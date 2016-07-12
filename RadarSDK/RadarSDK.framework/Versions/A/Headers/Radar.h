@@ -6,6 +6,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <CoreLocation/CoreLocation.h>
 
 @interface Radar : NSObject
 
@@ -14,24 +15,49 @@
  @warning You must call this method in application:didFinishLaunchingWithOptions: and pass your API key.
  @param key API key (required)
  **/
-+ (void)init:(NSString * _Nonnull)key;
++ (void)initWithKey:(NSString * _Nonnull)key;
 
 /**
- @abstract Prompts the user to authorize location access.
+ @abstract Returns the app's location authorization status.
+ @return A value indicating the app's location authorization status.
  **/
-+ (void)authorize;
++ (CLAuthorizationStatus)authorizationStatus;
 
 /**
- @abstract Starts location tracking for the user.
+ @abstract Requests permission to track the user's location in the foreground. Calls requestWhenInUseAuthorization on the Radar SDK's instance of CLLocationManager.
+ **/
++ (void)requestWhenInUseAuthorization;
+
+/**
+ @abstract Requests permission to track the user's location in the background. Calls requestAlwaysAuthorization on the Radar SDK's instance of CLLocationManager.
+ **/
++ (void)requestAlwaysAuthorization;
+
+/**
+ @abstract Tracks the user's location once in the foreground.
  @param userId Unique ID for the user (required)
  @param description Description for the user (optional)
- @warning If you have not called authorize before calling this method, it will be called automatically when you call this method.
+ @warning Before calling this method, the user's location authorization status must be kCLAuthorizationStatusAuthorizedWhenInUse or kCLAuthorizationStatusAuthorizedAlways.
  **/
-+ (void)startTracking:(NSString * _Nonnull)userId description:(NSString * _Nullable)description;
++ (void)trackOnceWithUserId:(NSString * _Nonnull)userId description:(NSString * _Nullable)description;
 
 /**
- @abstract Stops location tracking for the user.
+ @abstract Starts tracking the user's location in the background.
+ @param userId Unique ID for the user (required)
+ @param description Description for the user (optional)
+ @warning Before calling this method, the user's location authorization status must be kCLAuthorizationStatusAuthorizedAlways.
+ **/
++ (void)startTrackingWithUserId:(NSString * _Nonnull)userId description:(NSString * _Nullable)description;
+
+/**
+ @abstract Stops tracking location in the background.
  **/
 + (void)stopTracking;
+
+/**
+ @abstract Returns a boolean indicating whether the user's location is being tracked in the background.
+ @return A boolean indicating whether the user's location is being tracked in the background.
+ **/
++ (BOOL)isTracking;
 
 @end
