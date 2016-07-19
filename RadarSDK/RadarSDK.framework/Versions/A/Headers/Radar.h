@@ -50,7 +50,7 @@
 + (void)startTrackingWithUserId:(NSString * _Nonnull)userId description:(NSString * _Nullable)description;
 
 /**
- @abstract Stops tracking location in the background.
+ @abstract Stops tracking the user's location in the background.
  **/
 + (void)stopTracking;
 
