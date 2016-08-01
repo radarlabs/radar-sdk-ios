@@ -1,11 +1,11 @@
 Pod::Spec.new do |s|
   s.name                  = 'RadarSDK'
-  s.version               = '1.0.3'
+  s.version               = '1.0.4'
   s.summary               = 'iOS toolkit for location tracking and geofencing'
-  s.homepage              = 'https://www.radar.build'
-  s.author                = { 'Radar Labs, Inc.' => 'support@radar.build' }
+  s.homepage              = 'https://www.onradar.com'
+  s.author                = { 'Radar Labs, Inc.' => 'support@onradar.com' }
   s.platform              = :ios
-  s.source                = { :git => 'https://github.com/RadarLabs/RadarSDK-iOS.git', :tag => '1.0.3' }
+  s.source                = { :git => 'https://github.com/RadarLabs/RadarSDK-iOS.git', :tag => '1.0.4' }
   s.source_files          = 'RadarSDK/RadarSDK.framework/Versions/A/Headers/*.h'
   s.vendored_frameworks   = 'RadarSDK/RadarSDK.framework'
   s.ios.deployment_target = '8.0'
