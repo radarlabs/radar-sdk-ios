@@ -12,10 +12,10 @@
 
 /**
  @abstract Initializes the Radar SDK.
- @warning You must call this method in application:didFinishLaunchingWithOptions: and pass your API key.
- @param key API key (required)
+ @warning You must call this method in application:didFinishLaunchingWithOptions: and pass your publishable API key.
+ @param key Publishable API key (required)
  **/
-+ (void)initWithKey:(NSString * _Nonnull)key;
++ (void)initWithKey:(NSString * _Nonnull)publishableKey;
 
 /**
  @abstract Returns the app's location authorization status.
