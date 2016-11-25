@@ -6,7 +6,7 @@
 
 1.0.x
 
-```objective-c
+```objc
 [Radar initWithKey:publishableKey];
 
 [Radar startTrackingWithUserId:userId description:description];
@@ -16,7 +16,7 @@
 
 1.1.0
 
-```objective-c
+```objc
 [Radar initializeWithPublishableKey:publishableKey];
 
 [Radar setUserId:userId];
