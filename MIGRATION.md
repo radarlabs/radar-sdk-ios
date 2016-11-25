@@ -6,7 +6,7 @@
 
 1.0.x
 
-```
+```objective-c
 [Radar initWithKey:publishableKey];
 
 [Radar startTrackingWithUserId:userId description:description];
@@ -16,7 +16,7 @@
 
 1.1.0
 
-```
+```objective-c
 [Radar initializeWithPublishableKey:publishableKey];
 
 [Radar setUserId:userId];
@@ -33,7 +33,7 @@
 
 1.0.x
 
-```
+```swift
 Radar.initWithKey(publishableKey)
 
 Radar.startTracking(withUserId: userId, description: description)
@@ -43,7 +43,7 @@ Radar.trackOnce(withUserId: userId, description: description)
 
 1.1.0
 
-```
+```swift
 Radar.initialize(publishableKey: publishableKey)
 
 Radar.setUserId(userId)
