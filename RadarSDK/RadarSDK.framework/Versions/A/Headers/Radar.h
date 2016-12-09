@@ -31,11 +31,7 @@ typedef NS_ENUM(NSInteger, RadarStatus) {
 @interface Radar : NSObject
 
 /**
- @abstract A block type, called when a request completes.
- @param status The status.
- @param location The user's location. nil if status is not RadarStatusSuccess.
- @param events The events generated, if any. nil if status is not RadarStatusSuccess or if no events were generated.
- @param user The user. nil if status is not RadarStatusSuccess.
+ * A block type, called when a request completes. Receives the request status, the user's location, the events generated, if any, and the user.
  */
 typedef void(^ _Nullable RadarCompletionHandler)(RadarStatus status, CLLocation * _Nullable location, NSArray<RadarEvent *> * _Nullable events, RadarUser * _Nullable user);
 

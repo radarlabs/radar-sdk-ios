@@ -16,7 +16,7 @@
 /**
  @abstract Tells the delegate that events were received for the user. Note that events can also be delivered server-side via webhooks.
  @param events The events received.
- @param events The user.
+ @param user The user.
  */
 - (void)didReceiveEvents:(NSArray<RadarEvent *> * _Nonnull)events user:(RadarUser * _Nonnull)user NS_SWIFT_NAME(didReceiveEvents(_:user:));
 

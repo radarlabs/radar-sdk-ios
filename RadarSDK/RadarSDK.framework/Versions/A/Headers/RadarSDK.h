@@ -7,8 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
-#import <RadarSDK/Radar.h>
-#import <RadarSDK/RadarDelegate.h>
-#import <RadarSDK/RadarEvent.h>
-#import <RadarSDK/RadarUser.h>
-#import <RadarSDK/RadarGeofence.h>
+#import "Radar.h"
+#import "RadarDelegate.h"
+#import "RadarEvent.h"
+#import "RadarUser.h"
+#import "RadarGeofence.h"
