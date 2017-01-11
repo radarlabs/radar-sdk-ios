@@ -12,12 +12,13 @@
 
 @interface RadarEvent : NSObject
 
+/**
+ * The types for events.
+ */
 typedef NS_ENUM(NSInteger, RadarEventType) {
     UserEnteredGeofence = 1,
     UserExitedGeofence
 };
-
-- (instancetype _Nullable)initWithId:(NSString * _Nonnull)_id createdAt:(NSDate * _Nonnull)createdAt live:(BOOL)live type:(RadarEventType)type geofence:(RadarGeofence * _Nonnull)geofence duration:(float)duration;
 
 /**
  * @abstract The unique ID for the event, provided by Radar.

@@ -10,8 +10,6 @@
 
 @interface RadarUser : NSObject
 
-- (instancetype _Nullable)initWithId:(NSString * _Nonnull)_id userId:(NSString * _Nonnull)userId description:(NSString * _Nullable)description geofences:(NSArray * _Nullable)geofences;
-
 /**
  * @abstract The unique ID for the user, provided by Radar.
  */

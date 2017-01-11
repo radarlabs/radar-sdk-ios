@@ -9,8 +9,6 @@
 
 @interface RadarGeofence : NSObject
 
-- (instancetype _Nullable)initWithId:(NSString * _Nonnull)_id description:(NSString * _Nonnull)description tag:(NSString * _Nullable)tag externalId:(NSString * _Nullable)externalId;
-
 /**
  * @abstract The unique ID for the geofence, provided by Radar.
  */
