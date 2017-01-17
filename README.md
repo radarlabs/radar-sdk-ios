@@ -14,7 +14,7 @@ See migration guides in `MIGRATION.md`.
 
 See a Swift example app in `Examples/`.
 
-To run the sample app, clone this repository, add your publishable API key to `AppDelegate.swift`, and build the app.
+To run the example app, clone this repository, add your publishable API key in `AppDelegate.swift`, and build the app.
 
 ## Support
 
