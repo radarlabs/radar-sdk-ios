@@ -65,7 +65,7 @@
 				DD254A6B1E283A4400B69ECD /* Info.plist */,
 			);
 			path = RadarExampleSwift;
-			sourceTree = SOURCE_ROOT;
+			sourceTree = "<group>";
 		};
 		DD254A771E29376300B69ECD /* Frameworks */ = {
 			isa = PBXGroup;
@@ -73,7 +73,7 @@
 				DD254A7B1E293BAC00B69ECD /* RadarSDK.framework */,
 			);
 			name = Frameworks;
-			sourceTree = "<group>";
+			sourceTree = SOURCE_ROOT;
 		};
 /* End PBXGroup section */
 
@@ -254,7 +254,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/../../RadarSDK/**";
+				FRAMEWORK_SEARCH_PATHS = "$(SRCROOT)/../RadarSDK/**";
+				HEADER_SEARCH_PATHS = "$(SRCROOT)/../RadarSDK/**";
 				INFOPLIST_FILE = "$(SRCROOT)/RadarExampleSwift/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.onradar.exampleswift;
@@ -268,7 +269,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/../../RadarSDK/**";
+				FRAMEWORK_SEARCH_PATHS = "$(SRCROOT)/../RadarSDK/**";
+				HEADER_SEARCH_PATHS = "$(SRCROOT)/../RadarSDK/**";
 				INFOPLIST_FILE = "$(SRCROOT)/RadarExampleSwift/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.onradar.exampleswift;
