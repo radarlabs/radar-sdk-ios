@@ -16,8 +16,8 @@
  * The types for events.
  */
 typedef NS_ENUM(NSInteger, RadarEventType) {
-    UserEnteredGeofence = 1,
-    UserExitedGeofence
+    UserEnteredGeofence NS_SWIFT_NAME(userEnteredGeofence) = 1,
+    UserExitedGeofence NS_SWIFT_NAME(userExitedGeofence)
 };
 
 /**

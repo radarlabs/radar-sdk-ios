@@ -1,0 +1,305 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		DD254A671E283A4400B69ECD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DD254A661E283A4400B69ECD /* Assets.xcassets */; };
+		DD254A781E293A3E00B69ECD /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD254A5F1E283A4400B69ECD /* AppDelegate.swift */; };
+		DD254A791E293A4100B69ECD /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD254A611E283A4400B69ECD /* ViewController.swift */; };
+		DD254A7A1E293A4400B69ECD /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD254A731E2842F000B69ECD /* Utils.swift */; };
+		DD254A851E293E7200B69ECD /* RadarSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DD254A7B1E293BAC00B69ECD /* RadarSDK.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		DD254A5C1E283A4400B69ECD /* RadarExampleSwift.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RadarExampleSwift.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		DD254A5F1E283A4400B69ECD /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		DD254A611E283A4400B69ECD /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		DD254A661E283A4400B69ECD /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		DD254A6B1E283A4400B69ECD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		DD254A731E2842F000B69ECD /* Utils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
+		DD254A7B1E293BAC00B69ECD /* RadarSDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RadarSDK.framework; path = ../RadarSDK/RadarSDK.framework; sourceTree = SOURCE_ROOT; };
+		DD254A7E1E293C7400B69ECD /* ObjCBridge.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ObjCBridge.h; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		DD254A591E283A4400B69ECD /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DD254A851E293E7200B69ECD /* RadarSDK.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		DD254A531E283A4400B69ECD = {
+			isa = PBXGroup;
+			children = (
+				DD254A5E1E283A4400B69ECD /* RadarExampleSwift */,
+				DD254A771E29376300B69ECD /* Frameworks */,
+				DD254A5D1E283A4400B69ECD /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		DD254A5D1E283A4400B69ECD /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				DD254A5C1E283A4400B69ECD /* RadarExampleSwift.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		DD254A5E1E283A4400B69ECD /* RadarExampleSwift */ = {
+			isa = PBXGroup;
+			children = (
+				DD254A5F1E283A4400B69ECD /* AppDelegate.swift */,
+				DD254A611E283A4400B69ECD /* ViewController.swift */,
+				DD254A731E2842F000B69ECD /* Utils.swift */,
+				DD254A7E1E293C7400B69ECD /* ObjCBridge.h */,
+				DD254A661E283A4400B69ECD /* Assets.xcassets */,
+				DD254A6B1E283A4400B69ECD /* Info.plist */,
+			);
+			path = RadarExampleSwift;
+			sourceTree = SOURCE_ROOT;
+		};
+		DD254A771E29376300B69ECD /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				DD254A7B1E293BAC00B69ECD /* RadarSDK.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		DD254A5B1E283A4400B69ECD /* RadarExampleSwift */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = DD254A6E1E283A4400B69ECD /* Build configuration list for PBXNativeTarget "RadarExampleSwift" */;
+			buildPhases = (
+				DD254A581E283A4400B69ECD /* Sources */,
+				DD254A591E283A4400B69ECD /* Frameworks */,
+				DD254A5A1E283A4400B69ECD /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = RadarExampleSwift;
+			productName = example;
+			productReference = DD254A5C1E283A4400B69ECD /* RadarExampleSwift.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		DD254A541E283A4400B69ECD /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 0820;
+				LastUpgradeCheck = 0820;
+				ORGANIZATIONNAME = "Radar Labs, Inc.";
+				TargetAttributes = {
+					DD254A5B1E283A4400B69ECD = {
+						CreatedOnToolsVersion = 8.2;
+						ProvisioningStyle = Manual;
+						SystemCapabilities = {
+							com.apple.BackgroundModes = {
+								enabled = 1;
+							};
+						};
+					};
+				};
+			};
+			buildConfigurationList = DD254A571E283A4400B69ECD /* Build configuration list for PBXProject "RadarExampleSwift" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = DD254A531E283A4400B69ECD;
+			productRefGroup = DD254A5D1E283A4400B69ECD /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				DD254A5B1E283A4400B69ECD /* RadarExampleSwift */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		DD254A5A1E283A4400B69ECD /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DD254A671E283A4400B69ECD /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		DD254A581E283A4400B69ECD /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DD254A7A1E293A4400B69ECD /* Utils.swift in Sources */,
+				DD254A791E293A4100B69ECD /* ViewController.swift in Sources */,
+				DD254A781E293A3E00B69ECD /* AppDelegate.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		DD254A6C1E283A4400B69ECD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.2;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		DD254A6D1E283A4400B69ECD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.2;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		DD254A6F1E283A4400B69ECD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/../../RadarSDK/**";
+				INFOPLIST_FILE = "$(SRCROOT)/RadarExampleSwift/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.onradar.exampleswift;
+				PRODUCT_NAME = RadarExampleSwift;
+				SWIFT_OBJC_BRIDGING_HEADER = RadarExampleSwift/ObjCBridge.h;
+				SWIFT_VERSION = 3.0;
+			};
+			name = Debug;
+		};
+		DD254A701E283A4400B69ECD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/../../RadarSDK/**";
+				INFOPLIST_FILE = "$(SRCROOT)/RadarExampleSwift/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.onradar.exampleswift;
+				PRODUCT_NAME = RadarExampleSwift;
+				SWIFT_OBJC_BRIDGING_HEADER = RadarExampleSwift/ObjCBridge.h;
+				SWIFT_VERSION = 3.0;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		DD254A571E283A4400B69ECD /* Build configuration list for PBXProject "RadarExampleSwift" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				DD254A6C1E283A4400B69ECD /* Debug */,
+				DD254A6D1E283A4400B69ECD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		DD254A6E1E283A4400B69ECD /* Build configuration list for PBXNativeTarget "RadarExampleSwift" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				DD254A6F1E283A4400B69ECD /* Debug */,
+				DD254A701E283A4400B69ECD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = DD254A541E283A4400B69ECD /* Project object */;
+}
