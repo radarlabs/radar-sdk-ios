@@ -1,7 +1,21 @@
-# Radar
+![Radar](https://raw.githubusercontent.com/RadarLabs/RadarSDK-iOS/master/logo.png)
 
-[Radar](https://www.onradar.com) is a full-stack developer toolkit for location context and tracking.
+[Radar](https://www.onradar.com) is a full-stack developer toolkit for location context and tracking. We help companies collect, analyze, and act on location data.
+
+## Documentation
+
+See the full SDK documentation [here](https://www.onradar.com/documentation/sdk).
+
+## Migrating
 
 See migration guides in `MIGRATION.md`.
 
-See the full documentation [here](https://www.onradar.com/documentation/sdk).
+## Examples
+
+See a Swift example app in `Examples/`.
+
+To run the sample app, clone this repository, add your publishable API key to `AppDelegate.swift`, and build the app.
+
+## Support
+
+Have questions? We're here to help! Email us at [support@onradar.com](mailto:support@onradar.com).
