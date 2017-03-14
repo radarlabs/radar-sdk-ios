@@ -21,6 +21,16 @@ typedef NS_ENUM(NSInteger, RadarEventType) {
 };
 
 /**
+ * The confidence levels for events.
+ */
+typedef NS_ENUM(NSInteger, RadarEventConfidence) {
+    None NS_SWIFT_NAME(none) = 0,
+    Low NS_SWIFT_NAME(low) = 1,
+    Medium NS_SWIFT_NAME(medium) = 2,
+    High NS_SWIFT_NAME(high) = 3
+};
+
+/**
  * @abstract The unique ID for the event, provided by Radar.
  */
 @property (nonnull, copy, nonatomic, readonly) NSString *_id;
@@ -44,6 +54,11 @@ typedef NS_ENUM(NSInteger, RadarEventType) {
  * @abstract The geofence for which the event was generated.
  */
 @property (nonnull, strong, nonatomic, readonly) RadarGeofence *geofence;
+
+/**
+ * @abstract The confidence level of the event.
+ */
+@property (assign, nonatomic, readonly) RadarEventConfidence confidence;
 
 /**
  * @abstract The duration between entry and exit events, in minutes, for exit events. 0 for entry events.
