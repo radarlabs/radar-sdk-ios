@@ -16,18 +16,25 @@
  * The types for events.
  */
 typedef NS_ENUM(NSInteger, RadarEventType) {
-    UserEnteredGeofence NS_SWIFT_NAME(userEnteredGeofence) = 1,
-    UserExitedGeofence NS_SWIFT_NAME(userExitedGeofence)
+    RadarEventTypeUnknown NS_SWIFT_NAME(unknown),
+    RadarEventTypeUserEnteredGeofence NS_SWIFT_NAME(userEnteredGeofence),
+    RadarEventTypeUserExitedGeofence NS_SWIFT_NAME(userExitedGeofence),
+    RadarEventTypeUserEnteredHome NS_SWIFT_NAME(userEnteredHome),
+    RadarEventTypeUserExitedHome NS_SWIFT_NAME(userExitedHome),
+    RadarEventTypeUserEnteredOffice NS_SWIFT_NAME(userEnteredOffice),
+    RadarEventTypeUserExitedOffice NS_SWIFT_NAME(userExitedOffice),
+    RadarEventTypeUserStartedTraveling NS_SWIFT_NAME(userStartedTraveling),
+    RadarEventTypeUserStoppedTraveling NS_SWIFT_NAME(userStoppedTraveling),
 };
 
 /**
  * The confidence levels for events.
  */
 typedef NS_ENUM(NSInteger, RadarEventConfidence) {
-    None NS_SWIFT_NAME(none) = 0,
-    Low NS_SWIFT_NAME(low) = 1,
-    Medium NS_SWIFT_NAME(medium) = 2,
-    High NS_SWIFT_NAME(high) = 3
+    RadarEventConfidenceNone NS_SWIFT_NAME(none) = 0,
+    RadarEventConfidenceLow NS_SWIFT_NAME(low) = 1,
+    RadarEventConfidenceMedium NS_SWIFT_NAME(medium) = 2,
+    RadarEventConfidenceHigh NS_SWIFT_NAME(high) = 3
 };
 
 /**
@@ -51,9 +58,9 @@ typedef NS_ENUM(NSInteger, RadarEventConfidence) {
 @property (assign, nonatomic, readonly) RadarEventType type;
 
 /**
- * @abstract The geofence for which the event was generated.
+ * @abstract The geofence for which the event was generated. May be nil for non-geofence events.
  */
-@property (nonnull, strong, nonatomic, readonly) RadarGeofence *geofence;
+@property (nullable, strong, nonatomic, readonly) RadarGeofence *geofence;
 
 /**
  * @abstract The confidence level of the event.

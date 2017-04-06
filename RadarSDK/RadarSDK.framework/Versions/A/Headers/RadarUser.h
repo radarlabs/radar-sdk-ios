@@ -7,6 +7,7 @@
 
 #import <Foundation/Foundation.h>
 #import "RadarGeofence.h"
+#import "RadarUserInsights.h"
 
 @interface RadarUser : NSObject
 
@@ -29,5 +30,10 @@
  * @abstract An array of the user's last known geofences.
  */
 @property (nullable, copy, nonatomic, readonly) NSArray<RadarGeofence *> *geofences;
+
+/**
+ * @abstract Learned insights for the user. May be nil if no insights are available, or if Insights is turned off.
+ */
+@property (nullable, strong, nonatomic, readonly) RadarUserInsights *insights;
 
 @end

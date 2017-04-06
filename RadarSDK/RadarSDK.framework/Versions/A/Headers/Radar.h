@@ -17,7 +17,7 @@
  * The status types for a request.
  */
 typedef NS_ENUM(NSInteger, RadarStatus) {
-    RadarStatusSuccess = 0,
+    RadarStatusSuccess,
     RadarStatusErrorPublishableKey,
     RadarStatusErrorUserId,
     RadarStatusErrorPermissions,
