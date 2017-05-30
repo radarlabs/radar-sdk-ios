@@ -2,7 +2,6 @@
 //  RadarDelegate.h
 //  RadarSDK
 //
-//  Created by Nicholas Patrick on 11/22/16.
 //  Copyright © 2016 Radar. All rights reserved.
 //
 

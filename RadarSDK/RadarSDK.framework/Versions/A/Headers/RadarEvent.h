@@ -9,6 +9,7 @@
 #import <CoreLocation/CoreLocation.h>
 #import "RadarUser.h"
 #import "RadarGeofence.h"
+#import "RadarPlace.h"
 
 @interface RadarEvent : NSObject
 
@@ -25,6 +26,8 @@ typedef NS_ENUM(NSInteger, RadarEventType) {
     RadarEventTypeUserExitedOffice NS_SWIFT_NAME(userExitedOffice),
     RadarEventTypeUserStartedTraveling NS_SWIFT_NAME(userStartedTraveling),
     RadarEventTypeUserStoppedTraveling NS_SWIFT_NAME(userStoppedTraveling),
+    RadarEventTypeUserEnteredPlace NS_SWIFT_NAME(userEnteredPlace),
+    RadarEventTypeUserExitedPlace NS_SWIFT_NAME(userExitedPlace),
 };
 
 /**
@@ -35,6 +38,15 @@ typedef NS_ENUM(NSInteger, RadarEventConfidence) {
     RadarEventConfidenceLow NS_SWIFT_NAME(low) = 1,
     RadarEventConfidenceMedium NS_SWIFT_NAME(medium) = 2,
     RadarEventConfidenceHigh NS_SWIFT_NAME(high) = 3
+};
+
+/**
+ * The verification types for events.
+ */
+typedef NS_ENUM(NSInteger, RadarEventVerification) {
+    RadarEventVerificationAccept NS_SWIFT_NAME(accept) = 1,
+    RadarEventVerificationUnverify NS_SWIFT_NAME(unverify) = 0,
+    RadarEventVerificationReject NS_SWIFT_NAME(reject) = -1
 };
 
 /**
@@ -61,6 +73,11 @@ typedef NS_ENUM(NSInteger, RadarEventConfidence) {
  * @abstract The geofence for which the event was generated. May be nil for non-geofence events.
  */
 @property (nullable, strong, nonatomic, readonly) RadarGeofence *geofence;
+
+/**
+ * @abstract The place for which the event was generated. May be nil for non-place events.
+ */
+@property (nullable, strong, nonatomic, readonly) RadarPlace *place;
 
 /**
  * @abstract The confidence level of the event.
