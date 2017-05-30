@@ -1,4 +1,4 @@
-![Radar](https://raw.githubusercontent.com/radarlabs/radar-sdk-ios/master/logo.png)
+![Radar](https://raw.githubusercontent.com/radarlabs/radar-sdk-ios/master/logo.png?v=3)
 
 [Radar](https://www.onradar.com) is the location platform for mobile apps.
 
