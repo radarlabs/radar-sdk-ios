@@ -28,6 +28,14 @@ typedef NS_ENUM(NSInteger, RadarStatus) {
     RadarStatusErrorUnknown
 };
 
+/**
+ * The providers for Places data.
+ */
+typedef NS_ENUM(NSInteger, RadarPlacesProvider) {
+    RadarPlacesProviderNone,
+    RadarPlacesProviderFacebook
+};
+
 @interface Radar : NSObject
 
 /**
@@ -60,6 +68,12 @@ typedef void(^ _Nullable RadarCompletionHandler)(RadarStatus status, CLLocation 
  @param delegate A delegate for client-side event delivery. If nil, the previous delegate will be cleared.
  **/
 + (void)setDelegate:(id<RadarDelegate> _Nonnull)delegate;
+
+/**
+ @abstract Sets the provider for Places data.
+ @param provider The provider for Places data.
+ **/
++ (void)setPlacesProvider:(RadarPlacesProvider)provider;
 
 /**
  @abstract Returns the app's location authorization status. A convenience method that calls authorizationStatus on CLLocationManager.
