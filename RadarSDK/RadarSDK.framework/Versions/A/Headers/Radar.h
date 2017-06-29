@@ -64,6 +64,12 @@ typedef void(^ _Nullable RadarCompletionHandler)(RadarStatus status, CLLocation 
 + (void)setDescription:(NSString * _Nullable)description;
 
 /**
+ @abstract Sets an optional set of custom key-value pairs for the user.
+ @param metadata A set of custom key-value pairs for the user. Must have 16 or fewer keys and values of type string, boolean, or number. If nil, the previous metadata will be cleared.
+ **/
++ (void)setMetadata:(NSDictionary * _Nullable)metadata;
+
+/**
  @abstract Sets an optional delegate for client-side event delivery.
  @param delegate A delegate for client-side event delivery. If nil, the previous delegate will be cleared.
  **/
