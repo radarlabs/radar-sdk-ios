@@ -28,6 +28,11 @@
 @property (nullable, copy, nonatomic, readonly) NSString *_description;
 
 /**
+ * @abstract An optional set of custom key-value pairs for the user.
+ */
+@property (nullable, copy, nonatomic, readonly) NSDictionary *metadata;
+
+/**
  * @abstract An array of the user's last known geofences. May be nil or empty if the user is not in any geofences.
  */
 @property (nullable, copy, nonatomic, readonly) NSArray<RadarGeofence *> *geofences;
