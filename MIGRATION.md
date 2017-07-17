@@ -11,13 +11,18 @@ To avoid the [blue bar on iOS 11](https://blog.onradar.com/making-sense-of-new-b
 In addition, to prompt for background location permissions on iOS 11, you must add the new `NSLocationAlwaysAndWhenInUseUsageDescription` property to your `Info.plist`:
 
 ```xml
+<!-- new property -->
 <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 <string>Your iOS 11 and higher background location usage description goes here.</string>
+
+<!-- old properties -->
 <key>NSLocationAlwaysUsageDescription</key>
 <string>Your iOS 10 and lower background location usage description goes here.</string>
 <key>NSLocationWhenInUseUsageDescription</key>
 <string>Your foreground location usage description goes here.</string>
 ```
+
+You should keep the `NSLocationAlwaysUsageDescription` and `NSLocationWhenInUseUsageDescription` properties for backcompatibility.
 
 ## 1.0.x to 1.1.0
 
