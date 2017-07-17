@@ -4,7 +4,7 @@
 
 No code changes are required to upgrade from 1.1.x to 1.2.0. However, project metadata changes are required.
 
-To avoid the [blue bar on iOS 11](https://blog.onradar.com/making-sense-of-new-background-location-restrictions-in-ios-11-and-android-o-2c35eaf7af), 1.2.0 does not use the standard location service in the background. This means that **the location background mode is no longer required**. In the *Background Modes* section of your target's *Capabilities* tab, you can uncheck *Location updates*:
+To avoid the [blue bar on iOS 11](https://blog.onradar.com/making-sense-of-new-background-location-restrictions-in-ios-11-and-android-o-2c35eaf7af), 1.2.0 does not use the standard location service in the background. This means that the location background mode is no longer required. In the *Background Modes* section of your target's *Capabilities* tab, you can uncheck *Location updates*:
 
 ![Screenshot](https://raw.githubusercontent.com/radarlabs/radar-sdk-ios/master/Images/0.png)
 
@@ -16,7 +16,7 @@ In addition, to prompt for background location permissions on iOS 11, you must a
 <key>NSLocationAlwaysUsageDescription</key>
 <string>Your iOS 10 and lower background location usage description goes here.</string>
 <key>NSLocationWhenInUseUsageDescription</key>
-<string>Your foreground location usage description.</string>
+<string>Your foreground location usage description goes here.</string>
 ```
 
 ## 1.0.x to 1.1.0
