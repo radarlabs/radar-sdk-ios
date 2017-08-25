@@ -80,6 +80,21 @@ typedef NS_ENUM(NSInteger, RadarEventVerification) {
 @property (nullable, strong, nonatomic, readonly) RadarPlace *place;
 
 /**
+ * @abstract For place entry events, alternate place candidates. May be nil for non-place events.
+ */
+@property (nullable, strong, nonatomic, readonly) NSArray<RadarPlace *> *alternatePlaces;
+
+/**
+ * @abstract For accepted place entry events, the verified place. May be nil for non-place events.
+ */
+@property (nullable, strong, nonatomic, readonly) RadarPlace *verifiedPlace;
+
+/**
+ * @abstract The verification of the event.
+ */
+@property (assign, nonatomic, readonly) RadarEventVerification verification;
+
+/**
  * @abstract The confidence level of the event.
  */
 @property (assign, nonatomic, readonly) RadarEventConfidence confidence;

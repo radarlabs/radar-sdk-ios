@@ -130,11 +130,18 @@ typedef void(^ _Nullable RadarCompletionHandler)(RadarStatus status, CLLocation 
 + (void)updateLocation:(CLLocation * _Nonnull)location withCompletionHandler:(RadarCompletionHandler _Nullable)completionHandler NS_SWIFT_NAME(updateLocation(_:completionHandler:));
 
 /**
- @abstract Accepts or rejects an event. Events can be accepted or rejected after user check-ins or other forms of verification. Event verifications will be used to improve the accuracy and confidence level of future events.
- @param eventId The unique ID of the event, provided by Radar.
- @param verification A value indicating whether to accept, reject, or unverify the event.
+ @abstract Accepts an event. Events can be accepted after user check-ins or other forms of verification. Event verifications will be used to improve the accuracy and confidence level of future events.
+ @param eventId The ID of the event to accept.
+ @param verifiedPlaceId For place entry events, the ID of the verified place. May be nil.
  **/
-+ (void)verifyEventId:(NSString *_Nonnull)eventId withVerification:(RadarEventVerification)verification NS_SWIFT_NAME(verifyEventId(_:verification:));
++ (void)acceptEventId:(NSString *_Nonnull)eventId withVerifiedPlaceId:(NSString *_Nullable)verifiedPlaceId NS_SWIFT_NAME(acceptEventId(_:verifiedPlaceId:));
+
+/**
+ @abstract Rejects an event. Events can be accepted after user check-ins or other forms of verification. Event verifications will be used to improve the accuracy and confidence level of future events.
+ @param eventId The ID of the event to reject.
+ @param verifiedPlaceId For place entry events, the ID of the verified place.
+ **/
++ (void)rejectEventId:(NSString *_Nonnull)eventId NS_SWIFT_NAME(rejectEventId(_:));
 
 /**
  @abstract Returns a boolean indicating whether the user's wi-fi is enabled. Location accuracy and reliability are greatly improved when wi-fi is enabled.
