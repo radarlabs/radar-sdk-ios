@@ -39,5 +39,28 @@ class Utils {
             return "-"
         }
     }
+    
+    static func stringForStatus(_ status: RadarStatus) -> String {
+        switch status {
+        case .success:
+            return "Success"
+        case .errorPublishableKey:
+            return "Publishable Key Error"
+        case .errorUserId:
+            return "User ID Error"
+        case .errorPermissions:
+            return "Permissions Error"
+        case .errorLocation:
+            return "Location Error"
+        case .errorNetwork:
+            return "Network Error"
+        case .errorUnauthorized:
+            return "Unauthorized Error"
+        case .errorServer:
+            return "Server Error"
+        default:
+            return "Unknown Error"
+        }
+    }
 
 }
