@@ -139,7 +139,6 @@ typedef void(^ _Nullable RadarCompletionHandler)(RadarStatus status, CLLocation 
 /**
  @abstract Rejects an event. Events can be accepted after user check-ins or other forms of verification. Event verifications will be used to improve the accuracy and confidence level of future events.
  @param eventId The ID of the event to reject.
- @param verifiedPlaceId For place entry events, the ID of the verified place.
  **/
 + (void)rejectEventId:(NSString *_Nonnull)eventId NS_SWIFT_NAME(rejectEventId(_:));
 
