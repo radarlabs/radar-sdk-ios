@@ -13,11 +13,19 @@
 @protocol RadarDelegate <NSObject>
 
 /**
- @abstract Tells the delegate that events were received for the user. Note that events can also be delivered server-side via webhooks.
+ @abstract Tells the delegate that events were received for the current user. Note that events can also be delivered server-side via webhooks.
  @param events The events received.
- @param user The user.
+ @param user The current user.
  */
 - (void)didReceiveEvents:(NSArray<RadarEvent *> * _Nonnull)events user:(RadarUser * _Nonnull)user NS_SWIFT_NAME(didReceiveEvents(_:user:));
+
+@optional
+/**
+ @abstract Tells the delegate that the current user's location was updated.
+ @param location The location.
+ @param user The current user.
+ */
+- (void)didUpdateLocation:(CLLocation * _Nonnull)location user:(RadarUser * _Nonnull)user NS_SWIFT_NAME(didUpdateLocation(_:user:));
 
 @optional
 /**
