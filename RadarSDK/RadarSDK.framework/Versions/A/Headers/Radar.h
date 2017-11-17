@@ -36,6 +36,14 @@ typedef NS_ENUM(NSInteger, RadarPlacesProvider) {
     RadarPlacesProviderFacebook
 };
 
+/**
+ * The priorities for background tracking.
+ */
+typedef NS_ENUM(NSInteger, RadarPriority) {
+    RadarPriorityResponsiveness,
+    RadarPriorityEfficiency
+};
+
 @interface Radar : NSObject
 
 /**
@@ -110,6 +118,13 @@ typedef void(^ _Nullable RadarCompletionHandler)(RadarStatus status, CLLocation 
  @warning Before calling this method, you must have called setUserId: once to identify the user, and the user's location authorization status must be kCLAuthorizationStatusAuthorizedWhenInUse or kCLAuthorizationStatusAuthorizedAlways.
  **/
 + (void)trackOnceWithCompletionHandler:(RadarCompletionHandler _Nullable)completionHandler NS_SWIFT_NAME(trackOnce(completionHandler:));
+
+/**
+ @abstract Sets the priority for background tracking.
+ @param priority The priority for background tracking. RadarPriorityResponsiveness, the default, uses Radar stop detection and triggers more frequent wakeups for better responsiveness and reliability. RadarPriorityEfficiency uses iOS stop detection and triggers less frequent wakeups for better battery efficiency.
+ @warning RadarPriorityResponsiveness requires the location background mode. Otherwise, RadarPriorityEfficiency is used.
+ **/
++ (void)setTrackingPriority:(RadarPriority)priority;
 
 /**
  @abstract Starts tracking the user's location in the background.
