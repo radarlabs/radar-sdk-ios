@@ -29,4 +29,9 @@
  */
 @property (nullable, copy, nonatomic, readonly) NSString *externalId;
 
+/**
+ * @abstract An optional set of custom key-value pairs for the geofence.
+ */
+@property (nullable, copy, nonatomic, readonly) NSDictionary *metadata;
+
 @end
