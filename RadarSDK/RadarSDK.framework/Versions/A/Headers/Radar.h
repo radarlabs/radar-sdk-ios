@@ -24,6 +24,8 @@ typedef NS_ENUM(NSInteger, RadarStatus) {
     RadarStatusErrorLocation,
     RadarStatusErrorNetwork,
     RadarStatusErrorUnauthorized,
+    RadarStatusErrorRateLimit,
+    RadarStatusErrorPlaces,
     RadarStatusErrorServer,
     RadarStatusErrorUnknown
 };
