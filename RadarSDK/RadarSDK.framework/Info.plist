@@ -2,5 +2,5 @@
   CFBundleExecutable = "RadarSDK";
   CFBundleIdentifier = "com.onradar.sdk";
   CFBundlePackageType = "FMWK";
-  DTSDKName = "iphoneos11.1";
+  DTSDKName = "iphoneos11.2";
 }
