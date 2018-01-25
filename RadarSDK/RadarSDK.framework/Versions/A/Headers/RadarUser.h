@@ -20,7 +20,12 @@
 /**
  * @abstract The unique ID for the user, provided when you identified the user.
  */
-@property (nonnull, copy, nonatomic, readonly) NSString *userId;
+@property (nullable, copy, nonatomic, readonly) NSString *userId;
+
+/**
+ * @abstract The device ID of the user.
+ */
+@property (nullable, copy, nonatomic, readonly) NSString *deviceId;
 
 /**
  * @abstract An optional description for the user. Not to be confused with the NSObject description property.

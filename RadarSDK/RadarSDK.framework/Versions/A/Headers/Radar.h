@@ -68,13 +68,6 @@ typedef void(^ _Nullable RadarCompletionHandler)(RadarStatus status, CLLocation 
 + (void)setUserId:(NSString * _Nonnull)userId;
 
 /**
- @abstract Reidentifies the user, changing their user ID without creating a new user.
- @warning To reidentify the user, you must call this method with the user's old stable unique ID, call setUserId: with the user's new stable unique ID, then track the user's location.
- @param oldUserId The old stable unique ID for the user. If nil, the previous ID will be cleared.
- **/
-+ (void)reidentifyUserFromOldUserId:(NSString * _Nullable)oldUserId NS_SWIFT_NAME(reidentifyUser(oldUserId:));
-
-/**
  @abstract Sets an optional description for the user, displayed in the dashboard.
  @param description A description for the user. If nil, the previous description will be cleared.
  **/
