@@ -61,11 +61,11 @@ typedef void(^ _Nullable RadarCompletionHandler)(RadarStatus status, CLLocation 
 + (void)initializeWithPublishableKey:(NSString * _Nonnull)publishableKey NS_SWIFT_NAME(initialize(publishableKey:));
 
 /**
- @abstract Identifies the user.
- @warning You must call this method once before calling trackOnce: or startTracking.
+ @abstract Identifies the user when logged in.
+ @warning Until you identify the user, Radar will automatically identify the user by deviceId (IDFV).
  @param userId A stable unique ID for the user.
  **/
-+ (void)setUserId:(NSString * _Nonnull)userId;
++ (void)setUserId:(NSString * _Nullable)userId;
 
 /**
  @abstract Sets an optional description for the user, displayed in the dashboard.
@@ -158,11 +158,5 @@ typedef void(^ _Nullable RadarCompletionHandler)(RadarStatus status, CLLocation 
  @param eventId The ID of the event to reject.
  **/
 + (void)rejectEventId:(NSString *_Nonnull)eventId NS_SWIFT_NAME(rejectEventId(_:));
-
-/**
- @abstract Returns a boolean indicating whether the user's wi-fi is enabled. Location accuracy and reliability are greatly improved when wi-fi is enabled.
- @return A boolean indicating whether the user's wi-fi is enabled.
- **/
-+ (BOOL)isWifiEnabled;
 
 @end

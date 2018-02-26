@@ -12,3 +12,8 @@
 #import "RadarEvent.h"
 #import "RadarUser.h"
 #import "RadarGeofence.h"
+#import "RadarUserInsights.h"
+#import "RadarUserInsightsLocation.h"
+#import "RadarUserInsightsState.h"
+#import "RadarPlace.h"
+#import "RadarChain.h"
