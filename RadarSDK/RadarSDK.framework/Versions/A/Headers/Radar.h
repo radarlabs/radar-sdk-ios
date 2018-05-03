@@ -83,7 +83,7 @@ typedef void(^ _Nullable RadarCompletionHandler)(RadarStatus status, CLLocation 
  @abstract Sets an optional delegate for client-side event delivery.
  @param delegate A delegate for client-side event delivery. If nil, the previous delegate will be cleared.
  **/
-+ (void)setDelegate:(id<RadarDelegate> _Nonnull)delegate;
++ (void)setDelegate:(id<RadarDelegate> _Nullable)delegate;
 
 /**
  @abstract Sets the provider for Places data.
