@@ -2,36 +2,49 @@
 //  Radar.h
 //  RadarSDK
 //
-//  Copyright © 2016 Radar. All rights reserved.
+//  Copyright © 2018 Radar. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
 #import <CoreLocation/CoreLocation.h>
-#import "RadarUser.h"
-#import "RadarGeofence.h"
+#import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
+
 #import "RadarEvent.h"
+#import "RadarGeofence.h"
+#import "RadarUser.h"
 
 @protocol RadarDelegate;
 
 /**
- * The status types for a request.
+ The status types for a request.
+
+ - RadarStatusSuccess: Success
+ - RadarStatusErrorPublishableKey: Publishable key is not set
+ - RadarStatusErrorPermissions: Location permissions not granted
+ - RadarStatusErrorLocation: Invalid location sent to server
+ - RadarStatusErrorNetwork: Network failure
+ - RadarStatusErrorUnauthorized: Unauthorized API call, check publishable key
+ - RadarStatusErrorRateLimit: Radar rate limit was hit
+ - RadarStatusErrorServer: Radar server error
+ - RadarStatusErrorUnknown: Unknown error
  */
 typedef NS_ENUM(NSInteger, RadarStatus) {
     RadarStatusSuccess,
     RadarStatusErrorPublishableKey,
-    RadarStatusErrorUserId,
     RadarStatusErrorPermissions,
     RadarStatusErrorLocation,
     RadarStatusErrorNetwork,
     RadarStatusErrorUnauthorized,
     RadarStatusErrorRateLimit,
-    RadarStatusErrorPlaces,
     RadarStatusErrorServer,
     RadarStatusErrorUnknown
 };
 
 /**
- * The providers for Places data.
+ The providers for Places data.
+
+ - RadarPlacesProviderNone: No places provider
+ - RadarPlacesProviderFacebook: Facebook Places
  */
 typedef NS_ENUM(NSInteger, RadarPlacesProvider) {
     RadarPlacesProviderNone,
@@ -39,19 +52,16 @@ typedef NS_ENUM(NSInteger, RadarPlacesProvider) {
 };
 
 /**
- * The priorities for background tracking.
+ The Radar SDK
+ 
+ For detailed documentation, look below or on the web - https://radar.io/documentation/sdk
  */
-typedef NS_ENUM(NSInteger, RadarPriority) {
-    RadarPriorityResponsiveness,
-    RadarPriorityEfficiency
-};
-
 @interface Radar : NSObject
 
 /**
  * A block type, called when a location request completes. Receives the request status, the user's location, the events generated, if any, and the user.
  */
-typedef void(^ _Nullable RadarCompletionHandler)(RadarStatus status, CLLocation * _Nullable location, NSArray<RadarEvent *> * _Nullable events, RadarUser * _Nullable user);
+typedef void(^_Nullable RadarCompletionHandler)(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user);
 
 /**
  @abstract Initializes the Radar SDK.
@@ -80,32 +90,10 @@ typedef void(^ _Nullable RadarCompletionHandler)(RadarStatus status, CLLocation 
 + (void)setMetadata:(NSDictionary * _Nullable)metadata;
 
 /**
- @abstract Sets an optional delegate for client-side event delivery.
- @param delegate A delegate for client-side event delivery. If nil, the previous delegate will be cleared.
- **/
-+ (void)setDelegate:(id<RadarDelegate> _Nullable)delegate;
-
-/**
  @abstract Sets the provider for Places data.
  @param provider The provider for Places data.
  **/
 + (void)setPlacesProvider:(RadarPlacesProvider)provider;
-
-/**
- @abstract Returns the app's location authorization status. A convenience method that calls authorizationStatus on CLLocationManager.
- @return A value indicating the app's location authorization status.
- **/
-+ (CLAuthorizationStatus)authorizationStatus;
-
-/**
- @abstract Requests permission to track the user's location in the foreground. A convenience method that calls requestWhenInUseAuthorization on the Radar SDK's instance of CLLocationManager.
- **/
-+ (void)requestWhenInUseAuthorization;
-
-/**
- @abstract Requests permission to track the user's location in the background. A convenience method that calls requestAlwaysAuthorization on the Radar SDK's instance of CLLocationManager.
- **/
-+ (void)requestAlwaysAuthorization;
 
 /**
  @abstract Tracks the user's location once in the foreground.
@@ -113,13 +101,6 @@ typedef void(^ _Nullable RadarCompletionHandler)(RadarStatus status, CLLocation 
  @warning Before calling this method, you must have called setUserId: once to identify the user, and the user's location authorization status must be kCLAuthorizationStatusAuthorizedWhenInUse or kCLAuthorizationStatusAuthorizedAlways.
  **/
 + (void)trackOnceWithCompletionHandler:(RadarCompletionHandler _Nullable)completionHandler NS_SWIFT_NAME(trackOnce(completionHandler:));
-
-/**
- @abstract Sets the priority for background tracking.
- @param priority The priority for background tracking. RadarPriorityResponsiveness, the default, uses Radar stop detection and triggers more frequent wakeups for better responsiveness and reliability. RadarPriorityEfficiency uses iOS stop detection and triggers less frequent wakeups for better battery efficiency.
- @warning RadarPriorityResponsiveness requires the location background mode. Otherwise, RadarPriorityEfficiency is used.
- **/
-+ (void)setTrackingPriority:(RadarPriority)priority;
 
 /**
  @abstract Starts tracking the user's location in the background.
@@ -147,16 +128,27 @@ typedef void(^ _Nullable RadarCompletionHandler)(RadarStatus status, CLLocation 
 + (void)updateLocation:(CLLocation * _Nonnull)location withCompletionHandler:(RadarCompletionHandler _Nullable)completionHandler NS_SWIFT_NAME(updateLocation(_:completionHandler:));
 
 /**
- @abstract Accepts an event. Events can be accepted after user check-ins or other forms of verification. Event verifications will be used to improve the accuracy and confidence level of future events.
+ Sets an optional delegate for client-side event delivery.
+
+ @param delegate A delegate for client-side event delivery. If nil, the previous delegate will be cleared.
+ 
+ @note Radar keeps a weak reference to the given delegate so there's usually no need to explicitly clear it.
+ */
++ (void)setDelegate:(nullable id <RadarDelegate>)delegate;
+
+/**
+ Accepts an event. Events can be accepted after user check-ins or other forms of verification. Event verifications will be used to improve the accuracy and confidence level of future events.
+
  @param eventId The ID of the event to accept.
  @param verifiedPlaceId For place entry events, the ID of the verified place. May be nil.
- **/
+ */
 + (void)acceptEventId:(NSString *_Nonnull)eventId withVerifiedPlaceId:(NSString *_Nullable)verifiedPlaceId NS_SWIFT_NAME(acceptEventId(_:verifiedPlaceId:));
 
 /**
- @abstract Rejects an event. Events can be accepted after user check-ins or other forms of verification. Event verifications will be used to improve the accuracy and confidence level of future events.
+Rejects an event. Events can be accepted after user check-ins or other forms of verification. Event verifications will be used to improve the accuracy and confidence level of future events.
+
  @param eventId The ID of the event to reject.
- **/
+ */
 + (void)rejectEventId:(NSString *_Nonnull)eventId NS_SWIFT_NAME(rejectEventId(_:));
 
 @end
