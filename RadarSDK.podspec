@@ -10,7 +10,7 @@ Pod::Spec.new do |s|
   s.source_files          = 'RadarSDK/RadarSDK.framework/Versions/A/Headers/*.h'
   s.vendored_frameworks   = 'RadarSDK/RadarSDK.framework'
   s.module_name           = 'RadarSDK'
-  s.ios.deployment_target = '8.0'
+  s.ios.deployment_target = '9.0'
   s.frameworks            = 'CoreLocation'
   s.requires_arc          = true
   s.license               = { :type => 'Copyright',
