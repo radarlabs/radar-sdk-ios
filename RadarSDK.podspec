@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name                  = 'RadarSDK'
-  s.version               = '2.0.0-beta1'
+  s.version               = '2.0.0-beta2'
   s.summary               = 'iOS SDK for Radar, the location platform for mobile apps'
   s.homepage              = 'https://radar.io'
   s.social_media_url      = 'https://twitter.com/radarlabs'
@@ -10,7 +10,7 @@ Pod::Spec.new do |s|
   s.source_files          = 'RadarSDK/RadarSDK.framework/Versions/A/Headers/*.h'
   s.vendored_frameworks   = 'RadarSDK/RadarSDK.framework'
   s.module_name           = 'RadarSDK'
-  s.ios.deployment_target = '8.0'
+  s.ios.deployment_target = '9.0'
   s.frameworks            = 'CoreLocation'
   s.requires_arc          = true
   s.license               = { :type => 'Copyright',
