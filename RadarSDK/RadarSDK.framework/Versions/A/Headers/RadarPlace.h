@@ -21,6 +21,11 @@
 @property (nullable, copy, nonatomic, readonly) NSString *facebookId;
 
 /**
+ * @abstract A Facebook Place ID for the place, if known.
+ */
+@property (nullable, copy, nonatomic, readonly) NSString *facebookPlaceId;
+
+/**
  * @abstract The name of the place.
  */
 @property (nonnull, copy, nonatomic, readonly) NSString *name;
