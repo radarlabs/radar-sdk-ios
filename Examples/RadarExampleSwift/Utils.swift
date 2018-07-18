@@ -46,8 +46,6 @@ class Utils {
             return "Success"
         case .errorPublishableKey:
             return "Publishable Key Error"
-        case .errorUserId:
-            return "User ID Error"
         case .errorPermissions:
             return "Permissions Error"
         case .errorLocation:

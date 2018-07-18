@@ -11,6 +11,7 @@ import UserNotifications
 class ViewController: UIViewController, RadarDelegate {
 
     var stackView: UIStackView!
+    var locationManager: CLLocationManager = CLLocationManager()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -51,7 +52,7 @@ class ViewController: UIViewController, RadarDelegate {
         trackingTitleLabel.font = boldFont
 
         let trackingSwitch = UISwitch()
-        trackingSwitch.isOn = Radar.isTracking() && Radar.authorizationStatus() == .authorizedAlways
+        trackingSwitch.isOn = Radar.isTracking() && CLLocationManager.authorizationStatus() == .authorizedAlways
         trackingSwitch.addTarget(self, action: #selector(trackingChanged(trackingSwitch:)), for: .valueChanged)
 
         let arrangedSubviews = [
@@ -75,8 +76,8 @@ class ViewController: UIViewController, RadarDelegate {
     }
 
     func requestPermissions() {
-        if Radar.authorizationStatus() == .notDetermined {
-            Radar.requestAlwaysAuthorization()
+        if CLLocationManager.authorizationStatus() == .notDetermined {
+            self.locationManager.requestAlwaysAuthorization()
         }
 
         let center = UNUserNotificationCenter.current()
