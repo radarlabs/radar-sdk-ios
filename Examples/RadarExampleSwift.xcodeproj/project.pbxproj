@@ -258,6 +258,7 @@
 				HEADER_SEARCH_PATHS = "$(SRCROOT)/../RadarSDK/**";
 				INFOPLIST_FILE = "$(SRCROOT)/RadarExampleSwift/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				"OTHER_LDFLAGS[arch=*]" = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = com.onradar.exampleswift;
 				PRODUCT_NAME = RadarExampleSwift;
 				SWIFT_OBJC_BRIDGING_HEADER = RadarExampleSwift/ObjCBridge.h;
@@ -273,6 +274,7 @@
 				HEADER_SEARCH_PATHS = "$(SRCROOT)/../RadarSDK/**";
 				INFOPLIST_FILE = "$(SRCROOT)/RadarExampleSwift/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				"OTHER_LDFLAGS[arch=*]" = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = com.onradar.exampleswift;
 				PRODUCT_NAME = RadarExampleSwift;
 				SWIFT_OBJC_BRIDGING_HEADER = RadarExampleSwift/ObjCBridge.h;
