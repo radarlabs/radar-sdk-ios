@@ -57,4 +57,14 @@
  */
 @property (nullable, strong, nonatomic, readonly) RadarUserInsights *insights;
 
+/**
+ * @abstract A boolean indicating whether the user is stopped.
+ */
+@property (assign, nonatomic, readonly) BOOL stopped;
+
+/**
+ * @abstract A boolean indicating whether the user was last updated in the foreground.
+ */
+@property (assign, nonatomic, readonly) BOOL foreground;
+
 @end
