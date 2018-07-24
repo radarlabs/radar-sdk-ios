@@ -104,4 +104,9 @@ typedef NS_ENUM(NSInteger, RadarEventVerification) {
  */
 @property (assign, nonatomic, readonly) float duration;
 
+/**
+ * @abstract The location of the event.
+ */
+@property (nonnull, strong, nonatomic, readonly) CLLocation *location;
+
 @end
