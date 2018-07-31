@@ -1,5 +1,8 @@
 ![Radar](https://raw.githubusercontent.com/radarlabs/radar-sdk-ios/master/logo.png?v=3)
 
+[![CocoaPods](https://img.shields.io/cocoapods/v/RadarSDK.svg)](https://cocoapods.org/pods/RadarSDK)
+[![Carthage](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg)](https://github.com/Carthage/Carthage)
+
 [Radar](https://radar.io) is the location platform for mobile apps.
 
 ## Documentation
