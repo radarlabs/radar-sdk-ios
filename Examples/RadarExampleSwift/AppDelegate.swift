@@ -38,13 +38,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, RadarDelegate {
     
     func didUpdateLocation(_ location: CLLocation, user: RadarUser) {
         let state = user.stopped ? "Stopped at" : "Moved to"
-        let body = "\(state) location (\(location.coordinate.latitude), \(location.coordinate.longitude)) with accuracy \(location.horizontalAccuracy) meters"
-        self.showNotification(title: "Location", body: body)
+        let locationString = "\(state) location (\(location.coordinate.latitude), \(location.coordinate.longitude)) with accuracy \(location.horizontalAccuracy) meters"
+        self.showNotification(title: "Location", body: locationString)
     }
     
     func didFail(status: RadarStatus) {
         let statusString = Utils.stringForStatus(status)
-        print(statusString)
         self.showNotification(title: "Error", body: statusString)
     }
     
