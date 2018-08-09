@@ -8,18 +8,16 @@
 import UIKit
 import UserNotifications
 
-class ViewController: UIViewController, RadarDelegate {
+class ViewController: UIViewController {
 
     var stackView: UIStackView!
-    var locationManager: CLLocationManager = CLLocationManager()
+    let locationManager: CLLocationManager = CLLocationManager()
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
         self.setupView()
         self.requestPermissions()
-
-        Radar.setDelegate(self)
     }
 
     override func viewDidLayoutSubviews() {
@@ -76,7 +74,7 @@ class ViewController: UIViewController, RadarDelegate {
     }
 
     func requestPermissions() {
-        if CLLocationManager.authorizationStatus() == .notDetermined {
+        if CLLocationManager.authorizationStatus() != .authorizedAlways {
             self.locationManager.requestAlwaysAuthorization()
         }
 
@@ -129,38 +127,11 @@ class ViewController: UIViewController, RadarDelegate {
         }
     }
 
-    func didReceiveEvents(_ events: [RadarEvent], user: RadarUser) {
-        for event in events {
-            let eventString = Utils.stringForEvent(event)
-            self.showNotification(title: "Event", body: eventString)
-        }
-    }
-
-    func didFail(status: RadarStatus) {
-        let statusString = Utils.stringForStatus(status)
-        print(statusString)
-    }
-
     func showAlert(title: String, message: String?) {
         let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert);
         alertController.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
 
         self.present(alertController, animated: true, completion: nil)
-    }
-
-    func showNotification(title: String, body: String) {
-        let center = UNUserNotificationCenter.current()
-
-        let identifier = body
-
-        let content = UNMutableNotificationContent()
-        content.title = title
-        content.body = body
-
-        let request = UNNotificationRequest(identifier: identifier, content: content, trigger: nil)
-        center.add(request, withCompletionHandler: { (error: Error?) in
-
-        })
     }
 
 }
