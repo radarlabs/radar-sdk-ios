@@ -17,3 +17,7 @@
 #import "RadarUserInsightsState.h"
 #import "RadarPlace.h"
 #import "RadarChain.h"
+#import "RadarCoordinate.h"
+#import "RadarGeofenceGeometry.h"
+#import "RadarCircleGeometry.h"
+#import "RadarPolygonGeometry.h"

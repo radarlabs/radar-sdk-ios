@@ -17,122 +17,156 @@
 
 /**
  The status types for a request.
-
- - RadarStatusSuccess: Success
- - RadarStatusErrorPublishableKey: Publishable key is not set
- - RadarStatusErrorPermissions: Location permissions not granted
- - RadarStatusErrorLocation: Invalid location sent to server
- - RadarStatusErrorNetwork: Network failure
- - RadarStatusErrorUnauthorized: Unauthorized API call, check publishable key
- - RadarStatusErrorRateLimit: Radar rate limit was hit
- - RadarStatusErrorServer: Radar server error
- - RadarStatusErrorUnknown: Unknown error
+ 
+ @see https://radar.io/documentation/sdk#ios-foreground
  */
 typedef NS_ENUM(NSInteger, RadarStatus) {
+    /// The request succeeded
     RadarStatusSuccess,
+    /// The SDK was not initialized with a publishable API key
     RadarStatusErrorPublishableKey,
+    /// The app's location authorization status is not `kCLAuthorizationStatusAuthorizedWhenInUse` or `kCLAuthorizationStatusAuthorizedAlways`
     RadarStatusErrorPermissions,
+    /// Location services were unavailable, or the location request timed out.
     RadarStatusErrorLocation,
+    /// The network was unavailable, or the network connection timed out
     RadarStatusErrorNetwork,
+    /// The publishable API key is invalid
     RadarStatusErrorUnauthorized,
+    /// Exceeded rate limit of 1 request per second per user or 60 requests per hour per user
     RadarStatusErrorRateLimit,
+    /// An internal server error occurred
     RadarStatusErrorServer,
+    /// An unknown error occurred
     RadarStatusErrorUnknown
 };
 
 /**
  The providers for Places data.
-
- - RadarPlacesProviderNone: No places provider
- - RadarPlacesProviderFacebook: Facebook Places
+ 
+ @see https://radar.io/documentation/sdk#ios-places
  */
 typedef NS_ENUM(NSInteger, RadarPlacesProvider) {
+    /// No places provider
     RadarPlacesProviderNone,
+    /// Facebook Places
     RadarPlacesProviderFacebook
 };
 
 /**
- The Radar SDK
+ The top-level class used to interact with the Radar SDK. For more information, see https://radar.io/documentation/sdk
+.
  
- For detailed documentation, look below or on the web - https://radar.io/documentation/sdk
+ @see https://radar.io/documentation/sdk
  */
 @interface Radar : NSObject
 
 /**
- * A block type, called when a location request completes. Receives the request status, the user's location, the events generated, if any, and the user.
+ Called when a request succeeds, fails, or times out. Receives the request status and, if successful, the user's location, the events generated, and the user.
+ 
+ @see https://radar.io/documentation/sdk#ios-foreground
  */
 typedef void(^_Nullable RadarCompletionHandler)(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user);
 
 /**
- @abstract Initializes the Radar SDK.
- @warning You must call this method in application:didFinishLaunchingWithOptions: and pass your publishable API key.
+ Initializes the Radar SDK.
+ 
+ @warning Call this method from the main thread in your `AppDelegate` class before calling any other Radar methods.
+ 
  @param publishableKey Your publishable API key.
+ 
+ @see https://radar.io/documentation/sdk#ios-initialize
  **/
 + (void)initializeWithPublishableKey:(NSString * _Nonnull)publishableKey NS_SWIFT_NAME(initialize(publishableKey:));
 
 /**
- @abstract Identifies the user when logged in.
- @warning Until you identify the user, Radar will automatically identify the user by deviceId (IDFV).
+ Identifies the user when logged in.
+ 
+ @note Until you identify the user, Radar will automatically identify the user by `deviceId` (IDFV).
+ 
  @param userId A stable unique ID for the user.
+ 
+ @see https://radar.io/documentation/sdk#ios-identify
  **/
 + (void)setUserId:(NSString * _Nullable)userId;
 
 /**
- @abstract Sets an optional description for the user, displayed in the dashboard.
- @param description A description for the user. If nil, the previous description will be cleared.
+ Sets an optional description for the user, displayed in the dashboard.
+ 
+ @param description A description for the user. If `nil`, the previous description will be cleared.
+ 
+ @see https://radar.io/documentation/sdk#ios-identify
  **/
 + (void)setDescription:(NSString * _Nullable)description;
 
 /**
- @abstract Sets an optional set of custom key-value pairs for the user.
- @param metadata A set of custom key-value pairs for the user. Must have 16 or fewer keys and values of type string, boolean, or number. If nil, the previous metadata will be cleared.
+ Sets an optional set of custom key-value pairs for the user.
+ 
+ @param metadata A set of custom key-value pairs for the user. Must have 16 or fewer keys and values of type string, boolean, or number. If `nil`, the previous metadata will be cleared.
  **/
 + (void)setMetadata:(NSDictionary * _Nullable)metadata;
 
 /**
- @abstract Sets the provider for Places data.
+ Sets the provider for Places data.
+ 
  @param provider The provider for Places data.
+ 
+ @see https://radar.io/documentation/sdk#ios-places
  **/
 + (void)setPlacesProvider:(RadarPlacesProvider)provider;
 
 /**
- @abstract Tracks the user's location once in the foreground.
+ Tracks the user's location once in the foreground.
+ 
+ @warning Before calling this method, the user's location authorization status must be `kCLAuthorizationStatusAuthorizedWhenInUse` or `kCLAuthorizationStatusAuthorizedAlways`.
+ 
  @param completionHandler An optional completion handler.
- @warning Before calling this method, you must have called setUserId: once to identify the user, and the user's location authorization status must be kCLAuthorizationStatusAuthorizedWhenInUse or kCLAuthorizationStatusAuthorizedAlways.
+ 
+ @see https://radar.io/documentation/sdk#ios-foreground
  **/
 + (void)trackOnceWithCompletionHandler:(RadarCompletionHandler _Nullable)completionHandler NS_SWIFT_NAME(trackOnce(completionHandler:));
 
 /**
- @abstract Starts tracking the user's location in the background.
- @warning Before calling this method, you must have called setUserId: once to identify the user, and the user's location authorization status must be kCLAuthorizationStatusAuthorizedAlways.
+ Starts tracking the user's location in the background.
+ 
+ @warning Before calling this method, the user's location authorization status must be `kCLAuthorizationStatusAuthorizedAlways`.
+ 
+ @see https://radar.io/documentation/sdk#ios-background
  **/
 + (void)startTracking;
 
 /**
- @abstract Stops tracking the user's location in the background.
+ Stops tracking the user's location in the background.
+ 
+ @see https://radar.io/documentation/sdk#ios-background
  **/
 + (void)stopTracking;
 
 /**
- @abstract Returns a boolean indicating whether the user's location is being tracked in the background.
- @return A boolean indicating whether the user's location is being tracked in the background.
+ Returns a boolean indicating whether tracking has been started.
+ 
+ @return A boolean indicating whether tracking has been started.
  **/
 + (BOOL)isTracking;
 
 /**
- @abstract Manually updates the user's location.
- @param location A location for the user. Must have a valid latitude, longitude, and accuracy.
+ Manually updates the user's location.
+ 
+ @warning Be careful not to exceed the rate limit of 1 request per second per user or 60 requests per hour per user.
+ 
+ @param location A location for the user.
  @param completionHandler An optional completion handler.
- @warning Before calling this method, you must have called setUserId: once to identify the user.
+ 
+ @see https://radar.io/documentation/sdk#ios-manual
  **/
 + (void)updateLocation:(CLLocation * _Nonnull)location withCompletionHandler:(RadarCompletionHandler _Nullable)completionHandler NS_SWIFT_NAME(updateLocation(_:completionHandler:));
 
 /**
- Sets an optional delegate for client-side event delivery.
+ Sets an optional delegate for client-side delivery of server-persisted events and location updates.
 
- @param delegate A delegate for client-side event delivery. If nil, the previous delegate will be cleared.
+ @param delegate A delegate for client-side delivery of server-persisted events and location updates. If `nil`, the previous delegate will be cleared.
  
- @note Radar keeps a weak reference to the given delegate so there's usually no need to explicitly clear it.
+ @see https://radar.io/documentation/sdk#ios-background
  */
 + (void)setDelegate:(nullable id <RadarDelegate>)delegate;
 
@@ -140,7 +174,9 @@ typedef void(^_Nullable RadarCompletionHandler)(RadarStatus status, CLLocation *
  Accepts an event. Events can be accepted after user check-ins or other forms of verification. Event verifications will be used to improve the accuracy and confidence level of future events.
 
  @param eventId The ID of the event to accept.
- @param verifiedPlaceId For place entry events, the ID of the verified place. May be nil.
+ @param verifiedPlaceId For place entry events, the ID of the verified place. May be `nil`.
+ 
+ @see https://radar.io/documentation/sdk#ios-verify
  */
 + (void)acceptEventId:(NSString *_Nonnull)eventId withVerifiedPlaceId:(NSString *_Nullable)verifiedPlaceId NS_SWIFT_NAME(acceptEventId(_:verifiedPlaceId:));
 
@@ -148,6 +184,8 @@ typedef void(^_Nullable RadarCompletionHandler)(RadarStatus status, CLLocation *
 Rejects an event. Events can be accepted after user check-ins or other forms of verification. Event verifications will be used to improve the accuracy and confidence level of future events.
 
  @param eventId The ID of the event to reject.
+ 
+ @see https://radar.io/documentation/sdk#ios-verify
  */
 + (void)rejectEventId:(NSString *_Nonnull)eventId NS_SWIFT_NAME(rejectEventId(_:));
 

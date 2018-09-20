@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>RadarSDK  Reference</title>
+    <link rel="stylesheet" type="text/css" href="css/jazzy.css" />
+    <link rel="stylesheet" type="text/css" href="css/highlight.css" />
+    <meta charset='utf-8'>
+    <script src="js/jquery.min.js" defer></script>
+    <script src="js/jazzy.js" defer></script>
+    
+  </head>
+  <body>
+    <a title="RadarSDK  Reference"></a>
+    <header>
+      <div class="content-wrapper">
+        <p><a href="index.html">RadarSDK Docs</a></p>
+        <p class="header-right"><a href="https://github.com/radarlabs/radar-sdk-ios"><img src="img/gh.png"/>View on GitHub</a></p>
+      </div>
+    </header>
+    <div class="content-wrapper">
+      <p id="breadcrumbs">
+        <a href="index.html">RadarSDK Reference</a>
+        <img id="carat" src="img/carat.png" />
+        RadarSDK  Reference
+      </p>
+    </div>
+    <div class="content-wrapper">
+      <nav class="sidebar">
+        <ul class="nav-groups">
+          <li class="nav-group-name">
+            <a href="Classes.html">Classes</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="Classes/Radar.html">Radar</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/RadarChain.html">RadarChain</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/RadarCircleGeometry.html">RadarCircleGeometry</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/RadarCoordinate.html">RadarCoordinate</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/RadarEvent.html">RadarEvent</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/RadarGeofence.html">RadarGeofence</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes.html#/c:objc(cs)RadarGeofenceGeometry">RadarGeofenceGeometry</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/RadarPlace.html">RadarPlace</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/RadarPolygonGeometry.html">RadarPolygonGeometry</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/RadarUser.html">RadarUser</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/RadarUserInsights.html">RadarUserInsights</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/RadarUserInsightsLocation.html">RadarUserInsightsLocation</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/RadarUserInsightsState.html">RadarUserInsightsState</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="Enums.html">Enumerations</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="Enums/RadarEventConfidence.html">RadarEventConfidence</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Enums/RadarEventType.html">RadarEventType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Enums/RadarEventVerification.html">RadarEventVerification</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Enums/RadarPlacesProvider.html">RadarPlacesProvider</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Enums/RadarStatus.html">RadarStatus</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Enums/RadarUserInsightsLocationConfidence.html">RadarUserInsightsLocationConfidence</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Enums/RadarUserInsightsLocationType.html">RadarUserInsightsLocationType</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="Protocols.html">Protocols</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="Protocols/RadarDelegate.html">RadarDelegate</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="Type Definitions.html">Type Definitions</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="Type Definitions.html#/c:Radar.h@T@RadarCompletionHandler">RadarCompletionHandler</a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
+      <article class="main-content">
+        <section>
+          <section class="section">
+            
+            <h2 id='radar-sdk-ios' class='heading'>Radar SDK - iOS</h2>
+
+<p><a href="https://app.bitrise.io/app/9f6e3cdc98e1715e"><img src="https://app.bitrise.io/app/9f6e3cdc98e1715e/status.svg?token=t5_wLHjZkUTnHMqod0rm4A&branch=master" alt="Build Status"></a>
+<a href="https://cocoapods.org/pods/RadarSDK"><img src="https://img.shields.io/cocoapods/v/RadarSDK.svg" alt="CocoaPods"></a>
+<a href="https://github.com/Carthage/Carthage"><img src="https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat" alt="Carthage compatible"></a></p>
+
+<p>Source for iOS Radar SDK </p>
+<h2 id='setup' class='heading'>Setup</h2>
+
+<p>Simply clone this repository and open up <code>RadarSDK.xcodeproj</code> in XCode</p>
+<h2 id='deploy' class='heading'>Deploy</h2>
+
+<p>To deploy a new version of the SDK, first ensure the version name has been updated in <a href="RadarSDK/Util/RadarDeviceHelper.m#L32">RadarDeviceHelper.m</a></p>
+
+<p>Then simply create and push a tag named with the new version:</p>
+<pre class="highlight plaintext"><code>git tag x.y.z
+</code></pre>
+<pre class="highlight plaintext"><code>git push origin master --tags
+</code></pre>
+
+<p>Pushing a new tag will automatically kick off the <code>deploy</code> workflow in CI for the release. </p>
+<h3 id='from-the-a-href-https-github-com-radarlabs-radar-sdk-ios-radar-sdk-ios-a-repo' class='heading'>From the <a href="https://github.com/radarlabs/radar-sdk-ios">radar-sdk-ios</a> repo:</h3>
+
+<p>Once the Bitrise workflow is completed, it will automatically create a <code>release/x.y.z</code> branch in the public repository. Just create a pull request to <code>master</code> from the newly created branch.</p>
+
+<p>Once merged, <a href="https://help.github.com/articles/creating-releases/">create a new release</a> with the same title and tag as the new version name. <strong>Attach the <a href="https://github.com/radarlabs/radar-sdk-ios/blob/master/RadarSDK.framework.zip">framework zip</a> as a release binary.</strong> The zip can be found as one of the artificats of the <code>deploy</code> bitrise workflow.</p>
+
+<p>And finally push the new SDK to CocoaPods repo with</p>
+<pre class="highlight plaintext"><code>pod trunk push RadarSDK.podspec
+</code></pre>
+<h2 id='local-build-deploy-test-docs' class='heading'>Local Build/Deploy/Test/Docs</h2>
+
+<p>Check out our list of <a href="fastlane/README.md">fastlane actions</a> for a full list of available actions. </p>
+
+          </section>
+        </section>
+        <section id="footer">
+          <p>&copy; 2018 <a class="link" href="https://radar.io" target="_blank" rel="external">Radar Labs Inc</a>. All rights reserved. (Last updated: 2018-09-20)</p>
+          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.9.3</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
+        </section>
+      </article>
+    </div>
+  </body>
+</div>
+</html>

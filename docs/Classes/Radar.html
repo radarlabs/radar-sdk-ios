@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Radar Class Reference</title>
+    <link rel="stylesheet" type="text/css" href="../css/jazzy.css" />
+    <link rel="stylesheet" type="text/css" href="../css/highlight.css" />
+    <meta charset='utf-8'>
+    <script src="../js/jquery.min.js" defer></script>
+    <script src="../js/jazzy.js" defer></script>
+    
+  </head>
+  <body>
+    <a name="//apple_ref/objc/Class/Radar" class="dashAnchor"></a>
+    <a title="Radar Class Reference"></a>
+    <header>
+      <div class="content-wrapper">
+        <p><a href="../index.html">RadarSDK Docs</a></p>
+        <p class="header-right"><a href="https://github.com/radarlabs/radar-sdk-ios"><img src="../img/gh.png"/>View on GitHub</a></p>
+      </div>
+    </header>
+    <div class="content-wrapper">
+      <p id="breadcrumbs">
+        <a href="../index.html">RadarSDK Reference</a>
+        <img id="carat" src="../img/carat.png" />
+        Radar Class Reference
+      </p>
+    </div>
+    <div class="content-wrapper">
+      <nav class="sidebar">
+        <ul class="nav-groups">
+          <li class="nav-group-name">
+            <a href="../Classes.html">Classes</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Classes/Radar.html">Radar</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/RadarChain.html">RadarChain</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/RadarCircleGeometry.html">RadarCircleGeometry</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/RadarCoordinate.html">RadarCoordinate</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/RadarEvent.html">RadarEvent</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/RadarGeofence.html">RadarGeofence</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes.html#/c:objc(cs)RadarGeofenceGeometry">RadarGeofenceGeometry</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/RadarPlace.html">RadarPlace</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/RadarPolygonGeometry.html">RadarPolygonGeometry</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/RadarUser.html">RadarUser</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/RadarUserInsights.html">RadarUserInsights</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/RadarUserInsightsLocation.html">RadarUserInsightsLocation</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/RadarUserInsightsState.html">RadarUserInsightsState</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Enums.html">Enumerations</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Enums/RadarEventConfidence.html">RadarEventConfidence</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Enums/RadarEventType.html">RadarEventType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Enums/RadarEventVerification.html">RadarEventVerification</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Enums/RadarPlacesProvider.html">RadarPlacesProvider</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Enums/RadarStatus.html">RadarStatus</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Enums/RadarUserInsightsLocationConfidence.html">RadarUserInsightsLocationConfidence</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Enums/RadarUserInsightsLocationType.html">RadarUserInsightsLocationType</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Protocols.html">Protocols</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Protocols/RadarDelegate.html">RadarDelegate</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Type Definitions.html">Type Definitions</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Type Definitions.html#/c:Radar.h@T@RadarCompletionHandler">RadarCompletionHandler</a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
+      <article class="main-content">
+        <section>
+          <section class="section">
+            <h1>Radar</h1>
+              <div class="declaration">
+                <div class="language">
+                  <pre class="highlight objective_c"><code><span class="k">@interface</span> <span class="nc">Radar</span> <span class="p">:</span> <span class="nc">NSObject</span></code></pre>
+
+                </div>
+              </div>
+            <p>The top-level class used to interact with the Radar SDK. For more information, see <a href="https://radar.io/documentation/sdk">https://radar.io/documentation/sdk</a>
+.</p>
+<div class="aside aside-see">
+    <p class="aside-title">See</p>
+    <a href="https://radar.io/documentation/sdk">https://radar.io/documentation/sdk</a>
+
+</div>
+
+          </section>
+          <section class="section task-group-section">
+            <div class="task-group">
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:objc(cs)Radar(cm)initializeWithPublishableKey:"></a>
+                    <a name="//apple_ref/objc/Method/+initializeWithPublishableKey:" class="dashAnchor"></a>
+                    <a class="token" href="#/c:objc(cs)Radar(cm)initializeWithPublishableKey:">+initializeWithPublishableKey:</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Initializes the Radar SDK.</p>
+<div class="aside aside-warning">
+    <p class="aside-title">Warning</p>
+    <p>Call this method from the main thread in your <code>AppDelegate</code> class before calling any other Radar methods.</p>
+
+</div>
+<div class="aside aside-see">
+    <p class="aside-title">See</p>
+    <p><a href="https://radar.io/documentation/sdk#ios-initialize">https://radar.io/documentation/sdk#ios-initialize</a>
+*</p>
+
+</div>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Objective-C</p>
+                          <pre class="highlight objective_c"><code><span class="k">+</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">initializeWithPublishableKey</span><span class="p">:(</span><span class="n">NSString</span> <span class="o">*</span><span class="n">_Nonnull</span><span class="p">)</span><span class="nv">publishableKey</span><span class="p">;</span></code></pre>
+
+                        </div>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">class</span> <span class="kd">func</span> <span class="nf">initialize</span><span class="p">(</span><span class="nv">publishableKey</span><span class="p">:</span> <span class="kt">String</span><span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>publishableKey</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>Your publishable API key.</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:objc(cs)Radar(cm)setUserId:"></a>
+                    <a name="//apple_ref/objc/Method/+setUserId:" class="dashAnchor"></a>
+                    <a class="token" href="#/c:objc(cs)Radar(cm)setUserId:">+setUserId:</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Identifies the user when logged in.</p>
+<div class="aside aside-note">
+    <p class="aside-title">Note</p>
+    <p>Until you identify the user, Radar will automatically identify the user by <code>deviceId</code> (IDFV).</p>
+
+</div>
+<div class="aside aside-see">
+    <p class="aside-title">See</p>
+    <p><a href="https://radar.io/documentation/sdk#ios-identify">https://radar.io/documentation/sdk#ios-identify</a>
+*</p>
+
+</div>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Objective-C</p>
+                          <pre class="highlight objective_c"><code><span class="k">+</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">setUserId</span><span class="p">:(</span><span class="n">NSString</span> <span class="o">*</span><span class="n">_Nullable</span><span class="p">)</span><span class="nv">userId</span><span class="p">;</span></code></pre>
+
+                        </div>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">class</span> <span class="kd">func</span> <span class="nf">setUserId</span><span class="p">(</span><span class="n">_</span> <span class="nv">userId</span><span class="p">:</span> <span class="kt">String</span><span class="p">?)</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>userId</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>A stable unique ID for the user.</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:objc(cs)Radar(cm)setDescription:"></a>
+                    <a name="//apple_ref/objc/Method/+setDescription:" class="dashAnchor"></a>
+                    <a class="token" href="#/c:objc(cs)Radar(cm)setDescription:">+setDescription:</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Sets an optional description for the user, displayed in the dashboard.</p>
+<div class="aside aside-see">
+    <p class="aside-title">See</p>
+    <p><a href="https://radar.io/documentation/sdk#ios-identify">https://radar.io/documentation/sdk#ios-identify</a>
+*</p>
+
+</div>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Objective-C</p>
+                          <pre class="highlight objective_c"><code><span class="k">+</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">setDescription</span><span class="p">:(</span><span class="n">NSString</span> <span class="o">*</span><span class="n">_Nullable</span><span class="p">)</span><span class="nv">description</span><span class="p">;</span></code></pre>
+
+                        </div>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">class</span> <span class="kd">func</span> <span class="nf">setDescription</span><span class="p">(</span><span class="n">_</span> <span class="nv">description</span><span class="p">:</span> <span class="kt">String</span><span class="p">?)</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>description</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>A description for the user. If <code>nil</code>, the previous description will be cleared.</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:objc(cs)Radar(cm)setMetadata:"></a>
+                    <a name="//apple_ref/objc/Method/+setMetadata:" class="dashAnchor"></a>
+                    <a class="token" href="#/c:objc(cs)Radar(cm)setMetadata:">+setMetadata:</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Sets an optional set of custom key-value pairs for the user.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Objective-C</p>
+                          <pre class="highlight objective_c"><code><span class="k">+</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">setMetadata</span><span class="p">:(</span><span class="n">NSDictionary</span> <span class="o">*</span><span class="n">_Nullable</span><span class="p">)</span><span class="nv">metadata</span><span class="p">;</span></code></pre>
+
+                        </div>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">class</span> <span class="kd">func</span> <span class="nf">setMetadata</span><span class="p">(</span><span class="n">_</span> <span class="nv">metadata</span><span class="p">:</span> <span class="p">[</span><span class="kt">AnyHashable</span> <span class="p">:</span> <span class="kt">Any</span><span class="p">]?)</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>metadata</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>A set of custom key-value pairs for the user. Must have 16 or fewer keys and values of type string, boolean, or number. If <code>nil</code>, the previous metadata will be cleared.
+*</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:objc(cs)Radar(cm)setPlacesProvider:"></a>
+                    <a name="//apple_ref/objc/Method/+setPlacesProvider:" class="dashAnchor"></a>
+                    <a class="token" href="#/c:objc(cs)Radar(cm)setPlacesProvider:">+setPlacesProvider:</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Sets the provider for Places data.</p>
+<div class="aside aside-see">
+    <p class="aside-title">See</p>
+    <p><a href="https://radar.io/documentation/sdk#ios-places">https://radar.io/documentation/sdk#ios-places</a>
+*</p>
+
+</div>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Objective-C</p>
+                          <pre class="highlight objective_c"><code><span class="k">+</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">setPlacesProvider</span><span class="p">:(</span><span class="n"><a href="../Enums/RadarPlacesProvider.html">RadarPlacesProvider</a></span><span class="p">)</span><span class="nv">provider</span><span class="p">;</span></code></pre>
+
+                        </div>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">class</span> <span class="kd">func</span> <span class="nf">setPlacesProvider</span><span class="p">(</span><span class="n">_</span> <span class="nv">provider</span><span class="p">:</span> <span class="kt"><a href="../Enums/RadarPlacesProvider.html">RadarPlacesProvider</a></span><span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>provider</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>The provider for Places data.</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:objc(cs)Radar(cm)trackOnceWithCompletionHandler:"></a>
+                    <a name="//apple_ref/objc/Method/+trackOnceWithCompletionHandler:" class="dashAnchor"></a>
+                    <a class="token" href="#/c:objc(cs)Radar(cm)trackOnceWithCompletionHandler:">+trackOnceWithCompletionHandler:</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Tracks the user&rsquo;s location once in the foreground.</p>
+<div class="aside aside-warning">
+    <p class="aside-title">Warning</p>
+    <p>Before calling this method, the user&rsquo;s location authorization status must be <code>kCLAuthorizationStatusAuthorizedWhenInUse</code> or <code>kCLAuthorizationStatusAuthorizedAlways</code>.</p>
+
+</div>
+<div class="aside aside-see">
+    <p class="aside-title">See</p>
+    <p><a href="https://radar.io/documentation/sdk#ios-foreground">https://radar.io/documentation/sdk#ios-foreground</a>
+*</p>
+
+</div>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Objective-C</p>
+                          <pre class="highlight objective_c"><code><span class="k">+</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">trackOnceWithCompletionHandler</span><span class="p">:</span>
+    <span class="p">(</span><span class="n"><a href="../Type Definitions.html#/c:Radar.h@T@RadarCompletionHandler">RadarCompletionHandler</a></span> <span class="n">_Nullable</span><span class="p">)</span><span class="nv">completionHandler</span><span class="p">;</span></code></pre>
+
+                        </div>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">class</span> <span class="kd">func</span> <span class="nf">trackOnce</span><span class="p">(</span><span class="nv">completionHandler</span><span class="p">:</span> <span class="kt"><a href="../Type Definitions.html#/c:Radar.h@T@RadarCompletionHandler">RadarCompletionHandler</a></span><span class="p">?</span> <span class="o">=</span> <span class="kc">nil</span><span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>completionHandler</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>An optional completion handler.</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:objc(cs)Radar(cm)startTracking"></a>
+                    <a name="//apple_ref/objc/Method/+startTracking" class="dashAnchor"></a>
+                    <a class="token" href="#/c:objc(cs)Radar(cm)startTracking">+startTracking</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Starts tracking the user&rsquo;s location in the background.</p>
+<div class="aside aside-warning">
+    <p class="aside-title">Warning</p>
+    <p>Before calling this method, the user&rsquo;s location authorization status must be <code>kCLAuthorizationStatusAuthorizedAlways</code>.</p>
+
+</div>
+<div class="aside aside-see">
+    <p class="aside-title">See</p>
+    <p><a href="https://radar.io/documentation/sdk#ios-background">https://radar.io/documentation/sdk#ios-background</a>
+*</p>
+
+</div>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Objective-C</p>
+                          <pre class="highlight objective_c"><code><span class="k">+</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="n">startTracking</span><span class="p">;</span></code></pre>
+
+                        </div>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">class</span> <span class="kd">func</span> <span class="nf">startTracking</span><span class="p">()</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:objc(cs)Radar(cm)stopTracking"></a>
+                    <a name="//apple_ref/objc/Method/+stopTracking" class="dashAnchor"></a>
+                    <a class="token" href="#/c:objc(cs)Radar(cm)stopTracking">+stopTracking</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Stops tracking the user&rsquo;s location in the background.</p>
+<div class="aside aside-see">
+    <p class="aside-title">See</p>
+    <a href="https://radar.io/documentation/sdk#ios-background">https://radar.io/documentation/sdk#ios-background</a>
+*
+
+</div>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Objective-C</p>
+                          <pre class="highlight objective_c"><code><span class="k">+</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="n">stopTracking</span><span class="p">;</span></code></pre>
+
+                        </div>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">class</span> <span class="kd">func</span> <span class="nf">stopTracking</span><span class="p">()</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:objc(cs)Radar(cm)isTracking"></a>
+                    <a name="//apple_ref/objc/Method/+isTracking" class="dashAnchor"></a>
+                    <a class="token" href="#/c:objc(cs)Radar(cm)isTracking">+isTracking</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Returns a boolean indicating whether tracking has been started.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Objective-C</p>
+                          <pre class="highlight objective_c"><code><span class="k">+</span> <span class="p">(</span><span class="n">BOOL</span><span class="p">)</span><span class="n">isTracking</span><span class="p">;</span></code></pre>
+
+                        </div>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">class</span> <span class="kd">func</span> <span class="nf">isTracking</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kt">Bool</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Return Value</h4>
+                        <p>A boolean indicating whether tracking has been started.
+*</p>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:objc(cs)Radar(cm)updateLocation:withCompletionHandler:"></a>
+                    <a name="//apple_ref/objc/Method/+updateLocation:withCompletionHandler:" class="dashAnchor"></a>
+                    <a class="token" href="#/c:objc(cs)Radar(cm)updateLocation:withCompletionHandler:">+updateLocation:withCompletionHandler:</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Manually updates the user&rsquo;s location.</p>
+<div class="aside aside-warning">
+    <p class="aside-title">Warning</p>
+    <p>Be careful not to exceed the rate limit of 1 request per second per user or 60 requests per hour per user.</p>
+
+</div>
+<div class="aside aside-see">
+    <p class="aside-title">See</p>
+    <p><a href="https://radar.io/documentation/sdk#ios-manual">https://radar.io/documentation/sdk#ios-manual</a>
+*</p>
+
+</div>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Objective-C</p>
+                          <pre class="highlight objective_c"><code><span class="k">+</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">updateLocation</span><span class="p">:(</span><span class="n">CLLocation</span> <span class="o">*</span><span class="n">_Nonnull</span><span class="p">)</span><span class="nv">location</span>
+    <span class="nf">withCompletionHandler</span><span class="p">:(</span><span class="n"><a href="../Type Definitions.html#/c:Radar.h@T@RadarCompletionHandler">RadarCompletionHandler</a></span> <span class="n">_Nullable</span><span class="p">)</span><span class="nv">completionHandler</span><span class="p">;</span></code></pre>
+
+                        </div>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">class</span> <span class="kd">func</span> <span class="nf">updateLocation</span><span class="p">(</span><span class="n">_</span> <span class="nv">location</span><span class="p">:</span> <span class="kt">CLLocation</span><span class="p">,</span> <span class="nv">completionHandler</span><span class="p">:</span> <span class="kt"><a href="../Type Definitions.html#/c:Radar.h@T@RadarCompletionHandler">RadarCompletionHandler</a></span><span class="p">?</span> <span class="o">=</span> <span class="kc">nil</span><span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>location</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>A location for the user.</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>completionHandler</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>An optional completion handler.</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:objc(cs)Radar(cm)setDelegate:"></a>
+                    <a name="//apple_ref/objc/Method/+setDelegate:" class="dashAnchor"></a>
+                    <a class="token" href="#/c:objc(cs)Radar(cm)setDelegate:">+setDelegate:</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Sets an optional delegate for client-side delivery of server-persisted events and location updates.</p>
+<div class="aside aside-see">
+    <p class="aside-title">See</p>
+    <p><a href="https://radar.io/documentation/sdk#ios-background">https://radar.io/documentation/sdk#ios-background</a></p>
+
+</div>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Objective-C</p>
+                          <pre class="highlight objective_c"><code><span class="k">+</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">setDelegate</span><span class="p">:(</span><span class="n">nullable</span> <span class="n">id</span><span class="o">&lt;</span><span class="n"><a href="../Protocols/RadarDelegate.html">RadarDelegate</a></span><span class="o">&gt;</span><span class="p">)</span><span class="nv">delegate</span><span class="p">;</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>delegate</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>A delegate for client-side delivery of server-persisted events and location updates. If <code>nil</code>, the previous delegate will be cleared.</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:objc(cs)Radar(cm)acceptEventId:withVerifiedPlaceId:"></a>
+                    <a name="//apple_ref/objc/Method/+acceptEventId:withVerifiedPlaceId:" class="dashAnchor"></a>
+                    <a class="token" href="#/c:objc(cs)Radar(cm)acceptEventId:withVerifiedPlaceId:">+acceptEventId:withVerifiedPlaceId:</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Accepts an event. Events can be accepted after user check-ins or other forms of verification. Event verifications will be used to improve the accuracy and confidence level of future events.</p>
+<div class="aside aside-see">
+    <p class="aside-title">See</p>
+    <p><a href="https://radar.io/documentation/sdk#ios-verify">https://radar.io/documentation/sdk#ios-verify</a></p>
+
+</div>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Objective-C</p>
+                          <pre class="highlight objective_c"><code><span class="k">+</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">acceptEventId</span><span class="p">:(</span><span class="n">NSString</span> <span class="o">*</span><span class="n">_Nonnull</span><span class="p">)</span><span class="nv">eventId</span>
+    <span class="nf">withVerifiedPlaceId</span><span class="p">:(</span><span class="n">NSString</span> <span class="o">*</span><span class="n">_Nullable</span><span class="p">)</span><span class="nv">verifiedPlaceId</span><span class="p">;</span></code></pre>
+
+                        </div>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">class</span> <span class="kd">func</span> <span class="nf">acceptEventId</span><span class="p">(</span><span class="n">_</span> <span class="nv">eventId</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span> <span class="nv">verifiedPlaceId</span><span class="p">:</span> <span class="kt">String</span><span class="p">?)</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>eventId</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>The ID of the event to accept.</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>verifiedPlaceId</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>For place entry events, the ID of the verified place. May be <code>nil</code>.</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:objc(cs)Radar(cm)rejectEventId:"></a>
+                    <a name="//apple_ref/objc/Method/+rejectEventId:" class="dashAnchor"></a>
+                    <a class="token" href="#/c:objc(cs)Radar(cm)rejectEventId:">+rejectEventId:</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Rejects an event. Events can be accepted after user check-ins or other forms of verification. Event verifications will be used to improve the accuracy and confidence level of future events.</p>
+<div class="aside aside-see">
+    <p class="aside-title">See</p>
+    <p><a href="https://radar.io/documentation/sdk#ios-verify">https://radar.io/documentation/sdk#ios-verify</a></p>
+
+</div>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Objective-C</p>
+                          <pre class="highlight objective_c"><code><span class="k">+</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">rejectEventId</span><span class="p">:(</span><span class="n">NSString</span> <span class="o">*</span><span class="n">_Nonnull</span><span class="p">)</span><span class="nv">eventId</span><span class="p">;</span></code></pre>
+
+                        </div>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">class</span> <span class="kd">func</span> <span class="nf">rejectEventId</span><span class="p">(</span><span class="n">_</span> <span class="nv">eventId</span><span class="p">:</span> <span class="kt">String</span><span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>eventId</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>The ID of the event to reject.</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </section>
+        </section>
+        <section id="footer">
+          <p>&copy; 2018 <a class="link" href="https://radar.io" target="_blank" rel="external">Radar Labs Inc</a>. All rights reserved. (Last updated: 2018-09-20)</p>
+          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.9.3</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
+        </section>
+      </article>
+    </div>
+  </body>
+</div>
+</html>

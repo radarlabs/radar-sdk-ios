@@ -9,20 +9,25 @@
 #import "RadarUserInsightsLocation.h"
 #import "RadarUserInsightsState.h"
 
+/**
+ Represents the learned home, work, and traveling state and locations of the current user. For more information about Insights, see https://radar.io/documentation/insights.
+ 
+ @see https://radar.io/documentation/insights
+ */
 @interface RadarUserInsights : NSObject
 
 /**
- * @abstract The learned home location for the user. May be nil.
+ The learned home location of the user. May be `nil` if not yet learned, or if Insights is turned off.
  */
 @property (nullable, strong, nonatomic, readonly) RadarUserInsightsLocation *homeLocation;
 
 /**
- * @abstract The learned office location for the user. May be nil.
+ The learned office location of the user. May be `nil` if not yet learned, or if Insights is turned off.
  */
 @property (nullable, strong, nonatomic, readonly) RadarUserInsightsLocation *officeLocation;
 
 /**
- * @abstract The state of the user, based on learned home and office locations.
+ The state of the user, based on learned home and office locations.
  */
 @property (nonnull, strong, nonatomic, readonly) RadarUserInsightsState *state;
 
