@@ -119,40 +119,7 @@
         <section>
           <section class="section">
             
-            <h2 id='radar-sdk-ios' class='heading'>Radar SDK - iOS</h2>
-
-<p><a href="https://app.bitrise.io/app/9f6e3cdc98e1715e"><img src="https://app.bitrise.io/app/9f6e3cdc98e1715e/status.svg?token=t5_wLHjZkUTnHMqod0rm4A&branch=master" alt="Build Status"></a>
-<a href="https://cocoapods.org/pods/RadarSDK"><img src="https://img.shields.io/cocoapods/v/RadarSDK.svg" alt="CocoaPods"></a>
-<a href="https://github.com/Carthage/Carthage"><img src="https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat" alt="Carthage compatible"></a></p>
-
-<p>Source for iOS Radar SDK </p>
-<h2 id='setup' class='heading'>Setup</h2>
-
-<p>Simply clone this repository and open up <code>RadarSDK.xcodeproj</code> in XCode</p>
-<h2 id='deploy' class='heading'>Deploy</h2>
-
-<p>To deploy a new version of the SDK, first ensure the version name has been updated in <a href="RadarSDK/Util/RadarDeviceHelper.m#L32">RadarDeviceHelper.m</a></p>
-
-<p>Then simply create and push a tag named with the new version:</p>
-<pre class="highlight plaintext"><code>git tag x.y.z
-</code></pre>
-<pre class="highlight plaintext"><code>git push origin master --tags
-</code></pre>
-
-<p>Pushing a new tag will automatically kick off the <code>deploy</code> workflow in CI for the release. </p>
-<h3 id='from-the-a-href-https-github-com-radarlabs-radar-sdk-ios-radar-sdk-ios-a-repo' class='heading'>From the <a href="https://github.com/radarlabs/radar-sdk-ios">radar-sdk-ios</a> repo:</h3>
-
-<p>Once the Bitrise workflow is completed, it will automatically create a <code>release/x.y.z</code> branch in the public repository. Just create a pull request to <code>master</code> from the newly created branch.</p>
-
-<p>Once merged, <a href="https://help.github.com/articles/creating-releases/">create a new release</a> with the same title and tag as the new version name. <strong>Attach the <a href="https://github.com/radarlabs/radar-sdk-ios/blob/master/RadarSDK.framework.zip">framework zip</a> as a release binary.</strong> The zip can be found as one of the artificats of the <code>deploy</code> bitrise workflow.</p>
-
-<p>And finally push the new SDK to CocoaPods repo with</p>
-<pre class="highlight plaintext"><code>pod trunk push RadarSDK.podspec
-</code></pre>
-<h2 id='local-build-deploy-test-docs' class='heading'>Local Build/Deploy/Test/Docs</h2>
-
-<p>Check out our list of <a href="fastlane/README.md">fastlane actions</a> for a full list of available actions. </p>
-
+            
           </section>
         </section>
         <section id="footer">
