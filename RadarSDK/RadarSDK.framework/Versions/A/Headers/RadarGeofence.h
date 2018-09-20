@@ -6,32 +6,43 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "RadarGeofenceGeometry.h"
 
+/**
+ Represents a geofence. For more information about Geofences, see https://radar.io/documentation/geofences.
+ 
+ @see https://radar.io/documentation/geofences
+ */
 @interface RadarGeofence : NSObject
 
 /**
- * @abstract The unique ID for the geofence, provided by Radar.
+ The Radar ID of the geofence.
  */
 @property (nonnull, copy, nonatomic, readonly) NSString *_id;
 
 /**
- * @abstract A description for the geofence. Not to be confused with the NSObject description property.
+ The description of the geofence. Not to be confused with the `NSObject` `description` property.
  */
 @property (nonnull, copy, nonatomic, readonly) NSString *_description;
 
 /**
- * @abstract An optional group for the geofence.
+ The tag of the geofence.
  */
 @property (nullable, copy, nonatomic, readonly) NSString *tag;
 
 /**
- * @abstract An optional external ID for the geofence.
+ The external ID of the geofence.
  */
 @property (nullable, copy, nonatomic, readonly) NSString *externalId;
 
 /**
- * @abstract An optional set of custom key-value pairs for the geofence.
+ The optional set of custom key-value pairs for the geofence.
  */
 @property (nullable, copy, nonatomic, readonly) NSDictionary *metadata;
+
+/**
+ The geometry of the geofence.
+ */
+@property (nonnull, strong, nonatomic, readonly) RadarGeofenceGeometry *geometry;
 
 @end

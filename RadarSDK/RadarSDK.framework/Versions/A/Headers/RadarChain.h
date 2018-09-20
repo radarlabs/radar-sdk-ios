@@ -7,15 +7,24 @@
 
 #import <Foundation/Foundation.h>
 
+/**
+ Represents the chain of a place. For more information about Places, see https://radar.io/documentation/places.
+ 
+ @see https://radar.io/documentation/places
+ */
 @interface RadarChain : NSObject
 
 /**
- * @abstract A human-readable unique ID for the chain, provided by Radar.
+ The unique ID of the chain. For a full list of chains, see https://radar.io/documentation/places/chains.
+ 
+ @see https://radar.io/documentation/places/chains
  */
 @property (nonnull, copy, nonatomic, readonly) NSString *slug;
 
 /**
- * @abstract The name of the chain.
+ The name of the chain. For a full list of chains, see https://radar.io/documentation/places/chains.
+ 
+ @see https://radar.io/documentation/places/chains
  */
 @property (nonnull, copy, nonatomic, readonly) NSString *name;
 

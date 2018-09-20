@@ -7,20 +7,25 @@
 
 #import <Foundation/Foundation.h>
 
+/**
+ Represents the learned home, work, and traveling state of the current user. For more information about Insights, see https://radar.io/documentation/insights.
+ 
+ @see https://radar.io/documentation/insights
+ */
 @interface RadarUserInsightsState : NSObject
 
 /**
- * @abstract A boolean indicating whether the user is at home, based on learned home location.
+ A boolean indicating whether the user is at home, based on learned home location.
  */
 @property (assign, nonatomic, readonly) BOOL home;
 
 /**
- * @abstract A boolean indicating whether the user is at the office, based on learned office location.
+ A boolean indicating whether the user is at the office, based on learned office location.
  */
 @property (assign, nonatomic, readonly) BOOL office;
 
 /**
- * @abstract A boolean indicating whether the user is traveling, based on learned home location.
+ A boolean indicating whether the user is traveling, based on learned home location.
  */
 @property (assign, nonatomic, readonly) BOOL traveling;
 

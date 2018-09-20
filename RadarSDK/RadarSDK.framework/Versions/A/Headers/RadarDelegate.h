@@ -11,10 +11,15 @@
 #import "RadarEvent.h"
 #import "RadarUser.h"
 
+/**
+ A delegate for client-side delivery of events and location updates. For more information, see https://radar.io/documentation/sdk.
+ 
+ @see https://radar.io/documentation/sdk
+ */
 @protocol RadarDelegate <NSObject>
 
 /**
- Tells the delegate that events were received for the current user. Note that events can also be delivered server-side via webhooks.
+ Tells the delegate that events were received for the current user.
  
  @param events The events received.
  @param user The current user.
@@ -39,5 +44,15 @@
  @param status The status.
  */
 - (void)didFailWithStatus:(RadarStatus)status NS_SWIFT_NAME(didFail(status:));
+
+@optional
+
+/**
+ Tells the delegate that client's location was updated, but not necessarily persisted to the server. To receive server-persisted location updates and user state, use `didUpdateLocation:user:` instead.
+ 
+ @param location The location.
+ @param stopped A boolean indicating whether the client is stopped.
+ */
+- (void)didUpdateClientLocation:(CLLocation * _Nonnull)location stopped:(BOOL)stopped NS_SWIFT_NAME(didUpdateClientLocation(_:stopped:));
 
 @end

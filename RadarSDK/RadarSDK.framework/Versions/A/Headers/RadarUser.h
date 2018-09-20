@@ -10,60 +10,71 @@
 #import "RadarPlace.h"
 #import "RadarUserInsights.h"
 
+/**
+ Represents the current user state. For more information, see https://radar.io/documentation.
+ 
+ @see https://radar.io/documentation
+ */
 @interface RadarUser : NSObject
 
 /**
- * @abstract The unique ID for the user, provided by Radar.
+ The Radar ID of the user.
  */
 @property (nonnull, copy, nonatomic, readonly) NSString *_id;
 
 /**
- * @abstract The unique ID for the user, provided when you identified the user.
+ The unique ID of the user, provided when you identified the user. May be `nil` if the user has not been identified.
  */
 @property (nullable, copy, nonatomic, readonly) NSString *userId;
 
 /**
- * @abstract The device ID of the user.
+ The device ID of the user.
  */
 @property (nullable, copy, nonatomic, readonly) NSString *deviceId;
 
 /**
- * @abstract An optional description for the user. Not to be confused with the NSObject description property.
+ The optional description of the user. Not to be confused with the `NSObject` `description` property.
  */
 @property (nullable, copy, nonatomic, readonly) NSString *_description;
 
 /**
- * @abstract An optional set of custom key-value pairs for the user.
+ The optional set of custom key-value pairs for the user.
  */
 @property (nullable, copy, nonatomic, readonly) NSDictionary *metadata;
 
 /**
- * @abstract The user's last known location.
+ The user's last known location.
  */
 @property (nonnull, strong, nonatomic, readonly) CLLocation *location;
 
 /**
- * @abstract An array of the user's last known geofences. May be nil or empty if the user is not in any geofences.
+ An array of the user's last known geofences. May be `nil` or empty if the user is not in any geofences.
+ 
+ @see https://radar.io/documentation/geofences
  */
 @property (nullable, copy, nonatomic, readonly) NSArray<RadarGeofence *> *geofences;
 
 /**
- * @abstract The user's last known place. May be nil if the user is not at a place, or if Places is turned off.
+ The user's last known place. May be `nil` if the user is not at a place, or if Places is turned off.
+ 
+ @see https://radar.io/documentation/places
  */
 @property (nullable, copy, nonatomic, readonly) RadarPlace *place;
 
 /**
- * @abstract Learned insights for the user. May be nil if no insights are available, or if Insights is turned off.
+ Learned insights for the user. May be `nil` if no insights are available, or if Insights is turned off.
+ 
+ @see https://radar.io/documentation/insights
  */
 @property (nullable, strong, nonatomic, readonly) RadarUserInsights *insights;
 
 /**
- * @abstract A boolean indicating whether the user is stopped.
+ A boolean indicating whether the user is stopped.
  */
 @property (assign, nonatomic, readonly) BOOL stopped;
 
 /**
- * @abstract A boolean indicating whether the user was last updated in the foreground.
+ A boolean indicating whether the user was last updated in the foreground.
  */
 @property (assign, nonatomic, readonly) BOOL foreground;
 
