@@ -28,4 +28,9 @@
  */
 @property (nonnull, copy, nonatomic, readonly) NSString *name;
 
+/**
+ The external ID of the chain.
+ */
+@property (nullable, copy, nonatomic, readonly) NSString *externalId;
+
 @end
