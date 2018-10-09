@@ -78,9 +78,14 @@ typedef NS_ENUM(NSInteger, RadarEventVerification) {
 @property (nonnull, copy, nonatomic, readonly) NSString *_id;
 
 /**
- The datetime when the event was created.
+ The datetime when the event occurred on the device.
  */
 @property (nonnull, copy, nonatomic, readonly) NSDate *createdAt;
+
+/**
+ The datetime when the event was created on the server.
+ */
+@property (nonnull, copy, nonatomic, readonly) NSDate *actualCreatedAt;
 
 /**
  A boolean indicating whether the event was generated with your live API key.
