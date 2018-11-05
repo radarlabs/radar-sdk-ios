@@ -44,6 +44,8 @@ typedef NS_ENUM(NSInteger, RadarEventType) {
     RadarEventTypeUserEnteredPlace NS_SWIFT_NAME(userEnteredPlace),
     /// `user.exited_place`
     RadarEventTypeUserExitedPlace NS_SWIFT_NAME(userExitedPlace),
+    /// `user.nearby_place_chain`
+    RadarEventTypeUserNearbyPlaceChain NS_SWIFT_NAME(userNearbyPlaceChain)
 };
 
 /**
