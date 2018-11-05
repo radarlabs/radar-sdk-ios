@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>RadarTrackingOptions Class Reference</title>
+    <link rel="stylesheet" type="text/css" href="../css/jazzy.css" />
+    <link rel="stylesheet" type="text/css" href="../css/highlight.css" />
+    <meta charset='utf-8'>
+    <script src="../js/jquery.min.js" defer></script>
+    <script src="../js/jazzy.js" defer></script>
+    
+  </head>
+  <body>
+    <a name="//apple_ref/objc/Class/RadarTrackingOptions" class="dashAnchor"></a>
+    <a title="RadarTrackingOptions Class Reference"></a>
+    <header>
+      <div class="content-wrapper">
+        <p><a href="../index.html">RadarSDK Docs</a></p>
+        <p class="header-right"><a href="https://github.com/radarlabs/radar-sdk-ios"><img src="../img/gh.png"/>View on GitHub</a></p>
+      </div>
+    </header>
+    <div class="content-wrapper">
+      <p id="breadcrumbs">
+        <a href="../index.html">RadarSDK Reference</a>
+        <img id="carat" src="../img/carat.png" />
+        RadarTrackingOptions Class Reference
+      </p>
+    </div>
+    <div class="content-wrapper">
+      <nav class="sidebar">
+        <ul class="nav-groups">
+          <li class="nav-group-name">
+            <a href="../Classes.html">Classes</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Classes/Radar.html">Radar</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/RadarChain.html">RadarChain</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/RadarCircleGeometry.html">RadarCircleGeometry</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/RadarCoordinate.html">RadarCoordinate</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/RadarEvent.html">RadarEvent</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/RadarGeofence.html">RadarGeofence</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes.html#/c:objc(cs)RadarGeofenceGeometry">RadarGeofenceGeometry</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/RadarPlace.html">RadarPlace</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/RadarPolygonGeometry.html">RadarPolygonGeometry</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/RadarTrackingOptions.html">RadarTrackingOptions</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/RadarUser.html">RadarUser</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/RadarUserInsights.html">RadarUserInsights</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/RadarUserInsightsLocation.html">RadarUserInsightsLocation</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/RadarUserInsightsState.html">RadarUserInsightsState</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Enums.html">Enumerations</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Enums/RadarEventConfidence.html">RadarEventConfidence</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Enums/RadarEventType.html">RadarEventType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Enums/RadarEventVerification.html">RadarEventVerification</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Enums/RadarPlacesProvider.html">RadarPlacesProvider</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Enums/RadarStatus.html">RadarStatus</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Enums/RadarTrackingOffline.html">RadarTrackingOffline</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Enums/RadarTrackingSync.html">RadarTrackingSync</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Enums/RadarUserInsightsLocationConfidence.html">RadarUserInsightsLocationConfidence</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Enums/RadarUserInsightsLocationType.html">RadarUserInsightsLocationType</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Protocols.html">Protocols</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Protocols/RadarDelegate.html">RadarDelegate</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Type Definitions.html">Type Definitions</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Type Definitions.html#/c:Radar.h@T@RadarCompletionHandler">RadarCompletionHandler</a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
+      <article class="main-content">
+        <section>
+          <section class="section">
+            <h1>RadarTrackingOptions</h1>
+              <div class="declaration">
+                <div class="language">
+                  <pre class="highlight objective_c"><code><span class="k">@interface</span> <span class="nc">RadarTrackingOptions</span> <span class="p">:</span> <span class="nc">NSObject</span></code></pre>
+
+                </div>
+              </div>
+            <p>An options class used to configure Radar tracking.</p>
+
+          </section>
+          <section class="section task-group-section">
+            <div class="task-group">
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:objc(cs)RadarTrackingOptions(py)offline"></a>
+                    <a name="//apple_ref/objc/Property/offline" class="dashAnchor"></a>
+                    <a class="token" href="#/c:objc(cs)RadarTrackingOptions(py)offline">offline</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Determines whether to replay offline location updates to the server. Defaults to <code>RadarTrackingOfflineReplayStopped</code>.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Objective-C</p>
+                          <pre class="highlight objective_c"><code><span class="k">@property</span> <span class="p">(</span><span class="n">assign</span><span class="p">,</span> <span class="n">readwrite</span><span class="p">,</span> <span class="n">nonatomic</span><span class="p">)</span> <span class="n"><a href="../Enums/RadarTrackingOffline.html">RadarTrackingOffline</a></span> <span class="n">offline</span><span class="p">;</span></code></pre>
+
+                        </div>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="k">var</span> <span class="nv">offline</span><span class="p">:</span> <span class="kt"><a href="../Enums/RadarTrackingOffline.html">RadarTrackingOffline</a></span> <span class="p">{</span> <span class="k">get</span> <span class="k">set</span> <span class="p">}</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:objc(cs)RadarTrackingOptions(py)sync"></a>
+                    <a name="//apple_ref/objc/Property/sync" class="dashAnchor"></a>
+                    <a class="token" href="#/c:objc(cs)RadarTrackingOptions(py)sync">sync</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Determines which location updates to sync to the server. Defaults to <code>RadarSyncModeStateChanges</code>.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Objective-C</p>
+                          <pre class="highlight objective_c"><code><span class="k">@property</span> <span class="p">(</span><span class="n">assign</span><span class="p">,</span> <span class="n">readwrite</span><span class="p">,</span> <span class="n">nonatomic</span><span class="p">)</span> <span class="n"><a href="../Enums/RadarTrackingSync.html">RadarTrackingSync</a></span> <span class="n">sync</span><span class="p">;</span></code></pre>
+
+                        </div>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="k">var</span> <span class="nv">sync</span><span class="p">:</span> <span class="kt"><a href="../Enums/RadarTrackingSync.html">RadarTrackingSync</a></span> <span class="p">{</span> <span class="k">get</span> <span class="k">set</span> <span class="p">}</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:objc(cs)RadarTrackingOptions(cm)makeWithBlock:"></a>
+                    <a name="//apple_ref/objc/Method/+makeWithBlock:" class="dashAnchor"></a>
+                    <a class="token" href="#/c:objc(cs)RadarTrackingOptions(cm)makeWithBlock:">+makeWithBlock:</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Convenience block initializer for this class.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Objective-C</p>
+                          <pre class="highlight objective_c"><code><span class="k">+</span> <span class="p">(</span><span class="n">nonnull</span> <span class="n">instancetype</span><span class="p">)</span><span class="nf">makeWithBlock</span><span class="p">:</span>
+    <span class="p">(</span><span class="n">nonnull</span> <span class="kt">void</span> <span class="p">(</span><span class="o">^</span><span class="p">)(</span><span class="n">RadarTrackingOptions</span> <span class="o">*</span><span class="n">_Nonnull</span><span class="p">))</span><span class="nv">updateBlock</span><span class="p">;</span></code></pre>
+
+                        </div>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">class</span> <span class="kd">func</span> <span class="nf">make</span><span class="p">(</span><span class="nv">updateBlock</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt">RadarTrackingOptions</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Void</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="k">Self</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </section>
+        </section>
+        <section id="footer">
+          <p>&copy; 2018 <a class="link" href="https://radar.io" target="_blank" rel="external">Radar Labs Inc</a>. All rights reserved. (Last updated: 2018-11-05)</p>
+          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.9.3</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
+        </section>
+      </article>
+    </div>
+  </body>
+</div>
+</html>

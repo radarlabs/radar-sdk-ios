@@ -14,6 +14,7 @@
 #import "RadarUser.h"
 
 @protocol RadarDelegate;
+@class RadarTrackingOptions;
 
 /**
  The status types for a request.
@@ -51,6 +52,30 @@ typedef NS_ENUM(NSInteger, RadarPlacesProvider) {
     RadarPlacesProviderNone,
     /// Facebook Places
     RadarPlacesProviderFacebook
+};
+
+/**
+ The offline modes for tracking.
+ 
+ @see https://radar.io/documentation/sdk#ios-background
+ */
+typedef NS_ENUM(NSInteger, RadarTrackingOffline) {
+    /// Replays no location updates
+    RadarTrackingOfflineReplayOff = -1,
+    /// The default, replays stopped location updates
+    RadarTrackingOfflineReplayStopped = 1
+};
+
+/**
+ The sync modes for tracking.
+ 
+ @see https://radar.io/documentation/sdk#ios-background
+ */
+typedef NS_ENUM(NSInteger, RadarTrackingSync) {
+    /// Syncs all location updates
+    RadarTrackingSyncAll = -1,
+    /// The default, syncs only location updates that could generate events
+    RadarTrackingSyncPossibleStateChanges = 1
 };
 
 /**
@@ -136,6 +161,15 @@ typedef void(^_Nullable RadarCompletionHandler)(RadarStatus status, CLLocation *
 + (void)startTracking;
 
 /**
+ Starts tracking the user's location in the background with configurable tracking options.
+ 
+ @warning Before calling this method, the user's location authorization status must be `kCLAuthorizationStatusAuthorizedAlways`.
+ 
+ @see https://radar.io/documentation/sdk#ios-background
+ **/
++ (void)startTrackingWithOptions:(RadarTrackingOptions *)trackingOptions NS_SWIFT_NAME(startTracking(trackingOptions:));
+
+/**
  Stops tracking the user's location in the background.
  
  @see https://radar.io/documentation/sdk#ios-background
@@ -188,5 +222,7 @@ Rejects an event. Events can be accepted after user check-ins or other forms of 
  @see https://radar.io/documentation/sdk#ios-verify
  */
 + (void)rejectEventId:(NSString *_Nonnull)eventId NS_SWIFT_NAME(rejectEventId(_:));
+
++ (void)performFetchWithCompletionHandler:(void (^)(UIBackgroundFetchResult result))completionHandler NS_SWIFT_NAME(performFetchWithCompletionHandler(_:));
 
 @end
