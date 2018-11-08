@@ -59,9 +59,6 @@
                 <a href="../Classes/RadarPolygonGeometry.html">RadarPolygonGeometry</a>
               </li>
               <li class="nav-group-task">
-                <a href="../Classes/RadarTrackingOptions.html">RadarTrackingOptions</a>
-              </li>
-              <li class="nav-group-task">
                 <a href="../Classes/RadarUser.html">RadarUser</a>
               </li>
               <li class="nav-group-task">
@@ -92,12 +89,6 @@
               </li>
               <li class="nav-group-task">
                 <a href="../Enums/RadarStatus.html">RadarStatus</a>
-              </li>
-              <li class="nav-group-task">
-                <a href="../Enums/RadarTrackingOffline.html">RadarTrackingOffline</a>
-              </li>
-              <li class="nav-group-task">
-                <a href="../Enums/RadarTrackingSync.html">RadarTrackingSync</a>
               </li>
               <li class="nav-group-task">
                 <a href="../Enums/RadarUserInsightsLocationConfidence.html">RadarUserInsightsLocationConfidence</a>
@@ -546,49 +537,6 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/c:objc(cs)Radar(cm)startTrackingWithOptions:"></a>
-                    <a name="//apple_ref/objc/Method/+startTrackingWithOptions:" class="dashAnchor"></a>
-                    <a class="token" href="#/c:objc(cs)Radar(cm)startTrackingWithOptions:">+startTrackingWithOptions:</a>
-                    </code>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        <p>Starts tracking the user&rsquo;s location in the background with configurable tracking options.</p>
-<div class="aside aside-warning">
-    <p class="aside-title">Warning</p>
-    <p>Before calling this method, the user&rsquo;s location authorization status must be <code>kCLAuthorizationStatusAuthorizedAlways</code>.</p>
-
-</div>
-<div class="aside aside-see">
-    <p class="aside-title">See</p>
-    <p><a href="https://radar.io/documentation/sdk#ios-background">https://radar.io/documentation/sdk#ios-background</a>
-*</p>
-
-</div>
-
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Objective-C</p>
-                          <pre class="highlight objective_c"><code><span class="k">+</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">startTrackingWithOptions</span><span class="p">:(</span><span class="n"><a href="../Classes/RadarTrackingOptions.html">RadarTrackingOptions</a></span> <span class="o">*</span><span class="p">)</span><span class="nv">trackingOptions</span><span class="p">;</span></code></pre>
-
-                        </div>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">class</span> <span class="kd">func</span> <span class="nf">startTracking</span><span class="p">(</span><span class="nv">trackingOptions</span><span class="p">:</span> <span class="kt"><a href="../Classes/RadarTrackingOptions.html">RadarTrackingOptions</a></span><span class="o">!</span><span class="p">)</span></code></pre>
-
-                        </div>
-                      </div>
-                    </section>
-                  </div>
-                </li>
-                <li class="item">
-                  <div>
-                    <code>
                     <a name="/c:objc(cs)Radar(cm)stopTracking"></a>
                     <a name="//apple_ref/objc/Method/+stopTracking" class="dashAnchor"></a>
                     <a class="token" href="#/c:objc(cs)Radar(cm)stopTracking">+stopTracking</a>
@@ -912,44 +860,12 @@
                     </section>
                   </div>
                 </li>
-                <li class="item">
-                  <div>
-                    <code>
-                    <a name="/c:objc(cs)Radar(cm)performFetchWithCompletionHandler:"></a>
-                    <a name="//apple_ref/objc/Method/+performFetchWithCompletionHandler:" class="dashAnchor"></a>
-                    <a class="token" href="#/c:objc(cs)Radar(cm)performFetchWithCompletionHandler:">+performFetchWithCompletionHandler:</a>
-                    </code>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        <p>Undocumented</p>
-
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Objective-C</p>
-                          <pre class="highlight objective_c"><code><span class="k">+</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">performFetchWithCompletionHandler</span><span class="p">:(</span><span class="kt">void</span> <span class="p">(</span><span class="o">^</span><span class="p">)(</span><span class="n">UIBackgroundFetchResult</span> <span class="n">result</span><span class="p">))</span><span class="nv">completionHandler</span> <span class="n">NS_SWIFT_NAME</span><span class="p">(</span><span class="n">performFetchWithCompletionHandler</span><span class="p">(</span><span class="n">_</span><span class="o">:</span><span class="p">));</span></code></pre>
-
-                        </div>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">class</span> <span class="kd">func</span> <span class="nf">performFetchWithCompletionHandler</span><span class="p">(</span><span class="n">_</span> <span class="nv">completionHandler</span><span class="p">:</span> <span class="p">((</span><span class="kt">UIBackgroundFetchResult</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Void</span><span class="p">)</span><span class="o">!</span><span class="p">)</span></code></pre>
-
-                        </div>
-                      </div>
-                    </section>
-                  </div>
-                </li>
               </ul>
             </div>
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2018 <a class="link" href="https://radar.io" target="_blank" rel="external">Radar Labs Inc</a>. All rights reserved. (Last updated: 2018-11-05)</p>
+          <p>&copy; 2018 <a class="link" href="https://radar.io" target="_blank" rel="external">Radar Labs Inc</a>. All rights reserved. (Last updated: 2018-11-07)</p>
           <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.9.3</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
         </section>
       </article>

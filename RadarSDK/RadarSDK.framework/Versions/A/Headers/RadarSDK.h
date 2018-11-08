@@ -9,7 +9,6 @@
 
 #import "Radar.h"
 #import "RadarDelegate.h"
-#import "RadarTrackingOptions.h"
 #import "RadarEvent.h"
 #import "RadarUser.h"
 #import "RadarGeofence.h"
