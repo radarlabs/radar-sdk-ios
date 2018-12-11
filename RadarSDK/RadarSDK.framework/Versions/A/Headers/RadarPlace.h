@@ -58,6 +58,20 @@
 @property (nonnull, strong, nonatomic, readonly) RadarCoordinate *location;
 
 /**
+ The group for the place, if any. For a full list of groups, see https://radar.io/documentation/places/groups.
+ 
+ @see https://radar.io/documentation/places/groups
+ */
+@property (nullable, strong, nonatomic, readonly) NSString *group;
+
+/**
+ The metadata for the place, if part of a group. For details of metadata fields see https://radar.io/documentation/places/groups.
+ 
+ @see https://radar.io/documentation/places/groups
+ */
+@property (nullable, strong, nonatomic, readonly) NSDictionary *metadata;
+
+/**
  Returns a boolean indicating whether the place is part of the specified chain.
  
  @return A boolean indicating whether the place is part of the specified the chain.
