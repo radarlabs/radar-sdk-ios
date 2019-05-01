@@ -84,7 +84,7 @@ class ViewController: UIViewController {
         }
     }
 
-    func trackOnce(trackingButton: UIButton) {
+    @objc func trackOnce(trackingButton: UIButton) {
         trackingButton.isEnabled = false
 
         Radar.trackOnce(completionHandler: { (status: RadarStatus, location: CLLocation?, events: [RadarEvent]?, user: RadarUser?) in
@@ -119,7 +119,7 @@ class ViewController: UIViewController {
         })
     }
 
-    func trackingChanged(trackingSwitch: UISwitch) {
+    @objc func trackingChanged(trackingSwitch: UISwitch) {
         if trackingSwitch.isOn {
             Radar.startTracking()
         } else {

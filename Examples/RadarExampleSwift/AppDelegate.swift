@@ -13,7 +13,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, RadarDelegate {
 
     var window: UIWindow?
 
-    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         let publishableKey = "" // replace with your publishable API key
         Radar.initialize(publishableKey: publishableKey)
         
