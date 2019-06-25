@@ -10,6 +10,7 @@
 #import "RadarUser.h"
 #import "RadarGeofence.h"
 #import "RadarPlace.h"
+#import "RadarRegion.h"
 
 /**
  Represents a change in user state. For more information, see https://radar.io/documentation.
@@ -45,7 +46,19 @@ typedef NS_ENUM(NSInteger, RadarEventType) {
     /// `user.exited_place`
     RadarEventTypeUserExitedPlace NS_SWIFT_NAME(userExitedPlace),
     /// `user.nearby_place_chain`
-    RadarEventTypeUserNearbyPlaceChain NS_SWIFT_NAME(userNearbyPlaceChain)
+    RadarEventTypeUserNearbyPlaceChain NS_SWIFT_NAME(userNearbyPlaceChain),
+    /// `user.entered_region_country`
+    RadarEventTypeUserEnteredRegionCountry NS_SWIFT_NAME(userEnteredRegionCountry),
+    /// `user.exited_region_country`
+    RadarEventTypeUserExitedRegionCountry NS_SWIFT_NAME(userExitedRegionCountry),
+    /// `user.entered_region_state`
+    RadarEventTypeUserEnteredRegionState NS_SWIFT_NAME(userEnteredRegionState),
+    /// `user.exited_region_state`
+    RadarEventTypeUserExitedRegionState NS_SWIFT_NAME(userExitedRegionState),
+    /// `user.entered_region_dma`
+    RadarEventTypeUserEnteredRegionDMA NS_SWIFT_NAME(userEnteredRegionDMA),
+    /// `user.exited_region_dma`
+    RadarEventTypeUserExitedRegionDMA NS_SWIFT_NAME(userExitedRegionDMA),
 };
 
 /**
@@ -108,6 +121,11 @@ typedef NS_ENUM(NSInteger, RadarEventVerification) {
  The place for which the event was generated. May be `nil` for non-place events.
  */
 @property (nullable, strong, nonatomic, readonly) RadarPlace *place;
+
+/**
+ The region for which the event was generated. May be `null` for non-region events.
+ */
+@property (nullable, strong, nonatomic, readonly) RadarRegion *region;
 
 /**
  For place entry events, alternate place candidates. May be `nil` for non-place events.

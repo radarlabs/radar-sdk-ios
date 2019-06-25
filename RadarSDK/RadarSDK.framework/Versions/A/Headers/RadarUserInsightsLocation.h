@@ -7,6 +7,7 @@
 
 #import <Foundation/Foundation.h>
 #import <CoreLocation/CoreLocation.h>
+#import "RadarRegion.h"
 
 /**
  Represents a learned home or work location. For more information about Insights, see https://radar.io/documentation/insights.
@@ -60,5 +61,25 @@ typedef NS_ENUM(NSInteger, RadarUserInsightsLocationConfidence) {
  The datetime when the learned location was updated.
  */
 @property (nonnull, copy, nonatomic, readonly) NSDate *updatedAt;
+
+/**
+ The country of the learned location. May be `nil` if country is not available or if regions are not enabled.
+ */
+@property (nullable, strong, nonatomic, readonly) RadarRegion *country;
+
+/**
+ The state of the learned location. May be `nil` if state is not available or if regions are not enabled.
+ */
+@property (nullable, strong, nonatomic, readonly) RadarRegion *state;
+
+/**
+ The DMA of the learned location. May be `nil` if DMA is not available or if regions are not enabled.
+ */
+@property (nullable, strong, nonatomic, readonly) RadarRegion *dma;
+
+/**
+ The postal code of the learned location. May be `nil` if postal code is not available or if regions are not enabled.
+ */
+@property (nullable, strong, nonatomic, readonly) RadarRegion *postalCode;
 
 @end

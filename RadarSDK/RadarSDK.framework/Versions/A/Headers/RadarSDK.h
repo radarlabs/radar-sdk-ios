@@ -22,3 +22,4 @@
 #import "RadarGeofenceGeometry.h"
 #import "RadarCircleGeometry.h"
 #import "RadarPolygonGeometry.h"
+#import "RadarRegion.h"

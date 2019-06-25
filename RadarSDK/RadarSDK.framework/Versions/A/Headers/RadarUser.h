@@ -6,9 +6,11 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "RadarChain.h"
 #import "RadarGeofence.h"
 #import "RadarPlace.h"
 #import "RadarUserInsights.h"
+#import "RadarRegion.h"
 
 /**
  Represents the current user state. For more information, see https://radar.io/documentation.
@@ -77,5 +79,30 @@
  A boolean indicating whether the user was last updated in the foreground.
  */
 @property (assign, nonatomic, readonly) BOOL foreground;
+
+/**
+ The user's last known country. May be `nil` if country is not available or if regions are not enabled.
+ */
+@property (nullable, strong, nonatomic, readonly) RadarRegion *country;
+
+/**
+ The user's last known state. May be `nil` if state is not available or if regions are not enabled.
+ */
+@property (nullable, strong, nonatomic, readonly) RadarRegion *state;
+
+/**
+ The user's last known designated market area (DMA). May be `nil` if DMA is not available or if regions are not enabled.
+ */
+@property (nullable, strong, nonatomic, readonly) RadarRegion *dma;
+
+/**
+ The user's last known postal code. May be `nil` if postal code is not available or if regions are not enabled.
+ */
+@property (nullable, strong, nonatomic, readonly) RadarRegion *postalCode;
+
+/**
+ An array of nearby chains. May be `nil` if no chains are nearby or if nearby chains are not enabled.
+ */
+@property (nullable, copy, nonatomic, readonly) NSArray<RadarChain *> *nearbyPlaceChains;
 
 @end
