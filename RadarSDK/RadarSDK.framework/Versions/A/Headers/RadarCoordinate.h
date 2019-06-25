@@ -2,7 +2,6 @@
 //  RadarCoordinate.h
 //  RadarSDK
 //
-//  Created by Russell Cullen on 9/17/18.
 //  Copyright © 2018 Radar. All rights reserved.
 //
 

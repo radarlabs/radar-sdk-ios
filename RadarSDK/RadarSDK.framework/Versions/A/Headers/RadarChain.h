@@ -33,4 +33,9 @@
  */
 @property (nullable, copy, nonatomic, readonly) NSString *externalId;
 
+/**
+ The optional set of custom key-value pairs for the chain.
+ */
+@property (nullable, copy, nonatomic, readonly) NSDictionary *metadata;
+
 @end
