@@ -81,22 +81,22 @@
 @property (assign, nonatomic, readonly) BOOL foreground;
 
 /**
- The user's last known country. May be `nil` if country is not available or if regions are not enabled.
+ The user's last known country. May be `nil` if country is not available or if Regions is turned off.
  */
 @property (nullable, strong, nonatomic, readonly) RadarRegion *country;
 
 /**
- The user's last known state. May be `nil` if state is not available or if regions are not enabled.
+ The user's last known state. May be `nil` if state is not available or if Regions is turned off.
  */
 @property (nullable, strong, nonatomic, readonly) RadarRegion *state;
 
 /**
- The user's last known designated market area (DMA). May be `nil` if DMA is not available or if regions are not enabled.
+ The user's last known designated market area (DMA). May be `nil` if DMA is not available or if Regions is turned off.
  */
 @property (nullable, strong, nonatomic, readonly) RadarRegion *dma;
 
 /**
- The user's last known postal code. May be `nil` if postal code is not available or if regions are not enabled.
+ The user's last known postal code. May be `nil` if postal code is not available or if Regions is turned off.
  */
 @property (nullable, strong, nonatomic, readonly) RadarRegion *postalCode;
 
