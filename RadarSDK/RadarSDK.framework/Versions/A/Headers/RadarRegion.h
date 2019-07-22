@@ -10,11 +10,16 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- Represents a change in user state. For more information, see https://radar.io/documentation.
+ Represents a region. For more information about Regions, see https://radar.io/documentation/regions.
  
- @see https://radar.io/documentation
+ @see https://radar.io/documentation/regions
  */
 @interface RadarRegion : NSObject
+
+/**
+ The Radar ID of the region.
+ */
+@property (nonnull, copy, nonatomic, readonly) NSString *_id;
 
 /**
  The name of the region.
@@ -25,6 +30,11 @@ NS_ASSUME_NONNULL_BEGIN
  The unique code for the region.
  */
 @property (nonnull, copy, nonatomic, readonly) NSString *code;
+
+/**
+ The type of the region.
+ */
+@property (nonnull, copy, nonatomic, readonly) NSString *type;
 
 @end
 
