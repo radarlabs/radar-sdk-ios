@@ -17,6 +17,11 @@ NS_ASSUME_NONNULL_BEGIN
 @interface RadarRegion : NSObject
 
 /**
+ The id of the region.
+ */
+@property (nonnull, copy, nonatomic, readonly) NSString *_id;
+
+/**
  The name of the region.
  */
 @property (nonnull, copy, nonatomic, readonly) NSString *name;
@@ -25,6 +30,11 @@ NS_ASSUME_NONNULL_BEGIN
  The unique code for the region.
  */
 @property (nonnull, copy, nonatomic, readonly) NSString *code;
+
+/**
+ The type of region.
+ */
+@property (nonnull, copy, nonatomic, readonly) NSString *type;
 
 @end
 
