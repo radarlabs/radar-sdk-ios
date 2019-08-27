@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>RadarPlacesProvider Enumeration Reference</title>
+    <title>RadarTrackingPriority Enumeration Reference</title>
     <link rel="stylesheet" type="text/css" href="../css/jazzy.css" />
     <link rel="stylesheet" type="text/css" href="../css/highlight.css" />
     <meta charset='utf-8'>
@@ -10,8 +10,8 @@
     
   </head>
   <body>
-    <a name="//apple_ref/objc/Enum/RadarPlacesProvider" class="dashAnchor"></a>
-    <a title="RadarPlacesProvider Enumeration Reference"></a>
+    <a name="//apple_ref/objc/Enum/RadarTrackingPriority" class="dashAnchor"></a>
+    <a title="RadarTrackingPriority Enumeration Reference"></a>
     <header>
       <div class="content-wrapper">
         <p><a href="../index.html">RadarSDK Docs</a></p>
@@ -22,7 +22,7 @@
       <p id="breadcrumbs">
         <a href="../index.html">RadarSDK Reference</a>
         <img id="carat" src="../img/carat.png" />
-        RadarPlacesProvider Enumeration Reference
+        RadarTrackingPriority Enumeration Reference
       </p>
     </div>
     <div class="content-wrapper">
@@ -134,17 +134,17 @@
       <article class="main-content">
         <section>
           <section class="section">
-            <h1>RadarPlacesProvider</h1>
+            <h1>RadarTrackingPriority</h1>
               <div class="declaration">
                 <div class="language">
-                  <pre class="highlight objective_c"><code><span class="k">enum</span> <span class="n">RadarPlacesProvider</span> <span class="p">{}</span></code></pre>
+                  <pre class="highlight objective_c"><code><span class="k">enum</span> <span class="n">RadarTrackingPriority</span> <span class="p">{}</span></code></pre>
 
                 </div>
               </div>
-            <p>The providers for Places data.</p>
+            <p>The priority modes for tracking.</p>
 <div class="aside aside-see">
     <p class="aside-title">See</p>
-    <a href="https://radar.io/documentation/sdk#ios-places">https://radar.io/documentation/sdk#ios-places</a>
+    <a href="https://radar.io/documentation/sdk#ios-background">https://radar.io/documentation/sdk#ios-background</a>
 
 </div>
 
@@ -155,9 +155,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/c:@E@RadarPlacesProvider@RadarPlacesProviderNone"></a>
-                    <a name="//apple_ref/objc/Case/RadarPlacesProviderNone" class="dashAnchor"></a>
-                    <a class="token" href="#/c:@E@RadarPlacesProvider@RadarPlacesProviderNone">RadarPlacesProviderNone</a>
+                    <a name="/c:@E@RadarTrackingPriority@RadarTrackingPriorityEfficiency"></a>
+                    <a name="//apple_ref/objc/Case/RadarTrackingPriorityEfficiency" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@E@RadarTrackingPriority@RadarTrackingPriorityEfficiency">RadarTrackingPriorityEfficiency</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -165,19 +165,19 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>No places provider</p>
+                        <p>Less responsive</p>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Objective-C</p>
-                          <pre class="highlight objective_c"><code><span class="n">RadarPlacesProviderNone</span></code></pre>
+                          <pre class="highlight objective_c"><code><span class="n">RadarTrackingPriorityEfficiency</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span></code></pre>
 
                         </div>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="k">case</span> <span class="k">none</span> <span class="o">=</span> <span class="mi">0</span></code></pre>
+                          <pre class="highlight swift"><code><span class="k">case</span> <span class="n">efficiency</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span></code></pre>
 
                         </div>
                       </div>
@@ -187,9 +187,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/c:@E@RadarPlacesProvider@RadarPlacesProviderFacebook"></a>
-                    <a name="//apple_ref/objc/Case/RadarPlacesProviderFacebook" class="dashAnchor"></a>
-                    <a class="token" href="#/c:@E@RadarPlacesProvider@RadarPlacesProviderFacebook">RadarPlacesProviderFacebook</a>
+                    <a name="/c:@E@RadarTrackingPriority@RadarTrackingPriorityResponsiveness"></a>
+                    <a name="//apple_ref/objc/Case/RadarTrackingPriorityResponsiveness" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@E@RadarTrackingPriority@RadarTrackingPriorityResponsiveness">RadarTrackingPriorityResponsiveness</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -197,19 +197,19 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Facebook Places</p>
+                        <p>The default, more responsive</p>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Objective-C</p>
-                          <pre class="highlight objective_c"><code><span class="n">RadarPlacesProviderFacebook</span></code></pre>
+                          <pre class="highlight objective_c"><code><span class="n">RadarTrackingPriorityResponsiveness</span> <span class="o">=</span> <span class="mi">1</span></code></pre>
 
                         </div>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="k">case</span> <span class="n">facebook</span> <span class="o">=</span> <span class="mi">1</span></code></pre>
+                          <pre class="highlight swift"><code><span class="k">case</span> <span class="n">responsiveness</span> <span class="o">=</span> <span class="mi">1</span></code></pre>
 
                         </div>
                       </div>

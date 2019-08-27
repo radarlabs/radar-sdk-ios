@@ -55,6 +55,18 @@ typedef NS_ENUM(NSInteger, RadarPlacesProvider) {
 };
 
 /**
+ The priority modes for tracking.
+ 
+ @see https://radar.io/documentation/sdk#ios-background
+ */
+typedef NS_ENUM(NSInteger, RadarTrackingPriority) {
+    /// Less responsive
+    RadarTrackingPriorityEfficiency = -1,
+    /// The default, more responsive
+    RadarTrackingPriorityResponsiveness = 1
+};
+
+/**
  The offline modes for tracking.
  
  @see https://radar.io/documentation/sdk#ios-background
@@ -167,7 +179,7 @@ typedef void(^_Nullable RadarCompletionHandler)(RadarStatus status, CLLocation *
  
  @see https://radar.io/documentation/sdk#ios-background
  **/
-+ (void)startTrackingWithOptions:(RadarTrackingOptions *)trackingOptions NS_SWIFT_NAME(startTracking(trackingOptions:));
++ (void)startTrackingWithOptions:(RadarTrackingOptions * _Nullable)trackingOptions NS_SWIFT_NAME(startTracking(trackingOptions:));
 
 /**
  Stops tracking the user's location in the background.
@@ -223,6 +235,6 @@ Rejects an event. Events can be accepted after user check-ins or other forms of 
  */
 + (void)rejectEventId:(NSString *_Nonnull)eventId NS_SWIFT_NAME(rejectEventId(_:));
 
-+ (void)performFetchWithCompletionHandler:(void (^)(UIBackgroundFetchResult result))completionHandler NS_SWIFT_NAME(performFetchWithCompletionHandler(_:));
++ (void)performFetchWithCompletionHandler:(void (^ _Nullable)(UIBackgroundFetchResult result))completionHandler NS_SWIFT_NAME(performFetchWithCompletionHandler(_:));
 
 @end
