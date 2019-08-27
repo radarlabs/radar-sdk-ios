@@ -17,6 +17,11 @@ NS_ASSUME_NONNULL_BEGIN
 @interface RadarTrackingOptions : NSObject
 
 /**
+ Determines how frequently location updates are requested on the client. Defaults to `RadarTrackingPriorityResponsiveness`.
+ */
+@property (nonatomic) RadarTrackingPriority priority;
+
+/**
  Determines whether to replay offline location updates to the server. Defaults to `RadarTrackingOfflineReplayStopped`.
  */
 @property (nonatomic) RadarTrackingOffline offline;

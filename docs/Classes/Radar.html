@@ -100,6 +100,9 @@
                 <a href="../Enums/RadarTrackingOffline.html">RadarTrackingOffline</a>
               </li>
               <li class="nav-group-task">
+                <a href="../Enums/RadarTrackingPriority.html">RadarTrackingPriority</a>
+              </li>
+              <li class="nav-group-task">
                 <a href="../Enums/RadarTrackingSync.html">RadarTrackingSync</a>
               </li>
               <li class="nav-group-task">
@@ -577,12 +580,13 @@
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Objective-C</p>
-                          <pre class="highlight objective_c"><code><span class="k">+</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">startTrackingWithOptions</span><span class="p">:(</span><span class="n"><a href="../Classes/RadarTrackingOptions.html">RadarTrackingOptions</a></span> <span class="o">*</span><span class="p">)</span><span class="nv">trackingOptions</span><span class="p">;</span></code></pre>
+                          <pre class="highlight objective_c"><code><span class="k">+</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">startTrackingWithOptions</span><span class="p">:</span>
+    <span class="p">(</span><span class="n"><a href="../Classes/RadarTrackingOptions.html">RadarTrackingOptions</a></span> <span class="o">*</span><span class="n">_Nullable</span><span class="p">)</span><span class="nv">trackingOptions</span><span class="p">;</span></code></pre>
 
                         </div>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">class</span> <span class="kd">func</span> <span class="nf">startTracking</span><span class="p">(</span><span class="nv">trackingOptions</span><span class="p">:</span> <span class="kt"><a href="../Classes/RadarTrackingOptions.html">RadarTrackingOptions</a></span><span class="o">!</span><span class="p">)</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">class</span> <span class="kd">func</span> <span class="nf">startTracking</span><span class="p">(</span><span class="nv">trackingOptions</span><span class="p">:</span> <span class="kt"><a href="../Classes/RadarTrackingOptions.html">RadarTrackingOptions</a></span><span class="p">?)</span></code></pre>
 
                         </div>
                       </div>
@@ -935,12 +939,12 @@
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Objective-C</p>
-                          <pre class="highlight objective_c"><code><span class="k">+</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">performFetchWithCompletionHandler</span><span class="p">:(</span><span class="kt">void</span> <span class="p">(</span><span class="o">^</span><span class="p">)(</span><span class="n">UIBackgroundFetchResult</span> <span class="n">result</span><span class="p">))</span><span class="nv">completionHandler</span> <span class="n">NS_SWIFT_NAME</span><span class="p">(</span><span class="n">performFetchWithCompletionHandler</span><span class="p">(</span><span class="n">_</span><span class="o">:</span><span class="p">));</span></code></pre>
+                          <pre class="highlight objective_c"><code><span class="k">+</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">performFetchWithCompletionHandler</span><span class="p">:(</span><span class="kt">void</span> <span class="p">(</span><span class="o">^</span> <span class="n">_Nullable</span><span class="p">)(</span><span class="n">UIBackgroundFetchResult</span> <span class="n">result</span><span class="p">))</span><span class="nv">completionHandler</span> <span class="n">NS_SWIFT_NAME</span><span class="p">(</span><span class="n">performFetchWithCompletionHandler</span><span class="p">(</span><span class="n">_</span><span class="o">:</span><span class="p">));</span></code></pre>
 
                         </div>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">class</span> <span class="kd">func</span> <span class="nf">performFetchWithCompletionHandler</span><span class="p">(</span><span class="n">_</span> <span class="nv">completionHandler</span><span class="p">:</span> <span class="p">((</span><span class="kt">UIBackgroundFetchResult</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Void</span><span class="p">)</span><span class="o">!</span><span class="p">)</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">class</span> <span class="kd">func</span> <span class="nf">performFetchWithCompletionHandler</span><span class="p">(</span><span class="n">_</span> <span class="nv">completionHandler</span><span class="p">:</span> <span class="p">((</span><span class="kt">UIBackgroundFetchResult</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Void</span><span class="p">)?</span> <span class="o">=</span> <span class="kc">nil</span><span class="p">)</span></code></pre>
 
                         </div>
                       </div>
@@ -952,7 +956,7 @@
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2019 <a class="link" href="https://radar.io" target="_blank" rel="external">Radar Labs Inc</a>. All rights reserved. (Last updated: 2019-07-22)</p>
+          <p>&copy; 2019 <a class="link" href="https://radar.io" target="_blank" rel="external">Radar Labs Inc</a>. All rights reserved. (Last updated: 2019-08-27)</p>
           <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.9.3</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
         </section>
       </article>

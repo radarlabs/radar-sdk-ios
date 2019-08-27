@@ -2,7 +2,7 @@
   "warnings": [
     {
       "file": "/Users/vagrant/git/RadarSDK/Radar.h",
-      "line": 226,
+      "line": 238,
       "symbol": "Radar.+performFetchWithCompletionHandler:",
       "symbol_kind": "sourcekitten.source.lang.objc.decl.method.class",
       "warning": "undocumented"
