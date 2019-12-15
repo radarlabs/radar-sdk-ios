@@ -2,7 +2,7 @@
 
 [![CocoaPods](https://img.shields.io/cocoapods/v/RadarSDK.svg)](https://cocoapods.org/pods/RadarSDK)
 [![Carthage](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg)](https://github.com/Carthage/Carthage)
-[![CircleCI](https://circleci.com/gh/radarlabs/sdk-ios-new.svg?style=svg)](https://circleci.com/gh/radarlabs/sdk-ios-new)
+[![CircleCI](https://circleci.com/gh/radarlabs/sdk-ios-new.svg?style=svg)](https://circleci.com/gh/radarlabs/radar-sdk-ios)
 
 [Radar](https://radar.io) is the location platform for mobile apps.
 
