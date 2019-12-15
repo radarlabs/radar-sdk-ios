@@ -1,0 +1,33 @@
+version: 2
+jobs:
+  build_and_test:
+    macos:
+      xcode: "11.2.1"
+    steps:
+      - checkout
+      - run:
+          name: List simulators
+          command: xcrun simctl list
+      - run:
+          name: Install dependencies
+          command: |
+            sudo gem install xcpretty
+            sudo gem install cocoapods
+            sudo gem install jazzy
+      - run:
+          name: Test
+          command: make test-pretty
+      - run:
+          name: Build
+          command: make build-pretty
+      - run:
+          name: Docs
+          command: make docs
+      - run:
+          name: Lint
+          command: make lint
+workflows:
+  version: 2
+  build_and_test:
+    jobs:
+      - build_and_test

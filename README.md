@@ -2,6 +2,7 @@
 
 [![CocoaPods](https://img.shields.io/cocoapods/v/RadarSDK.svg)](https://cocoapods.org/pods/RadarSDK)
 [![Carthage](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg)](https://github.com/Carthage/Carthage)
+[![CircleCI](https://circleci.com/gh/radarlabs/sdk-ios-new.svg?style=svg)](https://circleci.com/gh/radarlabs/sdk-ios-new)
 
 [Radar](https://radar.io) is the location platform for mobile apps.
 
@@ -15,7 +16,7 @@ See migration guides in `MIGRATION.md`.
 
 ## Examples
 
-See a Swift example app in `Examples/`.
+See a Swift example app in `Example/`.
 
 To run the example app, clone this repository, add your publishable API key in `AppDelegate.swift`, and build the app.
 
