@@ -1,8 +1,7 @@
 //
 //  RadarAddress.m
-//  RadarSDKTests
+//  RadarSDK
 //
-//  Created by Jay Sani on 12/16/19.
 //  Copyright © 2019 Radar Labs, Inc. All rights reserved.
 //
 
