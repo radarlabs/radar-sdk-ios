@@ -22,6 +22,7 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		78156B9723A8210E0094410E /* RadarAddress.m in Sources */ = {isa = PBXBuildFile; fileRef = 78156B9623A8210E0094410E /* RadarAddress.m */; };
 		DD103211237E0C47003DD408 /* RadarSDKTests.m in Sources */ = {isa = PBXBuildFile; fileRef = DD103210237E0C47003DD408 /* RadarSDKTests.m */; };
 		DD103215237F1795003DD408 /* track.json in Resources */ = {isa = PBXBuildFile; fileRef = DD103214237F1795003DD408 /* track.json */; };
 		DD5E35E1238205FF002D93FF /* events_verification.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5E35E0238205FF002D93FF /* events_verification.json */; };
@@ -118,6 +119,10 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		78156B9523A8210E0094410E /* RadarAddress.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarAddress.h; sourceTree = "<group>"; };
+		78156B9623A8210E0094410E /* RadarAddress.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RadarAddress.m; sourceTree = "<group>"; };
+		78156B9823A826D20094410E /* RadarAddressConfidence.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarAddressConfidence.h; sourceTree = "<group>"; };
+		78156B9B23A834FA0094410E /* RadarAddress+Internal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "RadarAddress+Internal.h"; sourceTree = "<group>"; };
 		DD103210237E0C47003DD408 /* RadarSDKTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RadarSDKTests.m; sourceTree = "<group>"; };
 		DD103214237F1795003DD408 /* track.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = track.json; sourceTree = "<group>"; };
 		DD236C782308797B00EB88F9 /* RadarSDK.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarSDK.h; sourceTree = "<group>"; };
@@ -328,6 +333,10 @@
 				DD236CC02308812700EB88F9 /* RadarUserInsightsState.h */,
 				DD236CB42308812600EB88F9 /* RadarUserInsightsState+Internal.h */,
 				DD236CC12308812700EB88F9 /* RadarUserInsightsState.m */,
+				78156B9523A8210E0094410E /* RadarAddress.h */,
+				78156B9B23A834FA0094410E /* RadarAddress+Internal.h */,
+				78156B9623A8210E0094410E /* RadarAddress.m */,
+				78156B9823A826D20094410E /* RadarAddressConfidence.h */,
 			);
 			name = Models;
 			sourceTree = "<group>";
@@ -534,6 +543,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				DD103211237E0C47003DD408 /* RadarSDKTests.m in Sources */,
+				78156B9723A8210E0094410E /* RadarAddress.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -7,9 +7,11 @@
 
 #import "RadarAPIClient.h"
 
+#import "RadarAddress+Internal.h"
 #import "RadarEvent+Internal.h"
 #import "RadarPlace+Internal.h"
 #import "RadarGeofence+Internal.h"
+#import "RadarRegion+Internal.h"
 #import "RadarLogger.h"
 #import "RadarSettings.h"
 #import "RadarState.h"
@@ -383,6 +385,111 @@
         NSArray<RadarGeofence *> *geofences = [RadarGeofence geofencesFromObject:geofencesObj];
         if (geofences) {
             return completionHandler(RadarStatusSuccess, res, geofences);
+        }
+
+        completionHandler(RadarStatusErrorServer, nil, nil);
+    }];
+}
+
+- (void)geocode:(NSString *)query completionHandler:(RadarGeocodeCompletionHandler)completionHandler {
+    NSString *publishableKey = [RadarSettings publishableKey];
+    if (!publishableKey) {
+        return completionHandler(RadarStatusErrorPublishableKey, nil, nil);
+    }
+
+    NSMutableString *qs = [NSMutableString new];
+    [qs appendFormat:@"text=%@", query];
+
+    NSString *host = [RadarSettings host];
+    NSString *url = [NSString stringWithFormat:@"%@/v1/geocode/forward?%@", host, qs];
+    url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
+
+    NSDictionary *headers = @{
+        @"Authorization": publishableKey,
+        @"Content-Type": @"application/json",
+        @"User-Agent": [RadarUtils userAgent],
+        @"X-Radar-Config": @"true",
+    };
+
+    [self.apiHelper requestWithMethod:@"GET" url:url headers:headers params:nil completionHandler:^(RadarStatus status, NSDictionary * _Nullable res) {
+        if (status != RadarStatusSuccess || !res) {
+            return completionHandler(status, nil, nil);
+        }
+
+        id addressesObj = res[@"addresses"];
+        NSArray<RadarAddress *> *addresses = [RadarAddress addressesFromObject:addressesObj];
+        if (addresses) {
+            return completionHandler(RadarStatusSuccess, res, addresses);
+        }
+
+        completionHandler(RadarStatusErrorServer, nil, nil);
+    }];
+}
+
+- (void)reverseGeocode:(CLLocation *)location completionHandler:(RadarGeocodeCompletionHandler)completionHandler {
+    NSString *publishableKey = [RadarSettings publishableKey];
+    if (!publishableKey) {
+        return completionHandler(RadarStatusErrorPublishableKey, nil, nil);
+    }
+
+    NSMutableString *qs = [NSMutableString new];
+    [qs appendFormat:@"latitude=%.15f", location.coordinate.latitude];
+    [qs appendFormat:@"&longitude=%.15f", location.coordinate.longitude];
+
+    NSString *host = [RadarSettings host];
+    NSString *url = [NSString stringWithFormat:@"%@/v1/geocode/reverse?%@", host, qs];
+    url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
+
+    NSDictionary *headers = @{
+        @"Authorization": publishableKey,
+        @"Content-Type": @"application/json",
+        @"User-Agent": [RadarUtils userAgent],
+        @"X-Radar-Config": @"true",
+    };
+
+    [self.apiHelper requestWithMethod:@"GET" url:url headers:headers params:nil completionHandler:^(RadarStatus status, NSDictionary * _Nullable res) {
+        if (status != RadarStatusSuccess || !res) {
+            return completionHandler(status, nil, nil);
+        }
+
+        id addressesObj = res[@"addresses"];
+        NSArray<RadarAddress *> *addresses = [RadarAddress addressesFromObject:addressesObj];
+        if (addresses) {
+            return completionHandler(RadarStatusSuccess, res, addresses);
+        }
+
+        completionHandler(RadarStatusErrorServer, nil, nil);
+    }];
+}
+
+- (void)ipGeocode:(RadarIPGeocodeCompletionHandler)completionHandler {
+    NSString *publishableKey = [RadarSettings publishableKey];
+    if (!publishableKey) {
+        return completionHandler(RadarStatusErrorPublishableKey, nil, nil);
+    }
+
+    NSString *host = [RadarSettings host];
+    NSString *url = [NSString stringWithFormat:@"%@/v1/geocode/ip", host];
+    url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
+
+    NSDictionary *headers = @{
+        @"Authorization": publishableKey,
+        @"Content-Type": @"application/json",
+        @"User-Agent": [RadarUtils userAgent],
+        @"X-Radar-Config": @"true",
+    };
+
+    [self.apiHelper requestWithMethod:@"GET" url:url headers:headers params:nil completionHandler:^(RadarStatus status, NSDictionary * _Nullable res) {
+        if (status != RadarStatusSuccess || !res) {
+            return completionHandler(status, nil, nil);
+        }
+
+        // TODO (jsani): 'address' key for 'region' response?
+        id regionObj = res[@"address"];
+        RadarRegion *region = [[RadarRegion alloc]  initWithObject:regionObj];
+
+        if (region) {
+            return completionHandler(RadarStatusSuccess, res, region);
         }
 
         completionHandler(RadarStatusErrorServer, nil, nil);
