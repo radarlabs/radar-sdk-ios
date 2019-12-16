@@ -81,7 +81,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
   Confidence in the address received from the API.
  */
-@property(nonnull, copy, nonatomic, readonly) RadarAddressConfidence *confidence;
+@property(nonatomic, assign) enum RadarAddressConfidence confidence;
 
 @end
 
