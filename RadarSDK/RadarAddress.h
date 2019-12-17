@@ -14,67 +14,67 @@ NS_ASSUME_NONNULL_BEGIN
 @interface RadarAddress : NSObject
 
 /**
- The location coordinate of the user.
+ The location coordinate of the address.
  */
 @property(nonnull, copy, nonatomic, readonly) RadarCoordinate *coordinate;
 
 /**
- The formatted address of the user.
+ The fully formatted representation of the address.
  */
 @property(nullable, copy, nonatomic, readonly) NSString *formattedAddress;
 
 /**
- The country of the user.
+ The country of the address.
  */
 @property(nullable, copy, nonatomic, readonly) NSString *country;
 
 /**
- The countryCode of the user.
+ The countryCode of the address.
  */
 @property(nullable, copy, nonatomic, readonly) NSString *countryCode;
 
 /**
- The country flag of the user.
+ The country flag of the address.
  */
 @property(nullable, copy, nonatomic, readonly) NSString *countryFlag;
 
 /**
- The state of the user.
+ The state of the address.
  */
 @property(nullable, copy, nonatomic, readonly) NSString *state;
 
 /**
- The state code of the user.
+ The state code of the address.
  */
 @property(nullable, copy, nonatomic, readonly) NSString *stateCode;
 
 /**
- The postalCode of the user.
+ The postalCode of the address.
  */
 @property(nullable, copy, nonatomic, readonly) NSString *postalCode;
 
 /**
- The city of the user.
+ The city of the address.
  */
 @property(nullable, copy, nonatomic, readonly) NSString *city;
 
 /**
- The borough of the user.
+ The borough of the address.
  */
 @property(nullable, copy, nonatomic, readonly) NSString *borough;
 
 /**
- The county of the user.
+ The county of the address.
  */
 @property(nullable, copy, nonatomic, readonly) NSString *county;
 
 /**
- The neighborhood of the user.
+ The neighborhood of the address.
  */
 @property(nullable, copy, nonatomic, readonly) NSString *neighborhood;
 
 /**
- The address / house number of the user.
+ The address / house number of the address.
  */
 @property(nullable, copy, nonatomic, readonly) NSString *number;
 
