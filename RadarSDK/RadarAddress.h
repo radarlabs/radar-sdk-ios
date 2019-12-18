@@ -6,8 +6,14 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "RadarAddressConfidence.h"
 #import "RadarCoordinate.h"
+
+// RadarAddressConfidence enum
+typedef NS_ENUM(NSInteger, RadarAddressConfidence) {
+    RadarAddressConfidenceExact,
+    RadarAddressConfidenceInterpolated,
+    RadarAddressConfidenceFallback
+};
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -29,7 +35,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nullable, copy, nonatomic, readonly) NSString *country;
 
 /**
- The countryCode of the address.
+ The country code of the address.
  */
 @property(nullable, copy, nonatomic, readonly) NSString *countryCode;
 
@@ -49,7 +55,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nullable, copy, nonatomic, readonly) NSString *stateCode;
 
 /**
- The postalCode of the address.
+ The postal code of the address.
  */
 @property(nullable, copy, nonatomic, readonly) NSString *postalCode;
 
@@ -74,7 +80,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nullable, copy, nonatomic, readonly) NSString *neighborhood;
 
 /**
- The address / house number of the address.
+ The number / house number of the address.
  */
 @property(nullable, copy, nonatomic, readonly) NSString *number;
 

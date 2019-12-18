@@ -49,12 +49,26 @@
     NSString *county;
     NSString *neighborhood;
     NSString *number;
-    RadarAddressConfidence *confidence;
 
-    // TODO (jsani): verify serializing RadarCoordinate correctly
-    id coordinateObj = addressDict[@"coordinate"];
-    if (coordinateObj && [coordinateObj isKindOfClass:[RadarCoordinate class]]) {
-        coordinate = (RadarCoordinate *)coordinateObj;
+    // TODO (jsani): is this a sensible default for 'confidence', or should we have another enum entry?
+    RadarAddressConfidence confidence = RadarAddressConfidenceFallback;
+
+    id coordsObj = addressDict[@"coordinates"];
+    if (coordsObj && [coordsObj isKindOfClass:[NSArray class]]) {
+        NSArray *coordsArray = (NSArray *)coordsObj;
+        if (coordsArray.count != 2) {
+            return nil;
+        }
+
+        id longitudeObj = coordsArray[0];
+        id latitudeObj = coordsArray[1];
+        if (![longitudeObj isKindOfClass:[NSNumber class]] || ![latitudeObj isKindOfClass:[NSNumber class]]) {
+            return nil;
+        }
+
+        float longitude = [((NSNumber *) longitudeObj) floatValue];
+        float latitude = [((NSNumber *) latitudeObj) floatValue];
+        coordinate = [[RadarCoordinate alloc] initWithCoordinate:CLLocationCoordinate2DMake(latitude, longitude)];
     }
 
     id formattedAddressObj = addressDict[@"formattedAddress"];
@@ -117,9 +131,20 @@
         number = (NSString *)addressNumberObj;
     }
 
-    // TODO (jsani): how to serialize RadarAddressConfidence?
+    id confidenceObj = addressDict[@"confidence"];
+    if (confidenceObj && [confidenceObj isKindOfClass:[NSString class]]) {
+        NSString *confidenceStr = (NSString *)confidenceObj;
 
-    if (coordinate && confidence) {
+        if ([confidenceStr isEqualToString:@"exact"]) {
+            confidence = RadarAddressConfidenceExact;
+        } else if ([confidenceStr isEqualToString:@"interpolated"]) {
+            confidence = RadarAddressConfidenceInterpolated;
+        } else {
+            confidence = RadarAddressConfidenceFallback;
+        }
+    }
+
+    if (coordinate) {
         return [[RadarAddress alloc] initWithCoordinate:coordinate formattedAddress:formattedAddress country:country countryCode:countryCode countryFlag:countryFlag state:state stateCode:stateCode postalCode:postalCode city:city borough:borough county:county neighborhood:neighborhood number:number confidence:confidence];
     }
 
@@ -139,7 +164,7 @@
                                       county:(NSString * _Nullable)county
                                 neighborhood:(NSString * _Nullable)neighborhood
                                       number:(NSString * _Nullable)number
-                                  confidence:(RadarAddressConfidence * _Nonnull)confidence {
+                                  confidence:(RadarAddressConfidence)confidence {
     self = [super init];
     if (self) {
         _coordinate = coordinate;
@@ -155,9 +180,7 @@
         _county = county;
         _neighborhood = neighborhood;
         _number = number;
-
-        // TODO (jsani): Xcode complains about _confidence on LHS?
-        confidence = confidence;
+        _confidence = confidence;
     }
     return self;
 }

@@ -391,7 +391,7 @@
     }];
 }
 
-- (void)geocode:(NSString *)query completionHandler:(RadarGeocodeCompletionHandler)completionHandler {
+- (void)geocode:(NSString *)query completionHandler:(RadarGeocodeAPICompletionHandler)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
         return completionHandler(RadarStatusErrorPublishableKey, nil, nil);
@@ -426,7 +426,7 @@
     }];
 }
 
-- (void)reverseGeocode:(CLLocation *)location completionHandler:(RadarGeocodeCompletionHandler)completionHandler {
+- (void)reverseGeocode:(CLLocation *)location completionHandler:(RadarGeocodeAPICompletionHandler)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
         return completionHandler(RadarStatusErrorPublishableKey, nil, nil);
@@ -462,7 +462,7 @@
     }];
 }
 
-- (void)ipGeocode:(RadarIPGeocodeCompletionHandler)completionHandler {
+- (void)ipGeocode:(RadarIPGeocodeAPICompletionHandler)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
         return completionHandler(RadarStatusErrorPublishableKey, nil, nil);

@@ -23,9 +23,9 @@ typedef void(^ _Nullable RadarSearchPlacesAPICompletionHandler)(RadarStatus stat
 
 typedef void(^ _Nullable RadarSearchGeofencesAPICompletionHandler)(RadarStatus status, NSDictionary * _Nullable res, NSArray<RadarGeofence *> * _Nullable geofences);
 
-typedef void(^ _Nullable RadarGeocodeCompletionHandler)(RadarStatus status, NSDictionary * _Nullable res, NSArray<RadarAddress *> * _Nullable addresses);
+typedef void(^ _Nullable RadarGeocodeAPICompletionHandler)(RadarStatus status, NSDictionary * _Nullable res, NSArray<RadarAddress *> * _Nullable addresses);
 
-typedef void(^ _Nullable RadarIPGeocodeCompletionHandler)(RadarStatus status, NSDictionary * _Nullable res, RadarRegion * _Nullable country);
+typedef void(^ _Nullable RadarIPGeocodeAPICompletionHandler)(RadarStatus status, NSDictionary * _Nullable res, RadarRegion * _Nullable region);
 
 @interface RadarAPIClient : NSObject
 
@@ -61,12 +61,12 @@ typedef void(^ _Nullable RadarIPGeocodeCompletionHandler)(RadarStatus status, NS
                   completionHandler:(RadarSearchGeofencesAPICompletionHandler _Nullable)completionHandler;
 
 - (void)geocode:(NSString * _Nonnull)query
-        completionHandler:(RadarGeocodeCompletionHandler)completionHandler;
+        completionHandler:(RadarGeocodeAPICompletionHandler _Nullable)completionHandler;
 
 - (void)reverseGeocode:(CLLocation * _Nonnull)location
-     completionHandler:(RadarGeocodeCompletionHandler _Nullable)completionHandler;
+     completionHandler:(RadarGeocodeAPICompletionHandler _Nullable)completionHandler;
 
-- (void)ipGeocode:(RadarIPGeocodeCompletionHandler _Nullable)completionHandler;
+- (void)ipGeocode:(RadarIPGeocodeAPICompletionHandler _Nullable)completionHandler;
 
 @end
 

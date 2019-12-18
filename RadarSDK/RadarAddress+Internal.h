@@ -7,7 +7,6 @@
 
 #import <Foundation/Foundation.h>
 #import "RadarAddress.h"
-#import "RadarAddressConfidence.h"
 #import "RadarCoordinate.h"
 
 @interface RadarAddress ()
@@ -29,6 +28,6 @@
                                       county:(NSString * _Nullable)county
                                 neighborhood:(NSString * _Nullable)neighborhood
                                       number:(NSString * _Nullable)number
-                                  confidence:(RadarAddressConfidence * _Nonnull)confidence;
+                                  confidence:(RadarAddressConfidence)confidence;
 
 @end
