@@ -306,7 +306,7 @@
     }
     
     NSString *host = [RadarSettings host];
-    NSString *url = [NSString stringWithFormat:@"%@/v1/places/search?%@", host, queryString];
+    NSString *url = [NSString stringWithFormat:@"%@/v1/search/places?%@", host, queryString];
     url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
     
     NSDictionary *headers = @{
@@ -364,7 +364,7 @@
     }
 
     NSString *host = [RadarSettings host];
-    NSString *url = [NSString stringWithFormat:@"%@/v1/geofences/search?%@", host, queryString];
+    NSString *url = [NSString stringWithFormat:@"%@/v1/search/geofences?%@", host, queryString];
     url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
 
     NSDictionary *headers = @{
