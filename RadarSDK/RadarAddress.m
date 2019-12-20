@@ -36,7 +36,10 @@
 
     NSDictionary *addressDict = (NSDictionary *)object;
 
+    NSNumber *latitude;
+    NSNumber *longitude;
     RadarCoordinate *coordinate;
+
     NSString *formattedAddress;
     NSString *country;
     NSString *countryCode;
@@ -53,22 +56,18 @@
     // TODO (jsani): is this a sensible default for 'confidence', or should we have another enum entry?
     RadarAddressConfidence confidence = RadarAddressConfidenceFallback;
 
-    id coordsObj = addressDict[@"coordinates"];
-    if (coordsObj && [coordsObj isKindOfClass:[NSArray class]]) {
-        NSArray *coordsArray = (NSArray *)coordsObj;
-        if (coordsArray.count != 2) {
-            return nil;
-        }
+    id latitudeObj = addressDict[@"latitude"];
+    if (latitudeObj && [latitudeObj isKindOfClass:[NSNumber class]]) {
+        latitude = (NSNumber *)latitudeObj;
+    }
 
-        id longitudeObj = coordsArray[0];
-        id latitudeObj = coordsArray[1];
-        if (![longitudeObj isKindOfClass:[NSNumber class]] || ![latitudeObj isKindOfClass:[NSNumber class]]) {
-            return nil;
-        }
+    id longitudeObj = addressDict[@"longitude"];
+    if (longitudeObj && [longitudeObj isKindOfClass:[NSNumber class]]) {
+        longitude = (NSNumber *)longitudeObj;
+    }
 
-        float longitude = [((NSNumber *) longitudeObj) floatValue];
-        float latitude = [((NSNumber *) latitudeObj) floatValue];
-        coordinate = [[RadarCoordinate alloc] initWithCoordinate:CLLocationCoordinate2DMake(latitude, longitude)];
+    if (latitude && longitude) {
+        coordinate = [[RadarCoordinate alloc] initWithCoordinate:CLLocationCoordinate2DMake([latitude doubleValue], [longitude doubleValue])];
     }
 
     id formattedAddressObj = addressDict[@"formattedAddress"];

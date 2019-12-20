@@ -484,8 +484,7 @@
             return completionHandler(status, nil, nil);
         }
 
-        // TODO (jsani): 'address' key for 'region' response?
-        id regionObj = res[@"address"];
+        id regionObj = res[@"country"];
         RadarRegion *region = [[RadarRegion alloc]  initWithObject:regionObj];
 
         if (region) {
