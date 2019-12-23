@@ -614,9 +614,8 @@ static NSString * const kPublishableKey = @"prj_test_pk_000000000000000000000000
 
     XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
 
-    [Radar geocode:geocodeQuery completionHandler:^(RadarStatus status, NSDictionary * _Nullable res, NSArray<RadarAddress *> * _Nullable addresses) {
+    [Radar geocode:geocodeQuery completionHandler:^(RadarStatus status, NSArray<RadarAddress *> * _Nullable addresses) {
         XCTAssertEqual(status, RadarStatusErrorServer);
-        XCTAssertNil(res);
         XCTAssertNil(addresses);
 
         [expectation fulfill];
@@ -638,9 +637,8 @@ static NSString * const kPublishableKey = @"prj_test_pk_000000000000000000000000
 
     XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
 
-    [Radar geocode:geocodeQuery completionHandler:^(RadarStatus status, NSDictionary * _Nullable res, NSArray<RadarAddress *> * _Nullable addresses) {
+    [Radar geocode:geocodeQuery completionHandler:^(RadarStatus status, NSArray<RadarAddress *> * _Nullable addresses) {
         XCTAssertEqual(status, RadarStatusSuccess);
-        XCTAssertNotNil(res);
         XCTAssertNotNil(addresses);
 
         [expectation fulfill];
@@ -661,9 +659,8 @@ static NSString * const kPublishableKey = @"prj_test_pk_000000000000000000000000
 
     XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
 
-    [Radar reverseGeocode:location completionHandler:^(RadarStatus status, NSDictionary * _Nullable res, NSArray<RadarAddress *> * _Nullable addresses) {
+    [Radar reverseGeocode:location completionHandler:^(RadarStatus status, NSArray<RadarAddress *> * _Nullable addresses) {
         XCTAssertEqual(status, RadarStatusErrorServer);
-        XCTAssertNil(res);
         XCTAssertNil(addresses);
 
         [expectation fulfill];
@@ -685,9 +682,8 @@ static NSString * const kPublishableKey = @"prj_test_pk_000000000000000000000000
 
     XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
 
-    [Radar reverseGeocode:location completionHandler:^(RadarStatus status, NSDictionary * _Nullable res, NSArray<RadarAddress *> * _Nullable addresses) {
+    [Radar reverseGeocode:location completionHandler:^(RadarStatus status, NSArray<RadarAddress *> * _Nullable addresses) {
         XCTAssertEqual(status, RadarStatusSuccess);
-        XCTAssertNotNil(res);
         XCTAssertNotNil(addresses);
 
         [expectation fulfill];
@@ -706,10 +702,9 @@ static NSString * const kPublishableKey = @"prj_test_pk_000000000000000000000000
 
     XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
 
-    [Radar ipGeocode:^(RadarStatus status, NSDictionary * _Nullable res, RadarRegion * _Nullable region) {
+    [Radar ipGeocode:^(RadarStatus status, RadarRegion * _Nullable country) {
         XCTAssertEqual(status, RadarStatusErrorServer);
-        XCTAssertNil(res);
-        XCTAssertNil(region);
+        XCTAssertNil(country);
 
         [expectation fulfill];
     }];
@@ -728,10 +723,9 @@ static NSString * const kPublishableKey = @"prj_test_pk_000000000000000000000000
 
     XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
 
-    [Radar ipGeocode:^(RadarStatus status, NSDictionary * _Nullable res, RadarRegion * _Nullable region) {
+    [Radar ipGeocode:^(RadarStatus status, RadarRegion * _Nullable country) {
         XCTAssertEqual(status, RadarStatusSuccess);
-        XCTAssertNotNil(res);
-        XCTAssertNotNil(region);
+        XCTAssertNotNil(country);
 
         [expectation fulfill];
     }];
