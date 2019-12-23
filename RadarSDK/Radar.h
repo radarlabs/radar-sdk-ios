@@ -115,14 +115,14 @@ typedef void(^ _Nonnull RadarSearchGeofencesCompletionHandler)(RadarStatus statu
 
  @see TODO (jsani): [Documentation Link]
  */
-typedef void(^ _Nonnull RadarGeocodeCompletionHandler)(RadarStatus status, NSDictionary * _Nullable res, NSArray<RadarAddress *> * _Nullable addresses);
+typedef void(^ _Nonnull RadarGeocodeCompletionHandler)(RadarStatus status, NSArray<RadarAddress *> * _Nullable addresses);
 
 /**
  Called when an IP geocoding request succeeds, fails, or times out. Receives the request status and, if successful, the raw response and region of the IP.
 
  @see TODO (jsani): [Documentation Link]
  */
-typedef void(^ _Nonnull RadarIPGeocodeCompletionHandler)(RadarStatus status, NSDictionary * _Nullable res, RadarRegion * _Nullable region);
+typedef void(^ _Nonnull RadarIPGeocodeCompletionHandler)(RadarStatus status, RadarRegion * _Nullable country);
 
 /**
  The main class used to interact with the Radar SDK.

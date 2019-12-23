@@ -484,11 +484,11 @@
             return completionHandler(status, nil, nil);
         }
 
-        id regionObj = res[@"country"];
-        RadarRegion *region = [[RadarRegion alloc]  initWithObject:regionObj];
+        id countryObj = res[@"country"];
+        RadarRegion *country = [[RadarRegion alloc]  initWithObject:countryObj];
 
-        if (region) {
-            return completionHandler(RadarStatusSuccess, res, region);
+        if (country) {
+            return completionHandler(RadarStatusSuccess, res, country);
         }
 
         completionHandler(RadarStatusErrorServer, nil, nil);

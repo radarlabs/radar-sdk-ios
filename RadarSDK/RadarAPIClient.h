@@ -25,7 +25,7 @@ typedef void(^ _Nullable RadarSearchGeofencesAPICompletionHandler)(RadarStatus s
 
 typedef void(^ _Nullable RadarGeocodeAPICompletionHandler)(RadarStatus status, NSDictionary * _Nullable res, NSArray<RadarAddress *> * _Nullable addresses);
 
-typedef void(^ _Nullable RadarIPGeocodeAPICompletionHandler)(RadarStatus status, NSDictionary * _Nullable res, RadarRegion * _Nullable region);
+typedef void(^ _Nullable RadarIPGeocodeAPICompletionHandler)(RadarStatus status, NSDictionary * _Nullable res, RadarRegion * _Nullable country);
 
 @interface RadarAPIClient : NSObject
 
