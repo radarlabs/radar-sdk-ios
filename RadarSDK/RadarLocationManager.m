@@ -204,6 +204,8 @@ static NSString * const kRegionIdentifer = @"radar";
 - (void)requestLocation {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Requesting location"];
     
+    [self.locationManager stopUpdatingLocation];
+    self.locationManager.distanceFilter = kCLDistanceFilterNone;
     [self.locationManager requestLocation];
 }
 
@@ -326,7 +328,7 @@ static NSString * const kRegionIdentifer = @"radar";
     BOOL stopped = NO;
     
     BOOL force = (source == RadarLocationSourceForegroundLocation || source == RadarLocationSourceManualLocation);
-    if (!force && location.horizontalAccuracy >= 1000 && options.desiredAccuracy != RadarTrackingOptionsDesiredAccuracyLow) {
+    if (wasStopped && !force && location.horizontalAccuracy >= 1000 && options.desiredAccuracy != RadarTrackingOptionsDesiredAccuracyLow) {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Skipping location: inaccurate | accuracy = %f", location.horizontalAccuracy]];
         
         [self updateTracking:location];
