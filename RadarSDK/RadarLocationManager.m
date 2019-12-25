@@ -359,6 +359,9 @@ static NSString * const kRegionIdentifer = @"radar";
         if (location && lastMovedLocation && lastMovedAt) {
             distance = [location distanceFromLocation:lastMovedLocation];
             duration = [location.timestamp timeIntervalSinceDate:lastMovedAt];
+            if (duration == 0) {
+                duration = -[location.timestamp timeIntervalSinceNow];
+            }
             stopped = (distance <= options.stopDistance && duration >= options.stopDuration);
             
             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Calculating stopped | stopped = %d; distance = %f; duration = %f; location.timestamp = %@; lastMovedAt = %@", stopped, distance, duration, location.timestamp, lastMovedAt]];
