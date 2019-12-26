@@ -137,7 +137,7 @@
             confidence = RadarAddressConfidenceExact;
         } else if ([confidenceStr isEqualToString:@"interpolated"]) {
             confidence = RadarAddressConfidenceInterpolated;
-        } else {
+        } else if ([confidenceStr isEqualToString:@"fallback"]) {
             confidence = RadarAddressConfidenceFallback;
         }
     }
