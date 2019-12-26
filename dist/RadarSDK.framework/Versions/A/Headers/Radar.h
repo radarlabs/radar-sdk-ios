@@ -128,57 +128,50 @@ typedef void(^ _Nonnull RadarSearchGeofencesCompletionHandler)(RadarStatus statu
     NS_SWIFT_NAME(initialize(publishableKey:));
 
 /**
- Returns the current publishable API key.
- 
- @return The current publishable API key.
- */
-+ (NSString * _Nullable)getPublishableKey;
-
-/**
  Identifies the user.
  
  @note Until you identify the user, Radar will automatically identify the user by `deviceId` (IDFV).
  
- @param userId A stable unique ID for the user. If `nil`, the previous userId will be cleared.
+ @param userId A stable unique ID for the user. If `nil`, the previous `userId` will be cleared.
  
  @see https://radar.io/documentation/sdk#ios-identify
  */
 + (void)setUserId:(NSString * _Nullable)userId;
 
 /**
- Returns the current userId.
+ Returns the current `userId`.
  
- @return The current userId.
+ @return The current `userId`.
  */
 + (NSString * _Nullable)getUserId;
 
 /**
  Sets an optional description for the user, displayed in the dashboard.
  
- @param description A description for the user. If `nil`, the previous description will be cleared.
+ @param description A description for the user. If `nil`, the previous `description` will be cleared.
  
  @see https://radar.io/documentation/sdk#ios-identify
  */
 + (void)setDescription:(NSString * _Nullable)description;
 
 /**
- Returns the current description.
+ Returns the current `description`.
  
- @return The current description.
+ @return The current `description`.
  */
 + (NSString * _Nullable)getDescription;
 
 /**
  Sets an optional set of custom key-value pairs for the user.
  
- @param metadata A set of custom key-value pairs for the user. Must have 16 or fewer keys and values of type string, boolean, or number. If `nil`, the previous metadata will be cleared.
+ @param metadata A set of custom key-value pairs for the user. Must have 16 or fewer keys and values of type string, boolean, or number. If `nil`, the previous `metadata` will be cleared.
  */
 + (void)setMetadata:(NSDictionary * _Nullable)metadata;
 
 /**
- Returns the current metadata.
+ Returns the current `metadata`.
  
- @return The current metadata.
+ @return The current `metadata`.
  */
 + (NSDictionary * _Nullable)getMetadata;
 
@@ -193,7 +186,7 @@ typedef void(^ _Nonnull RadarSearchGeofencesCompletionHandler)(RadarStatus statu
 /**
  Tracks the user's location once in the foreground.
  
- @warning Before calling this method, the user's location authorization status should be `kCLAuthorizationStatusAuthorizedWhenInUse` or `kCLAuthorizationStatusAuthorizedAlways`. Note that these calls are subject to rate limits.
+ @warning Note that these calls are subject to rate limits.
  
  @param completionHandler An optional completion handler.
  
@@ -369,9 +362,23 @@ typedef void(^ _Nonnull RadarSearchGeofencesCompletionHandler)(RadarStatus statu
  */
 + (void)setLogLevel:(RadarLogLevel)level;
 
+/**
+ Returns a display string for a status value.
+ 
+ @param status A status value.
+ 
+ @return A display string for the status value.
+ */
 + (NSString *)stringForStatus:(RadarStatus)status
     NS_SWIFT_NAME(stringForStatus(_:));
 
+/**
+ Returns a display string for a location source value.
+ 
+ @param source A location source value.
+ 
+ @return A display string for the location source value.
+ */
 + (NSString *)stringForSource:(RadarLocationSource)source
     NS_SWIFT_NAME(stringForSource(_:));;
 
