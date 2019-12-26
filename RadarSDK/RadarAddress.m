@@ -53,8 +53,7 @@
     NSString *neighborhood;
     NSString *number;
 
-    // TODO (jsani): is this a sensible default for 'confidence', or should we have another enum entry?
-    RadarAddressConfidence confidence = RadarAddressConfidenceFallback;
+    RadarAddressConfidence confidence = RadarAddressConfidenceNone;
 
     id latitudeObj = addressDict[@"latitude"];
     if (latitudeObj && [latitudeObj isKindOfClass:[NSNumber class]]) {

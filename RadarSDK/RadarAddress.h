@@ -12,7 +12,8 @@
 typedef NS_ENUM(NSInteger, RadarAddressConfidence) {
     RadarAddressConfidenceExact,
     RadarAddressConfidenceInterpolated,
-    RadarAddressConfidenceFallback
+    RadarAddressConfidenceFallback,
+    RadarAddressConfidenceNone
 };
 
 NS_ASSUME_NONNULL_BEGIN
