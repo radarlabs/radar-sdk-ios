@@ -36,6 +36,11 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property (nonnull, copy, nonatomic, readonly) NSString *type;
 
+/**
+ The (optional) flag of the region.
+ */
+@property (nullable, copy, nonatomic, readonly) NSString *flag;
+
 @end
 
 NS_ASSUME_NONNULL_END

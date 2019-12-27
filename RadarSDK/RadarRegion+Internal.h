@@ -9,7 +9,12 @@
 
 @interface RadarRegion ()
 
-- (nonnull instancetype)initWithId:(nonnull NSString *)_id name:(nonnull NSString *)name code:(nonnull NSString *)code type:(nonnull NSString *)type;
+- (nonnull instancetype)initWithId:(nonnull NSString *)_id
+                              name:(nonnull NSString *)name
+                              code:(nonnull NSString *)code
+                              type:(nonnull NSString *)type
+                              flag:(nullable NSString *)flag;
+
 - (nullable instancetype)initWithObject:(nullable id)object;
 
 @end
