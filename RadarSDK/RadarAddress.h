@@ -8,12 +8,18 @@
 #import <Foundation/Foundation.h>
 #import "RadarCoordinate.h"
 
-// RadarAddressConfidence enum
+/**
+  The confidences for geocoded addresses.
+ */
 typedef NS_ENUM(NSInteger, RadarAddressConfidence) {
-    RadarAddressConfidenceExact,
-    RadarAddressConfidenceInterpolated,
-    RadarAddressConfidenceFallback,
-    RadarAddressConfidenceNone
+    /// None / unknown confidence - default
+    RadarAddressConfidenceNone NS_SWIFT_NAME(none) = 0,
+    /// Exact match confidence
+    RadarAddressConfidenceExact NS_SWIFT_NAME(exact) = 1,
+    /// Interpolated confidence
+    RadarAddressConfidenceInterpolated NS_SWIFT_NAME(interpolated) = 2,
+    /// Fallback confidence
+    RadarAddressConfidenceFallback NS_SWIFT_NAME(fallback) = 3
 };
 
 NS_ASSUME_NONNULL_BEGIN
