@@ -179,6 +179,24 @@
     }];
 }
 
++ (void)geocode:(NSString *)query completionHandler:(RadarGeocodeCompletionHandler)completionHandler {
+    [[RadarAPIClient sharedInstance] geocode:query completionHandler:^(RadarStatus status, NSDictionary * _Nullable res, NSArray<RadarAddress *> * _Nullable addresses) {
+        completionHandler(status, addresses);
+    }];
+}
+
++ (void)reverseGeocode:(CLLocation *)location completionHandler:(RadarGeocodeCompletionHandler)completionHandler {
+    [[RadarAPIClient sharedInstance] reverseGeocode:location completionHandler:^(RadarStatus status, NSDictionary * _Nullable res, NSArray<RadarAddress *> * _Nullable addresses) {
+        completionHandler(status, addresses);
+    }];
+}
+
++ (void)ipGeocode:(RadarIPGeocodeCompletionHandler)completionHandler {
+    [[RadarAPIClient sharedInstance] ipGeocode:^(RadarStatus status, NSDictionary * _Nullable res, RadarRegion * _Nullable country) {
+        completionHandler(status, country);
+    }];
+}
+
 + (void)setLogLevel:(RadarLogLevel)level {
     [RadarSettings setLogLevel:level];
 }

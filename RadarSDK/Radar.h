@@ -8,7 +8,9 @@
 #import <Foundation/Foundation.h>
 #import <CoreLocation/CoreLocation.h>
 
+#import "RadarAddress.h"
 #import "RadarEvent.h"
+#import "RadarRegion.h"
 #import "RadarTrackingOptions.h"
 #import "RadarUser.h"
 
@@ -107,6 +109,20 @@ typedef void(^ _Nonnull RadarSearchPlacesCompletionHandler)(RadarStatus status, 
  @see https://radar.io/documentation/sdk#ios-search
  */
 typedef void(^ _Nonnull RadarSearchGeofencesCompletionHandler)(RadarStatus status, CLLocation * _Nullable location, NSArray<RadarGeofence *> * _Nullable geofences);
+
+/**
+ Called when a forward / reverse geocoding request succeeds, fails, or times out. Receives the request status and, if successful, the raw response and an array of addresses.
+
+ @see TODO (jsani): [Documentation Link]
+ */
+typedef void(^ _Nonnull RadarGeocodeCompletionHandler)(RadarStatus status, NSArray<RadarAddress *> * _Nullable addresses);
+
+/**
+ Called when an IP geocoding request succeeds, fails, or times out. Receives the request status and, if successful, the raw response and region of the IP.
+
+ @see TODO (jsani): [Documentation Link]
+ */
+typedef void(^ _Nonnull RadarIPGeocodeCompletionHandler)(RadarStatus status, RadarRegion * _Nullable country);
 
 /**
  The main class used to interact with the Radar SDK.
@@ -354,6 +370,31 @@ typedef void(^ _Nonnull RadarSearchGeofencesCompletionHandler)(RadarStatus statu
                               limit:(int)limit
                   completionHandler:(RadarSearchGeofencesCompletionHandler)completionHandler
     NS_SWIFT_NAME(searchGeofences(location:radius:tags:limit:completionHandler:));
+
+/**
+ Geocodes a given query string, returning an array of addresses.
+
+ @param query The address string to geocode.
+ @param completionHandler A completion handler.
+ */
++ (void)geocode:(NSString * _Nonnull)query
+        completionHandler:(RadarGeocodeCompletionHandler)completionHandler;
+
+/**
+ Geocodes a given location [(lat, lng) pair], returning an array of addresses.
+
+ @param location The location to geocode.
+ @param completionHandler A completion handler.
+ */
++ (void)reverseGeocode:(CLLocation * _Nonnull)location
+     completionHandler:(RadarGeocodeCompletionHandler)completionHandler;
+
+/**
+ Geocodes the device's IP address, returning a region.
+
+ @param completionHandler A completion handler.
+ */
++ (void)ipGeocode:(RadarIPGeocodeCompletionHandler)completionHandler;
 
 /**
  Sets the log level for debug logs.
