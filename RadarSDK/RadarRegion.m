@@ -9,13 +9,18 @@
 
 @implementation RadarRegion
 
-- (instancetype)initWithId:(nonnull NSString *)_id name:(nonnull NSString *)name code:(nonnull NSString *)code type:(nonnull NSString *)type {
+- (instancetype)initWithId:(nonnull NSString *)_id
+                      name:(nonnull NSString *)name
+                      code:(nonnull NSString *)code
+                      type:(nonnull NSString *)type
+                      flag:(nullable NSString *)flag {
     self = [super init];
     if (self) {
         __id = _id;
         _name = name;
         _code = code;
         _type = type;
+        _flag = flag;
     }
     return self;
 }
@@ -31,6 +36,7 @@
     NSString *name = @"";
     NSString *code = @"";
     NSString *type = @"";
+    NSString *flag = @"";
     
     id eventIdObj = regionDict[@"_id"];
     if ([eventIdObj isKindOfClass:[NSString class]]) {
@@ -51,8 +57,13 @@
     if ([eventTypeObj isKindOfClass:[NSString class]]) {
         type = (NSString *)eventTypeObj;
     }
+
+    id flagObj = regionDict[@"flag"];
+    if (flagObj && [flagObj isKindOfClass:[NSString class]]) {
+        flag = (NSString *)flagObj;
+    }
     
-    return [[RadarRegion alloc] initWithId:_id name:name code:code type:type];
+    return [[RadarRegion alloc] initWithId:_id name:name code:code type:type flag:flag];
 }
 
 @end
