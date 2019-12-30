@@ -403,6 +403,12 @@ typedef void(^ _Nonnull RadarIPGeocodeCompletionHandler)(RadarStatus status, Rad
 + (void)ipGeocode:(RadarIPGeocodeCompletionHandler)completionHandler;
 
 /**
+ Geocodes a provided IP address, returning a region.
+ */
++ (void)ipGeocode:(NSString * _Nonnull)ip
+completionHandler:(RadarIPGeocodeCompletionHandler)completionHandler;
+
+/**
  Sets the log level for debug logs.
  
  @param level The log level.

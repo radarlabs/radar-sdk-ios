@@ -205,7 +205,13 @@
 }
 
 + (void)ipGeocode:(RadarIPGeocodeCompletionHandler)completionHandler {
-    [[RadarAPIClient sharedInstance] ipGeocode:^(RadarStatus status, NSDictionary * _Nullable res, RadarRegion * _Nullable country) {
+    [[RadarAPIClient sharedInstance] ipGeocode:nil completionHandler:^(RadarStatus status, NSDictionary * _Nullable res, RadarRegion * _Nullable country) {
+        completionHandler(status, country);
+    }];
+}
+
++ (void)ipGeocode:(NSString * _Nonnull)ip completionHandler:(RadarIPGeocodeCompletionHandler)completionHandler {
+    [[RadarAPIClient sharedInstance] ipGeocode:ip completionHandler:^(RadarStatus status, NSDictionary * _Nullable res, RadarRegion * _Nullable country) {
         completionHandler(status, country);
     }];
 }
