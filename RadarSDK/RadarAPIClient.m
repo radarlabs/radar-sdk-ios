@@ -398,7 +398,7 @@
     }
 
     NSMutableString *qs = [NSMutableString new];
-    [qs appendFormat:@"text=%@", query];
+    [qs appendFormat:@"query=%@", query];
 
     NSString *host = [RadarSettings host];
     NSString *url = [NSString stringWithFormat:@"%@/v1/geocode/forward?%@", host, qs];
