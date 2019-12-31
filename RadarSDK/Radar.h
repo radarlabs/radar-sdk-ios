@@ -400,15 +400,15 @@ typedef void(^ _Nonnull RadarIPGeocodeCompletionHandler)(RadarStatus status, Rad
 
  @param completionHandler A completion handler.
  */
-+ (void)ipGeocode:(RadarIPGeocodeCompletionHandler)completionHandler;
++ (void)geocodeDeviceIP:(RadarIPGeocodeCompletionHandler)completionHandler;
 
 /**
  Geocodes a provided IP address, returning a region.
 
- @param ip The IP address to geocode.
+ @param IP The IP address to geocode.
  @param completionHandler A completion handler.
  */
-+ (void)ipGeocode:(NSString * _Nonnull)ip
++ (void)geocodeIP:(NSString * _Nonnull)IP
 completionHandler:(RadarIPGeocodeCompletionHandler)completionHandler;
 
 /**
