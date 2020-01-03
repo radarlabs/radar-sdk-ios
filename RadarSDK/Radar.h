@@ -381,13 +381,19 @@ typedef void(^ _Nonnull RadarIPGeocodeCompletionHandler)(RadarStatus status, Rad
         completionHandler:(RadarGeocodeCompletionHandler)completionHandler;
 
 /**
+ Gets the device's current location, then geocodes that location, returning an array of addresses.
+ @param completionHandler A completion handler.
+ */
++(void)reverseGeocode:(RadarGeocodeCompletionHandler)completionHandler;
+
+/**
  Geocodes a given location [(lat, lng) pair], returning an array of addresses.
 
  @param location The location to geocode.
  @param completionHandler A completion handler.
  */
-+ (void)reverseGeocode:(CLLocation * _Nonnull)location
-     completionHandler:(RadarGeocodeCompletionHandler)completionHandler;
++ (void)reverseGeocodeLocation:(CLLocation * _Nonnull)location
+             completionHandler:(RadarGeocodeCompletionHandler)completionHandler;
 
 /**
  Geocodes the device's IP address, returning a region.

@@ -185,7 +185,20 @@
     }];
 }
 
-+ (void)reverseGeocode:(CLLocation *)location completionHandler:(RadarGeocodeCompletionHandler)completionHandler {
++ (void)reverseGeocode:(RadarGeocodeCompletionHandler)completionHandler {
+    [[RadarLocationManager sharedInstance] getLocationWithCompletionHandler:^(RadarStatus status, CLLocation * _Nullable location, BOOL stopped) {
+        if (status != RadarStatusSuccess) {
+            return completionHandler(status, nil);
+        }
+
+        [[RadarAPIClient sharedInstance] reverseGeocode:location completionHandler:^(RadarStatus status, NSDictionary * _Nullable res, NSArray<RadarAddress *> * _Nullable addresses) {
+            completionHandler(status, addresses);
+        }];
+    }];
+}
+
++ (void)reverseGeocodeLocation:(CLLocation *)location
+             completionHandler:(RadarGeocodeCompletionHandler)completionHandler {
     [[RadarAPIClient sharedInstance] reverseGeocode:location completionHandler:^(RadarStatus status, NSDictionary * _Nullable res, NSArray<RadarAddress *> * _Nullable addresses) {
         completionHandler(status, addresses);
     }];
