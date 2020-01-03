@@ -758,13 +758,13 @@ static NSString * const kPublishableKey = @"prj_test_pk_000000000000000000000000
     }];
 }
 
-- (void)test_Radar_ipGeocode_error {
+- (void)test_Radar_geocodeDeviceIP_error {
     self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusAuthorizedWhenInUse;
     self.apiHelperMock.mockStatus = RadarStatusErrorServer;
 
     XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
 
-    [Radar ipGeocode:^(RadarStatus status, RadarRegion * _Nullable country) {
+    [Radar geocodeDeviceIP:^(RadarStatus status, RadarRegion * _Nullable country) {
         XCTAssertEqual(status, RadarStatusErrorServer);
         XCTAssertNil(country);
 
@@ -778,14 +778,55 @@ static NSString * const kPublishableKey = @"prj_test_pk_000000000000000000000000
     }];
 }
 
-- (void)test_Radar_ipGeocode_success {
+- (void)test_Radar_geocodeDeviceIP_success {
     self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusAuthorizedWhenInUse;
     self.apiHelperMock.mockStatus = RadarStatusSuccess;
     self.apiHelperMock.mockResponse = [RadarSDKTestUtils jsonDictionaryFromResource:@"ipGeocode"];
 
     XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
 
-    [Radar ipGeocode:^(RadarStatus status, RadarRegion * _Nullable country) {
+    [Radar geocodeDeviceIP:^(RadarStatus status, RadarRegion * _Nullable country) {
+        XCTAssertEqual(status, RadarStatusSuccess);
+        XCTAssertNotNil(country);
+
+        [expectation fulfill];
+    }];
+
+    [self waitForExpectationsWithTimeout:30 handler:^(NSError * _Nullable error) {
+        if (error) {
+            XCTFail();
+        }
+    }];
+}
+
+- (void)test_Radar_geocodeIP_error {
+    self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusAuthorizedWhenInUse;
+    self.apiHelperMock.mockStatus = RadarStatusErrorServer;
+
+    XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
+
+    [Radar geocodeIP:@"192.0.2.28" completionHandler:^(RadarStatus status, RadarRegion * _Nullable country) {
+        XCTAssertEqual(status, RadarStatusErrorServer);
+        XCTAssertNil(country);
+
+        [expectation fulfill];
+    }];
+
+    [self waitForExpectationsWithTimeout:30 handler:^(NSError * _Nullable error) {
+        if (error) {
+            XCTFail();
+        }
+    }];
+}
+
+- (void)test_Radar_geocodeIP_success {
+    self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusAuthorizedWhenInUse;
+    self.apiHelperMock.mockStatus = RadarStatusSuccess;
+    self.apiHelperMock.mockResponse = [RadarSDKTestUtils jsonDictionaryFromResource:@"ipGeocode"];
+
+    XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
+
+    [Radar geocodeIP:@"192.0.2.28" completionHandler:^(RadarStatus status, RadarRegion * _Nullable country) {
         XCTAssertEqual(status, RadarStatusSuccess);
         XCTAssertNotNil(country);
 

@@ -462,14 +462,24 @@
     }];
 }
 
-- (void)ipGeocode:(RadarIPGeocodeAPICompletionHandler)completionHandler {
+- (void)ipGeocode:(NSString *)ip completionHandler:(RadarIPGeocodeAPICompletionHandler)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
         return completionHandler(RadarStatusErrorPublishableKey, nil, nil);
     }
 
     NSString *host = [RadarSettings host];
-    NSString *url = [NSString stringWithFormat:@"%@/v1/geocode/ip", host];
+
+    NSString *url;
+    if (ip && ip.length > 0) {
+        NSMutableString *qs = [NSMutableString new];
+        [qs appendFormat:@"ip=%@", ip];
+
+        url = [NSString stringWithFormat:@"%@/v1/geocode/ip?%@", host, qs];
+    } else {
+        url = [NSString stringWithFormat:@"%@/v1/geocode/ip", host];
+    }
+
     url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
 
     NSDictionary *headers = @{
