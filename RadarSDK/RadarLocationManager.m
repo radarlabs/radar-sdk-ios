@@ -326,7 +326,7 @@ static NSString * const kRegionIdentifer = @"radar";
     BOOL stopped = NO;
     
     BOOL force = (source == RadarLocationSourceForegroundLocation || source == RadarLocationSourceManualLocation);
-    if (!force && location.horizontalAccuracy >= 1000 && options.desiredAccuracy != RadarTrackingOptionsDesiredAccuracyLow) {
+    if (wasStopped && !force && location.horizontalAccuracy >= 1000 && options.desiredAccuracy != RadarTrackingOptionsDesiredAccuracyLow) {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Skipping location: inaccurate | accuracy = %f", location.horizontalAccuracy]];
         
         [self updateTracking:location];
@@ -357,7 +357,10 @@ static NSString * const kRegionIdentifer = @"radar";
         if (location && lastMovedLocation && lastMovedAt) {
             distance = [location distanceFromLocation:lastMovedLocation];
             duration = [location.timestamp timeIntervalSinceDate:lastMovedAt];
-            stopped = (distance <= options.stopDistance && duration >= options.stopDuration);
+            if (duration == 0) {
+                duration = -[location.timestamp timeIntervalSinceNow];
+            }
+            stopped = (distance <= options.stopDistance && duration >= options.stopDuration) || source == RadarLocationSourceVisitArrival;
             
             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Calculating stopped | stopped = %d; distance = %f; duration = %f; location.timestamp = %@; lastMovedAt = %@", stopped, distance, duration, location.timestamp, lastMovedAt]];
             

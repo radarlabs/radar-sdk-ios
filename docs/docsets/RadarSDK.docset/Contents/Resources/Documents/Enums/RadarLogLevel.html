@@ -122,6 +122,9 @@
                 <a href="../Type%20Definitions.html#/c:Radar.h@T@RadarLocationCompletionHandler">RadarLocationCompletionHandler</a>
               </li>
               <li class="nav-group-task">
+                <a href="../Type%20Definitions.html#/c:Radar.h@T@RadarSearchGeofencesCompletionHandler">RadarSearchGeofencesCompletionHandler</a>
+              </li>
+              <li class="nav-group-task">
                 <a href="../Type%20Definitions.html#/c:Radar.h@T@RadarSearchPlacesCompletionHandler">RadarSearchPlacesCompletionHandler</a>
               </li>
               <li class="nav-group-task">
@@ -150,9 +153,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/c:@E@RadarLogLevel@RadarLogLevelDebug"></a>
-                    <a name="//apple_ref/objc/Case/RadarLogLevelDebug" class="dashAnchor"></a>
-                    <a class="token" href="#/c:@E@RadarLogLevel@RadarLogLevelDebug">RadarLogLevelDebug</a>
+                    <a name="/c:@E@RadarLogLevel@RadarLogLevelNone"></a>
+                    <a name="//apple_ref/objc/Case/RadarLogLevelNone" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@E@RadarLogLevel@RadarLogLevelNone">RadarLogLevelNone</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -160,83 +163,19 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Debug</p>
+                        <p>None</p>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Objective-C</p>
-                          <pre class="highlight objective_c"><code><span class="n">RadarLogLevelDebug</span> <span class="o">=</span> <span class="mi">1</span></code></pre>
+                          <pre class="highlight objective_c"><code><span class="n">RadarLogLevelNone</span> <span class="o">=</span> <span class="mi">0</span></code></pre>
 
                         </div>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="k">case</span> <span class="n">debug</span> <span class="o">=</span> <span class="mi">1</span></code></pre>
-
-                        </div>
-                      </div>
-                    </section>
-                  </div>
-                </li>
-                <li class="item">
-                  <div>
-                    <code>
-                    <a name="/c:@E@RadarLogLevel@RadarLogLevelInfo"></a>
-                    <a name="//apple_ref/objc/Case/RadarLogLevelInfo" class="dashAnchor"></a>
-                    <a class="token" href="#/c:@E@RadarLogLevel@RadarLogLevelInfo">RadarLogLevelInfo</a>
-                    </code>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        <p>Info</p>
-
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Objective-C</p>
-                          <pre class="highlight objective_c"><code><span class="n">RadarLogLevelInfo</span> <span class="o">=</span> <span class="mi">2</span></code></pre>
-
-                        </div>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="k">case</span> <span class="n">info</span> <span class="o">=</span> <span class="mi">2</span></code></pre>
-
-                        </div>
-                      </div>
-                    </section>
-                  </div>
-                </li>
-                <li class="item">
-                  <div>
-                    <code>
-                    <a name="/c:@E@RadarLogLevel@RadarLogLevelWarning"></a>
-                    <a name="//apple_ref/objc/Case/RadarLogLevelWarning" class="dashAnchor"></a>
-                    <a class="token" href="#/c:@E@RadarLogLevel@RadarLogLevelWarning">RadarLogLevelWarning</a>
-                    </code>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        <p>Warning</p>
-
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Objective-C</p>
-                          <pre class="highlight objective_c"><code><span class="n">RadarLogLevelWarning</span> <span class="o">=</span> <span class="mi">3</span></code></pre>
-
-                        </div>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="k">case</span> <span class="n">warning</span> <span class="o">=</span> <span class="mi">3</span></code></pre>
+                          <pre class="highlight swift"><code><span class="k">case</span> <span class="k">none</span> <span class="o">=</span> <span class="mi">0</span></code></pre>
 
                         </div>
                       </div>
@@ -263,12 +202,12 @@
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Objective-C</p>
-                          <pre class="highlight objective_c"><code><span class="n">RadarLogLevelError</span> <span class="o">=</span> <span class="mi">4</span></code></pre>
+                          <pre class="highlight objective_c"><code><span class="n">RadarLogLevelError</span> <span class="o">=</span> <span class="mi">1</span></code></pre>
 
                         </div>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="k">case</span> <span class="n">error</span> <span class="o">=</span> <span class="mi">4</span></code></pre>
+                          <pre class="highlight swift"><code><span class="k">case</span> <span class="n">error</span> <span class="o">=</span> <span class="mi">1</span></code></pre>
 
                         </div>
                       </div>
@@ -278,9 +217,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/c:@E@RadarLogLevel@RadarLogLevelNone"></a>
-                    <a name="//apple_ref/objc/Case/RadarLogLevelNone" class="dashAnchor"></a>
-                    <a class="token" href="#/c:@E@RadarLogLevel@RadarLogLevelNone">RadarLogLevelNone</a>
+                    <a name="/c:@E@RadarLogLevel@RadarLogLevelWarning"></a>
+                    <a name="//apple_ref/objc/Case/RadarLogLevelWarning" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@E@RadarLogLevel@RadarLogLevelWarning">RadarLogLevelWarning</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -288,19 +227,83 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>None</p>
+                        <p>Warning</p>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Objective-C</p>
-                          <pre class="highlight objective_c"><code><span class="n">RadarLogLevelNone</span> <span class="o">=</span> <span class="n">INT_MAX</span></code></pre>
+                          <pre class="highlight objective_c"><code><span class="n">RadarLogLevelWarning</span> <span class="o">=</span> <span class="mi">2</span></code></pre>
 
                         </div>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="k">case</span> <span class="k">none</span> <span class="o">=</span> <span class="mi">2147483647</span></code></pre>
+                          <pre class="highlight swift"><code><span class="k">case</span> <span class="n">warning</span> <span class="o">=</span> <span class="mi">2</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:@E@RadarLogLevel@RadarLogLevelInfo"></a>
+                    <a name="//apple_ref/objc/Case/RadarLogLevelInfo" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@E@RadarLogLevel@RadarLogLevelInfo">RadarLogLevelInfo</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Info</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Objective-C</p>
+                          <pre class="highlight objective_c"><code><span class="n">RadarLogLevelInfo</span> <span class="o">=</span> <span class="mi">3</span></code></pre>
+
+                        </div>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="k">case</span> <span class="n">info</span> <span class="o">=</span> <span class="mi">3</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:@E@RadarLogLevel@RadarLogLevelDebug"></a>
+                    <a name="//apple_ref/objc/Case/RadarLogLevelDebug" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@E@RadarLogLevel@RadarLogLevelDebug">RadarLogLevelDebug</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Debug</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Objective-C</p>
+                          <pre class="highlight objective_c"><code><span class="n">RadarLogLevelDebug</span> <span class="o">=</span> <span class="mi">4</span></code></pre>
+
+                        </div>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="k">case</span> <span class="n">debug</span> <span class="o">=</span> <span class="mi">4</span></code></pre>
 
                         </div>
                       </div>
@@ -312,7 +315,7 @@
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2019 <a class="link" href="https://radar.io" target="_blank" rel="external">Radar Labs, Inc.</a>. All rights reserved. (Last updated: 2019-11-30)</p>
+          <p>&copy; 2019 <a class="link" href="https://radar.io" target="_blank" rel="external">Radar Labs, Inc.</a>. All rights reserved. (Last updated: 2019-12-26)</p>
           <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.12.0</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
         </section>
       </article>
