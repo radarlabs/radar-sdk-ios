@@ -302,6 +302,9 @@
 		DD27CB7D235D13F000299FEC /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				78156B9523A8210E0094410E /* RadarAddress.h */,
+				78156B9B23A834FA0094410E /* RadarAddress+Internal.h */,
+				78156B9623A8210E0094410E /* RadarAddress.m */,
 				DD236CBF2308812700EB88F9 /* RadarChain.h */,
 				DD236CC22308812700EB88F9 /* RadarChain+Internal.h */,
 				DD236CB62308812700EB88F9 /* RadarChain.m */,
@@ -340,9 +343,6 @@
 				DD236CC02308812700EB88F9 /* RadarUserInsightsState.h */,
 				DD236CB42308812600EB88F9 /* RadarUserInsightsState+Internal.h */,
 				DD236CC12308812700EB88F9 /* RadarUserInsightsState.m */,
-				78156B9523A8210E0094410E /* RadarAddress.h */,
-				78156B9B23A834FA0094410E /* RadarAddress+Internal.h */,
-				78156B9623A8210E0094410E /* RadarAddress.m */,
 			);
 			name = Models;
 			sourceTree = "<group>";

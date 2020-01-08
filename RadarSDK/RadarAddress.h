@@ -9,16 +9,16 @@
 #import "RadarCoordinate.h"
 
 /**
-  The confidences for geocoded addresses.
+  The confidence levels for geocoding results.
  */
 typedef NS_ENUM(NSInteger, RadarAddressConfidence) {
-    /// None / unknown confidence - default
+    /// Unknown
     RadarAddressConfidenceNone NS_SWIFT_NAME(none) = 0,
-    /// Exact match confidence
+    /// Exact
     RadarAddressConfidenceExact NS_SWIFT_NAME(exact) = 1,
-    /// Interpolated confidence
+    /// Interpolated
     RadarAddressConfidenceInterpolated NS_SWIFT_NAME(interpolated) = 2,
-    /// Fallback confidence
+    /// Fallback
     RadarAddressConfidenceFallback NS_SWIFT_NAME(fallback) = 3
 };
 
@@ -27,37 +27,37 @@ NS_ASSUME_NONNULL_BEGIN
 @interface RadarAddress : NSObject
 
 /**
- The location coordinate of the address.
+ The latitude and longitude of the address.
  */
 @property(nonnull, copy, nonatomic, readonly) RadarCoordinate *coordinate;
 
 /**
- The fully formatted representation of the address.
+ The formatted string representation of the address.
  */
 @property(nullable, copy, nonatomic, readonly) NSString *formattedAddress;
 
 /**
- The country of the address.
+ The name of the country of the address.
  */
 @property(nullable, copy, nonatomic, readonly) NSString *country;
 
 /**
- The country code of the address.
+ The unique code of the country of the address.
  */
 @property(nullable, copy, nonatomic, readonly) NSString *countryCode;
 
 /**
- The country flag of the address.
+ The flag of the country of the address.
  */
 @property(nullable, copy, nonatomic, readonly) NSString *countryFlag;
 
 /**
- The state of the address.
+ The name of the address.
  */
 @property(nullable, copy, nonatomic, readonly) NSString *state;
 
 /**
- The state code of the address.
+ The unique code of the state of the address.
  */
 @property(nullable, copy, nonatomic, readonly) NSString *stateCode;
 
@@ -87,14 +87,14 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nullable, copy, nonatomic, readonly) NSString *neighborhood;
 
 /**
- The number / house number of the address.
+ The number of the address.
  */
-@property(nullable, copy, nonatomic, readonly) NSString *number;
+@property (nullable, copy, nonatomic, readonly) NSString *number;
 
 /**
-  Confidence in the address received from the API.
+  The confidence level of the geocoding result.
  */
-@property(nonatomic, assign) enum RadarAddressConfidence confidence;
+@property (nonatomic, assign) enum RadarAddressConfidence confidence;
 
 @end
 
