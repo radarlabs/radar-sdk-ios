@@ -111,7 +111,7 @@ typedef void(^ _Nonnull RadarSearchPlacesCompletionHandler)(RadarStatus status, 
 typedef void(^ _Nonnull RadarSearchGeofencesCompletionHandler)(RadarStatus status, CLLocation * _Nullable location, NSArray<RadarGeofence *> * _Nullable geofences);
 
 /**
- Called when a forward or reverse geocoding request succeeds, fails, or times out. Receives the request status and, if successful, the raw response and an array of addresses.
+ Called when a geocoding request succeeds, fails, or times out. Receives the request status and, if successful, the raw response and an array of addresses.
 
  @see https://radar.io/documentation/geocoding
  */
