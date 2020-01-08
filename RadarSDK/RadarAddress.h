@@ -27,7 +27,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface RadarAddress : NSObject
 
 /**
- The latitude and longitude of the address.
+ The location coordinate of the address.
  */
 @property (assign, nonatomic, readonly) CLLocationCoordinate2D coordinate;
 
@@ -87,7 +87,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nullable, copy, nonatomic, readonly) NSString *neighborhood;
 
 /**
- The number of the address.
+ The street number of the address.
  */
 @property (nullable, copy, nonatomic, readonly) NSString *number;
 
