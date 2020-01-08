@@ -44,7 +44,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
         
         Radar.geocode(address: "20 Jay Street, Brooklyn, NY") { (status, addresses) in
-            print("Geocode geocode: status = \(Radar.stringForStatus(status)); coordinate = \(String(describing: addresses?.first?.coordinate))")
+            print("Geocode: status = \(Radar.stringForStatus(status)); coordinate = \(String(describing: addresses?.first?.coordinate))")
         }
         
         Radar.reverseGeocode { (status, addresses) in
