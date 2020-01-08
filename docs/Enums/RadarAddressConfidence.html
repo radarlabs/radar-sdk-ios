@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>RadarUserInsights Class Reference</title>
+    <title>RadarAddressConfidence Enumeration Reference</title>
     <link rel="stylesheet" type="text/css" href="../css/jazzy.css" />
     <link rel="stylesheet" type="text/css" href="../css/highlight.css" />
     <meta charset='utf-8'>
@@ -10,8 +10,8 @@
     
   </head>
   <body>
-    <a name="//apple_ref/objc/Class/RadarUserInsights" class="dashAnchor"></a>
-    <a title="RadarUserInsights Class Reference"></a>
+    <a name="//apple_ref/objc/Enum/RadarAddressConfidence" class="dashAnchor"></a>
+    <a title="RadarAddressConfidence Enumeration Reference"></a>
     <header>
       <div class="content-wrapper">
         <p><a href="../index.html">RadarSDK Docs</a></p>
@@ -22,7 +22,7 @@
       <p id="breadcrumbs">
         <a href="../index.html">RadarSDK Reference</a>
         <img id="carat" src="../img/carat.png" />
-        RadarUserInsights Class Reference
+        RadarAddressConfidence Enumeration Reference
       </p>
     </div>
     <div class="content-wrapper">
@@ -146,19 +146,14 @@
       <article class="main-content">
         <section>
           <section class="section">
-            <h1>RadarUserInsights</h1>
+            <h1>RadarAddressConfidence</h1>
               <div class="declaration">
                 <div class="language">
-                  <pre class="highlight objective_c"><code><span class="k">@interface</span> <span class="nc">RadarUserInsights</span> <span class="p">:</span> <span class="nc">NSObject</span></code></pre>
+                  <pre class="highlight objective_c"><code><span class="k">enum</span> <span class="n">RadarAddressConfidence</span> <span class="p">{}</span></code></pre>
 
                 </div>
               </div>
-            <p>Represents the learned home, work, and traveling state and locations of the current user. For more information about Insights, see <a href="https://radar.io/documentation/insights">https://radar.io/documentation/insights</a>.</p>
-<div class="aside aside-see">
-    <p class="aside-title">See</p>
-    <a href="https://radar.io/documentation/insights">https://radar.io/documentation/insights</a>
-
-</div>
+            <p>The confidence levels for geocoding results.</p>
 
           </section>
           <section class="section task-group-section">
@@ -167,9 +162,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/c:objc(cs)RadarUserInsights(py)homeLocation"></a>
-                    <a name="//apple_ref/objc/Property/homeLocation" class="dashAnchor"></a>
-                    <a class="token" href="#/c:objc(cs)RadarUserInsights(py)homeLocation">homeLocation</a>
+                    <a name="/c:@E@RadarAddressConfidence@RadarAddressConfidenceNone"></a>
+                    <a name="//apple_ref/objc/Case/RadarAddressConfidenceNone" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@E@RadarAddressConfidence@RadarAddressConfidenceNone">RadarAddressConfidenceNone</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -177,20 +172,19 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>The learned home location of the user. May be <code>nil</code> if not yet learned, or if Insights is turned off.</p>
+                        <p>Unknown</p>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Objective-C</p>
-                          <pre class="highlight objective_c"><code><span class="k">@property</span> <span class="p">(</span><span class="n">readonly</span><span class="p">,</span> <span class="n">strong</span><span class="p">,</span> <span class="n">nonatomic</span><span class="p">,</span> <span class="n">nullable</span><span class="p">)</span>
-    <span class="n"><a href="../Classes/RadarUserInsightsLocation.html">RadarUserInsightsLocation</a></span> <span class="o">*</span><span class="n">homeLocation</span><span class="p">;</span></code></pre>
+                          <pre class="highlight objective_c"><code><span class="n">RadarAddressConfidenceNone</span> <span class="o">=</span> <span class="mi">0</span></code></pre>
 
                         </div>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="k">var</span> <span class="nv">homeLocation</span><span class="p">:</span> <span class="kt"><a href="../Classes/RadarUserInsightsLocation.html">RadarUserInsightsLocation</a></span><span class="p">?</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span></code></pre>
+                          <pre class="highlight swift"><code><span class="k">case</span> <span class="k">none</span> <span class="o">=</span> <span class="mi">0</span></code></pre>
 
                         </div>
                       </div>
@@ -200,9 +194,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/c:objc(cs)RadarUserInsights(py)officeLocation"></a>
-                    <a name="//apple_ref/objc/Property/officeLocation" class="dashAnchor"></a>
-                    <a class="token" href="#/c:objc(cs)RadarUserInsights(py)officeLocation">officeLocation</a>
+                    <a name="/c:@E@RadarAddressConfidence@RadarAddressConfidenceExact"></a>
+                    <a name="//apple_ref/objc/Case/RadarAddressConfidenceExact" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@E@RadarAddressConfidence@RadarAddressConfidenceExact">RadarAddressConfidenceExact</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -210,20 +204,19 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>The learned office location of the user. May be <code>nil</code> if not yet learned, or if Insights is turned off.</p>
+                        <p>Exact</p>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Objective-C</p>
-                          <pre class="highlight objective_c"><code><span class="k">@property</span> <span class="p">(</span><span class="n">readonly</span><span class="p">,</span> <span class="n">strong</span><span class="p">,</span> <span class="n">nonatomic</span><span class="p">,</span> <span class="n">nullable</span><span class="p">)</span>
-    <span class="n"><a href="../Classes/RadarUserInsightsLocation.html">RadarUserInsightsLocation</a></span> <span class="o">*</span><span class="n">officeLocation</span><span class="p">;</span></code></pre>
+                          <pre class="highlight objective_c"><code><span class="n">RadarAddressConfidenceExact</span> <span class="o">=</span> <span class="mi">1</span></code></pre>
 
                         </div>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="k">var</span> <span class="nv">officeLocation</span><span class="p">:</span> <span class="kt"><a href="../Classes/RadarUserInsightsLocation.html">RadarUserInsightsLocation</a></span><span class="p">?</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span></code></pre>
+                          <pre class="highlight swift"><code><span class="k">case</span> <span class="n">exact</span> <span class="o">=</span> <span class="mi">1</span></code></pre>
 
                         </div>
                       </div>
@@ -233,9 +226,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/c:objc(cs)RadarUserInsights(py)state"></a>
-                    <a name="//apple_ref/objc/Property/state" class="dashAnchor"></a>
-                    <a class="token" href="#/c:objc(cs)RadarUserInsights(py)state">state</a>
+                    <a name="/c:@E@RadarAddressConfidence@RadarAddressConfidenceInterpolated"></a>
+                    <a name="//apple_ref/objc/Case/RadarAddressConfidenceInterpolated" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@E@RadarAddressConfidence@RadarAddressConfidenceInterpolated">RadarAddressConfidenceInterpolated</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -243,19 +236,51 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>The state of the user, based on learned home and office locations.</p>
+                        <p>Interpolated</p>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Objective-C</p>
-                          <pre class="highlight objective_c"><code><span class="k">@property</span> <span class="p">(</span><span class="n">readonly</span><span class="p">,</span> <span class="n">strong</span><span class="p">,</span> <span class="n">nonatomic</span><span class="p">,</span> <span class="n">nonnull</span><span class="p">)</span> <span class="n"><a href="../Classes/RadarUserInsightsState.html">RadarUserInsightsState</a></span> <span class="o">*</span><span class="n">state</span><span class="p">;</span></code></pre>
+                          <pre class="highlight objective_c"><code><span class="n">RadarAddressConfidenceInterpolated</span> <span class="o">=</span> <span class="mi">2</span></code></pre>
 
                         </div>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="k">var</span> <span class="nv">state</span><span class="p">:</span> <span class="kt"><a href="../Classes/RadarUserInsightsState.html">RadarUserInsightsState</a></span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span></code></pre>
+                          <pre class="highlight swift"><code><span class="k">case</span> <span class="n">interpolated</span> <span class="o">=</span> <span class="mi">2</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:@E@RadarAddressConfidence@RadarAddressConfidenceFallback"></a>
+                    <a name="//apple_ref/objc/Case/RadarAddressConfidenceFallback" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@E@RadarAddressConfidence@RadarAddressConfidenceFallback">RadarAddressConfidenceFallback</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Fallback</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Objective-C</p>
+                          <pre class="highlight objective_c"><code><span class="n">RadarAddressConfidenceFallback</span> <span class="o">=</span> <span class="mi">3</span></code></pre>
+
+                        </div>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="k">case</span> <span class="n">fallback</span> <span class="o">=</span> <span class="mi">3</span></code></pre>
 
                         </div>
                       </div>

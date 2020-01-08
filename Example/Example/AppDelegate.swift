@@ -35,12 +35,24 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         options.showBlueBar = true
         Radar.startTracking(trackingOptions: options)
         
-        Radar.searchPlaces(radius: 1000, chains: ["walmart"], categories: nil, groups: nil, limit: 10) { (status, location, places) in
+        Radar.searchPlaces(radius: 1000, chains: ["mcdonalds"], categories: nil, groups: nil, limit: 10) { (status, location, places) in
             print("Search places: status = \(Radar.stringForStatus(status)); places = \(String(describing: places))")
         }
         
         Radar.searchGeofences(radius: 1000, tags: ["store"], limit: 10) { (status, location, geofences) in
             print("Search geofences: status = \(Radar.stringForStatus(status)); geofences = \(String(describing: geofences))")
+        }
+        
+        Radar.geocode(address: "20 Jay Street, Brooklyn, NY") { (status, addresses) in
+            print("Geocode geocode: status = \(Radar.stringForStatus(status)); coordinate = \(String(describing: addresses?.first?.coordinate))")
+        }
+        
+        Radar.reverseGeocode { (status, addresses) in
+            print("Reverse geocode: status = \(Radar.stringForStatus(status)); formattedAddress = \(String(describing: addresses?.first?.formattedAddress))")
+        }
+        
+        Radar.ipGeocode { (status, country) in
+            print("IP geocode: status = \(Radar.stringForStatus(status)); code = \(String(describing: country?.code)); flag = \(String(describing: country?.flag))")
         }
         
         return true

@@ -15,7 +15,7 @@
 
 - (instancetype _Nullable)initWithObject:(id _Nonnull)object;
 
-- (instancetype _Nullable)initWithCoordinate:(RadarCoordinate * _Nonnull)coordinate
+- (instancetype _Nullable)initWithCoordinate:(CLLocationCoordinate2D)coordinate
                             formattedAddress:(NSString * _Nullable)formattedAddress
                                      country:(NSString * _Nullable)country
                                  countryCode:(NSString * _Nullable)countryCode

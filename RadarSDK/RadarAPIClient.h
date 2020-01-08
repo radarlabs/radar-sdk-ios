@@ -60,14 +60,13 @@ typedef void(^ _Nullable RadarIPGeocodeAPICompletionHandler)(RadarStatus status,
                               limit:(int)limit
                   completionHandler:(RadarSearchGeofencesAPICompletionHandler _Nullable)completionHandler;
 
-- (void)geocode:(NSString * _Nonnull)query
-        completionHandler:(RadarGeocodeAPICompletionHandler _Nullable)completionHandler;
-
-- (void)reverseGeocode:(CLLocation * _Nonnull)location
+- (void)geocodeAddress:(NSString * _Nonnull)query
      completionHandler:(RadarGeocodeAPICompletionHandler _Nullable)completionHandler;
 
-- (void)ipGeocode:(NSString * _Nullable)ip
-completionHandler:(RadarIPGeocodeAPICompletionHandler _Nullable)completionHandler;
+- (void)reverseGeocodeLocation:(CLLocation * _Nonnull)location
+             completionHandler:(RadarGeocodeAPICompletionHandler _Nullable)completionHandler;
+
+- (void)ipGeocodeWithCompletionHandler:(RadarIPGeocodeAPICompletionHandler _Nullable)completionHandler;
 
 @end
 

@@ -179,19 +179,19 @@
     }];
 }
 
-+ (void)geocode:(NSString *)query completionHandler:(RadarGeocodeCompletionHandler)completionHandler {
-    [[RadarAPIClient sharedInstance] geocode:query completionHandler:^(RadarStatus status, NSDictionary * _Nullable res, NSArray<RadarAddress *> * _Nullable addresses) {
++ (void)geocodeAddress:(NSString *)query completionHandler:(RadarGeocodeCompletionHandler)completionHandler {
+    [[RadarAPIClient sharedInstance] geocodeAddress:query completionHandler:^(RadarStatus status, NSDictionary * _Nullable res, NSArray<RadarAddress *> * _Nullable addresses) {
         completionHandler(status, addresses);
     }];
 }
 
-+ (void)reverseGeocode:(RadarGeocodeCompletionHandler)completionHandler {
++ (void)reverseGeocodeWithCompletionHandler:(RadarGeocodeCompletionHandler)completionHandler {
     [[RadarLocationManager sharedInstance] getLocationWithCompletionHandler:^(RadarStatus status, CLLocation * _Nullable location, BOOL stopped) {
         if (status != RadarStatusSuccess) {
             return completionHandler(status, nil);
         }
 
-        [[RadarAPIClient sharedInstance] reverseGeocode:location completionHandler:^(RadarStatus status, NSDictionary * _Nullable res, NSArray<RadarAddress *> * _Nullable addresses) {
+        [[RadarAPIClient sharedInstance] reverseGeocodeLocation:location completionHandler:^(RadarStatus status, NSDictionary * _Nullable res, NSArray<RadarAddress *> * _Nullable addresses) {
             completionHandler(status, addresses);
         }];
     }];
@@ -199,19 +199,13 @@
 
 + (void)reverseGeocodeLocation:(CLLocation *)location
              completionHandler:(RadarGeocodeCompletionHandler)completionHandler {
-    [[RadarAPIClient sharedInstance] reverseGeocode:location completionHandler:^(RadarStatus status, NSDictionary * _Nullable res, NSArray<RadarAddress *> * _Nullable addresses) {
+    [[RadarAPIClient sharedInstance] reverseGeocodeLocation:location completionHandler:^(RadarStatus status, NSDictionary * _Nullable res, NSArray<RadarAddress *> * _Nullable addresses) {
         completionHandler(status, addresses);
     }];
 }
 
-+ (void)geocodeDeviceIP:(RadarIPGeocodeCompletionHandler)completionHandler {
-    [[RadarAPIClient sharedInstance] ipGeocode:nil completionHandler:^(RadarStatus status, NSDictionary * _Nullable res, RadarRegion * _Nullable country) {
-        completionHandler(status, country);
-    }];
-}
-
-+ (void)geocodeIP:(NSString *)IP completionHandler:(RadarIPGeocodeCompletionHandler)completionHandler {
-    [[RadarAPIClient sharedInstance] ipGeocode:IP completionHandler:^(RadarStatus status, NSDictionary * _Nullable res, RadarRegion * _Nullable country) {
++ (void)ipGeocodeWithCompletionHandler:(RadarIPGeocodeCompletionHandler)completionHandler {
+    [[RadarAPIClient sharedInstance] ipGeocodeWithCompletionHandler:^(RadarStatus status, NSDictionary * _Nullable res, RadarRegion * _Nullable country) {
         completionHandler(status, country);
     }];
 }

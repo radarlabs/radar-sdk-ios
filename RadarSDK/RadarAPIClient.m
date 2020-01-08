@@ -391,17 +391,18 @@
     }];
 }
 
-- (void)geocode:(NSString *)query completionHandler:(RadarGeocodeAPICompletionHandler)completionHandler {
+- (void)geocodeAddress:(NSString *)query
+     completionHandler:(RadarGeocodeAPICompletionHandler)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
         return completionHandler(RadarStatusErrorPublishableKey, nil, nil);
     }
 
-    NSMutableString *qs = [NSMutableString new];
-    [qs appendFormat:@"query=%@", query];
+    NSMutableString *queryString = [NSMutableString new];
+    [queryString appendFormat:@"query=%@", query];
 
     NSString *host = [RadarSettings host];
-    NSString *url = [NSString stringWithFormat:@"%@/v1/geocode/forward?%@", host, qs];
+    NSString *url = [NSString stringWithFormat:@"%@/v1/geocode/forward?%@", host, queryString];
     url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
 
     NSDictionary *headers = @{
@@ -426,18 +427,19 @@
     }];
 }
 
-- (void)reverseGeocode:(CLLocation *)location completionHandler:(RadarGeocodeAPICompletionHandler)completionHandler {
+- (void)reverseGeocodeLocation:(CLLocation *)location
+             completionHandler:(RadarGeocodeAPICompletionHandler)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
         return completionHandler(RadarStatusErrorPublishableKey, nil, nil);
     }
 
-    NSMutableString *qs = [NSMutableString new];
-    [qs appendFormat:@"latitude=%.15f", location.coordinate.latitude];
-    [qs appendFormat:@"&longitude=%.15f", location.coordinate.longitude];
+    NSMutableString *queryString = [NSMutableString new];
+    [queryString appendFormat:@"latitude=%.15f", location.coordinate.latitude];
+    [queryString appendFormat:@"&longitude=%.15f", location.coordinate.longitude];
 
     NSString *host = [RadarSettings host];
-    NSString *url = [NSString stringWithFormat:@"%@/v1/geocode/reverse?%@", host, qs];
+    NSString *url = [NSString stringWithFormat:@"%@/v1/geocode/reverse?%@", host, queryString];
     url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
 
     NSDictionary *headers = @{
@@ -462,25 +464,14 @@
     }];
 }
 
-- (void)ipGeocode:(NSString *)ip completionHandler:(RadarIPGeocodeAPICompletionHandler)completionHandler {
+- (void)ipGeocodeWithCompletionHandler:(RadarIPGeocodeAPICompletionHandler)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
         return completionHandler(RadarStatusErrorPublishableKey, nil, nil);
     }
 
     NSString *host = [RadarSettings host];
-
-    NSString *url;
-    if (ip && ip.length > 0) {
-        NSMutableString *qs = [NSMutableString new];
-        [qs appendFormat:@"ip=%@", ip];
-
-        url = [NSString stringWithFormat:@"%@/v1/geocode/ip?%@", host, qs];
-    } else {
-        url = [NSString stringWithFormat:@"%@/v1/geocode/ip", host];
-    }
-
-    url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
+    NSString *url = [NSString stringWithFormat:@"%@/v1/geocode/ip", host];
 
     NSDictionary *headers = @{
         @"Authorization": publishableKey,

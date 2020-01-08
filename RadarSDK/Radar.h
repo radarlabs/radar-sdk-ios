@@ -377,15 +377,17 @@ typedef void(^ _Nonnull RadarIPGeocodeCompletionHandler)(RadarStatus status, Rad
  @param query The address to geocode.
  @param completionHandler A completion handler.
  */
-+ (void)geocode:(NSString * _Nonnull)query
-        completionHandler:(RadarGeocodeCompletionHandler)completionHandler;
++ (void)geocodeAddress:(NSString * _Nonnull)query
+     completionHandler:(RadarGeocodeCompletionHandler)completionHandler
+    NS_SWIFT_NAME(geocode(address:completionHandler:));
 
 /**
  Gets the device's current location, then reverse geocodes that location, converting coordinates to address.
  
  @param completionHandler A completion handler.
  */
-+(void)reverseGeocode:(RadarGeocodeCompletionHandler)completionHandler;
++(void)reverseGeocodeWithCompletionHandler:(RadarGeocodeCompletionHandler)completionHandler
+    NS_SWIFT_NAME(reverseGeocode(completionHandler:));
 
 /**
  Reverse geocodes a location, converting coordinates to address.
@@ -394,23 +396,16 @@ typedef void(^ _Nonnull RadarIPGeocodeCompletionHandler)(RadarStatus status, Rad
  @param completionHandler A completion handler.
  */
 + (void)reverseGeocodeLocation:(CLLocation * _Nonnull)location
-             completionHandler:(RadarGeocodeCompletionHandler)completionHandler;
+             completionHandler:(RadarGeocodeCompletionHandler)completionHandler
+    NS_SWIFT_NAME(reverseGeocode(location:completionHandler:));
 
 /**
  Geocodes the device's current IP address, converting IP address to country.
 
  @param completionHandler A completion handler.
  */
-+ (void)geocodeDeviceIP:(RadarIPGeocodeCompletionHandler)completionHandler;
-
-/**
- Geocodes an IP address, converting IP address to country.
-
- @param IP The IP address to geocode.
- @param completionHandler A completion handler.
- */
-+ (void)geocodeIP:(NSString * _Nonnull)IP
-completionHandler:(RadarIPGeocodeCompletionHandler)completionHandler;
++ (void)ipGeocodeWithCompletionHandler:(RadarIPGeocodeCompletionHandler)completionHandler
+    NS_SWIFT_NAME(ipGeocode(completionHandler:));
 
 /**
  Sets the log level for debug logs.
