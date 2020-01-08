@@ -108,7 +108,7 @@
     params[@"description"] = [RadarSettings _description];
     params[@"metadata"] = [RadarSettings metadata];
     NSString *adId = [RadarUtils adId];
-    if (adId) {
+    if (adId && [RadarSettings adIdEnabled]) {
         params[@"adId"] = adId;
     }
     params[@"latitude"] = @(location.coordinate.latitude);

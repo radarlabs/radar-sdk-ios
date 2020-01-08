@@ -26,6 +26,8 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)setDescription:(NSString * _Nullable)_description;
 + (NSDictionary * _Nullable)metadata;
 + (void)setMetadata:(NSDictionary * _Nullable)metadata;
++ (BOOL)adIdEnabled;
++ (void)setAdIdEnabled:(BOOL)enabled;
 + (BOOL)tracking;
 + (void)setTracking:(BOOL)tracking;
 + (RadarTrackingOptions * _Nullable)trackingOptions;
