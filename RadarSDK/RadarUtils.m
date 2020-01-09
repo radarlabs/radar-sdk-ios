@@ -39,10 +39,11 @@
     Class ASIdentifierManagerClass = NSClassFromString(@"ASIdentifierManager");
     if (ASIdentifierManagerClass) {
         id manager = [ASIdentifierManagerClass valueForKey:@"sharedManager"];
-        if ([[manager valueForKey:@"advertisingTrackingEnabled"] isEqual:@1])
+        if ([[manager valueForKey:@"advertisingTrackingEnabled"] isEqual:@1]) {
             return [[manager valueForKey:@"advertisingIdentifier"] UUIDString];
-        else
+        } else {
             return @"OptedOut";
+        }
     }
     return nil;
 }
