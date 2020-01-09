@@ -111,16 +111,16 @@ typedef void(^ _Nonnull RadarSearchPlacesCompletionHandler)(RadarStatus status, 
 typedef void(^ _Nonnull RadarSearchGeofencesCompletionHandler)(RadarStatus status, CLLocation * _Nullable location, NSArray<RadarGeofence *> * _Nullable geofences);
 
 /**
- Called when a forward / reverse geocoding request succeeds, fails, or times out. Receives the request status and, if successful, the raw response and an array of addresses.
+ Called when a geocoding request succeeds, fails, or times out. Receives the request status and, if successful, the geocoding results (an array of addresses).
 
- @see TODO (jsani): [Documentation Link]
+ @see https://radar.io/documentation/geocoding
  */
 typedef void(^ _Nonnull RadarGeocodeCompletionHandler)(RadarStatus status, NSArray<RadarAddress *> * _Nullable addresses);
 
 /**
- Called when an IP geocoding request succeeds, fails, or times out. Receives the request status and, if successful, the raw response and region of the IP.
+ Called when an IP geocoding request succeeds, fails, or times out. Receives the request status and, if successful, the geocoding result (a country).
 
- @see TODO (jsani): [Documentation Link]
+ @see https://radar.io/documentation/geocoding
  */
 typedef void(^ _Nonnull RadarIPGeocodeCompletionHandler)(RadarStatus status, RadarRegion * _Nullable country);
 
@@ -372,44 +372,40 @@ typedef void(^ _Nonnull RadarIPGeocodeCompletionHandler)(RadarStatus status, Rad
     NS_SWIFT_NAME(searchGeofences(location:radius:tags:limit:completionHandler:));
 
 /**
- Geocodes a given query string, returning an array of addresses.
+ Geocodes an address, converting address to coordinates.
 
- @param query The address string to geocode.
+ @param query The address to geocode.
  @param completionHandler A completion handler.
  */
-+ (void)geocode:(NSString * _Nonnull)query
-        completionHandler:(RadarGeocodeCompletionHandler)completionHandler;
++ (void)geocodeAddress:(NSString * _Nonnull)query
+     completionHandler:(RadarGeocodeCompletionHandler)completionHandler
+    NS_SWIFT_NAME(geocode(address:completionHandler:));
 
 /**
- Gets the device's current location, then geocodes that location, returning an array of addresses.
+ Gets the device's current location, then reverse geocodes that location, converting coordinates to address.
+ 
  @param completionHandler A completion handler.
  */
-+(void)reverseGeocode:(RadarGeocodeCompletionHandler)completionHandler;
++(void)reverseGeocodeWithCompletionHandler:(RadarGeocodeCompletionHandler)completionHandler
+    NS_SWIFT_NAME(reverseGeocode(completionHandler:));
 
 /**
- Geocodes a given location [(lat, lng) pair], returning an array of addresses.
+ Reverse geocodes a location, converting coordinates to address.
 
- @param location The location to geocode.
+ @param location The location to reverse geocode.
  @param completionHandler A completion handler.
  */
 + (void)reverseGeocodeLocation:(CLLocation * _Nonnull)location
-             completionHandler:(RadarGeocodeCompletionHandler)completionHandler;
+             completionHandler:(RadarGeocodeCompletionHandler)completionHandler
+    NS_SWIFT_NAME(reverseGeocode(location:completionHandler:));
 
 /**
- Geocodes the device's IP address, returning a region.
+ Geocodes the device's current IP address, converting IP address to country.
 
  @param completionHandler A completion handler.
  */
-+ (void)geocodeDeviceIP:(RadarIPGeocodeCompletionHandler)completionHandler;
-
-/**
- Geocodes a provided IP address, returning a region.
-
- @param IP The IP address to geocode.
- @param completionHandler A completion handler.
- */
-+ (void)geocodeIP:(NSString * _Nonnull)IP
-completionHandler:(RadarIPGeocodeCompletionHandler)completionHandler;
++ (void)ipGeocodeWithCompletionHandler:(RadarIPGeocodeCompletionHandler)completionHandler
+    NS_SWIFT_NAME(ipGeocode(completionHandler:));
 
 /**
  Sets the log level for debug logs.

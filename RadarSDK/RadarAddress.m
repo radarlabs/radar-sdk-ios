@@ -38,7 +38,7 @@
 
     NSNumber *latitude;
     NSNumber *longitude;
-    RadarCoordinate *coordinate;
+    CLLocationCoordinate2D coordinate;
 
     NSString *formattedAddress;
     NSString *country;
@@ -66,7 +66,9 @@
     }
 
     if (latitude && longitude) {
-        coordinate = [[RadarCoordinate alloc] initWithCoordinate:CLLocationCoordinate2DMake([latitude doubleValue], [longitude doubleValue])];
+        coordinate = CLLocationCoordinate2DMake([latitude doubleValue], [longitude doubleValue]);
+    } else {
+        coordinate = kCLLocationCoordinate2DInvalid;
     }
 
     id formattedAddressObj = addressDict[@"formattedAddress"];
@@ -142,14 +144,10 @@
         }
     }
 
-    if (coordinate) {
-        return [[RadarAddress alloc] initWithCoordinate:coordinate formattedAddress:formattedAddress country:country countryCode:countryCode countryFlag:countryFlag state:state stateCode:stateCode postalCode:postalCode city:city borough:borough county:county neighborhood:neighborhood number:number confidence:confidence];
-    }
-
-    return nil;
+    return [[RadarAddress alloc] initWithCoordinate:coordinate formattedAddress:formattedAddress country:country countryCode:countryCode countryFlag:countryFlag state:state stateCode:stateCode postalCode:postalCode city:city borough:borough county:county neighborhood:neighborhood number:number confidence:confidence];
 }
 
-- (instancetype _Nullable)initWithCoordinate:(RadarCoordinate * _Nonnull)coordinate
+- (instancetype _Nullable)initWithCoordinate:(CLLocationCoordinate2D)coordinate
                             formattedAddress:(NSString * _Nullable)formattedAddress
                                      country:(NSString * _Nullable)country
                                  countryCode:(NSString * _Nullable)countryCode
