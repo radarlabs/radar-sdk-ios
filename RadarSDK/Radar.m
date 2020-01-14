@@ -63,6 +63,10 @@
     [[RadarLocationManager sharedInstance] getLocationWithCompletionHandler:completionHandler];
 }
 
++ (void)getLocationWithDesiredAccuracy:(RadarTrackingOptionsDesiredAccuracy)desiredAccuracy completionHandler:(RadarLocationCompletionHandler)completionHandler {
+    [[RadarLocationManager sharedInstance] getLocationWithDesiredAccuracy:desiredAccuracy completionHandler:completionHandler];
+}
+
 + (void)trackOnceWithCompletionHandler:(RadarTrackCompletionHandler)completionHandler {
     [[RadarLocationManager sharedInstance] getLocationWithCompletionHandler:^(RadarStatus status, CLLocation * _Nullable location, BOOL stopped) {
         if (status != RadarStatusSuccess) {

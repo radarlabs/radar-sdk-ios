@@ -114,6 +114,10 @@ static NSString * const kRegionIdentifer = @"radar";
 }
 
 - (void)getLocationWithCompletionHandler:(RadarLocationCompletionHandler)completionHandler {
+    [self getLocationWithDesiredAccuracy:RadarTrackingOptionsDesiredAccuracyMedium completionHandler:completionHandler];
+}
+
+- (void)getLocationWithDesiredAccuracy:(RadarTrackingOptionsDesiredAccuracy)desiredAccuracy completionHandler:(RadarLocationCompletionHandler)completionHandler {
     CLAuthorizationStatus authorizationStatus = [self.permissionsHelper locationAuthorizationStatus];
     if (!(authorizationStatus == kCLAuthorizationStatusAuthorizedWhenInUse || authorizationStatus == kCLAuthorizationStatusAuthorizedAlways)) {
         if (self.delegate) {
@@ -125,7 +129,22 @@ static NSString * const kRegionIdentifer = @"radar";
     
     [self addCompletionHandler:completionHandler];
     
-    self.locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters;
+    CLLocationAccuracy accuracy;
+    switch(desiredAccuracy) {
+        case RadarTrackingOptionsDesiredAccuracyHigh:
+            accuracy = kCLLocationAccuracyBest;
+            break;
+        case RadarTrackingOptionsDesiredAccuracyMedium:
+            accuracy = kCLLocationAccuracyHundredMeters;
+            break;
+        case RadarTrackingOptionsDesiredAccuracyLow:
+            accuracy = kCLLocationAccuracyKilometer;
+            break;
+        default:
+            accuracy = kCLLocationAccuracyHundredMeters;
+    }
+    
+    self.locationManager.desiredAccuracy = accuracy;
     [self requestLocation];
 }
 
