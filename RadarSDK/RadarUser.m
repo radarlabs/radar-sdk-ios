@@ -12,10 +12,11 @@
 #import "RadarPlace+Internal.h"
 #import "RadarRegion+Internal.h"
 #import "RadarUserInsights+Internal.h"
+#import "RadarSegment+Internal.h"
 
 @implementation RadarUser
 
-- (instancetype _Nullable)initWithId:(NSString *)_id userId:(NSString *)userId deviceId:(NSString *)deviceId description:(NSString *)description metadata:(NSDictionary *)metadata location:(CLLocation *)location geofences:(NSArray *)geofences place:(RadarPlace *)place insights:(RadarUserInsights *)insights stopped:(BOOL)stopped foreground:(BOOL)foreground country:(RadarRegion * _Nullable)country state:(RadarRegion * _Nullable)state dma:(RadarRegion * _Nullable)dma postalCode:(RadarRegion * _Nullable)postalCode nearbyPlaceChains:(nullable NSArray<RadarChain *> *)nearbyPlaceChains {
+- (instancetype _Nullable)initWithId:(NSString *)_id userId:(NSString *)userId deviceId:(NSString *)deviceId description:(NSString *)description metadata:(NSDictionary *)metadata location:(CLLocation *)location geofences:(NSArray *)geofences place:(RadarPlace *)place insights:(RadarUserInsights *)insights stopped:(BOOL)stopped foreground:(BOOL)foreground country:(RadarRegion * _Nullable)country state:(RadarRegion * _Nullable)state dma:(RadarRegion * _Nullable)dma postalCode:(RadarRegion * _Nullable)postalCode nearbyPlaceChains:(nullable NSArray<RadarChain *> *)nearbyPlaceChains segments:(nullable NSArray<RadarSegment *> *)segments topChains:(nullable NSArray<RadarChain *> *)topChains {
     self = [super init];
     if (self) {
         __id = _id;
@@ -34,6 +35,8 @@
         _dma = dma;
         _postalCode = postalCode;
         _nearbyPlaceChains = nearbyPlaceChains;
+        _segments = segments;
+        _topChains = topChains;
     }
     return self;
 }
@@ -60,7 +63,9 @@
     RadarRegion *state;
     RadarRegion *dma;
     RadarRegion *postalCode;
-    NSArray<RadarChain *> *userPlaceChains;
+    NSArray<RadarChain *> *userNearbyPlaceChains;
+    NSArray<RadarSegment *> *userSegments;
+    NSArray<RadarChain *> *userTopChains;
 
     id userIdObj = userDict[@"_id"];
     if (userIdObj && [userIdObj isKindOfClass:[NSString class]]) {
@@ -184,11 +189,41 @@
             }
         }
         
-        userPlaceChains = mutableNearbyChains;
+        userNearbyPlaceChains = mutableNearbyChains;
+    }
+    
+    id userSegmentsObj = userDict[@"segments"];
+    if ([userSegmentsObj isKindOfClass:[NSArray class]]) {
+        NSArray *segmentsArr = (NSArray *)userSegmentsObj;
+        
+        NSMutableArray<RadarSegment *> *mutableSegments = [NSMutableArray<RadarSegment *> new];
+        for (id segmentObj in segmentsArr) {
+            RadarSegment *segment = [[RadarSegment alloc] initWithObject:segmentObj];
+            if (segment) {
+                [mutableSegments addObject:segment];
+            }
+        }
+        
+        userSegments = mutableSegments;
+    }
+    
+    id userTopChainsObj = userDict[@"topChains"];
+    if ([userTopChainsObj isKindOfClass:[NSArray class]]) {
+        NSArray *topChainsArr = (NSArray *)userTopChainsObj;
+        
+        NSMutableArray<RadarChain *> *mutableTopChains = [NSMutableArray<RadarChain *> new];
+        for (id chainObj in topChainsArr) {
+            RadarChain *placeChain = [[RadarChain alloc] initWithObject:chainObj];
+            if (placeChain) {
+                [mutableTopChains addObject:placeChain];
+            }
+        }
+        
+        userTopChains = mutableTopChains;
     }
     
     if (userId && userLocation) {
-        return [[RadarUser alloc] initWithId:userId userId:userUserId deviceId:userDeviceId description:userDescription metadata:userMetadata location:userLocation geofences:userGeofences place:userPlace insights:userInsights stopped:stopped foreground:foreground country:country state:state dma:dma postalCode:postalCode nearbyPlaceChains:userPlaceChains];
+        return [[RadarUser alloc] initWithId:userId userId:userUserId deviceId:userDeviceId description:userDescription metadata:userMetadata location:userLocation geofences:userGeofences place:userPlace insights:userInsights stopped:stopped foreground:foreground country:country state:state dma:dma postalCode:postalCode nearbyPlaceChains:userNearbyPlaceChains segments:userSegments topChains:userTopChains];
     }
     
     return nil;

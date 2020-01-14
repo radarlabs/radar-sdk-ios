@@ -29,6 +29,9 @@
 		78D8CE3E23AD7FEE009E91F5 /* geocode_ip.json in Resources */ = {isa = PBXBuildFile; fileRef = 78D8CE3D23AD7FEE009E91F5 /* geocode_ip.json */; };
 		DD103211237E0C47003DD408 /* RadarSDKTests.m in Sources */ = {isa = PBXBuildFile; fileRef = DD103210237E0C47003DD408 /* RadarSDKTests.m */; };
 		DD103215237F1795003DD408 /* track.json in Resources */ = {isa = PBXBuildFile; fileRef = DD103214237F1795003DD408 /* track.json */; };
+		DD14FD4C23CE783500E80AC8 /* RadarSegment.h in Headers */ = {isa = PBXBuildFile; fileRef = DD14FD4A23CE783500E80AC8 /* RadarSegment.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		DD14FD4D23CE783500E80AC8 /* RadarSegment.m in Sources */ = {isa = PBXBuildFile; fileRef = DD14FD4B23CE783500E80AC8 /* RadarSegment.m */; };
+		DD14FD4F23CE785200E80AC8 /* RadarSegment+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = DD14FD4E23CE784500E80AC8 /* RadarSegment+Internal.h */; };
 		DD5E35E1238205FF002D93FF /* events_verification.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5E35E0238205FF002D93FF /* events_verification.json */; };
 		DD5E35E323820796002D93FF /* search_places.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5E35E223820796002D93FF /* search_places.json */; };
 		DD86FD0F23919EEF003225F6 /* libRadarSDK.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DDC637C8238C7E6100747FD4 /* libRadarSDK.a */; };
@@ -130,6 +133,9 @@
 		78D8CE3D23AD7FEE009E91F5 /* geocode_ip.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = geocode_ip.json; sourceTree = "<group>"; };
 		DD103210237E0C47003DD408 /* RadarSDKTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RadarSDKTests.m; sourceTree = "<group>"; };
 		DD103214237F1795003DD408 /* track.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = track.json; sourceTree = "<group>"; };
+		DD14FD4A23CE783500E80AC8 /* RadarSegment.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarSegment.h; sourceTree = "<group>"; };
+		DD14FD4B23CE783500E80AC8 /* RadarSegment.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RadarSegment.m; sourceTree = "<group>"; };
+		DD14FD4E23CE784500E80AC8 /* RadarSegment+Internal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "RadarSegment+Internal.h"; sourceTree = "<group>"; };
 		DD236C782308797B00EB88F9 /* RadarSDK.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarSDK.h; sourceTree = "<group>"; };
 		DD236C792308797B00EB88F9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		DD236C7E2308797B00EB88F9 /* RadarSDKTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RadarSDKTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -331,6 +337,9 @@
 				DD236C9D2308812600EB88F9 /* RadarRegion.h */,
 				DD236CA72308812600EB88F9 /* RadarRegion+Internal.h */,
 				DD236CBC2308812700EB88F9 /* RadarRegion.m */,
+				DD14FD4A23CE783500E80AC8 /* RadarSegment.h */,
+				DD14FD4E23CE784500E80AC8 /* RadarSegment+Internal.h */,
+				DD14FD4B23CE783500E80AC8 /* RadarSegment.m */,
 				DD236CAF2308812600EB88F9 /* RadarUser.h */,
 				DD236CB12308812600EB88F9 /* RadarUser+Internal.h */,
 				DD236CBB2308812700EB88F9 /* RadarUser.m */,
@@ -387,6 +396,7 @@
 				DDC63804238C801C00747FD4 /* RadarPolygonGeometry.h in Headers */,
 				DDC63805238C801C00747FD4 /* RadarPolygonGeometry+Internal.h in Headers */,
 				DDC63806238C801C00747FD4 /* RadarRegion.h in Headers */,
+				DD14FD4C23CE783500E80AC8 /* RadarSegment.h in Headers */,
 				DDC63807238C801C00747FD4 /* RadarRegion+Internal.h in Headers */,
 				DDC63808238C801C00747FD4 /* RadarUser.h in Headers */,
 				DDC63809238C801C00747FD4 /* RadarUser+Internal.h in Headers */,
@@ -400,6 +410,7 @@
 				DDC63812238C801C00747FD4 /* Radar.h in Headers */,
 				DDC63813238C801C00747FD4 /* RadarAPIClient.h in Headers */,
 				DDC63814238C801C00747FD4 /* RadarAPIHelper.h in Headers */,
+				DD14FD4F23CE785200E80AC8 /* RadarSegment+Internal.h in Headers */,
 				78D0040E23AAD2D4007D6BE1 /* RadarAddress.h in Headers */,
 				DDC63815238C801C00747FD4 /* RadarBackgroundTaskManager.h in Headers */,
 				DDC63816238C801C00747FD4 /* RadarDelegate.h in Headers */,
@@ -564,6 +575,7 @@
 				DDC637DA238C7F8700747FD4 /* RadarCircleGeometry.m in Sources */,
 				DDC637DB238C7F8700747FD4 /* RadarCoordinate.m in Sources */,
 				DDC637DC238C7F8700747FD4 /* RadarEvent.m in Sources */,
+				DD14FD4D23CE783500E80AC8 /* RadarSegment.m in Sources */,
 				78D0040F23AAD2EB007D6BE1 /* RadarAddress.m in Sources */,
 				DDC637DD238C7F8700747FD4 /* RadarGeofence.m in Sources */,
 				DDC637DE238C7F8700747FD4 /* RadarGeofenceGeometry.m in Sources */,
