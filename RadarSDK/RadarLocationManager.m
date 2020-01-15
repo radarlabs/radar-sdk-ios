@@ -160,12 +160,12 @@ static NSString * const kRegionIdentifer = @"radar";
     
     [RadarSettings setTracking:YES];
     [RadarSettings setTrackingOptions:trackingOptions];
-    [self updateTracking:nil];
+    [self updateTracking];
 }
 
 - (void)stopTracking {
     [RadarSettings setTracking:NO];
-    [self updateTracking:nil];
+    [self updateTracking];
 }
 
 - (void)startUpdates:(int)interval {
@@ -224,6 +224,10 @@ static NSString * const kRegionIdentifer = @"radar";
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Requesting location"];
     
     [self.locationManager requestLocation];
+}
+
+- (void)updateTracking {
+    [self updateTracking:nil];
 }
 
 - (void)updateTracking:(CLLocation *)location {
@@ -496,7 +500,7 @@ static NSString * const kRegionIdentifer = @"radar";
         
         self.sending = NO;
         
-        [self updateTracking:nil];
+        [self updateTracking];
     }];
 }
 

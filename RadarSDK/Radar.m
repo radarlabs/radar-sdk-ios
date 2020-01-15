@@ -29,6 +29,7 @@
     
     [RadarSettings setPublishableKey:publishableKey];
     [[RadarAPIClient sharedInstance] getConfig];
+    [[RadarLocationManager sharedInstance] updateTracking];
 }
 
 + (NSString * _Nullable)getPublishableKey {
