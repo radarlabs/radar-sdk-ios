@@ -10,7 +10,7 @@
 @interface RadarSegment ()
 
 - (nonnull instancetype)initWithDescription:(nonnull NSString *)description
-                                 externalId:(nonnull NSString *)description;
+                                 externalId:(nonnull NSString *)externalId;
 
 - (nullable instancetype)initWithObject:(nullable id)object;
 
