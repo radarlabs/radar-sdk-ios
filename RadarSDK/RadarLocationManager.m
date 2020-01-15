@@ -425,7 +425,7 @@ static NSString * const kRegionIdentifer = @"radar";
     NSDate *now = [NSDate new];
     NSTimeInterval lastSyncInterval = [now timeIntervalSinceDate:lastSentAt];
     if (!ignoreSync) {
-        if (!force && stopped && wasStopped && distance <= options.stopDistance && options.desiredStoppedUpdateInterval == 0) {
+        if (!force && stopped && wasStopped && distance <= options.stopDistance && (options.desiredStoppedUpdateInterval == 0 || options.sync != RadarTrackingOptionsSyncAll)) {
             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Skipping sync: already stopped | stopped = %d; wasStopped = %d", stopped, wasStopped]];
             
             return;
