@@ -114,6 +114,10 @@ static NSString * const kRegionIdentifer = @"radar";
 }
 
 - (void)getLocationWithCompletionHandler:(RadarLocationCompletionHandler)completionHandler {
+    [self getLocationWithDesiredAccuracy:RadarTrackingOptionsDesiredAccuracyMedium completionHandler:completionHandler];
+}
+
+- (void)getLocationWithDesiredAccuracy:(RadarTrackingOptionsDesiredAccuracy)desiredAccuracy completionHandler:(RadarLocationCompletionHandler)completionHandler {
     CLAuthorizationStatus authorizationStatus = [self.permissionsHelper locationAuthorizationStatus];
     if (!(authorizationStatus == kCLAuthorizationStatusAuthorizedWhenInUse || authorizationStatus == kCLAuthorizationStatusAuthorizedAlways)) {
         if (self.delegate) {
@@ -125,7 +129,22 @@ static NSString * const kRegionIdentifer = @"radar";
     
     [self addCompletionHandler:completionHandler];
     
-    self.locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters;
+    CLLocationAccuracy accuracy;
+    switch(desiredAccuracy) {
+        case RadarTrackingOptionsDesiredAccuracyHigh:
+            accuracy = kCLLocationAccuracyBest;
+            break;
+        case RadarTrackingOptionsDesiredAccuracyMedium:
+            accuracy = kCLLocationAccuracyHundredMeters;
+            break;
+        case RadarTrackingOptionsDesiredAccuracyLow:
+            accuracy = kCLLocationAccuracyKilometer;
+            break;
+        default:
+            accuracy = kCLLocationAccuracyHundredMeters;
+    }
+    
+    self.locationManager.desiredAccuracy = accuracy;
     [self requestLocation];
 }
 
@@ -141,12 +160,12 @@ static NSString * const kRegionIdentifer = @"radar";
     
     [RadarSettings setTracking:YES];
     [RadarSettings setTrackingOptions:trackingOptions];
-    [self updateTracking:nil];
+    [self updateTracking];
 }
 
 - (void)stopTracking {
     [RadarSettings setTracking:NO];
-    [self updateTracking:nil];
+    [self updateTracking];
 }
 
 - (void)startUpdates:(int)interval {
@@ -205,6 +224,10 @@ static NSString * const kRegionIdentifer = @"radar";
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Requesting location"];
     
     [self.locationManager requestLocation];
+}
+
+- (void)updateTracking {
+    [self updateTracking:nil];
 }
 
 - (void)updateTracking:(CLLocation *)location {
@@ -406,7 +429,7 @@ static NSString * const kRegionIdentifer = @"radar";
     NSDate *now = [NSDate new];
     NSTimeInterval lastSyncInterval = [now timeIntervalSinceDate:lastSentAt];
     if (!ignoreSync) {
-        if (!force && stopped && wasStopped && distance <= options.stopDistance && options.desiredStoppedUpdateInterval == 0) {
+        if (!force && stopped && wasStopped && distance <= options.stopDistance && (options.desiredStoppedUpdateInterval == 0 || options.sync != RadarTrackingOptionsSyncAll)) {
             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Skipping sync: already stopped | stopped = %d; wasStopped = %d", stopped, wasStopped]];
             
             return;
@@ -477,7 +500,7 @@ static NSString * const kRegionIdentifer = @"radar";
         
         self.sending = NO;
         
-        [self updateTracking:nil];
+        [self updateTracking];
     }];
 }
 

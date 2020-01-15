@@ -29,6 +29,7 @@
     
     [RadarSettings setPublishableKey:publishableKey];
     [[RadarAPIClient sharedInstance] getConfig];
+    [[RadarLocationManager sharedInstance] updateTracking];
 }
 
 + (NSString * _Nullable)getPublishableKey {
@@ -61,6 +62,10 @@
 
 + (void)getLocationWithCompletionHandler:(RadarLocationCompletionHandler)completionHandler {
     [[RadarLocationManager sharedInstance] getLocationWithCompletionHandler:completionHandler];
+}
+
++ (void)getLocationWithDesiredAccuracy:(RadarTrackingOptionsDesiredAccuracy)desiredAccuracy completionHandler:(RadarLocationCompletionHandler)completionHandler {
+    [[RadarLocationManager sharedInstance] getLocationWithDesiredAccuracy:desiredAccuracy completionHandler:completionHandler];
 }
 
 + (void)trackOnceWithCompletionHandler:(RadarTrackCompletionHandler)completionHandler {

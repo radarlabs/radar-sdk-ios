@@ -11,6 +11,7 @@
 #import "RadarPlace.h"
 #import "RadarUserInsights.h"
 #import "RadarRegion.h"
+#import "RadarSegment.h"
 
 /**
  Represents the current user state. For more information, see https://radar.io/documentation.
@@ -57,14 +58,14 @@
 @property (nullable, copy, nonatomic, readonly) NSArray<RadarGeofence *> *geofences;
 
 /**
- The user's last known place. May be `nil` if the user is not at a place, or if Places is turned off.
+ The user's last known place. May be `nil` if the user is not at a place, or if Places is not enabled.
  
  @see https://radar.io/documentation/places
  */
 @property (nullable, copy, nonatomic, readonly) RadarPlace *place;
 
 /**
- Learned insights for the user. May be `nil` if no insights are available, or if Insights is turned off.
+ Learned insights for the user. May be `nil` if no insights are available, or if Insights is not enabled.
  
  @see https://radar.io/documentation/insights
  */
@@ -81,28 +82,46 @@
 @property (assign, nonatomic, readonly) BOOL foreground;
 
 /**
- The user's last known country. May be `nil` if country is not available or if Regions is turned off.
+ The user's last known country. May be `nil` if country is not available or if Regions is not enabled.
+ 
+ @see https://radar.io/documentation/regions
  */
 @property (nullable, strong, nonatomic, readonly) RadarRegion *country;
 
 /**
- The user's last known state. May be `nil` if state is not available or if Regions is turned off.
+ The user's last known state. May be `nil` if state is not available or if Regions is not enabled.
+ 
+ @see https://radar.io/documentation/regions
  */
 @property (nullable, strong, nonatomic, readonly) RadarRegion *state;
 
 /**
- The user's last known designated market area (DMA). May be `nil` if DMA is not available or if Regions is turned off.
+ The user's last known designated market area (DMA). May be `nil` if DMA is not available or if Regions is not enabled.
+ 
+ @see https://radar.io/documentation/regions
  */
 @property (nullable, strong, nonatomic, readonly) RadarRegion *dma;
 
 /**
- The user's last known postal code. May be `nil` if postal code is not available or if Regions is turned off.
+ The user's last known postal code. May be `nil` if postal code is not available or if Regions is not enabled.
+ 
+ @see https://radar.io/documentation/regions
  */
 @property (nullable, strong, nonatomic, readonly) RadarRegion *postalCode;
 
 /**
- An array of nearby chains. May be `nil` if no chains are nearby or if nearby chains are not enabled.
+ The user's nearby chains. May be `nil` if no chains are nearby or if nearby chains are not enabled.
  */
 @property (nullable, copy, nonatomic, readonly) NSArray<RadarChain *> *nearbyPlaceChains;
+
+/**
+ The user's segments. May be `nil` if segments are not enabled.
+ */
+@property (nullable, copy, nonatomic, readonly) NSArray<RadarSegment *> *segments;
+
+/**
+ The user's nearby chains. May be `nil` if segments are not enabled.
+ */
+@property (nullable, copy, nonatomic, readonly) NSArray<RadarChain *> *topChains;
 
 @end

@@ -62,6 +62,9 @@
                 <a href="../Classes/RadarRegion.html">RadarRegion</a>
               </li>
               <li class="nav-group-task">
+                <a href="../Classes/RadarSegment.html">RadarSegment</a>
+              </li>
+              <li class="nav-group-task">
                 <a href="../Classes.html#/c:objc(cs)RadarTrackingOptions">RadarTrackingOptions</a>
               </li>
               <li class="nav-group-task">
@@ -407,7 +410,7 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>The user&rsquo;s last known place. May be <code>nil</code> if the user is not at a place, or if Places is turned off.</p>
+                        <p>The user&rsquo;s last known place. May be <code>nil</code> if the user is not at a place, or if Places is not enabled.</p>
 <div class="aside aside-see">
     <p class="aside-title">See</p>
     <a href="https://radar.io/documentation/places">https://radar.io/documentation/places</a>
@@ -444,7 +447,7 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Learned insights for the user. May be <code>nil</code> if no insights are available, or if Insights is turned off.</p>
+                        <p>Learned insights for the user. May be <code>nil</code> if no insights are available, or if Insights is not enabled.</p>
 <div class="aside aside-see">
     <p class="aside-title">See</p>
     <a href="https://radar.io/documentation/insights">https://radar.io/documentation/insights</a>
@@ -545,7 +548,12 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>The user&rsquo;s last known country. May be <code>nil</code> if country is not available or if Regions is turned off.</p>
+                        <p>The user&rsquo;s last known country. May be <code>nil</code> if country is not available or if Regions is not enabled.</p>
+<div class="aside aside-see">
+    <p class="aside-title">See</p>
+    <a href="https://radar.io/documentation/regions">https://radar.io/documentation/regions</a>
+
+</div>
 
                       </div>
                       <div class="declaration">
@@ -577,7 +585,12 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>The user&rsquo;s last known state. May be <code>nil</code> if state is not available or if Regions is turned off.</p>
+                        <p>The user&rsquo;s last known state. May be <code>nil</code> if state is not available or if Regions is not enabled.</p>
+<div class="aside aside-see">
+    <p class="aside-title">See</p>
+    <a href="https://radar.io/documentation/regions">https://radar.io/documentation/regions</a>
+
+</div>
 
                       </div>
                       <div class="declaration">
@@ -609,7 +622,12 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>The user&rsquo;s last known designated market area (DMA). May be <code>nil</code> if DMA is not available or if Regions is turned off.</p>
+                        <p>The user&rsquo;s last known designated market area (DMA). May be <code>nil</code> if DMA is not available or if Regions is not enabled.</p>
+<div class="aside aside-see">
+    <p class="aside-title">See</p>
+    <a href="https://radar.io/documentation/regions">https://radar.io/documentation/regions</a>
+
+</div>
 
                       </div>
                       <div class="declaration">
@@ -641,7 +659,12 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>The user&rsquo;s last known postal code. May be <code>nil</code> if postal code is not available or if Regions is turned off.</p>
+                        <p>The user&rsquo;s last known postal code. May be <code>nil</code> if postal code is not available or if Regions is not enabled.</p>
+<div class="aside aside-see">
+    <p class="aside-title">See</p>
+    <a href="https://radar.io/documentation/regions">https://radar.io/documentation/regions</a>
+
+</div>
 
                       </div>
                       <div class="declaration">
@@ -673,7 +696,7 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>An array of nearby chains. May be <code>nil</code> if no chains are nearby or if nearby chains are not enabled.</p>
+                        <p>The user&rsquo;s nearby chains. May be <code>nil</code> if no chains are nearby or if nearby chains are not enabled.</p>
 
                       </div>
                       <div class="declaration">
@@ -693,12 +716,77 @@
                     </section>
                   </div>
                 </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:objc(cs)RadarUser(py)segments"></a>
+                    <a name="//apple_ref/objc/Property/segments" class="dashAnchor"></a>
+                    <a class="token" href="#/c:objc(cs)RadarUser(py)segments">segments</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>The user&rsquo;s segments. May be <code>nil</code> if segments are not enabled.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Objective-C</p>
+                          <pre class="highlight objective_c"><code><span class="k">@property</span> <span class="p">(</span><span class="n">readonly</span><span class="p">,</span> <span class="n">copy</span><span class="p">,</span> <span class="n">nonatomic</span><span class="p">,</span> <span class="n">nullable</span><span class="p">)</span>
+    <span class="n">NSArray</span><span class="o">&lt;</span><span class="n"><a href="../Classes/RadarSegment.html">RadarSegment</a></span> <span class="o">*&gt;</span> <span class="o">*</span><span class="n">segments</span><span class="p">;</span></code></pre>
+
+                        </div>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="k">var</span> <span class="nv">segments</span><span class="p">:</span> <span class="p">[</span><span class="kt"><a href="../Classes/RadarSegment.html">RadarSegment</a></span><span class="p">]?</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:objc(cs)RadarUser(py)topChains"></a>
+                    <a name="//apple_ref/objc/Property/topChains" class="dashAnchor"></a>
+                    <a class="token" href="#/c:objc(cs)RadarUser(py)topChains">topChains</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>The user&rsquo;s nearby chains. May be <code>nil</code> if segments are not enabled.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Objective-C</p>
+                          <pre class="highlight objective_c"><code><span class="k">@property</span> <span class="p">(</span><span class="n">readonly</span><span class="p">,</span> <span class="n">copy</span><span class="p">,</span> <span class="n">nonatomic</span><span class="p">,</span> <span class="n">nullable</span><span class="p">)</span> <span class="n">NSArray</span><span class="o">&lt;</span><span class="n"><a href="../Classes/RadarChain.html">RadarChain</a></span> <span class="o">*&gt;</span> <span class="o">*</span><span class="n">topChains</span><span class="p">;</span></code></pre>
+
+                        </div>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="k">var</span> <span class="nv">topChains</span><span class="p">:</span> <span class="p">[</span><span class="kt"><a href="../Classes/RadarChain.html">RadarChain</a></span><span class="p">]?</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
               </ul>
             </div>
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2020 <a class="link" href="https://radar.io" target="_blank" rel="external">Radar Labs, Inc.</a>. All rights reserved. (Last updated: 2020-01-08)</p>
+          <p>&copy; 2020 <a class="link" href="https://radar.io" target="_blank" rel="external">Radar Labs, Inc.</a>. All rights reserved. (Last updated: 2020-01-14)</p>
           <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.12.0</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
         </section>
       </article>

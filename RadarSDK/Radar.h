@@ -200,6 +200,15 @@ typedef void(^ _Nonnull RadarIPGeocodeCompletionHandler)(RadarStatus status, Rad
     NS_SWIFT_NAME(getLocation(completionHandler:));
 
 /**
+ Gets the device's current location with the desired accuracy.
+ 
+ @param desiredAccuracy The desired accuracy.
+ @param completionHandler An optional completion handler.
+ */
++ (void)getLocationWithDesiredAccuracy:(RadarTrackingOptionsDesiredAccuracy)desiredAccuracy completionHandler:(RadarLocationCompletionHandler _Nullable)completionHandler
+    NS_SWIFT_NAME(getLocation(desiredAccuracy:completionHandler:));
+
+/**
  Tracks the user's location once in the foreground.
  
  @warning Note that these calls are subject to rate limits.

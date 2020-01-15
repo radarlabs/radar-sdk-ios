@@ -32,17 +32,18 @@
 }
 
 + (NSString *)sdkVersion {
-    return @"3.0.0-alpha.3";
+    return @"3.0.0-alpha.4";
 }
 
 + (NSString *)adId {
     Class ASIdentifierManagerClass = NSClassFromString(@"ASIdentifierManager");
     if (ASIdentifierManagerClass) {
         id manager = [ASIdentifierManagerClass valueForKey:@"sharedManager"];
-        if ([[manager valueForKey:@"advertisingTrackingEnabled"] isEqual:@1])
+        if ([[manager valueForKey:@"advertisingTrackingEnabled"] isEqual:@1]) {
             return [[manager valueForKey:@"advertisingIdentifier"] UUIDString];
-        else
+        } else {
             return @"OptedOut";
+        }
     }
     return nil;
 }
