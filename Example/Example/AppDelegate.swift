@@ -20,24 +20,21 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         
         locationManager.requestAlwaysAuthorization()
         
-        Radar.initialize(publishableKey: "org_live_pk_624ad2b613457b5a84f46045dc1986690bdb479c")
+        Radar.initialize(publishableKey: "prj_test_pk_0000000000000000000000000000000000000000")
         Radar.setLogLevel(.debug)
         Radar.setDelegate(self)
         
-        /*
         if UIApplication.shared.applicationState != .background {
             Radar.trackOnce { (status, location, events, user) in
                 print("Track once: status = \(Radar.stringForStatus(status)); location = \(String(describing: location)); events = \(String(describing: events)); user = \(String(describing: user))")
             }
         }
-        */
         
         let options = RadarTrackingOptions.responsive
         options.sync = .all
         options.showBlueBar = true
         Radar.startTracking(trackingOptions: options)
         
-        /*
         Radar.searchPlaces(radius: 1000, chains: ["mcdonalds"], categories: nil, groups: nil, limit: 10) { (status, location, places) in
             print("Search places: status = \(Radar.stringForStatus(status)); places = \(String(describing: places))")
         }
@@ -57,7 +54,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         Radar.ipGeocode { (status, country) in
             print("IP geocode: status = \(Radar.stringForStatus(status)); code = \(String(describing: country?.code)); flag = \(String(describing: country?.flag))")
         }
-        */
         
         return true
     }
