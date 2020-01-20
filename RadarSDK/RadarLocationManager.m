@@ -59,11 +59,6 @@ static NSString * const kRegionIdentifer = @"radar";
         _locationManager.distanceFilter = kCLDistanceFilterNone;
         _locationManager.allowsBackgroundLocationUpdates = [RadarUtils allowsBackgroundLocationUpdates];
         
-        _lowPowerLocationManager = [CLLocationManager new];
-        _lowPowerLocationManager.desiredAccuracy = kCLLocationAccuracyThreeKilometers;
-        _lowPowerLocationManager.distanceFilter = 3000;
-        _lowPowerLocationManager.allowsBackgroundLocationUpdates = [RadarUtils allowsBackgroundLocationUpdates];
-        
         _permissionsHelper = [RadarPermissionsHelper new];
     }
     return self;
@@ -143,9 +138,10 @@ static NSString * const kRegionIdentifer = @"radar";
         default:
             accuracy = kCLLocationAccuracyHundredMeters;
     }
-    
     self.locationManager.desiredAccuracy = accuracy;
-    [self requestLocation];
+    self.locationManager.distanceFilter = kCLDistanceFilterNone;
+    
+    [self.locationManager requestLocation];
 }
 
 - (void)startTrackingWithOptions:(RadarTrackingOptions *)trackingOptions {
@@ -189,8 +185,6 @@ static NSString * const kRegionIdentifer = @"radar";
         [self requestLocation];
     }];
     
-    [self.lowPowerLocationManager startUpdatingLocation];
-    
     self.started = YES;
     self.startedInterval = interval;
 }
@@ -215,14 +209,41 @@ static NSString * const kRegionIdentifer = @"radar";
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delay * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             [[RadarBackgroundTaskManager sharedInstance] endBackgroundTasks];
             
-            [self.lowPowerLocationManager stopUpdatingLocation];
+            [self.locationManager stopUpdatingLocation];
         });
     }
 }
 
-- (void)requestLocation {
-    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Requesting location"];
+- (void)startUpdatesLowPower {
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Starting low power updates"];
     
+    self.locationManager.distanceFilter = 10000;
+    self.locationManager.desiredAccuracy = kCLLocationAccuracyThreeKilometers;
+    [self.locationManager startUpdatingLocation];
+}
+
+- (void)requestLocation {
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Starting high power updates"];
+    
+    RadarTrackingOptions *options = [RadarSettings trackingOptions];
+    CLLocationAccuracy desiredAccuracy;
+    switch(options.desiredAccuracy) {
+        case RadarTrackingOptionsDesiredAccuracyHigh:
+            desiredAccuracy = kCLLocationAccuracyBest;
+            break;
+        case RadarTrackingOptionsDesiredAccuracyMedium:
+            desiredAccuracy = kCLLocationAccuracyHundredMeters;
+            break;
+        case RadarTrackingOptionsDesiredAccuracyLow:
+            desiredAccuracy = kCLLocationAccuracyKilometer;
+            break;
+        default:
+            desiredAccuracy = kCLLocationAccuracyHundredMeters;
+    }
+    
+    [self.locationManager stopUpdatingLocation];
+    self.locationManager.desiredAccuracy = desiredAccuracy;
+    self.locationManager.distanceFilter = kCLDistanceFilterNone;
     [self.locationManager requestLocation];
 }
 
@@ -251,26 +272,9 @@ static NSString * const kRegionIdentifer = @"radar";
         
         if (tracking) {
             self.locationManager.pausesLocationUpdatesAutomatically = NO;
-            self.lowPowerLocationManager.pausesLocationUpdatesAutomatically = NO;
-            
-            CLLocationAccuracy desiredAccuracy;
-            switch(options.desiredAccuracy) {
-                case RadarTrackingOptionsDesiredAccuracyHigh:
-                    desiredAccuracy = kCLLocationAccuracyBest;
-                    break;
-                case RadarTrackingOptionsDesiredAccuracyMedium:
-                    desiredAccuracy = kCLLocationAccuracyHundredMeters;
-                    break;
-                case RadarTrackingOptionsDesiredAccuracyLow:
-                    desiredAccuracy = kCLLocationAccuracyKilometer;
-                    break;
-                default:
-                    desiredAccuracy = kCLLocationAccuracyHundredMeters;
-            }
-            self.locationManager.desiredAccuracy = desiredAccuracy;
             
             if (@available(iOS 11.0, *)) {
-                self.lowPowerLocationManager.showsBackgroundLocationIndicator = options.showBlueBar;
+                self.locationManager.showsBackgroundLocationIndicator = options.showBlueBar;
             }
             
             BOOL stopped = [RadarState stopped];
@@ -278,6 +282,7 @@ static NSString * const kRegionIdentifer = @"radar";
                 if (options.desiredStoppedUpdateInterval == 0) {
                     [self stopUpdates];
                 } else {
+                    [self startUpdatesLowPower];
                     [self startUpdates:options.desiredStoppedUpdateInterval];
                 }
                 if (options.useStoppedGeofence) {
@@ -291,6 +296,7 @@ static NSString * const kRegionIdentifer = @"radar";
                 if (options.desiredMovingUpdateInterval == 0) {
                     [self stopUpdates];
                 } else {
+                    [self startUpdatesLowPower];
                     [self startUpdates:options.desiredMovingUpdateInterval];
                 }
                 if (options.useMovingGeofence) {
