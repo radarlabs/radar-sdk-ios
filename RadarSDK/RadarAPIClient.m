@@ -134,7 +134,7 @@
     params[@"deviceMake"] = [RadarUtils deviceMake];
     params[@"sdkVersion"] = [RadarUtils sdkVersion];
     params[@"deviceModel"] = [RadarUtils deviceModel];
-    params[@"deviceOS"] = [RadarUtils deviceOS];;
+    params[@"deviceOS"] = [RadarUtils deviceOS];
     params[@"country"] = [RadarUtils country];
     params[@"timeZoneOffset"] = [RadarUtils timeZoneOffset];
     params[@"uaChannelId"] = [RadarUtils uaChannelId];
