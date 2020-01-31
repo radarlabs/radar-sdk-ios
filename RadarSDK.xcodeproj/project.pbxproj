@@ -22,6 +22,9 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		5343FFD823E231FF00808D93 /* RadarContext.h in Headers */ = {isa = PBXBuildFile; fileRef = 5343FFD723E2310D00808D93 /* RadarContext.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		5343FFDB23E4A2C400808D93 /* RadarContext.m in Sources */ = {isa = PBXBuildFile; fileRef = 5343FFD923E38BA300808D93 /* RadarContext.m */; };
+		5343FFDC23E4A2D400808D93 /* RadarContext+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 5343FFDA23E3A76900808D93 /* RadarContext+Internal.h */; };
 		78D0040E23AAD2D4007D6BE1 /* RadarAddress.h in Headers */ = {isa = PBXBuildFile; fileRef = 78156B9523A8210E0094410E /* RadarAddress.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		78D0040F23AAD2EB007D6BE1 /* RadarAddress.m in Sources */ = {isa = PBXBuildFile; fileRef = 78156B9623A8210E0094410E /* RadarAddress.m */; };
 		78D0041023AAD307007D6BE1 /* RadarAddress+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 78156B9B23A834FA0094410E /* RadarAddress+Internal.h */; };
@@ -126,6 +129,9 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		5343FFD723E2310D00808D93 /* RadarContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RadarContext.h; sourceTree = "<group>"; };
+		5343FFD923E38BA300808D93 /* RadarContext.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RadarContext.m; sourceTree = "<group>"; };
+		5343FFDA23E3A76900808D93 /* RadarContext+Internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "RadarContext+Internal.h"; sourceTree = "<group>"; };
 		78156B9523A8210E0094410E /* RadarAddress.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarAddress.h; sourceTree = "<group>"; };
 		78156B9623A8210E0094410E /* RadarAddress.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RadarAddress.m; sourceTree = "<group>"; };
 		78156B9B23A834FA0094410E /* RadarAddress+Internal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "RadarAddress+Internal.h"; sourceTree = "<group>"; };
@@ -321,6 +327,9 @@
 				DD236CB72308812700EB88F9 /* RadarCoordinate+Internal.h */,
 				DD236CBA2308812700EB88F9 /* RadarCoordinate.m */,
 				DD236CAA2308812600EB88F9 /* RadarEvent.h */,
+				5343FFD723E2310D00808D93 /* RadarContext.h */,
+				5343FFD923E38BA300808D93 /* RadarContext.m */,
+				5343FFDA23E3A76900808D93 /* RadarContext+Internal.h */,
 				DD236CA22308812600EB88F9 /* RadarEvent+Internal.h */,
 				DD236CB82308812700EB88F9 /* RadarEvent.m */,
 				DD236C9F2308812600EB88F9 /* RadarGeofence.h */,
@@ -392,11 +401,13 @@
 				DDC63800238C801C00747FD4 /* RadarGeofenceGeometry.h in Headers */,
 				DDC63801238C801C00747FD4 /* RadarGeofence+Internal.h in Headers */,
 				DDC63802238C801C00747FD4 /* RadarPlace.h in Headers */,
+				5343FFDC23E4A2D400808D93 /* RadarContext+Internal.h in Headers */,
 				DDC63803238C801C00747FD4 /* RadarPlace+Internal.h in Headers */,
 				DDC63804238C801C00747FD4 /* RadarPolygonGeometry.h in Headers */,
 				DDC63805238C801C00747FD4 /* RadarPolygonGeometry+Internal.h in Headers */,
 				DDC63806238C801C00747FD4 /* RadarRegion.h in Headers */,
 				DD14FD4C23CE783500E80AC8 /* RadarSegment.h in Headers */,
+				5343FFD823E231FF00808D93 /* RadarContext.h in Headers */,
 				DDC63807238C801C00747FD4 /* RadarRegion+Internal.h in Headers */,
 				DDC63808238C801C00747FD4 /* RadarUser.h in Headers */,
 				DDC63809238C801C00747FD4 /* RadarUser+Internal.h in Headers */,
@@ -597,6 +608,7 @@
 				DDC637EF238C7F8700747FD4 /* RadarState.m in Sources */,
 				DDC637F0238C7F8700747FD4 /* RadarTrackingOptions.m in Sources */,
 				DDC637F1238C7F8700747FD4 /* RadarUtils.m in Sources */,
+				5343FFDB23E4A2C400808D93 /* RadarContext.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
