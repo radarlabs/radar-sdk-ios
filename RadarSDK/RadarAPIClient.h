@@ -34,6 +34,8 @@ typedef void(^ _Nullable RadarIPGeocodeAPICompletionHandler)(RadarStatus status,
 
 + (instancetype)sharedInstance;
 
++ (NSDictionary *)headersWithPublishableKey:(NSString *)publishableKey;
+
 - (void)getConfig;
 
 - (void)trackWithLocation:(CLLocation * _Nonnull)location

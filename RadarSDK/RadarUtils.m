@@ -32,7 +32,7 @@
 }
 
 + (NSString *)sdkVersion {
-    return @"3.0.0-beta.1";
+    return @"3.0.0-beta.2";
 }
 
 + (NSString *)adId {
@@ -62,10 +62,6 @@
 
 + (NSString *)deviceMake {
     return @"Apple";
-}
-
-+ (NSString *)userAgent {
-    return [NSString stringWithFormat:@"RadarSDK/%@ (%@; %@; %@; %@)", [RadarUtils sdkVersion], [RadarUtils deviceType], [RadarUtils deviceMake], [RadarUtils deviceModel], [RadarUtils deviceOS]];
 }
 
 + (BOOL)locationBackgroundMode {
