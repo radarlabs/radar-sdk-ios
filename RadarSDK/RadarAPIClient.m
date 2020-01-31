@@ -8,7 +8,7 @@
 #import "RadarAPIClient.h"
 
 #import "RadarAddress+Internal.h"
-#import "RadarContext.h"
+#import "RadarContext+Internal.h"
 #import "RadarEvent+Internal.h"
 #import "RadarPlace+Internal.h"
 #import "RadarGeofence+Internal.h"
@@ -522,10 +522,8 @@
             return completionHandler(status, nil, nil);
         }
         
-        // TODO(coryp): deserialize response
-        // RadarContext *context = [[RadarContext alloc]  initWithObject:contextObj];
-        // id contextObj = res[@"context"];
-        id context = nil;
+        id contextObj = res[@"context"];
+        RadarContext *context = [[RadarContext alloc]  initWithObject:contextObj];
         if (context) {
             return completionHandler(RadarStatusSuccess, res, context);
         }
