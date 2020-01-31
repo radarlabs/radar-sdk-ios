@@ -48,7 +48,7 @@
     NSDictionary *contextDict = (NSDictionary *)object;
     
     // INIT
-    BOOL live = NO;
+    BOOL contextLive = NO;
     NSDate *contextUpdatedAt;
     CLLocation *contextLocation;
     NSArray <RadarGeofence *> *contextGeofences;
@@ -110,7 +110,7 @@
     id dmaObj = contextDict[@"dma"];
     dma = [[RadarRegion alloc] initWithObject:dmaObj];
     
-    id postalCodeObj = userDict[@"postalCode"];
+    id postalCodeObj = contextDict[@"postalCode"];
     postalCode = [[RadarRegion alloc] initWithObject:postalCodeObj];
     
     // REGION STATE
@@ -146,14 +146,16 @@
         if (contextLocationAccuracyObj && [contextLocationAccuracyObj isKindOfClass:[NSNumber class]]) {
             NSNumber *contextLocationAccuracyNumber = (NSNumber *)contextLocationAccuracyObj;
             
-            contextLocation = [[CLLocation alloc] initWithCoordinate:CLLocationCoordinate2DMake(contextLocationCoordinatesLatitudeFloat, contextLocationCoordinatesLongitudeFloat) altitude:-1 horizontalAccuracy:[contextLocationAccuracyNumber floatValue] verticalAccuracy:-1 timestamp:(contextCreatedAt ? contextCreatedAt : [NSDate date])];
+            contextLocation = [[CLLocation alloc] initWithCoordinate:CLLocationCoordinate2DMake(contextLocationCoordinatesLatitudeFloat, contextLocationCoordinatesLongitudeFloat) altitude:-1 horizontalAccuracy:[contextLocationAccuracyNumber floatValue] verticalAccuracy:-1 timestamp:(contextUpdatedAt ? contextUpdatedAt : [NSDate date])];
         }
     }
     
     if (contextUpdatedAt) {
-        return [[RadarContext alloc] initWithUpdatedAt:contextUpdatedAt live:contextLive geofences:contextGeofences place:contextPlace country:country state:state dma:dma postalCode:postalCode location:contextLocation];
+        return [[RadarContext alloc] initWithUpdatedAt:contextUpdatedAt location:contextLocation geofences:contextGeofences place:contextPlace live:contextLive  country:country state:state dma:dma postalCode:postalCode ];
     }
     
+    return nil;
+
 }
 
 @end
