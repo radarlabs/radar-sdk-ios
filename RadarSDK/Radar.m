@@ -184,6 +184,15 @@
     }];
 }
 
++ (void)autocompleteQuery:(NSString *)query
+                     near:(CLLocation *)near
+                    limit:(int)limit
+        completionHandler:(RadarGeocodeCompletionHandler)completionHandler {
+    [[RadarAPIClient sharedInstance] autocompleteQuery:query near:near limit:limit completionHandler:^(RadarStatus status, NSDictionary * _Nullable res, NSArray<RadarAddress *> * _Nullable addresses) {
+        completionHandler(status, addresses);
+    }];
+}
+
 + (void)geocodeAddress:(NSString *)query completionHandler:(RadarGeocodeCompletionHandler)completionHandler {
     [[RadarAPIClient sharedInstance] geocodeAddress:query completionHandler:^(RadarStatus status, NSDictionary * _Nullable res, NSArray<RadarAddress *> * _Nullable addresses) {
         completionHandler(status, addresses);
@@ -215,6 +224,27 @@
     }];
 }
 
++ (void)getDistanceToDestination:(CLLocation *)destination
+                           modes:(RadarRouteMode)modes
+                           units:(RadarRouteUnits)units
+               completionHandler:(RadarRouteCompletionHandler)completionHandler {
+    [[RadarLocationManager sharedInstance] getLocationWithCompletionHandler:^(RadarStatus status, CLLocation * _Nullable location, BOOL stopped) {
+        if (status != RadarStatusSuccess) {
+            return completionHandler(status, nil);
+        }
+        
+        [[RadarAPIClient sharedInstance] getDistanceFromOrigin:location destination:destination modes:modes units:units completionHandler:^(RadarStatus status, NSDictionary * _Nullable res, RadarRoutes * _Nullable routes) {
+            completionHandler(status, routes);
+        }];
+    }];
+}
+
++ (void)getDistanceFromOrigin:(CLLocation *)origin destination:(CLLocation *)destination modes:(RadarRouteMode)modes units:(RadarRouteUnits)units completionHandler:(RadarRouteCompletionHandler)completionHandler {
+    [[RadarAPIClient sharedInstance] getDistanceFromOrigin:origin destination:destination modes:modes units:units completionHandler:^(RadarStatus status, NSDictionary * _Nullable res, RadarRoutes * _Nullable routes) {
+        completionHandler(status, routes);
+    }];
+}
+
 + (void)setLogLevel:(RadarLogLevel)level {
     [RadarSettings setLogLevel:level];
 }
@@ -237,8 +267,14 @@
         case RadarStatusErrorNetwork:
             str = @"errorNetwork";
             break;
+        case RadarStatusErrorBadRequest:
+            str = @"errorBadRequest";
+            break;
         case RadarStatusErrorUnauthorized:
             str = @"errorUnauthorized";
+            break;
+        case RadarStatusErrorForbidden:
+            str = @"errorForbidden";
             break;
         case RadarStatusErrorRateLimit:
             str = @"errorRateLimit";

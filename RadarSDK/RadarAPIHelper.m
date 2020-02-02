@@ -52,9 +52,11 @@
            if (statusCode >= 200 && statusCode < 400) {
                return completionHandler(RadarStatusSuccess, res);
            } else if (statusCode == 400) {
-               return completionHandler(RadarStatusErrorLocation, nil);
+               return completionHandler(RadarStatusErrorBadRequest, nil);
            } else if (statusCode == 401) {
                return completionHandler(RadarStatusErrorUnauthorized, nil);
+           } else if (statusCode == 403) {
+               return completionHandler(RadarStatusErrorForbidden, nil);
            } else if (statusCode == 429) {
                return completionHandler(RadarStatusErrorRateLimit, nil);
            } else if (statusCode >= 500 && statusCode <= 599) {

@@ -24,3 +24,7 @@
 #import "RadarPolygonGeometry.h"
 #import "RadarRegion.h"
 #import "RadarAddress.h"
+#import "RadarRoutes.h"
+#import "RadarRoute.h"
+#import "RadarRouteDistance.h"
+#import "RadarRouteDuration.h"

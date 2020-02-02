@@ -532,7 +532,7 @@ static NSString * const kPublishableKey = @"prj_test_pk_000000000000000000000000
     
     [Radar searchPlacesWithLocation:mockLocation radius:1000 chains:nil categories:@[@"restaurant"] groups:nil limit:100 completionHandler:^(RadarStatus status, CLLocation * _Nullable location, NSArray<RadarPlace *> * _Nullable places) {
         XCTAssertEqual(status, RadarStatusSuccess);
-        XCTAssertNotNil(places);
+        XCTAssertNotNil(location);
         XCTAssertNotNil(places);
         
         [expectation fulfill];
@@ -606,11 +606,33 @@ static NSString * const kPublishableKey = @"prj_test_pk_000000000000000000000000
     }];
 }
 
+- (void)test_Radar_autocomplete_success {
+    self.apiHelperMock.mockStatus = RadarStatusSuccess;
+    self.apiHelperMock.mockResponse = [RadarSDKTestUtils jsonDictionaryFromResource:@"search_autocomplete"];
+    
+    CLLocation *near = [[CLLocation alloc] initWithLatitude:40.783826 longitude:-73.975363];
+    
+    XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
+    
+    [Radar autocompleteQuery:@"brooklyn roasting" near:near limit:10 completionHandler:^(RadarStatus status, NSArray<RadarAddress *> * _Nullable addresses) {
+        XCTAssertEqual(status, RadarStatusSuccess);
+        XCTAssertNotNil(addresses);
+        
+        [expectation fulfill];
+    }];
+    
+    [self waitForExpectationsWithTimeout:30 handler:^(NSError * _Nullable error) {
+        if (error) {
+            XCTFail();
+        }
+    }];
+}
+
 - (void)test_Radar_geocode_error {
     self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusAuthorizedWhenInUse;
     self.apiHelperMock.mockStatus = RadarStatusErrorServer;
 
-    NSString *geocodeQuery = @"20 Jay Street, Brooklyn, NY";
+    NSString *geocodeQuery = @"20 jay street brooklyn";
 
     XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
 
@@ -633,7 +655,7 @@ static NSString * const kPublishableKey = @"prj_test_pk_000000000000000000000000
     self.apiHelperMock.mockStatus = RadarStatusSuccess;
     self.apiHelperMock.mockResponse = [RadarSDKTestUtils jsonDictionaryFromResource:@"geocode"];
 
-    NSString *query = @"20 Jay Street, Brooklyn, NY";
+    NSString *query = @"20 jay st brooklyn";
 
     XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
 
