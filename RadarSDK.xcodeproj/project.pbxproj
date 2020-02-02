@@ -259,14 +259,14 @@
 		DD103213237F1778003DD408 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				78D8CE3D23AD7FEE009E91F5 /* geocode_ip.json */,
-				78D8CE3B23AD78A1009E91F5 /* geocode.json */,
-				DD103214237F1795003DD408 /* track.json */,
-				DD5E35E223820796002D93FF /* search_places.json */,
 				DD5E35E0238205FF002D93FF /* events_verification.json */,
-				DE1E7643239724FD006F34A1 /* search_geofences.json */,
-				DD4D4D2423E648D000D36C1D /* search_autocomplete.json */,
+				78D8CE3B23AD78A1009E91F5 /* geocode.json */,
+				78D8CE3D23AD7FEE009E91F5 /* geocode_ip.json */,
 				DD4D4D2623E648FF00D36C1D /* route_distance.json */,
+				DD4D4D2423E648D000D36C1D /* search_autocomplete.json */,
+				DE1E7643239724FD006F34A1 /* search_geofences.json */,
+				DD5E35E223820796002D93FF /* search_places.json */,
+				DD103214237F1795003DD408 /* track.json */,
 			);
 			path = Resources;
 			sourceTree = "<group>";

@@ -821,6 +821,30 @@ static NSString * const kPublishableKey = @"prj_test_pk_000000000000000000000000
     }];
 }
 
+- (void)test_Radar_getDistance_success {
+    self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusAuthorizedWhenInUse;
+    self.locationManagerMock.mockLocation = [[CLLocation alloc] initWithCoordinate:CLLocationCoordinate2DMake(40.783826, -73.975363) altitude:-1 horizontalAccuracy:65 verticalAccuracy:-1 timestamp:[NSDate new]];
+    self.apiHelperMock.mockStatus = RadarStatusSuccess;
+    self.apiHelperMock.mockResponse = [RadarSDKTestUtils jsonDictionaryFromResource:@"route_distance"];
+    
+    CLLocation *destination = [[CLLocation alloc] initWithLatitude:40.783826 longitude:-73.975363];
+    
+    XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
+    
+    [Radar getDistanceToDestination:destination modes:RadarRouteModeFoot | RadarRouteModeCar units:RadarRouteUnitsImperial completionHandler:^(RadarStatus status, RadarRoutes * _Nullable routes) {
+        XCTAssertEqual(status, RadarStatusSuccess);
+        XCTAssertNotNil(routes);
+        
+        [expectation fulfill];
+    }];
+    
+    [self waitForExpectationsWithTimeout:30 handler:^(NSError * _Nullable error) {
+        if (error) {
+            XCTFail();
+        }
+    }];
+}
+
 - (void)test_RadarTrackingOptions_isEqual {
     RadarTrackingOptions *options = RadarTrackingOptions.efficient;
     XCTAssertNotEqualObjects(options, nil);
