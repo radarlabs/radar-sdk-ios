@@ -141,21 +141,21 @@
             return completionHandler(status, nil, nil);
         }
         
-        [[RadarAPIClient sharedInstance] searchPlacesWithLocation:location radius:radius chains:chains categories:categories groups:groups limit:limit completionHandler:^(RadarStatus status, NSDictionary * _Nullable res, NSArray<RadarPlace *> * _Nullable places) {
+        [[RadarAPIClient sharedInstance] searchPlacesNear:location radius:radius chains:chains categories:categories groups:groups limit:limit completionHandler:^(RadarStatus status, NSDictionary * _Nullable res, NSArray<RadarPlace *> * _Nullable places) {
             completionHandler(status, location, places);
         }];
     }];
 }
 
-+ (void)searchPlacesWithLocation:(CLLocation * _Nonnull)location
-                          radius:(int)radius
-                          chains:(NSArray * _Nullable)chains
-                      categories:(NSArray * _Nullable)categories
-                          groups:(NSArray * _Nullable)groups
-                           limit:(int)limit
++ (void)searchPlacesNear:(CLLocation * _Nonnull)near
+                  radius:(int)radius
+                  chains:(NSArray * _Nullable)chains
+              categories:(NSArray * _Nullable)categories
+                  groups:(NSArray * _Nullable)groups
+                   limit:(int)limit
                completionHandler:(RadarSearchPlacesCompletionHandler)completionHandler {
-    [[RadarAPIClient sharedInstance] searchPlacesWithLocation:location radius:radius chains:chains categories:categories groups:groups limit:limit completionHandler:^(RadarStatus status, NSDictionary * _Nullable res, NSArray<RadarPlace *> * _Nullable places) {
-        completionHandler(status, location, places);
+    [[RadarAPIClient sharedInstance] searchPlacesNear:near radius:radius chains:chains categories:categories groups:groups limit:limit completionHandler:^(RadarStatus status, NSDictionary * _Nullable res, NSArray<RadarPlace *> * _Nullable places) {
+        completionHandler(status, near, places);
     }];
 }
 
@@ -168,19 +168,19 @@
             return completionHandler(status, nil, nil);
         }
     
-        [[RadarAPIClient sharedInstance] searchGeofencesWithLocation:location radius:radius tags:tags limit:limit completionHandler:^(RadarStatus status, NSDictionary * _Nullable res, NSArray<RadarGeofence *> * _Nullable geofences) {
+        [[RadarAPIClient sharedInstance] searchGeofencesNear:location radius:radius tags:tags limit:limit completionHandler:^(RadarStatus status, NSDictionary * _Nullable res, NSArray<RadarGeofence *> * _Nullable geofences) {
             completionHandler(status, location, geofences);
         }];
     }];
 }
 
-+ (void)searchGeofencesWithLocation:(CLLocation * _Nonnull)location
-                             radius:(int)radius
-                               tags:(NSArray * _Nullable)tags
-                              limit:(int)limit
++ (void)searchGeofencesNear:(CLLocation * _Nonnull)near
+                     radius:(int)radius
+                       tags:(NSArray * _Nullable)tags
+                      limit:(int)limit
                   completionHandler:(RadarSearchGeofencesCompletionHandler)completionHandler {
-    [[RadarAPIClient sharedInstance] searchGeofencesWithLocation:location radius:radius tags:tags limit:limit completionHandler:^(RadarStatus status, NSDictionary * _Nullable res, NSArray<RadarGeofence *> * _Nullable geofences) {
-        completionHandler(status, location, geofences);
+    [[RadarAPIClient sharedInstance] searchGeofencesNear:near radius:radius tags:tags limit:limit completionHandler:^(RadarStatus status, NSDictionary * _Nullable res, NSArray<RadarGeofence *> * _Nullable geofences) {
+        completionHandler(status, near, geofences);
     }];
 }
 

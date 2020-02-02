@@ -368,7 +368,7 @@ typedef void(^ _Nonnull RadarRouteCompletionHandler)(RadarStatus status, RadarRo
  
  @warning You may specify only one of chains, categories, or groups.
 
- @param location The location to search.
+ @param near The location to search.
  @param radius The radius to search, in meters. A number between 100 and 10000.
  @param chains An array of chain slugs to filter. See https://radar.io/documentation/places/chains
  @param categories An array of categories to filter. See: https://radar.io/documentation/places/categories
@@ -376,14 +376,14 @@ typedef void(^ _Nonnull RadarRouteCompletionHandler)(RadarStatus status, RadarRo
  @param limit The max number of places to return. A number between 1 and 100.
  @param completionHandler A completion handler.
 */
-+ (void)searchPlacesWithLocation:(CLLocation *)location
-                          radius:(int)radius
-                          chains:(NSArray * _Nullable)chains
-                      categories:(NSArray * _Nullable)categories
-                          groups:(NSArray * _Nullable)groups
-                           limit:(int)limit
-               completionHandler:(RadarSearchPlacesCompletionHandler)completionHandler
-    NS_SWIFT_NAME(searchPlaces(location:radius:chains:categories:groups:limit:completionHandler:));
++ (void)searchPlacesNear:(CLLocation *)near
+                  radius:(int)radius
+                  chains:(NSArray * _Nullable)chains
+              categories:(NSArray * _Nullable)categories
+                  groups:(NSArray * _Nullable)groups
+                   limit:(int)limit
+       completionHandler:(RadarSearchPlacesCompletionHandler)completionHandler
+    NS_SWIFT_NAME(searchPlaces(near:radius:chains:categories:groups:limit:completionHandler:));
 
 
 /**
@@ -403,24 +403,24 @@ typedef void(^ _Nonnull RadarRouteCompletionHandler)(RadarStatus status, RadarRo
 /**
  Searches for geofences near a location, sorted by distance.
 
- @param location The location to search.
+ @param near The location to search.
  @param radius The radius to search, in meters. A number between 100 and 10000.
  @param tags An array of tags to filter. See https://radar.io/documentation/geofences
  @param limit The max number of geofences to return. A number between 1 and 100.
  @param completionHandler A completion handler.
 */
-+ (void)searchGeofencesWithLocation:(CLLocation *)location
-                             radius:(int)radius
-                               tags:(NSArray * _Nullable)tags
-                              limit:(int)limit
-                  completionHandler:(RadarSearchGeofencesCompletionHandler)completionHandler
-    NS_SWIFT_NAME(searchGeofences(location:radius:tags:limit:completionHandler:));
++ (void)searchGeofencesNear:(CLLocation *)near
+                     radius:(int)radius
+                       tags:(NSArray * _Nullable)tags
+                      limit:(int)limit
+          completionHandler:(RadarSearchGeofencesCompletionHandler)completionHandler
+    NS_SWIFT_NAME(searchGeofences(near:radius:tags:limit:completionHandler:));
 
 /**
- Autocompletes addresses and place names, sorted by relevance.
+ Autocompletes partial addresses and place names, sorted by relevance.
  
  @param query The partial address or place name to autocomplete.
- @param near An location for the search.
+ @param near A location for the search.
  @param limit The max number of addresses to return. A number between 1 and 100.
  @param completionHandler A completion handler.
  */

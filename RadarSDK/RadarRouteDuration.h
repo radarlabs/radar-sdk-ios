@@ -9,6 +9,9 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+/**
+ Represents the duration of a route.
+ */
 @interface RadarRouteDuration : NSObject
 
 /**

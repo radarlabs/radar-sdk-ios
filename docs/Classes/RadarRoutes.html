@@ -65,6 +65,15 @@
                 <a href="../Classes/RadarRegion.html">RadarRegion</a>
               </li>
               <li class="nav-group-task">
+                <a href="../Classes/RadarRoute.html">RadarRoute</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/RadarRouteDistance.html">RadarRouteDistance</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/RadarRouteDuration.html">RadarRouteDuration</a>
+              </li>
+              <li class="nav-group-task">
                 <a href="../Classes/RadarRoutes.html">RadarRoutes</a>
               </li>
               <li class="nav-group-task">
@@ -202,12 +211,12 @@
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Objective-C</p>
-                          <pre class="highlight objective_c"><code><span class="k">@property</span> <span class="p">(</span><span class="n">readonly</span><span class="p">,</span> <span class="n">strong</span><span class="p">,</span> <span class="n">nonatomic</span><span class="p">,</span> <span class="n">nullable</span><span class="p">)</span> <span class="n">RadarRouteDistance</span> <span class="o">*</span><span class="n">geodesic</span><span class="p">;</span></code></pre>
+                          <pre class="highlight objective_c"><code><span class="k">@property</span> <span class="p">(</span><span class="n">readonly</span><span class="p">,</span> <span class="n">strong</span><span class="p">,</span> <span class="n">nonatomic</span><span class="p">,</span> <span class="n">nullable</span><span class="p">)</span> <span class="n"><a href="../Classes/RadarRouteDistance.html">RadarRouteDistance</a></span> <span class="o">*</span><span class="n">geodesic</span><span class="p">;</span></code></pre>
 
                         </div>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="k">var</span> <span class="nv">geodesic</span><span class="p">:</span> <span class="kt">RadarRouteDistance</span><span class="p">?</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span></code></pre>
+                          <pre class="highlight swift"><code><span class="k">var</span> <span class="nv">geodesic</span><span class="p">:</span> <span class="kt"><a href="../Classes/RadarRouteDistance.html">RadarRouteDistance</a></span><span class="p">?</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span></code></pre>
 
                         </div>
                       </div>
@@ -227,19 +236,19 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>The route by foot between the origin and destination. May be <code>nil</code> if mode <code>foot</code> not specified.</p>
+                        <p>The route by foot between the origin and destination. May be <code>nil</code> if mode not specified or route unavailable.</p>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Objective-C</p>
-                          <pre class="highlight objective_c"><code><span class="k">@property</span> <span class="p">(</span><span class="n">readonly</span><span class="p">,</span> <span class="n">strong</span><span class="p">,</span> <span class="n">nonatomic</span><span class="p">,</span> <span class="n">nullable</span><span class="p">)</span> <span class="n">RadarRoute</span> <span class="o">*</span><span class="n">foot</span><span class="p">;</span></code></pre>
+                          <pre class="highlight objective_c"><code><span class="k">@property</span> <span class="p">(</span><span class="n">readonly</span><span class="p">,</span> <span class="n">strong</span><span class="p">,</span> <span class="n">nonatomic</span><span class="p">,</span> <span class="n">nullable</span><span class="p">)</span> <span class="n"><a href="../Classes/RadarRoute.html">RadarRoute</a></span> <span class="o">*</span><span class="n">foot</span><span class="p">;</span></code></pre>
 
                         </div>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="k">var</span> <span class="nv">foot</span><span class="p">:</span> <span class="kt">RadarRoute</span><span class="p">?</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span></code></pre>
+                          <pre class="highlight swift"><code><span class="k">var</span> <span class="nv">foot</span><span class="p">:</span> <span class="kt"><a href="../Classes/RadarRoute.html">RadarRoute</a></span><span class="p">?</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span></code></pre>
 
                         </div>
                       </div>
@@ -259,19 +268,19 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>The route by bike between the origin and destination. May be <code>nil</code> if mode <code>bike</code> not specified.</p>
+                        <p>The route by bike between the origin and destination. May be <code>nil</code> if mode not specified or route unavailable.</p>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Objective-C</p>
-                          <pre class="highlight objective_c"><code><span class="k">@property</span> <span class="p">(</span><span class="n">readonly</span><span class="p">,</span> <span class="n">strong</span><span class="p">,</span> <span class="n">nonatomic</span><span class="p">,</span> <span class="n">nullable</span><span class="p">)</span> <span class="n">RadarRoute</span> <span class="o">*</span><span class="n">bike</span><span class="p">;</span></code></pre>
+                          <pre class="highlight objective_c"><code><span class="k">@property</span> <span class="p">(</span><span class="n">readonly</span><span class="p">,</span> <span class="n">strong</span><span class="p">,</span> <span class="n">nonatomic</span><span class="p">,</span> <span class="n">nullable</span><span class="p">)</span> <span class="n"><a href="../Classes/RadarRoute.html">RadarRoute</a></span> <span class="o">*</span><span class="n">bike</span><span class="p">;</span></code></pre>
 
                         </div>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="k">var</span> <span class="nv">bike</span><span class="p">:</span> <span class="kt">RadarRoute</span><span class="p">?</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span></code></pre>
+                          <pre class="highlight swift"><code><span class="k">var</span> <span class="nv">bike</span><span class="p">:</span> <span class="kt"><a href="../Classes/RadarRoute.html">RadarRoute</a></span><span class="p">?</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span></code></pre>
 
                         </div>
                       </div>
@@ -291,19 +300,19 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>The route by car between the origin and destination. May be <code>nil</code> if mode <code>car</code> not specified.</p>
+                        <p>The route by car between the origin and destination. May be <code>nil</code> if mode not specified or route unavailable.</p>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Objective-C</p>
-                          <pre class="highlight objective_c"><code><span class="k">@property</span> <span class="p">(</span><span class="n">readonly</span><span class="p">,</span> <span class="n">strong</span><span class="p">,</span> <span class="n">nonatomic</span><span class="p">,</span> <span class="n">nullable</span><span class="p">)</span> <span class="n">RadarRoute</span> <span class="o">*</span><span class="n">car</span><span class="p">;</span></code></pre>
+                          <pre class="highlight objective_c"><code><span class="k">@property</span> <span class="p">(</span><span class="n">readonly</span><span class="p">,</span> <span class="n">strong</span><span class="p">,</span> <span class="n">nonatomic</span><span class="p">,</span> <span class="n">nullable</span><span class="p">)</span> <span class="n"><a href="../Classes/RadarRoute.html">RadarRoute</a></span> <span class="o">*</span><span class="n">car</span><span class="p">;</span></code></pre>
 
                         </div>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="k">var</span> <span class="nv">car</span><span class="p">:</span> <span class="kt">RadarRoute</span><span class="p">?</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span></code></pre>
+                          <pre class="highlight swift"><code><span class="k">var</span> <span class="nv">car</span><span class="p">:</span> <span class="kt"><a href="../Classes/RadarRoute.html">RadarRoute</a></span><span class="p">?</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span></code></pre>
 
                         </div>
                       </div>
@@ -323,19 +332,19 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>The route by transit between the origin and destination. May be <code>nil</code> if mode <code>transit</code> not specified.</p>
+                        <p>The route by transit between the origin and destination. May be <code>nil</code> if mode not specified or route unavailable.</p>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Objective-C</p>
-                          <pre class="highlight objective_c"><code><span class="k">@property</span> <span class="p">(</span><span class="n">readonly</span><span class="p">,</span> <span class="n">strong</span><span class="p">,</span> <span class="n">nonatomic</span><span class="p">,</span> <span class="n">nullable</span><span class="p">)</span> <span class="n">RadarRoute</span> <span class="o">*</span><span class="n">transit</span><span class="p">;</span></code></pre>
+                          <pre class="highlight objective_c"><code><span class="k">@property</span> <span class="p">(</span><span class="n">readonly</span><span class="p">,</span> <span class="n">strong</span><span class="p">,</span> <span class="n">nonatomic</span><span class="p">,</span> <span class="n">nullable</span><span class="p">)</span> <span class="n"><a href="../Classes/RadarRoute.html">RadarRoute</a></span> <span class="o">*</span><span class="n">transit</span><span class="p">;</span></code></pre>
 
                         </div>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="k">var</span> <span class="nv">transit</span><span class="p">:</span> <span class="kt">RadarRoute</span><span class="p">?</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span></code></pre>
+                          <pre class="highlight swift"><code><span class="k">var</span> <span class="nv">transit</span><span class="p">:</span> <span class="kt"><a href="../Classes/RadarRoute.html">RadarRoute</a></span><span class="p">?</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span></code></pre>
 
                         </div>
                       </div>
@@ -347,7 +356,7 @@
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2020 <a class="link" href="https://radar.io" target="_blank" rel="external">Radar Labs, Inc.</a>. All rights reserved. (Last updated: 2020-02-01)</p>
+          <p>&copy; 2020 <a class="link" href="https://radar.io" target="_blank" rel="external">Radar Labs, Inc.</a>. All rights reserved. (Last updated: 2020-02-02)</p>
           <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.12.0</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
         </section>
       </article>

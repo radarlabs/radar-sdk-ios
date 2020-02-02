@@ -231,13 +231,13 @@
     }];
 }
 
-- (void)searchPlacesWithLocation:(CLLocation * _Nonnull)location
-                          radius:(int)radius
-                          chains:(NSArray * _Nullable)chains
-                      categories:(NSArray * _Nullable)categories
-                          groups:(NSArray * _Nullable)groups
-                           limit:(int)limit
-               completionHandler:(RadarSearchPlacesAPICompletionHandler)completionHandler {
+- (void)searchPlacesNear:(CLLocation * _Nonnull)near
+                  radius:(int)radius
+                  chains:(NSArray * _Nullable)chains
+              categories:(NSArray * _Nullable)categories
+                  groups:(NSArray * _Nullable)groups
+                   limit:(int)limit
+       completionHandler:(RadarSearchPlacesAPICompletionHandler)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
         return completionHandler(RadarStatusErrorPublishableKey, nil, nil);
@@ -246,7 +246,7 @@
     int finalLimit = MIN(limit, 100);
     
     NSMutableString *queryString = [NSMutableString new];
-    [queryString appendFormat:@"near=%.06f,%.06f", location.coordinate.latitude, location.coordinate.longitude];
+    [queryString appendFormat:@"near=%.06f,%.06f", near.coordinate.latitude, near.coordinate.longitude];
     [queryString appendFormat:@"&radius=%d", radius];
     [queryString appendFormat:@"&limit=%d", finalLimit];
     if (chains && [chains count] > 0) {
@@ -280,11 +280,11 @@
     }];
 }
 
-- (void)searchGeofencesWithLocation:(CLLocation * _Nonnull)location
-                             radius:(int)radius
-                             tags:(NSArray * _Nullable)tags
-                              limit:(int)limit
-                  completionHandler:(RadarSearchGeofencesAPICompletionHandler)completionHandler {
+- (void)searchGeofencesNear:(CLLocation * _Nonnull)near
+                     radius:(int)radius
+                       tags:(NSArray * _Nullable)tags
+                      limit:(int)limit
+          completionHandler:(RadarSearchGeofencesAPICompletionHandler)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
         return completionHandler(RadarStatusErrorPublishableKey, nil, nil);
@@ -293,7 +293,7 @@
     int finalLimit = MIN(limit, 100);
 
     NSMutableString *queryString = [NSMutableString new];
-    [queryString appendFormat:@"near=%.06f,%.06f", location.coordinate.latitude, location.coordinate.longitude];
+    [queryString appendFormat:@"near=%.06f,%.06f", near.coordinate.latitude, near.coordinate.longitude];
     [queryString appendFormat:@"&radius=%d", radius];
     [queryString appendFormat:@"&limit=%d", finalLimit];
     if (tags && [tags count] > 0) {

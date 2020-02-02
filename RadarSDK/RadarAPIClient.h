@@ -51,19 +51,19 @@ typedef void(^ _Nullable RadarRouteAPICompletionHandler)(RadarStatus status, NSD
          verification:(RadarEventVerification)verification
       verifiedPlaceId:(NSString * _Nullable)verifiedPlaceId;
 
-- (void)searchPlacesWithLocation:(CLLocation * _Nonnull)location
-                          radius:(int)radius
-                          chains:(NSArray * _Nullable)chains
-                      categories:(NSArray * _Nullable)categories
-                          groups:(NSArray * _Nullable)groups
-                           limit:(int)limit
-               completionHandler:(RadarSearchPlacesAPICompletionHandler _Nullable)completionHandler;
+- (void)searchPlacesNear:(CLLocation * _Nonnull)near
+                  radius:(int)radius
+                  chains:(NSArray * _Nullable)chains
+              categories:(NSArray * _Nullable)categories
+                  groups:(NSArray * _Nullable)groups
+                   limit:(int)limit
+       completionHandler:(RadarSearchPlacesAPICompletionHandler _Nullable)completionHandler;
 
-- (void)searchGeofencesWithLocation:(CLLocation * _Nonnull)location
-                             radius:(int)radius
-                               tags:(NSArray * _Nullable)tags
-                              limit:(int)limit
-                  completionHandler:(RadarSearchGeofencesAPICompletionHandler _Nullable)completionHandler;
+- (void)searchGeofencesNear:(CLLocation * _Nonnull)near
+                     radius:(int)radius
+                       tags:(NSArray * _Nullable)tags
+                      limit:(int)limit
+          completionHandler:(RadarSearchGeofencesAPICompletionHandler _Nullable)completionHandler;
 
 - (void)autocompleteQuery:(NSString * _Nonnull)query
                      near:(CLLocation * _Nonnull)near

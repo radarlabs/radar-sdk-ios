@@ -522,7 +522,7 @@ static NSString * const kPublishableKey = @"prj_test_pk_000000000000000000000000
     }];
 }
 
-- (void)test_Radar_searchPlacesWithLocation_categories_success {
+- (void)test_Radar_searchPlacesNear_categories_success {
     self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusNotDetermined;
     CLLocation *mockLocation = [[CLLocation alloc] initWithCoordinate:CLLocationCoordinate2DMake(40.783826, -73.975363) altitude:-1 horizontalAccuracy:65 verticalAccuracy:-1 timestamp:[NSDate new]];
     self.apiHelperMock.mockStatus = RadarStatusSuccess;
@@ -530,7 +530,7 @@ static NSString * const kPublishableKey = @"prj_test_pk_000000000000000000000000
     
     XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
     
-    [Radar searchPlacesWithLocation:mockLocation radius:1000 chains:nil categories:@[@"restaurant"] groups:nil limit:100 completionHandler:^(RadarStatus status, CLLocation * _Nullable location, NSArray<RadarPlace *> * _Nullable places) {
+    [Radar searchPlacesNear:mockLocation radius:1000 chains:nil categories:@[@"restaurant"] groups:nil limit:100 completionHandler:^(RadarStatus status, CLLocation * _Nullable location, NSArray<RadarPlace *> * _Nullable places) {
         XCTAssertEqual(status, RadarStatusSuccess);
         XCTAssertNotNil(location);
         XCTAssertNotNil(places);

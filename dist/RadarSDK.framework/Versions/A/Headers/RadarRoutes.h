@@ -23,22 +23,22 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nullable, strong, nonatomic, readonly) RadarRouteDistance *geodesic;
 
 /**
- The route by foot between the origin and destination. May be `nil` if mode `foot` not specified.
+ The route by foot between the origin and destination. May be `nil` if mode not specified or route unavailable.
  */
 @property (nullable, strong, nonatomic, readonly) RadarRoute *foot;
 
 /**
- The route by bike between the origin and destination. May be `nil` if mode `bike` not specified.
+ The route by bike between the origin and destination. May be `nil` if mode not specified or route unavailable.
  */
 @property (nullable, strong, nonatomic, readonly) RadarRoute *bike;
 
 /**
- The route by car between the origin and destination. May be `nil` if mode `car` not specified.
+ The route by car between the origin and destination. May be `nil` if mode not specified or route unavailable.
  */
 @property (nullable, strong, nonatomic, readonly) RadarRoute *car;
 
 /**
- The route by transit between the origin and destination. May be `nil` if mode `transit` not specified.
+ The route by transit between the origin and destination. May be `nil` if mode not specified or route unavailable.
  */
 @property (nullable, strong, nonatomic, readonly) RadarRoute *transit;
 

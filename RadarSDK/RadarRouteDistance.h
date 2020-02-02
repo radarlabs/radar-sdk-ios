@@ -9,6 +9,9 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+/**
+ Represents the distance of a route.
+ */
 @interface RadarRouteDistance : NSObject
 
 /**

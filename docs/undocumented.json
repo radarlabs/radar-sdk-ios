@@ -1,27 +1,6 @@
 {
   "warnings": [
     {
-      "file": "/Users/nickpatrick/Dropbox/dev/radar/radar-sdk-ios/RadarSDK/RadarRoute.h",
-      "line": 14,
-      "symbol": "RadarRoute",
-      "symbol_kind": "sourcekitten.source.lang.objc.decl.class",
-      "warning": "undocumented"
-    },
-    {
-      "file": "/Users/nickpatrick/Dropbox/dev/radar/radar-sdk-ios/RadarSDK/RadarRouteDistance.h",
-      "line": 12,
-      "symbol": "RadarRouteDistance",
-      "symbol_kind": "sourcekitten.source.lang.objc.decl.class",
-      "warning": "undocumented"
-    },
-    {
-      "file": "/Users/nickpatrick/Dropbox/dev/radar/radar-sdk-ios/RadarSDK/RadarRouteDuration.h",
-      "line": 12,
-      "symbol": "RadarRouteDuration",
-      "symbol_kind": "sourcekitten.source.lang.objc.decl.class",
-      "warning": "undocumented"
-    },
-    {
       "file": "/Users/nickpatrick/Dropbox/dev/radar/radar-sdk-ios/RadarSDK/RadarTrackingOptions.h",
       "line": 13,
       "symbol": "RadarTrackingOptionsDesiredAccuracy",
