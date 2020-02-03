@@ -141,21 +141,21 @@
             return completionHandler(status, nil, nil);
         }
         
-        [[RadarAPIClient sharedInstance] searchPlacesWithLocation:location radius:radius chains:chains categories:categories groups:groups limit:limit completionHandler:^(RadarStatus status, NSDictionary * _Nullable res, NSArray<RadarPlace *> * _Nullable places) {
+        [[RadarAPIClient sharedInstance] searchPlacesNear:location radius:radius chains:chains categories:categories groups:groups limit:limit completionHandler:^(RadarStatus status, NSDictionary * _Nullable res, NSArray<RadarPlace *> * _Nullable places) {
             completionHandler(status, location, places);
         }];
     }];
 }
 
-+ (void)searchPlacesWithLocation:(CLLocation * _Nonnull)location
-                          radius:(int)radius
-                          chains:(NSArray * _Nullable)chains
-                      categories:(NSArray * _Nullable)categories
-                          groups:(NSArray * _Nullable)groups
-                           limit:(int)limit
++ (void)searchPlacesNear:(CLLocation * _Nonnull)near
+                  radius:(int)radius
+                  chains:(NSArray * _Nullable)chains
+              categories:(NSArray * _Nullable)categories
+                  groups:(NSArray * _Nullable)groups
+                   limit:(int)limit
                completionHandler:(RadarSearchPlacesCompletionHandler)completionHandler {
-    [[RadarAPIClient sharedInstance] searchPlacesWithLocation:location radius:radius chains:chains categories:categories groups:groups limit:limit completionHandler:^(RadarStatus status, NSDictionary * _Nullable res, NSArray<RadarPlace *> * _Nullable places) {
-        completionHandler(status, location, places);
+    [[RadarAPIClient sharedInstance] searchPlacesNear:near radius:radius chains:chains categories:categories groups:groups limit:limit completionHandler:^(RadarStatus status, NSDictionary * _Nullable res, NSArray<RadarPlace *> * _Nullable places) {
+        completionHandler(status, near, places);
     }];
 }
 
@@ -168,19 +168,28 @@
             return completionHandler(status, nil, nil);
         }
     
-        [[RadarAPIClient sharedInstance] searchGeofencesWithLocation:location radius:radius tags:tags limit:limit completionHandler:^(RadarStatus status, NSDictionary * _Nullable res, NSArray<RadarGeofence *> * _Nullable geofences) {
+        [[RadarAPIClient sharedInstance] searchGeofencesNear:location radius:radius tags:tags limit:limit completionHandler:^(RadarStatus status, NSDictionary * _Nullable res, NSArray<RadarGeofence *> * _Nullable geofences) {
             completionHandler(status, location, geofences);
         }];
     }];
 }
 
-+ (void)searchGeofencesWithLocation:(CLLocation * _Nonnull)location
-                             radius:(int)radius
-                               tags:(NSArray * _Nullable)tags
-                              limit:(int)limit
++ (void)searchGeofencesNear:(CLLocation * _Nonnull)near
+                     radius:(int)radius
+                       tags:(NSArray * _Nullable)tags
+                      limit:(int)limit
                   completionHandler:(RadarSearchGeofencesCompletionHandler)completionHandler {
-    [[RadarAPIClient sharedInstance] searchGeofencesWithLocation:location radius:radius tags:tags limit:limit completionHandler:^(RadarStatus status, NSDictionary * _Nullable res, NSArray<RadarGeofence *> * _Nullable geofences) {
-        completionHandler(status, location, geofences);
+    [[RadarAPIClient sharedInstance] searchGeofencesNear:near radius:radius tags:tags limit:limit completionHandler:^(RadarStatus status, NSDictionary * _Nullable res, NSArray<RadarGeofence *> * _Nullable geofences) {
+        completionHandler(status, near, geofences);
+    }];
+}
+
++ (void)autocompleteQuery:(NSString *)query
+                     near:(CLLocation *)near
+                    limit:(int)limit
+        completionHandler:(RadarGeocodeCompletionHandler)completionHandler {
+    [[RadarAPIClient sharedInstance] autocompleteQuery:query near:near limit:limit completionHandler:^(RadarStatus status, NSDictionary * _Nullable res, NSArray<RadarAddress *> * _Nullable addresses) {
+        completionHandler(status, addresses);
     }];
 }
 
@@ -215,6 +224,27 @@
     }];
 }
 
++ (void)getDistanceToDestination:(CLLocation *)destination
+                           modes:(RadarRouteMode)modes
+                           units:(RadarRouteUnits)units
+               completionHandler:(RadarRouteCompletionHandler)completionHandler {
+    [[RadarLocationManager sharedInstance] getLocationWithCompletionHandler:^(RadarStatus status, CLLocation * _Nullable location, BOOL stopped) {
+        if (status != RadarStatusSuccess) {
+            return completionHandler(status, nil);
+        }
+        
+        [[RadarAPIClient sharedInstance] getDistanceFromOrigin:location destination:destination modes:modes units:units completionHandler:^(RadarStatus status, NSDictionary * _Nullable res, RadarRoutes * _Nullable routes) {
+            completionHandler(status, routes);
+        }];
+    }];
+}
+
++ (void)getDistanceFromOrigin:(CLLocation *)origin destination:(CLLocation *)destination modes:(RadarRouteMode)modes units:(RadarRouteUnits)units completionHandler:(RadarRouteCompletionHandler)completionHandler {
+    [[RadarAPIClient sharedInstance] getDistanceFromOrigin:origin destination:destination modes:modes units:units completionHandler:^(RadarStatus status, NSDictionary * _Nullable res, RadarRoutes * _Nullable routes) {
+        completionHandler(status, routes);
+    }];
+}
+
 + (void)setLogLevel:(RadarLogLevel)level {
     [RadarSettings setLogLevel:level];
 }
@@ -237,8 +267,14 @@
         case RadarStatusErrorNetwork:
             str = @"errorNetwork";
             break;
+        case RadarStatusErrorBadRequest:
+            str = @"errorBadRequest";
+            break;
         case RadarStatusErrorUnauthorized:
             str = @"errorUnauthorized";
+            break;
+        case RadarStatusErrorForbidden:
+            str = @"errorForbidden";
             break;
         case RadarStatusErrorRateLimit:
             str = @"errorRateLimit";

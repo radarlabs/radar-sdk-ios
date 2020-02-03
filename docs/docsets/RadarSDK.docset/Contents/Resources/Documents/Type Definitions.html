@@ -35,6 +35,9 @@
                 <a href="Classes/Radar.html">Radar</a>
               </li>
               <li class="nav-group-task">
+                <a href="Classes/RadarAddress.html">RadarAddress</a>
+              </li>
+              <li class="nav-group-task">
                 <a href="Classes/RadarChain.html">RadarChain</a>
               </li>
               <li class="nav-group-task">
@@ -60,6 +63,18 @@
               </li>
               <li class="nav-group-task">
                 <a href="Classes/RadarRegion.html">RadarRegion</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/RadarRoute.html">RadarRoute</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/RadarRouteDistance.html">RadarRouteDistance</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/RadarRouteDuration.html">RadarRouteDuration</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/RadarRoutes.html">RadarRoutes</a>
               </li>
               <li class="nav-group-task">
                 <a href="Classes/RadarSegment.html">RadarSegment</a>
@@ -103,6 +118,12 @@
                 <a href="Enums/RadarLogLevel.html">RadarLogLevel</a>
               </li>
               <li class="nav-group-task">
+                <a href="Enums/RadarRouteMode.html">RadarRouteMode</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Enums/RadarRouteUnits.html">RadarRouteUnits</a>
+              </li>
+              <li class="nav-group-task">
                 <a href="Enums/RadarStatus.html">RadarStatus</a>
               </li>
               <li class="nav-group-task">
@@ -132,6 +153,9 @@
               </li>
               <li class="nav-group-task">
                 <a href="Type%20Definitions.html#/c:Radar.h@T@RadarLocationCompletionHandler">RadarLocationCompletionHandler</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Type%20Definitions.html#/c:Radar.h@T@RadarRouteCompletionHandler">RadarRouteCompletionHandler</a>
               </li>
               <li class="nav-group-task">
                 <a href="Type%20Definitions.html#/c:Radar.h@T@RadarSearchGeofencesCompletionHandler">RadarSearchGeofencesCompletionHandler</a>
@@ -250,7 +274,7 @@
                         <p>Called when a place search request succeeds, fails, or times out. Receives the request status and, if successful, the location and an array of places sorted by distance.</p>
 <div class="aside aside-see">
     <p class="aside-title">See</p>
-    <a href="https://radar.io/documentation/sdk#ios-search">https://radar.io/documentation/sdk#ios-search</a>
+    <a href="https://radar.io/documentation/api#search-places">https://radar.io/documentation/api#search-places</a>
 
 </div>
 
@@ -288,7 +312,7 @@
                         <p>Called when a geofence search request succeeds, fails, or times out. Receives the request status and, if successful, the location and an array of geofences sorted by distance.</p>
 <div class="aside aside-see">
     <p class="aside-title">See</p>
-    <a href="https://radar.io/documentation/sdk#ios-search">https://radar.io/documentation/sdk#ios-search</a>
+    <a href="https://radar.io/documentation/api#search-geofences">https://radar.io/documentation/api#search-geofences</a>
 
 </div>
 
@@ -326,7 +350,7 @@
                         <p>Called when a geocoding request succeeds, fails, or times out. Receives the request status and, if successful, the geocoding results (an array of addresses).</p>
 <div class="aside aside-see">
     <p class="aside-title">See</p>
-    <a href="https://radar.io/documentation/geocoding">https://radar.io/documentation/geocoding</a>
+    <a href="https://radar.io/documentation/api#geocode">https://radar.io/documentation/api#geocode</a>
 
 </div>
 
@@ -336,12 +360,12 @@
                         <div class="language">
                           <p class="aside-title">Objective-C</p>
                           <pre class="highlight objective_c"><code><span class="k">typedef</span> <span class="kt">void</span> <span class="p">(</span><span class="o">^</span><span class="n">_Nonnull</span> <span class="n">RadarGeocodeCompletionHandler</span><span class="p">)(</span>
-    <span class="n"><a href="Enums/RadarStatus.html">RadarStatus</a></span><span class="p">,</span> <span class="n">NSArray</span><span class="o">&lt;</span><span class="n">RadarAddress</span> <span class="o">*&gt;</span> <span class="o">*</span><span class="n">_Nullable</span><span class="p">)</span></code></pre>
+    <span class="n"><a href="Enums/RadarStatus.html">RadarStatus</a></span><span class="p">,</span> <span class="n">NSArray</span><span class="o">&lt;</span><span class="n"><a href="Classes/RadarAddress.html">RadarAddress</a></span> <span class="o">*&gt;</span> <span class="o">*</span><span class="n">_Nullable</span><span class="p">)</span></code></pre>
 
                         </div>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">typealias</span> <span class="kt">RadarGeocodeCompletionHandler</span> <span class="o">=</span> <span class="p">(</span><span class="kt"><a href="Enums/RadarStatus.html">RadarStatus</a></span><span class="p">,</span> <span class="p">[</span><span class="kt">RadarAddress</span><span class="p">]?)</span> <span class="o">-&gt;</span> <span class="kt">Void</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">typealias</span> <span class="kt">RadarGeocodeCompletionHandler</span> <span class="o">=</span> <span class="p">(</span><span class="kt"><a href="Enums/RadarStatus.html">RadarStatus</a></span><span class="p">,</span> <span class="p">[</span><span class="kt"><a href="Classes/RadarAddress.html">RadarAddress</a></span><span class="p">]?)</span> <span class="o">-&gt;</span> <span class="kt">Void</span></code></pre>
 
                         </div>
                       </div>
@@ -364,7 +388,7 @@
                         <p>Called when an IP geocoding request succeeds, fails, or times out. Receives the request status and, if successful, the geocoding result (a country).</p>
 <div class="aside aside-see">
     <p class="aside-title">See</p>
-    <a href="https://radar.io/documentation/geocoding">https://radar.io/documentation/geocoding</a>
+    <a href="https://radar.io/documentation/api#geocode-ip">https://radar.io/documentation/api#geocode-ip</a>
 
 </div>
 
@@ -386,12 +410,50 @@
                     </section>
                   </div>
                 </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:Radar.h@T@RadarRouteCompletionHandler"></a>
+                    <a name="//apple_ref/objc/Type/RadarRouteCompletionHandler" class="dashAnchor"></a>
+                    <a class="token" href="#/c:Radar.h@T@RadarRouteCompletionHandler">RadarRouteCompletionHandler</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Called when a routing request succeeds, fails, or times out. Receives the request status and, if successful, the routes.</p>
+<div class="aside aside-see">
+    <p class="aside-title">See</p>
+    <a href="https://radar.io/documentation/api#route">https://radar.io/documentation/api#route</a>
+
+</div>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Objective-C</p>
+                          <pre class="highlight objective_c"><code><span class="k">typedef</span> <span class="kt">void</span> <span class="p">(</span><span class="o">^</span><span class="n">_Nonnull</span> <span class="n">RadarRouteCompletionHandler</span><span class="p">)(</span><span class="n"><a href="Enums/RadarStatus.html">RadarStatus</a></span><span class="p">,</span>
+                                                     <span class="n"><a href="Classes/RadarRoutes.html">RadarRoutes</a></span> <span class="o">*</span><span class="n">_Nullable</span><span class="p">)</span></code></pre>
+
+                        </div>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">typealias</span> <span class="kt">RadarRouteCompletionHandler</span> <span class="o">=</span> <span class="p">(</span><span class="kt"><a href="Enums/RadarStatus.html">RadarStatus</a></span><span class="p">,</span> <span class="kt"><a href="Classes/RadarRoutes.html">RadarRoutes</a></span><span class="p">?)</span> <span class="o">-&gt;</span> <span class="kt">Void</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
               </ul>
             </div>
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2020 <a class="link" href="https://radar.io" target="_blank" rel="external">Radar Labs, Inc.</a>. All rights reserved. (Last updated: 2020-01-26)</p>
+          <p>&copy; 2020 <a class="link" href="https://radar.io" target="_blank" rel="external">Radar Labs, Inc.</a>. All rights reserved. (Last updated: 2020-02-02)</p>
           <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.12.0</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
         </section>
       </article>

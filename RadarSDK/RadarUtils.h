@@ -20,7 +20,6 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSString *)deviceId;
 + (NSString *)deviceType;
 + (NSString *)deviceMake;
-+ (NSString *)userAgent;
 + (BOOL)locationBackgroundMode;
 + (BOOL)allowsBackgroundLocationUpdates;
 + (BOOL)foreground;

@@ -35,6 +35,9 @@
                 <a href="../Classes/Radar.html">Radar</a>
               </li>
               <li class="nav-group-task">
+                <a href="../Classes/RadarAddress.html">RadarAddress</a>
+              </li>
+              <li class="nav-group-task">
                 <a href="../Classes/RadarChain.html">RadarChain</a>
               </li>
               <li class="nav-group-task">
@@ -60,6 +63,18 @@
               </li>
               <li class="nav-group-task">
                 <a href="../Classes/RadarRegion.html">RadarRegion</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/RadarRoute.html">RadarRoute</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/RadarRouteDistance.html">RadarRouteDistance</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/RadarRouteDuration.html">RadarRouteDuration</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/RadarRoutes.html">RadarRoutes</a>
               </li>
               <li class="nav-group-task">
                 <a href="../Classes/RadarSegment.html">RadarSegment</a>
@@ -103,6 +118,12 @@
                 <a href="../Enums/RadarLogLevel.html">RadarLogLevel</a>
               </li>
               <li class="nav-group-task">
+                <a href="../Enums/RadarRouteMode.html">RadarRouteMode</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Enums/RadarRouteUnits.html">RadarRouteUnits</a>
+              </li>
+              <li class="nav-group-task">
                 <a href="../Enums/RadarStatus.html">RadarStatus</a>
               </li>
               <li class="nav-group-task">
@@ -132,6 +153,9 @@
               </li>
               <li class="nav-group-task">
                 <a href="../Type%20Definitions.html#/c:Radar.h@T@RadarLocationCompletionHandler">RadarLocationCompletionHandler</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Type%20Definitions.html#/c:Radar.h@T@RadarRouteCompletionHandler">RadarRouteCompletionHandler</a>
               </li>
               <li class="nav-group-task">
                 <a href="../Type%20Definitions.html#/c:Radar.h@T@RadarSearchGeofencesCompletionHandler">RadarSearchGeofencesCompletionHandler</a>
@@ -276,7 +300,7 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Location services were unavailable, or the location request timed out.</p>
+                        <p>Location services were unavailable, or the location request timed out</p>
 
                       </div>
                       <div class="declaration">
@@ -330,6 +354,38 @@
                 <li class="item">
                   <div>
                     <code>
+                    <a name="/c:@E@RadarStatus@RadarStatusErrorBadRequest"></a>
+                    <a name="//apple_ref/objc/Case/RadarStatusErrorBadRequest" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@E@RadarStatus@RadarStatusErrorBadRequest">RadarStatusErrorBadRequest</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>One or more parameters were invalid</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Objective-C</p>
+                          <pre class="highlight objective_c"><code><span class="n">RadarStatusErrorBadRequest</span></code></pre>
+
+                        </div>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="k">case</span> <span class="n">errorBadRequest</span> <span class="o">=</span> <span class="mi">5</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
                     <a name="/c:@E@RadarStatus@RadarStatusErrorUnauthorized"></a>
                     <a name="//apple_ref/objc/Case/RadarStatusErrorUnauthorized" class="dashAnchor"></a>
                     <a class="token" href="#/c:@E@RadarStatus@RadarStatusErrorUnauthorized">RadarStatusErrorUnauthorized</a>
@@ -352,7 +408,39 @@
                         </div>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="k">case</span> <span class="n">errorUnauthorized</span> <span class="o">=</span> <span class="mi">5</span></code></pre>
+                          <pre class="highlight swift"><code><span class="k">case</span> <span class="n">errorUnauthorized</span> <span class="o">=</span> <span class="mi">6</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:@E@RadarStatus@RadarStatusErrorForbidden"></a>
+                    <a name="//apple_ref/objc/Case/RadarStatusErrorForbidden" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@E@RadarStatus@RadarStatusErrorForbidden">RadarStatusErrorForbidden</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Use of the API is forbidden for the publishable API key</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Objective-C</p>
+                          <pre class="highlight objective_c"><code><span class="n">RadarStatusErrorForbidden</span></code></pre>
+
+                        </div>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="k">case</span> <span class="n">errorForbidden</span> <span class="o">=</span> <span class="mi">7</span></code></pre>
 
                         </div>
                       </div>
@@ -384,7 +472,7 @@
                         </div>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="k">case</span> <span class="n">errorRateLimit</span> <span class="o">=</span> <span class="mi">6</span></code></pre>
+                          <pre class="highlight swift"><code><span class="k">case</span> <span class="n">errorRateLimit</span> <span class="o">=</span> <span class="mi">8</span></code></pre>
 
                         </div>
                       </div>
@@ -416,7 +504,7 @@
                         </div>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="k">case</span> <span class="n">errorServer</span> <span class="o">=</span> <span class="mi">7</span></code></pre>
+                          <pre class="highlight swift"><code><span class="k">case</span> <span class="n">errorServer</span> <span class="o">=</span> <span class="mi">9</span></code></pre>
 
                         </div>
                       </div>
@@ -448,7 +536,7 @@
                         </div>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="k">case</span> <span class="n">errorUnknown</span> <span class="o">=</span> <span class="mi">8</span></code></pre>
+                          <pre class="highlight swift"><code><span class="k">case</span> <span class="n">errorUnknown</span> <span class="o">=</span> <span class="mi">10</span></code></pre>
 
                         </div>
                       </div>
@@ -460,7 +548,7 @@
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2020 <a class="link" href="https://radar.io" target="_blank" rel="external">Radar Labs, Inc.</a>. All rights reserved. (Last updated: 2020-01-26)</p>
+          <p>&copy; 2020 <a class="link" href="https://radar.io" target="_blank" rel="external">Radar Labs, Inc.</a>. All rights reserved. (Last updated: 2020-02-02)</p>
           <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.12.0</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
         </section>
       </article>
