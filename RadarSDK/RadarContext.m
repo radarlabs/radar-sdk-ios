@@ -16,20 +16,16 @@
 
 @implementation RadarContext
 
-- (instancetype _Nullable)initWithUpdatedAt:(NSDate *)updatedAt
-                                   location:(CLLocation *)location
-                                  geofences:(NSArray *)geofences
-                                      place:(RadarPlace *)place
-                                       live:(BOOL)live
-                                    country:(RadarRegion * _Nullable)country
-                                      state:(RadarRegion * _Nullable)state
-                                        dma:(RadarRegion * _Nullable)dma
-                                 postalCode:(RadarRegion * _Nullable)postalCode {
+- (instancetype _Nullable)initWithLive:(BOOL)live
+                             geofences:(NSArray *)geofences
+                                 place:(RadarPlace *)place
+                               country:(RadarRegion * _Nullable)country
+                                 state:(RadarRegion * _Nullable)state
+                                   dma:(RadarRegion * _Nullable)dma
+                            postalCode:(RadarRegion * _Nullable)postalCode {
     self = [super init];
     if (self) {
         _live = live;
-        _updatedAt = updatedAt;
-        _location = location;
         _geofences = geofences;
         _place = place;
         _country = country;
@@ -49,27 +45,12 @@
     
     // INIT
     BOOL contextLive = NO;
-    NSDate *contextUpdatedAt;
-    CLLocation *contextLocation;
     NSArray <RadarGeofence *> *contextGeofences;
     RadarPlace *contextPlace;
     RadarRegion *country;
     RadarRegion *state;
     RadarRegion *dma;
     RadarRegion *postalCode;
-    
-    // UPDATED AT
-    id contextUpdatedAtObj = contextDict[@"updatedAt"];
-    if (contextUpdatedAtObj && [contextUpdatedAtObj isKindOfClass:[NSString class]]) {
-        NSString *contextUpdatedAtStr = (NSString *)contextUpdatedAtObj;
-        
-        NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-        dateFormatter.locale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US_POSIX"];
-        dateFormatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
-        [dateFormatter setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss.SSSZ"];
-        
-        contextUpdatedAt = [dateFormatter dateFromString:contextUpdatedAtStr];
-    }
     
     // LIVE
     id contextLiveObj = contextDict[@"live"];
@@ -101,6 +82,7 @@
     id contextPlaceObj = contextDict[@"place"];
     contextPlace = [[RadarPlace alloc] initWithObject:contextPlaceObj];
     
+    // REGIONS
     id countryObj = contextDict[@"country"];
     country = [[RadarRegion alloc] initWithObject:countryObj];
 
@@ -113,45 +95,8 @@
     id postalCodeObj = contextDict[@"postalCode"];
     postalCode = [[RadarRegion alloc] initWithObject:postalCodeObj];
     
-    // REGION STATE
-    
-    // LOCATION
-    id contextLocationObj = contextDict[@"location"];
-    if (contextLocationObj && [contextLocationObj isKindOfClass:[NSDictionary class]]) {
-        NSDictionary *contextLocationDict = (NSDictionary *)contextLocationObj;
-        
-        id contextLocationCoordinatesObj = contextLocationDict[@"coordinates"];
-        if (!contextLocationCoordinatesObj || ![contextLocationCoordinatesObj isKindOfClass:[NSArray class]]) {
-            return nil;
-        }
-        
-        NSArray *contextLocationCoordinatesArr = (NSArray *)contextLocationCoordinatesObj;
-        if (contextLocationCoordinatesArr.count != 2) {
-            return nil;
-        }
-        
-        id contextLocationCoordinatesLongitudeObj = contextLocationCoordinatesArr[0];
-        id contextLocationCoordinatesLatitudeObj = contextLocationCoordinatesArr[1];
-        if (!contextLocationCoordinatesLongitudeObj || !contextLocationCoordinatesLatitudeObj || ![contextLocationCoordinatesLongitudeObj isKindOfClass:[NSNumber class]] || ![contextLocationCoordinatesLatitudeObj isKindOfClass:[NSNumber class]]) {
-            return nil;
-        }
-        
-        NSNumber *contextLocationCoordinatesLongitudeNumber = (NSNumber *)contextLocationCoordinatesLongitudeObj;
-        NSNumber *contextLocationCoordinatesLatitudeNumber = (NSNumber *)contextLocationCoordinatesLatitudeObj;
-        
-        float contextLocationCoordinatesLongitudeFloat = [contextLocationCoordinatesLongitudeNumber floatValue];
-        float contextLocationCoordinatesLatitudeFloat = [contextLocationCoordinatesLatitudeNumber floatValue];
-        
-        id contextLocationAccuracyObj = contextDict[@"locationAccuracy"];
-        if (contextLocationAccuracyObj && [contextLocationAccuracyObj isKindOfClass:[NSNumber class]]) {
-            NSNumber *contextLocationAccuracyNumber = (NSNumber *)contextLocationAccuracyObj;
-            
-            contextLocation = [[CLLocation alloc] initWithCoordinate:CLLocationCoordinate2DMake(contextLocationCoordinatesLatitudeFloat, contextLocationCoordinatesLongitudeFloat) altitude:-1 horizontalAccuracy:[contextLocationAccuracyNumber floatValue] verticalAccuracy:-1 timestamp:(contextUpdatedAt ? contextUpdatedAt : [NSDate date])];
-        }
-    }
-    
-    if (contextUpdatedAt) {
-        return [[RadarContext alloc] initWithUpdatedAt:contextUpdatedAt location:contextLocation geofences:contextGeofences place:contextPlace live:contextLive  country:country state:state dma:dma postalCode:postalCode ];
+    if (contextLive) {
+        return [[RadarContext alloc] initWithLive:contextLive geofences:contextGeofences place:contextPlace country:country state:state dma:dma postalCode:postalCode];
     }
     
     return nil;

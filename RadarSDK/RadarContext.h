@@ -19,19 +19,9 @@
 @interface RadarContext : NSObject
 
 /**
- The datetime when the location update occurred.
- */
-@property (nonnull, copy, nonatomic, readonly) NSDate *updatedAt;
-
-/**
  A boolean indicating whether the location context was generated with your live API key.
  */
 @property (assign, nonatomic, readonly) BOOL live;
-
-/**
- The location of the update. Includes coordinates and accuracy
- */
-@property (nonnull, strong, nonatomic, readonly) CLLocation *location;
 
 /**
  An array of the geofences the location is in. May be `nil` or empty if the location is not in any geofences.
