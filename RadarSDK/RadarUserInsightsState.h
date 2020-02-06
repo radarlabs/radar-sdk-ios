@@ -8,7 +8,7 @@
 #import <Foundation/Foundation.h>
 
 /**
- Represents the learned home, work, and traveling state of the current user. For more information about Insights, see https://radar.io/documentation/insights.
+ Represents the learned home, work, traveling and commuting state of the current user. For more information about Insights, see https://radar.io/documentation/insights.
  
  @see https://radar.io/documentation/insights
  */
@@ -28,5 +28,10 @@
  A boolean indicating whether the user is traveling, based on learned home location.
  */
 @property (assign, nonatomic, readonly) BOOL traveling;
+
+/**
+ A boolean indicating whether the user is commuting, based on learned home location.
+ */
+@property (assign, nonatomic, readonly) BOOL commuting;
 
 @end
