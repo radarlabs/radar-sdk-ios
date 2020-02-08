@@ -52,14 +52,14 @@
 @property (nullable, strong, nonatomic, readonly) RadarRegion *state;
 
 /**
- The location's last known designated market area (DMA). May be `nil` if DMA is not available or if Regions is not enabled.
+ The location's designated market area (DMA). May be `nil` if DMA is not available or if Regions is not enabled.
  
  @see https://radar.io/documentation/regions
  */
 @property (nullable, strong, nonatomic, readonly) RadarRegion *dma;
 
 /**
- The location's last known postal code. May be `nil` if postal code is not available or if Regions is not enabled.
+ The location's postal code. May be `nil` if postal code is not available or if Regions is not enabled.
  
  @see https://radar.io/documentation/regions
  */

@@ -215,6 +215,33 @@
     }];
 }
 
++ (void)getContextWithCompletionHandler:(RadarGetContextCompletionHandler)completionHandler {
+    [[RadarLocationManager sharedInstance] getLocationWithCompletionHandler:^(RadarStatus status, CLLocation * _Nullable location, BOOL stopped) {
+        if (status != RadarStatusSuccess) {
+            if (completionHandler) {
+                completionHandler(status, nil, nil);
+            }
+            
+            return;
+        }
+        
+        [[RadarAPIClient sharedInstance] getContextWithLocation:location completionHandler:^(RadarStatus status, NSDictionary * _Nullable res, RadarContext * _Nullable context) {
+            if (completionHandler) {
+                completionHandler(status, location, context);
+            }
+        }];
+    }];
+}
+
++ (void)getContextWithLocation:(CLLocation *)location
+            completionHandler:(RadarGetContextCompletionHandler)completionHandler {
+    [[RadarAPIClient sharedInstance] getContextWithLocation:location completionHandler:^(RadarStatus status, NSDictionary * _Nullable res, RadarContext * _Nullable context) {
+        if (completionHandler) {
+            completionHandler(status, location, context);
+        }
+    }];
+}
+
 + (void)setLogLevel:(RadarLogLevel)level {
     [RadarSettings setLogLevel:level];
 }

@@ -95,7 +95,7 @@
     id postalCodeObj = contextDict[@"postalCode"];
     postalCode = [[RadarRegion alloc] initWithObject:postalCodeObj];
     
-    if (contextLive) {
+    if (contextGeofences) {
         return [[RadarContext alloc] initWithLive:contextLive geofences:contextGeofences place:contextPlace country:country state:state dma:dma postalCode:postalCode];
     }
     

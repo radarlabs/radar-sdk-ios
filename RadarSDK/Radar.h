@@ -13,6 +13,7 @@
 #import "RadarRegion.h"
 #import "RadarTrackingOptions.h"
 #import "RadarUser.h"
+#import "RadarContext.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -123,6 +124,13 @@ typedef void(^ _Nonnull RadarGeocodeCompletionHandler)(RadarStatus status, NSArr
  @see https://radar.io/documentation/geocoding
  */
 typedef void(^ _Nonnull RadarIPGeocodeCompletionHandler)(RadarStatus status, RadarRegion * _Nullable country);
+
+/**
+ Called when a get context request succeeds, fails, or times out. Receives the request status and, if successful, the location and the context.
+ 
+ @see https://radar.io/documentation/sdk
+ */
+typedef void(^ _Nullable RadarGetContextCompletionHandler)(RadarStatus status, CLLocation * _Nullable location, RadarContext * _Nullable context);
 
 /**
  The main class used to interact with the Radar SDK.
@@ -415,6 +423,34 @@ typedef void(^ _Nonnull RadarIPGeocodeCompletionHandler)(RadarStatus status, Rad
  */
 + (void)ipGeocodeWithCompletionHandler:(RadarIPGeocodeCompletionHandler)completionHandler
     NS_SWIFT_NAME(ipGeocode(completionHandler:));
+
+/**
+ TODO(coryp): description and docs
+ Get context for a user's location once in the foreground, without including any user data.
+ 
+ @warning Note that these calls are subject to rate limits.
+ 
+ @param completionHandler An optional completion handler.
+ 
+ @see https://radar.io/documentation/sdk
+ */
++ (void)getContextWithCompletionHandler:(RadarGetContextCompletionHandler _Nullable)completionHandler
+    NS_SWIFT_NAME(getContext(completionHandler:));
+
+/**
+ TODO(coryp): description and docs
+ Manually get context for a location, without including any user data.
+
+ @warning Note that these calls are subject to rate limits.
+ 
+ @param location A location to get context for.
+ @param completionHandler An optional completion handler.
+ 
+ @see https://radar.io/documentation/sdk#ios-manual
+ */
++ (void)getContextWithLocation:(CLLocation * _Nonnull)location
+            completionHandler:(RadarGetContextCompletionHandler _Nullable)completionHandler
+    NS_SWIFT_NAME(getContext(location:completionHandler:));
 
 /**
  Sets the log level for debug logs.

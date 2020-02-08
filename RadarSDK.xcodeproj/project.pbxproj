@@ -25,6 +25,7 @@
 		5343FFD823E231FF00808D93 /* RadarContext.h in Headers */ = {isa = PBXBuildFile; fileRef = 5343FFD723E2310D00808D93 /* RadarContext.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		5343FFDB23E4A2C400808D93 /* RadarContext.m in Sources */ = {isa = PBXBuildFile; fileRef = 5343FFD923E38BA300808D93 /* RadarContext.m */; };
 		5343FFDC23E4A2D400808D93 /* RadarContext+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 5343FFDA23E3A76900808D93 /* RadarContext+Internal.h */; };
+		53B3B26B23EE41B400080818 /* context.json in Resources */ = {isa = PBXBuildFile; fileRef = 53B3B26A23EE41B400080818 /* context.json */; };
 		78D0040E23AAD2D4007D6BE1 /* RadarAddress.h in Headers */ = {isa = PBXBuildFile; fileRef = 78156B9523A8210E0094410E /* RadarAddress.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		78D0040F23AAD2EB007D6BE1 /* RadarAddress.m in Sources */ = {isa = PBXBuildFile; fileRef = 78156B9623A8210E0094410E /* RadarAddress.m */; };
 		78D0041023AAD307007D6BE1 /* RadarAddress+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 78156B9B23A834FA0094410E /* RadarAddress+Internal.h */; };
@@ -132,6 +133,7 @@
 		5343FFD723E2310D00808D93 /* RadarContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RadarContext.h; sourceTree = "<group>"; };
 		5343FFD923E38BA300808D93 /* RadarContext.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RadarContext.m; sourceTree = "<group>"; };
 		5343FFDA23E3A76900808D93 /* RadarContext+Internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "RadarContext+Internal.h"; sourceTree = "<group>"; };
+		53B3B26A23EE41B400080818 /* context.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = context.json; sourceTree = "<group>"; };
 		78156B9523A8210E0094410E /* RadarAddress.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarAddress.h; sourceTree = "<group>"; };
 		78156B9623A8210E0094410E /* RadarAddress.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RadarAddress.m; sourceTree = "<group>"; };
 		78156B9B23A834FA0094410E /* RadarAddress+Internal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "RadarAddress+Internal.h"; sourceTree = "<group>"; };
@@ -238,6 +240,7 @@
 		DD103213237F1778003DD408 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				53B3B26A23EE41B400080818 /* context.json */,
 				78D8CE3D23AD7FEE009E91F5 /* geocode_ip.json */,
 				78D8CE3B23AD78A1009E91F5 /* geocode.json */,
 				DD103214237F1795003DD408 /* track.json */,
@@ -522,6 +525,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				DD5E35E1238205FF002D93FF /* events_verification.json in Resources */,
+				53B3B26B23EE41B400080818 /* context.json in Resources */,
 				78D8CE3C23AD78A1009E91F5 /* geocode.json in Resources */,
 				DE1E7644239724FD006F34A1 /* search_geofences.json in Resources */,
 				78D8CE3E23AD7FEE009E91F5 /* geocode_ip.json in Resources */,
