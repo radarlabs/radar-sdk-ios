@@ -237,12 +237,12 @@ static NSString * const kRegionIdentifer = @"radar";
         
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Updating tracking | options = %@; location = %@", [options dictionaryValue], location]];
         
-        if (!tracking && [options.startTrackingAfter timeIntervalSinceNow] > 0) {
+        if (!tracking && [options.startTrackingAfter timeIntervalSinceNow] < 0) {
             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"Starting time-based tracking | startTrackingAfter = %@", options.startTrackingAfter]];
             
             [RadarSettings setTracking:YES];
             tracking = YES;
-        } else if (tracking && [options.stopTrackingAfter timeIntervalSinceNow] > 0) {
+        } else if (tracking && [options.stopTrackingAfter timeIntervalSinceNow] < 0) {
             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Stopping time-based tracking | stopTrackingAfter = %@", options.stopTrackingAfter]];
             
             [RadarSettings setTracking:NO];

@@ -53,6 +53,10 @@ class Utils {
             return "Started traveling with \(confidenceStr)"
         case .userStoppedTraveling:
             return "Stopped traveling with \(confidenceStr)"
+        case .userStartedCommuting:
+            return "Started commuting with \(confidenceStr)"
+        case .userStoppedCommuting:
+            return "Stopped commuting with \(confidenceStr)"
         case .userEnteredPlace:
             return "Entered place \(event.place!.name) with \(confidenceStr)"
         case .userExitedPlace:

@@ -13,6 +13,7 @@
 #import "RadarPlace+Internal.h"
 #import "RadarGeofence+Internal.h"
 #import "RadarRegion+Internal.h"
+#import "RadarRoutes+Internal.h"
 #import "RadarLogger.h"
 #import "RadarSettings.h"
 #import "RadarState.h"
@@ -38,6 +39,19 @@
     return self;
 }
 
++ (NSDictionary *)headersWithPublishableKey:(NSString *)publishableKey {
+    return @{
+        @"Authorization": publishableKey,
+        @"Content-Type": @"application/json",
+        @"X-Radar-Config": @"true",
+        @"X-Radar-Device-Make": [RadarUtils deviceMake],
+        @"X-Radar-Device-Model": [RadarUtils deviceModel],
+        @"X-Radar-Device-OS": [RadarUtils deviceOS],
+        @"X-Radar-Device-Type": [RadarUtils deviceType],
+        @"X-Radar-SDK-Version": [RadarUtils sdkVersion]
+    };
+}
+
 - (void)getConfig {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
@@ -50,29 +64,16 @@
     if (userId) {
         [queryString appendFormat:@"&userId=%@", userId];
     }
-    [queryString appendFormat:@"&deviceId=%@", [RadarUtils deviceId]];
-    [queryString appendFormat:@"&deviceType=%@", [RadarUtils deviceType]];
-    [queryString appendFormat:@"&deviceMake=%@", [RadarUtils deviceMake]];
-    [queryString appendFormat:@"&sdkVersion=%@", [RadarUtils sdkVersion]];
-    NSString *deviceModel = [RadarUtils deviceModel];
-    if (deviceModel) {
-        [queryString appendFormat:@"&deviceModel=%@", deviceModel];
-    }
-    NSString *deviceOS = [RadarUtils deviceOS];
-    if (deviceOS) {
-        [queryString appendFormat:@"&deviceOS=%@", deviceOS];
+    NSString *deviceId = [RadarUtils deviceId];
+    if (deviceId) {
+        [queryString appendFormat:@"&deviceId=%@", userId];
     }
     
     NSString *host = [RadarSettings host];
     NSString *url = [NSString stringWithFormat:@"%@/v1/config?%@", host, queryString];
     url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
     
-    NSDictionary *headers = @{
-        @"Authorization": publishableKey,
-        @"Content-Type": @"application/json",
-        @"User-Agent": [RadarUtils userAgent],
-        @"X-Radar-Config": @"true",
-    };
+    NSDictionary *headers = [RadarAPIClient headersWithPublishableKey:publishableKey];
     
     [self.apiHelper requestWithMethod:@"GET" url:url headers:headers params:nil completionHandler:^(RadarStatus status, NSDictionary * _Nullable res) {
         if (!res) {
@@ -114,7 +115,11 @@
     }
     params[@"latitude"] = @(location.coordinate.latitude);
     params[@"longitude"] = @(location.coordinate.longitude);
-    params[@"accuracy"] = @(location.horizontalAccuracy);
+    CLLocationAccuracy accuracy = location.horizontalAccuracy;
+    if (accuracy <= 0) {
+        accuracy = 1;
+    }
+    params[@"accuracy"] = @(accuracy);
     params[@"altitude"] = @(location.altitude);
     params[@"verticalAccuracy"] = @(location.verticalAccuracy);
     params[@"speed"] = @(location.speed);
@@ -134,46 +139,20 @@
     params[@"deviceType"] = [RadarUtils deviceType];
     params[@"deviceMake"] = [RadarUtils deviceMake];
     params[@"sdkVersion"] = [RadarUtils sdkVersion];
-    NSString *deviceModel = [RadarUtils deviceModel];
-    if (deviceModel) {
-        params[@"deviceModel"] = deviceModel;
-    }
-    NSString *deviceOS = [RadarUtils deviceOS];
-    if (deviceOS) {
-        params[@"deviceOS"] = deviceOS;
-    }
-    NSString *country = [RadarUtils country];
-    if (country) {
-        params[@"country"] = country;
-    }
-    NSNumber *timeZoneOffset = [RadarUtils timeZoneOffset];
-    if (timeZoneOffset) {
-        params[@"timeZoneOffset"] = timeZoneOffset;
-    }
-    NSString *uaChannelId = [RadarUtils uaChannelId];
-    if (uaChannelId) {
-        params[@"uaChannelId"] = uaChannelId;
-    }
-    NSString *uaNamedUserId = [RadarUtils uaNamedUserId];
-    if (uaNamedUserId) {
-        params[@"uaNamedUserId"] = uaNamedUserId;
-    }
-    NSString *uaSessionId = [RadarUtils uaSessionId];
-    if (uaSessionId) {
-        params[@"uaSessionId"] = uaSessionId;
-    }
+    params[@"deviceModel"] = [RadarUtils deviceModel];
+    params[@"deviceOS"] = [RadarUtils deviceOS];
+    params[@"country"] = [RadarUtils country];
+    params[@"timeZoneOffset"] = [RadarUtils timeZoneOffset];
+    params[@"uaChannelId"] = [RadarUtils uaChannelId];
+    params[@"uaNamedUserId"] = [RadarUtils uaNamedUserId];
+    params[@"uaSessionId"] = [RadarUtils uaSessionId];
     params[@"source"] = [Radar stringForSource:source];
     
     NSString *host = [RadarSettings host];
     NSString *url = [NSString stringWithFormat:@"%@/v1/track", host];
     url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
     
-    NSDictionary *headers = @{
-        @"Authorization": publishableKey,
-        @"Content-Type": @"application/json",
-        @"User-Agent": [RadarUtils userAgent],
-        @"X-Radar-Config": @"true",
-    };
+    NSDictionary *headers = [RadarAPIClient headersWithPublishableKey:publishableKey];
     
     [self.apiHelper requestWithMethod:@"POST" url:url headers:headers params:params completionHandler:^(RadarStatus status, NSDictionary * _Nullable res) {
         if (status != RadarStatusSuccess || !res) {
@@ -241,40 +220,25 @@
     if (verifiedPlaceId) {
         params[@"verifiedPlaceId"] = verifiedPlaceId;
     }
-    params[@"deviceType"] = [RadarUtils deviceType];
-    params[@"deviceMake"] = [RadarUtils deviceMake];
-    params[@"sdkVersion"] = [RadarUtils sdkVersion];
-    NSString *deviceModel = [RadarUtils deviceModel];
-    if (deviceModel) {
-        params[@"deviceModel"] = deviceModel;
-    }
-    NSString *deviceOS = [RadarUtils deviceOS];
-    if (deviceOS) {
-        params[@"deviceOS"] = deviceOS;
-    }
     
     NSString *host = [RadarSettings host];
     NSString *url = [NSString stringWithFormat:@"%@/v1/events/%@/verification", host, eventId];
     url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
     
-    NSDictionary *headers = @{
-        @"Authorization": publishableKey,
-        @"Content-Type": @"application/json",
-        @"User-Agent": [RadarUtils userAgent],
-    };
+    NSDictionary *headers = [RadarAPIClient headersWithPublishableKey:publishableKey];
     
     [self.apiHelper requestWithMethod:@"PUT" url:url headers:headers params:params completionHandler:^(RadarStatus status, NSDictionary * _Nullable res) {
         
     }];
 }
 
-- (void)searchPlacesWithLocation:(CLLocation * _Nonnull)location
-                          radius:(int)radius
-                          chains:(NSArray * _Nullable)chains
-                      categories:(NSArray * _Nullable)categories
-                          groups:(NSArray * _Nullable)groups
-                           limit:(int)limit
-               completionHandler:(RadarSearchPlacesAPICompletionHandler)completionHandler {
+- (void)searchPlacesNear:(CLLocation * _Nonnull)near
+                  radius:(int)radius
+                  chains:(NSArray * _Nullable)chains
+              categories:(NSArray * _Nullable)categories
+                  groups:(NSArray * _Nullable)groups
+                   limit:(int)limit
+       completionHandler:(RadarSearchPlacesAPICompletionHandler)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
         return completionHandler(RadarStatusErrorPublishableKey, nil, nil);
@@ -283,8 +247,7 @@
     int finalLimit = MIN(limit, 100);
     
     NSMutableString *queryString = [NSMutableString new];
-    [queryString appendFormat:@"latitude=%.15f", location.coordinate.latitude];
-    [queryString appendFormat:@"&longitude=%.15f", location.coordinate.longitude];
+    [queryString appendFormat:@"near=%.06f,%.06f", near.coordinate.latitude, near.coordinate.longitude];
     [queryString appendFormat:@"&radius=%d", radius];
     [queryString appendFormat:@"&limit=%d", finalLimit];
     if (chains && [chains count] > 0) {
@@ -296,28 +259,12 @@
     if (groups && [groups count] > 0) {
         [queryString appendFormat:@"&groups=%@", [groups componentsJoinedByString:@","]];
     }
-    [queryString appendFormat:@"&deviceType=%@", [RadarUtils deviceType]];
-    [queryString appendFormat:@"&deviceMake=%@", [RadarUtils deviceMake]];
-    [queryString appendFormat:@"&sdkVersion=%@", [RadarUtils sdkVersion]];
-    NSString *deviceModel = [RadarUtils deviceModel];
-    if (deviceModel) {
-        [queryString appendFormat:@"&deviceModel=%@", deviceModel];
-    }
-    NSString *deviceOS = [RadarUtils deviceOS];
-    if (deviceOS) {
-        [queryString appendFormat:@"&deviceOS=%@", deviceOS];
-    }
     
     NSString *host = [RadarSettings host];
     NSString *url = [NSString stringWithFormat:@"%@/v1/search/places?%@", host, queryString];
     url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
     
-    NSDictionary *headers = @{
-        @"Authorization": publishableKey,
-        @"Content-Type": @"application/json",
-        @"User-Agent": [RadarUtils userAgent],
-        @"X-Radar-Config": @"true",
-    };
+    NSDictionary *headers = [RadarAPIClient headersWithPublishableKey:publishableKey];
     
     [self.apiHelper requestWithMethod:@"GET" url:url headers:headers params:nil completionHandler:^(RadarStatus status, NSDictionary * _Nullable res) {
         if (status != RadarStatusSuccess || !res) {
@@ -334,11 +281,11 @@
     }];
 }
 
-- (void)searchGeofencesWithLocation:(CLLocation * _Nonnull)location
-                             radius:(int)radius
-                             tags:(NSArray * _Nullable)tags
-                              limit:(int)limit
-                  completionHandler:(RadarSearchGeofencesAPICompletionHandler)completionHandler {
+- (void)searchGeofencesNear:(CLLocation * _Nonnull)near
+                     radius:(int)radius
+                       tags:(NSArray * _Nullable)tags
+                      limit:(int)limit
+          completionHandler:(RadarSearchGeofencesAPICompletionHandler)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
         return completionHandler(RadarStatusErrorPublishableKey, nil, nil);
@@ -347,35 +294,18 @@
     int finalLimit = MIN(limit, 100);
 
     NSMutableString *queryString = [NSMutableString new];
-    [queryString appendFormat:@"latitude=%.15f", location.coordinate.latitude];
-    [queryString appendFormat:@"&longitude=%.15f", location.coordinate.longitude];
+    [queryString appendFormat:@"near=%.06f,%.06f", near.coordinate.latitude, near.coordinate.longitude];
     [queryString appendFormat:@"&radius=%d", radius];
     [queryString appendFormat:@"&limit=%d", finalLimit];
     if (tags && [tags count] > 0) {
         [queryString appendFormat:@"&tags=%@", [tags componentsJoinedByString:@","]];
-    }
-    [queryString appendFormat:@"&deviceType=%@", [RadarUtils deviceType]];
-    [queryString appendFormat:@"&deviceMake=%@", [RadarUtils deviceMake]];
-    [queryString appendFormat:@"&sdkVersion=%@", [RadarUtils sdkVersion]];
-    NSString *deviceModel = [RadarUtils deviceModel];
-    if (deviceModel) {
-        [queryString appendFormat:@"&deviceModel=%@", deviceModel];
-    }
-    NSString *deviceOS = [RadarUtils deviceOS];
-    if (deviceOS) {
-        [queryString appendFormat:@"&deviceOS=%@", deviceOS];
     }
 
     NSString *host = [RadarSettings host];
     NSString *url = [NSString stringWithFormat:@"%@/v1/search/geofences?%@", host, queryString];
     url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
 
-    NSDictionary *headers = @{
-        @"Authorization": publishableKey,
-        @"Content-Type": @"application/json",
-        @"User-Agent": [RadarUtils userAgent],
-        @"X-Radar-Config": @"true",
-    };
+    NSDictionary *headers = [RadarAPIClient headersWithPublishableKey:publishableKey];
 
     [self.apiHelper requestWithMethod:@"GET" url:url headers:headers params:nil completionHandler:^(RadarStatus status, NSDictionary * _Nullable res) {
         if (status != RadarStatusSuccess || !res) {
@@ -386,6 +316,43 @@
         NSArray<RadarGeofence *> *geofences = [RadarGeofence geofencesFromObject:geofencesObj];
         if (geofences) {
             return completionHandler(RadarStatusSuccess, res, geofences);
+        }
+
+        completionHandler(RadarStatusErrorServer, nil, nil);
+    }];
+}
+
+- (void)autocompleteQuery:(NSString *)query
+                     near:(CLLocation * _Nonnull)near
+                    limit:(int)limit
+        completionHandler:(RadarGeocodeAPICompletionHandler)completionHandler {
+    NSString *publishableKey = [RadarSettings publishableKey];
+    if (!publishableKey) {
+        return completionHandler(RadarStatusErrorPublishableKey, nil, nil);
+    }
+    
+    int finalLimit = MIN(limit, 100);
+    
+    NSMutableString *queryString = [NSMutableString new];
+    [queryString appendFormat:@"query=%@", query];
+    [queryString appendFormat:@"&near=%.06f,%.06f", near.coordinate.latitude, near.coordinate.longitude];
+    [queryString appendFormat:@"&limit=%d", finalLimit];
+    
+    NSString *host = [RadarSettings host];
+    NSString *url = [NSString stringWithFormat:@"%@/v1/search/autocomplete?%@", host, queryString];
+    url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
+
+    NSDictionary *headers = [RadarAPIClient headersWithPublishableKey:publishableKey];
+
+    [self.apiHelper requestWithMethod:@"GET" url:url headers:headers params:nil completionHandler:^(RadarStatus status, NSDictionary * _Nullable res) {
+        if (status != RadarStatusSuccess || !res) {
+            return completionHandler(status, nil, nil);
+        }
+
+        id addressesObj = res[@"addresses"];
+        NSArray<RadarAddress *> *addresses = [RadarAddress addressesFromObject:addressesObj];
+        if (addresses) {
+            return completionHandler(RadarStatusSuccess, res, addresses);
         }
 
         completionHandler(RadarStatusErrorServer, nil, nil);
@@ -406,12 +373,7 @@
     NSString *url = [NSString stringWithFormat:@"%@/v1/geocode/forward?%@", host, queryString];
     url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
 
-    NSDictionary *headers = @{
-        @"Authorization": publishableKey,
-        @"Content-Type": @"application/json",
-        @"User-Agent": [RadarUtils userAgent],
-        @"X-Radar-Config": @"true",
-    };
+    NSDictionary *headers = [RadarAPIClient headersWithPublishableKey:publishableKey];
 
     [self.apiHelper requestWithMethod:@"GET" url:url headers:headers params:nil completionHandler:^(RadarStatus status, NSDictionary * _Nullable res) {
         if (status != RadarStatusSuccess || !res) {
@@ -436,19 +398,13 @@
     }
 
     NSMutableString *queryString = [NSMutableString new];
-    [queryString appendFormat:@"latitude=%.15f", location.coordinate.latitude];
-    [queryString appendFormat:@"&longitude=%.15f", location.coordinate.longitude];
+    [queryString appendFormat:@"coordinates=%.06f,%.06f", location.coordinate.latitude, location.coordinate.longitude];
 
     NSString *host = [RadarSettings host];
     NSString *url = [NSString stringWithFormat:@"%@/v1/geocode/reverse?%@", host, queryString];
     url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
 
-    NSDictionary *headers = @{
-        @"Authorization": publishableKey,
-        @"Content-Type": @"application/json",
-        @"User-Agent": [RadarUtils userAgent],
-        @"X-Radar-Config": @"true",
-    };
+    NSDictionary *headers = [RadarAPIClient headersWithPublishableKey:publishableKey];
 
     [self.apiHelper requestWithMethod:@"GET" url:url headers:headers params:nil completionHandler:^(RadarStatus status, NSDictionary * _Nullable res) {
         if (status != RadarStatusSuccess || !res) {
@@ -474,12 +430,7 @@
     NSString *host = [RadarSettings host];
     NSString *url = [NSString stringWithFormat:@"%@/v1/geocode/ip", host];
 
-    NSDictionary *headers = @{
-        @"Authorization": publishableKey,
-        @"Content-Type": @"application/json",
-        @"User-Agent": [RadarUtils userAgent],
-        @"X-Radar-Config": @"true",
-    };
+    NSDictionary *headers = [RadarAPIClient headersWithPublishableKey:publishableKey];
 
     [self.apiHelper requestWithMethod:@"GET" url:url headers:headers params:nil completionHandler:^(RadarStatus status, NSDictionary * _Nullable res) {
         if (status != RadarStatusSuccess || !res) {
@@ -510,22 +461,73 @@
     NSString *host = [RadarSettings host];
     NSString *url = [NSString stringWithFormat:@"%@/v1/context?%@", host, queryString];
     
-    NSDictionary *headers = @{
-        @"Authorization": publishableKey,
-        @"Content-Type": @"application/json",
-        @"User-Agent": [RadarUtils userAgent],
-        @"X-Radar-Config": @"true",
-    };
-    
+    NSDictionary *headers = [RadarAPIClient headersWithPublishableKey:publishableKey];
+
     [self.apiHelper requestWithMethod:@"GET" url:url headers:headers params:nil completionHandler:^(RadarStatus status, NSDictionary * _Nullable res) {
         if (status != RadarStatusSuccess || !res) {
             return completionHandler(status, nil, nil);
         }
-        
+
         id contextObj = res[@"context"];
         RadarContext *context = [[RadarContext alloc] initWithObject:contextObj];
         if (context) {
             return completionHandler(RadarStatusSuccess, res, context);
+        }
+
+        completionHandler(RadarStatusErrorServer, nil, nil);
+    }];
+}
+
+- (void)getDistanceFromOrigin:(CLLocation *)origin
+                  destination:(CLLocation *)destination
+                        modes:(RadarRouteMode)modes
+                        units:(RadarRouteUnits)units
+            completionHandler:(RadarRouteAPICompletionHandler)completionHandler {
+    NSString *publishableKey = [RadarSettings publishableKey];
+    if (!publishableKey) {
+        return completionHandler(RadarStatusErrorPublishableKey, nil, nil);
+    }
+
+    NSMutableString *queryString = [NSMutableString new];
+    [queryString appendFormat:@"origin=%.06f,%.06f", origin.coordinate.latitude, origin.coordinate.longitude];
+    [queryString appendFormat:@"&destination=%.06f,%.06f", destination.coordinate.latitude, destination.coordinate.longitude];
+    NSMutableArray<NSString *> *modesArr = [NSMutableArray array];
+    if (modes & RadarRouteModeFoot) {
+        [modesArr addObject:@"foot"];
+    }
+    if (modes & RadarRouteModeBike) {
+        [modesArr addObject:@"bike"];
+    }
+    if (modes & RadarRouteModeCar) {
+        [modesArr addObject:@"car"];
+    }
+    if (modes & RadarRouteModeTransit) {
+        [modesArr addObject:@"transit"];
+    }
+    [queryString appendFormat:@"&modes=%@", [modesArr componentsJoinedByString:@","]];
+    NSString *unitsStr;
+    if (units == RadarRouteUnitsMetric) {
+        unitsStr = @"metric";
+    } else {
+        unitsStr = @"imperial";
+    }
+    [queryString appendFormat:@"&units=%@", unitsStr];
+    
+    NSString *host = [RadarSettings host];
+    NSString *url = [NSString stringWithFormat:@"%@/v1/route/distance?%@", host, queryString];
+    url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
+
+    NSDictionary *headers = [RadarAPIClient headersWithPublishableKey:publishableKey];
+
+    [self.apiHelper requestWithMethod:@"GET" url:url headers:headers params:nil completionHandler:^(RadarStatus status, NSDictionary * _Nullable res) {
+        if (status != RadarStatusSuccess || !res) {
+            return completionHandler(status, nil, nil);
+        }
+
+        id routesObj = res[@"routes"];
+        RadarRoutes *routes = [[RadarRoutes alloc] initWithObject:routesObj];
+        if (routes) {
+            return completionHandler(RadarStatusSuccess, res, routes);
         }
 
         completionHandler(RadarStatusErrorServer, nil, nil);

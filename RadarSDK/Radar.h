@@ -11,6 +11,7 @@
 #import "RadarAddress.h"
 #import "RadarEvent.h"
 #import "RadarRegion.h"
+#import "RadarRoutes.h"
 #import "RadarTrackingOptions.h"
 #import "RadarUser.h"
 #import "RadarContext.h"
@@ -31,12 +32,16 @@ typedef NS_ENUM(NSInteger, RadarStatus) {
     RadarStatusErrorPublishableKey,
     /// The app's location authorization status is not `kCLAuthorizationStatusAuthorizedWhenInUse` or `kCLAuthorizationStatusAuthorizedAlways`
     RadarStatusErrorPermissions,
-    /// Location services were unavailable, or the location request timed out.
+    /// Location services were unavailable, or the location request timed out
     RadarStatusErrorLocation,
     /// The network was unavailable, or the network connection timed out
     RadarStatusErrorNetwork,
+    /// One or more parameters were invalid
+    RadarStatusErrorBadRequest,
     /// The publishable API key is invalid
     RadarStatusErrorUnauthorized,
+    /// Use of the API is forbidden for the publishable API key
+    RadarStatusErrorForbidden,
     /// Exceeded rate limit
     RadarStatusErrorRateLimit,
     /// An internal server error occurred
@@ -84,6 +89,30 @@ typedef NS_ENUM(NSInteger, RadarLogLevel) {
 };
 
 /**
+ The travel modes for routes.
+ */
+typedef NS_OPTIONS(NSInteger, RadarRouteMode) {
+    /// Foot
+    RadarRouteModeFoot NS_SWIFT_NAME(foot) = 1 << 0,
+    /// Bike
+    RadarRouteModeBike NS_SWIFT_NAME(bike) = 1 << 1,
+    /// Car
+    RadarRouteModeCar NS_SWIFT_NAME(car) = 1 << 2,
+    /// Transit
+    RadarRouteModeTransit NS_SWIFT_NAME(transit) = 1 << 3
+};
+
+/**
+ The distance units for routes.
+ */
+typedef NS_ENUM(NSInteger, RadarRouteUnits) {
+    /// Imperial (feet)
+    RadarRouteUnitsImperial NS_SWIFT_NAME(imperial),
+    /// Metric (meters)
+    RadarRouteUnitsMetric NS_SWIFT_NAME(metric)
+};
+
+/**
  Called when a location request succeeds, fails, or times out. Receives the request status and, if successful, the location.
  
  @see https://radar.io/documentation/sdk#ios-foreground
@@ -100,28 +129,28 @@ typedef void(^ _Nullable RadarTrackCompletionHandler)(RadarStatus status, CLLoca
 /**
  Called when a place search request succeeds, fails, or times out. Receives the request status and, if successful, the location and an array of places sorted by distance.
  
- @see https://radar.io/documentation/sdk#ios-search
+ @see https://radar.io/documentation/api#search-places
  */
 typedef void(^ _Nonnull RadarSearchPlacesCompletionHandler)(RadarStatus status, CLLocation * _Nullable location, NSArray<RadarPlace *> * _Nullable places);
 
 /**
  Called when a geofence search request succeeds, fails, or times out. Receives the request status and, if successful, the location and an array of geofences sorted by distance.
 
- @see https://radar.io/documentation/sdk#ios-search
+ @see https://radar.io/documentation/api#search-geofences
  */
 typedef void(^ _Nonnull RadarSearchGeofencesCompletionHandler)(RadarStatus status, CLLocation * _Nullable location, NSArray<RadarGeofence *> * _Nullable geofences);
 
 /**
  Called when a geocoding request succeeds, fails, or times out. Receives the request status and, if successful, the geocoding results (an array of addresses).
 
- @see https://radar.io/documentation/geocoding
+ @see https://radar.io/documentation/api#geocode
  */
 typedef void(^ _Nonnull RadarGeocodeCompletionHandler)(RadarStatus status, NSArray<RadarAddress *> * _Nullable addresses);
 
 /**
  Called when an IP geocoding request succeeds, fails, or times out. Receives the request status and, if successful, the geocoding result (a country).
 
- @see https://radar.io/documentation/geocoding
+ @see https://radar.io/documentation/api#geocode-ip
  */
 typedef void(^ _Nonnull RadarIPGeocodeCompletionHandler)(RadarStatus status, RadarRegion * _Nullable country);
 
@@ -131,6 +160,13 @@ typedef void(^ _Nonnull RadarIPGeocodeCompletionHandler)(RadarStatus status, Rad
  @see https://radar.io/documentation/sdk
  */
 typedef void(^ _Nullable RadarGetContextCompletionHandler)(RadarStatus status, CLLocation * _Nullable location, RadarContext * _Nullable context);
+
+/**
+ Called when a routing request succeeds, fails, or times out. Receives the request status and, if successful, the routes.
+
+ @see https://radar.io/documentation/api#route
+ */
+typedef void(^ _Nonnull RadarRouteCompletionHandler)(RadarStatus status, RadarRoutes * _Nullable routes);
 
 /**
  The main class used to interact with the Radar SDK.
@@ -340,7 +376,7 @@ typedef void(^ _Nullable RadarGetContextCompletionHandler)(RadarStatus status, C
  
  @warning You may specify only one of chains, categories, or groups.
 
- @param location The location to search.
+ @param near The location to search.
  @param radius The radius to search, in meters. A number between 100 and 10000.
  @param chains An array of chain slugs to filter. See https://radar.io/documentation/places/chains
  @param categories An array of categories to filter. See: https://radar.io/documentation/places/categories
@@ -348,14 +384,14 @@ typedef void(^ _Nullable RadarGetContextCompletionHandler)(RadarStatus status, C
  @param limit The max number of places to return. A number between 1 and 100.
  @param completionHandler A completion handler.
 */
-+ (void)searchPlacesWithLocation:(CLLocation *)location
-                          radius:(int)radius
-                          chains:(NSArray * _Nullable)chains
-                      categories:(NSArray * _Nullable)categories
-                          groups:(NSArray * _Nullable)groups
-                           limit:(int)limit
-               completionHandler:(RadarSearchPlacesCompletionHandler)completionHandler
-    NS_SWIFT_NAME(searchPlaces(location:radius:chains:categories:groups:limit:completionHandler:));
++ (void)searchPlacesNear:(CLLocation *)near
+                  radius:(int)radius
+                  chains:(NSArray * _Nullable)chains
+              categories:(NSArray * _Nullable)categories
+                  groups:(NSArray * _Nullable)groups
+                   limit:(int)limit
+       completionHandler:(RadarSearchPlacesCompletionHandler)completionHandler
+    NS_SWIFT_NAME(searchPlaces(near:radius:chains:categories:groups:limit:completionHandler:));
 
 
 /**
@@ -375,18 +411,32 @@ typedef void(^ _Nullable RadarGetContextCompletionHandler)(RadarStatus status, C
 /**
  Searches for geofences near a location, sorted by distance.
 
- @param location The location to search.
+ @param near The location to search.
  @param radius The radius to search, in meters. A number between 100 and 10000.
  @param tags An array of tags to filter. See https://radar.io/documentation/geofences
  @param limit The max number of geofences to return. A number between 1 and 100.
  @param completionHandler A completion handler.
 */
-+ (void)searchGeofencesWithLocation:(CLLocation *)location
-                             radius:(int)radius
-                               tags:(NSArray * _Nullable)tags
-                              limit:(int)limit
-                  completionHandler:(RadarSearchGeofencesCompletionHandler)completionHandler
-    NS_SWIFT_NAME(searchGeofences(location:radius:tags:limit:completionHandler:));
++ (void)searchGeofencesNear:(CLLocation *)near
+                     radius:(int)radius
+                       tags:(NSArray * _Nullable)tags
+                      limit:(int)limit
+          completionHandler:(RadarSearchGeofencesCompletionHandler)completionHandler
+    NS_SWIFT_NAME(searchGeofences(near:radius:tags:limit:completionHandler:));
+
+/**
+ Autocompletes partial addresses and place names, sorted by relevance.
+ 
+ @param query The partial address or place name to autocomplete.
+ @param near A location for the search.
+ @param limit The max number of addresses to return. A number between 1 and 100.
+ @param completionHandler A completion handler.
+ */
++ (void)autocompleteQuery:(NSString * _Nonnull)query
+                     near:(CLLocation * _Nonnull)near
+                    limit:(int)limit
+        completionHandler:(RadarGeocodeCompletionHandler)completionHandler
+    NS_SWIFT_NAME(autocomplete(query:near:limit:completionHandler:));
 
 /**
  Geocodes an address, converting address to coordinates.
@@ -448,9 +498,40 @@ typedef void(^ _Nullable RadarGetContextCompletionHandler)(RadarStatus status, C
  
  @see https://radar.io/documentation/sdk#ios-manual
  */
+ 
 + (void)getContextWithLocation:(CLLocation * _Nonnull)location
             completionHandler:(RadarGetContextCompletionHandler _Nullable)completionHandler
     NS_SWIFT_NAME(getContext(location:completionHandler:));
+
+/**
+ Gets the device's current location, then calculates the travel distance and duration to a destination.
+ 
+ @param destination The destination.
+ @param modes The travel modes.
+ @param units The distance units.
+ @param completionHandler A completion handler.
+ */
++ (void)getDistanceToDestination:(CLLocation * _Nonnull)destination
+                           modes:(RadarRouteMode)modes
+                           units:(RadarRouteUnits)units
+               completionHandler:(RadarRouteCompletionHandler)completionHandler
+    NS_SWIFT_NAME(getDistance(destination:modes:units:completionHandler:));
+
+/**
+ Calculates the travel distance and duration from an origin to a destination.
+ 
+ @param origin The origin.
+ @param destination The destination.
+ @param modes The travel modes.
+ @param units The distance units.
+ @param completionHandler A completion handler.
+ */
++ (void)getDistanceFromOrigin:(CLLocation * _Nonnull)origin
+                  destination:(CLLocation * _Nonnull)destination
+                        modes:(RadarRouteMode)modes
+                        units:(RadarRouteUnits)units
+            completionHandler:(RadarRouteCompletionHandler)completionHandler
+    NS_SWIFT_NAME(getDistance(origin:destination:modes:units:completionHandler:));
 
 /**
  Sets the log level for debug logs.
@@ -477,7 +558,7 @@ typedef void(^ _Nullable RadarGetContextCompletionHandler)(RadarStatus status, C
  @return A display string for the location source value.
  */
 + (NSString *)stringForSource:(RadarLocationSource)source
-    NS_SWIFT_NAME(stringForSource(_:));;
+    NS_SWIFT_NAME(stringForSource(_:));
 
 @end
 

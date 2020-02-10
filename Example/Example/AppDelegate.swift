@@ -35,15 +35,24 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         options.showBlueBar = true
         Radar.startTracking(trackingOptions: options)
         
-        Radar.searchPlaces(radius: 1000, chains: ["mcdonalds"], categories: nil, groups: nil, limit: 10) { (status, location, places) in
+        Radar.searchPlaces(
+            radius: 1000,
+            chains: ["mcdonalds"],
+            categories: nil,
+            groups: nil,
+            limit: 10
+        ) { (status, location, places) in
             print("Search places: status = \(Radar.stringForStatus(status)); places = \(String(describing: places))")
         }
         
-        Radar.searchGeofences(radius: 1000, tags: ["store"], limit: 10) { (status, location, geofences) in
+        Radar.searchGeofences(
+            radius: 1000,
+            tags: ["store"], limit: 10
+        ) { (status, location, geofences) in
             print("Search geofences: status = \(Radar.stringForStatus(status)); geofences = \(String(describing: geofences))")
         }
         
-        Radar.geocode(address: "20 Jay Street, Brooklyn, NY") { (status, addresses) in
+        Radar.geocode(address: "20 jay st brooklyn") { (status, addresses) in
             print("Geocode: status = \(Radar.stringForStatus(status)); coordinate = \(String(describing: addresses?.first?.coordinate))")
         }
         
@@ -53,6 +62,23 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         
         Radar.ipGeocode { (status, country) in
             print("IP geocode: status = \(Radar.stringForStatus(status)); code = \(String(describing: country?.code)); flag = \(String(describing: country?.flag))")
+        }
+        
+        Radar.autocomplete(
+            query: "brooklyn roasting",
+            near: CLLocation(latitude: 40.70390, longitude: -73.98670),
+            limit: 10
+        ) { (status, addresses) in
+            print("Autocomplete: status = \(Radar.stringForStatus(status)); formattedAddress = \(String(describing: addresses?.first?.formattedAddress))")
+        }
+        
+        Radar.getDistance(
+            origin: CLLocation(latitude: 40.78382, longitude: -73.97536),
+            destination: CLLocation(latitude: 40.70390, longitude: -73.98670),
+            modes: [.foot, .car],
+            units: .imperial
+        ) { (status, routes) in
+            print("Distance: status = \(Radar.stringForStatus(status)); routes.car.distance.value = \(String(describing: routes?.car?.distance.value)); routes.car.distance.text = \(String(describing: routes?.car?.distance.text)); routes.car.duration.value = \(String(describing: routes?.car?.duration.value)); routes.car.duration.text = \(String(describing: routes?.car?.duration.text))")
         }
         
         return true

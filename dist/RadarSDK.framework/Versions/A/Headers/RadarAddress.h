@@ -24,6 +24,11 @@ typedef NS_ENUM(NSInteger, RadarAddressConfidence) {
 
 NS_ASSUME_NONNULL_BEGIN
 
+/**
+ Represents an address. For more information, see https://radar.io/documentation/api#geocode.
+ 
+ @see https://radar.io/documentation/api#geocode
+ */
 @interface RadarAddress : NSObject
 
 /**
@@ -90,6 +95,11 @@ NS_ASSUME_NONNULL_BEGIN
  The street number of the address.
  */
 @property (nullable, copy, nonatomic, readonly) NSString *number;
+
+/**
+ The name of the address.
+ */
+@property (nullable, copy, nonatomic, readonly) NSString *name;
 
 /**
   The confidence level of the geocoding result.

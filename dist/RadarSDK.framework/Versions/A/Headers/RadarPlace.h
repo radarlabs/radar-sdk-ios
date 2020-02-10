@@ -64,7 +64,7 @@
 /**
  Returns a boolean indicating whether the place is part of the specified chain.
  
- @return A boolean indicating whether the place is part of the specified the chain.
+ @return A boolean indicating whether the place is part of the specified chain.
  **/
 - (BOOL)isChain:(NSString *_Nullable)slug;
 

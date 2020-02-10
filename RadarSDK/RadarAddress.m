@@ -52,6 +52,7 @@
     NSString *county;
     NSString *neighborhood;
     NSString *number;
+    NSString *name;
 
     RadarAddressConfidence confidence = RadarAddressConfidenceNone;
 
@@ -130,6 +131,11 @@
     if (addressNumberObj && [addressNumberObj isKindOfClass:[NSString class]]) {
         number = (NSString *)addressNumberObj;
     }
+    
+    id nameObj = addressDict[@"name"];
+    if (nameObj && [nameObj isKindOfClass:[NSString class]]) {
+        name = (NSString *)nameObj;
+    }
 
     id confidenceObj = addressDict[@"confidence"];
     if (confidenceObj && [confidenceObj isKindOfClass:[NSString class]]) {
@@ -144,7 +150,7 @@
         }
     }
 
-    return [[RadarAddress alloc] initWithCoordinate:coordinate formattedAddress:formattedAddress country:country countryCode:countryCode countryFlag:countryFlag state:state stateCode:stateCode postalCode:postalCode city:city borough:borough county:county neighborhood:neighborhood number:number confidence:confidence];
+    return [[RadarAddress alloc] initWithCoordinate:coordinate formattedAddress:formattedAddress country:country countryCode:countryCode countryFlag:countryFlag state:state stateCode:stateCode postalCode:postalCode city:city borough:borough county:county neighborhood:neighborhood number:number name:name confidence:confidence];
 }
 
 - (instancetype _Nullable)initWithCoordinate:(CLLocationCoordinate2D)coordinate
@@ -160,6 +166,7 @@
                                       county:(NSString * _Nullable)county
                                 neighborhood:(NSString * _Nullable)neighborhood
                                       number:(NSString * _Nullable)number
+                                        name:(NSString * _Nullable)name
                                   confidence:(RadarAddressConfidence)confidence {
     self = [super init];
     if (self) {
@@ -176,6 +183,7 @@
         _county = county;
         _neighborhood = neighborhood;
         _number = number;
+        _name = name;
         _confidence = confidence;
     }
     return self;

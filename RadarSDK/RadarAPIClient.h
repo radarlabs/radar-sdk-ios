@@ -14,6 +14,7 @@
 #import "RadarAddress.h"
 #import "RadarEvent.h"
 #import "RadarRegion.h"
+#import "RadarRoutes.h"
 #import "RadarUser.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -34,12 +35,16 @@ typedef void(^ _Nullable RadarGetContextAPICompletionHandler)(
     RadarContext * _Nullable context
 );
 
+typedef void(^ _Nullable RadarRouteAPICompletionHandler)(RadarStatus status, NSDictionary * _Nullable res, RadarRoutes * _Nullable routes);
+
 @interface RadarAPIClient : NSObject
 
 @property (nullable, weak, nonatomic) id<RadarDelegate> delegate;
 @property (nonnull, strong, nonatomic) RadarAPIHelper *apiHelper;
 
 + (instancetype)sharedInstance;
+
++ (NSDictionary *)headersWithPublishableKey:(NSString *)publishableKey;
 
 - (void)getConfig;
 
@@ -53,19 +58,24 @@ typedef void(^ _Nullable RadarGetContextAPICompletionHandler)(
          verification:(RadarEventVerification)verification
       verifiedPlaceId:(NSString * _Nullable)verifiedPlaceId;
 
-- (void)searchPlacesWithLocation:(CLLocation * _Nonnull)location
-                          radius:(int)radius
-                          chains:(NSArray * _Nullable)chains
-                      categories:(NSArray * _Nullable)categories
-                          groups:(NSArray * _Nullable)groups
-                           limit:(int)limit
-               completionHandler:(RadarSearchPlacesAPICompletionHandler _Nullable)completionHandler;
+- (void)searchPlacesNear:(CLLocation * _Nonnull)near
+                  radius:(int)radius
+                  chains:(NSArray * _Nullable)chains
+              categories:(NSArray * _Nullable)categories
+                  groups:(NSArray * _Nullable)groups
+                   limit:(int)limit
+       completionHandler:(RadarSearchPlacesAPICompletionHandler _Nullable)completionHandler;
 
-- (void)searchGeofencesWithLocation:(CLLocation * _Nonnull)location
-                             radius:(int)radius
-                               tags:(NSArray * _Nullable)tags
-                              limit:(int)limit
-                  completionHandler:(RadarSearchGeofencesAPICompletionHandler _Nullable)completionHandler;
+- (void)searchGeofencesNear:(CLLocation * _Nonnull)near
+                     radius:(int)radius
+                       tags:(NSArray * _Nullable)tags
+                      limit:(int)limit
+          completionHandler:(RadarSearchGeofencesAPICompletionHandler _Nullable)completionHandler;
+
+- (void)autocompleteQuery:(NSString * _Nonnull)query
+                     near:(CLLocation * _Nonnull)near
+                    limit:(int)limit
+        completionHandler:(RadarGeocodeAPICompletionHandler _Nullable)completionHandler;
 
 - (void)geocodeAddress:(NSString * _Nonnull)query
      completionHandler:(RadarGeocodeAPICompletionHandler _Nullable)completionHandler;
@@ -77,6 +87,12 @@ typedef void(^ _Nullable RadarGetContextAPICompletionHandler)(
 
 - (void)getContextWithLocation:(CLLocation * _Nonnull)location
              completionHandler:(RadarGetContextAPICompletionHandler _Nullable)completionHandler;
+
+- (void)getDistanceFromOrigin:(CLLocation * _Nonnull)origin
+                  destination:(CLLocation * _Nonnull)destination
+                        modes:(RadarRouteMode)mode
+                        units:(RadarRouteUnits)units
+            completionHandler:(RadarRouteAPICompletionHandler _Nullable)completionHandler;
 
 @end
 

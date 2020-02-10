@@ -1,13 +1,6 @@
 {
   "warnings": [
     {
-      "file": "/Users/nickpatrick/Dropbox/dev/radar/radar-sdk-ios/RadarSDK/RadarAddress.h",
-      "line": 27,
-      "symbol": "RadarAddress",
-      "symbol_kind": "sourcekitten.source.lang.objc.decl.class",
-      "warning": "undocumented"
-    },
-    {
       "file": "/Users/nickpatrick/Dropbox/dev/radar/radar-sdk-ios/RadarSDK/RadarTrackingOptions.h",
       "line": 13,
       "symbol": "RadarTrackingOptionsDesiredAccuracy",
