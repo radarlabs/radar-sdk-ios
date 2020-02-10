@@ -32,14 +32,14 @@
     id userInsightsStateOfficeObj = userInsightsStateDict[@"office"];
     id userInsightsStateTravelingObj = userInsightsStateDict[@"traveling"];
     id userInsightsStateCommutingObj = userInsightsStateDict[@"commuting"];
-    if (!userInsightsStateHomeObj || ![userInsightsStateHomeObj isKindOfClass:[NSNumber class]] || !userInsightsStateOfficeObj || ![userInsightsStateOfficeObj isKindOfClass:[NSNumber class]] || !userInsightsStateTravelingObj || ![userInsightsStateTravelingObj isKindOfClass:[NSNumber class]]|| !userInsightsStateCommutingObj || ![userInsightsStateCommutingObj isKindOfClass:[NSNumber class]]) {
+    if (!userInsightsStateHomeObj || ![userInsightsStateHomeObj isKindOfClass:[NSNumber class]] || !userInsightsStateOfficeObj || ![userInsightsStateOfficeObj isKindOfClass:[NSNumber class]] || !userInsightsStateTravelingObj || ![userInsightsStateTravelingObj isKindOfClass:[NSNumber class]]) {
         return nil;
     }
     
     BOOL userInsightsStateHome = [(NSNumber *)userInsightsStateHomeObj boolValue];
     BOOL userInsightsStateOffice = [(NSNumber *)userInsightsStateOfficeObj boolValue];
     BOOL userInsightsStateTraveling = [(NSNumber *)userInsightsStateTravelingObj boolValue];
-    BOOL userInsightsStateCommuting = [(NSNumber *)userInsightsStateCommutingObj boolValue];
+    BOOL userInsightsStateCommuting = NO;
     
     return [[RadarUserInsightsState alloc] initWithHome:userInsightsStateHome office:userInsightsStateOffice traveling:userInsightsStateTraveling commuting:userInsightsStateCommuting];
 }
