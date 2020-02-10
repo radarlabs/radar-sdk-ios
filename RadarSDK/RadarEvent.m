@@ -127,6 +127,10 @@
             eventType = RadarEventTypeUserStartedTraveling;
         else if ([eventTypeStr isEqualToString:@"user.stopped_traveling"])
             eventType = RadarEventTypeUserStoppedTraveling;
+        else if ([eventTypeStr isEqualToString:@"user.started_commuting"])
+            eventType = RadarEventTypeUserStartedCommuting;
+        else if ([eventTypeStr isEqualToString:@"user.stopped_commuting"])
+            eventType = RadarEventTypeUserStoppedCommuting;
         else if ([eventTypeStr isEqualToString:@"user.entered_place"])
             eventType = RadarEventTypeUserEnteredPlace;
         else if ([eventTypeStr isEqualToString:@"user.exited_place"])
