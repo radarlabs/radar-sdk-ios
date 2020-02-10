@@ -14,7 +14,7 @@
 @interface RadarContext ()
 
 - (instancetype _Nullable)initWithLive:(BOOL)live
-                             geofences:(NSArray * _Nullable)geofences
+                             geofences:(NSArray * _Nonnull)geofences
                                  place:(RadarPlace * _Nullable)place
                                country:(RadarRegion * _Nullable)country
                                  state:(RadarRegion * _Nullable)state

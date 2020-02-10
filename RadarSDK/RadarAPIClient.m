@@ -523,7 +523,7 @@
         }
         
         id contextObj = res[@"context"];
-        RadarContext *context = [[RadarContext alloc]  initWithObject:contextObj];
+        RadarContext *context = [[RadarContext alloc] initWithObject:contextObj];
         if (context) {
             return completionHandler(RadarStatusSuccess, res, context);
         }

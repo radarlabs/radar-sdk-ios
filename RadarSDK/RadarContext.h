@@ -24,11 +24,11 @@
 @property (assign, nonatomic, readonly) BOOL live;
 
 /**
- An array of the geofences the location is in. May be `nil` or empty if the location is not in any geofences.
+ An array of the geofences the location is in. May be empty if the location is not in any geofences.
  
  @see https://radar.io/documentation/geofences
  */
-@property (nullable, copy, nonatomic, readonly) NSArray<RadarGeofence *> *geofences;
+@property (nonnull, copy, nonatomic, readonly) NSArray<RadarGeofence *> *geofences;
 
 /**
  The place a location is at. May be `nil` if the location is not at a place, or if Places is not enabled.
