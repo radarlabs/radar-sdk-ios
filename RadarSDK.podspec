@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
   s.name                  = 'RadarSDK'
   s.version               = '3.0.0-beta.3'
-  s.summary               = 'iOS SDK for Radar, the location context platform'
+  s.summary               = 'iOS SDK for Radar, location data infrastructure'
   s.homepage              = 'https://radar.io'
   s.social_media_url      = 'https://twitter.com/radarlabs'
   s.author                = { 'Radar Labs, Inc.' => 'support@radar.io' }

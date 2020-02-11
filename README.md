@@ -3,7 +3,7 @@
 [![CocoaPods](https://img.shields.io/cocoapods/v/RadarSDK.svg)](https://cocoapods.org/pods/RadarSDK)
 [![Carthage](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg)](https://github.com/Carthage/Carthage)
 
-[Radar](https://radar.io) is the location platform for mobile apps.
+[Radar](https://radar.io) is location data infrastructure. You can use Radar SDKs and APIs to add location context to your apps with just a few lines of code.
 
 ## Documentation
 
