@@ -10,6 +10,7 @@
 #import "Radar.h"
 #import "RadarAPIHelper.h"
 
+#import "RadarContext.h"
 #import "RadarAddress.h"
 #import "RadarEvent.h"
 #import "RadarRegion.h"
@@ -27,6 +28,12 @@ typedef void(^ _Nullable RadarSearchGeofencesAPICompletionHandler)(RadarStatus s
 typedef void(^ _Nullable RadarGeocodeAPICompletionHandler)(RadarStatus status, NSDictionary * _Nullable res, NSArray<RadarAddress *> * _Nullable addresses);
 
 typedef void(^ _Nullable RadarIPGeocodeAPICompletionHandler)(RadarStatus status, NSDictionary * _Nullable res, RadarRegion * _Nullable country);
+
+typedef void(^ _Nullable RadarGetContextAPICompletionHandler)(
+    RadarStatus status,
+    NSDictionary * _Nullable res,
+    RadarContext * _Nullable context
+);
 
 typedef void(^ _Nullable RadarRouteAPICompletionHandler)(RadarStatus status, NSDictionary * _Nullable res, RadarRoutes * _Nullable routes);
 
@@ -77,6 +84,9 @@ typedef void(^ _Nullable RadarRouteAPICompletionHandler)(RadarStatus status, NSD
              completionHandler:(RadarGeocodeAPICompletionHandler _Nullable)completionHandler;
 
 - (void)ipGeocodeWithCompletionHandler:(RadarIPGeocodeAPICompletionHandler _Nullable)completionHandler;
+
+- (void)getContextWithLocation:(CLLocation * _Nonnull)location
+             completionHandler:(RadarGetContextAPICompletionHandler _Nullable)completionHandler;
 
 - (void)getDistanceFromOrigin:(CLLocation * _Nonnull)origin
                   destination:(CLLocation * _Nonnull)destination

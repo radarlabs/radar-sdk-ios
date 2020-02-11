@@ -8,6 +8,7 @@
 #import "RadarAPIClient.h"
 
 #import "RadarAddress+Internal.h"
+#import "RadarContext+Internal.h"
 #import "RadarEvent+Internal.h"
 #import "RadarPlace+Internal.h"
 #import "RadarGeofence+Internal.h"
@@ -441,6 +442,36 @@
 
         if (country) {
             return completionHandler(RadarStatusSuccess, res, country);
+        }
+
+        completionHandler(RadarStatusErrorServer, nil, nil);
+    }];
+}
+
+- (void)getContextWithLocation:(CLLocation * _Nonnull)location
+             completionHandler:(RadarGetContextAPICompletionHandler _Nullable)completionHandler {
+    NSString *publishableKey = [RadarSettings publishableKey];
+    if (!publishableKey) {
+        return completionHandler(RadarStatusErrorPublishableKey, nil, nil);
+    }
+
+    NSMutableString *queryString = [NSMutableString new];
+    [queryString appendFormat:@"coordinates=%.15f,%.15f", location.coordinate.latitude, location.coordinate.longitude];
+
+    NSString *host = [RadarSettings host];
+    NSString *url = [NSString stringWithFormat:@"%@/v1/context?%@", host, queryString];
+    
+    NSDictionary *headers = [RadarAPIClient headersWithPublishableKey:publishableKey];
+
+    [self.apiHelper requestWithMethod:@"GET" url:url headers:headers params:nil completionHandler:^(RadarStatus status, NSDictionary * _Nullable res) {
+        if (status != RadarStatusSuccess || !res) {
+            return completionHandler(status, nil, nil);
+        }
+
+        id contextObj = res[@"context"];
+        RadarContext *context = [[RadarContext alloc] initWithObject:contextObj];
+        if (context) {
+            return completionHandler(RadarStatusSuccess, res, context);
         }
 
         completionHandler(RadarStatusErrorServer, nil, nil);
