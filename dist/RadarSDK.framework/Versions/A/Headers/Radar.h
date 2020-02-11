@@ -14,6 +14,7 @@
 #import "RadarRoutes.h"
 #import "RadarTrackingOptions.h"
 #import "RadarUser.h"
+#import "RadarContext.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -124,6 +125,13 @@ typedef void(^ _Nullable RadarLocationCompletionHandler)(RadarStatus status, CLL
  @see https://radar.io/documentation/sdk#ios-foreground
  */
 typedef void(^ _Nullable RadarTrackCompletionHandler)(RadarStatus status, CLLocation * _Nullable location, NSArray<RadarEvent *> * _Nullable events, RadarUser * _Nullable user);
+
+/**
+ Called when a context request succeeds, fails, or times out. Receives the request status and, if successful, the location and the context.
+ 
+ @see https://radar.io/documentation/api#context
+ */
+typedef void(^ _Nonnull RadarContextCompletionHandler)(RadarStatus status, CLLocation * _Nullable location, RadarContext * _Nullable context);
 
 /**
  Called when a place search request succeeds, fails, or times out. Receives the request status and, if successful, the location and an array of places sorted by distance.
@@ -342,6 +350,24 @@ typedef void(^ _Nonnull RadarRouteCompletionHandler)(RadarStatus status, RadarRo
  */
 + (void)rejectEventId:(NSString *_Nonnull)eventId
     NS_SWIFT_NAME(rejectEventId(_:));
+
+/**
+ Gets the device's current location, then gets context for that location without sending device or user identifiers to the server.
+ 
+ @param completionHandler An optional completion handler.
+ */
++ (void)getContextWithCompletionHandler:(RadarContextCompletionHandler _Nonnull)completionHandler
+    NS_SWIFT_NAME(getContext(completionHandler:));
+
+/**
+ Gets context for a location without sending device or user identifiers to the server.
+ 
+ @param location The location.
+ @param completionHandler An optional completion handler.
+ */
++ (void)getContextForLocation:(CLLocation * _Nonnull)location
+            completionHandler:(RadarContextCompletionHandler _Nonnull)completionHandler
+    NS_SWIFT_NAME(getContext(location:completionHandler:));
 
 /**
  Gets the device's current location, then searches for places near that location, sorted by distance.

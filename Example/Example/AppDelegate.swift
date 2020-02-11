@@ -35,6 +35,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         options.showBlueBar = true
         Radar.startTracking(trackingOptions: options)
         
+        Radar.getContext { (status, location, context) in
+            print("Context: status = \(Radar.stringForStatus(status)); location = \(String(describing: location)); context?.geofences = \(String(describing: context?.geofences)); context?.place = \(String(describing: context?.place)); context?.country = \(String(describing: context?.country))")
+        }
+        
         Radar.searchPlaces(
             radius: 1000,
             chains: ["mcdonalds"],

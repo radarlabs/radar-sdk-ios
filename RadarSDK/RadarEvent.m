@@ -111,44 +111,45 @@
     if (eventTypeObj && [eventTypeObj isKindOfClass:[NSString class]]) {
         NSString *eventTypeStr = (NSString *)eventTypeObj;
         
-        if ([eventTypeStr isEqualToString:@"user.entered_geofence"])
+        if ([eventTypeStr isEqualToString:@"user.entered_geofence"]) {
             eventType = RadarEventTypeUserEnteredGeofence;
-        else if ([eventTypeStr isEqualToString:@"user.exited_geofence"])
+        } else if ([eventTypeStr isEqualToString:@"user.exited_geofence"]) {
             eventType = RadarEventTypeUserExitedGeofence;
-        else if ([eventTypeStr isEqualToString:@"user.entered_home"])
+        } else if ([eventTypeStr isEqualToString:@"user.entered_home"]) {
             eventType = RadarEventTypeUserEnteredHome;
-        else if ([eventTypeStr isEqualToString:@"user.exited_home"])
+        } else if ([eventTypeStr isEqualToString:@"user.exited_home"]) {
             eventType = RadarEventTypeUserExitedHome;
-        else if ([eventTypeStr isEqualToString:@"user.entered_office"])
+        } else if ([eventTypeStr isEqualToString:@"user.entered_office"]) {
             eventType = RadarEventTypeUserEnteredOffice;
-        else if ([eventTypeStr isEqualToString:@"user.exited_office"])
+        } else if ([eventTypeStr isEqualToString:@"user.exited_office"]) {
             eventType = RadarEventTypeUserExitedOffice;
-        else if ([eventTypeStr isEqualToString:@"user.started_traveling"])
+        } else if ([eventTypeStr isEqualToString:@"user.started_traveling"]) {
             eventType = RadarEventTypeUserStartedTraveling;
-        else if ([eventTypeStr isEqualToString:@"user.stopped_traveling"])
+        } else if ([eventTypeStr isEqualToString:@"user.stopped_traveling"]) {
             eventType = RadarEventTypeUserStoppedTraveling;
-        else if ([eventTypeStr isEqualToString:@"user.started_commuting"])
+        } else if ([eventTypeStr isEqualToString:@"user.started_commuting"]) {
             eventType = RadarEventTypeUserStartedCommuting;
-        else if ([eventTypeStr isEqualToString:@"user.stopped_commuting"])
+        } else if ([eventTypeStr isEqualToString:@"user.stopped_commuting"]) {
             eventType = RadarEventTypeUserStoppedCommuting;
-        else if ([eventTypeStr isEqualToString:@"user.entered_place"])
+        } else if ([eventTypeStr isEqualToString:@"user.entered_place"]) {
             eventType = RadarEventTypeUserEnteredPlace;
-        else if ([eventTypeStr isEqualToString:@"user.exited_place"])
+        } else if ([eventTypeStr isEqualToString:@"user.exited_place"]) {
             eventType = RadarEventTypeUserExitedPlace;
-        else if ([eventTypeStr isEqualToString:@"user.nearby_place_chain"])
+        } else if ([eventTypeStr isEqualToString:@"user.nearby_place_chain"]) {
             eventType = RadarEventTypeUserNearbyPlaceChain;
-        else if ([eventTypeStr isEqualToString:@"user.entered_region_country"])
+        } else if ([eventTypeStr isEqualToString:@"user.entered_region_country"]) {
             eventType = RadarEventTypeUserEnteredRegionCountry;
-        else if ([eventTypeStr isEqualToString:@"user.exited_region_country"])
+        } else if ([eventTypeStr isEqualToString:@"user.exited_region_country"]) {
             eventType = RadarEventTypeUserExitedRegionCountry;
-        else if ([eventTypeStr isEqualToString:@"user.entered_region_state"])
+        } else if ([eventTypeStr isEqualToString:@"user.entered_region_state"]) {
             eventType = RadarEventTypeUserEnteredRegionState;
-        else if ([eventTypeStr isEqualToString:@"user.exited_region_state"])
+        } else if ([eventTypeStr isEqualToString:@"user.exited_region_state"]) {
             eventType = RadarEventTypeUserExitedRegionState;
-        else if ([eventTypeStr isEqualToString:@"user.entered_region_dma"])
+        } else if ([eventTypeStr isEqualToString:@"user.entered_region_dma"]) {
             eventType = RadarEventTypeUserEnteredRegionDMA;
-        else if ([eventTypeStr isEqualToString:@"user.exited_region_dma"])
+        } else if ([eventTypeStr isEqualToString:@"user.exited_region_dma"]) {
             eventType = RadarEventTypeUserExitedRegionDMA;
+        }
     }
     
     id eventLiveObj = eventDict[@"live"];
@@ -163,12 +164,13 @@
         NSNumber *eventVerificationNumber = (NSNumber *)eventVerificationObj;
         int eventVerificationInt = [eventVerificationNumber intValue];
         
-        if (eventVerificationInt == 1)
+        if (eventVerificationInt == 1) {
             eventVerification = RadarEventVerificationAccept;
-        else if (eventVerificationInt == -1)
+        } else if (eventVerificationInt == -1) {
             eventVerification = RadarEventVerificationReject;
-        else if (eventVerificationInt == 0)
+        } else if (eventVerificationInt == 0) {
             eventVerification = RadarEventVerificationUnverify;
+        }
     }
     
     id eventConfidenceObj = eventDict[@"confidence"];
@@ -176,12 +178,13 @@
         NSNumber *eventConfidenceNumber = (NSNumber *)eventConfidenceObj;
         int eventConfidenceInt = [eventConfidenceNumber intValue];
         
-        if (eventConfidenceInt == 3)
+        if (eventConfidenceInt == 3) {
             eventConfidence = RadarEventConfidenceHigh;
-        else if (eventConfidenceInt == 2)
+        } else if (eventConfidenceInt == 2) {
             eventConfidence = RadarEventConfidenceMedium;
-        else if (eventConfidenceInt == 1)
+        } else if (eventConfidenceInt == 1) {
             eventConfidence = RadarEventConfidenceLow;
+        }
     }
     
     id eventDurationObj = eventDict[@"duration"];
@@ -207,8 +210,9 @@
         NSArray *eventAlternatePlacesArr = (NSArray *)eventAlternatePlacesObj;
         for (id eventAlternatePlaceObj in eventAlternatePlacesArr) {
             RadarPlace *eventAlternatePlace = [[RadarPlace alloc] initWithObject:eventAlternatePlaceObj];
-            if (!eventAlternatePlace)
+            if (!eventAlternatePlace) {
                 return nil;
+            }
             
             [mutableEventAlternatePlaces addObject:eventAlternatePlace];
         }

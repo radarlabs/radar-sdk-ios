@@ -130,6 +130,31 @@
     [[RadarAPIClient sharedInstance] verifyEventId:eventId verification:RadarEventVerificationReject verifiedPlaceId:nil];
 }
 
++ (void)getContextWithCompletionHandler:(RadarContextCompletionHandler)completionHandler {
+    [[RadarLocationManager sharedInstance] getLocationWithCompletionHandler:^(RadarStatus status, CLLocation * _Nullable location, BOOL stopped) {
+        if (status != RadarStatusSuccess) {
+            if (completionHandler) {
+                return completionHandler(status, nil, nil);
+            }
+        }
+        
+        [[RadarAPIClient sharedInstance] getContextForLocation:location completionHandler:^(RadarStatus status, NSDictionary * _Nullable res, RadarContext * _Nullable context) {
+            if (completionHandler) {
+                completionHandler(status, location, context);
+            }
+        }];
+    }];
+}
+
++ (void)getContextForLocation:(CLLocation *)location
+            completionHandler:(RadarContextCompletionHandler)completionHandler {
+    [[RadarAPIClient sharedInstance] getContextForLocation:location completionHandler:^(RadarStatus status, NSDictionary * _Nullable res, RadarContext * _Nullable context) {
+        if (completionHandler) {
+            completionHandler(status, location, context);
+        }
+    }];
+}
+
 + (void)searchPlacesWithRadius:(int)radius
                         chains:(NSArray * _Nullable)chains
                     categories:(NSArray * _Nullable)categories
@@ -224,23 +249,6 @@
     }];
 }
 
-+ (void)getContextWithCompletionHandler:(RadarGetContextCompletionHandler)completionHandler {
-    [[RadarLocationManager sharedInstance] getLocationWithCompletionHandler:^(RadarStatus status, CLLocation * _Nullable location, BOOL stopped) {
-        if (status != RadarStatusSuccess) {
-            if (completionHandler) {
-                completionHandler(status, nil, nil);
-            }
-            
-            return;
-        }
-        
-        [[RadarAPIClient sharedInstance] getContextWithLocation:location completionHandler:^(RadarStatus status, NSDictionary * _Nullable res, RadarContext * _Nullable context) {
-            if (completionHandler) {
-                completionHandler(status, location, context);
-            }}];
-    }];
-}
-
 + (void)getDistanceToDestination:(CLLocation *)destination
                            modes:(RadarRouteMode)modes
                            units:(RadarRouteUnits)units
@@ -253,15 +261,6 @@
         [[RadarAPIClient sharedInstance] getDistanceFromOrigin:location destination:destination modes:modes units:units completionHandler:^(RadarStatus status, NSDictionary * _Nullable res, RadarRoutes * _Nullable routes) {
             completionHandler(status, routes);
         }];
-    }];
-}
-
-+ (void)getContextWithLocation:(CLLocation *)location
-            completionHandler:(RadarGetContextCompletionHandler)completionHandler {
-    [[RadarAPIClient sharedInstance] getContextWithLocation:location completionHandler:^(RadarStatus status, NSDictionary * _Nullable res, RadarContext * _Nullable context) {
-        if (completionHandler) {
-            completionHandler(status, location, context);
-        }
     }];
 }
 

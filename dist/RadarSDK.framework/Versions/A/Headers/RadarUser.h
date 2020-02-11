@@ -58,14 +58,14 @@
 @property (nullable, copy, nonatomic, readonly) NSArray<RadarGeofence *> *geofences;
 
 /**
- The user's last known place. May be `nil` if the user is not at a place, or if Places is not enabled.
+ The user's last known place. May be `nil` if the user is not at a place or if Places is not enabled.
  
  @see https://radar.io/documentation/places
  */
 @property (nullable, copy, nonatomic, readonly) RadarPlace *place;
 
 /**
- Learned insights for the user. May be `nil` if no insights are available, or if Insights is not enabled.
+ Learned insights for the user. May be `nil` if no insights are available or if Insights is not enabled.
  
  @see https://radar.io/documentation/insights
  */

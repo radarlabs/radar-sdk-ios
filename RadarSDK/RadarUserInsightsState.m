@@ -28,18 +28,30 @@
     
     NSDictionary *userInsightsStateDict = (NSDictionary *)object;
     
+    BOOL userInsightsStateHome = NO;
+    BOOL userInsightsStateOffice = NO;
+    BOOL userInsightsStateTraveling = NO;
+    BOOL userInsightsStateCommuting = NO;
+    
     id userInsightsStateHomeObj = userInsightsStateDict[@"home"];
-    id userInsightsStateOfficeObj = userInsightsStateDict[@"office"];
-    id userInsightsStateTravelingObj = userInsightsStateDict[@"traveling"];
-    id userInsightsStateCommutingObj = userInsightsStateDict[@"commuting"];
-    if (!userInsightsStateHomeObj || ![userInsightsStateHomeObj isKindOfClass:[NSNumber class]] || !userInsightsStateOfficeObj || ![userInsightsStateOfficeObj isKindOfClass:[NSNumber class]] || !userInsightsStateTravelingObj || ![userInsightsStateTravelingObj isKindOfClass:[NSNumber class]]) {
-        return nil;
+    if ([userInsightsStateHomeObj isKindOfClass:[NSNumber class]]) {
+        userInsightsStateHome = [(NSNumber *)userInsightsStateHomeObj boolValue];
     }
     
-    BOOL userInsightsStateHome = [(NSNumber *)userInsightsStateHomeObj boolValue];
-    BOOL userInsightsStateOffice = [(NSNumber *)userInsightsStateOfficeObj boolValue];
-    BOOL userInsightsStateTraveling = [(NSNumber *)userInsightsStateTravelingObj boolValue];
-    BOOL userInsightsStateCommuting = NO;
+    id userInsightsStateOfficeObj = userInsightsStateDict[@"office"];
+    if ([userInsightsStateOfficeObj isKindOfClass:[NSNumber class]]) {
+        userInsightsStateOffice = [(NSNumber *)userInsightsStateOfficeObj boolValue];
+    }
+         
+    id userInsightsStateTravelingObj = userInsightsStateDict[@"traveling"];
+    if ([userInsightsStateTravelingObj isKindOfClass:[NSNumber class]]) {
+        userInsightsStateTraveling = [(NSNumber *)userInsightsStateTravelingObj boolValue];
+    }
+    
+    id userInsightsStateCommutingObj = userInsightsStateDict[@"commuting"];
+    if ([userInsightsStateCommutingObj isKindOfClass:[NSNumber class]]) {
+        userInsightsStateCommuting = [(NSNumber *)userInsightsStateCommutingObj boolValue];
+    }
     
     return [[RadarUserInsightsState alloc] initWithHome:userInsightsStateHome office:userInsightsStateOffice traveling:userInsightsStateTraveling commuting:userInsightsStateCommuting];
 }

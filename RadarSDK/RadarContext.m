@@ -16,16 +16,14 @@
 
 @implementation RadarContext
 
-- (instancetype _Nullable)initWithLive:(BOOL)live
-                             geofences:(NSArray * _Nonnull)geofences
-                                 place:(RadarPlace * _Nullable)place
-                               country:(RadarRegion * _Nullable)country
-                                 state:(RadarRegion * _Nullable)state
-                                   dma:(RadarRegion * _Nullable)dma
-                            postalCode:(RadarRegion * _Nullable)postalCode {
+- (instancetype _Nullable)initWithGeofences:(NSArray * _Nonnull)geofences
+                                      place:(RadarPlace * _Nullable)place
+                                    country:(RadarRegion * _Nullable)country
+                                      state:(RadarRegion * _Nullable)state
+                                        dma:(RadarRegion * _Nullable)dma
+                                 postalCode:(RadarRegion * _Nullable)postalCode {
     self = [super init];
     if (self) {
-        _live = live;
         _geofences = geofences;
         _place = place;
         _country = country;
@@ -43,24 +41,13 @@
     
     NSDictionary *contextDict = (NSDictionary *)object;
     
-    // INIT
-    BOOL contextLive = NO;
-    NSArray <RadarGeofence *> *contextGeofences;
+    NSArray <RadarGeofence *> *contextGeofences = @[];
     RadarPlace *contextPlace;
     RadarRegion *country;
     RadarRegion *state;
     RadarRegion *dma;
     RadarRegion *postalCode;
     
-    // LIVE
-    id contextLiveObj = contextDict[@"live"];
-    if (contextLiveObj && [contextLiveObj isKindOfClass:[NSNumber class]]) {
-        NSNumber *contextLiveNumber = (NSNumber *)contextLiveObj;
-        
-        contextLive = [contextLiveNumber boolValue];
-    }
-    
-    // GEOFENCES
     id contextGeofencesObj = contextDict[@"geofences"];
     if (contextGeofencesObj && [contextGeofencesObj isKindOfClass:[NSArray class]]) {
         NSMutableArray<RadarGeofence *> *mutableContextGeofences = [NSMutableArray<RadarGeofence *> new];
@@ -78,11 +65,9 @@
         contextGeofences = mutableContextGeofences;
     }
     
-    // PLACE
     id contextPlaceObj = contextDict[@"place"];
     contextPlace = [[RadarPlace alloc] initWithObject:contextPlaceObj];
     
-    // REGIONS
     id countryObj = contextDict[@"country"];
     country = [[RadarRegion alloc] initWithObject:countryObj];
 
@@ -95,11 +80,7 @@
     id postalCodeObj = contextDict[@"postalCode"];
     postalCode = [[RadarRegion alloc] initWithObject:postalCodeObj];
     
-    if (contextGeofences) {
-        return [[RadarContext alloc] initWithLive:contextLive geofences:contextGeofences place:contextPlace country:country state:state dma:dma postalCode:postalCode];
-    }
-    
-    return nil;
+    return [[RadarContext alloc] initWithGeofences:contextGeofences place:contextPlace country:country state:state dma:dma postalCode:postalCode];
 
 }
 
