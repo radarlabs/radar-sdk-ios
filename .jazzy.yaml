@@ -1,0 +1,12 @@
+clean: true
+objc: true
+umbrella_header: RadarSDK/RadarSDK.h
+framework_root: RadarSDK
+sdk: iphonesimulator
+author: Radar Labs, Inc.
+author_url: https://radar.io
+github_url: https://github.com/radarlabs/radar-sdk-ios
+module: RadarSDK
+skip_undocumented: true
+hide_documentation_coverage: true
+readme: /dev/null
