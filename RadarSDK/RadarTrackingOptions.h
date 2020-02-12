@@ -23,17 +23,17 @@ typedef NS_ENUM(NSInteger, RadarTrackingOptionsDesiredAccuracy) {
 };
 
 /**
- The replay options.
+ The replay options for failed location updates.
  */
 typedef NS_ENUM(NSInteger, RadarTrackingOptionsReplay) {
-    /// Replay stops
+    /// Replays failed stops
     RadarTrackingOptionsReplayStops,
-    /// Replays no location updates
+    /// Replays no failed location updates
     RadarTrackingOptionsReplayNone
 };
 
 /**
- The sync options.
+ The sync options for location updates.
  */
 typedef NS_ENUM(NSInteger, RadarTrackingOptionsSync) {
     /// Syncs all location updates to the server
@@ -96,7 +96,7 @@ typedef NS_ENUM(NSInteger, RadarTrackingOptionsSync) {
 @property (nullable, nonatomic, copy) NSDate *stopTrackingAfter;
 
 /**
- Determines which location updates to replay to the server.
+ Determines which failed location updates to replay to the server.
  */
 @property (nonatomic, assign) RadarTrackingOptionsReplay replay;
 
@@ -113,26 +113,26 @@ typedef NS_ENUM(NSInteger, RadarTrackingOptionsSync) {
 @property (nonatomic, assign) BOOL showBlueBar;
 
 /**
- Determines whether to use the region monitoring service to create a geofence around the device's current location when stopped.
+ Determines whether to use the region monitoring service to create a client geofence around the device's current location when stopped.
  
  @see https://developer.apple.com/documentation/corelocation/monitoring_the_user_s_proximity_to_geographic_regions
  */
 @property (nonatomic, assign) BOOL useStoppedGeofence;
 
 /**
- Determines the radius in meters of the geofence around the device's current location when stopped.
+ Determines the radius in meters of the client geofence around the device's current location when stopped.
  */
 @property (nonatomic, assign) int stoppedGeofenceRadius;
 
 /**
- Determines whether to use the region monitoring service to create a geofence around the device's current location when moving.
+ Determines whether to use the region monitoring service to create a client geofence around the device's current location when moving.
  
  @see https://developer.apple.com/documentation/corelocation/monitoring_the_user_s_proximity_to_geographic_regions
  */
 @property (nonatomic, assign) BOOL useMovingGeofence;
 
 /**
- Determines the radius in meters of the geofence around the device's current location when moving.
+ Determines the radius in meters of the client geofence around the device's current location when moving.
  */
 @property (nonatomic, assign) int movingGeofenceRadius;
 
@@ -151,14 +151,14 @@ typedef NS_ENUM(NSInteger, RadarTrackingOptionsSync) {
 @property (nonatomic, assign) BOOL useSignificantLocationChanges;
 
 /**
- A preset that updates every 30 seconds and syncs all locations to the server. High battery usage and shows the flashing blue status bar when tracking.
+ A preset that updates about every 30 seconds and syncs all locations to the server. High battery usage and shows the flashing blue status bar when tracking.
  
  @see https://developer.apple.com/documentation/corelocation/cllocationmanager/2923541-showsbackgroundlocationindicator
  */
 @property (class, copy, readonly) RadarTrackingOptions *continuous;
 
 /**
- A preset that updates every 2.5 minutes when moving, shuts down when stopped, and only syncs stops and exits to the server. Low battery usage.
+ A preset that updates about every 2.5 minutes when moving, shuts down when stopped, and only syncs stops and exits to the server. Low battery usage.
  */
 @property (class, copy, readonly) RadarTrackingOptions *responsive;
 
