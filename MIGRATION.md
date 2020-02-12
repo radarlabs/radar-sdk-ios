@@ -1,5 +1,24 @@
 # Migration guides
 
+## 2.1.x to 3.0.x
+
+- The `updateLocation:completionHandler:` method has been renamed to `trackOnceWithLocation:completionHandler:`.
+- This update introduces new tracking options and presets. See https://radar.io/blog/open-source-radar-sdk-v3-custom-tracking-options-public-beta. If you were using `trackingOptions.priority = RadarTrackingPriorityEfficiency`, use the preset `RadarTrackingOptions.efficient` instead.
+
+```swift
+// 3.0.x
+Radar.trackOnce(location, completionHandler)
+
+Radar.startTracking(RadarTrackingOptions.efficient)
+
+// 2.1.x
+Radar.updateLocation(location, completionHandler)
+
+let trackingOptions = RadarTrackingOptions()
+trackingOptions.priority = .efficiency
+Radar.startTracking(trackingOptions)
+```
+
 ## 2.0.x to 2.1.x
 
 - This update introduces `startTrackingWithOptions:` to configure advanced tracking options. See https://radar.io/documentation/sdk#ios-background.
