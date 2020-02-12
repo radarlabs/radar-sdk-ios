@@ -163,7 +163,7 @@ typedef NS_ENUM(NSInteger, RadarTrackingOptionsSync) {
 @property (class, copy, readonly) RadarTrackingOptions *responsive;
 
 /**
- A preset that the visits location service to update only on stops and exits. Lowest battery usage, the default.
+ A preset that the visits location service to update only on stops and exits. The default, lowest battery usage.
  
  @see https://developer.apple.com/documentation/corelocation/getting_the_user_s_location/using_the_visits_location_service
  */
