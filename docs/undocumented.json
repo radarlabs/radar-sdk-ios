@@ -2,238 +2,56 @@
   "warnings": [
     {
       "file": "/Users/nickpatrick/Dropbox/dev/radar/radar-sdk-ios/RadarSDK/RadarTrackingOptions.h",
-      "line": 13,
-      "symbol": "RadarTrackingOptionsDesiredAccuracy",
-      "symbol_kind": "sourcekitten.source.lang.objc.decl.enum",
-      "warning": "undocumented"
-    },
-    {
-      "file": "/Users/nickpatrick/Dropbox/dev/radar/radar-sdk-ios/RadarSDK/RadarTrackingOptions.h",
-      "line": 13,
-      "symbol": "RadarTrackingOptionsDesiredAccuracy",
-      "symbol_kind": "sourcekitten.source.lang.objc.decl.typedef",
-      "warning": "undocumented"
-    },
-    {
-      "file": "/Users/nickpatrick/Dropbox/dev/radar/radar-sdk-ios/RadarSDK/RadarTrackingOptions.h",
-      "line": 19,
-      "symbol": "RadarTrackingOptionsReplay",
-      "symbol_kind": "sourcekitten.source.lang.objc.decl.enum",
-      "warning": "undocumented"
-    },
-    {
-      "file": "/Users/nickpatrick/Dropbox/dev/radar/radar-sdk-ios/RadarSDK/RadarTrackingOptions.h",
-      "line": 19,
-      "symbol": "RadarTrackingOptionsReplay",
-      "symbol_kind": "sourcekitten.source.lang.objc.decl.typedef",
-      "warning": "undocumented"
-    },
-    {
-      "file": "/Users/nickpatrick/Dropbox/dev/radar/radar-sdk-ios/RadarSDK/RadarTrackingOptions.h",
-      "line": 24,
-      "symbol": "RadarTrackingOptionsSync",
-      "symbol_kind": "sourcekitten.source.lang.objc.decl.enum",
-      "warning": "undocumented"
-    },
-    {
-      "file": "/Users/nickpatrick/Dropbox/dev/radar/radar-sdk-ios/RadarSDK/RadarTrackingOptions.h",
-      "line": 24,
-      "symbol": "RadarTrackingOptionsSync",
-      "symbol_kind": "sourcekitten.source.lang.objc.decl.typedef",
-      "warning": "undocumented"
-    },
-    {
-      "file": "/Users/nickpatrick/Dropbox/dev/radar/radar-sdk-ios/RadarSDK/RadarTrackingOptions.h",
-      "line": 37,
-      "symbol": "RadarTrackingOptions.desiredStoppedUpdateInterval",
-      "symbol_kind": "sourcekitten.source.lang.objc.decl.property",
-      "warning": "undocumented"
-    },
-    {
-      "file": "/Users/nickpatrick/Dropbox/dev/radar/radar-sdk-ios/RadarSDK/RadarTrackingOptions.h",
-      "line": 38,
-      "symbol": "RadarTrackingOptions.desiredMovingUpdateInterval",
-      "symbol_kind": "sourcekitten.source.lang.objc.decl.property",
-      "warning": "undocumented"
-    },
-    {
-      "file": "/Users/nickpatrick/Dropbox/dev/radar/radar-sdk-ios/RadarSDK/RadarTrackingOptions.h",
-      "line": 39,
-      "symbol": "RadarTrackingOptions.desiredSyncInterval",
-      "symbol_kind": "sourcekitten.source.lang.objc.decl.property",
-      "warning": "undocumented"
-    },
-    {
-      "file": "/Users/nickpatrick/Dropbox/dev/radar/radar-sdk-ios/RadarSDK/RadarTrackingOptions.h",
-      "line": 40,
-      "symbol": "RadarTrackingOptions.desiredAccuracy",
-      "symbol_kind": "sourcekitten.source.lang.objc.decl.property",
-      "warning": "undocumented"
-    },
-    {
-      "file": "/Users/nickpatrick/Dropbox/dev/radar/radar-sdk-ios/RadarSDK/RadarTrackingOptions.h",
-      "line": 41,
-      "symbol": "RadarTrackingOptions.stopDuration",
-      "symbol_kind": "sourcekitten.source.lang.objc.decl.property",
-      "warning": "undocumented"
-    },
-    {
-      "file": "/Users/nickpatrick/Dropbox/dev/radar/radar-sdk-ios/RadarSDK/RadarTrackingOptions.h",
-      "line": 42,
-      "symbol": "RadarTrackingOptions.stopDistance",
-      "symbol_kind": "sourcekitten.source.lang.objc.decl.property",
-      "warning": "undocumented"
-    },
-    {
-      "file": "/Users/nickpatrick/Dropbox/dev/radar/radar-sdk-ios/RadarSDK/RadarTrackingOptions.h",
-      "line": 43,
-      "symbol": "RadarTrackingOptions.startTrackingAfter",
-      "symbol_kind": "sourcekitten.source.lang.objc.decl.property",
-      "warning": "undocumented"
-    },
-    {
-      "file": "/Users/nickpatrick/Dropbox/dev/radar/radar-sdk-ios/RadarSDK/RadarTrackingOptions.h",
-      "line": 44,
-      "symbol": "RadarTrackingOptions.stopTrackingAfter",
-      "symbol_kind": "sourcekitten.source.lang.objc.decl.property",
-      "warning": "undocumented"
-    },
-    {
-      "file": "/Users/nickpatrick/Dropbox/dev/radar/radar-sdk-ios/RadarSDK/RadarTrackingOptions.h",
-      "line": 45,
-      "symbol": "RadarTrackingOptions.replay",
-      "symbol_kind": "sourcekitten.source.lang.objc.decl.property",
-      "warning": "undocumented"
-    },
-    {
-      "file": "/Users/nickpatrick/Dropbox/dev/radar/radar-sdk-ios/RadarSDK/RadarTrackingOptions.h",
-      "line": 46,
-      "symbol": "RadarTrackingOptions.sync",
-      "symbol_kind": "sourcekitten.source.lang.objc.decl.property",
-      "warning": "undocumented"
-    },
-    {
-      "file": "/Users/nickpatrick/Dropbox/dev/radar/radar-sdk-ios/RadarSDK/RadarTrackingOptions.h",
-      "line": 47,
-      "symbol": "RadarTrackingOptions.showBlueBar",
-      "symbol_kind": "sourcekitten.source.lang.objc.decl.property",
-      "warning": "undocumented"
-    },
-    {
-      "file": "/Users/nickpatrick/Dropbox/dev/radar/radar-sdk-ios/RadarSDK/RadarTrackingOptions.h",
-      "line": 48,
-      "symbol": "RadarTrackingOptions.useStoppedGeofence",
-      "symbol_kind": "sourcekitten.source.lang.objc.decl.property",
-      "warning": "undocumented"
-    },
-    {
-      "file": "/Users/nickpatrick/Dropbox/dev/radar/radar-sdk-ios/RadarSDK/RadarTrackingOptions.h",
-      "line": 49,
-      "symbol": "RadarTrackingOptions.stoppedGeofenceRadius",
-      "symbol_kind": "sourcekitten.source.lang.objc.decl.property",
-      "warning": "undocumented"
-    },
-    {
-      "file": "/Users/nickpatrick/Dropbox/dev/radar/radar-sdk-ios/RadarSDK/RadarTrackingOptions.h",
-      "line": 50,
-      "symbol": "RadarTrackingOptions.useMovingGeofence",
-      "symbol_kind": "sourcekitten.source.lang.objc.decl.property",
-      "warning": "undocumented"
-    },
-    {
-      "file": "/Users/nickpatrick/Dropbox/dev/radar/radar-sdk-ios/RadarSDK/RadarTrackingOptions.h",
-      "line": 51,
-      "symbol": "RadarTrackingOptions.movingGeofenceRadius",
-      "symbol_kind": "sourcekitten.source.lang.objc.decl.property",
-      "warning": "undocumented"
-    },
-    {
-      "file": "/Users/nickpatrick/Dropbox/dev/radar/radar-sdk-ios/RadarSDK/RadarTrackingOptions.h",
-      "line": 52,
-      "symbol": "RadarTrackingOptions.useVisits",
-      "symbol_kind": "sourcekitten.source.lang.objc.decl.property",
-      "warning": "undocumented"
-    },
-    {
-      "file": "/Users/nickpatrick/Dropbox/dev/radar/radar-sdk-ios/RadarSDK/RadarTrackingOptions.h",
-      "line": 53,
-      "symbol": "RadarTrackingOptions.useSignificantLocationChanges",
-      "symbol_kind": "sourcekitten.source.lang.objc.decl.property",
-      "warning": "undocumented"
-    },
-    {
-      "file": "/Users/nickpatrick/Dropbox/dev/radar/radar-sdk-ios/RadarSDK/RadarTrackingOptions.h",
-      "line": 54,
-      "symbol": "RadarTrackingOptions.continuous",
-      "symbol_kind": "sourcekitten.source.lang.objc.decl.property",
-      "warning": "undocumented"
-    },
-    {
-      "file": "/Users/nickpatrick/Dropbox/dev/radar/radar-sdk-ios/RadarSDK/RadarTrackingOptions.h",
-      "line": 55,
-      "symbol": "RadarTrackingOptions.responsive",
-      "symbol_kind": "sourcekitten.source.lang.objc.decl.property",
-      "warning": "undocumented"
-    },
-    {
-      "file": "/Users/nickpatrick/Dropbox/dev/radar/radar-sdk-ios/RadarSDK/RadarTrackingOptions.h",
-      "line": 56,
-      "symbol": "RadarTrackingOptions.efficient",
-      "symbol_kind": "sourcekitten.source.lang.objc.decl.property",
-      "warning": "undocumented"
-    },
-    {
-      "file": "/Users/nickpatrick/Dropbox/dev/radar/radar-sdk-ios/RadarSDK/RadarTrackingOptions.h",
-      "line": 58,
+      "line": 172,
       "symbol": "RadarTrackingOptions.+stringForDesiredAccuracy:",
       "symbol_kind": "sourcekitten.source.lang.objc.decl.method.class",
       "warning": "undocumented"
     },
     {
       "file": "/Users/nickpatrick/Dropbox/dev/radar/radar-sdk-ios/RadarSDK/RadarTrackingOptions.h",
-      "line": 59,
+      "line": 173,
       "symbol": "RadarTrackingOptions.+desiredAccuracyForString:",
       "symbol_kind": "sourcekitten.source.lang.objc.decl.method.class",
       "warning": "undocumented"
     },
     {
       "file": "/Users/nickpatrick/Dropbox/dev/radar/radar-sdk-ios/RadarSDK/RadarTrackingOptions.h",
-      "line": 60,
+      "line": 174,
       "symbol": "RadarTrackingOptions.+stringForReplay:",
       "symbol_kind": "sourcekitten.source.lang.objc.decl.method.class",
       "warning": "undocumented"
     },
     {
       "file": "/Users/nickpatrick/Dropbox/dev/radar/radar-sdk-ios/RadarSDK/RadarTrackingOptions.h",
-      "line": 61,
+      "line": 175,
       "symbol": "RadarTrackingOptions.+replayForString:",
       "symbol_kind": "sourcekitten.source.lang.objc.decl.method.class",
       "warning": "undocumented"
     },
     {
       "file": "/Users/nickpatrick/Dropbox/dev/radar/radar-sdk-ios/RadarSDK/RadarTrackingOptions.h",
-      "line": 62,
+      "line": 176,
       "symbol": "RadarTrackingOptions.+stringForSync:",
       "symbol_kind": "sourcekitten.source.lang.objc.decl.method.class",
       "warning": "undocumented"
     },
     {
       "file": "/Users/nickpatrick/Dropbox/dev/radar/radar-sdk-ios/RadarSDK/RadarTrackingOptions.h",
-      "line": 63,
+      "line": 177,
       "symbol": "RadarTrackingOptions.+syncForString:",
       "symbol_kind": "sourcekitten.source.lang.objc.decl.method.class",
       "warning": "undocumented"
     },
     {
       "file": "/Users/nickpatrick/Dropbox/dev/radar/radar-sdk-ios/RadarSDK/RadarTrackingOptions.h",
-      "line": 64,
+      "line": 178,
       "symbol": "RadarTrackingOptions.+trackingOptionsFromDictionary:",
       "symbol_kind": "sourcekitten.source.lang.objc.decl.method.class",
       "warning": "undocumented"
     },
     {
       "file": "/Users/nickpatrick/Dropbox/dev/radar/radar-sdk-ios/RadarSDK/RadarTrackingOptions.h",
-      "line": 65,
+      "line": 179,
       "symbol": "RadarTrackingOptions.-dictionaryValue",
       "symbol_kind": "sourcekitten.source.lang.objc.decl.method.instance",
       "warning": "undocumented"
