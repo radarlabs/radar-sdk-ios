@@ -25,38 +25,64 @@
         return nil;
     }
     
-    NSDictionary *chainDict = (NSDictionary *)object;
+    NSDictionary *dict = (NSDictionary *)object;
     
-    NSString *chainSlug;
-    NSString *chainName;
-    NSString *chainExternalId;
-    NSDictionary *chainMetadata;
+    NSString *slug;
+    NSString *name;
+    NSString *externalId;
+    NSDictionary *metadata;
     
-    id chainSlugObj = chainDict[@"slug"];
-    if (chainSlugObj && [chainSlugObj isKindOfClass:[NSString class]]) {
-        chainSlug = (NSString *)chainSlugObj;
+    id slugObj = dict[@"slug"];
+    if (slugObj && [slugObj isKindOfClass:[NSString class]]) {
+        slug = (NSString *)slugObj;
     }
     
-    id chainNameObj = chainDict[@"name"];
-    if (chainNameObj && [chainNameObj isKindOfClass:[NSString class]]) {
-        chainName = (NSString *)chainNameObj;
+    id nameObj = dict[@"name"];
+    if (nameObj && [nameObj isKindOfClass:[NSString class]]) {
+        name = (NSString *)nameObj;
     }
     
-    id chainExternalIdObj = chainDict[@"externalId"];
-    if ([chainExternalIdObj isKindOfClass:[NSString class]]) {
-        chainExternalId = (NSString *)chainExternalIdObj;
+    id externalIdObj = dict[@"externalId"];
+    if ([externalIdObj isKindOfClass:[NSString class]]) {
+        externalId = (NSString *)externalIdObj;
     }
     
-    id chainMetadataObj = chainDict[@"metadata"];
-    if ([chainMetadataObj isKindOfClass:[NSDictionary class]]) {
-        chainMetadata = (NSDictionary *)chainMetadataObj;
+    id metadataObj = dict[@"metadata"];
+    if ([metadataObj isKindOfClass:[NSDictionary class]]) {
+        metadata = (NSDictionary *)metadataObj;
     }
     
-    if (chainSlug && chainName) {
-        return [[RadarChain alloc] initWithSlug:chainSlug name:chainName externalId:chainExternalId metadata:chainMetadata];
+    if (slug && name) {
+        return [[RadarChain alloc] initWithSlug:slug name:name externalId:externalId metadata:metadata];
     }
     
     return nil;
+}
+
++ (NSArray<NSDictionary *> *)arrayForChains:(NSArray<RadarChain *> *)chains {
+    if (!chains) {
+        return nil;
+    }
+    
+    NSMutableArray *arr = [[NSMutableArray alloc] initWithCapacity:chains.count];
+    for (RadarChain *chain in chains) {
+        NSDictionary *dict = [chain toDictionary];
+        [arr addObject:dict];
+    }
+    return arr;
+}
+
+- (NSDictionary *)toDictionary {
+    NSMutableDictionary *dict = [NSMutableDictionary new];
+    [dict setValue:self.slug forKey:@"slug"];
+    [dict setValue:self.name forKey:@"name"];
+    if (self.externalId) {
+        [dict setValue:self.externalId forKey:@"externalId"];
+    }
+    if (self.metadata) {
+        [dict setValue:self.metadata forKey:@"metadata"];
+    }
+    return dict;
 }
 
 @end

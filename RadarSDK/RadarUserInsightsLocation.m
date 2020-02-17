@@ -32,97 +32,97 @@
         return nil;
     }
     
-    NSDictionary *userInsightsLocationDict = (NSDictionary *)object;
+    NSDictionary *dict = (NSDictionary *)object;
     
-    RadarUserInsightsLocationType userInsightsLocationType = RadarUserInsightsLocationTypeUnknown;
-    CLLocation *userInsightsLocationLocation;
-    RadarUserInsightsLocationConfidence userInsightsLocationConfidence = RadarUserInsightsLocationConfidenceNone;
-    NSDate *userInsightsLocationUpdatedAt;
+    RadarUserInsightsLocationType type = RadarUserInsightsLocationTypeUnknown;
+    CLLocation *location;
+    RadarUserInsightsLocationConfidence confidence = RadarUserInsightsLocationConfidenceNone;
+    NSDate *updatedAt;
     RadarRegion *country;
     RadarRegion *state;
     RadarRegion *dma;
     RadarRegion *postalCode;
     
-    id userInsightsLocationTypeObj = userInsightsLocationDict[@"type"];
-    if (userInsightsLocationTypeObj && [userInsightsLocationTypeObj isKindOfClass:[NSString class]]) {
-        NSString *userInsightsLocationTypeStr = (NSString *)userInsightsLocationTypeObj;
+    id typeObj = dict[@"type"];
+    if (typeObj && [typeObj isKindOfClass:[NSString class]]) {
+        NSString *typeStr = (NSString *)typeObj;
         
-        if ([userInsightsLocationTypeStr isEqualToString:@"home"]) {
-            userInsightsLocationType = RadarUserInsightsLocationTypeHome;
-        } else if ([userInsightsLocationTypeStr isEqualToString:@"office"]) {
-            userInsightsLocationType = RadarUserInsightsLocationTypeOffice;
+        if ([typeStr isEqualToString:@"home"]) {
+            type = RadarUserInsightsLocationTypeHome;
+        } else if ([typeStr isEqualToString:@"office"]) {
+            type = RadarUserInsightsLocationTypeOffice;
         }
     }
     
-    id userInsightsLocationLocationObj = userInsightsLocationDict[@"location"];
-    if (userInsightsLocationLocationObj && [userInsightsLocationLocationObj isKindOfClass:[NSDictionary class]]) {
-        NSDictionary *userInsightsLocationLocationDict = (NSDictionary *)userInsightsLocationLocationObj;
+    id locationObj = dict[@"location"];
+    if (locationObj && [locationObj isKindOfClass:[NSDictionary class]]) {
+        NSDictionary *locationDict = (NSDictionary *)locationObj;
         
-        id userInsightsLocationLocationCoordinatesObj = userInsightsLocationLocationDict[@"coordinates"];
-        if (!userInsightsLocationLocationCoordinatesObj || ![userInsightsLocationLocationCoordinatesObj isKindOfClass:[NSArray class]]) {
+        id locationCoordinatesObj = locationDict[@"coordinates"];
+        if (!locationCoordinatesObj || ![locationCoordinatesObj isKindOfClass:[NSArray class]]) {
             return nil;
         }
         
-        NSArray *userInsightsLocationLocationCoordinatesArr = (NSArray *)userInsightsLocationLocationCoordinatesObj;
-        if (userInsightsLocationLocationCoordinatesArr.count != 2) {
+        NSArray *locationCoordinatesArr = (NSArray *)locationCoordinatesObj;
+        if (locationCoordinatesArr.count != 2) {
             return nil;
         }
         
-        id userInsightsLocationLocationCoordinatesLongitudeObj = userInsightsLocationLocationCoordinatesArr[0];
-        id userInsightsLocationLocationCoordinatesLatitudeObj = userInsightsLocationLocationCoordinatesArr[1];
-        if (!userInsightsLocationLocationCoordinatesLongitudeObj || !userInsightsLocationLocationCoordinatesLatitudeObj || ![userInsightsLocationLocationCoordinatesLongitudeObj isKindOfClass:[NSNumber class]] || ![userInsightsLocationLocationCoordinatesLatitudeObj isKindOfClass:[NSNumber class]]) {
+        id locationCoordinatesLongitudeObj = locationCoordinatesArr[0];
+        id locationCoordinatesLatitudeObj = locationCoordinatesArr[1];
+        if (!locationCoordinatesLongitudeObj || !locationCoordinatesLatitudeObj || ![locationCoordinatesLongitudeObj isKindOfClass:[NSNumber class]] || ![locationCoordinatesLatitudeObj isKindOfClass:[NSNumber class]]) {
             return nil;
         }
         
-        NSNumber *userInsightsLocationLocationCoordinatesLongitudeNumber = (NSNumber *)userInsightsLocationLocationCoordinatesLongitudeObj;
-        NSNumber *userInsightsLocationLocationCoordinatesLatitudeNumber = (NSNumber *)userInsightsLocationLocationCoordinatesLatitudeObj;
+        NSNumber *locationCoordinatesLongitudeNumber = (NSNumber *)locationCoordinatesLongitudeObj;
+        NSNumber *locationCoordinatesLatitudeNumber = (NSNumber *)locationCoordinatesLatitudeObj;
         
-        float userInsightsLocationLocationCoordinatesLongitudeFloat = [userInsightsLocationLocationCoordinatesLongitudeNumber floatValue];
-        float userInsightsLocationLocationCoordinatesLatitudeFloat = [userInsightsLocationLocationCoordinatesLatitudeNumber floatValue];
+        float locationCoordinatesLongitudeFloat = [locationCoordinatesLongitudeNumber floatValue];
+        float locationCoordinatesLatitudeFloat = [locationCoordinatesLatitudeNumber floatValue];
         
-        userInsightsLocationLocation = [[CLLocation alloc] initWithLatitude:userInsightsLocationLocationCoordinatesLatitudeFloat longitude:userInsightsLocationLocationCoordinatesLongitudeFloat];
+        location = [[CLLocation alloc] initWithLatitude:locationCoordinatesLatitudeFloat longitude:locationCoordinatesLongitudeFloat];
     }
     
-    id userInsightsLocationConfidenceObj = userInsightsLocationDict[@"confidence"];
-    if (userInsightsLocationConfidenceObj && [userInsightsLocationConfidenceObj isKindOfClass:[NSNumber class]]) {
-        NSNumber *userInsightsLocationConfidenceNumber = (NSNumber *)userInsightsLocationConfidenceObj;
-        int userInsightsLocationConfidenceInt = [userInsightsLocationConfidenceNumber intValue];
+    id confidenceObj = dict[@"confidence"];
+    if (confidenceObj && [confidenceObj isKindOfClass:[NSNumber class]]) {
+        NSNumber *confidenceNumber = (NSNumber *)confidenceObj;
+        int userInsightsLocationConfidenceInt = [confidenceNumber intValue];
         
         if (userInsightsLocationConfidenceInt == 3) {
-            userInsightsLocationConfidence = RadarUserInsightsLocationConfidenceHigh;
+            confidence = RadarUserInsightsLocationConfidenceHigh;
         } else if (userInsightsLocationConfidenceInt == 2) {
-            userInsightsLocationConfidence = RadarUserInsightsLocationConfidenceMedium;
+            confidence = RadarUserInsightsLocationConfidenceMedium;
         } else if (userInsightsLocationConfidenceInt == 1) {
-            userInsightsLocationConfidence = RadarUserInsightsLocationConfidenceLow;
+            confidence = RadarUserInsightsLocationConfidenceLow;
         }
     }
     
-    id userInsightsLocationUpdatedAtObj = userInsightsLocationDict[@"updatedAt"];
-    if (userInsightsLocationUpdatedAtObj && [userInsightsLocationUpdatedAtObj isKindOfClass:[NSString class]]) {
-        NSString *userInsightsLocationUpdatedAtStr = (NSString *)userInsightsLocationUpdatedAtObj;
+    id updatedAtObj = dict[@"updatedAt"];
+    if (updatedAtObj && [updatedAtObj isKindOfClass:[NSString class]]) {
+        NSString *userInsightsLocationUpdatedAtStr = (NSString *)updatedAtObj;
         
         NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
         dateFormatter.locale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US_POSIX"];
         dateFormatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
         [dateFormatter setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss.SSSZ"];
         
-        userInsightsLocationUpdatedAt = [dateFormatter dateFromString:userInsightsLocationUpdatedAtStr];
+        updatedAt = [dateFormatter dateFromString:userInsightsLocationUpdatedAtStr];
     }
     
-    id countryObj = userInsightsLocationDict[@"country"];
+    id countryObj = dict[@"country"];
     country = [[RadarRegion alloc] initWithObject:countryObj];
     
-    id stateObj = userInsightsLocationDict[@"state"];
+    id stateObj = dict[@"state"];
     state = [[RadarRegion alloc] initWithObject:stateObj];
     
-    id dmaObj = userInsightsLocationDict[@"dma"];
+    id dmaObj = dict[@"dma"];
     dma = [[RadarRegion alloc] initWithObject:dmaObj];
     
-    id postalCodeObj = userInsightsLocationDict[@"postalCode"];
+    id postalCodeObj = dict[@"postalCode"];
     postalCode = [[RadarRegion alloc] initWithObject:postalCodeObj];
     
-    if (userInsightsLocationLocation && userInsightsLocationUpdatedAt) {
-        return [[RadarUserInsightsLocation alloc] initWithType:userInsightsLocationType location:userInsightsLocationLocation confidence:userInsightsLocationConfidence updatedAt:userInsightsLocationUpdatedAt country:country state:state dma:dma postalCode:postalCode];
+    if (location && updatedAt) {
+        return [[RadarUserInsightsLocation alloc] initWithType:type location:location confidence:confidence updatedAt:updatedAt country:country state:state dma:dma postalCode:postalCode];
     }
     
     return nil;
@@ -141,13 +141,17 @@
 
 - (NSDictionary *)toDictionary {
     NSMutableDictionary *dict = [NSMutableDictionary new];
-    NSString *type = [RadarUserInsightsLocation stringForUserInsightsLocationType:self.type];
-    if (type) {
-        [dict setValue:type forKey:@"type"];
+    if (self.type) {
+        NSString *type = [RadarUserInsightsLocation stringForUserInsightsLocationType:self.type];
+        if (type) {
+            [dict setValue:type forKey:@"type"];
+        }
     }
-    NSDictionary *locationDict = [RadarUtils dictionaryForLocation:self.location];
-    if (locationDict) {
-        [dict setValue:locationDict forKey:@"location"];
+    if (self.location) {
+        NSDictionary *locationDict = [RadarUtils dictionaryForLocation:self.location];
+        if (locationDict) {
+            [dict setValue:locationDict forKey:@"location"];
+        }
     }
     NSNumber *confidence = @(self.confidence);
     [dict setValue:confidence forKey:@"confidence"];

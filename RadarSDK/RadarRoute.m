@@ -26,22 +26,26 @@
         return nil;
     }
     
-    NSDictionary *routeDict = (NSDictionary *)object;
+    NSDictionary *dict = (NSDictionary *)object;
 
     RadarRouteDistance *distance;
     RadarRouteDuration *duration;
     
-    id distanceObj = routeDict[@"distance"];
+    id distanceObj = dict[@"distance"];
     if (distanceObj) {
         distance = [[RadarRouteDistance alloc] initWithObject:distanceObj];
     }
 
-    id durationObj = routeDict[@"duration"];
+    id durationObj = dict[@"duration"];
     if (durationObj) {
         duration = [[RadarRouteDuration alloc] initWithObject:durationObj];
     }
     
-    return [[RadarRoute alloc] initWithDistance:distance duration:duration];
+    if (distance && duration) {
+        return [[RadarRoute alloc] initWithDistance:distance duration:duration];
+    }
+    
+    return nil;
 }
 
 @end

@@ -29,130 +29,6 @@
     return mutableAddresses;
 }
 
-- (instancetype _Nullable)initWithObject:(id _Nonnull)object {
-    if (!object || ![object isKindOfClass:[NSDictionary class]]) {
-        return nil;
-    }
-
-    NSDictionary *addressDict = (NSDictionary *)object;
-
-    NSNumber *latitude;
-    NSNumber *longitude;
-    CLLocationCoordinate2D coordinate;
-
-    NSString *formattedAddress;
-    NSString *country;
-    NSString *countryCode;
-    NSString *countryFlag;
-    NSString *state;
-    NSString *stateCode;
-    NSString *postalCode;
-    NSString *city;
-    NSString *borough;
-    NSString *county;
-    NSString *neighborhood;
-    NSString *number;
-    NSString *name;
-
-    RadarAddressConfidence confidence = RadarAddressConfidenceNone;
-
-    id latitudeObj = addressDict[@"latitude"];
-    if (latitudeObj && [latitudeObj isKindOfClass:[NSNumber class]]) {
-        latitude = (NSNumber *)latitudeObj;
-    }
-
-    id longitudeObj = addressDict[@"longitude"];
-    if (longitudeObj && [longitudeObj isKindOfClass:[NSNumber class]]) {
-        longitude = (NSNumber *)longitudeObj;
-    }
-
-    if (latitude && longitude) {
-        coordinate = CLLocationCoordinate2DMake([latitude doubleValue], [longitude doubleValue]);
-    } else {
-        coordinate = kCLLocationCoordinate2DInvalid;
-    }
-
-    id formattedAddressObj = addressDict[@"formattedAddress"];
-    if (formattedAddressObj && [formattedAddressObj isKindOfClass:[NSString class]]) {
-        formattedAddress = (NSString *)formattedAddressObj;
-    }
-
-    id countryObj = addressDict[@"country"];
-    if (countryObj && [countryObj isKindOfClass:[NSString class]]) {
-        country = (NSString *)countryObj;
-    }
-
-    id countryCodeObj = addressDict[@"countryCode"];
-    if (countryCodeObj && [countryCodeObj isKindOfClass:[NSString class]]) {
-        countryCode = (NSString *)countryCodeObj;
-    }
-
-    id countryFlagObj = addressDict[@"countryFlag"];
-    if (countryFlagObj && [countryFlagObj isKindOfClass:[NSString class]]) {
-        countryFlag = (NSString *)countryFlagObj;
-    }
-
-    id stateObj = addressDict[@"state"];
-    if (stateObj && [stateObj isKindOfClass:[NSString class]]) {
-        state = (NSString *)stateObj;
-    }
-
-    id stateCodeObj = addressDict[@"stateCode"];
-    if (stateCodeObj && [stateCodeObj isKindOfClass:[NSString class]]) {
-        stateCode = (NSString *)stateCodeObj;
-    }
-
-    id postalCodeObj = addressDict[@"postalCode"];
-    if (postalCodeObj && [postalCodeObj isKindOfClass:[NSString class]]) {
-        postalCode = (NSString *)postalCodeObj;
-    }
-
-    id cityObj = addressDict[@"city"];
-    if (cityObj && [cityObj isKindOfClass:[NSString class]]) {
-        city = (NSString *)cityObj;
-    }
-
-    id boroughObj = addressDict[@"borough"];
-    if (boroughObj && [boroughObj isKindOfClass:[NSString class]]) {
-        borough = (NSString *)boroughObj;
-    }
-
-    id countyObj = addressDict[@"county"];
-    if (countyObj && [countyObj isKindOfClass:[NSString class]]) {
-        county = (NSString *)countyObj;
-    }
-
-    id neighborhoodObj = addressDict[@"neighborhood"];
-    if (neighborhoodObj && [neighborhoodObj isKindOfClass:[NSString class]]) {
-        neighborhood = (NSString *)neighborhoodObj;
-    }
-
-    id addressNumberObj = addressDict[@"number"];
-    if (addressNumberObj && [addressNumberObj isKindOfClass:[NSString class]]) {
-        number = (NSString *)addressNumberObj;
-    }
-    
-    id nameObj = addressDict[@"name"];
-    if (nameObj && [nameObj isKindOfClass:[NSString class]]) {
-        name = (NSString *)nameObj;
-    }
-
-    id confidenceObj = addressDict[@"confidence"];
-    if (confidenceObj && [confidenceObj isKindOfClass:[NSString class]]) {
-        NSString *confidenceStr = (NSString *)confidenceObj;
-
-        if ([confidenceStr isEqualToString:@"exact"]) {
-            confidence = RadarAddressConfidenceExact;
-        } else if ([confidenceStr isEqualToString:@"interpolated"]) {
-            confidence = RadarAddressConfidenceInterpolated;
-        } else if ([confidenceStr isEqualToString:@"fallback"]) {
-            confidence = RadarAddressConfidenceFallback;
-        }
-    }
-
-    return [[RadarAddress alloc] initWithCoordinate:coordinate formattedAddress:formattedAddress country:country countryCode:countryCode countryFlag:countryFlag state:state stateCode:stateCode postalCode:postalCode city:city borough:borough county:county neighborhood:neighborhood number:number name:name confidence:confidence];
-}
-
 - (instancetype _Nullable)initWithCoordinate:(CLLocationCoordinate2D)coordinate
                             formattedAddress:(NSString * _Nullable)formattedAddress
                                      country:(NSString * _Nullable)country
@@ -187,6 +63,130 @@
         _confidence = confidence;
     }
     return self;
+}
+
+- (instancetype _Nullable)initWithObject:(id _Nonnull)object {
+    if (!object || ![object isKindOfClass:[NSDictionary class]]) {
+        return nil;
+    }
+
+    NSDictionary *dict = (NSDictionary *)object;
+
+    NSNumber *latitude;
+    NSNumber *longitude;
+    CLLocationCoordinate2D coordinate;
+
+    NSString *formattedAddress;
+    NSString *country;
+    NSString *countryCode;
+    NSString *countryFlag;
+    NSString *state;
+    NSString *stateCode;
+    NSString *postalCode;
+    NSString *city;
+    NSString *borough;
+    NSString *county;
+    NSString *neighborhood;
+    NSString *number;
+    NSString *name;
+
+    RadarAddressConfidence confidence = RadarAddressConfidenceNone;
+
+    id latitudeObj = dict[@"latitude"];
+    if (latitudeObj && [latitudeObj isKindOfClass:[NSNumber class]]) {
+        latitude = (NSNumber *)latitudeObj;
+    }
+
+    id longitudeObj = dict[@"longitude"];
+    if (longitudeObj && [longitudeObj isKindOfClass:[NSNumber class]]) {
+        longitude = (NSNumber *)longitudeObj;
+    }
+
+    if (latitude && longitude) {
+        coordinate = CLLocationCoordinate2DMake([latitude doubleValue], [longitude doubleValue]);
+    } else {
+        coordinate = kCLLocationCoordinate2DInvalid;
+    }
+
+    id formattedAddressObj = dict[@"formattedAddress"];
+    if (formattedAddressObj && [formattedAddressObj isKindOfClass:[NSString class]]) {
+        formattedAddress = (NSString *)formattedAddressObj;
+    }
+
+    id countryObj = dict[@"country"];
+    if (countryObj && [countryObj isKindOfClass:[NSString class]]) {
+        country = (NSString *)countryObj;
+    }
+
+    id countryCodeObj = dict[@"countryCode"];
+    if (countryCodeObj && [countryCodeObj isKindOfClass:[NSString class]]) {
+        countryCode = (NSString *)countryCodeObj;
+    }
+
+    id countryFlagObj = dict[@"countryFlag"];
+    if (countryFlagObj && [countryFlagObj isKindOfClass:[NSString class]]) {
+        countryFlag = (NSString *)countryFlagObj;
+    }
+
+    id stateObj = dict[@"state"];
+    if (stateObj && [stateObj isKindOfClass:[NSString class]]) {
+        state = (NSString *)stateObj;
+    }
+
+    id stateCodeObj = dict[@"stateCode"];
+    if (stateCodeObj && [stateCodeObj isKindOfClass:[NSString class]]) {
+        stateCode = (NSString *)stateCodeObj;
+    }
+
+    id postalCodeObj = dict[@"postalCode"];
+    if (postalCodeObj && [postalCodeObj isKindOfClass:[NSString class]]) {
+        postalCode = (NSString *)postalCodeObj;
+    }
+
+    id cityObj = dict[@"city"];
+    if (cityObj && [cityObj isKindOfClass:[NSString class]]) {
+        city = (NSString *)cityObj;
+    }
+
+    id boroughObj = dict[@"borough"];
+    if (boroughObj && [boroughObj isKindOfClass:[NSString class]]) {
+        borough = (NSString *)boroughObj;
+    }
+
+    id countyObj = dict[@"county"];
+    if (countyObj && [countyObj isKindOfClass:[NSString class]]) {
+        county = (NSString *)countyObj;
+    }
+
+    id neighborhoodObj = dict[@"neighborhood"];
+    if (neighborhoodObj && [neighborhoodObj isKindOfClass:[NSString class]]) {
+        neighborhood = (NSString *)neighborhoodObj;
+    }
+
+    id addressNumberObj = dict[@"number"];
+    if (addressNumberObj && [addressNumberObj isKindOfClass:[NSString class]]) {
+        number = (NSString *)addressNumberObj;
+    }
+    
+    id nameObj = dict[@"name"];
+    if (nameObj && [nameObj isKindOfClass:[NSString class]]) {
+        name = (NSString *)nameObj;
+    }
+
+    id confidenceObj = dict[@"confidence"];
+    if (confidenceObj && [confidenceObj isKindOfClass:[NSString class]]) {
+        NSString *confidenceStr = (NSString *)confidenceObj;
+
+        if ([confidenceStr isEqualToString:@"exact"]) {
+            confidence = RadarAddressConfidenceExact;
+        } else if ([confidenceStr isEqualToString:@"interpolated"]) {
+            confidence = RadarAddressConfidenceInterpolated;
+        } else if ([confidenceStr isEqualToString:@"fallback"]) {
+            confidence = RadarAddressConfidenceFallback;
+        }
+    }
+
+    return [[RadarAddress alloc] initWithCoordinate:coordinate formattedAddress:formattedAddress country:country countryCode:countryCode countryFlag:countryFlag state:state stateCode:stateCode postalCode:postalCode city:city borough:borough county:county neighborhood:neighborhood number:number name:name confidence:confidence];
 }
 
 @end

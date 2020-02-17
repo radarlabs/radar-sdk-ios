@@ -38,4 +38,6 @@
  */
 @property (nullable, copy, nonatomic, readonly) NSDictionary *metadata;
 
+- (NSDictionary * _Nonnull)toDictionary;
+
 @end

@@ -4,6 +4,9 @@
 
 - The `updateLocation:completionHandler:` method has been renamed to `trackOnceWithLocation:completionHandler:`.
 - This update introduces new tracking options and presets. See https://radar.io/blog/open-source-radar-sdk-v3-custom-tracking-options-public-beta. If you were using `trackingOptions.priority = RadarTrackingPriorityEfficiency`, use the preset `RadarTrackingOptions.efficient` instead.
+- Call methods for `userId` and `metadata` getters and setters.
+- `adId` collection is now optional. To collect `adId`, call `setAdIdEnabled:`.
+- `setPlacesProvider:` has been removed.
 
 ```swift
 // 3.0.x
@@ -11,12 +14,18 @@ Radar.trackOnce(location, completionHandler)
 
 Radar.startTracking(RadarTrackingOptions.efficient)
 
+Radar.setUserId(userId)
+
+Radar.setAdIdEnabled(true) // optional
+
 // 2.1.x
 Radar.updateLocation(location, completionHandler)
 
 let trackingOptions = RadarTrackingOptions()
 trackingOptions.priority = .efficiency
 Radar.startTracking(trackingOptions)
+
+Radar.userId = userId
 ```
 
 ## 2.0.x to 2.1.x

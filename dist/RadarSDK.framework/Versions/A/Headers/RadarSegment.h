@@ -24,6 +24,8 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property (nonnull, copy, nonatomic, readonly) NSString *externalId;
 
+- (NSDictionary * _Nonnull)toDictionary;
+
 @end
 
 NS_ASSUME_NONNULL_END

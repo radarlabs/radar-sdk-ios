@@ -32,7 +32,7 @@
         return nil;
     }
     
-    NSDictionary *routesDict = (NSDictionary *)object;
+    NSDictionary *dict = (NSDictionary *)object;
 
     RadarRouteDistance *geodesic;
     RadarRoute *foot;
@@ -40,27 +40,27 @@
     RadarRoute *car;
     RadarRoute *transit;
     
-    id geodesicObj = routesDict[@"geodesic"];
+    id geodesicObj = dict[@"geodesic"];
     if (geodesicObj) {
         geodesic = [[RadarRouteDistance alloc] initWithObject:geodesicObj];
     }
 
-    id footObj = routesDict[@"foot"];
+    id footObj = dict[@"foot"];
     if (footObj) {
         foot = [[RadarRoute alloc] initWithObject:footObj];
     }
     
-    id bikeObj = routesDict[@"bike"];
+    id bikeObj = dict[@"bike"];
     if (bikeObj) {
         bike = [[RadarRoute alloc] initWithObject:bikeObj];
     }
     
-    id carObj = routesDict[@"car"];
+    id carObj = dict[@"car"];
     if (carObj) {
         car = [[RadarRoute alloc] initWithObject:carObj];
     }
     
-    id transitObj = routesDict[@"transit"];
+    id transitObj = dict[@"transit"];
     if (transitObj) {
         transit = [[RadarRoute alloc] initWithObject:transitObj];
     }

@@ -50,76 +50,76 @@
         return nil;
     }
     
-    NSDictionary *placeDict = (NSDictionary *)object;
+    NSDictionary *dict = (NSDictionary *)object;
     
-    NSString *placeId;
-    NSString *placeName;
-    NSArray<NSString *> *placeCategories = @[];
-    RadarChain *placeChain;
-    RadarCoordinate *placeLocation = [[RadarCoordinate alloc] initWithCoordinate:CLLocationCoordinate2DMake(0, 0)];
-    NSString *placeGroup;
-    NSDictionary *placeMetadata;
+    NSString *_id;
+    NSString *name;
+    NSArray<NSString *> *categories = @[];
+    RadarChain *chain;
+    RadarCoordinate *location = [[RadarCoordinate alloc] initWithCoordinate:CLLocationCoordinate2DMake(0, 0)];
+    NSString *group;
+    NSDictionary *metadata;
     
-    id placeIdObj = placeDict[@"_id"];
-    if (placeIdObj && [placeIdObj isKindOfClass:[NSString class]]) {
-        placeId = (NSString *)placeIdObj;
+    id idObj = dict[@"_id"];
+    if (idObj && [idObj isKindOfClass:[NSString class]]) {
+        _id = (NSString *)idObj;
     }
     
-    id placeNameObj = placeDict[@"name"];
-    if (placeNameObj && [placeNameObj isKindOfClass:[NSString class]]) {
-        placeName = (NSString *)placeNameObj;
+    id nameObj = dict[@"name"];
+    if (nameObj && [nameObj isKindOfClass:[NSString class]]) {
+        name = (NSString *)nameObj;
     }
     
-    id placeCategoriesObj = placeDict[@"categories"];
-    if (placeCategoriesObj && [placeCategoriesObj isKindOfClass:[NSArray class]]) {
-        placeCategories = (NSArray *)placeCategoriesObj;
+    id categoriesObj = dict[@"categories"];
+    if (categoriesObj && [categoriesObj isKindOfClass:[NSArray class]]) {
+        categories = (NSArray *)categoriesObj;
     }
     
-    id placeChainObj = placeDict[@"chain"];
-    placeChain = [[RadarChain alloc] initWithObject:placeChainObj];
+    id chainObj = dict[@"chain"];
+    chain = [[RadarChain alloc] initWithObject:chainObj];
     
-    id placeLocationObj = placeDict[@"location"];
-    if (placeLocationObj && [placeLocationObj isKindOfClass:[NSDictionary class]]) {
-        NSDictionary *placeLocationDict = (NSDictionary *)placeLocationObj;
+    id locationObj = dict[@"location"];
+    if (locationObj && [locationObj isKindOfClass:[NSDictionary class]]) {
+        NSDictionary *locationDict = (NSDictionary *)locationObj;
         
-        id placeLocationCoordinatesObj = placeLocationDict[@"coordinates"];
-        if (!placeLocationCoordinatesObj || ![placeLocationCoordinatesObj isKindOfClass:[NSArray class]]) {
+        id locationCoordinatesObj = locationDict[@"coordinates"];
+        if (!locationCoordinatesObj || ![locationCoordinatesObj isKindOfClass:[NSArray class]]) {
             return nil;
         }
         
-        NSArray *placeLocationCoordinatesArr = (NSArray *)placeLocationCoordinatesObj;
-        if (placeLocationCoordinatesArr.count != 2) {
+        NSArray *locationCoordinatesArr = (NSArray *)locationCoordinatesObj;
+        if (locationCoordinatesArr.count != 2) {
             return nil;
         }
         
-        id placeLocationCoordinatesLongitudeObj = placeLocationCoordinatesArr[0];
-        id placeLocationCoordinatesLatitudeObj = placeLocationCoordinatesArr[1];
-        if (!placeLocationCoordinatesLongitudeObj || !placeLocationCoordinatesLatitudeObj || ![placeLocationCoordinatesLongitudeObj isKindOfClass:[NSNumber class]] || ![placeLocationCoordinatesLatitudeObj isKindOfClass:[NSNumber class]]) {
+        id locationCoordinatesLongitudeObj = locationCoordinatesArr[0];
+        id locationCoordinatesLatitudeObj = locationCoordinatesArr[1];
+        if (!locationCoordinatesLongitudeObj || !locationCoordinatesLatitudeObj || ![locationCoordinatesLongitudeObj isKindOfClass:[NSNumber class]] || ![locationCoordinatesLatitudeObj isKindOfClass:[NSNumber class]]) {
             return nil;
         }
         
-        NSNumber *placeLocationCoordinatesLongitudeNumber = (NSNumber *)placeLocationCoordinatesLongitudeObj;
-        NSNumber *placeLocationCoordinatesLatitudeNumber = (NSNumber *)placeLocationCoordinatesLatitudeObj;
+        NSNumber *locationCoordinatesLongitudeNumber = (NSNumber *)locationCoordinatesLongitudeObj;
+        NSNumber *locationCoordinatesLatitudeNumber = (NSNumber *)locationCoordinatesLatitudeObj;
         
-        float placeLocationCoordinatesLongitudeFloat = [placeLocationCoordinatesLongitudeNumber floatValue];
-        float placeLocationCoordinatesLatitudeFloat = [placeLocationCoordinatesLatitudeNumber floatValue];
+        float locationCoordinatesLongitudeFloat = [locationCoordinatesLongitudeNumber floatValue];
+        float locationCoordinatesLatitudeFloat = [locationCoordinatesLatitudeNumber floatValue];
         
-        CLLocationCoordinate2D coordinate = CLLocationCoordinate2DMake(placeLocationCoordinatesLatitudeFloat, placeLocationCoordinatesLongitudeFloat);
-        placeLocation = [[RadarCoordinate alloc] initWithCoordinate:coordinate];
+        CLLocationCoordinate2D coordinate = CLLocationCoordinate2DMake(locationCoordinatesLatitudeFloat, locationCoordinatesLongitudeFloat);
+        location = [[RadarCoordinate alloc] initWithCoordinate:coordinate];
     }
     
-    id placeGroupObj = placeDict[@"group"];
-    if ([placeGroupObj isKindOfClass:[NSString class]]) {
-        placeGroup = (NSString *)placeGroupObj;
+    id groupObj = dict[@"group"];
+    if ([groupObj isKindOfClass:[NSString class]]) {
+        group = (NSString *)groupObj;
     }
     
-    id placeMetadataObj = placeDict[@"metadata"];
-    if ([placeMetadataObj isKindOfClass:[NSDictionary class]]) {
-        placeMetadata = (NSDictionary *)placeMetadataObj;
+    id metadataObj = dict[@"metadata"];
+    if ([metadataObj isKindOfClass:[NSDictionary class]]) {
+        metadata = (NSDictionary *)metadataObj;
     }
     
-    if (placeId && placeName) {
-        return [[RadarPlace alloc] initWithId:placeId name:placeName categories:placeCategories chain:placeChain location:placeLocation group:placeGroup metadata:placeMetadata];
+    if (_id && name) {
+        return [[RadarPlace alloc] initWithId:_id name:name categories:categories chain:chain location:location group:group metadata:metadata];
     }
     
     return nil;
@@ -168,11 +168,8 @@
         [dict setValue:self.categories forKey:@"categories"];
     }
     if (self.chain) {
-      NSDictionary *chain = @{
-          @"slug": self.chain.slug,
-          @"name": self.chain.name
-      };
-      [dict setValue:chain forKey:@"chain"];
+        NSDictionary *chainDict = [self.chain toDictionary];
+        [dict setValue:chainDict forKey:@"chain"];
     }
     return dict;
 }

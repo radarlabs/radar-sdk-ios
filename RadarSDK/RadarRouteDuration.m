@@ -24,22 +24,26 @@
         return nil;
     }
     
-    NSDictionary *durationDict = (NSDictionary *)object;
+    NSDictionary *dict = (NSDictionary *)object;
 
     double value = 0;
-    NSString *text = @"";
+    NSString *text;
     
-    id valueObj = durationDict[@"value"];
+    id valueObj = dict[@"value"];
     if ([valueObj isKindOfClass:[NSNumber class]]) {
         value = ((NSNumber *)valueObj).doubleValue;
     }
 
-    id textObj = durationDict[@"text"];
+    id textObj = dict[@"text"];
     if ([textObj isKindOfClass:[NSString class]]) {
         text = (NSString *)textObj;
     }
     
-    return [[RadarRouteDuration alloc] initWithValue:value text:text];
+    if (text) {
+        return [[RadarRouteDuration alloc] initWithValue:value text:text];
+    }
+    
+    return nil;
 }
 
 @end
