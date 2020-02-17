@@ -143,15 +143,11 @@
     NSMutableDictionary *dict = [NSMutableDictionary new];
     if (self.type) {
         NSString *type = [RadarUserInsightsLocation stringForUserInsightsLocationType:self.type];
-        if (type) {
-            [dict setValue:type forKey:@"type"];
-        }
+        [dict setValue:type forKey:@"type"];
     }
     if (self.location) {
         NSDictionary *locationDict = [RadarUtils dictionaryForLocation:self.location];
-        if (locationDict) {
-            [dict setValue:locationDict forKey:@"location"];
-        }
+        [dict setValue:locationDict forKey:@"location"];
     }
     NSNumber *confidence = @(self.confidence);
     [dict setValue:confidence forKey:@"confidence"];

@@ -84,4 +84,31 @@
 
 }
 
+- (NSDictionary *)toDictionary {
+    NSMutableDictionary *dict = [NSMutableDictionary new];
+    NSArray *geofencesArr = [RadarGeofence arrayForGeofences:self.geofences];
+    [dict setValue:geofencesArr forKey:@"geofences"];
+    if (self.place) {
+      NSDictionary *placeDict = [self.place toDictionary];
+      [dict setValue:placeDict forKey:@"place"];
+    }
+    if (self.country) {
+        NSDictionary *countryDict = [self.country toDictionary];
+        [dict setValue:countryDict forKey:@"country"];
+    }
+    if (self.state) {
+        NSDictionary *stateDict = [self.state toDictionary];
+        [dict setValue:stateDict forKey:@"state"];
+    }
+    if (self.dma) {
+        NSDictionary *dmaDict = [self.dma toDictionary];
+        [dict setValue:dmaDict forKey:@"dma"];
+    }
+    if (self.postalCode) {
+        NSDictionary *postalCodeDict = [self.postalCode toDictionary];
+        [dict setValue:postalCodeDict forKey:@"postalCode"];
+    }
+    return dict;
+}
+
 @end

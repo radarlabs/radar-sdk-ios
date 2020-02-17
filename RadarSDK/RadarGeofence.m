@@ -187,19 +187,10 @@
 - (NSDictionary *)toDictionary {
     NSMutableDictionary *dict = [NSMutableDictionary new];
     [dict setValue:self._id forKey:@"_id"];
-    NSString *tag = self.tag;
-    if (tag) {
-        [dict setValue:tag forKey:@"tag"];
-    }
-    NSString *externalId = self.externalId;
-    if (externalId) {
-        [dict setValue:externalId forKey:@"externalId"];
-    }
+    [dict setValue:self.tag forKey:@"tag"];
+    [dict setValue:self.externalId forKey:@"externalId"];
     [dict setValue:self._description forKey:@"description"];
-    NSDictionary *metadata = self.metadata;
-    if (metadata) {
-        [dict setValue:metadata forKey:@"metadata"];
-    }
+    [dict setValue:self.metadata forKey:@"metadata"];
     return dict;
 }
 

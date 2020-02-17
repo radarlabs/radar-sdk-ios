@@ -46,4 +46,11 @@
     return nil;
 }
 
+- (NSDictionary *)toDictionary {
+    NSMutableDictionary *dict = [NSMutableDictionary new];
+    [dict setValue:@(self.value) forKey:@"value"];
+    [dict setValue:self.text forKey:@"text"];
+    return dict;
+}
+
 @end

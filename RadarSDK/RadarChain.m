@@ -76,12 +76,8 @@
     NSMutableDictionary *dict = [NSMutableDictionary new];
     [dict setValue:self.slug forKey:@"slug"];
     [dict setValue:self.name forKey:@"name"];
-    if (self.externalId) {
-        [dict setValue:self.externalId forKey:@"externalId"];
-    }
-    if (self.metadata) {
-        [dict setValue:self.metadata forKey:@"metadata"];
-    }
+    [dict setValue:self.externalId forKey:@"externalId"];
+    [dict setValue:self.metadata forKey:@"metadata"];
     return dict;
 }
 

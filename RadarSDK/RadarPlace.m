@@ -164,9 +164,7 @@
     NSMutableDictionary *dict = [NSMutableDictionary new];
     [dict setValue:self._id forKey:@"_id"];
     [dict setValue:self.name forKey:@"name"];
-    if (self.categories && self.categories.count) {
-        [dict setValue:self.categories forKey:@"categories"];
-    }
+    [dict setValue:self.categories forKey:@"categories"];
     if (self.chain) {
         NSDictionary *chainDict = [self.chain toDictionary];
         [dict setValue:chainDict forKey:@"chain"];

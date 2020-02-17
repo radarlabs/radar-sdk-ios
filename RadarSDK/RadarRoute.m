@@ -48,4 +48,17 @@
     return nil;
 }
 
+- (NSDictionary *)toDictionary {
+    NSMutableDictionary *dict = [NSMutableDictionary new];
+    if (self.distance) {
+        NSDictionary *distanceDict = [self.distance toDictionary];
+        [dict setValue:distanceDict forKey:@"distance"];
+    }
+    if (self.duration) {
+        NSDictionary *durationDict = [self.duration toDictionary];
+        [dict setValue:durationDict forKey:@"duration"];
+    }
+    return dict;
+}
+
 @end

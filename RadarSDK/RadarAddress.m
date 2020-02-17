@@ -189,4 +189,25 @@
     return [[RadarAddress alloc] initWithCoordinate:coordinate formattedAddress:formattedAddress country:country countryCode:countryCode countryFlag:countryFlag state:state stateCode:stateCode postalCode:postalCode city:city borough:borough county:county neighborhood:neighborhood number:number name:name confidence:confidence];
 }
 
+- (NSDictionary *)toDictionary {
+    NSMutableDictionary *dict = [NSMutableDictionary new];
+    [dict setValue:@(self.coordinate.latitude) forKey:@"latitude"];
+    [dict setValue:@(self.coordinate.longitude) forKey:@"longitude"];
+    [dict setValue:self.formattedAddress forKey:@"formattedAddress"];
+    [dict setValue:self.country forKey:@"country"];
+    [dict setValue:self.countryCode forKey:@"countryCode"];
+    [dict setValue:self.countryFlag forKey:@"countryFlag"];
+    [dict setValue:self.state forKey:@"state"];
+    [dict setValue:self.stateCode forKey:@"stateCode"];
+    [dict setValue:self.postalCode forKey:@"postalCode"];
+    [dict setValue:self.city forKey:@"city"];
+    [dict setValue:self.borough forKey:@"borough"];
+    [dict setValue:self.county forKey:@"county"];
+    [dict setValue:self.neighborhood forKey:@"neighborhood"];
+    [dict setValue:self.number forKey:@"number"];
+    [dict setValue:self.name forKey:@"name"];
+    [dict setValue:@(self.confidence) forKey:@"confidence"];
+    return dict;
+}
+
 @end

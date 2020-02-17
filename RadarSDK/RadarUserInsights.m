@@ -66,21 +66,15 @@
     NSMutableDictionary *dict = [NSMutableDictionary new];
     if (self.homeLocation) {
         NSDictionary *homeLocationDict = [self.homeLocation toDictionary];
-        if (homeLocationDict) {
-            [dict setObject:homeLocationDict forKey:@"homeLocation"];
-        }
+        [dict setObject:homeLocationDict forKey:@"homeLocation"];
     }
     if (self.officeLocation) {
         NSDictionary *officeLocationDict = [self.officeLocation toDictionary];
-        if (officeLocationDict) {
-            [dict setObject:officeLocationDict forKey:@"officeLocation"];
-        }
+        [dict setObject:officeLocationDict forKey:@"officeLocation"];
     }
     if (self.state) {
         NSDictionary *stateDict = [self.state toDictionary];
-        if (stateDict) {
-            [dict setObject:stateDict forKey:@"state"];
-        }
+        [dict setObject:stateDict forKey:@"state"];
     }
     return dict;
 }

@@ -106,6 +106,8 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property (nonatomic, assign) enum RadarAddressConfidence confidence;
 
+- (NSDictionary * _Nonnull)toDictionary;
+
 @end
 
 NS_ASSUME_NONNULL_END
