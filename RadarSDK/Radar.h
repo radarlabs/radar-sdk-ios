@@ -236,6 +236,13 @@ typedef void(^ _Nonnull RadarRouteCompletionHandler)(RadarStatus status, RadarRo
 + (NSDictionary * _Nullable)getMetadata;
 
 /**
+ Enables `adId` (IDFA) collection.
+ 
+ @param enabled A boolean indicating whether `adId` should be collected.
+ */
++ (void)setAdIdEnabled:(BOOL)enabled;
+
+/**
  Gets the device's current location.
  
  @param completionHandler An optional completion handler.

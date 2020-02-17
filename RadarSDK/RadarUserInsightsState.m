@@ -56,4 +56,13 @@
     return [[RadarUserInsightsState alloc] initWithHome:userInsightsStateHome office:userInsightsStateOffice traveling:userInsightsStateTraveling commuting:userInsightsStateCommuting];
 }
 
+- (NSDictionary *)toDictionary {
+    NSMutableDictionary *dict = [NSMutableDictionary new];
+    [dict setValue:@(self.home) forKey:@"home"];
+    [dict setValue:@(self.office) forKey:@"office"];
+    [dict setValue:@(self.traveling) forKey:@"traveling"];
+    [dict setValue:@(self.commuting) forKey:@"commuting"];
+    return dict;
+}
+
 @end

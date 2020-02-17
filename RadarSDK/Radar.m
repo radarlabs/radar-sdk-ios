@@ -60,6 +60,10 @@
     return [RadarSettings metadata];
 }
 
++ (void)setAdIdEnabled:(BOOL)enabled {
+    [RadarSettings setAdIdEnabled:enabled];
+}
+
 + (void)getLocationWithCompletionHandler:(RadarLocationCompletionHandler)completionHandler {
     [[RadarLocationManager sharedInstance] getLocationWithCompletionHandler:completionHandler];
 }
@@ -278,37 +282,37 @@
     NSString *str;
     switch(status) {
         case RadarStatusSuccess:
-            str = @"success";
+            str = @"SUCCESS";
             break;
         case RadarStatusErrorPublishableKey:
-            str = @"errorPublishableKey";
+            str = @"ERROR_PUBLISHABLE_KEY";
             break;
         case RadarStatusErrorPermissions:
-            str = @"errorPermissions";
+            str = @"ERROR_PERMISSIONS";
             break;
         case RadarStatusErrorLocation:
-            str = @"errorLocation";
+            str = @"ERROR_LOCATION";
             break;
         case RadarStatusErrorNetwork:
-            str = @"errorNetwork";
+            str = @"ERROR_NETWORK";
             break;
         case RadarStatusErrorBadRequest:
-            str = @"errorBadRequest";
+            str = @"ERROR_BAD_REQUEST";
             break;
         case RadarStatusErrorUnauthorized:
-            str = @"errorUnauthorized";
+            str = @"ERROR_UNAUTHORIZED";
             break;
         case RadarStatusErrorForbidden:
-            str = @"errorForbidden";
+            str = @"ERROR_FORBIDDEN";
             break;
         case RadarStatusErrorRateLimit:
-            str = @"errorRateLimit";
+            str = @"ERROR_RATE_LIMIT";
             break;
         case RadarStatusErrorServer:
-            str = @"errorServer";
+            str = @"ERROR_SERVER";
             break;
         default:
-            str = @"errorUnknown";
+            str = @"ERROR_UNKNOWN";
     }
     return str;
 }
@@ -317,22 +321,25 @@
     NSString *str;
     switch(source) {
         case RadarLocationSourceForegroundLocation:
-            str = @"foregroundLocation";
+            str = @"FOREGROUND_LOCATION";
             break;
         case RadarLocationSourceBackgroundLocation:
-            str = @"backgroundLocation";
+            str = @"BACKGROUND_LOCATION";
+            break;
+        case RadarLocationSourceManualLocation:
+            str = @"MANUAL_LOCATION";
             break;
         case RadarLocationSourceGeofenceEnter:
-            str = @"geofenceEnter";
+            str = @"GEOFENCE_ENTER";
             break;
         case RadarLocationSourceGeofenceExit:
-            str = @"geofenceExit";
+            str = @"GEOFENCE_EXIT";
             break;
         case RadarLocationSourceVisitArrival:
-            str = @"visitArrival";
+            str = @"VISIT_ARRIVAL";
             break;
         case RadarLocationSourceVisitDeparture:
-            str = @"visitDeparture";
+            str = @"VISIT_DEPARTURE";
             break;
         default:
             str = nil;

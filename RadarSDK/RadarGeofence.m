@@ -176,4 +176,36 @@
     return nil;
 }
 
++ (NSArray<NSDictionary *> *)arrayForGeofences:(NSArray<RadarGeofence *> *)geofences {
+    if (!geofences) {
+        return nil;
+    }
+    
+    NSMutableArray *arr = [[NSMutableArray alloc] initWithCapacity:geofences.count];
+    for (RadarGeofence *geofence in geofences) {
+        NSDictionary *dict = [geofence toDictionary];
+        [arr addObject:dict];
+    }
+    return arr;
+}
+
+- (NSDictionary *)toDictionary {
+    NSMutableDictionary *dict = [NSMutableDictionary new];
+    [dict setValue:self._id forKey:@"_id"];
+    NSString *tag = self.tag;
+    if (tag) {
+        [dict setValue:tag forKey:@"tag"];
+    }
+    NSString *externalId = self.externalId;
+    if (externalId) {
+        [dict setValue:externalId forKey:@"externalId"];
+    }
+    [dict setValue:self._description forKey:@"description"];
+    NSDictionary *metadata = self.metadata;
+    if (metadata) {
+        [dict setValue:metadata forKey:@"metadata"];
+    }
+    return dict;
+}
+
 @end

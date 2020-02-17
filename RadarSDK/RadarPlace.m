@@ -126,24 +126,55 @@
 }
 
 - (BOOL)isChain:(NSString *)slug {
-    if (!_chain || !_chain.slug) {
+    if (!self.chain || !self.chain.slug) {
         return NO;
     }
     
-    return [_chain.slug isEqualToString:slug];
+    return [self.chain.slug isEqualToString:slug];
 }
 
 - (BOOL)hasCategory:(NSString *)category {
-    if (!_categories) {
+    if (!self.categories) {
         return NO;
     }
     
-    for (unsigned int i = 0; i < _categories.count; i++) {
-        if ([_categories[i] isEqualToString:category])
+    for (unsigned int i = 0; i < self.categories.count; i++) {
+        if ([self.categories[i] isEqualToString:category]) {
             return YES;
+        }
     }
     
     return NO;
+}
+
++ (NSArray<NSDictionary *> *)arrayForPlaces:(NSArray<RadarPlace *> *)places {
+    if (!places) {
+        return nil;
+    }
+    
+    NSMutableArray *arr = [[NSMutableArray alloc] initWithCapacity:places.count];
+    for (RadarPlace *place in places) {
+        NSDictionary *dict = [place toDictionary];
+        [arr addObject:dict];
+    }
+    return arr;
+}
+
+- (NSDictionary *)toDictionary {
+    NSMutableDictionary *dict = [NSMutableDictionary new];
+    [dict setValue:self._id forKey:@"_id"];
+    [dict setValue:self.name forKey:@"name"];
+    if (self.categories && self.categories.count) {
+        [dict setValue:self.categories forKey:@"categories"];
+    }
+    if (self.chain) {
+      NSDictionary *chain = @{
+          @"slug": self.chain.slug,
+          @"name": self.chain.name
+      };
+      [dict setValue:chain forKey:@"chain"];
+    }
+    return dict;
 }
 
 @end

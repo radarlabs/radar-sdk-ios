@@ -8,6 +8,7 @@
 #import "RadarUserInsightsLocation.h"
 #import "RadarUserInsightsLocation+Internal.h"
 #import "RadarRegion+Internal.h"
+#import "RadarUtils.h"
 
 @implementation RadarUserInsightsLocation
 
@@ -125,6 +126,32 @@
     }
     
     return nil;
+}
+
++ (NSString *)stringForUserInsightsLocationType:(RadarUserInsightsLocationType)type {
+    switch (type) {
+        case RadarUserInsightsLocationTypeHome:
+            return @"home";
+        case RadarUserInsightsLocationTypeOffice:
+            return @"office";
+        default:
+            return nil;
+    }
+}
+
+- (NSDictionary *)toDictionary {
+    NSMutableDictionary *dict = [NSMutableDictionary new];
+    NSString *type = [RadarUserInsightsLocation stringForUserInsightsLocationType:self.type];
+    if (type) {
+        [dict setValue:type forKey:@"type"];
+    }
+    NSDictionary *locationDict = [RadarUtils dictionaryForLocation:self.location];
+    if (locationDict) {
+        [dict setValue:locationDict forKey:@"location"];
+    }
+    NSNumber *confidence = @(self.confidence);
+    [dict setValue:confidence forKey:@"confidence"];
+    return dict;
 }
 
 @end

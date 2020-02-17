@@ -229,4 +229,23 @@
     return nil;
 }
 
+- (NSDictionary *)toDictionary {
+    NSMutableDictionary *dict = [NSMutableDictionary new];
+    [dict setValue:self._id forKey:@"_id"];
+    [dict setValue:self.userId forKey:@"userId"];
+    NSString *description = self._description;
+    if (description) {
+        [dict setValue:description forKey:@"description"];
+    }
+    NSArray *geofencesArr = [RadarGeofence arrayForGeofences:self.geofences];
+    [dict setValue:geofencesArr forKey:@"geofences"];
+    NSDictionary *insightsDict = [self.insights toDictionary];
+    [dict setValue:insightsDict forKey:@"insights"];
+    if (self.place) {
+      NSDictionary *placeDict = [self.place toDictionary];
+      [dict setValue:placeDict forKey:@"place"];
+    }
+    return dict;
+}
+
 @end

@@ -82,4 +82,7 @@ typedef NS_ENUM(NSInteger, RadarUserInsightsLocationConfidence) {
  */
 @property (nullable, strong, nonatomic, readonly) RadarRegion *postalCode;
 
++ (NSString * _Nullable)stringForUserInsightsLocationType:(RadarUserInsightsLocationType)type;
+- (NSDictionary * _Nonnull)toDictionary;
+
 @end
