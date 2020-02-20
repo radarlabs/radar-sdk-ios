@@ -20,7 +20,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         
         locationManager.requestAlwaysAuthorization()
         
-        Radar.initialize(publishableKey: "org_test_pk_5857c63d9c1565175db8b00750808a66a002acb8")
+        Radar.initialize(publishableKey: "prj_test_pk_0000000000000000000000000000000000000000")
         Radar.setLogLevel(.debug)
         Radar.setDelegate(self)
         
@@ -29,8 +29,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 print("Track once: status = \(Radar.stringForStatus(status)); location = \(String(describing: location)); events = \(String(describing: events)); user = \(String(describing: user))")
             }
         }
-        
-        Radar.rejectEventId("5e4e9d2483cd78004c3de4bf")
         
         let options = RadarTrackingOptions.responsive
         options.sync = .all
