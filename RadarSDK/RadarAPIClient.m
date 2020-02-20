@@ -66,7 +66,7 @@
     }
     NSString *deviceId = [RadarUtils deviceId];
     if (deviceId) {
-        [queryString appendFormat:@"&deviceId=%@", userId];
+        [queryString appendFormat:@"&deviceId=%@", deviceId];
     }
     
     NSString *host = [RadarSettings host];
