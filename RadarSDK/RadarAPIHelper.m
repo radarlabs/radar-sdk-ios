@@ -31,16 +31,12 @@
         [req setHTTPBody:[NSJSONSerialization dataWithJSONObject:params options:0 error:NULL]];
     }
     
-    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"API request | method = %@; url = %@; params = %@", method, url, params]];
-
     NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
     configuration.timeoutIntervalForRequest = 10;
     configuration.timeoutIntervalForResource = 10;
 
     NSURLSessionDataTask *task = [[NSURLSession sessionWithConfiguration:configuration] dataTaskWithRequest:req completionHandler:^void(NSData *data, NSURLResponse *response, NSError *error) {
        if (error) {
-           [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"API error | error = %@", error]];
-           
            return completionHandler(RadarStatusErrorNetwork, nil);
        }
        
@@ -52,8 +48,6 @@
        
        NSDictionary *res = (NSDictionary *)resObj;
         
-        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"API response | url = %@; res = %@", url, res]];
-       
        if ([response isKindOfClass:[NSHTTPURLResponse class]]) {
            NSInteger statusCode = ((NSHTTPURLResponse *)response).statusCode;
            if (statusCode >= 200 && statusCode < 400) {
