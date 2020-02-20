@@ -26,31 +26,31 @@ NS_ASSUME_NONNULL_BEGIN
  @see https://radar.io/documentation/sdk#ios-foreground
  */
 typedef NS_ENUM(NSInteger, RadarStatus) {
-    /// The request succeeded
+    /// Success
     RadarStatusSuccess,
-    /// The SDK was not initialized with a publishable API key
+    /// SDK not initialized
     RadarStatusErrorPublishableKey,
-    /// The app's location authorization status is not `kCLAuthorizationStatusAuthorizedWhenInUse` or `kCLAuthorizationStatusAuthorizedAlways`
+    /// Location permissions not granted
     RadarStatusErrorPermissions,
-    /// Location services were unavailable, or the location request timed out
+    /// Location services error
     RadarStatusErrorLocation,
-    /// The network was unavailable, or the network connection timed out
+    /// Network error
     RadarStatusErrorNetwork,
-    /// One or more parameters were invalid
+    /// Bad request (missing or invalid params)
     RadarStatusErrorBadRequest,
-    /// The publishable API key is invalid
+    /// Unauthorized (invalid API key)
     RadarStatusErrorUnauthorized,
-    /// Payment is required
+    /// Payment required (organization disabled or usage exceeded)
     RadarStatusErrorPaymentRequired,
-    /// Use of the API is forbidden for the publishable API key
+    /// Forbidden (insufficient permissions or no beta access)
     RadarStatusErrorForbidden,
-    /// Resource not found
+    /// Not found
     RadarStatusErrorNotFound,
-    /// Exceeded rate limit
+    /// Too many requests (rate limit exceeded)
     RadarStatusErrorRateLimit,
-    /// An internal server error occurred
+    /// Internal server error
     RadarStatusErrorServer,
-    /// An unknown error occurred
+    /// Unknown error
     RadarStatusErrorUnknown
 };
 
