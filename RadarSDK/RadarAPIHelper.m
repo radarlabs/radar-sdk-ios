@@ -56,8 +56,12 @@
                return completionHandler(RadarStatusErrorBadRequest, nil);
            } else if (statusCode == 401) {
                return completionHandler(RadarStatusErrorUnauthorized, nil);
+           } else if (statusCode == 402) {
+               return completionHandler(RadarStatusErrorPaymentRequired, nil);
            } else if (statusCode == 403) {
                return completionHandler(RadarStatusErrorForbidden, nil);
+           } else if (statusCode == 404) {
+               return completionHandler(RadarStatusErrorNotFound, nil);
            } else if (statusCode == 429) {
                return completionHandler(RadarStatusErrorRateLimit, nil);
            } else if (statusCode >= 500 && statusCode <= 599) {

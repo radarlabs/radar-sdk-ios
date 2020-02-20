@@ -40,8 +40,12 @@ typedef NS_ENUM(NSInteger, RadarStatus) {
     RadarStatusErrorBadRequest,
     /// The publishable API key is invalid
     RadarStatusErrorUnauthorized,
+    /// Payment is required
+    RadarStatusErrorPaymentRequired,
     /// Use of the API is forbidden for the publishable API key
     RadarStatusErrorForbidden,
+    /// Resource not found
+    RadarStatusErrorNotFound,
     /// Exceeded rate limit
     RadarStatusErrorRateLimit,
     /// An internal server error occurred

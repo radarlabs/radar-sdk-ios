@@ -302,6 +302,9 @@
         case RadarStatusErrorUnauthorized:
             str = @"ERROR_UNAUTHORIZED";
             break;
+        case RadarStatusErrorPaymentRequired:
+            str = @"ERROR_PAYMENT_REQUIRED";
+            break;
         case RadarStatusErrorForbidden:
             str = @"ERROR_FORBIDDEN";
             break;
