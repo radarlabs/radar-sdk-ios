@@ -345,7 +345,7 @@
             str = @"VISIT_DEPARTURE";
             break;
         default:
-            str = nil;
+            str = @"UNKNOWN";
     }
     return str;
 }
