@@ -18,4 +18,6 @@
  */
 @property (assign, nonatomic, readonly) CLLocationCoordinate2D coordinate;
 
+- (NSDictionary * _Nonnull)toDictionary;
+
 @end

@@ -12,7 +12,7 @@
 
 @implementation RadarUserInsightsLocation
 
-- (instancetype _Nullable)initWithType:(RadarUserInsightsLocationType)type location:(CLLocation *)location confidence:(RadarUserInsightsLocationConfidence)confidence updatedAt:(NSDate *)updatedAt country:(RadarRegion * _Nullable)country state:(RadarRegion * _Nullable)state dma:(RadarRegion * _Nullable)dma postalCode:(RadarRegion * _Nullable)postalCode {
+- (instancetype _Nullable)initWithType:(RadarUserInsightsLocationType)type location:(RadarCoordinate * _Nullable)location confidence:(RadarUserInsightsLocationConfidence)confidence updatedAt:(NSDate *)updatedAt country:(RadarRegion * _Nullable)country state:(RadarRegion * _Nullable)state dma:(RadarRegion * _Nullable)dma postalCode:(RadarRegion * _Nullable)postalCode {
     self = [super init];
     if (self) {
         _type = type;
@@ -35,7 +35,7 @@
     NSDictionary *dict = (NSDictionary *)object;
     
     RadarUserInsightsLocationType type = RadarUserInsightsLocationTypeUnknown;
-    CLLocation *location;
+    RadarCoordinate *location;
     RadarUserInsightsLocationConfidence confidence = RadarUserInsightsLocationConfidenceNone;
     NSDate *updatedAt;
     RadarRegion *country;
@@ -80,7 +80,7 @@
         float locationCoordinatesLongitudeFloat = [locationCoordinatesLongitudeNumber floatValue];
         float locationCoordinatesLatitudeFloat = [locationCoordinatesLatitudeNumber floatValue];
         
-        location = [[CLLocation alloc] initWithLatitude:locationCoordinatesLatitudeFloat longitude:locationCoordinatesLongitudeFloat];
+        location = [[RadarCoordinate alloc] initWithCoordinate: CLLocationCoordinate2DMake(locationCoordinatesLatitudeFloat, locationCoordinatesLongitudeFloat)];
     }
     
     id confidenceObj = dict[@"confidence"];
@@ -121,14 +121,14 @@
     id postalCodeObj = dict[@"postalCode"];
     postalCode = [[RadarRegion alloc] initWithObject:postalCodeObj];
     
-    if (location && updatedAt) {
+    if (updatedAt) {
         return [[RadarUserInsightsLocation alloc] initWithType:type location:location confidence:confidence updatedAt:updatedAt country:country state:state dma:dma postalCode:postalCode];
     }
     
     return nil;
 }
 
-+ (NSString *)stringForUserInsightsLocationType:(RadarUserInsightsLocationType)type {
++ (NSString *)stringForType:(RadarUserInsightsLocationType)type {
     switch (type) {
         case RadarUserInsightsLocationTypeHome:
             return @"home";
@@ -142,11 +142,11 @@
 - (NSDictionary *)toDictionary {
     NSMutableDictionary *dict = [NSMutableDictionary new];
     if (self.type) {
-        NSString *type = [RadarUserInsightsLocation stringForUserInsightsLocationType:self.type];
+        NSString *type = [RadarUserInsightsLocation stringForType:self.type];
         [dict setValue:type forKey:@"type"];
     }
     if (self.location) {
-        NSDictionary *locationDict = [RadarUtils dictionaryForLocation:self.location];
+        NSDictionary *locationDict = [self.location toDictionary];
         [dict setValue:locationDict forKey:@"location"];
     }
     NSNumber *confidence = @(self.confidence);

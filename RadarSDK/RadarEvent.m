@@ -265,7 +265,7 @@
     return nil;
 }
 
-+ (NSString *)stringForEventType:(RadarEventType)type {
++ (NSString *)stringForType:(RadarEventType)type {
     switch (type) {
         case RadarEventTypeUserEnteredGeofence:
             return @"user.entered_geofence";
@@ -311,7 +311,7 @@
     NSMutableDictionary *dict = [NSMutableDictionary new];
     [dict setValue:self._id forKey:@"_id"];
     [dict setValue:@(self.live) forKey:@"live"];
-    NSString *type = [RadarEvent stringForEventType:self.type];
+    NSString *type = [RadarEvent stringForType:self.type];
     if (type) {
         [dict setValue:type forKey:@"type"];
     }

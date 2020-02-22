@@ -17,4 +17,14 @@
     return self;
 }
 
+- (NSDictionary *)toDictionary {
+    return @{
+        @"type": @"Point",
+        @"coordinates": @[
+            @(self.coordinate.longitude),
+            @(self.coordinate.latitude)
+        ]
+    };
+}
+
 @end

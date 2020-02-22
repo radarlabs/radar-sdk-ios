@@ -142,26 +142,26 @@
             NSMutableArray<RadarCoordinate *> *mutablePolygonCoordinates = [NSMutableArray arrayWithCapacity:polygonArr.count];
             for (uint i = 0; i < polygonArr.count; i++) {
                 id polygonCoordinatesObj = polygonArr[i];
-                
                 if (![polygonCoordinatesObj isKindOfClass:[NSArray class]]) {
                     return nil;
                 }
+                
                 NSArray *polygonCoordinatesArr = (NSArray *)polygonCoordinatesObj;
                 if (polygonCoordinatesArr.count != 2) {
                     return nil;
                 }
                 
-                id polygonCoordinatesLongitudeObj = polygonCoordinatesArr[0];
-                id polygonCoordinatesLatitudeObj = polygonCoordinatesArr[1];
-                if (![polygonCoordinatesLongitudeObj isKindOfClass:[NSNumber class]] || ![polygonCoordinatesLatitudeObj isKindOfClass:[NSNumber class]]) {
+                id polygonCoordinateLongitudeObj = polygonCoordinatesArr[0];
+                id polygonCoordinateLatitudeObj = polygonCoordinatesArr[1];
+                if (![polygonCoordinateLongitudeObj isKindOfClass:[NSNumber class]] || ![polygonCoordinateLatitudeObj isKindOfClass:[NSNumber class]]) {
                     return nil;
                 }
                 
-                float polygonCoordinatesLongitude = [((NSNumber *)polygonCoordinatesLongitudeObj) floatValue];
-                float polygonCoordinatesLatitude = [((NSNumber *)polygonCoordinatesLatitudeObj) floatValue];
+                float polygonCoordinateLongitude = [((NSNumber *)polygonCoordinateLongitudeObj) floatValue];
+                float polygonCoordinateLatitude = [((NSNumber *)polygonCoordinateLatitudeObj) floatValue];
                 
-                CLLocationCoordinate2D polygonCoordinates = CLLocationCoordinate2DMake(polygonCoordinatesLatitude, polygonCoordinatesLongitude);
-                mutablePolygonCoordinates[i] = [[RadarCoordinate alloc] initWithCoordinate:polygonCoordinates];
+                CLLocationCoordinate2D polygonCoordinate = CLLocationCoordinate2DMake(polygonCoordinateLatitude, polygonCoordinateLongitude);
+                mutablePolygonCoordinates[i] = [[RadarCoordinate alloc] initWithCoordinate:polygonCoordinate];
             }
             
             geometry = [[RadarPolygonGeometry alloc] initWithCoordinates:mutablePolygonCoordinates];
