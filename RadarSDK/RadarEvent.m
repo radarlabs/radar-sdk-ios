@@ -289,8 +289,24 @@
             return @"user.exited_place";
         case RadarEventTypeUserNearbyPlaceChain:
             return @"user.nearby_place_chain";
+        case RadarEventTypeUserEnteredRegionCountry:
+            return @"user.entered_region_country";
+        case RadarEventTypeUserExitedRegionCountry:
+            return @"user.exited_region_country";
+        case RadarEventTypeUserEnteredRegionState:
+            return @"user.entered_region_state";
+        case RadarEventTypeUserExitedRegionState:
+            return @"user.exited_region_state";
+        case RadarEventTypeUserEnteredRegionDMA:
+            return @"user.entered_region_dma";
+        case RadarEventTypeUserExitedRegionDMA:
+            return @"user.exited_region_country";
+        case RadarEventTypeUserStartedCommuting:
+            return @"user.started_commuting";
+        case RadarEventTypeUserStoppedCommuting:
+            return @"user.stopped_commuting";
         default:
-            return nil;
+            return @"unknown";
     }
 }
 
