@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 #import <CoreLocation/CoreLocation.h>
-#import "RadarCoordinate+Internal.h"
+#import "RadarCoordinate.h"
 #import "RadarRegion.h"
 
 /**
@@ -84,6 +84,6 @@ typedef NS_ENUM(NSInteger, RadarUserInsightsLocationConfidence) {
 @property (nullable, strong, nonatomic, readonly) RadarRegion *postalCode;
 
 + (NSString * _Nullable)stringForType:(RadarUserInsightsLocationType)type;
-- (NSDictionary * _Nonnull)toDictionary;
+- (NSDictionary * _Nonnull)serialize;
 
 @end

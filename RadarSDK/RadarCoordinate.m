@@ -17,7 +17,7 @@
     return self;
 }
 
-- (NSDictionary *)toDictionary {
+- (NSDictionary *)serialize {
     return @{
         @"type": @"Point",
         @"coordinates": @[

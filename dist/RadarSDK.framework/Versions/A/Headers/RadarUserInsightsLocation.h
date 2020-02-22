@@ -7,6 +7,7 @@
 
 #import <Foundation/Foundation.h>
 #import <CoreLocation/CoreLocation.h>
+#import "RadarCoordinate.h"
 #import "RadarRegion.h"
 
 /**
@@ -50,7 +51,7 @@ typedef NS_ENUM(NSInteger, RadarUserInsightsLocationConfidence) {
 /**
  The learned location.
  */
-@property (nonnull, strong, nonatomic, readonly) CLLocation *location;
+@property (nullable, strong, nonatomic, readonly) RadarCoordinate *location;
 
 /**
  The confidence level of the learned location.
@@ -82,7 +83,7 @@ typedef NS_ENUM(NSInteger, RadarUserInsightsLocationConfidence) {
  */
 @property (nullable, strong, nonatomic, readonly) RadarRegion *postalCode;
 
-+ (NSString * _Nullable)stringForUserInsightsLocationType:(RadarUserInsightsLocationType)type;
-- (NSDictionary * _Nonnull)toDictionary;
++ (NSString * _Nullable)stringForType:(RadarUserInsightsLocationType)type;
+- (NSDictionary * _Nonnull)serialize;
 
 @end

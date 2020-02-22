@@ -189,20 +189,20 @@
     return [[RadarAddress alloc] initWithCoordinate:coordinate formattedAddress:formattedAddress country:country countryCode:countryCode countryFlag:countryFlag state:state stateCode:stateCode postalCode:postalCode city:city borough:borough county:county neighborhood:neighborhood number:number name:name confidence:confidence];
 }
 
-+ (NSArray<NSDictionary *> *)arrayForChains:(NSArray<RadarChain *> *)chains {
-    if (!chains) {
++ (NSArray<NSDictionary *> *)serializeArray:(NSArray<RadarAddress *> *)addresses {
+    if (!addresses) {
         return nil;
     }
     
-    NSMutableArray *arr = [[NSMutableArray alloc] initWithCapacity:chains.count];
-    for (RadarChain *chain in chains) {
-        NSDictionary *dict = [chain toDictionary];
+    NSMutableArray *arr = [[NSMutableArray alloc] initWithCapacity:addresses.count];
+    for (RadarAddress *address in addresses) {
+        NSDictionary *dict = [address serialize];
         [arr addObject:dict];
     }
     return arr;
 }
 
-- (NSDictionary *)toDictionary {
+- (NSDictionary *)serialize {
     NSMutableDictionary *dict = [NSMutableDictionary new];
     [dict setValue:@(self.coordinate.latitude) forKey:@"latitude"];
     [dict setValue:@(self.coordinate.longitude) forKey:@"longitude"];

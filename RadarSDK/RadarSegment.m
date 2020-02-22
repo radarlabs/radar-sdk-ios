@@ -46,20 +46,20 @@
     return nil;
 }
 
-+ (NSArray<NSDictionary *> *)arrayForSegments:(NSArray<RadarSegment *> *)segments {
++ (NSArray<NSDictionary *> *)serializeArray:(NSArray<RadarSegment *> *)segments {
     if (!segments) {
         return nil;
     }
     
     NSMutableArray *arr = [[NSMutableArray alloc] initWithCapacity:segments.count];
     for (RadarSegment *segment in segments) {
-        NSDictionary *dict = [segment toDictionary];
+        NSDictionary *dict = [segment serialize];
         [arr addObject:dict];
     }
     return arr;
 }
 
-- (NSDictionary *)toDictionary {
+- (NSDictionary *)serialize {
     NSMutableDictionary *dict = [NSMutableDictionary new];
     [dict setValue:self._description forKey:@"description"];
     [dict setValue:self.externalId forKey:@"externalId"];

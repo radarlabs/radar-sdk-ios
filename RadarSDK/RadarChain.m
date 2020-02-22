@@ -59,20 +59,20 @@
     return nil;
 }
 
-+ (NSArray<NSDictionary *> *)arrayForChains:(NSArray<RadarChain *> *)chains {
++ (NSArray<NSDictionary *> *)serializeArray:(NSArray<RadarChain *> *)chains {
     if (!chains) {
         return nil;
     }
     
     NSMutableArray *arr = [[NSMutableArray alloc] initWithCapacity:chains.count];
     for (RadarChain *chain in chains) {
-        NSDictionary *dict = [chain toDictionary];
+        NSDictionary *dict = [chain serialize];
         [arr addObject:dict];
     }
     return arr;
 }
 
-- (NSDictionary *)toDictionary {
+- (NSDictionary *)serialize {
     NSMutableDictionary *dict = [NSMutableDictionary new];
     [dict setValue:self.slug forKey:@"slug"];
     [dict setValue:self.name forKey:@"name"];

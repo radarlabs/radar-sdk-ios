@@ -294,20 +294,20 @@
     }
 }
 
-+ (NSArray<NSDictionary *> *)arrayForEvents:(NSArray<RadarEvent *> *)events {
++ (NSArray<NSDictionary *> *)serializeArray:(NSArray<RadarEvent *> *)events {
     if (!events) {
         return nil;
     }
 
     NSMutableArray *arr = [[NSMutableArray alloc] initWithCapacity:events.count];
     for (RadarEvent *event in events) {
-        NSDictionary *dict = [event toDictionary];
+        NSDictionary *dict = [event serialize];
         [arr addObject:dict];
     }
     return arr;
 }
 
-- (NSDictionary *)toDictionary {
+- (NSDictionary *)serialize {
     NSMutableDictionary *dict = [NSMutableDictionary new];
     [dict setValue:self._id forKey:@"_id"];
     [dict setValue:@(self.live) forKey:@"live"];
@@ -316,13 +316,13 @@
         [dict setValue:type forKey:@"type"];
     }
     if (self.geofence) {
-        NSDictionary *geofenceDict = [self.geofence toDictionary];
+        NSDictionary *geofenceDict = [self.geofence serialize];
         if (geofenceDict) {
             [dict setValue:geofenceDict forKey:@"geofence"];
         }
     }
     if (self.place) {
-        NSDictionary *placeDict = [self.place toDictionary];
+        NSDictionary *placeDict = [self.place serialize];
         if (placeDict) {
             [dict setValue:placeDict forKey:@"place"];
         }
@@ -332,12 +332,12 @@
     if (self.duration) {
         [dict setValue:@(self.duration) forKey:@"duration"];
     }
-    NSArray *alternatePlaces = [RadarPlace arrayForPlaces:self.alternatePlaces];
+    NSArray *alternatePlaces = [RadarPlace serializeArray:self.alternatePlaces];
     if (alternatePlaces) {
         [dict setValue:alternatePlaces forKey:@"alternatePlaces"];
     }
     if (self.region) {
-        NSDictionary *regionDict = [self.region toDictionary];
+        NSDictionary *regionDict = [self.region serialize];
         [dict setValue:regionDict forKey:@"region"];
     }
     return dict;

@@ -48,14 +48,14 @@
     return nil;
 }
 
-- (NSDictionary *)toDictionary {
+- (NSDictionary *)serialize {
     NSMutableDictionary *dict = [NSMutableDictionary new];
     if (self.distance) {
-        NSDictionary *distanceDict = [self.distance toDictionary];
+        NSDictionary *distanceDict = [self.distance serialize];
         [dict setValue:distanceDict forKey:@"distance"];
     }
     if (self.duration) {
-        NSDictionary *durationDict = [self.duration toDictionary];
+        NSDictionary *durationDict = [self.duration serialize];
         [dict setValue:durationDict forKey:@"duration"];
     }
     return dict;

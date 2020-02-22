@@ -171,20 +171,20 @@
     return [[RadarGeofence alloc] initWithId:_id description:description tag:tag externalId:externalId metadata:metadata geometry:geometry];
 }
 
-+ (NSArray<NSDictionary *> *)arrayForGeofences:(NSArray<RadarGeofence *> *)geofences {
++ (NSArray<NSDictionary *> *)serializeArray:(NSArray<RadarGeofence *> *)geofences {
     if (!geofences) {
         return nil;
     }
     
     NSMutableArray *arr = [[NSMutableArray alloc] initWithCapacity:geofences.count];
     for (RadarGeofence *geofence in geofences) {
-        NSDictionary *dict = [geofence toDictionary];
+        NSDictionary *dict = [geofence serialize];
         [arr addObject:dict];
     }
     return arr;
 }
 
-- (NSDictionary *)toDictionary {
+- (NSDictionary *)serialize {
     NSMutableDictionary *dict = [NSMutableDictionary new];
     [dict setValue:self._id forKey:@"_id"];
     [dict setValue:self.tag forKey:@"tag"];

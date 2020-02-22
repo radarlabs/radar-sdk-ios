@@ -147,26 +147,26 @@
     return NO;
 }
 
-+ (NSArray<NSDictionary *> *)arrayForPlaces:(NSArray<RadarPlace *> *)places {
++ (NSArray<NSDictionary *> *)serializeArray:(NSArray<RadarPlace *> *)places {
     if (!places) {
         return nil;
     }
     
     NSMutableArray *arr = [[NSMutableArray alloc] initWithCapacity:places.count];
     for (RadarPlace *place in places) {
-        NSDictionary *dict = [place toDictionary];
+        NSDictionary *dict = [place serialize];
         [arr addObject:dict];
     }
     return arr;
 }
 
-- (NSDictionary *)toDictionary {
+- (NSDictionary *)serialize {
     NSMutableDictionary *dict = [NSMutableDictionary new];
     [dict setValue:self._id forKey:@"_id"];
     [dict setValue:self.name forKey:@"name"];
     [dict setValue:self.categories forKey:@"categories"];
     if (self.chain) {
-        NSDictionary *chainDict = [self.chain toDictionary];
+        NSDictionary *chainDict = [self.chain serialize];
         [dict setValue:chainDict forKey:@"chain"];
     }
     return dict;

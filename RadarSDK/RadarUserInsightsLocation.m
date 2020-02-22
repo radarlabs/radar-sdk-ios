@@ -6,6 +6,7 @@
 //
 
 #import "RadarUserInsightsLocation.h"
+#import "RadarCoordinate+Internal.h"
 #import "RadarUserInsightsLocation+Internal.h"
 #import "RadarRegion+Internal.h"
 #import "RadarUtils.h"
@@ -139,14 +140,14 @@
     }
 }
 
-- (NSDictionary *)toDictionary {
+- (NSDictionary *)serialize {
     NSMutableDictionary *dict = [NSMutableDictionary new];
     if (self.type) {
         NSString *type = [RadarUserInsightsLocation stringForType:self.type];
         [dict setValue:type forKey:@"type"];
     }
     if (self.location) {
-        NSDictionary *locationDict = [self.location toDictionary];
+        NSDictionary *locationDict = [self.location serialize];
         [dict setValue:locationDict forKey:@"location"];
     }
     NSNumber *confidence = @(self.confidence);
