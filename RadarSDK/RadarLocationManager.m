@@ -169,30 +169,30 @@ static NSString * const kRegionIdentifer = @"radar";
 }
 
 - (void)startUpdates:(int)interval {
-    if (self.started || interval == self.startedInterval || interval == 0) {
+    if (!self.started || interval != self.startedInterval) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Starting timer | interval = %d", interval]];
+        
+        [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(shutDown) object:nil];
+        
+        if (self.timer) {
+            [self.timer invalidate];
+        }
+        
+        self.timer = [NSTimer scheduledTimerWithTimeInterval:interval repeats:YES block:^(NSTimer * _Nonnull timer) {
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Timer fired"];
+            
+            [[RadarBackgroundTaskManager sharedInstance] startBackgroundTask];
+            
+            [self requestLocation];
+        }];
+        
+        [self.lowPowerLocationManager startUpdatingLocation];
+        
+        self.started = YES;
+        self.startedInterval = interval;
+    } else {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Already started timer"];
-        
-        return;
     }
-    
-    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Starting timer"];
-    
-    if (self.timer) {
-        [self.timer invalidate];
-    }
-    
-    self.timer = [NSTimer scheduledTimerWithTimeInterval:interval repeats:YES block:^(NSTimer * _Nonnull timer) {
-        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Timer fired"];
-        
-        [[RadarBackgroundTaskManager sharedInstance] startBackgroundTask];
-        
-        [self requestLocation];
-    }];
-    
-    [self.lowPowerLocationManager startUpdatingLocation];
-    
-    self.started = YES;
-    self.startedInterval = interval;
 }
 
 - (void)stopUpdates {
@@ -212,12 +212,16 @@ static NSString * const kRegionIdentifer = @"radar";
         
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Scheduling shutdown"];
         
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delay * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            [[RadarBackgroundTaskManager sharedInstance] endBackgroundTasks];
-            
-            [self.lowPowerLocationManager stopUpdatingLocation];
-        });
+        [self performSelector:@selector(shutDown) withObject:nil afterDelay:delay];
     }
+}
+
+- (void)shutDown {
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Shutting down"];
+    
+    [[RadarBackgroundTaskManager sharedInstance] endBackgroundTasks];
+    
+    [self.lowPowerLocationManager stopUpdatingLocation];
 }
 
 - (void)requestLocation {
