@@ -336,6 +336,10 @@
     if (alternatePlaces) {
         [dict setValue:alternatePlaces forKey:@"alternatePlaces"];
     }
+    if (self.region) {
+        NSDictionary *regionDict = [self.region toDictionary];
+        [dict setValue:regionDict forKey:@"region"];
+    }
     return dict;
 }
 
