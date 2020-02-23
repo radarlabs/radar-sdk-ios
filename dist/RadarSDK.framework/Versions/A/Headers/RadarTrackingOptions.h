@@ -113,7 +113,7 @@ typedef NS_ENUM(NSInteger, RadarTrackingOptionsSync) {
 @property (nonatomic, assign) BOOL showBlueBar;
 
 /**
- Determines whether to use the region monitoring service to create a client geofence around the device's current location when stopped.
+ Determines whether to use the iOS region monitoring service (geofencing) to create a client geofence around the device's current location when stopped.
  
  @see https://developer.apple.com/documentation/corelocation/monitoring_the_user_s_proximity_to_geographic_regions
  */
@@ -125,7 +125,7 @@ typedef NS_ENUM(NSInteger, RadarTrackingOptionsSync) {
 @property (nonatomic, assign) int stoppedGeofenceRadius;
 
 /**
- Determines whether to use the region monitoring service to create a client geofence around the device's current location when moving.
+ Determines whether to use the iOS region monitoring service (geofencing) to create a client geofence around the device's current location when moving.
  
  @see https://developer.apple.com/documentation/corelocation/monitoring_the_user_s_proximity_to_geographic_regions
  */
@@ -137,33 +137,37 @@ typedef NS_ENUM(NSInteger, RadarTrackingOptionsSync) {
 @property (nonatomic, assign) int movingGeofenceRadius;
 
 /**
- Determines whether to use the visit monitoring service.
+ Determines whether to use the iOS visit monitoring service.
  
  @see https://developer.apple.com/documentation/corelocation/getting_the_user_s_location/using_the_visits_location_service
  */
 @property (nonatomic, assign) BOOL useVisits;
 
 /**
- Determines whether to use the significant location change service.
+ Determines whether to use the iOS significant location change service.
  
  @see https://developer.apple.com/documentation/corelocation/getting_the_user_s_location/using_the_significant-change_location_service
  */
 @property (nonatomic, assign) BOOL useSignificantLocationChanges;
 
 /**
- A preset that updates about every 30 seconds and syncs all locations to the server. High battery usage and shows the flashing blue status bar when tracking.
+ A preset that updates about every 30 seconds and syncs all locations to the server. High battery usage. Shows the flashing blue status bar when tracking.
  
  @see https://developer.apple.com/documentation/corelocation/cllocationmanager/2923541-showsbackgroundlocationindicator
  */
 @property (class, copy, readonly) RadarTrackingOptions *continuous;
 
 /**
- A preset that updates about every 2.5 minutes when moving, shuts down when stopped, and only syncs stops and exits to the server. Low battery usage.
+ A preset that updates about every 2.5 minutes when moving, shuts down when stopped, and only syncs stops and exits to the server. Requires the `location` background mode. Must move at least 200 meters to start moving again after a stop. Low battery usage.
+ 
+ Note that location updates may be delayed significantly by Low Power Mode, or if the device has connectivity issues, low battery, or wi-fi disabled.
  */
 @property (class, copy, readonly) RadarTrackingOptions *responsive;
 
 /**
- A preset that the visits location service to update only on stops and exits. The default, lowest battery usage.
+ A preset that uses the iOS visit monitoring service to update only on stops and exits. Must move a significant distance to start moving again after a stop. Lowest battery usage. Recommended.
+ 
+ Note that location updates may be delayed significantly by Low Power Mode, or if the device has connectivity issues, low battery, or wi-fi disabled.
  
  @see https://developer.apple.com/documentation/corelocation/getting_the_user_s_location/using_the_visits_location_service
  */

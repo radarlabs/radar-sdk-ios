@@ -290,18 +290,7 @@ typedef void(^ _Nonnull RadarRouteCompletionHandler)(RadarStatus status, RadarRo
     NS_SWIFT_NAME(trackOnce(location:completionHandler:));
 
 /**
- Starts tracking the user's location in the background.
- 
- @warning Before calling this method, the user's location authorization status must be `kCLAuthorizationStatusAuthorizedAlways`.
- 
- @see https://radar.io/documentation/sdk#ios-background
- */
-+ (void)startTracking;
-
-/**
  Starts tracking the user's location in the background with configurable tracking options.
- 
- @warning Before calling this method, the user's location authorization status should be `kCLAuthorizationStatusAuthorizedAlways`.
  
  @param options Configurable tracking options.
  

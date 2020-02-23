@@ -587,7 +587,7 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Determines whether to use the region monitoring service to create a client geofence around the device&rsquo;s current location when stopped.</p>
+                        <p>Determines whether to use the iOS region monitoring service (geofencing) to create a client geofence around the device&rsquo;s current location when stopped.</p>
 <div class="aside aside-see">
     <p class="aside-title">See</p>
     <a href="https://developer.apple.com/documentation/corelocation/monitoring_the_user_s_proximity_to_geographic_regions">https://developer.apple.com/documentation/corelocation/monitoring_the_user_s_proximity_to_geographic_regions</a>
@@ -656,7 +656,7 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Determines whether to use the region monitoring service to create a client geofence around the device&rsquo;s current location when moving.</p>
+                        <p>Determines whether to use the iOS region monitoring service (geofencing) to create a client geofence around the device&rsquo;s current location when moving.</p>
 <div class="aside aside-see">
     <p class="aside-title">See</p>
     <a href="https://developer.apple.com/documentation/corelocation/monitoring_the_user_s_proximity_to_geographic_regions">https://developer.apple.com/documentation/corelocation/monitoring_the_user_s_proximity_to_geographic_regions</a>
@@ -725,7 +725,7 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Determines whether to use the visit monitoring service.</p>
+                        <p>Determines whether to use the iOS visit monitoring service.</p>
 <div class="aside aside-see">
     <p class="aside-title">See</p>
     <a href="https://developer.apple.com/documentation/corelocation/getting_the_user_s_location/using_the_visits_location_service">https://developer.apple.com/documentation/corelocation/getting_the_user_s_location/using_the_visits_location_service</a>
@@ -762,7 +762,7 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Determines whether to use the significant location change service.</p>
+                        <p>Determines whether to use the iOS significant location change service.</p>
 <div class="aside aside-see">
     <p class="aside-title">See</p>
     <a href="https://developer.apple.com/documentation/corelocation/getting_the_user_s_location/using_the_significant-change_location_service">https://developer.apple.com/documentation/corelocation/getting_the_user_s_location/using_the_significant-change_location_service</a>
@@ -799,7 +799,7 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>A preset that updates about every 30 seconds and syncs all locations to the server. High battery usage and shows the flashing blue status bar when tracking.</p>
+                        <p>A preset that updates about every 30 seconds and syncs all locations to the server. High battery usage. Shows the flashing blue status bar when tracking.</p>
 <div class="aside aside-see">
     <p class="aside-title">See</p>
     <a href="https://developer.apple.com/documentation/corelocation/cllocationmanager/2923541-showsbackgroundlocationindicator">https://developer.apple.com/documentation/corelocation/cllocationmanager/2923541-showsbackgroundlocationindicator</a>
@@ -837,7 +837,9 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>A preset that updates about every 2.5 minutes when moving, shuts down when stopped, and only syncs stops and exits to the server. Low battery usage.</p>
+                        <p>A preset that updates about every 2.5 minutes when moving, shuts down when stopped, and only syncs stops and exits to the server. Requires the <code>location</code> background mode. Must move at least 200 meters to start moving again after a stop. Low battery usage.</p>
+
+<p>Note that location updates may be delayed significantly by Low Power Mode, or if the device has connectivity issues, low battery, or wi-fi disabled.</p>
 
                       </div>
                       <div class="declaration">
@@ -870,7 +872,9 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>A preset that the visits location service to update only on stops and exits. The default, lowest battery usage.</p>
+                        <p>A preset that uses the iOS visit monitoring service to update only on stops and exits. Must move a significant distance to start moving again after a stop. Lowest battery usage. Recommended.</p>
+
+<p>Note that location updates may be delayed significantly by Low Power Mode, or if the device has connectivity issues, low battery, or wi-fi disabled.</p>
 <div class="aside aside-see">
     <p class="aside-title">See</p>
     <a href="https://developer.apple.com/documentation/corelocation/getting_the_user_s_location/using_the_visits_location_service">https://developer.apple.com/documentation/corelocation/getting_the_user_s_location/using_the_visits_location_service</a>

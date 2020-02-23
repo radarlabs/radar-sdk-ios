@@ -502,18 +502,8 @@ static NSString * const kPublishableKey = @"prj_test_pk_000000000000000000000000
     
     [Radar stopTracking];
     
-    [Radar startTracking];
+    [Radar startTrackingWithOptions:RadarTrackingOptions.efficient];
     XCTAssertFalse([Radar isTracking]);
-}
-
-- (void)test_Radar_startTracking_default {
-    self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusAuthorizedWhenInUse;
-    
-    [Radar stopTracking];
-    
-    [Radar startTracking];
-    XCTAssertEqualObjects(RadarTrackingOptions.efficient, [Radar getTrackingOptions]);
-    XCTAssertTrue([Radar isTracking]);
 }
 
 - (void)test_Radar_startTracking_continuous {

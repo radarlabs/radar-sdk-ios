@@ -99,10 +99,6 @@
     }];
 }
 
-+ (void)startTracking {
-    [[RadarLocationManager sharedInstance] startTrackingWithOptions:[RadarTrackingOptions efficient]];
-}
-
 + (void)startTrackingWithOptions:(RadarTrackingOptions *)options {
     [[RadarLocationManager sharedInstance] startTrackingWithOptions:options];
 }
