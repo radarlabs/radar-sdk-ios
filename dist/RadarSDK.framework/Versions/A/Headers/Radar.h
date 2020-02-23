@@ -32,9 +32,9 @@ typedef NS_ENUM(NSInteger, RadarStatus) {
     RadarStatusErrorPublishableKey,
     /// Location permissions not granted
     RadarStatusErrorPermissions,
-    /// Location services error
+    /// Location services error or timeout (10 seconds)
     RadarStatusErrorLocation,
-    /// Network error
+    /// Network error or timeout (10 seconds)
     RadarStatusErrorNetwork,
     /// Bad request (missing or invalid params)
     RadarStatusErrorBadRequest,
