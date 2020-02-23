@@ -2,7 +2,7 @@
 
 ## 2.1.x to 3.0.x
 
-- This update introduces new tracking options and presets. See the [announcement](https://radar.io/blog/open-source-radar-sdk-v3-custom-tracking-options-public-beta), the [background tracking documentation](https://radar.io/documentation/sdk-v3#ios-background), and the [tracking options documentation](https://radar.io/documentation/sdk/tracking#ios).
+- This update introduces new tracking options and presets. See the [announcement](https://radar.io/blog/open-source-radar-sdk-v3-custom-tracking-options-public-beta), the [background tracking documentation](https://radar.io/documentation/sdk-v3#ios-background), and the [tracking options reference](https://radar.io/documentation/sdk/tracking#ios).
   - If you were using `Radar.startTracking()`, you must choose a preset. v2 default behavior was similar to `Radar.startTracking(RadarTrackingOptions.responsive)`.
   - If you were using `trackingOptions.priority = RadarTrackingPriorityEfficiency`, use the preset `RadarTrackingOptions.efficient` instead.
 - The `didUpdateClientLocation:stopped:source:` method is now required in `RadarDelegate`. It tells the delegate that the client's location was updated but not necessarily synced to the server. To receive only server-synced location updates and user state, use `didUpdateLocation:user:` instead.
