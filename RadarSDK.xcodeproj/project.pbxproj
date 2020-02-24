@@ -52,6 +52,11 @@
 		DD5E35E1238205FF002D93FF /* events_verification.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5E35E0238205FF002D93FF /* events_verification.json */; };
 		DD5E35E323820796002D93FF /* search_places.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5E35E223820796002D93FF /* search_places.json */; };
 		DD86FD0F23919EEF003225F6 /* libRadarSDK.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DDC637C8238C7E6100747FD4 /* libRadarSDK.a */; };
+		DD8E2F7124018BF9002D51AB /* RadarTestUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = DD8E2F7024018BF8002D51AB /* RadarTestUtils.m */; };
+		DD8E2F7424018C17002D51AB /* RadarPermissionsHelperMock.m in Sources */ = {isa = PBXBuildFile; fileRef = DD8E2F7324018C17002D51AB /* RadarPermissionsHelperMock.m */; };
+		DD8E2F7724018C25002D51AB /* RadarAPIHelperMock.m in Sources */ = {isa = PBXBuildFile; fileRef = DD8E2F7624018C25002D51AB /* RadarAPIHelperMock.m */; };
+		DD8E2F7A24018C37002D51AB /* CLLocationManagerMock.m in Sources */ = {isa = PBXBuildFile; fileRef = DD8E2F7924018C37002D51AB /* CLLocationManagerMock.m */; };
+		DD8E2F7D24018C54002D51AB /* CLVisitMock.m in Sources */ = {isa = PBXBuildFile; fileRef = DD8E2F7C24018C54002D51AB /* CLVisitMock.m */; };
 		DDC637D9238C7F8700747FD4 /* RadarChain.m in Sources */ = {isa = PBXBuildFile; fileRef = DD236CB62308812700EB88F9 /* RadarChain.m */; };
 		DDC637DA238C7F8700747FD4 /* RadarCircleGeometry.m in Sources */ = {isa = PBXBuildFile; fileRef = DD236CA52308812600EB88F9 /* RadarCircleGeometry.m */; };
 		DDC637DB238C7F8700747FD4 /* RadarCoordinate.m in Sources */ = {isa = PBXBuildFile; fileRef = DD236CBA2308812700EB88F9 /* RadarCoordinate.m */; };
@@ -236,6 +241,16 @@
 		DD633EC2237C5B800026C91A /* RadarAPIHelper.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RadarAPIHelper.m; sourceTree = "<group>"; };
 		DD633EC5237C5B9C0026C91A /* RadarPermissionsHelper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarPermissionsHelper.h; sourceTree = "<group>"; };
 		DD633EC6237C5B9C0026C91A /* RadarPermissionsHelper.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RadarPermissionsHelper.m; sourceTree = "<group>"; };
+		DD8E2F6F24018BF8002D51AB /* RadarTestUtils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarTestUtils.h; sourceTree = "<group>"; };
+		DD8E2F7024018BF8002D51AB /* RadarTestUtils.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RadarTestUtils.m; sourceTree = "<group>"; };
+		DD8E2F7224018C17002D51AB /* RadarPermissionsHelperMock.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarPermissionsHelperMock.h; sourceTree = "<group>"; };
+		DD8E2F7324018C17002D51AB /* RadarPermissionsHelperMock.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RadarPermissionsHelperMock.m; sourceTree = "<group>"; };
+		DD8E2F7524018C25002D51AB /* RadarAPIHelperMock.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarAPIHelperMock.h; sourceTree = "<group>"; };
+		DD8E2F7624018C25002D51AB /* RadarAPIHelperMock.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RadarAPIHelperMock.m; sourceTree = "<group>"; };
+		DD8E2F7824018C37002D51AB /* CLLocationManagerMock.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CLLocationManagerMock.h; sourceTree = "<group>"; };
+		DD8E2F7924018C37002D51AB /* CLLocationManagerMock.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CLLocationManagerMock.m; sourceTree = "<group>"; };
+		DD8E2F7B24018C54002D51AB /* CLVisitMock.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CLVisitMock.h; sourceTree = "<group>"; };
+		DD8E2F7C24018C54002D51AB /* CLVisitMock.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CLVisitMock.m; sourceTree = "<group>"; };
 		DDC637C8238C7E6100747FD4 /* libRadarSDK.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRadarSDK.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		DDC637F3238C7F9C00747FD4 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/System/Library/Frameworks/CoreLocation.framework; sourceTree = DEVELOPER_DIR; };
 		DDC63820238C815800747FD4 /* module.modulemap */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.module-map"; path = module.modulemap; sourceTree = "<group>"; };
@@ -336,8 +351,18 @@
 		DD236C822308797B00EB88F9 /* RadarSDKTests */ = {
 			isa = PBXGroup;
 			children = (
-				DD103213237F1778003DD408 /* Resources */,
+				DD8E2F7B24018C54002D51AB /* CLVisitMock.h */,
+				DD8E2F7C24018C54002D51AB /* CLVisitMock.m */,
+				DD8E2F7824018C37002D51AB /* CLLocationManagerMock.h */,
+				DD8E2F7924018C37002D51AB /* CLLocationManagerMock.m */,
+				DD8E2F7524018C25002D51AB /* RadarAPIHelperMock.h */,
+				DD8E2F7624018C25002D51AB /* RadarAPIHelperMock.m */,
+				DD8E2F7224018C17002D51AB /* RadarPermissionsHelperMock.h */,
+				DD8E2F7324018C17002D51AB /* RadarPermissionsHelperMock.m */,
+				DD8E2F6F24018BF8002D51AB /* RadarTestUtils.h */,
+				DD8E2F7024018BF8002D51AB /* RadarTestUtils.m */,
 				DD103210237E0C47003DD408 /* RadarSDKTests.m */,
+				DD103213237F1778003DD408 /* Resources */,
 				DD236C852308797B00EB88F9 /* Info.plist */,
 			);
 			path = RadarSDKTests;
@@ -358,10 +383,10 @@
 				DD236C9E2308812600EB88F9 /* RadarCoordinate.h */,
 				DD236CB72308812700EB88F9 /* RadarCoordinate+Internal.h */,
 				DD236CBA2308812700EB88F9 /* RadarCoordinate.m */,
-				DD236CAA2308812600EB88F9 /* RadarEvent.h */,
 				5343FFD723E2310D00808D93 /* RadarContext.h */,
 				5343FFDA23E3A76900808D93 /* RadarContext+Internal.h */,
 				5343FFD923E38BA300808D93 /* RadarContext.m */,
+				DD236CAA2308812600EB88F9 /* RadarEvent.h */,
 				DD236CA22308812600EB88F9 /* RadarEvent+Internal.h */,
 				DD236CB82308812700EB88F9 /* RadarEvent.m */,
 				DD236C9F2308812600EB88F9 /* RadarGeofence.h */,
@@ -628,7 +653,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DD8E2F7424018C17002D51AB /* RadarPermissionsHelperMock.m in Sources */,
+				DD8E2F7724018C25002D51AB /* RadarAPIHelperMock.m in Sources */,
 				DD103211237E0C47003DD408 /* RadarSDKTests.m in Sources */,
+				DD8E2F7124018BF9002D51AB /* RadarTestUtils.m in Sources */,
+				DD8E2F7D24018C54002D51AB /* CLVisitMock.m in Sources */,
+				DD8E2F7A24018C37002D51AB /* CLLocationManagerMock.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -41,10 +41,6 @@ typedef NS_ENUM(NSInteger, RadarEventType) {
     RadarEventTypeUserStartedTraveling NS_SWIFT_NAME(userStartedTraveling),
     /// `user.stopped_traveling`
     RadarEventTypeUserStoppedTraveling NS_SWIFT_NAME(userStoppedTraveling),
-    /// `user.started_commuting`
-    RadarEventTypeUserStartedCommuting NS_SWIFT_NAME(userStartedCommuting),
-    /// `user.stopped_commuting`
-    RadarEventTypeUserStoppedCommuting NS_SWIFT_NAME(userStoppedCommuting),
     /// `user.entered_place`
     RadarEventTypeUserEnteredPlace NS_SWIFT_NAME(userEnteredPlace),
     /// `user.exited_place`
@@ -63,6 +59,10 @@ typedef NS_ENUM(NSInteger, RadarEventType) {
     RadarEventTypeUserEnteredRegionDMA NS_SWIFT_NAME(userEnteredRegionDMA),
     /// `user.exited_region_dma`
     RadarEventTypeUserExitedRegionDMA NS_SWIFT_NAME(userExitedRegionDMA),
+    /// `user.started_commuting`
+    RadarEventTypeUserStartedCommuting NS_SWIFT_NAME(userStartedCommuting),
+    /// `user.stopped_commuting`
+    RadarEventTypeUserStoppedCommuting NS_SWIFT_NAME(userStoppedCommuting)
 };
 
 /**
@@ -160,5 +160,9 @@ typedef NS_ENUM(NSInteger, RadarEventVerification) {
  The location of the event.
  */
 @property (nonnull, strong, nonatomic, readonly) CLLocation *location;
+
++ (NSString * _Nullable)stringForType:(RadarEventType)type;
++ (NSArray<NSDictionary *> * _Nullable)serializeArray:(NSArray<RadarEvent *> * _Nullable)events;
+- (NSDictionary * _Nonnull)serialize;
 
 @end

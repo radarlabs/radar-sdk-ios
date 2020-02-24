@@ -26,27 +26,31 @@ NS_ASSUME_NONNULL_BEGIN
  @see https://radar.io/documentation/sdk#ios-foreground
  */
 typedef NS_ENUM(NSInteger, RadarStatus) {
-    /// The request succeeded
+    /// Success
     RadarStatusSuccess,
-    /// The SDK was not initialized with a publishable API key
+    /// SDK not initialized
     RadarStatusErrorPublishableKey,
-    /// The app's location authorization status is not `kCLAuthorizationStatusAuthorizedWhenInUse` or `kCLAuthorizationStatusAuthorizedAlways`
+    /// Location permissions not granted
     RadarStatusErrorPermissions,
-    /// Location services were unavailable, or the location request timed out
+    /// Location services error or timeout (10 seconds)
     RadarStatusErrorLocation,
-    /// The network was unavailable, or the network connection timed out
+    /// Network error or timeout (10 seconds)
     RadarStatusErrorNetwork,
-    /// One or more parameters were invalid
+    /// Bad request (missing or invalid params)
     RadarStatusErrorBadRequest,
-    /// The publishable API key is invalid
+    /// Unauthorized (invalid API key)
     RadarStatusErrorUnauthorized,
-    /// Use of the API is forbidden for the publishable API key
+    /// Payment required (organization disabled or usage exceeded)
+    RadarStatusErrorPaymentRequired,
+    /// Forbidden (insufficient permissions or no beta access)
     RadarStatusErrorForbidden,
-    /// Exceeded rate limit
+    /// Not found
+    RadarStatusErrorNotFound,
+    /// Too many requests (rate limit exceeded)
     RadarStatusErrorRateLimit,
-    /// An internal server error occurred
+    /// Internal server error
     RadarStatusErrorServer,
-    /// An unknown error occurred
+    /// Unknown error
     RadarStatusErrorUnknown
 };
 
@@ -236,6 +240,13 @@ typedef void(^ _Nonnull RadarRouteCompletionHandler)(RadarStatus status, RadarRo
 + (NSDictionary * _Nullable)getMetadata;
 
 /**
+ Enables `adId` (IDFA) collection.
+ 
+ @param enabled A boolean indicating whether `adId` should be collected.
+ */
++ (void)setAdIdEnabled:(BOOL)enabled;
+
+/**
  Gets the device's current location.
  
  @param completionHandler An optional completion handler.
@@ -279,18 +290,7 @@ typedef void(^ _Nonnull RadarRouteCompletionHandler)(RadarStatus status, RadarRo
     NS_SWIFT_NAME(trackOnce(location:completionHandler:));
 
 /**
- Starts tracking the user's location in the background.
- 
- @warning Before calling this method, the user's location authorization status must be `kCLAuthorizationStatusAuthorizedAlways`.
- 
- @see https://radar.io/documentation/sdk#ios-background
- */
-+ (void)startTracking;
-
-/**
  Starts tracking the user's location in the background with configurable tracking options.
- 
- @warning Before calling this method, the user's location authorization status should be `kCLAuthorizationStatusAuthorizedAlways`.
  
  @param options Configurable tracking options.
  

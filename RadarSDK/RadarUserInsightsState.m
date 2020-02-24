@@ -28,32 +28,41 @@
     
     NSDictionary *userInsightsStateDict = (NSDictionary *)object;
     
-    BOOL userInsightsStateHome = NO;
-    BOOL userInsightsStateOffice = NO;
-    BOOL userInsightsStateTraveling = NO;
-    BOOL userInsightsStateCommuting = NO;
+    BOOL home = NO;
+    BOOL office = NO;
+    BOOL traveling = NO;
+    BOOL commuting = NO;
     
-    id userInsightsStateHomeObj = userInsightsStateDict[@"home"];
-    if ([userInsightsStateHomeObj isKindOfClass:[NSNumber class]]) {
-        userInsightsStateHome = [(NSNumber *)userInsightsStateHomeObj boolValue];
+    id homeObj = userInsightsStateDict[@"home"];
+    if ([homeObj isKindOfClass:[NSNumber class]]) {
+        home = [(NSNumber *)homeObj boolValue];
     }
     
-    id userInsightsStateOfficeObj = userInsightsStateDict[@"office"];
-    if ([userInsightsStateOfficeObj isKindOfClass:[NSNumber class]]) {
-        userInsightsStateOffice = [(NSNumber *)userInsightsStateOfficeObj boolValue];
+    id officeObj = userInsightsStateDict[@"office"];
+    if ([officeObj isKindOfClass:[NSNumber class]]) {
+        office = [(NSNumber *)officeObj boolValue];
     }
          
-    id userInsightsStateTravelingObj = userInsightsStateDict[@"traveling"];
-    if ([userInsightsStateTravelingObj isKindOfClass:[NSNumber class]]) {
-        userInsightsStateTraveling = [(NSNumber *)userInsightsStateTravelingObj boolValue];
+    id travelingObj = userInsightsStateDict[@"traveling"];
+    if ([travelingObj isKindOfClass:[NSNumber class]]) {
+        traveling = [(NSNumber *)travelingObj boolValue];
     }
     
-    id userInsightsStateCommutingObj = userInsightsStateDict[@"commuting"];
-    if ([userInsightsStateCommutingObj isKindOfClass:[NSNumber class]]) {
-        userInsightsStateCommuting = [(NSNumber *)userInsightsStateCommutingObj boolValue];
+    id commutingObj = userInsightsStateDict[@"commuting"];
+    if ([commutingObj isKindOfClass:[NSNumber class]]) {
+        commuting = [(NSNumber *)commutingObj boolValue];
     }
     
-    return [[RadarUserInsightsState alloc] initWithHome:userInsightsStateHome office:userInsightsStateOffice traveling:userInsightsStateTraveling commuting:userInsightsStateCommuting];
+    return [[RadarUserInsightsState alloc] initWithHome:home office:office traveling:traveling commuting:commuting];
+}
+
+- (NSDictionary *)serialize {
+    NSMutableDictionary *dict = [NSMutableDictionary new];
+    [dict setValue:@(self.home) forKey:@"home"];
+    [dict setValue:@(self.office) forKey:@"office"];
+    [dict setValue:@(self.traveling) forKey:@"traveling"];
+    [dict setValue:@(self.commuting) forKey:@"commuting"];
+    return dict;
 }
 
 @end

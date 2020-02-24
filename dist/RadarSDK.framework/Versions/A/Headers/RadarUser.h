@@ -124,4 +124,6 @@
  */
 @property (nullable, copy, nonatomic, readonly) NSArray<RadarChain *> *topChains;
 
+- (NSDictionary * _Nonnull)serialize;
+
 @end

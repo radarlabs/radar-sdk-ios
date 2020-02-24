@@ -22,16 +22,18 @@
 }
 
 - (void)logWithLevel:(RadarLogLevel)level message:(NSString *)message {
-    RadarLogLevel logLevel = [RadarSettings logLevel];
-    if (logLevel >= level) {
-        message = [NSString stringWithFormat:@"%@ | backgroundTimeRemaining = %g", message, [RadarUtils backgroundTimeRemaining]];
-        
-        NSLog(@"%@", message);
-        
-        if (self.delegate) {
-            [self.delegate didLogMessage:message];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        RadarLogLevel logLevel = [RadarSettings logLevel];
+        if (logLevel >= level) {
+            NSString *log = [NSString stringWithFormat:@"%@ | backgroundTimeRemaining = %g", message, [RadarUtils backgroundTimeRemaining]];
+            
+            NSLog(@"%@", log);
+            
+            if (self.delegate) {
+                [self.delegate didLogMessage:log];
+            }
         }
-    }
+    });
 }
 
 @end

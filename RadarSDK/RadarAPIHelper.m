@@ -7,6 +7,7 @@
 
 #import "RadarAPIHelper.h"
 
+#import "RadarLogger.h"
 #import "RadarSettings.h"
 
 @implementation RadarAPIHelper
@@ -29,7 +30,7 @@
     if (params) {
         [req setHTTPBody:[NSJSONSerialization dataWithJSONObject:params options:0 error:NULL]];
     }
-
+    
     NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
     configuration.timeoutIntervalForRequest = 10;
     configuration.timeoutIntervalForResource = 10;
@@ -46,7 +47,7 @@
        }
        
        NSDictionary *res = (NSDictionary *)resObj;
-       
+        
        if ([response isKindOfClass:[NSHTTPURLResponse class]]) {
            NSInteger statusCode = ((NSHTTPURLResponse *)response).statusCode;
            if (statusCode >= 200 && statusCode < 400) {
@@ -55,8 +56,12 @@
                return completionHandler(RadarStatusErrorBadRequest, nil);
            } else if (statusCode == 401) {
                return completionHandler(RadarStatusErrorUnauthorized, nil);
+           } else if (statusCode == 402) {
+               return completionHandler(RadarStatusErrorPaymentRequired, nil);
            } else if (statusCode == 403) {
                return completionHandler(RadarStatusErrorForbidden, nil);
+           } else if (statusCode == 404) {
+               return completionHandler(RadarStatusErrorNotFound, nil);
            } else if (statusCode == 429) {
                return completionHandler(RadarStatusErrorRateLimit, nil);
            } else if (statusCode >= 500 && statusCode <= 599) {

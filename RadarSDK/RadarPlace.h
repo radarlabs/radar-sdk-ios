@@ -75,4 +75,7 @@
  **/
 - (BOOL)hasCategory:(NSString *_Nullable)category;
 
++ (NSArray<NSDictionary *> * _Nullable)serializeArray:(NSArray<RadarPlace *> * _Nullable)places;
+- (NSDictionary * _Nonnull)serialize;
+
 @end

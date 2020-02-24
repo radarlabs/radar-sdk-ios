@@ -32,7 +32,7 @@
         return nil;
     }
     
-    NSDictionary *routesDict = (NSDictionary *)object;
+    NSDictionary *dict = (NSDictionary *)object;
 
     RadarRouteDistance *geodesic;
     RadarRoute *foot;
@@ -40,32 +40,57 @@
     RadarRoute *car;
     RadarRoute *transit;
     
-    id geodesicObj = routesDict[@"geodesic"];
+    id geodesicObj = dict[@"geodesic"];
     if (geodesicObj) {
         geodesic = [[RadarRouteDistance alloc] initWithObject:geodesicObj];
     }
 
-    id footObj = routesDict[@"foot"];
+    id footObj = dict[@"foot"];
     if (footObj) {
         foot = [[RadarRoute alloc] initWithObject:footObj];
     }
     
-    id bikeObj = routesDict[@"bike"];
+    id bikeObj = dict[@"bike"];
     if (bikeObj) {
         bike = [[RadarRoute alloc] initWithObject:bikeObj];
     }
     
-    id carObj = routesDict[@"car"];
+    id carObj = dict[@"car"];
     if (carObj) {
         car = [[RadarRoute alloc] initWithObject:carObj];
     }
     
-    id transitObj = routesDict[@"transit"];
+    id transitObj = dict[@"transit"];
     if (transitObj) {
         transit = [[RadarRoute alloc] initWithObject:transitObj];
     }
     
     return [[RadarRoutes alloc] initWithGeodesic:geodesic foot:foot bike:bike car:car transit:transit];
+}
+
+- (NSDictionary *)serialize {
+    NSMutableDictionary *dict = [NSMutableDictionary new];
+    if (self.geodesic) {
+        NSDictionary *geodesicDict = [self.geodesic serialize];
+        [dict setValue:geodesicDict forKey:@"geodesic"];
+    }
+    if (self.foot) {
+        NSDictionary *footDict = [self.foot serialize];
+        [dict setValue:footDict forKey:@"foot"];
+    }
+    if (self.bike) {
+        NSDictionary *bikeDict = [self.bike serialize];
+        [dict setValue:bikeDict forKey:@"bike"];
+    }
+    if (self.car) {
+        NSDictionary *carDict = [self.car serialize];
+        [dict setValue:carDict forKey:@"car"];
+    }
+    if (self.transit) {
+        NSDictionary *transitDict = [self.transit serialize];
+        [dict setValue:transitDict forKey:@"transit"];
+    }
+    return dict;
 }
 
 @end

@@ -38,4 +38,7 @@
  */
 @property (nullable, copy, nonatomic, readonly) NSDictionary *metadata;
 
++ (NSArray<NSDictionary *> * _Nullable)serializeArray:(NSArray<RadarChain *> * _Nullable)chains;
+- (NSDictionary * _Nonnull)serialize;
+
 @end
