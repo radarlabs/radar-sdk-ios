@@ -1,6 +1,5 @@
 //
 //  RadarPoint+Internal.h
-//  Library
 //
 //  Copyright © 2020 Radar Labs, Inc. All rights reserved.
 //

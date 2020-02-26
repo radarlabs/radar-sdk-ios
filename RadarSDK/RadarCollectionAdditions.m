@@ -1,11 +1,10 @@
 //
-//  CollectionAdditions.m
-//  Library
+//  RadarCollectionAdditions.m
 //
 //  Copyright © 2020 Radar Labs, Inc. All rights reserved.
 //
 
-#import "CollectionAdditions.h"
+#import "RadarCollectionAdditions.h"
 #import "RadarCoordinate+Internal.h"
 
 @implementation NSArray (Radar)
@@ -14,7 +13,7 @@
 {
     NSMutableArray *result = [NSMutableArray arrayWithCapacity:[self count]];
 
-    [self enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+    [self enumerateObjectsUsingBlock:^(id _Nonnull obj, NSUInteger idx, BOOL *stop) {
       [result addObject:block(obj)];
     }];
     return result;

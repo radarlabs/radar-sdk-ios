@@ -1,15 +1,13 @@
 //
 //  RadarPoint.m
-//  RadarSDKTests
 //
-//  Created by Ping Xia on 2/26/20.
 //  Copyright © 2020 Radar Labs, Inc. All rights reserved.
 //
 
 #import "RadarPoint.h"
 #import "RadarPoint+Internal.h"
 
-#import "CollectionAdditions.h"
+#import "RadarCollectionAdditions.h"
 
 @implementation RadarPoint
 
@@ -64,29 +62,5 @@
     }
     return self;
 }
-
-#pragma mark - serialization
-
-//+ (NSArray<NSDictionary *> *)serializeArray:(NSArray<RadarPoint *> *)points
-//{
-//    if (!points) {
-//        return nil;
-//    }
-//    return [points radar_mapObjectsUsingBlock:^NSDictionary * _Nullable(RadarPoint * _Nonnull point) {
-//        return [point serialize];
-//    }];
-//}
-//
-//- (NSDictionary *)serialize
-//{
-//    NSMutableDictionary *dict = [NSMutableDictionary dictionary];
-//    [dict setValue:self._id forKey:@"_id"];
-//    [dict setValue:self.tag forKey:@"tag"];
-//    [dict setValue:self.externalId forKey:@"externalId"];
-//    [dict setValue:self._description forKey:@"description"];
-//    [dict setValue:self.metadata forKey:@"metadata"];
-//    return dict;
-//}
-
 
 @end

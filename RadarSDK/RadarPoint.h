@@ -1,6 +1,5 @@
 //
 //  RadarPoint.h
-//  RadarSDKTests
 //
 //  Copyright © 2020 Radar Labs, Inc. All rights reserved.
 //
@@ -43,9 +42,6 @@ The external ID of the point.
  The location of the point.
  */
 @property (nonatomic, readonly) RadarCoordinate *location;
-
-//+ (NSArray<NSDictionary *> * _Nullable)serializeArray:(NSArray<RadarPoint *> * _Nullable)points;
-//- (NSDictionary *)serialize;
 
 @end
 

@@ -1,6 +1,5 @@
 //
-//  CollectionAdditions.h
-//  Library
+//  RadarCollectionAdditions.h
 //
 //  Copyright © 2020 Radar Labs, Inc. All rights reserved.
 //
