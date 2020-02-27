@@ -5,61 +5,6 @@
    },
    "points":[
       {
-         "_id":"5e4c07e573f9ada9956e8477",
-         "createdAt":"2020-02-18T15:51:01.815Z",
-         "live":false,
-         "description":"Test Import 2",
-         "metadata":{
-            "testKey":100
-         },
-         "tag":"import",
-         "externalId":"2",
-         "geometry":{
-            "type":"Point",
-            "coordinates":[
-               -73.996973,
-               40.72566
-            ]
-         }
-      },
-      {
-         "_id":"5e4c07e573f9ada9956e846e",
-         "createdAt":"2020-02-18T15:51:01.812Z",
-         "live":false,
-         "description":"Test Import 1",
-         "metadata":{
-            "foo":"bar",
-            "baz":2
-         },
-         "tag":"import",
-         "externalId":"1",
-         "geometry":{
-            "type":"Point",
-            "coordinates":[
-               2.2945,
-               48.8584
-            ]
-         }
-      },
-      {
-         "_id":"5e4c07e573f9ada9956e8469",
-         "createdAt":"2020-02-18T15:51:01.809Z",
-         "live":false,
-         "description":"random point",
-         "metadata":{
-            "baz":2
-         },
-         "tag":"manhattan",
-         "externalId":"1",
-         "geometry":{
-            "type":"Point",
-            "coordinates":[
-               -74.0007234,
-               40.7113643
-            ]
-         }
-      },
-      {
          "_id":"5e4c07e573f9ada9956e8461",
          "createdAt":"2020-02-18T15:51:01.806Z",
          "live":false,
