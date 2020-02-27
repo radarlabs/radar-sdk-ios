@@ -5,18 +5,18 @@
 //  Copyright © 2019 Radar Labs, Inc. All rights reserved.
 //
 
-#import <XCTest/XCTest.h>
 #import <RadarSDK/RadarSDK.h>
+#import <XCTest/XCTest.h>
 
-#import "CLVisitMock.h"
 #import "CLLocationManagerMock.h"
-#import "RadarAPIHelperMock.h"
-#import "RadarPermissionsHelperMock.h"
-#import "RadarTestUtils.h"
+#import "CLVisitMock.h"
 #import "RadarAPIClient.h"
 #import "RadarAPIHelper.h"
+#import "RadarAPIHelperMock.h"
 #import "RadarLocationManager.h"
+#import "RadarPermissionsHelperMock.h"
 #import "RadarSettings.h"
+#import "RadarTestUtils.h"
 
 @interface RadarSDKTests : XCTestCase
 
@@ -28,10 +28,11 @@
 
 @implementation RadarSDKTests
 
-static NSString * const kPublishableKey = @"prj_test_pk_0000000000000000000000000000000000000000";
+static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000000000000000000";
 
 #define AssertGeofencesOk(geofences) [self assertGeofencesOk:geofences]
-- (void)assertGeofencesOk:(NSArray<RadarGeofence *>*)geofences {
+- (void)assertGeofencesOk:(NSArray<RadarGeofence *> *)geofences
+{
     XCTAssertNotNil(geofences);
     for (RadarGeofence *geofence in geofences) {
         [self assertGeofenceOk:geofence];
@@ -39,7 +40,8 @@ static NSString * const kPublishableKey = @"prj_test_pk_000000000000000000000000
 }
 
 #define AssertGeofenceOk(geofence) [self assertGeofenceOk:geofence]
-- (void)assertGeofenceOk:(RadarGeofence *)geofence {
+- (void)assertGeofenceOk:(RadarGeofence *)geofence
+{
     XCTAssertNotNil(geofence);
     XCTAssertNotNil(geofence._description);
     XCTAssertNotNil(geofence.tag);
@@ -48,8 +50,29 @@ static NSString * const kPublishableKey = @"prj_test_pk_000000000000000000000000
     XCTAssertNotNil(geofence.geometry);
 }
 
+#define AssertPointsOk(points) [self assertPointsOk:points]
+- (void)assertPointsOk:(NSArray<RadarPoint *> *)points
+{
+    XCTAssertNotNil(points);
+    for (RadarPoint *point in points) {
+        [self assertPointOk:point];
+    }
+}
+
+#define AssertPointOk(point) [self assertPointOk:point]
+- (void)assertPointOk:(RadarPoint *)point
+{
+    XCTAssertNotNil(point);
+    XCTAssertNotNil(point._description);
+    XCTAssertNotNil(point.tag);
+    XCTAssertNotNil(point.externalId);
+    XCTAssertNotNil(point.metadata);
+    XCTAssertNotNil(point.location);
+}
+
 #define AssertChainsOk(chains) [self assertChainsOk:chains]
-- (void)assertChainsOk:(NSArray<RadarChain *>*)chains {
+- (void)assertChainsOk:(NSArray<RadarChain *> *)chains
+{
     XCTAssertNotNil(chains);
     for (RadarChain *chain in chains) {
         [self assertChainOk:chain];
@@ -57,7 +80,8 @@ static NSString * const kPublishableKey = @"prj_test_pk_000000000000000000000000
 }
 
 #define AssertChainOk(chain) [self assertChainOk:chain]
-- (void)assertChainOk:(RadarChain *)chain {
+- (void)assertChainOk:(RadarChain *)chain
+{
     XCTAssertNotNil(chain);
     XCTAssertNotNil(chain.slug);
     XCTAssertNotNil(chain.name);
@@ -66,7 +90,8 @@ static NSString * const kPublishableKey = @"prj_test_pk_000000000000000000000000
 }
 
 #define AssertPlacesOk(places) [self assertPlacesOk:places]
-- (void)assertPlacesOk:(NSArray<RadarPlace *>*)places {
+- (void)assertPlacesOk:(NSArray<RadarPlace *> *)places
+{
     XCTAssertNotNil(places);
     for (RadarPlace *place in places) {
         [self assertPlaceOk:place];
@@ -74,7 +99,8 @@ static NSString * const kPublishableKey = @"prj_test_pk_000000000000000000000000
 }
 
 #define AssertPlaceOk(place) [self assertPlaceOk:place]
-- (void)assertPlaceOk:(RadarPlace *)place {
+- (void)assertPlaceOk:(RadarPlace *)place
+{
     XCTAssertNotNil(place);
     XCTAssertNotNil(place._id);
     XCTAssertNotNil(place.categories);
@@ -86,7 +112,8 @@ static NSString * const kPublishableKey = @"prj_test_pk_000000000000000000000000
 }
 
 #define AssertInsightsOk(insights) [self assertInsightsOk:insights]
-- (void)assertInsightsOk:(RadarUserInsights *)insights {
+- (void)assertInsightsOk:(RadarUserInsights *)insights
+{
     XCTAssertNotNil(insights);
     XCTAssertNotNil(insights.homeLocation);
     XCTAssertTrue(insights.homeLocation.updatedAt);
@@ -98,7 +125,8 @@ static NSString * const kPublishableKey = @"prj_test_pk_000000000000000000000000
 }
 
 #define AssertRegionOk(region) [self assertRegionOk:region]
-- (void)assertRegionOk:(RadarRegion *)region {
+- (void)assertRegionOk:(RadarRegion *)region
+{
     XCTAssertNotNil(region);
     XCTAssertNotNil(region._id);
     XCTAssertNotNil(region.name);
@@ -107,7 +135,8 @@ static NSString * const kPublishableKey = @"prj_test_pk_000000000000000000000000
 }
 
 #define AssertSegmentsOk(segments) [self assertSegmentsOk:segments]
-- (void)assertSegmentsOk:(NSArray<RadarSegment *>*)segments {
+- (void)assertSegmentsOk:(NSArray<RadarSegment *> *)segments
+{
     XCTAssertNotNil(segments);
     for (RadarSegment *segment in segments) {
         [self assertSegmentOk:segment];
@@ -115,14 +144,16 @@ static NSString * const kPublishableKey = @"prj_test_pk_000000000000000000000000
 }
 
 #define AssertSegmentOk(segment) [self assertSegmentOk:segment]
-- (void)assertSegmentOk:(RadarSegment *)segment {
+- (void)assertSegmentOk:(RadarSegment *)segment
+{
     XCTAssertNotNil(segment);
     XCTAssertNotNil(segment._description);
     XCTAssertNotNil(segment.externalId);
 }
 
 #define AssertUserOk(user) [self assertUserOk:user]
-- (void)assertUserOk:(RadarUser *)user {
+- (void)assertUserOk:(RadarUser *)user
+{
     XCTAssertNotNil(user);
     XCTAssertNotNil(user._id);
     XCTAssertNotNil(user.userId);
@@ -143,7 +174,8 @@ static NSString * const kPublishableKey = @"prj_test_pk_000000000000000000000000
 }
 
 #define AssertEventsOk(events) [self assertEventsOk:events]
-- (void)assertEventsOk:(NSArray<RadarEvent *>*)events {
+- (void)assertEventsOk:(NSArray<RadarEvent *> *)events
+{
     XCTAssertNotNil(events);
     for (RadarEvent *event in events) {
         [self assertEventOk:event];
@@ -151,7 +183,8 @@ static NSString * const kPublishableKey = @"prj_test_pk_000000000000000000000000
 }
 
 #define AssertEventOk(event) [self assertEventOk:event]
-- (void)assertEventOk:(RadarEvent *)event {
+- (void)assertEventOk:(RadarEvent *)event
+{
     XCTAssertNotNil(event);
     XCTAssertNotNil(event._id);
     XCTAssertNotNil(event.createdAt);
@@ -217,7 +250,8 @@ static NSString * const kPublishableKey = @"prj_test_pk_000000000000000000000000
 }
 
 #define AssertAddressesOk(addresses) [self assertAddressesOk:addresses]
-- (void)assertAddressesOk:(NSArray<RadarAddress *>*)addresses {
+- (void)assertAddressesOk:(NSArray<RadarAddress *> *)addresses
+{
     XCTAssertNotNil(addresses);
     for (RadarAddress *address in addresses) {
         [self assertAddressOk:address];
@@ -225,7 +259,8 @@ static NSString * const kPublishableKey = @"prj_test_pk_000000000000000000000000
 }
 
 #define AssertAddressOk(address) [self assertAddressOk:address]
-- (void)assertAddressOk:(RadarAddress *)address {
+- (void)assertAddressOk:(RadarAddress *)address
+{
     XCTAssertNotNil(address);
     XCTAssertNotEqual(address.coordinate.latitude, 0);
     XCTAssertNotEqual(address.coordinate.longitude, 0);
@@ -245,7 +280,8 @@ static NSString * const kPublishableKey = @"prj_test_pk_000000000000000000000000
 }
 
 #define AssertContextOk(context) [self assertContextOk:context]
-- (void)assertContextOk:(RadarContext *)context {
+- (void)assertContextOk:(RadarContext *)context
+{
     XCTAssertNotNil(context);
     AssertGeofencesOk(context.geofences);
     AssertPlaceOk(context.place);
@@ -256,7 +292,8 @@ static NSString * const kPublishableKey = @"prj_test_pk_000000000000000000000000
 }
 
 #define AssertRoutesOk(routes) [self assertRoutesOk:routes]
-- (void)assertRoutesOk:(RadarRoutes *)routes {
+- (void)assertRoutesOk:(RadarRoutes *)routes
+{
     XCTAssertNotNil(routes);
     XCTAssertNotNil(routes.geodesic);
     XCTAssertNotNil(routes.geodesic.text);
@@ -292,16 +329,17 @@ static NSString * const kPublishableKey = @"prj_test_pk_000000000000000000000000
 }
 
 
-- (void)setUp {
+- (void)setUp
+{
     [super setUp];
-    
+
     [Radar initializeWithPublishableKey:kPublishableKey];
     [Radar setLogLevel:RadarLogLevelDebug];
-    
+
     self.apiHelperMock = [RadarAPIHelperMock new];
     self.locationManagerMock = [CLLocationManagerMock new];
     self.permissionsHelperMock = [RadarPermissionsHelperMock new];
-    
+
     [RadarAPIClient sharedInstance].apiHelper = self.apiHelperMock;
     [RadarLocationManager sharedInstance].locationManager = self.locationManagerMock;
     self.locationManagerMock.delegate = [RadarLocationManager sharedInstance];
@@ -309,241 +347,268 @@ static NSString * const kPublishableKey = @"prj_test_pk_000000000000000000000000
     [RadarLocationManager sharedInstance].permissionsHelper = self.permissionsHelperMock;
 }
 
-- (void)tearDown {
-    
+- (void)tearDown
+{
 }
 
-- (void)test_Radar_initialize {
+- (void)test_Radar_initialize
+{
     XCTAssertEqualObjects(kPublishableKey, [RadarSettings publishableKey]);
 }
 
-- (void)test_Radar_setUserId {
+- (void)test_Radar_setUserId
+{
     NSString *userId = @"userId";
     [Radar setUserId:userId];
     XCTAssertEqualObjects(userId, [Radar getUserId]);
 }
 
-- (void)test_Radar_setUserId_nil {
+- (void)test_Radar_setUserId_nil
+{
     NSString *userId = nil;
     [Radar setUserId:userId];
     XCTAssertEqualObjects(userId, [Radar getUserId]);
 }
 
-- (void)test_Radar_setDescription {
+- (void)test_Radar_setDescription
+{
     NSString *description = @"description";
     [Radar setDescription:description];
     XCTAssertEqualObjects(description, [Radar getDescription]);
 }
 
-- (void)test_Radar_setDescription_nil {
+- (void)test_Radar_setDescription_nil
+{
     NSString *description = nil;
     [Radar setDescription:description];
     XCTAssertEqualObjects(description, [Radar getDescription]);
 }
 
-- (void)test_Radar_setMetadata {
-    NSDictionary *metadata = @{@"foo": @"bar", @"baz": @YES, @"qux": @1};
+- (void)test_Radar_setMetadata
+{
+    NSDictionary *metadata = @{@"foo" : @"bar", @"baz" : @YES, @"qux" : @1};
     [Radar setMetadata:metadata];
     XCTAssertEqualObjects(metadata, [Radar getMetadata]);
 }
 
-- (void)test_Radar_setMetadata_nil {
+- (void)test_Radar_setMetadata_nil
+{
     NSDictionary *metadata = nil;
     [Radar setMetadata:metadata];
     XCTAssertEqualObjects(metadata, [Radar getMetadata]);
 }
 
-- (void)test_Radar_getLocation_errorPermissions {
+- (void)test_Radar_getLocation_errorPermissions
+{
     self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusNotDetermined;
     self.locationManagerMock.mockLocation = nil;
-    
+
     XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
-    
-    [Radar getLocationWithCompletionHandler:^(RadarStatus status, CLLocation * _Nullable location, BOOL stopped) {
-        XCTAssertEqual(status, RadarStatusErrorPermissions);
-        
-        [expectation fulfill];
+
+    [Radar getLocationWithCompletionHandler:^(RadarStatus status, CLLocation *_Nullable location, BOOL stopped) {
+      XCTAssertEqual(status, RadarStatusErrorPermissions);
+
+      [expectation fulfill];
     }];
-    
-    [self waitForExpectationsWithTimeout:30 handler:^(NSError * _Nullable error) {
-        if (error) {
-            XCTFail();
-        }
-    }];
+
+    [self waitForExpectationsWithTimeout:30
+                                 handler:^(NSError *_Nullable error) {
+                                   if (error) {
+                                       XCTFail();
+                                   }
+                                 }];
 }
 
-- (void)test_Radar_getLocation_errorLocation {
+- (void)test_Radar_getLocation_errorLocation
+{
     self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusAuthorizedWhenInUse;
     self.locationManagerMock.mockLocation = nil;
-    
+
     XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
-    
-    [Radar getLocationWithCompletionHandler:^(RadarStatus status, CLLocation * _Nullable location, BOOL stopped) {
-        XCTAssertEqual(status, RadarStatusErrorLocation);
-        
-        [expectation fulfill];
+
+    [Radar getLocationWithCompletionHandler:^(RadarStatus status, CLLocation *_Nullable location, BOOL stopped) {
+      XCTAssertEqual(status, RadarStatusErrorLocation);
+
+      [expectation fulfill];
     }];
-    
-    [self waitForExpectationsWithTimeout:30 handler:^(NSError * _Nullable error) {
-        if (error) {
-            XCTFail();
-        }
-    }];
+
+    [self waitForExpectationsWithTimeout:30
+                                 handler:^(NSError *_Nullable error) {
+                                   if (error) {
+                                       XCTFail();
+                                   }
+                                 }];
 }
- 
-- (void)test_Radar_getLocation_success {
+
+- (void)test_Radar_getLocation_success
+{
     self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusAuthorizedWhenInUse;
     self.locationManagerMock.mockLocation = [[CLLocation alloc] initWithCoordinate:CLLocationCoordinate2DMake(40.783826, -73.975363) altitude:-1 horizontalAccuracy:65 verticalAccuracy:-1 timestamp:[NSDate new]];
-    
+
     XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
-    
-    [Radar getLocationWithCompletionHandler:^(RadarStatus status, CLLocation * _Nullable location, BOOL stopped) {
-        XCTAssertEqual(status, RadarStatusSuccess);
-        XCTAssertEqualObjects(self.locationManagerMock.mockLocation, location);
-        
-        [expectation fulfill];
+
+    [Radar getLocationWithCompletionHandler:^(RadarStatus status, CLLocation *_Nullable location, BOOL stopped) {
+      XCTAssertEqual(status, RadarStatusSuccess);
+      XCTAssertEqualObjects(self.locationManagerMock.mockLocation, location);
+
+      [expectation fulfill];
     }];
-    
-    [self waitForExpectationsWithTimeout:30 handler:^(NSError * _Nullable error) {
-        if (error) {
-            XCTFail();
-        }
-    }];
+
+    [self waitForExpectationsWithTimeout:30
+                                 handler:^(NSError *_Nullable error) {
+                                   if (error) {
+                                       XCTFail();
+                                   }
+                                 }];
 }
 
-- (void)test_Radar_trackOnce_errorPermissions {
+- (void)test_Radar_trackOnce_errorPermissions
+{
     self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusNotDetermined;
     self.locationManagerMock.mockLocation = nil;
-    
+
     XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
-    
-    [Radar trackOnceWithCompletionHandler:^(RadarStatus status, CLLocation * _Nullable location, NSArray<RadarEvent *> * _Nullable events, RadarUser * _Nullable user) {
-        XCTAssertEqual(status, RadarStatusErrorPermissions);
-        
-        [expectation fulfill];
+
+    [Radar trackOnceWithCompletionHandler:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user) {
+      XCTAssertEqual(status, RadarStatusErrorPermissions);
+
+      [expectation fulfill];
     }];
-    
-    [self waitForExpectationsWithTimeout:30 handler:^(NSError * _Nullable error) {
-        if (error) {
-            XCTFail();
-        }
-    }];
+
+    [self waitForExpectationsWithTimeout:30
+                                 handler:^(NSError *_Nullable error) {
+                                   if (error) {
+                                       XCTFail();
+                                   }
+                                 }];
 }
 
-- (void)test_Radar_trackOnce_errorLocation {
+- (void)test_Radar_trackOnce_errorLocation
+{
     self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusAuthorizedWhenInUse;
     self.locationManagerMock.mockLocation = nil;
-    
+
     XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
-    
-    [Radar trackOnceWithCompletionHandler:^(RadarStatus status, CLLocation * _Nullable location, NSArray<RadarEvent *> * _Nullable events, RadarUser * _Nullable user) {
-        XCTAssertEqual(status, RadarStatusErrorLocation);
-        
-        [expectation fulfill];
+
+    [Radar trackOnceWithCompletionHandler:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user) {
+      XCTAssertEqual(status, RadarStatusErrorLocation);
+
+      [expectation fulfill];
     }];
-    
-    [self waitForExpectationsWithTimeout:30 handler:^(NSError * _Nullable error) {
-        if (error) {
-            XCTFail();
-        }
-    }];
+
+    [self waitForExpectationsWithTimeout:30
+                                 handler:^(NSError *_Nullable error) {
+                                   if (error) {
+                                       XCTFail();
+                                   }
+                                 }];
 }
 
-- (void)test_Radar_trackOnce_success {
+- (void)test_Radar_trackOnce_success
+{
     self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusAuthorizedWhenInUse;
     self.locationManagerMock.mockLocation = [[CLLocation alloc] initWithCoordinate:CLLocationCoordinate2DMake(40.783826, -73.975363) altitude:-1 horizontalAccuracy:65 verticalAccuracy:-1 timestamp:[NSDate new]];
     self.apiHelperMock.mockStatus = RadarStatusSuccess;
     self.apiHelperMock.mockResponse = [RadarTestUtils jsonDictionaryFromResource:@"track"];
-    
+
     XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
-    
-    [Radar trackOnceWithCompletionHandler:^(RadarStatus status, CLLocation * _Nullable location, NSArray<RadarEvent *> * _Nullable events, RadarUser * _Nullable user) {
-        XCTAssertEqual(status, RadarStatusSuccess);
-        XCTAssertEqualObjects(self.locationManagerMock.mockLocation, location);
-        AssertEventsOk(events);
-        AssertUserOk(user);
-        
-        [expectation fulfill];
+
+    [Radar trackOnceWithCompletionHandler:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user) {
+      XCTAssertEqual(status, RadarStatusSuccess);
+      XCTAssertEqualObjects(self.locationManagerMock.mockLocation, location);
+      AssertEventsOk(events);
+      AssertUserOk(user);
+
+      [expectation fulfill];
     }];
-    
-    [self waitForExpectationsWithTimeout:30 handler:^(NSError * _Nullable error) {
-        if (error) {
-            XCTFail();
-        }
-    }];
+
+    [self waitForExpectationsWithTimeout:30
+                                 handler:^(NSError *_Nullable error) {
+                                   if (error) {
+                                       XCTFail();
+                                   }
+                                 }];
 }
 
-- (void)test_Radar_trackOnce_location_success {
+- (void)test_Radar_trackOnce_location_success
+{
     self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusNotDetermined;
     CLLocation *mockLocation = [[CLLocation alloc] initWithCoordinate:CLLocationCoordinate2DMake(40.783826, -73.975363) altitude:-1 horizontalAccuracy:65 verticalAccuracy:-1 timestamp:[NSDate new]];
     self.apiHelperMock.mockStatus = RadarStatusSuccess;
     self.apiHelperMock.mockResponse = [RadarTestUtils jsonDictionaryFromResource:@"track"];
-    
+
     XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
-    
-    [Radar trackOnceWithLocation:mockLocation completionHandler:^(RadarStatus status, CLLocation * _Nullable location, NSArray<RadarEvent *> * _Nullable events, RadarUser * _Nullable user) {
-        XCTAssertEqual(status, RadarStatusSuccess);
-        AssertEventsOk(events);
-        AssertUserOk(user);
-        
-        [expectation fulfill];
-    }];
-    
-    [self waitForExpectationsWithTimeout:30 handler:^(NSError * _Nullable error) {
-        if (error) {
-            XCTFail();
-        }
-    }];
+
+    [Radar trackOnceWithLocation:mockLocation
+               completionHandler:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user) {
+                 XCTAssertEqual(status, RadarStatusSuccess);
+                 AssertEventsOk(events);
+                 AssertUserOk(user);
+
+                 [expectation fulfill];
+               }];
+
+    [self waitForExpectationsWithTimeout:30
+                                 handler:^(NSError *_Nullable error) {
+                                   if (error) {
+                                       XCTFail();
+                                   }
+                                 }];
 }
 
-- (void)test_Radar_startTracking_errorPermissions {
+- (void)test_Radar_startTracking_errorPermissions
+{
     self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusNotDetermined;
     self.locationManagerMock.mockLocation = nil;
-    
+
     [Radar stopTracking];
-    
+
     [Radar startTrackingWithOptions:RadarTrackingOptions.efficient];
     XCTAssertFalse([Radar isTracking]);
 }
 
-- (void)test_Radar_startTracking_continuous {
+- (void)test_Radar_startTracking_continuous
+{
     self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusAuthorizedWhenInUse;
-    
+
     [Radar stopTracking];
-    
+
     RadarTrackingOptions *options = RadarTrackingOptions.continuous;
     [Radar startTrackingWithOptions:options];
     XCTAssertEqualObjects(options, [Radar getTrackingOptions]);
     XCTAssertTrue([Radar isTracking]);
 }
 
-- (void)test_Radar_startTracking_responsive {
+- (void)test_Radar_startTracking_responsive
+{
     self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusAuthorizedWhenInUse;
-    
+
     [Radar stopTracking];
-    
+
     RadarTrackingOptions *options = RadarTrackingOptions.responsive;
     [Radar startTrackingWithOptions:options];
     XCTAssertEqualObjects(options, [Radar getTrackingOptions]);
     XCTAssertTrue([Radar isTracking]);
 }
 
-- (void)test_Radar_startTracking_efficient {
+- (void)test_Radar_startTracking_efficient
+{
     self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusAuthorizedWhenInUse;
-    
+
     [Radar stopTracking];
-    
+
     RadarTrackingOptions *options = RadarTrackingOptions.efficient;
     [Radar startTrackingWithOptions:options];
     XCTAssertEqualObjects(options, [Radar getTrackingOptions]);
     XCTAssertTrue([Radar isTracking]);
 }
 
-- (void)test_Radar_startTracking_custom {
+- (void)test_Radar_startTracking_custom
+{
     self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusAuthorizedWhenInUse;
-    
+
     [Radar stopTracking];
-    
+
     RadarTrackingOptions *options = RadarTrackingOptions.efficient;
     options.desiredAccuracy = RadarTrackingOptionsDesiredAccuracyLow;
     NSDate *now = [NSDate new];
@@ -555,91 +620,102 @@ static NSString * const kPublishableKey = @"prj_test_pk_000000000000000000000000
     XCTAssertTrue([Radar isTracking]);
 }
 
-- (void)test_Radar_stopTracking {
+- (void)test_Radar_stopTracking
+{
     [Radar stopTracking];
     XCTAssertFalse([Radar isTracking]);
 }
 
-- (void)test_Radar_acceptEventId {
+- (void)test_Radar_acceptEventId
+{
     self.apiHelperMock.mockStatus = RadarStatusSuccess;
     self.apiHelperMock.mockResponse = [RadarTestUtils jsonDictionaryFromResource:@"events_verification"];
     [Radar acceptEventId:@"eventId" verifiedPlaceId:nil];
 }
 
-- (void)test_Radar_acceptEventId_verifiedPlaceId {
+- (void)test_Radar_acceptEventId_verifiedPlaceId
+{
     self.apiHelperMock.mockStatus = RadarStatusSuccess;
     self.apiHelperMock.mockResponse = [RadarTestUtils jsonDictionaryFromResource:@"events_verification"];
     [Radar acceptEventId:@"eventId" verifiedPlaceId:@"verifiedPlaceId"];
 }
 
-- (void)test_Radar_rejectEvent {
+- (void)test_Radar_rejectEvent
+{
     self.apiHelperMock.mockStatus = RadarStatusSuccess;
     self.apiHelperMock.mockResponse = [RadarTestUtils jsonDictionaryFromResource:@"events_verification"];
     [Radar rejectEventId:@"eventId"];
 }
 
-- (void)test_Radar_getContext_errorPermissions {
+- (void)test_Radar_getContext_errorPermissions
+{
     self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusNotDetermined;
     self.locationManagerMock.mockLocation = nil;
-    
+
     XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
-    
-    [Radar getContextWithCompletionHandler:^(RadarStatus status, CLLocation * _Nullable location, RadarContext * _Nullable context) {
-        XCTAssertEqual(status, RadarStatusErrorPermissions);
-        
-        [expectation fulfill];
+
+    [Radar getContextWithCompletionHandler:^(RadarStatus status, CLLocation *_Nullable location, RadarContext *_Nullable context) {
+      XCTAssertEqual(status, RadarStatusErrorPermissions);
+
+      [expectation fulfill];
     }];
-    
-    [self waitForExpectationsWithTimeout:30 handler:^(NSError * _Nullable error) {
-        if (error) {
-            XCTFail();
-        }
-    }];
+
+    [self waitForExpectationsWithTimeout:30
+                                 handler:^(NSError *_Nullable error) {
+                                   if (error) {
+                                       XCTFail();
+                                   }
+                                 }];
 }
 
-- (void)test_Radar_getContext_errorLocation {
+- (void)test_Radar_getContext_errorLocation
+{
     self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusAuthorizedWhenInUse;
     self.locationManagerMock.mockLocation = nil;
-    
+
     XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
-    
-    [Radar getContextWithCompletionHandler:^(RadarStatus status, CLLocation * _Nullable location, RadarContext * _Nullable context) {
-        XCTAssertEqual(status, RadarStatusErrorLocation);
-        
-        [expectation fulfill];
+
+    [Radar getContextWithCompletionHandler:^(RadarStatus status, CLLocation *_Nullable location, RadarContext *_Nullable context) {
+      XCTAssertEqual(status, RadarStatusErrorLocation);
+
+      [expectation fulfill];
     }];
-    
-    [self waitForExpectationsWithTimeout:30 handler:^(NSError * _Nullable error) {
-        if (error) {
-            XCTFail();
-        }
-    }];
+
+    [self waitForExpectationsWithTimeout:30
+                                 handler:^(NSError *_Nullable error) {
+                                   if (error) {
+                                       XCTFail();
+                                   }
+                                 }];
 }
 
-- (void)test_Radar_getContext_success {
+- (void)test_Radar_getContext_success
+{
     self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusAuthorizedWhenInUse;
     self.locationManagerMock.mockLocation = [[CLLocation alloc] initWithCoordinate:CLLocationCoordinate2DMake(40.783826, -73.975363) altitude:-1 horizontalAccuracy:65 verticalAccuracy:-1 timestamp:[NSDate new]];
     self.apiHelperMock.mockStatus = RadarStatusSuccess;
     self.apiHelperMock.mockResponse = [RadarTestUtils jsonDictionaryFromResource:@"context"];
-    
+
     XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
-    
-    [Radar getContextWithCompletionHandler:^(RadarStatus status, CLLocation * _Nullable location, RadarContext * _Nullable context) {
-        XCTAssertEqual(status, RadarStatusSuccess);
-        XCTAssertEqualObjects(self.locationManagerMock.mockLocation, location);
-        AssertContextOk(context);
-        
-        [expectation fulfill];
+
+    [Radar getContextWithCompletionHandler:^(RadarStatus status, CLLocation *_Nullable location, RadarContext *_Nullable context) {
+      XCTAssertEqual(status, RadarStatusSuccess);
+      XCTAssertEqualObjects(self.locationManagerMock.mockLocation, location);
+      AssertContextOk(context);
+
+      [expectation fulfill];
     }];
-    
-    [self waitForExpectationsWithTimeout:30 handler:^(NSError * _Nullable error) {
-        if (error) {
-            XCTFail();
-        }
-    }];
+
+    [self waitForExpectationsWithTimeout:30
+                                 handler:^(NSError *_Nullable error) {
+                                   if (error) {
+                                       XCTFail();
+                                   }
+                                 }];
 }
 
-- (void)test_Radar_getContext_location_success {
+- (void)test_Radar_getContext_location_success
+{
     self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusNotDetermined;
     CLLocation *mockLocation = [[CLLocation alloc] initWithCoordinate:CLLocationCoordinate2DMake(40.783826, -73.975363) altitude:-1 horizontalAccuracy:65 verticalAccuracy:-1 timestamp:[NSDate new]];
     self.apiHelperMock.mockStatus = RadarStatusSuccess;
@@ -647,189 +723,318 @@ static NSString * const kPublishableKey = @"prj_test_pk_000000000000000000000000
 
     XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
 
-    [Radar getContextForLocation:mockLocation completionHandler:^(RadarStatus status, CLLocation * _Nullable location, RadarContext * _Nullable context) {
-        XCTAssertEqual(status, RadarStatusSuccess);
-        AssertContextOk(context);
+    [Radar getContextForLocation:mockLocation
+               completionHandler:^(RadarStatus status, CLLocation *_Nullable location, RadarContext *_Nullable context) {
+                 XCTAssertEqual(status, RadarStatusSuccess);
+                 AssertContextOk(context);
 
-        [expectation fulfill];
-    }];
+                 [expectation fulfill];
+               }];
 
-    [self waitForExpectationsWithTimeout:30 handler:^(NSError * _Nullable error) {
-        if (error) {
-            XCTFail();
-        }
-    }];
+    [self waitForExpectationsWithTimeout:30
+                                 handler:^(NSError *_Nullable error) {
+                                   if (error) {
+                                       XCTFail();
+                                   }
+                                 }];
 }
 
 
-- (void)test_Radar_searchPlaces_errorPermissions {
+- (void)test_Radar_searchPlaces_errorPermissions
+{
     self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusNotDetermined;
     self.locationManagerMock.mockLocation = nil;
-    
+
     XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
-    
-    [Radar searchPlacesWithRadius:1000 chains:@[@"walmart"] categories:nil groups:nil limit:100 completionHandler:^(RadarStatus status, CLLocation * _Nullable location, NSArray<RadarPlace *> * _Nullable places) {
-        XCTAssertEqual(status, RadarStatusErrorPermissions);
-        
-        [expectation fulfill];
-    }];
-    
-    [self waitForExpectationsWithTimeout:30 handler:^(NSError * _Nullable error) {
-        if (error) {
-            XCTFail();
-        }
-    }];
+
+    [Radar searchPlacesWithRadius:1000
+                           chains:@[ @"walmart" ]
+                       categories:nil
+                           groups:nil
+                            limit:100
+                completionHandler:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarPlace *> *_Nullable places) {
+                  XCTAssertEqual(status, RadarStatusErrorPermissions);
+
+                  [expectation fulfill];
+                }];
+
+    [self waitForExpectationsWithTimeout:30
+                                 handler:^(NSError *_Nullable error) {
+                                   if (error) {
+                                       XCTFail();
+                                   }
+                                 }];
 }
 
-- (void)test_Radar_searchPlaces_errorLocation {
+- (void)test_Radar_searchPlaces_errorLocation
+{
     self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusAuthorizedWhenInUse;
     self.locationManagerMock.mockLocation = nil;
-    
+
     XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
-    
-    [Radar searchPlacesWithRadius:1000 chains:@[@"walmart"] categories:nil groups:nil limit:100 completionHandler:^(RadarStatus status, CLLocation * _Nullable location, NSArray<RadarPlace *> * _Nullable places) {
-        XCTAssertEqual(status, RadarStatusErrorLocation);
-        
-        [expectation fulfill];
-    }];
-    
-    [self waitForExpectationsWithTimeout:30 handler:^(NSError * _Nullable error) {
-        if (error) {
-            XCTFail();
-        }
-    }];
+
+    [Radar searchPlacesWithRadius:1000
+                           chains:@[ @"walmart" ]
+                       categories:nil
+                           groups:nil
+                            limit:100
+                completionHandler:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarPlace *> *_Nullable places) {
+                  XCTAssertEqual(status, RadarStatusErrorLocation);
+
+                  [expectation fulfill];
+                }];
+
+    [self waitForExpectationsWithTimeout:30
+                                 handler:^(NSError *_Nullable error) {
+                                   if (error) {
+                                       XCTFail();
+                                   }
+                                 }];
 }
 
-- (void)test_Radar_searchPlaces_chains_success {
+- (void)test_Radar_searchPlaces_chains_success
+{
     self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusAuthorizedWhenInUse;
     self.locationManagerMock.mockLocation = [[CLLocation alloc] initWithCoordinate:CLLocationCoordinate2DMake(40.783826, -73.975363) altitude:-1 horizontalAccuracy:65 verticalAccuracy:-1 timestamp:[NSDate new]];
     self.apiHelperMock.mockStatus = RadarStatusSuccess;
     self.apiHelperMock.mockResponse = [RadarTestUtils jsonDictionaryFromResource:@"search_places"];
-    
+
     XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
-    
-    [Radar searchPlacesWithRadius:1000 chains:@[@"walmart"] categories:nil groups:nil limit:100 completionHandler:^(RadarStatus status, CLLocation * _Nullable location, NSArray<RadarPlace *> * _Nullable places) {
-        XCTAssertEqual(status, RadarStatusSuccess);
-        XCTAssertNotNil(location);
-        AssertPlacesOk(places);
-        
-        [expectation fulfill];
-    }];
-    
-    [self waitForExpectationsWithTimeout:30 handler:^(NSError * _Nullable error) {
-        if (error) {
-            XCTFail();
-        }
-    }];
+
+    [Radar searchPlacesWithRadius:1000
+                           chains:@[ @"walmart" ]
+                       categories:nil
+                           groups:nil
+                            limit:100
+                completionHandler:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarPlace *> *_Nullable places) {
+                  XCTAssertEqual(status, RadarStatusSuccess);
+                  XCTAssertNotNil(location);
+                  AssertPlacesOk(places);
+
+                  [expectation fulfill];
+                }];
+
+    [self waitForExpectationsWithTimeout:30
+                                 handler:^(NSError *_Nullable error) {
+                                   if (error) {
+                                       XCTFail();
+                                   }
+                                 }];
 }
 
-- (void)test_Radar_searchPlacesNear_categories_success {
+- (void)test_Radar_searchPlacesNear_categories_success
+{
     self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusNotDetermined;
     CLLocation *mockLocation = [[CLLocation alloc] initWithCoordinate:CLLocationCoordinate2DMake(40.783826, -73.975363) altitude:-1 horizontalAccuracy:65 verticalAccuracy:-1 timestamp:[NSDate new]];
     self.apiHelperMock.mockStatus = RadarStatusSuccess;
     self.apiHelperMock.mockResponse = [RadarTestUtils jsonDictionaryFromResource:@"search_places"];
-    
+
     XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
-    
-    [Radar searchPlacesNear:mockLocation radius:1000 chains:nil categories:@[@"restaurant"] groups:nil limit:100 completionHandler:^(RadarStatus status, CLLocation * _Nullable location, NSArray<RadarPlace *> * _Nullable places) {
-        XCTAssertEqual(status, RadarStatusSuccess);
-        XCTAssertNotNil(location);
-        AssertPlacesOk(places);
-        
-        [expectation fulfill];
-    }];
-    
-    [self waitForExpectationsWithTimeout:30 handler:^(NSError * _Nullable error) {
-        if (error) {
-            XCTFail();
-        }
-    }];
+
+    [Radar searchPlacesNear:mockLocation
+                     radius:1000
+                     chains:nil
+                 categories:@[ @"restaurant" ]
+                     groups:nil
+                      limit:100
+          completionHandler:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarPlace *> *_Nullable places) {
+            XCTAssertEqual(status, RadarStatusSuccess);
+            XCTAssertNotNil(location);
+            AssertPlacesOk(places);
+
+            [expectation fulfill];
+          }];
+
+    [self waitForExpectationsWithTimeout:30
+                                 handler:^(NSError *_Nullable error) {
+                                   if (error) {
+                                       XCTFail();
+                                   }
+                                 }];
 }
 
-- (void)test_Radar_searchGeofences_errorPermissions {
+- (void)test_Radar_searchGeofences_errorPermissions
+{
     self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusNotDetermined;
     self.locationManagerMock.mockLocation = nil;
-    
+
     XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
-    
-    [Radar searchGeofencesWithRadius:1000 tags:nil limit:100 completionHandler:^(RadarStatus status, CLLocation * _Nullable location, NSArray<RadarGeofence *> * _Nullable geofences) {
-        XCTAssertEqual(status, RadarStatusErrorPermissions);
-        
-        [expectation fulfill];
-    }];
-    
-    [self waitForExpectationsWithTimeout:30 handler:^(NSError * _Nullable error) {
-        if (error) {
-            XCTFail();
-        }
-    }];
+
+    [Radar searchGeofencesWithRadius:1000
+                                tags:nil
+                               limit:100
+                   completionHandler:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarGeofence *> *_Nullable geofences) {
+                     XCTAssertEqual(status, RadarStatusErrorPermissions);
+
+                     [expectation fulfill];
+                   }];
+
+    [self waitForExpectationsWithTimeout:30
+                                 handler:^(NSError *_Nullable error) {
+                                   if (error) {
+                                       XCTFail();
+                                   }
+                                 }];
 }
 
-- (void)test_Radar_searchGeofences_errorLocation {
+- (void)test_Radar_searchGeofences_errorLocation
+{
     self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusAuthorizedWhenInUse;
     self.locationManagerMock.mockLocation = nil;
-    
+
     XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
-    
-    [Radar searchGeofencesWithRadius:1000 tags:nil limit:100 completionHandler:^(RadarStatus status, CLLocation * _Nullable location, NSArray<RadarGeofence *> * _Nullable geofences) {
-        XCTAssertEqual(status, RadarStatusErrorLocation);
-        
-        [expectation fulfill];
-    }];
-    
-    [self waitForExpectationsWithTimeout:30 handler:^(NSError * _Nullable error) {
-        if (error) {
-            XCTFail();
-        }
-    }];
+
+    [Radar searchGeofencesWithRadius:1000
+                                tags:nil
+                               limit:100
+                   completionHandler:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarGeofence *> *_Nullable geofences) {
+                     XCTAssertEqual(status, RadarStatusErrorLocation);
+
+                     [expectation fulfill];
+                   }];
+
+    [self waitForExpectationsWithTimeout:30
+                                 handler:^(NSError *_Nullable error) {
+                                   if (error) {
+                                       XCTFail();
+                                   }
+                                 }];
 }
 
-- (void)test_Radar_searchGeofences_success {
+- (void)test_Radar_searchGeofences_success
+{
     self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusAuthorizedWhenInUse;
     self.locationManagerMock.mockLocation = [[CLLocation alloc] initWithCoordinate:CLLocationCoordinate2DMake(40.783826, -73.975363) altitude:-1 horizontalAccuracy:65 verticalAccuracy:-1 timestamp:[NSDate new]];
     self.apiHelperMock.mockStatus = RadarStatusSuccess;
     self.apiHelperMock.mockResponse = [RadarTestUtils jsonDictionaryFromResource:@"search_geofences"];
-    
+
     XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
-    
-    [Radar searchGeofencesWithRadius:1000 tags:@[@"store"] limit:100 completionHandler:^(RadarStatus status, CLLocation * _Nullable location, NSArray<RadarGeofence *> * _Nullable geofences) {
-        XCTAssertEqual(status, RadarStatusSuccess);
-        XCTAssertNotNil(location);
-        AssertGeofencesOk(geofences);
-        
-        [expectation fulfill];
-    }];
-    
-    [self waitForExpectationsWithTimeout:30 handler:^(NSError * _Nullable error) {
-        if (error) {
-            XCTFail();
-        }
-    }];
+
+    [Radar searchGeofencesWithRadius:1000
+                                tags:@[ @"store" ]
+                               limit:100
+                   completionHandler:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarGeofence *> *_Nullable geofences) {
+                     XCTAssertEqual(status, RadarStatusSuccess);
+                     XCTAssertNotNil(location);
+                     AssertGeofencesOk(geofences);
+
+                     [expectation fulfill];
+                   }];
+
+    [self waitForExpectationsWithTimeout:30
+                                 handler:^(NSError *_Nullable error) {
+                                   if (error) {
+                                       XCTFail();
+                                   }
+                                 }];
 }
 
-- (void)test_Radar_autocomplete_success {
+#pragma mark - search points
+- (void)test_Radar_searchPoints_errorPermissions
+{
+    self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusNotDetermined;
+    self.locationManagerMock.mockLocation = nil;
+
+    XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
+
+    [Radar searchPointsWithRadius:1000
+                             tags:nil
+                            limit:100
+                completionHandler:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarPoint *> *_Nullable points) {
+                  XCTAssertEqual(status, RadarStatusErrorPermissions);
+
+                  [expectation fulfill];
+                }];
+
+    [self waitForExpectationsWithTimeout:30
+                                 handler:^(NSError *_Nullable error) {
+                                   if (error) {
+                                       XCTFail();
+                                   }
+                                 }];
+}
+
+- (void)test_Radar_searchPoints_errorLocation
+{
+    self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusAuthorizedWhenInUse;
+    self.locationManagerMock.mockLocation = nil;
+
+    XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
+
+    [Radar searchPointsWithRadius:1000
+                             tags:nil
+                            limit:100
+                completionHandler:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarPoint *> *_Nullable points) {
+                  XCTAssertEqual(status, RadarStatusErrorLocation);
+
+                  [expectation fulfill];
+                }];
+
+    [self waitForExpectationsWithTimeout:30
+                                 handler:^(NSError *_Nullable error) {
+                                   if (error) {
+                                       XCTFail();
+                                   }
+                                 }];
+}
+
+- (void)test_Radar_searchPoints_success
+{
+    self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusAuthorizedWhenInUse;
+    self.locationManagerMock.mockLocation = [[CLLocation alloc] initWithCoordinate:CLLocationCoordinate2DMake(40.7039799, -73.9873499) altitude:-1 horizontalAccuracy:65 verticalAccuracy:-1 timestamp:[NSDate new]];
+    self.apiHelperMock.mockStatus = RadarStatusSuccess;
+    self.apiHelperMock.mockResponse = [RadarTestUtils jsonDictionaryFromResource:@"search_points"];
+
+    XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
+
+    [Radar searchPointsWithRadius:1000
+                             tags:@[ @"store" ]
+                            limit:100
+                completionHandler:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarPoint *> *_Nullable points) {
+                  XCTAssertEqual(status, RadarStatusSuccess);
+                  XCTAssertNotNil(location);
+                  AssertPointsOk(points);
+
+                  [expectation fulfill];
+                }];
+
+    [self waitForExpectationsWithTimeout:30
+                                 handler:^(NSError *_Nullable error) {
+                                   if (error) {
+                                       XCTFail();
+                                   }
+                                 }];
+}
+
+- (void)test_Radar_autocomplete_success
+{
     self.apiHelperMock.mockStatus = RadarStatusSuccess;
     self.apiHelperMock.mockResponse = [RadarTestUtils jsonDictionaryFromResource:@"search_autocomplete"];
-    
+
     CLLocation *near = [[CLLocation alloc] initWithLatitude:40.783826 longitude:-73.975363];
-    
+
     XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
-    
-    [Radar autocompleteQuery:@"brooklyn roasting" near:near limit:10 completionHandler:^(RadarStatus status, NSArray<RadarAddress *> * _Nullable addresses) {
-        XCTAssertEqual(status, RadarStatusSuccess);
-        AssertAddressesOk(addresses);
-        
-        [expectation fulfill];
-    }];
-    
-    [self waitForExpectationsWithTimeout:30 handler:^(NSError * _Nullable error) {
-        if (error) {
-            XCTFail();
-        }
-    }];
+
+    [Radar autocompleteQuery:@"brooklyn roasting"
+                        near:near
+                       limit:10
+           completionHandler:^(RadarStatus status, NSArray<RadarAddress *> *_Nullable addresses) {
+             XCTAssertEqual(status, RadarStatusSuccess);
+             AssertAddressesOk(addresses);
+
+             [expectation fulfill];
+           }];
+
+    [self waitForExpectationsWithTimeout:30
+                                 handler:^(NSError *_Nullable error) {
+                                   if (error) {
+                                       XCTFail();
+                                   }
+                                 }];
 }
 
-- (void)test_Radar_geocode_error {
+- (void)test_Radar_geocode_error
+{
     self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusAuthorizedWhenInUse;
     self.apiHelperMock.mockStatus = RadarStatusErrorServer;
 
@@ -837,21 +1042,24 @@ static NSString * const kPublishableKey = @"prj_test_pk_000000000000000000000000
 
     XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
 
-    [Radar geocodeAddress:geocodeQuery completionHandler:^(RadarStatus status, NSArray<RadarAddress *> * _Nullable addresses) {
-        XCTAssertEqual(status, RadarStatusErrorServer);
-        XCTAssertNil(addresses);
+    [Radar geocodeAddress:geocodeQuery
+        completionHandler:^(RadarStatus status, NSArray<RadarAddress *> *_Nullable addresses) {
+          XCTAssertEqual(status, RadarStatusErrorServer);
+          XCTAssertNil(addresses);
 
-        [expectation fulfill];
-    }];
+          [expectation fulfill];
+        }];
 
-    [self waitForExpectationsWithTimeout:30 handler:^(NSError * _Nullable error) {
-        if (error) {
-            XCTFail();
-        }
-    }];
+    [self waitForExpectationsWithTimeout:30
+                                 handler:^(NSError *_Nullable error) {
+                                   if (error) {
+                                       XCTFail();
+                                   }
+                                 }];
 }
 
-- (void)test_Radar_geocode_success {
+- (void)test_Radar_geocode_success
+{
     self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusAuthorizedWhenInUse;
     self.apiHelperMock.mockStatus = RadarStatusSuccess;
     self.apiHelperMock.mockResponse = [RadarTestUtils jsonDictionaryFromResource:@"geocode"];
@@ -860,61 +1068,68 @@ static NSString * const kPublishableKey = @"prj_test_pk_000000000000000000000000
 
     XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
 
-    [Radar geocodeAddress:query completionHandler:^(RadarStatus status, NSArray<RadarAddress *> * _Nullable addresses) {
-        XCTAssertEqual(status, RadarStatusSuccess);
-        AssertAddressesOk(addresses);
+    [Radar geocodeAddress:query
+        completionHandler:^(RadarStatus status, NSArray<RadarAddress *> *_Nullable addresses) {
+          XCTAssertEqual(status, RadarStatusSuccess);
+          AssertAddressesOk(addresses);
 
-        [expectation fulfill];
-    }];
+          [expectation fulfill];
+        }];
 
-    [self waitForExpectationsWithTimeout:30 handler:^(NSError * _Nullable error) {
-        if (error) {
-            XCTFail();
-        }
-    }];
+    [self waitForExpectationsWithTimeout:30
+                                 handler:^(NSError *_Nullable error) {
+                                   if (error) {
+                                       XCTFail();
+                                   }
+                                 }];
 }
 
-- (void)test_Radar_reverseGeocode_errorPermissions {
+- (void)test_Radar_reverseGeocode_errorPermissions
+{
     self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusNotDetermined;
     self.locationManagerMock.mockLocation = nil;
 
     XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
 
-    [Radar reverseGeocodeWithCompletionHandler:^(RadarStatus status, NSArray<RadarAddress *> * _Nullable addresses) {
-        XCTAssertEqual(status, RadarStatusErrorPermissions);
-        XCTAssertNil(addresses);
+    [Radar reverseGeocodeWithCompletionHandler:^(RadarStatus status, NSArray<RadarAddress *> *_Nullable addresses) {
+      XCTAssertEqual(status, RadarStatusErrorPermissions);
+      XCTAssertNil(addresses);
 
-        [expectation fulfill];
+      [expectation fulfill];
     }];
 
-    [self waitForExpectationsWithTimeout:30 handler:^(NSError * _Nullable error) {
-        if (error) {
-            XCTFail();
-        }
-    }];
+    [self waitForExpectationsWithTimeout:30
+                                 handler:^(NSError *_Nullable error) {
+                                   if (error) {
+                                       XCTFail();
+                                   }
+                                 }];
 }
 
-- (void)test_Radar_reverseGeocode_errorLocation {
+- (void)test_Radar_reverseGeocode_errorLocation
+{
     self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusAuthorizedWhenInUse;
     self.locationManagerMock.mockLocation = nil;
 
     XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
 
-    [Radar reverseGeocodeWithCompletionHandler:^(RadarStatus status, NSArray<RadarAddress *> * _Nullable addresses) {
-        XCTAssertEqual(status, RadarStatusErrorLocation);
-        XCTAssertNil(addresses);
+    [Radar reverseGeocodeWithCompletionHandler:^(RadarStatus status, NSArray<RadarAddress *> *_Nullable addresses) {
+      XCTAssertEqual(status, RadarStatusErrorLocation);
+      XCTAssertNil(addresses);
 
-        [expectation fulfill];
+      [expectation fulfill];
     }];
 
-    [self waitForExpectationsWithTimeout:30 handler:^(NSError * _Nullable error) {
-        if (error) {
-            XCTFail();
-        }
-    }];
+    [self waitForExpectationsWithTimeout:30
+                                 handler:^(NSError *_Nullable error) {
+                                   if (error) {
+                                       XCTFail();
+                                   }
+                                 }];
 }
 
-- (void)test_Radar_reverseGeocode_success {
+- (void)test_Radar_reverseGeocode_success
+{
     self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusAuthorizedWhenInUse;
     self.locationManagerMock.mockLocation = [[CLLocation alloc] initWithCoordinate:CLLocationCoordinate2DMake(40.783826, -73.975363) altitude:-1 horizontalAccuracy:65 verticalAccuracy:-1 timestamp:[NSDate new]];
     self.apiHelperMock.mockStatus = RadarStatusSuccess;
@@ -922,21 +1137,23 @@ static NSString * const kPublishableKey = @"prj_test_pk_000000000000000000000000
 
     XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
 
-    [Radar reverseGeocodeWithCompletionHandler:^(RadarStatus status, NSArray<RadarAddress *> * _Nullable addresses) {
-        XCTAssertEqual(status, RadarStatusSuccess);
-        AssertAddressesOk(addresses);
+    [Radar reverseGeocodeWithCompletionHandler:^(RadarStatus status, NSArray<RadarAddress *> *_Nullable addresses) {
+      XCTAssertEqual(status, RadarStatusSuccess);
+      AssertAddressesOk(addresses);
 
-        [expectation fulfill];
+      [expectation fulfill];
     }];
 
-    [self waitForExpectationsWithTimeout:30 handler:^(NSError * _Nullable error) {
-        if (error) {
-            XCTFail();
-        }
-    }];
+    [self waitForExpectationsWithTimeout:30
+                                 handler:^(NSError *_Nullable error) {
+                                   if (error) {
+                                       XCTFail();
+                                   }
+                                 }];
 }
 
-- (void)test_Radar_reverseGeocodeLocation_error {
+- (void)test_Radar_reverseGeocodeLocation_error
+{
     self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusAuthorizedWhenInUse;
     self.apiHelperMock.mockStatus = RadarStatusErrorServer;
 
@@ -944,21 +1161,24 @@ static NSString * const kPublishableKey = @"prj_test_pk_000000000000000000000000
 
     XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
 
-    [Radar reverseGeocodeLocation:location completionHandler:^(RadarStatus status, NSArray<RadarAddress *> * _Nullable addresses) {
-        XCTAssertEqual(status, RadarStatusErrorServer);
-        XCTAssertNil(addresses);
+    [Radar reverseGeocodeLocation:location
+                completionHandler:^(RadarStatus status, NSArray<RadarAddress *> *_Nullable addresses) {
+                  XCTAssertEqual(status, RadarStatusErrorServer);
+                  XCTAssertNil(addresses);
 
-        [expectation fulfill];
-    }];
+                  [expectation fulfill];
+                }];
 
-    [self waitForExpectationsWithTimeout:30 handler:^(NSError * _Nullable error) {
-        if (error) {
-            XCTFail();
-        }
-    }];
+    [self waitForExpectationsWithTimeout:30
+                                 handler:^(NSError *_Nullable error) {
+                                   if (error) {
+                                       XCTFail();
+                                   }
+                                 }];
 }
 
-- (void)test_Radar_reverseGeocodeLocation_success {
+- (void)test_Radar_reverseGeocodeLocation_success
+{
     self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusAuthorizedWhenInUse;
     self.apiHelperMock.mockStatus = RadarStatusSuccess;
     self.apiHelperMock.mockResponse = [RadarTestUtils jsonDictionaryFromResource:@"geocode"];
@@ -967,86 +1187,98 @@ static NSString * const kPublishableKey = @"prj_test_pk_000000000000000000000000
 
     XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
 
-    [Radar reverseGeocodeLocation:location completionHandler:^(RadarStatus status, NSArray<RadarAddress *> * _Nullable addresses) {
-        XCTAssertEqual(status, RadarStatusSuccess);
-        AssertAddressesOk(addresses);
+    [Radar reverseGeocodeLocation:location
+                completionHandler:^(RadarStatus status, NSArray<RadarAddress *> *_Nullable addresses) {
+                  XCTAssertEqual(status, RadarStatusSuccess);
+                  AssertAddressesOk(addresses);
 
-        [expectation fulfill];
-    }];
+                  [expectation fulfill];
+                }];
 
-    [self waitForExpectationsWithTimeout:30 handler:^(NSError * _Nullable error) {
-        if (error) {
-            XCTFail();
-        }
-    }];
+    [self waitForExpectationsWithTimeout:30
+                                 handler:^(NSError *_Nullable error) {
+                                   if (error) {
+                                       XCTFail();
+                                   }
+                                 }];
 }
 
-- (void)test_Radar_ipGeocode_error {
+- (void)test_Radar_ipGeocode_error
+{
     self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusAuthorizedWhenInUse;
     self.apiHelperMock.mockStatus = RadarStatusErrorServer;
 
     XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
 
-    [Radar ipGeocodeWithCompletionHandler:^(RadarStatus status, RadarRegion * _Nullable country) {
-        XCTAssertEqual(status, RadarStatusErrorServer);
-        XCTAssertNil(country);
+    [Radar ipGeocodeWithCompletionHandler:^(RadarStatus status, RadarRegion *_Nullable country) {
+      XCTAssertEqual(status, RadarStatusErrorServer);
+      XCTAssertNil(country);
 
-        [expectation fulfill];
+      [expectation fulfill];
     }];
 
-    [self waitForExpectationsWithTimeout:30 handler:^(NSError * _Nullable error) {
-        if (error) {
-            XCTFail();
-        }
-    }];
+    [self waitForExpectationsWithTimeout:30
+                                 handler:^(NSError *_Nullable error) {
+                                   if (error) {
+                                       XCTFail();
+                                   }
+                                 }];
 }
 
-- (void)test_Radar_ipGeocode_success {
+- (void)test_Radar_ipGeocode_success
+{
     self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusAuthorizedWhenInUse;
     self.apiHelperMock.mockStatus = RadarStatusSuccess;
     self.apiHelperMock.mockResponse = [RadarTestUtils jsonDictionaryFromResource:@"geocode_ip"];
 
     XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
 
-    [Radar ipGeocodeWithCompletionHandler:^(RadarStatus status, RadarRegion * _Nullable country) {
-        XCTAssertEqual(status, RadarStatusSuccess);
-        AssertRegionOk(country);
+    [Radar ipGeocodeWithCompletionHandler:^(RadarStatus status, RadarRegion *_Nullable country) {
+      XCTAssertEqual(status, RadarStatusSuccess);
+      AssertRegionOk(country);
 
-        [expectation fulfill];
+      [expectation fulfill];
     }];
 
-    [self waitForExpectationsWithTimeout:30 handler:^(NSError * _Nullable error) {
-        if (error) {
-            XCTFail();
-        }
-    }];
+    [self waitForExpectationsWithTimeout:30
+                                 handler:^(NSError *_Nullable error) {
+                                   if (error) {
+                                       XCTFail();
+                                   }
+                                 }];
 }
 
-- (void)test_Radar_getDistance_success {
+- (void)test_Radar_getDistance_success
+{
     self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusAuthorizedWhenInUse;
     self.locationManagerMock.mockLocation = [[CLLocation alloc] initWithCoordinate:CLLocationCoordinate2DMake(40.783826, -73.975363) altitude:-1 horizontalAccuracy:65 verticalAccuracy:-1 timestamp:[NSDate new]];
     self.apiHelperMock.mockStatus = RadarStatusSuccess;
     self.apiHelperMock.mockResponse = [RadarTestUtils jsonDictionaryFromResource:@"route_distance"];
-    
+
     CLLocation *destination = [[CLLocation alloc] initWithLatitude:40.783826 longitude:-73.975363];
-    
+
     XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
-    
-    [Radar getDistanceToDestination:destination modes:RadarRouteModeFoot | RadarRouteModeCar units:RadarRouteUnitsImperial completionHandler:^(RadarStatus status, RadarRoutes * _Nullable routes) {
-        XCTAssertEqual(status, RadarStatusSuccess);
-        AssertRoutesOk(routes);
-        
-        [expectation fulfill];
-    }];
-    
-    [self waitForExpectationsWithTimeout:30 handler:^(NSError * _Nullable error) {
-        if (error) {
-            XCTFail();
-        }
-    }];
+
+    [Radar getDistanceToDestination:destination
+                              modes:RadarRouteModeFoot | RadarRouteModeCar
+                              units:RadarRouteUnitsImperial
+                  completionHandler:^(RadarStatus status, RadarRoutes *_Nullable routes) {
+                    XCTAssertEqual(status, RadarStatusSuccess);
+                    AssertRoutesOk(routes);
+
+                    [expectation fulfill];
+                  }];
+
+    [self waitForExpectationsWithTimeout:30
+                                 handler:^(NSError *_Nullable error) {
+                                   if (error) {
+                                       XCTFail();
+                                   }
+                                 }];
 }
 
-- (void)test_RadarTrackingOptions_isEqual {
+- (void)test_RadarTrackingOptions_isEqual
+{
     RadarTrackingOptions *options = RadarTrackingOptions.efficient;
     XCTAssertNotEqualObjects(options, nil);
     XCTAssertEqualObjects(options, options);

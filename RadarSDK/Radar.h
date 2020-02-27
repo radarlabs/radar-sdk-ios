@@ -439,7 +439,7 @@ typedef void (^_Nonnull RadarRouteCompletionHandler)(RadarStatus status, RadarRo
 
  @param near The location to search.
  @param radius The radius to search, in meters. A number between 100 and 10000.
- @param tags An array of tags to filter. See https://radar.io/documentation/geofences
+ @param tags An array of tags to filter.
  @param limit The max number of geofences to return. A number between 1 and 100.
  @param completionHandler A completion handler.
 */
@@ -454,7 +454,7 @@ typedef void (^_Nonnull RadarRouteCompletionHandler)(RadarStatus status, RadarRo
  Gets the device's current location, then searches for points near that location, sorted by distance.
 
  @param radius The radius to search, in meters. A number between 100 and 10000.
- @param tags An array of tags to filter. See https://radar.io/documentation/geofences
+ @param tags An array of tags to filter.
  @param limit The max number of points to return. A number between 1 and 100.
  @param completionHandler A completion handler.
 */
