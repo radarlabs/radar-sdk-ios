@@ -7,4 +7,3 @@ sonar-reports/
 .scannerwork/
 DerivedData/
 build/
-.clang-format

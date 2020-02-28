@@ -10,31 +10,31 @@
 #import "Radar.h"
 #import "RadarAPIHelper.h"
 
-#import "RadarAddress.h"
 #import "RadarContext.h"
+#import "RadarAddress.h"
 #import "RadarEvent.h"
-#import "RadarPoint.h"
 #import "RadarRegion.h"
 #import "RadarRoutes.h"
 #import "RadarUser.h"
+#import "RadarPoint.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-typedef void (^_Nullable RadarTrackAPICompletionHandler)(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user);
+typedef void(^ _Nullable RadarTrackAPICompletionHandler)(RadarStatus status, NSDictionary * _Nullable res, NSArray<RadarEvent *> * _Nullable events, RadarUser * _Nullable user);
 
-typedef void (^_Nullable RadarContextAPICompletionHandler)(RadarStatus status, NSDictionary *_Nullable res, RadarContext *_Nullable context);
+typedef void(^ _Nullable RadarContextAPICompletionHandler)(RadarStatus status, NSDictionary * _Nullable res, RadarContext * _Nullable context);
 
-typedef void (^_Nullable RadarSearchPlacesAPICompletionHandler)(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarPlace *> *_Nullable places);
+typedef void(^ _Nullable RadarSearchPlacesAPICompletionHandler)(RadarStatus status, NSDictionary * _Nullable res, NSArray<RadarPlace *> * _Nullable places);
 
-typedef void (^_Nullable RadarSearchGeofencesAPICompletionHandler)(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarGeofence *> *_Nullable geofences);
+typedef void(^ _Nullable RadarSearchGeofencesAPICompletionHandler)(RadarStatus status, NSDictionary * _Nullable res, NSArray<RadarGeofence *> * _Nullable geofences);
 
 typedef void (^_Nullable RadarSearchPointsAPICompletionHandler)(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarPoint *> *_Nullable points);
 
-typedef void (^_Nullable RadarGeocodeAPICompletionHandler)(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarAddress *> *_Nullable addresses);
+typedef void(^ _Nullable RadarGeocodeAPICompletionHandler)(RadarStatus status, NSDictionary * _Nullable res, NSArray<RadarAddress *> * _Nullable addresses);
 
-typedef void (^_Nullable RadarIPGeocodeAPICompletionHandler)(RadarStatus status, NSDictionary *_Nullable res, RadarRegion *_Nullable country);
+typedef void(^ _Nullable RadarIPGeocodeAPICompletionHandler)(RadarStatus status, NSDictionary * _Nullable res, RadarRegion * _Nullable country);
 
-typedef void (^_Nullable RadarRouteAPICompletionHandler)(RadarStatus status, NSDictionary *_Nullable res, RadarRoutes *_Nullable routes);
+typedef void(^ _Nullable RadarRouteAPICompletionHandler)(RadarStatus status, NSDictionary * _Nullable res, RadarRoutes * _Nullable routes);
 
 @interface RadarAPIClient : NSObject
 
@@ -47,54 +47,54 @@ typedef void (^_Nullable RadarRouteAPICompletionHandler)(RadarStatus status, NSD
 
 - (void)getConfig;
 
-- (void)trackWithLocation:(CLLocation *_Nonnull)location
+- (void)trackWithLocation:(CLLocation * _Nonnull)location
                   stopped:(BOOL)stopped
                    source:(RadarLocationSource)source
                  replayed:(BOOL)replayed
         completionHandler:(RadarTrackAPICompletionHandler _Nullable)completionHandler;
 
-- (void)verifyEventId:(NSString *_Nonnull)eventId
+- (void)verifyEventId:(NSString * _Nonnull)eventId
          verification:(RadarEventVerification)verification
-      verifiedPlaceId:(NSString *_Nullable)verifiedPlaceId;
+      verifiedPlaceId:(NSString * _Nullable)verifiedPlaceId;
 
-- (void)getContextForLocation:(CLLocation *_Nonnull)location
+- (void)getContextForLocation:(CLLocation * _Nonnull)location
             completionHandler:(RadarContextAPICompletionHandler _Nullable)completionHandler;
 
-- (void)searchPlacesNear:(CLLocation *_Nonnull)near
+- (void)searchPlacesNear:(CLLocation * _Nonnull)near
                   radius:(int)radius
-                  chains:(NSArray *_Nullable)chains
-              categories:(NSArray *_Nullable)categories
-                  groups:(NSArray *_Nullable)groups
+                  chains:(NSArray * _Nullable)chains
+              categories:(NSArray * _Nullable)categories
+                  groups:(NSArray * _Nullable)groups
                    limit:(int)limit
        completionHandler:(RadarSearchPlacesAPICompletionHandler _Nullable)completionHandler;
 
-- (void)searchGeofencesNear:(CLLocation *_Nonnull)near
+- (void)searchGeofencesNear:(CLLocation * _Nonnull)near
                      radius:(int)radius
-                       tags:(NSArray *_Nullable)tags
+                       tags:(NSArray * _Nullable)tags
                       limit:(int)limit
           completionHandler:(RadarSearchGeofencesAPICompletionHandler _Nullable)completionHandler;
 
 - (void)searchPointsNear:(CLLocation *_Nonnull)near
                   radius:(int)radius
-                    tags:(NSArray *_Nullable)tags
+                    tags:(NSArray<NSString *> *_Nullable)tags
                    limit:(int)limit
        completionHandler:(RadarSearchPointsAPICompletionHandler _Nullable)completionHandler;
 
-- (void)autocompleteQuery:(NSString *_Nonnull)query
-                     near:(CLLocation *_Nonnull)near
+- (void)autocompleteQuery:(NSString * _Nonnull)query
+                     near:(CLLocation * _Nonnull)near
                     limit:(int)limit
         completionHandler:(RadarGeocodeAPICompletionHandler _Nullable)completionHandler;
 
-- (void)geocodeAddress:(NSString *_Nonnull)query
+- (void)geocodeAddress:(NSString * _Nonnull)query
      completionHandler:(RadarGeocodeAPICompletionHandler _Nullable)completionHandler;
 
-- (void)reverseGeocodeLocation:(CLLocation *_Nonnull)location
+- (void)reverseGeocodeLocation:(CLLocation * _Nonnull)location
              completionHandler:(RadarGeocodeAPICompletionHandler _Nullable)completionHandler;
 
 - (void)ipGeocodeWithCompletionHandler:(RadarIPGeocodeAPICompletionHandler _Nullable)completionHandler;
 
-- (void)getDistanceFromOrigin:(CLLocation *_Nonnull)origin
-                  destination:(CLLocation *_Nonnull)destination
+- (void)getDistanceFromOrigin:(CLLocation * _Nonnull)origin
+                  destination:(CLLocation * _Nonnull)destination
                         modes:(RadarRouteMode)mode
                         units:(RadarRouteUnits)units
             completionHandler:(RadarRouteAPICompletionHandler _Nullable)completionHandler;
