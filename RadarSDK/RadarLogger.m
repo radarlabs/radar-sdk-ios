@@ -12,27 +12,29 @@
 
 @implementation RadarLogger
 
-+ (instancetype)sharedInstance {
++ (instancetype)sharedInstance
+{
     static dispatch_once_t once;
     static id sharedInstance;
     dispatch_once(&once, ^{
-        sharedInstance = [self new];
+      sharedInstance = [self new];
     });
     return sharedInstance;
 }
 
-- (void)logWithLevel:(RadarLogLevel)level message:(NSString *)message {
+- (void)logWithLevel:(RadarLogLevel)level message:(NSString *)message
+{
     dispatch_async(dispatch_get_main_queue(), ^{
-        RadarLogLevel logLevel = [RadarSettings logLevel];
-        if (logLevel >= level) {
-            NSString *log = [NSString stringWithFormat:@"%@ | backgroundTimeRemaining = %g", message, [RadarUtils backgroundTimeRemaining]];
-            
-            NSLog(@"%@", log);
-            
-            if (self.delegate) {
-                [self.delegate didLogMessage:log];
-            }
-        }
+      RadarLogLevel logLevel = [RadarSettings logLevel];
+      if (logLevel >= level) {
+          NSString *log = [NSString stringWithFormat:@"%@ | backgroundTimeRemaining = %g", message, [RadarUtils backgroundTimeRemaining]];
+
+          NSLog(@"%@", log);
+
+          if (self.delegate) {
+              [self.delegate didLogMessage:log];
+          }
+      }
     });
 }
 

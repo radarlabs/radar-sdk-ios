@@ -9,6 +9,9 @@ XC_TEST_ARGS := GCC_INSTRUMENT_PROGRAM_FLOW_ARCS=YES
 bootstrap:
 	./bootstrap.sh
 
+clang-format-init:
+	./clang_format_init.sh
+
 clean:
 	xcodebuild $(XC_ARGS) clean
 
@@ -35,4 +38,4 @@ docs:
 
 dist: clean-pretty test-pretty build-pretty docs lint
 
-.PHONY: bootstrap clean test build lint docs dist
+.PHONY: bootstrap clang-format-init clean test build lint docs dist

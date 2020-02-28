@@ -5,13 +5,12 @@
 //  Copyright © 2020 Radar Labs, Inc. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
 #import "RadarRoute.h"
+#import <Foundation/Foundation.h>
 
 @interface RadarRoute ()
 
-- (nullable instancetype)initWithDistance:(nullable RadarRouteDistance *)distance
-                                 duration:(nullable RadarRouteDuration *)duration;
+- (nullable instancetype)initWithDistance:(nullable RadarRouteDistance *)distance duration:(nullable RadarRouteDuration *)duration;
 
 - (instancetype _Nullable)initWithObject:(id _Nonnull)object;
 

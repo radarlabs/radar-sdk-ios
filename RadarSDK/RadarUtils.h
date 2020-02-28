@@ -24,7 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (BOOL)allowsBackgroundLocationUpdates;
 + (BOOL)foreground;
 + (NSTimeInterval)backgroundTimeRemaining;
-+ (CLLocation *)locationForDictionary:(NSDictionary * _Nonnull)dict;
++ (CLLocation *)locationForDictionary:(NSDictionary *_Nonnull)dict;
 + (NSDictionary *)dictionaryForLocation:(CLLocation *)location;
 + (BOOL)validLocation:(CLLocation *)location;
 + (NSString *)uaChannelId;

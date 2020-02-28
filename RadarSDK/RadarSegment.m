@@ -9,8 +9,8 @@
 
 @implementation RadarSegment
 
-- (instancetype)initWithDescription:(nonnull NSString *)description
-                         externalId:(nonnull NSString *)externalId {
+- (instancetype)initWithDescription:(nonnull NSString *)description externalId:(nonnull NSString *)externalId
+{
     self = [super init];
     if (self) {
         __description = description;
@@ -19,16 +19,17 @@
     return self;
 }
 
-- (nullable instancetype)initWithObject:(nullable id)object {
+- (nullable instancetype)initWithObject:(nullable id)object
+{
     if (![object isKindOfClass:[NSDictionary class]]) {
         return nil;
     }
-    
+
     NSDictionary *dict = (NSDictionary *)object;
 
     NSString *description;
     NSString *externalId;
-    
+
     id descriptionObj = dict[@"description"];
     if ([descriptionObj isKindOfClass:[NSString class]]) {
         description = (NSString *)descriptionObj;
@@ -38,19 +39,20 @@
     if ([externalIdObj isKindOfClass:[NSString class]]) {
         externalId = (NSString *)externalIdObj;
     }
-    
+
     if (description && externalId) {
         return [[RadarSegment alloc] initWithDescription:description externalId:externalId];
     }
-    
+
     return nil;
 }
 
-+ (NSArray<NSDictionary *> *)serializeArray:(NSArray<RadarSegment *> *)segments {
++ (NSArray<NSDictionary *> *)serializeArray:(NSArray<RadarSegment *> *)segments
+{
     if (!segments) {
         return nil;
     }
-    
+
     NSMutableArray *arr = [[NSMutableArray alloc] initWithCapacity:segments.count];
     for (RadarSegment *segment in segments) {
         NSDictionary *dict = [segment serialize];
@@ -59,7 +61,8 @@
     return arr;
 }
 
-- (NSDictionary *)serialize {
+- (NSDictionary *)serialize
+{
     NSMutableDictionary *dict = [NSMutableDictionary new];
     [dict setValue:self._description forKey:@"description"];
     [dict setValue:self.externalId forKey:@"externalId"];

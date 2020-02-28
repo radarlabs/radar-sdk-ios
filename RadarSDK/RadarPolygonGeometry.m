@@ -9,7 +9,8 @@
 
 @implementation RadarPolygonGeometry
 
-- (instancetype)initWithCoordinates:(NSArray *)coordinates {
+- (instancetype)initWithCoordinates:(NSArray *)coordinates
+{
     self = [super init];
     if (self) {
         _coordinates = coordinates;

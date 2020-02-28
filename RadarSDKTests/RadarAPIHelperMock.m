@@ -9,7 +9,12 @@
 
 @implementation RadarAPIHelperMock
 
-- (void)requestWithMethod:(NSString *)method url:(NSString *)url headers:(NSDictionary *)headers params:(NSDictionary *)params completionHandler:(RadarAPICompletionHandler)completionHandler {
+- (void)requestWithMethod:(NSString *)method
+                      url:(NSString *)url
+                  headers:(NSDictionary *)headers
+                   params:(NSDictionary *)params
+        completionHandler:(RadarAPICompletionHandler)completionHandler
+{
     completionHandler(self.mockStatus, self.mockResponse);
 }
 

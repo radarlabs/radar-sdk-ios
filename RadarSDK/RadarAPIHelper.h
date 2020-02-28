@@ -11,14 +11,14 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-typedef void(^ _Nullable RadarAPICompletionHandler)(RadarStatus status, NSDictionary * _Nullable res);
+typedef void (^_Nullable RadarAPICompletionHandler)(RadarStatus status, NSDictionary *_Nullable res);
 
 @interface RadarAPIHelper : NSObject
 
 - (void)requestWithMethod:(NSString *)method
                       url:(NSString *)url
-                  headers:(NSDictionary * _Nullable)headers
-                   params:(NSDictionary * _Nullable)params
+                  headers:(NSDictionary *_Nullable)headers
+                   params:(NSDictionary *_Nullable)params
         completionHandler:(RadarAPICompletionHandler _Nullable)completionHandler;
 
 @end

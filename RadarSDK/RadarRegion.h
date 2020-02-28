@@ -11,7 +11,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  Represents a region. For more information about Regions, see https://radar.io/documentation/regions.
- 
+
  @see https://radar.io/documentation/regions
  */
 @interface RadarRegion : NSObject
@@ -41,7 +41,7 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property (nullable, copy, nonatomic, readonly) NSString *flag;
 
-- (NSDictionary * _Nonnull)serialize;
+- (NSDictionary *_Nonnull)serialize;
 
 @end
 

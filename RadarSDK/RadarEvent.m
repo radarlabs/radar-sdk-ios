@@ -13,29 +13,44 @@
 
 @implementation RadarEvent
 
-+ (NSArray<RadarEvent *> * _Nullable)eventsFromObject:(id _Nonnull)object {
++ (NSArray<RadarEvent *> *_Nullable)eventsFromObject:(id _Nonnull)object
+{
     if (!object || ![object isKindOfClass:[NSArray class]]) {
         return nil;
     }
-    
+
     NSArray *eventsArr = (NSArray *)object;
-    
+
     NSMutableArray<RadarEvent *> *mutableEvents = [NSMutableArray<RadarEvent *> new];
-    
+
     for (id eventObj in eventsArr) {
         RadarEvent *event = [[RadarEvent alloc] initWithObject:eventObj];
-        
+
         if (!event) {
             return nil;
         }
-        
+
         [mutableEvents addObject:event];
     }
-    
+
     return mutableEvents;
 }
 
-- (instancetype _Nullable)initWithId:(NSString *)_id createdAt:(NSDate *)createdAt actualCreatedAt:(NSDate *)actualCreatedAt live:(BOOL)live type:(RadarEventType)type geofence:(RadarGeofence *)geofence place:(RadarPlace *)place region:(RadarRegion *)region alternatePlaces:(NSArray<RadarPlace *> *)alternatePlaces verifiedPlace:(RadarPlace *)verifiedPlace verification:(RadarEventVerification)verification confidence:(RadarEventConfidence)confidence duration:(float)duration location:(CLLocation *)location {
+- (instancetype _Nullable)initWithId:(NSString *)_id
+                           createdAt:(NSDate *)createdAt
+                     actualCreatedAt:(NSDate *)actualCreatedAt
+                                live:(BOOL)live
+                                type:(RadarEventType)type
+                            geofence:(RadarGeofence *)geofence
+                               place:(RadarPlace *)place
+                              region:(RadarRegion *)region
+                     alternatePlaces:(NSArray<RadarPlace *> *)alternatePlaces
+                       verifiedPlace:(RadarPlace *)verifiedPlace
+                        verification:(RadarEventVerification)verification
+                          confidence:(RadarEventConfidence)confidence
+                            duration:(float)duration
+                            location:(CLLocation *)location
+{
     self = [super init];
     if (self) {
         __id = _id;
@@ -56,13 +71,14 @@
     return self;
 }
 
-- (instancetype _Nullable)initWithObject:(id)object {
+- (instancetype _Nullable)initWithObject:(id)object
+{
     if (!object || ![object isKindOfClass:[NSDictionary class]]) {
         return nil;
     }
-    
+
     NSDictionary *dict = (NSDictionary *)object;
-    
+
     NSString *_id;
     NSDate *createdAt;
     NSDate *actualCreatedAt;
@@ -71,46 +87,46 @@
     RadarGeofence *geofence;
     RadarPlace *place;
     RadarRegion *region;
-    NSArray <RadarPlace *> *alternatePlaces;
+    NSArray<RadarPlace *> *alternatePlaces;
     RadarPlace *verifiedPlace;
     RadarEventVerification verification = RadarEventVerificationUnverify;
     RadarEventConfidence confidence = RadarEventConfidenceNone;
     float duration = 0;
     CLLocation *location;
-    
+
     id idObj = dict[@"_id"];
     if (idObj && [idObj isKindOfClass:[NSString class]]) {
         _id = (NSString *)idObj;
     }
-    
+
     id createdAtObj = dict[@"createdAt"];
     if (createdAtObj && [createdAtObj isKindOfClass:[NSString class]]) {
         NSString *createdAtStr = (NSString *)createdAtObj;
-        
+
         NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
         dateFormatter.locale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US_POSIX"];
         dateFormatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
         [dateFormatter setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss.SSSZ"];
-        
+
         createdAt = [dateFormatter dateFromString:createdAtStr];
     }
-    
+
     id actualCreatedAtObj = dict[@"actualCreatedAt"];
     if ([actualCreatedAtObj isKindOfClass:[NSString class]]) {
         NSString *actualCreatedAtStr = (NSString *)actualCreatedAtObj;
-        
+
         NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
         dateFormatter.locale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US_POSIX"];
         dateFormatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
         [dateFormatter setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss.SSSZ"];
-        
+
         actualCreatedAt = [dateFormatter dateFromString:actualCreatedAtStr];
     }
-    
+
     id typeObj = dict[@"type"];
     if (typeObj && [typeObj isKindOfClass:[NSString class]]) {
         NSString *typeStr = (NSString *)typeObj;
-        
+
         if ([typeStr isEqualToString:@"user.entered_geofence"]) {
             type = RadarEventTypeUserEnteredGeofence;
         } else if ([typeStr isEqualToString:@"user.exited_geofence"]) {
@@ -151,19 +167,19 @@
             type = RadarEventTypeUserExitedRegionDMA;
         }
     }
-    
+
     id liveObj = dict[@"live"];
     if (liveObj && [liveObj isKindOfClass:[NSNumber class]]) {
         NSNumber *eventLiveNumber = (NSNumber *)liveObj;
-        
+
         live = [eventLiveNumber boolValue];
     }
-    
+
     id verificationObj = dict[@"verification"];
     if (verificationObj && [verificationObj isKindOfClass:[NSNumber class]]) {
         NSNumber *verificationNumber = (NSNumber *)verificationObj;
         int verificationInt = [verificationNumber intValue];
-        
+
         if (verificationInt == 1) {
             verification = RadarEventVerificationAccept;
         } else if (verificationInt == -1) {
@@ -172,12 +188,12 @@
             verification = RadarEventVerificationUnverify;
         }
     }
-    
+
     id confidenceObj = dict[@"confidence"];
     if (confidenceObj && [confidenceObj isKindOfClass:[NSNumber class]]) {
         NSNumber *confidenceNumber = (NSNumber *)confidenceObj;
         int confidenceInt = [confidenceNumber intValue];
-        
+
         if (confidenceInt == 3) {
             confidence = RadarEventConfidenceHigh;
         } else if (confidenceInt == 2) {
@@ -186,131 +202,150 @@
             confidence = RadarEventConfidenceLow;
         }
     }
-    
+
     id durationObj = dict[@"duration"];
     if (durationObj && [durationObj isKindOfClass:[NSNumber class]]) {
         NSNumber *durationNumber = (NSNumber *)durationObj;
-        
+
         duration = [durationNumber floatValue];
     }
-    
+
     id geofenceObj = dict[@"geofence"];
     geofence = [[RadarGeofence alloc] initWithObject:geofenceObj];
-    
+
     id placeObj = dict[@"place"];
     place = [[RadarPlace alloc] initWithObject:placeObj];
-    
+
     id regionObj = dict[@"region"];
     region = [[RadarRegion alloc] initWithObject:regionObj];
-    
+
     id alternatePlacesObj = dict[@"alternatePlaces"];
     if (alternatePlacesObj && [alternatePlacesObj isKindOfClass:[NSArray class]]) {
         NSMutableArray<RadarPlace *> *mutableAlternatePlaces = [NSMutableArray<RadarPlace *> new];
-        
+
         NSArray *alternatePlacesArr = (NSArray *)alternatePlacesObj;
         for (id alternatePlaceObj in alternatePlacesArr) {
             RadarPlace *alternatePlace = [[RadarPlace alloc] initWithObject:alternatePlaceObj];
             if (!alternatePlace) {
                 return nil;
             }
-            
+
             [mutableAlternatePlaces addObject:alternatePlace];
         }
-        
+
         alternatePlaces = mutableAlternatePlaces;
     }
-    
+
     id verifiedPlaceObj = dict[@"verifiedPlace"];
     verifiedPlace = [[RadarPlace alloc] initWithObject:verifiedPlaceObj];
-    
+
     id locationObj = dict[@"location"];
     if (locationObj && [locationObj isKindOfClass:[NSDictionary class]]) {
         NSDictionary *locationDict = (NSDictionary *)locationObj;
-        
+
         id locationCoordinatesObj = locationDict[@"coordinates"];
         if (!locationCoordinatesObj || ![locationCoordinatesObj isKindOfClass:[NSArray class]]) {
             return nil;
         }
-        
+
         NSArray *locationCoordinatesArr = (NSArray *)locationCoordinatesObj;
         if (locationCoordinatesArr.count != 2) {
             return nil;
         }
-        
+
         id locationCoordinatesLongitudeObj = locationCoordinatesArr[0];
         id locationCoordinatesLatitudeObj = locationCoordinatesArr[1];
-        if (!locationCoordinatesLongitudeObj || !locationCoordinatesLatitudeObj || ![locationCoordinatesLongitudeObj isKindOfClass:[NSNumber class]] || ![locationCoordinatesLatitudeObj isKindOfClass:[NSNumber class]]) {
+        if (!locationCoordinatesLongitudeObj || !locationCoordinatesLatitudeObj || ![locationCoordinatesLongitudeObj isKindOfClass:[NSNumber class]] ||
+            ![locationCoordinatesLatitudeObj isKindOfClass:[NSNumber class]]) {
             return nil;
         }
-        
+
         NSNumber *locationCoordinatesLongitudeNumber = (NSNumber *)locationCoordinatesLongitudeObj;
         NSNumber *locationCoordinatesLatitudeNumber = (NSNumber *)locationCoordinatesLatitudeObj;
-        
+
         float locationCoordinatesLongitudeFloat = [locationCoordinatesLongitudeNumber floatValue];
         float locationCoordinatesLatitudeFloat = [locationCoordinatesLatitudeNumber floatValue];
-        
+
         id locationAccuracyObj = dict[@"locationAccuracy"];
         if (locationAccuracyObj && [locationAccuracyObj isKindOfClass:[NSNumber class]]) {
             NSNumber *locationAccuracyNumber = (NSNumber *)locationAccuracyObj;
-            
-            location = [[CLLocation alloc] initWithCoordinate:CLLocationCoordinate2DMake(locationCoordinatesLatitudeFloat, locationCoordinatesLongitudeFloat) altitude:-1 horizontalAccuracy:[locationAccuracyNumber floatValue] verticalAccuracy:-1 timestamp:(createdAt ? createdAt : [NSDate date])];
+
+            location = [[CLLocation alloc] initWithCoordinate:CLLocationCoordinate2DMake(locationCoordinatesLatitudeFloat, locationCoordinatesLongitudeFloat)
+                                                     altitude:-1
+                                           horizontalAccuracy:[locationAccuracyNumber floatValue]
+                                             verticalAccuracy:-1
+                                                    timestamp:(createdAt ? createdAt : [NSDate date])];
         }
     }
-    
-    
+
     if (_id && createdAt) {
-        return [[RadarEvent alloc] initWithId:_id createdAt:createdAt actualCreatedAt:actualCreatedAt live:live type:type geofence:geofence place:place region:region alternatePlaces:alternatePlaces verifiedPlace:verifiedPlace verification:verification confidence:confidence duration:duration location:location];
+        return [[RadarEvent alloc] initWithId:_id
+                                    createdAt:createdAt
+                              actualCreatedAt:actualCreatedAt
+                                         live:live
+                                         type:type
+                                     geofence:geofence
+                                        place:place
+                                       region:region
+                              alternatePlaces:alternatePlaces
+                                verifiedPlace:verifiedPlace
+                                 verification:verification
+                                   confidence:confidence
+                                     duration:duration
+                                     location:location];
     }
-    
+
     return nil;
 }
 
-+ (NSString *)stringForType:(RadarEventType)type {
++ (NSString *)stringForType:(RadarEventType)type
+{
     switch (type) {
-        case RadarEventTypeUserEnteredGeofence:
-            return @"user.entered_geofence";
-        case RadarEventTypeUserExitedGeofence:
-            return @"user.exited_geofence";
-        case RadarEventTypeUserEnteredHome:
-            return @"user.entered_home";
-        case RadarEventTypeUserExitedHome:
-            return @"user.exited_home";
-        case RadarEventTypeUserEnteredOffice:
-            return @"user.entered_office";
-        case RadarEventTypeUserExitedOffice:
-            return @"user.exited_office";
-        case RadarEventTypeUserStartedTraveling:
-            return @"user.started_traveling";
-        case RadarEventTypeUserStoppedTraveling:
-            return @"user.stopped_traveling";
-        case RadarEventTypeUserEnteredPlace:
-            return @"user.entered_place";
-        case RadarEventTypeUserExitedPlace:
-            return @"user.exited_place";
-        case RadarEventTypeUserNearbyPlaceChain:
-            return @"user.nearby_place_chain";
-        case RadarEventTypeUserEnteredRegionCountry:
-            return @"user.entered_region_country";
-        case RadarEventTypeUserExitedRegionCountry:
-            return @"user.exited_region_country";
-        case RadarEventTypeUserEnteredRegionState:
-            return @"user.entered_region_state";
-        case RadarEventTypeUserExitedRegionState:
-            return @"user.exited_region_state";
-        case RadarEventTypeUserEnteredRegionDMA:
-            return @"user.entered_region_dma";
-        case RadarEventTypeUserExitedRegionDMA:
-            return @"user.exited_region_country";
-        case RadarEventTypeUserStartedCommuting:
-            return @"user.started_commuting";
-        case RadarEventTypeUserStoppedCommuting:
-            return @"user.stopped_commuting";
-        default:
-            return @"unknown";
+    case RadarEventTypeUserEnteredGeofence:
+        return @"user.entered_geofence";
+    case RadarEventTypeUserExitedGeofence:
+        return @"user.exited_geofence";
+    case RadarEventTypeUserEnteredHome:
+        return @"user.entered_home";
+    case RadarEventTypeUserExitedHome:
+        return @"user.exited_home";
+    case RadarEventTypeUserEnteredOffice:
+        return @"user.entered_office";
+    case RadarEventTypeUserExitedOffice:
+        return @"user.exited_office";
+    case RadarEventTypeUserStartedTraveling:
+        return @"user.started_traveling";
+    case RadarEventTypeUserStoppedTraveling:
+        return @"user.stopped_traveling";
+    case RadarEventTypeUserEnteredPlace:
+        return @"user.entered_place";
+    case RadarEventTypeUserExitedPlace:
+        return @"user.exited_place";
+    case RadarEventTypeUserNearbyPlaceChain:
+        return @"user.nearby_place_chain";
+    case RadarEventTypeUserEnteredRegionCountry:
+        return @"user.entered_region_country";
+    case RadarEventTypeUserExitedRegionCountry:
+        return @"user.exited_region_country";
+    case RadarEventTypeUserEnteredRegionState:
+        return @"user.entered_region_state";
+    case RadarEventTypeUserExitedRegionState:
+        return @"user.exited_region_state";
+    case RadarEventTypeUserEnteredRegionDMA:
+        return @"user.entered_region_dma";
+    case RadarEventTypeUserExitedRegionDMA:
+        return @"user.exited_region_country";
+    case RadarEventTypeUserStartedCommuting:
+        return @"user.started_commuting";
+    case RadarEventTypeUserStoppedCommuting:
+        return @"user.stopped_commuting";
+    default:
+        return @"unknown";
     }
 }
 
-+ (NSArray<NSDictionary *> *)serializeArray:(NSArray<RadarEvent *> *)events {
++ (NSArray<NSDictionary *> *)serializeArray:(NSArray<RadarEvent *> *)events
+{
     if (!events) {
         return nil;
     }
@@ -323,7 +358,8 @@
     return arr;
 }
 
-- (NSDictionary *)serialize {
+- (NSDictionary *)serialize
+{
     NSMutableDictionary *dict = [NSMutableDictionary new];
     [dict setValue:self._id forKey:@"_id"];
     [dict setValue:@(self.live) forKey:@"live"];

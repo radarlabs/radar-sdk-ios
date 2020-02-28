@@ -9,7 +9,8 @@
 
 @implementation RadarTestUtils
 
-+ (NSDictionary *)jsonDictionaryFromResource:(NSString *)resource {
++ (NSDictionary *)jsonDictionaryFromResource:(NSString *)resource
+{
     NSString *path = [[NSBundle bundleForClass:[self class]] pathForResource:resource ofType:@"json"];
     NSData *data = [NSData dataWithContentsOfFile:path];
     NSError *deserializationError = nil;

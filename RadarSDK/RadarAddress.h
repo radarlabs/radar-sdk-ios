@@ -5,8 +5,8 @@
 //  Copyright © 2019 Radar Labs, Inc. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
 #import "RadarCoordinate.h"
+#import <Foundation/Foundation.h>
 
 /**
   The confidence levels for geocoding results.
@@ -26,7 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  Represents an address. For more information, see https://radar.io/documentation/api#geocode.
- 
+
  @see https://radar.io/documentation/api#geocode
  */
 @interface RadarAddress : NSObject
@@ -106,8 +106,8 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property (nonatomic, assign) enum RadarAddressConfidence confidence;
 
-+ (NSArray<NSDictionary *> * _Nullable)serializeArray:(NSArray<RadarAddress *> * _Nullable)addresses;
-- (NSDictionary * _Nonnull)serialize;
++ (NSArray<NSDictionary *> *_Nullable)serializeArray:(NSArray<RadarAddress *> *_Nullable)addresses;
+- (NSDictionary *_Nonnull)serialize;
 
 @end
 

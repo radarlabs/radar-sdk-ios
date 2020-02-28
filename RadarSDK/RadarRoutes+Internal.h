@@ -6,8 +6,8 @@
 //  Copyright © 2020 Radar Labs, Inc. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
 #import "RadarRoutes.h"
+#import <Foundation/Foundation.h>
 
 @interface RadarRoutes ()
 
