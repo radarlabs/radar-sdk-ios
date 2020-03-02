@@ -14,8 +14,7 @@
 
 - (instancetype _Nullable)initWithHomeLocation:(RadarUserInsightsLocation *)homeLocation
                                 officeLocation:(RadarUserInsightsLocation *)officeLocation
-                                         state:(RadarUserInsightsState *)state
-{
+                                         state:(RadarUserInsightsState *)state {
     self = [super init];
     if (self) {
         _homeLocation = homeLocation;
@@ -25,8 +24,7 @@
     return self;
 }
 
-- (instancetype _Nullable)initWithObject:(id)object
-{
+- (instancetype _Nullable)initWithObject:(id)object {
     if (!object || ![object isKindOfClass:[NSDictionary class]]) {
         return nil;
     }
@@ -66,8 +64,7 @@
     return nil;
 }
 
-- (NSDictionary *)serialize
-{
+- (NSDictionary *)serialize {
     NSMutableDictionary *dict = [NSMutableDictionary new];
     if (self.homeLocation) {
         NSDictionary *homeLocationDict = [self.homeLocation serialize];

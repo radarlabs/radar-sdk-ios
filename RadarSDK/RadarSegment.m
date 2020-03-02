@@ -9,8 +9,7 @@
 
 @implementation RadarSegment
 
-- (instancetype)initWithDescription:(nonnull NSString *)description externalId:(nonnull NSString *)externalId
-{
+- (instancetype)initWithDescription:(nonnull NSString *)description externalId:(nonnull NSString *)externalId {
     self = [super init];
     if (self) {
         __description = description;
@@ -19,8 +18,7 @@
     return self;
 }
 
-- (nullable instancetype)initWithObject:(nullable id)object
-{
+- (nullable instancetype)initWithObject:(nullable id)object {
     if (![object isKindOfClass:[NSDictionary class]]) {
         return nil;
     }
@@ -47,8 +45,7 @@
     return nil;
 }
 
-+ (NSArray<NSDictionary *> *)serializeArray:(NSArray<RadarSegment *> *)segments
-{
++ (NSArray<NSDictionary *> *)serializeArray:(NSArray<RadarSegment *> *)segments {
     if (!segments) {
         return nil;
     }
@@ -61,8 +58,7 @@
     return arr;
 }
 
-- (NSDictionary *)serialize
-{
+- (NSDictionary *)serialize {
     NSMutableDictionary *dict = [NSMutableDictionary new];
     [dict setValue:self._description forKey:@"description"];
     [dict setValue:self.externalId forKey:@"externalId"];

@@ -12,8 +12,7 @@
 - (instancetype _Nullable)initWithSlug:(NSString *_Nonnull)slug
                                   name:(NSString *_Nonnull)name
                             externalId:(NSString *_Nullable)externalId
-                              metadata:(nullable NSDictionary *)metadata
-{
+                              metadata:(nullable NSDictionary *)metadata {
     self = [super init];
     if (self) {
         _slug = slug;
@@ -24,8 +23,7 @@
     return self;
 }
 
-- (instancetype _Nullable)initWithObject:(id _Nonnull)object
-{
+- (instancetype _Nullable)initWithObject:(id _Nonnull)object {
     if (!object || ![object isKindOfClass:[NSDictionary class]]) {
         return nil;
     }
@@ -64,8 +62,7 @@
     return nil;
 }
 
-+ (NSArray<NSDictionary *> *)serializeArray:(NSArray<RadarChain *> *)chains
-{
++ (NSArray<NSDictionary *> *)serializeArray:(NSArray<RadarChain *> *)chains {
     if (!chains) {
         return nil;
     }
@@ -78,8 +75,7 @@
     return arr;
 }
 
-- (NSDictionary *)serialize
-{
+- (NSDictionary *)serialize {
     NSMutableDictionary *dict = [NSMutableDictionary new];
     [dict setValue:self.slug forKey:@"slug"];
     [dict setValue:self.name forKey:@"name"];

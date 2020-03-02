@@ -11,8 +11,7 @@
 
 @implementation RadarPlace
 
-+ (NSArray<RadarPlace *> *_Nullable)placesFromObject:(id _Nonnull)object
-{
++ (NSArray<RadarPlace *> *_Nullable)placesFromObject:(id _Nonnull)object {
     if (!object || ![object isKindOfClass:[NSArray class]]) {
         return nil;
     }
@@ -37,8 +36,7 @@
                                chain:(RadarChain *_Nullable)chain
                             location:(RadarCoordinate *_Nonnull)location
                                group:(NSString *_Nonnull)group
-                            metadata:(NSDictionary *)metadata
-{
+                            metadata:(NSDictionary *)metadata {
     self = [super init];
     if (self) {
         __id = _id;
@@ -52,8 +50,7 @@
     return self;
 }
 
-- (instancetype _Nullable)initWithObject:(id _Nonnull)object
-{
+- (instancetype _Nullable)initWithObject:(id _Nonnull)object {
     if (!object || ![object isKindOfClass:[NSDictionary class]]) {
         return nil;
     }
@@ -134,8 +131,7 @@
     return nil;
 }
 
-- (BOOL)isChain:(NSString *)slug
-{
+- (BOOL)isChain:(NSString *)slug {
     if (!self.chain || !self.chain.slug) {
         return NO;
     }
@@ -143,8 +139,7 @@
     return [self.chain.slug isEqualToString:slug];
 }
 
-- (BOOL)hasCategory:(NSString *)category
-{
+- (BOOL)hasCategory:(NSString *)category {
     if (!self.categories) {
         return NO;
     }
@@ -158,8 +153,7 @@
     return NO;
 }
 
-+ (NSArray<NSDictionary *> *)serializeArray:(NSArray<RadarPlace *> *)places
-{
++ (NSArray<NSDictionary *> *)serializeArray:(NSArray<RadarPlace *> *)places {
     if (!places) {
         return nil;
     }
@@ -172,8 +166,7 @@
     return arr;
 }
 
-- (NSDictionary *)serialize
-{
+- (NSDictionary *)serialize {
     NSMutableDictionary *dict = [NSMutableDictionary new];
     [dict setValue:self._id forKey:@"_id"];
     [dict setValue:self.name forKey:@"name"];

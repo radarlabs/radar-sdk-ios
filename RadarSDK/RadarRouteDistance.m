@@ -9,8 +9,7 @@
 
 @implementation RadarRouteDistance
 
-- (instancetype)initWithValue:(double)value text:(nonnull NSString *)text
-{
+- (instancetype)initWithValue:(double)value text:(nonnull NSString *)text {
     self = [super init];
     if (self) {
         _value = value;
@@ -19,8 +18,7 @@
     return self;
 }
 
-- (nullable instancetype)initWithObject:(nullable id)object
-{
+- (nullable instancetype)initWithObject:(nullable id)object {
     if (![object isKindOfClass:[NSDictionary class]]) {
         return nil;
     }
@@ -47,8 +45,7 @@
     return nil;
 }
 
-- (NSDictionary *)serialize
-{
+- (NSDictionary *)serialize {
     NSMutableDictionary *dict = [NSMutableDictionary new];
     [dict setValue:@(self.value) forKey:@"value"];
     [dict setValue:self.text forKey:@"text"];

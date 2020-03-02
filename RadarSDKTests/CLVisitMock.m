@@ -12,8 +12,7 @@
 - (instancetype)initWithCoordinate:(CLLocationCoordinate2D)coordinate
                 horizontalAccuracy:(CLLocationAccuracy)horizontalAccuracy
                        arrivalDate:(NSDate *)arrivalDate
-                     departureDate:(NSDate *)departureDate
-{
+                     departureDate:(NSDate *)departureDate {
     self = [super init];
     if (self) {
         self.coordinate = coordinate;
@@ -24,23 +23,19 @@
     return self;
 }
 
-- (void)setCoordinate:(CLLocationCoordinate2D)coordinate
-{
+- (void)setCoordinate:(CLLocationCoordinate2D)coordinate {
     self.coordinate = coordinate;
 }
 
-- (void)setHorizontalAccuracy:(CLLocationAccuracy)horizontalAccuracy
-{
+- (void)setHorizontalAccuracy:(CLLocationAccuracy)horizontalAccuracy {
     self.horizontalAccuracy = horizontalAccuracy;
 }
 
-- (void)setArrivalDate:(NSDate *)arrivalDate
-{
+- (void)setArrivalDate:(NSDate *)arrivalDate {
     self.arrivalDate = arrivalDate;
 }
 
-- (void)setDepartureDate:(NSDate *)departureDate
-{
+- (void)setDepartureDate:(NSDate *)departureDate {
     self.departureDate = departureDate;
 }
 

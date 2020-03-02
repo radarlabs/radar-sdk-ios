@@ -22,8 +22,7 @@
 
 @implementation RadarAPIClient
 
-+ (instancetype)sharedInstance
-{
++ (instancetype)sharedInstance {
     static dispatch_once_t once;
     static id sharedInstance;
     dispatch_once(&once, ^{
@@ -32,8 +31,7 @@
     return sharedInstance;
 }
 
-- (instancetype)init
-{
+- (instancetype)init {
     self = [super init];
     if (self) {
         _apiHelper = [RadarAPIHelper new];
@@ -41,8 +39,7 @@
     return self;
 }
 
-+ (NSDictionary *)headersWithPublishableKey:(NSString *)publishableKey
-{
++ (NSDictionary *)headersWithPublishableKey:(NSString *)publishableKey {
     return @{
         @"Authorization": publishableKey,
         @"Content-Type": @"application/json",
@@ -55,8 +52,7 @@
     };
 }
 
-- (void)getConfig
-{
+- (void)getConfig {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
         return;
@@ -104,8 +100,7 @@
                   stopped:(BOOL)stopped
                    source:(RadarLocationSource)source
                  replayed:(BOOL)replayed
-        completionHandler:(RadarTrackAPICompletionHandler _Nullable)completionHandler
-{
+        completionHandler:(RadarTrackAPICompletionHandler _Nullable)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
         return completionHandler(RadarStatusErrorPublishableKey, nil, nil, nil);
@@ -220,8 +215,7 @@
                     }];
 }
 
-- (void)verifyEventId:(NSString *)eventId verification:(RadarEventVerification)verification verifiedPlaceId:(NSString *)verifiedPlaceId
-{
+- (void)verifyEventId:(NSString *)eventId verification:(RadarEventVerification)verification verifiedPlaceId:(NSString *)verifiedPlaceId {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey || !eventId) {
         return;
@@ -249,8 +243,7 @@
                     }];
 }
 
-- (void)getContextForLocation:(CLLocation *_Nonnull)location completionHandler:(RadarContextAPICompletionHandler _Nullable)completionHandler
-{
+- (void)getContextForLocation:(CLLocation *_Nonnull)location completionHandler:(RadarContextAPICompletionHandler _Nullable)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
         return completionHandler(RadarStatusErrorPublishableKey, nil, nil);
@@ -289,8 +282,7 @@
               categories:(NSArray *_Nullable)categories
                   groups:(NSArray *_Nullable)groups
                    limit:(int)limit
-       completionHandler:(RadarSearchPlacesAPICompletionHandler)completionHandler
-{
+       completionHandler:(RadarSearchPlacesAPICompletionHandler)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
         return completionHandler(RadarStatusErrorPublishableKey, nil, nil);
@@ -341,8 +333,7 @@
                      radius:(int)radius
                        tags:(NSArray *_Nullable)tags
                       limit:(int)limit
-          completionHandler:(RadarSearchGeofencesAPICompletionHandler)completionHandler
-{
+          completionHandler:(RadarSearchGeofencesAPICompletionHandler)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
         return completionHandler(RadarStatusErrorPublishableKey, nil, nil);
@@ -386,8 +377,7 @@
 - (void)autocompleteQuery:(NSString *)query
                      near:(CLLocation *_Nonnull)near
                     limit:(int)limit
-        completionHandler:(RadarGeocodeAPICompletionHandler)completionHandler
-{
+        completionHandler:(RadarGeocodeAPICompletionHandler)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
         return completionHandler(RadarStatusErrorPublishableKey, nil, nil);
@@ -425,8 +415,7 @@
                     }];
 }
 
-- (void)geocodeAddress:(NSString *)query completionHandler:(RadarGeocodeAPICompletionHandler)completionHandler
-{
+- (void)geocodeAddress:(NSString *)query completionHandler:(RadarGeocodeAPICompletionHandler)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
         return completionHandler(RadarStatusErrorPublishableKey, nil, nil);
@@ -460,8 +449,7 @@
                     }];
 }
 
-- (void)reverseGeocodeLocation:(CLLocation *)location completionHandler:(RadarGeocodeAPICompletionHandler)completionHandler
-{
+- (void)reverseGeocodeLocation:(CLLocation *)location completionHandler:(RadarGeocodeAPICompletionHandler)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
         return completionHandler(RadarStatusErrorPublishableKey, nil, nil);
@@ -495,8 +483,7 @@
                     }];
 }
 
-- (void)ipGeocodeWithCompletionHandler:(RadarIPGeocodeAPICompletionHandler)completionHandler
-{
+- (void)ipGeocodeWithCompletionHandler:(RadarIPGeocodeAPICompletionHandler)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
         return completionHandler(RadarStatusErrorPublishableKey, nil, nil);
@@ -531,8 +518,7 @@
                   destination:(CLLocation *)destination
                         modes:(RadarRouteMode)modes
                         units:(RadarRouteUnits)units
-            completionHandler:(RadarRouteAPICompletionHandler)completionHandler
-{
+            completionHandler:(RadarRouteAPICompletionHandler)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
         return completionHandler(RadarStatusErrorPublishableKey, nil, nil);

@@ -10,8 +10,7 @@
 
 @implementation RadarAddress
 
-+ (NSArray<RadarAddress *> *_Nullable)addressesFromObject:(id _Nonnull)object
-{
++ (NSArray<RadarAddress *> *_Nullable)addressesFromObject:(id _Nonnull)object {
     if (!object || ![object isKindOfClass:[NSArray class]]) {
         return nil;
     }
@@ -44,8 +43,7 @@
                                 neighborhood:(NSString *_Nullable)neighborhood
                                       number:(NSString *_Nullable)number
                                         name:(NSString *_Nullable)name
-                                  confidence:(RadarAddressConfidence)confidence
-{
+                                  confidence:(RadarAddressConfidence)confidence {
     self = [super init];
     if (self) {
         _coordinate = coordinate;
@@ -67,8 +65,7 @@
     return self;
 }
 
-- (instancetype _Nullable)initWithObject:(id _Nonnull)object
-{
+- (instancetype _Nullable)initWithObject:(id _Nonnull)object {
     if (!object || ![object isKindOfClass:[NSDictionary class]]) {
         return nil;
     }
@@ -206,8 +203,7 @@
                                          confidence:confidence];
 }
 
-+ (NSArray<NSDictionary *> *)serializeArray:(NSArray<RadarAddress *> *)addresses
-{
++ (NSArray<NSDictionary *> *)serializeArray:(NSArray<RadarAddress *> *)addresses {
     if (!addresses) {
         return nil;
     }
@@ -220,8 +216,7 @@
     return arr;
 }
 
-- (NSDictionary *)serialize
-{
+- (NSDictionary *)serialize {
     NSMutableDictionary *dict = [NSMutableDictionary new];
     [dict setValue:@(self.coordinate.latitude) forKey:@"latitude"];
     [dict setValue:@(self.coordinate.longitude) forKey:@"longitude"];

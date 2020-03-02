@@ -12,8 +12,7 @@
 
 @implementation RadarGeofence
 
-+ (NSArray<RadarGeofence *> *_Nullable)geofencesFromObject:(id _Nonnull)object
-{
++ (NSArray<RadarGeofence *> *_Nullable)geofencesFromObject:(id _Nonnull)object {
     if (!object || ![object isKindOfClass:[NSArray class]]) {
         return nil;
     }
@@ -37,8 +36,7 @@
                                  tag:(NSString *)tag
                           externalId:(NSString *_Nullable)externalId
                             metadata:(NSDictionary *_Nullable)metadata
-                            geometry:(RadarGeofenceGeometry *_Nonnull)geometry
-{
+                            geometry:(RadarGeofenceGeometry *_Nonnull)geometry {
     self = [super init];
     if (self) {
         __id = _id;
@@ -51,8 +49,7 @@
     return self;
 }
 
-- (instancetype _Nullable)initWithObject:(id)object
-{
+- (instancetype _Nullable)initWithObject:(id)object {
     if (!object || ![object isKindOfClass:[NSDictionary class]]) {
         return nil;
     }
@@ -179,8 +176,7 @@
     return [[RadarGeofence alloc] initWithId:_id description:description tag:tag externalId:externalId metadata:metadata geometry:geometry];
 }
 
-+ (NSArray<NSDictionary *> *)serializeArray:(NSArray<RadarGeofence *> *)geofences
-{
++ (NSArray<NSDictionary *> *)serializeArray:(NSArray<RadarGeofence *> *)geofences {
     if (!geofences) {
         return nil;
     }
@@ -193,8 +189,7 @@
     return arr;
 }
 
-- (NSDictionary *)serialize
-{
+- (NSDictionary *)serialize {
     NSMutableDictionary *dict = [NSMutableDictionary new];
     [dict setValue:self._id forKey:@"_id"];
     [dict setValue:self.tag forKey:@"tag"];

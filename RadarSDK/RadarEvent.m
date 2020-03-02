@@ -13,8 +13,7 @@
 
 @implementation RadarEvent
 
-+ (NSArray<RadarEvent *> *_Nullable)eventsFromObject:(id _Nonnull)object
-{
++ (NSArray<RadarEvent *> *_Nullable)eventsFromObject:(id _Nonnull)object {
     if (!object || ![object isKindOfClass:[NSArray class]]) {
         return nil;
     }
@@ -49,8 +48,7 @@
                         verification:(RadarEventVerification)verification
                           confidence:(RadarEventConfidence)confidence
                             duration:(float)duration
-                            location:(CLLocation *)location
-{
+                            location:(CLLocation *)location {
     self = [super init];
     if (self) {
         __id = _id;
@@ -71,8 +69,7 @@
     return self;
 }
 
-- (instancetype _Nullable)initWithObject:(id)object
-{
+- (instancetype _Nullable)initWithObject:(id)object {
     if (!object || ![object isKindOfClass:[NSDictionary class]]) {
         return nil;
     }
@@ -298,8 +295,7 @@
     return nil;
 }
 
-+ (NSString *)stringForType:(RadarEventType)type
-{
++ (NSString *)stringForType:(RadarEventType)type {
     switch (type) {
     case RadarEventTypeUserEnteredGeofence:
         return @"user.entered_geofence";
@@ -344,8 +340,7 @@
     }
 }
 
-+ (NSArray<NSDictionary *> *)serializeArray:(NSArray<RadarEvent *> *)events
-{
++ (NSArray<NSDictionary *> *)serializeArray:(NSArray<RadarEvent *> *)events {
     if (!events) {
         return nil;
     }
@@ -358,8 +353,7 @@
     return arr;
 }
 
-- (NSDictionary *)serialize
-{
+- (NSDictionary *)serialize {
     NSMutableDictionary *dict = [NSMutableDictionary new];
     [dict setValue:self._id forKey:@"_id"];
     [dict setValue:@(self.live) forKey:@"live"];

@@ -10,8 +10,7 @@
 
 @implementation RadarUserInsightsState
 
-- (instancetype _Nullable)initWithHome:(BOOL)home office:(BOOL)office traveling:(BOOL)traveling commuting:(BOOL)commuting
-{
+- (instancetype _Nullable)initWithHome:(BOOL)home office:(BOOL)office traveling:(BOOL)traveling commuting:(BOOL)commuting {
     self = [super init];
     if (self) {
         _home = home;
@@ -22,8 +21,7 @@
     return self;
 }
 
-- (instancetype _Nullable)initWithObject:(id)object
-{
+- (instancetype _Nullable)initWithObject:(id)object {
     if (!object || ![object isKindOfClass:[NSDictionary class]]) {
         return nil;
     }
@@ -58,8 +56,7 @@
     return [[RadarUserInsightsState alloc] initWithHome:home office:office traveling:traveling commuting:commuting];
 }
 
-- (NSDictionary *)serialize
-{
+- (NSDictionary *)serialize {
     NSMutableDictionary *dict = [NSMutableDictionary new];
     [dict setValue:@(self.home) forKey:@"home"];
     [dict setValue:@(self.office) forKey:@"office"];

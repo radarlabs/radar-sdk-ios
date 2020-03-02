@@ -21,8 +21,7 @@
                                     country:(RadarRegion *_Nullable)country
                                       state:(RadarRegion *_Nullable)state
                                         dma:(RadarRegion *_Nullable)dma
-                                 postalCode:(RadarRegion *_Nullable)postalCode
-{
+                                 postalCode:(RadarRegion *_Nullable)postalCode {
     self = [super init];
     if (self) {
         _geofences = geofences;
@@ -35,8 +34,7 @@
     return self;
 }
 
-- (instancetype _Nullable)initWithObject:(NSObject *)object
-{
+- (instancetype _Nullable)initWithObject:(NSObject *)object {
     if (!object || ![object isKindOfClass:[NSDictionary class]]) {
         return nil;
     }
@@ -85,8 +83,7 @@
     return [[RadarContext alloc] initWithGeofences:contextGeofences place:contextPlace country:country state:state dma:dma postalCode:postalCode];
 }
 
-- (NSDictionary *)serialize
-{
+- (NSDictionary *)serialize {
     NSMutableDictionary *dict = [NSMutableDictionary new];
     NSArray *geofencesArr = [RadarGeofence serializeArray:self.geofences];
     [dict setValue:geofencesArr forKey:@"geofences"];

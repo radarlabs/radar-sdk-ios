@@ -33,8 +33,7 @@
                           postalCode:(RadarRegion *_Nullable)postalCode
                    nearbyPlaceChains:(nullable NSArray<RadarChain *> *)nearbyPlaceChains
                             segments:(nullable NSArray<RadarSegment *> *)segments
-                           topChains:(nullable NSArray<RadarChain *> *)topChains
-{
+                           topChains:(nullable NSArray<RadarChain *> *)topChains {
     self = [super init];
     if (self) {
         __id = _id;
@@ -59,8 +58,7 @@
     return self;
 }
 
-- (instancetype _Nullable)initWithObject:(NSObject *)object
-{
+- (instancetype _Nullable)initWithObject:(NSObject *)object {
     if (!object || ![object isKindOfClass:[NSDictionary class]]) {
         return nil;
     }
@@ -270,8 +268,7 @@
     return nil;
 }
 
-- (NSDictionary *)serialize
-{
+- (NSDictionary *)serialize {
     NSMutableDictionary *dict = [NSMutableDictionary new];
     [dict setValue:self._id forKey:@"_id"];
     [dict setValue:self.userId forKey:@"userId"];

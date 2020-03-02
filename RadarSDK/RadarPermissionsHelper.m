@@ -9,8 +9,7 @@
 
 @implementation RadarPermissionsHelper
 
-- (CLAuthorizationStatus)locationAuthorizationStatus
-{
+- (CLAuthorizationStatus)locationAuthorizationStatus {
     return [CLLocationManager authorizationStatus];
 }
 

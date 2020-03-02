@@ -13,8 +13,7 @@
                       name:(nonnull NSString *)name
                       code:(nonnull NSString *)code
                       type:(nonnull NSString *)type
-                      flag:(nullable NSString *)flag
-{
+                      flag:(nullable NSString *)flag {
     self = [super init];
     if (self) {
         __id = _id;
@@ -26,8 +25,7 @@
     return self;
 }
 
-- (nullable instancetype)initWithObject:(nullable id)object
-{
+- (nullable instancetype)initWithObject:(nullable id)object {
     if (![object isKindOfClass:[NSDictionary class]]) {
         return nil;
     }
@@ -72,8 +70,7 @@
     return nil;
 }
 
-- (NSDictionary *)serialize
-{
+- (NSDictionary *)serialize {
     NSMutableDictionary *dict = [NSMutableDictionary new];
     [dict setValue:self._id forKey:@"_id"];
     [dict setValue:self.name forKey:@"name"];

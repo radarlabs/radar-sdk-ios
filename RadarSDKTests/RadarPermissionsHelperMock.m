@@ -9,8 +9,7 @@
 
 @implementation RadarPermissionsHelperMock
 
-- (CLAuthorizationStatus)locationAuthorizationStatus
-{
+- (CLAuthorizationStatus)locationAuthorizationStatus {
     return self.mockLocationAuthorizationStatus;
 }
 

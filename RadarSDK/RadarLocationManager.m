@@ -31,8 +31,7 @@
 
 static NSString *const kRegionIdentifer = @"radar";
 
-+ (instancetype)sharedInstance
-{
++ (instancetype)sharedInstance {
     static dispatch_once_t once;
     static id sharedInstance;
     if ([NSThread isMainThread]) {
@@ -49,8 +48,7 @@ static NSString *const kRegionIdentifer = @"radar";
     return sharedInstance;
 }
 
-- (instancetype)init
-{
+- (instancetype)init {
     self = [super init];
     if (self) {
         _completionHandlers = [NSMutableArray new];
@@ -71,8 +69,7 @@ static NSString *const kRegionIdentifer = @"radar";
     return self;
 }
 
-- (void)callCompletionHandlersWithStatus:(RadarStatus)status location:(CLLocation *_Nullable)location
-{
+- (void)callCompletionHandlersWithStatus:(RadarStatus)status location:(CLLocation *_Nullable)location {
     @synchronized(self) {
         if (!self.completionHandlers.count) {
             return;
@@ -92,8 +89,7 @@ static NSString *const kRegionIdentifer = @"radar";
     }
 }
 
-- (void)addCompletionHandler:(RadarLocationCompletionHandler)completionHandler
-{
+- (void)addCompletionHandler:(RadarLocationCompletionHandler)completionHandler {
     if (!completionHandler) {
         return;
     }
@@ -105,8 +101,7 @@ static NSString *const kRegionIdentifer = @"radar";
     }
 }
 
-- (void)cancelTimeouts
-{
+- (void)cancelTimeouts {
     @synchronized(self) {
         for (RadarLocationCompletionHandler completionHandler in self.completionHandlers) {
             [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(timeoutWithCompletionHandler:) object:completionHandler];
@@ -114,20 +109,18 @@ static NSString *const kRegionIdentifer = @"radar";
     }
 }
 
-- (void)timeoutWithCompletionHandler:(RadarLocationCompletionHandler)completionHandler
-{
+- (void)timeoutWithCompletionHandler:(RadarLocationCompletionHandler)completionHandler {
     @synchronized(self) {
         [self callCompletionHandlersWithStatus:RadarStatusErrorLocation location:nil];
     }
 }
 
-- (void)getLocationWithCompletionHandler:(RadarLocationCompletionHandler)completionHandler
-{
+- (void)getLocationWithCompletionHandler:(RadarLocationCompletionHandler)completionHandler {
     [self getLocationWithDesiredAccuracy:RadarTrackingOptionsDesiredAccuracyMedium completionHandler:completionHandler];
 }
 
-- (void)getLocationWithDesiredAccuracy:(RadarTrackingOptionsDesiredAccuracy)desiredAccuracy completionHandler:(RadarLocationCompletionHandler)completionHandler
-{
+- (void)getLocationWithDesiredAccuracy:(RadarTrackingOptionsDesiredAccuracy)desiredAccuracy
+                     completionHandler:(RadarLocationCompletionHandler)completionHandler {
     CLAuthorizationStatus authorizationStatus = [self.permissionsHelper locationAuthorizationStatus];
     if (!(authorizationStatus == kCLAuthorizationStatusAuthorizedWhenInUse || authorizationStatus == kCLAuthorizationStatusAuthorizedAlways)) {
         if (self.delegate) {
@@ -158,8 +151,7 @@ static NSString *const kRegionIdentifer = @"radar";
     [self requestLocation];
 }
 
-- (void)startTrackingWithOptions:(RadarTrackingOptions *)trackingOptions
-{
+- (void)startTrackingWithOptions:(RadarTrackingOptions *)trackingOptions {
     CLAuthorizationStatus authorizationStatus = [self.permissionsHelper locationAuthorizationStatus];
     if (!(authorizationStatus == kCLAuthorizationStatusAuthorizedWhenInUse || authorizationStatus == kCLAuthorizationStatusAuthorizedAlways)) {
         if (self.delegate) {
@@ -174,14 +166,12 @@ static NSString *const kRegionIdentifer = @"radar";
     [self updateTracking];
 }
 
-- (void)stopTracking
-{
+- (void)stopTracking {
     [RadarSettings setTracking:NO];
     [self updateTracking];
 }
 
-- (void)startUpdates:(int)interval
-{
+- (void)startUpdates:(int)interval {
     if (!self.started || interval != self.startedInterval) {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Starting timer | interval = %d", interval]];
 
@@ -210,8 +200,7 @@ static NSString *const kRegionIdentifer = @"radar";
     }
 }
 
-- (void)stopUpdates
-{
+- (void)stopUpdates {
     if (!self.timer) {
         return;
     }
@@ -232,8 +221,7 @@ static NSString *const kRegionIdentifer = @"radar";
     }
 }
 
-- (void)shutDown
-{
+- (void)shutDown {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Shutting down"];
 
     [[RadarBackgroundTaskManager sharedInstance] endBackgroundTasks];
@@ -241,20 +229,17 @@ static NSString *const kRegionIdentifer = @"radar";
     [self.lowPowerLocationManager stopUpdatingLocation];
 }
 
-- (void)requestLocation
-{
+- (void)requestLocation {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Requesting location"];
 
     [self.locationManager requestLocation];
 }
 
-- (void)updateTracking
-{
+- (void)updateTracking {
     [self updateTracking:nil];
 }
 
-- (void)updateTracking:(CLLocation *)location
-{
+- (void)updateTracking:(CLLocation *)location {
     dispatch_async(dispatch_get_main_queue(), ^{
       BOOL tracking = [RadarSettings tracking];
       RadarTrackingOptions *options = [RadarSettings trackingOptions];
@@ -346,16 +331,14 @@ static NSString *const kRegionIdentifer = @"radar";
     });
 }
 
-- (void)replaceGeofence:(CLLocation *)location radius:(int)radius
-{
+- (void)replaceGeofence:(CLLocation *)location radius:(int)radius {
     [self removeGeofences];
     NSString *identifier = [NSString stringWithFormat:@"%@_%@", kRegionIdentifer, [[NSUUID UUID] UUIDString]];
     CLRegion *geofence = [[CLCircularRegion alloc] initWithCenter:location.coordinate radius:radius identifier:identifier];
     [self.locationManager startMonitoringForRegion:geofence];
 }
 
-- (void)removeGeofences
-{
+- (void)removeGeofences {
     for (CLRegion *region in self.locationManager.monitoredRegions) {
         if ([region.identifier hasPrefix:kRegionIdentifer]) {
             [self.locationManager stopMonitoringForRegion:region];
@@ -365,8 +348,7 @@ static NSString *const kRegionIdentifer = @"radar";
 
 #pragma mark - handlers
 
-- (void)handleLocation:(CLLocation *)location source:(RadarLocationSource)source
-{
+- (void)handleLocation:(CLLocation *)location source:(RadarLocationSource)source {
     [[RadarLogger sharedInstance]
         logWithLevel:RadarLogLevelDebug
              message:[NSString stringWithFormat:@"Handling location | source = %@; location = %@", [Radar stringForSource:source], location]];
@@ -545,8 +527,7 @@ static NSString *const kRegionIdentifer = @"radar";
     }
 }
 
-- (void)sendLocation:(CLLocation *)location stopped:(BOOL)stopped source:(RadarLocationSource)source replayed:(BOOL)replayed
-{
+- (void)sendLocation:(CLLocation *)location stopped:(BOOL)stopped source:(RadarLocationSource)source replayed:(BOOL)replayed {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
                                        message:[NSString stringWithFormat:@"Sending location | source = %@; location = %@; stopped = %d; replayed = %d",
                                                                           [Radar stringForSource:source],
@@ -581,8 +562,7 @@ static NSString *const kRegionIdentifer = @"radar";
 
 #pragma mark - CLLocationManagerDelegate
 
-- (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray<CLLocation *> *)locations
-{
+- (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray<CLLocation *> *)locations {
     if (locations && locations.count) {
         CLLocation *location = [locations lastObject];
         RadarLocationSource source = self.completionHandlers.count ? RadarLocationSourceForegroundLocation : RadarLocationSourceBackgroundLocation;
@@ -590,22 +570,19 @@ static NSString *const kRegionIdentifer = @"radar";
     }
 }
 
-- (void)locationManager:(CLLocationManager *)manager didEnterRegion:(CLRegion *)region
-{
+- (void)locationManager:(CLLocationManager *)manager didEnterRegion:(CLRegion *)region {
     if (manager && manager.location) {
         [self handleLocation:manager.location source:RadarLocationSourceGeofenceEnter];
     }
 }
 
-- (void)locationManager:(CLLocationManager *)manager didExitRegion:(CLRegion *)region
-{
+- (void)locationManager:(CLLocationManager *)manager didExitRegion:(CLRegion *)region {
     if (manager && manager.location) {
         [self handleLocation:manager.location source:RadarLocationSourceGeofenceExit];
     }
 }
 
-- (void)locationManager:(CLLocationManager *)manager didVisit:(CLVisit *)visit
-{
+- (void)locationManager:(CLLocationManager *)manager didVisit:(CLVisit *)visit {
     if (visit && manager && manager.location) {
         RadarLocationSource source =
             [visit.departureDate isEqualToDate:[NSDate distantFuture]] ? RadarLocationSourceVisitArrival : RadarLocationSourceVisitDeparture;
@@ -613,8 +590,7 @@ static NSString *const kRegionIdentifer = @"radar";
     }
 }
 
-- (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error
-{
+- (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error {
     if (self.delegate) {
         [self.delegate didFailWithStatus:RadarStatusErrorLocation];
     }

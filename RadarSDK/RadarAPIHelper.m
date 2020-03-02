@@ -16,8 +16,7 @@
                       url:(NSString *)url
                   headers:(NSDictionary *)headers
                    params:(NSDictionary *)params
-        completionHandler:(RadarAPICompletionHandler)completionHandler
-{
+        completionHandler:(RadarAPICompletionHandler)completionHandler {
     NSMutableURLRequest *req = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:url]];
     req.HTTPMethod = method;
 

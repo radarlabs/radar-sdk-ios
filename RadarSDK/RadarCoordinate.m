@@ -9,8 +9,7 @@
 
 @implementation RadarCoordinate
 
-- (instancetype)initWithCoordinate:(CLLocationCoordinate2D)coordinate
-{
+- (instancetype)initWithCoordinate:(CLLocationCoordinate2D)coordinate {
     self = [super init];
     if (self) {
         _coordinate = coordinate;
@@ -18,8 +17,7 @@
     return self;
 }
 
-- (NSDictionary *)serialize
-{
+- (NSDictionary *)serialize {
     return @{@"type": @"Point", @"coordinates": @[@(self.coordinate.longitude), @(self.coordinate.latitude)]};
 }
 

@@ -21,8 +21,7 @@
 
 static NSString *const kBackgroundTaskName = @"radar";
 
-+ (instancetype)sharedInstance
-{
++ (instancetype)sharedInstance {
     static dispatch_once_t once;
     static id sharedInstance;
     if ([NSThread isMainThread]) {
@@ -39,8 +38,7 @@ static NSString *const kBackgroundTaskName = @"radar";
     return sharedInstance;
 }
 
-- (instancetype)init
-{
+- (instancetype)init {
     self = [super init];
     if (self) {
         _backgroundTaskIdentifierNumbers = [NSMutableArray new];
@@ -48,8 +46,7 @@ static NSString *const kBackgroundTaskName = @"radar";
     return self;
 }
 
-- (void)startBackgroundTask
-{
+- (void)startBackgroundTask {
     NSTimeInterval backgroundTimeRemaining = [RadarUtils backgroundTimeRemaining];
     NSTimeInterval duration = backgroundTimeRemaining > 170 ? 170 : backgroundTimeRemaining - 10;
 
@@ -83,8 +80,7 @@ static NSString *const kBackgroundTaskName = @"radar";
     }
 }
 
-- (void)endBackgroundTasks
-{
+- (void)endBackgroundTasks {
     @synchronized(self) {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelWarning
                                            message:[NSString stringWithFormat:@"Ending background tasks | self.backgroundTaskIdentifierNumbers.count = %lu",
@@ -100,8 +96,7 @@ static NSString *const kBackgroundTaskName = @"radar";
     }
 }
 
-- (void)endBackgroundTaskWithIdentifier:(UIBackgroundTaskIdentifier)backgroundTaskIdentifier
-{
+- (void)endBackgroundTaskWithIdentifier:(UIBackgroundTaskIdentifier)backgroundTaskIdentifier {
     @synchronized(self) {
         [[RadarLogger sharedInstance]
             logWithLevel:RadarLogLevelWarning

@@ -12,8 +12,7 @@
 
 @implementation RadarLogger
 
-+ (instancetype)sharedInstance
-{
++ (instancetype)sharedInstance {
     static dispatch_once_t once;
     static id sharedInstance;
     dispatch_once(&once, ^{
@@ -22,8 +21,7 @@
     return sharedInstance;
 }
 
-- (void)logWithLevel:(RadarLogLevel)level message:(NSString *)message
-{
+- (void)logWithLevel:(RadarLogLevel)level message:(NSString *)message {
     dispatch_async(dispatch_get_main_queue(), ^{
       RadarLogLevel logLevel = [RadarSettings logLevel];
       if (logLevel >= level) {

@@ -9,8 +9,7 @@
 
 @implementation RadarCircleGeometry
 
-- (instancetype)initWithCenter:(RadarCoordinate *)center radius:(double)radius
-{
+- (instancetype)initWithCenter:(RadarCoordinate *)center radius:(double)radius {
     self = [super init];
     if (self) {
         _center = center;

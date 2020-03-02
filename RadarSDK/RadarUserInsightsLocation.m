@@ -20,8 +20,7 @@
                                country:(RadarRegion *_Nullable)country
                                  state:(RadarRegion *_Nullable)state
                                    dma:(RadarRegion *_Nullable)dma
-                            postalCode:(RadarRegion *_Nullable)postalCode
-{
+                            postalCode:(RadarRegion *_Nullable)postalCode {
     self = [super init];
     if (self) {
         _type = type;
@@ -36,8 +35,7 @@
     return self;
 }
 
-- (instancetype _Nullable)initWithObject:(id)object
-{
+- (instancetype _Nullable)initWithObject:(id)object {
     if (!object || ![object isKindOfClass:[NSDictionary class]]) {
         return nil;
     }
@@ -146,8 +144,7 @@
     return nil;
 }
 
-+ (NSString *)stringForType:(RadarUserInsightsLocationType)type
-{
++ (NSString *)stringForType:(RadarUserInsightsLocationType)type {
     switch (type) {
     case RadarUserInsightsLocationTypeHome:
         return @"home";
@@ -158,8 +155,7 @@
     }
 }
 
-- (NSDictionary *)serialize
-{
+- (NSDictionary *)serialize {
     NSMutableDictionary *dict = [NSMutableDictionary new];
     if (self.type) {
         NSString *type = [RadarUserInsightsLocation stringForType:self.type];

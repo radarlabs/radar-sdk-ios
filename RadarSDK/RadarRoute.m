@@ -11,8 +11,7 @@
 
 @implementation RadarRoute
 
-- (nullable instancetype)initWithDistance:(nullable RadarRouteDistance *)distance duration:(nullable RadarRouteDuration *)duration
-{
+- (nullable instancetype)initWithDistance:(nullable RadarRouteDistance *)distance duration:(nullable RadarRouteDuration *)duration {
     self = [super init];
     if (self) {
         _distance = distance;
@@ -21,8 +20,7 @@
     return self;
 }
 
-- (nullable instancetype)initWithObject:(nullable id)object
-{
+- (nullable instancetype)initWithObject:(nullable id)object {
     if (![object isKindOfClass:[NSDictionary class]]) {
         return nil;
     }
@@ -49,8 +47,7 @@
     return nil;
 }
 
-- (NSDictionary *)serialize
-{
+- (NSDictionary *)serialize {
     NSMutableDictionary *dict = [NSMutableDictionary new];
     if (self.distance) {
         NSDictionary *distanceDict = [self.distance serialize];

@@ -15,8 +15,7 @@
                                      foot:(nullable RadarRoute *)foot
                                      bike:(nullable RadarRoute *)bike
                                       car:(nullable RadarRoute *)car
-                                  transit:(nullable RadarRoute *)transit
-{
+                                  transit:(nullable RadarRoute *)transit {
     self = [super init];
     if (self) {
         _geodesic = geodesic;
@@ -28,8 +27,7 @@
     return self;
 }
 
-- (nullable instancetype)initWithObject:(nullable id)object
-{
+- (nullable instancetype)initWithObject:(nullable id)object {
     if (![object isKindOfClass:[NSDictionary class]]) {
         return nil;
     }
@@ -70,8 +68,7 @@
     return [[RadarRoutes alloc] initWithGeodesic:geodesic foot:foot bike:bike car:car transit:transit];
 }
 
-- (NSDictionary *)serialize
-{
+- (NSDictionary *)serialize {
     NSMutableDictionary *dict = [NSMutableDictionary new];
     if (self.geodesic) {
         NSDictionary *geodesicDict = [self.geodesic serialize];

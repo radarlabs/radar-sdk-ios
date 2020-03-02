@@ -18,8 +18,7 @@ static NSString *const kLastSentAt = @"radar-lastSentAt";
 static NSString *const kCanExit = @"radar-canExit";
 static NSString *const kLastFailedStoppedLocation = @"radar-lastFailedStoppedLocation";
 
-+ (CLLocation *)lastMovedLocation
-{
++ (CLLocation *)lastMovedLocation {
     NSDictionary *dict = [[NSUserDefaults standardUserDefaults] dictionaryForKey:kLastMovedLocation];
     CLLocation *lastMovedLocation = [RadarUtils locationForDictionary:dict];
 
@@ -30,8 +29,7 @@ static NSString *const kLastFailedStoppedLocation = @"radar-lastFailedStoppedLoc
     return lastMovedLocation;
 }
 
-+ (void)setLastMovedLocation:(CLLocation *)lastMovedLocation
-{
++ (void)setLastMovedLocation:(CLLocation *)lastMovedLocation {
     if (!lastMovedLocation || ![RadarUtils validLocation:lastMovedLocation]) {
         return;
     }
@@ -40,49 +38,40 @@ static NSString *const kLastFailedStoppedLocation = @"radar-lastFailedStoppedLoc
     [[NSUserDefaults standardUserDefaults] setObject:dict forKey:kLastMovedLocation];
 }
 
-+ (NSDate *)lastMovedAt
-{
++ (NSDate *)lastMovedAt {
     return [[NSUserDefaults standardUserDefaults] objectForKey:kLastMovedAt];
 }
 
-+ (void)setLastMovedAt:(NSDate *)lastMovedAt
-{
++ (void)setLastMovedAt:(NSDate *)lastMovedAt {
     [[NSUserDefaults standardUserDefaults] setObject:lastMovedAt forKey:kLastMovedAt];
 }
 
-+ (BOOL)stopped
-{
++ (BOOL)stopped {
     return [[NSUserDefaults standardUserDefaults] boolForKey:kStopped];
 }
 
-+ (void)setStopped:(BOOL)stopped
-{
++ (void)setStopped:(BOOL)stopped {
     [[NSUserDefaults standardUserDefaults] setBool:stopped forKey:kStopped];
 }
 
-+ (void)updateLastSentAt
-{
++ (void)updateLastSentAt {
     NSDate *now = [NSDate new];
     [[NSUserDefaults standardUserDefaults] setObject:now forKey:kLastSentAt];
 }
 
-+ (NSDate *)lastSentAt
-{
++ (NSDate *)lastSentAt {
     return [[NSUserDefaults standardUserDefaults] valueForKey:kLastSentAt];
 }
 
-+ (BOOL)canExit
-{
++ (BOOL)canExit {
     return [[NSUserDefaults standardUserDefaults] boolForKey:kCanExit];
 }
 
-+ (void)setCanExit:(BOOL)canExit
-{
++ (void)setCanExit:(BOOL)canExit {
     [[NSUserDefaults standardUserDefaults] setBool:canExit forKey:kCanExit];
 }
 
-+ (CLLocation *)lastFailedStoppedLocation
-{
++ (CLLocation *)lastFailedStoppedLocation {
     NSDictionary *dict = [[NSUserDefaults standardUserDefaults] dictionaryForKey:kLastFailedStoppedLocation];
     CLLocation *lastFailedStoppedLocation = [RadarUtils locationForDictionary:dict];
 
@@ -93,8 +82,7 @@ static NSString *const kLastFailedStoppedLocation = @"radar-lastFailedStoppedLoc
     return lastFailedStoppedLocation;
 }
 
-+ (void)setLastFailedStoppedLocation:(CLLocation *)lastFailedStoppedLocation
-{
++ (void)setLastFailedStoppedLocation:(CLLocation *)lastFailedStoppedLocation {
     if (!lastFailedStoppedLocation || ![RadarUtils validLocation:lastFailedStoppedLocation]) {
         [[NSUserDefaults standardUserDefaults] setObject:nil forKey:kLastFailedStoppedLocation];
 

@@ -13,35 +13,29 @@
 
 @implementation RadarUtils
 
-+ (NSString *)deviceModel
-{
++ (NSString *)deviceModel {
     struct utsname systemInfo;
     uname(&systemInfo);
     return [NSString stringWithCString:systemInfo.machine encoding:NSUTF8StringEncoding];
 }
 
-+ (NSString *)deviceOS
-{
++ (NSString *)deviceOS {
     return [[UIDevice currentDevice] systemVersion];
 }
 
-+ (NSString *)country
-{
++ (NSString *)country {
     return [[NSLocale currentLocale] objectForKey:NSLocaleCountryCode];
 }
 
-+ (NSNumber *)timeZoneOffset
-{
++ (NSNumber *)timeZoneOffset {
     return @((int)[[NSTimeZone localTimeZone] secondsFromGMT]);
 }
 
-+ (NSString *)sdkVersion
-{
++ (NSString *)sdkVersion {
     return @"3.0.0-beta.3";
 }
 
-+ (NSString *)adId
-{
++ (NSString *)adId {
     Class ASIdentifierManagerClass = NSClassFromString(@"ASIdentifierManager");
     if (ASIdentifierManagerClass) {
         id manager = [ASIdentifierManagerClass valueForKey:@"sharedManager"];
@@ -54,8 +48,7 @@
     return nil;
 }
 
-+ (NSString *)deviceId
-{
++ (NSString *)deviceId {
     NSUUID *idfv = [[UIDevice currentDevice] identifierForVendor];
     if (idfv) {
         return idfv.UUIDString;
@@ -63,40 +56,33 @@
     return nil;
 }
 
-+ (NSString *)deviceType
-{
++ (NSString *)deviceType {
     return @"iOS";
 }
 
-+ (NSString *)deviceMake
-{
++ (NSString *)deviceMake {
     return @"Apple";
 }
 
-+ (BOOL)locationBackgroundMode
-{
++ (BOOL)locationBackgroundMode {
     NSArray *backgroundModes = [NSBundle mainBundle].infoDictionary[@"UIBackgroundModes"];
     return backgroundModes && [backgroundModes containsObject:@"location"];
 }
 
-+ (BOOL)allowsBackgroundLocationUpdates
-{
++ (BOOL)allowsBackgroundLocationUpdates {
     return [RadarUtils locationBackgroundMode] && [CLLocationManager authorizationStatus] == kCLAuthorizationStatusAuthorizedAlways;
 }
 
-+ (BOOL)foreground
-{
++ (BOOL)foreground {
     return [[UIApplication sharedApplication] applicationState] != UIApplicationStateBackground;
 }
 
-+ (NSTimeInterval)backgroundTimeRemaining
-{
++ (NSTimeInterval)backgroundTimeRemaining {
     NSTimeInterval backgroundTimeRemaining = [[UIApplication sharedApplication] backgroundTimeRemaining];
     return (backgroundTimeRemaining == DBL_MAX) ? 180 : backgroundTimeRemaining;
 }
 
-+ (CLLocation *)locationForDictionary:(NSDictionary *)dict
-{
++ (CLLocation *)locationForDictionary:(NSDictionary *)dict {
     CLLocationCoordinate2D coordinate = CLLocationCoordinate2DMake([dict[@"latitude"] doubleValue], [dict[@"longitude"] doubleValue]);
     CLLocation *location = [[CLLocation alloc] initWithCoordinate:coordinate
                                                          altitude:[dict[@"altitude"] doubleValue]
@@ -106,8 +92,7 @@
     return location;
 }
 
-+ (NSDictionary *)dictionaryForLocation:(CLLocation *)location
-{
++ (NSDictionary *)dictionaryForLocation:(CLLocation *)location {
     return @{
         @"latitude": @(location.coordinate.latitude),
         @"longitude": @(location.coordinate.longitude),
@@ -117,8 +102,7 @@
     };
 }
 
-+ (BOOL)validLocation:(CLLocation *)location
-{
++ (BOOL)validLocation:(CLLocation *)location {
     BOOL latitudeValid = location.coordinate.latitude != 0 && location.coordinate.latitude > -90 && location.coordinate.latitude < 90;
     BOOL longitudeValid = location.coordinate.longitude != 0 && location.coordinate.longitude > -180 && location.coordinate.latitude < 180;
     BOOL horizontalAccuracyValid = location.horizontalAccuracy > 0;
@@ -131,8 +115,7 @@
 #pragma clang diagnostic ignored "-Warc-performSelector-leaks"
 #pragma GCC diagnostic ignored "-Wundeclared-selector"
 
-+ (NSString *)uaChannelId
-{
++ (NSString *)uaChannelId {
     Class UAirshipClass = NSClassFromString(@"UAirship");
     if (UAirshipClass) {
         SEL pushSelector = NSSelectorFromString(@"push");
@@ -150,8 +133,7 @@
     return nil;
 }
 
-+ (NSString *)uaNamedUserId
-{
++ (NSString *)uaNamedUserId {
     Class UAirshipClass = NSClassFromString(@"UAirship");
     if (UAirshipClass) {
         SEL namedUserSelector = NSSelectorFromString(@"namedUser");
@@ -169,8 +151,7 @@
     return nil;
 }
 
-+ (NSString *)uaSessionId
-{
++ (NSString *)uaSessionId {
     Class UAirshipClass = NSClassFromString(@"UAirship");
     if (UAirshipClass) {
         SEL sharedSelector = NSSelectorFromString(@"shared");
