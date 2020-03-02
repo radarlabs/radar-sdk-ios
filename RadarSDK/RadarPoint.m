@@ -16,10 +16,20 @@
     if (!object || ![object isKindOfClass:[NSArray class]]) {
         return nil;
     }
-
-    return [(NSArray *)object radar_mapObjectsUsingBlock:^RadarPoint *_Nullable(id _Nonnull pointObj) {
-      return [[RadarPoint alloc] initWithObject:pointObj];
-    }];
+    
+    NSArray *objArray = (NSArray *)object;
+    
+    NSMutableArray<RadarPoint *> *result = [NSMutableArray arrayWithCapacity:[objArray count]];
+    
+    for (id pointObj in objArray) {
+        RadarPoint *point = [[RadarPoint alloc] initWithObject:pointObj];
+        if (!point) {
+            return nil;
+        }
+        [result addObject:point];
+    }
+    
+    return result;
 }
 
 - (instancetype)initWithObject:(id)object
