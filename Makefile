@@ -24,6 +24,9 @@ build:
 lint:
 	pod lib lint --verbose
 
+format:
+	./clang_format.sh
+
 clean-pretty:
 	set -o pipefail && xcodebuild $(XC_ARGS) clean | xcpretty
 
@@ -36,6 +39,6 @@ build-pretty:
 docs:
 	jazzy
 
-dist: clean-pretty test-pretty build-pretty docs lint
+dist: clean-pretty test-pretty build-pretty docs lint format
 
 .PHONY: bootstrap clang-format-init clean test build lint docs dist
