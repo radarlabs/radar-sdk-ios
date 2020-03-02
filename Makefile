@@ -9,6 +9,7 @@ XC_TEST_ARGS := GCC_INSTRUMENT_PROGRAM_FLOW_ARCS=YES
 bootstrap:
 	./bootstrap.sh
 
+# setup clang-format as part of git pre-commit hook 
 clang-format-init:
 	./clang_format_init.sh
 

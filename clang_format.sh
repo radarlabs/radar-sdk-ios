@@ -1,8 +1,8 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 echo "start formatting files ..."
-for file in `find ./ -regex '.*\.[h|m]$'`; do
-    clang-format -i ${file} --verbose
+for file in `find ./ -type f -regex '.*\.[h|m]$'`; do
+    clang-format -i ${file} --verbose || exit 1
 done
 
 echo "finish formatting files"
