@@ -5,8 +5,8 @@
 //  Copyright © 2019 Radar Labs, Inc. All rights reserved.
 //
 
-#import "RadarGeofenceGeometry.h"
 #import "RadarCoordinate.h"
+#import "RadarGeofenceGeometry.h"
 
 /**
  Represents the geometry of polygon geofence.
