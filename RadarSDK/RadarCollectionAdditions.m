@@ -59,7 +59,13 @@
         return nil;
     }
     float longitude = [(NSNumber *)coordinates[0] floatValue];
+    if (longitude > 180 || longitude < -180) {
+        return nil;
+    }
     float latitude = [(NSNumber *)coordinates[1] floatValue];
+    if (latitude > 90 || latitude < -90) {
+        return nil;
+    }
     return [[RadarCoordinate alloc] initWithCoordinate:CLLocationCoordinate2DMake(latitude, longitude)];
 }
 

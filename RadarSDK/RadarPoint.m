@@ -45,13 +45,17 @@
     NSString *externalId = [dict radar_stringForKey:@"externalId"];
     NSDictionary *metadata = [dict radar_dictionaryForKey:@"metadata"];
     RadarCoordinate *location = [dict radar_coordinateForKey:@"geometry"];
-
-    return [[RadarPoint alloc] initWithId:_id
-                              description:description
-                                      tag:tag
-                               externalId:externalId
-                                 metadata:metadata
-                                 location:location];
+    
+    if (_id && description && location) {
+        // the above fields must be nonnull.
+        return [[RadarPoint alloc] initWithId:_id
+        description:description
+                tag:tag
+         externalId:externalId
+           metadata:metadata
+           location:location];
+    }
+    return nil;
 }
 
 - (instancetype)initWithId:(NSString *)_id
