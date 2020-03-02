@@ -9,10 +9,6 @@ XC_TEST_ARGS := GCC_INSTRUMENT_PROGRAM_FLOW_ARCS=YES
 bootstrap:
 	./bootstrap.sh
 
-# setup clang-format as part of git pre-commit hook 
-clang-format-init:
-	./clang_format_init.sh
-
 clean:
 	xcodebuild $(XC_ARGS) clean
 
@@ -40,6 +36,6 @@ build-pretty:
 docs:
 	jazzy
 
-dist: clean-pretty test-pretty build-pretty docs lint format
+dist: clean-pretty format test-pretty build-pretty docs lint
 
-.PHONY: bootstrap clang-format-init clean test build lint docs dist
+.PHONY: bootstrap clean test build lint format docs dist
