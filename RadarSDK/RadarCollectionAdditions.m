@@ -9,8 +9,7 @@
 
 @implementation NSArray (Radar)
 
-- (NSArray *)radar_mapObjectsUsingBlock:(id _Nullable (^)(id _Nonnull))block
-{
+- (NSArray *)radar_mapObjectsUsingBlock:(id _Nullable (^)(id _Nonnull))block {
     NSMutableArray *result = [NSMutableArray arrayWithCapacity:[self count]];
 
     [self enumerateObjectsUsingBlock:^(id _Nonnull obj, NSUInteger idx, BOOL *stop) {
@@ -23,32 +22,28 @@
 
 @implementation NSDictionary (Radar)
 
-#define GET_DICT_VALUE_FOR_KEY(_key, _valueClassName)                 \
-    {                                                                 \
-        id value = self[key];                                         \
-        if (value && [value isKindOfClass:[_valueClassName class]]) { \
-            return (_valueClassName *)value;                          \
-        }                                                             \
-        return nil;                                                   \
+#define GET_DICT_VALUE_FOR_KEY(_key, _valueClassName)                                                                                                          \
+    {                                                                                                                                                          \
+        id value = self[key];                                                                                                                                  \
+        if (value && [value isKindOfClass:[_valueClassName class]]) {                                                                                          \
+            return (_valueClassName *)value;                                                                                                                   \
+        }                                                                                                                                                      \
+        return nil;                                                                                                                                            \
     }
 
-- (NSString *)radar_stringForKey:(id)key
-{
+- (NSString *)radar_stringForKey:(id)key {
     GET_DICT_VALUE_FOR_KEY(key, NSString);
 }
 
-- (NSDictionary *)radar_dictionaryForKey:(id)key
-{
+- (NSDictionary *)radar_dictionaryForKey:(id)key {
     GET_DICT_VALUE_FOR_KEY(key, NSDictionary);
 }
 
-- (NSArray *)radar_arrayForKey:(id)key
-{
+- (NSArray *)radar_arrayForKey:(id)key {
     GET_DICT_VALUE_FOR_KEY(key, NSArray);
 }
 
-- (RadarCoordinate *)radar_coordinateForKey:(id)key
-{
+- (RadarCoordinate *)radar_coordinateForKey:(id)key {
     NSDictionary *geoJsonDict = [self radar_dictionaryForKey:key];
     if (!geoJsonDict) {
         return nil;

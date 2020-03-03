@@ -242,8 +242,7 @@
 + (void)searchPointsWithRadius:(int)radius
                           tags:(NSArray<NSString *> *)tags
                          limit:(int)limit
-             completionHandler:(RadarSearchPointsCompletionHandler)completionHandler
-{
+             completionHandler:(RadarSearchPointsCompletionHandler)completionHandler {
     [[RadarLocationManager sharedInstance] getLocationWithCompletionHandler:^(RadarStatus status, CLLocation *_Nullable location, BOOL stopped) {
       if (status != RadarStatusSuccess) {
           return completionHandler(status, nil, nil);
@@ -263,8 +262,7 @@
                   radius:(int)radius
                     tags:(NSArray<NSString *> *)tags
                    limit:(int)limit
-       completionHandler:(RadarSearchPointsCompletionHandler)completionHandler
-{
+       completionHandler:(RadarSearchPointsCompletionHandler)completionHandler {
     [[RadarAPIClient sharedInstance] searchPointsNear:near
                                                radius:radius
                                                  tags:tags
@@ -274,13 +272,13 @@
                                     }];
 }
 
-+ (void)autocompleteQuery:(NSString *)query
-                     near:(CLLocation *)near
-                    limit:(int)limit
-        completionHandler:(RadarGeocodeCompletionHandler)completionHandler {
-    [[RadarAPIClient sharedInstance] autocompleteQuery:query near:near limit:limit completionHandler:^(RadarStatus status, NSDictionary * _Nullable res, NSArray<RadarAddress *> * _Nullable addresses) {
-        completionHandler(status, addresses);
-    }];
++ (void)autocompleteQuery:(NSString *)query near:(CLLocation *)near limit:(int)limit completionHandler:(RadarGeocodeCompletionHandler)completionHandler {
+    [[RadarAPIClient sharedInstance] autocompleteQuery:query
+                                                  near:near
+                                                 limit:limit
+                                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarAddress *> *_Nullable addresses) {
+                                       completionHandler(status, addresses);
+                                     }];
 }
 
 + (void)geocodeAddress:(NSString *)query completionHandler:(RadarGeocodeCompletionHandler)completionHandler {

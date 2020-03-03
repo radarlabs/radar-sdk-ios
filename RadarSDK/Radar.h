@@ -11,12 +11,11 @@
 #import "RadarAddress.h"
 #import "RadarContext.h"
 #import "RadarEvent.h"
+#import "RadarPoint.h"
 #import "RadarRegion.h"
 #import "RadarRoutes.h"
 #import "RadarTrackingOptions.h"
 #import "RadarUser.h"
-#import "RadarContext.h"
-#import "RadarPoint.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -162,7 +161,8 @@ typedef void (^_Nonnull RadarSearchGeofencesCompletionHandler)(RadarStatus statu
                                                                NSArray<RadarGeofence *> *_Nullable geofences);
 
 /**
-Called when a point search request succeeds, fails, or times out. Receives the request status and, if successful, the location and an array of points sorted by distance.
+Called when a point search request succeeds, fails, or times out. Receives the request status and, if successful, the location and an array of points sorted by
+distance.
 
 @see https://radar.io/documentation/api#search-geofences
 */
@@ -459,10 +459,9 @@ typedef void (^_Nonnull RadarRouteCompletionHandler)(RadarStatus status, RadarRo
  @param completionHandler A completion handler.
 */
 + (void)searchPointsWithRadius:(int)radius
-                        tags:(NSArray<NSString *> *_Nullable)tags
+                          tags:(NSArray<NSString *> *_Nullable)tags
                          limit:(int)limit
-             completionHandler:(RadarSearchPointsCompletionHandler)completionHandler
-    NS_SWIFT_NAME(searchPoints(radius:tags:limit:completionHandler:));
+             completionHandler:(RadarSearchPointsCompletionHandler)completionHandler NS_SWIFT_NAME(searchPoints(radius:tags:limit:completionHandler:));
 
 /**
  Searches for points near a location, sorted by distance.
@@ -477,8 +476,7 @@ typedef void (^_Nonnull RadarRouteCompletionHandler)(RadarStatus status, RadarRo
                   radius:(int)radius
                     tags:(NSArray<NSString *> *_Nullable)tags
                    limit:(int)limit
-       completionHandler:(RadarSearchPointsCompletionHandler)completionHandler
-    NS_SWIFT_NAME(searchPoints(near:radius:tags:limit:completionHandler:));
+       completionHandler:(RadarSearchPointsCompletionHandler)completionHandler NS_SWIFT_NAME(searchPoints(near:radius:tags:limit:completionHandler:));
 
 /**
  Autocompletes partial addresses and place names, sorted by relevance.

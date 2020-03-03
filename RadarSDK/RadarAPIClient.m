@@ -13,13 +13,13 @@
 #import "RadarGeofence+Internal.h"
 #import "RadarLogger.h"
 #import "RadarPlace+Internal.h"
+#import "RadarPoint+Internal.h"
 #import "RadarRegion+Internal.h"
 #import "RadarRoutes+Internal.h"
 #import "RadarSettings.h"
 #import "RadarState.h"
 #import "RadarUser+Internal.h"
 #import "RadarUtils.h"
-#import "RadarPoint+Internal.h"
 
 @implementation RadarAPIClient
 
@@ -379,8 +379,7 @@
                   radius:(int)radius
                     tags:(NSArray<NSString *> *)tags
                    limit:(int)limit
-       completionHandler:(RadarSearchPointsAPICompletionHandler)completionHandler
-{
+       completionHandler:(RadarSearchPointsAPICompletionHandler)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
         return completionHandler(RadarStatusErrorPublishableKey, nil, nil);
@@ -419,7 +418,6 @@
                       completionHandler(RadarStatusErrorServer, nil, nil);
                     }];
 }
-
 
 - (void)autocompleteQuery:(NSString *)query
                      near:(CLLocation *_Nonnull)near

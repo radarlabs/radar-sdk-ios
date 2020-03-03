@@ -49,8 +49,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 }
 
 #define AssertPointsOk(points) [self assertPointsOk:points]
-- (void)assertPointsOk:(NSArray<RadarPoint *> *)points
-{
+- (void)assertPointsOk:(NSArray<RadarPoint *> *)points {
     XCTAssertNotNil(points);
     for (RadarPoint *point in points) {
         [self assertPointOk:point];
@@ -58,8 +57,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 }
 
 #define AssertPointOk(point) [self assertPointOk:point]
-- (void)assertPointOk:(RadarPoint *)point
-{
+- (void)assertPointOk:(RadarPoint *)point {
     XCTAssertNotNil(point);
     XCTAssertNotNil(point._description);
     XCTAssertNotNil(point.tag);
@@ -907,10 +905,9 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
                                    }
                                  }];
 }
-    
+
 #pragma mark - search points
-- (void)test_Radar_searchPoints_errorPermissions
-{
+- (void)test_Radar_searchPoints_errorPermissions {
     self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusNotDetermined;
     self.locationManagerMock.mockLocation = nil;
 
@@ -933,8 +930,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
                                  }];
 }
 
-- (void)test_Radar_searchPoints_errorLocation
-{
+- (void)test_Radar_searchPoints_errorLocation {
     self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusAuthorizedWhenInUse;
     self.locationManagerMock.mockLocation = nil;
 
@@ -957,17 +953,20 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
                                  }];
 }
 
-- (void)test_Radar_searchPoints_success
-{
+- (void)test_Radar_searchPoints_success {
     self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusAuthorizedWhenInUse;
-    self.locationManagerMock.mockLocation = [[CLLocation alloc] initWithCoordinate:CLLocationCoordinate2DMake(40.7039799, -73.9873499) altitude:-1 horizontalAccuracy:65 verticalAccuracy:-1 timestamp:[NSDate new]];
+    self.locationManagerMock.mockLocation = [[CLLocation alloc] initWithCoordinate:CLLocationCoordinate2DMake(40.7039799, -73.9873499)
+                                                                          altitude:-1
+                                                                horizontalAccuracy:65
+                                                                  verticalAccuracy:-1
+                                                                         timestamp:[NSDate new]];
     self.apiHelperMock.mockStatus = RadarStatusSuccess;
     self.apiHelperMock.mockResponse = [RadarTestUtils jsonDictionaryFromResource:@"search_points"];
 
     XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
 
     [Radar searchPointsWithRadius:1000
-                             tags:@[ @"store" ]
+                             tags:@[@"store"]
                             limit:100
                 completionHandler:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarPoint *> *_Nullable points) {
                   XCTAssertEqual(status, RadarStatusSuccess);
