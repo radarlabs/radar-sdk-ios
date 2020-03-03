@@ -16,6 +16,7 @@
 #import "RadarRegion.h"
 #import "RadarRoutes.h"
 #import "RadarUser.h"
+#import "RadarPoint.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -26,6 +27,8 @@ typedef void(^ _Nullable RadarContextAPICompletionHandler)(RadarStatus status, N
 typedef void(^ _Nullable RadarSearchPlacesAPICompletionHandler)(RadarStatus status, NSDictionary * _Nullable res, NSArray<RadarPlace *> * _Nullable places);
 
 typedef void(^ _Nullable RadarSearchGeofencesAPICompletionHandler)(RadarStatus status, NSDictionary * _Nullable res, NSArray<RadarGeofence *> * _Nullable geofences);
+
+typedef void (^_Nullable RadarSearchPointsAPICompletionHandler)(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarPoint *> *_Nullable points);
 
 typedef void(^ _Nullable RadarGeocodeAPICompletionHandler)(RadarStatus status, NSDictionary * _Nullable res, NSArray<RadarAddress *> * _Nullable addresses);
 
@@ -70,6 +73,12 @@ typedef void(^ _Nullable RadarRouteAPICompletionHandler)(RadarStatus status, NSD
                        tags:(NSArray * _Nullable)tags
                       limit:(int)limit
           completionHandler:(RadarSearchGeofencesAPICompletionHandler _Nullable)completionHandler;
+
+- (void)searchPointsNear:(CLLocation *_Nonnull)near
+                  radius:(int)radius
+                    tags:(NSArray<NSString *> *_Nullable)tags
+                   limit:(int)limit
+       completionHandler:(RadarSearchPointsAPICompletionHandler _Nullable)completionHandler;
 
 - (void)autocompleteQuery:(NSString * _Nonnull)query
                      near:(CLLocation * _Nonnull)near

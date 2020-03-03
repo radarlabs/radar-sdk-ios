@@ -209,6 +209,41 @@
     }];
 }
 
++ (void)searchPointsWithRadius:(int)radius
+                          tags:(NSArray<NSString *> *)tags
+                         limit:(int)limit
+             completionHandler:(RadarSearchPointsCompletionHandler)completionHandler
+{
+    [[RadarLocationManager sharedInstance] getLocationWithCompletionHandler:^(RadarStatus status, CLLocation *_Nullable location, BOOL stopped) {
+      if (status != RadarStatusSuccess) {
+          return completionHandler(status, nil, nil);
+      }
+
+      [[RadarAPIClient sharedInstance] searchPointsNear:location
+                                                 radius:radius
+                                                   tags:tags
+                                                  limit:limit
+                                      completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarPoint *> *_Nullable points) {
+                                        completionHandler(status, location, points);
+                                      }];
+    }];
+}
+
++ (void)searchPointsNear:(CLLocation *)near
+                  radius:(int)radius
+                    tags:(NSArray<NSString *> *)tags
+                   limit:(int)limit
+       completionHandler:(RadarSearchPointsCompletionHandler)completionHandler
+{
+    [[RadarAPIClient sharedInstance] searchPointsNear:near
+                                               radius:radius
+                                                 tags:tags
+                                                limit:limit
+                                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarPoint *> *_Nullable points) {
+                                      completionHandler(status, near, points);
+                                    }];
+}
+
 + (void)autocompleteQuery:(NSString *)query
                      near:(CLLocation *)near
                     limit:(int)limit

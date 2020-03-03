@@ -48,6 +48,25 @@ static NSString * const kPublishableKey = @"prj_test_pk_000000000000000000000000
     XCTAssertNotNil(geofence.geometry);
 }
 
+#define AssertPointsOk(points) [self assertPointsOk:points]
+- (void)assertPointsOk:(NSArray<RadarPoint *> *)points
+{
+    XCTAssertNotNil(points);
+    for (RadarPoint *point in points) {
+        [self assertPointOk:point];
+    }
+}
+
+#define AssertPointOk(point) [self assertPointOk:point]
+- (void)assertPointOk:(RadarPoint *)point
+{
+    XCTAssertNotNil(point);
+    XCTAssertNotNil(point._description);
+    XCTAssertNotNil(point.tag);
+    XCTAssertNotNil(point.externalId);
+    XCTAssertNotNil(point.metadata);
+}
+
 #define AssertChainsOk(chains) [self assertChainsOk:chains]
 - (void)assertChainsOk:(NSArray<RadarChain *>*)chains {
     XCTAssertNotNil(chains);
@@ -805,6 +824,83 @@ static NSString * const kPublishableKey = @"prj_test_pk_000000000000000000000000
             XCTFail();
         }
     }];
+}
+    
+#pragma mark - search points
+- (void)test_Radar_searchPoints_errorPermissions
+{
+    self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusNotDetermined;
+    self.locationManagerMock.mockLocation = nil;
+
+    XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
+
+    [Radar searchPointsWithRadius:1000
+                             tags:nil
+                            limit:100
+                completionHandler:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarPoint *> *_Nullable points) {
+                  XCTAssertEqual(status, RadarStatusErrorPermissions);
+
+                  [expectation fulfill];
+                }];
+
+    [self waitForExpectationsWithTimeout:30
+                                 handler:^(NSError *_Nullable error) {
+                                   if (error) {
+                                       XCTFail();
+                                   }
+                                 }];
+}
+
+- (void)test_Radar_searchPoints_errorLocation
+{
+    self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusAuthorizedWhenInUse;
+    self.locationManagerMock.mockLocation = nil;
+
+    XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
+
+    [Radar searchPointsWithRadius:1000
+                             tags:nil
+                            limit:100
+                completionHandler:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarPoint *> *_Nullable points) {
+                  XCTAssertEqual(status, RadarStatusErrorLocation);
+
+                  [expectation fulfill];
+                }];
+
+    [self waitForExpectationsWithTimeout:30
+                                 handler:^(NSError *_Nullable error) {
+                                   if (error) {
+                                       XCTFail();
+                                   }
+                                 }];
+}
+
+- (void)test_Radar_searchPoints_success
+{
+    self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusAuthorizedWhenInUse;
+    self.locationManagerMock.mockLocation = [[CLLocation alloc] initWithCoordinate:CLLocationCoordinate2DMake(40.7039799, -73.9873499) altitude:-1 horizontalAccuracy:65 verticalAccuracy:-1 timestamp:[NSDate new]];
+    self.apiHelperMock.mockStatus = RadarStatusSuccess;
+    self.apiHelperMock.mockResponse = [RadarTestUtils jsonDictionaryFromResource:@"search_points"];
+
+    XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
+
+    [Radar searchPointsWithRadius:1000
+                             tags:@[ @"store" ]
+                            limit:100
+                completionHandler:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarPoint *> *_Nullable points) {
+                  XCTAssertEqual(status, RadarStatusSuccess);
+                  XCTAssertNotNil(location);
+                  AssertPointsOk(points);
+
+                  [expectation fulfill];
+                }];
+
+    [self waitForExpectationsWithTimeout:30
+                                 handler:^(NSError *_Nullable error) {
+                                   if (error) {
+                                       XCTFail();
+                                   }
+                                 }];
 }
 
 - (void)test_Radar_autocomplete_success {

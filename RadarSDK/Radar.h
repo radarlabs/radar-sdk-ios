@@ -15,6 +15,7 @@
 #import "RadarTrackingOptions.h"
 #import "RadarUser.h"
 #import "RadarContext.h"
+#import "RadarPoint.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -150,6 +151,13 @@ typedef void(^ _Nonnull RadarSearchPlacesCompletionHandler)(RadarStatus status, 
  @see https://radar.io/documentation/api#search-geofences
  */
 typedef void(^ _Nonnull RadarSearchGeofencesCompletionHandler)(RadarStatus status, CLLocation * _Nullable location, NSArray<RadarGeofence *> * _Nullable geofences);
+
+/**
+Called when a point search request succeeds, fails, or times out. Receives the request status and, if successful, the location and an array of points sorted by distance.
+
+@see https://radar.io/documentation/api#search-geofences
+*/
+typedef void (^_Nonnull RadarSearchPointsCompletionHandler)(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarPoint *> *_Nullable points);
 
 /**
  Called when a geocoding request succeeds, fails, or times out. Receives the request status and, if successful, the geocoding results (an array of addresses).
@@ -441,6 +449,36 @@ typedef void(^ _Nonnull RadarRouteCompletionHandler)(RadarStatus status, RadarRo
                       limit:(int)limit
           completionHandler:(RadarSearchGeofencesCompletionHandler)completionHandler
     NS_SWIFT_NAME(searchGeofences(near:radius:tags:limit:completionHandler:));
+
+/**
+ Gets the device's current location, then searches for points near that location, sorted by distance.
+
+ @param radius The radius to search, in meters. A number between 100 and 10000.
+ @param tags An array of tags to filter. See https://radar.io/documentation/points
+ @param limit The max number of points to return. A number between 1 and 100.
+ @param completionHandler A completion handler.
+*/
++ (void)searchPointsWithRadius:(int)radius
+                        tags:(NSArray<NSString *> *_Nullable)tags
+                         limit:(int)limit
+             completionHandler:(RadarSearchPointsCompletionHandler)completionHandler
+    NS_SWIFT_NAME(searchPoints(radius:tags:limit:completionHandler:));
+
+/**
+ Searches for points near a location, sorted by distance.
+
+ @param near The location to search.
+ @param radius The radius to search, in meters. A number between 100 and 10000.
+ @param tags An array of tags to filter. See https://radar.io/documentation/points
+ @param limit The max number of points to return. A number between 1 and 100.
+ @param completionHandler A completion handler.
+*/
++ (void)searchPointsNear:(CLLocation *)near
+                  radius:(int)radius
+                    tags:(NSArray<NSString *> *_Nullable)tags
+                   limit:(int)limit
+       completionHandler:(RadarSearchPointsCompletionHandler)completionHandler
+    NS_SWIFT_NAME(searchPoints(near:radius:tags:limit:completionHandler:));
 
 /**
  Autocompletes partial addresses and place names, sorted by relevance.
