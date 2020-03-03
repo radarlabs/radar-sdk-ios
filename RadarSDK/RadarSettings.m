@@ -9,19 +9,19 @@
 
 @implementation RadarSettings
 
-static NSString * const kPublishableKey = @"radar-publishableKey";
-static NSString * const kInstallId = @"radar-installId";
-static NSString * const kId = @"radar-_id";
-static NSString * const kUserId = @"radar-userId";
-static NSString * const kDescription = @"radar-description";
-static NSString * const kMetadata = @"radar-metadata";
-static NSString * const kAdIdEnabled = @"radar-adIdEnabled";
-static NSString * const kTracking = @"radar-tracking";
-static NSString * const kTrackingOptions = @"radar-trackingOptions";
-static NSString * const kLogLevel = @"radar-logLevel";
-static NSString * const kConfig = @"radar-config";
-static NSString * const kHost = @"radar-host";
-static NSString * const kDefaultHost = @"https://api.radar.io";
+static NSString *const kPublishableKey = @"radar-publishableKey";
+static NSString *const kInstallId = @"radar-installId";
+static NSString *const kId = @"radar-_id";
+static NSString *const kUserId = @"radar-userId";
+static NSString *const kDescription = @"radar-description";
+static NSString *const kMetadata = @"radar-metadata";
+static NSString *const kAdIdEnabled = @"radar-adIdEnabled";
+static NSString *const kTracking = @"radar-tracking";
+static NSString *const kTrackingOptions = @"radar-trackingOptions";
+static NSString *const kLogLevel = @"radar-logLevel";
+static NSString *const kConfig = @"radar-config";
+static NSString *const kHost = @"radar-host";
+static NSString *const kDefaultHost = @"https://api.radar.io";
 
 + (NSString *)publishableKey {
     return [[NSUserDefaults standardUserDefaults] stringForKey:kPublishableKey];

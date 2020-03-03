@@ -13,7 +13,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface RadarLocationManager : NSObject <CLLocationManagerDelegate>
+@interface RadarLocationManager : NSObject<CLLocationManagerDelegate>
 
 @property (nullable, weak, nonatomic) id<RadarDelegate> delegate;
 @property (nonnull, strong, nonatomic) CLLocationManager *locationManager;
@@ -22,7 +22,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (instancetype)sharedInstance;
 - (void)getLocationWithCompletionHandler:(RadarLocationCompletionHandler _Nullable)completionHandler;
-- (void)getLocationWithDesiredAccuracy:(RadarTrackingOptionsDesiredAccuracy)desiredAccuracy completionHandler:(RadarLocationCompletionHandler _Nullable)completionHandler;
+- (void)getLocationWithDesiredAccuracy:(RadarTrackingOptionsDesiredAccuracy)desiredAccuracy
+                     completionHandler:(RadarLocationCompletionHandler _Nullable)completionHandler;
 - (void)startTrackingWithOptions:(RadarTrackingOptions *)trackingOptions;
 - (void)stopTracking;
 - (void)updateTracking;

@@ -6,17 +6,34 @@
 //
 
 #import "RadarUser.h"
-#import "RadarUser+Internal.h"
 #import "RadarChain+Internal.h"
 #import "RadarGeofence+Internal.h"
 #import "RadarPlace+Internal.h"
 #import "RadarRegion+Internal.h"
-#import "RadarUserInsights+Internal.h"
 #import "RadarSegment+Internal.h"
+#import "RadarUser+Internal.h"
+#import "RadarUserInsights+Internal.h"
 
 @implementation RadarUser
 
-- (instancetype _Nullable)initWithId:(NSString *)_id userId:(NSString *)userId deviceId:(NSString *)deviceId description:(NSString *)description metadata:(NSDictionary *)metadata location:(CLLocation *)location geofences:(NSArray *)geofences place:(RadarPlace *)place insights:(RadarUserInsights *)insights stopped:(BOOL)stopped foreground:(BOOL)foreground country:(RadarRegion * _Nullable)country state:(RadarRegion * _Nullable)state dma:(RadarRegion * _Nullable)dma postalCode:(RadarRegion * _Nullable)postalCode nearbyPlaceChains:(nullable NSArray<RadarChain *> *)nearbyPlaceChains segments:(nullable NSArray<RadarSegment *> *)segments topChains:(nullable NSArray<RadarChain *> *)topChains {
+- (instancetype _Nullable)initWithId:(NSString *)_id
+                              userId:(NSString *)userId
+                            deviceId:(NSString *)deviceId
+                         description:(NSString *)description
+                            metadata:(NSDictionary *)metadata
+                            location:(CLLocation *)location
+                           geofences:(NSArray *)geofences
+                               place:(RadarPlace *)place
+                            insights:(RadarUserInsights *)insights
+                             stopped:(BOOL)stopped
+                          foreground:(BOOL)foreground
+                             country:(RadarRegion *_Nullable)country
+                               state:(RadarRegion *_Nullable)state
+                                 dma:(RadarRegion *_Nullable)dma
+                          postalCode:(RadarRegion *_Nullable)postalCode
+                   nearbyPlaceChains:(nullable NSArray<RadarChain *> *)nearbyPlaceChains
+                            segments:(nullable NSArray<RadarSegment *> *)segments
+                           topChains:(nullable NSArray<RadarChain *> *)topChains {
     self = [super init];
     if (self) {
         __id = _id;
@@ -45,9 +62,9 @@
     if (!object || ![object isKindOfClass:[NSDictionary class]]) {
         return nil;
     }
-    
+
     NSDictionary *dict = (NSDictionary *)object;
-    
+
     NSString *_id;
     NSString *userId;
     NSString *deviceId;
@@ -71,116 +88,121 @@
     if (idObj && [idObj isKindOfClass:[NSString class]]) {
         _id = (NSString *)idObj;
     }
-    
+
     id userIdObj = dict[@"userId"];
     if (userIdObj && [userIdObj isKindOfClass:[NSString class]]) {
         userId = (NSString *)userIdObj;
     }
-    
+
     id deviceIdObj = dict[@"deviceId"];
     if (deviceIdObj && [deviceIdObj isKindOfClass:[NSString class]]) {
         deviceId = (NSString *)deviceIdObj;
     }
-    
+
     id descriptionObj = dict[@"description"];
     if (descriptionObj && [descriptionObj isKindOfClass:[NSString class]]) {
         description = (NSString *)descriptionObj;
     }
-    
+
     id metadataObj = dict[@"metadata"];
     if (metadataObj && [metadataObj isKindOfClass:[NSDictionary class]]) {
         metadata = (NSDictionary *)metadataObj;
     }
-    
+
     id locationObj = dict[@"location"];
     if (locationObj && [locationObj isKindOfClass:[NSDictionary class]]) {
         NSDictionary *locationDict = (NSDictionary *)locationObj;
-        
+
         id locationCoordinatesObj = locationDict[@"coordinates"];
         if (!locationCoordinatesObj || ![locationCoordinatesObj isKindOfClass:[NSArray class]]) {
             return nil;
         }
-        
+
         NSArray *locationCoordinatesArr = (NSArray *)locationCoordinatesObj;
         if (locationCoordinatesArr.count != 2) {
             return nil;
         }
-        
+
         id locationCoordinatesLongitudeObj = locationCoordinatesArr[0];
         id locationCoordinatesLatitudeObj = locationCoordinatesArr[1];
-        if (!locationCoordinatesLongitudeObj || !locationCoordinatesLatitudeObj || ![locationCoordinatesLongitudeObj isKindOfClass:[NSNumber class]] || ![locationCoordinatesLatitudeObj isKindOfClass:[NSNumber class]]) {
+        if (!locationCoordinatesLongitudeObj || !locationCoordinatesLatitudeObj || ![locationCoordinatesLongitudeObj isKindOfClass:[NSNumber class]] ||
+            ![locationCoordinatesLatitudeObj isKindOfClass:[NSNumber class]]) {
             return nil;
         }
-        
+
         NSNumber *locationCoordinatesLongitudeNumber = (NSNumber *)locationCoordinatesLongitudeObj;
         NSNumber *locationCoordinatesLatitudeNumber = (NSNumber *)locationCoordinatesLatitudeObj;
-        
+
         float locationCoordinatesLongitudeFloat = [locationCoordinatesLongitudeNumber floatValue];
         float locationCoordinatesLatitudeFloat = [locationCoordinatesLatitudeNumber floatValue];
-        
+
         id locationAccuracyObj = dict[@"locationAccuracy"];
         if (locationAccuracyObj && [locationAccuracyObj isKindOfClass:[NSNumber class]]) {
             NSNumber *locationAccuracyNumber = (NSNumber *)locationAccuracyObj;
-            
-            location = [[CLLocation alloc] initWithCoordinate:CLLocationCoordinate2DMake(locationCoordinatesLatitudeFloat, locationCoordinatesLongitudeFloat) altitude:-1 horizontalAccuracy:[locationAccuracyNumber floatValue] verticalAccuracy:-1 timestamp:[NSDate date]];
+
+            location = [[CLLocation alloc] initWithCoordinate:CLLocationCoordinate2DMake(locationCoordinatesLatitudeFloat, locationCoordinatesLongitudeFloat)
+                                                     altitude:-1
+                                           horizontalAccuracy:[locationAccuracyNumber floatValue]
+                                             verticalAccuracy:-1
+                                                    timestamp:[NSDate date]];
         }
     }
-    
+
     id geofencesObj = dict[@"geofences"];
     if (geofencesObj && [geofencesObj isKindOfClass:[NSArray class]]) {
         NSMutableArray<RadarGeofence *> *mutableGeofences = [NSMutableArray<RadarGeofence *> new];
-        
+
         NSArray *geofencesArr = (NSArray *)geofencesObj;
         for (id geofenceObj in geofencesArr) {
             RadarGeofence *userGeofence = [[RadarGeofence alloc] initWithObject:geofenceObj];
             if (!userGeofence) {
                 return nil;
             }
-            
+
             [mutableGeofences addObject:userGeofence];
         }
-        
+
         geofences = mutableGeofences;
     }
-    
+
     id placeObj = dict[@"place"];
     place = [[RadarPlace alloc] initWithObject:placeObj];
-    
+
     id insightsObj = dict[@"insights"];
     if (insightsObj && [insightsObj isKindOfClass:[NSDictionary class]]) {
         insights = [[RadarUserInsights alloc] initWithObject:insightsObj];
     }
-    
+
     id stoppedObj = dict[@"stopped"];
     if (stoppedObj && [stoppedObj isKindOfClass:[NSNumber class]]) {
         NSNumber *stoppedNumber = (NSNumber *)stoppedObj;
-        
+
         stopped = [stoppedNumber boolValue];
     }
-    
+
     id foregroundObj = dict[@"foreground"];
     if (foregroundObj && [foregroundObj isKindOfClass:[NSNumber class]]) {
         NSNumber *foregroundNumber = (NSNumber *)foregroundObj;
-        
+
         foreground = [foregroundNumber boolValue];
     }
-    
+
     id countryObj = dict[@"country"];
     country = [[RadarRegion alloc] initWithObject:countryObj];
 
     id stateObj = dict[@"state"];
     state = [[RadarRegion alloc] initWithObject:stateObj];
-    
+
     id dmaObj = dict[@"dma"];
     dma = [[RadarRegion alloc] initWithObject:dmaObj];
-    
+
     id postalCodeObj = dict[@"postalCode"];
     postalCode = [[RadarRegion alloc] initWithObject:postalCodeObj];
-    
+
     id userNearbyPlaceChainsObj = dict[@"nearbyPlaceChains"];
     if ([userNearbyPlaceChainsObj isKindOfClass:[NSArray class]]) {
         NSArray *nearbyChainsArr = (NSArray *)userNearbyPlaceChainsObj;
-        
+
         NSMutableArray<RadarChain *> *mutableNearbyPlaceChains = [NSMutableArray<RadarChain *> new];
         for (id chainObj in nearbyChainsArr) {
             RadarChain *placeChain = [[RadarChain alloc] initWithObject:chainObj];
@@ -188,14 +210,14 @@
                 [mutableNearbyPlaceChains addObject:placeChain];
             }
         }
-        
+
         nearbyPlaceChains = mutableNearbyPlaceChains;
     }
-    
+
     id segmentsObj = dict[@"segments"];
     if ([segmentsObj isKindOfClass:[NSArray class]]) {
         NSArray *segmentsArr = (NSArray *)segmentsObj;
-        
+
         NSMutableArray<RadarSegment *> *mutableSegments = [NSMutableArray<RadarSegment *> new];
         for (id segmentObj in segmentsArr) {
             RadarSegment *segment = [[RadarSegment alloc] initWithObject:segmentObj];
@@ -203,14 +225,14 @@
                 [mutableSegments addObject:segment];
             }
         }
-        
+
         segments = mutableSegments;
     }
-    
+
     id topChainsObj = dict[@"topChains"];
     if ([topChainsObj isKindOfClass:[NSArray class]]) {
         NSArray *topChainsArr = (NSArray *)topChainsObj;
-        
+
         NSMutableArray<RadarChain *> *mutableTopChains = [NSMutableArray<RadarChain *> new];
         for (id chainObj in topChainsArr) {
             RadarChain *placeChain = [[RadarChain alloc] initWithObject:chainObj];
@@ -218,14 +240,31 @@
                 [mutableTopChains addObject:placeChain];
             }
         }
-        
+
         topChains = mutableTopChains;
     }
-    
+
     if (_id && location) {
-        return [[RadarUser alloc] initWithId:_id userId:userId deviceId:deviceId description:description metadata:metadata location:location geofences:geofences place:place insights:insights stopped:stopped foreground:foreground country:country state:state dma:dma postalCode:postalCode nearbyPlaceChains:nearbyPlaceChains segments:segments topChains:topChains];
+        return [[RadarUser alloc] initWithId:_id
+                                      userId:userId
+                                    deviceId:deviceId
+                                 description:description
+                                    metadata:metadata
+                                    location:location
+                                   geofences:geofences
+                                       place:place
+                                    insights:insights
+                                     stopped:stopped
+                                  foreground:foreground
+                                     country:country
+                                       state:state
+                                         dma:dma
+                                  postalCode:postalCode
+                           nearbyPlaceChains:nearbyPlaceChains
+                                    segments:segments
+                                   topChains:topChains];
     }
-    
+
     return nil;
 }
 
@@ -239,8 +278,8 @@
     NSArray *geofencesArr = [RadarGeofence serializeArray:self.geofences];
     [dict setValue:geofencesArr forKey:@"geofences"];
     if (self.place) {
-      NSDictionary *placeDict = [self.place serialize];
-      [dict setValue:placeDict forKey:@"place"];
+        NSDictionary *placeDict = [self.place serialize];
+        [dict setValue:placeDict forKey:@"place"];
     }
     if (self.insights) {
         NSDictionary *insightsDict = [self.insights serialize];

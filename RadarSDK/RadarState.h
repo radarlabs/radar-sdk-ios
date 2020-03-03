@@ -5,15 +5,15 @@
 //  Copyright © 2019 Radar Labs, Inc. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
 #import <CoreLocation/CoreLocation.h>
+#import <Foundation/Foundation.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface RadarState : NSObject
 
 + (CLLocation *)lastMovedLocation;
-+ (void)setLastMovedLocation:(CLLocation * _Nullable)lastMovedLocation;
++ (void)setLastMovedLocation:(CLLocation *_Nullable)lastMovedLocation;
 + (NSDate *)lastMovedAt;
 + (void)setLastMovedAt:(NSDate *)lastMovedAt;
 + (BOOL)stopped;
@@ -23,7 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (BOOL)canExit;
 + (void)setCanExit:(BOOL)canExit;
 + (CLLocation *)lastFailedStoppedLocation;
-+ (void)setLastFailedStoppedLocation:(CLLocation * _Nullable)lastFailedStoppedLocation;
++ (void)setLastFailedStoppedLocation:(CLLocation *_Nullable)lastFailedStoppedLocation;
 
 @end
 

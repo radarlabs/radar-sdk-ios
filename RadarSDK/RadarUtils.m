@@ -5,9 +5,9 @@
 //  Copyright © 2019 Radar Labs, Inc. All rights reserved.
 //
 
-#import <sys/utsname.h>
 #import <CoreLocation/CoreLocation.h>
 #import <UIKit/UIKit.h>
+#import <sys/utsname.h>
 
 #import "RadarUtils.h"
 
@@ -28,7 +28,7 @@
 }
 
 + (NSNumber *)timeZoneOffset {
-    return @((int) [[NSTimeZone localTimeZone] secondsFromGMT]);
+    return @((int)[[NSTimeZone localTimeZone] secondsFromGMT]);
 }
 
 + (NSString *)sdkVersion {
@@ -84,8 +84,12 @@
 
 + (CLLocation *)locationForDictionary:(NSDictionary *)dict {
     CLLocationCoordinate2D coordinate = CLLocationCoordinate2DMake([dict[@"latitude"] doubleValue], [dict[@"longitude"] doubleValue]);
-   CLLocation *location = [[CLLocation alloc] initWithCoordinate:coordinate altitude:[dict[@"altitude"] doubleValue] horizontalAccuracy:[dict[@"horizontalAccuracy"] doubleValue] verticalAccuracy:[dict[@"verticalAccuracy"] doubleValue] timestamp:dict[@"timestamp"]];
-   return location;
+    CLLocation *location = [[CLLocation alloc] initWithCoordinate:coordinate
+                                                         altitude:[dict[@"altitude"] doubleValue]
+                                               horizontalAccuracy:[dict[@"horizontalAccuracy"] doubleValue]
+                                                 verticalAccuracy:[dict[@"verticalAccuracy"] doubleValue]
+                                                        timestamp:dict[@"timestamp"]];
+    return location;
 }
 
 + (NSDictionary *)dictionaryForLocation:(CLLocation *)location {

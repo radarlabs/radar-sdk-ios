@@ -5,14 +5,14 @@
 //  Copyright © 2019 Radar Labs, Inc. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
-#import <CoreLocation/CoreLocation.h>
 #import "RadarCoordinate.h"
 #import "RadarRegion.h"
+#import <CoreLocation/CoreLocation.h>
+#import <Foundation/Foundation.h>
 
 /**
  Represents a learned home or work location. For more information about Insights, see https://radar.io/documentation/insights.
- 
+
  @see https://radar.io/documentation/insights
  */
 @interface RadarUserInsightsLocation : NSObject
@@ -83,7 +83,7 @@ typedef NS_ENUM(NSInteger, RadarUserInsightsLocationConfidence) {
  */
 @property (nullable, strong, nonatomic, readonly) RadarRegion *postalCode;
 
-+ (NSString * _Nullable)stringForType:(RadarUserInsightsLocationType)type;
-- (NSDictionary * _Nonnull)serialize;
++ (NSString *_Nullable)stringForType:(RadarUserInsightsLocationType)type;
+- (NSDictionary *_Nonnull)serialize;
 
 @end

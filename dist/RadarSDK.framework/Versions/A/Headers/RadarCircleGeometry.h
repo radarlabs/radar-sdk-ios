@@ -5,9 +5,9 @@
 //  Copyright © 2019 Radar Labs, Inc. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
 #import "RadarCoordinate.h"
 #import "RadarGeofenceGeometry.h"
+#import <UIKit/UIKit.h>
 
 /**
  Represents the geometry of a circle geofence.

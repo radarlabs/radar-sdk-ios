@@ -10,7 +10,7 @@
 
 @implementation RadarAddress
 
-+ (NSArray<RadarAddress *> * _Nullable)addressesFromObject:(id _Nonnull)object {
++ (NSArray<RadarAddress *> *_Nullable)addressesFromObject:(id _Nonnull)object {
     if (!object || ![object isKindOfClass:[NSArray class]]) {
         return nil;
     }
@@ -30,19 +30,19 @@
 }
 
 - (instancetype _Nullable)initWithCoordinate:(CLLocationCoordinate2D)coordinate
-                            formattedAddress:(NSString * _Nullable)formattedAddress
-                                     country:(NSString * _Nullable)country
-                                 countryCode:(NSString * _Nullable)countryCode
-                                 countryFlag:(NSString * _Nullable)countryFlag
-                                       state:(NSString * _Nullable)state
-                                   stateCode:(NSString * _Nullable)stateCode
-                                  postalCode:(NSString * _Nullable)postalCode
-                                        city:(NSString * _Nullable)city
-                                     borough:(NSString * _Nullable)borough
-                                      county:(NSString * _Nullable)county
-                                neighborhood:(NSString * _Nullable)neighborhood
-                                      number:(NSString * _Nullable)number
-                                        name:(NSString * _Nullable)name
+                            formattedAddress:(NSString *_Nullable)formattedAddress
+                                     country:(NSString *_Nullable)country
+                                 countryCode:(NSString *_Nullable)countryCode
+                                 countryFlag:(NSString *_Nullable)countryFlag
+                                       state:(NSString *_Nullable)state
+                                   stateCode:(NSString *_Nullable)stateCode
+                                  postalCode:(NSString *_Nullable)postalCode
+                                        city:(NSString *_Nullable)city
+                                     borough:(NSString *_Nullable)borough
+                                      county:(NSString *_Nullable)county
+                                neighborhood:(NSString *_Nullable)neighborhood
+                                      number:(NSString *_Nullable)number
+                                        name:(NSString *_Nullable)name
                                   confidence:(RadarAddressConfidence)confidence {
     self = [super init];
     if (self) {
@@ -167,7 +167,7 @@
     if (addressNumberObj && [addressNumberObj isKindOfClass:[NSString class]]) {
         number = (NSString *)addressNumberObj;
     }
-    
+
     id nameObj = dict[@"name"];
     if (nameObj && [nameObj isKindOfClass:[NSString class]]) {
         name = (NSString *)nameObj;
@@ -186,14 +186,28 @@
         }
     }
 
-    return [[RadarAddress alloc] initWithCoordinate:coordinate formattedAddress:formattedAddress country:country countryCode:countryCode countryFlag:countryFlag state:state stateCode:stateCode postalCode:postalCode city:city borough:borough county:county neighborhood:neighborhood number:number name:name confidence:confidence];
+    return [[RadarAddress alloc] initWithCoordinate:coordinate
+                                   formattedAddress:formattedAddress
+                                            country:country
+                                        countryCode:countryCode
+                                        countryFlag:countryFlag
+                                              state:state
+                                          stateCode:stateCode
+                                         postalCode:postalCode
+                                               city:city
+                                            borough:borough
+                                             county:county
+                                       neighborhood:neighborhood
+                                             number:number
+                                               name:name
+                                         confidence:confidence];
 }
 
 + (NSArray<NSDictionary *> *)serializeArray:(NSArray<RadarAddress *> *)addresses {
     if (!addresses) {
         return nil;
     }
-    
+
     NSMutableArray *arr = [[NSMutableArray alloc] initWithCapacity:addresses.count];
     for (RadarAddress *address in addresses) {
         NSDictionary *dict = [address serialize];

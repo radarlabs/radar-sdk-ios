@@ -5,9 +5,9 @@
 //  Copyright © 2020 Radar Labs, Inc. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
 #import "RadarRouteDistance.h"
 #import "RadarRouteDuration.h"
+#import <Foundation/Foundation.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -26,7 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property (nonnull, strong, nonatomic, readonly) RadarRouteDuration *duration;
 
-- (NSDictionary * _Nonnull)serialize;
+- (NSDictionary *_Nonnull)serialize;
 
 @end
 

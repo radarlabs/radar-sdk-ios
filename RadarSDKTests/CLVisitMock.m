@@ -9,7 +9,10 @@
 
 @implementation CLVisitMock
 
-- (instancetype)initWithCoordinate:(CLLocationCoordinate2D)coordinate horizontalAccuracy:(CLLocationAccuracy)horizontalAccuracy arrivalDate:(NSDate *)arrivalDate departureDate:(NSDate *)departureDate {
+- (instancetype)initWithCoordinate:(CLLocationCoordinate2D)coordinate
+                horizontalAccuracy:(CLLocationAccuracy)horizontalAccuracy
+                       arrivalDate:(NSDate *)arrivalDate
+                     departureDate:(NSDate *)departureDate {
     self = [super init];
     if (self) {
         self.coordinate = coordinate;

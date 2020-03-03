@@ -11,16 +11,15 @@
 
 @implementation RadarPoint
 
-+ (NSArray<RadarPoint *> *)pointsFromObject:(id)object
-{
++ (NSArray<RadarPoint *> *)pointsFromObject:(id)object {
     if (!object || ![object isKindOfClass:[NSArray class]]) {
         return nil;
     }
-    
+
     NSArray *objArray = (NSArray *)object;
-    
+
     NSMutableArray<RadarPoint *> *result = [NSMutableArray arrayWithCapacity:[objArray count]];
-    
+
     for (id pointObj in objArray) {
         RadarPoint *point = [[RadarPoint alloc] initWithObject:pointObj];
         if (!point) {
@@ -28,12 +27,11 @@
         }
         [result addObject:point];
     }
-    
+
     return result;
 }
 
-- (instancetype)initWithObject:(id)object
-{
+- (instancetype)initWithObject:(id)object {
     if (!object || ![object isKindOfClass:[NSDictionary class]]) {
         return nil;
     }
@@ -45,15 +43,10 @@
     NSString *externalId = [dict radar_stringForKey:@"externalId"];
     NSDictionary *metadata = [dict radar_dictionaryForKey:@"metadata"];
     RadarCoordinate *location = [dict radar_coordinateForKey:@"geometry"];
-    
+
     if (_id && description && location) {
         // the above fields must be nonnull.
-        return [[RadarPoint alloc] initWithId:_id
-        description:description
-                tag:tag
-         externalId:externalId
-           metadata:metadata
-           location:location];
+        return [[RadarPoint alloc] initWithId:_id description:description tag:tag externalId:externalId metadata:metadata location:location];
     }
     return nil;
 }
@@ -63,8 +56,7 @@
                        tag:(NSString *)tag
                 externalId:(NSString *)externalId
                   metadata:(NSDictionary *)metadata
-                  location:(RadarCoordinate *)location
-{
+                  location:(RadarCoordinate *)location {
     self = [super init];
     if (self) {
         __id = [_id copy];
