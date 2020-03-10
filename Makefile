@@ -6,7 +6,7 @@ XC_ARGS := -project $(PROJECT).xcodeproj -scheme $(SCHEME) -destination $(DESTIN
 XC_BUILD_ARGS := ONLY_ACTIVE_ARCH=NO OTHER_CFLAGS="-fembed-bitcode"
 XC_TEST_ARGS := GCC_INSTRUMENT_PROGRAM_FLOW_ARCS=YES
 
-bootstrap: ## downlaod & install deps
+bootstrap: ## download & install deps
 	./bootstrap.sh
 
 clean: ## clean
@@ -18,10 +18,10 @@ test: ## run all tests
 build: ## build module
 	xcodebuild $(XC_ARGS) $(XC_BUILD_ARGS)
 
-lint: ## lint (all?) code in repo
+lint: ## lint all code in repo
 	pod lib lint --verbose
 
-format: ## format (all?) code in repo
+format: ## format all code (.m's and .h's) in repo
 	./clang_format.sh
 
 clean-pretty: ## clean + format xcode output
