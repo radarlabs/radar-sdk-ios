@@ -23,9 +23,9 @@ To run the example app, clone this repository, add your publishable API key in `
 
 Much of the development workflow for this library is contained in our [Makefile](https://github.com/radarlabs/radar-sdk-ios/blob/master/Makefile)
 
-`make bootstrap` - install any needed dependencies
-`make test-pretty` - compile and test (with the xcode output formatted to be readable)
-`make help` - list all targets
+- `make bootstrap` - install any needed dependencies
+- `make test-pretty` - compile and test (with the xcode output formatted to be readable)
+- `make help` - list all targets
 
 ## Support
 
