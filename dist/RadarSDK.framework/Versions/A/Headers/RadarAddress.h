@@ -57,7 +57,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nullable, copy, nonatomic, readonly) NSString *countryFlag;
 
 /**
- The name of the state.
+ The name of the address.
  */
 @property (nullable, copy, nonatomic, readonly) NSString *state;
 
@@ -97,14 +97,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nullable, copy, nonatomic, readonly) NSString *number;
 
 /**
- The label of the address.
+ The name of the address.
  */
-@property (nullable, copy, nonatomic, readonly) NSString *addressLabel;
-
-/**
- The label of the place.
- */
-@property (nullable, copy, nonatomic, readonly) NSString *placeLabel;
+@property (nullable, copy, nonatomic, readonly) NSString *name;
 
 /**
   The confidence level of the geocoding result.
