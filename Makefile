@@ -6,36 +6,40 @@ XC_ARGS := -project $(PROJECT).xcodeproj -scheme $(SCHEME) -destination $(DESTIN
 XC_BUILD_ARGS := ONLY_ACTIVE_ARCH=NO OTHER_CFLAGS="-fembed-bitcode"
 XC_TEST_ARGS := GCC_INSTRUMENT_PROGRAM_FLOW_ARCS=YES
 
-bootstrap:
+bootstrap: ## downlaod & install deps
 	./bootstrap.sh
 
-clean:
+clean: ## clean
 	xcodebuild $(XC_ARGS) clean
 
-test:
+test: ## run all tests
 	xcodebuild test $(XC_ARGS)
 
-build:
+build: ## build module
 	xcodebuild $(XC_ARGS) $(XC_BUILD_ARGS)
 
-lint:
+lint: ## lint (all?) code in repo
 	pod lib lint --verbose
 
-format:
+format: ## format (all?) code in repo
 	./clang_format.sh
 
-clean-pretty:
+clean-pretty: ## clean + format xcode output
 	set -o pipefail && xcodebuild $(XC_ARGS) clean | xcpretty
 
-test-pretty:
+test-pretty: ## test + format xcode output
 	set -o pipefail && xcodebuild test $(XC_ARGS) $(XC_TEST_ARGS) | xcpretty --report junit
 
-build-pretty:
+build-pretty: ## build + format xcode output
 	set -o pipefail && xcodebuild $(XC_ARGS) $(XC_BUILD_ARGS) | xcpretty
 
-docs:
+docs: ## build docs
 	jazzy
 
 dist: clean-pretty format test-pretty build-pretty docs lint
 
-.PHONY: bootstrap clean test build lint format docs dist
+# taken from https://marmelab.com/blog/2016/02/29/auto-documented-makefile.html
+help:
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
+
+.PHONY: bootstrap clean test build lint format docs dist list
