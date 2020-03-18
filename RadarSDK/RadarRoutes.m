@@ -42,7 +42,7 @@
 
     id geodesicObj = dict[@"geodesic"];
     if (geodesicObj) {
-        geodesic = [[RadarRouteDistance alloc] initWithObject:geodesicObj];
+        geodesic = [[RadarRouteDistance alloc] initWithObject:geodesicObj[@"distance"]];
     }
 
     id footObj = dict[@"foot"];
