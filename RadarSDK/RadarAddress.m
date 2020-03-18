@@ -42,7 +42,8 @@
                                       county:(NSString *_Nullable)county
                                 neighborhood:(NSString *_Nullable)neighborhood
                                       number:(NSString *_Nullable)number
-                                        name:(NSString *_Nullable)name
+                                addressLabel:(NSString *_Nullable)addressLabel
+                                  placeLabel:(NSString *_Nullable)placeLabel
                                   confidence:(RadarAddressConfidence)confidence {
     self = [super init];
     if (self) {
@@ -59,7 +60,8 @@
         _county = county;
         _neighborhood = neighborhood;
         _number = number;
-        _name = name;
+        _addressLabel = addressLabel;
+        _placeLabel = placeLabel;
         _confidence = confidence;
     }
     return self;
@@ -88,7 +90,8 @@
     NSString *county;
     NSString *neighborhood;
     NSString *number;
-    NSString *name;
+    NSString *addressLabel;
+    NSString *placeLabel;
 
     RadarAddressConfidence confidence = RadarAddressConfidenceNone;
 
@@ -168,9 +171,14 @@
         number = (NSString *)addressNumberObj;
     }
 
-    id nameObj = dict[@"name"];
-    if (nameObj && [nameObj isKindOfClass:[NSString class]]) {
-        name = (NSString *)nameObj;
+    id addressLabelObj = dict[@"addressLabel"];
+    if (addressLabelObj && [addressLabelObj isKindOfClass:[NSString class]]) {
+        addressLabel = (NSString *)addressLabelObj;
+    }
+
+    id placeLabelObj = dict[@"placeLabel"];
+    if (placeLabelObj && [placeLabelObj isKindOfClass:[NSString class]]) {
+        placeLabel = (NSString *)placeLabelObj;
     }
 
     id confidenceObj = dict[@"confidence"];
@@ -199,7 +207,8 @@
                                              county:county
                                        neighborhood:neighborhood
                                              number:number
-                                               name:name
+                                       addressLabel:addressLabel
+                                         placeLabel:placeLabel
                                          confidence:confidence];
 }
 
@@ -232,7 +241,8 @@
     [dict setValue:self.county forKey:@"county"];
     [dict setValue:self.neighborhood forKey:@"neighborhood"];
     [dict setValue:self.number forKey:@"number"];
-    [dict setValue:self.name forKey:@"name"];
+    [dict setValue:self.addressLabel forKey:@"addressLabel"];
+    [dict setValue:self.placeLabel forKey:@"placeLabel"];
     [dict setValue:@(self.confidence) forKey:@"confidence"];
     return dict;
 }
