@@ -25,7 +25,8 @@
          "county": "Kings County",
          "neighborhood": "DUMBO",
          "number": "20",
-         "confidence": "exact"
+         "confidence": "exact",
+         "addressLabel": "20 Jay Street"
       }
    ]
 }

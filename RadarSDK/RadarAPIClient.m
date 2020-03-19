@@ -14,7 +14,6 @@
 #import "RadarLogger.h"
 #import "RadarPlace+Internal.h"
 #import "RadarPoint+Internal.h"
-#import "RadarRegion+Internal.h"
 #import "RadarRoutes+Internal.h"
 #import "RadarSettings.h"
 #import "RadarState.h"
@@ -548,11 +547,11 @@
                           return completionHandler(status, nil, nil);
                       }
 
-                      id countryObj = res[@"country"];
-                      RadarRegion *country = [[RadarRegion alloc] initWithObject:countryObj];
+                      id addressObj = res[@"address"];
+                      RadarAddress *address = [[RadarAddress alloc] initWithObject:addressObj];
 
-                      if (country) {
-                          return completionHandler(RadarStatusSuccess, res, country);
+                      if (address) {
+                          return completionHandler(RadarStatusSuccess, res, address);
                       }
 
                       completionHandler(RadarStatusErrorServer, nil, nil);

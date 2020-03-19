@@ -37,7 +37,7 @@ typedef void (^_Nullable RadarSearchPointsAPICompletionHandler)(RadarStatus stat
 
 typedef void (^_Nullable RadarGeocodeAPICompletionHandler)(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarAddress *> *_Nullable addresses);
 
-typedef void (^_Nullable RadarIPGeocodeAPICompletionHandler)(RadarStatus status, NSDictionary *_Nullable res, RadarRegion *_Nullable country);
+typedef void (^_Nullable RadarIPGeocodeAPICompletionHandler)(RadarStatus status, NSDictionary *_Nullable res, RadarAddress *_Nullable address);
 
 typedef void (^_Nullable RadarRouteAPICompletionHandler)(RadarStatus status, NSDictionary *_Nullable res, RadarRoutes *_Nullable routes);
 

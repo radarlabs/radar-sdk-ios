@@ -176,11 +176,11 @@ typedef void (^_Nonnull RadarSearchPointsCompletionHandler)(RadarStatus status, 
 typedef void (^_Nonnull RadarGeocodeCompletionHandler)(RadarStatus status, NSArray<RadarAddress *> *_Nullable addresses);
 
 /**
- Called when an IP geocoding request succeeds, fails, or times out. Receives the request status and, if successful, the geocoding result (a country).
+ Called when an IP geocoding request succeeds, fails, or times out. Receives the request status and, if successful, the geocoding result (a partial address).
 
  @see https://radar.io/documentation/api#geocode-ip
  */
-typedef void (^_Nonnull RadarIPGeocodeCompletionHandler)(RadarStatus status, RadarRegion *_Nullable country);
+typedef void (^_Nonnull RadarIPGeocodeCompletionHandler)(RadarStatus status, RadarAddress *_Nullable address);
 
 /**
  Called when a routing request succeeds, fails, or times out. Receives the request status and, if successful, the routes.
@@ -517,7 +517,7 @@ typedef void (^_Nonnull RadarRouteCompletionHandler)(RadarStatus status, RadarRo
              completionHandler:(RadarGeocodeCompletionHandler)completionHandler NS_SWIFT_NAME(reverseGeocode(location:completionHandler:));
 
 /**
- Geocodes the device's current IP address, converting IP address to country.
+ Geocodes the device's current IP address, converting IP address to partial address.
 
  @param completionHandler A completion handler.
  */
