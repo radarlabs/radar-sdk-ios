@@ -547,7 +547,8 @@
                           return completionHandler(status, nil, nil);
                       }
 
-                      RadarAddress *address = [[RadarAddress alloc] initWithObject:res];
+                      id addressObj = res[@"address"];
+                      RadarAddress *address = [[RadarAddress alloc] initWithObject:addressObj];
 
                       if (address) {
                           return completionHandler(RadarStatusSuccess, res, address);
