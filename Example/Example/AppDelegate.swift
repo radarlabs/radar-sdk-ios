@@ -68,10 +68,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             print("IP geocode: status = \(Radar.stringForStatus(status)); code = \(String(describing: address?.countryCode)); flag = \(String(describing: address?.countryFlag))")
         }
         
-        Radar.ipGeocode { (status, country) in
-            
-        }
-        
         Radar.autocomplete(
             query: "brooklyn roasting",
             near: CLLocation(latitude: 40.70390, longitude: -73.98670),
