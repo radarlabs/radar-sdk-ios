@@ -1,10 +1,13 @@
 SDK ?= "iphonesimulator"
 DESTINATION ?= "platform=iOS Simulator,name=iPhone 11"
-PROJECT := RadarSDK
+PROJECT := Example
 SCHEME := Framework
 XC_ARGS := -project $(PROJECT).xcodeproj -scheme $(SCHEME) -destination $(DESTINATION)
 XC_BUILD_ARGS := ONLY_ACTIVE_ARCH=NO OTHER_CFLAGS="-fembed-bitcode"
 XC_TEST_ARGS := GCC_INSTRUMENT_PROGRAM_FLOW_ARCS=YES
+PROJECT_EXAMPLE := Example/Example
+SCHEME_EXAMPLE := Example
+XC_EXAMPLE_ARGS := -project $(PROJECT_EXAMPLE).xcodeproj -scheme $(SCHEME_EXAMPLE) -destination $(DESTINATION)
 
 bootstrap:
 	./bootstrap.sh
@@ -17,6 +20,9 @@ test:
 
 build:
 	xcodebuild $(XC_ARGS) $(XC_BUILD_ARGS)
+
+build-example:
+	xcodebuild $(XC_EXAMPLE_ARGS) $(XC_BUILD_ARGS)
 
 lint:
 	pod lib lint --verbose
@@ -32,6 +38,9 @@ test-pretty:
 
 build-pretty:
 	set -o pipefail && xcodebuild $(XC_ARGS) $(XC_BUILD_ARGS) | xcpretty
+
+build-example-pretty:
+	set -o pipefail && xcodebuild $(XC_EXAMPLE_ARGS) $(XC_BUILD_ARGS) | xcpretty
 
 docs:
 	jazzy
