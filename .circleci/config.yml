@@ -26,6 +26,9 @@ jobs:
       - run:
           name: Lint
           command: make lint
+      - run:
+          name: Build example
+          command: make build-example-pretty
 workflows:
   version: 2
   build_and_test:

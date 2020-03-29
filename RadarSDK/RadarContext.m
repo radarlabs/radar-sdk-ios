@@ -83,28 +83,28 @@
     return [[RadarContext alloc] initWithGeofences:contextGeofences place:contextPlace country:country state:state dma:dma postalCode:postalCode];
 }
 
-- (NSDictionary *)serialize {
+- (NSDictionary *)dictionaryValue {
     NSMutableDictionary *dict = [NSMutableDictionary new];
-    NSArray *geofencesArr = [RadarGeofence serializeArray:self.geofences];
+    NSArray *geofencesArr = [RadarGeofence arrayForGeofences:self.geofences];
     [dict setValue:geofencesArr forKey:@"geofences"];
     if (self.place) {
-        NSDictionary *placeDict = [self.place serialize];
+        NSDictionary *placeDict = [self.place dictionaryValue];
         [dict setValue:placeDict forKey:@"place"];
     }
     if (self.country) {
-        NSDictionary *countryDict = [self.country serialize];
+        NSDictionary *countryDict = [self.country dictionaryValue];
         [dict setValue:countryDict forKey:@"country"];
     }
     if (self.state) {
-        NSDictionary *stateDict = [self.state serialize];
+        NSDictionary *stateDict = [self.state dictionaryValue];
         [dict setValue:stateDict forKey:@"state"];
     }
     if (self.dma) {
-        NSDictionary *dmaDict = [self.dma serialize];
+        NSDictionary *dmaDict = [self.dma dictionaryValue];
         [dict setValue:dmaDict forKey:@"dma"];
     }
     if (self.postalCode) {
-        NSDictionary *postalCodeDict = [self.postalCode serialize];
+        NSDictionary *postalCodeDict = [self.postalCode dictionaryValue];
         [dict setValue:postalCodeDict forKey:@"postalCode"];
     }
     return dict;

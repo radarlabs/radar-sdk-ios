@@ -375,16 +375,16 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
 
     [Radar getLocationWithCompletionHandler:^(RadarStatus status, CLLocation *_Nullable location, BOOL stopped) {
-      XCTAssertEqual(status, RadarStatusErrorPermissions);
+        XCTAssertEqual(status, RadarStatusErrorPermissions);
 
-      [expectation fulfill];
+        [expectation fulfill];
     }];
 
     [self waitForExpectationsWithTimeout:30
                                  handler:^(NSError *_Nullable error) {
-                                   if (error) {
-                                       XCTFail();
-                                   }
+                                     if (error) {
+                                         XCTFail();
+                                     }
                                  }];
 }
 
@@ -395,16 +395,16 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
 
     [Radar getLocationWithCompletionHandler:^(RadarStatus status, CLLocation *_Nullable location, BOOL stopped) {
-      XCTAssertEqual(status, RadarStatusErrorLocation);
+        XCTAssertEqual(status, RadarStatusErrorLocation);
 
-      [expectation fulfill];
+        [expectation fulfill];
     }];
 
     [self waitForExpectationsWithTimeout:30
                                  handler:^(NSError *_Nullable error) {
-                                   if (error) {
-                                       XCTFail();
-                                   }
+                                     if (error) {
+                                         XCTFail();
+                                     }
                                  }];
 }
 
@@ -419,17 +419,17 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
 
     [Radar getLocationWithCompletionHandler:^(RadarStatus status, CLLocation *_Nullable location, BOOL stopped) {
-      XCTAssertEqual(status, RadarStatusSuccess);
-      XCTAssertEqualObjects(self.locationManagerMock.mockLocation, location);
+        XCTAssertEqual(status, RadarStatusSuccess);
+        XCTAssertEqualObjects(self.locationManagerMock.mockLocation, location);
 
-      [expectation fulfill];
+        [expectation fulfill];
     }];
 
     [self waitForExpectationsWithTimeout:30
                                  handler:^(NSError *_Nullable error) {
-                                   if (error) {
-                                       XCTFail();
-                                   }
+                                     if (error) {
+                                         XCTFail();
+                                     }
                                  }];
 }
 
@@ -439,18 +439,17 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 
     XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
 
-    [Radar trackOnceWithCompletionHandler:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarEvent *> *_Nullable events,
-                                            RadarUser *_Nullable user) {
-      XCTAssertEqual(status, RadarStatusErrorPermissions);
+    [Radar trackOnceWithCompletionHandler:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user) {
+        XCTAssertEqual(status, RadarStatusErrorPermissions);
 
-      [expectation fulfill];
+        [expectation fulfill];
     }];
 
     [self waitForExpectationsWithTimeout:30
                                  handler:^(NSError *_Nullable error) {
-                                   if (error) {
-                                       XCTFail();
-                                   }
+                                     if (error) {
+                                         XCTFail();
+                                     }
                                  }];
 }
 
@@ -460,18 +459,17 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 
     XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
 
-    [Radar trackOnceWithCompletionHandler:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarEvent *> *_Nullable events,
-                                            RadarUser *_Nullable user) {
-      XCTAssertEqual(status, RadarStatusErrorLocation);
+    [Radar trackOnceWithCompletionHandler:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user) {
+        XCTAssertEqual(status, RadarStatusErrorLocation);
 
-      [expectation fulfill];
+        [expectation fulfill];
     }];
 
     [self waitForExpectationsWithTimeout:30
                                  handler:^(NSError *_Nullable error) {
-                                   if (error) {
-                                       XCTFail();
-                                   }
+                                     if (error) {
+                                         XCTFail();
+                                     }
                                  }];
 }
 
@@ -487,21 +485,20 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 
     XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
 
-    [Radar trackOnceWithCompletionHandler:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarEvent *> *_Nullable events,
-                                            RadarUser *_Nullable user) {
-      XCTAssertEqual(status, RadarStatusSuccess);
-      XCTAssertEqualObjects(self.locationManagerMock.mockLocation, location);
-      AssertEventsOk(events);
-      AssertUserOk(user);
+    [Radar trackOnceWithCompletionHandler:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user) {
+        XCTAssertEqual(status, RadarStatusSuccess);
+        XCTAssertEqualObjects(self.locationManagerMock.mockLocation, location);
+        AssertEventsOk(events);
+        AssertUserOk(user);
 
-      [expectation fulfill];
+        [expectation fulfill];
     }];
 
     [self waitForExpectationsWithTimeout:30
                                  handler:^(NSError *_Nullable error) {
-                                   if (error) {
-                                       XCTFail();
-                                   }
+                                     if (error) {
+                                         XCTFail();
+                                     }
                                  }];
 }
 
@@ -519,18 +516,18 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 
     [Radar trackOnceWithLocation:mockLocation
                completionHandler:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user) {
-                 XCTAssertEqual(status, RadarStatusSuccess);
-                 AssertEventsOk(events);
-                 AssertUserOk(user);
+                   XCTAssertEqual(status, RadarStatusSuccess);
+                   AssertEventsOk(events);
+                   AssertUserOk(user);
 
-                 [expectation fulfill];
+                   [expectation fulfill];
                }];
 
     [self waitForExpectationsWithTimeout:30
                                  handler:^(NSError *_Nullable error) {
-                                   if (error) {
-                                       XCTFail();
-                                   }
+                                     if (error) {
+                                         XCTFail();
+                                     }
                                  }];
 }
 
@@ -623,16 +620,16 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
 
     [Radar getContextWithCompletionHandler:^(RadarStatus status, CLLocation *_Nullable location, RadarContext *_Nullable context) {
-      XCTAssertEqual(status, RadarStatusErrorPermissions);
+        XCTAssertEqual(status, RadarStatusErrorPermissions);
 
-      [expectation fulfill];
+        [expectation fulfill];
     }];
 
     [self waitForExpectationsWithTimeout:30
                                  handler:^(NSError *_Nullable error) {
-                                   if (error) {
-                                       XCTFail();
-                                   }
+                                     if (error) {
+                                         XCTFail();
+                                     }
                                  }];
 }
 
@@ -643,16 +640,16 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
 
     [Radar getContextWithCompletionHandler:^(RadarStatus status, CLLocation *_Nullable location, RadarContext *_Nullable context) {
-      XCTAssertEqual(status, RadarStatusErrorLocation);
+        XCTAssertEqual(status, RadarStatusErrorLocation);
 
-      [expectation fulfill];
+        [expectation fulfill];
     }];
 
     [self waitForExpectationsWithTimeout:30
                                  handler:^(NSError *_Nullable error) {
-                                   if (error) {
-                                       XCTFail();
-                                   }
+                                     if (error) {
+                                         XCTFail();
+                                     }
                                  }];
 }
 
@@ -669,18 +666,18 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
 
     [Radar getContextWithCompletionHandler:^(RadarStatus status, CLLocation *_Nullable location, RadarContext *_Nullable context) {
-      XCTAssertEqual(status, RadarStatusSuccess);
-      XCTAssertEqualObjects(self.locationManagerMock.mockLocation, location);
-      AssertContextOk(context);
+        XCTAssertEqual(status, RadarStatusSuccess);
+        XCTAssertEqualObjects(self.locationManagerMock.mockLocation, location);
+        AssertContextOk(context);
 
-      [expectation fulfill];
+        [expectation fulfill];
     }];
 
     [self waitForExpectationsWithTimeout:30
                                  handler:^(NSError *_Nullable error) {
-                                   if (error) {
-                                       XCTFail();
-                                   }
+                                     if (error) {
+                                         XCTFail();
+                                     }
                                  }];
 }
 
@@ -698,17 +695,17 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 
     [Radar getContextForLocation:mockLocation
                completionHandler:^(RadarStatus status, CLLocation *_Nullable location, RadarContext *_Nullable context) {
-                 XCTAssertEqual(status, RadarStatusSuccess);
-                 AssertContextOk(context);
+                   XCTAssertEqual(status, RadarStatusSuccess);
+                   AssertContextOk(context);
 
-                 [expectation fulfill];
+                   [expectation fulfill];
                }];
 
     [self waitForExpectationsWithTimeout:30
                                  handler:^(NSError *_Nullable error) {
-                                   if (error) {
-                                       XCTFail();
-                                   }
+                                     if (error) {
+                                         XCTFail();
+                                     }
                                  }];
 }
 
@@ -724,16 +721,16 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
                            groups:nil
                             limit:100
                 completionHandler:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarPlace *> *_Nullable places) {
-                  XCTAssertEqual(status, RadarStatusErrorPermissions);
+                    XCTAssertEqual(status, RadarStatusErrorPermissions);
 
-                  [expectation fulfill];
+                    [expectation fulfill];
                 }];
 
     [self waitForExpectationsWithTimeout:30
                                  handler:^(NSError *_Nullable error) {
-                                   if (error) {
-                                       XCTFail();
-                                   }
+                                     if (error) {
+                                         XCTFail();
+                                     }
                                  }];
 }
 
@@ -749,16 +746,16 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
                            groups:nil
                             limit:100
                 completionHandler:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarPlace *> *_Nullable places) {
-                  XCTAssertEqual(status, RadarStatusErrorLocation);
+                    XCTAssertEqual(status, RadarStatusErrorLocation);
 
-                  [expectation fulfill];
+                    [expectation fulfill];
                 }];
 
     [self waitForExpectationsWithTimeout:30
                                  handler:^(NSError *_Nullable error) {
-                                   if (error) {
-                                       XCTFail();
-                                   }
+                                     if (error) {
+                                         XCTFail();
+                                     }
                                  }];
 }
 
@@ -780,18 +777,18 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
                            groups:nil
                             limit:100
                 completionHandler:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarPlace *> *_Nullable places) {
-                  XCTAssertEqual(status, RadarStatusSuccess);
-                  XCTAssertNotNil(location);
-                  AssertPlacesOk(places);
+                    XCTAssertEqual(status, RadarStatusSuccess);
+                    XCTAssertNotNil(location);
+                    AssertPlacesOk(places);
 
-                  [expectation fulfill];
+                    [expectation fulfill];
                 }];
 
     [self waitForExpectationsWithTimeout:30
                                  handler:^(NSError *_Nullable error) {
-                                   if (error) {
-                                       XCTFail();
-                                   }
+                                     if (error) {
+                                         XCTFail();
+                                     }
                                  }];
 }
 
@@ -814,18 +811,18 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
                      groups:nil
                       limit:100
           completionHandler:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarPlace *> *_Nullable places) {
-            XCTAssertEqual(status, RadarStatusSuccess);
-            XCTAssertNotNil(location);
-            AssertPlacesOk(places);
+              XCTAssertEqual(status, RadarStatusSuccess);
+              XCTAssertNotNil(location);
+              AssertPlacesOk(places);
 
-            [expectation fulfill];
+              [expectation fulfill];
           }];
 
     [self waitForExpectationsWithTimeout:30
                                  handler:^(NSError *_Nullable error) {
-                                   if (error) {
-                                       XCTFail();
-                                   }
+                                     if (error) {
+                                         XCTFail();
+                                     }
                                  }];
 }
 
@@ -839,16 +836,16 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
                                 tags:nil
                                limit:100
                    completionHandler:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarGeofence *> *_Nullable geofences) {
-                     XCTAssertEqual(status, RadarStatusErrorPermissions);
+                       XCTAssertEqual(status, RadarStatusErrorPermissions);
 
-                     [expectation fulfill];
+                       [expectation fulfill];
                    }];
 
     [self waitForExpectationsWithTimeout:30
                                  handler:^(NSError *_Nullable error) {
-                                   if (error) {
-                                       XCTFail();
-                                   }
+                                     if (error) {
+                                         XCTFail();
+                                     }
                                  }];
 }
 
@@ -862,16 +859,16 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
                                 tags:nil
                                limit:100
                    completionHandler:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarGeofence *> *_Nullable geofences) {
-                     XCTAssertEqual(status, RadarStatusErrorLocation);
+                       XCTAssertEqual(status, RadarStatusErrorLocation);
 
-                     [expectation fulfill];
+                       [expectation fulfill];
                    }];
 
     [self waitForExpectationsWithTimeout:30
                                  handler:^(NSError *_Nullable error) {
-                                   if (error) {
-                                       XCTFail();
-                                   }
+                                     if (error) {
+                                         XCTFail();
+                                     }
                                  }];
 }
 
@@ -891,18 +888,18 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
                                 tags:@[@"store"]
                                limit:100
                    completionHandler:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarGeofence *> *_Nullable geofences) {
-                     XCTAssertEqual(status, RadarStatusSuccess);
-                     XCTAssertNotNil(location);
-                     AssertGeofencesOk(geofences);
+                       XCTAssertEqual(status, RadarStatusSuccess);
+                       XCTAssertNotNil(location);
+                       AssertGeofencesOk(geofences);
 
-                     [expectation fulfill];
+                       [expectation fulfill];
                    }];
 
     [self waitForExpectationsWithTimeout:30
                                  handler:^(NSError *_Nullable error) {
-                                   if (error) {
-                                       XCTFail();
-                                   }
+                                     if (error) {
+                                         XCTFail();
+                                     }
                                  }];
 }
 
@@ -917,16 +914,16 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
                              tags:nil
                             limit:100
                 completionHandler:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarPoint *> *_Nullable points) {
-                  XCTAssertEqual(status, RadarStatusErrorPermissions);
+                    XCTAssertEqual(status, RadarStatusErrorPermissions);
 
-                  [expectation fulfill];
+                    [expectation fulfill];
                 }];
 
     [self waitForExpectationsWithTimeout:30
                                  handler:^(NSError *_Nullable error) {
-                                   if (error) {
-                                       XCTFail();
-                                   }
+                                     if (error) {
+                                         XCTFail();
+                                     }
                                  }];
 }
 
@@ -940,16 +937,16 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
                              tags:nil
                             limit:100
                 completionHandler:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarPoint *> *_Nullable points) {
-                  XCTAssertEqual(status, RadarStatusErrorLocation);
+                    XCTAssertEqual(status, RadarStatusErrorLocation);
 
-                  [expectation fulfill];
+                    [expectation fulfill];
                 }];
 
     [self waitForExpectationsWithTimeout:30
                                  handler:^(NSError *_Nullable error) {
-                                   if (error) {
-                                       XCTFail();
-                                   }
+                                     if (error) {
+                                         XCTFail();
+                                     }
                                  }];
 }
 
@@ -969,18 +966,18 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
                              tags:@[@"store"]
                             limit:100
                 completionHandler:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarPoint *> *_Nullable points) {
-                  XCTAssertEqual(status, RadarStatusSuccess);
-                  XCTAssertNotNil(location);
-                  AssertPointsOk(points);
+                    XCTAssertEqual(status, RadarStatusSuccess);
+                    XCTAssertNotNil(location);
+                    AssertPointsOk(points);
 
-                  [expectation fulfill];
+                    [expectation fulfill];
                 }];
 
     [self waitForExpectationsWithTimeout:30
                                  handler:^(NSError *_Nullable error) {
-                                   if (error) {
-                                       XCTFail();
-                                   }
+                                     if (error) {
+                                         XCTFail();
+                                     }
                                  }];
 }
 
@@ -996,17 +993,17 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
                         near:near
                        limit:10
            completionHandler:^(RadarStatus status, NSArray<RadarAddress *> *_Nullable addresses) {
-             XCTAssertEqual(status, RadarStatusSuccess);
-             AssertAddressesOk(addresses);
+               XCTAssertEqual(status, RadarStatusSuccess);
+               AssertAddressesOk(addresses);
 
-             [expectation fulfill];
+               [expectation fulfill];
            }];
 
     [self waitForExpectationsWithTimeout:30
                                  handler:^(NSError *_Nullable error) {
-                                   if (error) {
-                                       XCTFail();
-                                   }
+                                     if (error) {
+                                         XCTFail();
+                                     }
                                  }];
 }
 
@@ -1020,17 +1017,17 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 
     [Radar geocodeAddress:geocodeQuery
         completionHandler:^(RadarStatus status, NSArray<RadarAddress *> *_Nullable addresses) {
-          XCTAssertEqual(status, RadarStatusErrorServer);
-          XCTAssertNil(addresses);
+            XCTAssertEqual(status, RadarStatusErrorServer);
+            XCTAssertNil(addresses);
 
-          [expectation fulfill];
+            [expectation fulfill];
         }];
 
     [self waitForExpectationsWithTimeout:30
                                  handler:^(NSError *_Nullable error) {
-                                   if (error) {
-                                       XCTFail();
-                                   }
+                                     if (error) {
+                                         XCTFail();
+                                     }
                                  }];
 }
 
@@ -1045,17 +1042,17 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 
     [Radar geocodeAddress:query
         completionHandler:^(RadarStatus status, NSArray<RadarAddress *> *_Nullable addresses) {
-          XCTAssertEqual(status, RadarStatusSuccess);
-          AssertAddressesOk(addresses);
+            XCTAssertEqual(status, RadarStatusSuccess);
+            AssertAddressesOk(addresses);
 
-          [expectation fulfill];
+            [expectation fulfill];
         }];
 
     [self waitForExpectationsWithTimeout:30
                                  handler:^(NSError *_Nullable error) {
-                                   if (error) {
-                                       XCTFail();
-                                   }
+                                     if (error) {
+                                         XCTFail();
+                                     }
                                  }];
 }
 
@@ -1066,17 +1063,17 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
 
     [Radar reverseGeocodeWithCompletionHandler:^(RadarStatus status, NSArray<RadarAddress *> *_Nullable addresses) {
-      XCTAssertEqual(status, RadarStatusErrorPermissions);
-      XCTAssertNil(addresses);
+        XCTAssertEqual(status, RadarStatusErrorPermissions);
+        XCTAssertNil(addresses);
 
-      [expectation fulfill];
+        [expectation fulfill];
     }];
 
     [self waitForExpectationsWithTimeout:30
                                  handler:^(NSError *_Nullable error) {
-                                   if (error) {
-                                       XCTFail();
-                                   }
+                                     if (error) {
+                                         XCTFail();
+                                     }
                                  }];
 }
 
@@ -1087,17 +1084,17 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
 
     [Radar reverseGeocodeWithCompletionHandler:^(RadarStatus status, NSArray<RadarAddress *> *_Nullable addresses) {
-      XCTAssertEqual(status, RadarStatusErrorLocation);
-      XCTAssertNil(addresses);
+        XCTAssertEqual(status, RadarStatusErrorLocation);
+        XCTAssertNil(addresses);
 
-      [expectation fulfill];
+        [expectation fulfill];
     }];
 
     [self waitForExpectationsWithTimeout:30
                                  handler:^(NSError *_Nullable error) {
-                                   if (error) {
-                                       XCTFail();
-                                   }
+                                     if (error) {
+                                         XCTFail();
+                                     }
                                  }];
 }
 
@@ -1114,17 +1111,17 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
 
     [Radar reverseGeocodeWithCompletionHandler:^(RadarStatus status, NSArray<RadarAddress *> *_Nullable addresses) {
-      XCTAssertEqual(status, RadarStatusSuccess);
-      AssertAddressesOk(addresses);
+        XCTAssertEqual(status, RadarStatusSuccess);
+        AssertAddressesOk(addresses);
 
-      [expectation fulfill];
+        [expectation fulfill];
     }];
 
     [self waitForExpectationsWithTimeout:30
                                  handler:^(NSError *_Nullable error) {
-                                   if (error) {
-                                       XCTFail();
-                                   }
+                                     if (error) {
+                                         XCTFail();
+                                     }
                                  }];
 }
 
@@ -1138,17 +1135,17 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 
     [Radar reverseGeocodeLocation:location
                 completionHandler:^(RadarStatus status, NSArray<RadarAddress *> *_Nullable addresses) {
-                  XCTAssertEqual(status, RadarStatusErrorServer);
-                  XCTAssertNil(addresses);
+                    XCTAssertEqual(status, RadarStatusErrorServer);
+                    XCTAssertNil(addresses);
 
-                  [expectation fulfill];
+                    [expectation fulfill];
                 }];
 
     [self waitForExpectationsWithTimeout:30
                                  handler:^(NSError *_Nullable error) {
-                                   if (error) {
-                                       XCTFail();
-                                   }
+                                     if (error) {
+                                         XCTFail();
+                                     }
                                  }];
 }
 
@@ -1163,17 +1160,17 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 
     [Radar reverseGeocodeLocation:location
                 completionHandler:^(RadarStatus status, NSArray<RadarAddress *> *_Nullable addresses) {
-                  XCTAssertEqual(status, RadarStatusSuccess);
-                  AssertAddressesOk(addresses);
+                    XCTAssertEqual(status, RadarStatusSuccess);
+                    AssertAddressesOk(addresses);
 
-                  [expectation fulfill];
+                    [expectation fulfill];
                 }];
 
     [self waitForExpectationsWithTimeout:30
                                  handler:^(NSError *_Nullable error) {
-                                   if (error) {
-                                       XCTFail();
-                                   }
+                                     if (error) {
+                                         XCTFail();
+                                     }
                                  }];
 }
 
@@ -1184,17 +1181,17 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
 
     [Radar ipGeocodeWithCompletionHandler:^(RadarStatus status, RadarAddress *_Nullable address) {
-      XCTAssertEqual(status, RadarStatusErrorServer);
-      XCTAssertNil(address);
+        XCTAssertEqual(status, RadarStatusErrorServer);
+        XCTAssertNil(address);
 
-      [expectation fulfill];
+        [expectation fulfill];
     }];
 
     [self waitForExpectationsWithTimeout:30
                                  handler:^(NSError *_Nullable error) {
-                                   if (error) {
-                                       XCTFail();
-                                   }
+                                     if (error) {
+                                         XCTFail();
+                                     }
                                  }];
 }
 
@@ -1206,17 +1203,17 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
 
     [Radar ipGeocodeWithCompletionHandler:^(RadarStatus status, RadarAddress *_Nullable address) {
-      XCTAssertEqual(status, RadarStatusSuccess);
-      AssertAddressOk(address);
+        XCTAssertEqual(status, RadarStatusSuccess);
+        AssertAddressOk(address);
 
-      [expectation fulfill];
+        [expectation fulfill];
     }];
 
     [self waitForExpectationsWithTimeout:30
                                  handler:^(NSError *_Nullable error) {
-                                   if (error) {
-                                       XCTFail();
-                                   }
+                                     if (error) {
+                                         XCTFail();
+                                     }
                                  }];
 }
 
@@ -1238,17 +1235,17 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
                               modes:RadarRouteModeFoot | RadarRouteModeCar
                               units:RadarRouteUnitsImperial
                   completionHandler:^(RadarStatus status, RadarRoutes *_Nullable routes) {
-                    XCTAssertEqual(status, RadarStatusSuccess);
-                    AssertRoutesOk(routes);
+                      XCTAssertEqual(status, RadarStatusSuccess);
+                      AssertRoutesOk(routes);
 
-                    [expectation fulfill];
+                      [expectation fulfill];
                   }];
 
     [self waitForExpectationsWithTimeout:30
                                  handler:^(NSError *_Nullable error) {
-                                   if (error) {
-                                       XCTFail();
-                                   }
+                                     if (error) {
+                                         XCTFail();
+                                     }
                                  }];
 }
 

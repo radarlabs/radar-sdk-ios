@@ -45,7 +45,7 @@
     return nil;
 }
 
-- (NSDictionary *)serialize {
+- (NSDictionary *)dictionaryValue {
     NSMutableDictionary *dict = [NSMutableDictionary new];
     [dict setValue:@(self.value) forKey:@"value"];
     [dict setValue:self.text forKey:@"text"];

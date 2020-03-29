@@ -9,11 +9,7 @@
 
 @implementation RadarRegion
 
-- (instancetype)initWithId:(nonnull NSString *)_id
-                      name:(nonnull NSString *)name
-                      code:(nonnull NSString *)code
-                      type:(nonnull NSString *)type
-                      flag:(nullable NSString *)flag {
+- (instancetype)initWithId:(nonnull NSString *)_id name:(nonnull NSString *)name code:(nonnull NSString *)code type:(nonnull NSString *)type flag:(nullable NSString *)flag {
     self = [super init];
     if (self) {
         __id = _id;
@@ -70,7 +66,7 @@
     return nil;
 }
 
-- (NSDictionary *)serialize {
+- (NSDictionary *)dictionaryValue {
     NSMutableDictionary *dict = [NSMutableDictionary new];
     [dict setValue:self._id forKey:@"_id"];
     [dict setValue:self.name forKey:@"name"];

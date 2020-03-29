@@ -36,13 +36,13 @@ static NSString *const kRegionIdentifer = @"radar";
     static id sharedInstance;
     if ([NSThread isMainThread]) {
         dispatch_once(&once, ^{
-          sharedInstance = [self new];
+            sharedInstance = [self new];
         });
     } else {
         dispatch_sync(dispatch_get_main_queue(), ^{
-          dispatch_once(&once, ^{
-            sharedInstance = [self new];
-          });
+            dispatch_once(&once, ^{
+                sharedInstance = [self new];
+            });
         });
     }
     return sharedInstance;
@@ -75,9 +75,9 @@ static NSString *const kRegionIdentifer = @"radar";
             return;
         }
 
-        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo
-                                           message:[NSString stringWithFormat:@"Calling completion handlers | self.completionHandlers.count = %lu",
-                                                                              (unsigned long)self.completionHandlers.count]];
+        [[RadarLogger sharedInstance]
+            logWithLevel:RadarLogLevelInfo
+                 message:[NSString stringWithFormat:@"Calling completion handlers | self.completionHandlers.count = %lu", (unsigned long)self.completionHandlers.count]];
 
         for (RadarLocationCompletionHandler completionHandler in self.completionHandlers) {
             [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(timeoutWithCompletionHandler:) object:completionHandler];
@@ -119,8 +119,7 @@ static NSString *const kRegionIdentifer = @"radar";
     [self getLocationWithDesiredAccuracy:RadarTrackingOptionsDesiredAccuracyMedium completionHandler:completionHandler];
 }
 
-- (void)getLocationWithDesiredAccuracy:(RadarTrackingOptionsDesiredAccuracy)desiredAccuracy
-                     completionHandler:(RadarLocationCompletionHandler)completionHandler {
+- (void)getLocationWithDesiredAccuracy:(RadarTrackingOptionsDesiredAccuracy)desiredAccuracy completionHandler:(RadarLocationCompletionHandler)completionHandler {
     CLAuthorizationStatus authorizationStatus = [self.permissionsHelper locationAuthorizationStatus];
     if (!(authorizationStatus == kCLAuthorizationStatusAuthorizedWhenInUse || authorizationStatus == kCLAuthorizationStatusAuthorizedAlways)) {
         if (self.delegate) {
@@ -184,11 +183,11 @@ static NSString *const kRegionIdentifer = @"radar";
         self.timer = [NSTimer scheduledTimerWithTimeInterval:interval
                                                      repeats:YES
                                                        block:^(NSTimer *_Nonnull timer) {
-                                                         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Timer fired"];
+                                                           [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Timer fired"];
 
-                                                         [[RadarBackgroundTaskManager sharedInstance] startBackgroundTask];
+                                                           [[RadarBackgroundTaskManager sharedInstance] startBackgroundTask];
 
-                                                         [self requestLocation];
+                                                           [self requestLocation];
                                                        }];
 
         [self.lowPowerLocationManager startUpdatingLocation];
@@ -241,93 +240,90 @@ static NSString *const kRegionIdentifer = @"radar";
 
 - (void)updateTracking:(CLLocation *)location {
     dispatch_async(dispatch_get_main_queue(), ^{
-      BOOL tracking = [RadarSettings tracking];
-      RadarTrackingOptions *options = [RadarSettings trackingOptions];
+        BOOL tracking = [RadarSettings tracking];
+        RadarTrackingOptions *options = [RadarSettings trackingOptions];
 
-      [[RadarLogger sharedInstance]
-          logWithLevel:RadarLogLevelDebug
-               message:[NSString stringWithFormat:@"Updating tracking | options = %@; location = %@", [options dictionaryValue], location]];
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
+                                           message:[NSString stringWithFormat:@"Updating tracking | options = %@; location = %@", [options dictionaryValue], location]];
 
-      if (!tracking && [options.startTrackingAfter timeIntervalSinceNow] < 0) {
-          [[RadarLogger sharedInstance]
-              logWithLevel:RadarLogLevelInfo
-                   message:[NSString stringWithFormat:@"Starting time-based tracking | startTrackingAfter = %@", options.startTrackingAfter]];
+        if (!tracking && [options.startTrackingAfter timeIntervalSinceNow] < 0) {
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo
+                                               message:[NSString stringWithFormat:@"Starting time-based tracking | startTrackingAfter = %@", options.startTrackingAfter]];
 
-          [RadarSettings setTracking:YES];
-          tracking = YES;
-      } else if (tracking && [options.stopTrackingAfter timeIntervalSinceNow] < 0) {
-          [[RadarLogger sharedInstance]
-              logWithLevel:RadarLogLevelDebug
-                   message:[NSString stringWithFormat:@"Stopping time-based tracking | stopTrackingAfter = %@", options.stopTrackingAfter]];
+            [RadarSettings setTracking:YES];
+            tracking = YES;
+        } else if (tracking && [options.stopTrackingAfter timeIntervalSinceNow] < 0) {
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
+                                               message:[NSString stringWithFormat:@"Stopping time-based tracking | stopTrackingAfter = %@", options.stopTrackingAfter]];
 
-          [RadarSettings setTracking:NO];
-          tracking = NO;
-      }
+            [RadarSettings setTracking:NO];
+            tracking = NO;
+        }
 
-      if (tracking) {
-          self.locationManager.pausesLocationUpdatesAutomatically = NO;
-          self.lowPowerLocationManager.pausesLocationUpdatesAutomatically = NO;
+        if (tracking) {
+            self.locationManager.pausesLocationUpdatesAutomatically = NO;
+            self.lowPowerLocationManager.pausesLocationUpdatesAutomatically = NO;
 
-          CLLocationAccuracy desiredAccuracy;
-          switch (options.desiredAccuracy) {
-          case RadarTrackingOptionsDesiredAccuracyHigh:
-              desiredAccuracy = kCLLocationAccuracyBest;
-              break;
-          case RadarTrackingOptionsDesiredAccuracyMedium:
-              desiredAccuracy = kCLLocationAccuracyHundredMeters;
-              break;
-          case RadarTrackingOptionsDesiredAccuracyLow:
-              desiredAccuracy = kCLLocationAccuracyKilometer;
-              break;
-          default:
-              desiredAccuracy = kCLLocationAccuracyHundredMeters;
-          }
-          self.locationManager.desiredAccuracy = desiredAccuracy;
+            CLLocationAccuracy desiredAccuracy;
+            switch (options.desiredAccuracy) {
+            case RadarTrackingOptionsDesiredAccuracyHigh:
+                desiredAccuracy = kCLLocationAccuracyBest;
+                break;
+            case RadarTrackingOptionsDesiredAccuracyMedium:
+                desiredAccuracy = kCLLocationAccuracyHundredMeters;
+                break;
+            case RadarTrackingOptionsDesiredAccuracyLow:
+                desiredAccuracy = kCLLocationAccuracyKilometer;
+                break;
+            default:
+                desiredAccuracy = kCLLocationAccuracyHundredMeters;
+            }
+            self.locationManager.desiredAccuracy = desiredAccuracy;
 
-          if (@available(iOS 11.0, *)) {
-              self.lowPowerLocationManager.showsBackgroundLocationIndicator = options.showBlueBar;
-          }
+            if (@available(iOS 11.0, *)) {
+                self.lowPowerLocationManager.showsBackgroundLocationIndicator = options.showBlueBar;
+            }
 
-          BOOL stopped = [RadarState stopped];
-          if (stopped) {
-              if (options.desiredStoppedUpdateInterval == 0) {
-                  [self stopUpdates];
-              } else {
-                  [self startUpdates:options.desiredStoppedUpdateInterval];
-              }
-              if (options.useStoppedGeofence) {
-                  if (location) {
-                      [self replaceGeofence:location radius:options.stoppedGeofenceRadius];
-                  }
-              } else {
-                  [self removeGeofences];
-              }
-          } else {
-              if (options.desiredMovingUpdateInterval == 0) {
-                  [self stopUpdates];
-              } else {
-                  [self startUpdates:options.desiredMovingUpdateInterval];
-              }
-              if (options.useMovingGeofence) {
-                  if (location) {
-                      [self replaceGeofence:location radius:options.movingGeofenceRadius];
-                  }
-              } else {
-                  [self removeGeofences];
-              }
-          }
-          if (options.useVisits) {
-              [self.locationManager startMonitoringVisits];
-          }
-          if (options.useSignificantLocationChanges) {
-              [self.locationManager startMonitoringSignificantLocationChanges];
-          }
-      } else {
-          [self stopUpdates];
-          [self removeGeofences];
-          [self.locationManager stopMonitoringVisits];
-          [self.locationManager stopMonitoringSignificantLocationChanges];
-      }
+            BOOL stopped = [RadarState stopped];
+            if (stopped) {
+                if (options.desiredStoppedUpdateInterval == 0) {
+                    [self stopUpdates];
+                } else {
+                    [self startUpdates:options.desiredStoppedUpdateInterval];
+                }
+                if (options.useStoppedGeofence) {
+                    if (location) {
+                        [self replaceGeofence:location radius:options.stoppedGeofenceRadius];
+                    }
+                } else {
+                    [self removeGeofences];
+                }
+            } else {
+                if (options.desiredMovingUpdateInterval == 0) {
+                    [self stopUpdates];
+                } else {
+                    [self startUpdates:options.desiredMovingUpdateInterval];
+                }
+                if (options.useMovingGeofence) {
+                    if (location) {
+                        [self replaceGeofence:location radius:options.movingGeofenceRadius];
+                    }
+                } else {
+                    [self removeGeofences];
+                }
+            }
+            if (options.useVisits) {
+                [self.locationManager startMonitoringVisits];
+            }
+            if (options.useSignificantLocationChanges) {
+                [self.locationManager startMonitoringSignificantLocationChanges];
+            }
+        } else {
+            [self stopUpdates];
+            [self removeGeofences];
+            [self.locationManager stopMonitoringVisits];
+            [self.locationManager stopMonitoringSignificantLocationChanges];
+        }
     });
 }
 
@@ -349,14 +345,12 @@ static NSString *const kRegionIdentifer = @"radar";
 #pragma mark - handlers
 
 - (void)handleLocation:(CLLocation *)location source:(RadarLocationSource)source {
-    [[RadarLogger sharedInstance]
-        logWithLevel:RadarLogLevelDebug
-             message:[NSString stringWithFormat:@"Handling location | source = %@; location = %@", [Radar stringForSource:source], location]];
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
+                                       message:[NSString stringWithFormat:@"Handling location | source = %@; location = %@", [Radar stringForSource:source], location]];
 
     if (!location || ![RadarUtils validLocation:location]) {
-        [[RadarLogger sharedInstance]
-            logWithLevel:RadarLogLevelDebug
-                 message:[NSString stringWithFormat:@"Invalid location | source = %@; location = %@", [Radar stringForSource:source], location]];
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
+                                           message:[NSString stringWithFormat:@"Invalid location | source = %@; location = %@", [Radar stringForSource:source], location]];
 
         [self callCompletionHandlersWithStatus:RadarStatusErrorLocation location:nil];
 
@@ -395,8 +389,7 @@ static NSString *const kRegionIdentifer = @"radar";
         if (!force && [lastMovedAt timeIntervalSinceDate:location.timestamp] > 0) {
             [[RadarLogger sharedInstance]
                 logWithLevel:RadarLogLevelDebug
-                     message:[NSString
-                                 stringWithFormat:@"Skipping location: old | lastMovedAt = %@; location.timestamp = %@", lastMovedAt, location.timestamp]];
+                     message:[NSString stringWithFormat:@"Skipping location: old | lastMovedAt = %@; location.timestamp = %@", lastMovedAt, location.timestamp]];
 
             return;
         }
@@ -410,13 +403,8 @@ static NSString *const kRegionIdentifer = @"radar";
 
             [[RadarLogger sharedInstance]
                 logWithLevel:RadarLogLevelDebug
-                     message:[NSString stringWithFormat:
-                                           @"Calculating stopped | stopped = %d; distance = %f; duration = %f; location.timestamp = %@; lastMovedAt = %@",
-                                           stopped,
-                                           distance,
-                                           duration,
-                                           location.timestamp,
-                                           lastMovedAt]];
+                     message:[NSString stringWithFormat:@"Calculating stopped | stopped = %d; distance = %f; duration = %f; location.timestamp = %@; lastMovedAt = %@", stopped,
+                                                        distance, duration, location.timestamp, lastMovedAt]];
 
             if (distance > options.stopDistance) {
                 [RadarState setLastMovedLocation:location];
@@ -461,21 +449,17 @@ static NSString *const kRegionIdentifer = @"radar";
     NSDate *now = [NSDate new];
     NSTimeInterval lastSyncInterval = [now timeIntervalSinceDate:lastSentAt];
     if (!ignoreSync) {
-        if (!force && stopped && wasStopped && distance <= options.stopDistance &&
-            (options.desiredStoppedUpdateInterval == 0 || options.sync != RadarTrackingOptionsSyncAll)) {
-            [[RadarLogger sharedInstance]
-                logWithLevel:RadarLogLevelDebug
-                     message:[NSString stringWithFormat:@"Skipping sync: already stopped | stopped = %d; wasStopped = %d", stopped, wasStopped]];
+        if (!force && stopped && wasStopped && distance <= options.stopDistance && (options.desiredStoppedUpdateInterval == 0 || options.sync != RadarTrackingOptionsSyncAll)) {
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
+                                               message:[NSString stringWithFormat:@"Skipping sync: already stopped | stopped = %d; wasStopped = %d", stopped, wasStopped]];
 
             return;
         }
 
         if (lastSyncInterval < options.desiredSyncInterval) {
-            [[RadarLogger sharedInstance]
-                logWithLevel:RadarLogLevelDebug
-                     message:[NSString stringWithFormat:@"Skipping sync: desired sync interval | desiredSyncInterval = %d; lastSyncInterval = %f",
-                                                        options.desiredSyncInterval,
-                                                        lastSyncInterval]];
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
+                                               message:[NSString stringWithFormat:@"Skipping sync: desired sync interval | desiredSyncInterval = %d; lastSyncInterval = %f",
+                                                                                  options.desiredSyncInterval, lastSyncInterval]];
 
             return;
         }
@@ -489,19 +473,17 @@ static NSString *const kRegionIdentifer = @"radar";
         }
 
         if (options.sync == RadarTrackingOptionsSyncNone) {
-            [[RadarLogger sharedInstance]
-                logWithLevel:RadarLogLevelInfo
-                     message:[NSString stringWithFormat:@"Skipping sync: sync mode | sync = %@", [RadarTrackingOptions stringForSync:options.sync]]];
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo
+                                               message:[NSString stringWithFormat:@"Skipping sync: sync mode | sync = %@", [RadarTrackingOptions stringForSync:options.sync]]];
 
             return;
         }
 
         BOOL canExit = [RadarState canExit];
         if (!canExit && options.sync == RadarTrackingOptionsSyncStopsAndExits) {
-            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo
-                                               message:[NSString stringWithFormat:@"Skipping sync: can't exit | sync = %@; canExit = %d",
-                                                                                  [RadarTrackingOptions stringForSync:options.sync],
-                                                                                  canExit]];
+            [[RadarLogger sharedInstance]
+                logWithLevel:RadarLogLevelInfo
+                     message:[NSString stringWithFormat:@"Skipping sync: can't exit | sync = %@; canExit = %d", [RadarTrackingOptions stringForSync:options.sync], canExit]];
 
             return;
         }
@@ -518,9 +500,9 @@ static NSString *const kRegionIdentifer = @"radar";
         self.scheduled = YES;
 
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-          [self sendLocation:sendLocation stopped:stopped source:source replayed:replayed];
+            [self sendLocation:sendLocation stopped:stopped source:source replayed:replayed];
 
-          self.scheduled = NO;
+            self.scheduled = NO;
         });
     } else {
         [self sendLocation:sendLocation stopped:stopped source:source replayed:replayed];
@@ -530,34 +512,30 @@ static NSString *const kRegionIdentifer = @"radar";
 - (void)sendLocation:(CLLocation *)location stopped:(BOOL)stopped source:(RadarLocationSource)source replayed:(BOOL)replayed {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
                                        message:[NSString stringWithFormat:@"Sending location | source = %@; location = %@; stopped = %d; replayed = %d",
-                                                                          [Radar stringForSource:source],
-                                                                          location,
-                                                                          stopped,
-                                                                          replayed]];
+                                                                          [Radar stringForSource:source], location, stopped, replayed]];
 
     self.sending = YES;
 
-    [[RadarAPIClient sharedInstance]
-        trackWithLocation:location
-                  stopped:stopped
-                   source:source
-                 replayed:replayed
-        completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user) {
-          if (user) {
-              [RadarSettings setId:user._id];
+    [[RadarAPIClient sharedInstance] trackWithLocation:location
+                                               stopped:stopped
+                                                source:source
+                                              replayed:replayed
+                                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user) {
+                                         if (user) {
+                                             [RadarSettings setId:user._id];
 
-              BOOL inGeofences = user.geofences && user.geofences.count;
-              BOOL atPlace = user.place != nil;
-              BOOL atHome = user.insights && user.insights.state && user.insights.state.home;
-              BOOL atOffice = user.insights && user.insights.state && user.insights.state.office;
-              BOOL canExit = inGeofences || atPlace || atHome || atOffice;
-              [RadarState setCanExit:canExit];
-          }
+                                             BOOL inGeofences = user.geofences && user.geofences.count;
+                                             BOOL atPlace = user.place != nil;
+                                             BOOL atHome = user.insights && user.insights.state && user.insights.state.home;
+                                             BOOL atOffice = user.insights && user.insights.state && user.insights.state.office;
+                                             BOOL canExit = inGeofences || atPlace || atHome || atOffice;
+                                             [RadarState setCanExit:canExit];
+                                         }
 
-          self.sending = NO;
+                                         self.sending = NO;
 
-          [self updateTracking];
-        }];
+                                         [self updateTracking];
+                                     }];
 }
 
 #pragma mark - CLLocationManagerDelegate
@@ -584,8 +562,7 @@ static NSString *const kRegionIdentifer = @"radar";
 
 - (void)locationManager:(CLLocationManager *)manager didVisit:(CLVisit *)visit {
     if (visit && manager && manager.location) {
-        RadarLocationSource source =
-            [visit.departureDate isEqualToDate:[NSDate distantFuture]] ? RadarLocationSourceVisitArrival : RadarLocationSourceVisitDeparture;
+        RadarLocationSource source = [visit.departureDate isEqualToDate:[NSDate distantFuture]] ? RadarLocationSourceVisitArrival : RadarLocationSourceVisitDeparture;
         [self handleLocation:manager.location source:source];
     }
 }

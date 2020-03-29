@@ -44,9 +44,7 @@ NS_ASSUME_NONNULL_BEGIN
  @param stopped A boolean indicating whether the client is stopped.
  @param source The source of the location.
  */
-- (void)didUpdateClientLocation:(CLLocation *_Nonnull)location
-                        stopped:(BOOL)stopped
-                         source:(RadarLocationSource)source NS_SWIFT_NAME(didUpdateClientLocation(_:stopped:source:));
+- (void)didUpdateClientLocation:(CLLocation *_Nonnull)location stopped:(BOOL)stopped source:(RadarLocationSource)source NS_SWIFT_NAME(didUpdateClientLocation(_:stopped:source:));
 
 /**
  Tells the delegate that a request failed.

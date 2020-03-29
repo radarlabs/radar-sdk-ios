@@ -26,13 +26,13 @@ static NSString *const kBackgroundTaskName = @"radar";
     static id sharedInstance;
     if ([NSThread isMainThread]) {
         dispatch_once(&once, ^{
-          sharedInstance = [self new];
+            sharedInstance = [self new];
         });
     } else {
         dispatch_sync(dispatch_get_main_queue(), ^{
-          dispatch_once(&once, ^{
-            sharedInstance = [self new];
-          });
+            dispatch_once(&once, ^{
+                sharedInstance = [self new];
+            });
         });
     }
     return sharedInstance;
@@ -51,8 +51,7 @@ static NSString *const kBackgroundTaskName = @"radar";
     NSTimeInterval duration = backgroundTimeRemaining > 170 ? 170 : backgroundTimeRemaining - 10;
 
     if (duration < 10) {
-        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelWarning
-                                           message:[NSString stringWithFormat:@"Background time expiring | duration = %f", duration]];
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelWarning message:[NSString stringWithFormat:@"Background time expiring | duration = %f", duration]];
 
         return;
     }
@@ -60,23 +59,23 @@ static NSString *const kBackgroundTaskName = @"radar";
     __block UIBackgroundTaskIdentifier backgroundTaskIdentifier = [[UIApplication sharedApplication]
         beginBackgroundTaskWithName:kBackgroundTaskName
                   expirationHandler:^{
-                    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelWarning
-                                                       message:[NSString stringWithFormat:@"Expiring background task | backgroundTaskIdentifier = %lu",
-                                                                                          (unsigned long)backgroundTaskIdentifier]];
+                      [[RadarLogger sharedInstance]
+                          logWithLevel:RadarLogLevelWarning
+                               message:[NSString stringWithFormat:@"Expiring background task | backgroundTaskIdentifier = %lu", (unsigned long)backgroundTaskIdentifier]];
 
-                    [self endBackgroundTaskWithIdentifier:backgroundTaskIdentifier];
+                      [self endBackgroundTaskWithIdentifier:backgroundTaskIdentifier];
                   }];
 
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(duration * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-      [self endBackgroundTaskWithIdentifier:backgroundTaskIdentifier];
+        [self endBackgroundTaskWithIdentifier:backgroundTaskIdentifier];
     });
 
     @synchronized(self) {
         [self.backgroundTaskIdentifierNumbers addObject:[NSNumber numberWithUnsignedLong:backgroundTaskIdentifier]];
 
-        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelWarning
-                                           message:[NSString stringWithFormat:@"Started background task | backgroundTaskIdentifier = %lu; duration = %f",
-                                                                              (unsigned long)backgroundTaskIdentifier, duration]];
+        [[RadarLogger sharedInstance]
+            logWithLevel:RadarLogLevelWarning
+                 message:[NSString stringWithFormat:@"Started background task | backgroundTaskIdentifier = %lu; duration = %f", (unsigned long)backgroundTaskIdentifier, duration]];
     }
 }
 
@@ -98,9 +97,8 @@ static NSString *const kBackgroundTaskName = @"radar";
 
 - (void)endBackgroundTaskWithIdentifier:(UIBackgroundTaskIdentifier)backgroundTaskIdentifier {
     @synchronized(self) {
-        [[RadarLogger sharedInstance]
-            logWithLevel:RadarLogLevelWarning
-                 message:[NSString stringWithFormat:@"Ending background task | backgroundTaskIdentifier = %lu", (unsigned long)backgroundTaskIdentifier]];
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelWarning
+                                           message:[NSString stringWithFormat:@"Ending background task | backgroundTaskIdentifier = %lu", (unsigned long)backgroundTaskIdentifier]];
 
         [[UIApplication sharedApplication] endBackgroundTask:backgroundTaskIdentifier];
         backgroundTaskIdentifier = UIBackgroundTaskInvalid;

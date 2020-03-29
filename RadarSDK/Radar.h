@@ -130,10 +130,7 @@ typedef void (^_Nullable RadarLocationCompletionHandler)(RadarStatus status, CLL
 
  @see https://radar.io/documentation/sdk#ios-foreground
  */
-typedef void (^_Nullable RadarTrackCompletionHandler)(RadarStatus status,
-                                                      CLLocation *_Nullable location,
-                                                      NSArray<RadarEvent *> *_Nullable events,
-                                                      RadarUser *_Nullable user);
+typedef void (^_Nullable RadarTrackCompletionHandler)(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user);
 
 /**
  Called when a context request succeeds, fails, or times out. Receives the request status and, if successful, the location and the context.
@@ -156,9 +153,7 @@ typedef void (^_Nonnull RadarSearchPlacesCompletionHandler)(RadarStatus status, 
 
  @see https://radar.io/documentation/api#search-geofences
  */
-typedef void (^_Nonnull RadarSearchGeofencesCompletionHandler)(RadarStatus status,
-                                                               CLLocation *_Nullable location,
-                                                               NSArray<RadarGeofence *> *_Nullable geofences);
+typedef void (^_Nonnull RadarSearchGeofencesCompletionHandler)(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarGeofence *> *_Nullable geofences);
 
 /**
 Called when a point search request succeeds, fails, or times out. Receives the request status and, if successful, the location and an array of points sorted by
@@ -277,8 +272,7 @@ typedef void (^_Nonnull RadarRouteCompletionHandler)(RadarStatus status, RadarRo
  @param completionHandler An optional completion handler.
  */
 + (void)getLocationWithDesiredAccuracy:(RadarTrackingOptionsDesiredAccuracy)desiredAccuracy
-                     completionHandler:(RadarLocationCompletionHandler _Nullable)completionHandler
-    NS_SWIFT_NAME(getLocation(desiredAccuracy:completionHandler:));
+                     completionHandler:(RadarLocationCompletionHandler _Nullable)completionHandler NS_SWIFT_NAME(getLocation(desiredAccuracy:completionHandler:));
 
 /**
  Tracks the user's location once in the foreground.
@@ -397,8 +391,7 @@ typedef void (^_Nonnull RadarRouteCompletionHandler)(RadarStatus status, RadarRo
                     categories:(NSArray *_Nullable)categories
                         groups:(NSArray *_Nullable)groups
                          limit:(int)limit
-             completionHandler:(RadarSearchPlacesCompletionHandler)completionHandler NS_SWIFT_NAME(searchPlaces(radius:chains:categories:groups:limit:
-                                                                                                                completionHandler:));
+             completionHandler:(RadarSearchPlacesCompletionHandler)completionHandler NS_SWIFT_NAME(searchPlaces(radius:chains:categories:groups:limit:completionHandler:));
 
 /**
  Searches for places near a location, sorted by distance.
@@ -419,8 +412,7 @@ typedef void (^_Nonnull RadarRouteCompletionHandler)(RadarStatus status, RadarRo
               categories:(NSArray *_Nullable)categories
                   groups:(NSArray *_Nullable)groups
                    limit:(int)limit
-       completionHandler:(RadarSearchPlacesCompletionHandler)completionHandler NS_SWIFT_NAME(searchPlaces(near:radius:chains:categories:groups:limit:
-                                                                                                          completionHandler:));
+       completionHandler:(RadarSearchPlacesCompletionHandler)completionHandler NS_SWIFT_NAME(searchPlaces(near:radius:chains:categories:groups:limit:completionHandler:));
 
 /**
  Gets the device's current location, then searches for geofences near that location, sorted by distance.
@@ -497,8 +489,7 @@ typedef void (^_Nonnull RadarRouteCompletionHandler)(RadarStatus status, RadarRo
  @param query The address to geocode.
  @param completionHandler A completion handler.
  */
-+ (void)geocodeAddress:(NSString *_Nonnull)query
-     completionHandler:(RadarGeocodeCompletionHandler)completionHandler NS_SWIFT_NAME(geocode(address:completionHandler:));
++ (void)geocodeAddress:(NSString *_Nonnull)query completionHandler:(RadarGeocodeCompletionHandler)completionHandler NS_SWIFT_NAME(geocode(address:completionHandler:));
 
 /**
  Gets the device's current location, then reverse geocodes that location, converting coordinates to address.

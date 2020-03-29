@@ -56,7 +56,7 @@
     return [[RadarUserInsightsState alloc] initWithHome:home office:office traveling:traveling commuting:commuting];
 }
 
-- (NSDictionary *)serialize {
+- (NSDictionary *)dictionaryValue {
     NSMutableDictionary *dict = [NSMutableDictionary new];
     [dict setValue:@(self.home) forKey:@"home"];
     [dict setValue:@(self.office) forKey:@"office"];

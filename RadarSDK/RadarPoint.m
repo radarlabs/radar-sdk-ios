@@ -45,7 +45,6 @@
     RadarCoordinate *location = [dict radar_coordinateForKey:@"geometry"];
 
     if (_id && description && location) {
-        // the above fields must be nonnull.
         return [[RadarPoint alloc] initWithId:_id description:description tag:tag externalId:externalId metadata:metadata location:location];
     }
     return nil;

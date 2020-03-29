@@ -268,46 +268,46 @@
     return nil;
 }
 
-- (NSDictionary *)serialize {
+- (NSDictionary *)dictionaryValue {
     NSMutableDictionary *dict = [NSMutableDictionary new];
     [dict setValue:self._id forKey:@"_id"];
     [dict setValue:self.userId forKey:@"userId"];
     [dict setValue:self.deviceId forKey:@"deviceId"];
     [dict setValue:self._description forKey:@"description"];
     [dict setValue:self.metadata forKey:@"metadata"];
-    NSArray *geofencesArr = [RadarGeofence serializeArray:self.geofences];
+    NSArray *geofencesArr = [RadarGeofence arrayForGeofences:self.geofences];
     [dict setValue:geofencesArr forKey:@"geofences"];
     if (self.place) {
-        NSDictionary *placeDict = [self.place serialize];
+        NSDictionary *placeDict = [self.place dictionaryValue];
         [dict setValue:placeDict forKey:@"place"];
     }
     if (self.insights) {
-        NSDictionary *insightsDict = [self.insights serialize];
+        NSDictionary *insightsDict = [self.insights dictionaryValue];
         [dict setValue:insightsDict forKey:@"insights"];
     }
     [dict setValue:@(self.stopped) forKey:@"stopped"];
     [dict setValue:@(self.foreground) forKey:@"foreground"];
     if (self.country) {
-        NSDictionary *countryDict = [self.country serialize];
+        NSDictionary *countryDict = [self.country dictionaryValue];
         [dict setValue:countryDict forKey:@"country"];
     }
     if (self.state) {
-        NSDictionary *stateDict = [self.state serialize];
+        NSDictionary *stateDict = [self.state dictionaryValue];
         [dict setValue:stateDict forKey:@"state"];
     }
     if (self.dma) {
-        NSDictionary *dmaDict = [self.dma serialize];
+        NSDictionary *dmaDict = [self.dma dictionaryValue];
         [dict setValue:dmaDict forKey:@"dma"];
     }
     if (self.postalCode) {
-        NSDictionary *postalCodeDict = [self.postalCode serialize];
+        NSDictionary *postalCodeDict = [self.postalCode dictionaryValue];
         [dict setValue:postalCodeDict forKey:@"postalCode"];
     }
-    NSArray *nearbyPlaceChains = [RadarChain serializeArray:self.nearbyPlaceChains];
+    NSArray *nearbyPlaceChains = [RadarChain arrayForChains:self.nearbyPlaceChains];
     [dict setValue:nearbyPlaceChains forKey:@"nearbyPlaceChains"];
-    NSArray *segmentsArr = [RadarSegment serializeArray:self.segments];
+    NSArray *segmentsArr = [RadarSegment arrayForSegments:self.segments];
     [dict setValue:segmentsArr forKey:@"segments"];
-    NSArray *topChainsArr = [RadarChain serializeArray:self.topChains];
+    NSArray *topChainsArr = [RadarChain arrayForChains:self.topChains];
     [dict setValue:topChainsArr forKey:@"topChains"];
     return dict;
 }

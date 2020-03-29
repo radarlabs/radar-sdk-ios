@@ -26,7 +26,7 @@
     static dispatch_once_t once;
     static id sharedInstance;
     dispatch_once(&once, ^{
-      sharedInstance = [self new];
+        sharedInstance = [self new];
     });
     return sharedInstance;
 }
@@ -80,19 +80,19 @@
                               headers:headers
                                params:nil
                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
-                      if (!res) {
-                          return;
-                      }
+                        if (!res) {
+                            return;
+                        }
 
-                      id metaObj = res[@"meta"];
-                      if (metaObj && [metaObj isKindOfClass:[NSDictionary class]]) {
-                          NSDictionary *meta = (NSDictionary *)metaObj;
-                          id configObj = meta[@"config"];
-                          if (configObj && [configObj isKindOfClass:[NSDictionary class]]) {
-                              NSDictionary *config = (NSDictionary *)configObj;
-                              [RadarSettings setConfig:config];
-                          }
-                      }
+                        id metaObj = res[@"meta"];
+                        if (metaObj && [metaObj isKindOfClass:[NSDictionary class]]) {
+                            NSDictionary *meta = (NSDictionary *)metaObj;
+                            id configObj = meta[@"config"];
+                            if (configObj && [configObj isKindOfClass:[NSDictionary class]]) {
+                                NSDictionary *config = (NSDictionary *)configObj;
+                                [RadarSettings setConfig:config];
+                            }
+                        }
                     }];
 }
 
@@ -163,55 +163,55 @@
                               headers:headers
                                params:params
                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
-                      if (status != RadarStatusSuccess || !res) {
-                          RadarTrackingOptions *options = [RadarSettings trackingOptions];
-                          if (options.replay == RadarTrackingOptionsReplayStops && stopped &&
-                              !(source == RadarLocationSourceForegroundLocation || source == RadarLocationSourceManualLocation)) {
-                              [RadarState setLastFailedStoppedLocation:location];
-                          }
+                        if (status != RadarStatusSuccess || !res) {
+                            RadarTrackingOptions *options = [RadarSettings trackingOptions];
+                            if (options.replay == RadarTrackingOptionsReplayStops && stopped &&
+                                !(source == RadarLocationSourceForegroundLocation || source == RadarLocationSourceManualLocation)) {
+                                [RadarState setLastFailedStoppedLocation:location];
+                            }
 
-                          if (self.delegate) {
-                              [self.delegate didFailWithStatus:status];
-                          }
+                            if (self.delegate) {
+                                [self.delegate didFailWithStatus:status];
+                            }
 
-                          return completionHandler(status, nil, nil, nil);
-                      }
+                            return completionHandler(status, nil, nil, nil);
+                        }
 
-                      [RadarState setLastFailedStoppedLocation:nil];
+                        [RadarState setLastFailedStoppedLocation:nil];
 
-                      id metaObj = res[@"meta"];
-                      if (metaObj && [metaObj isKindOfClass:[NSDictionary class]]) {
-                          NSDictionary *meta = (NSDictionary *)metaObj;
-                          id configObj = meta[@"config"];
-                          if (configObj && [configObj isKindOfClass:[NSDictionary class]]) {
-                              NSDictionary *config = (NSDictionary *)configObj;
-                              [RadarSettings setConfig:config];
-                          }
-                      }
+                        id metaObj = res[@"meta"];
+                        if (metaObj && [metaObj isKindOfClass:[NSDictionary class]]) {
+                            NSDictionary *meta = (NSDictionary *)metaObj;
+                            id configObj = meta[@"config"];
+                            if (configObj && [configObj isKindOfClass:[NSDictionary class]]) {
+                                NSDictionary *config = (NSDictionary *)configObj;
+                                [RadarSettings setConfig:config];
+                            }
+                        }
 
-                      id eventsObj = res[@"events"];
-                      id userObj = res[@"user"];
-                      NSArray<RadarEvent *> *events = [RadarEvent eventsFromObject:eventsObj];
-                      RadarUser *user = [[RadarUser alloc] initWithObject:userObj];
-                      if (events && user) {
-                          if (self.delegate) {
-                              if (location) {
-                                  [self.delegate didUpdateLocation:location user:user];
-                              }
+                        id eventsObj = res[@"events"];
+                        id userObj = res[@"user"];
+                        NSArray<RadarEvent *> *events = [RadarEvent eventsFromObject:eventsObj];
+                        RadarUser *user = [[RadarUser alloc] initWithObject:userObj];
+                        if (events && user) {
+                            if (self.delegate) {
+                                if (location) {
+                                    [self.delegate didUpdateLocation:location user:user];
+                                }
 
-                              if (events.count) {
-                                  [self.delegate didReceiveEvents:events user:user];
-                              }
-                          }
+                                if (events.count) {
+                                    [self.delegate didReceiveEvents:events user:user];
+                                }
+                            }
 
-                          return completionHandler(RadarStatusSuccess, res, events, user);
-                      }
+                            return completionHandler(RadarStatusSuccess, res, events, user);
+                        }
 
-                      if (self.delegate) {
-                          [self.delegate didFailWithStatus:status];
-                      }
+                        if (self.delegate) {
+                            [self.delegate didFailWithStatus:status];
+                        }
 
-                      completionHandler(RadarStatusErrorServer, nil, nil, nil);
+                        completionHandler(RadarStatusErrorServer, nil, nil, nil);
                     }];
 }
 
@@ -262,17 +262,17 @@
                               headers:headers
                                params:nil
                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
-                      if (status != RadarStatusSuccess || !res) {
-                          return completionHandler(status, nil, nil);
-                      }
+                        if (status != RadarStatusSuccess || !res) {
+                            return completionHandler(status, nil, nil);
+                        }
 
-                      id contextObj = res[@"context"];
-                      RadarContext *context = [[RadarContext alloc] initWithObject:contextObj];
-                      if (context) {
-                          return completionHandler(RadarStatusSuccess, res, context);
-                      }
+                        id contextObj = res[@"context"];
+                        RadarContext *context = [[RadarContext alloc] initWithObject:contextObj];
+                        if (context) {
+                            return completionHandler(RadarStatusSuccess, res, context);
+                        }
 
-                      completionHandler(RadarStatusErrorServer, nil, nil);
+                        completionHandler(RadarStatusErrorServer, nil, nil);
                     }];
 }
 
@@ -315,17 +315,17 @@
                               headers:headers
                                params:nil
                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
-                      if (status != RadarStatusSuccess || !res) {
-                          return completionHandler(status, nil, nil);
-                      }
+                        if (status != RadarStatusSuccess || !res) {
+                            return completionHandler(status, nil, nil);
+                        }
 
-                      id placesObj = res[@"places"];
-                      NSArray<RadarPlace *> *places = [RadarPlace placesFromObject:placesObj];
-                      if (places) {
-                          return completionHandler(RadarStatusSuccess, res, places);
-                      }
+                        id placesObj = res[@"places"];
+                        NSArray<RadarPlace *> *places = [RadarPlace placesFromObject:placesObj];
+                        if (places) {
+                            return completionHandler(RadarStatusSuccess, res, places);
+                        }
 
-                      completionHandler(RadarStatusErrorServer, nil, nil);
+                        completionHandler(RadarStatusErrorServer, nil, nil);
                     }];
 }
 
@@ -360,17 +360,17 @@
                               headers:headers
                                params:nil
                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
-                      if (status != RadarStatusSuccess || !res) {
-                          return completionHandler(status, nil, nil);
-                      }
+                        if (status != RadarStatusSuccess || !res) {
+                            return completionHandler(status, nil, nil);
+                        }
 
-                      id geofencesObj = res[@"geofences"];
-                      NSArray<RadarGeofence *> *geofences = [RadarGeofence geofencesFromObject:geofencesObj];
-                      if (geofences) {
-                          return completionHandler(RadarStatusSuccess, res, geofences);
-                      }
+                        id geofencesObj = res[@"geofences"];
+                        NSArray<RadarGeofence *> *geofences = [RadarGeofence geofencesFromObject:geofencesObj];
+                        if (geofences) {
+                            return completionHandler(RadarStatusSuccess, res, geofences);
+                        }
 
-                      completionHandler(RadarStatusErrorServer, nil, nil);
+                        completionHandler(RadarStatusErrorServer, nil, nil);
                     }];
 }
 
@@ -404,24 +404,21 @@
                               headers:headers
                                params:nil
                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
-                      if (status != RadarStatusSuccess || !res) {
-                          return completionHandler(status, nil, nil);
-                      }
+                        if (status != RadarStatusSuccess || !res) {
+                            return completionHandler(status, nil, nil);
+                        }
 
-                      id pointsObj = res[@"points"];
-                      NSArray<RadarPoint *> *points = [RadarPoint pointsFromObject:pointsObj];
-                      if (points) {
-                          return completionHandler(RadarStatusSuccess, res, points);
-                      }
+                        id pointsObj = res[@"points"];
+                        NSArray<RadarPoint *> *points = [RadarPoint pointsFromObject:pointsObj];
+                        if (points) {
+                            return completionHandler(RadarStatusSuccess, res, points);
+                        }
 
-                      completionHandler(RadarStatusErrorServer, nil, nil);
+                        completionHandler(RadarStatusErrorServer, nil, nil);
                     }];
 }
 
-- (void)autocompleteQuery:(NSString *)query
-                     near:(CLLocation *_Nonnull)near
-                    limit:(int)limit
-        completionHandler:(RadarGeocodeAPICompletionHandler)completionHandler {
+- (void)autocompleteQuery:(NSString *)query near:(CLLocation *_Nonnull)near limit:(int)limit completionHandler:(RadarGeocodeAPICompletionHandler)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
         return completionHandler(RadarStatusErrorPublishableKey, nil, nil);
@@ -445,17 +442,17 @@
                               headers:headers
                                params:nil
                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
-                      if (status != RadarStatusSuccess || !res) {
-                          return completionHandler(status, nil, nil);
-                      }
+                        if (status != RadarStatusSuccess || !res) {
+                            return completionHandler(status, nil, nil);
+                        }
 
-                      id addressesObj = res[@"addresses"];
-                      NSArray<RadarAddress *> *addresses = [RadarAddress addressesFromObject:addressesObj];
-                      if (addresses) {
-                          return completionHandler(RadarStatusSuccess, res, addresses);
-                      }
+                        id addressesObj = res[@"addresses"];
+                        NSArray<RadarAddress *> *addresses = [RadarAddress addressesFromObject:addressesObj];
+                        if (addresses) {
+                            return completionHandler(RadarStatusSuccess, res, addresses);
+                        }
 
-                      completionHandler(RadarStatusErrorServer, nil, nil);
+                        completionHandler(RadarStatusErrorServer, nil, nil);
                     }];
 }
 
@@ -479,17 +476,17 @@
                               headers:headers
                                params:nil
                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
-                      if (status != RadarStatusSuccess || !res) {
-                          return completionHandler(status, nil, nil);
-                      }
+                        if (status != RadarStatusSuccess || !res) {
+                            return completionHandler(status, nil, nil);
+                        }
 
-                      id addressesObj = res[@"addresses"];
-                      NSArray<RadarAddress *> *addresses = [RadarAddress addressesFromObject:addressesObj];
-                      if (addresses) {
-                          return completionHandler(RadarStatusSuccess, res, addresses);
-                      }
+                        id addressesObj = res[@"addresses"];
+                        NSArray<RadarAddress *> *addresses = [RadarAddress addressesFromObject:addressesObj];
+                        if (addresses) {
+                            return completionHandler(RadarStatusSuccess, res, addresses);
+                        }
 
-                      completionHandler(RadarStatusErrorServer, nil, nil);
+                        completionHandler(RadarStatusErrorServer, nil, nil);
                     }];
 }
 
@@ -513,17 +510,17 @@
                               headers:headers
                                params:nil
                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
-                      if (status != RadarStatusSuccess || !res) {
-                          return completionHandler(status, nil, nil);
-                      }
+                        if (status != RadarStatusSuccess || !res) {
+                            return completionHandler(status, nil, nil);
+                        }
 
-                      id addressesObj = res[@"addresses"];
-                      NSArray<RadarAddress *> *addresses = [RadarAddress addressesFromObject:addressesObj];
-                      if (addresses) {
-                          return completionHandler(RadarStatusSuccess, res, addresses);
-                      }
+                        id addressesObj = res[@"addresses"];
+                        NSArray<RadarAddress *> *addresses = [RadarAddress addressesFromObject:addressesObj];
+                        if (addresses) {
+                            return completionHandler(RadarStatusSuccess, res, addresses);
+                        }
 
-                      completionHandler(RadarStatusErrorServer, nil, nil);
+                        completionHandler(RadarStatusErrorServer, nil, nil);
                     }];
 }
 
@@ -543,18 +540,18 @@
                               headers:headers
                                params:nil
                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
-                      if (status != RadarStatusSuccess || !res) {
-                          return completionHandler(status, nil, nil);
-                      }
+                        if (status != RadarStatusSuccess || !res) {
+                            return completionHandler(status, nil, nil);
+                        }
 
-                      id addressObj = res[@"address"];
-                      RadarAddress *address = [[RadarAddress alloc] initWithObject:addressObj];
+                        id addressObj = res[@"address"];
+                        RadarAddress *address = [[RadarAddress alloc] initWithObject:addressObj];
 
-                      if (address) {
-                          return completionHandler(RadarStatusSuccess, res, address);
-                      }
+                        if (address) {
+                            return completionHandler(RadarStatusSuccess, res, address);
+                        }
 
-                      completionHandler(RadarStatusErrorServer, nil, nil);
+                        completionHandler(RadarStatusErrorServer, nil, nil);
                     }];
 }
 
@@ -604,17 +601,17 @@
                               headers:headers
                                params:nil
                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
-                      if (status != RadarStatusSuccess || !res) {
-                          return completionHandler(status, nil, nil);
-                      }
+                        if (status != RadarStatusSuccess || !res) {
+                            return completionHandler(status, nil, nil);
+                        }
 
-                      id routesObj = res[@"routes"];
-                      RadarRoutes *routes = [[RadarRoutes alloc] initWithObject:routesObj];
-                      if (routes) {
-                          return completionHandler(RadarStatusSuccess, res, routes);
-                      }
+                        id routesObj = res[@"routes"];
+                        RadarRoutes *routes = [[RadarRoutes alloc] initWithObject:routesObj];
+                        if (routes) {
+                            return completionHandler(RadarStatusSuccess, res, routes);
+                        }
 
-                      completionHandler(RadarStatusErrorServer, nil, nil);
+                        completionHandler(RadarStatusErrorServer, nil, nil);
                     }];
 }
 

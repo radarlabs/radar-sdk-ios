@@ -18,6 +18,6 @@
  */
 @property (assign, nonatomic, readonly) CLLocationCoordinate2D coordinate;
 
-- (NSDictionary* _Nonnull)serialize;
+- (NSDictionary* _Nonnull)dictionaryValue;
 
 @end

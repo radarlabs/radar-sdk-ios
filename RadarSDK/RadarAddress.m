@@ -212,20 +212,20 @@
                                          confidence:confidence];
 }
 
-+ (NSArray<NSDictionary *> *)serializeArray:(NSArray<RadarAddress *> *)addresses {
++ (NSArray<NSDictionary *> *)arrayForAddresses:(NSArray<RadarAddress *> *)addresses {
     if (!addresses) {
         return nil;
     }
 
     NSMutableArray *arr = [[NSMutableArray alloc] initWithCapacity:addresses.count];
     for (RadarAddress *address in addresses) {
-        NSDictionary *dict = [address serialize];
+        NSDictionary *dict = [address dictionaryValue];
         [arr addObject:dict];
     }
     return arr;
 }
 
-- (NSDictionary *)serialize {
+- (NSDictionary *)dictionaryValue {
     NSMutableDictionary *dict = [NSMutableDictionary new];
     [dict setValue:@(self.coordinate.latitude) forKey:@"latitude"];
     [dict setValue:@(self.coordinate.longitude) forKey:@"longitude"];

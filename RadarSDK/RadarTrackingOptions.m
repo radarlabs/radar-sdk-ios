@@ -238,15 +238,15 @@ NSString *const kSyncNone = @"none";
 
     RadarTrackingOptions *options = (RadarTrackingOptions *)object;
 
-    return self.desiredStoppedUpdateInterval == options.desiredStoppedUpdateInterval &&
-           self.desiredMovingUpdateInterval == options.desiredMovingUpdateInterval && self.desiredSyncInterval == options.desiredSyncInterval &&
-           self.desiredAccuracy == options.desiredAccuracy && self.stopDuration == options.stopDuration && self.stopDistance == options.stopDistance &&
+    return self.desiredStoppedUpdateInterval == options.desiredStoppedUpdateInterval && self.desiredMovingUpdateInterval == options.desiredMovingUpdateInterval &&
+           self.desiredSyncInterval == options.desiredSyncInterval && self.desiredAccuracy == options.desiredAccuracy && self.stopDuration == options.stopDuration &&
+           self.stopDistance == options.stopDistance &&
            (self.startTrackingAfter == nil ? options.startTrackingAfter == nil : [self.startTrackingAfter isEqual:options.startTrackingAfter]) &&
-           (self.stopTrackingAfter == nil ? options.stopTrackingAfter == nil : [self.stopTrackingAfter isEqual:options.stopTrackingAfter]) &&
-           self.sync == options.sync && self.replay == options.replay && self.showBlueBar == options.showBlueBar &&
-           self.useStoppedGeofence == options.useStoppedGeofence && self.stoppedGeofenceRadius == options.stoppedGeofenceRadius &&
-           self.useMovingGeofence == options.useMovingGeofence && self.movingGeofenceRadius == options.movingGeofenceRadius &&
-           self.useVisits == options.useVisits && self.useSignificantLocationChanges == options.useSignificantLocationChanges;
+           (self.stopTrackingAfter == nil ? options.stopTrackingAfter == nil : [self.stopTrackingAfter isEqual:options.stopTrackingAfter]) && self.sync == options.sync &&
+           self.replay == options.replay && self.showBlueBar == options.showBlueBar && self.useStoppedGeofence == options.useStoppedGeofence &&
+           self.stoppedGeofenceRadius == options.stoppedGeofenceRadius && self.useMovingGeofence == options.useMovingGeofence &&
+           self.movingGeofenceRadius == options.movingGeofenceRadius && self.useVisits == options.useVisits &&
+           self.useSignificantLocationChanges == options.useSignificantLocationChanges;
 }
 
 @end
