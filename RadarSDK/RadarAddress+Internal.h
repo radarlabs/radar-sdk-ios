@@ -28,7 +28,8 @@
                                       county:(NSString *_Nullable)county
                                 neighborhood:(NSString *_Nullable)neighborhood
                                       number:(NSString *_Nullable)number
-                                        name:(NSString *_Nullable)name
+                                addressLabel:(NSString *_Nullable)addressLabel
+                                  placeLabel:(NSString *_Nullable)placeLabel
                                   confidence:(RadarAddressConfidence)confidence;
 
 @end

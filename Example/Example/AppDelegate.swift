@@ -64,8 +64,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             print("Reverse geocode: status = \(Radar.stringForStatus(status)); formattedAddress = \(String(describing: addresses?.first?.formattedAddress))")
         }
         
+        Radar.ipGeocode { (status, address) in
+            print("IP geocode: status = \(Radar.stringForStatus(status)); code = \(String(describing: address?.countryCode)); flag = \(String(describing: address?.countryFlag))")
+        }
+        
         Radar.ipGeocode { (status, country) in
-            print("IP geocode: status = \(Radar.stringForStatus(status)); code = \(String(describing: country?.code)); flag = \(String(describing: country?.flag))")
+            
         }
         
         Radar.autocomplete(
