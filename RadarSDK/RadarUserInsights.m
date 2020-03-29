@@ -12,7 +12,9 @@
 
 @implementation RadarUserInsights
 
-- (instancetype _Nullable)initWithHomeLocation:(RadarUserInsightsLocation *)homeLocation officeLocation:(RadarUserInsightsLocation *)officeLocation state:(RadarUserInsightsState *)state {
+- (instancetype _Nullable)initWithHomeLocation:(RadarUserInsightsLocation *)homeLocation
+                                officeLocation:(RadarUserInsightsLocation *)officeLocation
+                                         state:(RadarUserInsightsState *)state {
     self = [super init];
     if (self) {
         _homeLocation = homeLocation;
@@ -26,13 +28,13 @@
     if (!object || ![object isKindOfClass:[NSDictionary class]]) {
         return nil;
     }
-    
+
     NSDictionary *dict = (NSDictionary *)object;
-    
+
     RadarUserInsightsLocation *homeLocation;
     RadarUserInsightsLocation *officeLocation;
     RadarUserInsightsState *state;
-    
+
     id locationsObj = dict[@"locations"];
     if (locationsObj && [locationsObj isKindOfClass:[NSArray class]]) {
         NSArray *userInsightsLocationsArr = (NSArray *)locationsObj;
@@ -41,7 +43,7 @@
             if (!location) {
                 return nil;
             }
-            
+
             if (location.type == RadarUserInsightsLocationTypeHome) {
                 homeLocation = location;
             } else if (location.type == RadarUserInsightsLocationTypeOffice) {
@@ -49,16 +51,16 @@
             }
         }
     }
-    
+
     id stateObj = dict[@"state"];
     if (locationsObj && [locationsObj isKindOfClass:[NSArray class]]) {
         state = [[RadarUserInsightsState alloc] initWithObject:stateObj];
     }
-    
+
     if (homeLocation && officeLocation && state) {
         return [[RadarUserInsights alloc] initWithHomeLocation:homeLocation officeLocation:officeLocation state:state];
     }
-    
+
     return nil;
 }
 

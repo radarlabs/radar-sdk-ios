@@ -5,8 +5,8 @@
 //  Copyright © 2019 Radar Labs, Inc. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
 #import <CoreLocation/CoreLocation.h>
+#import <Foundation/Foundation.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -46,21 +46,21 @@ typedef NS_ENUM(NSInteger, RadarTrackingOptionsSync) {
 
 /**
  An options class used to configure background tracking.
- 
+
  @see https://radar.io/documentation/sdk#ios-background
  */
 @interface RadarTrackingOptions : NSObject
 
 /**
  Determines the desired location update interval in seconds when stopped. Use 0 to shut down when stopped.
- 
+
  @warning Note that location updates may be delayed significantly by Low Power Mode, or if the device has connectivity issues, low battery, or wi-fi disabled.
  */
 @property (nonatomic, assign) int desiredStoppedUpdateInterval;
 
 /**
  Determines the desired location update interval in seconds when moving.
- 
+
  @warning Note that location updates may be delayed significantly by Low Power Mode, or if the device has connectivity issues, low battery, or wi-fi disabled.
  */
 @property (nonatomic, assign) int desiredMovingUpdateInterval;
@@ -107,14 +107,14 @@ typedef NS_ENUM(NSInteger, RadarTrackingOptionsSync) {
 
 /**
  Determines whether the flashing blue status bar is shown when tracking.
- 
+
  @see https://developer.apple.com/documentation/corelocation/cllocationmanager/2923541-showsbackgroundlocationindicator
  */
 @property (nonatomic, assign) BOOL showBlueBar;
 
 /**
  Determines whether to use the iOS region monitoring service (geofencing) to create a client geofence around the device's current location when stopped.
- 
+
  @see https://developer.apple.com/documentation/corelocation/monitoring_the_user_s_proximity_to_geographic_regions
  */
 @property (nonatomic, assign) BOOL useStoppedGeofence;
@@ -126,7 +126,7 @@ typedef NS_ENUM(NSInteger, RadarTrackingOptionsSync) {
 
 /**
  Determines whether to use the iOS region monitoring service (geofencing) to create a client geofence around the device's current location when moving.
- 
+
  @see https://developer.apple.com/documentation/corelocation/monitoring_the_user_s_proximity_to_geographic_regions
  */
 @property (nonatomic, assign) BOOL useMovingGeofence;
@@ -138,37 +138,39 @@ typedef NS_ENUM(NSInteger, RadarTrackingOptionsSync) {
 
 /**
  Determines whether to use the iOS visit monitoring service.
- 
+
  @see https://developer.apple.com/documentation/corelocation/getting_the_user_s_location/using_the_visits_location_service
  */
 @property (nonatomic, assign) BOOL useVisits;
 
 /**
  Determines whether to use the iOS significant location change service.
- 
+
  @see https://developer.apple.com/documentation/corelocation/getting_the_user_s_location/using_the_significant-change_location_service
  */
 @property (nonatomic, assign) BOOL useSignificantLocationChanges;
 
 /**
  A preset that updates about every 30 seconds and syncs all locations to the server. High battery usage. Shows the flashing blue status bar when tracking.
- 
+
  @see https://developer.apple.com/documentation/corelocation/cllocationmanager/2923541-showsbackgroundlocationindicator
  */
 @property (class, copy, readonly) RadarTrackingOptions *continuous;
 
 /**
- A preset that updates about every 2.5 minutes when moving, shuts down when stopped, and only syncs stops and exits to the server. Requires the `location` background mode. Must move at least 200 meters to start moving again after a stop. Low battery usage.
- 
+ A preset that updates about every 2.5 minutes when moving, shuts down when stopped, and only syncs stops and exits to the server. Requires the `location`
+ background mode. Must move at least 200 meters to start moving again after a stop. Low battery usage.
+
  Note that location updates may be delayed significantly by Low Power Mode, or if the device has connectivity issues, low battery, or wi-fi disabled.
  */
 @property (class, copy, readonly) RadarTrackingOptions *responsive;
 
 /**
- A preset that uses the iOS visit monitoring service to update only on stops and exits. Must move a significant distance to start moving again after a stop. Lowest battery usage. Recommended.
- 
+ A preset that uses the iOS visit monitoring service to update only on stops and exits. Must move a significant distance to start moving again after a stop.
+ Lowest battery usage. Recommended.
+
  Note that location updates may be delayed significantly by Low Power Mode, or if the device has connectivity issues, low battery, or wi-fi disabled.
- 
+
  @see https://developer.apple.com/documentation/corelocation/getting_the_user_s_location/using_the_visits_location_service
  */
 @property (class, copy, readonly) RadarTrackingOptions *efficient;
@@ -179,7 +181,7 @@ typedef NS_ENUM(NSInteger, RadarTrackingOptionsSync) {
 + (RadarTrackingOptionsReplay)replayForString:(NSString *)str;
 + (NSString *)stringForSync:(RadarTrackingOptionsSync)sync;
 + (RadarTrackingOptionsSync)syncForString:(NSString *)str;
-+ (RadarTrackingOptions * _Nonnull)trackingOptionsFromDictionary:(NSDictionary * _Nonnull)dictionary;
++ (RadarTrackingOptions *_Nonnull)trackingOptionsFromDictionary:(NSDictionary *_Nonnull)dictionary;
 - (NSDictionary *)dictionaryValue;
 
 @end

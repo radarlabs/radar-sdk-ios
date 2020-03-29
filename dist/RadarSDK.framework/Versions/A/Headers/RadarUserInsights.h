@@ -5,13 +5,14 @@
 //  Copyright © 2019 Radar Labs, Inc. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
 #import "RadarUserInsightsLocation.h"
 #import "RadarUserInsightsState.h"
+#import <Foundation/Foundation.h>
 
 /**
- Represents the learned home, work, traveling and commuting state and locations of the current user. For more information about Insights, see https://radar.io/documentation/insights.
- 
+ Represents the learned home, work, traveling and commuting state and locations of the current user. For more information about Insights, see
+ https://radar.io/documentation/insights.
+
  @see https://radar.io/documentation/insights
  */
 @interface RadarUserInsights : NSObject
@@ -31,6 +32,10 @@
  */
 @property (nonnull, strong, nonatomic, readonly) RadarUserInsightsState *state;
 
+<<<<<<< HEAD
 - (NSDictionary * _Nonnull)dictionaryValue;
+=======
+- (NSDictionary *_Nonnull)serialize;
+>>>>>>> master
 
 @end

@@ -9,8 +9,7 @@
 
 @implementation RadarSegment
 
-- (instancetype)initWithDescription:(nonnull NSString *)description
-                         externalId:(nonnull NSString *)externalId {
+- (instancetype)initWithDescription:(nonnull NSString *)description externalId:(nonnull NSString *)externalId {
     self = [super init];
     if (self) {
         __description = description;
@@ -23,12 +22,12 @@
     if (![object isKindOfClass:[NSDictionary class]]) {
         return nil;
     }
-    
+
     NSDictionary *dict = (NSDictionary *)object;
 
     NSString *description;
     NSString *externalId;
-    
+
     id descriptionObj = dict[@"description"];
     if ([descriptionObj isKindOfClass:[NSString class]]) {
         description = (NSString *)descriptionObj;
@@ -38,11 +37,11 @@
     if ([externalIdObj isKindOfClass:[NSString class]]) {
         externalId = (NSString *)externalIdObj;
     }
-    
+
     if (description && externalId) {
         return [[RadarSegment alloc] initWithDescription:description externalId:externalId];
     }
-    
+
     return nil;
 }
 
@@ -50,7 +49,7 @@
     if (!segments) {
         return nil;
     }
-    
+
     NSMutableArray *arr = [[NSMutableArray alloc] initWithCapacity:segments.count];
     for (RadarSegment *segment in segments) {
         NSDictionary *dict = [segment dictionaryValue];

@@ -5,16 +5,16 @@
 //  Copyright © 2019 Radar Labs, Inc. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
-#import <CoreLocation/CoreLocation.h>
-#import "RadarUser.h"
 #import "RadarGeofence.h"
 #import "RadarPlace.h"
 #import "RadarRegion.h"
+#import "RadarUser.h"
+#import <CoreLocation/CoreLocation.h>
+#import <Foundation/Foundation.h>
 
 /**
  Represents a change in user state. For more information, see https://radar.io/documentation.
- 
+
  @see https://radar.io/documentation
  */
 @interface RadarEvent : NSObject
@@ -161,8 +161,14 @@ typedef NS_ENUM(NSInteger, RadarEventVerification) {
  */
 @property (nonnull, strong, nonatomic, readonly) CLLocation *location;
 
+<<<<<<< HEAD
 + (NSString * _Nullable)stringForType:(RadarEventType)type;
 + (NSArray<NSDictionary *> * _Nullable)arrayForEvents:(NSArray<RadarEvent *> * _Nullable)events;
 - (NSDictionary * _Nonnull)dictionaryValue;
+=======
++ (NSString *_Nullable)stringForType:(RadarEventType)type;
++ (NSArray<NSDictionary *> *_Nullable)serializeArray:(NSArray<RadarEvent *> *_Nullable)events;
+- (NSDictionary *_Nonnull)serialize;
+>>>>>>> master
 
 @end

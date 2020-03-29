@@ -5,12 +5,12 @@
 //  Copyright © 2019 Radar Labs, Inc. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
 #import "RadarGeofenceGeometry.h"
+#import <Foundation/Foundation.h>
 
 /**
  Represents a geofence. For more information about Geofences, see https://radar.io/documentation/geofences.
- 
+
  @see https://radar.io/documentation/geofences
  */
 @interface RadarGeofence : NSObject

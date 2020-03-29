@@ -5,8 +5,8 @@
 //  Copyright © 2019 Radar Labs, Inc. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
 #import "RadarCoordinate.h"
+#import <Foundation/Foundation.h>
 
 /**
   The confidence levels for geocoding results.
@@ -26,7 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  Represents an address. For more information, see https://radar.io/documentation/api#geocode.
- 
+
  @see https://radar.io/documentation/api#geocode
  */
 @interface RadarAddress : NSObject
@@ -57,7 +57,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nullable, copy, nonatomic, readonly) NSString *countryFlag;
 
 /**
- The name of the address.
+ The name of the state.
  */
 @property (nullable, copy, nonatomic, readonly) NSString *state;
 
@@ -97,9 +97,14 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nullable, copy, nonatomic, readonly) NSString *number;
 
 /**
- The name of the address.
+ The label of the address.
  */
-@property (nullable, copy, nonatomic, readonly) NSString *name;
+@property (nullable, copy, nonatomic, readonly) NSString *addressLabel;
+
+/**
+ The label of the place.
+ */
+@property (nullable, copy, nonatomic, readonly) NSString *placeLabel;
 
 /**
   The confidence level of the geocoding result.

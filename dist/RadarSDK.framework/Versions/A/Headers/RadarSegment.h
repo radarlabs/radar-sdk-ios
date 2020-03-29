@@ -24,8 +24,13 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property (nonnull, copy, nonatomic, readonly) NSString *externalId;
 
+<<<<<<< HEAD
 + (NSArray<NSDictionary *> * _Nullable)arrayForSegments:(NSArray<RadarSegment *> * _Nullable)segments;
 - (NSDictionary * _Nonnull)dictionaryValue;
+=======
++ (NSArray<NSDictionary *> *_Nullable)serializeArray:(NSArray<RadarSegment *> *_Nullable)segments;
+- (NSDictionary *_Nonnull)serialize;
+>>>>>>> master
 
 @end
 

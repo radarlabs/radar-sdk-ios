@@ -29,7 +29,7 @@
     if (![object isKindOfClass:[NSDictionary class]]) {
         return nil;
     }
-    
+
     NSDictionary *dict = (NSDictionary *)object;
 
     NSString *_id = @"";
@@ -37,7 +37,7 @@
     NSString *code = @"";
     NSString *type = @"";
     NSString *flag = @"";
-    
+
     id idObj = dict[@"_id"];
     if ([idObj isKindOfClass:[NSString class]]) {
         _id = (NSString *)idObj;
@@ -47,12 +47,12 @@
     if ([nameObj isKindOfClass:[NSString class]]) {
         name = (NSString *)nameObj;
     }
-    
+
     id codeObj = dict[@"code"];
     if ([codeObj isKindOfClass:[NSString class]]) {
         code = (NSString *)codeObj;
     }
-    
+
     id typeObj = dict[@"type"];
     if ([typeObj isKindOfClass:[NSString class]]) {
         type = (NSString *)typeObj;
@@ -62,7 +62,7 @@
     if (flagObj && [flagObj isKindOfClass:[NSString class]]) {
         flag = (NSString *)flagObj;
     }
-        
+
     if (_id && name && code && type) {
         return [[RadarRegion alloc] initWithId:_id name:name code:code type:type flag:flag];
     }

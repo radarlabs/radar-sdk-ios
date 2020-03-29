@@ -5,14 +5,14 @@
 //  Copyright © 2020 Radar Labs, Inc. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
 #import "RadarRoute.h"
+#import <Foundation/Foundation.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 /**
  Represents routes from an origin to a destination. For more information, see https://radar.io/documentation/api#route.
- 
+
  @see https://radar.io/documentation/api#route
 */
 @interface RadarRoutes : NSObject
