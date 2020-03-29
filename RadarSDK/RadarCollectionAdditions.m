@@ -13,7 +13,7 @@
     NSMutableArray *result = [NSMutableArray arrayWithCapacity:[self count]];
 
     [self enumerateObjectsUsingBlock:^(id _Nonnull obj, NSUInteger idx, BOOL *stop) {
-      [result addObject:block(obj)];
+        [result addObject:block(obj)];
     }];
     return result;
 }
