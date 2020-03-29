@@ -1,5 +1,6 @@
 //
 //  RadarPoint+Internal.h
+//  RadarSDK
 //
 //  Copyright © 2020 Radar Labs, Inc. All rights reserved.
 //
@@ -8,7 +9,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface RadarPoint (Internal)
+@interface RadarPoint ()
+
 + (NSArray<RadarPoint *> *_Nullable)pointsFromObject:(id)object;
 - (instancetype _Nullable)initWithId:(NSString *)_id
                          description:(NSString *)description

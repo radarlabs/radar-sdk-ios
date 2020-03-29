@@ -55,6 +55,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         ) { (status, location, geofences) in
             print("Search geofences: status = \(Radar.stringForStatus(status)); geofences = \(String(describing: geofences))")
         }
+        
+        Radar.searchPoints(
+            radius: 1000,
+            tags: ["article"], limit: 10
+        ) { (status, location, points) in
+            print("Search points: status = \(Radar.stringForStatus(status)); points = \(String(describing: points))")
+        }
 
         Radar.geocode(address: "20 jay st brooklyn") { (status, addresses) in
             print("Geocode: status = \(Radar.stringForStatus(status)); coordinate = \(String(describing: addresses?.first?.coordinate))")
