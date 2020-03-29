@@ -2,14 +2,14 @@
   "warnings": [
     {
       "file": "/Users/nickpatrick/Dropbox/dev/radar/radar-sdk-ios/RadarSDK/RadarAddress.h",
-      "line": 109,
+      "line": 114,
       "symbol": "RadarAddress.+arrayForAddresses:",
       "symbol_kind": "sourcekitten.source.lang.objc.decl.method.class",
       "warning": "undocumented"
     },
     {
       "file": "/Users/nickpatrick/Dropbox/dev/radar/radar-sdk-ios/RadarSDK/RadarAddress.h",
-      "line": 110,
+      "line": 115,
       "symbol": "RadarAddress.-dictionaryValue",
       "symbol_kind": "sourcekitten.source.lang.objc.decl.method.instance",
       "warning": "undocumented"
@@ -79,14 +79,14 @@
     },
     {
       "file": "/Users/nickpatrick/Dropbox/dev/radar/radar-sdk-ios/RadarSDK/RadarPlace.h",
-      "line": 78,
+      "line": 77,
       "symbol": "RadarPlace.+arrayForPlaces:",
       "symbol_kind": "sourcekitten.source.lang.objc.decl.method.class",
       "warning": "undocumented"
     },
     {
       "file": "/Users/nickpatrick/Dropbox/dev/radar/radar-sdk-ios/RadarSDK/RadarPlace.h",
-      "line": 79,
+      "line": 78,
       "symbol": "RadarPlace.-dictionaryValue",
       "symbol_kind": "sourcekitten.source.lang.objc.decl.method.instance",
       "warning": "undocumented"
@@ -142,56 +142,56 @@
     },
     {
       "file": "/Users/nickpatrick/Dropbox/dev/radar/radar-sdk-ios/RadarSDK/RadarTrackingOptions.h",
-      "line": 176,
+      "line": 178,
       "symbol": "RadarTrackingOptions.+stringForDesiredAccuracy:",
       "symbol_kind": "sourcekitten.source.lang.objc.decl.method.class",
       "warning": "undocumented"
     },
     {
       "file": "/Users/nickpatrick/Dropbox/dev/radar/radar-sdk-ios/RadarSDK/RadarTrackingOptions.h",
-      "line": 177,
+      "line": 179,
       "symbol": "RadarTrackingOptions.+desiredAccuracyForString:",
       "symbol_kind": "sourcekitten.source.lang.objc.decl.method.class",
       "warning": "undocumented"
     },
     {
       "file": "/Users/nickpatrick/Dropbox/dev/radar/radar-sdk-ios/RadarSDK/RadarTrackingOptions.h",
-      "line": 178,
+      "line": 180,
       "symbol": "RadarTrackingOptions.+stringForReplay:",
       "symbol_kind": "sourcekitten.source.lang.objc.decl.method.class",
       "warning": "undocumented"
     },
     {
       "file": "/Users/nickpatrick/Dropbox/dev/radar/radar-sdk-ios/RadarSDK/RadarTrackingOptions.h",
-      "line": 179,
+      "line": 181,
       "symbol": "RadarTrackingOptions.+replayForString:",
       "symbol_kind": "sourcekitten.source.lang.objc.decl.method.class",
       "warning": "undocumented"
     },
     {
       "file": "/Users/nickpatrick/Dropbox/dev/radar/radar-sdk-ios/RadarSDK/RadarTrackingOptions.h",
-      "line": 180,
+      "line": 182,
       "symbol": "RadarTrackingOptions.+stringForSync:",
       "symbol_kind": "sourcekitten.source.lang.objc.decl.method.class",
       "warning": "undocumented"
     },
     {
       "file": "/Users/nickpatrick/Dropbox/dev/radar/radar-sdk-ios/RadarSDK/RadarTrackingOptions.h",
-      "line": 181,
+      "line": 183,
       "symbol": "RadarTrackingOptions.+syncForString:",
       "symbol_kind": "sourcekitten.source.lang.objc.decl.method.class",
       "warning": "undocumented"
     },
     {
       "file": "/Users/nickpatrick/Dropbox/dev/radar/radar-sdk-ios/RadarSDK/RadarTrackingOptions.h",
-      "line": 182,
+      "line": 184,
       "symbol": "RadarTrackingOptions.+trackingOptionsFromDictionary:",
       "symbol_kind": "sourcekitten.source.lang.objc.decl.method.class",
       "warning": "undocumented"
     },
     {
       "file": "/Users/nickpatrick/Dropbox/dev/radar/radar-sdk-ios/RadarSDK/RadarTrackingOptions.h",
-      "line": 183,
+      "line": 185,
       "symbol": "RadarTrackingOptions.-dictionaryValue",
       "symbol_kind": "sourcekitten.source.lang.objc.decl.method.instance",
       "warning": "undocumented"
@@ -205,7 +205,7 @@
     },
     {
       "file": "/Users/nickpatrick/Dropbox/dev/radar/radar-sdk-ios/RadarSDK/RadarUserInsights.h",
-      "line": 34,
+      "line": 35,
       "symbol": "RadarUserInsights.-dictionaryValue",
       "symbol_kind": "sourcekitten.source.lang.objc.decl.method.instance",
       "warning": "undocumented"
@@ -226,7 +226,7 @@
     },
     {
       "file": "/Users/nickpatrick/Dropbox/dev/radar/radar-sdk-ios/RadarSDK/RadarUserInsightsState.h",
-      "line": 37,
+      "line": 38,
       "symbol": "RadarUserInsightsState.-dictionaryValue",
       "symbol_kind": "sourcekitten.source.lang.objc.decl.method.instance",
       "warning": "undocumented"

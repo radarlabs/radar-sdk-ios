@@ -62,6 +62,9 @@
                 <a href="../Classes/RadarPlace.html">RadarPlace</a>
               </li>
               <li class="nav-group-task">
+                <a href="../Classes/RadarPoint.html">RadarPoint</a>
+              </li>
+              <li class="nav-group-task">
                 <a href="../Classes/RadarPolygonGeometry.html">RadarPolygonGeometry</a>
               </li>
               <li class="nav-group-task">
@@ -177,6 +180,9 @@
               </li>
               <li class="nav-group-task">
                 <a href="../Type%20Definitions.html#/c:Radar.h@T@RadarSearchPlacesCompletionHandler">RadarSearchPlacesCompletionHandler</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Type%20Definitions.html#/c:Radar.h@T@RadarSearchPointsCompletionHandler">RadarSearchPointsCompletionHandler</a>
               </li>
               <li class="nav-group-task">
                 <a href="../Type%20Definitions.html#/c:Radar.h@T@RadarTrackCompletionHandler">RadarTrackCompletionHandler</a>
@@ -379,7 +385,7 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>The name of the address.</p>
+                        <p>The name of the state.</p>
 
                       </div>
                       <div class="declaration">
@@ -625,9 +631,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/c:objc(cs)RadarAddress(py)name"></a>
-                    <a name="//apple_ref/objc/Property/name" class="dashAnchor"></a>
-                    <a class="token" href="#/c:objc(cs)RadarAddress(py)name">name</a>
+                    <a name="/c:objc(cs)RadarAddress(py)addressLabel"></a>
+                    <a name="//apple_ref/objc/Property/addressLabel" class="dashAnchor"></a>
+                    <a class="token" href="#/c:objc(cs)RadarAddress(py)addressLabel">addressLabel</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -635,19 +641,51 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>The name of the address.</p>
+                        <p>The label of the address.</p>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Objective-C</p>
-                          <pre class="highlight objective_c"><code><span class="k">@property</span> <span class="p">(</span><span class="n">readonly</span><span class="p">,</span> <span class="n">copy</span><span class="p">,</span> <span class="n">nonatomic</span><span class="p">,</span> <span class="n">nullable</span><span class="p">)</span> <span class="n">NSString</span> <span class="o">*</span><span class="n">name</span><span class="p">;</span></code></pre>
+                          <pre class="highlight objective_c"><code><span class="k">@property</span> <span class="p">(</span><span class="n">readonly</span><span class="p">,</span> <span class="n">copy</span><span class="p">,</span> <span class="n">nonatomic</span><span class="p">,</span> <span class="n">nullable</span><span class="p">)</span> <span class="n">NSString</span> <span class="o">*</span><span class="n">addressLabel</span><span class="p">;</span></code></pre>
 
                         </div>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="k">var</span> <span class="nv">name</span><span class="p">:</span> <span class="kt">String</span><span class="p">?</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span></code></pre>
+                          <pre class="highlight swift"><code><span class="k">var</span> <span class="nv">addressLabel</span><span class="p">:</span> <span class="kt">String</span><span class="p">?</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:objc(cs)RadarAddress(py)placeLabel"></a>
+                    <a name="//apple_ref/objc/Property/placeLabel" class="dashAnchor"></a>
+                    <a class="token" href="#/c:objc(cs)RadarAddress(py)placeLabel">placeLabel</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>The label of the place.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Objective-C</p>
+                          <pre class="highlight objective_c"><code><span class="k">@property</span> <span class="p">(</span><span class="n">readonly</span><span class="p">,</span> <span class="n">copy</span><span class="p">,</span> <span class="n">nonatomic</span><span class="p">,</span> <span class="n">nullable</span><span class="p">)</span> <span class="n">NSString</span> <span class="o">*</span><span class="n">placeLabel</span><span class="p">;</span></code></pre>
+
+                        </div>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="k">var</span> <span class="nv">placeLabel</span><span class="p">:</span> <span class="kt">String</span><span class="p">?</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span></code></pre>
 
                         </div>
                       </div>
@@ -691,7 +729,7 @@
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2020 <a class="link" href="https://radar.io" target="_blank" rel="external">Radar Labs, Inc.</a>. All rights reserved. (Last updated: 2020-02-26)</p>
+          <p>&copy; 2020 <a class="link" href="https://radar.io" target="_blank" rel="external">Radar Labs, Inc.</a>. All rights reserved. (Last updated: 2020-03-29)</p>
           <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.12.0</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
         </section>
       </article>
