@@ -45,12 +45,7 @@
  */
 @property (nonnull, strong, nonatomic, readonly) RadarGeofenceGeometry *geometry;
 
-<<<<<<< HEAD
 + (NSArray<NSDictionary *> * _Nullable)arrayForGeofences:(NSArray<RadarGeofence *> * _Nullable)geofences;
 - (NSDictionary * _Nonnull)dictionaryValue;
-=======
-+ (NSArray<NSDictionary *> *_Nullable)serializeArray:(NSArray<RadarGeofence *> *_Nullable)geofences;
-- (NSDictionary *_Nonnull)serialize;
->>>>>>> master
 
 @end

@@ -24,11 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property (nonnull, copy, nonatomic, readonly) NSString *text;
 
-<<<<<<< HEAD
 - (NSDictionary * _Nonnull)dictionaryValue;
-=======
-- (NSDictionary *_Nonnull)serialize;
->>>>>>> master
 
 @end
 

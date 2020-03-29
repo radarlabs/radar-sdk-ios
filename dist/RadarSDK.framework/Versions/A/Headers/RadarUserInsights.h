@@ -32,10 +32,6 @@
  */
 @property (nonnull, strong, nonatomic, readonly) RadarUserInsightsState *state;
 
-<<<<<<< HEAD
 - (NSDictionary * _Nonnull)dictionaryValue;
-=======
-- (NSDictionary *_Nonnull)serialize;
->>>>>>> master
 
 @end

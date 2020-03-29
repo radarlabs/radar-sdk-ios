@@ -35,10 +35,6 @@
  */
 @property (assign, nonatomic, readonly) BOOL commuting;
 
-<<<<<<< HEAD
 - (NSDictionary * _Nonnull)dictionaryValue;
-=======
-- (NSDictionary* _Nonnull)serialize;
->>>>>>> master
 
 @end

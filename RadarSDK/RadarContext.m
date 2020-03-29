@@ -88,8 +88,9 @@
     NSArray *geofencesArr = [RadarGeofence arrayForGeofences:self.geofences];
     [dict setValue:geofencesArr forKey:@"geofences"];
     if (self.place) {
-      NSDictionary *placeDict = [self.place dictionaryValue];
-      [dict setValue:placeDict forKey:@"place"];
+        NSDictionary *placeDict = [self.place dictionaryValue];
+        [dict setValue:placeDict forKey:@"place"];
+    }
     if (self.country) {
         NSDictionary *countryDict = [self.country dictionaryValue];
         [dict setValue:countryDict forKey:@"country"];

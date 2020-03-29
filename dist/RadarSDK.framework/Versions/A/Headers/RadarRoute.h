@@ -26,11 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property (nonnull, strong, nonatomic, readonly) RadarRouteDuration *duration;
 
-<<<<<<< HEAD
 - (NSDictionary * _Nonnull)dictionaryValue;
-=======
-- (NSDictionary *_Nonnull)serialize;
->>>>>>> master
 
 @end
 

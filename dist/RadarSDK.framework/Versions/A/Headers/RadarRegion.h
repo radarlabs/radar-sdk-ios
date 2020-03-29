@@ -41,11 +41,7 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property (nullable, copy, nonatomic, readonly) NSString *flag;
 
-<<<<<<< HEAD
 - (NSDictionary * _Nonnull)dictionaryValue;
-=======
-- (NSDictionary *_Nonnull)serialize;
->>>>>>> master
 
 @end
 

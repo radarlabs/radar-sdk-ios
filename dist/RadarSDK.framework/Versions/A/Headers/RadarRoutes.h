@@ -42,11 +42,7 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property (nullable, strong, nonatomic, readonly) RadarRoute *transit;
 
-<<<<<<< HEAD
 - (NSDictionary * _Nonnull)dictionaryValue;
-=======
-- (NSDictionary *_Nonnull)serialize;
->>>>>>> master
 
 @end
 
