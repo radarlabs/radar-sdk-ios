@@ -1,6 +1,6 @@
 SDK ?= "iphonesimulator"
 DESTINATION ?= "platform=iOS Simulator,name=iPhone 11"
-PROJECT := Example
+PROJECT := RadarSDK
 SCHEME := Framework
 XC_ARGS := -project $(PROJECT).xcodeproj -scheme $(SCHEME) -destination $(DESTINATION)
 XC_BUILD_ARGS := ONLY_ACTIVE_ARCH=NO OTHER_CFLAGS="-fembed-bitcode"
