@@ -9,11 +9,7 @@
 
 @implementation RadarRegion
 
-- (instancetype)initWithId:(nonnull NSString *)_id
-                      name:(nonnull NSString *)name
-                      code:(nonnull NSString *)code
-                      type:(nonnull NSString *)type
-                      flag:(nullable NSString *)flag {
+- (instancetype)initWithId:(nonnull NSString *)_id name:(nonnull NSString *)name code:(nonnull NSString *)code type:(nonnull NSString *)type flag:(nullable NSString *)flag {
     self = [super init];
     if (self) {
         __id = _id;

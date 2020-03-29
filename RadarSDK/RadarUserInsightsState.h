@@ -35,6 +35,6 @@
  */
 @property (assign, nonatomic, readonly) BOOL commuting;
 
-- (NSDictionary * _Nonnull)dictionaryValue;
+- (NSDictionary* _Nonnull)dictionaryValue;
 
 @end

@@ -33,10 +33,7 @@
 - (void)mockVisitArrival {
     if (self.delegate) {
         NSDate *now = [NSDate new];
-        CLVisit *visit = [[CLVisitMock alloc] initWithCoordinate:self.mockLocation.coordinate
-                                              horizontalAccuracy:100
-                                                     arrivalDate:now
-                                                   departureDate:[NSDate distantFuture]];
+        CLVisit *visit = [[CLVisitMock alloc] initWithCoordinate:self.mockLocation.coordinate horizontalAccuracy:100 arrivalDate:now departureDate:[NSDate distantFuture]];
         [self.delegate locationManager:self didVisit:visit];
     }
 }

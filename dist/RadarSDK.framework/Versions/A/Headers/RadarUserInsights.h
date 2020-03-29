@@ -32,6 +32,6 @@
  */
 @property (nonnull, strong, nonatomic, readonly) RadarUserInsightsState *state;
 
-- (NSDictionary * _Nonnull)dictionaryValue;
+- (NSDictionary *_Nonnull)dictionaryValue;
 
 @end

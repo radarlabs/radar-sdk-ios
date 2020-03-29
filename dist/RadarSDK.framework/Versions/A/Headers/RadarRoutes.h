@@ -42,7 +42,7 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property (nullable, strong, nonatomic, readonly) RadarRoute *transit;
 
-- (NSDictionary * _Nonnull)dictionaryValue;
+- (NSDictionary *_Nonnull)dictionaryValue;
 
 @end
 

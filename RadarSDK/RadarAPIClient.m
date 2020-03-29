@@ -418,10 +418,7 @@
                     }];
 }
 
-- (void)autocompleteQuery:(NSString *)query
-                     near:(CLLocation *_Nonnull)near
-                    limit:(int)limit
-        completionHandler:(RadarGeocodeAPICompletionHandler)completionHandler {
+- (void)autocompleteQuery:(NSString *)query near:(CLLocation *_Nonnull)near limit:(int)limit completionHandler:(RadarGeocodeAPICompletionHandler)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
         return completionHandler(RadarStatusErrorPublishableKey, nil, nil);

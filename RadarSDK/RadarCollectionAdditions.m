@@ -22,13 +22,13 @@
 
 @implementation NSDictionary (Radar)
 
-#define GET_DICT_VALUE_FOR_KEY(_key, _valueClassName)                                                                                                          \
-    {                                                                                                                                                          \
-        id value = self[key];                                                                                                                                  \
-        if (value && [value isKindOfClass:[_valueClassName class]]) {                                                                                          \
-            return (_valueClassName *)value;                                                                                                                   \
-        }                                                                                                                                                      \
-        return nil;                                                                                                                                            \
+#define GET_DICT_VALUE_FOR_KEY(_key, _valueClassName)                                                                                                                              \
+    {                                                                                                                                                                              \
+        id value = self[key];                                                                                                                                                      \
+        if (value && [value isKindOfClass:[_valueClassName class]]) {                                                                                                              \
+            return (_valueClassName *)value;                                                                                                                                       \
+        }                                                                                                                                                                          \
+        return nil;                                                                                                                                                                \
     }
 
 - (NSString *)radar_stringForKey:(id)key {

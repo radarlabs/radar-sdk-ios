@@ -161,8 +161,8 @@ typedef NS_ENUM(NSInteger, RadarEventVerification) {
  */
 @property (nonnull, strong, nonatomic, readonly) CLLocation *location;
 
-+ (NSString * _Nullable)stringForType:(RadarEventType)type;
-+ (NSArray<NSDictionary *> * _Nullable)arrayForEvents:(NSArray<RadarEvent *> * _Nullable)events;
-- (NSDictionary * _Nonnull)dictionaryValue;
++ (NSString *_Nullable)stringForType:(RadarEventType)type;
++ (NSArray<NSDictionary *> *_Nullable)arrayForEvents:(NSArray<RadarEvent *> *_Nullable)events;
+- (NSDictionary *_Nonnull)dictionaryValue;
 
 @end
