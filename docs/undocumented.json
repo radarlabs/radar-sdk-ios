@@ -92,6 +92,20 @@
       "warning": "undocumented"
     },
     {
+      "file": "/Users/nickpatrick/Dropbox/dev/radar/radar-sdk-ios/RadarSDK/RadarPoint.h",
+      "line": 51,
+      "symbol": "RadarPoint.+arrayForPoints:",
+      "symbol_kind": "sourcekitten.source.lang.objc.decl.method.class",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/nickpatrick/Dropbox/dev/radar/radar-sdk-ios/RadarSDK/RadarPoint.h",
+      "line": 52,
+      "symbol": "RadarPoint.-dictionaryValue",
+      "symbol_kind": "sourcekitten.source.lang.objc.decl.method.instance",
+      "warning": "undocumented"
+    },
+    {
       "file": "/Users/nickpatrick/Dropbox/dev/radar/radar-sdk-ios/RadarSDK/RadarRegion.h",
       "line": 44,
       "symbol": "RadarRegion.-dictionaryValue",

@@ -48,6 +48,9 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property (nonatomic, readonly) RadarCoordinate *location;
 
++ (NSArray<NSDictionary *> *_Nullable)arrayForPoints:(NSArray<RadarPoint *> *_Nullable)points;
+- (NSDictionary *_Nonnull)dictionaryValue;
+
 @end
 
 NS_ASSUME_NONNULL_END

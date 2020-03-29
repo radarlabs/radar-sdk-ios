@@ -416,7 +416,11 @@
 }
 
 + (NSDictionary *)dictionaryForLocation:(CLLocation *)location {
-    return [RadarUtils dictionaryForLocation:location];
+    return @{
+        @"latitude": @(location.coordinate.latitude),
+        @"longitude": @(location.coordinate.longitude),
+        @"accuracy": @(location.horizontalAccuracy),
+    };
 }
 
 @end

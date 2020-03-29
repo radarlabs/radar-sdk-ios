@@ -569,9 +569,9 @@ typedef void (^_Nonnull RadarRouteCompletionHandler)(RadarStatus status, RadarRo
 
 /**
  Returns a dictionary for a location.
- 
+
  @param location A location.
- 
+
  @return A dictionary for the location.
  */
 + (NSDictionary *)dictionaryForLocation:(CLLocation *)location NS_SWIFT_NAME(dictionaryForLocation(_:));
