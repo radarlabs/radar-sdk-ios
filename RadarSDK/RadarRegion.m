@@ -70,7 +70,7 @@
     return nil;
 }
 
-- (NSDictionary *)serialize {
+- (NSDictionary *)dictionaryValue {
     NSMutableDictionary *dict = [NSMutableDictionary new];
     [dict setValue:self._id forKey:@"_id"];
     [dict setValue:self.name forKey:@"name"];

@@ -41,7 +41,7 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property (nullable, copy, nonatomic, readonly) NSString *flag;
 
-- (NSDictionary * _Nonnull)serialize;
+- (NSDictionary * _Nonnull)dictionaryValue;
 
 @end
 

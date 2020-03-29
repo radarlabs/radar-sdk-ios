@@ -68,26 +68,26 @@
     return [[RadarRoutes alloc] initWithGeodesic:geodesic foot:foot bike:bike car:car transit:transit];
 }
 
-- (NSDictionary *)serialize {
+- (NSDictionary *)dictionaryValue {
     NSMutableDictionary *dict = [NSMutableDictionary new];
     if (self.geodesic) {
-        NSDictionary *geodesicDict = [self.geodesic serialize];
+        NSDictionary *geodesicDict = [self.geodesic dictionaryValue];
         [dict setValue:geodesicDict forKey:@"geodesic"];
     }
     if (self.foot) {
-        NSDictionary *footDict = [self.foot serialize];
+        NSDictionary *footDict = [self.foot dictionaryValue];
         [dict setValue:footDict forKey:@"foot"];
     }
     if (self.bike) {
-        NSDictionary *bikeDict = [self.bike serialize];
+        NSDictionary *bikeDict = [self.bike dictionaryValue];
         [dict setValue:bikeDict forKey:@"bike"];
     }
     if (self.car) {
-        NSDictionary *carDict = [self.car serialize];
+        NSDictionary *carDict = [self.car dictionaryValue];
         [dict setValue:carDict forKey:@"car"];
     }
     if (self.transit) {
-        NSDictionary *transitDict = [self.transit serialize];
+        NSDictionary *transitDict = [self.transit dictionaryValue];
         [dict setValue:transitDict forKey:@"transit"];
     }
     return dict;

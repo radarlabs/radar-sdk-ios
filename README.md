@@ -7,7 +7,9 @@
 
 ## Documentation
 
-See the full documentation [here](https://radar.io/documentation). You can also see a detailed SDK reference [here](https://radarlabs.github.io/radar-sdk-ios/Classes/Radar.html).
+See the Radar overview documentation [here](https://radar.io/documentation). See the Radar SDK documentation [here](https://radar.io/documentation/sdk).
+
+You can also see a detailed SDK reference [here](https://radarlabs.github.io/radar-sdk-ios/Classes/Radar.html).
 
 ## Migrating
 

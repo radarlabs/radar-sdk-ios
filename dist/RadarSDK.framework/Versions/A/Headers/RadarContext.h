@@ -60,6 +60,6 @@
  */
 @property (nullable, strong, nonatomic, readonly) RadarRegion *postalCode;
 
-- (NSDictionary * _Nonnull)serialize;
+- (NSDictionary * _Nonnull)dictionaryValue;
 
 @end

@@ -62,18 +62,18 @@
     return nil;
 }
 
-- (NSDictionary *)serialize {
+- (NSDictionary *)dictionaryValue {
     NSMutableDictionary *dict = [NSMutableDictionary new];
     if (self.homeLocation) {
-        NSDictionary *homeLocationDict = [self.homeLocation serialize];
+        NSDictionary *homeLocationDict = [self.homeLocation dictionaryValue];
         [dict setObject:homeLocationDict forKey:@"homeLocation"];
     }
     if (self.officeLocation) {
-        NSDictionary *officeLocationDict = [self.officeLocation serialize];
+        NSDictionary *officeLocationDict = [self.officeLocation dictionaryValue];
         [dict setObject:officeLocationDict forKey:@"officeLocation"];
     }
     if (self.state) {
-        NSDictionary *stateDict = [self.state serialize];
+        NSDictionary *stateDict = [self.state dictionaryValue];
         [dict setObject:stateDict forKey:@"state"];
     }
     return dict;

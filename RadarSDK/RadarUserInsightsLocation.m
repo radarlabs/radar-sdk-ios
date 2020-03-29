@@ -140,14 +140,14 @@
     }
 }
 
-- (NSDictionary *)serialize {
+- (NSDictionary *)dictionaryValue {
     NSMutableDictionary *dict = [NSMutableDictionary new];
     if (self.type) {
         NSString *type = [RadarUserInsightsLocation stringForType:self.type];
         [dict setValue:type forKey:@"type"];
     }
     if (self.location) {
-        NSDictionary *locationDict = [self.location serialize];
+        NSDictionary *locationDict = [self.location dictionaryValue];
         [dict setValue:locationDict forKey:@"location"];
     }
     NSNumber *confidence = @(self.confidence);
