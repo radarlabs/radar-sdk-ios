@@ -65,7 +65,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
         
         Radar.ipGeocode { (status, address) in
-            print("IP geocode: status = \(Radar.stringForStatus(status)); code = \(String(describing: address?.countryCode)); flag = \(String(describing: address?.countryFlag))")
+            print("IP geocode: status = \(Radar.stringForStatus(status)); country = \(String(describing: address?.countryCode)); city = \(String(describing: address?.city))")
         }
         
         Radar.autocomplete(
