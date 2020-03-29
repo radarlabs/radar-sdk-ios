@@ -68,4 +68,27 @@
     return self;
 }
 
++ (NSArray<NSDictionary *> *)arrayForPoints:(NSArray<RadarPoint *> *)points {
+    if (!points) {
+        return nil;
+    }
+
+    NSMutableArray *arr = [[NSMutableArray alloc] initWithCapacity:points.count];
+    for (RadarPoint *point in points) {
+        NSDictionary *dict = [point dictionaryValue];
+        [arr addObject:dict];
+    }
+    return arr;
+}
+
+- (NSDictionary *)dictionaryValue {
+    NSMutableDictionary *dict = [NSMutableDictionary new];
+    [dict setValue:self._id forKey:@"_id"];
+    [dict setValue:self.tag forKey:@"tag"];
+    [dict setValue:self.externalId forKey:@"externalId"];
+    [dict setValue:self._description forKey:@"description"];
+    [dict setValue:self.metadata forKey:@"metadata"];
+    return dict;
+}
+
 @end

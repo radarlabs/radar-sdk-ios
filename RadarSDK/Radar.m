@@ -12,6 +12,7 @@
 #import "RadarLogger.h"
 #import "RadarSettings.h"
 #import "RadarState.h"
+#import "RadarUtils.h"
 
 @implementation Radar
 
@@ -412,6 +413,10 @@
         str = @"UNKNOWN";
     }
     return str;
+}
+
++ (NSDictionary *)dictionaryForLocation:(CLLocation *)location {
+    return [RadarUtils dictionaryForLocation:location];
 }
 
 @end
