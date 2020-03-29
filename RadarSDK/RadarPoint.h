@@ -11,6 +11,11 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+/**
+ Represents a point. For more information about Points, see https://radar.io/documentation/points.
+
+ @see https://radar.io/documentation/points
+*/
 @interface RadarPoint : NSObject
 
 /**
@@ -29,7 +34,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nullable, nonatomic, readonly) NSString *tag;
 
 /**
-The external ID of the point.
+ The external ID of the point.
 */
 @property (nullable, nonatomic, readonly) NSString *externalId;
 
