@@ -412,6 +412,9 @@
 				DD236CB52308812700EB88F9 /* RadarPlace.h */,
 				DD236CA82308812600EB88F9 /* RadarPlace+Internal.h */,
 				DD236CB22308812600EB88F9 /* RadarPlace.m */,
+				58F950C52406CBE500364B15 /* RadarPoint.h */,
+				58F950C82406CE5000364B15 /* RadarPoint+Internal.h */,
+				58F950C62406CBE500364B15 /* RadarPoint.m */,
 				DD236CB92308812700EB88F9 /* RadarPolygonGeometry.h */,
 				DD236CA12308812600EB88F9 /* RadarPolygonGeometry+Internal.h */,
 				DD236CAB2308812600EB88F9 /* RadarPolygonGeometry.m */,
@@ -445,9 +448,6 @@
 				DD236CC02308812700EB88F9 /* RadarUserInsightsState.h */,
 				DD236CB42308812600EB88F9 /* RadarUserInsightsState+Internal.h */,
 				DD236CC12308812700EB88F9 /* RadarUserInsightsState.m */,
-				58F950C52406CBE500364B15 /* RadarPoint.h */,
-				58F950C82406CE5000364B15 /* RadarPoint+Internal.h */,
-				58F950C62406CBE500364B15 /* RadarPoint.m */,
 			);
 			name = Models;
 			sourceTree = "<group>";
