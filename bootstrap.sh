@@ -50,7 +50,7 @@ else
 fi
 
 if ! command -v clang-format >/dev/null; then
-  echo "installing clang-format ..."
+  echo "installing clang-format..."
   brew install clang-format
 else
   echo "clang-format already installed"
