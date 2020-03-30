@@ -51,14 +51,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         Radar.searchGeofences(
             radius: 1000,
-            tags: ["store"], limit: 10
+            tags: ["store"],
+            limit: 10
         ) { (status, location, geofences) in
             print("Search geofences: status = \(Radar.stringForStatus(status)); geofences = \(String(describing: geofences))")
         }
         
         Radar.searchPoints(
             radius: 1000,
-            tags: ["article"], limit: 10
+            tags: ["article"],
+            limit: 10
         ) { (status, location, points) in
             print("Search points: status = \(Radar.stringForStatus(status)); points = \(String(describing: points))")
         }
