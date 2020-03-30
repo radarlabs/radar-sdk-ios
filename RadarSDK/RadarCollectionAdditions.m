@@ -44,23 +44,24 @@
 }
 
 - (RadarCoordinate *)radar_coordinateForKey:(id)key {
-    NSDictionary *geoJsonDict = [self radar_dictionaryForKey:key];
-    if (!geoJsonDict) {
+    NSDictionary *dict = [self radar_dictionaryForKey:key];
+    if (!dict) {
         return nil;
     }
 
-    NSArray *coordinates = [geoJsonDict radar_arrayForKey:@"coordinates"];
+    NSArray *coordinates = [dict radar_arrayForKey:@"coordinates"];
     if (!coordinates || coordinates.count != 2 || ![coordinates[0] isKindOfClass:[NSNumber class]] || ![coordinates[1] isKindOfClass:[NSNumber class]]) {
         return nil;
     }
     float longitude = [(NSNumber *)coordinates[0] floatValue];
-    if (longitude > 180 || longitude < -180) {
+    if (longitude < -180 || longitude > 180) {
         return nil;
     }
     float latitude = [(NSNumber *)coordinates[1] floatValue];
-    if (latitude > 90 || latitude < -90) {
+    if (latitude < -90 || latitude > 90) {
         return nil;
     }
+
     return [[RadarCoordinate alloc] initWithCoordinate:CLLocationCoordinate2DMake(latitude, longitude)];
 }
 
