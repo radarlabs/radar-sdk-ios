@@ -256,7 +256,7 @@
     [dict setValue:self.number forKey:@"number"];
     [dict setValue:self.addressLabel forKey:@"addressLabel"];
     [dict setValue:self.placeLabel forKey:@"placeLabel"];
-    [dict setValue:@(self.confidence) forKey:@"confidence"];
+    [dict setValue:[RadarAddress stringForConfidence:self.confidence] forKey:@"confidence"];
     return dict;
 }
 
