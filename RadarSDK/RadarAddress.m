@@ -225,6 +225,19 @@
     return arr;
 }
 
++ (NSString *)stringForConfidence:(RadarAddressConfidence)confidence {
+    switch (confidence) {
+    case RadarAddressConfidenceExact:
+        return @"exact";
+    case RadarAddressConfidenceInterpolated:
+        return @"interpolated";
+    case RadarAddressConfidenceFallback:
+        return @"fallback";
+    default:
+        return @"none";
+    }
+}
+
 - (NSDictionary *)dictionaryValue {
     NSMutableDictionary *dict = [NSMutableDictionary new];
     [dict setValue:@(self.coordinate.latitude) forKey:@"latitude"];
