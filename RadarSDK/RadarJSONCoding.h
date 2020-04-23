@@ -14,7 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable instancetype)initWithRadarJSONObject:(nullable id)object;
 
-- (NSDictionary *)dictionaryValue;
+- (id)toRadarJSONObject; // RadarJSONObject is either a NSDictionary or a NSArray
 
 @end
 

@@ -21,11 +21,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithLatitude:(double)latitude longtitude:(double)longtitude type:(RadarLocationType)type NS_DESIGNATED_INITIALIZER;
 
-// Initialization Method from Networking.
-- (nullable instancetype)initWithRadarJSONObject:(nullable id)object;
-
-- (NSDictionary *)dictionaryValue;
-
 @end
 
 NS_ASSUME_NONNULL_END

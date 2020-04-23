@@ -11,5 +11,8 @@ RadarBeacon {
   NSArray<NSString *> *metadataArray
   #This is another Radar model class (it must conforms to RadarJSONCODding)
   RadarLocation *location
+  #This is an arrry of another Radar model class
+  NSArray<RadarLocation *> *locationArray
+  
   NSNumber *version
 }

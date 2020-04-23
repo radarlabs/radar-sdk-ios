@@ -86,14 +86,6 @@ static NSUInteger HashDouble(double givenDouble) {
     return self;
 }
 
-- (NSDictionary *)dictionaryValue {
-    NSMutableDictionary *dict = [[NSMutableDictionary alloc] init];
-    dict[@"latitude"] = @(_latitude);
-    dict[@"longtitude"] = @(_longtitude);
-    dict[@"type"] = @(_type);
-    return [dict copy];
-}
-
 - (void)encodeWithCoder:(NSCoder *)aCoder {
     [aCoder encodeDouble:_latitude forKey:kLatitudeKey];
     [aCoder encodeDouble:_longtitude forKey:kLongtitudeKey];
@@ -123,6 +115,14 @@ static NSUInteger HashDouble(double givenDouble) {
         return NO;
     }
     return _type == object->_type && CompareDoubles(_latitude, object->_latitude) && CompareDoubles(_longtitude, object->_longtitude);
+}
+
+- (id)toRadarJSONObject {
+    NSMutableDictionary *dict = [[NSMutableDictionary alloc] init];
+    dict[@"latitude"] = @(_latitude);
+    dict[@"longtitude"] = @(_longtitude);
+    dict[@"type"] = @(_type);
+    return [dict copy];
 }
 
 @end

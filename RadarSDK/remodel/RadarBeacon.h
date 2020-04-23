@@ -34,14 +34,15 @@ NS_ASSUME_NONNULL_BEGIN
  * This is another Radar model class (it must conforms to RadarJSONCODding)
  */
 @property (nonatomic, readonly, copy) RadarLocation *location;
+/**
+ * This is an arrry of another Radar model class
+ */
+@property (nonatomic, readonly, copy) NSArray<RadarLocation *> *locationArray;
 @property (nonatomic, readonly, copy) NSNumber *version;
 
 + (instancetype)new NS_UNAVAILABLE;
 
 - (instancetype)init NS_UNAVAILABLE;
-
-// Initialization Method from Networking.
-- (nullable instancetype)initWithRadarJSONObject:(nullable id)object;
 
 /**
  * @param _id This is nonnull property.
@@ -49,15 +50,15 @@ NS_ASSUME_NONNULL_BEGIN
  * @param numberMetadata This is collection with generic type
  * @param metadataArray This is collection without generic type
  * @param location This is another Radar model class (it must conforms to RadarJSONCODding)
+ * @param locationArray This is an arrry of another Radar model class
  */
 - (instancetype)initWith_id:(NSString *)_id
                _description:(nullable NSString *)_description
              numberMetadata:(NSDictionary<NSString *, NSNumber *> *)numberMetadata
               metadataArray:(NSArray<NSString *> *)metadataArray
                    location:(RadarLocation *)location
+              locationArray:(NSArray<RadarLocation *> *)locationArray
                     version:(NSNumber *)version NS_DESIGNATED_INITIALIZER;
-
-- (NSDictionary *)dictionaryValue;
 
 @end
 

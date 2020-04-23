@@ -224,10 +224,7 @@ function dictionaryParsingFunction(attribute) {
         NSObject: function () {
             const typeName = attribute.type.name;
             const keyToModelGenerator = (val) => {
-                if (typeName === 'RadarCoordinate') {
-                    return `[dictionary radar_coordinateForKey:@"${attribute.name}"]`;
-                }
-                else if (typeName.startsWith('Radar')) {
+                if (typeName.startsWith('Radar') || typeName === 'NSArray') {
                     return `[[${typeName} alloc] initWithRadarJSONObject:${val}]`;
                 }
                 else {
@@ -235,8 +232,8 @@ function dictionaryParsingFunction(attribute) {
                 }
             };
             const keyFromModelGenerator = (val) => {
-                if (typeName.startsWith('Radar')) {
-                    return `[_${attribute.name} dictionaryValue]`;
+                if (typeName.startsWith('Radar') || typeName === 'NSArray') {
+                    return `[_${attribute.name} toRadarJSONObject]`;
                 }
                 else {
                     return val;
@@ -366,20 +363,23 @@ function instanceToDictionaryConverter(attributes) {
 function instanceToDictionaryMethod(attributes) {
     return {
         preprocessors: [],
-        belongsToProtocol: null,
+        belongsToProtocol: 'RadarJSONCoding',
         code: instanceToDictionaryConverter(attributes),
-        comments: [],
+        comments: [{
+                content: '// Convert to JSON object (either an dictionary or array).'
+            },
+        ],
         compilerAttributes: [],
         keywords: [
             {
-                name: 'dictionaryValue',
+                name: 'toRadarJSONObject',
                 argument: null
             }
         ],
         returnType: {
             type: ({
-                name: 'NSDictionary *',
-                reference: 'NSDictionary *'
+                name: 'id',
+                reference: 'id'
             }),
             modifiers: []
         }
@@ -439,13 +439,13 @@ function dictionaryToInstanceInitializer(attributes) {
 function dictionaryToInstanceMethod(attributes) {
     return {
         preprocessors: [],
-        belongsToProtocol: null,
+        belongsToProtocol: 'RadarJSONCoding',
         code: dictionaryToInstanceInitializer(attributes),
         comments: [{
-                content: '// Initialization Method from Networking.'
+                content: '// Initializer from JSON Object.'
             },
         ],
-        compilerAttributes: [],
+        compilerAttributes: ['NS_DESIGNATED_INITIALIZER'],
         keywords: [
             {
                 name: 'initWithRadarJSONObject',

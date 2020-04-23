@@ -16,7 +16,33 @@
     [self enumerateObjectsUsingBlock:^(id _Nonnull obj, NSUInteger idx, BOOL *stop) {
         [result addObject:block(obj)];
     }];
-    return result;
+    return [result copy];
+}
+
+- (nullable instancetype)initWithRadarJSONObject:(nullable id)object {
+    if (!object || ![object isKindOfClass:[NSArray class]]) {
+        return nil;
+    }
+
+    NSArray *array = [(NSArray *)object radar_mapObjectsUsingBlock:^id _Nullable(id _Nonnull obj) {
+        if ([object conformsToProtocol:@protocol(RadarJSONCoding)]) {
+            return [[[object class] alloc] initWithRadarJSONObject:object];
+        } else {
+            return object;
+        }
+    }];
+
+    return [self initWithArray:array];
+}
+
+- (nonnull id)toRadarJSONObject {
+    return [self radar_mapObjectsUsingBlock:^id _Nullable(id _Nonnull obj) {
+        if ([obj conformsToProtocol:@protocol(RadarJSONCoding)]) {
+            return [obj toRadarJSONObject];
+        } else {
+            return obj;
+        }
+    }];
 }
 
 @end
