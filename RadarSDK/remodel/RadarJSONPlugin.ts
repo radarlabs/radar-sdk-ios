@@ -405,8 +405,6 @@ const noChange = (attributeName: string) => attributeName;
            return `[dictionary radar_coordinateForKey:@"${attribute.name}"]`;
          } else if (typeName.startsWith('Radar')) {
           return `[[${typeName} alloc] initWithRadarJSONObject:${val}]`;
-         } else if (typeName === 'NSArray') {
-           return `[NSArray fromRadarJSONObject:${val}]`;
          } else {
            return `(${typeName} *)${val}`;
          }
@@ -415,8 +413,6 @@ const noChange = (attributeName: string) => attributeName;
        const keyFromModelGenerator = (val) => {
         if (typeName.startsWith('Radar')) {
           return `[_${attribute.name} dictionaryValue]`;
-         } else if (typeName === 'NSArray') {
-           return `[_${attribute.name} toRadarJSONObject]`;
          } else {
            return val;
          }

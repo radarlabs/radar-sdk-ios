@@ -230,9 +230,6 @@ function dictionaryParsingFunction(attribute) {
                 else if (typeName.startsWith('Radar')) {
                     return `[[${typeName} alloc] initWithRadarJSONObject:${val}]`;
                 }
-                else if (typeName === 'NSArray') {
-                    return `[NSArray fromRadarJSONObject:${val}]`;
-                }
                 else {
                     return `(${typeName} *)${val}`;
                 }
@@ -240,9 +237,6 @@ function dictionaryParsingFunction(attribute) {
             const keyFromModelGenerator = (val) => {
                 if (typeName.startsWith('Radar')) {
                     return `[_${attribute.name} dictionaryValue]`;
-                }
-                else if (typeName === 'NSArray') {
-                    return `[_${attribute.name} toRadarJSONObject]`;
                 }
                 else {
                     return val;

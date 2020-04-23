@@ -1,0 +1,5 @@
+RadarLocation {
+    double latitude
+    double longtitude
+    RadarLocationType(NSInteger) type
+}

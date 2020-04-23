@@ -1,18 +1,15 @@
-# Represents a beacon.
+# This is a test data class for auto generation code
 RadarBeacon {
-  #The Radar ID of the beacon.
+  #This is nonnull property.
   NSString *_id
-  #The description of the beacon. Not to be confused with the `NSObject` `description` property.
-  NSString *_description
-  #The optional set of custom key-value pairs for the beacon.
+  #This is a nullable property.
   %nullable
-  NSDictionary *metadata
-  #The location of the beacon.
-  RadarCoordinate *location
-  # The UUID of the beacon.
-  NSString *uuid
-  # The major number of the beacon.
-  NSNumber *major
-  # The minor number of the beacon.
-  NSNumber *minor
+  NSString *_description
+  #This is collection with generic type
+  NSDictionary<NSString *, NSNumber *> *numberMetadata
+  #This is collection without generic type
+  NSArray<NSString *> *metadataArray
+  #This is another Radar model class (it must conforms to RadarJSONCODding)
+  RadarLocation *location
+  NSNumber *version
 }

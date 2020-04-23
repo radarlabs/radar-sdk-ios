@@ -3,45 +3,38 @@
  * The name of the input file is RadarBeacon.value
  */
 
-#import "RadarCoordinate.h"
 #import "RadarJSONCoding.h"
+#import "RadarLocation.h"
 #import <Foundation/Foundation.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * Represents a beacon.
+ * This is a test data class for auto generation code
  */
 @interface RadarBeacon : NSObject<RadarJSONCoding, NSCopying, NSCoding>
 
 /**
- * The Radar ID of the beacon.
+ * This is nonnull property.
  */
 @property (nonatomic, readonly, copy) NSString *_id;
 /**
- * The description of the beacon. Not to be confused with the `NSObject` `description` property.
+ * This is a nullable property.
  */
-@property (nonatomic, readonly, copy) NSString *_description;
+@property (nonatomic, readonly, copy, nullable) NSString *_description;
 /**
- * The optional set of custom key-value pairs for the beacon.
+ * This is collection with generic type
  */
-@property (nonatomic, readonly, copy, nullable) NSDictionary *metadata;
+@property (nonatomic, readonly, copy) NSDictionary<NSString *, NSNumber *> *numberMetadata;
 /**
- * The location of the beacon.
+ * This is collection without generic type
  */
-@property (nonatomic, readonly, copy) RadarCoordinate *location;
+@property (nonatomic, readonly, copy) NSArray<NSString *> *metadataArray;
 /**
- * The UUID of the beacon.
+ * This is another Radar model class (it must conforms to RadarJSONCODding)
  */
-@property (nonatomic, readonly, copy) NSString *uuid;
-/**
- * The major number of the beacon.
- */
-@property (nonatomic, readonly, copy) NSNumber *major;
-/**
- * The minor number of the beacon.
- */
-@property (nonatomic, readonly, copy) NSNumber *minor;
+@property (nonatomic, readonly, copy) RadarLocation *location;
+@property (nonatomic, readonly, copy) NSNumber *version;
 
 + (instancetype)new NS_UNAVAILABLE;
 
@@ -51,21 +44,18 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable instancetype)initWithRadarJSONObject:(nullable id)object;
 
 /**
- * @param _id The Radar ID of the beacon.
- * @param _description The description of the beacon. Not to be confused with the `NSObject` `description` property.
- * @param metadata The optional set of custom key-value pairs for the beacon.
- * @param location The location of the beacon.
- * @param uuid The UUID of the beacon.
- * @param major The major number of the beacon.
- * @param minor The minor number of the beacon.
+ * @param _id This is nonnull property.
+ * @param _description This is a nullable property.
+ * @param numberMetadata This is collection with generic type
+ * @param metadataArray This is collection without generic type
+ * @param location This is another Radar model class (it must conforms to RadarJSONCODding)
  */
 - (instancetype)initWith_id:(NSString *)_id
-               _description:(NSString *)_description
-                   metadata:(nullable NSDictionary *)metadata
-                   location:(RadarCoordinate *)location
-                       uuid:(NSString *)uuid
-                      major:(NSNumber *)major
-                      minor:(NSNumber *)minor NS_DESIGNATED_INITIALIZER;
+               _description:(nullable NSString *)_description
+             numberMetadata:(NSDictionary<NSString *, NSNumber *> *)numberMetadata
+              metadataArray:(NSArray<NSString *> *)metadataArray
+                   location:(RadarLocation *)location
+                    version:(NSNumber *)version NS_DESIGNATED_INITIALIZER;
 
 - (NSDictionary *)dictionaryValue;
 
