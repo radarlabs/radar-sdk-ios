@@ -566,4 +566,3 @@ function createPlugin() {
     };
 }
 exports.createPlugin = createPlugin;
-// @generated
