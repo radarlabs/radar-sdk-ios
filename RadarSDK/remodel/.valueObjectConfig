@@ -1,0 +1,22 @@
+{
+    "defaultExcludes": [
+      "RMDescription",
+      "RMCoding"
+    ],
+    "diagnosticIgnores": [
+      "-Wobjc-designated-initializers"
+    ],
+    "defaultIncludes": [
+      "RMAssertNullability",
+      "RMAssumeNonnull",
+      "RMCopying",
+      "RMEquality",
+      "RMImmutableProperties",
+      "RMInitNewUnavailable",
+      "RMValueObjectSemantics",
+      "RadarJSONCoding"
+    ],
+    "customPluginPaths": [
+      "./RadarJSONPlugin.js"
+    ]
+  }

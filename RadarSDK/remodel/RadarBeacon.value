@@ -1,0 +1,18 @@
+# Represents a beacon.
+RadarBeacon {
+  #The Radar ID of the beacon.
+  NSString *_id
+  #The description of the beacon. Not to be confused with the `NSObject` `description` property.
+  NSString *_description
+  #The optional set of custom key-value pairs for the beacon.
+  %nullable
+  NSDictionary *metadata
+  #The location of the beacon.
+  RadarCoordinate *location
+  # The UUID of the beacon.
+  NSString *uuid
+  # The major number of the beacon.
+  NSNumber *major
+  # The minor number of the beacon.
+  NSNumber *minor
+}
