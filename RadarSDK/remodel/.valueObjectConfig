@@ -1,7 +1,6 @@
 {
     "defaultExcludes": [
-      "RMDescription",
-      "RMCoding"
+      "RMDescription"
     ],
     "diagnosticIgnores": [
       "-Wobjc-designated-initializers"
@@ -9,6 +8,7 @@
     "defaultIncludes": [
       "RMAssertNullability",
       "RMAssumeNonnull",
+      "RMCoding",
       "RMCopying",
       "RMEquality",
       "RMImmutableProperties",

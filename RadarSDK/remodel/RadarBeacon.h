@@ -12,7 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * Represents a beacon.
  */
-@interface RadarBeacon : NSObject<RadarJSONCoding, NSCopying>
+@interface RadarBeacon : NSObject<RadarJSONCoding, NSCopying, NSCoding>
 
 /**
  * The Radar ID of the beacon.

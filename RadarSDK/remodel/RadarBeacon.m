@@ -13,11 +13,32 @@
 #pragma clang diagnostic push
 #pragma GCC diagnostic ignored "-Wobjc-designated-initializers"
 
+static __unsafe_unretained NSString *const k_idKey = @"_ID";
+static __unsafe_unretained NSString *const k_descriptionKey = @"_DESCRIPTION";
+static __unsafe_unretained NSString *const kMetadataKey = @"METADATA";
+static __unsafe_unretained NSString *const kLocationKey = @"LOCATION";
+static __unsafe_unretained NSString *const kUuidKey = @"UUID";
+static __unsafe_unretained NSString *const kMajorKey = @"MAJOR";
+static __unsafe_unretained NSString *const kMinorKey = @"MINOR";
+
 #define RMParameterAssert(condition) NSCParameterAssert((condition))
 
 NS_ASSUME_NONNULL_BEGIN
 
 @implementation RadarBeacon
+
+- (nullable instancetype)initWithCoder:(NSCoder *)aDecoder {
+    if ((self = [super init])) {
+        __id = (id)[aDecoder decodeObjectForKey:k_idKey];
+        __description = (id)[aDecoder decodeObjectForKey:k_descriptionKey];
+        _metadata = (id)[aDecoder decodeObjectForKey:kMetadataKey];
+        _location = (id)[aDecoder decodeObjectForKey:kLocationKey];
+        _uuid = (id)[aDecoder decodeObjectForKey:kUuidKey];
+        _major = (id)[aDecoder decodeObjectForKey:kMajorKey];
+        _minor = (id)[aDecoder decodeObjectForKey:kMinorKey];
+    }
+    return self;
+}
 
 - (nullable instancetype)initWithRadarJSONObject:(nullable id)object {
     if (!object || ![object isKindOfClass:[NSDictionary class]]) {
@@ -96,6 +117,16 @@ NS_ASSUME_NONNULL_BEGIN
     dict[@"major"] = _major;
     dict[@"minor"] = _minor;
     return [dict copy];
+}
+
+- (void)encodeWithCoder:(NSCoder *)aCoder {
+    [aCoder encodeObject:__id forKey:k_idKey];
+    [aCoder encodeObject:__description forKey:k_descriptionKey];
+    [aCoder encodeObject:_metadata forKey:kMetadataKey];
+    [aCoder encodeObject:_location forKey:kLocationKey];
+    [aCoder encodeObject:_uuid forKey:kUuidKey];
+    [aCoder encodeObject:_major forKey:kMajorKey];
+    [aCoder encodeObject:_minor forKey:kMinorKey];
 }
 
 - (NSUInteger)hash {
