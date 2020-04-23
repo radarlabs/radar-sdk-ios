@@ -30,8 +30,9 @@
 		582BDBE52451290800988AED /* RadarBeacon.h in Headers */ = {isa = PBXBuildFile; fileRef = 582BDBE22451290800988AED /* RadarBeacon.h */; };
 		582BDBE82451293F00988AED /* RadarJSONCoding.h in Headers */ = {isa = PBXBuildFile; fileRef = 582BDBE62451293F00988AED /* RadarJSONCoding.h */; };
 		582BDBED2451E47600988AED /* RadarLocation.value in Resources */ = {isa = PBXBuildFile; fileRef = 582BDBEA2451E47600988AED /* RadarLocation.value */; };
-		582BDBEE2451E47600988AED /* RadarLocation.m in Sources */ = {isa = PBXBuildFile; fileRef = 582BDBEB2451E47600988AED /* RadarLocation.m */; };
 		582BDBF12451E49D00988AED /* RadarLocationType.h in Headers */ = {isa = PBXBuildFile; fileRef = 582BDBEF2451E49C00988AED /* RadarLocationType.h */; };
+		589DDC4E2451FA24006B5A60 /* RadarLocation.h in Headers */ = {isa = PBXBuildFile; fileRef = 582BDBEC2451E47600988AED /* RadarLocation.h */; };
+		589DDC4F2451FA29006B5A60 /* RadarLocation.m in Sources */ = {isa = PBXBuildFile; fileRef = 582BDBEB2451E47600988AED /* RadarLocation.m */; };
 		58AE02C52408359A00E87C9C /* search_points.json in Resources */ = {isa = PBXBuildFile; fileRef = 58AE02C42408359A00E87C9C /* search_points.json */; };
 		58F950CA2406CE5000364B15 /* RadarPoint+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 58F950C82406CE5000364B15 /* RadarPoint+Internal.h */; };
 		58F950CC2406CE7400364B15 /* RadarPoint.h in Headers */ = {isa = PBXBuildFile; fileRef = 58F950C52406CBE500364B15 /* RadarPoint.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -522,6 +523,7 @@
 				DDC63802238C801C00747FD4 /* RadarPlace.h in Headers */,
 				5343FFDC23E4A2D400808D93 /* RadarContext+Internal.h in Headers */,
 				DDC63803238C801C00747FD4 /* RadarPlace+Internal.h in Headers */,
+				589DDC4E2451FA24006B5A60 /* RadarLocation.h in Headers */,
 				582BDBE82451293F00988AED /* RadarJSONCoding.h in Headers */,
 				DDC63804238C801C00747FD4 /* RadarPolygonGeometry.h in Headers */,
 				DDC63805238C801C00747FD4 /* RadarPolygonGeometry+Internal.h in Headers */,
@@ -710,7 +712,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				DD8E2F7424018C17002D51AB /* RadarPermissionsHelperMock.m in Sources */,
-				582BDBEE2451E47600988AED /* RadarLocation.m in Sources */,
 				DD8E2F7724018C25002D51AB /* RadarAPIHelperMock.m in Sources */,
 				DD103211237E0C47003DD408 /* RadarSDKTests.m in Sources */,
 				DD8E2F7124018BF9002D51AB /* RadarTestUtils.m in Sources */,
@@ -724,6 +725,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				DDC637D9238C7F8700747FD4 /* RadarChain.m in Sources */,
+				589DDC4F2451FA29006B5A60 /* RadarLocation.m in Sources */,
 				DDC637DA238C7F8700747FD4 /* RadarCircleGeometry.m in Sources */,
 				DDC637DB238C7F8700747FD4 /* RadarCoordinate.m in Sources */,
 				DDC637DC238C7F8700747FD4 /* RadarEvent.m in Sources */,
