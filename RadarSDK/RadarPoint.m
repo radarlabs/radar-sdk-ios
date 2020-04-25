@@ -42,7 +42,7 @@
     NSString *tag = [dict radar_stringForKey:@"tag"];
     NSString *externalId = [dict radar_stringForKey:@"externalId"];
     NSDictionary *metadata = [dict radar_dictionaryForKey:@"metadata"];
-    RadarCoordinate *location = [dict radar_coordinateForKey:@"geometry"];
+    RadarCoordinate *location = [[RadarCoordinate alloc] initWithObject:dict[@"geometry"]];
 
     if (_id && description && location) {
         return [[RadarPoint alloc] initWithId:_id description:description tag:tag externalId:externalId metadata:metadata location:location];

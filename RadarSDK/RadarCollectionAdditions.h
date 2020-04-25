@@ -21,7 +21,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable NSString *)radar_stringForKey:(KeyType)key;
 - (nullable NSDictionary *)radar_dictionaryForKey:(KeyType)key;
 - (nullable NSArray *)radar_arrayForKey:(KeyType)key;
-- (nullable RadarCoordinate *)radar_coordinateForKey:(KeyType)key;
 
 @end
 

@@ -14,9 +14,12 @@
     NSMutableArray *result = [NSMutableArray arrayWithCapacity:[self count]];
 
     [self enumerateObjectsUsingBlock:^(id _Nonnull obj, NSUInteger idx, BOOL *stop) {
-        [result addObject:block(obj)];
+        id mappedObj = block(obj);
+        if (mappedObj) {
+            [result addObject:mappedObj];
+        }
     }];
-    return result;
+    return [result copy];
 }
 
 @end
@@ -42,28 +45,6 @@
 
 - (NSArray *)radar_arrayForKey:(id)key {
     GET_DICT_VALUE_FOR_KEY(key, NSArray);
-}
-
-- (RadarCoordinate *)radar_coordinateForKey:(id)key {
-    NSDictionary *dict = [self radar_dictionaryForKey:key];
-    if (!dict) {
-        return nil;
-    }
-
-    NSArray *coordinates = [dict radar_arrayForKey:@"coordinates"];
-    if (!coordinates || coordinates.count != 2 || ![coordinates[0] isKindOfClass:[NSNumber class]] || ![coordinates[1] isKindOfClass:[NSNumber class]]) {
-        return nil;
-    }
-    float longitude = [(NSNumber *)coordinates[0] floatValue];
-    if (longitude < -180 || longitude > 180) {
-        return nil;
-    }
-    float latitude = [(NSNumber *)coordinates[1] floatValue];
-    if (latitude < -90 || latitude > 90) {
-        return nil;
-    }
-
-    return [[RadarCoordinate alloc] initWithCoordinate:CLLocationCoordinate2DMake(latitude, longitude)];
 }
 
 @end

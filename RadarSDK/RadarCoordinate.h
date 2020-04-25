@@ -8,10 +8,12 @@
 #import <CoreLocation/CoreLocation.h>
 #import <Foundation/Foundation.h>
 
+#import "RadarJSONCoding.h"
+
 /**
  Represents a location coordinate.
  */
-@interface RadarCoordinate : NSObject
+@interface RadarCoordinate : NSObject<RadarJSONCoding>
 
 /**
  The coordinate.
