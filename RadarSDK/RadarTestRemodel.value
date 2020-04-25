@@ -1,0 +1,15 @@
+RadarTestRemodel {
+    NSString *_id
+    %nullable
+    NSNumber *_version
+
+    %nullable
+    NSDictionary *metadata
+
+    NSArray<RadarCoordinate * > *geometry
+
+    %nullable
+    NSDictionary<NSString *, NSNumber *> * beacons
+
+    BOOL isActive
+}

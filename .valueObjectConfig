@@ -17,6 +17,6 @@
       "RadarJSONCoding"
     ],
     "customPluginPaths": [
-      "./RadarJSONPlugin.js"
+      "./RemodelPlugin/bin/RadarJSONPlugin.js"
     ]
   }

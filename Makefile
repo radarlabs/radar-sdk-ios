@@ -30,6 +30,9 @@ lint:
 format:
 	./clang_format.sh
 
+remodel:
+	./remodel.sh RadarSDK/valueObjects/
+
 clean-pretty:
 	set -o pipefail && xcodebuild $(XC_ARGS) clean | xcpretty
 
@@ -47,4 +50,4 @@ docs:
 
 dist: clean-pretty format test-pretty build-pretty docs lint
 
-.PHONY: bootstrap clean test build lint format docs dist
+.PHONY: bootstrap clean test build lint format docs dist remodel

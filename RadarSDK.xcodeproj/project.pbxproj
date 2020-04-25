@@ -306,7 +306,7 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		582BDBDF2451289000988AED /* remodel */ = {
+		582BDBDF2451289000988AED /* valueObjects */ = {
 			isa = PBXGroup;
 			children = (
 				582BDBEC2451E47600988AED /* RadarLocation.h */,
@@ -317,7 +317,7 @@
 				582BDBE32451290800988AED /* RadarBeacon.value */,
 				582BDBEF2451E49C00988AED /* RadarLocationType.h */,
 			);
-			path = remodel;
+			path = valueObjects;
 			sourceTree = "<group>";
 		};
 		DD103213237F1778003DD408 /* Resources */ = {
@@ -415,7 +415,7 @@
 		DD27CB7D235D13F000299FEC /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				582BDBDF2451289000988AED /* remodel */,
+				582BDBDF2451289000988AED /* valueObjects */,
 				78156B9523A8210E0094410E /* RadarAddress.h */,
 				78156B9B23A834FA0094410E /* RadarAddress+Internal.h */,
 				78156B9623A8210E0094410E /* RadarAddress.m */,
