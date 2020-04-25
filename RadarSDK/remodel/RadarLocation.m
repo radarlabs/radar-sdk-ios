@@ -41,6 +41,23 @@ static NSUInteger HashDouble(double givenDouble) {
     return (NSUInteger)p;
 }
 
++ (nullable NSArray<RadarLocation *> *)fromObjectArray:(nullable id)objectArray {
+    if (!objectArray || ![objectArray isKindOfClass:[NSArray class]]) {
+        return nil;
+    }
+
+    NSMutableArray<RadarLocation *> *array = [NSMutableArray array];
+    for (id object in (NSArray *)objectArray) {
+        RadarLocation *value = [[RadarLocation alloc] initWithObject:object];
+        if (!value) {
+            return nil;
+        }
+        [array addObject:value];
+    }
+
+    return [array copy];
+}
+
 - (nullable instancetype)initWithCoder:(NSCoder *)aDecoder {
     if ((self = [super init])) {
         _latitude = [aDecoder decodeDoubleForKey:kLatitudeKey];
@@ -60,30 +77,35 @@ static NSUInteger HashDouble(double givenDouble) {
     return self;
 }
 
-- (nullable instancetype)initWithRadarJSONObject:(nullable id)object {
+- (nullable instancetype)initWithObject:(nullable id)object {
     if (!object || ![object isKindOfClass:[NSDictionary class]]) {
         return nil;
     }
     NSDictionary *dictionary = (NSDictionary *)object;
     if ((self = [super init])) {
-        if (!dictionary[@"latitude"]) {
-            return nil;
+        if (dictionary[@"latitude"] && [dictionary[@"latitude"] isKindOfClass:[NSNumber class]]) {
+            _latitude = [dictionary[@"latitude"] doubleValue];
         }
-        _latitude = [dictionary[@"latitude"] doubleValue];
-        if (!dictionary[@"longtitude"]) {
-            return nil;
+        if (dictionary[@"longtitude"] && [dictionary[@"longtitude"] isKindOfClass:[NSNumber class]]) {
+            _longtitude = [dictionary[@"longtitude"] doubleValue];
         }
-        _longtitude = [dictionary[@"longtitude"] doubleValue];
-        if (!dictionary[@"type"]) {
-            return nil;
+        if (dictionary[@"type"] && [dictionary[@"type"] isKindOfClass:[NSNumber class]]) {
+            _type = [dictionary[@"type"] integerValue];
         }
-        _type = [dictionary[@"type"] integerValue];
     }
     return self;
 }
 
 - (id)copyWithZone:(nullable NSZone *)zone {
     return self;
+}
+
+- (NSDictionary *)dictionaryValue {
+    NSMutableDictionary *dictionary = [[NSMutableDictionary alloc] init];
+    dictionary[@"latitude"] = @(_latitude);
+    dictionary[@"longtitude"] = @(_longtitude);
+    dictionary[@"type"] = @(_type);
+    return [dictionary copy];
 }
 
 - (void)encodeWithCoder:(NSCoder *)aCoder {
@@ -115,14 +137,6 @@ static NSUInteger HashDouble(double givenDouble) {
         return NO;
     }
     return _type == object->_type && CompareDoubles(_latitude, object->_latitude) && CompareDoubles(_longtitude, object->_longtitude);
-}
-
-- (id)toRadarJSONObject {
-    NSMutableDictionary *dict = [[NSMutableDictionary alloc] init];
-    dict[@"latitude"] = @(_latitude);
-    dict[@"longtitude"] = @(_longtitude);
-    dict[@"type"] = @(_type);
-    return [dict copy];
 }
 
 @end

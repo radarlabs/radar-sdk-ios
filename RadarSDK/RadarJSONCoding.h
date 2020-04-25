@@ -12,9 +12,16 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol RadarJSONCoding
 
-- (nullable instancetype)initWithRadarJSONObject:(nullable id)object;
+/// Deserialize from an array of JSON objects. Return nil if any of the JSON object is not valid
+/// @param objectArray An array of the JSON objects
++ (nullable NSArray *)fromObjectArray:(nullable id)objectArray;
 
-- (id)toRadarJSONObject; // RadarJSONObject is either a NSDictionary or a NSArray
+/// Deserialize from JSON object; return nil if the JSON object is not valid.
+/// @param object JSON representation for the object
+- (nullable instancetype)initWithObject:(nullable id)object;
+
+/// Serialize to JSON object.
+- (NSDictionary *)dictionaryValue;
 
 @end
 

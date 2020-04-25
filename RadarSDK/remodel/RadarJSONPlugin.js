@@ -1,11 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 function matchType(matchers, type) {
-    return matchTypeName(matchers, type.name);
-}
-exports.matchType = matchType;
-/** Like matchType but allows you to pass a type name instead of an ObjC.Type. */
-function matchTypeName(matchers, typeName) {
+    const typeName = type.name;
     if (typeName === 'id') {
         return matchers.id();
     }
@@ -27,56 +23,35 @@ function matchTypeName(matchers, typeName) {
     else if (typeName === 'float') {
         return matchers.float();
     }
-    else if (typeName === 'CGFloat') {
-        return matchers.CGFloat();
-    }
-    else if (typeName === 'NSTimeInterval') {
-        return matchers.NSTimeInterval();
-    }
-    else if (typeName === 'uintptr_t') {
-        return matchers.uintptr_t();
-    }
-    else if (typeName === 'uint32_t') {
-        return matchers.uint32_t();
-    }
-    else if (typeName === 'uint64_t') {
-        return matchers.uint64_t();
-    }
-    else if (typeName === 'int32_t') {
-        return matchers.int32_t();
-    }
-    else if (typeName === 'int64_t') {
-        return matchers.int64_t();
-    }
-    else if (typeName === 'SEL') {
-        return matchers.SEL();
-    }
-    else if (typeName === 'NSRange') {
-        return matchers.NSRange();
-    }
-    else if (typeName === 'CGRect') {
-        return matchers.CGRect();
-    }
-    else if (typeName === 'CGPoint') {
-        return matchers.CGPoint();
-    }
-    else if (typeName === 'CGSize') {
-        return matchers.CGSize();
-    }
-    else if (typeName === 'UIEdgeInsets') {
-        return matchers.UIEdgeInsets();
-    }
-    else if (typeName === 'Class') {
-        return matchers.Class();
-    }
-    else if (typeName === 'dispatch_block_t') {
-        return matchers.dispatch_block_t();
-    }
     else {
         return matchers.unmatchedType();
     }
+    // return matchTypeName(matchers, type.name);
 }
-exports.matchTypeName = matchTypeName;
+exports.matchType = matchType;
+/** Like matchType but allows you to pass a type name instead of an ObjC.Type. */
+// export function matchTypeName<T>(
+//   matchers: TypeMatchers<T>,
+//   typeName: string,
+// ): T {
+//   if (typeName === 'id') {
+//     return matchers.id();
+//   } else if (typeName === 'NSObject') {
+//     return matchers.NSObject();
+//   } else if (typeName === 'BOOL') {
+//     return matchers.BOOL();
+//   } else if (typeName === 'NSInteger') {
+//     return matchers.NSInteger();
+//   } else if (typeName === 'NSUInteger') {
+//     return matchers.NSUInteger();
+//   } else if (typeName === 'double') {
+//     return matchers.double();
+//   } else if (typeName === 'float') {
+//     return matchers.float();
+//   } else {
+//     return matchers.unmatchedType();
+//   }
+// }
 var ClassNullability;
 (function (ClassNullability) {
     ClassNullability[ClassNullability["default"] = 0] = "default";
@@ -156,24 +131,7 @@ class Nullability {
         }
     }
 }
-function stringContainingSpaces(spaces) {
-    var str = '';
-    for (var i = 0; i < spaces; i++) {
-        str += ' ';
-    }
-    return str;
-}
-function indentFunc(spaces, str) {
-    if (str !== '') {
-        return stringContainingSpaces(spaces) + str;
-    }
-    else {
-        return str;
-    }
-}
-function strIndent(spaces) {
-    return str => indentFunc(spaces, str);
-}
+// functions
 function typeForUnderlyingType(underlyingType) {
     return {
         name: underlyingType,
@@ -196,175 +154,137 @@ function computeTypeOfAttribute(attribute) {
         };
     }, attribute.type.underlyingType);
 }
-function pApplyf2(val, f) {
-    return function (b) {
-        return f(val, b);
-    };
-}
-const noChange = (attributeName) => attributeName;
 function dictionaryWrappingAmpersand(attributeName) {
     return "@(" + attributeName + ")";
 }
-function dictionaryUnwrappingByKeyword(unwrappingKeyword) {
-    return function (attributeName) {
-        return "[" + attributeName + " " + unwrappingKeyword + "]";
-    };
-}
-function dictionaryParsingFunction(attribute) {
-    const iVarString = '_' + attribute.name;
-    const type = computeTypeOfAttribute(attribute);
-    const defaultParsingFunction = {
-        keyFromModelGenerator: noChange,
-        keyToModelGenerator: noChange,
-    };
-    return matchType({
-        id: function () {
-            return defaultParsingFunction;
-        },
-        NSObject: function () {
-            const typeName = attribute.type.name;
-            const keyToModelGenerator = (val) => {
-                if (typeName.startsWith('Radar') || typeName === 'NSArray') {
-                    return `[[${typeName} alloc] initWithRadarJSONObject:${val}]`;
-                }
-                else {
-                    return `(${typeName} *)${val}`;
-                }
-            };
-            const keyFromModelGenerator = (val) => {
-                if (typeName.startsWith('Radar') || typeName === 'NSArray') {
-                    return `[_${attribute.name} toRadarJSONObject]`;
-                }
-                else {
-                    return val;
-                }
-            };
-            return {
-                keyFromModelGenerator,
-                keyToModelGenerator,
-            };
-        },
-        BOOL: function () {
-            return {
-                keyFromModelGenerator: dictionaryWrappingAmpersand,
-                keyToModelGenerator: dictionaryUnwrappingByKeyword("boolValue"),
-            };
-        },
-        NSInteger: function () {
-            return {
-                keyFromModelGenerator: dictionaryWrappingAmpersand,
-                keyToModelGenerator: dictionaryUnwrappingByKeyword("integerValue"),
-            };
-        },
-        NSUInteger: function () {
-            return {
-                keyFromModelGenerator: dictionaryWrappingAmpersand,
-                keyToModelGenerator: dictionaryUnwrappingByKeyword("unsignedIntegerValue"),
-            };
-        },
-        double: function () {
-            return {
-                keyFromModelGenerator: dictionaryWrappingAmpersand,
-                keyToModelGenerator: dictionaryUnwrappingByKeyword("doubleValue"),
-            };
-        },
-        float: function () {
-            return {
-                keyFromModelGenerator: dictionaryWrappingAmpersand,
-                keyToModelGenerator: dictionaryUnwrappingByKeyword("floatValue"),
-            };
-        },
-        CGFloat: function () {
-            return {
-                keyFromModelGenerator: dictionaryWrappingAmpersand,
-                keyToModelGenerator: dictionaryUnwrappingByKeyword("floatValue"),
-            };
-        },
-        NSTimeInterval: function () {
-            return {
-                keyFromModelGenerator: dictionaryWrappingAmpersand,
-                keyToModelGenerator: dictionaryUnwrappingByKeyword("doubleValue"),
-            };
-        },
-        uintptr_t: function () {
-            return null;
-        },
-        uint32_t: function () {
-            return null;
-        },
-        uint64_t: function () {
-            return null;
-        },
-        int32_t: function () {
-            return null;
-        },
-        int64_t: function () {
-            return null;
-        },
-        SEL: function () {
-            return null;
-        },
-        NSRange: function () {
-            return null;
-        },
-        CGRect: function () {
-            return null;
-        },
-        CGPoint: function () {
-            return null;
-        },
-        CGSize: function () {
-            return null;
-        },
-        UIEdgeInsets: function () {
-            return null;
-        },
-        Class: function () {
-            return null;
-        },
-        dispatch_block_t: function () {
-            return null;
-        },
-        unmatchedType: function () {
-            return null;
+const isRadarClass = (name) => (name.indexOf('Radar') !== -1);
+function referencedGenericTypesIncludesRadarClass(genericType) {
+    if (isRadarClass(genericType.name)) {
+        return true;
+    }
+    for (const subType of genericType.referencedGenericTypes) {
+        if (referencedGenericTypesIncludesRadarClass(subType)) {
+            return true;
         }
+    }
+    return false;
+}
+function isAttributeTypeUnsupported(attribute) {
+    const type = computeTypeOfAttribute(attribute);
+    return matchType({
+        id: () => false,
+        BOOL: () => false,
+        NSInteger: () => false,
+        NSUInteger: () => false,
+        double: () => false,
+        float: () => false,
+        NSObject: () => {
+            const typeName = attribute.type.name;
+            if (typeName.indexOf('NSMutable') !== -1) {
+                return true;
+            }
+            if (typeName === 'NSSet') {
+                return true;
+            }
+            if (typeName === 'NSArray') {
+                for (const genericType of attribute.type.referencedGenericTypes) {
+                    if (isRadarClass(genericType.name)) {
+                        return false; // we support NSArray<RadarXX *> * 
+                    }
+                    else if (referencedGenericTypesIncludesRadarClass(genericType)) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+            if (typeName === 'NSDictionary') {
+                for (const genericType of attribute.type.referencedGenericTypes) {
+                    if (referencedGenericTypesIncludesRadarClass(genericType)) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+            return false;
+        },
+        unmatchedType: () => true,
     }, type);
 }
-function toIvarKeyValuePair(attribute) {
-    const iVar = '_' + attribute.name;
-    const parsingFunction = dictionaryParsingFunction(attribute);
-    let wrapped = iVar;
-    if (parsingFunction) {
-        wrapped = parsingFunction.keyFromModelGenerator(iVar);
-    }
+// from model to json
+function toDictAssignment(attribute) {
     const keyName = attribute.name;
-    return attribute.nullability.match(() => {
-        return 'dict[@"' + keyName + '"] = ' + wrapped + ';';
-    }, () => {
-        return 'dict[@"' + keyName + '"] = ' + wrapped + ';';
-    }, // nonnull
-    () => {
+    const ivar = '_' + keyName;
+    const raw = 'dictionary[@"' + keyName + '"]';
+    const type = computeTypeOfAttribute(attribute);
+    const assignment = matchType({
+        id: () => [`${raw} = ${ivar};`],
+        BOOL: () => [`${raw} = ${dictionaryWrappingAmpersand(ivar)};`],
+        NSInteger: () => [`${raw} = ${dictionaryWrappingAmpersand(ivar)};`],
+        NSUInteger: () => [`${raw} = ${dictionaryWrappingAmpersand(ivar)};`],
+        double: () => [`${raw} = ${dictionaryWrappingAmpersand(ivar)};`],
+        float: () => [`${raw} = ${dictionaryWrappingAmpersand(ivar)};`],
+        NSObject: () => {
+            const typeName = attribute.type.name;
+            const defaultAssignment = [`${raw} = ${ivar};`];
+            if (typeName === 'NSArray') {
+                if (attribute.type.referencedGenericTypes.length > 0) {
+                    const genericName = attribute.type.referencedGenericTypes[0].name;
+                    if (isRadarClass(genericName)) {
+                        return [
+                            `${raw} = [${ivar} radar_mapObjectsUsingBlock:^id _Nullable(${genericName} * _Nonnull obj) {`,
+                            `return [obj dictionaryValue];`,
+                            `}];`
+                        ];
+                    }
+                }
+                return defaultAssignment;
+            }
+            else if (typeName === 'NSDictionary') {
+                // if (attribute.type.referencedGenericTypes.length > 1) {
+                //   const genericName = attribute.type.referencedGenericTypes[1].name;
+                //   if (isRadarClass(genericName)) {
+                //     return [
+                //       `${raw} = [${ivar} radar_mapObjectsUsingBlock:^id _Nullable(${genericName} * _Nonnull obj) {`,
+                //       `return [obj dictionaryValue];`,
+                //       `}];`
+                //     ];
+                //   }
+                // } 
+                return defaultAssignment;
+            }
+            else if (isRadarClass(typeName)) {
+                return [`${raw} = [${ivar} dictionaryValue];`];
+            }
+            else {
+                return defaultAssignment;
+            }
+        },
+        unmatchedType: () => []
+    }, type);
+    const withNullability = attribute.nullability.match(() => assignment, () => assignment, () => {
         return [
-            `if (${iVar}) {`,
-            strIndent(2)('dict[@"' + keyName + '"] = ' + wrapped + ';'),
-            '}'
-        ].join('\n');
+            `if (${ivar}) {`
+        ].concat(assignment)
+            .concat([
+            '}',
+        ]);
     });
+    return withNullability.join(`\n`);
 }
-function instanceToDictionaryConverter(attributes) {
+function instanceToJSONConverter(attributes) {
     const result = [
-        'NSMutableDictionary *dict = [[NSMutableDictionary alloc] init];'
-    ].concat(attributes.map(toIvarKeyValuePair))
+        'NSMutableDictionary *dictionary = [[NSMutableDictionary alloc] init];'
+    ].concat(attributes.map(toDictAssignment))
         .concat([
-        'return [dict copy];',
+        'return [dictionary copy];',
     ]);
     return result;
 }
-function instanceToDictionaryMethod(attributes) {
+function instanceToJSONMethod(attributes) {
     return {
         preprocessors: [],
         belongsToProtocol: 'RadarJSONCoding',
-        code: instanceToDictionaryConverter(attributes),
+        code: instanceToJSONConverter(attributes),
         comments: [{
                 content: '// Convert to JSON object (either an dictionary or array).'
             },
@@ -372,75 +292,176 @@ function instanceToDictionaryMethod(attributes) {
         compilerAttributes: [],
         keywords: [
             {
-                name: 'toRadarJSONObject',
+                name: 'dictionaryValue',
                 argument: null
             }
         ],
         returnType: {
             type: ({
-                name: 'id',
-                reference: 'id'
+                name: 'NSDictionary *',
+                reference: 'NSDictionary *'
             }),
             modifiers: []
         }
     };
 }
-function safeUnwrapDecodingStatement(parsingFunction, decodingStatement) {
-    let unwrapped = decodingStatement;
-    if (parsingFunction) {
-        unwrapped = parsingFunction.keyToModelGenerator(unwrapped);
-    }
-    return unwrapped;
-}
-function toIvarAssignment(supportsValueSemantics, attribute) {
+// from json to model
+function toIvarAssignment(attribute) {
     const keyName = attribute.name;
+    const ivar = '_' + keyName;
     const raw = 'dictionary[@"' + keyName + '"]';
-    const parsingFunction = dictionaryParsingFunction(attribute);
-    const unwrapped = safeUnwrapDecodingStatement(parsingFunction, raw);
-    let decoded = unwrapped;
-    //    const shouldCopy = ObjectSpecCodeUtils.shouldCopyIncomingValueForAttribute(supportsValueSemantics, attribute);
-    decoded = decoded + ";";
-    let res;
-    return attribute.nullability.match(() => {
+    const type = computeTypeOfAttribute(attribute);
+    const assignment = matchType({
+        id: () => {
+            return [
+                `if (${raw}) {`,
+                `${ivar} = ${raw};`,
+                '}',
+            ];
+        },
+        BOOL: () => {
+            return [
+                `if (${raw} && [${raw} isKindOfClass:[NSNumber class]]) {`,
+                `${ivar} = [${raw} boolValue];`,
+                `}`,
+            ];
+        },
+        NSInteger: () => {
+            return [
+                `if (${raw} && [${raw} isKindOfClass:[NSNumber class]]) {`,
+                `${ivar} = [${raw} integerValue];`,
+                `}`,
+            ];
+        },
+        NSUInteger: () => {
+            return [
+                `if (${raw} && [${raw} isKindOfClass:[NSNumber class]]) {`,
+                `${ivar} = [${raw} unsignedIntegerValue];`,
+                `}`,
+            ];
+        },
+        double: () => {
+            return [
+                `if (${raw} && [${raw} isKindOfClass:[NSNumber class]]) {`,
+                `${ivar} = [${raw} doubleValue];`,
+                `}`,
+            ];
+        },
+        float: () => {
+            return [
+                `if (${raw} && [${raw} isKindOfClass:[NSNumber class]]) {`,
+                `${ivar} = [${raw} floatValue];`,
+                `}`,
+            ];
+        },
+        NSObject: () => {
+            const typeName = attribute.type.name;
+            const defaultAssignmentLine = `${ivar} = (${typeName} *)${raw};`;
+            if (typeName === 'NSArray') {
+                let ivarAssignmentLine = defaultAssignmentLine;
+                if (attribute.type.referencedGenericTypes.length > 0) {
+                    const genericName = attribute.type.referencedGenericTypes[0].name;
+                    if (isRadarClass(genericName)) {
+                        ivarAssignmentLine = `${ivar} = [${genericName} fromObjectArray:${raw}];`;
+                    }
+                }
+                return [
+                    `if (${raw} && [${raw} isKindOfClass:[NSArray class]]) {`,
+                    ivarAssignmentLine,
+                    `}`,
+                ];
+            }
+            else if (typeName === 'NSDictionary') {
+                return [
+                    `if (${raw} && [${raw} isKindOfClass:[${typeName} class]]) {`,
+                    defaultAssignmentLine,
+                    `}`,
+                ];
+                // if (attribute.type.referencedGenericTypes.length > 1) {
+                //   const genericName = attribute.type.referencedGenericTypes[1].name;
+                //   if (isRadarClass(genericName)) {
+                //     ivarAssignmentLine = [
+                //       `${ivar} = [(NSDictionary *)${raw} radar_mapObjectsUsingBlock:^id _Nullable(id  _Nonnull obj) {`,
+                //       `return [[${genericName} alloc] initWithObject:obj];`,
+                //       `}];`
+                //     ].join('\n');
+                //   }
+                // }
+            }
+            else if (typeName === 'NSNumber' || typeName === 'NSString') {
+                return [
+                    `if (${raw} && [${raw} isKindOfClass:[${typeName} class]]) {`,
+                    defaultAssignmentLine,
+                    `}`,
+                ];
+            }
+            else if (isRadarClass(typeName)) {
+                return [
+                    `if (${raw} && [${raw} isKindOfClass:[NSDictionary class]]) {`,
+                    `${ivar} = [[${typeName} alloc] initWithObject:${raw}];`,
+                    `}`,
+                ];
+            }
+            else {
+                return [
+                    `if (${raw}) {`,
+                    defaultAssignmentLine,
+                    `}`,
+                ];
+            }
+        },
+        unmatchedType: () => [],
+    }, type);
+    if (type.name !== 'NSObject') {
+        return assignment.join('\n');
+    }
+    const nullabilityCheck = attribute.nullability.match(() => {
+        // this is assumeNonnull
         return [
-            `if (!${raw}) {`,
-            strIndent(4)('return nil;'),
+            `if (!${ivar}) {`,
+            `self = nil;`,
+            `return self;`,
             '}',
-            '_' + attribute.name + ' = ' + decoded
-        ].join('\n');
+        ];
     }, () => {
         return [
-            `if (!${raw}) {`,
-            strIndent(4)('return nil;'),
+            `if (!${ivar}) {`,
+            `self = nil;`,
+            `return self;`,
             '}',
-            '_' + attribute.name + ' = ' + decoded
-        ].join('\n');
-    }, // nonnull
-    () => {
-        return '_' + attribute.name + ' = ' + decoded;
-    }); //nullable
+        ];
+    }, () => {
+        return null;
+    });
+    if (nullabilityCheck) {
+        return assignment.concat(nullabilityCheck).join('\n');
+    }
+    else {
+        return assignment.join('\n');
+    }
 }
-function dictionaryToInstanceInitializer(attributes) {
+function JSONToInstanceInitializer(objectType) {
+    const attributes = objectType.attributes;
     const result = [
         'if ((self = [super init])) {'
-    ].concat(attributes.map(pApplyf2(true, toIvarAssignment)).map(strIndent(2)))
+    ].concat(attributes.map(toIvarAssignment))
         .concat([
         '}',
         'return self;'
     ]);
     const finalResult = [
         'if (!object || ![object isKindOfClass:[NSDictionary class]]) {',
-        strIndent(2)('return nil;'),
+        'return nil;',
         '}',
         'NSDictionary *dictionary = (NSDictionary *)object;'
     ].concat(result);
     return finalResult;
 }
-function dictionaryToInstanceMethod(attributes) {
+function JSONToInstanceMethod(objectType) {
     return {
         preprocessors: [],
         belongsToProtocol: 'RadarJSONCoding',
-        code: dictionaryToInstanceInitializer(attributes),
+        code: JSONToInstanceInitializer(objectType),
         comments: [{
                 content: '// Initializer from JSON Object.'
             },
@@ -448,7 +469,7 @@ function dictionaryToInstanceMethod(attributes) {
         compilerAttributes: ['NS_DESIGNATED_INITIALIZER'],
         keywords: [
             {
-                name: 'initWithRadarJSONObject',
+                name: 'initWithObject',
                 argument: ({
                     name: 'object',
                     modifiers: [KeywordArgumentModifier.Nullable()],
@@ -468,14 +489,59 @@ function dictionaryToInstanceMethod(attributes) {
         }
     };
 }
-function doesValueAttributeContainAnUnsupportedType(attribute) {
-    return dictionaryParsingFunction(attribute) == null;
+// from json array to model array
+function JSONArrayToInstanceCode(objectType) {
+    return `
+  if (!objectArray || ![objectArray isKindOfClass:[NSArray class]]) {
+    return nil;
+  } 
+  
+  NSMutableArray<${objectType.typeName} *> *array = [NSMutableArray array];
+  for (id object in (NSArray *)objectArray) {
+      ${objectType.typeName} *value = [[${objectType.typeName} alloc] initWithObject:object];
+      if (!value) {
+          return nil;
+      }
+      [array addObject:value];
+  }
+
+  return [array copy];
+  `.split('\n');
+}
+function JSONArrayToInstanceMethod(objectType) {
+    return {
+        preprocessors: [],
+        belongsToProtocol: 'RadarJSONCoding',
+        code: JSONArrayToInstanceCode(objectType),
+        comments: [],
+        compilerAttributes: [],
+        keywords: [
+            {
+                name: 'fromObjectArray',
+                argument: ({
+                    name: 'objectArray',
+                    modifiers: [KeywordArgumentModifier.Nullable()],
+                    type: {
+                        name: 'id',
+                        reference: 'id'
+                    }
+                })
+            }
+        ],
+        returnType: {
+            type: ({
+                name: `NSArray<${objectType.typeName} *> *`,
+                reference: `NSArray<${objectType.typeName} *> *`,
+            }),
+            modifiers: [KeywordArgumentModifier.Nullable()]
+        }
+    };
 }
 function valueAttributeToUnsupportedTypeError(objectType, attribute) {
     return match(function (underlyingType) {
-        return Error('The JSONCoding plugin does not know how to decode and encode the backing type "' + underlyingType + '" from ' + objectType.typeName + '.' + attribute.name + '. ' + attribute.type.name + ' is not supported.');
+        return Error('The RadarJSONCoding plugin does not know how to decode and encode the backing type "' + underlyingType + '" from ' + objectType.typeName + '.' + attribute.name + '. ' + attribute.type.name + ' is not supported.');
     }, function () {
-        return Error('The JSONCoding plugin does not know how to decode and encode the type "' + attribute.type.name + '" from ' + objectType.typeName + '.' + attribute.name + '. ' + attribute.type.name + ' is not supported.');
+        return Error('The RadarJSONCoding plugin does not know how to decode and encode the type "' + attribute.type.name + '" from ' + objectType.typeName + '.' + attribute.name + '. ' + attribute.type.name + ' is not supported.');
     }, attribute.type.underlyingType);
 }
 function createPlugin() {
@@ -493,7 +559,7 @@ function createPlugin() {
             return [];
         },
         classMethods: function (objectType) {
-            return [];
+            return [JSONArrayToInstanceMethod(objectType)];
         },
         transformFileRequest: function (request) {
             return request;
@@ -534,8 +600,8 @@ function createPlugin() {
             ];
         },
         instanceMethods: function (objectType) {
-            return [instanceToDictionaryMethod(objectType.attributes),
-                dictionaryToInstanceMethod(objectType.attributes)];
+            return [instanceToJSONMethod(objectType.attributes),
+                JSONToInstanceMethod(objectType)];
         },
         macros: function (valueType) {
             return [];
@@ -548,7 +614,12 @@ function createPlugin() {
             return [];
         },
         validationErrors: function (objectType) {
-            const unsupportedTypeErrors = objectType.attributes.filter(doesValueAttributeContainAnUnsupportedType).map(pApplyf2(objectType, valueAttributeToUnsupportedTypeError));
+            const unsupportedTypeErrors = [];
+            const unsupportedAttributes = objectType.attributes.filter(isAttributeTypeUnsupported);
+            for (const attribute of unsupportedAttributes) {
+                const error = valueAttributeToUnsupportedTypeError(objectType, attribute);
+                unsupportedTypeErrors.push(error);
+            }
             return unsupportedTypeErrors;
         },
         nullability: function (objectType) {

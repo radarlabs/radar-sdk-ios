@@ -27,6 +27,23 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation RadarBeacon
 
++ (nullable NSArray<RadarBeacon *> *)fromObjectArray:(nullable id)objectArray {
+    if (!objectArray || ![objectArray isKindOfClass:[NSArray class]]) {
+        return nil;
+    }
+
+    NSMutableArray<RadarBeacon *> *array = [NSMutableArray array];
+    for (id object in (NSArray *)objectArray) {
+        RadarBeacon *value = [[RadarBeacon alloc] initWithObject:object];
+        if (!value) {
+            return nil;
+        }
+        [array addObject:value];
+    }
+
+    return [array copy];
+}
+
 - (nullable instancetype)initWithCoder:(NSCoder *)aDecoder {
     if ((self = [super init])) {
         __id = (id)[aDecoder decodeObjectForKey:k_idKey];
@@ -40,37 +57,57 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-- (nullable instancetype)initWithRadarJSONObject:(nullable id)object {
+- (nullable instancetype)initWithObject:(nullable id)object {
     if (!object || ![object isKindOfClass:[NSDictionary class]]) {
         return nil;
     }
     NSDictionary *dictionary = (NSDictionary *)object;
     if ((self = [super init])) {
-        if (!dictionary[@"_id"]) {
-            return nil;
+        if (dictionary[@"_id"] && [dictionary[@"_id"] isKindOfClass:[NSString class]]) {
+            __id = (NSString *)dictionary[@"_id"];
         }
-        __id = (NSString *)dictionary[@"_id"];
-        __description = (NSString *)dictionary[@"_description"];
-        if (!dictionary[@"numberMetadata"]) {
-            return nil;
+        if (!__id) {
+            self = nil;
+            return self;
         }
-        _numberMetadata = (NSDictionary *)dictionary[@"numberMetadata"];
-        if (!dictionary[@"metadataArray"]) {
-            return nil;
+        if (dictionary[@"_description"] && [dictionary[@"_description"] isKindOfClass:[NSString class]]) {
+            __description = (NSString *)dictionary[@"_description"];
         }
-        _metadataArray = [[NSArray alloc] initWithRadarJSONObject:dictionary[@"metadataArray"]];
-        if (!dictionary[@"location"]) {
-            return nil;
+        if (dictionary[@"numberMetadata"] && [dictionary[@"numberMetadata"] isKindOfClass:[NSDictionary class]]) {
+            _numberMetadata = (NSDictionary *)dictionary[@"numberMetadata"];
         }
-        _location = [[RadarLocation alloc] initWithRadarJSONObject:dictionary[@"location"]];
-        if (!dictionary[@"locationArray"]) {
-            return nil;
+        if (!_numberMetadata) {
+            self = nil;
+            return self;
         }
-        _locationArray = [[NSArray alloc] initWithRadarJSONObject:dictionary[@"locationArray"]];
-        if (!dictionary[@"version"]) {
-            return nil;
+        if (dictionary[@"metadataArray"] && [dictionary[@"metadataArray"] isKindOfClass:[NSArray class]]) {
+            _metadataArray = (NSArray *)dictionary[@"metadataArray"];
         }
-        _version = (NSNumber *)dictionary[@"version"];
+        if (!_metadataArray) {
+            self = nil;
+            return self;
+        }
+        if (dictionary[@"location"] && [dictionary[@"location"] isKindOfClass:[NSDictionary class]]) {
+            _location = [[RadarLocation alloc] initWithObject:dictionary[@"location"]];
+        }
+        if (!_location) {
+            self = nil;
+            return self;
+        }
+        if (dictionary[@"locationArray"] && [dictionary[@"locationArray"] isKindOfClass:[NSArray class]]) {
+            _locationArray = [RadarLocation fromObjectArray:dictionary[@"locationArray"]];
+        }
+        if (!_locationArray) {
+            self = nil;
+            return self;
+        }
+        if (dictionary[@"version"] && [dictionary[@"version"] isKindOfClass:[NSNumber class]]) {
+            _version = (NSNumber *)dictionary[@"version"];
+        }
+        if (!_version) {
+            self = nil;
+            return self;
+        }
     }
     return self;
 }
@@ -103,6 +140,22 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (id)copyWithZone:(nullable NSZone *)zone {
     return self;
+}
+
+- (NSDictionary *)dictionaryValue {
+    NSMutableDictionary *dictionary = [[NSMutableDictionary alloc] init];
+    dictionary[@"_id"] = __id;
+    if (__description) {
+        dictionary[@"_description"] = __description;
+    }
+    dictionary[@"numberMetadata"] = _numberMetadata;
+    dictionary[@"metadataArray"] = _metadataArray;
+    dictionary[@"location"] = [_location dictionaryValue];
+    dictionary[@"locationArray"] = [_locationArray radar_mapObjectsUsingBlock:^id _Nullable(RadarLocation *_Nonnull obj) {
+        return [obj dictionaryValue];
+    }];
+    dictionary[@"version"] = _version;
+    return [dictionary copy];
 }
 
 - (void)encodeWithCoder:(NSCoder *)aCoder {
@@ -143,20 +196,6 @@ NS_ASSUME_NONNULL_BEGIN
            (_location == object->_location ? YES : [_location isEqual:object->_location]) &&
            (_locationArray == object->_locationArray ? YES : [_locationArray isEqual:object->_locationArray]) &&
            (_version == object->_version ? YES : [_version isEqual:object->_version]);
-}
-
-- (id)toRadarJSONObject {
-    NSMutableDictionary *dict = [[NSMutableDictionary alloc] init];
-    dict[@"_id"] = __id;
-    if (__description) {
-        dict[@"_description"] = __description;
-    }
-    dict[@"numberMetadata"] = _numberMetadata;
-    dict[@"metadataArray"] = [_metadataArray toRadarJSONObject];
-    dict[@"location"] = [_location toRadarJSONObject];
-    dict[@"locationArray"] = [_locationArray toRadarJSONObject];
-    dict[@"version"] = _version;
-    return [dict copy];
 }
 
 @end

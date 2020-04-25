@@ -5,14 +5,12 @@
 //  Copyright © 2020 Radar Labs, Inc. All rights reserved.
 //
 
-#import "RadarJSONCoding.h"
-
 #import <Foundation/Foundation.h>
 @class RadarCoordinate;
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface NSArray<ObjectType>(Radar)<RadarJSONCoding>
+@interface NSArray<ObjectType>(Radar)
 
 - (NSArray *)radar_mapObjectsUsingBlock:(id _Nullable (^)(ObjectType obj))block;
 
