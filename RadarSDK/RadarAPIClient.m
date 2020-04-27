@@ -127,7 +127,11 @@
     params[@"altitude"] = @(location.altitude);
     params[@"verticalAccuracy"] = @(location.verticalAccuracy);
     params[@"speed"] = @(location.speed);
+    params[@"speedAccuracy"] = @(location.speedAccuracy);
     params[@"course"] = @(location.course);
+    if (@available(iOS 13.4, *)) {
+        params[@"courseAccuracy"] = @(location.courseAccuracy);
+    }
     if (location.floor) {
         params[@"floorLevel"] = @(location.floor.level);
     }
