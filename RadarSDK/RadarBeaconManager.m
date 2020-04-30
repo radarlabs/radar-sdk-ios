@@ -85,6 +85,9 @@ dispatch_source_t CreateDispatchTimer(double interval, dispatch_queue_t queue, d
     weakify(self);
     dispatch_async(_workQueue, ^{
         strongify(self);
+        if (radarBeacons.count == 0) {
+            return block(RadarStatusSuccess, @[]);
+        }
         RadarBeaconScanRequest *request = [[RadarBeaconScanRequest alloc] initWithIdentifier:[[NSUUID UUID] UUIDString]
                                                                             createdTimestamp:[[NSDate date] timeIntervalSince1970]
                                                                                      beacons:radarBeacons];

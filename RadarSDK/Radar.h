@@ -283,6 +283,13 @@ typedef void (^_Nonnull RadarRouteCompletionHandler)(RadarStatus status, RadarRo
 + (void)setAdIdEnabled:(BOOL)enabled;
 
 /**
+Enables beacon tracking
+
+@param enabled A boolean indicating whether beacons should be collected.
+*/
++ (void)setBeaconEnabled:(BOOL)enabled;
+
+/**
  Gets the device's current location.
 
  @param completionHandler An optional completion handler.

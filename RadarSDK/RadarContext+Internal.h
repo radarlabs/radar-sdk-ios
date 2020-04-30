@@ -13,12 +13,15 @@
 
 @interface RadarContext ()
 
+@property (nonnull, strong, nonatomic) NSArray<RadarBeacon*>* beacons;
+
 - (instancetype _Nullable)initWithGeofences:(NSArray* _Nonnull)geofences
                                       place:(RadarPlace* _Nullable)place
                                     country:(RadarRegion* _Nullable)country
                                       state:(RadarRegion* _Nullable)state
                                         dma:(RadarRegion* _Nullable)dma
-                                 postalCode:(RadarRegion* _Nullable)postalCode;
+                                 postalCode:(RadarRegion* _Nullable)postalCode
+                                    beacons:(NSArray<RadarBeacon*>* _Nonnull)beacons;
 
 - (instancetype _Nullable)initWithObject:(id _Nonnull)object;
 

@@ -66,6 +66,10 @@
     [RadarSettings setAdIdEnabled:enabled];
 }
 
++ (void)setBeaconEnabled:(BOOL)enabled {
+    [RadarSettings setBeaconEnabled:enabled];
+}
+
 + (void)getLocationWithCompletionHandler:(RadarLocationCompletionHandler)completionHandler {
     [[RadarLocationManager sharedInstance] getLocationWithCompletionHandler:completionHandler];
 }

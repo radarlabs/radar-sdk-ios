@@ -8,6 +8,8 @@
 #import "RadarAPIClient.h"
 
 #import "RadarAddress+Internal.h"
+#import "RadarBeacon.h"
+#import "RadarBeaconManager.h"
 #import "RadarContext+Internal.h"
 #import "RadarCoordinate+Internal.h"
 #import "RadarEvent+Internal.h"
@@ -257,6 +259,11 @@
     NSMutableString *queryString = [NSMutableString new];
     [queryString appendFormat:@"coordinates=%.06f,%.06f", location.coordinate.latitude, location.coordinate.longitude];
 
+    BOOL beaconEnabled = [RadarSettings beaconEnabled];
+    if (beaconEnabled) {
+        [queryString appendFormat:@"&includeBeacon=true"];
+    }
+
     NSString *host = [RadarSettings host];
     NSString *url = [NSString stringWithFormat:@"%@/v1/context?%@", host, queryString];
 
@@ -273,11 +280,27 @@
 
                         id contextObj = res[@"context"];
                         RadarContext *context = [[RadarContext alloc] initWithObject:contextObj];
-                        if (context) {
-                            return completionHandler(RadarStatusSuccess, res, context);
+                        if (!context) {
+                            completionHandler(RadarStatusErrorServer, nil, nil);
                         }
 
-                        completionHandler(RadarStatusErrorServer, nil, nil);
+                        if (!beaconEnabled) {
+                            return completionHandler(RadarStatusSuccess, res, context);
+                        }
+                        NSArray<RadarBeacon *> *beaconsToMonitor = [RadarBeacon fromObjectArray:res[@"beacons"]];
+                        if (!beaconsToMonitor) {
+                            // deserialization error
+                            return completionHandler(RadarStatusErrorServer, res, context);
+                        } else {
+                            [[RadarBeaconManager sharedInstance] monitorOnceForRadarBeacons:beaconsToMonitor
+                                                                            completionBlock:^(RadarStatus status, NSArray<RadarBeacon *> *_Nullable nearbyBeacons) {
+                                                                                // TODO: beacon monitoring status handling
+                                                                                if (nearbyBeacons.count > 0) {
+                                                                                    [context setBeacons:nearbyBeacons];
+                                                                                }
+                                                                                return completionHandler(RadarStatusSuccess, res, context);
+                                                                            }];
+                        }
                     }];
 }
 

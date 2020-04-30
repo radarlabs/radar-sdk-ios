@@ -5,6 +5,7 @@
 //  Copyright © 2020 Radar Labs, Inc. All rights reserved.
 //
 
+#import "RadarBeacon.h"
 #import "RadarGeofence.h"
 #import "RadarPlace.h"
 #import "RadarRegion.h"
@@ -59,6 +60,13 @@
  @see https://radar.io/documentation/regions
  */
 @property (nullable, strong, nonatomic, readonly) RadarRegion *postalCode;
+
+/**
+An array of the beacons for the location. May be empty if the location is not in any beacons range.
+
+@see https://radar.io/documentation/regions
+*/
+@property (nonnull, strong, nonatomic, readonly) NSArray<RadarBeacon *> *beacons;
 
 - (NSDictionary *_Nonnull)dictionaryValue;
 

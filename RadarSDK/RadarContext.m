@@ -21,7 +21,8 @@
                                     country:(RadarRegion *_Nullable)country
                                       state:(RadarRegion *_Nullable)state
                                         dma:(RadarRegion *_Nullable)dma
-                                 postalCode:(RadarRegion *_Nullable)postalCode {
+                                 postalCode:(RadarRegion *_Nullable)postalCode
+                                    beacons:(NSArray<RadarBeacon *> *_Nonnull)beacons {
     self = [super init];
     if (self) {
         _geofences = geofences;
@@ -80,7 +81,13 @@
     id postalCodeObj = contextDict[@"postalCode"];
     postalCode = [[RadarRegion alloc] initWithObject:postalCodeObj];
 
-    return [[RadarContext alloc] initWithGeofences:contextGeofences place:contextPlace country:country state:state dma:dma postalCode:postalCode];
+    // the beacons will be set later
+    // TODO: we need builder model for this class.
+    return [[RadarContext alloc] initWithGeofences:contextGeofences place:contextPlace country:country state:state dma:dma postalCode:postalCode beacons:@[]];
+}
+
+- (void)setBeacons:(NSArray<RadarBeacon *> *)beacons {
+    _beacons = beacons;
 }
 
 - (NSDictionary *)dictionaryValue {
