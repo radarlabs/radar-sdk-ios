@@ -35,6 +35,16 @@ typedef NS_ENUM(NSInteger, RadarStatus) {
     RadarStatusErrorPermissions,
     /// Location services error or timeout (10 seconds)
     RadarStatusErrorLocation,
+    /// Bluetooth permissions not granted
+    RadarStatusErrorBluetoothPermission,
+    /// Bluetooth powered off
+    RadarStatusErrorBluetoothPoweredOff,
+    /// Bluetooth momentarily lost
+    RadarStatusErrorBluetoothResetting,
+    /// Bluetooth low energy (needed for beacon scaning) not supporeted
+    RadarStatusErrorBluetoothUnsupported,
+    /// Beacon services error or timeout (10 seconds)
+    RadarStatusErrorBeacon,
     /// Network error or timeout (10 seconds)
     RadarStatusErrorNetwork,
     /// Bad request (missing or invalid params)

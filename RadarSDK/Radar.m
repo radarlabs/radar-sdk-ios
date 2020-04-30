@@ -438,6 +438,21 @@
     case RadarStatusErrorLocation:
         str = @"ERROR_LOCATION";
         break;
+    case RadarStatusErrorBluetoothPermission:
+        str = @"ERROR_BLUETOOTH_PERMISSION";
+        break;
+    case RadarStatusErrorBluetoothResetting:
+        str = @"ERROR_BLUETOOTH_RESETTING";
+        break;
+    case RadarStatusErrorBluetoothPoweredOff:
+        str = @"ERROR_BLUETOOTH_POWERED_OFF";
+        break;
+    case RadarStatusErrorBluetoothUnsupported:
+        str = @"ERROR_BLUETOOTH_UNSUPPORTED";
+        break;
+    case RadarStatusErrorBeacon:
+        str = @"ERROR_BEACON";
+        break;
     case RadarStatusErrorNetwork:
         str = @"ERROR_NETWORK";
         break;
@@ -459,8 +474,9 @@
     case RadarStatusErrorServer:
         str = @"ERROR_SERVER";
         break;
-    default:
+    case RadarStatusErrorUnknown:
         str = @"ERROR_UNKNOWN";
+        break;
     }
     return str;
 }
