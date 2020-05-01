@@ -12,6 +12,7 @@
 #import "Radar.h"
 #import "RadarBeacon.h"
 #import "RadarBeaconScanRequest.h"
+#import "RadarPermissionsHelper.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -25,7 +26,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface RadarBeaconScanner : NSObject
 
-- (instancetype)initWithDelegate:(id<RadarBeaconScannerDelegate>)delegate;
+- (instancetype)initWithDelegate:(__weak id<RadarBeaconScannerDelegate>)delegate
+                 locationManager:(CLLocationManager *)locationManager
+               permissionsHelper:(RadarPermissionsHelper *)permissionsHelper;
 
 - (void)startMonitoringWithRequest:(RadarBeaconScanRequest *)request;
 

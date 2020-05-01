@@ -18,16 +18,15 @@
     return self;
 }
 
-- (CBManagerState)cbState {
-    return _cbManager.state;
-}
-
 - (CLAuthorizationStatus)locationAuthorizationStatus {
     return [CLLocationManager authorizationStatus];
 }
 
-- (BOOL)isBeaconMonitoringAvailable {
-    return [CLLocationManager isMonitoringAvailableForClass:[CLBeaconRegion class]];
+- (CBManagerState)bluetoothState {
+    if (![CLLocationManager isMonitoringAvailableForClass:[CLBeaconRegion class]]) {
+        return CBManagerStateUnsupported;
+    }
+    return _cbManager.state;
 }
 
 @end

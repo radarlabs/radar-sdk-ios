@@ -13,11 +13,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface RadarPermissionsHelper : NSObject
 
-@property (nonatomic, readonly) CBManagerState cbState;
-
 - (CLAuthorizationStatus)locationAuthorizationStatus;
-
-- (BOOL)isBeaconMonitoringAvailable;
+- (CBManagerState)bluetoothState;
 
 @end
 

@@ -8,7 +8,6 @@
 
 #import "Radar.h"
 #import "RadarBeacon.h"
-#import "RadarDelegate.h"
 #import <Foundation/Foundation.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -17,8 +16,6 @@ typedef void (^RadarBeaconMonitorCompletionHandler)(RadarStatus status, NSArray<
 
 /// Manager class for beacon monitoring
 @interface RadarBeaconManager : NSObject
-
-@property (nonatomic, weak, nullable) id<RadarDelegate> delegate;
 
 + (instancetype)sharedInstance;
 

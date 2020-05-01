@@ -7,9 +7,9 @@
 //
 
 #import "RadarBeaconManager.h"
+#import "RadarBeaconManager+Internal.h"
 
 #import "RadarBeaconScanRequest.h"
-#import "RadarBeaconScanner.h"
 #import "RadarUtils.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -26,13 +26,7 @@ dispatch_source_t CreateDispatchTimer(double interval, dispatch_queue_t queue, d
     return timer;
 }
 
-@interface RadarBeaconManager ()<RadarBeaconScannerDelegate>
-
-@end
-
 @implementation RadarBeaconManager {
-    RadarBeaconScanner *_beaconScanner;
-
     NSMutableArray<RadarBeaconScanRequest *> *_queuedRequests;
     RadarBeaconScanRequest *_runningRequest;
 
@@ -65,7 +59,7 @@ dispatch_source_t CreateDispatchTimer(double interval, dispatch_queue_t queue, d
 - (instancetype)init {
     self = [super init];
     if (self) {
-        _beaconScanner = [[RadarBeaconScanner alloc] initWithDelegate:self];
+        _beaconScanner = [[RadarBeaconScanner alloc] initWithDelegate:self locationManager:[CLLocationManager new] permissionsHelper:[RadarPermissionsHelper new]];
 
         _workQueue = dispatch_queue_create_with_target("com.radar.beaconManager", DISPATCH_QUEUE_SERIAL, DISPATCH_TARGET_QUEUE_DEFAULT);
         _queuedRequests = [NSMutableArray array];
@@ -84,7 +78,7 @@ dispatch_source_t CreateDispatchTimer(double interval, dispatch_queue_t queue, d
 - (void)monitorOnceForRadarBeacons:(NSArray<RadarBeacon *> *)radarBeacons completionBlock:(RadarBeaconMonitorCompletionHandler)block {
     weakify(self);
     dispatch_async(_workQueue, ^{
-        strongify(self);
+        strongify_else_return(self);
         if (radarBeacons.count == 0) {
             return block(RadarStatusSuccess, @[]);
         }
@@ -103,11 +97,7 @@ dispatch_source_t CreateDispatchTimer(double interval, dispatch_queue_t queue, d
     if (!_timer) {
         weakify(self);
         _timer = CreateDispatchTimer(kRadarBeaconMonitorTimeoutSecond / 2.0, _workQueue, ^{
-            strongify(self);
-            if (!self) {
-                return;
-            }
-
+            strongify_else_return(self);
             [self _cancelTimedOutRequests];
         });
     }
@@ -188,7 +178,7 @@ dispatch_source_t CreateDispatchTimer(double interval, dispatch_queue_t queue, d
 - (void)didFinishMonitoring:(RadarBeaconScanRequest *)request status:(RadarStatus)status nearbyBeacons:(NSArray<RadarBeacon *> *_Nullable)nearbyBeacons {
     weakify(self);
     dispatch_async(_workQueue, ^{
-        strongify(self);
+        strongify_else_return(self);
         RadarBeaconMonitorCompletionHandler completion = self->_completionHandlers[request.identifier];
         if (completion) {
             completion(status, nearbyBeacons);

@@ -8,7 +8,6 @@
 
 #import "RadarBeaconScanner.h"
 #import "RadarBeaconManager.h"
-#import "RadarPermissionsHelper.h"
 #import "RadarUtils.h"
 
 @interface RadarBeaconScanner ()<CLLocationManagerDelegate>
@@ -28,14 +27,16 @@
     BOOL _isMonitoring;
 }
 
-- (instancetype)initWithDelegate:(id<RadarBeaconScannerDelegate>)delegate {
+- (instancetype)initWithDelegate:(id<RadarBeaconScannerDelegate>)delegate
+                 locationManager:(nonnull CLLocationManager *)locationManager
+               permissionsHelper:(nonnull RadarPermissionsHelper *)permissionsHelper {
     if (self = [super init]) {
-        _locationManager = [CLLocationManager new];
+        _locationManager = locationManager;
         _locationManager.allowsBackgroundLocationUpdates = [RadarUtils allowsBackgroundLocationUpdates];
         _locationManager.delegate = self;
 
         _delegate = delegate;
-        _permissionsHelper = [RadarPermissionsHelper new];
+        _permissionsHelper = permissionsHelper;
     }
     return self;
 }
@@ -43,7 +44,7 @@
 - (void)startMonitoringWithRequest:(RadarBeaconScanRequest *)request {
     weakify(self);
     dispatch_async(dispatch_get_main_queue(), ^{
-        strongify(self);
+        strongify_else_return(self);
         RadarStatus permissionStatus = [self _permissionStatus];
         if (permissionStatus != RadarStatusSuccess) {
             [self->_delegate didFinishMonitoring:request status:permissionStatus nearbyBeacons:nil];
@@ -73,7 +74,7 @@
 - (void)stopMonitoring {
     weakify(self);
     dispatch_async(dispatch_get_main_queue(), ^{
-        strongify(self);
+        strongify_else_return(self);
         self->_runningRequest = nil;
         self->_allRegions = nil;
         self->_detectedRegionIds = nil;
@@ -149,10 +150,7 @@
 }
 
 - (RadarStatus)_permissionStatus {
-    if ([_permissionsHelper isBeaconMonitoringAvailable]) {
-        return RadarStatusErrorBluetoothUnsupported;
-    }
-    switch (_permissionsHelper.cbState) {
+    switch (_permissionsHelper.bluetoothState) {
     case CBManagerStatePoweredOff:
         return RadarStatusErrorBluetoothPoweredOff;
     case CBManagerStatePoweredOn:

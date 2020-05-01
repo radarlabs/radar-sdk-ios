@@ -13,4 +13,8 @@
     return self.mockLocationAuthorizationStatus;
 }
 
+- (CBManagerState)bluetoothState {
+    return self.mockBluetoothState;
+}
+
 @end

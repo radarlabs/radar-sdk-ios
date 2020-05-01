@@ -14,6 +14,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nullable, strong, nonatomic) CLLocation *mockLocation;
 
+@property (nullable, strong, nonatomic) NSDictionary<NSString *, CLBeaconRegion *> *mockBeaconRegions;
+
 - (void)mockRegionEnter;
 - (void)mockRegionExit;
 - (void)mockVisitArrival;

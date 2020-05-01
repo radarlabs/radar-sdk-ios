@@ -1,7 +1,3 @@
-/**
- * This file is generated using the remodel generation script.
- * The name of the input file is RadarBeaconScanRequest.value
- */
 
 #import "RadarBeacon.h"
 #import <Foundation/Foundation.h>

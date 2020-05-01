@@ -9,6 +9,7 @@
 
 #import "RadarAPIClient.h"
 #import "RadarCoordinate+Internal.h"
+#import "RadarBeaconManager.h"
 #import "RadarLocationManager.h"
 #import "RadarLogger.h"
 #import "RadarSettings.h"
@@ -32,6 +33,7 @@
     [RadarSettings setPublishableKey:publishableKey];
     [[RadarAPIClient sharedInstance] getConfig];
     [[RadarLocationManager sharedInstance] updateTracking];
+    [RadarBeaconManager sharedInstance]; // TODO: any initial config logic?
 }
 
 + (NSString *_Nullable)getPublishableKey {
@@ -471,6 +473,9 @@
         break;
     case RadarStatusErrorForbidden:
         str = @"ERROR_FORBIDDEN";
+        break;
+    case RadarStatusErrorNotFound:
+        str = @"ERROR_NOT_FOUND";
         break;
     case RadarStatusErrorRateLimit:
         str = @"ERROR_RATE_LIMIT";

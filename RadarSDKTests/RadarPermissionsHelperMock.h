@@ -17,6 +17,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (assign, nonatomic) CLAuthorizationStatus mockLocationAuthorizationStatus;
 
+@property (assign, nonatomic) CBManagerState mockBluetoothState;
+
 @end
 
 NS_ASSUME_NONNULL_END

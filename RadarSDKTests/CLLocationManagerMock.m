@@ -16,6 +16,37 @@
     }
 }
 
+- (void)startMonitoringForRegion:(CLRegion *)region {
+    if (!self.delegate) {
+        NSAssert(NO, @"Delegate is not set");
+        return;
+    }
+
+    if (![region isKindOfClass:[CLBeaconRegion class]]) {
+        NSAssert(NO, @"Only beacon region is supported.");
+        return;
+    }
+
+    if (!self.mockBeaconRegions) {
+        // let the time out kick in
+        return;
+    }
+
+    if ([self.mockBeaconRegions objectForKey:region.identifier]) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.delegate locationManager:self didEnterRegion:region];
+        });
+    } else {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.delegate locationManager:self didExitRegion:region];
+        });
+    }
+}
+
+- (void)stopMonitoringForRegion:(CLRegion *)region {
+    // No op
+}
+
 - (void)mockRegionEnter {
     if (self.delegate) {
         CLRegion *region = [[CLCircularRegion alloc] initWithCenter:self.mockLocation.coordinate radius:100 identifier:@"radar"];

@@ -1,7 +1,0 @@
-RadarBeaconScanRequest includes(RMCoding, RMAssumeNonnull) {
-	NSString *identifier
-
-	NSTimeInterval createdTimestamp
-
-	NSArray<RadarBeacon *> *beacons
-}

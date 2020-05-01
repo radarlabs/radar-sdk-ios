@@ -13,6 +13,12 @@
     _Pragma("clang diagnostic push") _Pragma("clang diagnostic ignored \"-Wshadow\"") __strong typeof(var) var = RadarWeak_##var;                                                  \
     _Pragma("clang diagnostic pop")
 
+#define strongify_else_return(var)                                                                                                                                                 \
+    strongify(var);                                                                                                                                                                \
+    if (!var) {                                                                                                                                                                    \
+        return;                                                                                                                                                                    \
+    }
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface RadarUtils : NSObject

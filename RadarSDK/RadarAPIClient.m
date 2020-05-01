@@ -287,14 +287,16 @@
                         if (!beaconEnabled) {
                             return completionHandler(RadarStatusSuccess, res, context);
                         }
-                        NSArray<RadarBeacon *> *beaconsToMonitor = [RadarBeacon fromObjectArray:res[@"beacons"]];
+                        NSArray<RadarBeacon *> *beaconsToMonitor = [RadarBeacon fromObjectArray:res[@"context"][@"beacons"]];
                         if (!beaconsToMonitor) {
                             // deserialization error
                             return completionHandler(RadarStatusErrorServer, res, context);
                         } else {
                             [[RadarBeaconManager sharedInstance] monitorOnceForRadarBeacons:beaconsToMonitor
                                                                             completionBlock:^(RadarStatus status, NSArray<RadarBeacon *> *_Nullable nearbyBeacons) {
-                                                                                // TODO: beacon monitoring status handling
+                                                                                if (status != RadarStatusSuccess) {
+                                                                                    return completionHandler(status, nil, nil);
+                                                                                }
                                                                                 if (nearbyBeacons.count > 0) {
                                                                                     [context setBeacons:nearbyBeacons];
                                                                                 }
