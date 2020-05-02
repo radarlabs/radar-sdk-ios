@@ -13,6 +13,7 @@
 #import "RadarAPIClient.h"
 #import "RadarAPIHelper.h"
 #import "RadarAPIHelperMock.h"
+#import "RadarBeacon+CLBeacon.h"
 #import "RadarBeaconManager+Internal.h"
 #import "RadarLocationManager.h"
 #import "RadarPermissionsHelperMock.h"
@@ -1375,14 +1376,12 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     NSDictionary *context = [RadarTestUtils jsonDictionaryFromResource:@"context"];
     self.apiHelperMock.mockResponse = context;
 
-    NSDictionary *beacon = context[@"context"][@"beacons"][0];
-    NSUUID *uuid = [[NSUUID alloc] initWithUUIDString:beacon[@"uuid"]];
-    CLBeaconMajorValue major = [beacon[@"major"] doubleValue];
-    CLBeaconMinorValue minor = [beacon[@"minor"] doubleValue];
-    CLBeaconRegion *region = [[CLBeaconRegion alloc] initWithProximityUUID:uuid major:major minor:minor identifier:beacon[@"_id"]];
+    NSDictionary *beaconObject = context[@"context"][@"beacons"][0];
+    RadarBeacon *beacon = [[RadarBeacon alloc] initWithObject:beaconObject];
+    CLBeaconRegion *region = [beacon toCLBeaconRegion];
 
     self.locationManagerMockForBeacon.mockBeaconRegions = @{
-        beacon[@"_id"]: region,
+        beacon._id: region,
     };
 
     XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];

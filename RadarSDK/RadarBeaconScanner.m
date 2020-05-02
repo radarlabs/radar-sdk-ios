@@ -7,6 +7,7 @@
 //
 
 #import "RadarBeaconScanner.h"
+#import "RadarBeacon+CLBeacon.h"
 #import "RadarBeaconManager.h"
 #import "RadarUtils.h"
 
@@ -56,10 +57,9 @@
 
         NSMutableDictionary *regionsToMonitor = [NSMutableDictionary dictionary];
         for (RadarBeacon *beacon in request.beacons) {
-            NSUUID *uuid = [[NSUUID alloc] initWithUUIDString:beacon.uuid];
-            CLBeaconRegion *region = [[CLBeaconRegion alloc] initWithProximityUUID:uuid major:[beacon.major doubleValue] minor:[beacon.minor doubleValue] identifier:beacon._id];
+            CLBeaconRegion *region = [beacon toCLBeaconRegion];
             [self->_locationManager startMonitoringForRegion:region];
-            [regionsToMonitor setValue:region forKey:beacon._id];
+            [regionsToMonitor setValue:region forKey:region.identifier];
         }
 
         self->_runningRequest = request;

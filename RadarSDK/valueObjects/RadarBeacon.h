@@ -13,8 +13,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly, copy) RadarCoordinate *geometry;
 @property (nonatomic, readonly, copy) NSString *type;
 @property (nonatomic, readonly, copy) NSString *uuid;
-@property (nonatomic, readonly, copy) NSNumber *major;
-@property (nonatomic, readonly, copy) NSNumber *minor;
+@property (nonatomic, readonly, copy) NSString *major;
+@property (nonatomic, readonly, copy) NSString *minor;
 
 + (instancetype)new NS_UNAVAILABLE;
 
@@ -26,8 +26,8 @@ NS_ASSUME_NONNULL_BEGIN
                    geometry:(RadarCoordinate *)geometry
                        type:(NSString *)type
                        uuid:(NSString *)uuid
-                      major:(NSNumber *)major
-                      minor:(NSNumber *)minor NS_DESIGNATED_INITIALIZER;
+                      major:(NSString *)major
+                      minor:(NSString *)minor NS_DESIGNATED_INITIALIZER;
 
 @end
 

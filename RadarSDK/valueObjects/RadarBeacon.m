@@ -100,15 +100,15 @@ NS_ASSUME_NONNULL_BEGIN
             self = nil;
             return self;
         }
-        if (dictionary[@"major"] && [dictionary[@"major"] isKindOfClass:[NSNumber class]]) {
-            _major = (NSNumber *)dictionary[@"major"];
+        if (dictionary[@"major"] && [dictionary[@"major"] isKindOfClass:[NSString class]]) {
+            _major = (NSString *)dictionary[@"major"];
         }
         if (!_major) {
             self = nil;
             return self;
         }
-        if (dictionary[@"minor"] && [dictionary[@"minor"] isKindOfClass:[NSNumber class]]) {
-            _minor = (NSNumber *)dictionary[@"minor"];
+        if (dictionary[@"minor"] && [dictionary[@"minor"] isKindOfClass:[NSString class]]) {
+            _minor = (NSString *)dictionary[@"minor"];
         }
         if (!_minor) {
             self = nil;
@@ -124,8 +124,8 @@ NS_ASSUME_NONNULL_BEGIN
                    geometry:(RadarCoordinate *)geometry
                        type:(NSString *)type
                        uuid:(NSString *)uuid
-                      major:(NSNumber *)major
-                      minor:(NSNumber *)minor {
+                      major:(NSString *)major
+                      minor:(NSString *)minor {
     RMParameterAssert(_id != nil);
     RMParameterAssert(_description != nil);
     RMParameterAssert(geometry != nil);
