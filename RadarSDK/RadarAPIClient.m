@@ -284,10 +284,12 @@
                             completionHandler(RadarStatusErrorServer, nil, nil);
                         }
 
-                        if (!beaconEnabled) {
+                        id beaconObj = res[@"context"][@"beacons"];
+
+                        if (!beaconEnabled || !beaconObj) {
                             return completionHandler(RadarStatusSuccess, res, context);
                         }
-                        NSArray<RadarBeacon *> *beaconsToMonitor = [RadarBeacon fromObjectArray:res[@"context"][@"beacons"]];
+                        NSArray<RadarBeacon *> *beaconsToMonitor = [RadarBeacon fromObjectArray:beaconObj];
                         if (!beaconsToMonitor) {
                             // deserialization error
                             return completionHandler(RadarStatusErrorServer, res, context);

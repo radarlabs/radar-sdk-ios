@@ -21,7 +21,7 @@
                                       state:(RadarRegion* _Nullable)state
                                         dma:(RadarRegion* _Nullable)dma
                                  postalCode:(RadarRegion* _Nullable)postalCode
-                                    beacons:(NSArray<RadarBeacon*>* _Nonnull)beacons;
+                                    beacons:(NSArray<RadarBeacon*>* _Nullable)beacons;
 
 - (instancetype _Nullable)initWithObject:(id _Nonnull)object;
 

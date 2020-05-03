@@ -66,7 +66,7 @@ An array of the beacons for the location. May be empty if the location is not in
 
 @see https://radar.io/documentation/regions
 */
-@property (nonnull, strong, nonatomic, readonly) NSArray<RadarBeacon *> *beacons;
+@property (nullable, strong, nonatomic, readonly) NSArray<RadarBeacon *> *beacons;
 
 - (NSDictionary *_Nonnull)dictionaryValue;
 
