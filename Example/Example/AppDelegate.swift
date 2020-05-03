@@ -25,6 +25,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         Radar.setDelegate(self)
 
         if UIApplication.shared.applicationState != .background {
+            Radar.getLocation { (status, location, stopped) in
+                print("Location: status = \(Radar.stringForStatus(status)); location = \(String(describing: location))")
+            }
+            
             Radar.trackOnce { (status, location, events, user) in
                 print("Track once: status = \(Radar.stringForStatus(status)); location = \(String(describing: location)); events = \(String(describing: events)); user = \(String(describing: user))")
             }
