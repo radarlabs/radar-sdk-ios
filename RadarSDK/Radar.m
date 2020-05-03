@@ -420,6 +420,8 @@
         @"latitude": @(location.coordinate.latitude),
         @"longitude": @(location.coordinate.longitude),
         @"accuracy": @(location.horizontalAccuracy),
+        @"speed": @(location.speed),
+        @"course": @(location.course)
     };
 }
 
