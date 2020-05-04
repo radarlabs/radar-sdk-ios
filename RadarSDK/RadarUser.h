@@ -5,6 +5,7 @@
 //  Copyright © 2019 Radar Labs, Inc. All rights reserved.
 //
 
+#import "RadarBeacon.h"
 #import "RadarChain.h"
 #import "RadarGeofence.h"
 #import "RadarPlace.h"
@@ -123,6 +124,12 @@
  The user's nearby chains. May be `nil` if segments are not enabled.
  */
 @property (nullable, copy, nonatomic, readonly) NSArray<RadarChain *> *topChains;
+
+/**
+ An array of the user's nearby beacons. May be `nil` or empty if the user is not in any beacon's range.
+
+ */
+@property (nullable, copy, nonatomic, readonly) NSArray<RadarBeacon *> *beacons;
 
 - (NSDictionary *_Nonnull)dictionaryValue;
 

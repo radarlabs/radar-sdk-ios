@@ -1,0 +1,27 @@
+
+{
+   "meta": {
+      "code": 200
+   },
+   "beacons": [
+      {
+         "_id": "5cf695266da6a800683f58AA",
+         "description": "office beacon",
+         "metadata": {
+            "category": "office"
+         },
+         "geometry": {
+            "type": "Point",
+            "coordinates": [
+               -73.975363,
+               40.783826
+            ]
+         },
+         "type": "ibeacon",
+         "uuid": "B9407F30-F5F8-466E-AFF9-25556B57FE6D",
+         "major": "9572",
+         "minor": "12745"
+      }
+   ]
+}
+

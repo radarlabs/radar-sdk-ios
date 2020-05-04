@@ -45,6 +45,7 @@
                               region:(RadarRegion *)region
                      alternatePlaces:(NSArray<RadarPlace *> *)alternatePlaces
                        verifiedPlace:(RadarPlace *)verifiedPlace
+                              beacon:(RadarBeacon *)beacon
                         verification:(RadarEventVerification)verification
                           confidence:(RadarEventConfidence)confidence
                             duration:(float)duration
@@ -65,6 +66,7 @@
         _confidence = confidence;
         _duration = duration;
         _location = location;
+        _beacon = beacon;
     }
     return self;
 }
@@ -84,6 +86,7 @@
     RadarGeofence *geofence;
     RadarPlace *place;
     RadarRegion *region;
+    RadarBeacon *beacon;
     NSArray<RadarPlace *> *alternatePlaces;
     RadarPlace *verifiedPlace;
     RadarEventVerification verification = RadarEventVerificationUnverify;
@@ -162,6 +165,10 @@
             type = RadarEventTypeUserEnteredRegionDMA;
         } else if ([typeStr isEqualToString:@"user.exited_region_dma"]) {
             type = RadarEventTypeUserExitedRegionDMA;
+        } else if ([typeStr isEqualToString:@"user.entered_beacon"]) {
+            type = RadarEventTypeUserEnteredBeacon;
+        } else if ([typeStr isEqualToString:@"user.exited_beacon"]) {
+            type = RadarEventTypeUserExitedBeacon;
         }
     }
 
@@ -215,6 +222,9 @@
 
     id regionObj = dict[@"region"];
     region = [[RadarRegion alloc] initWithObject:regionObj];
+
+    id beaconObj = dict[@"beacon"];
+    beacon = [[RadarBeacon alloc] initWithObject:beaconObj];
 
     id alternatePlacesObj = dict[@"alternatePlaces"];
     if (alternatePlacesObj && [alternatePlacesObj isKindOfClass:[NSArray class]]) {
@@ -286,6 +296,7 @@
                                        region:region
                               alternatePlaces:alternatePlaces
                                 verifiedPlace:verifiedPlace
+                                       beacon:beacon
                                  verification:verification
                                    confidence:confidence
                                      duration:duration
@@ -335,7 +346,11 @@
         return @"user.started_commuting";
     case RadarEventTypeUserStoppedCommuting:
         return @"user.stopped_commuting";
-    default:
+    case RadarEventTypeUserEnteredBeacon:
+        return @"user.entered_beacon";
+    case RadarEventTypeUserExitedBeacon:
+        return @"user.exited_beacon";
+    case RadarEventTypeUnknown:
         return @"unknown";
     }
 }
@@ -385,6 +400,11 @@
     if (self.region) {
         NSDictionary *regionDict = [self.region dictionaryValue];
         [dict setValue:regionDict forKey:@"region"];
+    }
+
+    if (self.beacon) {
+        NSDictionary *beaconDict = [self.beacon dictionaryValue];
+        [dict setValue:beaconDict forKey:@"beacon"];
     }
     return dict;
 }

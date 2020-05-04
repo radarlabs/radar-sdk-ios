@@ -5,6 +5,7 @@
 //  Copyright © 2019 Radar Labs, Inc. All rights reserved.
 //
 
+#import <OCMock/OCMock.h>
 #import <RadarSDK/RadarSDK.h>
 #import <XCTest/XCTest.h>
 
@@ -12,7 +13,6 @@
 #import "CLVisitMock.h"
 #import "RadarAPIClient.h"
 #import "RadarAPIHelper.h"
-#import "RadarAPIHelperMock.h"
 #import "RadarBeacon+CLBeacon.h"
 #import "RadarBeaconManager+Internal.h"
 #import "RadarLocationManager.h"
@@ -22,7 +22,7 @@
 
 @interface RadarSDKTests : XCTestCase
 
-@property (nonnull, strong, nonatomic) RadarAPIHelperMock *apiHelperMock;
+@property (nonnull, strong, nonatomic) id apiHelperMock;
 @property (nonnull, strong, nonatomic) CLLocationManagerMock *locationManagerMock;
 @property (nonnull, strong, nonatomic) RadarPermissionsHelperMock *permissionsHelperMock;
 
@@ -33,6 +33,14 @@
 @implementation RadarSDKTests
 
 static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000000000000000000";
+
+#define AssertBeaconsOk(beacons) [self assertBeaconsOk:beacons]
+- (void)assertBeaconsOk:(NSArray<RadarBeacon *> *)beacons {
+    XCTAssertNotNil(beacons);
+    for (RadarBeacon *beacon in beacons) {
+        [self assertBeaconOk:beacon];
+    }
+}
 
 #define AssertBeaconOk(beacon) [self assertBeaconOk:beacon]
 - (void)assertBeaconOk:(RadarBeacon *)beacon {
@@ -172,6 +180,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     AssertChainsOk(user.nearbyPlaceChains);
     AssertSegmentsOk(user.segments);
     AssertChainsOk(user.topChains);
+    AssertBeaconsOk(user.beacons);
 }
 
 #define AssertEventsOk(events) [self assertEventsOk:events]
@@ -243,7 +252,11 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
         break;
     case RadarEventTypeUserStoppedCommuting:
         break;
-    default:
+    case RadarEventTypeUserEnteredBeacon:
+        AssertBeaconOk(event.beacon);
+    case RadarEventTypeUserExitedBeacon:
+        AssertBeaconOk(event.beacon);
+    case RadarEventTypeUnknown:
         break;
     }
 }
@@ -322,7 +335,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     [Radar initializeWithPublishableKey:kPublishableKey];
     [Radar setLogLevel:RadarLogLevelDebug];
 
-    self.apiHelperMock = [RadarAPIHelperMock new];
+    self.apiHelperMock = OCMClassMock([RadarAPIHelper class]);
     self.locationManagerMock = [CLLocationManagerMock new];
     self.permissionsHelperMock = [RadarPermissionsHelperMock new];
     self.locationManagerMockForBeacon = [CLLocationManagerMock new];
@@ -496,8 +509,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
                                                                 horizontalAccuracy:65
                                                                   verticalAccuracy:-1
                                                                          timestamp:[NSDate new]];
-    self.apiHelperMock.mockStatus = RadarStatusSuccess;
-    self.apiHelperMock.mockResponse = [RadarTestUtils jsonDictionaryFromResource:@"track"];
+    [self _stubAPIRequestWithStatus:RadarStatusSuccess response:[RadarTestUtils jsonDictionaryFromResource:@"track"]];
 
     XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
 
@@ -525,8 +537,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
                                                    horizontalAccuracy:65
                                                      verticalAccuracy:-1
                                                             timestamp:[NSDate new]];
-    self.apiHelperMock.mockStatus = RadarStatusSuccess;
-    self.apiHelperMock.mockResponse = [RadarTestUtils jsonDictionaryFromResource:@"track"];
+    [self _stubAPIRequestWithStatus:RadarStatusSuccess response:[RadarTestUtils jsonDictionaryFromResource:@"track"]];
 
     XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
 
@@ -613,8 +624,12 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 
 - (void)test_Radar_mockTracking {
     self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusNotDetermined;
-    self.apiHelperMock.mockStatus = RadarStatusSuccess;
-    self.apiHelperMock.mockResponse = [RadarTestUtils jsonDictionaryFromResource:@"route_distance"];
+    OCMStub([self.apiHelperMock requestWithMethod:[OCMArg any] url:[OCMArg any] headers:[OCMArg any] params:[OCMArg any] completionHandler:[OCMArg any]])
+        .andDo(^(NSInvocation *invocation) {
+            RadarAPICompletionHandler completion;
+            [invocation getArgument:&completion atIndex:6];
+            completion(RadarStatusSuccess, [RadarTestUtils jsonDictionaryFromResource:@"route_distance"]);
+        });
 
     CLLocation *origin = [[CLLocation alloc] initWithLatitude:40.78382 longitude:-73.97536];
     CLLocation *destination = [[CLLocation alloc] initWithLatitude:40.70390 longitude:-73.98670];
@@ -645,20 +660,17 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 }
 
 - (void)test_Radar_acceptEventId {
-    self.apiHelperMock.mockStatus = RadarStatusSuccess;
-    self.apiHelperMock.mockResponse = [RadarTestUtils jsonDictionaryFromResource:@"events_verification"];
+    [self _stubAPIRequestWithStatus:RadarStatusSuccess response:[RadarTestUtils jsonDictionaryFromResource:@"events_verification"]];
     [Radar acceptEventId:@"eventId" verifiedPlaceId:nil];
 }
 
 - (void)test_Radar_acceptEventId_verifiedPlaceId {
-    self.apiHelperMock.mockStatus = RadarStatusSuccess;
-    self.apiHelperMock.mockResponse = [RadarTestUtils jsonDictionaryFromResource:@"events_verification"];
+    [self _stubAPIRequestWithStatus:RadarStatusSuccess response:[RadarTestUtils jsonDictionaryFromResource:@"events_verification"]];
     [Radar acceptEventId:@"eventId" verifiedPlaceId:@"verifiedPlaceId"];
 }
 
 - (void)test_Radar_rejectEvent {
-    self.apiHelperMock.mockStatus = RadarStatusSuccess;
-    self.apiHelperMock.mockResponse = [RadarTestUtils jsonDictionaryFromResource:@"events_verification"];
+    [self _stubAPIRequestWithStatus:RadarStatusSuccess response:[RadarTestUtils jsonDictionaryFromResource:@"events_verification"]];
     [Radar rejectEventId:@"eventId"];
 }
 
@@ -709,8 +721,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
                                                                 horizontalAccuracy:65
                                                                   verticalAccuracy:-1
                                                                          timestamp:[NSDate new]];
-    self.apiHelperMock.mockStatus = RadarStatusSuccess;
-    self.apiHelperMock.mockResponse = [RadarTestUtils jsonDictionaryFromResource:@"context"];
+    [self _stubAPIRequestWithStatus:RadarStatusSuccess response:[RadarTestUtils jsonDictionaryFromResource:@"context"]];
 
     XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
 
@@ -737,8 +748,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
                                                    horizontalAccuracy:65
                                                      verticalAccuracy:-1
                                                             timestamp:[NSDate new]];
-    self.apiHelperMock.mockStatus = RadarStatusSuccess;
-    self.apiHelperMock.mockResponse = [RadarTestUtils jsonDictionaryFromResource:@"context"];
+    [self _stubAPIRequestWithStatus:RadarStatusSuccess response:[RadarTestUtils jsonDictionaryFromResource:@"context"]];
 
     XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
 
@@ -815,8 +825,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
                                                                 horizontalAccuracy:65
                                                                   verticalAccuracy:-1
                                                                          timestamp:[NSDate new]];
-    self.apiHelperMock.mockStatus = RadarStatusSuccess;
-    self.apiHelperMock.mockResponse = [RadarTestUtils jsonDictionaryFromResource:@"search_places"];
+    [self _stubAPIRequestWithStatus:RadarStatusSuccess response:[RadarTestUtils jsonDictionaryFromResource:@"search_places"]];
 
     XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
 
@@ -848,8 +857,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
                                                    horizontalAccuracy:65
                                                      verticalAccuracy:-1
                                                             timestamp:[NSDate new]];
-    self.apiHelperMock.mockStatus = RadarStatusSuccess;
-    self.apiHelperMock.mockResponse = [RadarTestUtils jsonDictionaryFromResource:@"search_places"];
+    [self _stubAPIRequestWithStatus:RadarStatusSuccess response:[RadarTestUtils jsonDictionaryFromResource:@"search_places"]];
 
     XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
 
@@ -928,8 +936,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
                                                                 horizontalAccuracy:65
                                                                   verticalAccuracy:-1
                                                                          timestamp:[NSDate new]];
-    self.apiHelperMock.mockStatus = RadarStatusSuccess;
-    self.apiHelperMock.mockResponse = [RadarTestUtils jsonDictionaryFromResource:@"search_geofences"];
+    [self _stubAPIRequestWithStatus:RadarStatusSuccess response:[RadarTestUtils jsonDictionaryFromResource:@"search_geofences"]];
 
     XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
 
@@ -1005,8 +1012,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
                                                                 horizontalAccuracy:65
                                                                   verticalAccuracy:-1
                                                                          timestamp:[NSDate new]];
-    self.apiHelperMock.mockStatus = RadarStatusSuccess;
-    self.apiHelperMock.mockResponse = [RadarTestUtils jsonDictionaryFromResource:@"search_points"];
+    [self _stubAPIRequestWithStatus:RadarStatusSuccess response:[RadarTestUtils jsonDictionaryFromResource:@"search_points"]];
 
     XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
 
@@ -1030,8 +1036,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 }
 
 - (void)test_Radar_autocomplete_success {
-    self.apiHelperMock.mockStatus = RadarStatusSuccess;
-    self.apiHelperMock.mockResponse = [RadarTestUtils jsonDictionaryFromResource:@"search_autocomplete"];
+    [self _stubAPIRequestWithStatus:RadarStatusSuccess response:[RadarTestUtils jsonDictionaryFromResource:@"search_autocomplete"]];
 
     CLLocation *near = [[CLLocation alloc] initWithLatitude:40.78382 longitude:-73.97536];
 
@@ -1057,7 +1062,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 
 - (void)test_Radar_geocode_error {
     self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusAuthorizedWhenInUse;
-    self.apiHelperMock.mockStatus = RadarStatusErrorServer;
+    [self _stubAPIRequestWithStatus:RadarStatusErrorServer response:nil];
 
     NSString *geocodeQuery = @"20 jay street brooklyn";
 
@@ -1081,8 +1086,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 
 - (void)test_Radar_geocode_success {
     self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusAuthorizedWhenInUse;
-    self.apiHelperMock.mockStatus = RadarStatusSuccess;
-    self.apiHelperMock.mockResponse = [RadarTestUtils jsonDictionaryFromResource:@"geocode"];
+    [self _stubAPIRequestWithStatus:RadarStatusSuccess response:[RadarTestUtils jsonDictionaryFromResource:@"geocode"]];
 
     NSString *query = @"20 jay st brooklyn";
 
@@ -1153,8 +1157,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
                                                                 horizontalAccuracy:65
                                                                   verticalAccuracy:-1
                                                                          timestamp:[NSDate new]];
-    self.apiHelperMock.mockStatus = RadarStatusSuccess;
-    self.apiHelperMock.mockResponse = [RadarTestUtils jsonDictionaryFromResource:@"geocode"];
+    [self _stubAPIRequestWithStatus:RadarStatusSuccess response:[RadarTestUtils jsonDictionaryFromResource:@"geocode"]];
 
     XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
 
@@ -1175,7 +1178,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 
 - (void)test_Radar_reverseGeocodeLocation_error {
     self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusAuthorizedWhenInUse;
-    self.apiHelperMock.mockStatus = RadarStatusErrorServer;
+    [self _stubAPIRequestWithStatus:RadarStatusErrorServer response:nil];
 
     CLLocation *location = [[CLLocation alloc] initWithLatitude:40.78382 longitude:-73.97536];
 
@@ -1199,8 +1202,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 
 - (void)test_Radar_reverseGeocodeLocation_success {
     self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusAuthorizedWhenInUse;
-    self.apiHelperMock.mockStatus = RadarStatusSuccess;
-    self.apiHelperMock.mockResponse = [RadarTestUtils jsonDictionaryFromResource:@"geocode"];
+    [self _stubAPIRequestWithStatus:RadarStatusSuccess response:[RadarTestUtils jsonDictionaryFromResource:@"geocode"]];
 
     CLLocation *location = [[CLLocation alloc] initWithLatitude:40.78382 longitude:-73.97536];
 
@@ -1224,7 +1226,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 
 - (void)test_Radar_ipGeocode_error {
     self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusAuthorizedWhenInUse;
-    self.apiHelperMock.mockStatus = RadarStatusErrorServer;
+    [self _stubAPIRequestWithStatus:RadarStatusErrorServer response:nil];
 
     XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
 
@@ -1245,8 +1247,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 
 - (void)test_Radar_ipGeocode_success {
     self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusAuthorizedWhenInUse;
-    self.apiHelperMock.mockStatus = RadarStatusSuccess;
-    self.apiHelperMock.mockResponse = [RadarTestUtils jsonDictionaryFromResource:@"geocode_ip"];
+    [self _stubAPIRequestWithStatus:RadarStatusSuccess response:[RadarTestUtils jsonDictionaryFromResource:@"geocode_ip"]];
 
     XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
 
@@ -1272,8 +1273,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
                                                                 horizontalAccuracy:65
                                                                   verticalAccuracy:-1
                                                                          timestamp:[NSDate new]];
-    self.apiHelperMock.mockStatus = RadarStatusSuccess;
-    self.apiHelperMock.mockResponse = [RadarTestUtils jsonDictionaryFromResource:@"route_distance"];
+    [self _stubAPIRequestWithStatus:RadarStatusSuccess response:[RadarTestUtils jsonDictionaryFromResource:@"route_distance"]];
 
     CLLocation *destination = [[CLLocation alloc] initWithLatitude:40.78382 longitude:-73.97536];
 
@@ -1314,7 +1314,6 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
                                                                 horizontalAccuracy:65
                                                                   verticalAccuracy:-1
                                                                          timestamp:[NSDate new]];
-    self.apiHelperMock.mockStatus = RadarStatusSuccess;
     self.locationManagerMockForBeacon.mockBeaconRegions = nil;
 }
 
@@ -1323,7 +1322,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     [self _setup_Radar_beacon_tests];
     self.permissionsHelperMock.mockBluetoothState = CBManagerStateUnauthorized; // fails
 
-    self.apiHelperMock.mockResponse = [RadarTestUtils jsonDictionaryFromResource:@"context"];
+    [self _stubAPIRequestWithStatus:RadarStatusSuccess response:[RadarTestUtils jsonDictionaryFromResource:@"context"]];
 
     XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
 
@@ -1348,7 +1347,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     self.permissionsHelperMock.mockBluetoothState = CBManagerStatePoweredOn;
     self.locationManagerMockForBeacon.mockBeaconRegions = @{};
 
-    self.apiHelperMock.mockResponse = [RadarTestUtils jsonDictionaryFromResource:@"context"];
+    [self _stubAPIRequestWithStatus:RadarStatusSuccess response:[RadarTestUtils jsonDictionaryFromResource:@"context"]];
 
     XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
 
@@ -1375,7 +1374,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     self.permissionsHelperMock.mockBluetoothState = CBManagerStatePoweredOn;
 
     NSDictionary *context = [RadarTestUtils jsonDictionaryFromResource:@"context"];
-    self.apiHelperMock.mockResponse = context;
+    [self _stubAPIRequestWithStatus:RadarStatusSuccess response:context];
 
     NSDictionary *beaconObject = context[@"context"][@"beacons"][0];
     RadarBeacon *beacon = [[RadarBeacon alloc] initWithObject:beaconObject];
@@ -1407,6 +1406,70 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
                                          XCTFail();
                                      }
                                  }];
+}
+
+- (void)test_Radar_trackOnce_beacons {
+    // GIVEN
+    [self _setup_Radar_beacon_tests];
+    self.permissionsHelperMock.mockBluetoothState = CBManagerStatePoweredOn;
+    NSDictionary *beaconSearchResponse = [RadarTestUtils jsonDictionaryFromResource:@"beacons"];
+    NSArray<RadarBeacon *> *beacons = [RadarBeacon fromObjectArray:beaconSearchResponse[@"beacons"]];
+
+    NSMutableDictionary *beaconRegions = [NSMutableDictionary dictionary];
+    for (RadarBeacon *beacon in beacons) {
+        beaconRegions[beacon._id] = [beacon toCLBeaconRegion];
+    }
+
+    self.locationManagerMockForBeacon.mockBeaconRegions = beaconRegions;
+
+    OCMStub([self.apiHelperMock requestWithMethod:@"GET" url:[OCMArg any] headers:[OCMArg any] params:[OCMArg any] completionHandler:[OCMArg any]])
+        .andDo(^(NSInvocation *invocation) {
+            RadarAPICompletionHandler completion;
+            [invocation getArgument:&completion atIndex:6];
+            completion(RadarStatusSuccess, beaconSearchResponse);
+        });
+
+    OCMStub([self.apiHelperMock requestWithMethod:@"POST" url:[OCMArg any] headers:[OCMArg any] params:[OCMArg any] completionHandler:[OCMArg any]])
+        .andDo(^(NSInvocation *invocation) {
+            NSDictionary *params;
+            [invocation getArgument:&params atIndex:5];
+            NSString *upsertBeaconId = params[@"nearbyBeacons"][0];
+            XCTAssertTrue([beaconRegions objectForKey:upsertBeaconId] != nil);
+
+            RadarAPICompletionHandler completion;
+            [invocation getArgument:&completion atIndex:6];
+            completion(RadarStatusSuccess, [RadarTestUtils jsonDictionaryFromResource:@"track"]);
+        });
+
+    XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
+
+    // THEN
+    [Radar trackOnceWithCompletionHandler:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user) {
+        XCTAssertEqual(status, RadarStatusSuccess);
+        XCTAssertEqualObjects(self.locationManagerMock.mockLocation, location);
+        AssertEventsOk(events);
+        AssertUserOk(user);
+
+        [expectation fulfill];
+    }];
+
+    [self waitForExpectationsWithTimeout:30
+                                 handler:^(NSError *_Nullable error) {
+                                     if (error) {
+                                         XCTFail();
+                                     }
+                                 }];
+}
+
+#pragma mark - fixtures
+
+- (void)_stubAPIRequestWithStatus:(RadarStatus)status response:(NSDictionary *)response {
+    OCMStub([self.apiHelperMock requestWithMethod:[OCMArg any] url:[OCMArg any] headers:[OCMArg any] params:[OCMArg any] completionHandler:[OCMArg any]])
+        .andDo(^(NSInvocation *invocation) {
+            RadarAPICompletionHandler completion;
+            [invocation getArgument:&completion atIndex:6];
+            completion(status, response);
+        });
 }
 
 @end

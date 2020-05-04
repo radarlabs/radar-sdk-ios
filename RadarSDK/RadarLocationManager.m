@@ -521,6 +521,7 @@ static NSString *const kRegionIdentifer = @"radar";
                                             foreground:[RadarUtils foreground]
                                                 source:source
                                               replayed:replayed
+                                         nearbyBeacons:nil // TODO: continuous beacon tracking
                                      completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user) {
                                          if (user) {
                                              [RadarSettings setId:user._id];

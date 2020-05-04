@@ -7,6 +7,7 @@
 
 #import "RadarUser.h"
 #import "RadarChain+Internal.h"
+#import "RadarCollectionAdditions.h"
 #import "RadarGeofence+Internal.h"
 #import "RadarPlace+Internal.h"
 #import "RadarRegion+Internal.h"
@@ -33,7 +34,8 @@
                           postalCode:(RadarRegion *_Nullable)postalCode
                    nearbyPlaceChains:(nullable NSArray<RadarChain *> *)nearbyPlaceChains
                             segments:(nullable NSArray<RadarSegment *> *)segments
-                           topChains:(nullable NSArray<RadarChain *> *)topChains {
+                           topChains:(nullable NSArray<RadarChain *> *)topChains
+                             beacons:(nullable NSArray<RadarBeacon *> *)beacons {
     self = [super init];
     if (self) {
         __id = _id;
@@ -54,6 +56,7 @@
         _nearbyPlaceChains = nearbyPlaceChains;
         _segments = segments;
         _topChains = topChains;
+        _beacons = beacons;
     }
     return self;
 }
@@ -83,6 +86,7 @@
     NSArray<RadarChain *> *nearbyPlaceChains;
     NSArray<RadarSegment *> *segments;
     NSArray<RadarChain *> *topChains;
+    NSArray<RadarBeacon *> *beacons;
 
     id idObj = dict[@"_id"];
     if (idObj && [idObj isKindOfClass:[NSString class]]) {
@@ -244,6 +248,14 @@
         topChains = mutableTopChains;
     }
 
+    id beaconsObj = dict[@"beacons"];
+    if (beaconsObj) {
+        beacons = [RadarBeacon fromObjectArray:dict[@"beacons"]];
+        if (!beacons) {
+            return nil; // beacon deserialization error
+        }
+    }
+
     if (_id && location) {
         return [[RadarUser alloc] initWithId:_id
                                       userId:userId
@@ -262,7 +274,8 @@
                                   postalCode:postalCode
                            nearbyPlaceChains:nearbyPlaceChains
                                     segments:segments
-                                   topChains:topChains];
+                                   topChains:topChains
+                                     beacons:beacons];
     }
 
     return nil;
@@ -309,6 +322,12 @@
     [dict setValue:segmentsArr forKey:@"segments"];
     NSArray *topChainsArr = [RadarChain arrayForChains:self.topChains];
     [dict setValue:topChainsArr forKey:@"topChains"];
+    if (self.beacons) {
+        NSArray *beaconsArray = [self.beacons radar_mapObjectsUsingBlock:^id _Nullable(RadarBeacon *_Nonnull beacon) {
+            return [beacon dictionaryValue];
+        }];
+        [dict setValue:beaconsArray forKey:@"beacons"];
+    }
     return dict;
 }
 

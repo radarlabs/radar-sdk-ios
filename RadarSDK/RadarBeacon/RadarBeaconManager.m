@@ -2,6 +2,7 @@
 #import "RadarBeaconManager.h"
 #import "RadarBeaconManager+Internal.h"
 
+#import "RadarAPIClient.h"
 #import "RadarBeaconScanRequest.h"
 #import "RadarUtils.h"
 
@@ -9,6 +10,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 static double const kRadarBeaconMonitorTimeoutSecond = 10.00f;
 static NSUInteger const kRadarBeaconMonitorLimit = 20;
+static int const kRadarBeaconSearchRadius = 1000;
+static int const kRadarBeaconSearchLimit = 20;
 
 dispatch_source_t CreateDispatchTimer(double interval, dispatch_queue_t queue, dispatch_block_t block) {
     dispatch_source_t timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, queue);
@@ -65,6 +68,24 @@ dispatch_source_t CreateDispatchTimer(double interval, dispatch_queue_t queue, d
 }
 
 #pragma mark - track Once with timer
+
+- (void)detectOnceForLocation:(CLLocation *)location completionBlock:(RadarBeaconTrackCompletionHandler)completionBlock {
+    [[RadarAPIClient sharedInstance] searchBeaconsNear:location
+                                                radius:kRadarBeaconSearchRadius
+                                                 limit:kRadarBeaconSearchLimit
+                                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarBeacon *> *_Nullable beacons) {
+                                         if (status != RadarStatusSuccess) {
+                                             completionBlock(status, nil);
+                                             return;
+                                         }
+
+                                         if (!beacons || beacons.count == 0) {
+                                             completionBlock(status, @[]);
+                                             return;
+                                         }
+                                         [self detectOnceForRadarBeacons:beacons completionBlock:completionBlock];
+                                     }];
+}
 
 - (void)detectOnceForRadarBeacons:(NSArray<RadarBeacon *> *)radarBeacons completionBlock:(RadarBeaconTrackCompletionHandler)block {
     weakify(self);

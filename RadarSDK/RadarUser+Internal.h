@@ -29,7 +29,8 @@
                           postalCode:(RadarRegion *_Nullable)postalCode
                    nearbyPlaceChains:(nullable NSArray<RadarChain *> *)nearbyPlaceChains
                             segments:(nullable NSArray<RadarSegment *> *)segments
-                           topChains:(nullable NSArray<RadarChain *> *)topChains;
+                           topChains:(nullable NSArray<RadarChain *> *)topChains
+                             beacons:(nullable NSArray<RadarBeacon *> *)beacons;
 - (instancetype _Nullable)initWithObject:(id _Nonnull)object;
 
 @end

@@ -5,6 +5,7 @@
 //  Copyright © 2019 Radar Labs, Inc. All rights reserved.
 //
 
+#import "RadarBeacon.h"
 #import "RadarGeofence.h"
 #import "RadarPlace.h"
 #import "RadarRegion.h"
@@ -62,7 +63,11 @@ typedef NS_ENUM(NSInteger, RadarEventType) {
     /// `user.started_commuting`
     RadarEventTypeUserStartedCommuting NS_SWIFT_NAME(userStartedCommuting),
     /// `user.stopped_commuting`
-    RadarEventTypeUserStoppedCommuting NS_SWIFT_NAME(userStoppedCommuting)
+    RadarEventTypeUserStoppedCommuting NS_SWIFT_NAME(userStoppedCommuting),
+    /// `user.entered_beacon`
+    RadarEventTypeUserEnteredBeacon NS_SWIFT_NAME(userEnteredBeacon),
+    /// `user.exited_beacon`
+    RadarEventTypeUserExitedBeacon NS_SWIFT_NAME(userExitedBeacon),
 };
 
 /**
@@ -140,6 +145,11 @@ typedef NS_ENUM(NSInteger, RadarEventVerification) {
  For accepted place entry events, the verified place. May be `nil` for non-place events or unverified events.
  */
 @property (nullable, strong, nonatomic, readonly) RadarPlace *verifiedPlace;
+
+/**
+ The beacon for which the event was generated. May be `nil` for non-beacon events.
+ */
+@property (nullable, strong, nonatomic, readonly) RadarBeacon *beacon;
 
 /**
  The verification of the event.

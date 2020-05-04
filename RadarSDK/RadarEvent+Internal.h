@@ -25,6 +25,7 @@
                               region:(RadarRegion *_Nullable)region
                      alternatePlaces:(NSArray<RadarPlace *> *_Nullable)alternatePlaces
                        verifiedPlace:(RadarPlace *_Nullable)verifiedPlace
+                              beacon:(RadarBeacon *_Nullable)beacon
                         verification:(RadarEventVerification)verification
                           confidence:(RadarEventConfidence)confidence
                             duration:(float)duration

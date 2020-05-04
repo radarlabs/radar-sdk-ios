@@ -24,6 +24,8 @@ typedef void (^_Nullable RadarTrackAPICompletionHandler)(RadarStatus status, NSD
 
 typedef void (^_Nullable RadarContextAPICompletionHandler)(RadarStatus status, NSDictionary *_Nullable res, RadarContext *_Nullable context);
 
+typedef void (^_Nullable RadarSearchBeaconsCompletionHandler)(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarBeacon *> *_Nullable beacons);
+
 typedef void (^_Nullable RadarSearchPlacesAPICompletionHandler)(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarPlace *> *_Nullable places);
 
 typedef void (^_Nullable RadarSearchGeofencesAPICompletionHandler)(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarGeofence *> *_Nullable geofences);
@@ -52,11 +54,14 @@ typedef void (^_Nullable RadarDistanceAPICompletionHandler)(RadarStatus status, 
                foreground:(BOOL)foreground
                    source:(RadarLocationSource)source
                  replayed:(BOOL)replayed
+            nearbyBeacons:(NSArray<NSString *> *_Nullable)nearbyBeacons
         completionHandler:(RadarTrackAPICompletionHandler _Nullable)completionHandler;
 
 - (void)verifyEventId:(NSString *_Nonnull)eventId verification:(RadarEventVerification)verification verifiedPlaceId:(NSString *_Nullable)verifiedPlaceId;
 
 - (void)getContextForLocation:(CLLocation *_Nonnull)location includeBeacon:(BOOL)includeBeacon completionHandler:(RadarContextAPICompletionHandler _Nullable)completionHandler;
+
+- (void)searchBeaconsNear:(CLLocation *)near radius:(int)radius limit:(int)limit completionHandler:(RadarSearchBeaconsCompletionHandler)completionHandler;
 
 - (void)searchPlacesNear:(CLLocation *_Nonnull)near
                   radius:(int)radius
