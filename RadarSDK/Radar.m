@@ -416,11 +416,19 @@
 }
 
 + (NSDictionary *)dictionaryForLocation:(CLLocation *)location {
-    return @{
-        @"latitude": @(location.coordinate.latitude),
-        @"longitude": @(location.coordinate.longitude),
-        @"accuracy": @(location.horizontalAccuracy),
-    };
+    NSMutableDictionary *dict = [NSMutableDictionary new];
+    dict[@"latitude"] = @(location.coordinate.latitude);
+    dict[@"longitude"] = @(location.coordinate.longitude);
+    dict[@"accuracy"] = @(location.horizontalAccuracy);
+    dict[@"altitude"] = @(location.altitude);
+    dict[@"verticalAccuracy"] = @(location.verticalAccuracy);
+    dict[@"speed"] = @(location.speed);
+    dict[@"speedAccuracy"] = @(location.speedAccuracy);
+    dict[@"course"] = @(location.course);
+    if (@available(iOS 13.4, *)) {
+        dict[@"courseAccuracy"] = @(location.courseAccuracy);
+    }
+    return dict;
 }
 
 @end
