@@ -33,7 +33,7 @@
     [RadarSettings setPublishableKey:publishableKey];
     [[RadarAPIClient sharedInstance] getConfig];
     [[RadarLocationManager sharedInstance] updateTracking];
-    [RadarBeaconManager sharedInstance]; // TODO: any initial config logic?
+    [RadarBeaconManager sharedInstance];
 }
 
 + (NSString *_Nullable)getPublishableKey {

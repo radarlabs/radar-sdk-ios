@@ -1,10 +1,3 @@
-//
-//  RadarJSONCoding.h
-//  Library
-//
-//  Created by Ping Xia on 4/23/20.
-//  Copyright © 2020 Radar Labs, Inc. All rights reserved.
-//
 
 #import <Foundation/Foundation.h>
 

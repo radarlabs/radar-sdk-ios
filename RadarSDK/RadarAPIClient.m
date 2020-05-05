@@ -299,9 +299,7 @@
                                                                                 if (status != RadarStatusSuccess) {
                                                                                     return completionHandler(status, nil, nil);
                                                                                 }
-                                                                                if (nearbyBeacons.count > 0) {
-                                                                                    [context setBeacons:nearbyBeacons];
-                                                                                }
+                                                                                [context setBeacons:nearbyBeacons];
                                                                                 return completionHandler(RadarStatusSuccess, res, context);
                                                                             }];
                         }

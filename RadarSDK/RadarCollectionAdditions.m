@@ -22,6 +22,19 @@
     return [result copy];
 }
 
+- (NSDictionary *)radar_mapToDictionaryUsingKeyBlock:(id _Nullable (^)(id _Nonnull))keyBlock valueBlock:(id _Nullable (^)(id _Nonnull))valueBlock {
+    NSMutableDictionary *result = [NSMutableDictionary dictionaryWithCapacity:[self count]];
+
+    [self enumerateObjectsUsingBlock:^(id _Nonnull obj, NSUInteger idx, BOOL *_Nonnull stop) {
+        id key = keyBlock(obj);
+        id value = valueBlock(obj);
+        if (key && value) {
+            [result setValue:value forKey:key];
+        }
+    }];
+
+    return [result copy];
+}
 @end
 
 @implementation NSDictionary (Radar)

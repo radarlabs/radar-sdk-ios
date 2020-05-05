@@ -20,8 +20,7 @@
                                     country:(RadarRegion* _Nullable)country
                                       state:(RadarRegion* _Nullable)state
                                         dma:(RadarRegion* _Nullable)dma
-                                 postalCode:(RadarRegion* _Nullable)postalCode
-                                    beacons:(NSArray<RadarBeacon*>* _Nullable)beacons;
+                                 postalCode:(RadarRegion* _Nullable)postalCode;
 
 - (instancetype _Nullable)initWithObject:(id _Nonnull)object;
 

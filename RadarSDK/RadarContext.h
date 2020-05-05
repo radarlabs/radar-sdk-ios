@@ -62,7 +62,7 @@
 @property (nullable, strong, nonatomic, readonly) RadarRegion *postalCode;
 
 /**
-An array of the beacons for the location. May be empty if the location is not in any beacons range.
+An array of the beacons for the location. May be empty if the location is not in any beacon's range.
 
 @see https://radar.io/documentation/regions
 */

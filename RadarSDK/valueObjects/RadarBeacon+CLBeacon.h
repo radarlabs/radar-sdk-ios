@@ -7,6 +7,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface RadarBeacon (CLBeacon)
 
+// create a CLBeaconRegion for the RadarBeacon. The region's identifier is the RadarBeacon._id
 - (CLBeaconRegion *)toCLBeaconRegion;
 
 @end

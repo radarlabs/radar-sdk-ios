@@ -1,10 +1,3 @@
-//
-//  RadarBeaconManager.m
-//  Library
-//
-//  Created by Ping Xia on 4/28/20.
-//  Copyright © 2020 Radar Labs, Inc. All rights reserved.
-//
 
 #import "RadarBeaconManager.h"
 #import "RadarBeaconManager+Internal.h"
@@ -15,6 +8,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 static double const kRadarBeaconMonitorTimeoutSecond = 10.00f;
+static NSUInteger const kRadarBeaconMonitorLimit = 20;
 
 dispatch_source_t CreateDispatchTimer(double interval, dispatch_queue_t queue, dispatch_block_t block) {
     dispatch_source_t timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, queue);
@@ -82,9 +76,10 @@ dispatch_source_t CreateDispatchTimer(double interval, dispatch_queue_t queue, d
         if (radarBeacons.count == 0) {
             return block(RadarStatusSuccess, @[]);
         }
+        NSArray *beaconsToMonitor = [radarBeacons subarrayWithRange:NSMakeRange(0, MIN(kRadarBeaconMonitorLimit, radarBeacons.count))];
         RadarBeaconScanRequest *request = [[RadarBeaconScanRequest alloc] initWithIdentifier:[[NSUUID UUID] UUIDString]
                                                                             createdTimestamp:[[NSDate date] timeIntervalSince1970]
-                                                                                     beacons:radarBeacons];
+                                                                                     beacons:beaconsToMonitor];
         [self->_queuedRequests addObject:request];
         self->_completionHandlers[request.identifier] = block;
 
@@ -170,10 +165,6 @@ dispatch_source_t CreateDispatchTimer(double interval, dispatch_queue_t queue, d
 }
 
 #pragma mark - RadarBeaconScannerDelegate
-
-- (void)didFailStartMonitoring {
-    // No op for now.
-}
 
 - (void)didFinishMonitoring:(RadarBeaconScanRequest *)request status:(RadarStatus)status nearbyBeacons:(NSArray<RadarBeacon *> *_Nullable)nearbyBeacons {
     weakify(self);

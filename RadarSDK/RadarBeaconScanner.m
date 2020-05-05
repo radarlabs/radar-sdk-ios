@@ -1,14 +1,8 @@
-//
-//  RadarBeaconScanner.m
-//  Library
-//
-//  Created by Ping Xia on 4/29/20.
-//  Copyright © 2020 Radar Labs, Inc. All rights reserved.
-//
 
 #import "RadarBeaconScanner.h"
 #import "RadarBeacon+CLBeacon.h"
 #import "RadarBeaconManager.h"
+#import "RadarCollectionAdditions.h"
 #import "RadarUtils.h"
 
 @interface RadarBeaconScanner ()<CLLocationManagerDelegate>
@@ -52,22 +46,32 @@
         }
 
         if (self->_isMonitoring) {
-            [self->_delegate didFailStartMonitoring];
+            // TODO: we should probably have another status for scanner busy error.
+            // but that status needs to be private (so not part of RadarStatus)
+            [self->_delegate didFinishMonitoring:request status:RadarStatusErrorBeacon nearbyBeacons:nil];
         }
 
-        NSMutableDictionary *regionsToMonitor = [NSMutableDictionary dictionary];
-        for (RadarBeacon *beacon in request.beacons) {
-            CLBeaconRegion *region = [beacon toCLBeaconRegion];
-            [self->_locationManager startMonitoringForRegion:region];
-            [regionsToMonitor setValue:region forKey:region.identifier];
-        }
+        self->_isMonitoring = YES;
 
         self->_runningRequest = request;
-        self->_allRegions = [regionsToMonitor copy];
+        NSArray<CLBeaconRegion *> *regions = [request.beacons radar_mapObjectsUsingBlock:^id _Nullable(RadarBeacon *_Nonnull beacon) {
+            return [beacon toCLBeaconRegion];
+        }];
+        self->_allRegions = [regions
+            radar_mapToDictionaryUsingKeyBlock:^id _Nullable(CLBeaconRegion *_Nonnull region) {
+                return region.identifier;
+            }
+            valueBlock:^id _Nullable(CLBeaconRegion *_Nonnull region) {
+                return region;
+            }];
 
         self->_detectedRegionIds = [NSMutableSet set];
         self->_enteredRegionIds = [NSMutableSet set];
-        self->_isMonitoring = YES;
+
+        for (NSString *regionId in self->_allRegions) {
+            CLBeaconRegion *region = self->_allRegions[regionId];
+            [self->_locationManager startMonitoringForRegion:region];
+        }
     });
 }
 

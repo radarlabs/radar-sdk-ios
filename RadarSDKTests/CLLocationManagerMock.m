@@ -33,13 +33,11 @@
     }
 
     if ([self.mockBeaconRegions objectForKey:region.identifier]) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self.delegate locationManager:self didEnterRegion:region];
-        });
+        // should really to dispatch main queue async here. But it makes the tests flaky.
+        // TODO: fix it
+        [self.delegate locationManager:self didEnterRegion:region];
     } else {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self.delegate locationManager:self didExitRegion:region];
-        });
+        [self.delegate locationManager:self didExitRegion:region];
     }
 }
 

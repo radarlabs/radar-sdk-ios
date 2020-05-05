@@ -1,10 +1,3 @@
-//
-//  RadarBeaconManager.h
-//  Library
-//
-//  Created by Ping Xia on 4/28/20.
-//  Copyright © 2020 Radar Labs, Inc. All rights reserved.
-//
 
 #import "Radar.h"
 #import "RadarBeacon.h"
@@ -19,7 +12,7 @@ typedef void (^RadarBeaconMonitorCompletionHandler)(RadarStatus status, NSArray<
 
 + (instancetype)sharedInstance;
 
-/// One time detection on beacons
+/// One time detection on nearby beacons
 /// @param radarBeacons the list of beacons to monitor / detect
 /// @param block completion block which will be called on the internal queue of RadarBeaconManager
 - (void)monitorOnceForRadarBeacons:(NSArray<RadarBeacon *> *)radarBeacons completionBlock:(RadarBeaconMonitorCompletionHandler)block;

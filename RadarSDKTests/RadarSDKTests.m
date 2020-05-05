@@ -39,6 +39,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     XCTAssertNotNil(beacon);
     XCTAssertNotNil(beacon._description);
     XCTAssertNotNil(beacon.geometry);
+    XCTAssertNotNil(beacon.type);
     XCTAssertNotNil(beacon.uuid);
     XCTAssertNotNil(beacon.major);
     XCTAssertNotNil(beacon.minor);

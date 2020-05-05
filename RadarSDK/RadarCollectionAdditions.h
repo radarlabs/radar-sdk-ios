@@ -9,10 +9,10 @@
 @class RadarCoordinate;
 
 NS_ASSUME_NONNULL_BEGIN
-
 @interface NSArray<ObjectType>(Radar)
 
 - (NSArray *)radar_mapObjectsUsingBlock:(id _Nullable (^)(ObjectType obj))block;
+- (NSDictionary *)radar_mapToDictionaryUsingKeyBlock:(id _Nullable (^)(ObjectType obj))keyBlock valueBlock:(id _Nullable (^)(ObjectType obj))valueBlock;
 
 @end
 
