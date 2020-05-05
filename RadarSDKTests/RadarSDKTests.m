@@ -1395,6 +1395,9 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 
         AssertBeaconOk(context.beacons[0]);
 
+        NSString *regionUUIDWithoutHyphens = [region.proximityUUID.UUIDString stringByReplacingOccurrencesOfString:@"-" withString:@""];
+        XCTAssertEqualObjects(regionUUIDWithoutHyphens, context.beacons[0].uuid);
+
         [expectation fulfill];
     }];
 
