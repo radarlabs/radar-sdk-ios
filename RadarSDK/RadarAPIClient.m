@@ -9,6 +9,7 @@
 
 #import "RadarAddress+Internal.h"
 #import "RadarContext+Internal.h"
+#import "RadarCoordinate+Internal.h"
 #import "RadarEvent+Internal.h"
 #import "RadarGeofence+Internal.h"
 #import "RadarLogger.h"
@@ -563,7 +564,7 @@
                   destination:(CLLocation *)destination
                         modes:(RadarRouteMode)modes
                         units:(RadarRouteUnits)units
-            completionHandler:(RadarRouteAPICompletionHandler)completionHandler {
+            completionHandler:(RadarDistanceAPICompletionHandler)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
         return completionHandler(RadarStatusErrorPublishableKey, nil, nil);
@@ -581,9 +582,6 @@
     }
     if (modes & RadarRouteModeCar) {
         [modesArr addObject:@"car"];
-    }
-    if (modes & RadarRouteModeTransit) {
-        [modesArr addObject:@"transit"];
     }
     [queryString appendFormat:@"&modes=%@", [modesArr componentsJoinedByString:@","]];
     NSString *unitsStr;
@@ -613,6 +611,55 @@
                         RadarRoutes *routes = [[RadarRoutes alloc] initWithObject:routesObj];
                         if (routes) {
                             return completionHandler(RadarStatusSuccess, res, routes);
+                        }
+
+                        completionHandler(RadarStatusErrorServer, nil, nil);
+                    }];
+}
+
+- (void)getMockFromOrigin:(CLLocation *)origin
+              destination:(CLLocation *)destination
+                     mode:(RadarRouteMode)mode
+                   points:(int)points
+        completionHandler:(RadarMockAPICompletionHandler)completionHandler {
+    NSString *publishableKey = [RadarSettings publishableKey];
+    if (!publishableKey) {
+        return completionHandler(RadarStatusErrorPublishableKey, nil, nil);
+    }
+
+    NSMutableString *queryString = [NSMutableString new];
+    [queryString appendFormat:@"origin=%.06f,%.06f", origin.coordinate.latitude, origin.coordinate.longitude];
+    [queryString appendFormat:@"&destination=%.06f,%.06f", destination.coordinate.latitude, destination.coordinate.longitude];
+    NSString *modeStr;
+    if (mode == RadarRouteModeFoot) {
+        modeStr = @"foot";
+    } else if (mode == RadarRouteModeBike) {
+        modeStr = @"bike";
+    } else if (mode == RadarRouteModeCar) {
+        modeStr = @"car";
+    }
+    [queryString appendFormat:@"&mode=%@", modeStr];
+    [queryString appendFormat:@"&points=%d", points];
+
+    NSString *host = [RadarSettings host];
+    NSString *url = [NSString stringWithFormat:@"%@/v1/route/mock?%@", host, queryString];
+    url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
+
+    NSDictionary *headers = [RadarAPIClient headersWithPublishableKey:publishableKey];
+
+    [self.apiHelper requestWithMethod:@"GET"
+                                  url:url
+                              headers:headers
+                               params:nil
+                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
+                        if (status != RadarStatusSuccess || !res) {
+                            return completionHandler(status, nil, nil);
+                        }
+
+                        id points = res[@"points"];
+                        NSArray<RadarCoordinate *> *coordinates = [RadarCoordinate coordinatesFromObject:points];
+                        if (coordinates) {
+                            return completionHandler(RadarStatusSuccess, res, coordinates);
                         }
 
                         completionHandler(RadarStatusErrorServer, nil, nil);

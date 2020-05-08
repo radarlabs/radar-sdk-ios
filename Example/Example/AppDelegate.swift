@@ -38,6 +38,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         options.sync = .all
         options.showBlueBar = true
         Radar.startTracking(trackingOptions: options)
+        
+        Radar.mockTracking(
+            origin: CLLocation(latitude: 40.78382, longitude: -73.97536),
+            destination: CLLocation(latitude: 40.70390, longitude: -73.98670),
+            mode: .car,
+            points: 10,
+            interval: 1
+        )
 
         Radar.getContext { (status, location, context) in
             print("Context: status = \(Radar.stringForStatus(status)); location = \(String(describing: location)); context?.geofences = \(String(describing: context?.geofences)); context?.place = \(String(describing: context?.place)); context?.country = \(String(describing: context?.country))")

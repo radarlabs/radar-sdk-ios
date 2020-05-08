@@ -73,6 +73,8 @@ typedef NS_ENUM(NSInteger, RadarLocationSource) {
     RadarLocationSourceGeofenceEnter,
     /// Geofence exit
     RadarLocationSourceGeofenceExit,
+    /// Mock
+    RadarLocationSourceMockLocation,
     /// Unknown
     RadarLocationSourceUnknown
 };
@@ -102,9 +104,7 @@ typedef NS_OPTIONS(NSInteger, RadarRouteMode) {
     /// Bike
     RadarRouteModeBike NS_SWIFT_NAME(bike) = 1 << 1,
     /// Car
-    RadarRouteModeCar NS_SWIFT_NAME(car) = 1 << 2,
-    /// Transit
-    RadarRouteModeTransit NS_SWIFT_NAME(transit) = 1 << 3
+    RadarRouteModeCar NS_SWIFT_NAME(car) = 1 << 2
 };
 
 /**
@@ -304,8 +304,26 @@ typedef void (^_Nonnull RadarRouteCompletionHandler)(RadarStatus status, RadarRo
  @param options Configurable tracking options.
 
  @see https://radar.io/documentation/sdk#ios-background
-**/
+ */
 + (void)startTrackingWithOptions:(RadarTrackingOptions *)options NS_SWIFT_NAME(startTracking(trackingOptions:));
+
+/**
+ Mocks tracking the user's location from an origin to a destination.
+ 
+ @param origin The origin.
+ @param destination The destination.
+ @param mode The travel mode.
+ @param points The number of mock location updates.
+ @param interval The interval in seconds between each mock location update.
+ 
+ @see https://radar.io/documentation/sdk#ios-mock
+ */
++ (void)mockTrackingWithOrigin:(CLLocation *_Nonnull)origin
+                   destination:(CLLocation *_Nonnull)destination
+                          mode:(RadarRouteMode)mode
+                        points:(int)points
+                      interval:(NSTimeInterval)interval
+    NS_SWIFT_NAME(mockTracking(origin:destination:mode:points:interval:));
 
 /**
  Stops tracking the user's location in the background.

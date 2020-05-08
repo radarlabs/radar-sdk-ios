@@ -9,6 +9,8 @@
 
 @interface RadarCoordinate ()
 
-- (instancetype)initWithCoordinate:(CLLocationCoordinate2D)coordinate;
++ (NSArray<RadarCoordinate *> *_Nullable)coordinatesFromObject:(id _Nonnull)object;
+- (instancetype _Nullable)initWithCoordinate:(CLLocationCoordinate2D)coordinate;
+- (instancetype _Nullable)initWithObject:(id _Nonnull)object;
 
 @end

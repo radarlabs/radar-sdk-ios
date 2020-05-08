@@ -34,7 +34,9 @@ typedef void (^_Nullable RadarGeocodeAPICompletionHandler)(RadarStatus status, N
 
 typedef void (^_Nullable RadarIPGeocodeAPICompletionHandler)(RadarStatus status, NSDictionary *_Nullable res, RadarAddress *_Nullable address);
 
-typedef void (^_Nullable RadarRouteAPICompletionHandler)(RadarStatus status, NSDictionary *_Nullable res, RadarRoutes *_Nullable routes);
+typedef void (^_Nullable RadarDistanceAPICompletionHandler)(RadarStatus status, NSDictionary *_Nullable res, RadarRoutes *_Nullable routes);
+
+typedef void (^_Nullable RadarMockAPICompletionHandler)(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarCoordinate *> *_Nullable points);
 
 @interface RadarAPIClient : NSObject
 
@@ -90,9 +92,15 @@ typedef void (^_Nullable RadarRouteAPICompletionHandler)(RadarStatus status, NSD
 
 - (void)getDistanceFromOrigin:(CLLocation *_Nonnull)origin
                   destination:(CLLocation *_Nonnull)destination
-                        modes:(RadarRouteMode)mode
+                        modes:(RadarRouteMode)modes
                         units:(RadarRouteUnits)units
-            completionHandler:(RadarRouteAPICompletionHandler _Nullable)completionHandler;
+            completionHandler:(RadarDistanceAPICompletionHandler _Nullable)completionHandler;
+
+- (void)getMockFromOrigin:(CLLocation *_Nonnull)origin
+              destination:(CLLocation *_Nonnull)destination
+                     mode:(RadarRouteMode)mode
+                   points:(int)points
+        completionHandler:(RadarMockAPICompletionHandler _Nullable)completionHandler;
 
 @end
 
