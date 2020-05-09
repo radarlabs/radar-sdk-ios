@@ -106,7 +106,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             destination: destination,
             mode: .car,
             points: 10,
-            interval: 1
+            interval: 2
         )
 
         return true

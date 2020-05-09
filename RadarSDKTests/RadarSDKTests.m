@@ -603,17 +603,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     CLLocation *origin = [[CLLocation alloc] initWithLatitude:40.783826 longitude:-73.975363];
     CLLocation *destination = [[CLLocation alloc] initWithLatitude:40.70390 longitude:-73.98670];
 
-    [Radar mockTrackingWithOrigin:origin destination:destination mode:RadarRouteModeCar points:10 interval:5];
-
-    RadarTrackingOptions *options = RadarTrackingOptions.efficient;
-    options.desiredAccuracy = RadarTrackingOptionsDesiredAccuracyLow;
-    NSDate *now = [NSDate new];
-    options.startTrackingAfter = now;
-    options.stopTrackingAfter = [now dateByAddingTimeInterval:1000];
-    options.sync = RadarTrackingOptionsSyncNone;
-    [Radar startTrackingWithOptions:options];
-    XCTAssertEqualObjects(options, [Radar getTrackingOptions]);
-    XCTAssertTrue([Radar isTracking]);
+    [Radar mockTrackingWithOrigin:origin destination:destination mode:RadarRouteModeCar points:10 interval:2];
 }
 
 - (void)test_Radar_acceptEventId {
