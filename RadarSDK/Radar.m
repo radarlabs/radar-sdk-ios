@@ -113,21 +113,36 @@
 }
 
 + (void)mockTrackingWithOrigin:(CLLocation *)origin destination:(CLLocation *)destination mode:(RadarRouteMode)mode points:(int)points interval:(NSTimeInterval)interval {
-    [[RadarAPIClient sharedInstance] getMockFromOrigin:origin destination:destination mode:mode points:points completionHandler:^(RadarStatus status, NSDictionary * _Nullable res, NSArray<RadarCoordinate *> *_Nullable coordinates) {
-        if (status != RadarStatusSuccess || !coordinates) {
-            return;
-        }
-        for (int i = 0; i < coordinates.count; i++) {
-            RadarCoordinate *coordinate = coordinates[i];
-            __block CLLocation *location = [[CLLocation alloc] initWithCoordinate:coordinate.coordinate altitude:-1 horizontalAccuracy:5 verticalAccuracy:-1 timestamp:[NSDate new]];
-            __block BOOL stopped = (i == 0) || (i == coordinates.count - 1);
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(interval * i * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                [[RadarAPIClient sharedInstance] trackWithLocation:location stopped:stopped source:RadarLocationSourceMockLocation replayed:NO completionHandler:^(RadarStatus status, NSDictionary * _Nullable res, NSArray<RadarEvent *> * _Nullable events, RadarUser * _Nullable user) {
-                    
-                }];
-            });
-        }
-    }];
+    [[RadarAPIClient sharedInstance] getMockFromOrigin:origin
+                                           destination:destination
+                                                  mode:mode
+                                                points:points
+                                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarCoordinate *> *_Nullable coordinates) {
+                                         if (status != RadarStatusSuccess || !coordinates) {
+                                             return;
+                                         }
+
+                                         for (int i = 0; i < coordinates.count; i++) {
+                                             RadarCoordinate *coordinate = coordinates[i];
+                                             __block CLLocation *location = [[CLLocation alloc] initWithCoordinate:coordinate.coordinate
+                                                                                                          altitude:-1
+                                                                                                horizontalAccuracy:5
+                                                                                                  verticalAccuracy:-1
+                                                                                                         timestamp:[NSDate new]];
+                                             __block BOOL stopped = (i == 0) || (i == coordinates.count - 1);
+
+                                             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(interval * i * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                                                 [[RadarAPIClient sharedInstance] trackWithLocation:location
+                                                                                            stopped:stopped
+                                                                                             source:RadarLocationSourceMockLocation
+                                                                                           replayed:NO
+                                                                                  completionHandler:^(RadarStatus status, NSDictionary *_Nullable res,
+                                                                                                      NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user){
+
+                                                                                  }];
+                                             });
+                                         }
+                                     }];
 }
 
 + (void)stopTracking {

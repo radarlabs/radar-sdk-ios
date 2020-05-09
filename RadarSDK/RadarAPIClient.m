@@ -630,13 +630,11 @@
     NSMutableString *queryString = [NSMutableString new];
     [queryString appendFormat:@"origin=%.06f,%.06f", origin.coordinate.latitude, origin.coordinate.longitude];
     [queryString appendFormat:@"&destination=%.06f,%.06f", destination.coordinate.latitude, destination.coordinate.longitude];
-    NSString *modeStr;
+    NSString *modeStr = @"car";
     if (mode == RadarRouteModeFoot) {
         modeStr = @"foot";
     } else if (mode == RadarRouteModeBike) {
         modeStr = @"bike";
-    } else if (mode == RadarRouteModeCar) {
-        modeStr = @"car";
     }
     [queryString appendFormat:@"&mode=%@", modeStr];
     [queryString appendFormat:@"&points=%d", points];

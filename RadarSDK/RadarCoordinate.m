@@ -62,7 +62,7 @@
     float coordinatesLatitudeFloat = [coordinatesLatitudeNumber floatValue];
 
     CLLocationCoordinate2D coordinate = CLLocationCoordinate2DMake(coordinatesLatitudeFloat, coordinatesLongitudeFloat);
-    
+
     return [[RadarCoordinate alloc] initWithCoordinate:coordinate];
 }
 
