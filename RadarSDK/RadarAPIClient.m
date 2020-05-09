@@ -636,7 +636,7 @@
     } else if (mode == RadarRouteModeBike) {
         modeStr = @"bike";
     }
-    [queryString appendFormat:@"&mode=%@", modeStr];
+    [queryString appendFormat:@"&modes=%@", modeStr];
     [queryString appendFormat:@"&points=%d", points];
 
     NSString *host = [RadarSettings host];
@@ -653,11 +653,15 @@
                         if (status != RadarStatusSuccess || !res) {
                             return completionHandler(status, nil, nil);
                         }
-
-                        id points = res[@"points"];
-                        NSArray<RadarCoordinate *> *coordinates = [RadarCoordinate coordinatesFromObject:points];
-                        if (coordinates) {
-                            return completionHandler(RadarStatusSuccess, res, coordinates);
+                        
+                        id mockObj = res[@"mock"];
+                        if (mockObj && [[mockObj class] isKindOfClass:[NSDictionary class]]) {
+                            NSDictionary *mockDict = (NSDictionary *)mockObj;
+                            id pointsObj = mockDict[@"points"];
+                            NSArray<RadarCoordinate *> *coordinates = [RadarCoordinate coordinatesFromObject:pointsObj];
+                            if (coordinates) {
+                                return completionHandler(RadarStatusSuccess, res, coordinates);
+                            }
                         }
 
                         completionHandler(RadarStatusErrorServer, nil, nil);
