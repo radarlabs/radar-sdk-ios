@@ -39,14 +39,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         options.showBlueBar = true
         Radar.startTracking(trackingOptions: options)
         
-        Radar.mockTracking(
-            origin: CLLocation(latitude: 40.78382, longitude: -73.97536),
-            destination: CLLocation(latitude: 40.70390, longitude: -73.98670),
-            mode: .car,
-            points: 10,
-            interval: 1
-        )
-
         Radar.getContext { (status, location, context) in
             print("Context: status = \(Radar.stringForStatus(status)); location = \(String(describing: location)); context?.geofences = \(String(describing: context?.geofences)); context?.place = \(String(describing: context?.place)); context?.country = \(String(describing: context?.country))")
         }
@@ -88,23 +80,34 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         Radar.ipGeocode { (status, address) in
             print("IP geocode: status = \(Radar.stringForStatus(status)); country = \(String(describing: address?.countryCode)); city = \(String(describing: address?.city))")
         }
+        
+        let origin = CLLocation(latitude: 40.70390, longitude: -73.98670)
+        let destination = CLLocation(latitude: 40.70390, longitude: -73.98670)
 
         Radar.autocomplete(
             query: "brooklyn roasting",
-            near: CLLocation(latitude: 40.70390, longitude: -73.98670),
+            near: origin,
             limit: 10
         ) { (status, addresses) in
             print("Autocomplete: status = \(Radar.stringForStatus(status)); formattedAddress = \(String(describing: addresses?.first?.formattedAddress))")
         }
 
         Radar.getDistance(
-            origin: CLLocation(latitude: 40.78382, longitude: -73.97536),
-            destination: CLLocation(latitude: 40.70390, longitude: -73.98670),
+            origin: origin,
+            destination: destination,
             modes: [.foot, .car],
             units: .imperial
         ) { (status, routes) in
             print("Distance: status = \(Radar.stringForStatus(status)); routes.car.distance.value = \(String(describing: routes?.car?.distance.value)); routes.car.distance.text = \(String(describing: routes?.car?.distance.text)); routes.car.duration.value = \(String(describing: routes?.car?.duration.value)); routes.car.duration.text = \(String(describing: routes?.car?.duration.text))")
         }
+        
+        Radar.mockTracking(
+            origin: origin,
+            destination: destination,
+            mode: .car,
+            points: 10,
+            interval: 1
+        )
 
         return true
     }
