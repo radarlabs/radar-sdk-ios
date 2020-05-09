@@ -134,8 +134,8 @@
                                          }
 
                                          NSTimeInterval intervalLimit = interval;
-                                         if (intervalLimit < 5) {
-                                             intervalLimit = 5;
+                                         if (intervalLimit < 2) {
+                                             intervalLimit = 2;
                                          } else if (intervalLimit > 60) {
                                              intervalLimit = 60;
                                          }
