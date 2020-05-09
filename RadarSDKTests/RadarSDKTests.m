@@ -602,8 +602,30 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 
     CLLocation *origin = [[CLLocation alloc] initWithLatitude:40.783826 longitude:-73.975363];
     CLLocation *destination = [[CLLocation alloc] initWithLatitude:40.70390 longitude:-73.98670];
+    int points = 3;
+    int i = 0;
 
-    [Radar mockTrackingWithOrigin:origin destination:destination mode:RadarRouteModeCar points:10 interval:2];
+    XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
+
+    [Radar mockTrackingWithOrigin:origin
+                      destination:destination
+                             mode:RadarRouteModeCar
+                           points:points
+                         interval:5
+                completionHandler:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user) {
+                    i++;
+
+                    if (i == points) {
+                        [expectation fulfill];
+                    }
+                }];
+
+    [self waitForExpectationsWithTimeout:30
+                                 handler:^(NSError *_Nullable error) {
+                                     if (error) {
+                                         XCTFail();
+                                     }
+                                 }];
 }
 
 - (void)test_Radar_acceptEventId {
@@ -914,7 +936,6 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
                                  }];
 }
 
-#pragma mark - search points
 - (void)test_Radar_searchPoints_errorPermissions {
     self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusNotDetermined;
     self.locationManagerMock.mockLocation = nil;

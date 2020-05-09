@@ -149,7 +149,7 @@
                                                                                                          timestamp:[NSDate new]];
                                              __block BOOL stopped = (i == 0) || (i == coordinates.count - 1);
 
-                                             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(interval * i * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                                             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(intervalLimit * i * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
                                                  [[RadarAPIClient sharedInstance] trackWithLocation:location
                                                                                             stopped:stopped
                                                                                          foreground:NO
