@@ -51,6 +51,7 @@ typedef void (^_Nullable RadarMockAPICompletionHandler)(RadarStatus status, NSDi
 
 - (void)trackWithLocation:(CLLocation *_Nonnull)location
                   stopped:(BOOL)stopped
+               foreground:(BOOL)foreground
                    source:(RadarLocationSource)source
                  replayed:(BOOL)replayed
         completionHandler:(RadarTrackAPICompletionHandler _Nullable)completionHandler;

@@ -99,6 +99,7 @@
 
 - (void)trackWithLocation:(CLLocation *_Nonnull)location
                   stopped:(BOOL)stopped
+               foreground:(BOOL)foreground
                    source:(RadarLocationSource)source
                  replayed:(BOOL)replayed
         completionHandler:(RadarTrackAPICompletionHandler _Nullable)completionHandler {
@@ -136,7 +137,6 @@
     if (location.floor) {
         params[@"floorLevel"] = @(location.floor.level);
     }
-    BOOL foreground = [RadarUtils foreground];
     if (!foreground) {
         long timeInMs = (long)(location.timestamp.timeIntervalSince1970 * 1000);
         long nowMs = (long)([NSDate date].timeIntervalSince1970 * 1000);
@@ -653,9 +653,9 @@
                         if (status != RadarStatusSuccess || !res) {
                             return completionHandler(status, nil, nil);
                         }
-                        
+
                         id mockObj = res[@"mock"];
-                        if (mockObj && [[mockObj class] isKindOfClass:[NSDictionary class]]) {
+                        if (mockObj && [mockObj isKindOfClass:[NSDictionary class]]) {
                             NSDictionary *mockDict = (NSDictionary *)mockObj;
                             id pointsObj = mockDict[@"points"];
                             NSArray<RadarCoordinate *> *coordinates = [RadarCoordinate coordinatesFromObject:pointsObj];

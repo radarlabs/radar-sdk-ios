@@ -86,6 +86,7 @@
 
         [[RadarAPIClient sharedInstance] trackWithLocation:location
                                                    stopped:stopped
+                                                foreground:YES
                                                     source:RadarLocationSourceForegroundLocation
                                                   replayed:NO
                                          completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user) {
@@ -99,6 +100,7 @@
 + (void)trackOnceWithLocation:(CLLocation *)location completionHandler:(RadarTrackCompletionHandler)completionHandler {
     [[RadarAPIClient sharedInstance] trackWithLocation:location
                                                stopped:NO
+                                            foreground:YES
                                                 source:RadarLocationSourceManualLocation
                                               replayed:NO
                                      completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user) {
@@ -112,14 +114,30 @@
     [[RadarLocationManager sharedInstance] startTrackingWithOptions:options];
 }
 
-+ (void)mockTrackingWithOrigin:(CLLocation *)origin destination:(CLLocation *)destination mode:(RadarRouteMode)mode points:(int)points interval:(NSTimeInterval)interval {
++ (void)mockTrackingWithOrigin:(CLLocation *)origin
+                   destination:(CLLocation *)destination
+                          mode:(RadarRouteMode)mode
+                        points:(int)points
+                      interval:(NSTimeInterval)interval
+             completionHandler:(RadarTrackCompletionHandler _Nullable)completionHandler {
     [[RadarAPIClient sharedInstance] getMockFromOrigin:origin
                                            destination:destination
                                                   mode:mode
                                                 points:points
                                      completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarCoordinate *> *_Nullable coordinates) {
                                          if (status != RadarStatusSuccess || !coordinates) {
+                                             if (completionHandler) {
+                                                 completionHandler(status, nil, nil, nil);
+                                             }
+
                                              return;
+                                         }
+
+                                         NSTimeInterval intervalLimit = interval;
+                                         if (intervalLimit < 5) {
+                                             intervalLimit = 5;
+                                         } else if (intervalLimit > 60) {
+                                             intervalLimit = 60;
                                          }
 
                                          for (int i = 0; i < coordinates.count; i++) {
@@ -134,11 +152,14 @@
                                              dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(interval * i * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
                                                  [[RadarAPIClient sharedInstance] trackWithLocation:location
                                                                                             stopped:stopped
+                                                                                         foreground:NO
                                                                                              source:RadarLocationSourceMockLocation
                                                                                            replayed:NO
                                                                                   completionHandler:^(RadarStatus status, NSDictionary *_Nullable res,
-                                                                                                      NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user){
-
+                                                                                                      NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user) {
+                                                                                      if (completionHandler) {
+                                                                                          completionHandler(status, location, events, user);
+                                                                                      }
                                                                                   }];
                                              });
                                          }

@@ -119,7 +119,7 @@ typedef NS_ENUM(NSInteger, RadarRouteUnits) {
 
 /**
  Called when a location request succeeds, fails, or times out.
- 
+
  Receives the request status and, if successful, the location.
 
  @see https://radar.io/documentation/sdk#ios-foreground
@@ -128,7 +128,7 @@ typedef void (^_Nullable RadarLocationCompletionHandler)(RadarStatus status, CLL
 
 /**
  Called when a track request succeeds, fails, or times out.
- 
+
  Receives the request status and, if successful, the user's location, an array of the events generated, and the user.
 
  @see https://radar.io/documentation/sdk#ios-foreground
@@ -137,7 +137,7 @@ typedef void (^_Nullable RadarTrackCompletionHandler)(RadarStatus status, CLLoca
 
 /**
  Called when a context request succeeds, fails, or times out.
- 
+
  Receives the request status and, if successful, the location and the context.
 
  @see https://radar.io/documentation/api#context
@@ -146,7 +146,7 @@ typedef void (^_Nonnull RadarContextCompletionHandler)(RadarStatus status, CLLoc
 
 /**
  Called when a place search request succeeds, fails, or times out.
- 
+
  Receives the request status and, if successful, the location and an array of places sorted by distance.
 
  @see https://radar.io/documentation/api#search-places
@@ -155,7 +155,7 @@ typedef void (^_Nonnull RadarSearchPlacesCompletionHandler)(RadarStatus status, 
 
 /**
  Called when a geofence search request succeeds, fails, or times out.
- 
+
  Receives the request status and, if successful, the location and an array of geofences sorted by distance.
 
  @see https://radar.io/documentation/api#search-geofences
@@ -164,7 +164,7 @@ typedef void (^_Nonnull RadarSearchGeofencesCompletionHandler)(RadarStatus statu
 
 /**
  Called when a point search request succeeds, fails, or times out.
- 
+
  Receives the request status and, if successful, the location and an array of points sorted by distance.
 
  @see https://radar.io/documentation/api#search-geofences
@@ -173,7 +173,7 @@ typedef void (^_Nonnull RadarSearchPointsCompletionHandler)(RadarStatus status, 
 
 /**
  Called when a geocoding request succeeds, fails, or times out.
- 
+
  Receives the request status and, if successful, the geocoding results (an array of addresses).
 
  @see https://radar.io/documentation/api#geocode
@@ -182,7 +182,7 @@ typedef void (^_Nonnull RadarGeocodeCompletionHandler)(RadarStatus status, NSArr
 
 /**
  Called when an IP geocoding request succeeds, fails, or times out.
- 
+
  Receives the request status and, if successful, the geocoding result (a partial address).
 
  @see https://radar.io/documentation/api#geocode-ip
@@ -191,7 +191,7 @@ typedef void (^_Nonnull RadarIPGeocodeCompletionHandler)(RadarStatus status, Rad
 
 /**
  Called when a routing request succeeds, fails, or times out.
- 
+
  Receives the request status and, if successful, the routes.
 
  @see https://radar.io/documentation/api#route
@@ -328,7 +328,7 @@ typedef void (^_Nonnull RadarRouteCompletionHandler)(RadarStatus status, RadarRo
  @param destination The destination.
  @param mode The travel mode.
  @param points The number of mock location updates.
- @param interval The interval in seconds between each mock location update.
+ @param interval The interval in seconds between each mock location update. A number between 5 and 60.
 
  @see https://radar.io/documentation/sdk#ios-mock
  */
@@ -336,7 +336,8 @@ typedef void (^_Nonnull RadarRouteCompletionHandler)(RadarStatus status, RadarRo
                    destination:(CLLocation *_Nonnull)destination
                           mode:(RadarRouteMode)mode
                         points:(int)points
-                      interval:(NSTimeInterval)interval NS_SWIFT_NAME(mockTracking(origin:destination:mode:points:interval:));
+                      interval:(NSTimeInterval)interval
+             completionHandler:(RadarTrackCompletionHandler _Nullable)completionHandler NS_SWIFT_NAME(mockTracking(origin:destination:mode:points:interval:completionHandler:));
 
 /**
  Stops tracking the user's location in the background.

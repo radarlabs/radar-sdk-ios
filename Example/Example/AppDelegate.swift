@@ -20,10 +20,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         locationManager.requestAlwaysAuthorization()
 
-        Radar.initialize(publishableKey: "prj_test_pk_0000000000000000000000000000000000000000")
+        Radar.initialize(publishableKey: "org_test_pk_e6d0bb91ac41b187b84f21ba18ca4e5794401997")
         Radar.setLogLevel(.debug)
         Radar.setDelegate(self)
-
+        UserDefaults.standard.set("https://api-blackmad-dev.radar.io", forKey: "radar-host")
+        
+        /*
         if UIApplication.shared.applicationState != .background {
             Radar.getLocation { (status, location, stopped) in
                 print("Location: status = \(Radar.stringForStatus(status)); location = \(String(describing: location))")
@@ -100,6 +102,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         ) { (status, routes) in
             print("Distance: status = \(Radar.stringForStatus(status)); routes.car.distance.value = \(String(describing: routes?.car?.distance.value)); routes.car.distance.text = \(String(describing: routes?.car?.distance.text)); routes.car.duration.value = \(String(describing: routes?.car?.duration.value)); routes.car.duration.text = \(String(describing: routes?.car?.duration.text))")
         }
+        */
+        
+        let origin = CLLocation(latitude: 40.78382, longitude: -73.97536)
+        let destination = CLLocation(latitude: 40.70390, longitude: -73.98670)
         
         Radar.mockTracking(
             origin: origin,
@@ -107,7 +113,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             mode: .car,
             points: 10,
             interval: 2
-        )
+        ) { (status, location, events, user) in
+            print("Mock track: status = \(Radar.stringForStatus(status)); location = \(String(describing: location)); events = \(String(describing: events)); user = \(String(describing: user))")
+        }
 
         return true
     }

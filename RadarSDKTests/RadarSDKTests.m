@@ -599,7 +599,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusNotDetermined;
     self.apiHelperMock.mockStatus = RadarStatusSuccess;
     self.apiHelperMock.mockResponse = [RadarTestUtils jsonDictionaryFromResource:@"route_mock"];
-    
+
     CLLocation *origin = [[CLLocation alloc] initWithLatitude:40.783826 longitude:-73.975363];
     CLLocation *destination = [[CLLocation alloc] initWithLatitude:40.70390 longitude:-73.98670];
 
