@@ -118,67 +118,81 @@ typedef NS_ENUM(NSInteger, RadarRouteUnits) {
 };
 
 /**
- Called when a location request succeeds, fails, or times out. Receives the request status and, if successful, the location.
+ Called when a location request succeeds, fails, or times out.
+ 
+ Receives the request status and, if successful, the location.
 
  @see https://radar.io/documentation/sdk#ios-foreground
  */
 typedef void (^_Nullable RadarLocationCompletionHandler)(RadarStatus status, CLLocation *_Nullable location, BOOL stopped);
 
 /**
- Called when a track request succeeds, fails, or times out. Receives the request status and, if successful, the user's location, an array of the events
- generated, and the user.
+ Called when a track request succeeds, fails, or times out.
+ 
+ Receives the request status and, if successful, the user's location, an array of the events generated, and the user.
 
  @see https://radar.io/documentation/sdk#ios-foreground
  */
 typedef void (^_Nullable RadarTrackCompletionHandler)(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user);
 
 /**
- Called when a context request succeeds, fails, or times out. Receives the request status and, if successful, the location and the context.
+ Called when a context request succeeds, fails, or times out.
+ 
+ Receives the request status and, if successful, the location and the context.
 
  @see https://radar.io/documentation/api#context
  */
 typedef void (^_Nonnull RadarContextCompletionHandler)(RadarStatus status, CLLocation *_Nullable location, RadarContext *_Nullable context);
 
 /**
- Called when a place search request succeeds, fails, or times out. Receives the request status and, if successful, the location and an array of places sorted by
- distance.
+ Called when a place search request succeeds, fails, or times out.
+ 
+ Receives the request status and, if successful, the location and an array of places sorted by distance.
 
  @see https://radar.io/documentation/api#search-places
  */
 typedef void (^_Nonnull RadarSearchPlacesCompletionHandler)(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarPlace *> *_Nullable places);
 
 /**
- Called when a geofence search request succeeds, fails, or times out. Receives the request status and, if successful, the location and an array of geofences
- sorted by distance.
+ Called when a geofence search request succeeds, fails, or times out.
+ 
+ Receives the request status and, if successful, the location and an array of geofences sorted by distance.
 
  @see https://radar.io/documentation/api#search-geofences
  */
 typedef void (^_Nonnull RadarSearchGeofencesCompletionHandler)(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarGeofence *> *_Nullable geofences);
 
 /**
-Called when a point search request succeeds, fails, or times out. Receives the request status and, if successful, the location and an array of points sorted by
-distance.
+ Called when a point search request succeeds, fails, or times out.
+ 
+ Receives the request status and, if successful, the location and an array of points sorted by distance.
 
-@see https://radar.io/documentation/api#search-geofences
-*/
+ @see https://radar.io/documentation/api#search-geofences
+ */
 typedef void (^_Nonnull RadarSearchPointsCompletionHandler)(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarPoint *> *_Nullable points);
 
 /**
- Called when a geocoding request succeeds, fails, or times out. Receives the request status and, if successful, the geocoding results (an array of addresses).
+ Called when a geocoding request succeeds, fails, or times out.
+ 
+ Receives the request status and, if successful, the geocoding results (an array of addresses).
 
  @see https://radar.io/documentation/api#geocode
  */
 typedef void (^_Nonnull RadarGeocodeCompletionHandler)(RadarStatus status, NSArray<RadarAddress *> *_Nullable addresses);
 
 /**
- Called when an IP geocoding request succeeds, fails, or times out. Receives the request status and, if successful, the geocoding result (a partial address).
+ Called when an IP geocoding request succeeds, fails, or times out.
+ 
+ Receives the request status and, if successful, the geocoding result (a partial address).
 
  @see https://radar.io/documentation/api#geocode-ip
  */
 typedef void (^_Nonnull RadarIPGeocodeCompletionHandler)(RadarStatus status, RadarAddress *_Nullable address);
 
 /**
- Called when a routing request succeeds, fails, or times out. Receives the request status and, if successful, the routes.
+ Called when a routing request succeeds, fails, or times out.
+ 
+ Receives the request status and, if successful, the routes.
 
  @see https://radar.io/documentation/api#route
  */
@@ -402,7 +416,7 @@ typedef void (^_Nonnull RadarRouteCompletionHandler)(RadarStatus status, RadarRo
  @param groups An array of groups to filter. See https://radar.io/documentation/places/groups
  @param limit The max number of places to return. A number between 1 and 100.
  @param completionHandler A completion handler.
-*/
+ */
 + (void)searchPlacesWithRadius:(int)radius
                         chains:(NSArray *_Nullable)chains
                     categories:(NSArray *_Nullable)categories
@@ -422,7 +436,7 @@ typedef void (^_Nonnull RadarRouteCompletionHandler)(RadarStatus status, RadarRo
  @param groups An array of groups to filter. See https://radar.io/documentation/places/groups
  @param limit The max number of places to return. A number between 1 and 100.
  @param completionHandler A completion handler.
-*/
+ */
 + (void)searchPlacesNear:(CLLocation *)near
                   radius:(int)radius
                   chains:(NSArray *_Nullable)chains
@@ -438,7 +452,7 @@ typedef void (^_Nonnull RadarRouteCompletionHandler)(RadarStatus status, RadarRo
  @param tags An array of tags to filter. See https://radar.io/documentation/geofences
  @param limit The max number of geofences to return. A number between 1 and 100.
  @param completionHandler A completion handler.
-*/
+ */
 + (void)searchGeofencesWithRadius:(int)radius
                              tags:(NSArray *_Nullable)tags
                             limit:(int)limit
@@ -452,7 +466,7 @@ typedef void (^_Nonnull RadarRouteCompletionHandler)(RadarStatus status, RadarRo
  @param tags An array of tags to filter. See https://radar.io/documentation/geofences
  @param limit The max number of geofences to return. A number between 1 and 100.
  @param completionHandler A completion handler.
-*/
+ */
 + (void)searchGeofencesNear:(CLLocation *)near
                      radius:(int)radius
                        tags:(NSArray *_Nullable)tags
@@ -466,7 +480,7 @@ typedef void (^_Nonnull RadarRouteCompletionHandler)(RadarStatus status, RadarRo
  @param tags An array of tags to filter. See https://radar.io/documentation/points
  @param limit The max number of points to return. A number between 1 and 100.
  @param completionHandler A completion handler.
-*/
+ */
 + (void)searchPointsWithRadius:(int)radius
                           tags:(NSArray<NSString *> *_Nullable)tags
                          limit:(int)limit
@@ -480,7 +494,7 @@ typedef void (^_Nonnull RadarRouteCompletionHandler)(RadarStatus status, RadarRo
  @param tags An array of tags to filter. See https://radar.io/documentation/points
  @param limit The max number of points to return. A number between 1 and 100.
  @param completionHandler A completion handler.
-*/
+ */
 + (void)searchPointsNear:(CLLocation *)near
                   radius:(int)radius
                     tags:(NSArray<NSString *> *_Nullable)tags
