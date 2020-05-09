@@ -1,4 +1,8 @@
 ---
+# Custom options from https://github.com/square/spacecommander
+IndentNestedBlocks: false
+AllowNewlineBeforeBlockParameter: false
+
 # BasedOnStyle: LLVM
 AccessModifierOffset: -2
 AlignEscapedNewlinesLeft: false
@@ -15,7 +19,7 @@ BreakBeforeBraces: Attach
 BreakBeforeTernaryOperators: false
 BreakConstructorInitializersBeforeComma: false
 BinPackParameters: false
-ColumnLimit: 180
+ColumnLimit: 0
 CommentPragmas: '^ IWYU pragma:'
 ConstructorInitializerAllOnOneLineOrOnePerLine: false
 ConstructorInitializerIndentWidth: 4
@@ -53,8 +57,6 @@ SpacesBeforeTrailingComments: 1
 Standard: Cpp11
 TabWidth: 8
 UseTab: Never
----
-Language: ObjC
 ---
 Language: Cpp
 ...
