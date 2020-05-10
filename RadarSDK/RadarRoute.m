@@ -1,6 +1,6 @@
 //
 //  RadarRoute.m
-//  RadarSDKTests
+//  RadarSDK
 //
 //  Copyright © 2020 Radar Labs, Inc. All rights reserved.
 //

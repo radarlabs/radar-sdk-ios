@@ -2,7 +2,6 @@
 //  RadarContext+Internal.h
 //  RadarSDK
 //
-//  Created by Cory Pisano on 1/30/20.
 //  Copyright © 2020 Radar Labs, Inc. All rights reserved.
 //
 

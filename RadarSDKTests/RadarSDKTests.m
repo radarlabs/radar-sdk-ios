@@ -17,6 +17,7 @@
 #import "RadarPermissionsHelperMock.h"
 #import "RadarSettings.h"
 #import "RadarTestUtils.h"
+#import "RadarTripOptions.h"
 
 @interface RadarSDKTests : XCTestCase
 
@@ -637,6 +638,21 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     self.apiHelperMock.mockStatus = RadarStatusSuccess;
     self.apiHelperMock.mockResponse = [RadarTestUtils jsonDictionaryFromResource:@"events_verification"];
     [Radar rejectEventId:@"eventId"];
+}
+
+- (void)test_Radar_startTrip {
+    RadarTripOptions *options = [[RadarTripOptions alloc] initWithExternalId:@"tripExternalId"];
+    options.metadata = @{@"foo": @"bar", @"baz": @YES, @"qux": @1};
+    options.destinationGeofenceTag = @"tripDestinationGeofenceTag";
+    options.destinationGeofenceExternalId = @"tripDestinationExternalId";
+    options.mode = RadarRouteModeFoot;
+    [Radar startTripWithOptions:options];
+    XCTAssertEqualObjects(options, [Radar getTripOptions]);
+}
+
+- (void)test_Radar_stopTrip {
+    [Radar stopTrip];
+    XCTAssertNil([Radar getTripOptions]);
 }
 
 - (void)test_Radar_getContext_errorPermissions {

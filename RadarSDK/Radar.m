@@ -215,6 +215,20 @@
     [[RadarAPIClient sharedInstance] verifyEventId:eventId verification:RadarEventVerificationReject verifiedPlaceId:nil];
 }
 
++ (RadarTripOptions *)getTripOptions {
+    return [RadarSettings tripOptions];
+}
+
++ (void)startTripWithOptions:(RadarTripOptions *)options {
+    [RadarSettings setTripOptions:options];
+    [[RadarLocationManager sharedInstance] requestLocation];
+}
+
++ (void)stopTrip {
+    [RadarSettings setTripOptions:nil];
+    [[RadarLocationManager sharedInstance] requestLocation];
+}
+
 + (void)getContextWithCompletionHandler:(RadarContextCompletionHandler)completionHandler {
     [[RadarLocationManager sharedInstance] getLocationWithCompletionHandler:^(RadarStatus status, CLLocation *_Nullable location, BOOL stopped) {
         if (status != RadarStatusSuccess) {
@@ -494,6 +508,22 @@
         break;
     case RadarLocationSourceUnknown:
         str = @"UNKNOWN";
+    }
+    return str;
+}
+
++ (NSString *)stringForMode:(RadarRouteMode)mode {
+    NSString *str;
+    switch (mode) {
+    case RadarRouteModeFoot:
+        str = @"foot";
+        break;
+    case RadarRouteModeBike:
+        str = @"bike";
+        break;
+    case RadarRouteModeCar:
+        str = @"car";
+        break;
     }
     return str;
 }
