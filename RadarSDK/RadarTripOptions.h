@@ -11,6 +11,11 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+/**
+ An options class used to configure trip tracking.
+
+ @see https://radar.io/documentation/sdk#ios-trips
+ */
 @interface RadarTripOptions : NSObject
 
 - (instancetype)initWithExternalId:(NSString *_Nonnull)externalId;
