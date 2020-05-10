@@ -17,6 +17,7 @@
 #import "RadarRoutes+Internal.h"
 #import "RadarSettings.h"
 #import "RadarState.h"
+#import "RadarTripOptions.h"
 #import "RadarUser+Internal.h"
 #import "RadarUtils.h"
 
@@ -155,6 +156,16 @@
     params[@"uaNamedUserId"] = [RadarUtils uaNamedUserId];
     params[@"uaSessionId"] = [RadarUtils uaSessionId];
     params[@"source"] = [Radar stringForSource:source];
+    RadarTripOptions *tripOptions = [RadarSettings tripOptions];
+    if (tripOptions) {
+        params[@"tripExternalId"] = tripOptions.externalId;
+        params[@"tripMetadata"] = tripOptions.metadata;
+        if (tripOptions.destinationGeofenceTag && tripOptions.destinationGeofenceExternalId) {
+            params[@"tripDestinationGeofenceTag"] = tripOptions.destinationGeofenceTag;
+            params[@"tripDestinationGeofenceExternalId"] = tripOptions.destinationGeofenceExternalId;
+            params[@"tripMode"] = [Radar stringForMode:tripOptions.mode];
+        }
+    }
 
     NSString *host = [RadarSettings host];
     NSString *url = [NSString stringWithFormat:@"%@/v1/track", host];
@@ -581,9 +592,6 @@
     }
     if (modes & RadarRouteModeCar) {
         [modesArr addObject:@"car"];
-    }
-    if (modes & RadarRouteModeTransit) {
-        [modesArr addObject:@"transit"];
     }
     [queryString appendFormat:@"&modes=%@", [modesArr componentsJoinedByString:@","]];
     NSString *unitsStr;
