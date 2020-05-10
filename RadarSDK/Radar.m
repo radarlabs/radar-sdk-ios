@@ -143,12 +143,12 @@
 
 + (void)startTripWithOptions:(RadarTripOptions *)options {
     [RadarSettings setTripOptions:options];
-    [[RadarLocationManager sharedInstance] requestLocation];
+    [[RadarLocationManager sharedInstance] getLocationWithCompletionHandler:nil];
 }
 
 + (void)stopTrip {
     [RadarSettings setTripOptions:nil];
-    [[RadarLocationManager sharedInstance] requestLocation];
+    [[RadarLocationManager sharedInstance] getLocationWithCompletionHandler:nil];
 }
 
 + (void)getContextWithCompletionHandler:(RadarContextCompletionHandler)completionHandler {

@@ -25,7 +25,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)getLocationWithDesiredAccuracy:(RadarTrackingOptionsDesiredAccuracy)desiredAccuracy completionHandler:(RadarLocationCompletionHandler _Nullable)completionHandler;
 - (void)startTrackingWithOptions:(RadarTrackingOptions *)trackingOptions;
 - (void)stopTracking;
-- (void)requestLocation;
 - (void)updateTracking;
 
 @end
