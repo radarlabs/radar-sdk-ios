@@ -300,13 +300,6 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     XCTAssertNotNil(routes.car.duration);
     XCTAssertNotNil(routes.car.duration.text);
     XCTAssertNotEqual(routes.car.duration.value, 0);
-    XCTAssertNotNil(routes.transit);
-    XCTAssertNotNil(routes.transit.distance);
-    XCTAssertNotNil(routes.transit.distance.text);
-    XCTAssertNotEqual(routes.transit.distance.value, 0);
-    XCTAssertNotNil(routes.transit.duration);
-    XCTAssertNotNil(routes.transit.duration.text);
-    XCTAssertNotEqual(routes.transit.duration.value, 0);
 }
 
 - (void)setUp {

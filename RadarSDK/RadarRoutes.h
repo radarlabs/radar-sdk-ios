@@ -37,11 +37,6 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property (nullable, strong, nonatomic, readonly) RadarRoute *car;
 
-/**
- The route by transit between the origin and destination. May be `nil` if mode not specified or route unavailable.
- */
-@property (nullable, strong, nonatomic, readonly) RadarRoute *transit;
-
 - (NSDictionary *_Nonnull)dictionaryValue;
 
 @end
