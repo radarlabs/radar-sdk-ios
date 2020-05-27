@@ -596,7 +596,6 @@
         [queryString appendFormat:@"&geometryPoints=%d", geometryPoints];
     }
     [queryString appendString:@"&geometry=linestring"];
-    NSLog(@"%@", queryString);
 
     NSString *host = [RadarSettings host];
     NSString *url = [NSString stringWithFormat:@"%@/v1/route/distance?%@", host, queryString];
