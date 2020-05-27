@@ -22,6 +22,7 @@
 #import "RadarRoute.h"
 #import "RadarRouteDistance.h"
 #import "RadarRouteDuration.h"
+#import "RadarRouteGeometry.h"
 #import "RadarRoutes.h"
 #import "RadarTrackingOptions.h"
 #import "RadarUser.h"

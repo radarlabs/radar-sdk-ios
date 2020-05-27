@@ -20,11 +20,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         locationManager.requestAlwaysAuthorization()
 
-        Radar.initialize(publishableKey: "prj_test_pk_0000000000000000000000000000000000000000")
+        Radar.initialize(publishableKey: "org_test_pk_5857c63d9c1565175db8b00750808a66a002acb8")
         Radar.setLogLevel(.debug)
         Radar.setDelegate(self)
         
-        if UIApplication.shared.applicationState != .background {
+        /*if UIApplication.shared.applicationState != .background {
             Radar.getLocation { (status, location, stopped) in
                 print("Location: status = \(Radar.stringForStatus(status)); location = \(String(describing: location))")
             }
@@ -99,13 +99,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             units: .imperial
         ) { (status, routes) in
             print("Distance: status = \(Radar.stringForStatus(status)); routes.car.distance.value = \(String(describing: routes?.car?.distance.value)); routes.car.distance.text = \(String(describing: routes?.car?.distance.text)); routes.car.duration.value = \(String(describing: routes?.car?.duration.value)); routes.car.duration.text = \(String(describing: routes?.car?.duration.text))")
-        }
+        }*/
+        
+        let origin = CLLocation(latitude: 40.71344, longitude: -74.03558)
+        let destination = CLLocation(latitude: 40.72039, longitude: -74.04683)
         
         Radar.mockTracking(
             origin: origin,
             destination: destination,
-            mode: .car,
-            points: 10,
+            mode: .foot,
+            points: 20,
             interval: 2
         ) { (status, location, events, user) in
             print("Mock track: status = \(Radar.stringForStatus(status)); location = \(String(describing: location)); events = \(String(describing: events)); user = \(String(describing: user))")

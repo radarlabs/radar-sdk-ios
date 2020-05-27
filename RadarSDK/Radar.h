@@ -327,15 +327,15 @@ typedef void (^_Nonnull RadarRouteCompletionHandler)(RadarStatus status, RadarRo
  @param origin The origin.
  @param destination The destination.
  @param mode The travel mode.
- @param points The number of mock location updates.
- @param interval The interval in seconds between each mock location update. A number between 2 and 60.
+ @param steps The number of mock location updates.
+ @param interval The interval in seconds between each mock location update. A number between 1 and 60.
 
  @see https://radar.io/documentation/sdk#ios-mock
  */
 + (void)mockTrackingWithOrigin:(CLLocation *_Nonnull)origin
                    destination:(CLLocation *_Nonnull)destination
                           mode:(RadarRouteMode)mode
-                        points:(int)points
+                         steps:(int)steps
                       interval:(NSTimeInterval)interval
              completionHandler:(RadarTrackCompletionHandler _Nullable)completionHandler NS_SWIFT_NAME(mockTracking(origin:destination:mode:points:interval:completionHandler:));
 

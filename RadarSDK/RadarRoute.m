@@ -8,14 +8,16 @@
 #import "RadarRoute.h"
 #import "RadarRouteDistance+Internal.h"
 #import "RadarRouteDuration+Internal.h"
+#import "RadarRouteGeometry+Internal.h"
 
 @implementation RadarRoute
 
-- (nullable instancetype)initWithDistance:(nullable RadarRouteDistance *)distance duration:(nullable RadarRouteDuration *)duration {
+- (nullable instancetype)initWithDistance:(nullable RadarRouteDistance *)distance duration:(nullable RadarRouteDuration *)duration geometry:(nullable RadarRouteGeometry *)geometry {
     self = [super init];
     if (self) {
         _distance = distance;
         _duration = duration;
+        _geometry = geometry;
     }
     return self;
 }
@@ -29,6 +31,7 @@
 
     RadarRouteDistance *distance;
     RadarRouteDuration *duration;
+    RadarRouteGeometry *geometry;
 
     id distanceObj = dict[@"distance"];
     if (distanceObj) {
@@ -39,9 +42,14 @@
     if (durationObj) {
         duration = [[RadarRouteDuration alloc] initWithObject:durationObj];
     }
+    
+    id geometryObj = dict[@"geometry"];
+    if (geometryObj) {
+        geometry = [[RadarRouteGeometry alloc] initWithObject:geometryObj];
+    }
 
     if (distance && duration) {
-        return [[RadarRoute alloc] initWithDistance:distance duration:duration];
+        return [[RadarRoute alloc] initWithDistance:distance duration:duration geometry:geometry];
     }
 
     return nil;

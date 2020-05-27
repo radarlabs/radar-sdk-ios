@@ -95,13 +95,8 @@ typedef void (^_Nullable RadarMockAPICompletionHandler)(RadarStatus status, NSDi
                   destination:(CLLocation *_Nonnull)destination
                         modes:(RadarRouteMode)modes
                         units:(RadarRouteUnits)units
+               geometryPoints:(int)geometryPoints
             completionHandler:(RadarDistanceAPICompletionHandler _Nullable)completionHandler;
-
-- (void)getMockFromOrigin:(CLLocation *_Nonnull)origin
-              destination:(CLLocation *_Nonnull)destination
-                     mode:(RadarRouteMode)mode
-                   points:(int)points
-        completionHandler:(RadarMockAPICompletionHandler _Nullable)completionHandler;
 
 @end
 

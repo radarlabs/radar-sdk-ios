@@ -10,7 +10,7 @@
 
 @interface RadarRoute ()
 
-- (nullable instancetype)initWithDistance:(nullable RadarRouteDistance *)distance duration:(nullable RadarRouteDuration *)duration;
+- (nullable instancetype)initWithDistance:(nullable RadarRouteDistance *)distance duration:(nullable RadarRouteDuration *)duration geometry:(nullable RadarRouteGeometry *)geometry;
 
 - (instancetype _Nullable)initWithObject:(id _Nonnull)object;
 
