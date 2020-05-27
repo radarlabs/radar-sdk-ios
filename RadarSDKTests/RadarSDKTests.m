@@ -598,11 +598,11 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 - (void)test_Radar_mockTracking {
     self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusNotDetermined;
     self.apiHelperMock.mockStatus = RadarStatusSuccess;
-    self.apiHelperMock.mockResponse = [RadarTestUtils jsonDictionaryFromResource:@"route_mock"];
+    self.apiHelperMock.mockResponse = [RadarTestUtils jsonDictionaryFromResource:@"route_distance"];
 
     CLLocation *origin = [[CLLocation alloc] initWithLatitude:40.78382 longitude:-73.97536];
     CLLocation *destination = [[CLLocation alloc] initWithLatitude:40.70390 longitude:-73.98670];
-    int points = 3;
+    int steps = 20;
     __block int i = 0;
 
     XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
@@ -610,12 +610,12 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     [Radar mockTrackingWithOrigin:origin
                       destination:destination
                              mode:RadarRouteModeCar
-                           points:points
-                         interval:5
+                            steps:steps
+                         interval:1
                 completionHandler:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user) {
                     i++;
 
-                    if (i == points) {
+                    if (i == steps) {
                         [expectation fulfill];
                     }
                 }];
