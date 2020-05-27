@@ -36,8 +36,6 @@ typedef void (^_Nullable RadarIPGeocodeAPICompletionHandler)(RadarStatus status,
 
 typedef void (^_Nullable RadarDistanceAPICompletionHandler)(RadarStatus status, NSDictionary *_Nullable res, RadarRoutes *_Nullable routes);
 
-typedef void (^_Nullable RadarMockAPICompletionHandler)(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarCoordinate *> *_Nullable points);
-
 @interface RadarAPIClient : NSObject
 
 @property (nullable, weak, nonatomic) id<RadarDelegate> delegate;
