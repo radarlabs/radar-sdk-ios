@@ -65,6 +65,10 @@
         NSDictionary *durationDict = [self.duration dictionaryValue];
         [dict setValue:durationDict forKey:@"duration"];
     }
+    if (self.geometry) {
+        NSDictionary *geometryDict = [self.geometry dictionaryValue];
+        [dict setValue:geometryDict forKey:@"geometry"];
+    }
     return dict;
 }
 

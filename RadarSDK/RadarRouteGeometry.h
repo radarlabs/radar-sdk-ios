@@ -21,6 +21,8 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property (nullable, copy, nonatomic, readonly) NSArray<RadarCoordinate *> *coordinates;
 
+- (NSDictionary *_Nonnull)dictionaryValue;
+
 @end
 
 NS_ASSUME_NONNULL_END

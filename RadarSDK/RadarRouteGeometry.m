@@ -62,4 +62,18 @@
     return [[RadarRouteGeometry alloc] initWithCoordinates:mutableCoordinates];
 }
 
+- (NSDictionary *)dictionaryValue {
+    NSMutableDictionary *dict = [NSMutableDictionary new];
+    [dict setValue:@"LineString" forKey:@"type"];
+    if (self.coordinates) {
+        NSMutableArray<NSArray *> *mutableCoordinates = [NSMutableArray<NSArray *> new];
+        for (uint i = 0; i < self.coordinates.count; i++) {
+            CLLocationCoordinate2D coordinate = self.coordinates[i].coordinate;
+            mutableCoordinates[i] = @[@(coordinate.longitude), @(coordinate.latitude)];
+        }
+        [dict setValue:mutableCoordinates forKey:@"coordinates"];
+    }
+    return dict;
+}
+
 @end
