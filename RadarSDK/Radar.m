@@ -127,7 +127,7 @@
                                             geometryPoints:steps
                                          completionHandler:^(RadarStatus status, NSDictionary * _Nullable res, RadarRoutes * _Nullable routes) {
         NSArray<RadarCoordinate *> *coordinates;
-        if (status == RadarStatusSuccess && routes) {
+        if (routes) {
             if (mode == RadarRouteModeFoot && routes.foot && routes.foot.geometry) {
                 coordinates = routes.foot.geometry.coordinates;
             } else if (mode == RadarRouteModeBike && routes.bike && routes.bike.geometry) {
