@@ -608,7 +608,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
                 completionHandler:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user) {
                     i++;
 
-                    if (i == steps) {
+                    if (i == steps - 1) {
                         [expectation fulfill];
                     }
                 }];
