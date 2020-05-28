@@ -518,6 +518,7 @@ static NSString *const kRegionIdentifer = @"radar";
 
     [[RadarAPIClient sharedInstance] trackWithLocation:location
                                                stopped:stopped
+                                            foreground:[RadarUtils foreground]
                                                 source:source
                                               replayed:replayed
                                      completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user) {

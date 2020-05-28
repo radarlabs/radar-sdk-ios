@@ -8,6 +8,7 @@
 #import "Radar.h"
 
 #import "RadarAPIClient.h"
+#import "RadarCoordinate+Internal.h"
 #import "RadarLocationManager.h"
 #import "RadarLogger.h"
 #import "RadarSettings.h"
@@ -85,6 +86,7 @@
 
         [[RadarAPIClient sharedInstance] trackWithLocation:location
                                                    stopped:stopped
+                                                foreground:YES
                                                     source:RadarLocationSourceForegroundLocation
                                                   replayed:NO
                                          completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user) {
@@ -98,6 +100,7 @@
 + (void)trackOnceWithLocation:(CLLocation *)location completionHandler:(RadarTrackCompletionHandler)completionHandler {
     [[RadarAPIClient sharedInstance] trackWithLocation:location
                                                stopped:NO
+                                            foreground:YES
                                                 source:RadarLocationSourceManualLocation
                                               replayed:NO
                                      completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user) {
@@ -109,6 +112,81 @@
 
 + (void)startTrackingWithOptions:(RadarTrackingOptions *)options {
     [[RadarLocationManager sharedInstance] startTrackingWithOptions:options];
+}
+
++ (void)mockTrackingWithOrigin:(CLLocation *)origin
+                   destination:(CLLocation *)destination
+                          mode:(RadarRouteMode)mode
+                         steps:(int)steps
+                      interval:(NSTimeInterval)interval
+             completionHandler:(RadarTrackCompletionHandler _Nullable)completionHandler {
+    [[RadarAPIClient sharedInstance]
+        getDistanceFromOrigin:origin
+                  destination:destination
+                        modes:mode
+                        units:RadarRouteUnitsMetric
+               geometryPoints:steps
+            completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, RadarRoutes *_Nullable routes) {
+                NSArray<RadarCoordinate *> *coordinates;
+                if (routes) {
+                    if (mode == RadarRouteModeFoot && routes.foot && routes.foot.geometry) {
+                        coordinates = routes.foot.geometry.coordinates;
+                    } else if (mode == RadarRouteModeBike && routes.bike && routes.bike.geometry) {
+                        coordinates = routes.bike.geometry.coordinates;
+                    } else if (mode == RadarRouteModeCar && routes.car && routes.car.geometry) {
+                        coordinates = routes.car.geometry.coordinates;
+                    }
+                }
+
+                if (!coordinates) {
+                    if (completionHandler) {
+                        completionHandler(status, nil, nil, nil);
+                    }
+
+                    return;
+                }
+
+                NSTimeInterval intervalLimit = interval;
+                if (intervalLimit < 1) {
+                    intervalLimit = 1;
+                } else if (intervalLimit > 60) {
+                    intervalLimit = 60;
+                }
+
+                __block int i = 0;
+                __block void (^track)(void);
+                __block __weak void (^weakTrack)(void);
+                track = ^{
+                    weakTrack = track;
+                    RadarCoordinate *coordinate = coordinates[i];
+                    CLLocation *location = [[CLLocation alloc] initWithCoordinate:coordinate.coordinate
+                                                                         altitude:-1
+                                                               horizontalAccuracy:5
+                                                                 verticalAccuracy:-1
+                                                                        timestamp:[NSDate new]];
+                    BOOL stopped = (i == 0) || (i == coordinates.count - 1);
+
+                    [[RadarAPIClient sharedInstance]
+                        trackWithLocation:location
+                                  stopped:stopped
+                               foreground:NO
+                                   source:RadarLocationSourceMockLocation
+                                 replayed:NO
+                        completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user) {
+                            if (completionHandler) {
+                                completionHandler(status, location, events, user);
+                            }
+
+                            i++;
+
+                            if (i < coordinates.count - 1) {
+                                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(intervalLimit * NSEC_PER_SEC)), dispatch_get_main_queue(), weakTrack);
+                            }
+                        }];
+                };
+
+                track();
+            }];
 }
 
 + (void)stopTracking {
@@ -319,6 +397,7 @@
                                                    destination:destination
                                                          modes:modes
                                                          units:units
+                                                geometryPoints:-1
                                              completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, RadarRoutes *_Nullable routes) {
                                                  completionHandler(status, routes);
                                              }];
@@ -334,6 +413,7 @@
                                                destination:destination
                                                      modes:modes
                                                      units:units
+                                            geometryPoints:-1
                                          completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, RadarRoutes *_Nullable routes) {
                                              completionHandler(status, routes);
                                          }];
@@ -409,7 +489,10 @@
     case RadarLocationSourceVisitDeparture:
         str = @"VISIT_DEPARTURE";
         break;
-    default:
+    case RadarLocationSourceMockLocation:
+        str = @"MOCK_LOCATION";
+        break;
+    case RadarLocationSourceUnknown:
         str = @"UNKNOWN";
     }
     return str;

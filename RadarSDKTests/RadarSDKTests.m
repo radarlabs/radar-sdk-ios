@@ -299,13 +299,6 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     XCTAssertNotNil(routes.car.duration);
     XCTAssertNotNil(routes.car.duration.text);
     XCTAssertNotEqual(routes.car.duration.value, 0);
-    XCTAssertNotNil(routes.transit);
-    XCTAssertNotNil(routes.transit.distance);
-    XCTAssertNotNil(routes.transit.distance.text);
-    XCTAssertNotEqual(routes.transit.distance.value, 0);
-    XCTAssertNotNil(routes.transit.duration);
-    XCTAssertNotNil(routes.transit.duration.text);
-    XCTAssertNotEqual(routes.transit.duration.value, 0);
 }
 
 - (void)setUp {
@@ -410,7 +403,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 
 - (void)test_Radar_getLocation_success {
     self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusAuthorizedWhenInUse;
-    self.locationManagerMock.mockLocation = [[CLLocation alloc] initWithCoordinate:CLLocationCoordinate2DMake(40.783826, -73.975363)
+    self.locationManagerMock.mockLocation = [[CLLocation alloc] initWithCoordinate:CLLocationCoordinate2DMake(40.78382, -73.97536)
                                                                           altitude:-1
                                                                 horizontalAccuracy:65
                                                                   verticalAccuracy:-1
@@ -475,7 +468,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 
 - (void)test_Radar_trackOnce_success {
     self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusAuthorizedWhenInUse;
-    self.locationManagerMock.mockLocation = [[CLLocation alloc] initWithCoordinate:CLLocationCoordinate2DMake(40.783826, -73.975363)
+    self.locationManagerMock.mockLocation = [[CLLocation alloc] initWithCoordinate:CLLocationCoordinate2DMake(40.78382, -73.97536)
                                                                           altitude:-1
                                                                 horizontalAccuracy:65
                                                                   verticalAccuracy:-1
@@ -504,7 +497,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 
 - (void)test_Radar_trackOnce_location_success {
     self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusNotDetermined;
-    CLLocation *mockLocation = [[CLLocation alloc] initWithCoordinate:CLLocationCoordinate2DMake(40.783826, -73.975363)
+    CLLocation *mockLocation = [[CLLocation alloc] initWithCoordinate:CLLocationCoordinate2DMake(40.78382, -73.97536)
                                                              altitude:-1
                                                    horizontalAccuracy:65
                                                      verticalAccuracy:-1
@@ -595,6 +588,39 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     XCTAssertFalse([Radar isTracking]);
 }
 
+- (void)test_Radar_mockTracking {
+    self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusNotDetermined;
+    self.apiHelperMock.mockStatus = RadarStatusSuccess;
+    self.apiHelperMock.mockResponse = [RadarTestUtils jsonDictionaryFromResource:@"route_distance"];
+
+    CLLocation *origin = [[CLLocation alloc] initWithLatitude:40.78382 longitude:-73.97536];
+    CLLocation *destination = [[CLLocation alloc] initWithLatitude:40.70390 longitude:-73.98670];
+    int steps = 20;
+    __block int i = 0;
+
+    XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
+
+    [Radar mockTrackingWithOrigin:origin
+                      destination:destination
+                             mode:RadarRouteModeCar
+                            steps:steps
+                         interval:1
+                completionHandler:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user) {
+                    i++;
+
+                    if (i == steps - 1) {
+                        [expectation fulfill];
+                    }
+                }];
+
+    [self waitForExpectationsWithTimeout:30
+                                 handler:^(NSError *_Nullable error) {
+                                     if (error) {
+                                         XCTFail();
+                                     }
+                                 }];
+}
+
 - (void)test_Radar_acceptEventId {
     self.apiHelperMock.mockStatus = RadarStatusSuccess;
     self.apiHelperMock.mockResponse = [RadarTestUtils jsonDictionaryFromResource:@"events_verification"];
@@ -655,7 +681,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 
 - (void)test_Radar_getContext_success {
     self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusAuthorizedWhenInUse;
-    self.locationManagerMock.mockLocation = [[CLLocation alloc] initWithCoordinate:CLLocationCoordinate2DMake(40.783826, -73.975363)
+    self.locationManagerMock.mockLocation = [[CLLocation alloc] initWithCoordinate:CLLocationCoordinate2DMake(40.78382, -73.97536)
                                                                           altitude:-1
                                                                 horizontalAccuracy:65
                                                                   verticalAccuracy:-1
@@ -683,7 +709,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 
 - (void)test_Radar_getContext_location_success {
     self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusNotDetermined;
-    CLLocation *mockLocation = [[CLLocation alloc] initWithCoordinate:CLLocationCoordinate2DMake(40.783826, -73.975363)
+    CLLocation *mockLocation = [[CLLocation alloc] initWithCoordinate:CLLocationCoordinate2DMake(40.78382, -73.97536)
                                                              altitude:-1
                                                    horizontalAccuracy:65
                                                      verticalAccuracy:-1
@@ -761,7 +787,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 
 - (void)test_Radar_searchPlaces_chains_success {
     self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusAuthorizedWhenInUse;
-    self.locationManagerMock.mockLocation = [[CLLocation alloc] initWithCoordinate:CLLocationCoordinate2DMake(40.783826, -73.975363)
+    self.locationManagerMock.mockLocation = [[CLLocation alloc] initWithCoordinate:CLLocationCoordinate2DMake(40.78382, -73.97536)
                                                                           altitude:-1
                                                                 horizontalAccuracy:65
                                                                   verticalAccuracy:-1
@@ -794,7 +820,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 
 - (void)test_Radar_searchPlacesNear_categories_success {
     self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusNotDetermined;
-    CLLocation *mockLocation = [[CLLocation alloc] initWithCoordinate:CLLocationCoordinate2DMake(40.783826, -73.975363)
+    CLLocation *mockLocation = [[CLLocation alloc] initWithCoordinate:CLLocationCoordinate2DMake(40.78382, -73.97536)
                                                              altitude:-1
                                                    horizontalAccuracy:65
                                                      verticalAccuracy:-1
@@ -874,7 +900,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 
 - (void)test_Radar_searchGeofences_success {
     self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusAuthorizedWhenInUse;
-    self.locationManagerMock.mockLocation = [[CLLocation alloc] initWithCoordinate:CLLocationCoordinate2DMake(40.783826, -73.975363)
+    self.locationManagerMock.mockLocation = [[CLLocation alloc] initWithCoordinate:CLLocationCoordinate2DMake(40.78382, -73.97536)
                                                                           altitude:-1
                                                                 horizontalAccuracy:65
                                                                   verticalAccuracy:-1
@@ -903,7 +929,6 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
                                  }];
 }
 
-#pragma mark - search points
 - (void)test_Radar_searchPoints_errorPermissions {
     self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusNotDetermined;
     self.locationManagerMock.mockLocation = nil;
@@ -985,7 +1010,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     self.apiHelperMock.mockStatus = RadarStatusSuccess;
     self.apiHelperMock.mockResponse = [RadarTestUtils jsonDictionaryFromResource:@"search_autocomplete"];
 
-    CLLocation *near = [[CLLocation alloc] initWithLatitude:40.783826 longitude:-73.975363];
+    CLLocation *near = [[CLLocation alloc] initWithLatitude:40.78382 longitude:-73.97536];
 
     XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
 
@@ -1100,7 +1125,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 
 - (void)test_Radar_reverseGeocode_success {
     self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusAuthorizedWhenInUse;
-    self.locationManagerMock.mockLocation = [[CLLocation alloc] initWithCoordinate:CLLocationCoordinate2DMake(40.783826, -73.975363)
+    self.locationManagerMock.mockLocation = [[CLLocation alloc] initWithCoordinate:CLLocationCoordinate2DMake(40.78382, -73.97536)
                                                                           altitude:-1
                                                                 horizontalAccuracy:65
                                                                   verticalAccuracy:-1
@@ -1129,7 +1154,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusAuthorizedWhenInUse;
     self.apiHelperMock.mockStatus = RadarStatusErrorServer;
 
-    CLLocation *location = [[CLLocation alloc] initWithLatitude:40.783826 longitude:-73.975363];
+    CLLocation *location = [[CLLocation alloc] initWithLatitude:40.78382 longitude:-73.97536];
 
     XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
 
@@ -1154,7 +1179,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     self.apiHelperMock.mockStatus = RadarStatusSuccess;
     self.apiHelperMock.mockResponse = [RadarTestUtils jsonDictionaryFromResource:@"geocode"];
 
-    CLLocation *location = [[CLLocation alloc] initWithLatitude:40.783826 longitude:-73.975363];
+    CLLocation *location = [[CLLocation alloc] initWithLatitude:40.78382 longitude:-73.97536];
 
     XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
 
@@ -1219,7 +1244,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 
 - (void)test_Radar_getDistance_success {
     self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusAuthorizedWhenInUse;
-    self.locationManagerMock.mockLocation = [[CLLocation alloc] initWithCoordinate:CLLocationCoordinate2DMake(40.783826, -73.975363)
+    self.locationManagerMock.mockLocation = [[CLLocation alloc] initWithCoordinate:CLLocationCoordinate2DMake(40.78382, -73.97536)
                                                                           altitude:-1
                                                                 horizontalAccuracy:65
                                                                   verticalAccuracy:-1
@@ -1227,7 +1252,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     self.apiHelperMock.mockStatus = RadarStatusSuccess;
     self.apiHelperMock.mockResponse = [RadarTestUtils jsonDictionaryFromResource:@"route_distance"];
 
-    CLLocation *destination = [[CLLocation alloc] initWithLatitude:40.783826 longitude:-73.975363];
+    CLLocation *destination = [[CLLocation alloc] initWithLatitude:40.78382 longitude:-73.97536];
 
     XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
 

@@ -9,6 +9,7 @@
 
 #import "RadarAddress+Internal.h"
 #import "RadarContext+Internal.h"
+#import "RadarCoordinate+Internal.h"
 #import "RadarEvent+Internal.h"
 #import "RadarGeofence+Internal.h"
 #import "RadarLogger.h"
@@ -98,6 +99,7 @@
 
 - (void)trackWithLocation:(CLLocation *_Nonnull)location
                   stopped:(BOOL)stopped
+               foreground:(BOOL)foreground
                    source:(RadarLocationSource)source
                  replayed:(BOOL)replayed
         completionHandler:(RadarTrackAPICompletionHandler _Nullable)completionHandler {
@@ -135,7 +137,6 @@
     if (location.floor) {
         params[@"floorLevel"] = @(location.floor.level);
     }
-    BOOL foreground = [RadarUtils foreground];
     if (!foreground) {
         long timeInMs = (long)(location.timestamp.timeIntervalSince1970 * 1000);
         long nowMs = (long)([NSDate date].timeIntervalSince1970 * 1000);
@@ -563,7 +564,8 @@
                   destination:(CLLocation *)destination
                         modes:(RadarRouteMode)modes
                         units:(RadarRouteUnits)units
-            completionHandler:(RadarRouteAPICompletionHandler)completionHandler {
+               geometryPoints:(int)geometryPoints
+            completionHandler:(RadarDistanceAPICompletionHandler)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
         return completionHandler(RadarStatusErrorPublishableKey, nil, nil);
@@ -582,9 +584,6 @@
     if (modes & RadarRouteModeCar) {
         [modesArr addObject:@"car"];
     }
-    if (modes & RadarRouteModeTransit) {
-        [modesArr addObject:@"transit"];
-    }
     [queryString appendFormat:@"&modes=%@", [modesArr componentsJoinedByString:@","]];
     NSString *unitsStr;
     if (units == RadarRouteUnitsMetric) {
@@ -593,6 +592,10 @@
         unitsStr = @"imperial";
     }
     [queryString appendFormat:@"&units=%@", unitsStr];
+    if (geometryPoints > 1) {
+        [queryString appendFormat:@"&geometryPoints=%d", geometryPoints];
+    }
+    [queryString appendString:@"&geometry=linestring"];
 
     NSString *host = [RadarSettings host];
     NSString *url = [NSString stringWithFormat:@"%@/v1/route/distance?%@", host, queryString];

@@ -34,7 +34,7 @@ typedef void (^_Nullable RadarGeocodeAPICompletionHandler)(RadarStatus status, N
 
 typedef void (^_Nullable RadarIPGeocodeAPICompletionHandler)(RadarStatus status, NSDictionary *_Nullable res, RadarAddress *_Nullable address);
 
-typedef void (^_Nullable RadarRouteAPICompletionHandler)(RadarStatus status, NSDictionary *_Nullable res, RadarRoutes *_Nullable routes);
+typedef void (^_Nullable RadarDistanceAPICompletionHandler)(RadarStatus status, NSDictionary *_Nullable res, RadarRoutes *_Nullable routes);
 
 @interface RadarAPIClient : NSObject
 
@@ -49,6 +49,7 @@ typedef void (^_Nullable RadarRouteAPICompletionHandler)(RadarStatus status, NSD
 
 - (void)trackWithLocation:(CLLocation *_Nonnull)location
                   stopped:(BOOL)stopped
+               foreground:(BOOL)foreground
                    source:(RadarLocationSource)source
                  replayed:(BOOL)replayed
         completionHandler:(RadarTrackAPICompletionHandler _Nullable)completionHandler;
@@ -90,9 +91,10 @@ typedef void (^_Nullable RadarRouteAPICompletionHandler)(RadarStatus status, NSD
 
 - (void)getDistanceFromOrigin:(CLLocation *_Nonnull)origin
                   destination:(CLLocation *_Nonnull)destination
-                        modes:(RadarRouteMode)mode
+                        modes:(RadarRouteMode)modes
                         units:(RadarRouteUnits)units
-            completionHandler:(RadarRouteAPICompletionHandler _Nullable)completionHandler;
+               geometryPoints:(int)geometryPoints
+            completionHandler:(RadarDistanceAPICompletionHandler _Nullable)completionHandler;
 
 @end
 
