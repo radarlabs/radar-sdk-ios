@@ -12,7 +12,9 @@
 
 @implementation RadarRoute
 
-- (nullable instancetype)initWithDistance:(nullable RadarRouteDistance *)distance duration:(nullable RadarRouteDuration *)duration geometry:(nullable RadarRouteGeometry *)geometry {
+- (nullable instancetype)initWithDistance:(nullable RadarRouteDistance *)distance
+                                 duration:(nullable RadarRouteDuration *)duration
+                                 geometry:(nullable RadarRouteGeometry *)geometry {
     self = [super init];
     if (self) {
         _distance = distance;
@@ -42,7 +44,7 @@
     if (durationObj) {
         duration = [[RadarRouteDuration alloc] initWithObject:durationObj];
     }
-    
+
     id geometryObj = dict[@"geometry"];
     if (geometryObj) {
         geometry = [[RadarRouteGeometry alloc] initWithObject:geometryObj];

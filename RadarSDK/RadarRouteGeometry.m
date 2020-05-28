@@ -23,16 +23,16 @@
     if (!object || ![object isKindOfClass:[NSDictionary class]]) {
         return nil;
     }
-    
+
     NSDictionary *dict = (NSDictionary *)object;
-    
+
     id coordinatesObj = dict[@"coordinates"];
     if (![coordinatesObj isKindOfClass:[NSArray class]]) {
         return nil;
     }
 
     NSArray *coordinatesArr = (NSArray *)coordinatesObj;
-    
+
     NSMutableArray<RadarCoordinate *> *mutableCoordinates = [NSMutableArray<RadarCoordinate *> arrayWithCapacity:coordinatesArr.count];
 
     for (uint i = 0; i < coordinatesArr.count; i++) {
@@ -40,7 +40,7 @@
         if (![coordinateObj isKindOfClass:[NSArray class]]) {
             return nil;
         }
-        
+
         NSArray *coordinateArr = (NSArray *)coordinateObj;
         if (coordinateArr.count != 2) {
             return nil;
@@ -51,14 +51,14 @@
         if (![coordinateLongitudeObj isKindOfClass:[NSNumber class]] || ![coordinateLatitudeObj isKindOfClass:[NSNumber class]]) {
             return nil;
         }
-        
+
         float polygonCoordinateLongitude = [((NSNumber *)coordinateLongitudeObj) floatValue];
         float polygonCoordinateLatitude = [((NSNumber *)coordinateLatitudeObj) floatValue];
 
         CLLocationCoordinate2D coordinate = CLLocationCoordinate2DMake(polygonCoordinateLatitude, polygonCoordinateLongitude);
         mutableCoordinates[i] = [[RadarCoordinate alloc] initWithCoordinate:coordinate];
     }
-    
+
     return [[RadarRouteGeometry alloc] initWithCoordinates:mutableCoordinates];
 }
 
