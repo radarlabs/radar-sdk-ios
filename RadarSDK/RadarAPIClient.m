@@ -296,11 +296,11 @@
                         } else {
                             [[RadarBeaconManager sharedInstance] monitorOnceForRadarBeacons:beaconsToMonitor
                                                                             completionBlock:^(RadarStatus status, NSArray<RadarBeacon *> *_Nullable nearbyBeacons) {
-                                                                                if (status != RadarStatusSuccess) {
-                                                                                    return completionHandler(status, nil, nil);
+                                                                                if (status == RadarStatusSuccess) {
+                                                                                    [context setBeacons:nearbyBeacons];
                                                                                 }
-                                                                                [context setBeacons:nearbyBeacons];
-                                                                                return completionHandler(RadarStatusSuccess, res, context);
+
+                                                                                return completionHandler(status, res, context);
                                                                             }];
                         }
                     }];
