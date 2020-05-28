@@ -21,6 +21,10 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+static BOOL CompareDoubles(double givenDouble, double doubleToCompare) {
+    return fabs(givenDouble - doubleToCompare) < DBL_EPSILON * fabs(givenDouble + doubleToCompare) || fabs(givenDouble - doubleToCompare) < DBL_MIN;
+}
+
 @interface RadarUtils : NSObject
 
 + (NSString *)deviceModel;

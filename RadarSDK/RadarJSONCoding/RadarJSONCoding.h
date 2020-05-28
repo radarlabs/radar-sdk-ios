@@ -3,6 +3,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+
+/// A JSON serialization / deserialization protocol for Radar models
 @protocol RadarJSONCoding
 
 /// Deserialize from an array of JSON objects. Return nil if any of the JSON object is not valid

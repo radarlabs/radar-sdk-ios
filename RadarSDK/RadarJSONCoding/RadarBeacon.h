@@ -5,7 +5,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface RadarBeacon : NSObject<RadarJSONCoding, NSCopying, NSCoding>
+@interface RadarBeacon : NSObject<RadarJSONCoding, NSCopying>
 
 @property (nonatomic, readonly, copy) NSString *_id;
 @property (nonatomic, readonly, copy) NSString *_description;
@@ -20,8 +20,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)init NS_UNAVAILABLE;
 
-- (instancetype)initWith_id:(NSString *)_id
-               _description:(NSString *)_description
+- (instancetype)initWithId:(NSString *)_id
+                description:(NSString *)_description
                    metadata:(nullable NSDictionary *)metadata
                    geometry:(RadarCoordinate *)geometry
                        type:(NSString *)type

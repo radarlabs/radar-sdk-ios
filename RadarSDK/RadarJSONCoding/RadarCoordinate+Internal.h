@@ -7,10 +7,12 @@
 
 #import "RadarCoordinate.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface RadarCoordinate ()
 
-+ (NSArray<RadarCoordinate *> *_Nullable)coordinatesFromObject:(id _Nonnull)object;
 - (instancetype _Nullable)initWithCoordinate:(CLLocationCoordinate2D)coordinate;
-- (instancetype _Nullable)initWithObject:(id _Nonnull)object;
 
 @end
+
+NS_ASSUME_NONNULL_END
