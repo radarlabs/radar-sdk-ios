@@ -24,10 +24,6 @@ dispatch_source_t CreateDispatchTimer(double interval, dispatch_queue_t queue, d
     NSMutableArray<RadarBeaconScanRequest *> *_queuedRequests;
     RadarBeaconScanRequest *_runningRequest;
 
-    NSMutableDictionary<NSString *, RadarBeaconMonitorCompletionHandler> *_completionHandlers;
-
-    BOOL _isMonitoring;
-
     dispatch_source_t _timer;
 
     dispatch_queue_t _workQueue;
@@ -57,7 +53,6 @@ dispatch_source_t CreateDispatchTimer(double interval, dispatch_queue_t queue, d
 
         _workQueue = dispatch_queue_create_with_target("com.radar.beaconManager", DISPATCH_QUEUE_SERIAL, DISPATCH_TARGET_QUEUE_DEFAULT);
         _queuedRequests = [NSMutableArray array];
-        _completionHandlers = [NSMutableDictionary dictionary];
         [self _startTimer];
     }
     return self;
@@ -80,9 +75,11 @@ dispatch_source_t CreateDispatchTimer(double interval, dispatch_queue_t queue, d
         }
         NSArray *beaconsToMonitor = [radarBeacons subarrayWithRange:NSMakeRange(0, MIN(kRadarBeaconMonitorLimit, radarBeacons.count))];
         NSTimeInterval expiration = [[NSDate date] timeIntervalSince1970] + kRadarBeaconMonitorTimeoutSecond;
-        RadarBeaconScanRequest *request = [[RadarBeaconScanRequest alloc] initWithIdentifier:[[NSUUID UUID] UUIDString] expiration:expiration beacons:beaconsToMonitor];
+        RadarBeaconScanRequest *request = [[RadarBeaconScanRequest alloc] initWithIdentifier:[[NSUUID UUID] UUIDString]
+                                                                                  expiration:expiration
+                                                                                     beacons:beaconsToMonitor
+                                                                           completionHandler:block];
         [self->_queuedRequests addObject:request];
-        self->_completionHandlers[request.identifier] = block;
 
         [self _scheduleRequest];
     });
@@ -114,10 +111,8 @@ dispatch_source_t CreateDispatchTimer(double interval, dispatch_queue_t queue, d
     NSArray *queuedRequestsCopy = [_queuedRequests copy];
     for (RadarBeaconScanRequest *request in queuedRequestsCopy) {
         if (now >= request.expiration) {
-            RadarBeaconMonitorCompletionHandler completion = _completionHandlers[request.identifier];
-            if (completion) {
-                completion(RadarStatusErrorBeacon, nil);
-                [_completionHandlers removeObjectForKey:request.identifier];
+            if (request.completionHandler) {
+                request.completionHandler(RadarStatusErrorBeacon, nil);
             }
             [_queuedRequests removeObject:request];
         }
@@ -130,7 +125,7 @@ dispatch_source_t CreateDispatchTimer(double interval, dispatch_queue_t queue, d
 
 #pragma mark - scheduling
 - (void)_scheduleRequest {
-    if (_isMonitoring) {
+    if (_runningRequest) {
         return;
     }
 
@@ -142,28 +137,37 @@ dispatch_source_t CreateDispatchTimer(double interval, dispatch_queue_t queue, d
     [_queuedRequests removeObjectAtIndex:0];
 
     _runningRequest = request;
-    _isMonitoring = YES;
     [_beaconScanner startMonitoringWithRequest:request];
 }
 
 #pragma mark - RadarBeaconScannerDelegate
 
-- (void)didFinishMonitoring:(RadarBeaconScanRequest *)request status:(RadarStatus)status nearbyBeacons:(NSArray<RadarBeacon *> *_Nullable)nearbyBeacons {
+- (void)didFailWithStatus:(RadarStatus)status forScanRequest:(RadarBeaconScanRequest *)request {
     weakify(self);
     dispatch_async(_workQueue, ^{
         strongify_else_return(self);
-        [self _didFinishMonitoringWithStatus:status nearbyBeacons:nearbyBeacons];
+        [self _didFinishMonitoringWithStatus:status nearbyBeacons:nil];
     });
 }
 
+- (void)didDetectNearbyBeacons:(NSArray<RadarBeacon *> *)nearbyBeacons forScanRequest:(RadarBeaconScanRequest *)request {
+    weakify(self);
+    dispatch_async(_workQueue, ^{
+        strongify_else_return(self);
+        // only support track once now
+        [self _didFinishMonitoringWithStatus:RadarStatusSuccess nearbyBeacons:nearbyBeacons];
+    });
+}
+
+- (void)didUpdateNearbyBeacons:(NSArray<RadarBeacon *> *)nearbyBeacons forScanRequest:(RadarBeaconScanRequest *)request {
+    // TODO: for continuous tracking
+}
+
 - (void)_didFinishMonitoringWithStatus:(RadarStatus)status nearbyBeacons:(NSArray<RadarBeacon *> *_Nullable)nearbyBeacons {
-    RadarBeaconMonitorCompletionHandler completion = _completionHandlers[_runningRequest.identifier];
-    if (completion) {
-        completion(status, nearbyBeacons);
-        [_completionHandlers removeObjectForKey:_runningRequest.identifier];
+    if (_runningRequest.completionHandler) {
+        _runningRequest.completionHandler(status, nearbyBeacons);
     }
     [_beaconScanner stopMonitoring];
-    _isMonitoring = NO;
     _runningRequest = nil;
     [self _scheduleRequest];
 }

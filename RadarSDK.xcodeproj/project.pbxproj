@@ -329,9 +329,9 @@
 			children = (
 				5865CD7A248013150052BD25 /* RadarBeaconScanRequest.h */,
 				5865CD7E248013150052BD25 /* RadarBeaconScanRequest.m */,
+				5865CD7D248013150052BD25 /* RadarBeaconScanner.h */,
 				5865CD7B248013150052BD25 /* RadarBeaconScanner.m */,
 				5865CD7C248013150052BD25 /* RadarBeaconManager.h */,
-				5865CD7D248013150052BD25 /* RadarBeaconScanner.h */,
 				5865CD7F248013150052BD25 /* RadarBeaconManager.m */,
 				5865CD80248013150052BD25 /* RadarBeaconManager+Internal.h */,
 			);
