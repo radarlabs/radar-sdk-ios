@@ -69,6 +69,8 @@ dispatch_source_t CreateDispatchTimer(double interval, dispatch_queue_t queue, d
     }
 }
 
+#pragma mark - track Once with timer
+
 - (void)monitorOnceForRadarBeacons:(NSArray<RadarBeacon *> *)radarBeacons completionBlock:(RadarBeaconMonitorCompletionHandler)block {
     weakify(self);
     dispatch_async(_workQueue, ^{
@@ -77,9 +79,8 @@ dispatch_source_t CreateDispatchTimer(double interval, dispatch_queue_t queue, d
             return block(RadarStatusSuccess, @[]);
         }
         NSArray *beaconsToMonitor = [radarBeacons subarrayWithRange:NSMakeRange(0, MIN(kRadarBeaconMonitorLimit, radarBeacons.count))];
-        RadarBeaconScanRequest *request = [[RadarBeaconScanRequest alloc] initWithIdentifier:[[NSUUID UUID] UUIDString]
-                                                                            createdTimestamp:[[NSDate date] timeIntervalSince1970]
-                                                                                     beacons:beaconsToMonitor];
+        NSTimeInterval expiration = [[NSDate date] timeIntervalSince1970] + kRadarBeaconMonitorTimeoutSecond;
+        RadarBeaconScanRequest *request = [[RadarBeaconScanRequest alloc] initWithIdentifier:[[NSUUID UUID] UUIDString] expiration:expiration beacons:beaconsToMonitor];
         [self->_queuedRequests addObject:request];
         self->_completionHandlers[request.identifier] = block;
 
@@ -87,7 +88,6 @@ dispatch_source_t CreateDispatchTimer(double interval, dispatch_queue_t queue, d
     });
 }
 
-#pragma mark - timer for cancellation
 - (void)_startTimer {
     if (!_timer) {
         weakify(self);
@@ -106,15 +106,25 @@ dispatch_source_t CreateDispatchTimer(double interval, dispatch_queue_t queue, d
 }
 
 - (void)_cancelTimedOutRequests {
+    if (!_runningRequest && _queuedRequests.count == 0) {
+        return;
+    }
+
     NSTimeInterval now = [[NSDate date] timeIntervalSince1970];
-    for (RadarBeaconScanRequest *request in _queuedRequests) {
-        if (now - request.createdTimestamp >= kRadarBeaconMonitorTimeoutSecond) {
-            [self _cancelRequest:request];
+    NSArray *queuedRequestsCopy = [_queuedRequests copy];
+    for (RadarBeaconScanRequest *request in queuedRequestsCopy) {
+        if (now >= request.expiration) {
+            RadarBeaconMonitorCompletionHandler completion = _completionHandlers[request.identifier];
+            if (completion) {
+                completion(RadarStatusErrorBeacon, nil);
+                [_completionHandlers removeObjectForKey:request.identifier];
+            }
+            [_queuedRequests removeObject:request];
         }
     }
 
-    if (_runningRequest && now - _runningRequest.createdTimestamp >= kRadarBeaconMonitorTimeoutSecond) {
-        [self _cancelRequest:_runningRequest];
+    if (_runningRequest && now >= _runningRequest.expiration) {
+        [self _didFinishMonitoringWithStatus:RadarStatusErrorBeacon nearbyBeacons:nil];
     }
 }
 
@@ -136,47 +146,26 @@ dispatch_source_t CreateDispatchTimer(double interval, dispatch_queue_t queue, d
     [_beaconScanner startMonitoringWithRequest:request];
 }
 
-- (void)_cancelRequest:(RadarBeaconScanRequest *)request {
-    if ([_queuedRequests containsObject:request]) {
-        [_queuedRequests removeObject:request];
-        RadarBeaconMonitorCompletionHandler completion = _completionHandlers[request.identifier];
-        if (completion) {
-            completion(RadarStatusErrorBeacon, nil);
-            [_completionHandlers removeObjectForKey:request.identifier];
-        }
-        return;
-    }
-
-    if ([request.identifier isEqualToString:_runningRequest.identifier]) {
-        RadarBeaconMonitorCompletionHandler completion = _completionHandlers[request.identifier];
-        if (completion) {
-            completion(RadarStatusErrorBeacon, nil);
-            [_completionHandlers removeObjectForKey:request.identifier];
-        }
-        [_beaconScanner stopMonitoring];
-    }
-}
-
-- (void)_didFinishMonitoring {
-    [_beaconScanner stopMonitoring];
-    _isMonitoring = NO;
-    _runningRequest = nil;
-    [self _scheduleRequest];
-}
-
 #pragma mark - RadarBeaconScannerDelegate
 
 - (void)didFinishMonitoring:(RadarBeaconScanRequest *)request status:(RadarStatus)status nearbyBeacons:(NSArray<RadarBeacon *> *_Nullable)nearbyBeacons {
     weakify(self);
     dispatch_async(_workQueue, ^{
         strongify_else_return(self);
-        RadarBeaconMonitorCompletionHandler completion = self->_completionHandlers[request.identifier];
-        if (completion) {
-            completion(status, nearbyBeacons);
-            [self->_completionHandlers removeObjectForKey:request.identifier];
-        }
-        [self _didFinishMonitoring];
+        [self _didFinishMonitoringWithStatus:status nearbyBeacons:nearbyBeacons];
     });
+}
+
+- (void)_didFinishMonitoringWithStatus:(RadarStatus)status nearbyBeacons:(NSArray<RadarBeacon *> *_Nullable)nearbyBeacons {
+    RadarBeaconMonitorCompletionHandler completion = _completionHandlers[_runningRequest.identifier];
+    if (completion) {
+        completion(status, nearbyBeacons);
+        [_completionHandlers removeObjectForKey:_runningRequest.identifier];
+    }
+    [_beaconScanner stopMonitoring];
+    _isMonitoring = NO;
+    _runningRequest = nil;
+    [self _scheduleRequest];
 }
 
 @end

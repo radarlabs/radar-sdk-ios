@@ -6,10 +6,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation RadarBeaconScanRequest
 
-- (instancetype)initWithIdentifier:(NSString *)identifier createdTimestamp:(NSTimeInterval)createdTimestamp beacons:(NSArray<RadarBeacon *> *)beacons {
+- (instancetype)initWithIdentifier:(NSString *)identifier expiration:(NSTimeInterval)expiration beacons:(NSArray<RadarBeacon *> *)beacons {
     if ((self = [super init])) {
         _identifier = [identifier copy];
-        _createdTimestamp = createdTimestamp;
+        _expiration = expiration;
         _beacons = [beacons copy];
     }
 
@@ -26,7 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
     } else if (object == nil || ![object isKindOfClass:[self class]]) {
         return NO;
     }
-    return CompareDoubles(_createdTimestamp, object->_createdTimestamp) && (_identifier == object->_identifier ? YES : [_identifier isEqual:object->_identifier]) &&
+    return CompareDoubles(_expiration, object->_expiration) && (_identifier == object->_identifier ? YES : [_identifier isEqual:object->_identifier]) &&
            (_beacons == object->_beacons ? YES : [_beacons isEqual:object->_beacons]);
 }
 
