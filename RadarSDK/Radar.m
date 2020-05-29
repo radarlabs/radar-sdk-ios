@@ -8,8 +8,8 @@
 #import "Radar.h"
 
 #import "RadarAPIClient.h"
-#import "RadarCoordinate+Internal.h"
 #import "RadarBeaconManager.h"
+#import "RadarCoordinate+Internal.h"
 #import "RadarLocationManager.h"
 #import "RadarLogger.h"
 #import "RadarSettings.h"
@@ -230,6 +230,7 @@
         }
 
         [[RadarAPIClient sharedInstance] getContextForLocation:location
+                                                 includeBeacon:[RadarSettings beaconEnabled]
                                              completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, RadarContext *_Nullable context) {
                                                  if (completionHandler) {
                                                      completionHandler(status, location, context);
@@ -240,6 +241,7 @@
 
 + (void)getContextForLocation:(CLLocation *)location completionHandler:(RadarContextCompletionHandler)completionHandler {
     [[RadarAPIClient sharedInstance] getContextForLocation:location
+                                             includeBeacon:[RadarSettings beaconEnabled]
                                          completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, RadarContext *_Nullable context) {
                                              if (completionHandler) {
                                                  completionHandler(status, location, context);

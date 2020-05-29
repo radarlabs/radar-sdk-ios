@@ -1,6 +1,5 @@
 
 #import "RadarBeaconScanRequest.h"
-#import "RadarUtils.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -9,7 +8,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithIdentifier:(NSString *)identifier
                         expiration:(NSTimeInterval)expiration
                            beacons:(NSArray<RadarBeacon *> *)beacons
-                 completionHandler:(nullable RadarBeaconScanCompletionHandler)completionHandler {
+                 completionHandler:(nullable RadarBeaconTrackCompletionHandler)completionHandler {
     if ((self = [super init])) {
         _identifier = [identifier copy];
         _expiration = expiration;

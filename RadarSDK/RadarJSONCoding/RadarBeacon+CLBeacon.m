@@ -1,5 +1,6 @@
 
 #import "RadarBeacon+CLBeacon.h"
+#import "RadarLogger.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -8,6 +9,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (CLBeaconRegion *_Nullable)toCLBeaconRegion {
     NSUUID *uuid = [self _NSUUID];
     if (!uuid) {
+        NSString *message = [NSString stringWithFormat:@"Invalid beacon uuid %@", self.uuid];
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:message];
         return nil;
     }
     NSNumberFormatter *formatter = [[NSNumberFormatter alloc] init];

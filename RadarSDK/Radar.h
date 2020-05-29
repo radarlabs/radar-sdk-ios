@@ -285,7 +285,7 @@ typedef void (^_Nonnull RadarRouteCompletionHandler)(RadarStatus status, RadarRo
 /**
 Enables beacon tracking
 
-@param enabled A boolean indicating whether beacons should be collected.
+@param enabled A boolean indicating whether beacons should be monitored.
 */
 + (void)setBeaconEnabled:(BOOL)enabled;
 

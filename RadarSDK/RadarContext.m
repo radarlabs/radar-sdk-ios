@@ -7,6 +7,7 @@
 //
 
 #import "RadarContext.h"
+#import "RadarCollectionAdditions.h"
 #import "RadarContext+Internal.h"
 #import "RadarGeofence+Internal.h"
 #import "RadarPlace+Internal.h"
@@ -81,7 +82,6 @@
     postalCode = [[RadarRegion alloc] initWithObject:postalCodeObj];
 
     // the beacons will be set later
-    // TODO: we need builder model for this class.
     return [[RadarContext alloc] initWithGeofences:contextGeofences place:contextPlace country:country state:state dma:dma postalCode:postalCode];
 }
 
@@ -112,6 +112,12 @@
     if (self.postalCode) {
         NSDictionary *postalCodeDict = [self.postalCode dictionaryValue];
         [dict setValue:postalCodeDict forKey:@"postalCode"];
+    }
+    if (self.beacons) {
+        NSArray *beaconsArray = [self.beacons radar_mapObjectsUsingBlock:^id _Nullable(RadarBeacon *_Nonnull beacon) {
+            return [beacon dictionaryValue];
+        }];
+        [dict setValue:beaconsArray forKey:@"beacons"];
     }
     return dict;
 }

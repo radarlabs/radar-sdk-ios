@@ -12,18 +12,18 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol RadarBeaconScannerDelegate
 
 /// Called when the initial states (inside or outside) of all beacons are determined.
-/// @param nearbyBeacons the detected nearby beacons.
-/// @param request scan request.
-- (void)didDetectNearbyBeacons:(NSArray<RadarBeacon *> *)nearbyBeacons forScanRequest:(RadarBeaconScanRequest *)request;
+/// @param nearbyBeacons The detected nearby beacons.
+/// @param request The scan request.
+- (void)didDetermineStatesWithNearbyBeacons:(NSArray<RadarBeacon *> *)nearbyBeacons forScanRequest:(RadarBeaconScanRequest *)request;
 
-/// Called when there is any update on nearby beacons.
-/// @param nearbyBeacons the latest nearby beacons.
-/// @param request scan request
+/// Called when there is any update on nearby beacons AFTER initial states have determined.
+/// @param nearbyBeacons The latest nearby beacons.
+/// @param request The scan request
 - (void)didUpdateNearbyBeacons:(NSArray<RadarBeacon *> *)nearbyBeacons forScanRequest:(RadarBeaconScanRequest *)request;
 
 /// Called when the scan fails.
-/// @param status error status.
-/// @param request scan request.
+/// @param status The error status.
+/// @param request The scan request.
 - (void)didFailWithStatus:(RadarStatus)status forScanRequest:(RadarBeaconScanRequest *)request;
 
 @end

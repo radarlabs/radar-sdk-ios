@@ -5,7 +5,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-typedef void (^RadarBeaconMonitorCompletionHandler)(RadarStatus status, NSArray<RadarBeacon *> *_Nullable nearbyBeacons);
+typedef void (^RadarBeaconTrackCompletionHandler)(RadarStatus status, NSArray<RadarBeacon *> *_Nullable nearbyBeacons);
 
 /// Manager class for beacon monitoring
 @interface RadarBeaconManager : NSObject
@@ -15,7 +15,7 @@ typedef void (^RadarBeaconMonitorCompletionHandler)(RadarStatus status, NSArray<
 /// One time detection on nearby beacons
 /// @param radarBeacons the list of beacons to monitor / detect
 /// @param block completion block which will be called on the internal queue of RadarBeaconManager
-- (void)monitorOnceForRadarBeacons:(NSArray<RadarBeacon *> *)radarBeacons completionBlock:(RadarBeaconMonitorCompletionHandler)block;
+- (void)trackOnceForRadarBeacons:(NSArray<RadarBeacon *> *)radarBeacons completionBlock:(RadarBeaconTrackCompletionHandler)block;
 
 @end
 

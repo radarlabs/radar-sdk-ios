@@ -1,18 +1,17 @@
 
 #import "Radar.h"
 #import "RadarBeacon.h"
+#import "RadarBeaconManager.h"
 #import <Foundation/Foundation.h>
 
 NS_ASSUME_NONNULL_BEGIN
-
-typedef void (^RadarBeaconScanCompletionHandler)(RadarStatus status, NSArray<RadarBeacon *> *_Nullable nearbyBeacons);
 
 @interface RadarBeaconScanRequest : NSObject<NSCopying>
 
 @property (nonatomic, readonly) NSString *identifier;
 @property (nonatomic, readonly) NSTimeInterval expiration;
 @property (nonatomic, readonly) NSArray<RadarBeacon *> *beacons;
-@property (nonatomic, readonly, nullable) RadarBeaconScanCompletionHandler completionHandler;
+@property (nonatomic, readonly, nullable) RadarBeaconTrackCompletionHandler completionHandler;
 
 + (instancetype)new NS_UNAVAILABLE;
 
@@ -21,7 +20,7 @@ typedef void (^RadarBeaconScanCompletionHandler)(RadarStatus status, NSArray<Rad
 - (instancetype)initWithIdentifier:(NSString *)identifier
                         expiration:(NSTimeInterval)expiration
                            beacons:(NSArray<RadarBeacon *> *)beacons
-                 completionHandler:(nullable RadarBeaconScanCompletionHandler)completionHandler NS_DESIGNATED_INITIALIZER;
+                 completionHandler:(nullable RadarBeaconTrackCompletionHandler)completionHandler NS_DESIGNATED_INITIALIZER;
 
 @end
 

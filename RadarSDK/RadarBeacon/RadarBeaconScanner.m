@@ -3,6 +3,7 @@
 #import "RadarBeacon+CLBeacon.h"
 #import "RadarBeaconManager.h"
 #import "RadarCollectionAdditions.h"
+#import "RadarLogger.h"
 #import "RadarUtils.h"
 
 @interface RadarBeaconScanner ()<CLLocationManagerDelegate>
@@ -15,13 +16,11 @@
     RadarPermissionsHelper *_permissionsHelper;
 
     RadarBeaconScanRequest *_runningRequest;
-    NSDictionary<NSString *, CLBeaconRegion *> *_allRegions;
+    NSSet<NSString *> *_allRegionIds;
     NSMutableSet<NSString *> *_detectedRegionIds;
     NSMutableSet<NSString *> *_enteredRegionIds;
 
     BOOL _hasDetectedAllRegions;
-
-    BOOL _isMonitoring;
 }
 
 - (instancetype)initWithDelegate:(id<RadarBeaconScannerDelegate>)delegate
@@ -42,36 +41,34 @@
     weakify(self);
     dispatch_async(dispatch_get_main_queue(), ^{
         strongify_else_return(self);
+        if (self->_runningRequest) {
+            // TODO: this should not happen
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Beacon Scanner is busy."];
+            [self->_delegate didFailWithStatus:RadarStatusErrorBeacon forScanRequest:request];
+            return;
+        }
+
         RadarStatus permissionStatus = [self _permissionStatus];
         if (permissionStatus != RadarStatusSuccess) {
             [self->_delegate didFailWithStatus:permissionStatus forScanRequest:request];
+            return;
         }
 
-        if (self->_isMonitoring) {
-            // TODO: this should not happen
-            [self->_delegate didFailWithStatus:RadarStatusErrorBeacon forScanRequest:request];
-        }
-
-        self->_isMonitoring = YES;
-
-        self->_runningRequest = request;
         NSArray<CLBeaconRegion *> *regions = [request.beacons radar_mapObjectsUsingBlock:^id _Nullable(RadarBeacon *_Nonnull beacon) {
             return [beacon toCLBeaconRegion];
         }];
-        self->_allRegions = [regions
-            radar_mapToDictionaryUsingKeyBlock:^id _Nullable(CLBeaconRegion *_Nonnull region) {
-                return region.identifier;
-            }
-            valueBlock:^id _Nullable(CLBeaconRegion *_Nonnull region) {
-                return region;
-            }];
+        NSArray<NSString *> *regionIds = [regions radar_mapObjectsUsingBlock:^id _Nullable(CLBeaconRegion *_Nonnull region) {
+            return region.identifier;
+        }];
+
+        self->_allRegionIds = [NSSet setWithArray:regionIds];
 
         self->_detectedRegionIds = [NSMutableSet set];
         self->_enteredRegionIds = [NSMutableSet set];
         self->_hasDetectedAllRegions = NO;
+        self->_runningRequest = request;
 
-        for (NSString *regionId in self->_allRegions) {
-            CLBeaconRegion *region = self->_allRegions[regionId];
+        for (CLBeaconRegion *region in regions) {
             [self->_locationManager startMonitoringForRegion:region];
         }
     });
@@ -82,11 +79,10 @@
     dispatch_async(dispatch_get_main_queue(), ^{
         strongify_else_return(self);
         self->_runningRequest = nil;
-        self->_allRegions = nil;
+        self->_allRegionIds = nil;
         self->_detectedRegionIds = nil;
         self->_enteredRegionIds = nil;
         self->_hasDetectedAllRegions = NO;
-        self->_isMonitoring = NO;
     });
 }
 
@@ -134,7 +130,7 @@
 
 - (void)_handleBeaconUpdate:(CLBeaconRegion *)region {
     [_detectedRegionIds addObject:region.identifier];
-    if (_detectedRegionIds.count == _allRegions.count) {
+    if (_detectedRegionIds.count == _allRegionIds.count) {
         NSMutableArray<RadarBeacon *> *nearbyBeacons = [NSMutableArray array];
         for (RadarBeacon *beacon in _runningRequest.beacons) {
             if ([_enteredRegionIds containsObject:beacon._id]) {
@@ -143,20 +139,11 @@
         }
         if (!_hasDetectedAllRegions) {
             // detected all beacons for the first time
-            [_delegate didDetectNearbyBeacons:nearbyBeacons forScanRequest:_runningRequest];
+            [_delegate didDetermineStatesWithNearbyBeacons:nearbyBeacons forScanRequest:_runningRequest];
+            _hasDetectedAllRegions = YES;
         } else {
             [_delegate didUpdateNearbyBeacons:nearbyBeacons forScanRequest:_runningRequest];
         }
-    }
-    if (_detectedRegionIds.count == _allRegions.count && !_hasDetectedAllRegions) {
-        // detected all beacons
-        NSMutableArray<RadarBeacon *> *nearbyBeacons = [NSMutableArray array];
-        for (RadarBeacon *beacon in _runningRequest.beacons) {
-            if ([_detectedRegionIds containsObject:beacon._id]) {
-                [nearbyBeacons addObject:beacon];
-            }
-        }
-        [_delegate didDetectNearbyBeacons:nearbyBeacons forScanRequest:_runningRequest];
     }
 }
 
@@ -167,7 +154,7 @@
 #pragma mark - private helpers
 
 - (BOOL)_isRegionOfInterest:(CLRegion *)region {
-    return [region isKindOfClass:[CLBeaconRegion class]] && [_allRegions objectForKey:region.identifier];
+    return [region isKindOfClass:[CLBeaconRegion class]] && [_allRegionIds containsObject:region.identifier];
 }
 
 - (RadarStatus)_permissionStatus {

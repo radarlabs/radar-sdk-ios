@@ -12,7 +12,7 @@
 #import <Foundation/Foundation.h>
 
 @interface RadarContext ()
-
+// This property will be set after initialization.
 @property (nonnull, strong, nonatomic) NSArray<RadarBeacon*>* beacons;
 
 - (instancetype _Nullable)initWithGeofences:(NSArray* _Nonnull)geofences

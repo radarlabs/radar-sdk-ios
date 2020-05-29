@@ -250,7 +250,7 @@
                     }];
 }
 
-- (void)getContextForLocation:(CLLocation *_Nonnull)location completionHandler:(RadarContextAPICompletionHandler _Nullable)completionHandler {
+- (void)getContextForLocation:(CLLocation *_Nonnull)location includeBeacon:(BOOL)includeBeacon completionHandler:(RadarContextAPICompletionHandler _Nullable)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
         return completionHandler(RadarStatusErrorPublishableKey, nil, nil);
@@ -259,8 +259,7 @@
     NSMutableString *queryString = [NSMutableString new];
     [queryString appendFormat:@"coordinates=%.06f,%.06f", location.coordinate.latitude, location.coordinate.longitude];
 
-    BOOL beaconEnabled = [RadarSettings beaconEnabled];
-    if (beaconEnabled) {
+    if (includeBeacon) {
         [queryString appendFormat:@"&includeBeacon=true"];
     }
 
@@ -286,7 +285,7 @@
 
                         id beaconObj = res[@"context"][@"beacons"];
 
-                        if (!beaconEnabled || !beaconObj) {
+                        if (!includeBeacon || !beaconObj) {
                             return completionHandler(RadarStatusSuccess, res, context);
                         }
                         NSArray<RadarBeacon *> *beaconsToMonitor = [RadarBeacon fromObjectArray:beaconObj];
@@ -294,14 +293,16 @@
                             // deserialization error
                             return completionHandler(RadarStatusErrorServer, res, context);
                         } else {
-                            [[RadarBeaconManager sharedInstance] monitorOnceForRadarBeacons:beaconsToMonitor
-                                                                            completionBlock:^(RadarStatus status, NSArray<RadarBeacon *> *_Nullable nearbyBeacons) {
-                                                                                if (status == RadarStatusSuccess) {
-                                                                                    [context setBeacons:nearbyBeacons];
-                                                                                }
+                            [[RadarBeaconManager sharedInstance] trackOnceForRadarBeacons:beaconsToMonitor
+                                                                          completionBlock:^(RadarStatus status, NSArray<RadarBeacon *> *_Nullable nearbyBeacons) {
+                                                                              if (status != RadarStatusSuccess) {
+                                                                                  NSString *warningMessage = [NSString stringWithFormat:@"Beacon Monitor Error | %@", @(status)];
+                                                                                  [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelWarning message:warningMessage];
+                                                                              }
+                                                                              [context setBeacons:nearbyBeacons];
 
-                                                                                return completionHandler(status, res, context);
-                                                                            }];
+                                                                              return completionHandler(status, res, context);
+                                                                          }];
                         }
                     }];
 }

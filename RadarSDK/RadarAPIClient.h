@@ -56,7 +56,7 @@ typedef void (^_Nullable RadarDistanceAPICompletionHandler)(RadarStatus status, 
 
 - (void)verifyEventId:(NSString *_Nonnull)eventId verification:(RadarEventVerification)verification verifiedPlaceId:(NSString *_Nullable)verifiedPlaceId;
 
-- (void)getContextForLocation:(CLLocation *_Nonnull)location completionHandler:(RadarContextAPICompletionHandler _Nullable)completionHandler;
+- (void)getContextForLocation:(CLLocation *_Nonnull)location includeBeacon:(BOOL)includeBeacon completionHandler:(RadarContextAPICompletionHandler _Nullable)completionHandler;
 
 - (void)searchPlacesNear:(CLLocation *_Nonnull)near
                   radius:(int)radius
