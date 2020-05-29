@@ -3,7 +3,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-
 /// A JSON serialization / deserialization protocol for Radar models
 @protocol RadarJSONCoding
 

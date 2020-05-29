@@ -137,7 +137,7 @@ dispatch_source_t CreateDispatchTimer(double interval, dispatch_queue_t queue, d
     [_queuedRequests removeObjectAtIndex:0];
 
     _runningRequest = request;
-    [_beaconScanner startMonitoringWithRequest:request];
+    [_beaconScanner startScanWithRequest:request];
 }
 
 #pragma mark - RadarBeaconScannerDelegate
@@ -167,7 +167,7 @@ dispatch_source_t CreateDispatchTimer(double interval, dispatch_queue_t queue, d
     if (_runningRequest.completionHandler) {
         _runningRequest.completionHandler(status, nearbyBeacons);
     }
-    [_beaconScanner stopMonitoring];
+    [_beaconScanner stopScan];
     _runningRequest = nil;
     [self _scheduleRequest];
 }

@@ -1409,29 +1409,4 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
                                  }];
 }
 
-// TODO: the timeout tests will fail other beacon tests. Fix it later
-//- (void)test_Radar_getContext_beacon_timeout_error {
-//    // GIVEN
-//    [self _setup_Radar_beacon_tests];
-//    self.permissionsHelperMock.mockBluetoothState = CBManagerStatePoweredOn;
-//
-//    self.apiHelperMock.mockResponse = [RadarTestUtils jsonDictionaryFromResource:@"context"];
-//
-//    XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
-//
-//    // THEN
-//    [Radar getContextWithCompletionHandler:^(RadarStatus status, CLLocation *_Nullable location, RadarContext *_Nullable context) {
-//        XCTAssertEqual(status, RadarStatusErrorBeacon);
-//
-//        [expectation fulfill];
-//    }];
-//
-//    [self waitForExpectationsWithTimeout:30
-//                                 handler:^(NSError *_Nullable error) {
-//                                     if (error) {
-//                                         XCTFail();
-//                                     }
-//                                 }];
-//}
-
 @end

@@ -21,13 +21,13 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)init NS_UNAVAILABLE;
 
 - (instancetype)initWithId:(NSString *)_id
-                description:(NSString *)_description
-                   metadata:(nullable NSDictionary *)metadata
-                   geometry:(RadarCoordinate *)geometry
-                       type:(NSString *)type
-                       uuid:(NSString *)uuid
-                      major:(NSString *)major
-                      minor:(NSString *)minor NS_DESIGNATED_INITIALIZER;
+               description:(NSString *)_description
+                  metadata:(nullable NSDictionary *)metadata
+                  geometry:(RadarCoordinate *)geometry
+                      type:(NSString *)type
+                      uuid:(NSString *)uuid
+                     major:(NSString *)major
+                     minor:(NSString *)minor NS_DESIGNATED_INITIALIZER;
 
 @end
 

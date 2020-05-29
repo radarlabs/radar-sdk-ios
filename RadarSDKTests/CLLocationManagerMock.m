@@ -16,7 +16,7 @@
     }
 }
 
-- (void)startMonitoringForRegion:(CLRegion *)region {
+- (void)startRangingBeaconsInRegion:(CLBeaconRegion *)region {
     if (!self.delegate) {
         NSAssert(NO, @"Delegate is not set");
         return;
@@ -33,15 +33,13 @@
     }
 
     if ([self.mockBeaconRegions objectForKey:region.identifier]) {
-        // should really to dispatch main queue async here. But it makes the tests flaky.
-        // TODO: fix it
-        [self.delegate locationManager:self didEnterRegion:region];
+        [self.delegate locationManager:self didRangeBeacons:@[@"test"] inRegion:region];
     } else {
-        [self.delegate locationManager:self didExitRegion:region];
+        [self.delegate locationManager:self didRangeBeacons:@[] inRegion:region];
     }
 }
 
-- (void)stopMonitoringForRegion:(CLRegion *)region {
+- (void)stopRangingBeaconsInRegion:(CLBeaconRegion *)region {
     // No op
 }
 

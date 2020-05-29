@@ -34,9 +34,9 @@ NS_ASSUME_NONNULL_BEGIN
                  locationManager:(CLLocationManager *)locationManager
                permissionsHelper:(RadarPermissionsHelper *)permissionsHelper;
 
-- (void)startMonitoringWithRequest:(RadarBeaconScanRequest *)request;
+- (void)startScanWithRequest:(RadarBeaconScanRequest *)request;
 
-- (void)stopMonitoring;
+- (void)stopScan;
 
 @end
 
