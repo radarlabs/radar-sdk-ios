@@ -23,11 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  A stable unique ID for the trip.
  */
-<<<<<<< HEAD
 @property (nonnull, nonatomic, copy) NSString *externalId;
-=======
-@property (nullable, nonatomic, copy) NSString *externalId;
->>>>>>> 2e3ceecdd398262df1cb7747ace8936c0d8516c2
 
 /**
  An optional set of custom key-value pairs for the trip.
