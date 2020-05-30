@@ -177,11 +177,11 @@
                                 completionHandler(status, location, events, user);
                             }
 
-                            i++;
-
                             if (i < coordinates.count - 1) {
                                 dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(intervalLimit * NSEC_PER_SEC)), dispatch_get_main_queue(), weakTrack);
                             }
+                        
+                            i++;
                         }];
                 };
 

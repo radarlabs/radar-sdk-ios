@@ -159,13 +159,19 @@
     params[@"source"] = [Radar stringForSource:source];
     RadarTripOptions *tripOptions = [RadarSettings tripOptions];
     if (tripOptions) {
-        params[@"tripExternalId"] = tripOptions.externalId;
-        params[@"tripMetadata"] = tripOptions.metadata;
-        if (tripOptions.destinationGeofenceTag && tripOptions.destinationGeofenceExternalId) {
-            params[@"tripDestinationGeofenceTag"] = tripOptions.destinationGeofenceTag;
-            params[@"tripDestinationGeofenceExternalId"] = tripOptions.destinationGeofenceExternalId;
-            params[@"tripMode"] = [Radar stringForMode:tripOptions.mode];
+        NSMutableDictionary *tripOptionsDict = [NSMutableDictionary new];
+        tripOptionsDict[@"externalId"] = tripOptions.externalId;
+        if (tripOptions.metadata) {
+            tripOptionsDict[@"metadata"] = tripOptions.metadata;
         }
+        if (tripOptions.destinationGeofenceTag) {
+            tripOptionsDict[@"destinationGeofenceTag"] = tripOptions.destinationGeofenceTag;
+        }
+        if (tripOptions.destinationGeofenceExternalId) {
+            tripOptionsDict[@"destinationGeofenceExternalId"] = tripOptions.destinationGeofenceExternalId;
+        }
+        tripOptionsDict[@"mode"] = [Radar stringForMode:tripOptions.mode];
+        params[@"tripOptions"] = tripOptionsDict;
     }
 
     NSString *host = [RadarSettings host];

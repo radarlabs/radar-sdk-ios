@@ -105,7 +105,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             origin: origin,
             destination: destination,
             mode: .car,
-            points: 10,
+            steps: 10,
             interval: 1
         ) { (status, location, events, user) in
             print("Mock track: status = \(Radar.stringForStatus(status)); location = \(String(describing: location)); events = \(String(describing: events)); user = \(String(describing: user))")

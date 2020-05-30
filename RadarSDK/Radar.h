@@ -338,7 +338,7 @@ typedef void (^_Nonnull RadarRouteCompletionHandler)(RadarStatus status, RadarRo
                           mode:(RadarRouteMode)mode
                          steps:(int)steps
                       interval:(NSTimeInterval)interval
-             completionHandler:(RadarTrackCompletionHandler _Nullable)completionHandler NS_SWIFT_NAME(mockTracking(origin:destination:mode:points:interval:completionHandler:));
+             completionHandler:(RadarTrackCompletionHandler _Nullable)completionHandler NS_SWIFT_NAME(mockTracking(origin:destination:mode:steps:interval:completionHandler:));
 
 /**
  Stops tracking the user's location in the background.
