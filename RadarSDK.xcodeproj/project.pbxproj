@@ -258,12 +258,9 @@
 		DD633EC2237C5B800026C91A /* RadarAPIHelper.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RadarAPIHelper.m; sourceTree = "<group>"; };
 		DD633EC5237C5B9C0026C91A /* RadarPermissionsHelper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarPermissionsHelper.h; sourceTree = "<group>"; };
 		DD633EC6237C5B9C0026C91A /* RadarPermissionsHelper.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RadarPermissionsHelper.m; sourceTree = "<group>"; };
-<<<<<<< HEAD
 		DD87B873247E955B0065A36D /* RadarRouteGeometry.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RadarRouteGeometry.m; sourceTree = "<group>"; };
 		DD87B874247E955B0065A36D /* RadarRouteGeometry+Internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "RadarRouteGeometry+Internal.h"; sourceTree = "<group>"; };
 		DD87B875247E955C0065A36D /* RadarRouteGeometry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RadarRouteGeometry.h; sourceTree = "<group>"; };
-=======
->>>>>>> 2e3ceecdd398262df1cb7747ace8936c0d8516c2
 		DD8CCDF6246872360011690D /* RadarTripOptions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarTripOptions.h; sourceTree = "<group>"; };
 		DD8CCDF7246872360011690D /* RadarTripOptions.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RadarTripOptions.m; sourceTree = "<group>"; };
 		DD8E2F6F24018BF8002D51AB /* RadarTestUtils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarTestUtils.h; sourceTree = "<group>"; };
