@@ -293,16 +293,16 @@
                             // deserialization error
                             return completionHandler(RadarStatusErrorServer, res, context);
                         } else {
-                            [[RadarBeaconManager sharedInstance] trackOnceForRadarBeacons:beaconsToMonitor
-                                                                          completionBlock:^(RadarStatus status, NSArray<RadarBeacon *> *_Nullable nearbyBeacons) {
-                                                                              if (status != RadarStatusSuccess) {
-                                                                                  NSString *warningMessage = [NSString stringWithFormat:@"Beacon Monitor Error | %@", @(status)];
-                                                                                  [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelWarning message:warningMessage];
-                                                                              }
-                                                                              [context setBeacons:nearbyBeacons];
+                            [[RadarBeaconManager sharedInstance] detectOnceForRadarBeacons:beaconsToMonitor
+                                                                           completionBlock:^(RadarStatus status, NSArray<RadarBeacon *> *_Nullable nearbyBeacons) {
+                                                                               if (status != RadarStatusSuccess) {
+                                                                                   NSString *warningMessage = [NSString stringWithFormat:@"Beacon Monitor Error | %@", @(status)];
+                                                                                   [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelWarning message:warningMessage];
+                                                                               }
+                                                                               [context setBeacons:nearbyBeacons];
 
-                                                                              return completionHandler(status, res, context);
-                                                                          }];
+                                                                               return completionHandler(status, res, context);
+                                                                           }];
                         }
                     }];
 }

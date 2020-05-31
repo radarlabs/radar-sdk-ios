@@ -66,7 +66,7 @@ dispatch_source_t CreateDispatchTimer(double interval, dispatch_queue_t queue, d
 
 #pragma mark - track Once with timer
 
-- (void)trackOnceForRadarBeacons:(NSArray<RadarBeacon *> *)radarBeacons completionBlock:(RadarBeaconTrackCompletionHandler)block {
+- (void)detectOnceForRadarBeacons:(NSArray<RadarBeacon *> *)radarBeacons completionBlock:(RadarBeaconTrackCompletionHandler)block {
     weakify(self);
     dispatch_async(_workQueue, ^{
         strongify_else_return(self);

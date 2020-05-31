@@ -15,7 +15,7 @@ typedef void (^RadarBeaconTrackCompletionHandler)(RadarStatus status, NSArray<Ra
 /// One time detection on nearby beacons
 /// @param radarBeacons the list of beacons to monitor / detect
 /// @param block completion block which will be called on the internal queue of RadarBeaconManager
-- (void)trackOnceForRadarBeacons:(NSArray<RadarBeacon *> *)radarBeacons completionBlock:(RadarBeaconTrackCompletionHandler)block;
+- (void)detectOnceForRadarBeacons:(NSArray<RadarBeacon *> *)radarBeacons completionBlock:(RadarBeaconTrackCompletionHandler)block;
 
 @end
 

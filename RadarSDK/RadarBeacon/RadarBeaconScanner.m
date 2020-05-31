@@ -107,7 +107,9 @@
         [_enteredRegionIds removeObject:region.identifier];
     }
 
-    if (_detectedRegionIds.count == _allRegions.count) {
+    if (_detectedRegionIds.count == _allRegions.count && !_hasDetectedAllRegions) {
+        _hasDetectedAllRegions = YES;
+
         NSMutableArray<RadarBeacon *> *nearbyRadarBeacons = [NSMutableArray array];
         for (RadarBeacon *radarBeacon in _runningRequest.beacons) {
             // RadarBeacon._id is the region.identifier
@@ -115,14 +117,8 @@
                 [nearbyRadarBeacons addObject:radarBeacon];
             }
         }
-
-        if (!_hasDetectedAllRegions) {
-            // detected all beacons for the first time
-            [_delegate didDetermineStatesWithNearbyBeacons:nearbyRadarBeacons forScanRequest:_runningRequest];
-            _hasDetectedAllRegions = YES;
-        } else {
-            [_delegate didUpdateNearbyBeacons:nearbyRadarBeacons forScanRequest:_runningRequest];
-        }
+        [self stopScan];
+        [_delegate didDetermineStatesWithNearbyBeacons:nearbyRadarBeacons forScanRequest:_runningRequest];
     }
 }
 
