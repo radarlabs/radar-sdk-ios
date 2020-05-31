@@ -172,6 +172,10 @@
     return nil;
 }
 
++ (BOOL)compareDouble:(double)aDouble withAnotherDouble:(double)anotherDouble {
+    return fabs(aDouble - anotherDouble) < DBL_EPSILON * fabs(aDouble + anotherDouble) || fabs(aDouble - anotherDouble) < DBL_MIN;
+}
+
 #pragma clang diagnostic pop
 
 @end

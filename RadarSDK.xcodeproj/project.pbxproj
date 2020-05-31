@@ -40,6 +40,7 @@
 		58823EB42459054B00DF486F /* CoreBluetooth.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 58823EB32459054B00DF486F /* CoreBluetooth.framework */; };
 		58AE02C52408359A00E87C9C /* search_points.json in Resources */ = {isa = PBXBuildFile; fileRef = 58AE02C42408359A00E87C9C /* search_points.json */; };
 		58C28CFA24521AA7003001B8 /* RadarJSONCoding.h in Headers */ = {isa = PBXBuildFile; fileRef = 58C28CF824521AA7003001B8 /* RadarJSONCoding.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		58C57682248423A1001DC575 /* RadarMacros.h in Headers */ = {isa = PBXBuildFile; fileRef = 58C5767F2484237D001DC575 /* RadarMacros.h */; };
 		58F950CA2406CE5000364B15 /* RadarPoint+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 58F950C82406CE5000364B15 /* RadarPoint+Internal.h */; };
 		58F950CC2406CE7400364B15 /* RadarPoint.h in Headers */ = {isa = PBXBuildFile; fileRef = 58F950C52406CBE500364B15 /* RadarPoint.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		58F950CD2406DF5300364B15 /* RadarPoint.m in Sources */ = {isa = PBXBuildFile; fileRef = 58F950C62406CBE500364B15 /* RadarPoint.m */; };
@@ -188,6 +189,7 @@
 		58823EB32459054B00DF486F /* CoreBluetooth.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreBluetooth.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/System/Library/Frameworks/CoreBluetooth.framework; sourceTree = DEVELOPER_DIR; };
 		58AE02C42408359A00E87C9C /* search_points.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = search_points.json; sourceTree = "<group>"; };
 		58C28CF824521AA7003001B8 /* RadarJSONCoding.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarJSONCoding.h; sourceTree = "<group>"; };
+		58C5767F2484237D001DC575 /* RadarMacros.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarMacros.h; sourceTree = "<group>"; };
 		58F950C52406CBE500364B15 /* RadarPoint.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarPoint.h; sourceTree = "<group>"; };
 		58F950C62406CBE500364B15 /* RadarPoint.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RadarPoint.m; sourceTree = "<group>"; };
 		58F950C82406CE5000364B15 /* RadarPoint+Internal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "RadarPoint+Internal.h"; sourceTree = "<group>"; };
@@ -422,6 +424,7 @@
 				DD236D0323099B8400EB88F9 /* RadarUtils.h */,
 				DD236D0423099B8400EB88F9 /* RadarUtils.m */,
 				DD236C792308797B00EB88F9 /* Info.plist */,
+				58C5767F2484237D001DC575 /* RadarMacros.h */,
 			);
 			path = RadarSDK;
 			sourceTree = "<group>";
@@ -591,6 +594,7 @@
 				DDC63817238C801C00747FD4 /* RadarLogger.h in Headers */,
 				DDC63818238C801C00747FD4 /* RadarLocationManager.h in Headers */,
 				DD4D4D1A23E60F3100D36C1D /* RadarRouteDistance.h in Headers */,
+				58C57682248423A1001DC575 /* RadarMacros.h in Headers */,
 				DDC63819238C801C00747FD4 /* RadarPermissionsHelper.h in Headers */,
 				DD4D4D1B23E60F3500D36C1D /* RadarRouteDuration.h in Headers */,
 				DDC6381A238C801C00747FD4 /* RadarSettings.h in Headers */,

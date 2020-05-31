@@ -76,7 +76,9 @@ NS_ASSUME_NONNULL_BEGIN
     } else if (object == nil || ![object isKindOfClass:[self class]]) {
         return NO;
     }
-    return CompareDoubles(_coordinate.latitude, object->_coordinate.latitude) && CompareDoubles(_coordinate.longitude, object->_coordinate.longitude);
+
+    return [RadarUtils compareDouble:_coordinate.latitude withAnotherDouble:object->_coordinate.latitude] && [RadarUtils compareDouble:_coordinate.longitude
+                                                                                                                     withAnotherDouble:object->_coordinate.longitude];
 }
 
 #pragma mark - designated init

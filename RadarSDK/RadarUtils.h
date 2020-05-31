@@ -5,25 +5,10 @@
 //  Copyright © 2019 Radar Labs, Inc. All rights reserved.
 //
 
+#import "RadarMacros.h"
 #import <Foundation/Foundation.h>
 
-#define weakify(var) __weak typeof(var) RadarWeak_##var = var;
-
-#define strongify(var)                                                                                                                                                             \
-    _Pragma("clang diagnostic push") _Pragma("clang diagnostic ignored \"-Wshadow\"") __strong typeof(var) var = RadarWeak_##var;                                                  \
-    _Pragma("clang diagnostic pop")
-
-#define strongify_else_return(var)                                                                                                                                                 \
-    strongify(var);                                                                                                                                                                \
-    if (!var) {                                                                                                                                                                    \
-        return;                                                                                                                                                                    \
-    }
-
 NS_ASSUME_NONNULL_BEGIN
-
-static BOOL CompareDoubles(double givenDouble, double doubleToCompare) {
-    return fabs(givenDouble - doubleToCompare) < DBL_EPSILON * fabs(givenDouble + doubleToCompare) || fabs(givenDouble - doubleToCompare) < DBL_MIN;
-}
 
 @interface RadarUtils : NSObject
 
@@ -46,6 +31,8 @@ static BOOL CompareDoubles(double givenDouble, double doubleToCompare) {
 + (NSString *)uaChannelId;
 + (NSString *)uaNamedUserId;
 + (NSString *)uaSessionId;
+
++ (BOOL)compareDouble:(double)aDouble withAnotherDouble:(double)anotherDouble;
 
 @end
 
