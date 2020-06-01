@@ -23,6 +23,7 @@ static NSString *const kConfig = @"radar-config";
 static NSString *const kHost = @"radar-host";
 static NSString *const kDefaultHost = @"https://api.radar.io";
 static NSString *const kBeaconEnabled = @"radar-beaconEnabled";
+static NSString *const kBeaconTracking = @"radar_beaconTracking";
 
 + (NSString *)publishableKey {
     return [[NSUserDefaults standardUserDefaults] stringForKey:kPublishableKey];
@@ -128,6 +129,14 @@ static NSString *const kBeaconEnabled = @"radar-beaconEnabled";
 
 + (void)setBeaconEnabled:(BOOL)enabled {
     [[NSUserDefaults standardUserDefaults] setBool:enabled forKey:kBeaconEnabled];
+}
+
++ (BOOL)beaconTracking {
+    return [[NSUserDefaults standardUserDefaults] boolForKey:kBeaconTracking];
+}
+
++ (void)setBeaconTracking:(BOOL)enabled {
+    [[NSUserDefaults standardUserDefaults] setBool:enabled forKey:kBeaconTracking];
 }
 
 @end

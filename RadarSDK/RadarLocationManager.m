@@ -11,6 +11,7 @@
 
 #import "RadarAPIClient.h"
 #import "RadarBackgroundTaskManager.h"
+#import "RadarBeaconManager.h"
 #import "RadarLogger.h"
 #import "RadarSettings.h"
 #import "RadarState.h"
@@ -516,28 +517,46 @@ static NSString *const kRegionIdentifer = @"radar";
 
     self.sending = YES;
 
-    [[RadarAPIClient sharedInstance] trackWithLocation:location
-                                               stopped:stopped
-                                            foreground:[RadarUtils foreground]
-                                                source:source
-                                              replayed:replayed
-                                         nearbyBeacons:nil // TODO: continuous beacon tracking
-                                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user) {
-                                         if (user) {
-                                             [RadarSettings setId:user._id];
+    let completionBlock = ^(NSArray<NSString *> *_Nullable nearbyBeacons) {
+        [[RadarAPIClient sharedInstance] trackWithLocation:location
+                                                   stopped:stopped
+                                                foreground:[RadarUtils foreground]
+                                                    source:source
+                                                  replayed:replayed
+                                             nearbyBeacons:nearbyBeacons
+                                         completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user) {
+                                             if (user) {
+                                                 [RadarSettings setId:user._id];
 
-                                             BOOL inGeofences = user.geofences && user.geofences.count;
-                                             BOOL atPlace = user.place != nil;
-                                             BOOL atHome = user.insights && user.insights.state && user.insights.state.home;
-                                             BOOL atOffice = user.insights && user.insights.state && user.insights.state.office;
-                                             BOOL canExit = inGeofences || atPlace || atHome || atOffice;
-                                             [RadarState setCanExit:canExit];
-                                         }
+                                                 BOOL inGeofences = user.geofences && user.geofences.count;
+                                                 BOOL atPlace = user.place != nil;
+                                                 BOOL atHome = user.insights && user.insights.state && user.insights.state.home;
+                                                 BOOL atOffice = user.insights && user.insights.state && user.insights.state.office;
+                                                 BOOL canExit = inGeofences || atPlace || atHome || atOffice;
+                                                 [RadarState setCanExit:canExit];
+                                             }
 
-                                         self.sending = NO;
+                                             self.sending = NO;
 
-                                         [self updateTracking];
-                                     }];
+                                             [self updateTracking];
+                                         }];
+    };
+
+    if ([[RadarBeaconManager sharedInstance] isTracking]) {
+        [[RadarBeaconManager sharedInstance] updateTrackingWithLocation:location
+                                                                 source:source
+                                                      completionHandler:^(RadarStatus status, NSArray<RadarBeacon *> *_Nullable nearbyBeacons) {
+                                                          if (status != RadarStatusSuccess) {
+                                                              completionBlock(nil);
+                                                              return;
+                                                          }
+
+                                                          let nearbyBeaconIds = BeaconIdsFromRadarBeacons(nearbyBeacons);
+                                                          completionBlock(nearbyBeaconIds);
+                                                      }];
+    } else {
+        completionBlock(nil);
+    }
 }
 
 #pragma mark - CLLocationManagerDelegate

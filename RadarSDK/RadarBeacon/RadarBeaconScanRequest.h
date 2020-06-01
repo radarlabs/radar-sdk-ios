@@ -10,8 +10,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly) NSString *identifier;
 @property (nonatomic, readonly) NSTimeInterval expiration;
+@property (nonatomic, readonly) BOOL shouldTrack;
 @property (nonatomic, readonly) NSArray<RadarBeacon *> *beacons;
-@property (nonatomic, readonly, nullable) RadarBeaconTrackCompletionHandler completionHandler;
+@property (nonatomic, readonly, nullable) RadarBeaconDetectionCompletionHandler detectionCompletionHandler;
 
 + (instancetype)new NS_UNAVAILABLE;
 
@@ -19,8 +20,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithIdentifier:(NSString *)identifier
                         expiration:(NSTimeInterval)expiration
+                       shouldTrack:(BOOL)shouldTrack
                            beacons:(NSArray<RadarBeacon *> *)beacons
-                 completionHandler:(nullable RadarBeaconTrackCompletionHandler)completionHandler NS_DESIGNATED_INITIALIZER;
+                 completionHandler:(nullable RadarBeaconDetectionCompletionHandler)detectionCompletionHandler NS_DESIGNATED_INITIALIZER;
 
 @end
 

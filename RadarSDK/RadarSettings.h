@@ -30,6 +30,8 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)setAdIdEnabled:(BOOL)enabled;
 + (BOOL)beaconEnabled;
 + (void)setBeaconEnabled:(BOOL)enabled;
++ (BOOL)beaconTracking;
++ (void)setBeaconTracking:(BOOL)enabled;
 + (BOOL)tracking;
 + (void)setTracking:(BOOL)tracking;
 + (RadarTrackingOptions *_Nullable)trackingOptions;

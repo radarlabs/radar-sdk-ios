@@ -163,6 +163,9 @@
 
 + (void)startTrackingWithOptions:(RadarTrackingOptions *)options {
     [[RadarLocationManager sharedInstance] startTrackingWithOptions:options];
+    if ([RadarSettings beaconEnabled]) {
+        [[RadarBeaconManager sharedInstance] startTracking];
+    }
 }
 
 + (void)mockTrackingWithOrigin:(CLLocation *)origin
@@ -243,6 +246,7 @@
 
 + (void)stopTracking {
     [[RadarLocationManager sharedInstance] stopTracking];
+    [[RadarBeaconManager sharedInstance] stopTracking];
 }
 
 + (BOOL)isTracking {
@@ -257,6 +261,7 @@
     [[RadarLocationManager sharedInstance] setDelegate:delegate];
     [[RadarAPIClient sharedInstance] setDelegate:delegate];
     [[RadarLogger sharedInstance] setDelegate:delegate];
+    // TODO: delegate for RadarBeaconManager?
 }
 
 + (void)acceptEventId:(NSString *)eventId verifiedPlaceId:(NSString *)verifiedPlaceId {
