@@ -69,6 +69,7 @@ typedef void (^_Nullable RadarDistanceAPICompletionHandler)(RadarStatus status, 
 - (void)searchGeofencesNear:(CLLocation *_Nonnull)near
                      radius:(int)radius
                        tags:(NSArray *_Nullable)tags
+                   metadata:(NSDictionary *_Nullable)metadata
                       limit:(int)limit
           completionHandler:(RadarSearchGeofencesAPICompletionHandler _Nullable)completionHandler;
 
