@@ -363,8 +363,6 @@
     NSString *host = [RadarSettings host];
     NSString *url = [NSString stringWithFormat:@"%@/v1/search/geofences?%@", host, queryString];
     url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
-    
-    // NSLog(@"%@", url);
 
     NSDictionary *headers = [RadarAPIClient headersWithPublishableKey:publishableKey];
 
