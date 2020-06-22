@@ -337,6 +337,7 @@
 - (void)searchGeofencesNear:(CLLocation *_Nonnull)near
                      radius:(int)radius
                        tags:(NSArray *_Nullable)tags
+                   metadata:(NSDictionary *_Nullable)metadata
                       limit:(int)limit
           completionHandler:(RadarSearchGeofencesAPICompletionHandler)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
@@ -352,6 +353,11 @@
     [queryString appendFormat:@"&limit=%d", finalLimit];
     if (tags && [tags count] > 0) {
         [queryString appendFormat:@"&tags=%@", [tags componentsJoinedByString:@","]];
+    }
+    if (metadata && [metadata count] > 0) {
+        for (NSString *key in metadata) {
+            [queryString appendFormat:@"&metadata[%@]=%@", key, metadata[key]];
+        }
     }
 
     NSString *host = [RadarSettings host];
