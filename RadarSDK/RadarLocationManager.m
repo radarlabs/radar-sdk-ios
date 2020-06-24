@@ -125,10 +125,10 @@ static NSString *const kRegionIdentifer = @"radar";
         if (self.delegate) {
             [self.delegate didFailWithStatus:RadarStatusErrorPermissions];
         }
-        
+
         if (completionHandler) {
             completionHandler(RadarStatusErrorPermissions, nil, NO);
-            
+
             return;
         }
     }

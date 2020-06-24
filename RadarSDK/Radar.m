@@ -180,7 +180,7 @@
                             if (i < coordinates.count - 1) {
                                 dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(intervalLimit * NSEC_PER_SEC)), dispatch_get_main_queue(), weakTrack);
                             }
-                        
+
                             i++;
                         }];
                 };
@@ -296,7 +296,11 @@
                                     }];
 }
 
-+ (void)searchGeofencesWithRadius:(int)radius tags:(NSArray *_Nullable)tags metadata:(NSDictionary *_Nullable)metadata limit:(int)limit completionHandler:(RadarSearchGeofencesCompletionHandler)completionHandler {
++ (void)searchGeofencesWithRadius:(int)radius
+                             tags:(NSArray *_Nullable)tags
+                         metadata:(NSDictionary *_Nullable)metadata
+                            limit:(int)limit
+                completionHandler:(RadarSearchGeofencesCompletionHandler)completionHandler {
     [[RadarLocationManager sharedInstance] getLocationWithCompletionHandler:^(RadarStatus status, CLLocation *_Nullable location, BOOL stopped) {
         if (status != RadarStatusSuccess) {
             return completionHandler(status, nil, nil);
