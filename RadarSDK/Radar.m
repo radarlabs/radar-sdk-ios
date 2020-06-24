@@ -296,7 +296,7 @@
                                     }];
 }
 
-+ (void)searchGeofencesWithRadius:(int)radius tags:(NSArray *_Nullable)tags limit:(int)limit completionHandler:(RadarSearchGeofencesCompletionHandler)completionHandler {
++ (void)searchGeofencesWithRadius:(int)radius tags:(NSArray *_Nullable)tags metadata:(NSDictionary *_Nullable)metadata limit:(int)limit completionHandler:(RadarSearchGeofencesCompletionHandler)completionHandler {
     [[RadarLocationManager sharedInstance] getLocationWithCompletionHandler:^(RadarStatus status, CLLocation *_Nullable location, BOOL stopped) {
         if (status != RadarStatusSuccess) {
             return completionHandler(status, nil, nil);
@@ -305,6 +305,7 @@
         [[RadarAPIClient sharedInstance] searchGeofencesNear:location
                                                       radius:radius
                                                         tags:tags
+                                                    metadata:metadata
                                                        limit:limit
                                            completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarGeofence *> *_Nullable geofences) {
                                                completionHandler(status, location, geofences);
@@ -315,11 +316,13 @@
 + (void)searchGeofencesNear:(CLLocation *_Nonnull)near
                      radius:(int)radius
                        tags:(NSArray *_Nullable)tags
+                   metadata:(NSDictionary *_Nullable)metadata
                       limit:(int)limit
           completionHandler:(RadarSearchGeofencesCompletionHandler)completionHandler {
     [[RadarAPIClient sharedInstance] searchGeofencesNear:near
                                                   radius:radius
                                                     tags:tags
+                                                metadata:metadata
                                                    limit:limit
                                        completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarGeofence *> *_Nullable geofences) {
                                            completionHandler(status, near, geofences);

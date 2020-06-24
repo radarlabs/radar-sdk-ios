@@ -876,6 +876,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 
     [Radar searchGeofencesWithRadius:1000
                                 tags:nil
+                            metadata:nil
                                limit:100
                    completionHandler:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarGeofence *> *_Nullable geofences) {
                        XCTAssertEqual(status, RadarStatusErrorPermissions);
@@ -899,6 +900,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 
     [Radar searchGeofencesWithRadius:1000
                                 tags:nil
+                            metadata:nil
                                limit:100
                    completionHandler:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarGeofence *> *_Nullable geofences) {
                        XCTAssertEqual(status, RadarStatusErrorLocation);
@@ -928,6 +930,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 
     [Radar searchGeofencesWithRadius:1000
                                 tags:@[@"store"]
+                            metadata:@{@"foo":@"bar"}
                                limit:100
                    completionHandler:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarGeofence *> *_Nullable geofences) {
                        XCTAssertEqual(status, RadarStatusSuccess);

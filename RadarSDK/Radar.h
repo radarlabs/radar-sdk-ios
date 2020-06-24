@@ -471,13 +471,15 @@ typedef void (^_Nonnull RadarRouteCompletionHandler)(RadarStatus status, RadarRo
 
  @param radius The radius to search, in meters. A number between 100 and 10000.
  @param tags An array of tags to filter. See https://radar.io/documentation/geofences
+ @param metadata A dictionary of metadata to filter. See https://radar.io/documentation/geofences
  @param limit The max number of geofences to return. A number between 1 and 100.
  @param completionHandler A completion handler.
  */
 + (void)searchGeofencesWithRadius:(int)radius
                              tags:(NSArray *_Nullable)tags
+                         metadata:(NSDictionary *_Nullable)metadata
                             limit:(int)limit
-                completionHandler:(RadarSearchGeofencesCompletionHandler)completionHandler NS_SWIFT_NAME(searchGeofences(radius:tags:limit:completionHandler:));
+                completionHandler:(RadarSearchGeofencesCompletionHandler)completionHandler NS_SWIFT_NAME(searchGeofences(radius:tags:metadata:limit:completionHandler:));
 
 /**
  Searches for geofences near a location, sorted by distance.
@@ -485,14 +487,16 @@ typedef void (^_Nonnull RadarRouteCompletionHandler)(RadarStatus status, RadarRo
  @param near The location to search.
  @param radius The radius to search, in meters. A number between 100 and 10000.
  @param tags An array of tags to filter. See https://radar.io/documentation/geofences
+ @param metadata A dictionary of metadata to filter. See https://radar.io/documentation/geofences
  @param limit The max number of geofences to return. A number between 1 and 100.
  @param completionHandler A completion handler.
  */
 + (void)searchGeofencesNear:(CLLocation *)near
                      radius:(int)radius
                        tags:(NSArray *_Nullable)tags
+                   metadata:(NSDictionary *_Nullable)metadata
                       limit:(int)limit
-          completionHandler:(RadarSearchGeofencesCompletionHandler)completionHandler NS_SWIFT_NAME(searchGeofences(near:radius:tags:limit:completionHandler:));
+          completionHandler:(RadarSearchGeofencesCompletionHandler)completionHandler NS_SWIFT_NAME(searchGeofences(near:radius:tags:metadata:limit:completionHandler:));
 
 /**
  Gets the device's current location, then searches for points near that location, sorted by distance.
