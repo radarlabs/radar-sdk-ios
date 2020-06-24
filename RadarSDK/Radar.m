@@ -177,11 +177,11 @@
                                 completionHandler(status, location, events, user);
                             }
 
-                            i++;
-
                             if (i < coordinates.count - 1) {
                                 dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(intervalLimit * NSEC_PER_SEC)), dispatch_get_main_queue(), weakTrack);
                             }
+
+                            i++;
                         }];
                 };
 
@@ -213,6 +213,20 @@
 
 + (void)rejectEventId:(NSString *)eventId {
     [[RadarAPIClient sharedInstance] verifyEventId:eventId verification:RadarEventVerificationReject verifiedPlaceId:nil];
+}
+
++ (RadarTripOptions *)getTripOptions {
+    return [RadarSettings tripOptions];
+}
+
++ (void)startTripWithOptions:(RadarTripOptions *)options {
+    [RadarSettings setTripOptions:options];
+    [[RadarLocationManager sharedInstance] getLocationWithCompletionHandler:nil];
+}
+
++ (void)stopTrip {
+    [RadarSettings setTripOptions:nil];
+    [[RadarLocationManager sharedInstance] getLocationWithCompletionHandler:nil];
 }
 
 + (void)getContextWithCompletionHandler:(RadarContextCompletionHandler)completionHandler {
@@ -282,7 +296,11 @@
                                     }];
 }
 
-+ (void)searchGeofencesWithRadius:(int)radius tags:(NSArray *_Nullable)tags metadata:(NSDictionary *_Nullable)metadata limit:(int)limit completionHandler:(RadarSearchGeofencesCompletionHandler)completionHandler {
++ (void)searchGeofencesWithRadius:(int)radius
+                             tags:(NSArray *_Nullable)tags
+                         metadata:(NSDictionary *_Nullable)metadata
+                            limit:(int)limit
+                completionHandler:(RadarSearchGeofencesCompletionHandler)completionHandler {
     [[RadarLocationManager sharedInstance] getLocationWithCompletionHandler:^(RadarStatus status, CLLocation *_Nullable location, BOOL stopped) {
         if (status != RadarStatusSuccess) {
             return completionHandler(status, nil, nil);
@@ -497,6 +515,22 @@
         break;
     case RadarLocationSourceUnknown:
         str = @"UNKNOWN";
+    }
+    return str;
+}
+
++ (NSString *)stringForMode:(RadarRouteMode)mode {
+    NSString *str;
+    switch (mode) {
+    case RadarRouteModeFoot:
+        str = @"foot";
+        break;
+    case RadarRouteModeBike:
+        str = @"bike";
+        break;
+    case RadarRouteModeCar:
+        str = @"car";
+        break;
     }
     return str;
 }

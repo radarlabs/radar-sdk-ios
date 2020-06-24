@@ -20,6 +20,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @protocol RadarDelegate;
+@class RadarTripOptions;
 
 /**
  The status types for a request.
@@ -337,7 +338,7 @@ typedef void (^_Nonnull RadarRouteCompletionHandler)(RadarStatus status, RadarRo
                           mode:(RadarRouteMode)mode
                          steps:(int)steps
                       interval:(NSTimeInterval)interval
-             completionHandler:(RadarTrackCompletionHandler _Nullable)completionHandler NS_SWIFT_NAME(mockTracking(origin:destination:mode:points:interval:completionHandler:));
+             completionHandler:(RadarTrackCompletionHandler _Nullable)completionHandler NS_SWIFT_NAME(mockTracking(origin:destination:mode:steps:interval:completionHandler:));
 
 /**
  Stops tracking the user's location in the background.
@@ -389,6 +390,25 @@ typedef void (^_Nonnull RadarRouteCompletionHandler)(RadarStatus status, RadarRo
  @see https://radar.io/documentation/sdk#ios-verify
  */
 + (void)rejectEventId:(NSString *_Nonnull)eventId NS_SWIFT_NAME(rejectEventId(_:));
+
+/**
+ Returns the current trip options.
+
+ @return The current trip options.
+ */
++ (RadarTripOptions *_Nullable)getTripOptions;
+
+/**
+ Starts a trip.
+
+ @param options Configurable trip options.
+ */
++ (void)startTripWithOptions:(RadarTripOptions *_Nonnull)options NS_SWIFT_NAME(startTrip(options:));
+
+/**
+ Stops a trip.
+ */
++ (void)stopTrip;
 
 /**
  Gets the device's current location, then gets context for that location without sending device or user identifiers to the server.
@@ -602,6 +622,15 @@ typedef void (^_Nonnull RadarRouteCompletionHandler)(RadarStatus status, RadarRo
  @return A display string for the location source value.
  */
 + (NSString *)stringForSource:(RadarLocationSource)source NS_SWIFT_NAME(stringForSource(_:));
+
+/**
+ Returns a display string for a travel mode value.
+
+ @param mode A travel mode value.
+
+ @return A display string for the travel mode value.
+ */
++ (NSString *)stringForMode:(RadarRouteMode)mode NS_SWIFT_NAME(stringForMode(_:));
 
 /**
  Returns a dictionary for a location.

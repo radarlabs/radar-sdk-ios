@@ -386,6 +386,11 @@
         NSDictionary *regionDict = [self.region dictionaryValue];
         [dict setValue:regionDict forKey:@"region"];
     }
+    NSMutableDictionary *locationDict = [NSMutableDictionary new];
+    locationDict[@"type"] = @"Point";
+    NSArray *coordinates = @[@(self.location.coordinate.longitude), @(self.location.coordinate.latitude)];
+    locationDict[@"coordinates"] = coordinates;
+    [dict setValue:locationDict forKey:@"location"];
     return dict;
 }
 

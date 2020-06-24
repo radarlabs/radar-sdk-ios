@@ -1,6 +1,6 @@
 //
 //  RadarRoutes.m
-//  RadarSDKTests
+//  RadarSDK
 //
 //  Copyright © 2020 Radar Labs, Inc. All rights reserved.
 //
@@ -11,18 +11,13 @@
 
 @implementation RadarRoutes
 
-- (nullable instancetype)initWithGeodesic:(nullable RadarRouteDistance *)geodesic
-                                     foot:(nullable RadarRoute *)foot
-                                     bike:(nullable RadarRoute *)bike
-                                      car:(nullable RadarRoute *)car
-                                  transit:(nullable RadarRoute *)transit {
+- (nullable instancetype)initWithGeodesic:(nullable RadarRouteDistance *)geodesic foot:(nullable RadarRoute *)foot bike:(nullable RadarRoute *)bike car:(nullable RadarRoute *)car {
     self = [super init];
     if (self) {
         _geodesic = geodesic;
         _foot = foot;
         _bike = bike;
         _car = car;
-        _transit = transit;
     }
     return self;
 }
@@ -38,7 +33,6 @@
     RadarRoute *foot;
     RadarRoute *bike;
     RadarRoute *car;
-    RadarRoute *transit;
 
     id geodesicObj = dict[@"geodesic"];
     if (geodesicObj) {
@@ -63,12 +57,7 @@
         car = [[RadarRoute alloc] initWithObject:carObj];
     }
 
-    id transitObj = dict[@"transit"];
-    if (transitObj) {
-        transit = [[RadarRoute alloc] initWithObject:transitObj];
-    }
-
-    return [[RadarRoutes alloc] initWithGeodesic:geodesic foot:foot bike:bike car:car transit:transit];
+    return [[RadarRoutes alloc] initWithGeodesic:geodesic foot:foot bike:bike car:car];
 }
 
 - (NSDictionary *)dictionaryValue {
@@ -88,10 +77,6 @@
     if (self.car) {
         NSDictionary *carDict = [self.car dictionaryValue];
         [dict setValue:carDict forKey:@"car"];
-    }
-    if (self.transit) {
-        NSDictionary *transitDict = [self.transit dictionaryValue];
-        [dict setValue:transitDict forKey:@"transit"];
     }
     return dict;
 }

@@ -275,6 +275,11 @@
     [dict setValue:self.deviceId forKey:@"deviceId"];
     [dict setValue:self._description forKey:@"description"];
     [dict setValue:self.metadata forKey:@"metadata"];
+    NSMutableDictionary *locationDict = [NSMutableDictionary new];
+    locationDict[@"type"] = @"Point";
+    NSArray *coordinates = @[@(self.location.coordinate.longitude), @(self.location.coordinate.latitude)];
+    locationDict[@"coordinates"] = coordinates;
+    [dict setValue:locationDict forKey:@"location"];
     NSArray *geofencesArr = [RadarGeofence arrayForGeofences:self.geofences];
     [dict setValue:geofencesArr forKey:@"geofences"];
     if (self.place) {

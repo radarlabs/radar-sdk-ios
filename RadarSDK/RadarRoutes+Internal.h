@@ -11,11 +11,7 @@
 
 @interface RadarRoutes ()
 
-- (nullable instancetype)initWithGeodesic:(nullable RadarRouteDistance *)geodesic
-                                     foot:(nullable RadarRoute *)foot
-                                     bike:(nullable RadarRoute *)bike
-                                      car:(nullable RadarRoute *)car
-                                  transit:(nullable RadarRoute *)transit;
+- (nullable instancetype)initWithGeodesic:(nullable RadarRouteDistance *)geodesic foot:(nullable RadarRoute *)foot bike:(nullable RadarRoute *)bike car:(nullable RadarRoute *)car;
 
 - (instancetype _Nullable)initWithObject:(id _Nonnull)object;
 

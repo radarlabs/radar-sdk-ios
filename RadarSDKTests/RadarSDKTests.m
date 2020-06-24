@@ -17,6 +17,7 @@
 #import "RadarPermissionsHelperMock.h"
 #import "RadarSettings.h"
 #import "RadarTestUtils.h"
+#import "RadarTripOptions.h"
 
 @interface RadarSDKTests : XCTestCase
 
@@ -639,6 +640,21 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     [Radar rejectEventId:@"eventId"];
 }
 
+- (void)test_Radar_startTrip {
+    RadarTripOptions *options = [[RadarTripOptions alloc] initWithExternalId:@"tripExternalId"];
+    options.metadata = @{@"foo": @"bar", @"baz": @YES, @"qux": @1};
+    options.destinationGeofenceTag = @"tripDestinationGeofenceTag";
+    options.destinationGeofenceExternalId = @"tripDestinationExternalId";
+    options.mode = RadarRouteModeFoot;
+    [Radar startTripWithOptions:options];
+    XCTAssertEqualObjects(options, [Radar getTripOptions]);
+}
+
+- (void)test_Radar_stopTrip {
+    [Radar stopTrip];
+    XCTAssertNil([Radar getTripOptions]);
+}
+
 - (void)test_Radar_getContext_errorPermissions {
     self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusNotDetermined;
     self.locationManagerMock.mockLocation = nil;
@@ -914,7 +930,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 
     [Radar searchGeofencesWithRadius:1000
                                 tags:@[@"store"]
-                            metadata:@{@"foo":@"bar"}
+                            metadata:@{@"foo": @"bar"}
                                limit:100
                    completionHandler:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarGeofence *> *_Nullable geofences) {
                        XCTAssertEqual(status, RadarStatusSuccess);

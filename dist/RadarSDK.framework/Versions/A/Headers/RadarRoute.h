@@ -1,13 +1,15 @@
 //
 //  RadarRoute.h
-//  RadarSDKTests
+//  RadarSDK
 //
 //  Copyright © 2020 Radar Labs, Inc. All rights reserved.
 //
 
+#import <Foundation/Foundation.h>
+
 #import "RadarRouteDistance.h"
 #import "RadarRouteDuration.h"
-#import <Foundation/Foundation.h>
+#import "RadarRouteGeometry.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -25,6 +27,11 @@ NS_ASSUME_NONNULL_BEGIN
  The duration of the route.
  */
 @property (nonnull, strong, nonatomic, readonly) RadarRouteDuration *duration;
+
+/**
+ The geometry of the route.
+ */
+@property (nonnull, strong, nonatomic, readonly) RadarRouteGeometry *geometry;
 
 - (NSDictionary *_Nonnull)dictionaryValue;
 
