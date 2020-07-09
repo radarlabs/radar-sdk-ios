@@ -287,12 +287,13 @@ static NSString *const kRegionIdentifer = @"radar";
             if (@available(iOS 11.0, *)) {
                 self.lowPowerLocationManager.showsBackgroundLocationIndicator = options.showBlueBar;
             }
-
+            
+            BOOL startUpdates = options.showBlueBar || [CLLocationManager authorizationStatus] == kCLAuthorizationStatusAuthorizedAlways;
             BOOL stopped = [RadarState stopped];
             if (stopped) {
                 if (options.desiredStoppedUpdateInterval == 0) {
                     [self stopUpdates];
-                } else {
+                } else if (startUpdates) {
                     [self startUpdates:options.desiredStoppedUpdateInterval];
                 }
                 if (options.useStoppedGeofence) {
@@ -305,7 +306,7 @@ static NSString *const kRegionIdentifer = @"radar";
             } else {
                 if (options.desiredMovingUpdateInterval == 0) {
                     [self stopUpdates];
-                } else {
+                } else if (startUpdates) {
                     [self startUpdates:options.desiredMovingUpdateInterval];
                 }
                 if (options.useMovingGeofence) {
