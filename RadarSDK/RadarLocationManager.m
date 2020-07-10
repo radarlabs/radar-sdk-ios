@@ -57,12 +57,12 @@ static NSString *const kRegionIdentifer = @"radar";
         _locationManager.delegate = self;
         _locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters;
         _locationManager.distanceFilter = kCLDistanceFilterNone;
-        _locationManager.allowsBackgroundLocationUpdates = [RadarUtils allowsBackgroundLocationUpdates];
+        _locationManager.allowsBackgroundLocationUpdates = [RadarUtils locationBackgroundMode] && [CLLocationManager authorizationStatus] == kCLAuthorizationStatusAuthorizedAlways;
 
         _lowPowerLocationManager = [CLLocationManager new];
         _lowPowerLocationManager.desiredAccuracy = kCLLocationAccuracyThreeKilometers;
         _lowPowerLocationManager.distanceFilter = 3000;
-        _lowPowerLocationManager.allowsBackgroundLocationUpdates = [RadarUtils allowsBackgroundLocationUpdates];
+        _lowPowerLocationManager.allowsBackgroundLocationUpdates = [RadarUtils locationBackgroundMode];
 
         _permissionsHelper = [RadarPermissionsHelper new];
     }
@@ -265,7 +265,11 @@ static NSString *const kRegionIdentifer = @"radar";
         }
 
         if (tracking) {
+            self.locationManager.allowsBackgroundLocationUpdates =
+                [RadarUtils locationBackgroundMode] && [CLLocationManager authorizationStatus] == kCLAuthorizationStatusAuthorizedAlways;
             self.locationManager.pausesLocationUpdatesAutomatically = NO;
+
+            self.lowPowerLocationManager.allowsBackgroundLocationUpdates = [RadarUtils locationBackgroundMode];
             self.lowPowerLocationManager.pausesLocationUpdatesAutomatically = NO;
 
             CLLocationAccuracy desiredAccuracy;
@@ -288,11 +292,12 @@ static NSString *const kRegionIdentifer = @"radar";
                 self.lowPowerLocationManager.showsBackgroundLocationIndicator = options.showBlueBar;
             }
 
+            BOOL startUpdates = options.showBlueBar || [CLLocationManager authorizationStatus] == kCLAuthorizationStatusAuthorizedAlways;
             BOOL stopped = [RadarState stopped];
             if (stopped) {
                 if (options.desiredStoppedUpdateInterval == 0) {
                     [self stopUpdates];
-                } else {
+                } else if (startUpdates) {
                     [self startUpdates:options.desiredStoppedUpdateInterval];
                 }
                 if (options.useStoppedGeofence) {
@@ -305,7 +310,7 @@ static NSString *const kRegionIdentifer = @"radar";
             } else {
                 if (options.desiredMovingUpdateInterval == 0) {
                     [self stopUpdates];
-                } else {
+                } else if (startUpdates) {
                     [self startUpdates:options.desiredMovingUpdateInterval];
                 }
                 if (options.useMovingGeofence) {

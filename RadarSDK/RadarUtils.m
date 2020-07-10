@@ -32,7 +32,7 @@
 }
 
 + (NSString *)sdkVersion {
-    return @"3.0.2";
+    return @"3.0.3";
 }
 
 + (NSString *)adId {
@@ -67,10 +67,6 @@
 + (BOOL)locationBackgroundMode {
     NSArray *backgroundModes = [NSBundle mainBundle].infoDictionary[@"UIBackgroundModes"];
     return backgroundModes && [backgroundModes containsObject:@"location"];
-}
-
-+ (BOOL)allowsBackgroundLocationUpdates {
-    return [RadarUtils locationBackgroundMode] && [CLLocationManager authorizationStatus] == kCLAuthorizationStatusAuthorizedAlways;
 }
 
 + (BOOL)foreground {
