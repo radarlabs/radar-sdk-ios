@@ -69,10 +69,6 @@
     return backgroundModes && [backgroundModes containsObject:@"location"];
 }
 
-+ (BOOL)allowsBackgroundLocationUpdates {
-    return [RadarUtils locationBackgroundMode] && [CLLocationManager authorizationStatus] == kCLAuthorizationStatusAuthorizedAlways;
-}
-
 + (BOOL)foreground {
     return [[UIApplication sharedApplication] applicationState] != UIApplicationStateBackground;
 }

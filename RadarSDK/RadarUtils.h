@@ -21,7 +21,6 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSString *)deviceType;
 + (NSString *)deviceMake;
 + (BOOL)locationBackgroundMode;
-+ (BOOL)allowsBackgroundLocationUpdates;
 + (BOOL)foreground;
 + (NSTimeInterval)backgroundTimeRemaining;
 + (CLLocation *)locationForDictionary:(NSDictionary *_Nonnull)dict;

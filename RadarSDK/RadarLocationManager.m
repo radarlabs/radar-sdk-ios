@@ -57,12 +57,12 @@ static NSString *const kRegionIdentifer = @"radar";
         _locationManager.delegate = self;
         _locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters;
         _locationManager.distanceFilter = kCLDistanceFilterNone;
-        _locationManager.allowsBackgroundLocationUpdates = [RadarUtils allowsBackgroundLocationUpdates];
+        _locationManager.allowsBackgroundLocationUpdates = [RadarUtils locationBackgroundMode];
 
         _lowPowerLocationManager = [CLLocationManager new];
         _lowPowerLocationManager.desiredAccuracy = kCLLocationAccuracyThreeKilometers;
         _lowPowerLocationManager.distanceFilter = 3000;
-        _lowPowerLocationManager.allowsBackgroundLocationUpdates = [RadarUtils allowsBackgroundLocationUpdates];
+        _lowPowerLocationManager.allowsBackgroundLocationUpdates = [RadarUtils locationBackgroundMode];
 
         _permissionsHelper = [RadarPermissionsHelper new];
     }
@@ -287,7 +287,7 @@ static NSString *const kRegionIdentifer = @"radar";
             if (@available(iOS 11.0, *)) {
                 self.lowPowerLocationManager.showsBackgroundLocationIndicator = options.showBlueBar;
             }
-            
+
             BOOL startUpdates = options.showBlueBar || [CLLocationManager authorizationStatus] == kCLAuthorizationStatusAuthorizedAlways;
             BOOL stopped = [RadarState stopped];
             if (stopped) {
