@@ -57,7 +57,7 @@ static NSString *const kRegionIdentifer = @"radar";
         _locationManager.delegate = self;
         _locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters;
         _locationManager.distanceFilter = kCLDistanceFilterNone;
-        _locationManager.allowsBackgroundLocationUpdates = [RadarUtils locationBackgroundMode];
+        _locationManager.allowsBackgroundLocationUpdates = [RadarUtils locationBackgroundMode] && [CLLocationManager authorizationStatus] == kCLAuthorizationStatusAuthorizedAlways;
 
         _lowPowerLocationManager = [CLLocationManager new];
         _lowPowerLocationManager.desiredAccuracy = kCLLocationAccuracyThreeKilometers;
@@ -265,7 +265,11 @@ static NSString *const kRegionIdentifer = @"radar";
         }
 
         if (tracking) {
+            self.locationManager.allowsBackgroundLocationUpdates =
+                [RadarUtils locationBackgroundMode] && [CLLocationManager authorizationStatus] == kCLAuthorizationStatusAuthorizedAlways;
             self.locationManager.pausesLocationUpdatesAutomatically = NO;
+
+            self.lowPowerLocationManager.allowsBackgroundLocationUpdates = [RadarUtils locationBackgroundMode];
             self.lowPowerLocationManager.pausesLocationUpdatesAutomatically = NO;
 
             CLLocationAccuracy desiredAccuracy;
