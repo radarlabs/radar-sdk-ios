@@ -260,7 +260,37 @@
                                   url:url
                               headers:headers
                                params:params
-                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res){
+                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
+
+                    }];
+}
+
+- (void)stopTrip {
+    NSString *publishableKey = [RadarSettings publishableKey];
+    if (!publishableKey) {
+        return;
+    }
+    
+    RadarTripOptions *tripOptions = [RadarSettings tripOptions];
+    if (!tripOptions || !tripOptions.externalId) {
+        return;
+    }
+
+    NSMutableDictionary *params = [NSMutableDictionary new];
+
+    params[@"active"] = @(NO);
+
+    NSString *host = [RadarSettings host];
+    NSString *url = [NSString stringWithFormat:@"%@/v1/trips/%@", host, tripOptions.externalId];
+    url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
+
+    NSDictionary *headers = [RadarAPIClient headersWithPublishableKey:publishableKey];
+
+    [self.apiHelper requestWithMethod:@"PATCH"
+                                  url:url
+                              headers:headers
+                               params:params
+                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
 
                     }];
 }

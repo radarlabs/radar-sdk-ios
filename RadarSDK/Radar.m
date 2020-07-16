@@ -225,8 +225,8 @@
 }
 
 + (void)stopTrip {
+    [[RadarAPIClient sharedInstance] stopTrip];
     [RadarSettings setTripOptions:nil];
-    [[RadarLocationManager sharedInstance] getLocationWithCompletionHandler:nil];
 }
 
 + (void)getContextWithCompletionHandler:(RadarContextCompletionHandler)completionHandler {
