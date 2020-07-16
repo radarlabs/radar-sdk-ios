@@ -102,14 +102,27 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             print("Distance: status = \(Radar.stringForStatus(status)); routes.car.distance.value = \(String(describing: routes?.car?.distance.value)); routes.car.distance.text = \(String(describing: routes?.car?.distance.text)); routes.car.duration.value = \(String(describing: routes?.car?.duration.value)); routes.car.duration.text = \(String(describing: routes?.car?.duration.text))")
         }
         
+        let tripOptions = RadarTripOptions(externalId: "299")
+        tripOptions.destinationGeofenceTag = "store"
+        tripOptions.destinationGeofenceExternalId = "123"
+        tripOptions.mode = .car
+        
+        let steps = 3
+        var i = 0
         Radar.mockTracking(
             origin: origin,
             destination: destination,
             mode: .car,
-            steps: 10,
-            interval: 1
+            steps: steps,
+            interval: 3
         ) { (status, location, events, user) in
             print("Mock track: status = \(Radar.stringForStatus(status)); location = \(String(describing: location)); events = \(String(describing: events)); user = \(String(describing: user))")
+            
+            i++
+            
+            if (i == steps - 1) {
+                Radar.stopTrip()
+            }
         }
 
         return true
