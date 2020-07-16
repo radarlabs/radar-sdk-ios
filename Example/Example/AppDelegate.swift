@@ -107,22 +107,21 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         tripOptions.destinationGeofenceExternalId = "123"
         tripOptions.mode = .car
         
-        let steps = 3
         var i = 0
         Radar.mockTracking(
             origin: origin,
             destination: destination,
             mode: .car,
-            steps: steps,
+            steps: 3,
             interval: 3
         ) { (status, location, events, user) in
             print("Mock track: status = \(Radar.stringForStatus(status)); location = \(String(describing: location)); events = \(String(describing: events)); user = \(String(describing: user))")
             
-            i++
-            
-            if (i == steps - 1) {
+            if (i == 2) {
                 Radar.stopTrip()
             }
+            
+            i++
         }
 
         return true
