@@ -121,7 +121,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 Radar.stopTrip()
             }
             
-            i++
+            i += 1
         }
 
         return true
