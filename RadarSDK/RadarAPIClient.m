@@ -585,7 +585,7 @@
 - (void)ipGeocodeWithCompletionHandler:(RadarIPGeocodeAPICompletionHandler)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
-        return completionHandler(RadarStatusErrorPublishableKey, nil, nil);
+        return completionHandler(RadarStatusErrorPublishableKey, nil, nil, NO);
     }
 
     NSString *host = [RadarSettings host];
@@ -599,17 +599,23 @@
                                params:nil
                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
                         if (status != RadarStatusSuccess || !res) {
-                            return completionHandler(status, nil, nil);
+                            return completionHandler(status, nil, nil, NO);
                         }
 
                         id addressObj = res[@"address"];
                         RadarAddress *address = [[RadarAddress alloc] initWithObject:addressObj];
-
-                        if (address) {
-                            return completionHandler(RadarStatusSuccess, res, address);
+                        id proxyObj = res[@"proxy"];
+                        BOOL proxy = NO;
+                        if ([proxyObj isKindOfClass:[NSNumber class]]) {
+                            NSNumber *proxyNumber = (NSNumber *)proxyObj;
+                            proxy = [proxyNumber boolValue];
                         }
 
-                        completionHandler(RadarStatusErrorServer, nil, nil);
+                        if (address) {
+                            return completionHandler(RadarStatusSuccess, res, address, proxy);
+                        }
+
+                        completionHandler(RadarStatusErrorServer, nil, nil, NO);
                     }];
 }
 

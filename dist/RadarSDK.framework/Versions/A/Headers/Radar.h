@@ -188,7 +188,7 @@ typedef void (^_Nonnull RadarGeocodeCompletionHandler)(RadarStatus status, NSArr
 
  @see https://radar.io/documentation/api#geocode-ip
  */
-typedef void (^_Nonnull RadarIPGeocodeCompletionHandler)(RadarStatus status, RadarAddress *_Nullable address);
+typedef void (^_Nonnull RadarIPGeocodeCompletionHandler)(RadarStatus status, RadarAddress *_Nullable address, BOOL proxy);
 
 /**
  Called when a routing request succeeds, fails, or times out.

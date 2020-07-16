@@ -1224,9 +1224,10 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 
     XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
 
-    [Radar ipGeocodeWithCompletionHandler:^(RadarStatus status, RadarAddress *_Nullable address) {
+    [Radar ipGeocodeWithCompletionHandler:^(RadarStatus status, RadarAddress *_Nullable address, BOOL proxy) {
         XCTAssertEqual(status, RadarStatusErrorServer);
         XCTAssertNil(address);
+        XCTAssertFalse(proxy);
 
         [expectation fulfill];
     }];
@@ -1246,9 +1247,10 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 
     XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
 
-    [Radar ipGeocodeWithCompletionHandler:^(RadarStatus status, RadarAddress *_Nullable address) {
+    [Radar ipGeocodeWithCompletionHandler:^(RadarStatus status, RadarAddress *_Nullable address, BOOL proxy) {
         XCTAssertEqual(status, RadarStatusSuccess);
         AssertAddressOk(address);
+        XCTAssertTrue(proxy);
 
         [expectation fulfill];
     }];
