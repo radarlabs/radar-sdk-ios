@@ -25,9 +25,9 @@ typedef NS_ENUM(NSInteger, RadarAddressConfidence) {
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- Represents an address. For more information, see https://radar.io/documentation/api#geocode.
+ Represents an address. For more information, see https://radar.io/documentation/api#geocoding.
 
- @see https://radar.io/documentation/api#geocode
+ @see https://radar.io/documentation/api#geocoding
  */
 @interface RadarAddress : NSObject
 
