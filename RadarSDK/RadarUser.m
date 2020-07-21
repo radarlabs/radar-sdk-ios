@@ -5,6 +5,7 @@
 //  Copyright © 2019 Radar Labs, Inc. All rights reserved.
 //
 
+#import "Radar.h"
 #import "RadarUser.h"
 #import "RadarChain+Internal.h"
 #import "RadarGeofence+Internal.h"
@@ -33,7 +34,9 @@
                           postalCode:(RadarRegion *_Nullable)postalCode
                    nearbyPlaceChains:(nullable NSArray<RadarChain *> *)nearbyPlaceChains
                             segments:(nullable NSArray<RadarSegment *> *)segments
-                           topChains:(nullable NSArray<RadarChain *> *)topChains {
+                           topChains:(nullable NSArray<RadarChain *> *)topChains
+                              source:(RadarLocationSource)source
+                               proxy:(BOOL)proxy {
     self = [super init];
     if (self) {
         __id = _id;
@@ -54,6 +57,8 @@
         _nearbyPlaceChains = nearbyPlaceChains;
         _segments = segments;
         _topChains = topChains;
+        _source = source;
+        _proxy = proxy;
     }
     return self;
 }
@@ -83,6 +88,8 @@
     NSArray<RadarChain *> *nearbyPlaceChains;
     NSArray<RadarSegment *> *segments;
     NSArray<RadarChain *> *topChains;
+    RadarLocationSource source = RadarLocationSourceUnknown;
+    BOOL proxy = false;
 
     id idObj = dict[@"_id"];
     if (idObj && [idObj isKindOfClass:[NSString class]]) {
@@ -243,6 +250,71 @@
 
         topChains = mutableTopChains;
     }
+    
+    /**
+     case RadarLocationSourceForegroundLocation:
+         str = @"FOREGROUND_LOCATION";
+         break;
+     case RadarLocationSourceBackgroundLocation:
+         str = @"BACKGROUND_LOCATION";
+         break;
+     case RadarLocationSourceManualLocation:
+         str = @"MANUAL_LOCATION";
+         break;
+     case RadarLocationSourceGeofenceEnter:
+         str = @"GEOFENCE_ENTER";
+         break;
+     case RadarLocationSourceGeofenceExit:
+         str = @"GEOFENCE_EXIT";
+         break;
+     case RadarLocationSourceVisitArrival:
+         str = @"VISIT_ARRIVAL";
+         break;
+     case RadarLocationSourceVisitDeparture:
+         str = @"VISIT_DEPARTURE";
+         break;
+     case RadarLocationSourceMockLocation:
+         str = @"MOCK_LOCATION";
+         break;
+     case RadarLocationSourceUnknown:
+         str = @"UNKNOWN";
+     }
+     */
+    
+    id sourceObj = dict[@"source"];
+    if (sourceObj && [sourceObj isKindOfClass:[NSString class]]) {
+        NSString *sourceStr = (NSString *)sourceObj;
+
+        if ([sourceStr isEqualToString:@"FOREGROUND_LOCATION"]) {
+            source = RadarLocationSourceForegroundLocation;
+        } else if ([sourceStr isEqualToString:@"BACKGROUND_LOCATION"]) {
+            source = RadarLocationSourceBackgroundLocation;
+        } else if ([sourceStr isEqualToString:@"MANUAL_LOCATION"]) {
+            source = RadarLocationSourceManualLocation;
+        } else if ([sourceStr isEqualToString:@"GEOFENCE_ENTER"]) {
+            source = RadarLocationSourceGeofenceEnter;
+        } else if ([sourceStr isEqualToString:@"GEOFENCE_EXIT"]) {
+            source = RadarLocationSourceGeofenceExit;
+        } else if ([sourceStr isEqualToString:@"VISIT_ARRIVAL"]) {
+           source = RadarLocationSourceVisitArrival;
+       } else if ([sourceStr isEqualToString:@"VISIT_DEPARTURE"]) {
+           source = RadarLocationSourceVisitDeparture;
+       } else if ([sourceStr isEqualToString:@"MOCK_LOCATION"]) {
+           source = RadarLocationSourceMockLocation;
+       }
+    }
+    
+    id fraudObj = dict[@"fraud"];
+    if (fraudObj && [fraudObj isKindOfClass:[NSDictionary class]]) {
+        NSDictionary *fraudDict = (NSDictionary *)fraudObj;
+        
+        id proxyObj = fraudDict[@"proxy"];
+        if (proxyObj && [proxyObj isKindOfClass:[NSNumber class]]) {
+            NSNumber *proxyNumber = (NSNumber *)proxyObj;
+
+            proxy = [proxyNumber boolValue];
+        }
+    }
 
     if (_id && location) {
         return [[RadarUser alloc] initWithId:_id
@@ -262,7 +334,9 @@
                                   postalCode:postalCode
                            nearbyPlaceChains:nearbyPlaceChains
                                     segments:segments
-                                   topChains:topChains];
+                                   topChains:topChains
+                                      source:source
+                                       proxy:proxy];
     }
 
     return nil;
@@ -314,6 +388,12 @@
     [dict setValue:segmentsArr forKey:@"segments"];
     NSArray *topChainsArr = [RadarChain arrayForChains:self.topChains];
     [dict setValue:topChainsArr forKey:@"topChains"];
+    [dict setValue:[Radar stringForSource:self.source] forKey:@"source"];
+    NSDictionary *fraudDict = @{
+        @"proxy": @(self.proxy),
+        @"mocked": @(NO)
+    };
+    [dict setValue:fraudDict forKey:@"fraud"];
     return dict;
 }
 

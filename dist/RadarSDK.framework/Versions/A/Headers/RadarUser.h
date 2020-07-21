@@ -13,6 +13,8 @@
 #import "RadarUserInsights.h"
 #import <Foundation/Foundation.h>
 
+typedef NS_ENUM(NSInteger, RadarLocationSource);
+
 /**
  Represents the current user state. For more information, see https://radar.io/documentation.
 
@@ -125,5 +127,15 @@
 @property (nullable, copy, nonatomic, readonly) NSArray<RadarChain *> *topChains;
 
 - (NSDictionary *_Nonnull)dictionaryValue;
+
+/**
+ The source of the user's last known location.
+ */
+@property (assign, nonatomic, readonly) RadarLocationSource source;
+
+/**
+ A boolean indicating whether the user is using a proxy. May be `false` if Fraud is not enabled.
+ */
+@property (assign, nonatomic, readonly) BOOL proxy;
 
 @end

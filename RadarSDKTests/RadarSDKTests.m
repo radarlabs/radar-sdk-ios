@@ -158,6 +158,8 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     AssertChainsOk(user.nearbyPlaceChains);
     AssertSegmentsOk(user.segments);
     AssertChainsOk(user.topChains);
+    XCTAssertNotEqual(user.source, RadarLocationSourceUnknown);
+    XCTAssertTrue(user.proxy);
 }
 
 #define AssertEventsOk(events) [self assertEventsOk:events]

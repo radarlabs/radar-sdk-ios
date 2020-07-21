@@ -177,6 +177,10 @@
          "name": "10024",
          "code": "10024"
       }
+      "source": "BACKGROUND_LOCATION",
+      "fraud": {
+          "proxy": true
+      }
    },
    "events": [
       {
