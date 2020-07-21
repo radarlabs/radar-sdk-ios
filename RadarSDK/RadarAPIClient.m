@@ -260,7 +260,7 @@
                                   url:url
                               headers:headers
                                params:params
-                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
+                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res){
 
                     }];
 }
@@ -270,7 +270,7 @@
     if (!publishableKey) {
         return;
     }
-    
+
     RadarTripOptions *tripOptions = [RadarSettings tripOptions];
     if (!tripOptions || !tripOptions.externalId) {
         return;
@@ -290,7 +290,7 @@
                                   url:url
                               headers:headers
                                params:params
-                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
+                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res){
 
                     }];
 }
