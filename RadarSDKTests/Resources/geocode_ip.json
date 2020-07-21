@@ -29,5 +29,5 @@
     "confidence": "exact",
     "addressLabel": "20 Jay Street"
   },
-  "proxy": false
+  "proxy": true
 }
