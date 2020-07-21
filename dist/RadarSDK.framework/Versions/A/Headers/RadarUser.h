@@ -134,7 +134,7 @@ typedef NS_ENUM(NSInteger, RadarLocationSource);
 @property (assign, nonatomic, readonly) RadarLocationSource source;
 
 /**
- A boolean indicating whether the user is using a proxy. May be `false` if Fraud is not enabled.
+ A boolean indicating whether the user's IP address is a known proxy. May be `false` if Fraud is not enabled.
  */
 @property (assign, nonatomic, readonly) BOOL proxy;
 
