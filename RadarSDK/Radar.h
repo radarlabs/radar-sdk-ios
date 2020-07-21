@@ -184,7 +184,7 @@ typedef void (^_Nonnull RadarGeocodeCompletionHandler)(RadarStatus status, NSArr
 /**
  Called when an IP geocoding request succeeds, fails, or times out.
 
- Receives the request status and, if successful, the geocoding result (a partial address).
+ Receives the request status and, if successful, the geocoding result (a partial address) and a boolean indicating whether the IP address is a known proxy.
 
  @see https://radar.io/documentation/api#ip-geocode
  */
