@@ -20,6 +20,8 @@
                                      country:(NSString *_Nullable)country
                                  countryCode:(NSString *_Nullable)countryCode
                                  countryFlag:(NSString *_Nullable)countryFlag
+                                         dma:(NSString *_Nullable)dma
+                                     dmaCode:(NSString *_Nullable)dmaCode
                                        state:(NSString *_Nullable)state
                                    stateCode:(NSString *_Nullable)stateCode
                                   postalCode:(NSString *_Nullable)postalCode

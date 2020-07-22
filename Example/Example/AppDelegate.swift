@@ -106,6 +106,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         tripOptions.destinationGeofenceTag = "store"
         tripOptions.destinationGeofenceExternalId = "123"
         tripOptions.mode = .car
+        Radar.startTrip(options: tripOptions)
         
         var i = 0
         Radar.mockTracking(
