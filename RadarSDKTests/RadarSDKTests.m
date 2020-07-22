@@ -1252,8 +1252,8 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     [Radar ipGeocodeWithCompletionHandler:^(RadarStatus status, RadarAddress *_Nullable address, BOOL proxy) {
         XCTAssertEqual(status, RadarStatusSuccess);
         AssertAddressOk(address);
-        XCTAssertNotNil(address.dma)
-        XCTAssertNotNil(address.dmaCode)
+        XCTAssertNotNil(address.dma);
+        XCTAssertNotNil(address.dmaCode);
         XCTAssertTrue(proxy);
 
         [expectation fulfill];
