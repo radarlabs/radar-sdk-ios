@@ -14,7 +14,7 @@
     <a title="Type Definitions  Reference"></a>
     <header>
       <div class="content-wrapper">
-        <p><a href="index.html">RadarSDK 3.0.3 Docs</a></p>
+        <p><a href="index.html">RadarSDK 3.0.4 Docs</a></p>
         <p class="header-right"><a href="https://github.com/radarlabs/radar-sdk-ios"><img src="img/gh.png"/>View on GitHub</a></p>
       </div>
     </header>
@@ -225,7 +225,7 @@
 <p>Receives the request status and, if successful, the location.</p>
 <div class="aside aside-see">
     <p class="aside-title">See</p>
-    <a href="https://radar.io/documentation/sdk#ios-foreground">https://radar.io/documentation/sdk#ios-foreground</a>
+    <a href="https://radar.io/documentation/sdk#ios">https://radar.io/documentation/sdk#ios</a>
 
 </div>
 
@@ -266,7 +266,7 @@
 <p>Receives the request status and, if successful, the user&rsquo;s location, an array of the events generated, and the user.</p>
 <div class="aside aside-see">
     <p class="aside-title">See</p>
-    <a href="https://radar.io/documentation/sdk#ios-foreground">https://radar.io/documentation/sdk#ios-foreground</a>
+    <a href="https://radar.io/documentation/sdk#ios">https://radar.io/documentation/sdk#ios</a>
 
 </div>
 
@@ -505,10 +505,10 @@
                       <div class="abstract">
                         <p>Called when an IP geocoding request succeeds, fails, or times out.</p>
 
-<p>Receives the request status and, if successful, the geocoding result (a partial address).</p>
+<p>Receives the request status and, if successful, the geocoding result (a partial address) and a boolean indicating whether the IP address is a known proxy.</p>
 <div class="aside aside-see">
     <p class="aside-title">See</p>
-    <a href="https://radar.io/documentation/api#geocode-ip">https://radar.io/documentation/api#geocode-ip</a>
+    <a href="https://radar.io/documentation/api#ip-geocode">https://radar.io/documentation/api#ip-geocode</a>
 
 </div>
 
@@ -518,12 +518,12 @@
                         <div class="language">
                           <p class="aside-title">Objective-C</p>
                           <pre class="highlight objective_c"><code><span class="k">typedef</span> <span class="kt">void</span> <span class="p">(</span><span class="o">^</span><span class="n">_Nonnull</span> <span class="n">RadarIPGeocodeCompletionHandler</span><span class="p">)(</span>
-    <span class="n"><a href="Enums/RadarStatus.html">RadarStatus</a></span><span class="p">,</span> <span class="n"><a href="Classes/RadarAddress.html">RadarAddress</a></span> <span class="o">*</span><span class="n">_Nullable</span><span class="p">)</span></code></pre>
+    <span class="n"><a href="Enums/RadarStatus.html">RadarStatus</a></span><span class="p">,</span> <span class="n"><a href="Classes/RadarAddress.html">RadarAddress</a></span> <span class="o">*</span><span class="n">_Nullable</span><span class="p">,</span> <span class="n">BOOL</span><span class="p">)</span></code></pre>
 
                         </div>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">typealias</span> <span class="kt">RadarIPGeocodeCompletionHandler</span> <span class="o">=</span> <span class="p">(</span><span class="kt"><a href="Enums/RadarStatus.html">RadarStatus</a></span><span class="p">,</span> <span class="kt"><a href="Classes/RadarAddress.html">RadarAddress</a></span><span class="p">?)</span> <span class="o">-&gt;</span> <span class="kt">Void</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">typealias</span> <span class="kt">RadarIPGeocodeCompletionHandler</span> <span class="o">=</span> <span class="p">(</span><span class="kt"><a href="Enums/RadarStatus.html">RadarStatus</a></span><span class="p">,</span> <span class="kt"><a href="Classes/RadarAddress.html">RadarAddress</a></span><span class="p">?,</span> <span class="kt">Bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Void</span></code></pre>
 
                         </div>
                       </div>
@@ -548,7 +548,7 @@
 <p>Receives the request status and, if successful, the routes.</p>
 <div class="aside aside-see">
     <p class="aside-title">See</p>
-    <a href="https://radar.io/documentation/api#route">https://radar.io/documentation/api#route</a>
+    <a href="https://radar.io/documentation/api#routing">https://radar.io/documentation/api#routing</a>
 
 </div>
 
@@ -575,7 +575,7 @@
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2020 <a class="link" href="https://radar.io" target="_blank" rel="external">Radar Labs, Inc.</a>. All rights reserved. (Last updated: 2020-07-10)</p>
+          <p>&copy; 2020 <a class="link" href="https://radar.io" target="_blank" rel="external">Radar Labs, Inc.</a>. All rights reserved. (Last updated: 2020-07-22)</p>
           <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.13.3</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
         </section>
       </article>

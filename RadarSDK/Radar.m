@@ -225,8 +225,8 @@
 }
 
 + (void)stopTrip {
+    [[RadarAPIClient sharedInstance] stopTrip];
     [RadarSettings setTripOptions:nil];
-    [[RadarLocationManager sharedInstance] getLocationWithCompletionHandler:nil];
 }
 
 + (void)getContextWithCompletionHandler:(RadarContextCompletionHandler)completionHandler {
@@ -400,8 +400,8 @@
 }
 
 + (void)ipGeocodeWithCompletionHandler:(RadarIPGeocodeCompletionHandler)completionHandler {
-    [[RadarAPIClient sharedInstance] ipGeocodeWithCompletionHandler:^(RadarStatus status, NSDictionary *_Nullable res, RadarAddress *_Nullable address) {
-        completionHandler(status, address);
+    [[RadarAPIClient sharedInstance] ipGeocodeWithCompletionHandler:^(RadarStatus status, NSDictionary *_Nullable res, RadarAddress *_Nullable address, BOOL proxy) {
+        completionHandler(status, address, proxy);
     }];
 }
 

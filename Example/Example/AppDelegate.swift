@@ -78,8 +78,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             print("Reverse geocode: status = \(Radar.stringForStatus(status)); formattedAddress = \(String(describing: addresses?.first?.formattedAddress))")
         }
 
-        Radar.ipGeocode { (status, address) in
-            print("IP geocode: status = \(Radar.stringForStatus(status)); country = \(String(describing: address?.countryCode)); city = \(String(describing: address?.city))")
+        Radar.ipGeocode { (status, address, proxy) in
+            print("IP geocode: status = \(Radar.stringForStatus(status)); country = \(String(describing: address?.countryCode)); city = \(String(describing: address?.city)); proxy = \(proxy)")
         }
         
         let origin = CLLocation(latitude: 40.78382, longitude: -73.97536)
@@ -102,14 +102,27 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             print("Distance: status = \(Radar.stringForStatus(status)); routes.car.distance.value = \(String(describing: routes?.car?.distance.value)); routes.car.distance.text = \(String(describing: routes?.car?.distance.text)); routes.car.duration.value = \(String(describing: routes?.car?.duration.value)); routes.car.duration.text = \(String(describing: routes?.car?.duration.text))")
         }
         
+        let tripOptions = RadarTripOptions(externalId: "299")
+        tripOptions.destinationGeofenceTag = "store"
+        tripOptions.destinationGeofenceExternalId = "123"
+        tripOptions.mode = .car
+        Radar.startTrip(options: tripOptions)
+        
+        var i = 0
         Radar.mockTracking(
             origin: origin,
             destination: destination,
             mode: .car,
-            steps: 10,
-            interval: 1
+            steps: 3,
+            interval: 3
         ) { (status, location, events, user) in
             print("Mock track: status = \(Radar.stringForStatus(status)); location = \(String(describing: location)); events = \(String(describing: events)); user = \(String(describing: user))")
+            
+            if (i == 2) {
+                Radar.stopTrip()
+            }
+            
+            i += 1
         }
 
         return true

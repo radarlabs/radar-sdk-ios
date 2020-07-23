@@ -2,14 +2,14 @@
   "warnings": [
     {
       "file": "/Users/nickpatrick/radar/radar-sdk-ios/RadarSDK/RadarAddress.h",
-      "line": 114,
+      "line": 124,
       "symbol": "RadarAddress.+arrayForAddresses:",
       "symbol_kind": "sourcekitten.source.lang.objc.decl.method.class",
       "warning": "undocumented"
     },
     {
       "file": "/Users/nickpatrick/radar/radar-sdk-ios/RadarSDK/RadarAddress.h",
-      "line": 115,
+      "line": 125,
       "symbol": "RadarAddress.-dictionaryValue",
       "symbol_kind": "sourcekitten.source.lang.objc.decl.method.instance",
       "warning": "undocumented"
@@ -240,7 +240,7 @@
     },
     {
       "file": "/Users/nickpatrick/radar/radar-sdk-ios/RadarSDK/RadarUser.h",
-      "line": 127,
+      "line": 129,
       "symbol": "RadarUser.-dictionaryValue",
       "symbol_kind": "sourcekitten.source.lang.objc.decl.method.instance",
       "warning": "undocumented"

@@ -260,7 +260,37 @@
                                   url:url
                               headers:headers
                                params:params
-                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res){
+                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
+
+                    }];
+}
+
+- (void)stopTrip {
+    NSString *publishableKey = [RadarSettings publishableKey];
+    if (!publishableKey) {
+        return;
+    }
+
+    RadarTripOptions *tripOptions = [RadarSettings tripOptions];
+    if (!tripOptions || !tripOptions.externalId) {
+        return;
+    }
+
+    NSMutableDictionary *params = [NSMutableDictionary new];
+
+    params[@"active"] = @(NO);
+
+    NSString *host = [RadarSettings host];
+    NSString *url = [NSString stringWithFormat:@"%@/v1/trips/%@", host, tripOptions.externalId];
+    url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
+
+    NSDictionary *headers = [RadarAPIClient headersWithPublishableKey:publishableKey];
+
+    [self.apiHelper requestWithMethod:@"PATCH"
+                                  url:url
+                              headers:headers
+                               params:params
+                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
 
                     }];
 }
@@ -555,7 +585,7 @@
 - (void)ipGeocodeWithCompletionHandler:(RadarIPGeocodeAPICompletionHandler)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
-        return completionHandler(RadarStatusErrorPublishableKey, nil, nil);
+        return completionHandler(RadarStatusErrorPublishableKey, nil, nil, NO);
     }
 
     NSString *host = [RadarSettings host];
@@ -569,17 +599,23 @@
                                params:nil
                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
                         if (status != RadarStatusSuccess || !res) {
-                            return completionHandler(status, nil, nil);
+                            return completionHandler(status, nil, nil, NO);
                         }
 
                         id addressObj = res[@"address"];
                         RadarAddress *address = [[RadarAddress alloc] initWithObject:addressObj];
-
-                        if (address) {
-                            return completionHandler(RadarStatusSuccess, res, address);
+                        id proxyObj = res[@"proxy"];
+                        BOOL proxy = NO;
+                        if ([proxyObj isKindOfClass:[NSNumber class]]) {
+                            NSNumber *proxyNumber = (NSNumber *)proxyObj;
+                            proxy = [proxyNumber boolValue];
                         }
 
-                        completionHandler(RadarStatusErrorServer, nil, nil);
+                        if (address) {
+                            return completionHandler(RadarStatusSuccess, res, address, proxy);
+                        }
+
+                        completionHandler(RadarStatusErrorServer, nil, nil, NO);
                     }];
 }
 

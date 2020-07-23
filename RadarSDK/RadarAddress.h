@@ -25,9 +25,9 @@ typedef NS_ENUM(NSInteger, RadarAddressConfidence) {
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- Represents an address. For more information, see https://radar.io/documentation/api#geocode.
+ Represents an address. For more information, see https://radar.io/documentation/api#geocoding.
 
- @see https://radar.io/documentation/api#geocode
+ @see https://radar.io/documentation/api#geocoding
  */
 @interface RadarAddress : NSObject
 
@@ -57,7 +57,17 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nullable, copy, nonatomic, readonly) NSString *countryFlag;
 
 /**
- The name of the state.
+ The name of the DMA of the address.
+ */
+@property (nullable, copy, nonatomic, readonly) NSString *dma;
+
+/**
+ The unique code of the DMA of the address.
+ */
+@property (nullable, copy, nonatomic, readonly) NSString *dmaCode;
+
+/**
+ The name of the state of the address.
  */
 @property (nullable, copy, nonatomic, readonly) NSString *state;
 

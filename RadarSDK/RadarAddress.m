@@ -34,6 +34,8 @@
                                      country:(NSString *_Nullable)country
                                  countryCode:(NSString *_Nullable)countryCode
                                  countryFlag:(NSString *_Nullable)countryFlag
+                                         dma:(NSString *_Nullable)dma
+                                     dmaCode:(NSString *_Nullable)dmaCode
                                        state:(NSString *_Nullable)state
                                    stateCode:(NSString *_Nullable)stateCode
                                   postalCode:(NSString *_Nullable)postalCode
@@ -52,6 +54,8 @@
         _country = country;
         _countryCode = countryCode;
         _countryFlag = countryFlag;
+        _dma = dma;
+        _dmaCode = dmaCode;
         _state = state;
         _stateCode = stateCode;
         _postalCode = postalCode;
@@ -82,6 +86,8 @@
     NSString *country;
     NSString *countryCode;
     NSString *countryFlag;
+    NSString *dma;
+    NSString *dmaCode;
     NSString *state;
     NSString *stateCode;
     NSString *postalCode;
@@ -129,6 +135,16 @@
     id countryFlagObj = dict[@"countryFlag"];
     if (countryFlagObj && [countryFlagObj isKindOfClass:[NSString class]]) {
         countryFlag = (NSString *)countryFlagObj;
+    }
+
+    id dmaObj = dict[@"dma"];
+    if (dmaObj && [dmaObj isKindOfClass:[NSString class]]) {
+        dma = (NSString *)dmaObj;
+    }
+
+    id dmaCodeObj = dict[@"dmaCode"];
+    if (dmaCodeObj && [dmaCodeObj isKindOfClass:[NSString class]]) {
+        dmaCode = (NSString *)dmaCodeObj;
     }
 
     id stateObj = dict[@"state"];
@@ -199,6 +215,8 @@
                                             country:country
                                         countryCode:countryCode
                                         countryFlag:countryFlag
+                                                dma:dma
+                                            dmaCode:dmaCode
                                               state:state
                                           stateCode:stateCode
                                          postalCode:postalCode
@@ -246,6 +264,8 @@
     [dict setValue:self.country forKey:@"country"];
     [dict setValue:self.countryCode forKey:@"countryCode"];
     [dict setValue:self.countryFlag forKey:@"countryFlag"];
+    [dict setValue:self.dma forKey:@"dma"];
+    [dict setValue:self.dmaCode forKey:@"dmaCode"];
     [dict setValue:self.state forKey:@"state"];
     [dict setValue:self.stateCode forKey:@"stateCode"];
     [dict setValue:self.postalCode forKey:@"postalCode"];
