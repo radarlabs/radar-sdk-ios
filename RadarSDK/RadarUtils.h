@@ -30,6 +30,8 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSString *)uaNamedUserId;
 + (NSString *)uaSessionId;
 
++ (void)runOnMainThreadAsyncIfNecessary:(dispatch_block_t)block;
+
 @end
 
 NS_ASSUME_NONNULL_END
