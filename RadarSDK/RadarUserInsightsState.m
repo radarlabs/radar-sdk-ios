@@ -6,6 +6,7 @@
 //
 
 #import "RadarUserInsightsState.h"
+#import "RadarCollectionAdditions.h"
 #import "RadarUserInsightsState+Internal.h"
 
 @implementation RadarUserInsightsState
@@ -28,30 +29,17 @@
 
     NSDictionary *userInsightsStateDict = (NSDictionary *)object;
 
-    BOOL home = NO;
-    BOOL office = NO;
-    BOOL traveling = NO;
-    BOOL commuting = NO;
+    NSNumber *homeNumber = [userInsightsStateDict radar_numberForKey:@"home"];
+    BOOL home = homeNumber ? [homeNumber boolValue] : NO;
 
-    id homeObj = userInsightsStateDict[@"home"];
-    if ([homeObj isKindOfClass:[NSNumber class]]) {
-        home = [(NSNumber *)homeObj boolValue];
-    }
+    NSNumber *officeNumber = [userInsightsStateDict radar_numberForKey:@"office"];
+    BOOL office = officeNumber ? [officeNumber boolValue] : NO;
 
-    id officeObj = userInsightsStateDict[@"office"];
-    if ([officeObj isKindOfClass:[NSNumber class]]) {
-        office = [(NSNumber *)officeObj boolValue];
-    }
+    NSNumber *travelingNumber = [userInsightsStateDict radar_numberForKey:@"traveling"];
+    BOOL traveling = travelingNumber ? [travelingNumber boolValue] : NO;
 
-    id travelingObj = userInsightsStateDict[@"traveling"];
-    if ([travelingObj isKindOfClass:[NSNumber class]]) {
-        traveling = [(NSNumber *)travelingObj boolValue];
-    }
-
-    id commutingObj = userInsightsStateDict[@"commuting"];
-    if ([commutingObj isKindOfClass:[NSNumber class]]) {
-        commuting = [(NSNumber *)commutingObj boolValue];
-    }
+    NSNumber *commutingNumber = [userInsightsStateDict radar_numberForKey:@"commuting"];
+    BOOL commuting = commutingNumber ? [commutingNumber boolValue] : NO;
 
     return [[RadarUserInsightsState alloc] initWithHome:home office:office traveling:traveling commuting:commuting];
 }

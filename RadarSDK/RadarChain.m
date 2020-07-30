@@ -6,6 +6,9 @@
 //
 
 #import "RadarChain.h"
+#import "RadarChain+Internal.h"
+#import "RadarCollectionAdditions.h"
+#import "RadarJSONCoding.h"
 
 @implementation RadarChain
 
@@ -23,6 +26,12 @@
     return self;
 }
 
+#pragma mark - JSON coding
+
++ (NSArray<RadarChain *> *_Nullable)chainsFromObject:(id)object {
+    FROM_JSON_ARRAY_DEFAULT_IMP(object, RadarChain);
+}
+
 - (instancetype _Nullable)initWithObject:(id _Nonnull)object {
     if (!object || ![object isKindOfClass:[NSDictionary class]]) {
         return nil;
@@ -30,30 +39,10 @@
 
     NSDictionary *dict = (NSDictionary *)object;
 
-    NSString *slug;
-    NSString *name;
-    NSString *externalId;
-    NSDictionary *metadata;
-
-    id slugObj = dict[@"slug"];
-    if (slugObj && [slugObj isKindOfClass:[NSString class]]) {
-        slug = (NSString *)slugObj;
-    }
-
-    id nameObj = dict[@"name"];
-    if (nameObj && [nameObj isKindOfClass:[NSString class]]) {
-        name = (NSString *)nameObj;
-    }
-
-    id externalIdObj = dict[@"externalId"];
-    if ([externalIdObj isKindOfClass:[NSString class]]) {
-        externalId = (NSString *)externalIdObj;
-    }
-
-    id metadataObj = dict[@"metadata"];
-    if ([metadataObj isKindOfClass:[NSDictionary class]]) {
-        metadata = (NSDictionary *)metadataObj;
-    }
+    NSString *slug = [dict radar_stringForKey:@"slug"];
+    NSString *name = [dict radar_stringForKey:@"name"];
+    NSString *externalId = [dict radar_stringForKey:@"externalId"];
+    NSDictionary *metadata = [dict radar_dictionaryForKey:@"metadata"];
 
     if (slug && name) {
         return [[RadarChain alloc] initWithSlug:slug name:name externalId:externalId metadata:metadata];
@@ -63,16 +52,7 @@
 }
 
 + (NSArray<NSDictionary *> *)arrayForChains:(NSArray<RadarChain *> *)chains {
-    if (!chains) {
-        return nil;
-    }
-
-    NSMutableArray *arr = [[NSMutableArray alloc] initWithCapacity:chains.count];
-    for (RadarChain *chain in chains) {
-        NSDictionary *dict = [chain dictionaryValue];
-        [arr addObject:dict];
-    }
-    return arr;
+    TO_JSON_ARRAY_DEFAULT_IMP(chains, RadarChain);
 }
 
 - (NSDictionary *)dictionaryValue {

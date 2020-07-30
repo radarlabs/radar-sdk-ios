@@ -5,6 +5,7 @@
 //  Copyright © 2019 Radar. All rights reserved.
 //
 
+#import "RadarCollectionAdditions.h"
 #import "RadarRegion+Internal.h"
 
 @implementation RadarRegion
@@ -21,6 +22,8 @@
     return self;
 }
 
+#pragma mark - JSON coding
+
 - (nullable instancetype)initWithObject:(nullable id)object {
     if (![object isKindOfClass:[NSDictionary class]]) {
         return nil;
@@ -28,36 +31,11 @@
 
     NSDictionary *dict = (NSDictionary *)object;
 
-    NSString *_id = @"";
-    NSString *name = @"";
-    NSString *code = @"";
-    NSString *type = @"";
-    NSString *flag = @"";
-
-    id idObj = dict[@"_id"];
-    if ([idObj isKindOfClass:[NSString class]]) {
-        _id = (NSString *)idObj;
-    }
-
-    id nameObj = dict[@"name"];
-    if ([nameObj isKindOfClass:[NSString class]]) {
-        name = (NSString *)nameObj;
-    }
-
-    id codeObj = dict[@"code"];
-    if ([codeObj isKindOfClass:[NSString class]]) {
-        code = (NSString *)codeObj;
-    }
-
-    id typeObj = dict[@"type"];
-    if ([typeObj isKindOfClass:[NSString class]]) {
-        type = (NSString *)typeObj;
-    }
-
-    id flagObj = dict[@"flag"];
-    if (flagObj && [flagObj isKindOfClass:[NSString class]]) {
-        flag = (NSString *)flagObj;
-    }
+    NSString *_id = [dict radar_stringForKey:@"_id"];
+    NSString *name = [dict radar_stringForKey:@"name"];
+    NSString *code = [dict radar_stringForKey:@"code"];
+    NSString *type = [dict radar_stringForKey:@"type"];
+    NSString *flag = [dict radar_stringForKey:@"flag"];
 
     if (_id && name && code && type) {
         return [[RadarRegion alloc] initWithId:_id name:name code:code type:type flag:flag];

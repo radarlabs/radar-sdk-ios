@@ -6,29 +6,12 @@
 //
 
 #import "RadarChain+Internal.h"
+#import "RadarCollectionAdditions.h"
 #import "RadarCoordinate+Internal.h"
+#import "RadarJSONCoding.h"
 #import "RadarPlace+Internal.h"
 
 @implementation RadarPlace
-
-+ (NSArray<RadarPlace *> *_Nullable)placesFromObject:(id _Nonnull)object {
-    if (!object || ![object isKindOfClass:[NSArray class]]) {
-        return nil;
-    }
-
-    NSArray *placesArr = (NSArray *)object;
-    NSMutableArray<RadarPlace *> *mutablePlaces = [NSMutableArray<RadarPlace *> new];
-
-    for (id placeObj in placesArr) {
-        RadarPlace *place = [[RadarPlace alloc] initWithObject:placeObj];
-        if (!place) {
-            return nil;
-        }
-        [mutablePlaces addObject:place];
-    }
-
-    return mutablePlaces;
-}
 
 - (instancetype _Nullable)initWithId:(NSString *_Nonnull)_id
                                 name:(NSString *_Nonnull)name
@@ -50,6 +33,12 @@
     return self;
 }
 
+#pragma mark - JSON coding
+
++ (NSArray<RadarPlace *> *_Nullable)placesFromObject:(id _Nonnull)object {
+    FROM_JSON_ARRAY_DEFAULT_IMP(object, RadarPlace);
+}
+
 - (instancetype _Nullable)initWithObject:(id _Nonnull)object {
     if (!object || ![object isKindOfClass:[NSDictionary class]]) {
         return nil;
@@ -57,78 +46,37 @@
 
     NSDictionary *dict = (NSDictionary *)object;
 
-    NSString *_id;
-    NSString *name;
-    NSArray<NSString *> *categories = @[];
-    RadarChain *chain;
-    RadarCoordinate *location = [[RadarCoordinate alloc] initWithCoordinate:CLLocationCoordinate2DMake(0, 0)];
-    NSString *group;
-    NSDictionary *metadata;
+    NSString *_id = [dict radar_stringForKey:@"_id"];
+    NSString *name = [dict radar_stringForKey:@"name"];
+    NSArray<NSString *> *categories = [dict radar_arrayForKey:@"categories"];
+    RadarChain *chain = [[RadarChain alloc] initWithObject:dict[@"chain"]];
+    RadarCoordinate *location = [[RadarCoordinate alloc] initWithObject:dict[@"location"]];
+    NSString *group = [dict radar_stringForKey:@"group"];
+    NSDictionary *metadata = [dict radar_dictionaryForKey:@"metadata"];
 
-    id idObj = dict[@"_id"];
-    if (idObj && [idObj isKindOfClass:[NSString class]]) {
-        _id = (NSString *)idObj;
-    }
-
-    id nameObj = dict[@"name"];
-    if (nameObj && [nameObj isKindOfClass:[NSString class]]) {
-        name = (NSString *)nameObj;
-    }
-
-    id categoriesObj = dict[@"categories"];
-    if (categoriesObj && [categoriesObj isKindOfClass:[NSArray class]]) {
-        categories = (NSArray *)categoriesObj;
-    }
-
-    id chainObj = dict[@"chain"];
-    chain = [[RadarChain alloc] initWithObject:chainObj];
-
-    id locationObj = dict[@"location"];
-    if (locationObj && [locationObj isKindOfClass:[NSDictionary class]]) {
-        NSDictionary *locationDict = (NSDictionary *)locationObj;
-
-        id locationCoordinatesObj = locationDict[@"coordinates"];
-        if (!locationCoordinatesObj || ![locationCoordinatesObj isKindOfClass:[NSArray class]]) {
-            return nil;
-        }
-
-        NSArray *locationCoordinatesArr = (NSArray *)locationCoordinatesObj;
-        if (locationCoordinatesArr.count != 2) {
-            return nil;
-        }
-
-        id locationCoordinatesLongitudeObj = locationCoordinatesArr[0];
-        id locationCoordinatesLatitudeObj = locationCoordinatesArr[1];
-        if (!locationCoordinatesLongitudeObj || !locationCoordinatesLatitudeObj || ![locationCoordinatesLongitudeObj isKindOfClass:[NSNumber class]] ||
-            ![locationCoordinatesLatitudeObj isKindOfClass:[NSNumber class]]) {
-            return nil;
-        }
-
-        NSNumber *locationCoordinatesLongitudeNumber = (NSNumber *)locationCoordinatesLongitudeObj;
-        NSNumber *locationCoordinatesLatitudeNumber = (NSNumber *)locationCoordinatesLatitudeObj;
-
-        float locationCoordinatesLongitudeFloat = [locationCoordinatesLongitudeNumber floatValue];
-        float locationCoordinatesLatitudeFloat = [locationCoordinatesLatitudeNumber floatValue];
-
-        CLLocationCoordinate2D coordinate = CLLocationCoordinate2DMake(locationCoordinatesLatitudeFloat, locationCoordinatesLongitudeFloat);
-        location = [[RadarCoordinate alloc] initWithCoordinate:coordinate];
-    }
-
-    id groupObj = dict[@"group"];
-    if ([groupObj isKindOfClass:[NSString class]]) {
-        group = (NSString *)groupObj;
-    }
-
-    id metadataObj = dict[@"metadata"];
-    if ([metadataObj isKindOfClass:[NSDictionary class]]) {
-        metadata = (NSDictionary *)metadataObj;
-    }
-
-    if (_id && name) {
+    if (_id && name && categories && location) {
         return [[RadarPlace alloc] initWithId:_id name:name categories:categories chain:chain location:location group:group metadata:metadata];
     }
 
     return nil;
+}
+
++ (NSArray<NSDictionary *> *)arrayForPlaces:(NSArray<RadarPlace *> *)places {
+    TO_JSON_ARRAY_DEFAULT_IMP(places, RadarPlace);
+}
+
+- (NSDictionary *)dictionaryValue {
+    NSMutableDictionary *dict = [NSMutableDictionary new];
+    [dict setValue:self._id forKey:@"_id"];
+    [dict setValue:self.name forKey:@"name"];
+    [dict setValue:self.categories forKey:@"categories"];
+    if (self.chain) {
+        NSDictionary *chainDict = [self.chain dictionaryValue];
+        [dict setValue:chainDict forKey:@"chain"];
+    }
+    [dict setValue:self.group forKey:@"group"];
+    [dict setValue:self.metadata forKey:@"metadata"];
+    return dict;
 }
 
 - (BOOL)isChain:(NSString *)slug {
@@ -151,33 +99,6 @@
     }
 
     return NO;
-}
-
-+ (NSArray<NSDictionary *> *)arrayForPlaces:(NSArray<RadarPlace *> *)places {
-    if (!places) {
-        return nil;
-    }
-
-    NSMutableArray *arr = [[NSMutableArray alloc] initWithCapacity:places.count];
-    for (RadarPlace *place in places) {
-        NSDictionary *dict = [place dictionaryValue];
-        [arr addObject:dict];
-    }
-    return arr;
-}
-
-- (NSDictionary *)dictionaryValue {
-    NSMutableDictionary *dict = [NSMutableDictionary new];
-    [dict setValue:self._id forKey:@"_id"];
-    [dict setValue:self.name forKey:@"name"];
-    [dict setValue:self.categories forKey:@"categories"];
-    if (self.chain) {
-        NSDictionary *chainDict = [self.chain dictionaryValue];
-        [dict setValue:chainDict forKey:@"chain"];
-    }
-    [dict setValue:self.group forKey:@"group"];
-    [dict setValue:self.metadata forKey:@"metadata"];
-    return dict;
 }
 
 @end

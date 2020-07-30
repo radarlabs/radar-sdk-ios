@@ -6,6 +6,7 @@
 //
 
 #import "RadarUserInsights.h"
+#import "RadarCollectionAdditions.h"
 #import "RadarUserInsights+Internal.h"
 #import "RadarUserInsightsLocation+Internal.h"
 #import "RadarUserInsightsState+Internal.h"
@@ -33,7 +34,7 @@
 
     RadarUserInsightsLocation *homeLocation;
     RadarUserInsightsLocation *officeLocation;
-    RadarUserInsightsState *state;
+    RadarUserInsightsState *state = [[RadarUserInsightsState alloc] initWithObject:dict[@"state"]];
 
     id locationsObj = dict[@"locations"];
     if (locationsObj && [locationsObj isKindOfClass:[NSArray class]]) {
@@ -50,11 +51,6 @@
                 officeLocation = location;
             }
         }
-    }
-
-    id stateObj = dict[@"state"];
-    if (locationsObj && [locationsObj isKindOfClass:[NSArray class]]) {
-        state = [[RadarUserInsightsState alloc] initWithObject:stateObj];
     }
 
     if (homeLocation && officeLocation && state) {

@@ -33,33 +33,12 @@
 
     NSArray *coordinatesArr = (NSArray *)coordinatesObj;
 
-    NSMutableArray<RadarCoordinate *> *mutableCoordinates = [NSMutableArray<RadarCoordinate *> arrayWithCapacity:coordinatesArr.count];
-
-    for (uint i = 0; i < coordinatesArr.count; i++) {
-        id coordinateObj = coordinatesArr[i];
-        if (![coordinateObj isKindOfClass:[NSArray class]]) {
-            return nil;
-        }
-
-        NSArray *coordinateArr = (NSArray *)coordinateObj;
-        if (coordinateArr.count != 2) {
-            return nil;
-        }
-
-        id coordinateLongitudeObj = coordinateArr[0];
-        id coordinateLatitudeObj = coordinateArr[1];
-        if (![coordinateLongitudeObj isKindOfClass:[NSNumber class]] || ![coordinateLatitudeObj isKindOfClass:[NSNumber class]]) {
-            return nil;
-        }
-
-        float polygonCoordinateLongitude = [((NSNumber *)coordinateLongitudeObj) floatValue];
-        float polygonCoordinateLatitude = [((NSNumber *)coordinateLatitudeObj) floatValue];
-
-        CLLocationCoordinate2D coordinate = CLLocationCoordinate2DMake(polygonCoordinateLatitude, polygonCoordinateLongitude);
-        mutableCoordinates[i] = [[RadarCoordinate alloc] initWithCoordinate:coordinate];
+    NSArray<RadarCoordinate *> *coordinates = [RadarCoordinate coordinatesFromJSONCoordinates:coordinatesArr];
+    if (coordinates) {
+        return [[RadarRouteGeometry alloc] initWithCoordinates:coordinates];
     }
 
-    return [[RadarRouteGeometry alloc] initWithCoordinates:mutableCoordinates];
+    return nil;
 }
 
 - (NSDictionary *)dictionaryValue {

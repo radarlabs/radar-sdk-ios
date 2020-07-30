@@ -6,6 +6,7 @@
 //
 
 #import "RadarUserInsightsLocation.h"
+#import "RadarCollectionAdditions.h"
 #import "RadarCoordinate+Internal.h"
 #import "RadarRegion+Internal.h"
 #import "RadarUserInsightsLocation+Internal.h"
@@ -43,60 +44,19 @@
     NSDictionary *dict = (NSDictionary *)object;
 
     RadarUserInsightsLocationType type = RadarUserInsightsLocationTypeUnknown;
-    RadarCoordinate *location;
+    NSString *typeStr = [dict radar_stringForKey:@"type"];
+    if ([typeStr isEqualToString:@"home"]) {
+        type = RadarUserInsightsLocationTypeHome;
+    } else if ([typeStr isEqualToString:@"office"]) {
+        type = RadarUserInsightsLocationTypeOffice;
+    }
+
+    RadarCoordinate *location = [[RadarCoordinate alloc] initWithObject:dict[@"location"]];
+
+    NSNumber *confidenceNumber = [dict radar_numberForKey:@"confidence"];
     RadarUserInsightsLocationConfidence confidence = RadarUserInsightsLocationConfidenceNone;
-    NSDate *updatedAt;
-    RadarRegion *country;
-    RadarRegion *state;
-    RadarRegion *dma;
-    RadarRegion *postalCode;
-
-    id typeObj = dict[@"type"];
-    if (typeObj && [typeObj isKindOfClass:[NSString class]]) {
-        NSString *typeStr = (NSString *)typeObj;
-
-        if ([typeStr isEqualToString:@"home"]) {
-            type = RadarUserInsightsLocationTypeHome;
-        } else if ([typeStr isEqualToString:@"office"]) {
-            type = RadarUserInsightsLocationTypeOffice;
-        }
-    }
-
-    id locationObj = dict[@"location"];
-    if (locationObj && [locationObj isKindOfClass:[NSDictionary class]]) {
-        NSDictionary *locationDict = (NSDictionary *)locationObj;
-
-        id locationCoordinatesObj = locationDict[@"coordinates"];
-        if (!locationCoordinatesObj || ![locationCoordinatesObj isKindOfClass:[NSArray class]]) {
-            return nil;
-        }
-
-        NSArray *locationCoordinatesArr = (NSArray *)locationCoordinatesObj;
-        if (locationCoordinatesArr.count != 2) {
-            return nil;
-        }
-
-        id locationCoordinatesLongitudeObj = locationCoordinatesArr[0];
-        id locationCoordinatesLatitudeObj = locationCoordinatesArr[1];
-        if (!locationCoordinatesLongitudeObj || !locationCoordinatesLatitudeObj || ![locationCoordinatesLongitudeObj isKindOfClass:[NSNumber class]] ||
-            ![locationCoordinatesLatitudeObj isKindOfClass:[NSNumber class]]) {
-            return nil;
-        }
-
-        NSNumber *locationCoordinatesLongitudeNumber = (NSNumber *)locationCoordinatesLongitudeObj;
-        NSNumber *locationCoordinatesLatitudeNumber = (NSNumber *)locationCoordinatesLatitudeObj;
-
-        float locationCoordinatesLongitudeFloat = [locationCoordinatesLongitudeNumber floatValue];
-        float locationCoordinatesLatitudeFloat = [locationCoordinatesLatitudeNumber floatValue];
-
-        location = [[RadarCoordinate alloc] initWithCoordinate:CLLocationCoordinate2DMake(locationCoordinatesLatitudeFloat, locationCoordinatesLongitudeFloat)];
-    }
-
-    id confidenceObj = dict[@"confidence"];
-    if (confidenceObj && [confidenceObj isKindOfClass:[NSNumber class]]) {
-        NSNumber *confidenceNumber = (NSNumber *)confidenceObj;
+    if (confidenceNumber) {
         int userInsightsLocationConfidenceInt = [confidenceNumber intValue];
-
         if (userInsightsLocationConfidenceInt == 3) {
             confidence = RadarUserInsightsLocationConfidenceHigh;
         } else if (userInsightsLocationConfidenceInt == 2) {
@@ -106,10 +66,9 @@
         }
     }
 
-    id updatedAtObj = dict[@"updatedAt"];
-    if (updatedAtObj && [updatedAtObj isKindOfClass:[NSString class]]) {
-        NSString *userInsightsLocationUpdatedAtStr = (NSString *)updatedAtObj;
-
+    NSDate *updatedAt;
+    NSString *userInsightsLocationUpdatedAtStr = [dict radar_stringForKey:@"updatedAt"];
+    if (userInsightsLocationUpdatedAtStr) {
         NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
         dateFormatter.locale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US_POSIX"];
         dateFormatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
@@ -118,17 +77,10 @@
         updatedAt = [dateFormatter dateFromString:userInsightsLocationUpdatedAtStr];
     }
 
-    id countryObj = dict[@"country"];
-    country = [[RadarRegion alloc] initWithObject:countryObj];
-
-    id stateObj = dict[@"state"];
-    state = [[RadarRegion alloc] initWithObject:stateObj];
-
-    id dmaObj = dict[@"dma"];
-    dma = [[RadarRegion alloc] initWithObject:dmaObj];
-
-    id postalCodeObj = dict[@"postalCode"];
-    postalCode = [[RadarRegion alloc] initWithObject:postalCodeObj];
+    RadarRegion *country = [[RadarRegion alloc] initWithObject:dict[@"country"]];
+    RadarRegion *state = [[RadarRegion alloc] initWithObject:dict[@"state"]];
+    RadarRegion *dma = [[RadarRegion alloc] initWithObject:dict[@"dma"]];
+    RadarRegion *postalCode = [[RadarRegion alloc] initWithObject:dict[@"postalCode"]];
 
     if (updatedAt) {
         return [[RadarUserInsightsLocation alloc] initWithType:type

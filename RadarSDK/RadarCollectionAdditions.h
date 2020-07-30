@@ -19,9 +19,9 @@ NS_ASSUME_NONNULL_BEGIN
 @interface NSDictionary<KeyType, ObjectType>(Radar)
 
 - (nullable NSString *)radar_stringForKey:(KeyType)key;
+- (nullable NSNumber *)radar_numberForKey:(KeyType)key;
 - (nullable NSDictionary *)radar_dictionaryForKey:(KeyType)key;
 - (nullable NSArray *)radar_arrayForKey:(KeyType)key;
-- (nullable RadarCoordinate *)radar_coordinateForKey:(KeyType)key;
 
 @end
 

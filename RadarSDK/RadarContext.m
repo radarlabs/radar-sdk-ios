@@ -40,44 +40,12 @@
 
     NSDictionary *contextDict = (NSDictionary *)object;
 
-    NSArray<RadarGeofence *> *contextGeofences = @[];
-    RadarPlace *contextPlace;
-    RadarRegion *country;
-    RadarRegion *state;
-    RadarRegion *dma;
-    RadarRegion *postalCode;
-
-    id contextGeofencesObj = contextDict[@"geofences"];
-    if (contextGeofencesObj && [contextGeofencesObj isKindOfClass:[NSArray class]]) {
-        NSMutableArray<RadarGeofence *> *mutableContextGeofences = [NSMutableArray<RadarGeofence *> new];
-
-        NSArray *contextGeofencesArr = (NSArray *)contextGeofencesObj;
-        for (id contextGeofenceObj in contextGeofencesArr) {
-            RadarGeofence *contextGeofence = [[RadarGeofence alloc] initWithObject:contextGeofenceObj];
-            if (!contextGeofence) {
-                return nil;
-            }
-
-            [mutableContextGeofences addObject:contextGeofence];
-        }
-
-        contextGeofences = mutableContextGeofences;
-    }
-
-    id contextPlaceObj = contextDict[@"place"];
-    contextPlace = [[RadarPlace alloc] initWithObject:contextPlaceObj];
-
-    id countryObj = contextDict[@"country"];
-    country = [[RadarRegion alloc] initWithObject:countryObj];
-
-    id stateObj = contextDict[@"state"];
-    state = [[RadarRegion alloc] initWithObject:stateObj];
-
-    id dmaObj = contextDict[@"dma"];
-    dma = [[RadarRegion alloc] initWithObject:dmaObj];
-
-    id postalCodeObj = contextDict[@"postalCode"];
-    postalCode = [[RadarRegion alloc] initWithObject:postalCodeObj];
+    NSArray<RadarGeofence *> *contextGeofences = [RadarGeofence geofencesFromObject:contextDict[@"geofences"]];
+    RadarPlace *contextPlace = [[RadarPlace alloc] initWithObject:contextDict[@"place"]];
+    RadarRegion *country = [[RadarRegion alloc] initWithObject:contextDict[@"country"]];
+    RadarRegion *state = [[RadarRegion alloc] initWithObject:contextDict[@"state"]];
+    RadarRegion *dma = [[RadarRegion alloc] initWithObject:contextDict[@"dma"]];
+    RadarRegion *postalCode = [[RadarRegion alloc] initWithObject:contextDict[@"postalCode"]];
 
     return [[RadarContext alloc] initWithGeofences:contextGeofences place:contextPlace country:country state:state dma:dma postalCode:postalCode];
 }

@@ -5,50 +5,13 @@
 //
 
 #import "RadarPoint.h"
+#import "RadarCoordinate+Internal.h"
 #import "RadarPoint+Internal.h"
 
 #import "RadarCollectionAdditions.h"
+#import "RadarJSONCoding.h"
 
 @implementation RadarPoint
-
-+ (NSArray<RadarPoint *> *)pointsFromObject:(id)object {
-    if (!object || ![object isKindOfClass:[NSArray class]]) {
-        return nil;
-    }
-
-    NSArray *objArray = (NSArray *)object;
-
-    NSMutableArray<RadarPoint *> *result = [NSMutableArray arrayWithCapacity:[objArray count]];
-
-    for (id pointObj in objArray) {
-        RadarPoint *point = [[RadarPoint alloc] initWithObject:pointObj];
-        if (!point) {
-            return nil;
-        }
-        [result addObject:point];
-    }
-
-    return result;
-}
-
-- (instancetype)initWithObject:(id)object {
-    if (!object || ![object isKindOfClass:[NSDictionary class]]) {
-        return nil;
-    }
-
-    NSDictionary *dict = (NSDictionary *)object;
-    NSString *_id = [dict radar_stringForKey:@"_id"];
-    NSString *description = [dict radar_stringForKey:@"description"];
-    NSString *tag = [dict radar_stringForKey:@"tag"];
-    NSString *externalId = [dict radar_stringForKey:@"externalId"];
-    NSDictionary *metadata = [dict radar_dictionaryForKey:@"metadata"];
-    RadarCoordinate *location = [dict radar_coordinateForKey:@"geometry"];
-
-    if (_id && description && location) {
-        return [[RadarPoint alloc] initWithId:_id description:description tag:tag externalId:externalId metadata:metadata location:location];
-    }
-    return nil;
-}
 
 - (instancetype)initWithId:(NSString *)_id
                description:(NSString *)description
@@ -68,17 +31,32 @@
     return self;
 }
 
-+ (NSArray<NSDictionary *> *)arrayForPoints:(NSArray<RadarPoint *> *)points {
-    if (!points) {
-        return nil;
+#pragma mark - JSON coding
+
++ (NSArray<RadarPoint *> *)pointsFromObject:(id)object {
+    FROM_JSON_ARRAY_DEFAULT_IMP(object, RadarPoint);
+}
+
+- (instancetype)initWithObject:(id)object {
+    if (!object || ![object isKindOfClass:[NSDictionary class]]) {
     }
 
-    NSMutableArray *arr = [[NSMutableArray alloc] initWithCapacity:points.count];
-    for (RadarPoint *point in points) {
-        NSDictionary *dict = [point dictionaryValue];
-        [arr addObject:dict];
+    NSDictionary *dict = (NSDictionary *)object;
+    NSString *_id = [dict radar_stringForKey:@"_id"];
+    NSString *description = [dict radar_stringForKey:@"description"];
+    NSString *tag = [dict radar_stringForKey:@"tag"];
+    NSString *externalId = [dict radar_stringForKey:@"externalId"];
+    NSDictionary *metadata = [dict radar_dictionaryForKey:@"metadata"];
+    RadarCoordinate *location = [[RadarCoordinate alloc] initWithObject:dict[@"geometry"]];
+
+    if (_id && description && location) {
+        return [[RadarPoint alloc] initWithId:_id description:description tag:tag externalId:externalId metadata:metadata location:location];
     }
-    return arr;
+    return nil;
+}
+
++ (NSArray<NSDictionary *> *)arrayForPoints:(NSArray<RadarPoint *> *)points {
+    TO_JSON_ARRAY_DEFAULT_IMP(points, RadarPoint);
 }
 
 - (NSDictionary *)dictionaryValue {

@@ -8,6 +8,8 @@
 #import "RadarUser.h"
 #import "Radar.h"
 #import "RadarChain+Internal.h"
+#import "RadarCollectionAdditions.h"
+#import "RadarCoordinate+Internal.h"
 #import "RadarGeofence+Internal.h"
 #import "RadarPlace+Internal.h"
 #import "RadarRegion+Internal.h"
@@ -70,220 +72,66 @@
 
     NSDictionary *dict = (NSDictionary *)object;
 
-    NSString *_id;
-    NSString *userId;
-    NSString *deviceId;
-    NSString *description;
-    NSDictionary *metadata;
-    CLLocation *location;
-    NSArray<RadarGeofence *> *geofences;
-    RadarPlace *place;
-    RadarUserInsights *insights;
-    BOOL stopped = NO;
-    BOOL foreground = NO;
-    RadarRegion *country;
-    RadarRegion *state;
-    RadarRegion *dma;
-    RadarRegion *postalCode;
-    NSArray<RadarChain *> *nearbyPlaceChains;
-    NSArray<RadarSegment *> *segments;
-    NSArray<RadarChain *> *topChains;
+    NSString *_id = [dict radar_stringForKey:@"_id"];
+    NSString *userId = [dict radar_stringForKey:@"userId"];
+    NSString *deviceId = [dict radar_stringForKey:@"deviceId"];
+    NSString *description = [dict radar_stringForKey:@"description"];
+    NSDictionary *metadata = [dict radar_dictionaryForKey:@"metadata"];
+
+    NSArray<RadarGeofence *> *geofences = [RadarGeofence geofencesFromObject:dict[@"geofences"]];
+
+    RadarPlace *place = [[RadarPlace alloc] initWithObject:dict[@"place"]];
+    RadarUserInsights *insights = [[RadarUserInsights alloc] initWithObject:dict[@"insights"]];
+
+    NSNumber *stoppedNumber = [dict radar_numberForKey:@"stopped"];
+    BOOL stopped = stoppedNumber ? [stoppedNumber boolValue] : NO;
+
+    NSNumber *foregroundNumber = [dict radar_numberForKey:@"foreground"];
+    BOOL foreground = foregroundNumber ? [foregroundNumber boolValue] : NO;
+
+    RadarRegion *country = [[RadarRegion alloc] initWithObject:dict[@"country"]];
+    RadarRegion *state = [[RadarRegion alloc] initWithObject:dict[@"state"]];
+    RadarRegion *dma = [[RadarRegion alloc] initWithObject:dict[@"dma"]];
+    RadarRegion *postalCode = [[RadarRegion alloc] initWithObject:dict[@"postalCode"]];
+
+    NSArray<RadarChain *> *nearbyPlaceChains = [RadarChain chainsFromObject:dict[@"nearbyPlaceChains"]];
+    NSArray<RadarSegment *> *segments = [RadarSegment segmentsFromObject:dict[@"segments"]];
+    NSArray<RadarChain *> *topChains = [RadarChain chainsFromObject:dict[@"topChains"]];
+
+    NSDictionary *fraudDict = [dict radar_dictionaryForKey:@"fraud"];
+    NSNumber *proxyNumber = [fraudDict radar_numberForKey:@"proxy"];
+    BOOL proxy = proxyNumber ? [proxyNumber boolValue] : NO;
+
+    RadarCoordinate *coordinate = [[RadarCoordinate alloc] initWithObject:dict[@"location"]];
+    NSNumber *locationAccuracyNumber = [dict radar_numberForKey:@"locationAccuracy"];
+    if (!coordinate || !locationAccuracyNumber) {
+        return nil;
+    }
+
+    CLLocation *location = [[CLLocation alloc] initWithCoordinate:coordinate.coordinate
+                                                         altitude:-1
+                                               horizontalAccuracy:[locationAccuracyNumber floatValue]
+                                                 verticalAccuracy:-1
+                                                        timestamp:[NSDate date]];
+
+    NSString *sourceStr = [dict radar_stringForKey:@"source"];
     RadarLocationSource source = RadarLocationSourceUnknown;
-    BOOL proxy = false;
-
-    id idObj = dict[@"_id"];
-    if (idObj && [idObj isKindOfClass:[NSString class]]) {
-        _id = (NSString *)idObj;
-    }
-
-    id userIdObj = dict[@"userId"];
-    if (userIdObj && [userIdObj isKindOfClass:[NSString class]]) {
-        userId = (NSString *)userIdObj;
-    }
-
-    id deviceIdObj = dict[@"deviceId"];
-    if (deviceIdObj && [deviceIdObj isKindOfClass:[NSString class]]) {
-        deviceId = (NSString *)deviceIdObj;
-    }
-
-    id descriptionObj = dict[@"description"];
-    if (descriptionObj && [descriptionObj isKindOfClass:[NSString class]]) {
-        description = (NSString *)descriptionObj;
-    }
-
-    id metadataObj = dict[@"metadata"];
-    if (metadataObj && [metadataObj isKindOfClass:[NSDictionary class]]) {
-        metadata = (NSDictionary *)metadataObj;
-    }
-
-    id locationObj = dict[@"location"];
-    if (locationObj && [locationObj isKindOfClass:[NSDictionary class]]) {
-        NSDictionary *locationDict = (NSDictionary *)locationObj;
-
-        id locationCoordinatesObj = locationDict[@"coordinates"];
-        if (!locationCoordinatesObj || ![locationCoordinatesObj isKindOfClass:[NSArray class]]) {
-            return nil;
-        }
-
-        NSArray *locationCoordinatesArr = (NSArray *)locationCoordinatesObj;
-        if (locationCoordinatesArr.count != 2) {
-            return nil;
-        }
-
-        id locationCoordinatesLongitudeObj = locationCoordinatesArr[0];
-        id locationCoordinatesLatitudeObj = locationCoordinatesArr[1];
-        if (!locationCoordinatesLongitudeObj || !locationCoordinatesLatitudeObj || ![locationCoordinatesLongitudeObj isKindOfClass:[NSNumber class]] ||
-            ![locationCoordinatesLatitudeObj isKindOfClass:[NSNumber class]]) {
-            return nil;
-        }
-
-        NSNumber *locationCoordinatesLongitudeNumber = (NSNumber *)locationCoordinatesLongitudeObj;
-        NSNumber *locationCoordinatesLatitudeNumber = (NSNumber *)locationCoordinatesLatitudeObj;
-
-        float locationCoordinatesLongitudeFloat = [locationCoordinatesLongitudeNumber floatValue];
-        float locationCoordinatesLatitudeFloat = [locationCoordinatesLatitudeNumber floatValue];
-
-        id locationAccuracyObj = dict[@"locationAccuracy"];
-        if (locationAccuracyObj && [locationAccuracyObj isKindOfClass:[NSNumber class]]) {
-            NSNumber *locationAccuracyNumber = (NSNumber *)locationAccuracyObj;
-
-            location = [[CLLocation alloc] initWithCoordinate:CLLocationCoordinate2DMake(locationCoordinatesLatitudeFloat, locationCoordinatesLongitudeFloat)
-                                                     altitude:-1
-                                           horizontalAccuracy:[locationAccuracyNumber floatValue]
-                                             verticalAccuracy:-1
-                                                    timestamp:[NSDate date]];
-        }
-    }
-
-    id geofencesObj = dict[@"geofences"];
-    if (geofencesObj && [geofencesObj isKindOfClass:[NSArray class]]) {
-        NSMutableArray<RadarGeofence *> *mutableGeofences = [NSMutableArray<RadarGeofence *> new];
-
-        NSArray *geofencesArr = (NSArray *)geofencesObj;
-        for (id geofenceObj in geofencesArr) {
-            RadarGeofence *userGeofence = [[RadarGeofence alloc] initWithObject:geofenceObj];
-            if (!userGeofence) {
-                return nil;
-            }
-
-            [mutableGeofences addObject:userGeofence];
-        }
-
-        geofences = mutableGeofences;
-    }
-
-    id placeObj = dict[@"place"];
-    place = [[RadarPlace alloc] initWithObject:placeObj];
-
-    id insightsObj = dict[@"insights"];
-    if (insightsObj && [insightsObj isKindOfClass:[NSDictionary class]]) {
-        insights = [[RadarUserInsights alloc] initWithObject:insightsObj];
-    }
-
-    id stoppedObj = dict[@"stopped"];
-    if (stoppedObj && [stoppedObj isKindOfClass:[NSNumber class]]) {
-        NSNumber *stoppedNumber = (NSNumber *)stoppedObj;
-
-        stopped = [stoppedNumber boolValue];
-    }
-
-    id foregroundObj = dict[@"foreground"];
-    if (foregroundObj && [foregroundObj isKindOfClass:[NSNumber class]]) {
-        NSNumber *foregroundNumber = (NSNumber *)foregroundObj;
-
-        foreground = [foregroundNumber boolValue];
-    }
-
-    id countryObj = dict[@"country"];
-    country = [[RadarRegion alloc] initWithObject:countryObj];
-
-    id stateObj = dict[@"state"];
-    state = [[RadarRegion alloc] initWithObject:stateObj];
-
-    id dmaObj = dict[@"dma"];
-    dma = [[RadarRegion alloc] initWithObject:dmaObj];
-
-    id postalCodeObj = dict[@"postalCode"];
-    postalCode = [[RadarRegion alloc] initWithObject:postalCodeObj];
-
-    id userNearbyPlaceChainsObj = dict[@"nearbyPlaceChains"];
-    if ([userNearbyPlaceChainsObj isKindOfClass:[NSArray class]]) {
-        NSArray *nearbyChainsArr = (NSArray *)userNearbyPlaceChainsObj;
-
-        NSMutableArray<RadarChain *> *mutableNearbyPlaceChains = [NSMutableArray<RadarChain *> new];
-        for (id chainObj in nearbyChainsArr) {
-            RadarChain *placeChain = [[RadarChain alloc] initWithObject:chainObj];
-            if (placeChain) {
-                [mutableNearbyPlaceChains addObject:placeChain];
-            }
-        }
-
-        nearbyPlaceChains = mutableNearbyPlaceChains;
-    }
-
-    id segmentsObj = dict[@"segments"];
-    if ([segmentsObj isKindOfClass:[NSArray class]]) {
-        NSArray *segmentsArr = (NSArray *)segmentsObj;
-
-        NSMutableArray<RadarSegment *> *mutableSegments = [NSMutableArray<RadarSegment *> new];
-        for (id segmentObj in segmentsArr) {
-            RadarSegment *segment = [[RadarSegment alloc] initWithObject:segmentObj];
-            if (segment) {
-                [mutableSegments addObject:segment];
-            }
-        }
-
-        segments = mutableSegments;
-    }
-
-    id topChainsObj = dict[@"topChains"];
-    if ([topChainsObj isKindOfClass:[NSArray class]]) {
-        NSArray *topChainsArr = (NSArray *)topChainsObj;
-
-        NSMutableArray<RadarChain *> *mutableTopChains = [NSMutableArray<RadarChain *> new];
-        for (id chainObj in topChainsArr) {
-            RadarChain *placeChain = [[RadarChain alloc] initWithObject:chainObj];
-            if (placeChain) {
-                [mutableTopChains addObject:placeChain];
-            }
-        }
-
-        topChains = mutableTopChains;
-    }
-
-    id sourceObj = dict[@"source"];
-    if (sourceObj && [sourceObj isKindOfClass:[NSString class]]) {
-        NSString *sourceStr = (NSString *)sourceObj;
-
-        if ([sourceStr isEqualToString:@"FOREGROUND_LOCATION"]) {
-            source = RadarLocationSourceForegroundLocation;
-        } else if ([sourceStr isEqualToString:@"BACKGROUND_LOCATION"]) {
-            source = RadarLocationSourceBackgroundLocation;
-        } else if ([sourceStr isEqualToString:@"MANUAL_LOCATION"]) {
-            source = RadarLocationSourceManualLocation;
-        } else if ([sourceStr isEqualToString:@"GEOFENCE_ENTER"]) {
-            source = RadarLocationSourceGeofenceEnter;
-        } else if ([sourceStr isEqualToString:@"GEOFENCE_EXIT"]) {
-            source = RadarLocationSourceGeofenceExit;
-        } else if ([sourceStr isEqualToString:@"VISIT_ARRIVAL"]) {
-            source = RadarLocationSourceVisitArrival;
-        } else if ([sourceStr isEqualToString:@"VISIT_DEPARTURE"]) {
-            source = RadarLocationSourceVisitDeparture;
-        } else if ([sourceStr isEqualToString:@"MOCK_LOCATION"]) {
-            source = RadarLocationSourceMockLocation;
-        }
-    }
-
-    id fraudObj = dict[@"fraud"];
-    if (fraudObj && [fraudObj isKindOfClass:[NSDictionary class]]) {
-        NSDictionary *fraudDict = (NSDictionary *)fraudObj;
-
-        id proxyObj = fraudDict[@"proxy"];
-        if (proxyObj && [proxyObj isKindOfClass:[NSNumber class]]) {
-            NSNumber *proxyNumber = (NSNumber *)proxyObj;
-
-            proxy = [proxyNumber boolValue];
-        }
+    if ([sourceStr isEqualToString:@"FOREGROUND_LOCATION"]) {
+        source = RadarLocationSourceForegroundLocation;
+    } else if ([sourceStr isEqualToString:@"BACKGROUND_LOCATION"]) {
+        source = RadarLocationSourceBackgroundLocation;
+    } else if ([sourceStr isEqualToString:@"MANUAL_LOCATION"]) {
+        source = RadarLocationSourceManualLocation;
+    } else if ([sourceStr isEqualToString:@"GEOFENCE_ENTER"]) {
+        source = RadarLocationSourceGeofenceEnter;
+    } else if ([sourceStr isEqualToString:@"GEOFENCE_EXIT"]) {
+        source = RadarLocationSourceGeofenceExit;
+    } else if ([sourceStr isEqualToString:@"VISIT_ARRIVAL"]) {
+        source = RadarLocationSourceVisitArrival;
+    } else if ([sourceStr isEqualToString:@"VISIT_DEPARTURE"]) {
+        source = RadarLocationSourceVisitDeparture;
+    } else if ([sourceStr isEqualToString:@"MOCK_LOCATION"]) {
+        source = RadarLocationSourceMockLocation;
     }
 
     if (_id && location) {

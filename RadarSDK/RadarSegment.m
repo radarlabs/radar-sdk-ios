@@ -5,6 +5,8 @@
 //  Copyright © 2019 Radar. All rights reserved.
 //
 
+#import "RadarCollectionAdditions.h"
+#import "RadarJSONCoding.h"
 #import "RadarSegment+Internal.h"
 
 @implementation RadarSegment
@@ -18,6 +20,10 @@
     return self;
 }
 
++ (nullable NSArray<RadarSegment *> *)segmentsFromObject:(nullable id)object {
+    FROM_JSON_ARRAY_DEFAULT_IMP(object, RadarSegment);
+}
+
 - (nullable instancetype)initWithObject:(nullable id)object {
     if (![object isKindOfClass:[NSDictionary class]]) {
         return nil;
@@ -25,18 +31,8 @@
 
     NSDictionary *dict = (NSDictionary *)object;
 
-    NSString *description;
-    NSString *externalId;
-
-    id descriptionObj = dict[@"description"];
-    if ([descriptionObj isKindOfClass:[NSString class]]) {
-        description = (NSString *)descriptionObj;
-    }
-
-    id externalIdObj = dict[@"externalId"];
-    if ([externalIdObj isKindOfClass:[NSString class]]) {
-        externalId = (NSString *)externalIdObj;
-    }
+    NSString *description = [dict radar_stringForKey:@"description"];
+    NSString *externalId = [dict radar_stringForKey:@"externalId"];
 
     if (description && externalId) {
         return [[RadarSegment alloc] initWithDescription:description externalId:externalId];
@@ -46,16 +42,7 @@
 }
 
 + (NSArray<NSDictionary *> *)arrayForSegments:(NSArray<RadarSegment *> *)segments {
-    if (!segments) {
-        return nil;
-    }
-
-    NSMutableArray *arr = [[NSMutableArray alloc] initWithCapacity:segments.count];
-    for (RadarSegment *segment in segments) {
-        NSDictionary *dict = [segment dictionaryValue];
-        [arr addObject:dict];
-    }
-    return arr;
+    TO_JSON_ARRAY_DEFAULT_IMP(segments, RadarSegment);
 }
 
 - (NSDictionary *)dictionaryValue {

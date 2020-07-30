@@ -14,7 +14,10 @@
     NSMutableArray *result = [NSMutableArray arrayWithCapacity:[self count]];
 
     [self enumerateObjectsUsingBlock:^(id _Nonnull obj, NSUInteger idx, BOOL *stop) {
-        [result addObject:block(obj)];
+        id mappedObj = block(obj);
+        if (mappedObj) {
+            [result addObject:mappedObj];
+        }
     }];
     return result;
 }
@@ -36,6 +39,10 @@
     GET_DICT_VALUE_FOR_KEY(key, NSString);
 }
 
+- (NSNumber *)radar_numberForKey:(id)key {
+    GET_DICT_VALUE_FOR_KEY(key, NSNumber);
+}
+
 - (NSDictionary *)radar_dictionaryForKey:(id)key {
     GET_DICT_VALUE_FOR_KEY(key, NSDictionary);
 }
@@ -45,12 +52,7 @@
 }
 
 - (RadarCoordinate *)radar_coordinateForKey:(id)key {
-    NSDictionary *dict = [self radar_dictionaryForKey:key];
-    if (!dict) {
-        return nil;
-    }
-
-    NSArray *coordinates = [dict radar_arrayForKey:@"coordinates"];
+    NSArray *coordinates = [self radar_arrayForKey:key];
     if (!coordinates || coordinates.count != 2 || ![coordinates[0] isKindOfClass:[NSNumber class]] || ![coordinates[1] isKindOfClass:[NSNumber class]]) {
         return nil;
     }
