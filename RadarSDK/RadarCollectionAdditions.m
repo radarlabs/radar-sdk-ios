@@ -43,29 +43,30 @@
     GET_DICT_VALUE_FOR_KEY(key, NSNumber);
 }
 
+- (BOOL)radar_boolForKey:(id)key {
+    NSNumber *valueNumber = [self radar_numberForKey:key];
+    return valueNumber ? [valueNumber boolValue] : NO;
+}
+
+- (NSDate *)radar_dateForKey:(id)key {
+    NSString *dateStr = [self radar_stringForKey:key];
+    if (dateStr) {
+        NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+        dateFormatter.locale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US_POSIX"];
+        dateFormatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
+        [dateFormatter setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss.SSSZ"];
+
+        return [dateFormatter dateFromString:dateStr];
+    }
+    return nil;
+}
+
 - (NSDictionary *)radar_dictionaryForKey:(id)key {
     GET_DICT_VALUE_FOR_KEY(key, NSDictionary);
 }
 
 - (NSArray *)radar_arrayForKey:(id)key {
     GET_DICT_VALUE_FOR_KEY(key, NSArray);
-}
-
-- (RadarCoordinate *)radar_coordinateForKey:(id)key {
-    NSArray *coordinates = [self radar_arrayForKey:key];
-    if (!coordinates || coordinates.count != 2 || ![coordinates[0] isKindOfClass:[NSNumber class]] || ![coordinates[1] isKindOfClass:[NSNumber class]]) {
-        return nil;
-    }
-    float longitude = [(NSNumber *)coordinates[0] floatValue];
-    if (longitude < -180 || longitude > 180) {
-        return nil;
-    }
-    float latitude = [(NSNumber *)coordinates[1] floatValue];
-    if (latitude < -90 || latitude > 90) {
-        return nil;
-    }
-
-    return [[RadarCoordinate alloc] initWithCoordinate:CLLocationCoordinate2DMake(latitude, longitude)];
 }
 
 @end

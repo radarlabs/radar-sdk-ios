@@ -7,12 +7,13 @@
 
 #import "RadarEvent.h"
 #import "RadarGeofence.h"
+#import "RadarJSONCoding.h"
 #import "RadarPlace.h"
 #import "RadarUser.h"
 #import <CoreLocation/CoreLocation.h>
 #import <Foundation/Foundation.h>
 
-@interface RadarEvent ()
+@interface RadarEvent ()<RadarJSONCoding>
 
 + (NSArray<RadarEvent *> *_Nullable)eventsFromObject:(id _Nonnull)object;
 - (instancetype _Nullable)initWithId:(NSString *_Nonnull)_id
@@ -29,6 +30,5 @@
                           confidence:(RadarEventConfidence)confidence
                             duration:(float)duration
                             location:(CLLocation *_Nonnull)location;
-- (instancetype _Nullable)initWithObject:(id _Nonnull)object;
 
 @end

@@ -5,11 +5,12 @@
 //  Copyright © 2020 Radar Labs, Inc. All rights reserved.
 //
 
+#import "RadarJSONCoding.h"
 #import "RadarPoint.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface RadarPoint ()
+@interface RadarPoint ()<RadarJSONCoding>
 
 + (NSArray<RadarPoint *> *_Nullable)pointsFromObject:(id)object;
 - (instancetype _Nullable)initWithId:(NSString *)_id
@@ -18,7 +19,6 @@ NS_ASSUME_NONNULL_BEGIN
                           externalId:(NSString *_Nullable)externalId
                             metadata:(NSDictionary *_Nullable)metadata
                             location:(RadarCoordinate *)location;
-- (instancetype _Nullable)initWithObject:(id)object;
 - (instancetype)init NS_UNAVAILABLE;
 
 @end

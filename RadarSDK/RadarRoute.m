@@ -31,24 +31,9 @@
 
     NSDictionary *dict = (NSDictionary *)object;
 
-    RadarRouteDistance *distance;
-    RadarRouteDuration *duration;
-    RadarRouteGeometry *geometry;
-
-    id distanceObj = dict[@"distance"];
-    if (distanceObj) {
-        distance = [[RadarRouteDistance alloc] initWithObject:distanceObj];
-    }
-
-    id durationObj = dict[@"duration"];
-    if (durationObj) {
-        duration = [[RadarRouteDuration alloc] initWithObject:durationObj];
-    }
-
-    id geometryObj = dict[@"geometry"];
-    if (geometryObj) {
-        geometry = [[RadarRouteGeometry alloc] initWithObject:geometryObj];
-    }
+    RadarRouteDistance *distance = [[RadarRouteDistance alloc] initWithObject:dict[@"distance"]];
+    RadarRouteDuration *duration = [[RadarRouteDuration alloc] initWithObject:dict[@"duration"]];
+    RadarRouteGeometry *geometry = [[RadarRouteGeometry alloc] initWithObject:dict[@"geometry"]];
 
     if (distance && duration) {
         return [[RadarRoute alloc] initWithDistance:distance duration:duration geometry:geometry];

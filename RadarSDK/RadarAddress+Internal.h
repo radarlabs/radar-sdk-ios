@@ -7,13 +7,12 @@
 
 #import "RadarAddress.h"
 #import "RadarCoordinate.h"
+#import "RadarJSONCoding.h"
 #import <Foundation/Foundation.h>
 
-@interface RadarAddress ()
+@interface RadarAddress ()<RadarJSONCoding>
 
 + (NSArray<RadarAddress *> *_Nullable)addressesFromObject:(id _Nonnull)object;
-
-- (instancetype _Nullable)initWithObject:(id _Nonnull)object;
 
 - (instancetype _Nullable)initWithCoordinate:(CLLocationCoordinate2D)coordinate
                             formattedAddress:(NSString *_Nullable)formattedAddress

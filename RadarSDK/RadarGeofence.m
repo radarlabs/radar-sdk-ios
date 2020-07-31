@@ -38,7 +38,7 @@
     FROM_JSON_ARRAY_DEFAULT_IMP(object, RadarGeofence);
 }
 
-- (instancetype _Nullable)initWithObject:(id)object {
+- (instancetype _Nullable)initWithObject:(id _Nullable)object {
     if (!object || ![object isKindOfClass:[NSDictionary class]]) {
         return nil;
     }

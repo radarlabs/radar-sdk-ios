@@ -39,7 +39,7 @@
     FROM_JSON_ARRAY_DEFAULT_IMP(object, RadarPlace);
 }
 
-- (instancetype _Nullable)initWithObject:(id _Nonnull)object {
+- (instancetype _Nullable)initWithObject:(id _Nullable)object {
     if (!object || ![object isKindOfClass:[NSDictionary class]]) {
         return nil;
     }

@@ -6,9 +6,10 @@
 //
 
 #import "RadarGeofence.h"
+#import "RadarJSONCoding.h"
 #import <Foundation/Foundation.h>
 
-@interface RadarGeofence ()
+@interface RadarGeofence ()<RadarJSONCoding>
 
 + (NSArray<RadarGeofence *> *_Nullable)geofencesFromObject:(id _Nonnull)object;
 - (instancetype _Nullable)initWithId:(NSString *_Nonnull)_id
@@ -17,6 +18,5 @@
                           externalId:(NSString *_Nullable)externalId
                             metadata:(NSDictionary *_Nullable)metadata
                             geometry:(RadarGeofenceGeometry *_Nonnull)geometry;
-- (instancetype _Nullable)initWithObject:(id _Nonnull)object;
 
 @end

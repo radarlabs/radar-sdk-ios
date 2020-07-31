@@ -11,25 +11,7 @@
 @implementation RadarCoordinate
 
 + (NSArray<RadarCoordinate *> *_Nullable)coordinatesFromObject:(id _Nonnull)object {
-    if (!object || ![object isKindOfClass:[NSArray class]]) {
-        return nil;
-    }
-
-    NSArray *coordinatesArr = (NSArray *)object;
-
-    NSMutableArray<RadarCoordinate *> *mutableCoordinates = [NSMutableArray<RadarCoordinate *> new];
-
-    for (id coordinateObj in coordinatesArr) {
-        RadarCoordinate *coordinate = [[RadarCoordinate alloc] initWithObject:coordinateObj];
-
-        if (!coordinate) {
-            return nil;
-        }
-
-        [mutableCoordinates addObject:coordinate];
-    }
-
-    return mutableCoordinates;
+    FROM_JSON_ARRAY_DEFAULT_IMP(object, RadarCoordinate);
 }
 
 - (instancetype _Nullable)initWithObject:(id)object {

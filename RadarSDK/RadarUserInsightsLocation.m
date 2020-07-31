@@ -66,16 +66,7 @@
         }
     }
 
-    NSDate *updatedAt;
-    NSString *userInsightsLocationUpdatedAtStr = [dict radar_stringForKey:@"updatedAt"];
-    if (userInsightsLocationUpdatedAtStr) {
-        NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-        dateFormatter.locale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US_POSIX"];
-        dateFormatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
-        [dateFormatter setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss.SSSZ"];
-
-        updatedAt = [dateFormatter dateFromString:userInsightsLocationUpdatedAtStr];
-    }
+    NSDate *updatedAt = [dict radar_dateForKey:@"updatedAt"];
 
     RadarRegion *country = [[RadarRegion alloc] initWithObject:dict[@"country"]];
     RadarRegion *state = [[RadarRegion alloc] initWithObject:dict[@"state"]];

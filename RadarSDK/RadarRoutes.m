@@ -6,6 +6,7 @@
 //
 
 #import "RadarRoutes.h"
+#import "RadarCollectionAdditions.h"
 #import "RadarRoute+Internal.h"
 #import "RadarRouteDistance+Internal.h"
 
@@ -30,9 +31,9 @@
     NSDictionary *dict = (NSDictionary *)object;
 
     RadarRouteDistance *geodesic;
-    RadarRoute *foot;
-    RadarRoute *bike;
-    RadarRoute *car;
+    RadarRoute *foot = [[RadarRoute alloc] initWithObject:dict[@"foot"]];
+    RadarRoute *bike = [[RadarRoute alloc] initWithObject:dict[@"bike"]];
+    RadarRoute *car = [[RadarRoute alloc] initWithObject:dict[@"bike"]];
 
     id geodesicObj = dict[@"geodesic"];
     if (geodesicObj) {
@@ -40,21 +41,6 @@
         if (geodesicDistanceObj) {
             geodesic = [[RadarRouteDistance alloc] initWithObject:geodesicDistanceObj];
         }
-    }
-
-    id footObj = dict[@"foot"];
-    if (footObj) {
-        foot = [[RadarRoute alloc] initWithObject:footObj];
-    }
-
-    id bikeObj = dict[@"bike"];
-    if (bikeObj) {
-        bike = [[RadarRoute alloc] initWithObject:bikeObj];
-    }
-
-    id carObj = dict[@"car"];
-    if (carObj) {
-        car = [[RadarRoute alloc] initWithObject:carObj];
     }
 
     return [[RadarRoutes alloc] initWithGeodesic:geodesic foot:foot bike:bike car:car];

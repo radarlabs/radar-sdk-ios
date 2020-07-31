@@ -5,10 +5,11 @@
 //  Copyright © 2019 Radar Labs, Inc. All rights reserved.
 //
 
+#import "RadarJSONCoding.h"
 #import "RadarPlace.h"
 #import <Foundation/Foundation.h>
 
-@interface RadarPlace ()
+@interface RadarPlace ()<RadarJSONCoding>
 
 + (NSArray<RadarPlace *> *_Nullable)placesFromObject:(id _Nonnull)object;
 - (instancetype _Nullable)initWithId:(NSString *_Nonnull)_id
@@ -18,6 +19,5 @@
                             location:(RadarCoordinate *_Nonnull)location
                                group:(NSString *_Nonnull)group
                             metadata:(NSDictionary *_Nullable)metadata;
-- (instancetype _Nullable)initWithObject:(id _Nonnull)object;
 
 @end

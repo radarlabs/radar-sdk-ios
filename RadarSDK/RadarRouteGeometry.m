@@ -26,14 +26,7 @@
 
     NSDictionary *dict = (NSDictionary *)object;
 
-    id coordinatesObj = dict[@"coordinates"];
-    if (![coordinatesObj isKindOfClass:[NSArray class]]) {
-        return nil;
-    }
-
-    NSArray *coordinatesArr = (NSArray *)coordinatesObj;
-
-    NSArray<RadarCoordinate *> *coordinates = [RadarCoordinate coordinatesFromJSONCoordinates:coordinatesArr];
+    NSArray<RadarCoordinate *> *coordinates = [RadarCoordinate coordinatesFromJSONCoordinates:dict[@"coordinates"]];
     if (coordinates) {
         return [[RadarRouteGeometry alloc] initWithCoordinates:coordinates];
     }

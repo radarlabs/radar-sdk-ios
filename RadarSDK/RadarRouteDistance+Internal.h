@@ -5,13 +5,12 @@
 //  Copyright © 2020 Radar Labs, Inc. All rights reserved.
 //
 
+#import "RadarJSONCoding.h"
 #import "RadarRouteDistance.h"
 #import <Foundation/Foundation.h>
 
-@interface RadarRouteDistance ()
+@interface RadarRouteDistance ()<RadarJSONCoding>
 
 - (instancetype _Nullable)initWithValue:(double)value text:(nonnull NSString *)text;
-
-- (instancetype _Nullable)initWithObject:(id _Nonnull)object;
 
 @end

@@ -20,6 +20,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable NSString *)radar_stringForKey:(KeyType)key;
 - (nullable NSNumber *)radar_numberForKey:(KeyType)key;
+// return NO if the key is not existent or is not a NSNumber type
+- (BOOL)radar_boolForKey:(KeyType)key;
+- (nullable NSDate *)radar_dateForKey:(KeyType)key;
 - (nullable NSDictionary *)radar_dictionaryForKey:(KeyType)key;
 - (nullable NSArray *)radar_arrayForKey:(KeyType)key;
 

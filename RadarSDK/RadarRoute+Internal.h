@@ -5,6 +5,7 @@
 //  Copyright © 2020 Radar Labs, Inc. All rights reserved.
 //
 
+#import "RadarJSONCoding.h"
 #import "RadarRoute.h"
 #import <Foundation/Foundation.h>
 

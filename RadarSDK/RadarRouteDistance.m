@@ -6,6 +6,7 @@
 //
 
 #import "RadarRouteDistance.h"
+#import "RadarCollectionAdditions.h"
 
 @implementation RadarRouteDistance
 
@@ -25,18 +26,10 @@
 
     NSDictionary *dict = (NSDictionary *)object;
 
-    double value = 0;
-    NSString *text;
+    NSNumber *valueNumber = [dict radar_numberForKey:@"value"];
+    double value = valueNumber ? [valueNumber floatValue] : 0;
 
-    id valueObj = dict[@"value"];
-    if ([valueObj isKindOfClass:[NSNumber class]]) {
-        value = ((NSNumber *)valueObj).doubleValue;
-    }
-
-    id textObj = dict[@"text"];
-    if ([textObj isKindOfClass:[NSString class]]) {
-        text = (NSString *)textObj;
-    }
+    NSString *text = [dict radar_stringForKey:@"text"];
 
     if (text) {
         return [[RadarRouteDistance alloc] initWithValue:value text:text];

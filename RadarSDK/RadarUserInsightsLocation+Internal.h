@@ -5,10 +5,11 @@
 //  Copyright © 2019 Radar Labs, Inc. All rights reserved.
 //
 
+#import "RadarJSONCoding.h"
 #import "RadarUserInsightsLocation.h"
 #import <Foundation/Foundation.h>
 
-@interface RadarUserInsightsLocation ()
+@interface RadarUserInsightsLocation ()<RadarJSONCoding>
 
 - (instancetype _Nullable)initWithType:(RadarUserInsightsLocationType)type
                               location:(RadarCoordinate* _Nullable)location
@@ -18,6 +19,5 @@
                                  state:(RadarRegion* _Nullable)state
                                    dma:(RadarRegion* _Nullable)dma
                             postalCode:(RadarRegion* _Nullable)postalCode;
-- (instancetype _Nullable)initWithObject:(id _Nonnull)object;
 
 @end

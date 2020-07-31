@@ -29,17 +29,10 @@
 
     NSDictionary *userInsightsStateDict = (NSDictionary *)object;
 
-    NSNumber *homeNumber = [userInsightsStateDict radar_numberForKey:@"home"];
-    BOOL home = homeNumber ? [homeNumber boolValue] : NO;
-
-    NSNumber *officeNumber = [userInsightsStateDict radar_numberForKey:@"office"];
-    BOOL office = officeNumber ? [officeNumber boolValue] : NO;
-
-    NSNumber *travelingNumber = [userInsightsStateDict radar_numberForKey:@"traveling"];
-    BOOL traveling = travelingNumber ? [travelingNumber boolValue] : NO;
-
-    NSNumber *commutingNumber = [userInsightsStateDict radar_numberForKey:@"commuting"];
-    BOOL commuting = commutingNumber ? [commutingNumber boolValue] : NO;
+    BOOL home = [userInsightsStateDict radar_boolForKey:@"home"];
+    BOOL office = [userInsightsStateDict radar_boolForKey:@"office"];
+    BOOL traveling = [userInsightsStateDict radar_boolForKey:@"traveling"];
+    BOOL commuting = [userInsightsStateDict radar_boolForKey:@"commuting"];
 
     return [[RadarUserInsightsState alloc] initWithHome:home office:office traveling:traveling commuting:commuting];
 }

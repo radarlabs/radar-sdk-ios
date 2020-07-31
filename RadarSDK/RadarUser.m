@@ -83,11 +83,8 @@
     RadarPlace *place = [[RadarPlace alloc] initWithObject:dict[@"place"]];
     RadarUserInsights *insights = [[RadarUserInsights alloc] initWithObject:dict[@"insights"]];
 
-    NSNumber *stoppedNumber = [dict radar_numberForKey:@"stopped"];
-    BOOL stopped = stoppedNumber ? [stoppedNumber boolValue] : NO;
-
-    NSNumber *foregroundNumber = [dict radar_numberForKey:@"foreground"];
-    BOOL foreground = foregroundNumber ? [foregroundNumber boolValue] : NO;
+    BOOL stopped = [dict radar_boolForKey:@"stopped"];
+    BOOL foreground = [dict radar_boolForKey:@"foreground"];
 
     RadarRegion *country = [[RadarRegion alloc] initWithObject:dict[@"country"]];
     RadarRegion *state = [[RadarRegion alloc] initWithObject:dict[@"state"]];
@@ -99,8 +96,7 @@
     NSArray<RadarChain *> *topChains = [RadarChain chainsFromObject:dict[@"topChains"]];
 
     NSDictionary *fraudDict = [dict radar_dictionaryForKey:@"fraud"];
-    NSNumber *proxyNumber = [fraudDict radar_numberForKey:@"proxy"];
-    BOOL proxy = proxyNumber ? [proxyNumber boolValue] : NO;
+    BOOL proxy = fraudDict ? [fraudDict radar_boolForKey:@"proxy"] : NO;
 
     RadarCoordinate *coordinate = [[RadarCoordinate alloc] initWithObject:dict[@"location"]];
     NSNumber *locationAccuracyNumber = [dict radar_numberForKey:@"locationAccuracy"];

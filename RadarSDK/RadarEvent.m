@@ -6,34 +6,14 @@
 //
 
 #import "RadarEvent.h"
+#import "RadarCollectionAdditions.h"
+#import "RadarCoordinate+Internal.h"
 #import "RadarEvent+Internal.h"
 #import "RadarGeofence+Internal.h"
 #import "RadarPlace+Internal.h"
 #import "RadarRegion+Internal.h"
 
 @implementation RadarEvent
-
-+ (NSArray<RadarEvent *> *_Nullable)eventsFromObject:(id _Nonnull)object {
-    if (!object || ![object isKindOfClass:[NSArray class]]) {
-        return nil;
-    }
-
-    NSArray *eventsArr = (NSArray *)object;
-
-    NSMutableArray<RadarEvent *> *mutableEvents = [NSMutableArray<RadarEvent *> new];
-
-    for (id eventObj in eventsArr) {
-        RadarEvent *event = [[RadarEvent alloc] initWithObject:eventObj];
-
-        if (!event) {
-            return nil;
-        }
-
-        [mutableEvents addObject:event];
-    }
-
-    return mutableEvents;
-}
 
 - (instancetype _Nullable)initWithId:(NSString *)_id
                            createdAt:(NSDate *)createdAt
@@ -69,6 +49,12 @@
     return self;
 }
 
+#pragma mark - JSON coding
+
++ (NSArray<RadarEvent *> *_Nullable)eventsFromObject:(id _Nonnull)object {
+    FROM_JSON_ARRAY_DEFAULT_IMP(object, RadarEvent);
+}
+
 - (instancetype _Nullable)initWithObject:(id)object {
     if (!object || ![object isKindOfClass:[NSDictionary class]]) {
         return nil;
@@ -76,50 +62,34 @@
 
     NSDictionary *dict = (NSDictionary *)object;
 
-    NSString *_id;
-    NSDate *createdAt;
-    NSDate *actualCreatedAt;
-    BOOL live = NO;
+    NSString *_id = [dict radar_stringForKey:@"_id"];
+    NSDate *createdAt = [dict radar_dateForKey:@"createdAt"];
+    NSDate *actualCreatedAt = [dict radar_dateForKey:@"actualCreatedAt"];
+
+    BOOL live = [dict radar_boolForKey:@"live"];
+
+    RadarGeofence *geofence = [[RadarGeofence alloc] initWithObject:dict[@"geofence"]];
+    RadarPlace *place = [[RadarPlace alloc] initWithObject:dict[@"place"]];
+    RadarRegion *region = [[RadarRegion alloc] initWithObject:dict[@"region"]];
+    NSArray<RadarPlace *> *alternatePlaces = [RadarPlace placesFromObject:dict[@"alternatePlaces"]];
+    RadarPlace *verifiedPlace = [[RadarPlace alloc] initWithObject:dict[@"verifiedPlace"]];
+
+    NSNumber *durationNumber = [dict radar_numberForKey:@"duration"];
+    float duration = durationNumber ? [durationNumber floatValue] : 0;
+
+    // location
+    RadarCoordinate *coordinate = [[RadarCoordinate alloc] initWithObject:dict[@"location"]];
+    NSNumber *locationAccuracyNumber = [dict radar_numberForKey:@"locationAccuracy"];
+    if (!coordinate || !locationAccuracyNumber) {
+        return nil;
+    }
+    CLLocation *location = [[CLLocation alloc] initWithCoordinate:coordinate.coordinate
+                                                         altitude:-1
+                                               horizontalAccuracy:[locationAccuracyNumber floatValue]
+                                                 verticalAccuracy:-1
+                                                        timestamp:(createdAt ? createdAt : [NSDate date])];
+
     RadarEventType type = RadarEventTypeUnknown;
-    RadarGeofence *geofence;
-    RadarPlace *place;
-    RadarRegion *region;
-    NSArray<RadarPlace *> *alternatePlaces;
-    RadarPlace *verifiedPlace;
-    RadarEventVerification verification = RadarEventVerificationUnverify;
-    RadarEventConfidence confidence = RadarEventConfidenceNone;
-    float duration = 0;
-    CLLocation *location;
-
-    id idObj = dict[@"_id"];
-    if (idObj && [idObj isKindOfClass:[NSString class]]) {
-        _id = (NSString *)idObj;
-    }
-
-    id createdAtObj = dict[@"createdAt"];
-    if (createdAtObj && [createdAtObj isKindOfClass:[NSString class]]) {
-        NSString *createdAtStr = (NSString *)createdAtObj;
-
-        NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-        dateFormatter.locale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US_POSIX"];
-        dateFormatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
-        [dateFormatter setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss.SSSZ"];
-
-        createdAt = [dateFormatter dateFromString:createdAtStr];
-    }
-
-    id actualCreatedAtObj = dict[@"actualCreatedAt"];
-    if ([actualCreatedAtObj isKindOfClass:[NSString class]]) {
-        NSString *actualCreatedAtStr = (NSString *)actualCreatedAtObj;
-
-        NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-        dateFormatter.locale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US_POSIX"];
-        dateFormatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
-        [dateFormatter setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss.SSSZ"];
-
-        actualCreatedAt = [dateFormatter dateFromString:actualCreatedAtStr];
-    }
-
     id typeObj = dict[@"type"];
     if (typeObj && [typeObj isKindOfClass:[NSString class]]) {
         NSString *typeStr = (NSString *)typeObj;
@@ -165,13 +135,7 @@
         }
     }
 
-    id liveObj = dict[@"live"];
-    if (liveObj && [liveObj isKindOfClass:[NSNumber class]]) {
-        NSNumber *eventLiveNumber = (NSNumber *)liveObj;
-
-        live = [eventLiveNumber boolValue];
-    }
-
+    RadarEventVerification verification = RadarEventVerificationUnverify;
     id verificationObj = dict[@"verification"];
     if (verificationObj && [verificationObj isKindOfClass:[NSNumber class]]) {
         NSNumber *verificationNumber = (NSNumber *)verificationObj;
@@ -186,6 +150,7 @@
         }
     }
 
+    RadarEventConfidence confidence = RadarEventConfidenceNone;
     id confidenceObj = dict[@"confidence"];
     if (confidenceObj && [confidenceObj isKindOfClass:[NSNumber class]]) {
         NSNumber *confidenceNumber = (NSNumber *)confidenceObj;
@@ -197,81 +162,6 @@
             confidence = RadarEventConfidenceMedium;
         } else if (confidenceInt == 1) {
             confidence = RadarEventConfidenceLow;
-        }
-    }
-
-    id durationObj = dict[@"duration"];
-    if (durationObj && [durationObj isKindOfClass:[NSNumber class]]) {
-        NSNumber *durationNumber = (NSNumber *)durationObj;
-
-        duration = [durationNumber floatValue];
-    }
-
-    id geofenceObj = dict[@"geofence"];
-    geofence = [[RadarGeofence alloc] initWithObject:geofenceObj];
-
-    id placeObj = dict[@"place"];
-    place = [[RadarPlace alloc] initWithObject:placeObj];
-
-    id regionObj = dict[@"region"];
-    region = [[RadarRegion alloc] initWithObject:regionObj];
-
-    id alternatePlacesObj = dict[@"alternatePlaces"];
-    if (alternatePlacesObj && [alternatePlacesObj isKindOfClass:[NSArray class]]) {
-        NSMutableArray<RadarPlace *> *mutableAlternatePlaces = [NSMutableArray<RadarPlace *> new];
-
-        NSArray *alternatePlacesArr = (NSArray *)alternatePlacesObj;
-        for (id alternatePlaceObj in alternatePlacesArr) {
-            RadarPlace *alternatePlace = [[RadarPlace alloc] initWithObject:alternatePlaceObj];
-            if (!alternatePlace) {
-                return nil;
-            }
-
-            [mutableAlternatePlaces addObject:alternatePlace];
-        }
-
-        alternatePlaces = mutableAlternatePlaces;
-    }
-
-    id verifiedPlaceObj = dict[@"verifiedPlace"];
-    verifiedPlace = [[RadarPlace alloc] initWithObject:verifiedPlaceObj];
-
-    id locationObj = dict[@"location"];
-    if (locationObj && [locationObj isKindOfClass:[NSDictionary class]]) {
-        NSDictionary *locationDict = (NSDictionary *)locationObj;
-
-        id locationCoordinatesObj = locationDict[@"coordinates"];
-        if (!locationCoordinatesObj || ![locationCoordinatesObj isKindOfClass:[NSArray class]]) {
-            return nil;
-        }
-
-        NSArray *locationCoordinatesArr = (NSArray *)locationCoordinatesObj;
-        if (locationCoordinatesArr.count != 2) {
-            return nil;
-        }
-
-        id locationCoordinatesLongitudeObj = locationCoordinatesArr[0];
-        id locationCoordinatesLatitudeObj = locationCoordinatesArr[1];
-        if (!locationCoordinatesLongitudeObj || !locationCoordinatesLatitudeObj || ![locationCoordinatesLongitudeObj isKindOfClass:[NSNumber class]] ||
-            ![locationCoordinatesLatitudeObj isKindOfClass:[NSNumber class]]) {
-            return nil;
-        }
-
-        NSNumber *locationCoordinatesLongitudeNumber = (NSNumber *)locationCoordinatesLongitudeObj;
-        NSNumber *locationCoordinatesLatitudeNumber = (NSNumber *)locationCoordinatesLatitudeObj;
-
-        float locationCoordinatesLongitudeFloat = [locationCoordinatesLongitudeNumber floatValue];
-        float locationCoordinatesLatitudeFloat = [locationCoordinatesLatitudeNumber floatValue];
-
-        id locationAccuracyObj = dict[@"locationAccuracy"];
-        if (locationAccuracyObj && [locationAccuracyObj isKindOfClass:[NSNumber class]]) {
-            NSNumber *locationAccuracyNumber = (NSNumber *)locationAccuracyObj;
-
-            location = [[CLLocation alloc] initWithCoordinate:CLLocationCoordinate2DMake(locationCoordinatesLatitudeFloat, locationCoordinatesLongitudeFloat)
-                                                     altitude:-1
-                                           horizontalAccuracy:[locationAccuracyNumber floatValue]
-                                             verticalAccuracy:-1
-                                                    timestamp:(createdAt ? createdAt : [NSDate date])];
         }
     }
 

@@ -7,10 +7,11 @@
 
 #import "RadarContext.h"
 #import "RadarGeofence.h"
+#import "RadarJSONCoding.h"
 #import "RadarUserInsights.h"
 #import <Foundation/Foundation.h>
 
-@interface RadarContext ()
+@interface RadarContext ()<RadarJSONCoding>
 
 - (instancetype _Nullable)initWithGeofences:(NSArray* _Nonnull)geofences
                                       place:(RadarPlace* _Nullable)place
@@ -18,7 +19,5 @@
                                       state:(RadarRegion* _Nullable)state
                                         dma:(RadarRegion* _Nullable)dma
                                  postalCode:(RadarRegion* _Nullable)postalCode;
-
-- (instancetype _Nullable)initWithObject:(id _Nonnull)object;
 
 @end

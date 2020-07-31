@@ -6,11 +6,12 @@
 //
 
 #import "RadarGeofence.h"
+#import "RadarJSONCoding.h"
 #import "RadarUser.h"
 #import "RadarUserInsights.h"
 #import <Foundation/Foundation.h>
 
-@interface RadarUser ()
+@interface RadarUser ()<RadarJSONCoding>
 
 - (instancetype _Nullable)initWithId:(NSString *_Nonnull)_id
                               userId:(NSString *_Nullable)userId
@@ -32,6 +33,5 @@
                            topChains:(nullable NSArray<RadarChain *> *)topChains
                               source:(RadarLocationSource)source
                                proxy:(BOOL)proxy;
-- (instancetype _Nullable)initWithObject:(id _Nonnull)object;
 
 @end

@@ -6,13 +6,13 @@
 //
 
 #import "RadarChain.h"
+#import "RadarJSONCoding.h"
 #import <Foundation/Foundation.h>
 
-@interface RadarChain ()
+@interface RadarChain ()<RadarJSONCoding>
 
 + (NSArray<RadarChain *> *_Nullable)chainsFromObject:(id _Nonnull)object;
 
 - (instancetype _Nullable)initWithSlug:(NSString *_Nonnull)slug name:(NSString *_Nonnull)name externalId:(NSString *_Nullable)externalId metadata:(nullable NSDictionary *)metadata;
-- (instancetype _Nullable)initWithObject:(id _Nonnull)object;
 
 @end

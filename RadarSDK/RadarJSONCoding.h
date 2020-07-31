@@ -1,41 +1,8 @@
 #import <Foundation/Foundation.h>
 
-// a default implementation of deserializing from an array of JSON objects
-#define FROM_JSON_ARRAY_DEFAULT_IMP(jsonArray, className)                                                                                                                          \
-    {                                                                                                                                                                              \
-        if (!jsonArray || ![jsonArray isKindOfClass:[NSArray class]]) {                                                                                                            \
-            return nil;                                                                                                                                                            \
-        }                                                                                                                                                                          \
-                                                                                                                                                                                   \
-        NSMutableArray<className *> *__mutableArray = [NSMutableArray array];                                                                                                      \
-        for (id __jsonObject in (NSArray *)jsonArray) {                                                                                                                            \
-            className *__radarObject = [[className alloc] initWithObject:__jsonObject];                                                                                            \
-            if (!__radarObject) {                                                                                                                                                  \
-                return nil;                                                                                                                                                        \
-            }                                                                                                                                                                      \
-            [__mutableArray addObject:__radarObject];                                                                                                                              \
-        }                                                                                                                                                                          \
-        return [__mutableArray copy];                                                                                                                                              \
-    }
-
-// a default implementation of serializing to an array of JSON objects
-#define TO_JSON_ARRAY_DEFAULT_IMP(radarObjectArray, className)                                                                                                                     \
-    {                                                                                                                                                                              \
-        if (!radarObjectArray) {                                                                                                                                                   \
-            return nil;                                                                                                                                                            \
-        }                                                                                                                                                                          \
-                                                                                                                                                                                   \
-        NSMutableArray<NSDictionary *> *__mutableArray = [NSMutableArray array];                                                                                                   \
-        for (className * __radarObject in (NSArray *)radarObjectArray) {                                                                                                           \
-            NSDictionary *__dict = [__radarObject dictionaryValue];                                                                                                                \
-            [__mutableArray addObject:__dict];                                                                                                                                     \
-        }                                                                                                                                                                          \
-        return [__mutableArray copy];                                                                                                                                              \
-    }
-
 NS_ASSUME_NONNULL_BEGIN
 
-/// A JSON serialization / deserialization protocol for Radar models
+/// A JSON serialization / deserialization protocol for Radar model
 @protocol RadarJSONCoding
 
 /// Deserialize from JSON object; return nil if the JSON object is not valid.
@@ -48,3 +15,38 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 NS_ASSUME_NONNULL_END
+
+/* default implementations to serialize / deserialize an array of id<RadarJSONCoding> objects */
+
+// Deserialize from an array of JSON objects. Return nil if any JSON object can't be deserialized,
+#define FROM_JSON_ARRAY_DEFAULT_IMP(jsonArray, radarClassName)                                                                                                                     \
+    {                                                                                                                                                                              \
+        if (!jsonArray || ![jsonArray isKindOfClass:[NSArray class]]) {                                                                                                            \
+            return nil;                                                                                                                                                            \
+        }                                                                                                                                                                          \
+                                                                                                                                                                                   \
+        NSMutableArray<radarClassName *> *__mutableArray = [NSMutableArray array];                                                                                                 \
+        for (id __jsonObject in (NSArray *)jsonArray) {                                                                                                                            \
+            radarClassName *__radarObject = [[radarClassName alloc] initWithObject:__jsonObject];                                                                                  \
+            if (!__radarObject) {                                                                                                                                                  \
+                return nil;                                                                                                                                                        \
+            }                                                                                                                                                                      \
+            [__mutableArray addObject:__radarObject];                                                                                                                              \
+        }                                                                                                                                                                          \
+        return [__mutableArray copy];                                                                                                                                              \
+    }
+
+// Serialize to an array of JSON objects.
+#define TO_JSON_ARRAY_DEFAULT_IMP(radarObjectArray, radarClassName)                                                                                                                \
+    {                                                                                                                                                                              \
+        if (!radarObjectArray) {                                                                                                                                                   \
+            return nil;                                                                                                                                                            \
+        }                                                                                                                                                                          \
+                                                                                                                                                                                   \
+        NSMutableArray<NSDictionary *> *__mutableArray = [NSMutableArray array];                                                                                                   \
+        for (radarClassName * __radarObject in (NSArray *)radarObjectArray) {                                                                                                      \
+            NSDictionary *__dict = [__radarObject dictionaryValue];                                                                                                                \
+            [__mutableArray addObject:__dict];                                                                                                                                     \
+        }                                                                                                                                                                          \
+        return [__mutableArray copy];                                                                                                                                              \
+    }
