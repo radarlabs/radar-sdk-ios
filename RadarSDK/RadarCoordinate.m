@@ -21,8 +21,7 @@
 
     NSDictionary *dict = (NSDictionary *)object;
 
-    NSArray *coordinates = [dict radar_arrayForKey:@"coordinates"];
-    return [self initWithJSONCoordinate:coordinates];
+    return [self initWithJSONCoordinate:dict[@"coordinates"]];
 }
 
 + (NSArray<RadarCoordinate *> *_Nullable)coordinatesFromJSONCoordinates:(id)coordinateArrayObject {
