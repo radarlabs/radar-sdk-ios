@@ -105,6 +105,22 @@
     return latitudeValid && longitudeValid && horizontalAccuracyValid;
 }
 
+#pragma mark - threading
++ (void)runOnMainThreadAsyncIfNecessary:(dispatch_block_t)block {
+    if (!block) {
+        return;
+    }
+
+    if ([NSThread isMainThread]) {
+        block();
+    } else {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            block();
+        });
+    }
+    return;
+}
+
 #pragma mark - Airship integration
 
 #pragma clang diagnostic push
