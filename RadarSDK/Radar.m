@@ -91,7 +91,6 @@
                     completionHandler(status, nil, nil, nil);
                 }];
             }
-
             return;
         }
 
@@ -252,8 +251,11 @@
     [[RadarLocationManager sharedInstance] getLocationWithCompletionHandler:^(RadarStatus status, CLLocation *_Nullable location, BOOL stopped) {
         if (status != RadarStatusSuccess) {
             if (completionHandler) {
-                return completionHandler(status, nil, nil);
+                [RadarUtils runOnMainThreadAsyncIfNecessary:^{
+                    completionHandler(status, nil, nil);
+                }];
             }
+            return;
         }
 
         [[RadarAPIClient sharedInstance] getContextForLocation:location
@@ -286,7 +288,10 @@
              completionHandler:(RadarSearchPlacesCompletionHandler)completionHandler {
     [[RadarLocationManager sharedInstance] getLocationWithCompletionHandler:^(RadarStatus status, CLLocation *_Nullable location, BOOL stopped) {
         if (status != RadarStatusSuccess) {
-            return completionHandler(status, nil, nil);
+            [RadarUtils runOnMainThreadAsyncIfNecessary:^{
+                completionHandler(status, nil, nil);
+            }];
+            return;
         }
 
         [[RadarAPIClient sharedInstance] searchPlacesNear:location
