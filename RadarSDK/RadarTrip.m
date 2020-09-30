@@ -69,7 +69,7 @@ destinationGeofenceExternalId:(NSString *_Nullable)destinationGeofenceExternalId
     NSDictionary *etaDict = [dict radar_dictionaryForKey:@"eta"];
     if (etaDict) {
         etaDistance = [etaDict radar_floatForKey:@"distance"];
-        etaDistance = [etaDict radar_floatForKey:@"duration"];
+        etaDuration = [etaDict radar_floatForKey:@"duration"];
     }
     arrived = [dict radar_boolForKey:@"arrived"];
     
