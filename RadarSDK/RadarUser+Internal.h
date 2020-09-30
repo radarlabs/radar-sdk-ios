@@ -6,6 +6,7 @@
 //
 
 #import "RadarGeofence.h"
+#import "RadarTrip.h"
 #import "RadarUser.h"
 #import "RadarUserInsights.h"
 #import <Foundation/Foundation.h>
@@ -31,7 +32,8 @@
                             segments:(nullable NSArray<RadarSegment *> *)segments
                            topChains:(nullable NSArray<RadarChain *> *)topChains
                               source:(RadarLocationSource)source
-                               proxy:(BOOL)proxy;
+                               proxy:(BOOL)proxy
+                                trip:(RadarTrip *_Nullable)trip;
 - (instancetype _Nullable)initWithObject:(id _Nonnull)object;
 
 @end

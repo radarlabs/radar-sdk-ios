@@ -162,6 +162,16 @@
             type = RadarEventTypeUserEnteredRegionDMA;
         } else if ([typeStr isEqualToString:@"user.exited_region_dma"]) {
             type = RadarEventTypeUserExitedRegionDMA;
+        } else if ([typeStr isEqualToString:@"user.started_trip"]) {
+            type = RadarEventTypeUserStartedTrip;
+        } else if ([typeStr isEqualToString:@"user.updated_trip"]) {
+            type = RadarEventTypeUserUpdatedTrip;
+        } else if ([typeStr isEqualToString:@"user.approaching_trip_destination"]) {
+            type = RadarEventTypeUserApproachingTripDestination;
+        } else if ([typeStr isEqualToString:@"user.arrived_at_trip_destination"]) {
+            type = RadarEventTypeUserArrivedAtTripDestination;
+        } else if ([typeStr isEqualToString:@"user.stopped_trip"]) {
+            type = RadarEventTypeUserStoppedTrip;
         }
     }
 
@@ -335,6 +345,16 @@
         return @"user.started_commuting";
     case RadarEventTypeUserStoppedCommuting:
         return @"user.stopped_commuting";
+    case RadarEventTypeUserStartedTrip:
+        return @"user.started_trip";
+    case RadarEventTypeUserUpdatedTrip:
+        return @"user.updated_trip";
+    case RadarEventTypeUserApproachingTripDestination:
+        return @"user.approaching_trip_destination";
+    case RadarEventTypeUserArrivedAtTripDestination:
+        return @"user.arrived_at_trip_destination";
+    case RadarEventTypeUserStoppedTrip:
+        return @"user.stopped_trip";
     default:
         return @"unknown";
     }

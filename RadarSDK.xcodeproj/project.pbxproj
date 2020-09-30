@@ -132,6 +132,9 @@
 		DDC6381B238C801C00747FD4 /* RadarState.h in Headers */ = {isa = PBXBuildFile; fileRef = DD236D0E2309B3FE00EB88F9 /* RadarState.h */; };
 		DDC6381C238C801C00747FD4 /* RadarTrackingOptions.h in Headers */ = {isa = PBXBuildFile; fileRef = DD236CEA2308821600EB88F9 /* RadarTrackingOptions.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		DDC6381D238C801C00747FD4 /* RadarUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = DD236D0323099B8400EB88F9 /* RadarUtils.h */; };
+		DDF1157D2524E18200D575C4 /* RadarTrip+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = DDF1157A2524E18100D575C4 /* RadarTrip+Internal.h */; };
+		DDF1157E2524E18200D575C4 /* RadarTrip.h in Headers */ = {isa = PBXBuildFile; fileRef = DDF1157B2524E18100D575C4 /* RadarTrip.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		DDF1157F2524E18200D575C4 /* RadarTrip.m in Sources */ = {isa = PBXBuildFile; fileRef = DDF1157C2524E18100D575C4 /* RadarTrip.m */; };
 		DE1E7644239724FD006F34A1 /* search_geofences.json in Resources */ = {isa = PBXBuildFile; fileRef = DE1E7643239724FD006F34A1 /* search_geofences.json */; };
 /* End PBXBuildFile section */
 
@@ -278,6 +281,9 @@
 		DDC63820238C815800747FD4 /* module.modulemap */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.module-map"; path = module.modulemap; sourceTree = "<group>"; };
 		DDC87FEC238B03A8007683D8 /* RadarBackgroundTaskManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarBackgroundTaskManager.h; sourceTree = "<group>"; };
 		DDC87FED238B03A8007683D8 /* RadarBackgroundTaskManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RadarBackgroundTaskManager.m; sourceTree = "<group>"; };
+		DDF1157A2524E18100D575C4 /* RadarTrip+Internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "RadarTrip+Internal.h"; sourceTree = "<group>"; };
+		DDF1157B2524E18100D575C4 /* RadarTrip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RadarTrip.h; sourceTree = "<group>"; };
+		DDF1157C2524E18100D575C4 /* RadarTrip.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RadarTrip.m; sourceTree = "<group>"; };
 		DE1E7643239724FD006F34A1 /* search_geofences.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = search_geofences.json; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -451,6 +457,9 @@
 				DD14FD4A23CE783500E80AC8 /* RadarSegment.h */,
 				DD14FD4E23CE784500E80AC8 /* RadarSegment+Internal.h */,
 				DD14FD4B23CE783500E80AC8 /* RadarSegment.m */,
+				DDF1157B2524E18100D575C4 /* RadarTrip.h */,
+				DDF1157A2524E18100D575C4 /* RadarTrip+Internal.h */,
+				DDF1157C2524E18100D575C4 /* RadarTrip.m */,
 				DD236CAF2308812600EB88F9 /* RadarUser.h */,
 				DD236CB12308812600EB88F9 /* RadarUser+Internal.h */,
 				DD236CBB2308812700EB88F9 /* RadarUser.m */,
@@ -491,6 +500,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DDF1157E2524E18200D575C4 /* RadarTrip.h in Headers */,
 				DDC637F7238C801C00747FD4 /* RadarChain.h in Headers */,
 				DDC637F8238C801C00747FD4 /* RadarChain+Internal.h in Headers */,
 				DDC637F9238C801C00747FD4 /* RadarCircleGeometry.h in Headers */,
@@ -526,6 +536,7 @@
 				DDC6380F238C801C00747FD4 /* RadarUserInsightsState+Internal.h in Headers */,
 				DDC63810238C801C00747FD4 /* RadarSDK.h in Headers */,
 				DDC63812238C801C00747FD4 /* Radar.h in Headers */,
+				DDF1157D2524E18200D575C4 /* RadarTrip+Internal.h in Headers */,
 				DDC63813238C801C00747FD4 /* RadarAPIClient.h in Headers */,
 				DD4D4D0D23E60C0B00D36C1D /* RadarRoutes.h in Headers */,
 				DDC63814238C801C00747FD4 /* RadarAPIHelper.h in Headers */,
@@ -733,6 +744,7 @@
 				DDC637EC238C7F8700747FD4 /* RadarLocationManager.m in Sources */,
 				DD87B876247E955C0065A36D /* RadarRouteGeometry.m in Sources */,
 				DDC637ED238C7F8700747FD4 /* RadarPermissionsHelper.m in Sources */,
+				DDF1157F2524E18200D575C4 /* RadarTrip.m in Sources */,
 				DDC637EE238C7F8700747FD4 /* RadarSettings.m in Sources */,
 				DDC637EF238C7F8700747FD4 /* RadarState.m in Sources */,
 				DDC637F0238C7F8700747FD4 /* RadarTrackingOptions.m in Sources */,

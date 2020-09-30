@@ -25,6 +25,7 @@
 #import "RadarRouteGeometry.h"
 #import "RadarRoutes.h"
 #import "RadarTrackingOptions.h"
+#import "RadarTrip.h"
 #import "RadarTripOptions.h"
 #import "RadarUser.h"
 #import "RadarUserInsights.h"

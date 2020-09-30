@@ -22,6 +22,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable NSDictionary *)radar_dictionaryForKey:(KeyType)key;
 - (nullable NSArray *)radar_arrayForKey:(KeyType)key;
 - (nullable RadarCoordinate *)radar_coordinateForKey:(KeyType)key;
+- (float)radar_floatForKey:(KeyType)key;
+- (BOOL)radar_boolForKey:(KeyType)key;
 
 @end
 
