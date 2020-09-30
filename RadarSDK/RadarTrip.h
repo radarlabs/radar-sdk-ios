@@ -8,7 +8,7 @@
 #import "RadarCoordinate.h"
 #import <Foundation/Foundation.h>
 
-typedef NS_ENUM(NSInteger, RadarRouteMode);
+typedef NS_OPTIONS(NSInteger, RadarRouteMode);
 
 /**
  Represents a trip. For more information, see https://radar.io/documentation/trip-tracking.
