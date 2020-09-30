@@ -10,20 +10,6 @@
 #import "RadarCollectionAdditions.h"
 #import "RadarTrip+Internal.h"
 
-NSString *const kExternalId = @"externalId";
-NSString *const kMetadata = @"metadata";
-NSString *const kDestinationGeofenceTag = @"destinationGeofenceTag";
-NSString *const kDestinationGeofenceExternalId = @"destinationGeofenceExternalId";
-NSString *const kDestinationLocation = @"destinationLocation";
-NSString *const kCoordinates = @"coordinates";
-NSString *const kType = @"type";
-NSString *const kPoint = @"Point";
-NSString *const kMode = @"mode";
-NSString *const kETA = @"eta";
-NSString *const kDistance = @"distance";
-NSString *const kDuration = @"duration";
-NSString *const kArrived = @"arrived";
-
 @implementation RadarTrip
 
 - (instancetype _Nullable)initWithExternalId:(NSString *_Nonnull)externalId
@@ -67,11 +53,11 @@ destinationGeofenceExternalId:(NSString *_Nullable)destinationGeofenceExternalId
     float etaDuration = 0;
     BOOL arrived = NO;
 
-    externalId = [dict radar_stringForKey:kExternalId];
-    metadata = [dict radar_dictionaryForKey:kMetadata];
-    destinationGeofenceTag = [dict radar_stringForKey:kDestinationGeofenceTag];
-    destinationGeofenceExternalId = [dict radar_stringForKey:kDestinationGeofenceExternalId];
-    destinationLocation = [dict radar_coordinateForKey:kDestinationLocation];
+    externalId = [dict radar_stringForKey:@"externalId"];
+    metadata = [dict radar_dictionaryForKey:@"metadata"];
+    destinationGeofenceTag = [dict radar_stringForKey:@"destinationGeofenceTag"];
+    destinationGeofenceExternalId = [dict radar_stringForKey:@"destinationGeofenceExternalId"];
+    destinationLocation = [dict radar_coordinateForKey:@"destinationLocation"];
     NSString *modeStr = [dict radar_stringForKey:@"mode"];
     if ([modeStr isEqualToString:@"foot"]) {
         mode = RadarRouteModeFoot;
@@ -80,12 +66,12 @@ destinationGeofenceExternalId:(NSString *_Nullable)destinationGeofenceExternalId
     } else {
         mode = RadarRouteModeCar;
     }
-    NSDictionary *etaDict = [dict radar_dictionaryForKey:kETA];
+    NSDictionary *etaDict = [dict radar_dictionaryForKey:@"eta"];
     if (etaDict) {
-        etaDistance = [etaDict radar_floatForKey:kDistance];
-        etaDistance = [etaDict radar_floatForKey:kDuration];
+        etaDistance = [etaDict radar_floatForKey:@"distance"];
+        etaDistance = [etaDict radar_floatForKey:@"duration"];
     }
-    arrived = [dict radar_boolForKey:kArrived];
+    arrived = [dict radar_boolForKey:@"arrived"];
     
 
     if (externalId) {
@@ -105,25 +91,25 @@ destinationGeofenceExternalId:(NSString *_Nullable)destinationGeofenceExternalId
 
 - (NSDictionary *)dictionaryValue {
     NSMutableDictionary *dict = [NSMutableDictionary new];
-    dict[kExternalId] = self.externalId;
-    dict[kMetadata] = self.metadata;
-    dict[kDestinationGeofenceTag] = self.destinationGeofenceTag;
-    dict[kDestinationGeofenceExternalId] = self.destinationGeofenceExternalId;
+    dict[@"externalId"] = self.externalId;
+    dict[@"metadata"] = self.metadata;
+    dict[@"destinationGeofenceTag"] = self.destinationGeofenceTag;
+    dict[@"destinationGeofenceExternalId"] = self.destinationGeofenceExternalId;
     NSMutableDictionary *destinationLocationDict = [NSMutableDictionary new];
-    destinationLocationDict[kType] = kPoint;
+    destinationLocationDict[@"type"] = @"Point";
     NSArray *coordinates = @[
         @(self.destinationLocation.coordinate.longitude),
         @(self.destinationLocation.coordinate.latitude)
     ];
-    destinationLocationDict[kCoordinates] = coordinates;
-    dict[kDestinationLocation] = destinationLocationDict;
-    dict[kMode] = [Radar stringForMode:self.mode];
+    destinationLocationDict[@"coordinates"] = coordinates;
+    dict[@"destinationLocation"] = destinationLocationDict;
+    dict[@"mode"] = [Radar stringForMode:self.mode];
     NSDictionary *etaDict = @{
-        kDistance: @(self.etaDistance),
-        kDuration: @(self.etaDuration)
+        @"distance": @(self.etaDistance),
+        @"duration": @(self.etaDuration)
     };
-    dict[kETA] = etaDict;
-    dict[kArrived] = @(self.arrived);
+    dict[@"eta"] = etaDict;
+    dict[@"arrived"] = @(self.arrived);
     return dict;
 }
 
