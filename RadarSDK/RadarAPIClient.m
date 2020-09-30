@@ -153,9 +153,6 @@
     params[@"deviceOS"] = [RadarUtils deviceOS];
     params[@"country"] = [RadarUtils country];
     params[@"timeZoneOffset"] = [RadarUtils timeZoneOffset];
-    params[@"uaChannelId"] = [RadarUtils uaChannelId];
-    params[@"uaNamedUserId"] = [RadarUtils uaNamedUserId];
-    params[@"uaSessionId"] = [RadarUtils uaSessionId];
     params[@"source"] = [Radar stringForSource:source];
     RadarTripOptions *tripOptions = [RadarSettings tripOptions];
     if (tripOptions) {
