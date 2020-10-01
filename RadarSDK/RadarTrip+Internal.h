@@ -1,8 +1,8 @@
 //
-//  RadarUser+Internal.h
+//  RadarTrip+Internal.h
 //  RadarSDK
 //
-//  Copyright © 2019 Radar Labs, Inc. All rights reserved.
+//  Copyright © 2020 Radar Labs, Inc. All rights reserved.
 //
 
 #import "RadarTrip.h"
