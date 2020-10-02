@@ -1,0 +1,24 @@
+//
+//  RadarTrip+Internal.h
+//  RadarSDK
+//
+//  Copyright © 2020 Radar Labs, Inc. All rights reserved.
+//
+
+#import "RadarTrip.h"
+#import <Foundation/Foundation.h>
+
+@interface RadarTrip ()
+
+- (instancetype _Nullable)initWithExternalId:(NSString *_Nonnull)externalId
+                                    metadata:(NSDictionary *_Nullable)metadata
+                      destinationGeofenceTag:(NSString *_Nullable)destinationGeofenceTag
+               destinationGeofenceExternalId:(NSString *_Nullable)destinationGeofenceExternalId
+                         destinationLocation:(RadarCoordinate *_Nullable)destinationLocation
+                                        mode:(RadarRouteMode)mode
+                                 etaDistance:(float)etaDistance
+                                 etaDuration:(float)etaDuration
+                                     arrived:(BOOL)arrived;
+- (instancetype _Nullable)initWithObject:(id _Nonnull)object;
+
+@end

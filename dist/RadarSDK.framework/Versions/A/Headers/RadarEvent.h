@@ -62,7 +62,17 @@ typedef NS_ENUM(NSInteger, RadarEventType) {
     /// `user.started_commuting`
     RadarEventTypeUserStartedCommuting NS_SWIFT_NAME(userStartedCommuting),
     /// `user.stopped_commuting`
-    RadarEventTypeUserStoppedCommuting NS_SWIFT_NAME(userStoppedCommuting)
+    RadarEventTypeUserStoppedCommuting NS_SWIFT_NAME(userStoppedCommuting),
+    /// `user.started_trip`
+    RadarEventTypeUserStartedTrip NS_SWIFT_NAME(userStartedTrip),
+    /// `user.updated_trip`
+    RadarEventTypeUserUpdatedTrip NS_SWIFT_NAME(userUpdatedTrip),
+    /// `user.approaching_trip_destination`
+    RadarEventTypeUserApproachingTripDestination NS_SWIFT_NAME(userApproachingTripDestination),
+    /// `user.arrived_at_trip_destination`
+    RadarEventTypeUserArrivedAtTripDestination NS_SWIFT_NAME(userArrivedAtTripDestination),
+    /// `user.stopped_trip`
+    RadarEventTypeUserStoppedTrip NS_SWIFT_NAME(userStoppedTrip)
 };
 
 /**

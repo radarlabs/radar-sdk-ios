@@ -12,6 +12,7 @@
 #import "RadarPlace+Internal.h"
 #import "RadarRegion+Internal.h"
 #import "RadarSegment+Internal.h"
+#import "RadarTrip+Internal.h"
 #import "RadarUser+Internal.h"
 #import "RadarUserInsights+Internal.h"
 
@@ -36,7 +37,8 @@
                             segments:(nullable NSArray<RadarSegment *> *)segments
                            topChains:(nullable NSArray<RadarChain *> *)topChains
                               source:(RadarLocationSource)source
-                               proxy:(BOOL)proxy {
+                               proxy:(BOOL)proxy
+                                trip:(RadarTrip *_Nullable)trip {
     self = [super init];
     if (self) {
         __id = _id;
@@ -59,6 +61,7 @@
         _topChains = topChains;
         _source = source;
         _proxy = proxy;
+        _trip = trip;
     }
     return self;
 }
@@ -90,6 +93,7 @@
     NSArray<RadarChain *> *topChains;
     RadarLocationSource source = RadarLocationSourceUnknown;
     BOOL proxy = false;
+    RadarTrip *trip;
 
     id idObj = dict[@"_id"];
     if (idObj && [idObj isKindOfClass:[NSString class]]) {
@@ -286,6 +290,9 @@
         }
     }
 
+    id tripObj = dict[@"trip"];
+    trip = [[RadarTrip alloc] initWithObject:tripObj];
+
     if (_id && location) {
         return [[RadarUser alloc] initWithId:_id
                                       userId:userId
@@ -306,7 +313,8 @@
                                     segments:segments
                                    topChains:topChains
                                       source:source
-                                       proxy:proxy];
+                                       proxy:proxy
+                                        trip:trip];
     }
 
     return nil;
@@ -361,6 +369,9 @@
     [dict setValue:[Radar stringForSource:self.source] forKey:@"source"];
     NSDictionary *fraudDict = @{@"proxy": @(self.proxy)};
     [dict setValue:fraudDict forKey:@"fraud"];
+    if (self.trip) {
+        [dict setValue:self.trip forKey:@"trip"];
+    }
     return dict;
 }
 

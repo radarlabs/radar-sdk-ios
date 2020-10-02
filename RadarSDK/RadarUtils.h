@@ -26,9 +26,6 @@ NS_ASSUME_NONNULL_BEGIN
 + (CLLocation *)locationForDictionary:(NSDictionary *_Nonnull)dict;
 + (NSDictionary *)dictionaryForLocation:(CLLocation *)location;
 + (BOOL)validLocation:(CLLocation *)location;
-+ (NSString *)uaChannelId;
-+ (NSString *)uaNamedUserId;
-+ (NSString *)uaSessionId;
 
 + (void)runOnMainThreadAsyncIfNecessary:(dispatch_block_t)block;
 

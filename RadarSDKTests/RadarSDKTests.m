@@ -139,6 +139,19 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     XCTAssertNotNil(segment.externalId);
 }
 
+#define AssertTripOk(trip) [self assertTripOk:trip]
+- (void)assertTripOk:(RadarTrip *)trip {
+    XCTAssertNotNil(trip);
+    XCTAssertNotNil(trip.externalId);
+    XCTAssertNotNil(trip.metadata);
+    XCTAssertNotNil(trip.destinationGeofenceTag);
+    XCTAssertNotNil(trip.destinationGeofenceExternalId);
+    XCTAssertNotNil(trip.destinationLocation);
+    XCTAssertNotEqual(trip.etaDistance, 0);
+    XCTAssertNotEqual(trip.etaDuration, 0);
+    XCTAssertTrue(trip.arrived);
+}
+
 #define AssertUserOk(user) [self assertUserOk:user]
 - (void)assertUserOk:(RadarUser *)user {
     XCTAssertNotNil(user);
@@ -160,6 +173,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     AssertChainsOk(user.topChains);
     XCTAssertNotEqual(user.source, RadarLocationSourceUnknown);
     XCTAssertTrue(user.proxy);
+    AssertTripOk(user.trip);
 }
 
 #define AssertEventsOk(events) [self assertEventsOk:events]
@@ -275,33 +289,26 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     AssertRegionOk(context.postalCode);
 }
 
+#define AssertRouteOk(route) [self assertRouteOk:route]
+- (void)assertRouteOk:(RadarRoute *)route {
+    XCTAssertNotNil(route);
+    XCTAssertNotNil(route.distance);
+    XCTAssertNotNil(route.distance.text);
+    XCTAssertNotEqual(route.distance.value, 0);
+    XCTAssertNotNil(route.duration);
+    XCTAssertNotNil(route.duration.text);
+    XCTAssertNotEqual(route.duration.value, 0);
+}
+
 #define AssertRoutesOk(routes) [self assertRoutesOk:routes]
 - (void)assertRoutesOk:(RadarRoutes *)routes {
     XCTAssertNotNil(routes);
     XCTAssertNotNil(routes.geodesic);
     XCTAssertNotNil(routes.geodesic.text);
     XCTAssertNotEqual(routes.geodesic.value, 0);
-    XCTAssertNotNil(routes.foot);
-    XCTAssertNotNil(routes.foot.distance);
-    XCTAssertNotNil(routes.foot.distance.text);
-    XCTAssertNotEqual(routes.foot.distance.value, 0);
-    XCTAssertNotNil(routes.foot.duration);
-    XCTAssertNotNil(routes.foot.duration.text);
-    XCTAssertNotEqual(routes.foot.duration.value, 0);
-    XCTAssertNotNil(routes.bike);
-    XCTAssertNotNil(routes.bike.distance);
-    XCTAssertNotNil(routes.bike.distance.text);
-    XCTAssertNotEqual(routes.bike.distance.value, 0);
-    XCTAssertNotNil(routes.bike.duration);
-    XCTAssertNotNil(routes.bike.duration.text);
-    XCTAssertNotEqual(routes.bike.duration.value, 0);
-    XCTAssertNotNil(routes.car);
-    XCTAssertNotNil(routes.car.distance);
-    XCTAssertNotNil(routes.car.distance.text);
-    XCTAssertNotEqual(routes.car.distance.value, 0);
-    XCTAssertNotNil(routes.car.duration);
-    XCTAssertNotNil(routes.car.duration.text);
-    XCTAssertNotEqual(routes.car.duration.value, 0);
+    AssertRouteOk(routes.foot);
+    AssertRouteOk(routes.bike);
+    AssertRouteOk(routes.car);
 }
 
 - (void)setUp {

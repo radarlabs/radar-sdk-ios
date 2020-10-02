@@ -32,7 +32,7 @@
 }
 
 + (NSString *)sdkVersion {
-    return @"3.0.4";
+    return @"3.0.5";
 }
 
 + (NSString *)adId {
@@ -120,70 +120,5 @@
     }
     return;
 }
-
-#pragma mark - Airship integration
-
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
-#pragma GCC diagnostic ignored "-Wundeclared-selector"
-
-+ (NSString *)uaChannelId {
-    Class UAirshipClass = NSClassFromString(@"UAirship");
-    if (UAirshipClass) {
-        SEL pushSelector = NSSelectorFromString(@"push");
-        if ([UAirshipClass respondsToSelector:pushSelector]) {
-            id push = [UAirshipClass performSelector:pushSelector];
-            Class UAPushClass = NSClassFromString(@"UAPush");
-            if (push && UAPushClass && [push isKindOfClass:UAPushClass]) {
-                id channelId = [push valueForKey:@"channelID"];
-                if (channelId && [channelId isKindOfClass:[NSString class]]) {
-                    return channelId;
-                }
-            }
-        }
-    }
-    return nil;
-}
-
-+ (NSString *)uaNamedUserId {
-    Class UAirshipClass = NSClassFromString(@"UAirship");
-    if (UAirshipClass) {
-        SEL namedUserSelector = NSSelectorFromString(@"namedUser");
-        if ([UAirshipClass respondsToSelector:namedUserSelector]) {
-            id namedUser = [UAirshipClass performSelector:namedUserSelector];
-            Class UANamedUserClass = NSClassFromString(@"UANamedUser");
-            if (namedUser && UANamedUserClass && [namedUser isKindOfClass:UANamedUserClass]) {
-                id identifier = [namedUser valueForKey:@"identifier"];
-                if (identifier && [identifier isKindOfClass:[NSString class]]) {
-                    return identifier;
-                }
-            }
-        }
-    }
-    return nil;
-}
-
-+ (NSString *)uaSessionId {
-    Class UAirshipClass = NSClassFromString(@"UAirship");
-    if (UAirshipClass) {
-        SEL sharedSelector = NSSelectorFromString(@"shared");
-        if ([UAirshipClass respondsToSelector:sharedSelector]) {
-            id shared = [UAirshipClass performSelector:sharedSelector];
-            if (shared && [shared isKindOfClass:UAirshipClass]) {
-                id analytics = [shared valueForKey:@"analytics"];
-                Class UAAnalytics = NSClassFromString(@"UAAnalytics");
-                if (analytics && [analytics isKindOfClass:UAAnalytics]) {
-                    id sessionId = [analytics valueForKey:@"sessionID"];
-                    if (sessionId && [sessionId isKindOfClass:[NSString class]]) {
-                        return sessionId;
-                    }
-                }
-            }
-        }
-    }
-    return nil;
-}
-
-#pragma clang diagnostic pop
 
 @end

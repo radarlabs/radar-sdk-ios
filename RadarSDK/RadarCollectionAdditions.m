@@ -66,4 +66,20 @@
     return [[RadarCoordinate alloc] initWithCoordinate:CLLocationCoordinate2DMake(latitude, longitude)];
 }
 
+- (float)radar_floatForKey:(id)key {
+    id value = self[key];
+    if ([value isKindOfClass:[NSNumber class]]) {
+        return [(NSNumber *)value floatValue];
+    }
+    return 0;
+}
+
+- (BOOL)radar_boolForKey:(id)key {
+    id value = self[key];
+    if ([value isKindOfClass:[NSNumber class]]) {
+        return [(NSNumber *)value boolValue];
+    }
+    return NO;
+}
+
 @end
