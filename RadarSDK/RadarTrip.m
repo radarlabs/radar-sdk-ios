@@ -52,31 +52,31 @@
     float etaDistance = 0;
     float etaDuration = 0;
     BOOL arrived = NO;
-    
+
     id externalIdObj = dict[@"externalId"];
     if (externalIdObj && [externalIdObj isKindOfClass:[NSString class]]) {
         externalId = (NSString *)externalIdObj;
     }
-    
+
     id metadataObj = dict[@"metadata"];
     if (metadataObj && [metadataObj isKindOfClass:[NSDictionary class]]) {
         metadata = (NSDictionary *)metadataObj;
     }
-    
+
     id destinationGeofenceTagObj = dict[@"destinationGeofenceTag"];
     if (destinationGeofenceTagObj && [destinationGeofenceTagObj isKindOfClass:[NSString class]]) {
         destinationGeofenceTag = (NSString *)destinationGeofenceTagObj;
     }
-    
+
     id destinationGeofenceExternalIdObj = dict[@"destinationGeofenceExternalId"];
     if (destinationGeofenceExternalIdObj && [destinationGeofenceExternalIdObj isKindOfClass:[NSString class]]) {
         destinationGeofenceExternalId = (NSString *)destinationGeofenceExternalIdObj;
     }
-    
+
     id destinationLocationObj = dict[@"destinationLocation"];
     if (destinationLocationObj && [destinationLocationObj isKindOfClass:[NSDictionary class]]) {
         NSDictionary *destinationLocationDict = (NSDictionary *)destinationLocationObj;
-        
+
         id destinationLocationCoordinatesObj = destinationLocationDict[@"coordinates"];
         if (!destinationLocationCoordinatesObj || ![destinationLocationCoordinatesObj isKindOfClass:[NSArray class]]) {
             return nil;
@@ -89,8 +89,8 @@
 
         id destinationLocationCoordinatesLongitudeObj = destinationLocationCoordinatesArr[0];
         id destinationLocationCoordinatesLatitudeObj = destinationLocationCoordinatesArr[1];
-        if (!destinationLocationCoordinatesLongitudeObj || !destinationLocationCoordinatesLatitudeObj || ![destinationLocationCoordinatesLongitudeObj isKindOfClass:[NSNumber class]] ||
-            ![destinationLocationCoordinatesLatitudeObj isKindOfClass:[NSNumber class]]) {
+        if (!destinationLocationCoordinatesLongitudeObj || !destinationLocationCoordinatesLatitudeObj ||
+            ![destinationLocationCoordinatesLongitudeObj isKindOfClass:[NSNumber class]] || ![destinationLocationCoordinatesLatitudeObj isKindOfClass:[NSNumber class]]) {
             return nil;
         }
 
@@ -99,10 +99,11 @@
 
         float destinationLocationCoordinatesLongitudeFloat = [destinationLocationCoordinatesLongitudeNumber floatValue];
         float destinationLocationCoordinatesLatitudeFloat = [destinationLocationCoordinatesLatitudeNumber floatValue];
-        
-        destinationLocation = [[RadarCoordinate alloc] initWithCoordinate:CLLocationCoordinate2DMake(destinationLocationCoordinatesLatitudeFloat, destinationLocationCoordinatesLongitudeFloat)];
+
+        destinationLocation =
+            [[RadarCoordinate alloc] initWithCoordinate:CLLocationCoordinate2DMake(destinationLocationCoordinatesLatitudeFloat, destinationLocationCoordinatesLongitudeFloat)];
     }
-    
+
     id modeObj = dict[@"mode"];
     if (modeObj && [modeObj isKindOfClass:[NSString class]]) {
         NSString *modeStr = (NSString *)modeObj;
@@ -114,7 +115,7 @@
             mode = RadarRouteModeCar;
         }
     }
-    
+
     id etaObj = dict[@"eta"];
     if (etaObj && [etaObj isKindOfClass:[NSDictionary class]]) {
         NSDictionary *etaDict = (NSDictionary *)etaObj;
@@ -127,7 +128,7 @@
             etaDuration = [(NSNumber *)etaDurationObj floatValue];
         }
     }
-    
+
     id arrivedObj = dict[@"arrived"];
     if (arrivedObj && [arrivedObj isKindOfClass:[NSNumber class]]) {
         arrived = [(NSNumber *)arrivedObj boolValue];
