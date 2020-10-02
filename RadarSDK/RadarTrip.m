@@ -13,14 +13,14 @@
 @implementation RadarTrip
 
 - (instancetype _Nullable)initWithExternalId:(NSString *_Nonnull)externalId
-                     metadata:(NSDictionary *_Nullable)metadata
-       destinationGeofenceTag:(NSString *_Nullable)destinationGeofenceTag
-destinationGeofenceExternalId:(NSString *_Nullable)destinationGeofenceExternalId
-          destinationLocation:(RadarCoordinate *_Nullable)destinationLocation
-                         mode:(RadarRouteMode)mode
-                  etaDistance:(float)etaDistance
-                  etaDuration:(float)etaDuration
-                      arrived:(BOOL)arrived {
+                                    metadata:(NSDictionary *_Nullable)metadata
+                      destinationGeofenceTag:(NSString *_Nullable)destinationGeofenceTag
+               destinationGeofenceExternalId:(NSString *_Nullable)destinationGeofenceExternalId
+                         destinationLocation:(RadarCoordinate *_Nullable)destinationLocation
+                                        mode:(RadarRouteMode)mode
+                                 etaDistance:(float)etaDistance
+                                 etaDuration:(float)etaDuration
+                                     arrived:(BOOL)arrived {
     self = [super init];
     if (self) {
         _externalId = externalId;
@@ -72,7 +72,6 @@ destinationGeofenceExternalId:(NSString *_Nullable)destinationGeofenceExternalId
         etaDuration = [etaDict radar_floatForKey:@"duration"];
     }
     arrived = [dict radar_boolForKey:@"arrived"];
-    
 
     if (externalId) {
         return [[RadarTrip alloc] initWithExternalId:externalId
@@ -97,17 +96,11 @@ destinationGeofenceExternalId:(NSString *_Nullable)destinationGeofenceExternalId
     dict[@"destinationGeofenceExternalId"] = self.destinationGeofenceExternalId;
     NSMutableDictionary *destinationLocationDict = [NSMutableDictionary new];
     destinationLocationDict[@"type"] = @"Point";
-    NSArray *coordinates = @[
-        @(self.destinationLocation.coordinate.longitude),
-        @(self.destinationLocation.coordinate.latitude)
-    ];
+    NSArray *coordinates = @[@(self.destinationLocation.coordinate.longitude), @(self.destinationLocation.coordinate.latitude)];
     destinationLocationDict[@"coordinates"] = coordinates;
     dict[@"destinationLocation"] = destinationLocationDict;
     dict[@"mode"] = [Radar stringForMode:self.mode];
-    NSDictionary *etaDict = @{
-        @"distance": @(self.etaDistance),
-        @"duration": @(self.etaDuration)
-    };
+    NSDictionary *etaDict = @{@"distance": @(self.etaDistance), @"duration": @(self.etaDuration)};
     dict[@"eta"] = etaDict;
     dict[@"arrived"] = @(self.arrived);
     return dict;

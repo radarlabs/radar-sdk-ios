@@ -289,7 +289,7 @@
             proxy = [proxyNumber boolValue];
         }
     }
-    
+
     id tripObj = dict[@"trip"];
     trip = [[RadarTrip alloc] initWithObject:tripObj];
 
