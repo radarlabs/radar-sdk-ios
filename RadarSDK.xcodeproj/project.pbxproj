@@ -934,6 +934,7 @@
 		DDC637CE238C7E6100747FD4 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_CODE_COVERAGE = NO;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 96GHH65B9D;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
