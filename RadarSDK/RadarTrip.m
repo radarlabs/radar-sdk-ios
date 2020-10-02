@@ -52,26 +52,56 @@
     float etaDistance = 0;
     float etaDuration = 0;
     BOOL arrived = NO;
-
-    externalId = [dict radar_stringForKey:@"externalId"];
-    metadata = [dict radar_dictionaryForKey:@"metadata"];
-    destinationGeofenceTag = [dict radar_stringForKey:@"destinationGeofenceTag"];
-    destinationGeofenceExternalId = [dict radar_stringForKey:@"destinationGeofenceExternalId"];
-    destinationLocation = [dict radar_coordinateForKey:@"destinationLocation"];
-    NSString *modeStr = [dict radar_stringForKey:@"mode"];
-    if ([modeStr isEqualToString:@"foot"]) {
-        mode = RadarRouteModeFoot;
-    } else if ([modeStr isEqualToString:@"bike"]) {
-        mode = RadarRouteModeBike;
-    } else {
-        mode = RadarRouteModeCar;
+    
+    id externalIdObj = dict[@"externalId"];
+    if (externalIdObj && [externalIdObj isKindOfClass:[NSString class]]) {
+        externalId = (NSString *)externalIdObj;
     }
-    NSDictionary *etaDict = [dict radar_dictionaryForKey:@"eta"];
-    if (etaDict) {
-        etaDistance = [etaDict radar_floatForKey:@"distance"];
-        etaDuration = [etaDict radar_floatForKey:@"duration"];
+    
+    id metadataObj = dict[@"metadata"];
+    if (metadataObj && [metadataObj isKindOfClass:[NSDictionary class]]) {
+        metadata = (NSDictionary *)metadataObj;
     }
-    arrived = [dict radar_boolForKey:@"arrived"];
+    
+    id destinationGeofenceTagObj = dict[@"destinationGeofenceTag"];
+    if (destinationGeofenceTagObj && [destinationGeofenceTagObj isKindOfClass:[NSString class]]) {
+        destinationGeofenceTag = (NSString *)destinationGeofenceTagObj;
+    }
+    
+    id destinationGeofenceExternalIdObj = dict[@"destinationGeofenceExternalId"];
+    if (destinationGeofenceExternalIdObj && [destinationGeofenceExternalIdObj isKindOfClass:[NSString class]]) {
+        destinationGeofenceExternalId = (NSString *)destinationGeofenceExternalIdObj;
+    }
+    
+    id modeObj = dict[@"mode"];
+    if (modeObj && [modeObj isKindOfClass:[NSString class]]) {
+        NSString *modeStr = (NSString *)modeObj;
+        if ([modeStr isEqualToString:@"foot"]) {
+            mode = RadarRouteModeFoot;
+        } else if ([modeStr isEqualToString:@"bike"]) {
+            mode = RadarRouteModeBike;
+        } else {
+            mode = RadarRouteModeCar;
+        }
+    }
+    
+    id etaObj = dict[@"eta"];
+    if (etaObj && [etaObj isKindOfClass:[NSDictionary class]]) {
+        NSDictionary *etaDict = (NSDictionary *)etaObj;
+        id etaDistanceObj = etaDict[@"distance"];
+        if (etaDistanceObj && [etaDistanceObj isKindOfClass:[NSNumber class]]) {
+            etaDistance = [(NSNumber *)etaDistanceObj floatValue];
+        }
+        id etaDurationObj = etaDict[@"duration"];
+        if (etaDurationObj && [etaDurationObj isKindOfClass:[NSNumber class]]) {
+            etaDuration = [(NSNumber *)etaDurationObj floatValue];
+        }
+    }
+    
+    id arrivedObj = dict[@"arrived"];
+    if (arrivedObj && [arrivedObj isKindOfClass:[NSNumber class]]) {
+        arrived = [(NSNumber *)arrivedObj boolValue];
+    }
 
     if (externalId) {
         return [[RadarTrip alloc] initWithExternalId:externalId
