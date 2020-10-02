@@ -7,7 +7,7 @@
 
 #import "RadarTrip.h"
 #import "Radar.h"
-#import "RadarCollectionAdditions.h"
+#import "RadarCoordinate+Internal.h"
 #import "RadarTrip+Internal.h"
 
 @implementation RadarTrip
@@ -71,6 +71,36 @@
     id destinationGeofenceExternalIdObj = dict[@"destinationGeofenceExternalId"];
     if (destinationGeofenceExternalIdObj && [destinationGeofenceExternalIdObj isKindOfClass:[NSString class]]) {
         destinationGeofenceExternalId = (NSString *)destinationGeofenceExternalIdObj;
+    }
+    
+    id destinationLocationObj = dict[@"destinationLocation"];
+    if (destinationLocationObj && [destinationLocationObj isKindOfClass:[NSDictionary class]]) {
+        NSDictionary *destinationLocationDict = (NSDictionary *)destinationLocationObj;
+        
+        id destinationLocationCoordinatesObj = destinationLocationDict[@"coordinates"];
+        if (!destinationLocationCoordinatesObj || ![destinationLocationCoordinatesObj isKindOfClass:[NSArray class]]) {
+            return nil;
+        }
+
+        NSArray *destinationLocationCoordinatesArr = (NSArray *)destinationLocationCoordinatesObj;
+        if (destinationLocationCoordinatesArr.count != 2) {
+            return nil;
+        }
+
+        id destinationLocationCoordinatesLongitudeObj = destinationLocationCoordinatesArr[0];
+        id destinationLocationCoordinatesLatitudeObj = destinationLocationCoordinatesArr[1];
+        if (!destinationLocationCoordinatesLongitudeObj || !destinationLocationCoordinatesLatitudeObj || ![destinationLocationCoordinatesLongitudeObj isKindOfClass:[NSNumber class]] ||
+            ![destinationLocationCoordinatesLatitudeObj isKindOfClass:[NSNumber class]]) {
+            return nil;
+        }
+
+        NSNumber *destinationLocationCoordinatesLongitudeNumber = (NSNumber *)destinationLocationCoordinatesLongitudeObj;
+        NSNumber *destinationLocationCoordinatesLatitudeNumber = (NSNumber *)destinationLocationCoordinatesLatitudeObj;
+
+        float destinationLocationCoordinatesLongitudeFloat = [destinationLocationCoordinatesLongitudeNumber floatValue];
+        float destinationLocationCoordinatesLatitudeFloat = [destinationLocationCoordinatesLatitudeNumber floatValue];
+        
+        destinationLocation = [[RadarCoordinate alloc] initWithCoordinate:CLLocationCoordinate2DMake(destinationLocationCoordinatesLatitudeFloat, destinationLocationCoordinatesLongitudeFloat)];
     }
     
     id modeObj = dict[@"mode"];
