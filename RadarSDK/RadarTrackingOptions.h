@@ -137,6 +137,11 @@ typedef NS_ENUM(NSInteger, RadarTrackingOptionsSync) {
 @property (nonatomic, assign) int movingGeofenceRadius;
 
 /**
+ Determines whether to sync nearby geofences from the server to the client to improve responsiveness.
+ */
+@property (nonatomic, assign) BOOL syncGeofences;
+
+/**
  Determines whether to use the iOS visit monitoring service.
 
  @see https://developer.apple.com/documentation/corelocation/getting_the_user_s_location/using_the_visits_location_service

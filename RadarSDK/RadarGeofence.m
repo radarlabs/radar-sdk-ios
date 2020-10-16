@@ -61,7 +61,7 @@
     NSString *tag;
     NSString *externalId;
     NSDictionary *metadata;
-    RadarGeofenceGeometry *geometry = [[RadarPolygonGeometry alloc] initWithCoordinates:@[]];
+    RadarGeofenceGeometry *geometry;
 
     id idObj = dict[@"_id"];
     if (idObj && [idObj isKindOfClass:[NSString class]]) {
@@ -91,36 +91,38 @@
     id typeObj = dict[@"type"];
     if ([typeObj isKindOfClass:[NSString class]]) {
         NSString *type = (NSString *)typeObj;
+
+        id radiusObj = dict[@"geometryRadius"];
+        id centerObj = dict[@"geometryCenter"];
+
+        if (![radiusObj isKindOfClass:[NSNumber class]] || ![centerObj isKindOfClass:[NSDictionary class]]) {
+            return nil;
+        }
+
+        id centerCoordinatesObj = ((NSDictionary *)centerObj)[@"coordinates"];
+        if (![centerCoordinatesObj isKindOfClass:[NSArray class]]) {
+            return nil;
+        }
+
+        NSArray *centerCoordinatesArr = (NSArray *)centerCoordinatesObj;
+        if (centerCoordinatesArr.count != 2) {
+            return nil;
+        }
+
+        id centerLongitudeObj = centerCoordinatesArr[0];
+        id centerLatitudeObj = centerCoordinatesArr[1];
+        if (![centerLongitudeObj isKindOfClass:[NSNumber class]] || ![centerLatitudeObj isKindOfClass:[NSNumber class]]) {
+            return nil;
+        }
+
+        float centerLongitude = [((NSNumber *)centerLongitudeObj) floatValue];
+        float centerLatitude = [((NSNumber *)centerLatitudeObj) floatValue];
+        float radius = [((NSNumber *)radiusObj) floatValue];
+
+        RadarCoordinate *center = [[RadarCoordinate alloc] initWithCoordinate:CLLocationCoordinate2DMake(centerLatitude, centerLongitude)];
+
         if ([type isEqualToString:@"circle"]) {
-            id radiusObj = dict[@"geometryRadius"];
-            id centerObj = dict[@"geometryCenter"];
-
-            if (![radiusObj isKindOfClass:[NSNumber class]] || ![centerObj isKindOfClass:[NSDictionary class]]) {
-                return nil;
-            }
-
-            id centerCoordinatesObj = ((NSDictionary *)centerObj)[@"coordinates"];
-            if (![centerCoordinatesObj isKindOfClass:[NSArray class]]) {
-                return nil;
-            }
-
-            NSArray *centerCoordinatesArr = (NSArray *)centerCoordinatesObj;
-            if (centerCoordinatesArr.count != 2) {
-                return nil;
-            }
-
-            id centerLongitudeObj = centerCoordinatesArr[0];
-            id centerLatitudeObj = centerCoordinatesArr[1];
-            if (![centerLongitudeObj isKindOfClass:[NSNumber class]] || ![centerLatitudeObj isKindOfClass:[NSNumber class]]) {
-                return nil;
-            }
-
-            float centerLongitude = [((NSNumber *)centerLongitudeObj) floatValue];
-            float centerLatitude = [((NSNumber *)centerLatitudeObj) floatValue];
-            float centerRadius = [((NSNumber *)radiusObj) floatValue];
-
-            RadarCoordinate *center = [[RadarCoordinate alloc] initWithCoordinate:CLLocationCoordinate2DMake(centerLatitude, centerLongitude)];
-            geometry = [[RadarCircleGeometry alloc] initWithCenter:center radius:centerRadius];
+            geometry = [[RadarCircleGeometry alloc] initWithCenter:center radius:radius];
         } else if ([type isEqualToString:@"polygon"]) {
             id geometryObj = dict[@"geometry"];
 
@@ -169,7 +171,7 @@
                 mutablePolygonCoordinates[i] = [[RadarCoordinate alloc] initWithCoordinate:polygonCoordinate];
             }
 
-            geometry = [[RadarPolygonGeometry alloc] initWithCoordinates:mutablePolygonCoordinates];
+            geometry = [[RadarPolygonGeometry alloc] initWithCoordinates:mutablePolygonCoordinates center:center radius:radius];
         }
     }
 

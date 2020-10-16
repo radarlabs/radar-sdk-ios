@@ -24,6 +24,7 @@ NSString *const kUseStoppedGeofence = @"useStoppedGeofence";
 NSString *const kStoppedGeofenceRadius = @"stoppedGeofenceRadius";
 NSString *const kUseMovingGeofence = @"useMovingGeofence";
 NSString *const kMovingGeofenceRadius = @"movingGeofenceRadius";
+NSString *const kSyncGeofences = @"syncGeofences";
 NSString *const kUseVisits = @"useVisits";
 NSString *const kUseSignificantLocationChanges = @"useSignificantLocationChanges";
 
@@ -55,6 +56,7 @@ NSString *const kSyncNone = @"none";
     options.stoppedGeofenceRadius = 0;
     options.useMovingGeofence = NO;
     options.movingGeofenceRadius = 0;
+    options.syncGeofences = NO;
     options.useVisits = NO;
     options.useSignificantLocationChanges = NO;
     return options;
@@ -77,6 +79,7 @@ NSString *const kSyncNone = @"none";
     options.stoppedGeofenceRadius = 200;
     options.useMovingGeofence = NO;
     options.movingGeofenceRadius = 0;
+    options.syncGeofences = NO;
     options.useVisits = YES;
     options.useSignificantLocationChanges = YES;
     return options;
@@ -99,6 +102,7 @@ NSString *const kSyncNone = @"none";
     options.stoppedGeofenceRadius = 0;
     options.useMovingGeofence = NO;
     options.movingGeofenceRadius = 0;
+    options.syncGeofences = NO;
     options.useVisits = YES;
     options.useSignificantLocationChanges = NO;
     return options;
@@ -196,6 +200,7 @@ NSString *const kSyncNone = @"none";
     options.stoppedGeofenceRadius = [dict[kStoppedGeofenceRadius] intValue];
     options.useMovingGeofence = [dict[kUseMovingGeofence] boolValue];
     options.movingGeofenceRadius = [dict[kMovingGeofenceRadius] intValue];
+    options.syncGeofences = [dict[kSyncGeofences] boolValue];
     options.useVisits = [dict[kUseVisits] boolValue];
     options.useSignificantLocationChanges = [dict[kUseSignificantLocationChanges] boolValue];
     return options;
@@ -218,6 +223,7 @@ NSString *const kSyncNone = @"none";
     dict[kStoppedGeofenceRadius] = @(self.stoppedGeofenceRadius);
     dict[kUseMovingGeofence] = @(self.useMovingGeofence);
     dict[kMovingGeofenceRadius] = @(self.movingGeofenceRadius);
+    dict[kSyncGeofences] = @(self.syncGeofences);
     dict[kUseVisits] = @(self.useVisits);
     dict[kUseSignificantLocationChanges] = @(self.useSignificantLocationChanges);
     return dict;
@@ -245,7 +251,7 @@ NSString *const kSyncNone = @"none";
            (self.stopTrackingAfter == nil ? options.stopTrackingAfter == nil : [self.stopTrackingAfter isEqual:options.stopTrackingAfter]) && self.sync == options.sync &&
            self.replay == options.replay && self.showBlueBar == options.showBlueBar && self.useStoppedGeofence == options.useStoppedGeofence &&
            self.stoppedGeofenceRadius == options.stoppedGeofenceRadius && self.useMovingGeofence == options.useMovingGeofence &&
-           self.movingGeofenceRadius == options.movingGeofenceRadius && self.useVisits == options.useVisits &&
+           self.movingGeofenceRadius == options.movingGeofenceRadius && self.syncGeofences == options.syncGeofences && self.useVisits == options.useVisits &&
            self.useSignificantLocationChanges == options.useSignificantLocationChanges;
 }
 

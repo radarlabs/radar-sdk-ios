@@ -9,10 +9,12 @@
 
 @implementation RadarPolygonGeometry
 
-- (instancetype)initWithCoordinates:(NSArray *)coordinates {
+- (instancetype)initWithCoordinates:(NSArray<RadarCoordinate *> *)coordinates center:(RadarCoordinate *)center radius:(double)radius {
     self = [super init];
     if (self) {
         _coordinates = coordinates;
+        _center = center;
+        _radius = radius;
     }
     return self;
 }
