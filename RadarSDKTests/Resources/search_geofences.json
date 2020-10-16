@@ -43,6 +43,13 @@
                ]
             ]
          },
+         "geometryCenter": {
+            "type": "Point",
+            "coordinates": [
+               114.165405,
+               22.27772
+            ]
+         },
          "geometryRadius": 100
       }
    ]
