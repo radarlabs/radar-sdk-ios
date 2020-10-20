@@ -346,9 +346,11 @@ static NSString *const kRegionSyncIdentifer = @"radar_sync";
         CLRegion *region;
         if ([geofence.geometry isKindOfClass:[RadarCircleGeometry class]]) {
             RadarCircleGeometry *circleGeometry = (RadarCircleGeometry *)geofence.geometry;
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Synced circle geofence | latitude = %f; longitude = %f; radius = %f; identifier = %@", circleGeometry.center.coordinate.latitude, circleGeometry.center.coordinate.longitude, circleGeometry.radius, region.identifier]];
             region = [[CLCircularRegion alloc] initWithCenter:circleGeometry.center.coordinate radius:circleGeometry.radius identifier:identifier];
         } else if ([geofence.geometry isKindOfClass:[RadarPolygonGeometry class]]) {
             RadarPolygonGeometry *polygonGeometry = (RadarPolygonGeometry *)geofence.geometry;
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Synced polygon geofence | latitude = %f; longitude = %f; radius = %f; identifier = %@", polygonGeometry.center.coordinate.latitude, polygonGeometry.center.coordinate.longitude, polygonGeometry.radius, region.identifier]];
             region = [[CLCircularRegion alloc] initWithCenter:polygonGeometry.center.coordinate radius:polygonGeometry.radius identifier:identifier];
         }
         if (region) {
@@ -581,8 +583,6 @@ static NSString *const kRegionSyncIdentifer = @"radar_sync";
               completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarGeofence *> *_Nullable geofences) {
                   if (geofences) {
                       [self replaceSyncedGeofences:geofences];
-
-                      [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Synced geofences | location = %@", location]];
                   }
               }];
     }
