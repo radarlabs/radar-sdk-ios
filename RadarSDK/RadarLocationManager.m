@@ -343,18 +343,22 @@ static NSString *const kRegionSyncIdentifer = @"radar_sync";
     for (int i = 0; i < geofences.count; i++) {
         RadarGeofence *geofence = [geofences objectAtIndex:i];
         NSString *identifier = [NSString stringWithFormat:@"%@_%d", kRegionSyncIdentifer, i];
-        CLRegion *region;
+        RadarCoordinate *center;
+        double radius = 100;
         if ([geofence.geometry isKindOfClass:[RadarCircleGeometry class]]) {
-            RadarCircleGeometry *circleGeometry = (RadarCircleGeometry *)geofence.geometry;
-            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Synced circle geofence | latitude = %f; longitude = %f; radius = %f; identifier = %@", circleGeometry.center.coordinate.latitude, circleGeometry.center.coordinate.longitude, circleGeometry.radius, region.identifier]];
-            region = [[CLCircularRegion alloc] initWithCenter:circleGeometry.center.coordinate radius:circleGeometry.radius identifier:identifier];
+            RadarCircleGeometry *geometry = (RadarCircleGeometry *)geofence.geometry;
+            center = geometry.center;
+            radius = geometry.radius;
         } else if ([geofence.geometry isKindOfClass:[RadarPolygonGeometry class]]) {
-            RadarPolygonGeometry *polygonGeometry = (RadarPolygonGeometry *)geofence.geometry;
-            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Synced polygon geofence | latitude = %f; longitude = %f; radius = %f; identifier = %@", polygonGeometry.center.coordinate.latitude, polygonGeometry.center.coordinate.longitude, polygonGeometry.radius, region.identifier]];
-            region = [[CLCircularRegion alloc] initWithCenter:polygonGeometry.center.coordinate radius:polygonGeometry.radius identifier:identifier];
+            RadarPolygonGeometry *geometry = (RadarPolygonGeometry *)geofence.geometry;
+            center = geometry.center;
+            radius = geometry.radius;
         }
-        if (region) {
+        if (center) {
+            CLRegion *region = [[CLCircularRegion alloc] initWithCenter:center.coordinate radius:radius identifier:identifier];
             [self.locationManager startMonitoringForRegion:region];
+            
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Synced geofence | latitude = %f; longitude = %f; radius = %f; identifier = %@", center.coordinate.latitude, center.coordinate.longitude, radius, identifier]];
         }
     }
 }
