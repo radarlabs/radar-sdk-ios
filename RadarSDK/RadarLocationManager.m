@@ -570,7 +570,7 @@ static NSString *const kRegionSyncIdentifer = @"radar_sync";
 
     RadarTrackingOptions *options = [RadarSettings trackingOptions];
     if (options.syncGeofences) {
-        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Syncing geofences for location | location = %@", location]];
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Syncing geofences | location = %@", location]];
 
         [[RadarAPIClient sharedInstance]
             searchGeofencesNear:location
@@ -582,7 +582,7 @@ static NSString *const kRegionSyncIdentifer = @"radar_sync";
                   if (geofences) {
                       [self replaceSyncedGeofences:geofences];
 
-                      [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Synced geofences for location | location = %@", location]];
+                      [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Synced geofences | location = %@", location]];
                   }
               }];
     }
