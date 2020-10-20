@@ -24,7 +24,7 @@
 @property (nonnull, strong, nonatomic, readonly) RadarCoordinate *center;
 
 /**
- The calculated radius of the polygon geofence.
+ The calculated radius of the polygon geofence in meters.
  */
 @property (assign, nonatomic, readonly) double radius;
 
