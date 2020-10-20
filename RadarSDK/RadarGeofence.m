@@ -96,7 +96,7 @@
         id centerObj = dict[@"geometryCenter"];
         
         RadarCoordinate *center = [[RadarCoordinate alloc] initWithCoordinate:CLLocationCoordinate2DMake(0, 0)];
-        float radius = 0.0f;
+        float radius = 0.0;
 
         if ([radiusObj isKindOfClass:[NSNumber class]] && [centerObj isKindOfClass:[NSDictionary class]]) {
             id centerCoordinatesObj = ((NSDictionary *)centerObj)[@"coordinates"];
