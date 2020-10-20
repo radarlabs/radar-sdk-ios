@@ -94,7 +94,7 @@
 
         id radiusObj = dict[@"geometryRadius"];
         id centerObj = dict[@"geometryCenter"];
-        
+
         RadarCoordinate *center = [[RadarCoordinate alloc] initWithCoordinate:CLLocationCoordinate2DMake(0, 0)];
         float radius = 0.0;
 
@@ -117,7 +117,7 @@
 
             float centerLongitude = [((NSNumber *)centerLongitudeObj) floatValue];
             float centerLatitude = [((NSNumber *)centerLatitudeObj) floatValue];
-            
+
             center = [[RadarCoordinate alloc] initWithCoordinate:CLLocationCoordinate2DMake(centerLatitude, centerLongitude)];
             radius = [((NSNumber *)radiusObj) floatValue];
         }
