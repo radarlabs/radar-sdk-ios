@@ -305,10 +305,10 @@ static NSString *const kRegionSyncIdentifer = @"radar_sync";
                 }
                 if (options.useStoppedGeofence) {
                     if (location) {
-                        [self replaceMovingStoppedGeofence:location radius:options.stoppedGeofenceRadius];
+                        [self replaceBubbleGeofence:location radius:options.stoppedGeofenceRadius];
                     }
                 } else {
-                    [self removeMovingStoppedGeofence];
+                    [self removeBubbleGeofence];
                 }
             } else {
                 if (options.desiredMovingUpdateInterval == 0) {
@@ -318,10 +318,10 @@ static NSString *const kRegionSyncIdentifer = @"radar_sync";
                 }
                 if (options.useMovingGeofence) {
                     if (location) {
-                        [self replaceMovingStoppedGeofence:location radius:options.movingGeofenceRadius];
+                        [self replaceBubbleGeofence:location radius:options.movingGeofenceRadius];
                     }
                 } else {
-                    [self removeMovingStoppedGeofence];
+                    [self removeBubbleGeofence];
                 }
             }
             if (options.useVisits) {
@@ -332,7 +332,7 @@ static NSString *const kRegionSyncIdentifer = @"radar_sync";
             }
         } else {
             [self stopUpdates];
-            [self removeMovingStoppedGeofence];
+            [self removeAllGeofences];
             [self.locationManager stopMonitoringVisits];
             [self.locationManager stopMonitoringSignificantLocationChanges];
         }
@@ -363,16 +363,25 @@ static NSString *const kRegionSyncIdentifer = @"radar_sync";
     }
 }
 
-- (void)replaceMovingStoppedGeofence:(CLLocation *)location radius:(int)radius {
-    [self removeMovingStoppedGeofence];
+- (void)replaceBubbleGeofence:(CLLocation *)location radius:(int)radius {
+    [self removeBubbleGeofence];
+    
     NSString *identifier = [NSString stringWithFormat:@"%@_%@", kRegionIdentifer, [[NSUUID UUID] UUIDString]];
     CLRegion *region = [[CLCircularRegion alloc] initWithCenter:location.coordinate radius:radius identifier:identifier];
     [self.locationManager startMonitoringForRegion:region];
 }
 
-- (void)removeMovingStoppedGeofence {
+- (void)removeBubbleGeofence {
     for (CLRegion *region in self.locationManager.monitoredRegions) {
         if ([region.identifier hasPrefix:kRegionIdentifer] && ![region.identifier hasPrefix:kRegionSyncIdentifer]) {
+            [self.locationManager stopMonitoringForRegion:region];
+        }
+    }
+}
+
+- (void)removeAllGeofences {
+    for (CLRegion *region in self.locationManager.monitoredRegions) {
+        if ([region.identifier hasPrefix:kRegionIdentifer]) {
             [self.locationManager stopMonitoringForRegion:region];
         }
     }
