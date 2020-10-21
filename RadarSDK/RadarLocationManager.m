@@ -341,7 +341,7 @@ static NSString *const kRegionSyncIdentifer = @"radar_sync";
 
 - (void)replaceSyncedGeofences:(NSArray<RadarGeofence *> *)geofences {
     [self removeSyncedGeofences];
-    
+
     for (int i = 0; i < geofences.count; i++) {
         RadarGeofence *geofence = [geofences objectAtIndex:i];
         NSString *identifier = [NSString stringWithFormat:@"%@_%d", kRegionSyncIdentifer, i];
