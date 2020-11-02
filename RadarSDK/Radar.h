@@ -301,6 +301,19 @@ typedef void (^_Nonnull RadarRouteCompletionHandler)(RadarStatus status, RadarRo
 + (void)trackOnceWithCompletionHandler:(RadarTrackCompletionHandler _Nullable)completionHandler NS_SWIFT_NAME(trackOnce(completionHandler:));
 
 /**
+ Tracks the user's location once in the foreground with the desired accuracy..
+
+ @warning Note that these calls are subject to rate limits.
+
+ @param desiredAccuracy The desired accuracy.
+ @param completionHandler An optional completion handler.
+
+ @see https://radar.io/documentation/sdk#ios
+ */
++ (void)trackOnceWithDesiredAccuracy:(RadarTrackingOptionsDesiredAccuracy)desiredAccuracy
+                   completionHandler:(RadarTrackCompletionHandler _Nullable)completionHandler NS_SWIFT_NAME(trackOnce(desiredAccuracy:completionHandler:));
+
+/**
  Manually updates the user's location.
 
  @warning Note that these calls are subject to rate limits.

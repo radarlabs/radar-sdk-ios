@@ -84,7 +84,11 @@
 }
 
 + (void)trackOnceWithCompletionHandler:(RadarTrackCompletionHandler)completionHandler {
-    [[RadarLocationManager sharedInstance] getLocationWithCompletionHandler:^(RadarStatus status, CLLocation *_Nullable location, BOOL stopped) {
+    [[Radar sharedInstance] trackOnceWithDesiredAccuracy:RadarTrackingOptionsDesiredAccuracyMedium completionHandler:completionHandler];
+}
+
++ (void)trackOnceWithDesiredAccuracy:(RadarTrackingOptionsDesiredAccuracy)desiredAccuracy completionHandler:(RadarTrackCompletionHandler)completionHandler {
+    [[RadarLocationManager sharedInstance] getLocationWithDesiredAccuracy:desiredAccuracy completionHandler:^(RadarStatus status, CLLocation *_Nullable location, BOOL stopped) {
         if (status != RadarStatusSuccess) {
             if (completionHandler) {
                 [RadarUtils runOnMainThreadAsyncIfNecessary:^{
