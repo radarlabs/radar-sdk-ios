@@ -262,7 +262,7 @@
                     }];
 }
 
-- (void)stopTrip {
+- (void)stopTripWithCanceled:(BOOL)canceled {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
         return;
@@ -276,6 +276,7 @@
     NSMutableDictionary *params = [NSMutableDictionary new];
 
     params[@"active"] = @(NO);
+    params[@"canceled"] = @(canceled);
 
     NSString *host = [RadarSettings host];
     NSString *url = [NSString stringWithFormat:@"%@/v1/trips/%@", host, tripOptions.externalId];

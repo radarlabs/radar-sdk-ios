@@ -250,7 +250,11 @@
 }
 
 + (void)stopTrip {
-    [[RadarAPIClient sharedInstance] stopTrip];
+    [self stopTripWithCanceled:NO];
+}
+
++ (void)stopTripWithCanceled:(BOOL)canceled {
+    [[RadarAPIClient sharedInstance] stopTripWithCanceled:canceled];
     [RadarSettings setTripOptions:nil];
 }
 

@@ -419,9 +419,16 @@ typedef void (^_Nonnull RadarRouteCompletionHandler)(RadarStatus status, RadarRo
 + (void)startTripWithOptions:(RadarTripOptions *_Nonnull)options NS_SWIFT_NAME(startTrip(options:));
 
 /**
- Stops a trip.
+ Completes a trip.
  */
 + (void)stopTrip;
+
+/**
+ Completes or cancels a trip.
+ 
+ @param canceled A boolean indicating whether the trip was completed or canceled.
+ */
++ (void)stopTripWithCanceled:(BOOL)canceled  NS_SWIFT_NAME(stopTrip(canceled:));
 
 /**
  Gets the device's current location, then gets context for that location without sending device or user identifiers to the server.

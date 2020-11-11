@@ -581,6 +581,10 @@ static NSString *const kRegionSyncIdentifer = @"radar_sync";
                                      completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user) {
                                          if (user) {
                                              [RadarSettings setId:user._id];
+                                             
+                                             if (!user.trip) {
+                                                 [RadarSettings setTripOptions:nil];
+                                             }
 
                                              BOOL inGeofences = user.geofences && user.geofences.count;
                                              BOOL atPlace = user.place != nil;
