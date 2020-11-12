@@ -280,9 +280,8 @@
     }
 
     NSMutableDictionary *params = [NSMutableDictionary new];
-
-    params[@"active"] = @(NO);
-    params[@"canceled"] = @(canceled);
+    
+    params[@"status"] = canceled ? @"canceled" : @"completed";
 
     NSString *host = [RadarSettings host];
     NSString *url = [NSString stringWithFormat:@"%@/v1/trips/%@", host, tripOptions.externalId];
