@@ -149,7 +149,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     XCTAssertNotNil(trip.destinationLocation);
     XCTAssertNotEqual(trip.etaDistance, 0);
     XCTAssertNotEqual(trip.etaDuration, 0);
-    XCTAssertEqual(trip.arrived, RadarTripStatusStarted);
+    XCTAssertEqual(trip.status, RadarTripStatusStarted);
 }
 
 #define AssertUserOk(user) [self assertUserOk:user]
@@ -659,8 +659,13 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     XCTAssertEqualObjects(options, [Radar getTripOptions]);
 }
 
-- (void)test_Radar_stopTrip {
-    [Radar stopTrip];
+- (void)test_Radar_completeTrip {
+    [Radar completeTrip];
+    XCTAssertNil([Radar getTripOptions]);
+}
+
+- (void)test_Radar_cancelTrip {
+    [Radar cancelTrip];
     XCTAssertNil([Radar getTripOptions]);
 }
 
