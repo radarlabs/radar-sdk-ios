@@ -18,6 +18,26 @@ typedef NS_OPTIONS(NSInteger, RadarRouteMode);
 @interface RadarTrip : NSObject
 
 /**
+ The statuses for trips.
+ */
+typedef NS_ENUM(NSInteger, RadarTripStatus) {
+    /// Unknown
+    RadarTripStatusUnknown NS_SWIFT_NAME(unknown),
+    /// `started`
+    RadarTripStatusStarted NS_SWIFT_NAME(started),
+    /// `approaching`
+    RadarTripStatusApproaching NS_SWIFT_NAME(approaching),
+    /// `arrived`
+    RadarTripStatusArrived NS_SWIFT_NAME(arrived),
+    /// `expired`
+    RadarTripStatusExpired NS_SWIFT_NAME(expired),
+    /// `completed`
+    RadarTripStatusCompleted NS_SWIFT_NAME(completed),
+    /// `canceled`
+    RadarTripStatusCanceled NS_SWIFT_NAME(canceled)
+};
+
+/**
  The external ID of the trip.
  */
 @property (nullable, copy, nonatomic, readonly) NSString *externalId;
@@ -58,8 +78,8 @@ typedef NS_OPTIONS(NSInteger, RadarRouteMode);
 @property (assign, nonatomic, readonly) float etaDuration;
 
 /**
- For trips with a destination, a boolean indicating whether the user has arrived (destination geofence entered).
+ The status of the trip.
  */
-@property (assign, nonatomic, readonly) BOOL arrived;
+@property (assign, nonatomic, readonly) RadarTripStatus status;
 
 @end

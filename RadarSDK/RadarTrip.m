@@ -20,7 +20,7 @@
                                         mode:(RadarRouteMode)mode
                                  etaDistance:(float)etaDistance
                                  etaDuration:(float)etaDuration
-                                     arrived:(BOOL)arrived {
+                                      status:(RadarTripStatus)status {
     self = [super init];
     if (self) {
         _externalId = externalId;
@@ -31,7 +31,7 @@
         _mode = mode;
         _etaDistance = etaDistance;
         _etaDuration = etaDuration;
-        _arrived = arrived;
+        _status = status;
     }
     return self;
 }
@@ -51,7 +51,7 @@
     RadarRouteMode mode = RadarRouteModeCar;
     float etaDistance = 0;
     float etaDuration = 0;
-    BOOL arrived = NO;
+    RadarTripStatus status = RadarTripStatusUnknown;
 
     id externalIdObj = dict[@"externalId"];
     if (externalIdObj && [externalIdObj isKindOfClass:[NSString class]]) {
@@ -128,10 +128,23 @@
             etaDuration = [(NSNumber *)etaDurationObj floatValue];
         }
     }
-
-    id arrivedObj = dict[@"arrived"];
-    if (arrivedObj && [arrivedObj isKindOfClass:[NSNumber class]]) {
-        arrived = [(NSNumber *)arrivedObj boolValue];
+    
+    id statusObj = dict[@"status"];
+    if (statusObj && [statusObj isKindOfClass:[NSString class]]) {
+        NSString *statusStr = (NSString *)statusObj;
+        if ([statusStr isEqualToString:@"started"]) {
+            status = RadarTripStatusStarted;
+        } else if ([statusStr isEqualToString:@"approaching"]) {
+            status = RadarTripStatusApproaching;
+        } else if ([statusStr isEqualToString:@"arrived"]) {
+            status = RadarTripStatusArrived;
+        } else if ([statusStr isEqualToString:@"expired"]) {
+            status = RadarTripStatusExpired;
+        } else if ([statusStr isEqualToString:@"completed"]) {
+            status = RadarTripStatusCompleted;
+        } else if ([statusStr isEqualToString:@"canceled"]) {
+            status = RadarTripStatusCanceled;
+        }
     }
 
     if (externalId) {
@@ -143,7 +156,7 @@
                                                 mode:mode
                                          etaDistance:etaDistance
                                          etaDuration:etaDuration
-                                             arrived:arrived];
+                                              status:status];
     }
 
     return nil;
@@ -163,7 +176,7 @@
     dict[@"mode"] = [Radar stringForMode:self.mode];
     NSDictionary *etaDict = @{@"distance": @(self.etaDistance), @"duration": @(self.etaDuration)};
     dict[@"eta"] = etaDict;
-    dict[@"arrived"] = @(self.arrived);
+    dict[@"status"] = [Radar stringForTripStatus:self.status];
     return dict;
 }
 

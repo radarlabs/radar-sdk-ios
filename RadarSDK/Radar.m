@@ -250,11 +250,16 @@
 }
 
 + (void)stopTrip {
-    [self stopTripWithCanceled:NO];
+    [self completeTrip];
 }
 
-+ (void)stopTripWithCanceled:(BOOL)canceled {
-    [[RadarAPIClient sharedInstance] stopTripWithCanceled:canceled];
++ (void)completeTrip {
+    [[RadarAPIClient sharedInstance] stopTripWithCanceled:NO];
+    [RadarSettings setTripOptions:nil];
+}
+
++ (void)cancelTrip {
+    [[RadarAPIClient sharedInstance] stopTripWithCanceled:YES];
     [RadarSettings setTripOptions:nil];
 }
 
@@ -608,6 +613,33 @@
     case RadarRouteModeCar:
         str = @"car";
         break;
+    }
+    return str;
+}
+
++ (NSString *)stringForTripStatus:(RadarTripStatus)status {
+    NSString *str;
+    switch (status) {
+    case RadarTripStatusStarted:
+        str = @"started";
+        break;
+    case RadarTripStatusApproaching:
+        str = @"approaching";
+        break;
+    case RadarTripStatusArrived:
+        str = @"arrived";
+        break;
+    case RadarTripStatusExpired:
+        str = @"expired";
+        break;
+    case RadarTripStatusCompleted:
+        str = @"completed";
+        break;
+    case RadarTripStatusCanceled:
+        str = @"canceled";
+        break;
+    default:
+        str = @"unknown";
     }
     return str;
 }

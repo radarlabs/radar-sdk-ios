@@ -421,14 +421,17 @@ typedef void (^_Nonnull RadarRouteCompletionHandler)(RadarStatus status, RadarRo
 /**
  Completes a trip.
  */
-+ (void)stopTrip;
++ (void)stopTrip __deprecated_msg("Use completeTrip or cancelTrip instead");
 
 /**
- Completes or cancels a trip.
- 
- @param canceled A boolean indicating whether the trip was completed or canceled.
+ Completes a trip.
  */
-+ (void)stopTripWithCanceled:(BOOL)canceled  NS_SWIFT_NAME(stopTrip(canceled:));
++ (void)completeTrip;
+
+/**
+ Cancels a trip.
+ */
++ (void)cancelTrip;
 
 /**
  Gets the device's current location, then gets context for that location without sending device or user identifiers to the server.
@@ -651,6 +654,15 @@ typedef void (^_Nonnull RadarRouteCompletionHandler)(RadarStatus status, RadarRo
  @return A display string for the travel mode value.
  */
 + (NSString *)stringForMode:(RadarRouteMode)mode NS_SWIFT_NAME(stringForMode(_:));
+
+/**
+ Returns a display string for a trip status value.
+
+ @param status A trip status value.
+
+ @return A display string for the trip status value.
+ */
++ (NSString *)stringForTripStatus:(RadarTripStatus)status NS_SWIFT_NAME(stringForTripStatus(_:));
 
 /**
  Returns a dictionary for a location.
