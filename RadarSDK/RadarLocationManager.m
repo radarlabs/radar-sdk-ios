@@ -340,7 +340,16 @@ static NSString *const kRegionSyncIdentifer = @"radar_sync";
 }
 
 - (void)replaceSyncedGeofences:(NSArray<RadarGeofence *> *)geofences {
+    RadarTrackingOptions *options = [RadarSettings trackingOptions];
+    if (!options.syncGeofences) {
+        return;
+    }
+    
     [self removeSyncedGeofences];
+    
+    if (!geofences) {
+        return;
+    }
 
     for (int i = 0; i < geofences.count; i++) {
         RadarGeofence *geofence = [geofences objectAtIndex:i];
@@ -578,7 +587,7 @@ static NSString *const kRegionSyncIdentifer = @"radar_sync";
                                             foreground:[RadarUtils foreground]
                                                 source:source
                                               replayed:replayed
-                                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user) {
+                                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user, NSArray<RadarGeofence *> *_Nullable nearbyGeofences) {
                                          if (user) {
                                              [RadarSettings setId:user._id];
                                              
@@ -593,27 +602,12 @@ static NSString *const kRegionSyncIdentifer = @"radar_sync";
                                              BOOL canExit = inGeofences || atPlace || atHome || atOffice;
                                              [RadarState setCanExit:canExit];
                                          }
-
+        
                                          self.sending = NO;
 
                                          [self updateTracking];
+                                         [self replaceSyncedGeofences:nearbyGeofences];
                                      }];
-
-    RadarTrackingOptions *options = [RadarSettings trackingOptions];
-    if (options.syncGeofences) {
-        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Syncing geofences | location = %@", location]];
-
-        [[RadarAPIClient sharedInstance] searchGeofencesNear:location
-                                                      radius:10000
-                                                        tags:nil
-                                                    metadata:nil
-                                                       limit:10
-                                           completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarGeofence *> *_Nullable geofences) {
-                                               if (geofences) {
-                                                   [self replaceSyncedGeofences:geofences];
-                                               }
-                                           }];
-    }
 }
 
 #pragma mark - CLLocationManagerDelegate

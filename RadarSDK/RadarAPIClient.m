@@ -106,7 +106,7 @@
         completionHandler:(RadarTrackAPICompletionHandler _Nullable)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
-        return completionHandler(RadarStatusErrorPublishableKey, nil, nil, nil);
+        return completionHandler(RadarStatusErrorPublishableKey, nil, nil, nil, nil);
     }
 
     NSMutableDictionary *params = [NSMutableDictionary new];
@@ -170,6 +170,10 @@
         tripOptionsDict[@"mode"] = [Radar stringForMode:tripOptions.mode];
         params[@"tripOptions"] = tripOptionsDict;
     }
+    RadarTrackingOptions *options = [RadarSettings trackingOptions];
+    if (options.syncGeofences) {
+        params[@"nearbyGeofences"] = @(YES);
+    }
 
     NSString *host = [RadarSettings host];
     NSString *url = [NSString stringWithFormat:@"%@/v1/track", host];
@@ -193,7 +197,7 @@
                                 [self.delegate didFailWithStatus:status];
                             }
 
-                            return completionHandler(status, nil, nil, nil);
+                            return completionHandler(status, nil, nil, nil, nil);
                         }
 
                         [RadarState setLastFailedStoppedLocation:nil];
@@ -210,8 +214,10 @@
 
                         id eventsObj = res[@"events"];
                         id userObj = res[@"user"];
+                        id nearbyGeofencesObj = res[@"nearbyGeofences"];
                         NSArray<RadarEvent *> *events = [RadarEvent eventsFromObject:eventsObj];
                         RadarUser *user = [[RadarUser alloc] initWithObject:userObj];
+                        NSArray<RadarGeofence *> *nearbyGeofences = [RadarGeofence geofencesFromObject:nearbyGeofencesObj];
                         if (events && user) {
                             if (self.delegate) {
                                 if (location) {
@@ -223,14 +229,14 @@
                                 }
                             }
 
-                            return completionHandler(RadarStatusSuccess, res, events, user);
+                            return completionHandler(RadarStatusSuccess, res, events, user, nearbyGeofences);
                         }
 
                         if (self.delegate) {
                             [self.delegate didFailWithStatus:status];
                         }
 
-                        completionHandler(RadarStatusErrorServer, nil, nil, nil);
+                        completionHandler(RadarStatusErrorServer, nil, nil, nil, nil);
                     }];
 }
 
