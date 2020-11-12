@@ -106,7 +106,7 @@
                                     foreground:YES
                                         source:RadarLocationSourceForegroundLocation
                                       replayed:NO
-                             completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user) {
+                             completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user, NSArray<RadarGeofence *> *_Nullable nearbyGeofences) {
                                  if (completionHandler) {
                                      [RadarUtils runOnMainThreadAsyncIfNecessary:^{
                                          completionHandler(status, location, events, user);
@@ -122,7 +122,7 @@
                                             foreground:YES
                                                 source:RadarLocationSourceManualLocation
                                               replayed:NO
-                                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user) {
+                                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user, NSArray<RadarGeofence *> *_Nullable nearbyGeofences) {
                                          if (completionHandler) {
                                              [RadarUtils runOnMainThreadAsyncIfNecessary:^{
                                                  completionHandler(status, location, events, user);
@@ -195,7 +195,7 @@
                                foreground:NO
                                    source:RadarLocationSourceMockLocation
                                  replayed:NO
-                        completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user) {
+                        completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user, NSArray<RadarGeofence *> *_Nullable nearbyGeofences) {
                             if (completionHandler) {
                                 [RadarUtils runOnMainThreadAsyncIfNecessary:^{
                                     completionHandler(status, location, events, user);
