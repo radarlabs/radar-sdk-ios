@@ -421,7 +421,7 @@ typedef void (^_Nonnull RadarRouteCompletionHandler)(RadarStatus status, RadarRo
 /**
  Stops a trip.
  */
-+ (void)stopTrip __deprecated_msg("Use completeTrip or cancelTrip instead");
++ (void)stopTrip __deprecated_msg("Use completeTrip or cancelTrip instead.");
 
 /**
  Completes a trip.
