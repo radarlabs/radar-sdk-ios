@@ -11,7 +11,9 @@
 
 #import "RadarAPIClient.h"
 #import "RadarBackgroundTaskManager.h"
+#import "RadarCircleGeometry.h"
 #import "RadarLogger.h"
+#import "RadarPolygonGeometry.h"
 #import "RadarSettings.h"
 #import "RadarState.h"
 #import "RadarUtils.h"
@@ -30,6 +32,7 @@
 @implementation RadarLocationManager
 
 static NSString *const kRegionIdentifer = @"radar";
+static NSString *const kRegionSyncIdentifer = @"radar_sync";
 
 + (instancetype)sharedInstance {
     static dispatch_once_t once;
@@ -302,10 +305,10 @@ static NSString *const kRegionIdentifer = @"radar";
                 }
                 if (options.useStoppedGeofence) {
                     if (location) {
-                        [self replaceGeofence:location radius:options.stoppedGeofenceRadius];
+                        [self replaceBubbleGeofence:location radius:options.stoppedGeofenceRadius];
                     }
                 } else {
-                    [self removeGeofences];
+                    [self removeBubbleGeofence];
                 }
             } else {
                 if (options.desiredMovingUpdateInterval == 0) {
@@ -315,10 +318,10 @@ static NSString *const kRegionIdentifer = @"radar";
                 }
                 if (options.useMovingGeofence) {
                     if (location) {
-                        [self replaceGeofence:location radius:options.movingGeofenceRadius];
+                        [self replaceBubbleGeofence:location radius:options.movingGeofenceRadius];
                     }
                 } else {
-                    [self removeGeofences];
+                    [self removeBubbleGeofence];
                 }
             }
             if (options.useVisits) {
@@ -329,21 +332,71 @@ static NSString *const kRegionIdentifer = @"radar";
             }
         } else {
             [self stopUpdates];
-            [self removeGeofences];
+            [self removeAllGeofences];
             [self.locationManager stopMonitoringVisits];
             [self.locationManager stopMonitoringSignificantLocationChanges];
         }
     });
 }
 
-- (void)replaceGeofence:(CLLocation *)location radius:(int)radius {
-    [self removeGeofences];
-    NSString *identifier = [NSString stringWithFormat:@"%@_%@", kRegionIdentifer, [[NSUUID UUID] UUIDString]];
-    CLRegion *geofence = [[CLCircularRegion alloc] initWithCenter:location.coordinate radius:radius identifier:identifier];
-    [self.locationManager startMonitoringForRegion:geofence];
+- (void)replaceSyncedGeofences:(NSArray<RadarGeofence *> *)geofences {
+    [self removeSyncedGeofences];
+
+    RadarTrackingOptions *options = [RadarSettings trackingOptions];
+    if (!options.syncGeofences || !geofences) {
+        return;
+    }
+
+    for (int i = 0; i < geofences.count; i++) {
+        RadarGeofence *geofence = [geofences objectAtIndex:i];
+        NSString *identifier = [NSString stringWithFormat:@"%@_%d", kRegionSyncIdentifer, i];
+        RadarCoordinate *center;
+        double radius = 100;
+        if ([geofence.geometry isKindOfClass:[RadarCircleGeometry class]]) {
+            RadarCircleGeometry *geometry = (RadarCircleGeometry *)geofence.geometry;
+            center = geometry.center;
+            radius = geometry.radius;
+        } else if ([geofence.geometry isKindOfClass:[RadarPolygonGeometry class]]) {
+            RadarPolygonGeometry *geometry = (RadarPolygonGeometry *)geofence.geometry;
+            center = geometry.center;
+            radius = geometry.radius;
+        }
+        if (center) {
+            CLRegion *region = [[CLCircularRegion alloc] initWithCenter:center.coordinate radius:radius identifier:identifier];
+            [self.locationManager startMonitoringForRegion:region];
+
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
+                                               message:[NSString stringWithFormat:@"Synced geofence | latitude = %f; longitude = %f; radius = %f; identifier = %@",
+                                                                                  center.coordinate.latitude, center.coordinate.longitude, radius, identifier]];
+        }
+    }
 }
 
-- (void)removeGeofences {
+- (void)replaceBubbleGeofence:(CLLocation *)location radius:(int)radius {
+    [self removeBubbleGeofence];
+
+    NSString *identifier = [NSString stringWithFormat:@"%@_%@", kRegionIdentifer, [[NSUUID UUID] UUIDString]];
+    CLRegion *region = [[CLCircularRegion alloc] initWithCenter:location.coordinate radius:radius identifier:identifier];
+    [self.locationManager startMonitoringForRegion:region];
+}
+
+- (void)removeSyncedGeofences {
+    for (CLRegion *region in self.locationManager.monitoredRegions) {
+        if ([region.identifier hasPrefix:kRegionSyncIdentifer]) {
+            [self.locationManager stopMonitoringForRegion:region];
+        }
+    }
+}
+
+- (void)removeBubbleGeofence {
+    for (CLRegion *region in self.locationManager.monitoredRegions) {
+        if ([region.identifier hasPrefix:kRegionIdentifer] && ![region.identifier hasPrefix:kRegionSyncIdentifer]) {
+            [self.locationManager stopMonitoringForRegion:region];
+        }
+    }
+}
+
+- (void)removeAllGeofences {
     for (CLRegion *region in self.locationManager.monitoredRegions) {
         if ([region.identifier hasPrefix:kRegionIdentifer]) {
             [self.locationManager stopMonitoringForRegion:region];
@@ -530,10 +583,9 @@ static NSString *const kRegionIdentifer = @"radar";
                                             foreground:[RadarUtils foreground]
                                                 source:source
                                               replayed:replayed
-                                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user) {
+                                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user,
+                                                         NSArray<RadarGeofence *> *_Nullable nearbyGeofences) {
                                          if (user) {
-                                             [RadarSettings setId:user._id];
-
                                              BOOL inGeofences = user.geofences && user.geofences.count;
                                              BOOL atPlace = user.place != nil;
                                              BOOL atHome = user.insights && user.insights.state && user.insights.state.home;
@@ -545,6 +597,7 @@ static NSString *const kRegionIdentifer = @"radar";
                                          self.sending = NO;
 
                                          [self updateTracking];
+                                         [self replaceSyncedGeofences:nearbyGeofences];
                                      }];
 }
 

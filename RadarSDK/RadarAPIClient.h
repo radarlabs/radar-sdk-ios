@@ -20,7 +20,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-typedef void (^_Nullable RadarTrackAPICompletionHandler)(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user);
+typedef void (^_Nullable RadarTrackAPICompletionHandler)(
+    RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user, NSArray<RadarGeofence *> *_Nullable nearbyGeofences);
 
 typedef void (^_Nullable RadarContextAPICompletionHandler)(RadarStatus status, NSDictionary *_Nullable res, RadarContext *_Nullable context);
 
@@ -56,7 +57,7 @@ typedef void (^_Nullable RadarDistanceAPICompletionHandler)(RadarStatus status, 
 
 - (void)verifyEventId:(NSString *_Nonnull)eventId verification:(RadarEventVerification)verification verifiedPlaceId:(NSString *_Nullable)verifiedPlaceId;
 
-- (void)stopTrip;
+- (void)stopTripWithCanceled:(BOOL)canceled;
 
 - (void)getContextForLocation:(CLLocation *_Nonnull)location completionHandler:(RadarContextAPICompletionHandler _Nullable)completionHandler;
 

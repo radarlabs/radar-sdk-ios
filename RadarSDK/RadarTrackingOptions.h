@@ -47,7 +47,7 @@ typedef NS_ENUM(NSInteger, RadarTrackingOptionsSync) {
 /**
  An options class used to configure background tracking.
 
- @see https://radar.io/documentation/sdk#ios
+ @see https://radar.io/documentation/sdk/ios
  */
 @interface RadarTrackingOptions : NSObject
 
@@ -135,6 +135,11 @@ typedef NS_ENUM(NSInteger, RadarTrackingOptionsSync) {
  Determines the radius in meters of the client geofence around the device's current location when moving.
  */
 @property (nonatomic, assign) int movingGeofenceRadius;
+
+/**
+ Determines whether to sync nearby geofences from the server to the client to improve responsiveness.
+ */
+@property (nonatomic, assign) BOOL syncGeofences;
 
 /**
  Determines whether to use the iOS visit monitoring service.

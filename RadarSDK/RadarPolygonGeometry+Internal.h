@@ -9,6 +9,6 @@
 
 @interface RadarPolygonGeometry ()
 
-- (instancetype)initWithCoordinates:(NSArray<RadarCoordinate *> *)coordinates;
+- (instancetype)initWithCoordinates:(NSArray<RadarCoordinate *> *)coordinates center:(RadarCoordinate *)center radius:(double)radius;
 
 @end

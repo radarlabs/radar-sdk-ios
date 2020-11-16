@@ -106,7 +106,7 @@
         completionHandler:(RadarTrackAPICompletionHandler _Nullable)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
-        return completionHandler(RadarStatusErrorPublishableKey, nil, nil, nil);
+        return completionHandler(RadarStatusErrorPublishableKey, nil, nil, nil, nil);
     }
 
     NSMutableDictionary *params = [NSMutableDictionary new];
@@ -170,6 +170,10 @@
         tripOptionsDict[@"mode"] = [Radar stringForMode:tripOptions.mode];
         params[@"tripOptions"] = tripOptionsDict;
     }
+    RadarTrackingOptions *options = [RadarSettings trackingOptions];
+    if (options.syncGeofences) {
+        params[@"nearbyGeofences"] = @(YES);
+    }
 
     NSString *host = [RadarSettings host];
     NSString *url = [NSString stringWithFormat:@"%@/v1/track", host];
@@ -183,7 +187,6 @@
                                params:params
                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
                         if (status != RadarStatusSuccess || !res) {
-                            RadarTrackingOptions *options = [RadarSettings trackingOptions];
                             if (options.replay == RadarTrackingOptionsReplayStops && stopped &&
                                 !(source == RadarLocationSourceForegroundLocation || source == RadarLocationSourceManualLocation)) {
                                 [RadarState setLastFailedStoppedLocation:location];
@@ -193,7 +196,7 @@
                                 [self.delegate didFailWithStatus:status];
                             }
 
-                            return completionHandler(status, nil, nil, nil);
+                            return completionHandler(status, nil, nil, nil, nil);
                         }
 
                         [RadarState setLastFailedStoppedLocation:nil];
@@ -210,9 +213,19 @@
 
                         id eventsObj = res[@"events"];
                         id userObj = res[@"user"];
+                        id nearbyGeofencesObj = res[@"nearbyGeofences"];
                         NSArray<RadarEvent *> *events = [RadarEvent eventsFromObject:eventsObj];
                         RadarUser *user = [[RadarUser alloc] initWithObject:userObj];
+                        NSArray<RadarGeofence *> *nearbyGeofences = [RadarGeofence geofencesFromObject:nearbyGeofencesObj];
                         if (events && user) {
+                            if (user) {
+                                [RadarSettings setId:user._id];
+
+                                if (!user.trip) {
+                                    [RadarSettings setTripOptions:nil];
+                                }
+                            }
+
                             if (self.delegate) {
                                 if (location) {
                                     [self.delegate didUpdateLocation:location user:user];
@@ -223,14 +236,14 @@
                                 }
                             }
 
-                            return completionHandler(RadarStatusSuccess, res, events, user);
+                            return completionHandler(RadarStatusSuccess, res, events, user, nearbyGeofences);
                         }
 
                         if (self.delegate) {
                             [self.delegate didFailWithStatus:status];
                         }
 
-                        completionHandler(RadarStatusErrorServer, nil, nil, nil);
+                        completionHandler(RadarStatusErrorServer, nil, nil, nil, nil);
                     }];
 }
 
@@ -262,7 +275,7 @@
                     }];
 }
 
-- (void)stopTrip {
+- (void)stopTripWithCanceled:(BOOL)canceled {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
         return;
@@ -275,7 +288,7 @@
 
     NSMutableDictionary *params = [NSMutableDictionary new];
 
-    params[@"active"] = @(NO);
+    params[@"status"] = canceled ? @"canceled" : @"completed";
 
     NSString *host = [RadarSettings host];
     NSString *url = [NSString stringWithFormat:@"%@/v1/trips/%@", host, tripOptions.externalId];

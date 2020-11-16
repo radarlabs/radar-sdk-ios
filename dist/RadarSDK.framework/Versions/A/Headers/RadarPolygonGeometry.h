@@ -18,4 +18,14 @@
  */
 @property (nullable, copy, nonatomic, readonly) NSArray<RadarCoordinate *> *coordinates;
 
+/**
+ The calculated centroid of the polygon geofence.
+ */
+@property (nonnull, strong, nonatomic, readonly) RadarCoordinate *center;
+
+/**
+ The calculated radius of the polygon geofence in meters.
+ */
+@property (assign, nonatomic, readonly) double radius;
+
 @end

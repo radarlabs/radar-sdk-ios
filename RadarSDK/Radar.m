@@ -84,29 +84,36 @@
 }
 
 + (void)trackOnceWithCompletionHandler:(RadarTrackCompletionHandler)completionHandler {
-    [[RadarLocationManager sharedInstance] getLocationWithCompletionHandler:^(RadarStatus status, CLLocation *_Nullable location, BOOL stopped) {
-        if (status != RadarStatusSuccess) {
-            if (completionHandler) {
-                [RadarUtils runOnMainThreadAsyncIfNecessary:^{
-                    completionHandler(status, nil, nil, nil);
-                }];
-            }
-            return;
-        }
+    [self trackOnceWithDesiredAccuracy:RadarTrackingOptionsDesiredAccuracyMedium completionHandler:completionHandler];
+}
 
-        [[RadarAPIClient sharedInstance] trackWithLocation:location
-                                                   stopped:stopped
-                                                foreground:YES
-                                                    source:RadarLocationSourceForegroundLocation
-                                                  replayed:NO
-                                         completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user) {
-                                             if (completionHandler) {
-                                                 [RadarUtils runOnMainThreadAsyncIfNecessary:^{
-                                                     completionHandler(status, location, events, user);
-                                                 }];
-                                             }
-                                         }];
-    }];
++ (void)trackOnceWithDesiredAccuracy:(RadarTrackingOptionsDesiredAccuracy)desiredAccuracy completionHandler:(RadarTrackCompletionHandler)completionHandler {
+    [[RadarLocationManager sharedInstance] getLocationWithDesiredAccuracy:desiredAccuracy
+                                                        completionHandler:^(RadarStatus status, CLLocation *_Nullable location, BOOL stopped) {
+                                                            if (status != RadarStatusSuccess) {
+                                                                if (completionHandler) {
+                                                                    [RadarUtils runOnMainThreadAsyncIfNecessary:^{
+                                                                        completionHandler(status, nil, nil, nil);
+                                                                    }];
+                                                                }
+                                                                return;
+                                                            }
+
+                                                            [[RadarAPIClient sharedInstance]
+                                                                trackWithLocation:location
+                                                                          stopped:stopped
+                                                                       foreground:YES
+                                                                           source:RadarLocationSourceForegroundLocation
+                                                                         replayed:NO
+                                                                completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events,
+                                                                                    RadarUser *_Nullable user, NSArray<RadarGeofence *> *_Nullable nearbyGeofences) {
+                                                                    if (completionHandler) {
+                                                                        [RadarUtils runOnMainThreadAsyncIfNecessary:^{
+                                                                            completionHandler(status, location, events, user);
+                                                                        }];
+                                                                    }
+                                                                }];
+                                                        }];
 }
 
 + (void)trackOnceWithLocation:(CLLocation *)location completionHandler:(RadarTrackCompletionHandler)completionHandler {
@@ -115,7 +122,8 @@
                                             foreground:YES
                                                 source:RadarLocationSourceManualLocation
                                               replayed:NO
-                                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user) {
+                                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user,
+                                                         NSArray<RadarGeofence *> *_Nullable nearbyGeofences) {
                                          if (completionHandler) {
                                              [RadarUtils runOnMainThreadAsyncIfNecessary:^{
                                                  completionHandler(status, location, events, user);
@@ -188,7 +196,8 @@
                                foreground:NO
                                    source:RadarLocationSourceMockLocation
                                  replayed:NO
-                        completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user) {
+                        completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user,
+                                            NSArray<RadarGeofence *> *_Nullable nearbyGeofences) {
                             if (completionHandler) {
                                 [RadarUtils runOnMainThreadAsyncIfNecessary:^{
                                     completionHandler(status, location, events, user);
@@ -243,7 +252,16 @@
 }
 
 + (void)stopTrip {
-    [[RadarAPIClient sharedInstance] stopTrip];
+    [self completeTrip];
+}
+
++ (void)completeTrip {
+    [[RadarAPIClient sharedInstance] stopTripWithCanceled:NO];
+    [RadarSettings setTripOptions:nil];
+}
+
++ (void)cancelTrip {
+    [[RadarAPIClient sharedInstance] stopTripWithCanceled:YES];
     [RadarSettings setTripOptions:nil];
 }
 
@@ -597,6 +615,33 @@
     case RadarRouteModeCar:
         str = @"car";
         break;
+    }
+    return str;
+}
+
++ (NSString *)stringForTripStatus:(RadarTripStatus)status {
+    NSString *str;
+    switch (status) {
+    case RadarTripStatusStarted:
+        str = @"started";
+        break;
+    case RadarTripStatusApproaching:
+        str = @"approaching";
+        break;
+    case RadarTripStatusArrived:
+        str = @"arrived";
+        break;
+    case RadarTripStatusExpired:
+        str = @"expired";
+        break;
+    case RadarTripStatusCompleted:
+        str = @"completed";
+        break;
+    case RadarTripStatusCanceled:
+        str = @"canceled";
+        break;
+    default:
+        str = @"unknown";
     }
     return str;
 }
