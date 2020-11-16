@@ -247,12 +247,8 @@
 }
 
 + (void)startTripWithOptions:(RadarTripOptions *)options {
-    NSString *tripId = [RadarSettings tripId];
-    if (tripId) {
-        [[RadarAPIClient sharedInstance] updateTripWithStatus:RadarTripStatusStarted];
-    }
-    
     [RadarSettings setTripOptions:options];
+    [[RadarAPIClient sharedInstance] updateTripWithStatus:RadarTripStatusStarted];
     [[RadarLocationManager sharedInstance] getLocationWithCompletionHandler:nil];
 }
 
