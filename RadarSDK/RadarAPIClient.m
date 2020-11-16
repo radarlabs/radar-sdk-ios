@@ -187,7 +187,6 @@
                                params:params
                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
                         if (status != RadarStatusSuccess || !res) {
-                            RadarTrackingOptions *options = [RadarSettings trackingOptions];
                             if (options.replay == RadarTrackingOptionsReplayStops && stopped &&
                                 !(source == RadarLocationSourceForegroundLocation || source == RadarLocationSourceManualLocation)) {
                                 [RadarState setLastFailedStoppedLocation:location];
