@@ -279,7 +279,7 @@
     }
 
     NSMutableDictionary *params = [NSMutableDictionary new];
-    
+
     params[@"status"] = canceled ? @"canceled" : @"completed";
 
     NSString *host = [RadarSettings host];

@@ -88,32 +88,32 @@
 }
 
 + (void)trackOnceWithDesiredAccuracy:(RadarTrackingOptionsDesiredAccuracy)desiredAccuracy completionHandler:(RadarTrackCompletionHandler)completionHandler {
-    [[RadarLocationManager sharedInstance]
-        getLocationWithDesiredAccuracy:desiredAccuracy
-                     completionHandler:^(RadarStatus status, CLLocation *_Nullable location, BOOL stopped) {
-                         if (status != RadarStatusSuccess) {
-                             if (completionHandler) {
-                                 [RadarUtils runOnMainThreadAsyncIfNecessary:^{
-                                     completionHandler(status, nil, nil, nil);
-                                 }];
-                             }
-                             return;
-                         }
+    [[RadarLocationManager sharedInstance] getLocationWithDesiredAccuracy:desiredAccuracy
+                                                        completionHandler:^(RadarStatus status, CLLocation *_Nullable location, BOOL stopped) {
+                                                            if (status != RadarStatusSuccess) {
+                                                                if (completionHandler) {
+                                                                    [RadarUtils runOnMainThreadAsyncIfNecessary:^{
+                                                                        completionHandler(status, nil, nil, nil);
+                                                                    }];
+                                                                }
+                                                                return;
+                                                            }
 
-                         [[RadarAPIClient sharedInstance]
-                             trackWithLocation:location
-                                       stopped:stopped
-                                    foreground:YES
-                                        source:RadarLocationSourceForegroundLocation
-                                      replayed:NO
-                             completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user, NSArray<RadarGeofence *> *_Nullable nearbyGeofences) {
-                                 if (completionHandler) {
-                                     [RadarUtils runOnMainThreadAsyncIfNecessary:^{
-                                         completionHandler(status, location, events, user);
-                                     }];
-                                 }
-                             }];
-                     }];
+                                                            [[RadarAPIClient sharedInstance]
+                                                                trackWithLocation:location
+                                                                          stopped:stopped
+                                                                       foreground:YES
+                                                                           source:RadarLocationSourceForegroundLocation
+                                                                         replayed:NO
+                                                                completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events,
+                                                                                    RadarUser *_Nullable user, NSArray<RadarGeofence *> *_Nullable nearbyGeofences) {
+                                                                    if (completionHandler) {
+                                                                        [RadarUtils runOnMainThreadAsyncIfNecessary:^{
+                                                                            completionHandler(status, location, events, user);
+                                                                        }];
+                                                                    }
+                                                                }];
+                                                        }];
 }
 
 + (void)trackOnceWithLocation:(CLLocation *)location completionHandler:(RadarTrackCompletionHandler)completionHandler {
@@ -122,7 +122,8 @@
                                             foreground:YES
                                                 source:RadarLocationSourceManualLocation
                                               replayed:NO
-                                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user, NSArray<RadarGeofence *> *_Nullable nearbyGeofences) {
+                                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user,
+                                                         NSArray<RadarGeofence *> *_Nullable nearbyGeofences) {
                                          if (completionHandler) {
                                              [RadarUtils runOnMainThreadAsyncIfNecessary:^{
                                                  completionHandler(status, location, events, user);
@@ -195,7 +196,8 @@
                                foreground:NO
                                    source:RadarLocationSourceMockLocation
                                  replayed:NO
-                        completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user, NSArray<RadarGeofence *> *_Nullable nearbyGeofences) {
+                        completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user,
+                                            NSArray<RadarGeofence *> *_Nullable nearbyGeofences) {
                             if (completionHandler) {
                                 [RadarUtils runOnMainThreadAsyncIfNecessary:^{
                                     completionHandler(status, location, events, user);

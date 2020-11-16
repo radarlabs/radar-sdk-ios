@@ -128,7 +128,7 @@
             etaDuration = [(NSNumber *)etaDurationObj floatValue];
         }
     }
-    
+
     id statusObj = dict[@"status"];
     if (statusObj && [statusObj isKindOfClass:[NSString class]]) {
         NSString *statusStr = (NSString *)statusObj;

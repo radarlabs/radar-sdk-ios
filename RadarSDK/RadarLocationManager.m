@@ -344,9 +344,9 @@ static NSString *const kRegionSyncIdentifer = @"radar_sync";
     if (!options.syncGeofences) {
         return;
     }
-    
+
     [self removeSyncedGeofences];
-    
+
     if (!geofences) {
         return;
     }
@@ -587,10 +587,11 @@ static NSString *const kRegionSyncIdentifer = @"radar_sync";
                                             foreground:[RadarUtils foreground]
                                                 source:source
                                               replayed:replayed
-                                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user, NSArray<RadarGeofence *> *_Nullable nearbyGeofences) {
+                                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user,
+                                                         NSArray<RadarGeofence *> *_Nullable nearbyGeofences) {
                                          if (user) {
                                              [RadarSettings setId:user._id];
-                                             
+
                                              if (!user.trip) {
                                                  [RadarSettings setTripOptions:nil];
                                              }
@@ -602,7 +603,7 @@ static NSString *const kRegionSyncIdentifer = @"radar_sync";
                                              BOOL canExit = inGeofences || atPlace || atHome || atOffice;
                                              [RadarState setCanExit:canExit];
                                          }
-        
+
                                          self.sending = NO;
 
                                          [self updateTracking];
