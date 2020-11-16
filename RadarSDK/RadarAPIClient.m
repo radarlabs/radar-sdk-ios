@@ -158,10 +158,6 @@
     RadarTripOptions *tripOptions = [RadarSettings tripOptions];
     if (tripOptions) {
         NSMutableDictionary *tripOptionsDict = [NSMutableDictionary new];
-        NSString *tripId = [RadarSettings tripId];
-        if (tripId) {
-            tripOptionsDict[@"_id"] = tripId;
-        }
         tripOptionsDict[@"externalId"] = tripOptions.externalId;
         if (tripOptions.metadata) {
             tripOptionsDict[@"metadata"] = tripOptions.metadata;
