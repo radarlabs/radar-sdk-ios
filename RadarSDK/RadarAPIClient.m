@@ -218,6 +218,14 @@
                         RadarUser *user = [[RadarUser alloc] initWithObject:userObj];
                         NSArray<RadarGeofence *> *nearbyGeofences = [RadarGeofence geofencesFromObject:nearbyGeofencesObj];
                         if (events && user) {
+                            if (user) {
+                                [RadarSettings setId:user._id];
+                                
+                                if (!user.trip) {
+                                    [RadarSettings setTripOptions:nil];
+                                }
+                            }
+                            
                             if (self.delegate) {
                                 if (location) {
                                     [self.delegate didUpdateLocation:location user:user];
