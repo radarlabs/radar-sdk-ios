@@ -220,12 +220,12 @@
                         if (events && user) {
                             if (user) {
                                 [RadarSettings setId:user._id];
-                                
+
                                 if (!user.trip) {
                                     [RadarSettings setTripOptions:nil];
                                 }
                             }
-                            
+
                             if (self.delegate) {
                                 if (location) {
                                     [self.delegate didUpdateLocation:location user:user];
