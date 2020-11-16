@@ -261,7 +261,7 @@
 }
 
 + (void)completeTrip {
-    [[RadarAPIClient sharedInstance] updateTripWithStatus:RadarTripStatusCanceled];
+    [[RadarAPIClient sharedInstance] updateTripWithStatus:RadarTripStatusCompleted];
     [RadarSettings setTripOptions:nil];
     [RadarSettings setTripId:nil];
 }
