@@ -21,6 +21,7 @@ static NSString *const kAdIdEnabled = @"radar-adIdEnabled";
 static NSString *const kTracking = @"radar-tracking";
 static NSString *const kTrackingOptions = @"radar-trackingOptions";
 static NSString *const kTripOptions = @"radar-tripOptions";
+static NSString *const kTripId = @"radar-tripId";
 static NSString *const kLogLevel = @"radar-logLevel";
 static NSString *const kConfig = @"radar-config";
 static NSString *const kHost = @"radar-host";
@@ -113,6 +114,14 @@ static NSString *const kDefaultHost = @"https://api.radar.io";
 + (void)setTripOptions:(RadarTripOptions *)options {
     NSDictionary *optionsDict = [options dictionaryValue];
     [[NSUserDefaults standardUserDefaults] setObject:optionsDict forKey:kTripOptions];
+}
+
++ (NSString *)tripId {
+    return [[NSUserDefaults standardUserDefaults] stringForKey:kTripId];
+}
+
++ (void)setTripId:(NSString *)tripId {
+    [[NSUserDefaults standardUserDefaults] setObject:tripId forKey:kTripId];
 }
 
 + (void)setConfig:(NSDictionary *)config {

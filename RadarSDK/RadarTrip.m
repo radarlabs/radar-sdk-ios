@@ -12,17 +12,19 @@
 
 @implementation RadarTrip
 
-- (instancetype _Nullable)initWithExternalId:(NSString *_Nonnull)externalId
-                                    metadata:(NSDictionary *_Nullable)metadata
-                      destinationGeofenceTag:(NSString *_Nullable)destinationGeofenceTag
-               destinationGeofenceExternalId:(NSString *_Nullable)destinationGeofenceExternalId
-                         destinationLocation:(RadarCoordinate *_Nullable)destinationLocation
-                                        mode:(RadarRouteMode)mode
-                                 etaDistance:(float)etaDistance
-                                 etaDuration:(float)etaDuration
-                                      status:(RadarTripStatus)status {
+- (instancetype _Nullable)initWithId:(NSString *_Nonnull)_id
+                          externalId:(NSString *_Nonnull)externalId
+                            metadata:(NSDictionary *_Nullable)metadata
+              destinationGeofenceTag:(NSString *_Nullable)destinationGeofenceTag
+       destinationGeofenceExternalId:(NSString *_Nullable)destinationGeofenceExternalId
+                 destinationLocation:(RadarCoordinate *_Nullable)destinationLocation
+                                mode:(RadarRouteMode)mode
+                         etaDistance:(float)etaDistance
+                         etaDuration:(float)etaDuration
+                              status:(RadarTripStatus)status {
     self = [super init];
     if (self) {
+        __id = _id;
         _externalId = externalId;
         _metadata = metadata;
         _destinationGeofenceTag = destinationGeofenceTag;
@@ -43,6 +45,7 @@
 
     NSDictionary *dict = (NSDictionary *)object;
 
+    NSString *_id;
     NSString *externalId;
     NSDictionary *metadata;
     NSString *destinationGeofenceTag;
@@ -52,6 +55,11 @@
     float etaDistance = 0;
     float etaDuration = 0;
     RadarTripStatus status = RadarTripStatusUnknown;
+    
+    id idObj = dict[@"_id"];
+    if (idObj && [idObj isKindOfClass:[NSString class]]) {
+        _id = (NSString *)idObj;
+    }
 
     id externalIdObj = dict[@"externalId"];
     if (externalIdObj && [externalIdObj isKindOfClass:[NSString class]]) {
@@ -148,15 +156,16 @@
     }
 
     if (externalId) {
-        return [[RadarTrip alloc] initWithExternalId:externalId
-                                            metadata:metadata
-                              destinationGeofenceTag:destinationGeofenceTag
-                       destinationGeofenceExternalId:destinationGeofenceExternalId
-                                 destinationLocation:destinationLocation
-                                                mode:mode
-                                         etaDistance:etaDistance
-                                         etaDuration:etaDuration
-                                              status:status];
+        return [[RadarTrip alloc] initWithId:_id
+                                  externalId:externalId
+                                    metadata:metadata
+                      destinationGeofenceTag:destinationGeofenceTag
+               destinationGeofenceExternalId:destinationGeofenceExternalId
+                         destinationLocation:destinationLocation
+                                        mode:mode
+                                 etaDistance:etaDistance
+                                 etaDuration:etaDuration
+                                      status:status];
     }
 
     return nil;
@@ -164,6 +173,7 @@
 
 - (NSDictionary *)dictionaryValue {
     NSMutableDictionary *dict = [NSMutableDictionary new];
+    dict[@"_id"] = self._id;
     dict[@"externalId"] = self.externalId;
     dict[@"metadata"] = self.metadata;
     dict[@"destinationGeofenceTag"] = self.destinationGeofenceTag;

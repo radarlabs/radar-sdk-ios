@@ -38,6 +38,11 @@ typedef NS_ENUM(NSInteger, RadarTripStatus) {
 };
 
 /**
+ The Radar ID of the trip.
+ */
+@property (nonnull, copy, nonatomic, readonly) NSString *_id;
+
+/**
  The external ID of the trip.
  */
 @property (nullable, copy, nonatomic, readonly) NSString *externalId;

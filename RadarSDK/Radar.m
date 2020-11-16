@@ -247,6 +247,11 @@
 }
 
 + (void)startTripWithOptions:(RadarTripOptions *)options {
+    NSString *tripId = [RadarSettings tripId];
+    if (tripId) {
+        [[RadarAPIClient sharedInstance] updateTripWithStatus:RadarTripStatusStarted];
+    }
+    
     [RadarSettings setTripOptions:options];
     [[RadarLocationManager sharedInstance] getLocationWithCompletionHandler:nil];
 }
@@ -256,13 +261,15 @@
 }
 
 + (void)completeTrip {
-    [[RadarAPIClient sharedInstance] stopTripWithCanceled:NO];
+    [[RadarAPIClient sharedInstance] updateTripWithStatus:RadarTripStatusCanceled];
     [RadarSettings setTripOptions:nil];
+    [RadarSettings setTripId:nil];
 }
 
 + (void)cancelTrip {
-    [[RadarAPIClient sharedInstance] stopTripWithCanceled:YES];
+    [[RadarAPIClient sharedInstance] updateTripWithStatus:RadarTripStatusCanceled];
     [RadarSettings setTripOptions:nil];
+    [RadarSettings setTripId:nil];
 }
 
 + (void)getContextWithCompletionHandler:(RadarContextCompletionHandler)completionHandler {
