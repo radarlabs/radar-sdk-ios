@@ -340,14 +340,10 @@ static NSString *const kRegionSyncIdentifer = @"radar_sync";
 }
 
 - (void)replaceSyncedGeofences:(NSArray<RadarGeofence *> *)geofences {
-    RadarTrackingOptions *options = [RadarSettings trackingOptions];
-    if (!options.syncGeofences) {
-        return;
-    }
-
     [self removeSyncedGeofences];
 
-    if (!geofences) {
+    RadarTrackingOptions *options = [RadarSettings trackingOptions];
+    if (!options.syncGeofences || !geofences) {
         return;
     }
 
