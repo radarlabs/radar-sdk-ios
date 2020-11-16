@@ -34,8 +34,6 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)setTrackingOptions:(RadarTrackingOptions *_Nonnull)options;
 + (RadarTripOptions *_Nullable)tripOptions;
 + (void)setTripOptions:(RadarTripOptions *_Nullable)options;
-+ (NSString *_Nullable)tripId;
-+ (void)setTripId:(NSString *_Nullable)tripId;
 + (void)setConfig:(NSDictionary *_Nullable)config;
 + (RadarLogLevel)logLevel;
 + (void)setLogLevel:(RadarLogLevel)level;

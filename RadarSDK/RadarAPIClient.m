@@ -225,11 +225,8 @@
                         if (events && user) {
                             [RadarSettings setId:user._id];
 
-                            if (user.trip) {
-                                [RadarSettings setTripId:user.trip._id];
-                            } else {
+                            if (!user.trip) {
                                 [RadarSettings setTripOptions:nil];
-                                [RadarSettings setTripId:nil];
                             }
 
                             if (self.delegate) {

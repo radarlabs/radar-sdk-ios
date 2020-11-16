@@ -116,14 +116,6 @@ static NSString *const kDefaultHost = @"https://api.radar.io";
     [[NSUserDefaults standardUserDefaults] setObject:optionsDict forKey:kTripOptions];
 }
 
-+ (NSString *)tripId {
-    return [[NSUserDefaults standardUserDefaults] stringForKey:kTripId];
-}
-
-+ (void)setTripId:(NSString *)tripId {
-    [[NSUserDefaults standardUserDefaults] setObject:tripId forKey:kTripId];
-}
-
 + (void)setConfig:(NSDictionary *)config {
     [[NSUserDefaults standardUserDefaults] setObject:config forKey:kConfig];
 }

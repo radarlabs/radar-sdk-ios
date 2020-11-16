@@ -259,13 +259,11 @@
 + (void)completeTrip {
     [[RadarAPIClient sharedInstance] updateTripWithStatus:RadarTripStatusCompleted];
     [RadarSettings setTripOptions:nil];
-    [RadarSettings setTripId:nil];
 }
 
 + (void)cancelTrip {
     [[RadarAPIClient sharedInstance] updateTripWithStatus:RadarTripStatusCanceled];
     [RadarSettings setTripOptions:nil];
-    [RadarSettings setTripId:nil];
 }
 
 + (void)getContextWithCompletionHandler:(RadarContextCompletionHandler)completionHandler {
