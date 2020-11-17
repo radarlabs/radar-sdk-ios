@@ -18,6 +18,7 @@
 #import "RadarRoutes+Internal.h"
 #import "RadarSettings.h"
 #import "RadarState.h"
+#import "RadarTrip.h"
 #import "RadarTripOptions.h"
 #import "RadarUser+Internal.h"
 #import "RadarUtils.h"
@@ -273,7 +274,7 @@
                     }];
 }
 
-- (void)stopTripWithCanceled:(BOOL)canceled {
+- (void)updateTripWithStatus:(RadarTripStatus)status {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
         return;
@@ -286,7 +287,7 @@
 
     NSMutableDictionary *params = [NSMutableDictionary new];
 
-    params[@"status"] = canceled ? @"canceled" : @"completed";
+    params[@"status"] = [Radar stringForTripStatus:status];
 
     NSString *host = [RadarSettings host];
     NSString *url = [NSString stringWithFormat:@"%@/v1/trips/%@", host, tripOptions.externalId];
