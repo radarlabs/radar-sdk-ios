@@ -10,7 +10,7 @@ import UserNotifications
 import RadarSDK
 
 @UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate, RadarDelegate {
+class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate, CLLocationManagerDelegate, RadarDelegate {
 
     let locationManager = CLLocationManager()
 
@@ -18,7 +18,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { (_, _) in }
         UNUserNotificationCenter.current().delegate = self
 
-        locationManager.requestAlwaysAuthorization()
+        locationManager.delegate = self
 
         Radar.initialize(publishableKey: "prj_test_pk_0000000000000000000000000000000000000000")
         Radar.setLogLevel(.debug)
@@ -126,6 +126,22 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
 
         return true
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
+        if #available(iOS 13.4, *) {
+            // On iOS 13.4 and later, prompt for foreground first. If granted, prompt for background.
+            // The OS will show the background prompt in-app.
+            if status == .notDetermined {
+                locationManager.requestWhenInUseAuthorization()
+            } else if status == .authorizedWhenInUse {
+                locationManager.requestAlwaysAuthorization()
+            }
+        } else {
+            // Before iOS 13.4, prompt for background first. The OS will show the foreground prompt in-app.
+            // The OS will show the background prompt outside of the app later, at a time determined by the OS.
+            locationManager.requestAlwaysAuthorization()
+        }
     }
 
     func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
