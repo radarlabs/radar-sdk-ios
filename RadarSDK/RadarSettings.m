@@ -21,7 +21,6 @@ static NSString *const kAdIdEnabled = @"radar-adIdEnabled";
 static NSString *const kTracking = @"radar-tracking";
 static NSString *const kTrackingOptions = @"radar-trackingOptions";
 static NSString *const kTripOptions = @"radar-tripOptions";
-static NSString *const kTripId = @"radar-tripId";
 static NSString *const kLogLevel = @"radar-logLevel";
 static NSString *const kConfig = @"radar-config";
 static NSString *const kHost = @"radar-host";
