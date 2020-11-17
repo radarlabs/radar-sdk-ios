@@ -55,7 +55,7 @@
     float etaDistance = 0;
     float etaDuration = 0;
     RadarTripStatus status = RadarTripStatusUnknown;
-    
+
     id idObj = dict[@"_id"];
     if (idObj && [idObj isKindOfClass:[NSString class]]) {
         _id = (NSString *)idObj;
