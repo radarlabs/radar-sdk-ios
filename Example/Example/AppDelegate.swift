@@ -138,7 +138,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 locationManager.requestAlwaysAuthorization()
             }
         } else {
-            // Before iOS 13.4, prompt for background first. The OS will show a foreground prompt in-app.
+            // Before iOS 13.4, prompt for background first. On iOS 13, the OS will show a foreground prompt in-app.
             // The OS will show the background prompt outside of the app later, at a time determined by the OS.
             locationManager.requestAlwaysAuthorization()
         }
