@@ -18,6 +18,7 @@ static NSString *const kUserId = @"radar-userId";
 static NSString *const kDescription = @"radar-description";
 static NSString *const kMetadata = @"radar-metadata";
 static NSString *const kAdIdEnabled = @"radar-adIdEnabled";
+static NSString *const kBeaconsEnabled = @"radar-beaconsEnabled";
 static NSString *const kTracking = @"radar-tracking";
 static NSString *const kTrackingOptions = @"radar-trackingOptions";
 static NSString *const kTripOptions = @"radar-tripOptions";
@@ -85,6 +86,14 @@ static NSString *const kDefaultHost = @"https://api.radar.io";
 
 + (void)setAdIdEnabled:(BOOL)enabled {
     [[NSUserDefaults standardUserDefaults] setBool:enabled forKey:kAdIdEnabled];
+}
+
++ (BOOL)beaconsEnabled {
+    return [[NSUserDefaults standardUserDefaults] boolForKey:kBeaconsEnabled];
+}
+
++ (void)setBeaconsEnabled:(BOOL)enabled {
+    [[NSUserDefaults standardUserDefaults] setBool:enabled forKey:kBeaconsEnabled];
 }
 
 + (BOOL)tracking {

@@ -5,6 +5,7 @@
 //  Copyright © 2019 Radar Labs, Inc. All rights reserved.
 //
 
+#import "RadarBeacon.h"
 #import "RadarChain.h"
 #import "RadarGeofence.h"
 #import "RadarPlace.h"
@@ -73,6 +74,13 @@ typedef NS_ENUM(NSInteger, RadarLocationSource);
  @see https://radar.io/documentation/insights
  */
 @property (nullable, strong, nonatomic, readonly) RadarUserInsights *insights;
+
+/**
+ An array of the user's nearby beacons. May be `nil` or empty if the user is not near anyh beacons or if Beacons is not enabled.
+
+ @see https://radar.io/documentation/beacons
+ */
+@property (nullable, copy, nonatomic, readonly) NSArray<RadarBeacon *> *beacons;
 
 /**
  A boolean indicating whether the user is stopped.

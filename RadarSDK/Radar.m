@@ -9,6 +9,7 @@
 
 #import "RadarAPIClient.h"
 #import "RadarCoordinate+Internal.h"
+#import "RadarBeaconManager.h"
 #import "RadarLocationManager.h"
 #import "RadarLogger.h"
 #import "RadarSettings.h"
@@ -66,6 +67,10 @@
     [RadarSettings setAdIdEnabled:enabled];
 }
 
++ (void)setBeaconsEnabled:(BOOL)enabled {
+    [RadarSettings setBeaconsEnabled:enabled];
+}
+
 + (void)getLocationWithCompletionHandler:(RadarLocationCompletionHandler)completionHandler {
     [[RadarLocationManager sharedInstance] getLocationWithCompletionHandler:^(RadarStatus status, CLLocation *_Nullable location, BOOL stopped) {
         [RadarUtils runOnMainThreadAsyncIfNecessary:^{
@@ -96,23 +101,50 @@
                                                                         completionHandler(status, nil, nil, nil);
                                                                     }];
                                                                 }
+                                                                
                                                                 return;
                                                             }
-
-                                                            [[RadarAPIClient sharedInstance]
-                                                                trackWithLocation:location
-                                                                          stopped:stopped
-                                                                       foreground:YES
-                                                                           source:RadarLocationSourceForegroundLocation
-                                                                         replayed:NO
-                                                                completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events,
-                                                                                    RadarUser *_Nullable user, NSArray<RadarGeofence *> *_Nullable nearbyGeofences) {
-                                                                    if (completionHandler) {
-                                                                        [RadarUtils runOnMainThreadAsyncIfNecessary:^{
-                                                                            completionHandler(status, location, events, user);
-                                                                        }];
+        
+                                                            void (^callTrackAPI)(NSArray<NSString *> *_Nullable) = ^(NSArray<NSString *> *_Nullable nearbyBeacons) {
+                                                                [[RadarAPIClient sharedInstance]
+                                                                    trackWithLocation:location
+                                                                              stopped:stopped
+                                                                           foreground:YES
+                                                                               source:RadarLocationSourceForegroundLocation
+                                                                             replayed:NO
+                                                                        nearbyBeacons:nearbyBeacons
+                                                                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events,
+                                                                                        RadarUser *_Nullable user, NSArray<RadarGeofence *> *_Nullable nearbyGeofences) {
+                                                                        if (completionHandler) {
+                                                                            [RadarUtils runOnMainThreadAsyncIfNecessary:^{
+                                                                                completionHandler(status, location, events, user);
+                                                                            }];
+                                                                        }
+                                                                    }];
+                                                            };
+                                                            
+                                                            BOOL beaconsEnabled = [RadarSettings beaconsEnabled];
+                                                            if (beaconsEnabled) {
+                                                                [[RadarAPIClient sharedInstance] searchBeaconsNear:location radius:10000 limit:10 completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarBeacon *> *_Nullable beacons) {
+                                                                    if (status != RadarStatusSuccess || !beacons) {
+                                                                        callTrackAPI(nil);
+                                                                        
+                                                                        return;
                                                                     }
+                                                                    
+                                                                    [[RadarBeaconManager sharedInstance] rangeBeacons:beacons completionHandler:^(RadarStatus status, NSArray<NSString *> *_Nullable nearbyBeacons) {
+                                                                        if (status != RadarStatusSuccess || !nearbyBeacons) {
+                                                                            callTrackAPI(nil);
+                                                                            
+                                                                            return;
+                                                                        }
+                                                                        
+                                                                        callTrackAPI(nearbyBeacons);
+                                                                    }];
                                                                 }];
+                                                            } else {
+                                                                callTrackAPI(nil);
+                                                            }
                                                         }];
 }
 
@@ -122,6 +154,7 @@
                                             foreground:YES
                                                 source:RadarLocationSourceManualLocation
                                               replayed:NO
+                                         nearbyBeacons:nil
                                      completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user,
                                                          NSArray<RadarGeofence *> *_Nullable nearbyGeofences) {
                                          if (completionHandler) {
@@ -196,6 +229,7 @@
                                foreground:NO
                                    source:RadarLocationSourceMockLocation
                                  replayed:NO
+                            nearbyBeacons:nil
                         completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user,
                                             NSArray<RadarGeofence *> *_Nullable nearbyGeofences) {
                             if (completionHandler) {
@@ -543,6 +577,9 @@
         break;
     case RadarStatusErrorLocation:
         str = @"ERROR_LOCATION";
+        break;
+    case RadarStatusErrorBluetooth:
+        str = @"ERROR_BLUETOOTH";
         break;
     case RadarStatusErrorNetwork:
         str = @"ERROR_NETWORK";

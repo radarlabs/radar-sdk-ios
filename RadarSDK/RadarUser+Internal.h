@@ -22,6 +22,7 @@
                            geofences:(NSArray *_Nullable)geofences
                                place:(RadarPlace *_Nullable)place
                             insights:(RadarUserInsights *_Nullable)insights
+                             beacons:(NSArray *_Nullable)beacons
                              stopped:(BOOL)stopped
                           foreground:(BOOL)foreground
                              country:(RadarRegion *_Nullable)country
