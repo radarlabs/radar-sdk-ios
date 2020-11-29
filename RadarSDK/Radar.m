@@ -125,7 +125,7 @@
                                                             
                                                             BOOL beaconsEnabled = [RadarSettings beaconsEnabled];
                                                             if (beaconsEnabled) {
-                                                                [[RadarAPIClient sharedInstance] searchBeaconsNear:location radius:10000 limit:10 completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarBeacon *> *_Nullable beacons) {
+                                                                [[RadarAPIClient sharedInstance] searchBeaconsNear:location radius:200 limit:10 completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarBeacon *> *_Nullable beacons) {
                                                                     if (status != RadarStatusSuccess || !beacons) {
                                                                         callTrackAPI(nil);
                                                                         

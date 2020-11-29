@@ -19,6 +19,4 @@
                                major:(NSString *_Nullable)major
                                minor:(NSString *_Nullable)minor;
 
-- (CLBeaconRegion *_Nonnull)region;
-
 @end

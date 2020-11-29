@@ -97,8 +97,4 @@
     return dict;
 }
 
-- (CLBeaconRegion *)region {
-    return [[CLBeaconRegion alloc] initWithProximityUUID:[[NSUUID alloc] initWithUUIDString:self.uuid] major:[self.major intValue] minor:[self.minor intValue] identifier:self._id];
-}
-
 @end

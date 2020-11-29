@@ -118,6 +118,10 @@
     }
     
     if (!CLLocationManager.isRangingAvailable) {
+        if (self.delegate) {
+            [self.delegate didFailWithStatus:RadarStatusErrorBluetooth];
+        }
+        
         completionHandler(RadarStatusErrorBluetooth, nil);
         
         return;
@@ -145,7 +149,7 @@
             logWithLevel:RadarLogLevelInfo
                 message:[NSString stringWithFormat:@"Starting ranging beacon | _id = %@; uuid = %@; major = %@; minor = %@", beacon._id, beacon.uuid, beacon.major, beacon.minor]];
         
-        [self.locationManager startRangingBeaconsInRegion:[beacon region]];
+        [self.locationManager startRangingBeaconsInRegion:[self regionForBeacon:beacon]];
     }
 }
 
@@ -155,7 +159,7 @@
     [self cancelTimeouts];
     
     for (RadarBeacon *beacon in self.beacons) {
-        [self.locationManager stopRangingBeaconsInRegion:[beacon region]];
+        [self.locationManager stopRangingBeaconsInRegion:[self regionForBeacon:beacon]];
     }
     
     [self callCompletionHandlersWithStatus:RadarStatusSuccess beacons:[self.nearbyBeaconIdentifers allObjects]];
@@ -165,6 +169,10 @@
     
     [self.nearbyBeaconIdentifers removeAllObjects];
     [self.failedBeaconIdentifiers removeAllObjects];
+}
+
+- (CLBeaconRegion *)regionForBeacon:(RadarBeacon *)beacon {
+    return [[CLBeaconRegion alloc] initWithProximityUUID:[[NSUUID alloc] initWithUUIDString:beacon.uuid] major:[beacon.major intValue] minor:[beacon.minor intValue] identifier:beacon._id];
 }
 
 - (void)handleBeacons {
