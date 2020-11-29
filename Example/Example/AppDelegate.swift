@@ -20,12 +20,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         locationManager.delegate = self
         self.requestLocationPermissions()
-        
-        UserDefaults.standard.setValue("https://api-staging.radar.io", forKey: "radar-host")
-        Radar.initialize(publishableKey: "org_test_pk_e6d0bb91ac41b187b84f21ba18ca4e5794401997")
+
+        Radar.initialize(publishableKey: "prj_test_pk_0000000000000000000000000000000000000000")
         Radar.setLogLevel(.debug)
         Radar.setDelegate(self)
-        Radar.setBeaconsEnabled(true)
         
         if UIApplication.shared.applicationState != .background {
             Radar.getLocation { (status, location, stopped) in
@@ -37,7 +35,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             }
         }
 
-        /*
         let options = RadarTrackingOptions.responsive
         options.sync = .all
         options.showBlueBar = true
