@@ -125,7 +125,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
             i += 1
         }
-        */
 
         return true
     }
