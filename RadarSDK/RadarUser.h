@@ -76,7 +76,7 @@ typedef NS_ENUM(NSInteger, RadarLocationSource);
 @property (nullable, strong, nonatomic, readonly) RadarUserInsights *insights;
 
 /**
- An array of the user's nearby beacons. May be `nil` or empty if the user is not near anyh beacons or if Beacons is not enabled.
+ An array of the user's nearby beacons. May be `nil` or empty if the user is not near any beacons or if Beacons is not enabled.
 
  @see https://radar.io/documentation/beacons
  */
