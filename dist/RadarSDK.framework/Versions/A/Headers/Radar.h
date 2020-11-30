@@ -34,8 +34,10 @@ typedef NS_ENUM(NSInteger, RadarStatus) {
     RadarStatusErrorPublishableKey,
     /// Location permissions not granted
     RadarStatusErrorPermissions,
-    /// Location services error or timeout (10 seconds)
+    /// Location services error or timeout (20 seconds)
     RadarStatusErrorLocation,
+    /// Beacon ranging error or timeout (5 seconds)
+    RadarStatusErrorBluetooth,
     /// Network error or timeout (10 seconds)
     RadarStatusErrorNetwork,
     /// Bad request (missing or invalid params)
@@ -126,6 +128,15 @@ typedef NS_ENUM(NSInteger, RadarRouteUnits) {
  @see https://radar.io/documentation/sdk/ios
  */
 typedef void (^_Nullable RadarLocationCompletionHandler)(RadarStatus status, CLLocation *_Nullable location, BOOL stopped);
+
+/**
+ Called when a beacon ranging request succeeds, fails, or times out.
+
+ Receives the request status and, if successful, the nearby beacon identifiers.
+
+ @see https://radar.io/documentation/sdk/ios
+ */
+typedef void (^_Nullable RadarBeaconCompletionHandler)(RadarStatus status, NSArray<NSString *> *_Nullable nearbyBeacons);
 
 /**
  Called when a track request succeeds, fails, or times out.
@@ -272,6 +283,13 @@ typedef void (^_Nonnull RadarRouteCompletionHandler)(RadarStatus status, RadarRo
  @param enabled A boolean indicating whether `adId` should be collected.
  */
 + (void)setAdIdEnabled:(BOOL)enabled;
+
+/**
+ Enables beacon ranging.
+
+ @param enabled A boolean indicating whether beacon ranging should be enabled.
+ */
++ (void)setBeaconsEnabled:(BOOL)enabled;
 
 /**
  Gets the device's current location.
