@@ -66,7 +66,7 @@
     [RadarSettings setAdIdEnabled:enabled];
 }
 
-+ (void)setDebugHandler:(RadarDebugHandler *_Nullable)debugHandler {
++ (void)setDebugHandler:(RadarDebugHandler _Nullable)debugHandler {
   [RadarState setDebugHandler:debugHandler];
 }
 

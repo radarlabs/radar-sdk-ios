@@ -113,7 +113,7 @@ static RadarDebugHandler debugHandler = nil;
     return [[NSUserDefaults standardUserDefaults] valueForKey:kLastBubble];
 }
 
-+ (void)setDebugHandler:(RadarDebugHandler *_Nullable)debugHandler {
++ (void)setDebugHandler:(RadarDebugHandler _Nullable)debugHandler {
   self.debugHandler = debugHandler;
 }
 

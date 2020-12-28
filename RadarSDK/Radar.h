@@ -275,6 +275,8 @@ typedef void (^_Nonnull RadarRouteCompletionHandler)(RadarStatus status, RadarRo
  */
 + (void)setAdIdEnabled:(BOOL)enabled;
 
++ (void)setDebugHandler:(RadarDebugHandler _Nullable)debugHandler;
+
 /**
  Gets the device's current location.
 
