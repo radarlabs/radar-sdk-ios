@@ -605,9 +605,6 @@ static NSString *const kRegionSyncIdentifer = @"radar_sync";
                                          [self replaceSyncedGeofences:nearbyGeofences];
 
                                          [RadarState callDebugHandler:@"LOCATION_RESPONSE"
-                                                             location:nil
-                                                               bubble:nil
-                                                      deviceGeofences:nil
                                                                events:events
                                                                  user:user
                                                             geofences:nearbyGeofences

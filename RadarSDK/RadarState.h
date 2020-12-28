@@ -27,7 +27,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)setLastFailedStoppedLocation:(CLLocation *_Nullable)lastFailedStoppedLocation;
 
 + (void)setDebugHandler:(RadarDebugHandler _Nullable)debugHandler;
-+ (void)callDebugHandler:(NSString *)status location:(CLLocation *_Nullable)location bubble:(CLRegion *_Nullable)bubble deviceGeofences:(NSArray<RadarGeofence *> *_Nullable)deviceGeofences events:(NSArray<RadarEvent *> *_Nullable)events user:(RadarUser *_Nullable)user geofences:(NSArray<RadarGeofence *> *_Nullable)geofences places:(NSArray<RadarPlace *> *_Nullable)places;
++ (void)callDebugHandler:(NSString *)status events:(NSArray<RadarEvent *> *_Nullable)events user:(RadarUser *_Nullable)user geofences:(NSArray<RadarGeofence *> *_Nullable)geofences places:(NSArray<RadarPlace *> *_Nullable)places;
 
 + (void)setLastGeofences:(NSArray<RadarGeofence *> *_Nullable)geofences;
 + (NSArray<RadarGeofence *> *_Nullable)lastGeofences;

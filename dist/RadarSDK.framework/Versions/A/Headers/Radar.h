@@ -118,7 +118,7 @@ typedef NS_ENUM(NSInteger, RadarRouteUnits) {
     RadarRouteUnitsMetric NS_SWIFT_NAME(metric)
 };
 
-typedef void (^_Nullable RadarDebugHandler)(NSString *status, CLLocation *_Nullable location, CLRegion *_Nullable bubble, NSArray<RadarGeofence *> *_Nullable deviceGeofences, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user, NSArray<RadarGeofence *> *_Nullable geofences, NSArray<RadarPlace *> *_Nullable places);
+typedef void (^_Nullable RadarDebugHandler)(NSString *status,CLLocation *_Nullable location, BOOL stopped, CLRegion *_Nullable bubble, NSArray<RadarGeofence *> *_Nullable deviceGeofences, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user, NSArray<RadarGeofence *> *_Nullable geofences, NSArray<RadarPlace *> *_Nullable places);
 
 /**
  Called when a location request succeeds, fails, or times out.
