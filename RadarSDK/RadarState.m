@@ -17,6 +17,10 @@ static NSString *const kStopped = @"radar-stopped";
 static NSString *const kLastSentAt = @"radar-lastSentAt";
 static NSString *const kCanExit = @"radar-canExit";
 static NSString *const kLastFailedStoppedLocation = @"radar-lastFailedStoppedLocation";
+static NSString *const kLastGeofences = @"radar-lastGeofences";
+static NSString *const kLastBubble = @"radar-lastBubble";
+
+static RadarDebugHandler debugHandler = nil;
 
 + (CLLocation *)lastMovedLocation {
     NSDictionary *dict = [[NSUserDefaults standardUserDefaults] dictionaryForKey:kLastMovedLocation];
@@ -91,6 +95,43 @@ static NSString *const kLastFailedStoppedLocation = @"radar-lastFailedStoppedLoc
 
     NSDictionary *dict = [RadarUtils dictionaryForLocation:lastFailedStoppedLocation];
     [[NSUserDefaults standardUserDefaults] setObject:dict forKey:kLastFailedStoppedLocation];
+}
+
++ (void)setLastGeofences:(NSArray<RadarGeofence *> *_Nullable)geofences {
+    [[NSUserDefaults standardUserDefaults] setObject:geofences forKey:kLastGeofences];
+}
+
++ (NSArray<RadarGeofence *> *_Nullable)lastGeofences {
+    return [[NSUserDefaults standardUserDefaults] valueForKey:kLastGeofences];
+}
+
++ (void)setLastBubble:(CLRegion *_Nullable)region {
+    [[NSUserDefaults standardUserDefaults] setObject:region forKey:kLastBubble];
+}
+
++ (CLRegion *_Nullable)lastBubble {
+    return [[NSUserDefaults standardUserDefaults] valueForKey:kLastBubble];
+}
+
++ (void)setDebugHandler:(RadarDebugHandler *_Nullable)debugHandler {
+  self.debugHandler = debugHandler;
+}
+
++ (void)stateChanged {
+  [self callDebugHandler:@"STATE_CHANGE"
+                location:[self lastMovedLocation]
+                  bubble:[self lastBubble]
+         deviceGeofences:[self lastGeofences]
+                  events:nil
+                    user:nil
+               geofences:nil
+                  places:nil];
+}
+
++ (void)callDebugHandler:(NSString *)status location:(CLLocation *_Nullable)location bubble:(CLRegion *_Nullable)bubble deviceGeofences:(NSArray<RadarGeofence *> *_Nullable)deviceGeofences events:(NSArray<RadarEvent *> *_Nullable)events user:(RadarUser *_Nullable)user geofences:(NSArray<RadarGeofence *> *_Nullable)geofences places:(NSArray<RadarPlace *> *_Nullable)places {
+  if (debugHandler != nil) {
+    debugHandler(@"STATE_CHANGE", location, bubble, deviceGeofences, events, user, geofences, places);
+  }
 }
 
 @end

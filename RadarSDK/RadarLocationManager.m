@@ -370,6 +370,8 @@ static NSString *const kRegionSyncIdentifer = @"radar_sync";
                                                                                   center.coordinate.latitude, center.coordinate.longitude, radius, identifier]];
         }
     }
+
+    [RadarState setLastGeofences:geofences];
 }
 
 - (void)replaceBubbleGeofence:(CLLocation *)location radius:(int)radius {
@@ -378,6 +380,7 @@ static NSString *const kRegionSyncIdentifer = @"radar_sync";
     NSString *identifier = [NSString stringWithFormat:@"%@_%@", kRegionIdentifer, [[NSUUID UUID] UUIDString]];
     CLRegion *region = [[CLCircularRegion alloc] initWithCenter:location.coordinate radius:radius identifier:identifier];
     [self.locationManager startMonitoringForRegion:region];
+    [RadarState setLastBubble:region];
 }
 
 - (void)removeSyncedGeofences {
@@ -386,6 +389,7 @@ static NSString *const kRegionSyncIdentifer = @"radar_sync";
             [self.locationManager stopMonitoringForRegion:region];
         }
     }
+    [RadarState setLastGeofences:nil];
 }
 
 - (void)removeBubbleGeofence {
@@ -394,6 +398,7 @@ static NSString *const kRegionSyncIdentifer = @"radar_sync";
             [self.locationManager stopMonitoringForRegion:region];
         }
     }
+    [RadarState setLastBubble:nil];
 }
 
 - (void)removeAllGeofences {
@@ -598,7 +603,17 @@ static NSString *const kRegionSyncIdentifer = @"radar_sync";
 
                                          [self updateTracking];
                                          [self replaceSyncedGeofences:nearbyGeofences];
-                                     }];
+
+                                         [RadarState callDebugHandler:@"LOCATION_RESPONSE"
+                                                             location:nil
+                                                               bubble:nil
+                                                      deviceGeofences:nil
+                                                               events:events
+                                                                 user:user
+                                                            geofences:nearbyGeofences
+                                                               places:nil];
+                                        }
+     ];
 }
 
 #pragma mark - CLLocationManagerDelegate
