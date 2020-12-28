@@ -3,7 +3,6 @@ Pod::Spec.new do |s|
   s.version               = '3.0.8'
   s.summary               = 'iOS SDK for Radar, location data infrastructure'
   s.homepage              = 'https://radar.io'
-  s.social_media_url      = 'https://twitter.com/radarlabs'
   s.author                = { 'Radar Labs, Inc.' => 'support@radar.io' }
   s.platform              = :ios
   s.source                = { :git => 'https://github.com/radarlabs/radar-sdk-ios.git', :tag => s.version.to_s }
