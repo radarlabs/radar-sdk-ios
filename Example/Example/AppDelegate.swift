@@ -128,20 +128,31 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         return true
     }
     
-    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
+    func requestLocationPermissions() {
+        var status: CLAuthorizationStatus = .notDetermined
+        if #available(iOS 14.0, *) {
+            // On iOS 14.0 and later, use the authorizationStatus instance property.
+            status = self.locationManager.authorizationStatus
+        } else {
+            // Before iOS 14.0, use the authorizationStatus class method.
+            status = CLLocationManager.authorizationStatus()
+        }
+        
         if #available(iOS 13.4, *) {
-            // On iOS 13.4 and later, prompt for foreground first. If granted, prompt for background.
-            // The OS will show the background prompt in-app.
+            // On iOS 13.4 and later, prompt for foreground first. If granted, prompt for background. The OS will show the background prompt in-app.
             if status == .notDetermined {
-                locationManager.requestWhenInUseAuthorization()
+                self.locationManager.requestWhenInUseAuthorization()
             } else if status == .authorizedWhenInUse {
-                locationManager.requestAlwaysAuthorization()
+                self.locationManager.requestAlwaysAuthorization()
             }
         } else {
-            // Before iOS 13.4, prompt for background first. On iOS 13, the OS will show a foreground prompt in-app.
-            // The OS will show the background prompt outside of the app later, at a time determined by the OS.
-            locationManager.requestAlwaysAuthorization()
+            // Before iOS 13.4, prompt for background first. On iOS 13, the OS will show a foreground prompt in-app. The OS will show the background prompt outside of the app later, at a time determined by the OS.
+            self.locationManager.requestAlwaysAuthorization()
         }
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
+        self.requestLocationPermissions()
     }
 
     func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {

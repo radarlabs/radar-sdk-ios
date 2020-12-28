@@ -69,6 +69,39 @@
     return backgroundModes && [backgroundModes containsObject:@"location"];
 }
 
++ (NSString *)locationAuthorization {
+    CLAuthorizationStatus authorizationStatus = CLLocationManager.authorizationStatus;
+    switch (authorizationStatus) {
+        case kCLAuthorizationStatusDenied:
+            return @"DENIED";
+        case kCLAuthorizationStatusRestricted:
+            return @"DENIED";
+        case kCLAuthorizationStatusAuthorizedWhenInUse:
+            return @"GRANTED_FOREGROUND";
+        case kCLAuthorizationStatusAuthorizedAlways:
+            return @"GRANTED_BACKGROUND";
+        default:
+            return @"NOT_DETERMINED";
+    }
+}
+
++ (NSString *)locationAccuracyAuthorization {
+    CLLocationManager *locationManager = [CLLocationManager new];
+    if (@available(iOS 14.0, *)) {
+        CLAccuracyAuthorization accuracyAuthorization = locationManager.accuracyAuthorization;
+        switch (accuracyAuthorization) {
+            case CLAccuracyAuthorizationReducedAccuracy:
+                return @"REDUCED";
+            case CLAccuracyAuthorizationFullAccuracy:
+                return @"FULL";
+            default:
+                return nil;
+        }
+    } else {
+        return nil;
+    }
+}
+
 + (BOOL)foreground {
     return [[UIApplication sharedApplication] applicationState] != UIApplicationStateBackground;
 }
@@ -106,7 +139,7 @@
 }
 
 #pragma mark - threading
-+ (void)runOnMainThreadAsyncIfNecessary:(dispatch_block_t)block {
++ (void)runOnMainThread:(dispatch_block_t)block {
     if (!block) {
         return;
     }
