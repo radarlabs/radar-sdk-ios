@@ -72,16 +72,12 @@
 + (NSString *)locationAuthorization {
     CLAuthorizationStatus authorizationStatus = CLLocationManager.authorizationStatus;
     switch (authorizationStatus) {
-        case kCLAuthorizationStatusDenied:
-            return @"DENIED";
-        case kCLAuthorizationStatusRestricted:
-            return @"DENIED";
         case kCLAuthorizationStatusAuthorizedWhenInUse:
             return @"GRANTED_FOREGROUND";
         case kCLAuthorizationStatusAuthorizedAlways:
             return @"GRANTED_BACKGROUND";
         default:
-            return @"NOT_DETERMINED";
+            return @"DENIED";
     }
 }
 
