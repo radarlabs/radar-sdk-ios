@@ -25,7 +25,7 @@ build-example:
 	xcodebuild $(XC_EXAMPLE_ARGS) $(XC_BUILD_ARGS)
 
 lint:
-	pod lib lint --verbose --allow-warnings
+	pod lib lint --verbose
 
 format:
 	./clang_format.sh
