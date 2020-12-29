@@ -118,8 +118,6 @@ typedef NS_ENUM(NSInteger, RadarRouteUnits) {
     RadarRouteUnitsMetric NS_SWIFT_NAME(metric)
 };
 
-typedef void (^_Nullable RadarDebugHandler)(NSString *status,CLLocation *_Nullable location, BOOL stopped, CLRegion *_Nullable bubble, NSArray<RadarGeofence *> *_Nullable deviceGeofences, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user, NSArray<RadarGeofence *> *_Nullable geofences, NSArray<RadarPlace *> *_Nullable places);
-
 /**
  Called when a location request succeeds, fails, or times out.
 
@@ -202,6 +200,11 @@ typedef void (^_Nonnull RadarIPGeocodeCompletionHandler)(RadarStatus status, Rad
 typedef void (^_Nonnull RadarRouteCompletionHandler)(RadarStatus status, RadarRoutes *_Nullable routes);
 
 /**
+ Called with the current internal state values
+ */
+typedef void (^_Nullable RadarStateHandler)(CLLocation *_Nullable lastMovedLocation, NSDate *_Nullable lastMovedAt, BOOL stopped, NSDate *_Nullable lastSentAt, BOOL canExit, CLLocation *_Nullable lastFailedStoppedLocation, NSArray<RadarGeofence *> *_Nullable lastGeofences, CLRegion *_Nullable lastBubble);
+
+/**
  The main class used to interact with the Radar SDK.
 
  @see https://radar.io/documentation/sdk
@@ -275,7 +278,12 @@ typedef void (^_Nonnull RadarRouteCompletionHandler)(RadarStatus status, RadarRo
  */
 + (void)setAdIdEnabled:(BOOL)enabled;
 
-+ (void)setDebugHandler:(RadarDebugHandler _Nullable)debugHandler;
+/**
+ Gets the device's current internal state.
+
+ @param stateHandler An optional completion handler.
+ */
++ (void)getState:(RadarStateHandler)stateHandler;
 
 /**
  Gets the device's current location.

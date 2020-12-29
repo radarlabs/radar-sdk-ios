@@ -603,13 +603,7 @@ static NSString *const kRegionSyncIdentifer = @"radar_sync";
 
                                          [self updateTracking];
                                          [self replaceSyncedGeofences:nearbyGeofences];
-
-                                         [RadarState callDebugHandler:@"LOCATION_RESPONSE"
-                                                               events:events
-                                                                 user:user
-                                                            geofences:nearbyGeofences
-                                                               places:nil];
-                                        }
+                                     }
      ];
 }
 

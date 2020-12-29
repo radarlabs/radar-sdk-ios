@@ -66,8 +66,8 @@
     [RadarSettings setAdIdEnabled:enabled];
 }
 
-+ (void)setDebugHandler:(RadarDebugHandler _Nullable)debugHandler {
-  [RadarState setDebugHandler:debugHandler];
++ (void)getState:(RadarStateHandler)stateHandler {
+  [RadarState getState:stateHandler];
 }
 
 + (void)getLocationWithCompletionHandler:(RadarLocationCompletionHandler)completionHandler {
