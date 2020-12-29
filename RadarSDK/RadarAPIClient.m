@@ -63,6 +63,7 @@
 
     NSMutableString *queryString = [NSMutableString new];
     [queryString appendFormat:@"installId=%@", [RadarSettings installId]];
+    [queryString appendFormat:@"?sessionId=%@", [RadarSettings sessionId]];
     NSString *locationAuthorization = [RadarUtils locationAuthorization];
     if (locationAuthorization) {
         [queryString appendFormat:@"&locationAuthorization=%@", locationAuthorization];

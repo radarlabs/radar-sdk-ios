@@ -28,6 +28,17 @@
 
 + (void)initializeWithPublishableKey:(NSString *)publishableKey {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Initializing"];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:[self sharedInstance] selector:@selector(applicationWillEnterForeground) name:UIApplicationWillEnterForegroundNotification object:nil];
+    
+    if ([[UIApplication sharedApplication] applicationState] != UIApplicationStateBackground) {
+        BOOL updated = [RadarSettings updateSessionId];
+        if (updated) {
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"New session from initialize | sessionId = %@", [RadarSettings sessionId]]];
+        } else {
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Existing session from initialize | sessionId = %@", [RadarSettings sessionId]]];
+        }
+    }
 
     [RadarSettings setPublishableKey:publishableKey];
     [[RadarLocationManager sharedInstance] updateTracking];
@@ -661,6 +672,21 @@
         dict[@"courseAccuracy"] = @(location.courseAccuracy);
     }
     return dict;
+}
+
+- (void)applicationWillEnterForeground {
+    BOOL updated = [RadarSettings updateSessionId];
+    if (updated) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"New session from foreground | sessionId = %@", [RadarSettings sessionId]]];
+        
+        [[RadarAPIClient sharedInstance] getConfig];
+    } else {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Existing session from foreground | sessionId = %@", [RadarSettings sessionId]]];
+    }
+}
+
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 @end
