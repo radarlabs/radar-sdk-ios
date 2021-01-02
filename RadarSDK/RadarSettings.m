@@ -7,6 +7,7 @@
 
 #import "RadarSettings.h"
 
+#import "RadarLogger.h"
 #import "RadarTripOptions.h"
 
 @implementation RadarSettings
@@ -44,18 +45,21 @@ static NSString *const kDefaultHost = @"https://api.radar.io";
     return installId;
 }
 
++ (NSString *)sessionId {
+    return [NSString stringWithFormat:@"%.f", [[NSUserDefaults standardUserDefaults] doubleForKey:kSessionId]];
+}
+
 + (BOOL)updateSessionId {
     double timestampSeconds = [[NSDate date] timeIntervalSince1970];
     double sessionIdSeconds = [[NSUserDefaults standardUserDefaults] doubleForKey:kSessionId];
     if (timestampSeconds - sessionIdSeconds > 300) {
-        [[NSUserDefaults standardUserDefaults] setDouble:round(timestampSeconds) forKey:kSessionId];
+        [[NSUserDefaults standardUserDefaults] setDouble:timestampSeconds forKey:kSessionId];
+        
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"New session | sessionId = %@", [RadarSettings sessionId]]];
+        
         return YES;
     }
     return NO;
-}
-
-+ (NSString *)sessionId {
-    return [NSString stringWithFormat:@"%.f", [[NSUserDefaults standardUserDefaults] doubleForKey:kSessionId]];
 }
 
 + (NSString *)_id {
