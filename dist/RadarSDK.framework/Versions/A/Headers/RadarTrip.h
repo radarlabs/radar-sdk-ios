@@ -87,4 +87,6 @@ typedef NS_ENUM(NSInteger, RadarTripStatus) {
  */
 @property (assign, nonatomic, readonly) RadarTripStatus status;
 
+- (NSDictionary *_Nonnull)dictionaryValue;
+
 @end
