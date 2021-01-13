@@ -6,6 +6,7 @@
 //
 
 #import "RadarEvent.h"
+#import "RadarBeacon+Internal.h"
 #import "RadarEvent+Internal.h"
 #import "RadarGeofence+Internal.h"
 #import "RadarPlace+Internal.h"
@@ -43,6 +44,7 @@
                             geofence:(RadarGeofence *)geofence
                                place:(RadarPlace *)place
                               region:(RadarRegion *)region
+                              beacon:(RadarBeacon *)beacon
                      alternatePlaces:(NSArray<RadarPlace *> *)alternatePlaces
                        verifiedPlace:(RadarPlace *)verifiedPlace
                         verification:(RadarEventVerification)verification
@@ -59,6 +61,7 @@
         _geofence = geofence;
         _place = place;
         _region = region;
+        _beacon = beacon;
         _alternatePlaces = alternatePlaces;
         _verifiedPlace = verifiedPlace;
         _verification = verification;
@@ -84,6 +87,7 @@
     RadarGeofence *geofence;
     RadarPlace *place;
     RadarRegion *region;
+    RadarBeacon *beacon;
     NSArray<RadarPlace *> *alternatePlaces;
     RadarPlace *verifiedPlace;
     RadarEventVerification verification = RadarEventVerificationUnverify;
@@ -225,6 +229,9 @@
 
     id regionObj = dict[@"region"];
     region = [[RadarRegion alloc] initWithObject:regionObj];
+    
+    id beaconObj = dict[@"beacon"];
+    beacon = [[RadarBeacon alloc] initWithObject:beaconObj];
 
     id alternatePlacesObj = dict[@"alternatePlaces"];
     if (alternatePlacesObj && [alternatePlacesObj isKindOfClass:[NSArray class]]) {
@@ -294,6 +301,7 @@
                                      geofence:geofence
                                         place:place
                                        region:region
+                                       beacon:beacon
                               alternatePlaces:alternatePlaces
                                 verifiedPlace:verifiedPlace
                                  verification:verification
@@ -355,6 +363,10 @@
         return @"user.arrived_at_trip_destination";
     case RadarEventTypeUserStoppedTrip:
         return @"user.stopped_trip";
+    case RadarEventTypeUserEnteredBeacon:
+        return @"user.entered_beacon";
+    case RadarEventTypeUserExitedBeacon:
+        return @"user.exited_beacon";
     default:
         return @"unknown";
     }

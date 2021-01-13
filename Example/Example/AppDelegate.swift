@@ -19,11 +19,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         UNUserNotificationCenter.current().delegate = self
 
         locationManager.delegate = self
+        self.requestLocationPermissions()
 
         Radar.initialize(publishableKey: "prj_test_pk_0000000000000000000000000000000000000000")
         Radar.setLogLevel(.debug)
         Radar.setDelegate(self)
-
+        
         if UIApplication.shared.applicationState != .background {
             Radar.getLocation { (status, location, stopped) in
                 print("Location: status = \(Radar.stringForStatus(status)); location = \(String(describing: location))")
@@ -190,7 +191,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
 
     func didFail(status: RadarStatus) {
-        self.notify(Utils.stringForRadarStatus(status))
+        self.notify(Radar.stringForStatus(status))
     }
 
     func didLog(message: String) {

@@ -583,6 +583,7 @@ static NSString *const kRegionSyncIdentifer = @"radar_sync";
                                             foreground:[RadarUtils foreground]
                                                 source:source
                                               replayed:replayed
+                                         nearbyBeacons:nil
                                      completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user,
                                                          NSArray<RadarGeofence *> *_Nullable nearbyGeofences) {
                                          if (user) {

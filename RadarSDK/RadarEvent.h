@@ -72,7 +72,11 @@ typedef NS_ENUM(NSInteger, RadarEventType) {
     /// `user.arrived_at_trip_destination`
     RadarEventTypeUserArrivedAtTripDestination NS_SWIFT_NAME(userArrivedAtTripDestination),
     /// `user.stopped_trip`
-    RadarEventTypeUserStoppedTrip NS_SWIFT_NAME(userStoppedTrip)
+    RadarEventTypeUserStoppedTrip NS_SWIFT_NAME(userStoppedTrip),
+    /// `user.entered_beacon`
+    RadarEventTypeUserEnteredBeacon NS_SWIFT_NAME(userEnteredBeacon),
+    /// `user.exited_beacon`
+    RadarEventTypeUserExitedBeacon NS_SWIFT_NAME(userExitedBeacon)
 };
 
 /**
@@ -140,6 +144,11 @@ typedef NS_ENUM(NSInteger, RadarEventVerification) {
  The region for which the event was generated. May be `null` for non-region events.
  */
 @property (nullable, strong, nonatomic, readonly) RadarRegion *region;
+
+/**
+ The beacon for which the event was generated. May be `nil` for non-beacon events.
+ */
+@property (nullable, strong, nonatomic, readonly) RadarBeacon *beacon;
 
 /**
  For place entry events, alternate place candidates. May be `nil` for non-place events.

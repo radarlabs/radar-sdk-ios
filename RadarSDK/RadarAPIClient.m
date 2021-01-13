@@ -8,6 +8,7 @@
 #import "RadarAPIClient.h"
 
 #import "RadarAddress+Internal.h"
+#import "RadarBeacon+Internal.h"
 #import "RadarContext+Internal.h"
 #import "RadarCoordinate+Internal.h"
 #import "RadarEvent+Internal.h"
@@ -105,6 +106,7 @@
                foreground:(BOOL)foreground
                    source:(RadarLocationSource)source
                  replayed:(BOOL)replayed
+            nearbyBeacons:(NSArray<NSString *> *_Nullable)nearbyBeacons
         completionHandler:(RadarTrackAPICompletionHandler _Nullable)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
@@ -176,6 +178,9 @@
     if (options.syncGeofences) {
         params[@"nearbyGeofences"] = @(YES);
     }
+    if (nearbyBeacons) {
+        params[@"nearbyBeacons"] = nearbyBeacons;
+    }
 
     NSString *host = [RadarSettings host];
     NSString *url = [NSString stringWithFormat:@"%@/v1/track", host];
@@ -202,7 +207,7 @@
                         }
 
                         [RadarState setLastFailedStoppedLocation:nil];
-
+        
                         id metaObj = res[@"meta"];
                         if (metaObj && [metaObj isKindOfClass:[NSDictionary class]]) {
                             NSDictionary *meta = (NSDictionary *)metaObj;
@@ -480,6 +485,46 @@
                         NSArray<RadarPoint *> *points = [RadarPoint pointsFromObject:pointsObj];
                         if (points) {
                             return completionHandler(RadarStatusSuccess, res, points);
+                        }
+
+                        completionHandler(RadarStatusErrorServer, nil, nil);
+                    }];
+}
+
+- (void)searchBeaconsNear:(CLLocation *)near
+                   radius:(int)radius
+                    limit:(int)limit
+        completionHandler:(RadarSearchBeaconsAPICompletionHandler)completionHandler {
+    NSString *publishableKey = [RadarSettings publishableKey];
+    if (!publishableKey) {
+        return completionHandler(RadarStatusErrorPublishableKey, nil, nil);
+    }
+
+    int finalLimit = MIN(limit, 100);
+
+    NSMutableString *queryString = [NSMutableString new];
+    [queryString appendFormat:@"near=%.06f,%.06f", near.coordinate.latitude, near.coordinate.longitude];
+    [queryString appendFormat:@"&radius=%d", radius];
+    [queryString appendFormat:@"&limit=%d", finalLimit];
+
+    NSString *host = [RadarSettings host];
+    NSString *url = [NSString stringWithFormat:@"%@/v1/search/beacons?%@", host, queryString];
+    url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
+
+    NSDictionary *headers = [RadarAPIClient headersWithPublishableKey:publishableKey];
+    [self.apiHelper requestWithMethod:@"GET"
+                                  url:url
+                              headers:headers
+                               params:nil
+                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
+                        if (status != RadarStatusSuccess || !res) {
+                            return completionHandler(status, nil, nil);
+                        }
+
+                        id beaconsObj = res[@"beacons"];
+                        NSArray<RadarBeacon *> *beacons = [RadarBeacon beaconsFromObject:beaconsObj];
+                        if (beacons) {
+                            return completionHandler(RadarStatusSuccess, res, beacons);
                         }
 
                         completionHandler(RadarStatusErrorServer, nil, nil);
