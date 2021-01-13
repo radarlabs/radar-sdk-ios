@@ -29,10 +29,11 @@
     return mutableBeacons;
 }
 
-- (instancetype _Nullable)initWithId:(NSString *)_id uuid:(NSString *)uuid major:(NSString *)major minor:(NSString *)minor {
+- (instancetype _Nullable)initWithId:(NSString *)_id description:(NSString *)description uuid:(NSString *)uuid major:(NSString *)major minor:(NSString *)minor {
     self = [super init];
     if (self) {
         __id = _id;
+        __description = description;
         _uuid = uuid;
         _major = major;
         _minor = minor;
@@ -48,6 +49,7 @@
     NSDictionary *dict = (NSDictionary *)object;
 
     NSString *_id;
+    NSString *description;
     NSString *uuid;
     NSString *major;
     NSString *minor;
@@ -55,6 +57,11 @@
     id idObj = dict[@"_id"];
     if (idObj && [idObj isKindOfClass:[NSString class]]) {
         _id = (NSString *)idObj;
+    }
+    
+    id descriptionObj = dict[@"description"];
+    if (descriptionObj && [descriptionObj isKindOfClass:[NSString class]]) {
+        __description = (NSString *)descriptionObj;
     }
 
     id uuidObj = dict[@"uuid"];
@@ -72,7 +79,7 @@
         minor = (NSString *)minorObj;
     }
 
-    return [[RadarBeacon alloc] initWithId:_id uuid:uuid major:major minor:minor];
+    return [[RadarBeacon alloc] initWithId:_id description:description uuid:uuid major:major minor:minor];
 }
 
 + (NSArray<NSDictionary *> *)arrayForBeacons:(NSArray<RadarBeacon *> *)beacons {
@@ -91,6 +98,7 @@
 - (NSDictionary *)dictionaryValue {
     NSMutableDictionary *dict = [NSMutableDictionary new];
     [dict setValue:self._id forKey:@"_id"];
+    [dict setValue:self.description forKey:@"description"];
     [dict setValue:self.uuid forKey:@"uuid"];
     [dict setValue:self.major forKey:@"major"];
     [dict setValue:self.minor forKey:@"minor"];

@@ -22,6 +22,11 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonnull, copy, nonatomic, readonly) NSString *_id;
 
 /**
+ The description of the beacon. Not to be confused with the `NSObject` `description` property.
+ */
+@property (nonnull, copy, nonatomic, readonly) NSString *_description;
+
+/**
  The UUID of the beacon.
  */
 @property (nonnull, copy, nonatomic, readonly) NSString *uuid;

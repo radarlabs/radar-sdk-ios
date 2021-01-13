@@ -14,6 +14,6 @@
 
 - (instancetype _Nullable)initWithObject:(id _Nonnull)object;
 
-- (instancetype _Nullable)initWithId:(NSString *_Nonnull)_id uuid:(NSString *_Nonnull)uuid major:(NSString *_Nullable)major minor:(NSString *_Nullable)minor;
+- (instancetype _Nullable)initWithId:(NSString *_Nonnull)_id description:(NSString *_Nullable)description uuid:(NSString *_Nonnull)uuid major:(NSString *_Nullable)major minor:(NSString *_Nullable)minor;
 
 @end
