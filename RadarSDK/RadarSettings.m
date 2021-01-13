@@ -7,12 +7,14 @@
 
 #import "RadarSettings.h"
 
+#import "RadarLogger.h"
 #import "RadarTripOptions.h"
 
 @implementation RadarSettings
 
 static NSString *const kPublishableKey = @"radar-publishableKey";
 static NSString *const kInstallId = @"radar-installId";
+static NSString *const kSessionId = @"radar-sessionId";
 static NSString *const kId = @"radar-_id";
 static NSString *const kUserId = @"radar-userId";
 static NSString *const kDescription = @"radar-description";
@@ -41,6 +43,23 @@ static NSString *const kDefaultHost = @"https://api.radar.io";
         [[NSUserDefaults standardUserDefaults] setObject:installId forKey:kInstallId];
     }
     return installId;
+}
+
++ (NSString *)sessionId {
+    return [NSString stringWithFormat:@"%.f", [[NSUserDefaults standardUserDefaults] doubleForKey:kSessionId]];
+}
+
++ (BOOL)updateSessionId {
+    double timestampSeconds = [[NSDate date] timeIntervalSince1970];
+    double sessionIdSeconds = [[NSUserDefaults standardUserDefaults] doubleForKey:kSessionId];
+    if (timestampSeconds - sessionIdSeconds > 300) {
+        [[NSUserDefaults standardUserDefaults] setDouble:timestampSeconds forKey:kSessionId];
+        
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"New session | sessionId = %@", [RadarSettings sessionId]]];
+        
+        return YES;
+    }
+    return NO;
 }
 
 + (NSString *)_id {

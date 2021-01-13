@@ -63,13 +63,14 @@
 
     NSMutableString *queryString = [NSMutableString new];
     [queryString appendFormat:@"installId=%@", [RadarSettings installId]];
-    NSString *userId = [RadarSettings userId];
-    if (userId) {
-        [queryString appendFormat:@"&userId=%@", userId];
+    [queryString appendFormat:@"&sessionId=%@", [RadarSettings sessionId]];
+    NSString *locationAuthorization = [RadarUtils locationAuthorization];
+    if (locationAuthorization) {
+        [queryString appendFormat:@"&locationAuthorization=%@", locationAuthorization];
     }
-    NSString *deviceId = [RadarUtils deviceId];
-    if (deviceId) {
-        [queryString appendFormat:@"&deviceId=%@", deviceId];
+    NSString *locationAccuracyAuthorization = [RadarUtils locationAccuracyAuthorization];
+    if (locationAccuracyAuthorization) {
+        [queryString appendFormat:@"&locationAccuracyAuthorization=%@", locationAccuracyAuthorization];
     }
 
     NSString *host = [RadarSettings host];
