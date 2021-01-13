@@ -144,17 +144,19 @@
                                                                       return;
                                                                   }
 
-                                                                  [[RadarBeaconManager sharedInstance]
-                                                                           rangeBeacons:beacons
-                                                                      completionHandler:^(RadarStatus status, NSArray<NSString *> *_Nullable nearbyBeacons) {
-                                                                          if (status != RadarStatusSuccess || !nearbyBeacons) {
-                                                                              callTrackAPI(nil);
+                                                                  [RadarUtils runOnMainThread:^{
+                                                                      [[RadarBeaconManager sharedInstance]
+                                                                               rangeBeacons:beacons
+                                                                          completionHandler:^(RadarStatus status, NSArray<NSString *> *_Nullable nearbyBeacons) {
+                                                                              if (status != RadarStatusSuccess || !nearbyBeacons) {
+                                                                                  callTrackAPI(nil);
 
-                                                                              return;
-                                                                          }
+                                                                                  return;
+                                                                              }
 
-                                                                          callTrackAPI(nearbyBeacons);
-                                                                      }];
+                                                                              callTrackAPI(nearbyBeacons);
+                                                                          }];
+                                                                  }];
                                                               }];
                          } else {
                              callTrackAPI(nil);

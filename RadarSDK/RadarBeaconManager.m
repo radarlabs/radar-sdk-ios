@@ -97,9 +97,9 @@
 }
 
 - (void)timeoutWithCompletionHandler:(RadarBeaconCompletionHandler)completionHandler {
-    @synchronized(self) {
-        [self stopRanging];
-    }
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:@"Timeout"];
+
+    [self stopRanging];
 }
 
 - (void)rangeBeacons:(NSArray<RadarBeacon *> *_Nonnull)beacons completionHandler:(RadarBeaconCompletionHandler)completionHandler {
@@ -121,6 +121,8 @@
             [self.delegate didFailWithStatus:RadarStatusErrorBluetooth];
         }
 
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:@"Beacon ranging not available"];
+
         completionHandler(RadarStatusErrorBluetooth, nil);
 
         return;
@@ -136,6 +138,8 @@
 
     if (!beacons || !beacons.count) {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:@"No beacons to range"];
+
+        completionHandler(RadarStatusSuccess, @[]);
 
         return;
     }
@@ -202,9 +206,13 @@
 }
 
 - (void)locationManager:(CLLocationManager *)manager didRangeBeacons:(nonnull NSArray<CLBeacon *> *)beacons inRegion:(nonnull CLBeaconRegion *)region {
-    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"Ranged beacon | region.identifier = %@", region.identifier]];
+    for (CLBeacon *beacon in beacons) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo
+                                           message:[NSString stringWithFormat:@"Ranged beacon | region.identifier = %@; beacon.rssi = %ld; beacon.proximity = %ld",
+                                                                              region.identifier, (long)beacon.rssi, (long)beacon.proximity]];
 
-    [self.nearbyBeaconIdentifers addObject:region.identifier];
+        [self.nearbyBeaconIdentifers addObject:region.identifier];
+    }
 
     [self handleBeacons];
 }
