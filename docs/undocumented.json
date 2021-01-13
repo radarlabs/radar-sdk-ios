@@ -15,6 +15,20 @@
       "warning": "undocumented"
     },
     {
+      "file": "/Users/nickpatrick/radar/radar-sdk-ios/RadarSDK/RadarBeacon.h",
+      "line": 39,
+      "symbol": "RadarBeacon.+arrayForBeacons:",
+      "symbol_kind": "sourcekitten.source.lang.objc.decl.method.class",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/nickpatrick/radar/radar-sdk-ios/RadarSDK/RadarBeacon.h",
+      "line": 40,
+      "symbol": "RadarBeacon.-dictionaryValue",
+      "symbol_kind": "sourcekitten.source.lang.objc.decl.method.instance",
+      "warning": "undocumented"
+    },
+    {
       "file": "/Users/nickpatrick/radar/radar-sdk-ios/RadarSDK/RadarChain.h",
       "line": 41,
       "symbol": "RadarChain.+arrayForChains:",
@@ -44,21 +58,21 @@
     },
     {
       "file": "/Users/nickpatrick/radar/radar-sdk-ios/RadarSDK/RadarEvent.h",
-      "line": 174,
+      "line": 183,
       "symbol": "RadarEvent.+stringForType:",
       "symbol_kind": "sourcekitten.source.lang.objc.decl.method.class",
       "warning": "undocumented"
     },
     {
       "file": "/Users/nickpatrick/radar/radar-sdk-ios/RadarSDK/RadarEvent.h",
-      "line": 175,
+      "line": 184,
       "symbol": "RadarEvent.+arrayForEvents:",
       "symbol_kind": "sourcekitten.source.lang.objc.decl.method.class",
       "warning": "undocumented"
     },
     {
       "file": "/Users/nickpatrick/radar/radar-sdk-ios/RadarSDK/RadarEvent.h",
-      "line": 176,
+      "line": 185,
       "symbol": "RadarEvent.-dictionaryValue",
       "symbol_kind": "sourcekitten.source.lang.objc.decl.method.instance",
       "warning": "undocumented"
@@ -247,7 +261,7 @@
     },
     {
       "file": "/Users/nickpatrick/radar/radar-sdk-ios/RadarSDK/RadarUser.h",
-      "line": 130,
+      "line": 138,
       "symbol": "RadarUser.-dictionaryValue",
       "symbol_kind": "sourcekitten.source.lang.objc.decl.method.instance",
       "warning": "undocumented"

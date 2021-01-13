@@ -46,6 +46,9 @@
                 <a href="Classes/RadarAddress.html">RadarAddress</a>
               </li>
               <li class="nav-group-task">
+                <a href="Classes/RadarBeacon.html">RadarBeacon</a>
+              </li>
+              <li class="nav-group-task">
                 <a href="Classes/RadarChain.html">RadarChain</a>
               </li>
               <li class="nav-group-task">
@@ -181,6 +184,9 @@
             <a href="Type%20Definitions.html">Type Definitions</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
+                <a href="Type%20Definitions.html#/c:Radar.h@T@RadarBeaconCompletionHandler">RadarBeaconCompletionHandler</a>
+              </li>
+              <li class="nav-group-task">
                 <a href="Type%20Definitions.html#/c:Radar.h@T@RadarContextCompletionHandler">RadarContextCompletionHandler</a>
               </li>
               <li class="nav-group-task">
@@ -256,6 +262,46 @@
                         <div class="language">
                           <p class="aside-title">Swift</p>
                           <pre class="highlight swift"><code><span class="kd">typealias</span> <span class="kt">RadarLocationCompletionHandler</span> <span class="o">=</span> <span class="p">(</span><span class="kt"><a href="Enums/RadarStatus.html">RadarStatus</a></span><span class="p">,</span> <span class="kt">CLLocation</span><span class="p">?,</span> <span class="kt">Bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Void</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:Radar.h@T@RadarBeaconCompletionHandler"></a>
+                    <a name="//apple_ref/objc/Type/RadarBeaconCompletionHandler" class="dashAnchor"></a>
+                    <a class="token" href="#/c:Radar.h@T@RadarBeaconCompletionHandler">RadarBeaconCompletionHandler</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Called when a beacon ranging request succeeds, fails, or times out.</p>
+
+<p>Receives the request status and, if successful, the nearby beacon identifiers.</p>
+<div class="aside aside-see">
+    <p class="aside-title">See</p>
+    <a href="https://radar.io/documentation/sdk/ios">https://radar.io/documentation/sdk/ios</a>
+
+</div>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Objective-C</p>
+                          <pre class="highlight objective_c"><code><span class="k">typedef</span> <span class="kt">void</span> <span class="p">(</span><span class="o">^</span><span class="n">_Nullable</span> <span class="n">RadarBeaconCompletionHandler</span><span class="p">)(</span>
+    <span class="n"><a href="Enums/RadarStatus.html">RadarStatus</a></span><span class="p">,</span> <span class="n">NSArray</span><span class="o">&lt;</span><span class="n">NSString</span> <span class="o">*&gt;</span> <span class="o">*</span><span class="n">_Nullable</span><span class="p">)</span></code></pre>
+
+                        </div>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">typealias</span> <span class="kt">RadarBeaconCompletionHandler</span> <span class="o">=</span> <span class="p">(</span><span class="kt"><a href="Enums/RadarStatus.html">RadarStatus</a></span><span class="p">,</span> <span class="p">[</span><span class="kt">String</span><span class="p">]?)</span> <span class="o">-&gt;</span> <span class="kt">Void</span></code></pre>
 
                         </div>
                       </div>
