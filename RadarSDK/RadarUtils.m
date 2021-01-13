@@ -88,13 +88,11 @@
         switch (accuracyAuthorization) {
             case CLAccuracyAuthorizationReducedAccuracy:
                 return @"REDUCED";
-            case CLAccuracyAuthorizationFullAccuracy:
-                return @"FULL";
             default:
-                return nil;
+                return @"FULL";
         }
     } else {
-        return nil;
+        return @"FULL";
     }
 }
 
@@ -135,6 +133,7 @@
 }
 
 #pragma mark - threading
+
 + (void)runOnMainThread:(dispatch_block_t)block {
     if (!block) {
         return;
