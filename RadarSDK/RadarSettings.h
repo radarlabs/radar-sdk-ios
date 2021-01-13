@@ -18,6 +18,8 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSString *_Nullable)publishableKey;
 + (void)setPublishableKey:(NSString *)publishableKey;
 + (NSString *)installId;
++ (BOOL)updateSessionId;
++ (NSString *)sessionId;
 + (NSString *_Nullable)_id;
 + (void)setId:(NSString *_Nullable)_id;
 + (NSString *_Nullable)userId;

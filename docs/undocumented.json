@@ -218,6 +218,13 @@
       "warning": "undocumented"
     },
     {
+      "file": "/Users/nickpatrick/radar/radar-sdk-ios/RadarSDK/RadarTrip.h",
+      "line": 90,
+      "symbol": "RadarTrip.-dictionaryValue",
+      "symbol_kind": "sourcekitten.source.lang.objc.decl.method.instance",
+      "warning": "undocumented"
+    },
+    {
       "file": "/Users/nickpatrick/radar/radar-sdk-ios/RadarSDK/RadarTripOptions.h",
       "line": 21,
       "symbol": "RadarTripOptions.-initWithExternalId:",

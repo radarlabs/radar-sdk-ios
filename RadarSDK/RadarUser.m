@@ -372,7 +372,7 @@
     NSDictionary *fraudDict = @{@"proxy": @(self.proxy)};
     [dict setValue:fraudDict forKey:@"fraud"];
     if (self.trip) {
-        [dict setValue:self.trip forKey:@"trip"];
+        [dict setValue:[self.trip dictionaryValue] forKey:@"trip"];
     }
     return dict;
 }

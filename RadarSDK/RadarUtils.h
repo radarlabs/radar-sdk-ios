@@ -21,13 +21,15 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSString *)deviceType;
 + (NSString *)deviceMake;
 + (BOOL)locationBackgroundMode;
++ (NSString *)locationAuthorization;
++ (NSString *)locationAccuracyAuthorization;
 + (BOOL)foreground;
 + (NSTimeInterval)backgroundTimeRemaining;
 + (CLLocation *)locationForDictionary:(NSDictionary *_Nonnull)dict;
 + (NSDictionary *)dictionaryForLocation:(CLLocation *)location;
 + (BOOL)validLocation:(CLLocation *)location;
 
-+ (void)runOnMainThreadAsyncIfNecessary:(dispatch_block_t)block;
++ (void)runOnMainThread:(dispatch_block_t)block;
 
 @end
 
