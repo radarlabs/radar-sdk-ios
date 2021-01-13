@@ -438,11 +438,6 @@ typedef void (^_Nonnull RadarRouteCompletionHandler)(RadarStatus status, RadarRo
 + (void)startTripWithOptions:(RadarTripOptions *_Nonnull)options NS_SWIFT_NAME(startTrip(options:));
 
 /**
- Stops a trip.
- */
-+ (void)stopTrip __deprecated_msg("Use completeTrip or cancelTrip instead.");
-
-/**
  Completes a trip.
  */
 + (void)completeTrip;
