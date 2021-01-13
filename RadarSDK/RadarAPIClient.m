@@ -207,7 +207,7 @@
                         }
 
                         [RadarState setLastFailedStoppedLocation:nil];
-        
+
                         id metaObj = res[@"meta"];
                         if (metaObj && [metaObj isKindOfClass:[NSDictionary class]]) {
                             NSDictionary *meta = (NSDictionary *)metaObj;
@@ -491,10 +491,7 @@
                     }];
 }
 
-- (void)searchBeaconsNear:(CLLocation *)near
-                   radius:(int)radius
-                    limit:(int)limit
-        completionHandler:(RadarSearchBeaconsAPICompletionHandler)completionHandler {
+- (void)searchBeaconsNear:(CLLocation *)near radius:(int)radius limit:(int)limit completionHandler:(RadarSearchBeaconsAPICompletionHandler)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
         return completionHandler(RadarStatusErrorPublishableKey, nil, nil);

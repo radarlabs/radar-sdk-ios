@@ -229,7 +229,7 @@
 
     id regionObj = dict[@"region"];
     region = [[RadarRegion alloc] initWithObject:regionObj];
-    
+
     id beaconObj = dict[@"beacon"];
     beacon = [[RadarBeacon alloc] initWithObject:beaconObj];
 

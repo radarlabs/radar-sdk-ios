@@ -55,9 +55,9 @@ static NSString *const kDefaultHost = @"https://api.radar.io";
     double sessionIdSeconds = [[NSUserDefaults standardUserDefaults] doubleForKey:kSessionId];
     if (timestampSeconds - sessionIdSeconds > 300) {
         [[NSUserDefaults standardUserDefaults] setDouble:timestampSeconds forKey:kSessionId];
-        
+
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"New session | sessionId = %@", [RadarSettings sessionId]]];
-        
+
         return YES;
     }
     return NO;

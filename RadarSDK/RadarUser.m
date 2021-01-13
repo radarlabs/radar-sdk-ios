@@ -175,7 +175,7 @@
     if (insightsObj && [insightsObj isKindOfClass:[NSDictionary class]]) {
         insights = [[RadarUserInsights alloc] initWithObject:insightsObj];
     }
-    
+
     id beaconsObj = dict[@"beacons"];
     if (beaconsObj && [beaconsObj isKindOfClass:[NSArray class]]) {
         beacons = [RadarBeacon beaconsFromObject:beaconsObj];

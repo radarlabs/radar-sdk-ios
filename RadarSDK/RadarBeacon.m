@@ -56,17 +56,17 @@
     if (idObj && [idObj isKindOfClass:[NSString class]]) {
         _id = (NSString *)idObj;
     }
-    
+
     id uuidObj = dict[@"uuid"];
     if (uuidObj && [uuidObj isKindOfClass:[NSString class]]) {
         uuid = (NSString *)uuidObj;
     }
-    
+
     id majorObj = dict[@"major"];
     if (majorObj && [majorObj isKindOfClass:[NSString class]]) {
         major = (NSString *)majorObj;
     }
-    
+
     id minorObj = dict[@"minor"];
     if (minorObj && [minorObj isKindOfClass:[NSString class]]) {
         minor = (NSString *)minorObj;

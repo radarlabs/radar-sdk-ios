@@ -72,12 +72,12 @@
 + (NSString *)locationAuthorization {
     CLAuthorizationStatus authorizationStatus = CLLocationManager.authorizationStatus;
     switch (authorizationStatus) {
-        case kCLAuthorizationStatusAuthorizedWhenInUse:
-            return @"GRANTED_FOREGROUND";
-        case kCLAuthorizationStatusAuthorizedAlways:
-            return @"GRANTED_BACKGROUND";
-        default:
-            return @"DENIED";
+    case kCLAuthorizationStatusAuthorizedWhenInUse:
+        return @"GRANTED_FOREGROUND";
+    case kCLAuthorizationStatusAuthorizedAlways:
+        return @"GRANTED_BACKGROUND";
+    default:
+        return @"DENIED";
     }
 }
 
@@ -86,10 +86,10 @@
     if (@available(iOS 14.0, *)) {
         CLAccuracyAuthorization accuracyAuthorization = locationManager.accuracyAuthorization;
         switch (accuracyAuthorization) {
-            case CLAccuracyAuthorizationReducedAccuracy:
-                return @"REDUCED";
-            default:
-                return @"FULL";
+        case CLAccuracyAuthorizationReducedAccuracy:
+            return @"REDUCED";
+        default:
+            return @"FULL";
         }
     } else {
         return @"FULL";

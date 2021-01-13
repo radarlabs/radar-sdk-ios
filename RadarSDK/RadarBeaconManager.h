@@ -5,8 +5,8 @@
 //  Copyright © 2020 Radar Labs, Inc. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
 #import <CoreLocation/CoreLocation.h>
+#import <Foundation/Foundation.h>
 
 #import "Radar.h"
 #import "RadarBeacon.h"
