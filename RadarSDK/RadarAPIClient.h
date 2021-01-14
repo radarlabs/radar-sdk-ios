@@ -14,7 +14,6 @@
 #import "RadarBeacon.h"
 #import "RadarContext.h"
 #import "RadarEvent.h"
-#import "RadarPoint.h"
 #import "RadarRegion.h"
 #import "RadarRoutes.h"
 #import "RadarUser.h"
@@ -29,8 +28,6 @@ typedef void (^_Nullable RadarContextAPICompletionHandler)(RadarStatus status, N
 typedef void (^_Nullable RadarSearchPlacesAPICompletionHandler)(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarPlace *> *_Nullable places);
 
 typedef void (^_Nullable RadarSearchGeofencesAPICompletionHandler)(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarGeofence *> *_Nullable geofences);
-
-typedef void (^_Nullable RadarSearchPointsAPICompletionHandler)(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarPoint *> *_Nullable points);
 
 typedef void (^_Nullable RadarSearchBeaconsAPICompletionHandler)(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarBeacon *> *_Nullable beacons);
 
@@ -79,12 +76,6 @@ typedef void (^_Nullable RadarDistanceAPICompletionHandler)(RadarStatus status, 
                    metadata:(NSDictionary *_Nullable)metadata
                       limit:(int)limit
           completionHandler:(RadarSearchGeofencesAPICompletionHandler _Nullable)completionHandler;
-
-- (void)searchPointsNear:(CLLocation *_Nonnull)near
-                  radius:(int)radius
-                    tags:(NSArray<NSString *> *_Nullable)tags
-                   limit:(int)limit
-       completionHandler:(RadarSearchPointsAPICompletionHandler _Nullable)completionHandler;
 
 - (void)searchBeaconsNear:(CLLocation *_Nonnull)near radius:(int)radius limit:(int)limit completionHandler:(RadarSearchBeaconsAPICompletionHandler _Nullable)completionHandler;
 

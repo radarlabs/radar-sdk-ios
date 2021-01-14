@@ -441,43 +441,6 @@
                                        }];
 }
 
-+ (void)searchPointsWithRadius:(int)radius tags:(NSArray<NSString *> *)tags limit:(int)limit completionHandler:(RadarSearchPointsCompletionHandler)completionHandler {
-    [[RadarLocationManager sharedInstance] getLocationWithCompletionHandler:^(RadarStatus status, CLLocation *_Nullable location, BOOL stopped) {
-        if (status != RadarStatusSuccess) {
-            [RadarUtils runOnMainThread:^{
-                completionHandler(status, nil, nil);
-            }];
-            return;
-        }
-
-        [[RadarAPIClient sharedInstance] searchPointsNear:location
-                                                   radius:radius
-                                                     tags:tags
-                                                    limit:limit
-                                        completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarPoint *> *_Nullable points) {
-                                            [RadarUtils runOnMainThread:^{
-                                                completionHandler(status, location, points);
-                                            }];
-                                        }];
-    }];
-}
-
-+ (void)searchPointsNear:(CLLocation *)near
-                  radius:(int)radius
-                    tags:(NSArray<NSString *> *)tags
-                   limit:(int)limit
-       completionHandler:(RadarSearchPointsCompletionHandler)completionHandler {
-    [[RadarAPIClient sharedInstance] searchPointsNear:near
-                                               radius:radius
-                                                 tags:tags
-                                                limit:limit
-                                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarPoint *> *_Nullable points) {
-                                        [RadarUtils runOnMainThread:^{
-                                            completionHandler(status, near, points);
-                                        }];
-                                    }];
-}
-
 + (void)autocompleteQuery:(NSString *)query near:(CLLocation *)near limit:(int)limit completionHandler:(RadarGeocodeCompletionHandler)completionHandler {
     [[RadarAPIClient sharedInstance] autocompleteQuery:query
                                                   near:near

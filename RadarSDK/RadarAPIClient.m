@@ -15,7 +15,6 @@
 #import "RadarGeofence+Internal.h"
 #import "RadarLogger.h"
 #import "RadarPlace+Internal.h"
-#import "RadarPoint+Internal.h"
 #import "RadarRoutes+Internal.h"
 #import "RadarSettings.h"
 #import "RadarState.h"
@@ -441,50 +440,6 @@
                         NSArray<RadarGeofence *> *geofences = [RadarGeofence geofencesFromObject:geofencesObj];
                         if (geofences) {
                             return completionHandler(RadarStatusSuccess, res, geofences);
-                        }
-
-                        completionHandler(RadarStatusErrorServer, nil, nil);
-                    }];
-}
-
-- (void)searchPointsNear:(CLLocation *)near
-                  radius:(int)radius
-                    tags:(NSArray<NSString *> *)tags
-                   limit:(int)limit
-       completionHandler:(RadarSearchPointsAPICompletionHandler)completionHandler {
-    NSString *publishableKey = [RadarSettings publishableKey];
-    if (!publishableKey) {
-        return completionHandler(RadarStatusErrorPublishableKey, nil, nil);
-    }
-
-    int finalLimit = MIN(limit, 100);
-
-    NSMutableString *queryString = [NSMutableString new];
-    [queryString appendFormat:@"near=%.06f,%.06f", near.coordinate.latitude, near.coordinate.longitude];
-    [queryString appendFormat:@"&radius=%d", radius];
-    [queryString appendFormat:@"&limit=%d", finalLimit];
-    if (tags && [tags count] > 0) {
-        [queryString appendFormat:@"&tags=%@", [tags componentsJoinedByString:@","]];
-    }
-
-    NSString *host = [RadarSettings host];
-    NSString *url = [NSString stringWithFormat:@"%@/v1/search/points?%@", host, queryString];
-    url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
-
-    NSDictionary *headers = [RadarAPIClient headersWithPublishableKey:publishableKey];
-    [self.apiHelper requestWithMethod:@"GET"
-                                  url:url
-                              headers:headers
-                               params:nil
-                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
-                        if (status != RadarStatusSuccess || !res) {
-                            return completionHandler(status, nil, nil);
-                        }
-
-                        id pointsObj = res[@"points"];
-                        NSArray<RadarPoint *> *points = [RadarPoint pointsFromObject:pointsObj];
-                        if (points) {
-                            return completionHandler(RadarStatusSuccess, res, points);
                         }
 
                         completionHandler(RadarStatusErrorServer, nil, nil);
