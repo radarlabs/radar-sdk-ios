@@ -7,6 +7,7 @@
 
 #import "RadarBeacon.h"
 #import "RadarBeacon+Internal.h"
+#import "RadarCoordinate+Internal.h"
 
 @implementation RadarBeacon
 
@@ -29,14 +30,24 @@
     return mutableBeacons;
 }
 
-- (instancetype _Nullable)initWithId:(NSString *)_id description:(NSString *)description uuid:(NSString *)uuid major:(NSString *)major minor:(NSString *)minor {
+- (instancetype _Nullable)initWithId:(NSString *)_id
+                         description:(NSString *)description
+                                 tag:(NSString *)tag
+                          externalId:(NSString *)externalId
+                                uuid:(NSString *)uuid
+                               major:(NSString *)major
+                               minor:(NSString *)minor
+                            geometry:(RadarCoordinate *)geometry {
     self = [super init];
     if (self) {
         __id = _id;
         __description = description;
+        _tag = tag;
+        _externalId = externalId;
         _uuid = uuid;
         _major = major;
         _minor = minor;
+        _geometry = geometry;
     }
     return self;
 }
@@ -50,9 +61,12 @@
 
     NSString *_id;
     NSString *description;
+    NSString *tag;
+    NSString *externalId;
     NSString *uuid;
     NSString *major;
     NSString *minor;
+    RadarCoordinate *geometry = [[RadarCoordinate alloc] initWithCoordinate:CLLocationCoordinate2DMake(0, 0)];
 
     id idObj = dict[@"_id"];
     if (idObj && [idObj isKindOfClass:[NSString class]]) {
@@ -62,6 +76,16 @@
     id descriptionObj = dict[@"description"];
     if (descriptionObj && [descriptionObj isKindOfClass:[NSString class]]) {
         __description = (NSString *)descriptionObj;
+    }
+    
+    id tagObj = dict[@"tag"];
+    if (tagObj && [tagObj isKindOfClass:[NSString class]]) {
+        tag = (NSString *)tagObj;
+    }
+    
+    id externalIdObj = dict[@"externalId"];
+    if (externalIdObj && [externalIdObj isKindOfClass:[NSString class]]) {
+        externalId = (NSString *)externalIdObj;
     }
 
     id uuidObj = dict[@"uuid"];
@@ -78,8 +102,39 @@
     if (minorObj && [minorObj isKindOfClass:[NSString class]]) {
         minor = (NSString *)minorObj;
     }
+    
+    id geometryObj = dict[@"geometry"];
+    if (geometryObj && [geometryObj isKindOfClass:[NSDictionary class]]) {
+        NSDictionary *geometryDict = (NSDictionary *)geometryObj;
 
-    return [[RadarBeacon alloc] initWithId:_id description:description uuid:uuid major:major minor:minor];
+        id geometryCoordinatesObj = geometryDict[@"coordinates"];
+        if (!geometryCoordinatesObj || ![geometryCoordinatesObj isKindOfClass:[NSArray class]]) {
+            return nil;
+        }
+
+        NSArray *geometryCoordinatesArr = (NSArray *)geometryCoordinatesObj;
+        if (geometryCoordinatesArr.count != 2) {
+            return nil;
+        }
+
+        id geometryCoordinatesLongitudeObj = geometryCoordinatesArr[0];
+        id geometryCoordinatesLatitudeObj = geometryCoordinatesArr[1];
+        if (!geometryCoordinatesLongitudeObj || !geometryCoordinatesLatitudeObj || ![geometryCoordinatesLongitudeObj isKindOfClass:[NSNumber class]] ||
+            ![geometryCoordinatesLatitudeObj isKindOfClass:[NSNumber class]]) {
+            return nil;
+        }
+
+        NSNumber *geometryCoordinatesLongitudeNumber = (NSNumber *)geometryCoordinatesLongitudeObj;
+        NSNumber *geometryCoordinatesLatitudeNumber = (NSNumber *)geometryCoordinatesLatitudeObj;
+
+        float geometryCoordinatesLongitudeFloat = [geometryCoordinatesLongitudeNumber floatValue];
+        float geometryCoordinatesLatitudeFloat = [geometryCoordinatesLatitudeNumber floatValue];
+
+        CLLocationCoordinate2D coordinate = CLLocationCoordinate2DMake(geometryCoordinatesLatitudeFloat, geometryCoordinatesLongitudeFloat);
+        geometry = [[RadarCoordinate alloc] initWithCoordinate:coordinate];
+    }
+
+    return [[RadarBeacon alloc] initWithId:_id description:description tag:tag externalId:externalId uuid:uuid major:major minor:minor geometry:geometry];
 }
 
 + (NSArray<NSDictionary *> *)arrayForBeacons:(NSArray<RadarBeacon *> *)beacons {
@@ -98,7 +153,9 @@
 - (NSDictionary *)dictionaryValue {
     NSMutableDictionary *dict = [NSMutableDictionary new];
     [dict setValue:self._id forKey:@"_id"];
-    [dict setValue:self.description forKey:@"description"];
+    [dict setValue:self._description forKey:@"description"];
+    [dict setValue:self.tag forKey:@"tag"];
+    [dict setValue:self.externalId forKey:@"externalId"];
     [dict setValue:self.uuid forKey:@"uuid"];
     [dict setValue:self.major forKey:@"major"];
     [dict setValue:self.minor forKey:@"minor"];

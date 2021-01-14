@@ -5,6 +5,7 @@
 //  Copyright © 2020 Radar Labs, Inc. All rights reserved.
 //
 
+#import "RadarCoordinate.h"
 #import <CoreLocation/CoreLocation.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -27,6 +28,16 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonnull, copy, nonatomic, readonly) NSString *_description;
 
 /**
+ The tag of the beacon.
+ */
+@property (nullable, copy, nonatomic, readonly) NSString *tag;
+
+/**
+ The external ID of the beacon.
+ */
+@property (nullable, copy, nonatomic, readonly) NSString *externalId;
+
+/**
  The UUID of the beacon.
  */
 @property (nonnull, copy, nonatomic, readonly) NSString *uuid;
@@ -40,6 +51,11 @@ NS_ASSUME_NONNULL_BEGIN
  The minor ID of the beacon.
  */
 @property (nonnull, copy, nonatomic, readonly) NSString *minor;
+
+/**
+ The location of the beacon.
+ */
+@property (nonnull, strong, nonatomic, readonly) RadarCoordinate *geometry;
 
 + (NSArray<NSDictionary *> *_Nullable)arrayForBeacons:(NSArray<RadarBeacon *> *_Nullable)beacons;
 - (NSDictionary *_Nonnull)dictionaryValue;
