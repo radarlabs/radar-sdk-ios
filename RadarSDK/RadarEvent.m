@@ -176,6 +176,10 @@
             type = RadarEventTypeUserArrivedAtTripDestination;
         } else if ([typeStr isEqualToString:@"user.stopped_trip"]) {
             type = RadarEventTypeUserStoppedTrip;
+        } else if ([typeStr isEqualToString:@"user.entered_beacon"]) {
+           type = RadarEventTypeUserEnteredBeacon;
+        } else if ([typeStr isEqualToString:@"user.exited_beacon"]) {
+           type = RadarEventTypeUserExitedBeacon;
         }
     }
 
@@ -417,6 +421,10 @@
     if (self.region) {
         NSDictionary *regionDict = [self.region dictionaryValue];
         [dict setValue:regionDict forKey:@"region"];
+    }
+    if (self.beacon) {
+        NSDictionary *beaconDict = [self.beacon dictionaryValue];
+        [dict setValue:beaconDict forKey:@"beacon"];
     }
     NSMutableDictionary *locationDict = [NSMutableDictionary new];
     locationDict[@"type"] = @"Point";

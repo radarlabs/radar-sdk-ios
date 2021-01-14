@@ -75,7 +75,7 @@
     
     id descriptionObj = dict[@"description"];
     if (descriptionObj && [descriptionObj isKindOfClass:[NSString class]]) {
-        __description = (NSString *)descriptionObj;
+        description = (NSString *)descriptionObj;
     }
     
     id tagObj = dict[@"tag"];
