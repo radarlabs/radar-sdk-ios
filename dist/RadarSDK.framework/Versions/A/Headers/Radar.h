@@ -78,6 +78,10 @@ typedef NS_ENUM(NSInteger, RadarLocationSource) {
     RadarLocationSourceGeofenceExit,
     /// Mock
     RadarLocationSourceMockLocation,
+    /// Beacon enter
+    RadarLocationSourceBeaconEnter,
+    /// Beacon exit
+    RadarLocationSourceBeaconExit,
     /// Unknown
     RadarLocationSourceUnknown
 };

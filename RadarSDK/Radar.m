@@ -8,7 +8,7 @@
 #import "Radar.h"
 
 #import "RadarAPIClient.h"
-#import "RadarBeaconScanner.h"
+#import "RadarBeaconManager.h"
 #import "RadarCoordinate+Internal.h"
 #import "RadarLocationManager.h"
 #import "RadarLogger.h"
@@ -145,7 +145,7 @@
                                                                   }
 
                                                                   [RadarUtils runOnMainThread:^{
-                                                                      [[RadarBeaconScanner sharedInstance]
+                                                                      [[RadarBeaconManager sharedInstance]
                                                                                rangeBeacons:beacons
                                                                           completionHandler:^(RadarStatus status, NSArray<NSString *> *_Nullable nearbyBeacons) {
                                                                               if (status != RadarStatusSuccess || !nearbyBeacons) {

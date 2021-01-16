@@ -53,8 +53,8 @@
 		DD4D4D2723E648FF00D36C1D /* route_distance.json in Resources */ = {isa = PBXBuildFile; fileRef = DD4D4D2623E648FF00D36C1D /* route_distance.json */; };
 		DD5E35E1238205FF002D93FF /* events_verification.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5E35E0238205FF002D93FF /* events_verification.json */; };
 		DD5E35E323820796002D93FF /* search_places.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5E35E223820796002D93FF /* search_places.json */; };
-		DD6F4F722573175300AFA38B /* RadarBeaconScanner.m in Sources */ = {isa = PBXBuildFile; fileRef = DD6F4F672573174400AFA38B /* RadarBeaconScanner.m */; };
-		DD6F4F762573175A00AFA38B /* RadarBeaconScanner.h in Headers */ = {isa = PBXBuildFile; fileRef = DD6F4F662573174400AFA38B /* RadarBeaconScanner.h */; };
+		DD64416F25B398A7003C3E63 /* RadarBeaconManager.m in Sources */ = {isa = PBXBuildFile; fileRef = DD64416E25B398A7003C3E63 /* RadarBeaconManager.m */; };
+		DD6F4F762573175A00AFA38B /* RadarBeaconManager.h in Headers */ = {isa = PBXBuildFile; fileRef = DD6F4F662573174400AFA38B /* RadarBeaconManager.h */; };
 		DD6F4F8625741B1700AFA38B /* RadarBeacon.h in Headers */ = {isa = PBXBuildFile; fileRef = DD6F4F8425741B1700AFA38B /* RadarBeacon.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		DD6F4F8725741B1700AFA38B /* RadarBeacon.m in Sources */ = {isa = PBXBuildFile; fileRef = DD6F4F8525741B1700AFA38B /* RadarBeacon.m */; };
 		DD6F4F8F25741C4100AFA38B /* RadarBeacon+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = DD6F4F8E25741C4100AFA38B /* RadarBeacon+Internal.h */; };
@@ -258,8 +258,8 @@
 		DD633EC2237C5B800026C91A /* RadarAPIHelper.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RadarAPIHelper.m; sourceTree = "<group>"; };
 		DD633EC5237C5B9C0026C91A /* RadarPermissionsHelper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarPermissionsHelper.h; sourceTree = "<group>"; };
 		DD633EC6237C5B9C0026C91A /* RadarPermissionsHelper.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RadarPermissionsHelper.m; sourceTree = "<group>"; };
-		DD6F4F662573174400AFA38B /* RadarBeaconScanner.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarBeaconScanner.h; sourceTree = "<group>"; };
-		DD6F4F672573174400AFA38B /* RadarBeaconScanner.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RadarBeaconScanner.m; sourceTree = "<group>"; };
+		DD64416E25B398A7003C3E63 /* RadarBeaconManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RadarBeaconManager.m; sourceTree = "<group>"; };
+		DD6F4F662573174400AFA38B /* RadarBeaconManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarBeaconManager.h; sourceTree = "<group>"; };
 		DD6F4F8425741B1700AFA38B /* RadarBeacon.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarBeacon.h; sourceTree = "<group>"; };
 		DD6F4F8525741B1700AFA38B /* RadarBeacon.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RadarBeacon.m; sourceTree = "<group>"; };
 		DD6F4F8E25741C4100AFA38B /* RadarBeacon+Internal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "RadarBeacon+Internal.h"; sourceTree = "<group>"; };
@@ -358,8 +358,8 @@
 				DD633EC2237C5B800026C91A /* RadarAPIHelper.m */,
 				DDC87FEC238B03A8007683D8 /* RadarBackgroundTaskManager.h */,
 				DDC87FED238B03A8007683D8 /* RadarBackgroundTaskManager.m */,
-				DD6F4F662573174400AFA38B /* RadarBeaconScanner.h */,
-				DD6F4F672573174400AFA38B /* RadarBeaconScanner.m */,
+				DD6F4F662573174400AFA38B /* RadarBeaconManager.h */,
+				DD64416E25B398A7003C3E63 /* RadarBeaconManager.m */,
 				58F950CE2407038300364B15 /* RadarCollectionAdditions.h */,
 				58F950CF2407038300364B15 /* RadarCollectionAdditions.m */,
 				DD236CE9230881B600EB88F9 /* RadarDelegate.h */,
@@ -506,7 +506,7 @@
 				DDF1157E2524E18200D575C4 /* RadarTrip.h in Headers */,
 				DDC637F7238C801C00747FD4 /* RadarChain.h in Headers */,
 				DDC637F8238C801C00747FD4 /* RadarChain+Internal.h in Headers */,
-				DD6F4F762573175A00AFA38B /* RadarBeaconScanner.h in Headers */,
+				DD6F4F762573175A00AFA38B /* RadarBeaconManager.h in Headers */,
 				DDC637F9238C801C00747FD4 /* RadarCircleGeometry.h in Headers */,
 				DDC637FA238C801C00747FD4 /* RadarCircleGeometry+Internal.h in Headers */,
 				DDC637FB238C801C00747FD4 /* RadarCoordinate.h in Headers */,
@@ -713,6 +713,7 @@
 				DD8E2F7124018BF9002D51AB /* RadarTestUtils.m in Sources */,
 				DD8E2F7D24018C54002D51AB /* CLVisitMock.m in Sources */,
 				DD8E2F7A24018C37002D51AB /* CLLocationManagerMock.m in Sources */,
+				DD64416F25B398A7003C3E63 /* RadarBeaconManager.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -754,7 +755,6 @@
 				DDC637F0238C7F8700747FD4 /* RadarTrackingOptions.m in Sources */,
 				DD4D4D0F23E60C1C00D36C1D /* RadarRoutes.m in Sources */,
 				DD4D4D2223E62DD300D36C1D /* RadarRouteDistance.m in Sources */,
-				DD6F4F722573175300AFA38B /* RadarBeaconScanner.m in Sources */,
 				DDC637F1238C7F8700747FD4 /* RadarUtils.m in Sources */,
 				5343FFDB23E4A2C400808D93 /* RadarContext.m in Sources */,
 			);
