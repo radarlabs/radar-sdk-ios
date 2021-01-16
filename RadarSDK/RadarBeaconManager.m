@@ -5,12 +5,12 @@
 //  Copyright © 2020 Radar Labs, Inc. All rights reserved.
 //
 
-#import "RadarBeaconScanner.h"
+#import "RadarBeaconManager.h"
 
 #import "RadarBeacon+Internal.h"
 #import "RadarLogger.h"
 
-@interface RadarBeaconScanner ()
+@interface RadarBeaconManager ()
 
 @property (assign, nonatomic) BOOL started;
 @property (nonnull, strong, nonatomic) NSMutableArray<RadarBeaconCompletionHandler> *completionHandlers;
@@ -20,7 +20,7 @@
 
 @end
 
-@implementation RadarBeaconScanner
+@implementation RadarBeaconManager
 
 + (instancetype)sharedInstance {
     static dispatch_once_t once;
