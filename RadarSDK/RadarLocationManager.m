@@ -354,7 +354,7 @@ static NSString *const kRegionBeaconSyncIdentifer = @"radar_beacon_sync";
         return;
     }
 
-    NSUInteger numGeofences = MAX(geofences.count, 9);
+    NSUInteger numGeofences = MIN(geofences.count, 9);
 
     for (int i = 0; i < numGeofences; i++) {
         RadarGeofence *geofence = [geofences objectAtIndex:i];
@@ -412,7 +412,7 @@ static NSString *const kRegionBeaconSyncIdentifer = @"radar_beacon_sync";
         return;
     }
 
-    NSUInteger numBeacons = MAX(beacons.count, 9);
+    NSUInteger numBeacons = MIN(beacons.count, 9);
 
     for (int i = 0; i < numBeacons; i++) {
         RadarBeacon *beacon = [beacons objectAtIndex:i];
