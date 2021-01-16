@@ -144,6 +144,8 @@
                                                                       return;
                                                                   }
 
+                                                                  [[RadarLocationManager sharedInstance] replaceSyncedBeacons:beacons];
+
                                                                   [RadarUtils runOnMainThread:^{
                                                                       [[RadarBeaconManager sharedInstance]
                                                                                rangeBeacons:beacons
