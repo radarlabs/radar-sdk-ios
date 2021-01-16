@@ -118,6 +118,8 @@ static NSString *const kRegionBeaconSyncIdentifer = @"radar_beacon_sync";
 
 - (void)timeoutWithCompletionHandler:(RadarLocationCompletionHandler)completionHandler {
     @synchronized(self) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:@"Location timeout"];
+        
         [self callCompletionHandlersWithStatus:RadarStatusErrorLocation location:nil];
     }
 }
