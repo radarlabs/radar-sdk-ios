@@ -334,6 +334,9 @@ static NSString *const kRegionBeaconSyncIdentifer = @"radar_beacon_sync";
             if (options.useSignificantLocationChanges) {
                 [self.locationManager startMonitoringSignificantLocationChanges];
             }
+            if (![RadarSettings beaconsEnabled]) {
+                [self removeSyncedBeacons];
+            }
         } else {
             [self stopUpdates];
             [self removeAllRegions];

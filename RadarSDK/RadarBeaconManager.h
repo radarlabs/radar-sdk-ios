@@ -1,5 +1,5 @@
 //
-//  RadarBeaconScanner.h
+//  RadarBeaconManager.h
 //  RadarSDK
 //
 //  Copyright © 2020 Radar Labs, Inc. All rights reserved.
