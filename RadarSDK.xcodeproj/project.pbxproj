@@ -53,7 +53,7 @@
 		DD4D4D2723E648FF00D36C1D /* route_distance.json in Resources */ = {isa = PBXBuildFile; fileRef = DD4D4D2623E648FF00D36C1D /* route_distance.json */; };
 		DD5E35E1238205FF002D93FF /* events_verification.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5E35E0238205FF002D93FF /* events_verification.json */; };
 		DD5E35E323820796002D93FF /* search_places.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5E35E223820796002D93FF /* search_places.json */; };
-		DD64416F25B398A7003C3E63 /* RadarBeaconManager.m in Sources */ = {isa = PBXBuildFile; fileRef = DD64416E25B398A7003C3E63 /* RadarBeaconManager.m */; };
+		DD64418125B39E80003C3E63 /* RadarBeaconManager.m in Sources */ = {isa = PBXBuildFile; fileRef = DD64416E25B398A7003C3E63 /* RadarBeaconManager.m */; };
 		DD6F4F762573175A00AFA38B /* RadarBeaconManager.h in Headers */ = {isa = PBXBuildFile; fileRef = DD6F4F662573174400AFA38B /* RadarBeaconManager.h */; };
 		DD6F4F8625741B1700AFA38B /* RadarBeacon.h in Headers */ = {isa = PBXBuildFile; fileRef = DD6F4F8425741B1700AFA38B /* RadarBeacon.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		DD6F4F8725741B1700AFA38B /* RadarBeacon.m in Sources */ = {isa = PBXBuildFile; fileRef = DD6F4F8525741B1700AFA38B /* RadarBeacon.m */; };
@@ -713,7 +713,6 @@
 				DD8E2F7124018BF9002D51AB /* RadarTestUtils.m in Sources */,
 				DD8E2F7D24018C54002D51AB /* CLVisitMock.m in Sources */,
 				DD8E2F7A24018C37002D51AB /* CLLocationManagerMock.m in Sources */,
-				DD64416F25B398A7003C3E63 /* RadarBeaconManager.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -755,6 +754,7 @@
 				DDC637F0238C7F8700747FD4 /* RadarTrackingOptions.m in Sources */,
 				DD4D4D0F23E60C1C00D36C1D /* RadarRoutes.m in Sources */,
 				DD4D4D2223E62DD300D36C1D /* RadarRouteDistance.m in Sources */,
+				DD64418125B39E80003C3E63 /* RadarBeaconManager.m in Sources */,
 				DDC637F1238C7F8700747FD4 /* RadarUtils.m in Sources */,
 				5343FFDB23E4A2C400808D93 /* RadarContext.m in Sources */,
 			);
