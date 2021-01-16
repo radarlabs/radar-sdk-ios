@@ -399,7 +399,7 @@ static NSString *const kRegionBeaconSyncIdentifer = @"radar_beacon_sync";
 
 - (void)removeBubbleGeofence {
     for (CLRegion *region in self.locationManager.monitoredRegions) {
-        if ([region.identifier hasPrefix:kRegionIdentifer] && ![region.identifier hasPrefix:kRegionSyncIdentifer]) {
+        if ([region.identifier hasPrefix:kRegionIdentifer] && ![region.identifier hasPrefix:kRegionSyncIdentifer] && ![region.identifier hasPrefix:kRegionBeaconSyncIdentifer]) {
             [self.locationManager stopMonitoringForRegion:region];
         }
     }
