@@ -8,7 +8,7 @@
 #import "Radar.h"
 
 #import "RadarAPIClient.h"
-#import "RadarBeaconManager.h"
+#import "RadarBeaconScanner.h"
 #import "RadarCoordinate+Internal.h"
 #import "RadarLocationManager.h"
 #import "RadarLogger.h"
@@ -135,7 +135,7 @@
                          BOOL beaconsEnabled = [RadarSettings beaconsEnabled];
                          if (beaconsEnabled) {
                              [[RadarAPIClient sharedInstance] searchBeaconsNear:location
-                                                                         radius:200
+                                                                         radius:1000
                                                                           limit:10
                                                               completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarBeacon *> *_Nullable beacons) {
                                                                   if (status != RadarStatusSuccess || !beacons) {
@@ -145,7 +145,7 @@
                                                                   }
 
                                                                   [RadarUtils runOnMainThread:^{
-                                                                      [[RadarBeaconManager sharedInstance]
+                                                                      [[RadarBeaconScanner sharedInstance]
                                                                                rangeBeacons:beacons
                                                                           completionHandler:^(RadarStatus status, NSArray<NSString *> *_Nullable nearbyBeacons) {
                                                                               if (status != RadarStatusSuccess || !nearbyBeacons) {
@@ -599,20 +599,26 @@
     case RadarLocationSourceManualLocation:
         str = @"MANUAL_LOCATION";
         break;
-    case RadarLocationSourceGeofenceEnter:
-        str = @"GEOFENCE_ENTER";
-        break;
-    case RadarLocationSourceGeofenceExit:
-        str = @"GEOFENCE_EXIT";
-        break;
     case RadarLocationSourceVisitArrival:
         str = @"VISIT_ARRIVAL";
         break;
     case RadarLocationSourceVisitDeparture:
         str = @"VISIT_DEPARTURE";
         break;
+    case RadarLocationSourceGeofenceEnter:
+        str = @"GEOFENCE_ENTER";
+        break;
+    case RadarLocationSourceGeofenceExit:
+        str = @"GEOFENCE_EXIT";
+        break;
     case RadarLocationSourceMockLocation:
         str = @"MOCK_LOCATION";
+        break;
+    case RadarLocationSourceBeaconEnter:
+        str = @"BEACON_ENTER";
+        break;
+    case RadarLocationSourceBeaconExit:
+        str = @"BEACON_EXIT";
         break;
     case RadarLocationSourceUnknown:
         str = @"UNKNOWN";

@@ -177,9 +177,9 @@
         } else if ([typeStr isEqualToString:@"user.stopped_trip"]) {
             type = RadarEventTypeUserStoppedTrip;
         } else if ([typeStr isEqualToString:@"user.entered_beacon"]) {
-           type = RadarEventTypeUserEnteredBeacon;
+            type = RadarEventTypeUserEnteredBeacon;
         } else if ([typeStr isEqualToString:@"user.exited_beacon"]) {
-           type = RadarEventTypeUserExitedBeacon;
+            type = RadarEventTypeUserExitedBeacon;
         }
     }
 

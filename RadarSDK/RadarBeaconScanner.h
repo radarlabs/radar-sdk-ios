@@ -1,5 +1,5 @@
 //
-//  RadarBeaconManager.h
+//  RadarBeaconScanner.h
 //  RadarSDK
 //
 //  Copyright © 2020 Radar Labs, Inc. All rights reserved.
@@ -14,7 +14,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface RadarBeaconManager : NSObject<CLLocationManagerDelegate>
+@interface RadarBeaconScanner : NSObject<CLLocationManagerDelegate>
 
 @property (nullable, weak, nonatomic) id<RadarDelegate> delegate;
 @property (nonnull, strong, nonatomic) CLLocationManager *locationManager;
