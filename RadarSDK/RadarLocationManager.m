@@ -330,13 +330,16 @@ static NSString *const kSyncBeaconIdentifierPrefix = @"radar_beacon_";
                     [self removeBubbleGeofence];
                 }
             }
+            if (!options.syncGeofences) {
+                [self removeSyncedGeofences];
+            }
             if (options.useVisits) {
                 [self.locationManager startMonitoringVisits];
             }
             if (options.useSignificantLocationChanges) {
                 [self.locationManager startMonitoringSignificantLocationChanges];
             }
-            if (![RadarSettings beaconsEnabled]) {
+            if (!options.beacons) {
                 [self removeSyncedBeacons];
             }
         } else {
@@ -351,7 +354,8 @@ static NSString *const kSyncBeaconIdentifierPrefix = @"radar_beacon_";
 - (void)replaceBubbleGeofence:(CLLocation *)location radius:(int)radius {
     [self removeBubbleGeofence];
     
-    if (![RadarSettings tracking]) {
+    BOOL tracking = [RadarSettings tracking];
+    if (!tracking) {
         return;
     }
 
@@ -370,9 +374,10 @@ static NSString *const kSyncBeaconIdentifierPrefix = @"radar_beacon_";
 
 - (void)replaceSyncedGeofences:(NSArray<RadarGeofence *> *)geofences {
     [self removeSyncedGeofences];
-
+    
+    BOOL tracking = [RadarSettings tracking];
     RadarTrackingOptions *options = [RadarSettings trackingOptions];
-    if (![RadarSettings tracking] || !options.syncGeofences || !geofences) {
+    if (!tracking || !options.syncGeofences || !geofences) {
         return;
     }
 
@@ -414,7 +419,9 @@ static NSString *const kSyncBeaconIdentifierPrefix = @"radar_beacon_";
 - (void)replaceSyncedBeacons:(NSArray<RadarBeacon *> *)beacons {
     [self removeSyncedBeacons];
 
-    if (![RadarSettings tracking] || ![RadarSettings beaconsEnabled] || !beacons) {
+    BOOL tracking = [RadarSettings tracking];
+    RadarTrackingOptions *options = [RadarSettings trackingOptions];
+    if (!tracking || !options.beacons || !beacons) {
         return;
     }
 
@@ -629,7 +636,8 @@ static NSString *const kSyncBeaconIdentifierPrefix = @"radar_beacon_";
     self.sending = YES;
 
     NSArray<NSString *> *nearbyBeacons;
-    if ([RadarSettings beaconsEnabled]) {
+    RadarTrackingOptions *options = [RadarSettings trackingOptions];
+    if (options.beacons) {
         nearbyBeacons = [self.nearbyBeaconIdentifers allObjects];
         
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug

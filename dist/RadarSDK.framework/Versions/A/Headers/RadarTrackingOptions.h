@@ -156,6 +156,11 @@ typedef NS_ENUM(NSInteger, RadarTrackingOptionsSync) {
 @property (nonatomic, assign) BOOL useSignificantLocationChanges;
 
 /**
+ Determines whether to monitor beacons.
+ */
+@property (nonatomic, assign) BOOL beacons;
+
+/**
  A preset that updates about every 30 seconds and syncs all locations to the server. High battery usage. Shows the flashing blue status bar when tracking.
 
  @see https://developer.apple.com/documentation/corelocation/cllocationmanager/2923541-showsbackgroundlocationindicator

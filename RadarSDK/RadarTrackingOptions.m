@@ -27,6 +27,7 @@ NSString *const kMovingGeofenceRadius = @"movingGeofenceRadius";
 NSString *const kSyncGeofences = @"syncGeofences";
 NSString *const kUseVisits = @"useVisits";
 NSString *const kUseSignificantLocationChanges = @"useSignificantLocationChanges";
+NSString *const kBeacons = @"beacons";
 
 NSString *const kDesiredAccuracyHigh = @"high";
 NSString *const kDesiredAccuracyMedium = @"medium";
@@ -59,6 +60,7 @@ NSString *const kSyncNone = @"none";
     options.syncGeofences = NO;
     options.useVisits = NO;
     options.useSignificantLocationChanges = NO;
+    options.beacons = NO;
     return options;
 }
 
@@ -82,6 +84,7 @@ NSString *const kSyncNone = @"none";
     options.syncGeofences = YES;
     options.useVisits = YES;
     options.useSignificantLocationChanges = YES;
+    options.beacons = NO;
     return options;
 }
 
@@ -105,6 +108,7 @@ NSString *const kSyncNone = @"none";
     options.syncGeofences = YES;
     options.useVisits = YES;
     options.useSignificantLocationChanges = NO;
+    options.beacons = NO;
     return options;
 }
 
@@ -203,6 +207,7 @@ NSString *const kSyncNone = @"none";
     options.syncGeofences = [dict[kSyncGeofences] boolValue];
     options.useVisits = [dict[kUseVisits] boolValue];
     options.useSignificantLocationChanges = [dict[kUseSignificantLocationChanges] boolValue];
+    options.beacons = [dict[kUseSignificantLocationChanges] boolValue];
     return options;
 }
 
@@ -226,6 +231,7 @@ NSString *const kSyncNone = @"none";
     dict[kSyncGeofences] = @(self.syncGeofences);
     dict[kUseVisits] = @(self.useVisits);
     dict[kUseSignificantLocationChanges] = @(self.useSignificantLocationChanges);
+    dict[kBeacons] = @(self.beacons);
     return dict;
 }
 
@@ -252,7 +258,7 @@ NSString *const kSyncNone = @"none";
            self.replay == options.replay && self.showBlueBar == options.showBlueBar && self.useStoppedGeofence == options.useStoppedGeofence &&
            self.stoppedGeofenceRadius == options.stoppedGeofenceRadius && self.useMovingGeofence == options.useMovingGeofence &&
            self.movingGeofenceRadius == options.movingGeofenceRadius && self.syncGeofences == options.syncGeofences && self.useVisits == options.useVisits &&
-           self.useSignificantLocationChanges == options.useSignificantLocationChanges;
+           self.useSignificantLocationChanges == options.useSignificantLocationChanges && self.beacons == options.beacons;
 }
 
 @end

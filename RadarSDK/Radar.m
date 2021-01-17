@@ -76,10 +76,6 @@
     [RadarSettings setAdIdEnabled:enabled];
 }
 
-+ (void)setBeaconsEnabled:(BOOL)enabled {
-    [RadarSettings setBeaconsEnabled:enabled];
-}
-
 + (void)getLocationWithCompletionHandler:(RadarLocationCompletionHandler)completionHandler {
     [[RadarLocationManager sharedInstance] getLocationWithCompletionHandler:^(RadarStatus status, CLLocation *_Nullable location, BOOL stopped) {
         [RadarUtils runOnMainThread:^{
@@ -98,10 +94,10 @@
 }
 
 + (void)trackOnceWithCompletionHandler:(RadarTrackCompletionHandler)completionHandler {
-    [self trackOnceWithDesiredAccuracy:RadarTrackingOptionsDesiredAccuracyMedium completionHandler:completionHandler];
+    [self trackOnceWithDesiredAccuracy:RadarTrackingOptionsDesiredAccuracyMedium beacons:NO completionHandler:completionHandler];
 }
 
-+ (void)trackOnceWithDesiredAccuracy:(RadarTrackingOptionsDesiredAccuracy)desiredAccuracy completionHandler:(RadarTrackCompletionHandler)completionHandler {
++ (void)trackOnceWithDesiredAccuracy:(RadarTrackingOptionsDesiredAccuracy)desiredAccuracy beacons:(BOOL)beacons completionHandler:(RadarTrackCompletionHandler)completionHandler {
     [[RadarLocationManager sharedInstance]
         getLocationWithDesiredAccuracy:desiredAccuracy
                      completionHandler:^(RadarStatus status, CLLocation *_Nullable location, BOOL stopped) {
@@ -132,8 +128,7 @@
                                                               }];
                          };
 
-                         BOOL beaconsEnabled = [RadarSettings beaconsEnabled];
-                         if (beaconsEnabled) {
+                         if (beacons) {
                              [[RadarAPIClient sharedInstance] searchBeaconsNear:location
                                                                          radius:1000
                                                                           limit:10
