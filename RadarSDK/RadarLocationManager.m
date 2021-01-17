@@ -423,6 +423,7 @@ static NSString *const kRegionBeaconSyncIdentifer = @"radar_beacon_sync";
                                                                          major:[beacon.major intValue]
                                                                          minor:[beacon.minor intValue]
                                                                     identifier:identifier];
+        region.notifyEntryStateOnDisplay = YES;
         [self.locationManager startMonitoringForRegion:region];
         [self.locationManager requestStateForRegion:region];
 
