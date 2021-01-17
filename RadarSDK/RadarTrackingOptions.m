@@ -207,7 +207,7 @@ NSString *const kSyncNone = @"none";
     options.syncGeofences = [dict[kSyncGeofences] boolValue];
     options.useVisits = [dict[kUseVisits] boolValue];
     options.useSignificantLocationChanges = [dict[kUseSignificantLocationChanges] boolValue];
-    options.beacons = [dict[kUseSignificantLocationChanges] boolValue];
+    options.beacons = [dict[kBeacons] boolValue];
     return options;
 }
 
