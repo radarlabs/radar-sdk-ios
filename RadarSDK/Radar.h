@@ -307,7 +307,7 @@ typedef void (^_Nonnull RadarRouteCompletionHandler)(RadarStatus status, RadarRo
 + (void)trackOnceWithCompletionHandler:(RadarTrackCompletionHandler _Nullable)completionHandler NS_SWIFT_NAME(trackOnce(completionHandler:));
 
 /**
- Tracks the user's location once in the foreground with the desired accuracy and optionally ranges beacons.
+ Tracks the user's location once with the desired accuracy and optionally ranges beacons in the foreground.
 
  @warning Note that these calls are subject to rate limits.
 
