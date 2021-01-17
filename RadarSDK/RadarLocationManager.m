@@ -526,6 +526,8 @@ static NSString *const kRegionBeaconSyncIdentifer = @"radar_beacon_sync";
     }
     BOOL justStopped = stopped && !wasStopped;
     [RadarState setStopped:stopped];
+    
+    [RadarState setLastLocation:location];
 
     if (self.delegate) {
         [self.delegate didUpdateClientLocation:location stopped:stopped source:source];
@@ -552,7 +554,7 @@ static NSString *const kRegionBeaconSyncIdentifer = @"radar_beacon_sync";
     }
 
     NSDate *lastSentAt = [RadarState lastSentAt];
-    BOOL ignoreSync = !lastSentAt || self.completionHandlers.count || justStopped || replayed;
+    BOOL ignoreSync = !lastSentAt || self.completionHandlers.count || justStopped || replayed || source == RadarLocationSourceBeaconEnter || source == RadarLocationSourceBeaconExit;
     NSDate *now = [NSDate new];
     NSTimeInterval lastSyncInterval = [now timeIntervalSinceDate:lastSentAt];
     if (!ignoreSync) {
@@ -683,12 +685,18 @@ static NSString *const kRegionBeaconSyncIdentifer = @"radar_beacon_sync";
 - (void)locationManager:(CLLocationManager *)manager didEnterRegion:(CLRegion *)region {
     if (manager && manager.location) {
         if ([region.identifier hasPrefix:kRegionBeaconSyncIdentifer]) {
-            NSString *identifier = [region.identifier substringFromIndex:kRegionBeaconSyncIdentifer.length];
+            NSString *identifier = [region.identifier substringFromIndex:kRegionBeaconSyncIdentifer.length + 1];
 
-            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"Entered beacon region | identifier = %@", region.identifier]];
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"Entered beacon region | identifier = %@", identifier]];
 
             [self.nearbyBeaconIdentifers addObject:identifier];
-            [self handleLocation:manager.location source:RadarLocationSourceBeaconEnter];
+            CLLocation *location;
+            if ([RadarUtils validLocation:manager.location]) {
+                location = manager.location;
+            } else {
+                location = [RadarState lastLocation];
+            }
+            [self handleLocation:location source:RadarLocationSourceBeaconEnter];
         } else {
             [self handleLocation:manager.location source:RadarLocationSourceGeofenceEnter];
         }
@@ -698,12 +706,18 @@ static NSString *const kRegionBeaconSyncIdentifer = @"radar_beacon_sync";
 - (void)locationManager:(CLLocationManager *)manager didExitRegion:(CLRegion *)region {
     if (manager && manager.location) {
         if ([region.identifier hasPrefix:kRegionBeaconSyncIdentifer]) {
-            NSString *identifier = [region.identifier substringFromIndex:kRegionBeaconSyncIdentifer.length];
+            NSString *identifier = [region.identifier substringFromIndex:kRegionBeaconSyncIdentifer.length + 1];
 
             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"Exited beacon region | identifier = %@", identifier]];
 
             [self.nearbyBeaconIdentifers removeObject:identifier];
-            [self handleLocation:manager.location source:RadarLocationSourceBeaconExit];
+            CLLocation *location;
+            if ([RadarUtils validLocation:manager.location]) {
+                location = manager.location;
+            } else {
+                location = [RadarState lastLocation];
+            }
+            [self handleLocation:location source:RadarLocationSourceBeaconExit];
         } else {
             [self handleLocation:manager.location source:RadarLocationSourceGeofenceExit];
         }
@@ -712,7 +726,7 @@ static NSString *const kRegionBeaconSyncIdentifer = @"radar_beacon_sync";
 
 - (void)locationManager:(CLLocationManager *)manager didDetermineState:(CLRegionState)state forRegion:(CLRegion *)region {
     if ([region.identifier hasPrefix:kRegionBeaconSyncIdentifer]) {
-        NSString *identifier = [region.identifier substringFromIndex:kRegionBeaconSyncIdentifer.length];
+        NSString *identifier = [region.identifier substringFromIndex:kRegionBeaconSyncIdentifer.length + 1];
 
         if (state == CLRegionStateInside) {
             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"Inside beacon region | identifier = %@", identifier]];

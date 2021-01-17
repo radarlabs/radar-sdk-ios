@@ -12,6 +12,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface RadarState : NSObject
 
++ (CLLocation *)lastLocation;
++ (void)setLastLocation:(CLLocation *_Nullable)lastLocation;
 + (CLLocation *)lastMovedLocation;
 + (void)setLastMovedLocation:(CLLocation *_Nullable)lastMovedLocation;
 + (NSDate *)lastMovedAt;
