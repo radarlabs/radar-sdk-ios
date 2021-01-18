@@ -32,6 +32,7 @@
 
 @implementation RadarLocationManager
 
+static NSString *const kIdentifierPrefix = @"radar_";
 static NSString *const kBubbleGeofenceIdentifierPrefix = @"radar_bubble_";
 static NSString *const kSyncGeofenceIdentifierPrefix = @"radar_geofence_";
 static NSString *const kSyncBeaconIdentifierPrefix = @"radar_beacon_";
@@ -453,9 +454,11 @@ static NSString *const kSyncBeaconIdentifierPrefix = @"radar_beacon_";
 }
 
 - (void)removeAllRegions {
-    [self removeBubbleGeofence];
-    [self removeSyncedGeofences];
-    [self removeSyncedBeacons];
+    for (CLRegion *region in self.locationManager.monitoredRegions) {
+        if ([region.identifier hasPrefix:kIdentifierPrefix]) {
+            [self.locationManager stopMonitoringForRegion:region];
+        }
+    }
 }
 
 #pragma mark - handlers
