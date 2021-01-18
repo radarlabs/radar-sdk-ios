@@ -76,10 +76,6 @@
     [RadarSettings setAdIdEnabled:enabled];
 }
 
-+ (void)setBeaconsEnabled:(BOOL)enabled {
-    [RadarSettings setBeaconsEnabled:enabled];
-}
-
 + (void)getLocationWithCompletionHandler:(RadarLocationCompletionHandler)completionHandler {
     [[RadarLocationManager sharedInstance] getLocationWithCompletionHandler:^(RadarStatus status, CLLocation *_Nullable location, BOOL stopped) {
         [RadarUtils runOnMainThread:^{
@@ -98,10 +94,10 @@
 }
 
 + (void)trackOnceWithCompletionHandler:(RadarTrackCompletionHandler)completionHandler {
-    [self trackOnceWithDesiredAccuracy:RadarTrackingOptionsDesiredAccuracyMedium completionHandler:completionHandler];
+    [self trackOnceWithDesiredAccuracy:RadarTrackingOptionsDesiredAccuracyMedium beacons:NO completionHandler:completionHandler];
 }
 
-+ (void)trackOnceWithDesiredAccuracy:(RadarTrackingOptionsDesiredAccuracy)desiredAccuracy completionHandler:(RadarTrackCompletionHandler)completionHandler {
++ (void)trackOnceWithDesiredAccuracy:(RadarTrackingOptionsDesiredAccuracy)desiredAccuracy beacons:(BOOL)beacons completionHandler:(RadarTrackCompletionHandler)completionHandler {
     [[RadarLocationManager sharedInstance]
         getLocationWithDesiredAccuracy:desiredAccuracy
                      completionHandler:^(RadarStatus status, CLLocation *_Nullable location, BOOL stopped) {
@@ -132,10 +128,9 @@
                                                               }];
                          };
 
-                         BOOL beaconsEnabled = [RadarSettings beaconsEnabled];
-                         if (beaconsEnabled) {
+                         if (beacons) {
                              [[RadarAPIClient sharedInstance] searchBeaconsNear:location
-                                                                         radius:200
+                                                                         radius:1000
                                                                           limit:10
                                                               completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarBeacon *> *_Nullable beacons) {
                                                                   if (status != RadarStatusSuccess || !beacons) {
@@ -143,6 +138,8 @@
 
                                                                       return;
                                                                   }
+
+                                                                  [[RadarLocationManager sharedInstance] replaceSyncedBeacons:beacons];
 
                                                                   [RadarUtils runOnMainThread:^{
                                                                       [[RadarBeaconManager sharedInstance]
@@ -599,20 +596,26 @@
     case RadarLocationSourceManualLocation:
         str = @"MANUAL_LOCATION";
         break;
-    case RadarLocationSourceGeofenceEnter:
-        str = @"GEOFENCE_ENTER";
-        break;
-    case RadarLocationSourceGeofenceExit:
-        str = @"GEOFENCE_EXIT";
-        break;
     case RadarLocationSourceVisitArrival:
         str = @"VISIT_ARRIVAL";
         break;
     case RadarLocationSourceVisitDeparture:
         str = @"VISIT_DEPARTURE";
         break;
+    case RadarLocationSourceGeofenceEnter:
+        str = @"GEOFENCE_ENTER";
+        break;
+    case RadarLocationSourceGeofenceExit:
+        str = @"GEOFENCE_EXIT";
+        break;
     case RadarLocationSourceMockLocation:
         str = @"MOCK_LOCATION";
+        break;
+    case RadarLocationSourceBeaconEnter:
+        str = @"BEACON_ENTER";
+        break;
+    case RadarLocationSourceBeaconExit:
+        str = @"BEACON_EXIT";
         break;
     case RadarLocationSourceUnknown:
         str = @"UNKNOWN";

@@ -72,17 +72,17 @@
     if (idObj && [idObj isKindOfClass:[NSString class]]) {
         _id = (NSString *)idObj;
     }
-    
+
     id descriptionObj = dict[@"description"];
     if (descriptionObj && [descriptionObj isKindOfClass:[NSString class]]) {
         description = (NSString *)descriptionObj;
     }
-    
+
     id tagObj = dict[@"tag"];
     if (tagObj && [tagObj isKindOfClass:[NSString class]]) {
         tag = (NSString *)tagObj;
     }
-    
+
     id externalIdObj = dict[@"externalId"];
     if (externalIdObj && [externalIdObj isKindOfClass:[NSString class]]) {
         externalId = (NSString *)externalIdObj;
@@ -102,7 +102,7 @@
     if (minorObj && [minorObj isKindOfClass:[NSString class]]) {
         minor = (NSString *)minorObj;
     }
-    
+
     id geometryObj = dict[@"geometry"];
     if (geometryObj && [geometryObj isKindOfClass:[NSDictionary class]]) {
         NSDictionary *geometryDict = (NSDictionary *)geometryObj;

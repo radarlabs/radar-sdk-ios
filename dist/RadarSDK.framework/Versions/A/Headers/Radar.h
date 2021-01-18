@@ -78,6 +78,10 @@ typedef NS_ENUM(NSInteger, RadarLocationSource) {
     RadarLocationSourceGeofenceExit,
     /// Mock
     RadarLocationSourceMockLocation,
+    /// Beacon enter
+    RadarLocationSourceBeaconEnter,
+    /// Beacon exit
+    RadarLocationSourceBeaconExit,
     /// Unknown
     RadarLocationSourceUnknown
 };
@@ -276,13 +280,6 @@ typedef void (^_Nonnull RadarRouteCompletionHandler)(RadarStatus status, RadarRo
 + (void)setAdIdEnabled:(BOOL)enabled;
 
 /**
- Enables beacon ranging.
-
- @param enabled A boolean indicating whether beacon ranging should be enabled.
- */
-+ (void)setBeaconsEnabled:(BOOL)enabled;
-
-/**
  Gets the device's current location.
 
  @param completionHandler An optional completion handler.
@@ -310,17 +307,19 @@ typedef void (^_Nonnull RadarRouteCompletionHandler)(RadarStatus status, RadarRo
 + (void)trackOnceWithCompletionHandler:(RadarTrackCompletionHandler _Nullable)completionHandler NS_SWIFT_NAME(trackOnce(completionHandler:));
 
 /**
- Tracks the user's location once in the foreground with the desired accuracy.
+ Tracks the user's location once in the foreground with the desired accuracy and optionally ranges beacons.
 
  @warning Note that these calls are subject to rate limits.
 
  @param desiredAccuracy The desired accuracy.
+ @param beacons A boolean indicating whether to range beacons.
  @param completionHandler An optional completion handler.
 
  @see https://radar.io/documentation/sdk/ios
  */
 + (void)trackOnceWithDesiredAccuracy:(RadarTrackingOptionsDesiredAccuracy)desiredAccuracy
-                   completionHandler:(RadarTrackCompletionHandler _Nullable)completionHandler NS_SWIFT_NAME(trackOnce(desiredAccuracy:completionHandler:));
+                             beacons:(BOOL)beacons
+                   completionHandler:(RadarTrackCompletionHandler _Nullable)completionHandler NS_SWIFT_NAME(trackOnce(desiredAccuracy:beacons:completionHandler:));
 
 /**
  Manually updates the user's location.

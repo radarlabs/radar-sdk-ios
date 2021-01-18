@@ -24,4 +24,3 @@
                             geometry:(RadarCoordinate *_Nonnull)geometry;
 
 @end
-

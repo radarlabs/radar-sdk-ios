@@ -97,7 +97,7 @@
 }
 
 - (void)timeoutWithCompletionHandler:(RadarBeaconCompletionHandler)completionHandler {
-    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:@"Timeout"];
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:@"Beacon ranging timeout"];
 
     [self stopRanging];
 }

@@ -26,13 +26,15 @@
 @property (assign, nonatomic) BOOL scheduled;
 @property (strong, nonatomic) NSTimer *timer;
 @property (nonnull, strong, nonatomic) NSMutableArray<RadarLocationCompletionHandler> *completionHandlers;
+@property (nonnull, strong, nonatomic) NSMutableSet<NSString *> *nearbyBeaconIdentifers;
 
 @end
 
 @implementation RadarLocationManager
 
-static NSString *const kRegionIdentifer = @"radar";
-static NSString *const kRegionSyncIdentifer = @"radar_sync";
+static NSString *const kBubbleGeofenceIdentifierPrefix = @"radar_bubble_";
+static NSString *const kSyncGeofenceIdentifierPrefix = @"radar_geofence_";
+static NSString *const kSyncBeaconIdentifierPrefix = @"radar_beacon_";
 
 + (instancetype)sharedInstance {
     static dispatch_once_t once;
@@ -68,6 +70,8 @@ static NSString *const kRegionSyncIdentifer = @"radar_sync";
         _lowPowerLocationManager.allowsBackgroundLocationUpdates = [RadarUtils locationBackgroundMode];
 
         _permissionsHelper = [RadarPermissionsHelper new];
+
+        _nearbyBeaconIdentifers = [NSMutableSet new];
     }
     return self;
 }
@@ -114,6 +118,8 @@ static NSString *const kRegionSyncIdentifer = @"radar_sync";
 
 - (void)timeoutWithCompletionHandler:(RadarLocationCompletionHandler)completionHandler {
     @synchronized(self) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:@"Location timeout"];
+        
         [self callCompletionHandlersWithStatus:RadarStatusErrorLocation location:nil];
     }
 }
@@ -324,32 +330,62 @@ static NSString *const kRegionSyncIdentifer = @"radar_sync";
                     [self removeBubbleGeofence];
                 }
             }
+            if (!options.syncGeofences) {
+                [self removeSyncedGeofences];
+            }
             if (options.useVisits) {
                 [self.locationManager startMonitoringVisits];
             }
             if (options.useSignificantLocationChanges) {
                 [self.locationManager startMonitoringSignificantLocationChanges];
             }
+            if (!options.beacons) {
+                [self removeSyncedBeacons];
+            }
         } else {
             [self stopUpdates];
-            [self removeAllGeofences];
+            [self removeAllRegions];
             [self.locationManager stopMonitoringVisits];
             [self.locationManager stopMonitoringSignificantLocationChanges];
         }
     });
 }
 
-- (void)replaceSyncedGeofences:(NSArray<RadarGeofence *> *)geofences {
-    [self removeSyncedGeofences];
-
-    RadarTrackingOptions *options = [RadarSettings trackingOptions];
-    if (!options.syncGeofences || !geofences) {
+- (void)replaceBubbleGeofence:(CLLocation *)location radius:(int)radius {
+    [self removeBubbleGeofence];
+    
+    BOOL tracking = [RadarSettings tracking];
+    if (!tracking) {
         return;
     }
 
-    for (int i = 0; i < geofences.count; i++) {
+    NSString *identifier = [NSString stringWithFormat:@"%@%@", kBubbleGeofenceIdentifierPrefix, [[NSUUID UUID] UUIDString]];
+    CLRegion *region = [[CLCircularRegion alloc] initWithCenter:location.coordinate radius:radius identifier:identifier];
+    [self.locationManager startMonitoringForRegion:region];
+}
+
+- (void)removeBubbleGeofence {
+    for (CLRegion *region in self.locationManager.monitoredRegions) {
+        if ([region.identifier hasPrefix:kBubbleGeofenceIdentifierPrefix]) {
+            [self.locationManager stopMonitoringForRegion:region];
+        }
+    }
+}
+
+- (void)replaceSyncedGeofences:(NSArray<RadarGeofence *> *)geofences {
+    [self removeSyncedGeofences];
+    
+    BOOL tracking = [RadarSettings tracking];
+    RadarTrackingOptions *options = [RadarSettings trackingOptions];
+    if (!tracking || !options.syncGeofences || !geofences) {
+        return;
+    }
+
+    NSUInteger numGeofences = MIN(geofences.count, 9);
+
+    for (int i = 0; i < numGeofences; i++) {
         RadarGeofence *geofence = [geofences objectAtIndex:i];
-        NSString *identifier = [NSString stringWithFormat:@"%@_%d", kRegionSyncIdentifer, i];
+        NSString *identifier = [NSString stringWithFormat:@"%@%d", kSyncGeofenceIdentifierPrefix, i];
         RadarCoordinate *center;
         double radius = 100;
         if ([geofence.geometry isKindOfClass:[RadarCircleGeometry class]]) {
@@ -372,36 +408,54 @@ static NSString *const kRegionSyncIdentifer = @"radar_sync";
     }
 }
 
-- (void)replaceBubbleGeofence:(CLLocation *)location radius:(int)radius {
-    [self removeBubbleGeofence];
-
-    NSString *identifier = [NSString stringWithFormat:@"%@_%@", kRegionIdentifer, [[NSUUID UUID] UUIDString]];
-    CLRegion *region = [[CLCircularRegion alloc] initWithCenter:location.coordinate radius:radius identifier:identifier];
-    [self.locationManager startMonitoringForRegion:region];
-}
-
 - (void)removeSyncedGeofences {
     for (CLRegion *region in self.locationManager.monitoredRegions) {
-        if ([region.identifier hasPrefix:kRegionSyncIdentifer]) {
+        if ([region.identifier hasPrefix:kSyncGeofenceIdentifierPrefix]) {
             [self.locationManager stopMonitoringForRegion:region];
         }
     }
 }
 
-- (void)removeBubbleGeofence {
+- (void)replaceSyncedBeacons:(NSArray<RadarBeacon *> *)beacons {
+    [self removeSyncedBeacons];
+
+    BOOL tracking = [RadarSettings tracking];
+    RadarTrackingOptions *options = [RadarSettings trackingOptions];
+    if (!tracking || !options.beacons || !beacons) {
+        return;
+    }
+
+    NSUInteger numBeacons = MIN(beacons.count, 9);
+
+    for (int i = 0; i < numBeacons; i++) {
+        RadarBeacon *beacon = [beacons objectAtIndex:i];
+        NSString *identifier = [NSString stringWithFormat:@"%@%@", kSyncBeaconIdentifierPrefix, beacon._id];
+        CLBeaconRegion *region = [[CLBeaconRegion alloc] initWithProximityUUID:[[NSUUID alloc] initWithUUIDString:beacon.uuid]
+                                                                         major:[beacon.major intValue]
+                                                                         minor:[beacon.minor intValue]
+                                                                    identifier:identifier];
+        region.notifyEntryStateOnDisplay = YES;
+        [self.locationManager startMonitoringForRegion:region];
+        [self.locationManager requestStateForRegion:region];
+
+        [[RadarLogger sharedInstance]
+            logWithLevel:RadarLogLevelDebug
+                 message:[NSString stringWithFormat:@"Synced beacon | identifier = %@; uuid = %@; major = %@; minor = %@", identifier, beacon.uuid, beacon.major, beacon.minor]];
+    }
+}
+
+- (void)removeSyncedBeacons {
     for (CLRegion *region in self.locationManager.monitoredRegions) {
-        if ([region.identifier hasPrefix:kRegionIdentifer] && ![region.identifier hasPrefix:kRegionSyncIdentifer]) {
+        if ([region.identifier hasPrefix:kSyncBeaconIdentifierPrefix]) {
             [self.locationManager stopMonitoringForRegion:region];
         }
     }
 }
 
-- (void)removeAllGeofences {
-    for (CLRegion *region in self.locationManager.monitoredRegions) {
-        if ([region.identifier hasPrefix:kRegionIdentifer]) {
-            [self.locationManager stopMonitoringForRegion:region];
-        }
-    }
+- (void)removeAllRegions {
+    [self removeBubbleGeofence];
+    [self removeSyncedGeofences];
+    [self removeSyncedBeacons];
 }
 
 #pragma mark - handlers
@@ -423,7 +477,8 @@ static NSString *const kRegionSyncIdentifer = @"radar_sync";
     BOOL wasStopped = [RadarState stopped];
     BOOL stopped = NO;
 
-    BOOL force = (source == RadarLocationSourceForegroundLocation || source == RadarLocationSourceManualLocation);
+    BOOL force = (source == RadarLocationSourceForegroundLocation || source == RadarLocationSourceManualLocation || source == RadarLocationSourceBeaconEnter ||
+                  source == RadarLocationSourceBeaconExit);
     if (wasStopped && !force && location.horizontalAccuracy >= 1000 && options.desiredAccuracy != RadarTrackingOptionsDesiredAccuracyLow) {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
                                            message:[NSString stringWithFormat:@"Skipping location: inaccurate | accuracy = %f", location.horizontalAccuracy]];
@@ -481,6 +536,8 @@ static NSString *const kRegionSyncIdentifer = @"radar_sync";
     }
     BOOL justStopped = stopped && !wasStopped;
     [RadarState setStopped:stopped];
+    
+    [RadarState setLastLocation:location];
 
     if (self.delegate) {
         [self.delegate didUpdateClientLocation:location stopped:stopped source:source];
@@ -507,7 +564,7 @@ static NSString *const kRegionSyncIdentifer = @"radar_sync";
     }
 
     NSDate *lastSentAt = [RadarState lastSentAt];
-    BOOL ignoreSync = !lastSentAt || self.completionHandlers.count || justStopped || replayed;
+    BOOL ignoreSync = !lastSentAt || self.completionHandlers.count || justStopped || replayed || source == RadarLocationSourceBeaconEnter || source == RadarLocationSourceBeaconExit;
     NSDate *now = [NSDate new];
     NSTimeInterval lastSyncInterval = [now timeIntervalSinceDate:lastSentAt];
     if (!ignoreSync) {
@@ -578,12 +635,37 @@ static NSString *const kRegionSyncIdentifer = @"radar_sync";
 
     self.sending = YES;
 
+    NSArray<NSString *> *nearbyBeacons;
+    RadarTrackingOptions *options = [RadarSettings trackingOptions];
+    if (options.beacons) {
+        nearbyBeacons = [self.nearbyBeaconIdentifers allObjects];
+        
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
+                                           message:[NSString stringWithFormat:@"Sending nearby beacons | nearbyBeacons = %@", [nearbyBeacons componentsJoinedByString:@","]]];
+        
+        if (source != RadarLocationSourceBeaconEnter && source != RadarLocationSourceBeaconExit && source != RadarLocationSourceMockLocation &&
+            source != RadarLocationSourceManualLocation) {
+            [[RadarAPIClient sharedInstance] searchBeaconsNear:location
+                                                        radius:1000
+                                                         limit:10
+                                             completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarBeacon *> *_Nullable beacons) {
+                                                 if (status != RadarStatusSuccess || !beacons) {
+                                                     return;
+                                                 }
+
+                                                 [self replaceSyncedBeacons:beacons];
+                                             }];
+        }
+    }
+    
+    
+
     [[RadarAPIClient sharedInstance] trackWithLocation:location
                                                stopped:stopped
                                             foreground:[RadarUtils foreground]
                                                 source:source
                                               replayed:replayed
-                                         nearbyBeacons:nil
+                                         nearbyBeacons:nearbyBeacons
                                      completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user,
                                                          NSArray<RadarGeofence *> *_Nullable nearbyGeofences) {
                                          if (user) {
@@ -605,29 +687,92 @@ static NSString *const kRegionSyncIdentifer = @"radar_sync";
 #pragma mark - CLLocationManagerDelegate
 
 - (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray<CLLocation *> *)locations {
-    if (locations && locations.count) {
-        CLLocation *location = [locations lastObject];
-        RadarLocationSource source = self.completionHandlers.count ? RadarLocationSourceForegroundLocation : RadarLocationSourceBackgroundLocation;
-        [self handleLocation:location source:source];
+    if (!locations || !locations.count) {
+        return;
+    }
+    
+    CLLocation *location = [locations lastObject];
+    if (self.completionHandlers.count) {
+        [self handleLocation:location source:RadarLocationSourceForegroundLocation];
+    } else {
+        [self handleLocation:location source:RadarLocationSourceBackgroundLocation];
     }
 }
 
 - (void)locationManager:(CLLocationManager *)manager didEnterRegion:(CLRegion *)region {
-    if (manager && manager.location) {
+    if ([region.identifier hasPrefix:kSyncBeaconIdentifierPrefix]) {
+        NSString *identifier = [region.identifier substringFromIndex:kSyncBeaconIdentifierPrefix.length];
+        BOOL alreadyInside = [self.nearbyBeaconIdentifers containsObject:identifier];
+        if (alreadyInside) {
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"Already inside beacon region | identifier = %@", identifier]];
+        } else {
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"Entered beacon region | identifier = %@", identifier]];
+            
+            [self.nearbyBeaconIdentifers addObject:identifier];
+            
+            CLLocation *location;
+            if ([RadarUtils validLocation:manager.location]) {
+                location = manager.location;
+            } else {
+                location = [RadarState lastLocation];
+            }
+            [self handleLocation:location source:RadarLocationSourceBeaconEnter];
+        }
+    } else if (manager.location) {
         [self handleLocation:manager.location source:RadarLocationSourceGeofenceEnter];
     }
 }
 
 - (void)locationManager:(CLLocationManager *)manager didExitRegion:(CLRegion *)region {
-    if (manager && manager.location) {
+    if ([region.identifier hasPrefix:kSyncBeaconIdentifierPrefix]) {
+        NSString *identifier = [region.identifier substringFromIndex:kSyncBeaconIdentifierPrefix.length];
+        BOOL alreadyOutside = ![self.nearbyBeaconIdentifers containsObject:identifier];
+        if (alreadyOutside) {
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"Already outside beacon region | identifier = %@", identifier]];
+        } else {
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"Exited beacon region | identifier = %@", identifier]];
+
+            [self.nearbyBeaconIdentifers removeObject:identifier];
+            
+            CLLocation *location;
+            if ([RadarUtils validLocation:manager.location]) {
+                location = manager.location;
+            } else {
+                location = [RadarState lastLocation];
+            }
+            [self handleLocation:location source:RadarLocationSourceBeaconExit];
+        }
+    } else if (manager.location) {
         [self handleLocation:manager.location source:RadarLocationSourceGeofenceExit];
     }
 }
 
+- (void)locationManager:(CLLocationManager *)manager didDetermineState:(CLRegionState)state forRegion:(CLRegion *)region {
+    if (![region.identifier hasPrefix:kSyncBeaconIdentifierPrefix]) {
+        return;
+    }
+    
+    NSString *identifier = [region.identifier substringFromIndex:kSyncBeaconIdentifierPrefix.length];
+    if (state == CLRegionStateInside) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"Inside beacon region | identifier = %@", identifier]];
+
+        [self.nearbyBeaconIdentifers addObject:identifier];
+    } else {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"Outside beacon region | identifier = %@", identifier]];
+
+        [self.nearbyBeaconIdentifers removeObject:identifier];
+    }
+}
+
 - (void)locationManager:(CLLocationManager *)manager didVisit:(CLVisit *)visit {
-    if (visit && manager && manager.location) {
-        RadarLocationSource source = [visit.departureDate isEqualToDate:[NSDate distantFuture]] ? RadarLocationSourceVisitArrival : RadarLocationSourceVisitDeparture;
-        [self handleLocation:manager.location source:source];
+    if (!manager.location) {
+        return;
+    }
+    
+    if ([visit.departureDate isEqualToDate:[NSDate distantFuture]]) {
+        [self handleLocation:manager.location source:RadarLocationSourceVisitArrival];
+    } else {
+        [self handleLocation:manager.location source:RadarLocationSourceVisitDeparture];
     }
 }
 
