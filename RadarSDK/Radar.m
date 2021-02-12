@@ -16,6 +16,12 @@
 #import "RadarState.h"
 #import "RadarUtils.h"
 
+@interface Radar ()
+
+@property (nullable, weak, nonatomic) id<RadarDelegate> delegate;
+
+@end
+
 @implementation Radar
 
 + (id)sharedInstance {
@@ -276,6 +282,7 @@
 }
 
 + (void)setDelegate:(id<RadarDelegate>)delegate {
+    [Radar sharedInstance].delegate = delegate;
     [[RadarLocationManager sharedInstance] setDelegate:delegate];
     [[RadarAPIClient sharedInstance] setDelegate:delegate];
     [[RadarLogger sharedInstance] setDelegate:delegate];
@@ -680,6 +687,26 @@
         dict[@"courseAccuracy"] = @(location.courseAccuracy);
     }
     return dict;
+}
+
+- (void)didReceiveEvents:(NSArray<RadarEvent *> *)events user:(RadarUser *)user {
+    
+}
+
+- (void)didUpdateLocation:(CLLocation *)location user:(RadarUser *)user {
+    
+}
+
+- (void)didUpdateClientLocation:(CLLocation *)location stopped:(BOOL)stopped source:(RadarLocationSource)source {
+    
+}
+
+- (void)didFailWithStatus:(RadarStatus)status {
+    
+}
+
+- (void)didLogMessage:(NSString *)message {
+    
 }
 
 - (void)applicationWillEnterForeground {

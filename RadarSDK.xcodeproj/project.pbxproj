@@ -125,7 +125,6 @@
 		DDC63813238C801C00747FD4 /* RadarAPIClient.h in Headers */ = {isa = PBXBuildFile; fileRef = DD236C9823087F9200EB88F9 /* RadarAPIClient.h */; };
 		DDC63814238C801C00747FD4 /* RadarAPIHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = DD633EC1237C5B800026C91A /* RadarAPIHelper.h */; };
 		DDC63815238C801C00747FD4 /* RadarBackgroundTaskManager.h in Headers */ = {isa = PBXBuildFile; fileRef = DDC87FEC238B03A8007683D8 /* RadarBackgroundTaskManager.h */; };
-		DDC63816238C801C00747FD4 /* RadarDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = DD236CE9230881B600EB88F9 /* RadarDelegate.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		DDC63817238C801C00747FD4 /* RadarLogger.h in Headers */ = {isa = PBXBuildFile; fileRef = DD236D66230A0D6700EB88F9 /* RadarLogger.h */; };
 		DDC63818238C801C00747FD4 /* RadarLocationManager.h in Headers */ = {isa = PBXBuildFile; fileRef = DD236CF723088F8400EB88F9 /* RadarLocationManager.h */; };
 		DDC63819238C801C00747FD4 /* RadarPermissionsHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = DD633EC5237C5B9C0026C91A /* RadarPermissionsHelper.h */; };
@@ -225,7 +224,6 @@
 		DD236CC02308812700EB88F9 /* RadarUserInsightsState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RadarUserInsightsState.h; sourceTree = "<group>"; };
 		DD236CC12308812700EB88F9 /* RadarUserInsightsState.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RadarUserInsightsState.m; sourceTree = "<group>"; };
 		DD236CC22308812700EB88F9 /* RadarChain+Internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "RadarChain+Internal.h"; sourceTree = "<group>"; };
-		DD236CE9230881B600EB88F9 /* RadarDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarDelegate.h; sourceTree = "<group>"; };
 		DD236CEA2308821600EB88F9 /* RadarTrackingOptions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarTrackingOptions.h; sourceTree = "<group>"; };
 		DD236CEB2308821600EB88F9 /* RadarTrackingOptions.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RadarTrackingOptions.m; sourceTree = "<group>"; };
 		DD236CF723088F8400EB88F9 /* RadarLocationManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarLocationManager.h; sourceTree = "<group>"; };
@@ -362,7 +360,6 @@
 				DD64416E25B398A7003C3E63 /* RadarBeaconManager.m */,
 				58F950CE2407038300364B15 /* RadarCollectionAdditions.h */,
 				58F950CF2407038300364B15 /* RadarCollectionAdditions.m */,
-				DD236CE9230881B600EB88F9 /* RadarDelegate.h */,
 				DD236D66230A0D6700EB88F9 /* RadarLogger.h */,
 				DD236D67230A0D6700EB88F9 /* RadarLogger.m */,
 				DD236CF723088F8400EB88F9 /* RadarLocationManager.h */,
@@ -548,7 +545,6 @@
 				DD14FD4F23CE785200E80AC8 /* RadarSegment+Internal.h in Headers */,
 				78D0040E23AAD2D4007D6BE1 /* RadarAddress.h in Headers */,
 				DDC63815238C801C00747FD4 /* RadarBackgroundTaskManager.h in Headers */,
-				DDC63816238C801C00747FD4 /* RadarDelegate.h in Headers */,
 				DD6F4F8625741B1700AFA38B /* RadarBeacon.h in Headers */,
 				DDC63817238C801C00747FD4 /* RadarLogger.h in Headers */,
 				DDC63818238C801C00747FD4 /* RadarLocationManager.h in Headers */,

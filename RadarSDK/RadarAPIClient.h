@@ -39,7 +39,6 @@ typedef void (^_Nullable RadarDistanceAPICompletionHandler)(RadarStatus status, 
 
 @interface RadarAPIClient : NSObject
 
-@property (nullable, weak, nonatomic) id<RadarDelegate> delegate;
 @property (nonnull, strong, nonatomic) RadarAPIHelper *apiHelper;
 
 + (instancetype)sharedInstance;

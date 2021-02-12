@@ -28,6 +28,8 @@
             NSString *log = [NSString stringWithFormat:@"%@ | backgroundTimeRemaining = %g", message, [RadarUtils backgroundTimeRemaining]];
 
             NSLog(@"%@", log);
+            
+            [Radar didLogMessage]
 
             if (self.delegate) {
                 [self.delegate didLogMessage:log];

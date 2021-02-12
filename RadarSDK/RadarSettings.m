@@ -139,8 +139,13 @@ static NSString *const kDefaultHost = @"https://api.radar.io";
 }
 
 + (RadarLogLevel)logLevel {
-    NSInteger logLevelInteger = [[NSUserDefaults standardUserDefaults] integerForKey:kLogLevel];
-    return (RadarLogLevel)logLevelInteger;
+    RadarLogLevel logLevel;
+    if ([[NSUserDefaults standardUserDefaults] objectForKey:kLogLevel] == nil) {
+        logLevel = RadarLogLevelInfo;
+    } else {
+        logLevel = (RadarLogLevel)[[NSUserDefaults standardUserDefaults] integerForKey:kLogLevel];
+    }
+    return logLevel;
 }
 
 + (void)setLogLevel:(RadarLogLevel)level {
