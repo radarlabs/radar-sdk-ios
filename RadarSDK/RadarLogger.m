@@ -7,6 +7,7 @@
 
 #import "RadarLogger.h"
 
+#import "RadarDelegateHolder.h"
 #import "RadarSettings.h"
 #import "RadarUtils.h"
 
@@ -28,12 +29,8 @@
             NSString *log = [NSString stringWithFormat:@"%@ | backgroundTimeRemaining = %g", message, [RadarUtils backgroundTimeRemaining]];
 
             NSLog(@"%@", log);
-            
-            [Radar didLogMessage]
 
-            if (self.delegate) {
-                [self.delegate didLogMessage:log];
-            }
+            [[RadarDelegateHolder sharedInstance] didLogMessage:log];
         }
     });
 }

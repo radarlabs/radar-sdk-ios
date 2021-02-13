@@ -12,6 +12,7 @@
 #import "RadarBeacon+Internal.h"
 #import "RadarContext+Internal.h"
 #import "RadarCoordinate+Internal.h"
+#import "RadarDelegateHolder.h"
 #import "RadarEvent+Internal.h"
 #import "RadarGeofence+Internal.h"
 #import "RadarLogger.h"
@@ -199,9 +200,7 @@
                                 [RadarState setLastFailedStoppedLocation:location];
                             }
 
-                            if (self.delegate) {
-                                [self.delegate didFailWithStatus:status];
-                            }
+                            [[RadarDelegateHolder sharedInstance] didFailWithStatus:status];
 
                             return completionHandler(status, nil, nil, nil, nil);
                         }
@@ -231,22 +230,18 @@
                                 [RadarSettings setTripOptions:nil];
                             }
 
-                            if (self.delegate) {
-                                if (location) {
-                                    [self.delegate didUpdateLocation:location user:user];
-                                }
+                            if (location) {
+                                [[RadarDelegateHolder sharedInstance] didUpdateLocation:location user:user];
+                            }
 
-                                if (events.count) {
-                                    [self.delegate didReceiveEvents:events user:user];
-                                }
+                            if (events.count) {
+                                [[RadarDelegateHolder sharedInstance] didReceiveEvents:events user:user];
                             }
 
                             return completionHandler(RadarStatusSuccess, res, events, user, nearbyGeofences);
                         }
 
-                        if (self.delegate) {
-                            [self.delegate didFailWithStatus:status];
-                        }
+                        [[RadarDelegateHolder sharedInstance] didFailWithStatus:status];
 
                         completionHandler(RadarStatusErrorServer, nil, nil, nil, nil);
                     }];

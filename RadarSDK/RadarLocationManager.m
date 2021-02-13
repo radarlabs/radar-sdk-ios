@@ -11,6 +11,7 @@
 
 #import "RadarAPIClient.h"
 #import "RadarCircleGeometry.h"
+#import "RadarDelegateHolder.h"
 #import "RadarLogger.h"
 #import "RadarPolygonGeometry.h"
 #import "RadarSettings.h"
@@ -131,9 +132,7 @@ static NSString *const kSyncBeaconIdentifierPrefix = @"radar_beacon_";
 - (void)getLocationWithDesiredAccuracy:(RadarTrackingOptionsDesiredAccuracy)desiredAccuracy completionHandler:(RadarLocationCompletionHandler)completionHandler {
     CLAuthorizationStatus authorizationStatus = [self.permissionsHelper locationAuthorizationStatus];
     if (!(authorizationStatus == kCLAuthorizationStatusAuthorizedWhenInUse || authorizationStatus == kCLAuthorizationStatusAuthorizedAlways)) {
-        if (self.delegate) {
-            [self.delegate didFailWithStatus:RadarStatusErrorPermissions];
-        }
+        [[RadarDelegateHolder sharedInstance] didFailWithStatus:RadarStatusErrorPermissions];
 
         if (completionHandler) {
             completionHandler(RadarStatusErrorPermissions, nil, NO);
@@ -166,9 +165,7 @@ static NSString *const kSyncBeaconIdentifierPrefix = @"radar_beacon_";
 - (void)startTrackingWithOptions:(RadarTrackingOptions *)trackingOptions {
     CLAuthorizationStatus authorizationStatus = [self.permissionsHelper locationAuthorizationStatus];
     if (!(authorizationStatus == kCLAuthorizationStatusAuthorizedWhenInUse || authorizationStatus == kCLAuthorizationStatusAuthorizedAlways)) {
-        if (self.delegate) {
-            [self.delegate didFailWithStatus:RadarStatusErrorPermissions];
-        }
+        [[RadarDelegateHolder sharedInstance] didFailWithStatus:RadarStatusErrorPermissions];
 
         return;
     }
@@ -537,9 +534,7 @@ static NSString *const kSyncBeaconIdentifierPrefix = @"radar_beacon_";
 
     [RadarState setLastLocation:location];
 
-    if (self.delegate) {
-        [self.delegate didUpdateClientLocation:location stopped:stopped source:source];
-    }
+    [[RadarDelegateHolder sharedInstance] didUpdateClientLocation:location stopped:stopped source:source];
 
     if (source != RadarLocationSourceManualLocation) {
         [self updateTracking:location];
@@ -774,9 +769,7 @@ static NSString *const kSyncBeaconIdentifierPrefix = @"radar_beacon_";
 }
 
 - (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error {
-    if (self.delegate) {
-        [self.delegate didFailWithStatus:RadarStatusErrorLocation];
-    }
+    [[RadarDelegateHolder sharedInstance] didFailWithStatus:RadarStatusErrorLocation];
 
     [self callCompletionHandlersWithStatus:RadarStatusErrorLocation location:nil];
 }

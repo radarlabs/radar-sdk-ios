@@ -10,6 +10,7 @@
 #import "RadarAPIClient.h"
 #import "RadarBeaconManager.h"
 #import "RadarCoordinate+Internal.h"
+#import "RadarDelegateHolder.h"
 #import "RadarLocationManager.h"
 #import "RadarLogger.h"
 #import "RadarSettings.h"
@@ -282,10 +283,7 @@
 }
 
 + (void)setDelegate:(id<RadarDelegate>)delegate {
-    [Radar sharedInstance].delegate = delegate;
-    [[RadarLocationManager sharedInstance] setDelegate:delegate];
-    [[RadarAPIClient sharedInstance] setDelegate:delegate];
-    [[RadarLogger sharedInstance] setDelegate:delegate];
+    [RadarDelegateHolder sharedInstance].delegate = delegate;
 }
 
 + (void)acceptEventId:(NSString *)eventId verifiedPlaceId:(NSString *)verifiedPlaceId {
@@ -687,26 +685,6 @@
         dict[@"courseAccuracy"] = @(location.courseAccuracy);
     }
     return dict;
-}
-
-- (void)didReceiveEvents:(NSArray<RadarEvent *> *)events user:(RadarUser *)user {
-    
-}
-
-- (void)didUpdateLocation:(CLLocation *)location user:(RadarUser *)user {
-    
-}
-
-- (void)didUpdateClientLocation:(CLLocation *)location stopped:(BOOL)stopped source:(RadarLocationSource)source {
-    
-}
-
-- (void)didFailWithStatus:(RadarStatus)status {
-    
-}
-
-- (void)didLogMessage:(NSString *)message {
-    
 }
 
 - (void)applicationWillEnterForeground {

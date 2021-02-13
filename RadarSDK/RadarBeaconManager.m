@@ -8,6 +8,7 @@
 #import "RadarBeaconManager.h"
 
 #import "RadarBeacon+Internal.h"
+#import "RadarDelegateHolder.h"
 #import "RadarLogger.h"
 
 @interface RadarBeaconManager ()
@@ -105,9 +106,7 @@
 - (void)rangeBeacons:(NSArray<RadarBeacon *> *_Nonnull)beacons completionHandler:(RadarBeaconCompletionHandler)completionHandler {
     CLAuthorizationStatus authorizationStatus = [self.permissionsHelper locationAuthorizationStatus];
     if (!(authorizationStatus == kCLAuthorizationStatusAuthorizedWhenInUse || authorizationStatus == kCLAuthorizationStatusAuthorizedAlways)) {
-        if (self.delegate) {
-            [self.delegate didFailWithStatus:RadarStatusErrorPermissions];
-        }
+        [[RadarDelegateHolder sharedInstance] didFailWithStatus:RadarStatusErrorPermissions];
 
         if (completionHandler) {
             completionHandler(RadarStatusErrorPermissions, nil);
@@ -117,9 +116,7 @@
     }
 
     if (!CLLocationManager.isRangingAvailable) {
-        if (self.delegate) {
-            [self.delegate didFailWithStatus:RadarStatusErrorBluetooth];
-        }
+        [[RadarDelegateHolder sharedInstance] didFailWithStatus:RadarStatusErrorBluetooth];
 
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Beacon ranging not available"];
 

@@ -16,7 +16,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface RadarBeaconManager : NSObject<CLLocationManagerDelegate>
 
-@property (nullable, weak, nonatomic) id<RadarDelegate> delegate;
 @property (nonnull, strong, nonatomic) CLLocationManager *locationManager;
 @property (nonnull, strong, nonatomic) RadarPermissionsHelper *permissionsHelper;
 
