@@ -31,12 +31,12 @@
 
     [[RadarLogger sharedInstance]
         logWithLevel:RadarLogLevelInfo
-             message:[NSString stringWithFormat:@"📍 Radar location updated: coordinates = (%f, %f); accuracy = %f; link = https://radar.io/dashboard/users/%@",
+             message:[NSString stringWithFormat:@"📍 Radar location updated | coordinates = (%f, %f); accuracy = %f; link = https://radar.io/dashboard/users/%@",
                                                 user.location.coordinate.latitude, user.location.coordinate.longitude, user.location.horizontalAccuracy, user._id]];
 
     for (RadarEvent *event in events) {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo
-                                           message:[NSString stringWithFormat:@"📍 Radar event received: type = %@; link = https://radar.io/dashboard/events/%@",
+                                           message:[NSString stringWithFormat:@"📍 Radar event received | type = %@; link = https://radar.io/dashboard/events/%@",
                                                                               [RadarEvent stringForType:event.type], event._id]];
     }
 }
@@ -62,7 +62,7 @@
         [self.delegate didFailWithStatus:status];
     }
 
-    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"📍 Radar error received: status = %@", [Radar stringForStatus:status]]];
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"📍 Radar error received | status = %@", [Radar stringForStatus:status]]];
 }
 
 - (void)didLogMessage:(NSString *)message {
