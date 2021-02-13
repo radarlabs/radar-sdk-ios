@@ -85,7 +85,6 @@
 		DDC637E7238C7F8700747FD4 /* Radar.m in Sources */ = {isa = PBXBuildFile; fileRef = DD236C9023087A3500EB88F9 /* Radar.m */; };
 		DDC637E8238C7F8700747FD4 /* RadarAPIClient.m in Sources */ = {isa = PBXBuildFile; fileRef = DD236C9923087F9200EB88F9 /* RadarAPIClient.m */; };
 		DDC637E9238C7F8700747FD4 /* RadarAPIHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = DD633EC2237C5B800026C91A /* RadarAPIHelper.m */; };
-		DDC637EA238C7F8700747FD4 /* RadarBackgroundTaskManager.m in Sources */ = {isa = PBXBuildFile; fileRef = DDC87FED238B03A8007683D8 /* RadarBackgroundTaskManager.m */; };
 		DDC637EB238C7F8700747FD4 /* RadarLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = DD236D67230A0D6700EB88F9 /* RadarLogger.m */; };
 		DDC637EC238C7F8700747FD4 /* RadarLocationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = DD236CF823088F8400EB88F9 /* RadarLocationManager.m */; };
 		DDC637ED238C7F8700747FD4 /* RadarPermissionsHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = DD633EC6237C5B9C0026C91A /* RadarPermissionsHelper.m */; };
@@ -124,7 +123,6 @@
 		DDC63812238C801C00747FD4 /* Radar.h in Headers */ = {isa = PBXBuildFile; fileRef = DD236C8F23087A3500EB88F9 /* Radar.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		DDC63813238C801C00747FD4 /* RadarAPIClient.h in Headers */ = {isa = PBXBuildFile; fileRef = DD236C9823087F9200EB88F9 /* RadarAPIClient.h */; };
 		DDC63814238C801C00747FD4 /* RadarAPIHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = DD633EC1237C5B800026C91A /* RadarAPIHelper.h */; };
-		DDC63815238C801C00747FD4 /* RadarBackgroundTaskManager.h in Headers */ = {isa = PBXBuildFile; fileRef = DDC87FEC238B03A8007683D8 /* RadarBackgroundTaskManager.h */; };
 		DDC63817238C801C00747FD4 /* RadarLogger.h in Headers */ = {isa = PBXBuildFile; fileRef = DD236D66230A0D6700EB88F9 /* RadarLogger.h */; };
 		DDC63818238C801C00747FD4 /* RadarLocationManager.h in Headers */ = {isa = PBXBuildFile; fileRef = DD236CF723088F8400EB88F9 /* RadarLocationManager.h */; };
 		DDC63819238C801C00747FD4 /* RadarPermissionsHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = DD633EC5237C5B9C0026C91A /* RadarPermissionsHelper.h */; };
@@ -279,8 +277,6 @@
 		DDC637C8238C7E6100747FD4 /* libRadarSDK.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRadarSDK.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		DDC637F3238C7F9C00747FD4 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/System/Library/Frameworks/CoreLocation.framework; sourceTree = DEVELOPER_DIR; };
 		DDC63820238C815800747FD4 /* module.modulemap */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.module-map"; path = module.modulemap; sourceTree = "<group>"; };
-		DDC87FEC238B03A8007683D8 /* RadarBackgroundTaskManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarBackgroundTaskManager.h; sourceTree = "<group>"; };
-		DDC87FED238B03A8007683D8 /* RadarBackgroundTaskManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RadarBackgroundTaskManager.m; sourceTree = "<group>"; };
 		DDF1157A2524E18100D575C4 /* RadarTrip+Internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "RadarTrip+Internal.h"; sourceTree = "<group>"; };
 		DDF1157B2524E18100D575C4 /* RadarTrip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RadarTrip.h; sourceTree = "<group>"; };
 		DDF1157C2524E18100D575C4 /* RadarTrip.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RadarTrip.m; sourceTree = "<group>"; };
@@ -354,8 +350,6 @@
 				DD236C9923087F9200EB88F9 /* RadarAPIClient.m */,
 				DD633EC1237C5B800026C91A /* RadarAPIHelper.h */,
 				DD633EC2237C5B800026C91A /* RadarAPIHelper.m */,
-				DDC87FEC238B03A8007683D8 /* RadarBackgroundTaskManager.h */,
-				DDC87FED238B03A8007683D8 /* RadarBackgroundTaskManager.m */,
 				DD6F4F662573174400AFA38B /* RadarBeaconManager.h */,
 				DD64416E25B398A7003C3E63 /* RadarBeaconManager.m */,
 				58F950CE2407038300364B15 /* RadarCollectionAdditions.h */,
@@ -544,7 +538,6 @@
 				DDC63814238C801C00747FD4 /* RadarAPIHelper.h in Headers */,
 				DD14FD4F23CE785200E80AC8 /* RadarSegment+Internal.h in Headers */,
 				78D0040E23AAD2D4007D6BE1 /* RadarAddress.h in Headers */,
-				DDC63815238C801C00747FD4 /* RadarBackgroundTaskManager.h in Headers */,
 				DD6F4F8625741B1700AFA38B /* RadarBeacon.h in Headers */,
 				DDC63817238C801C00747FD4 /* RadarLogger.h in Headers */,
 				DDC63818238C801C00747FD4 /* RadarLocationManager.h in Headers */,
@@ -738,7 +731,6 @@
 				DDC637E8238C7F8700747FD4 /* RadarAPIClient.m in Sources */,
 				DDC637E9238C7F8700747FD4 /* RadarAPIHelper.m in Sources */,
 				58F950D12407038300364B15 /* RadarCollectionAdditions.m in Sources */,
-				DDC637EA238C7F8700747FD4 /* RadarBackgroundTaskManager.m in Sources */,
 				DDC637EB238C7F8700747FD4 /* RadarLogger.m in Sources */,
 				DDC637EC238C7F8700747FD4 /* RadarLocationManager.m in Sources */,
 				DD87B876247E955C0065A36D /* RadarRouteGeometry.m in Sources */,

@@ -10,7 +10,6 @@
 #import "RadarLocationManager.h"
 
 #import "RadarAPIClient.h"
-#import "RadarBackgroundTaskManager.h"
 #import "RadarCircleGeometry.h"
 #import "RadarLogger.h"
 #import "RadarPolygonGeometry.h"
@@ -199,8 +198,6 @@ static NSString *const kSyncBeaconIdentifierPrefix = @"radar_beacon_";
                                                        block:^(NSTimer *_Nonnull timer) {
                                                            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Timer fired"];
 
-                                                           // [[RadarBackgroundTaskManager sharedInstance] startBackgroundTask];
-
                                                            [self requestLocation];
                                                        }];
 
@@ -236,8 +233,6 @@ static NSString *const kSyncBeaconIdentifierPrefix = @"radar_beacon_";
 
 - (void)shutDown {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Shutting down"];
-
-    // [[RadarBackgroundTaskManager sharedInstance] endBackgroundTasks];
 
     [self.lowPowerLocationManager stopUpdatingLocation];
 }
