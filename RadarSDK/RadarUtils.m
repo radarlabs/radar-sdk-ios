@@ -76,8 +76,12 @@
         return @"GRANTED_FOREGROUND";
     case kCLAuthorizationStatusAuthorizedAlways:
         return @"GRANTED_BACKGROUND";
-    default:
+    case kCLAuthorizationStatusDenied:
         return @"DENIED";
+    case kCLAuthorizationStatusRestricted:
+        return @"DENIED";
+    default:
+        return @"NOT_DETERMINED";
     }
 }
 
