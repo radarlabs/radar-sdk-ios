@@ -7,11 +7,11 @@
 
 #import <CoreLocation/CoreLocation.h>
 #import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 
 #import "RadarAddress.h"
 #import "RadarContext.h"
 #import "RadarEvent.h"
-#import "RadarPoint.h"
 #import "RadarRegion.h"
 #import "RadarRoutes.h"
 #import "RadarTrackingOptions.h"
@@ -34,8 +34,10 @@ typedef NS_ENUM(NSInteger, RadarStatus) {
     RadarStatusErrorPublishableKey,
     /// Location permissions not granted
     RadarStatusErrorPermissions,
-    /// Location services error or timeout (10 seconds)
+    /// Location services error or timeout (20 seconds)
     RadarStatusErrorLocation,
+    /// Beacon ranging error or timeout (5 seconds)
+    RadarStatusErrorBluetooth,
     /// Network error or timeout (10 seconds)
     RadarStatusErrorNetwork,
     /// Bad request (missing or invalid params)
@@ -76,6 +78,10 @@ typedef NS_ENUM(NSInteger, RadarLocationSource) {
     RadarLocationSourceGeofenceExit,
     /// Mock
     RadarLocationSourceMockLocation,
+    /// Beacon enter
+    RadarLocationSourceBeaconEnter,
+    /// Beacon exit
+    RadarLocationSourceBeaconExit,
     /// Unknown
     RadarLocationSourceUnknown
 };
@@ -128,6 +134,15 @@ typedef NS_ENUM(NSInteger, RadarRouteUnits) {
 typedef void (^_Nullable RadarLocationCompletionHandler)(RadarStatus status, CLLocation *_Nullable location, BOOL stopped);
 
 /**
+ Called when a beacon ranging request succeeds, fails, or times out.
+
+ Receives the request status and, if successful, the nearby beacon identifiers.
+
+ @see https://radar.io/documentation/sdk/ios
+ */
+typedef void (^_Nullable RadarBeaconCompletionHandler)(RadarStatus status, NSArray<NSString *> *_Nullable nearbyBeacons);
+
+/**
  Called when a track request succeeds, fails, or times out.
 
  Receives the request status and, if successful, the user's location, an array of the events generated, and the user.
@@ -162,15 +177,6 @@ typedef void (^_Nonnull RadarSearchPlacesCompletionHandler)(RadarStatus status, 
  @see https://radar.io/documentation/api#search-geofences
  */
 typedef void (^_Nonnull RadarSearchGeofencesCompletionHandler)(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarGeofence *> *_Nullable geofences);
-
-/**
- Called when a point search request succeeds, fails, or times out.
-
- Receives the request status and, if successful, the location and an array of points sorted by distance.
-
- @see https://radar.io/documentation/api#search-geofences
- */
-typedef void (^_Nonnull RadarSearchPointsCompletionHandler)(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarPoint *> *_Nullable points);
 
 /**
  Called when a geocoding request succeeds, fails, or times out.
@@ -301,17 +307,19 @@ typedef void (^_Nonnull RadarRouteCompletionHandler)(RadarStatus status, RadarRo
 + (void)trackOnceWithCompletionHandler:(RadarTrackCompletionHandler _Nullable)completionHandler NS_SWIFT_NAME(trackOnce(completionHandler:));
 
 /**
- Tracks the user's location once in the foreground with the desired accuracy.
+ Tracks the user's location once with the desired accuracy and optionally ranges beacons in the foreground.
 
  @warning Note that these calls are subject to rate limits.
 
  @param desiredAccuracy The desired accuracy.
+ @param beacons A boolean indicating whether to range beacons.
  @param completionHandler An optional completion handler.
 
  @see https://radar.io/documentation/sdk/ios
  */
 + (void)trackOnceWithDesiredAccuracy:(RadarTrackingOptionsDesiredAccuracy)desiredAccuracy
-                   completionHandler:(RadarTrackCompletionHandler _Nullable)completionHandler NS_SWIFT_NAME(trackOnce(desiredAccuracy:completionHandler:));
+                             beacons:(BOOL)beacons
+                   completionHandler:(RadarTrackCompletionHandler _Nullable)completionHandler NS_SWIFT_NAME(trackOnce(desiredAccuracy:beacons:completionHandler:));
 
 /**
  Manually updates the user's location.
@@ -419,11 +427,6 @@ typedef void (^_Nonnull RadarRouteCompletionHandler)(RadarStatus status, RadarRo
 + (void)startTripWithOptions:(RadarTripOptions *_Nonnull)options NS_SWIFT_NAME(startTrip(options:));
 
 /**
- Stops a trip.
- */
-+ (void)stopTrip __deprecated_msg("Use completeTrip or cancelTrip instead.");
-
-/**
  Completes a trip.
  */
 + (void)completeTrip;
@@ -520,34 +523,6 @@ typedef void (^_Nonnull RadarRouteCompletionHandler)(RadarStatus status, RadarRo
                    metadata:(NSDictionary *_Nullable)metadata
                       limit:(int)limit
           completionHandler:(RadarSearchGeofencesCompletionHandler)completionHandler NS_SWIFT_NAME(searchGeofences(near:radius:tags:metadata:limit:completionHandler:));
-
-/**
- Gets the device's current location, then searches for points near that location, sorted by distance.
-
- @param radius The radius to search, in meters. A number between 100 and 10000.
- @param tags An array of tags to filter. See https://radar.io/documentation/points
- @param limit The max number of points to return. A number between 1 and 100.
- @param completionHandler A completion handler.
- */
-+ (void)searchPointsWithRadius:(int)radius
-                          tags:(NSArray<NSString *> *_Nullable)tags
-                         limit:(int)limit
-             completionHandler:(RadarSearchPointsCompletionHandler)completionHandler NS_SWIFT_NAME(searchPoints(radius:tags:limit:completionHandler:));
-
-/**
- Searches for points near a location, sorted by distance.
-
- @param near The location to search.
- @param radius The radius to search, in meters. A number between 100 and 10000.
- @param tags An array of tags to filter. See https://radar.io/documentation/points
- @param limit The max number of points to return. A number between 1 and 100.
- @param completionHandler A completion handler.
- */
-+ (void)searchPointsNear:(CLLocation *)near
-                  radius:(int)radius
-                    tags:(NSArray<NSString *> *_Nullable)tags
-                   limit:(int)limit
-       completionHandler:(RadarSearchPointsCompletionHandler)completionHandler NS_SWIFT_NAME(searchPoints(near:radius:tags:limit:completionHandler:));
 
 /**
  Autocompletes partial addresses and place names, sorted by relevance.

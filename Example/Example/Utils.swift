@@ -10,29 +10,6 @@ import RadarSDK
 
 class Utils {
     
-    static func stringForRadarStatus(_ status: RadarStatus) -> String {
-        switch status {
-        case .success:
-            return "Success"
-        case .errorPublishableKey:
-            return "Publishable key error"
-        case .errorPermissions:
-            return "Permissions error"
-        case .errorLocation:
-            return "Location error"
-        case .errorNetwork:
-            return "Network error"
-        case .errorUnauthorized:
-            return "Unauthorized error"
-        case .errorRateLimit:
-            return "Rate limit error"
-        case .errorServer:
-            return "Server error"
-        default:
-            return "Unknown error"
-        }
-    }
-    
     static func stringForRadarEvent(_ event: RadarEvent) -> String {
         let confidenceStr = Utils.stringForRadarEventConfidence(event.confidence)
         

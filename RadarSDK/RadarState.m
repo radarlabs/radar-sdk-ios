@@ -11,12 +11,33 @@
 
 @implementation RadarState
 
+static NSString *const kLastLocation = @"radar-lastLocation";
 static NSString *const kLastMovedLocation = @"radar-lastMovedLocation";
 static NSString *const kLastMovedAt = @"radar-lastMovedAt";
 static NSString *const kStopped = @"radar-stopped";
 static NSString *const kLastSentAt = @"radar-lastSentAt";
 static NSString *const kCanExit = @"radar-canExit";
 static NSString *const kLastFailedStoppedLocation = @"radar-lastFailedStoppedLocation";
+
++ (CLLocation *)lastLocation {
+    NSDictionary *dict = [[NSUserDefaults standardUserDefaults] dictionaryForKey:kLastLocation];
+    CLLocation *lastLocation = [RadarUtils locationForDictionary:dict];
+
+    if (![RadarUtils validLocation:lastLocation]) {
+        return nil;
+    }
+
+    return lastLocation;
+}
+
++ (void)setLastLocation:(CLLocation *)lastLocation {
+    if (!lastLocation || ![RadarUtils validLocation:lastLocation]) {
+        return;
+    }
+
+    NSDictionary *dict = [RadarUtils dictionaryForLocation:lastLocation];
+    [[NSUserDefaults standardUserDefaults] setObject:dict forKey:kLastLocation];
+}
 
 + (CLLocation *)lastMovedLocation {
     NSDictionary *dict = [[NSUserDefaults standardUserDefaults] dictionaryForKey:kLastMovedLocation];

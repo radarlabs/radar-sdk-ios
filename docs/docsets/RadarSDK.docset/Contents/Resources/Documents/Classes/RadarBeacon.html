@@ -1,28 +1,36 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>RadarPoint Class Reference</title>
+    <title>RadarBeacon Class Reference</title>
     <link rel="stylesheet" type="text/css" href="../css/jazzy.css" />
     <link rel="stylesheet" type="text/css" href="../css/highlight.css" />
     <meta charset='utf-8'>
     <script src="../js/jquery.min.js" defer></script>
     <script src="../js/jazzy.js" defer></script>
     
+    <script src="../js/lunr.min.js" defer></script>
+    <script src="../js/typeahead.jquery.js" defer></script>
+    <script src="../js/jazzy.search.js" defer></script>
   </head>
   <body>
-    <a name="//apple_ref/objc/Class/RadarPoint" class="dashAnchor"></a>
-    <a title="RadarPoint Class Reference"></a>
+    <a name="//apple_ref/objc/Class/RadarBeacon" class="dashAnchor"></a>
+    <a title="RadarBeacon Class Reference"></a>
     <header>
       <div class="content-wrapper">
-        <p><a href="../index.html">RadarSDK 3.0.8 Docs</a></p>
+        <p><a href="../index.html">RadarSDK 3.1.0 Docs</a></p>
         <p class="header-right"><a href="https://github.com/radarlabs/radar-sdk-ios"><img src="../img/gh.png"/>View on GitHub</a></p>
+        <p class="header-right">
+          <form role="search" action="../search.json">
+            <input type="text" placeholder="Search documentation" data-typeahead>
+          </form>
+        </p>
       </div>
     </header>
     <div class="content-wrapper">
       <p id="breadcrumbs">
         <a href="../index.html">RadarSDK Reference</a>
         <img id="carat" src="../img/carat.png" />
-        RadarPoint Class Reference
+        RadarBeacon Class Reference
       </p>
     </div>
     <div class="content-wrapper">
@@ -36,6 +44,9 @@
               </li>
               <li class="nav-group-task">
                 <a href="../Classes/RadarAddress.html">RadarAddress</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/RadarBeacon.html">RadarBeacon</a>
               </li>
               <li class="nav-group-task">
                 <a href="../Classes/RadarChain.html">RadarChain</a>
@@ -60,9 +71,6 @@
               </li>
               <li class="nav-group-task">
                 <a href="../Classes/RadarPlace.html">RadarPlace</a>
-              </li>
-              <li class="nav-group-task">
-                <a href="../Classes/RadarPoint.html">RadarPoint</a>
               </li>
               <li class="nav-group-task">
                 <a href="../Classes/RadarPolygonGeometry.html">RadarPolygonGeometry</a>
@@ -173,6 +181,9 @@
             <a href="../Type%20Definitions.html">Type Definitions</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
+                <a href="../Type%20Definitions.html#/c:Radar.h@T@RadarBeaconCompletionHandler">RadarBeaconCompletionHandler</a>
+              </li>
+              <li class="nav-group-task">
                 <a href="../Type%20Definitions.html#/c:Radar.h@T@RadarContextCompletionHandler">RadarContextCompletionHandler</a>
               </li>
               <li class="nav-group-task">
@@ -194,9 +205,6 @@
                 <a href="../Type%20Definitions.html#/c:Radar.h@T@RadarSearchPlacesCompletionHandler">RadarSearchPlacesCompletionHandler</a>
               </li>
               <li class="nav-group-task">
-                <a href="../Type%20Definitions.html#/c:Radar.h@T@RadarSearchPointsCompletionHandler">RadarSearchPointsCompletionHandler</a>
-              </li>
-              <li class="nav-group-task">
                 <a href="../Type%20Definitions.html#/c:Radar.h@T@RadarTrackCompletionHandler">RadarTrackCompletionHandler</a>
               </li>
             </ul>
@@ -206,17 +214,23 @@
       <article class="main-content">
         <section>
           <section class="section">
-            <h1>RadarPoint</h1>
+            <h1>RadarBeacon</h1>
               <div class="declaration">
                 <div class="language">
-                  <pre class="highlight objective_c"><code><span class="k">@interface</span> <span class="nc">RadarPoint</span> <span class="p">:</span> <span class="nc">NSObject</span></code></pre>
+                  <p class="aside-title">Objective-C</p>
+                  <pre class="highlight objective_c"><code><span class="k">@interface</span> <span class="nc">RadarBeacon</span> <span class="p">:</span> <span class="nc">NSObject</span></code></pre>
+
+                </div>
+                <div class="language">
+                  <p class="aside-title">Swift</p>
+                  <pre class="highlight swift"><code><span class="kd">class</span> <span class="kt">RadarBeacon</span> <span class="p">:</span> <span class="kt">NSObject</span></code></pre>
 
                 </div>
               </div>
-            <p>Represents a point. For more information about Points, see <a href="https://radar.io/documentation/points">https://radar.io/documentation/points</a>.</p>
+            <p>Represents a Bluetooth beacon. For more information about Beacons, see <a href="https://radar.io/documentation/beacons">https://radar.io/documentation/beacons</a>.</p>
 <div class="aside aside-see">
     <p class="aside-title">See</p>
-    <a href="https://radar.io/documentation/points">https://radar.io/documentation/points</a>
+    <a href="https://radar.io/documentation/beacons">https://radar.io/documentation/beacons</a>
 
 </div>
 
@@ -227,9 +241,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/c:objc(cs)RadarPoint(py)_id"></a>
+                    <a name="/c:objc(cs)RadarBeacon(py)_id"></a>
                     <a name="//apple_ref/objc/Property/_id" class="dashAnchor"></a>
-                    <a class="token" href="#/c:objc(cs)RadarPoint(py)_id">_id</a>
+                    <a class="token" href="#/c:objc(cs)RadarBeacon(py)_id">_id</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -237,14 +251,14 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>The Radar ID of the point.</p>
+                        <p>The Radar ID of the beacon.</p>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Objective-C</p>
-                          <pre class="highlight objective_c"><code><span class="k">@property</span> <span class="p">(</span><span class="n">nonatomic</span><span class="p">,</span> <span class="n">readonly</span><span class="p">)</span> <span class="n">NSString</span> <span class="o">*</span><span class="n">_Nonnull</span> <span class="n">_id</span><span class="p">;</span></code></pre>
+                          <pre class="highlight objective_c"><code><span class="k">@property</span> <span class="p">(</span><span class="n">nonatomic</span><span class="p">,</span> <span class="n">copy</span><span class="p">,</span> <span class="n">readonly</span><span class="p">,</span> <span class="n">nonnull</span><span class="p">)</span> <span class="n">NSString</span> <span class="o">*</span><span class="n">_id</span><span class="p">;</span></code></pre>
 
                         </div>
                         <div class="language">
@@ -259,9 +273,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/c:objc(cs)RadarPoint(py)_description"></a>
+                    <a name="/c:objc(cs)RadarBeacon(py)_description"></a>
                     <a name="//apple_ref/objc/Property/_description" class="dashAnchor"></a>
-                    <a class="token" href="#/c:objc(cs)RadarPoint(py)_description">_description</a>
+                    <a class="token" href="#/c:objc(cs)RadarBeacon(py)_description">_description</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -269,14 +283,14 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>The description of the point. Not to be confused with the <code>NSObject</code> <code>description</code> property.</p>
+                        <p>The description of the beacon. Not to be confused with the <code>NSObject</code> <code>description</code> property.</p>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Objective-C</p>
-                          <pre class="highlight objective_c"><code><span class="k">@property</span> <span class="p">(</span><span class="n">nonatomic</span><span class="p">,</span> <span class="n">readonly</span><span class="p">)</span> <span class="n">NSString</span> <span class="o">*</span><span class="n">_Nonnull</span> <span class="n">_description</span><span class="p">;</span></code></pre>
+                          <pre class="highlight objective_c"><code><span class="k">@property</span> <span class="p">(</span><span class="n">nonatomic</span><span class="p">,</span> <span class="n">copy</span><span class="p">,</span> <span class="n">readonly</span><span class="p">,</span> <span class="n">nonnull</span><span class="p">)</span> <span class="n">NSString</span> <span class="o">*</span><span class="n">_description</span><span class="p">;</span></code></pre>
 
                         </div>
                         <div class="language">
@@ -291,9 +305,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/c:objc(cs)RadarPoint(py)tag"></a>
+                    <a name="/c:objc(cs)RadarBeacon(py)tag"></a>
                     <a name="//apple_ref/objc/Property/tag" class="dashAnchor"></a>
-                    <a class="token" href="#/c:objc(cs)RadarPoint(py)tag">tag</a>
+                    <a class="token" href="#/c:objc(cs)RadarBeacon(py)tag">tag</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -301,14 +315,14 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>The tag of the point.</p>
+                        <p>The tag of the beacon.</p>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Objective-C</p>
-                          <pre class="highlight objective_c"><code><span class="k">@property</span> <span class="p">(</span><span class="n">nonatomic</span><span class="p">,</span> <span class="n">readonly</span><span class="p">,</span> <span class="n">nullable</span><span class="p">)</span> <span class="n">NSString</span> <span class="o">*</span><span class="n">tag</span><span class="p">;</span></code></pre>
+                          <pre class="highlight objective_c"><code><span class="k">@property</span> <span class="p">(</span><span class="n">nonatomic</span><span class="p">,</span> <span class="n">copy</span><span class="p">,</span> <span class="n">readonly</span><span class="p">,</span> <span class="n">nullable</span><span class="p">)</span> <span class="n">NSString</span> <span class="o">*</span><span class="n">tag</span><span class="p">;</span></code></pre>
 
                         </div>
                         <div class="language">
@@ -323,9 +337,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/c:objc(cs)RadarPoint(py)externalId"></a>
+                    <a name="/c:objc(cs)RadarBeacon(py)externalId"></a>
                     <a name="//apple_ref/objc/Property/externalId" class="dashAnchor"></a>
-                    <a class="token" href="#/c:objc(cs)RadarPoint(py)externalId">externalId</a>
+                    <a class="token" href="#/c:objc(cs)RadarBeacon(py)externalId">externalId</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -333,14 +347,14 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>The external ID of the point.</p>
+                        <p>The external ID of the beacon.</p>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Objective-C</p>
-                          <pre class="highlight objective_c"><code><span class="k">@property</span> <span class="p">(</span><span class="n">nonatomic</span><span class="p">,</span> <span class="n">readonly</span><span class="p">,</span> <span class="n">nullable</span><span class="p">)</span> <span class="n">NSString</span> <span class="o">*</span><span class="n">externalId</span><span class="p">;</span></code></pre>
+                          <pre class="highlight objective_c"><code><span class="k">@property</span> <span class="p">(</span><span class="n">nonatomic</span><span class="p">,</span> <span class="n">copy</span><span class="p">,</span> <span class="n">readonly</span><span class="p">,</span> <span class="n">nullable</span><span class="p">)</span> <span class="n">NSString</span> <span class="o">*</span><span class="n">externalId</span><span class="p">;</span></code></pre>
 
                         </div>
                         <div class="language">
@@ -355,9 +369,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/c:objc(cs)RadarPoint(py)metadata"></a>
-                    <a name="//apple_ref/objc/Property/metadata" class="dashAnchor"></a>
-                    <a class="token" href="#/c:objc(cs)RadarPoint(py)metadata">metadata</a>
+                    <a name="/c:objc(cs)RadarBeacon(py)uuid"></a>
+                    <a name="//apple_ref/objc/Property/uuid" class="dashAnchor"></a>
+                    <a class="token" href="#/c:objc(cs)RadarBeacon(py)uuid">uuid</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -365,19 +379,19 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>The optional set of custom key-value pairs for the point.</p>
+                        <p>The UUID of the beacon.</p>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Objective-C</p>
-                          <pre class="highlight objective_c"><code><span class="k">@property</span> <span class="p">(</span><span class="n">nonatomic</span><span class="p">,</span> <span class="n">readonly</span><span class="p">,</span> <span class="n">nullable</span><span class="p">)</span> <span class="n">NSDictionary</span> <span class="o">*</span><span class="n">metadata</span><span class="p">;</span></code></pre>
+                          <pre class="highlight objective_c"><code><span class="k">@property</span> <span class="p">(</span><span class="n">nonatomic</span><span class="p">,</span> <span class="n">copy</span><span class="p">,</span> <span class="n">readonly</span><span class="p">,</span> <span class="n">nonnull</span><span class="p">)</span> <span class="n">NSString</span> <span class="o">*</span><span class="n">uuid</span><span class="p">;</span></code></pre>
 
                         </div>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="k">var</span> <span class="nv">metadata</span><span class="p">:</span> <span class="p">[</span><span class="kt">AnyHashable</span> <span class="p">:</span> <span class="kt">Any</span><span class="p">]?</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span></code></pre>
+                          <pre class="highlight swift"><code><span class="k">var</span> <span class="nv">uuid</span><span class="p">:</span> <span class="kt">String</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span></code></pre>
 
                         </div>
                       </div>
@@ -387,9 +401,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/c:objc(cs)RadarPoint(py)location"></a>
-                    <a name="//apple_ref/objc/Property/location" class="dashAnchor"></a>
-                    <a class="token" href="#/c:objc(cs)RadarPoint(py)location">location</a>
+                    <a name="/c:objc(cs)RadarBeacon(py)major"></a>
+                    <a name="//apple_ref/objc/Property/major" class="dashAnchor"></a>
+                    <a class="token" href="#/c:objc(cs)RadarBeacon(py)major">major</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -397,19 +411,83 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>The location of the point.</p>
+                        <p>The major ID of the beacon.</p>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Objective-C</p>
-                          <pre class="highlight objective_c"><code><span class="k">@property</span> <span class="p">(</span><span class="n">nonatomic</span><span class="p">,</span> <span class="n">readonly</span><span class="p">)</span> <span class="n"><a href="../Classes/RadarCoordinate.html">RadarCoordinate</a></span> <span class="o">*</span><span class="n">_Nonnull</span> <span class="n">location</span><span class="p">;</span></code></pre>
+                          <pre class="highlight objective_c"><code><span class="k">@property</span> <span class="p">(</span><span class="n">nonatomic</span><span class="p">,</span> <span class="n">copy</span><span class="p">,</span> <span class="n">readonly</span><span class="p">,</span> <span class="n">nonnull</span><span class="p">)</span> <span class="n">NSString</span> <span class="o">*</span><span class="n">major</span><span class="p">;</span></code></pre>
 
                         </div>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="k">var</span> <span class="nv">location</span><span class="p">:</span> <span class="kt"><a href="../Classes/RadarCoordinate.html">RadarCoordinate</a></span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span></code></pre>
+                          <pre class="highlight swift"><code><span class="k">var</span> <span class="nv">major</span><span class="p">:</span> <span class="kt">String</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:objc(cs)RadarBeacon(py)minor"></a>
+                    <a name="//apple_ref/objc/Property/minor" class="dashAnchor"></a>
+                    <a class="token" href="#/c:objc(cs)RadarBeacon(py)minor">minor</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>The minor ID of the beacon.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Objective-C</p>
+                          <pre class="highlight objective_c"><code><span class="k">@property</span> <span class="p">(</span><span class="n">nonatomic</span><span class="p">,</span> <span class="n">copy</span><span class="p">,</span> <span class="n">readonly</span><span class="p">,</span> <span class="n">nonnull</span><span class="p">)</span> <span class="n">NSString</span> <span class="o">*</span><span class="n">minor</span><span class="p">;</span></code></pre>
+
+                        </div>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="k">var</span> <span class="nv">minor</span><span class="p">:</span> <span class="kt">String</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:objc(cs)RadarBeacon(py)geometry"></a>
+                    <a name="//apple_ref/objc/Property/geometry" class="dashAnchor"></a>
+                    <a class="token" href="#/c:objc(cs)RadarBeacon(py)geometry">geometry</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>The location of the beacon.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Objective-C</p>
+                          <pre class="highlight objective_c"><code><span class="k">@property</span> <span class="p">(</span><span class="n">nonatomic</span><span class="p">,</span> <span class="n">strong</span><span class="p">,</span> <span class="n">readonly</span><span class="p">,</span> <span class="n">nonnull</span><span class="p">)</span> <span class="n"><a href="../Classes/RadarCoordinate.html">RadarCoordinate</a></span> <span class="o">*</span><span class="n">geometry</span><span class="p">;</span></code></pre>
+
+                        </div>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="k">var</span> <span class="nv">geometry</span><span class="p">:</span> <span class="kt"><a href="../Classes/RadarCoordinate.html">RadarCoordinate</a></span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span></code></pre>
 
                         </div>
                       </div>
@@ -421,8 +499,8 @@
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2020 <a class="link" href="https://radar.io" target="_blank" rel="external">Radar Labs, Inc.</a>. All rights reserved. (Last updated: 2020-11-16)</p>
-          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.13.3</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
+          <p>&copy; 2021 <a class="link" href="https://radar.io" target="_blank" rel="external">Radar Labs, Inc.</a>. All rights reserved. (Last updated: 2021-02-14)</p>
+          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.13.6</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
         </section>
       </article>
     </div>

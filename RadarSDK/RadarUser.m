@@ -7,6 +7,7 @@
 
 #import "RadarUser.h"
 #import "Radar.h"
+#import "RadarBeacon+Internal.h"
 #import "RadarChain+Internal.h"
 #import "RadarGeofence+Internal.h"
 #import "RadarPlace+Internal.h"
@@ -27,6 +28,7 @@
                            geofences:(NSArray *)geofences
                                place:(RadarPlace *)place
                             insights:(RadarUserInsights *)insights
+                             beacons:(NSArray *)beacons
                              stopped:(BOOL)stopped
                           foreground:(BOOL)foreground
                              country:(RadarRegion *_Nullable)country
@@ -50,6 +52,7 @@
         _geofences = geofences;
         _place = place;
         _insights = insights;
+        _beacons = beacons;
         _stopped = stopped;
         _foreground = foreground;
         _country = country;
@@ -82,6 +85,7 @@
     NSArray<RadarGeofence *> *geofences;
     RadarPlace *place;
     RadarUserInsights *insights;
+    NSArray<RadarBeacon *> *beacons;
     BOOL stopped = NO;
     BOOL foreground = NO;
     RadarRegion *country;
@@ -161,19 +165,7 @@
 
     id geofencesObj = dict[@"geofences"];
     if (geofencesObj && [geofencesObj isKindOfClass:[NSArray class]]) {
-        NSMutableArray<RadarGeofence *> *mutableGeofences = [NSMutableArray<RadarGeofence *> new];
-
-        NSArray *geofencesArr = (NSArray *)geofencesObj;
-        for (id geofenceObj in geofencesArr) {
-            RadarGeofence *userGeofence = [[RadarGeofence alloc] initWithObject:geofenceObj];
-            if (!userGeofence) {
-                return nil;
-            }
-
-            [mutableGeofences addObject:userGeofence];
-        }
-
-        geofences = mutableGeofences;
+        geofences = [RadarGeofence geofencesFromObject:geofencesObj];
     }
 
     id placeObj = dict[@"place"];
@@ -182,6 +174,11 @@
     id insightsObj = dict[@"insights"];
     if (insightsObj && [insightsObj isKindOfClass:[NSDictionary class]]) {
         insights = [[RadarUserInsights alloc] initWithObject:insightsObj];
+    }
+
+    id beaconsObj = dict[@"beacons"];
+    if (beaconsObj && [beaconsObj isKindOfClass:[NSArray class]]) {
+        beacons = [RadarBeacon beaconsFromObject:beaconsObj];
     }
 
     id stoppedObj = dict[@"stopped"];
@@ -303,6 +300,7 @@
                                    geofences:geofences
                                        place:place
                                     insights:insights
+                                     beacons:beacons
                                      stopped:stopped
                                   foreground:foreground
                                      country:country
@@ -342,6 +340,10 @@
         NSDictionary *insightsDict = [self.insights dictionaryValue];
         [dict setValue:insightsDict forKey:@"insights"];
     }
+    if (self.beacons) {
+        NSArray *beaconsArr = [RadarBeacon arrayForBeacons:self.beacons];
+        [dict setValue:beaconsArr forKey:@"beacons"];
+    }
     [dict setValue:@(self.stopped) forKey:@"stopped"];
     [dict setValue:@(self.foreground) forKey:@"foreground"];
     if (self.country) {
@@ -370,7 +372,7 @@
     NSDictionary *fraudDict = @{@"proxy": @(self.proxy)};
     [dict setValue:fraudDict forKey:@"fraud"];
     if (self.trip) {
-        [dict setValue:self.trip forKey:@"trip"];
+        [dict setValue:[self.trip dictionaryValue] forKey:@"trip"];
     }
     return dict;
 }

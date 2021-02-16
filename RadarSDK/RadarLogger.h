@@ -14,8 +14,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface RadarLogger : NSObject
 
-@property (nullable, weak, nonatomic) id<RadarDelegate> delegate;
-
 + (instancetype)sharedInstance;
 - (void)logWithLevel:(RadarLogLevel)level message:(NSString *)message;
 

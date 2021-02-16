@@ -11,9 +11,9 @@
 #import "RadarAPIHelper.h"
 
 #import "RadarAddress.h"
+#import "RadarBeacon.h"
 #import "RadarContext.h"
 #import "RadarEvent.h"
-#import "RadarPoint.h"
 #import "RadarRegion.h"
 #import "RadarRoutes.h"
 #import "RadarUser.h"
@@ -29,7 +29,7 @@ typedef void (^_Nullable RadarSearchPlacesAPICompletionHandler)(RadarStatus stat
 
 typedef void (^_Nullable RadarSearchGeofencesAPICompletionHandler)(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarGeofence *> *_Nullable geofences);
 
-typedef void (^_Nullable RadarSearchPointsAPICompletionHandler)(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarPoint *> *_Nullable points);
+typedef void (^_Nullable RadarSearchBeaconsAPICompletionHandler)(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarBeacon *> *_Nullable beacons);
 
 typedef void (^_Nullable RadarGeocodeAPICompletionHandler)(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarAddress *> *_Nullable addresses);
 
@@ -39,7 +39,6 @@ typedef void (^_Nullable RadarDistanceAPICompletionHandler)(RadarStatus status, 
 
 @interface RadarAPIClient : NSObject
 
-@property (nullable, weak, nonatomic) id<RadarDelegate> delegate;
 @property (nonnull, strong, nonatomic) RadarAPIHelper *apiHelper;
 
 + (instancetype)sharedInstance;
@@ -53,6 +52,7 @@ typedef void (^_Nullable RadarDistanceAPICompletionHandler)(RadarStatus status, 
                foreground:(BOOL)foreground
                    source:(RadarLocationSource)source
                  replayed:(BOOL)replayed
+            nearbyBeacons:(NSArray<NSString *> *_Nullable)nearbyBeacons
         completionHandler:(RadarTrackAPICompletionHandler _Nullable)completionHandler;
 
 - (void)verifyEventId:(NSString *_Nonnull)eventId verification:(RadarEventVerification)verification verifiedPlaceId:(NSString *_Nullable)verifiedPlaceId;
@@ -76,11 +76,7 @@ typedef void (^_Nullable RadarDistanceAPICompletionHandler)(RadarStatus status, 
                       limit:(int)limit
           completionHandler:(RadarSearchGeofencesAPICompletionHandler _Nullable)completionHandler;
 
-- (void)searchPointsNear:(CLLocation *_Nonnull)near
-                  radius:(int)radius
-                    tags:(NSArray<NSString *> *_Nullable)tags
-                   limit:(int)limit
-       completionHandler:(RadarSearchPointsAPICompletionHandler _Nullable)completionHandler;
+- (void)searchBeaconsNear:(CLLocation *_Nonnull)near radius:(int)radius limit:(int)limit completionHandler:(RadarSearchBeaconsAPICompletionHandler _Nullable)completionHandler;
 
 - (void)autocompleteQuery:(NSString *_Nonnull)query
                      near:(CLLocation *_Nonnull)near

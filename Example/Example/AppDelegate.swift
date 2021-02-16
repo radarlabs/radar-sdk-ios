@@ -19,11 +19,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         UNUserNotificationCenter.current().delegate = self
 
         locationManager.delegate = self
+        self.requestLocationPermissions()
 
         Radar.initialize(publishableKey: "prj_test_pk_0000000000000000000000000000000000000000")
-        Radar.setLogLevel(.debug)
         Radar.setDelegate(self)
-
+        
         if UIApplication.shared.applicationState != .background {
             Radar.getLocation { (status, location, stopped) in
                 print("Location: status = \(Radar.stringForStatus(status)); location = \(String(describing: location))")
@@ -60,14 +60,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             limit: 10
         ) { (status, location, geofences) in
             print("Search geofences: status = \(Radar.stringForStatus(status)); geofences = \(String(describing: geofences))")
-        }
-
-        Radar.searchPoints(
-            radius: 1000,
-            tags: ["article"],
-            limit: 10
-        ) { (status, location, points) in
-            print("Search points: status = \(Radar.stringForStatus(status)); points = \(String(describing: points))")
         }
 
         Radar.geocode(address: "20 jay st brooklyn") { (status, addresses) in
@@ -128,20 +120,31 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         return true
     }
     
-    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
+    func requestLocationPermissions() {
+        var status: CLAuthorizationStatus = .notDetermined
+        if #available(iOS 14.0, *) {
+            // On iOS 14.0 and later, use the authorizationStatus instance property.
+            status = self.locationManager.authorizationStatus
+        } else {
+            // Before iOS 14.0, use the authorizationStatus class method.
+            status = CLLocationManager.authorizationStatus()
+        }
+        
         if #available(iOS 13.4, *) {
-            // On iOS 13.4 and later, prompt for foreground first. If granted, prompt for background.
-            // The OS will show the background prompt in-app.
+            // On iOS 13.4 and later, prompt for foreground first. If granted, prompt for background. The OS will show the background prompt in-app.
             if status == .notDetermined {
-                locationManager.requestWhenInUseAuthorization()
+                self.locationManager.requestWhenInUseAuthorization()
             } else if status == .authorizedWhenInUse {
-                locationManager.requestAlwaysAuthorization()
+                self.locationManager.requestAlwaysAuthorization()
             }
         } else {
-            // Before iOS 13.4, prompt for background first. On iOS 13, the OS will show a foreground prompt in-app.
-            // The OS will show the background prompt outside of the app later, at a time determined by the OS.
-            locationManager.requestAlwaysAuthorization()
+            // Before iOS 13.4, prompt for background first. On iOS 13, the OS will show a foreground prompt in-app. The OS will show the background prompt outside of the app later, at a time determined by the OS.
+            self.locationManager.requestAlwaysAuthorization()
         }
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
+        self.requestLocationPermissions()
     }
 
     func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
@@ -179,7 +182,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
 
     func didFail(status: RadarStatus) {
-        self.notify(Utils.stringForRadarStatus(status))
+        self.notify(Radar.stringForStatus(status))
     }
 
     func didLog(message: String) {

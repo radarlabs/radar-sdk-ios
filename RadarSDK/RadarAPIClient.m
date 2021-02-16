@@ -7,14 +7,16 @@
 
 #import "RadarAPIClient.h"
 
+#import "Radar.h"
 #import "RadarAddress+Internal.h"
+#import "RadarBeacon+Internal.h"
 #import "RadarContext+Internal.h"
 #import "RadarCoordinate+Internal.h"
+#import "RadarDelegateHolder.h"
 #import "RadarEvent+Internal.h"
 #import "RadarGeofence+Internal.h"
 #import "RadarLogger.h"
 #import "RadarPlace+Internal.h"
-#import "RadarPoint+Internal.h"
 #import "RadarRoutes+Internal.h"
 #import "RadarSettings.h"
 #import "RadarState.h"
@@ -63,13 +65,14 @@
 
     NSMutableString *queryString = [NSMutableString new];
     [queryString appendFormat:@"installId=%@", [RadarSettings installId]];
-    NSString *userId = [RadarSettings userId];
-    if (userId) {
-        [queryString appendFormat:@"&userId=%@", userId];
+    [queryString appendFormat:@"&sessionId=%@", [RadarSettings sessionId]];
+    NSString *locationAuthorization = [RadarUtils locationAuthorization];
+    if (locationAuthorization) {
+        [queryString appendFormat:@"&locationAuthorization=%@", locationAuthorization];
     }
-    NSString *deviceId = [RadarUtils deviceId];
-    if (deviceId) {
-        [queryString appendFormat:@"&deviceId=%@", deviceId];
+    NSString *locationAccuracyAuthorization = [RadarUtils locationAccuracyAuthorization];
+    if (locationAccuracyAuthorization) {
+        [queryString appendFormat:@"&locationAccuracyAuthorization=%@", locationAccuracyAuthorization];
     }
 
     NSString *host = [RadarSettings host];
@@ -104,6 +107,7 @@
                foreground:(BOOL)foreground
                    source:(RadarLocationSource)source
                  replayed:(BOOL)replayed
+            nearbyBeacons:(NSArray<NSString *> *_Nullable)nearbyBeacons
         completionHandler:(RadarTrackAPICompletionHandler _Nullable)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
@@ -175,6 +179,9 @@
     if (options.syncGeofences) {
         params[@"nearbyGeofences"] = @(YES);
     }
+    if (nearbyBeacons) {
+        params[@"nearbyBeacons"] = nearbyBeacons;
+    }
 
     NSString *host = [RadarSettings host];
     NSString *url = [NSString stringWithFormat:@"%@/v1/track", host];
@@ -193,9 +200,7 @@
                                 [RadarState setLastFailedStoppedLocation:location];
                             }
 
-                            if (self.delegate) {
-                                [self.delegate didFailWithStatus:status];
-                            }
+                            [[RadarDelegateHolder sharedInstance] didFailWithStatus:status];
 
                             return completionHandler(status, nil, nil, nil, nil);
                         }
@@ -225,22 +230,18 @@
                                 [RadarSettings setTripOptions:nil];
                             }
 
-                            if (self.delegate) {
-                                if (location) {
-                                    [self.delegate didUpdateLocation:location user:user];
-                                }
+                            if (location) {
+                                [[RadarDelegateHolder sharedInstance] didUpdateLocation:location user:user];
+                            }
 
-                                if (events.count) {
-                                    [self.delegate didReceiveEvents:events user:user];
-                                }
+                            if (events.count) {
+                                [[RadarDelegateHolder sharedInstance] didReceiveEvents:events user:user];
                             }
 
                             return completionHandler(RadarStatusSuccess, res, events, user, nearbyGeofences);
                         }
 
-                        if (self.delegate) {
-                            [self.delegate didFailWithStatus:status];
-                        }
+                        [[RadarDelegateHolder sharedInstance] didFailWithStatus:status];
 
                         completionHandler(RadarStatusErrorServer, nil, nil, nil, nil);
                     }];
@@ -441,11 +442,7 @@
                     }];
 }
 
-- (void)searchPointsNear:(CLLocation *)near
-                  radius:(int)radius
-                    tags:(NSArray<NSString *> *)tags
-                   limit:(int)limit
-       completionHandler:(RadarSearchPointsAPICompletionHandler)completionHandler {
+- (void)searchBeaconsNear:(CLLocation *)near radius:(int)radius limit:(int)limit completionHandler:(RadarSearchBeaconsAPICompletionHandler)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
         return completionHandler(RadarStatusErrorPublishableKey, nil, nil);
@@ -457,12 +454,9 @@
     [queryString appendFormat:@"near=%.06f,%.06f", near.coordinate.latitude, near.coordinate.longitude];
     [queryString appendFormat:@"&radius=%d", radius];
     [queryString appendFormat:@"&limit=%d", finalLimit];
-    if (tags && [tags count] > 0) {
-        [queryString appendFormat:@"&tags=%@", [tags componentsJoinedByString:@","]];
-    }
 
     NSString *host = [RadarSettings host];
-    NSString *url = [NSString stringWithFormat:@"%@/v1/search/points?%@", host, queryString];
+    NSString *url = [NSString stringWithFormat:@"%@/v1/search/beacons?%@", host, queryString];
     url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
 
     NSDictionary *headers = [RadarAPIClient headersWithPublishableKey:publishableKey];
@@ -475,10 +469,10 @@
                             return completionHandler(status, nil, nil);
                         }
 
-                        id pointsObj = res[@"points"];
-                        NSArray<RadarPoint *> *points = [RadarPoint pointsFromObject:pointsObj];
-                        if (points) {
-                            return completionHandler(RadarStatusSuccess, res, points);
+                        id beaconsObj = res[@"beacons"];
+                        NSArray<RadarBeacon *> *beacons = [RadarBeacon beaconsFromObject:beaconsObj];
+                        if (beacons) {
+                            return completionHandler(RadarStatusSuccess, res, beacons);
                         }
 
                         completionHandler(RadarStatusErrorServer, nil, nil);

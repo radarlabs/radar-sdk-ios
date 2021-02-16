@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
   s.name                  = 'RadarSDK'
-  s.version               = '3.0.8'
-  s.summary               = 'iOS SDK for Radar, location data infrastructure'
+  s.version               = '3.1.0'
+  s.summary               = 'iOS SDK for Radar, the leading geofencing and location tracking platform'
   s.homepage              = 'https://radar.io'
   s.author                = { 'Radar Labs, Inc.' => 'support@radar.io' }
   s.platform              = :ios
@@ -14,4 +14,6 @@ Pod::Spec.new do |s|
   s.frameworks            = 'CoreLocation'
   s.requires_arc          = true
   s.license               = { :type => 'Apache-2.0' }
+  s.pod_target_xcconfig   = { 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'arm64' }
+  s.user_target_xcconfig  = { 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'arm64' }
 end

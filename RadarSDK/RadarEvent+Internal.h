@@ -5,6 +5,7 @@
 //  Copyright © 2019 Radar Labs, Inc. All rights reserved.
 //
 
+#import "RadarBeacon.h"
 #import "RadarEvent.h"
 #import "RadarGeofence.h"
 #import "RadarPlace.h"
@@ -23,6 +24,7 @@
                             geofence:(RadarGeofence *_Nullable)geofence
                                place:(RadarPlace *_Nullable)place
                               region:(RadarRegion *_Nullable)region
+                              beacon:(RadarBeacon *_Nullable)beacon
                      alternatePlaces:(NSArray<RadarPlace *> *_Nullable)alternatePlaces
                        verifiedPlace:(RadarPlace *_Nullable)verifiedPlace
                         verification:(RadarEventVerification)verification

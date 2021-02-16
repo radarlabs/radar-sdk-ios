@@ -7,6 +7,7 @@
 
 #import "RadarLogger.h"
 
+#import "RadarDelegateHolder.h"
 #import "RadarSettings.h"
 #import "RadarUtils.h"
 
@@ -29,9 +30,7 @@
 
             NSLog(@"%@", log);
 
-            if (self.delegate) {
-                [self.delegate didLogMessage:log];
-            }
+            [[RadarDelegateHolder sharedInstance] didLogMessage:log];
         }
     });
 }
