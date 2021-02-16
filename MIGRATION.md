@@ -2,6 +2,7 @@
 
 ## 3.0.x to 3.1.x
 
+- The `Radar.trackOnce(desiredAccuracy:completionHandler:)` method is now `Radar.trackOnce(desiredAccuracy:beacons:completionHandler)`.
 - The `Radar.stopTrip()` method has been removed. Call `Radar.completeTrip()` or `Radar.cancelTrip()` instead.
 
 ## 2.1.x to 3.0.x
