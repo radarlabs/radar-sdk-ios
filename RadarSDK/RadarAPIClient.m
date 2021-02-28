@@ -647,6 +647,12 @@
     if (modes & RadarRouteModeCar) {
         [modesArr addObject:@"car"];
     }
+    if (modes & RadarRouteModeTruck) {
+        [modesArr addObject:@"truck"];
+    }
+    if (modes & RadarRouteModeMotorScooter) {
+        [modesArr addObject:@"motor_scooter"];
+    }
     [queryString appendFormat:@"&modes=%@", [modesArr componentsJoinedByString:@","]];
     NSString *unitsStr;
     if (units == RadarRouteUnitsMetric) {
@@ -715,12 +721,14 @@
     NSString *modeStr;
     if (mode == RadarRouteModeFoot) {
         modeStr = @"foot";
-    }
-    if (mode == RadarRouteModeBike) {
+    } else if (mode == RadarRouteModeBike) {
         modeStr = @"bike";
-    }
-    if (mode == RadarRouteModeCar) {
+    } else if (mode == RadarRouteModeCar) {
         modeStr = @"car";
+    } else if (mode == RadarRouteModeTruck) {
+        modeStr = @"truck";
+    } else if (mode == RadarRouteModeMotorScooter) {
+        modeStr = @"motor_scooter";
     }
     [queryString appendFormat:@"&mode=%@", modeStr];
     NSString *unitsStr;

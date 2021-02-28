@@ -119,6 +119,10 @@
             mode = RadarRouteModeFoot;
         } else if ([modeStr isEqualToString:@"bike"]) {
             mode = RadarRouteModeBike;
+        } else if ([modeStr isEqualToString:@"truck"]) {
+            mode = RadarRouteModeTruck;
+        } else if ([modeStr isEqualToString:@"motor_scooter"]) {
+            mode = RadarRouteModeMotorScooter;
         } else {
             mode = RadarRouteModeCar;
         }

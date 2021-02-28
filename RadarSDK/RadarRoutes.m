@@ -11,13 +11,15 @@
 
 @implementation RadarRoutes
 
-- (nullable instancetype)initWithGeodesic:(nullable RadarRouteDistance *)geodesic foot:(nullable RadarRoute *)foot bike:(nullable RadarRoute *)bike car:(nullable RadarRoute *)car {
+- (nullable instancetype)initWithGeodesic:(nullable RadarRouteDistance *)geodesic foot:(nullable RadarRoute *)foot bike:(nullable RadarRoute *)bike car:(nullable RadarRoute *)car truck:(nullable RadarRoute *)truck motorScooter:(nullable RadarRoute *)motorScooter {
     self = [super init];
     if (self) {
         _geodesic = geodesic;
         _foot = foot;
         _bike = bike;
         _car = car;
+        _truck = truck;
+        _motorScooter = motorScooter;
     }
     return self;
 }
@@ -33,6 +35,8 @@
     RadarRoute *foot;
     RadarRoute *bike;
     RadarRoute *car;
+    RadarRoute *truck;
+    RadarRoute *motorScooter;
 
     id geodesicObj = dict[@"geodesic"];
     if (geodesicObj) {
@@ -56,8 +60,18 @@
     if (carObj) {
         car = [[RadarRoute alloc] initWithObject:carObj];
     }
+    
+    id truckObj = dict[@"truck"];
+    if (truckObj) {
+        truck = [[RadarRoute alloc] initWithObject:truckObj];
+    }
+    
+    id motorScooterObj = dict[@"motorScooter"];
+    if (motorScooterObj) {
+        motorScooter = [[RadarRoute alloc] initWithObject:motorScooterObj];
+    }
 
-    return [[RadarRoutes alloc] initWithGeodesic:geodesic foot:foot bike:bike car:car];
+    return [[RadarRoutes alloc] initWithGeodesic:geodesic foot:foot bike:bike car:car truck:truck motorScooter:motorScooter];
 }
 
 - (NSDictionary *)dictionaryValue {
@@ -77,6 +91,14 @@
     if (self.car) {
         NSDictionary *carDict = [self.car dictionaryValue];
         [dict setValue:carDict forKey:@"car"];
+    }
+    if (self.truck) {
+        NSDictionary *truckDict = [self.truck dictionaryValue];
+        [dict setValue:truckDict forKey:@"truck"];
+    }
+    if (self.motorScooter) {
+        NSDictionary *motorScooterDict = [self.motorScooter dictionaryValue];
+        [dict setValue:motorScooterDict forKey:@"motorScooter"];
     }
     return dict;
 }

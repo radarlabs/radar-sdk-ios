@@ -19,7 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  Returns the route between the specified origin and destination.
- 
+
  @param originIndex The index of the origin.
  @param destinationIndex The index of the destination.
 

@@ -210,6 +210,10 @@
                         coordinates = routes.bike.geometry.coordinates;
                     } else if (mode == RadarRouteModeCar && routes.car && routes.car.geometry) {
                         coordinates = routes.car.geometry.coordinates;
+                    } else if (mode == RadarRouteModeTruck && routes.truck && routes.truck.geometry) {
+                        coordinates = routes.truck.geometry.coordinates;
+                    } else if (mode == RadarRouteModeMotorScooter && routes.motorScooter && routes.motorScooter.geometry) {
+                        coordinates = routes.motorScooter.geometry.coordinates;
                     }
                 }
 
@@ -655,6 +659,12 @@
         break;
     case RadarRouteModeCar:
         str = @"car";
+        break;
+    case RadarRouteModeTruck:
+        str = @"truck";
+        break;
+    case RadarRouteModeMotorScooter:
+        str = @"motor_scooter";
         break;
     }
     return str;
