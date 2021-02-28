@@ -43,9 +43,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nullable, strong, nonatomic, readonly) RadarRoute *truck;
 
 /**
- The route by motor scooter between the origin and destination. May be `nil` if mode not specified or route unavailable.
+ The route by motorbike between the origin and destination. May be `nil` if mode not specified or route unavailable.
  */
-@property (nullable, strong, nonatomic, readonly) RadarRoute *motorScooter;
+@property (nullable, strong, nonatomic, readonly) RadarRoute *motorbike;
 
 - (NSDictionary *_Nonnull)dictionaryValue;
 

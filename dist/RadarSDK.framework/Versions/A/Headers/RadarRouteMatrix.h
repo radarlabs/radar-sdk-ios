@@ -11,9 +11,9 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- Represents routes between multiple origins and destinations. For more information, see https://radar.io/documentation/api#matrix.
+ Represents routes between multiple origins and destinations.
 
- @see https://radar.io/documentation/api#routing
+ @see https://radar.io/documentation/api#matrix
 */
 @interface RadarRouteMatrix : NSObject
 

@@ -40,8 +40,8 @@ NSString *const kMode = @"mode";
         options.mode = RadarRouteModeBike;
     } else if ([modeStr isEqualToString:@"truck"]) {
         options.mode = RadarRouteModeTruck;
-    } else if ([modeStr isEqualToString:@"motor_scooter"]) {
-        options.mode = RadarRouteModeMotorScooter;
+    } else if ([modeStr isEqualToString:@"motorbike"]) {
+        options.mode = RadarRouteModeMotorbike;
     } else {
         options.mode = RadarRouteModeCar;
     }

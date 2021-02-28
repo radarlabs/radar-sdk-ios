@@ -11,7 +11,7 @@
 
 @implementation RadarRoutes
 
-- (nullable instancetype)initWithGeodesic:(nullable RadarRouteDistance *)geodesic foot:(nullable RadarRoute *)foot bike:(nullable RadarRoute *)bike car:(nullable RadarRoute *)car truck:(nullable RadarRoute *)truck motorScooter:(nullable RadarRoute *)motorScooter {
+- (nullable instancetype)initWithGeodesic:(nullable RadarRouteDistance *)geodesic foot:(nullable RadarRoute *)foot bike:(nullable RadarRoute *)bike car:(nullable RadarRoute *)car truck:(nullable RadarRoute *)truck motorbike:(nullable RadarRoute *)motorbike {
     self = [super init];
     if (self) {
         _geodesic = geodesic;
@@ -19,7 +19,7 @@
         _bike = bike;
         _car = car;
         _truck = truck;
-        _motorScooter = motorScooter;
+        _motorbike = motorbike;
     }
     return self;
 }
@@ -36,7 +36,7 @@
     RadarRoute *bike;
     RadarRoute *car;
     RadarRoute *truck;
-    RadarRoute *motorScooter;
+    RadarRoute *motorbike;
 
     id geodesicObj = dict[@"geodesic"];
     if (geodesicObj) {
@@ -66,12 +66,12 @@
         truck = [[RadarRoute alloc] initWithObject:truckObj];
     }
     
-    id motorScooterObj = dict[@"motorScooter"];
-    if (motorScooterObj) {
-        motorScooter = [[RadarRoute alloc] initWithObject:motorScooterObj];
+    id motorbikeObj = dict[@"motorbike"];
+    if (motorbikeObj) {
+        motorbike = [[RadarRoute alloc] initWithObject:motorbikeObj];
     }
 
-    return [[RadarRoutes alloc] initWithGeodesic:geodesic foot:foot bike:bike car:car truck:truck motorScooter:motorScooter];
+    return [[RadarRoutes alloc] initWithGeodesic:geodesic foot:foot bike:bike car:car truck:truck motorbike:motorbike];
 }
 
 - (NSDictionary *)dictionaryValue {
@@ -96,9 +96,9 @@
         NSDictionary *truckDict = [self.truck dictionaryValue];
         [dict setValue:truckDict forKey:@"truck"];
     }
-    if (self.motorScooter) {
-        NSDictionary *motorScooterDict = [self.motorScooter dictionaryValue];
-        [dict setValue:motorScooterDict forKey:@"motorScooter"];
+    if (self.motorbike) {
+        NSDictionary *motorbikeDict = [self.motorbike dictionaryValue];
+        [dict setValue:motorbikeDict forKey:@"motorbike"];
     }
     return dict;
 }

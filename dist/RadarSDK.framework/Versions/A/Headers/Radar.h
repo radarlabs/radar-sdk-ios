@@ -117,8 +117,8 @@ typedef NS_OPTIONS(NSInteger, RadarRouteMode) {
     RadarRouteModeCar NS_SWIFT_NAME(car) = 1 << 2,
     /// Truck
     RadarRouteModeTruck NS_SWIFT_NAME(truck) = 1 << 3,
-    /// Motor scooter
-    RadarRouteModeMotorScooter NS_SWIFT_NAME(motorScooter) = 1 << 4
+    /// Motorbike
+    RadarRouteModeMotorbike NS_SWIFT_NAME(motorbike) = 1 << 4
 };
 
 /**
