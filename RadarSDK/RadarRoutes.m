@@ -11,7 +11,12 @@
 
 @implementation RadarRoutes
 
-- (nullable instancetype)initWithGeodesic:(nullable RadarRouteDistance *)geodesic foot:(nullable RadarRoute *)foot bike:(nullable RadarRoute *)bike car:(nullable RadarRoute *)car truck:(nullable RadarRoute *)truck motorbike:(nullable RadarRoute *)motorbike {
+- (nullable instancetype)initWithGeodesic:(nullable RadarRouteDistance *)geodesic
+                                     foot:(nullable RadarRoute *)foot
+                                     bike:(nullable RadarRoute *)bike
+                                      car:(nullable RadarRoute *)car
+                                    truck:(nullable RadarRoute *)truck
+                                motorbike:(nullable RadarRoute *)motorbike {
     self = [super init];
     if (self) {
         _geodesic = geodesic;
@@ -60,12 +65,12 @@
     if (carObj) {
         car = [[RadarRoute alloc] initWithObject:carObj];
     }
-    
+
     id truckObj = dict[@"truck"];
     if (truckObj) {
         truck = [[RadarRoute alloc] initWithObject:truckObj];
     }
-    
+
     id motorbikeObj = dict[@"motorbike"];
     if (motorbikeObj) {
         motorbike = [[RadarRoute alloc] initWithObject:motorbikeObj];

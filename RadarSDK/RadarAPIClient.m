@@ -738,7 +738,7 @@
         unitsStr = @"imperial";
     }
     [queryString appendFormat:@"&units=%@", unitsStr];
-    
+
     NSLog(@"%@", queryString);
 
     NSString *host = [RadarSettings host];

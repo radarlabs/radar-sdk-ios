@@ -141,8 +141,15 @@
       "warning": "undocumented"
     },
     {
+      "file": "/Users/nickpatrick/radar/radar-sdk-ios/RadarSDK/RadarRouteMatrix.h",
+      "line": 30,
+      "symbol": "RadarRouteMatrix.-arrayValue",
+      "symbol_kind": "sourcekitten.source.lang.objc.decl.method.instance",
+      "warning": "undocumented"
+    },
+    {
       "file": "/Users/nickpatrick/radar/radar-sdk-ios/RadarSDK/RadarRoutes.h",
-      "line": 40,
+      "line": 50,
       "symbol": "RadarRoutes.-dictionaryValue",
       "symbol_kind": "sourcekitten.source.lang.objc.decl.method.instance",
       "warning": "undocumented"
