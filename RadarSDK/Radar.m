@@ -540,6 +540,22 @@
                                          }];
 }
 
++ (void)getMatrixFromOrigins:(NSArray<CLLocation *> *_Nonnull)origins
+                destinations:(NSArray<CLLocation *> *_Nonnull)destinations
+                        mode:(RadarRouteMode)mode
+                       units:(RadarRouteUnits)units
+           completionHandler:(RadarRouteMatrixCompletionHandler)completionHandler {
+    [[RadarAPIClient sharedInstance] getMatrixFromOrigins:origins
+                                             destinations:destinations
+                                                     mode:mode
+                                                    units:units
+                                        completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, RadarRouteMatrix *_Nullable matrix) {
+                                            [RadarUtils runOnMainThread:^{
+                                                completionHandler(status, matrix);
+                                            }];
+                                        }];
+}
+
 + (void)setLogLevel:(RadarLogLevel)level {
     [RadarSettings setLogLevel:level];
 }
