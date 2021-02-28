@@ -21,7 +21,7 @@
 }
 
 - (nullable instancetype)initWithObject:(_Nonnull id)object {
-    if (![object isKindOfClass:[NSDictionary class]]) {
+    if (![object isKindOfClass:[NSArray class]]) {
         return nil;
     }
 

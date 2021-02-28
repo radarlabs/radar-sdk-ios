@@ -710,7 +710,7 @@
             [queryString appendString:@"|"];
         }
     }
-    [queryString appendString:@"destinations="];
+    [queryString appendString:@"&destinations="];
     for (int i = 0; i < destinations.count; i++) {
         CLLocation *destination = destinations[i];
         [queryString appendFormat:@"%.06f,%.06f", destination.coordinate.latitude, destination.coordinate.longitude];
@@ -738,6 +738,8 @@
         unitsStr = @"imperial";
     }
     [queryString appendFormat:@"&units=%@", unitsStr];
+    
+    NSLog(@"%@", queryString);
 
     NSString *host = [RadarSettings host];
     NSString *url = [NSString stringWithFormat:@"%@/v1/route/matrix?%@", host, queryString];
