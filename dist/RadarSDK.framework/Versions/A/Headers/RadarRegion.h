@@ -10,7 +10,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- Represents a region. For more information about Regions, see https://radar.io/documentation/regions.
+ Represents a region.
 
  @see https://radar.io/documentation/regions
  */

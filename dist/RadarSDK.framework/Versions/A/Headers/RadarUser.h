@@ -18,9 +18,7 @@
 typedef NS_ENUM(NSInteger, RadarLocationSource);
 
 /**
- Represents the current user state. For more information, see https://radar.io/documentation.
-
- @see https://radar.io/documentation
+ Represents the current user state.
  */
 @interface RadarUser : NSObject
 

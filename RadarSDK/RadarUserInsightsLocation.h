@@ -11,7 +11,7 @@
 #import <Foundation/Foundation.h>
 
 /**
- Represents a learned home or work location. For more information about Insights, see https://radar.io/documentation/insights.
+ Represents a learned home or work location.
 
  @see https://radar.io/documentation/insights
  */

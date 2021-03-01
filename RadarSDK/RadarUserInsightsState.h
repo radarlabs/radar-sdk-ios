@@ -8,8 +8,7 @@
 #import <Foundation/Foundation.h>
 
 /**
- Represents the learned home, work, traveling and commuting state of the current user. For more information about Insights, see
- https://radar.io/documentation/insights.
+ Represents the learned home, work, traveling and commuting state of the current user.
 
  @see https://radar.io/documentation/insights
  */

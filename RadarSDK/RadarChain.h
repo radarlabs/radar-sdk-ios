@@ -8,7 +8,7 @@
 #import <Foundation/Foundation.h>
 
 /**
- Represents the chain of a place. For more information about Places, see https://radar.io/documentation/places.
+ Represents the chain of a place.
 
  @see https://radar.io/documentation/places
  */

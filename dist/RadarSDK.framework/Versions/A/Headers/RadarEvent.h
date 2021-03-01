@@ -13,9 +13,7 @@
 #import <Foundation/Foundation.h>
 
 /**
- Represents a change in user state. For more information, see https://radar.io/documentation.
-
- @see https://radar.io/documentation
+ Represents a change in user state.
  */
 @interface RadarEvent : NSObject
 
