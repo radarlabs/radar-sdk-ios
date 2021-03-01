@@ -11,7 +11,7 @@
 #import <Foundation/Foundation.h>
 
 /**
- Represents a place. For more information about Places, see https://radar.io/documentation/places.
+ Represents a place.
 
  @see https://radar.io/documentation/places
  */

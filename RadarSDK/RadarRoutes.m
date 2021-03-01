@@ -11,13 +11,20 @@
 
 @implementation RadarRoutes
 
-- (nullable instancetype)initWithGeodesic:(nullable RadarRouteDistance *)geodesic foot:(nullable RadarRoute *)foot bike:(nullable RadarRoute *)bike car:(nullable RadarRoute *)car {
+- (nullable instancetype)initWithGeodesic:(nullable RadarRouteDistance *)geodesic
+                                     foot:(nullable RadarRoute *)foot
+                                     bike:(nullable RadarRoute *)bike
+                                      car:(nullable RadarRoute *)car
+                                    truck:(nullable RadarRoute *)truck
+                                motorbike:(nullable RadarRoute *)motorbike {
     self = [super init];
     if (self) {
         _geodesic = geodesic;
         _foot = foot;
         _bike = bike;
         _car = car;
+        _truck = truck;
+        _motorbike = motorbike;
     }
     return self;
 }
@@ -33,6 +40,8 @@
     RadarRoute *foot;
     RadarRoute *bike;
     RadarRoute *car;
+    RadarRoute *truck;
+    RadarRoute *motorbike;
 
     id geodesicObj = dict[@"geodesic"];
     if (geodesicObj) {
@@ -57,7 +66,17 @@
         car = [[RadarRoute alloc] initWithObject:carObj];
     }
 
-    return [[RadarRoutes alloc] initWithGeodesic:geodesic foot:foot bike:bike car:car];
+    id truckObj = dict[@"truck"];
+    if (truckObj) {
+        truck = [[RadarRoute alloc] initWithObject:truckObj];
+    }
+
+    id motorbikeObj = dict[@"motorbike"];
+    if (motorbikeObj) {
+        motorbike = [[RadarRoute alloc] initWithObject:motorbikeObj];
+    }
+
+    return [[RadarRoutes alloc] initWithGeodesic:geodesic foot:foot bike:bike car:car truck:truck motorbike:motorbike];
 }
 
 - (NSDictionary *)dictionaryValue {
@@ -77,6 +96,14 @@
     if (self.car) {
         NSDictionary *carDict = [self.car dictionaryValue];
         [dict setValue:carDict forKey:@"car"];
+    }
+    if (self.truck) {
+        NSDictionary *truckDict = [self.truck dictionaryValue];
+        [dict setValue:truckDict forKey:@"truck"];
+    }
+    if (self.motorbike) {
+        NSDictionary *motorbikeDict = [self.motorbike dictionaryValue];
+        [dict setValue:motorbikeDict forKey:@"motorbike"];
     }
     return dict;
 }

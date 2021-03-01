@@ -11,7 +11,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- Represents a Bluetooth beacon. For more information about Beacons, see https://radar.io/documentation/beacons.
+ Represents a Bluetooth beacon.
 
  @see https://radar.io/documentation/beacons
  */

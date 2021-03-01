@@ -15,6 +15,7 @@
 #import "RadarContext.h"
 #import "RadarEvent.h"
 #import "RadarRegion.h"
+#import "RadarRouteMatrix.h"
 #import "RadarRoutes.h"
 #import "RadarUser.h"
 
@@ -36,6 +37,8 @@ typedef void (^_Nullable RadarGeocodeAPICompletionHandler)(RadarStatus status, N
 typedef void (^_Nullable RadarIPGeocodeAPICompletionHandler)(RadarStatus status, NSDictionary *_Nullable res, RadarAddress *_Nullable address, BOOL proxy);
 
 typedef void (^_Nullable RadarDistanceAPICompletionHandler)(RadarStatus status, NSDictionary *_Nullable res, RadarRoutes *_Nullable routes);
+
+typedef void (^_Nullable RadarMatrixAPICompletionHandler)(RadarStatus status, NSDictionary *_Nullable res, RadarRouteMatrix *_Nullable matrix);
 
 @interface RadarAPIClient : NSObject
 
@@ -95,6 +98,12 @@ typedef void (^_Nullable RadarDistanceAPICompletionHandler)(RadarStatus status, 
                         units:(RadarRouteUnits)units
                geometryPoints:(int)geometryPoints
             completionHandler:(RadarDistanceAPICompletionHandler _Nullable)completionHandler;
+
+- (void)getMatrixFromOrigins:(NSArray<CLLocation *> *_Nonnull)origins
+                destinations:(NSArray<CLLocation *> *_Nonnull)destinations
+                        mode:(RadarRouteMode)mode
+                       units:(RadarRouteUnits)units
+           completionHandler:(RadarMatrixAPICompletionHandler _Nullable)completionHandler;
 
 @end
 

@@ -210,6 +210,10 @@
                         coordinates = routes.bike.geometry.coordinates;
                     } else if (mode == RadarRouteModeCar && routes.car && routes.car.geometry) {
                         coordinates = routes.car.geometry.coordinates;
+                    } else if (mode == RadarRouteModeTruck && routes.truck && routes.truck.geometry) {
+                        coordinates = routes.truck.geometry.coordinates;
+                    } else if (mode == RadarRouteModeMotorbike && routes.motorbike && routes.motorbike.geometry) {
+                        coordinates = routes.motorbike.geometry.coordinates;
                     }
                 }
 
@@ -540,6 +544,22 @@
                                          }];
 }
 
++ (void)getMatrixFromOrigins:(NSArray<CLLocation *> *_Nonnull)origins
+                destinations:(NSArray<CLLocation *> *_Nonnull)destinations
+                        mode:(RadarRouteMode)mode
+                       units:(RadarRouteUnits)units
+           completionHandler:(RadarRouteMatrixCompletionHandler)completionHandler {
+    [[RadarAPIClient sharedInstance] getMatrixFromOrigins:origins
+                                             destinations:destinations
+                                                     mode:mode
+                                                    units:units
+                                        completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, RadarRouteMatrix *_Nullable matrix) {
+                                            [RadarUtils runOnMainThread:^{
+                                                completionHandler(status, matrix);
+                                            }];
+                                        }];
+}
+
 + (void)setLogLevel:(RadarLogLevel)level {
     [RadarSettings setLogLevel:level];
 }
@@ -639,6 +659,12 @@
         break;
     case RadarRouteModeCar:
         str = @"car";
+        break;
+    case RadarRouteModeTruck:
+        str = @"truck";
+        break;
+    case RadarRouteModeMotorbike:
+        str = @"motorbike";
         break;
     }
     return str;

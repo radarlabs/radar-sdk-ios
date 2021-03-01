@@ -124,7 +124,7 @@
 
         if ([type isEqualToString:@"circle"]) {
             geometry = [[RadarCircleGeometry alloc] initWithCenter:center radius:radius];
-        } else if ([type isEqualToString:@"polygon"]) {
+        } else if ([type isEqualToString:@"polygon"] || [type isEqualToString:@"isochrone"]) {
             id geometryObj = dict[@"geometry"];
 
             if (![geometryObj isKindOfClass:[NSDictionary class]]) {

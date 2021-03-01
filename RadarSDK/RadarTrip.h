@@ -11,7 +11,7 @@
 typedef NS_OPTIONS(NSInteger, RadarRouteMode);
 
 /**
- Represents a trip. For more information, see https://radar.io/documentation/trip-tracking.
+ Represents a trip.
 
  @see https://radar.io/documentation/trip-tracking
  */

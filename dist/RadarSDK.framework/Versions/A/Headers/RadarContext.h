@@ -12,7 +12,7 @@
 #import <Foundation/Foundation.h>
 
 /**
- The context for a location.
+ Represents the context for a location.
 
  @see https://radar.io/documentation/api#context
  */

@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 
 /**
- Represents a geofence. For more information about Geofences, see https://radar.io/documentation/geofences.
+ Represents a geofence.
 
  @see https://radar.io/documentation/geofences
  */

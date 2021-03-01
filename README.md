@@ -1,4 +1,4 @@
-![Radar](https://raw.githubusercontent.com/radarlabs/radar-sdk-ios/master/logo.png?v=3)
+![Radar](https://raw.githubusercontent.com/radarlabs/radar-sdk-ios/master/logo.png)
 
 [![CocoaPods](https://img.shields.io/cocoapods/v/RadarSDK.svg)](https://cocoapods.org/pods/RadarSDK)
 [![Carthage](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg)](https://github.com/Carthage/Carthage)

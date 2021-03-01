@@ -17,6 +17,7 @@
 #import "RadarGeofence+Internal.h"
 #import "RadarLogger.h"
 #import "RadarPlace+Internal.h"
+#import "RadarRouteMatrix+Internal.h"
 #import "RadarRoutes+Internal.h"
 #import "RadarSettings.h"
 #import "RadarState.h"
@@ -646,6 +647,12 @@
     if (modes & RadarRouteModeCar) {
         [modesArr addObject:@"car"];
     }
+    if (modes & RadarRouteModeTruck) {
+        [modesArr addObject:@"truck"];
+    }
+    if (modes & RadarRouteModeMotorbike) {
+        [modesArr addObject:@"motorbike"];
+    }
     [queryString appendFormat:@"&modes=%@", [modesArr componentsJoinedByString:@","]];
     NSString *unitsStr;
     if (units == RadarRouteUnitsMetric) {
@@ -678,6 +685,81 @@
                         RadarRoutes *routes = [[RadarRoutes alloc] initWithObject:routesObj];
                         if (routes) {
                             return completionHandler(RadarStatusSuccess, res, routes);
+                        }
+
+                        completionHandler(RadarStatusErrorServer, nil, nil);
+                    }];
+}
+
+- (void)getMatrixFromOrigins:(NSArray<CLLocation *> *)origins
+                destinations:(NSArray<CLLocation *> *)destinations
+                        mode:(RadarRouteMode)mode
+                       units:(RadarRouteUnits)units
+           completionHandler:(RadarMatrixAPICompletionHandler)completionHandler {
+    NSString *publishableKey = [RadarSettings publishableKey];
+    if (!publishableKey) {
+        return completionHandler(RadarStatusErrorPublishableKey, nil, nil);
+    }
+
+    NSMutableString *queryString = [NSMutableString new];
+    [queryString appendString:@"origins="];
+    for (int i = 0; i < origins.count; i++) {
+        CLLocation *origin = origins[i];
+        [queryString appendFormat:@"%.06f,%.06f", origin.coordinate.latitude, origin.coordinate.longitude];
+        if (i < origins.count - 1) {
+            [queryString appendString:@"|"];
+        }
+    }
+    [queryString appendString:@"&destinations="];
+    for (int i = 0; i < destinations.count; i++) {
+        CLLocation *destination = destinations[i];
+        [queryString appendFormat:@"%.06f,%.06f", destination.coordinate.latitude, destination.coordinate.longitude];
+        if (i < destinations.count - 1) {
+            [queryString appendString:@"|"];
+        }
+    }
+    NSString *modeStr;
+    if (mode == RadarRouteModeFoot) {
+        modeStr = @"foot";
+    } else if (mode == RadarRouteModeBike) {
+        modeStr = @"bike";
+    } else if (mode == RadarRouteModeCar) {
+        modeStr = @"car";
+    } else if (mode == RadarRouteModeTruck) {
+        modeStr = @"truck";
+    } else if (mode == RadarRouteModeMotorbike) {
+        modeStr = @"motorbike";
+    }
+    [queryString appendFormat:@"&mode=%@", modeStr];
+    NSString *unitsStr;
+    if (units == RadarRouteUnitsMetric) {
+        unitsStr = @"metric";
+    } else {
+        unitsStr = @"imperial";
+    }
+    [queryString appendFormat:@"&units=%@", unitsStr];
+
+    NSLog(@"%@", queryString);
+
+    NSString *host = [RadarSettings host];
+    NSString *url = [NSString stringWithFormat:@"%@/v1/route/matrix?%@", host, queryString];
+    url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
+
+    NSDictionary *headers = [RadarAPIClient headersWithPublishableKey:publishableKey];
+
+    [self.apiHelper requestWithMethod:@"GET"
+                                  url:url
+                              headers:headers
+                               params:nil
+                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
+                        if (status != RadarStatusSuccess || !res) {
+                            return completionHandler(status, nil, nil);
+                        }
+
+                        id matrixObj = res[@"matrix"];
+                        RadarRouteMatrix *matrix = [[RadarRouteMatrix alloc] initWithObject:matrixObj];
+                        if (matrix) {
+                            return completionHandler(RadarStatusSuccess, res, matrix);
                         }
 
                         completionHandler(RadarStatusErrorServer, nil, nil);
