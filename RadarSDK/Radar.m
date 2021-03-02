@@ -304,21 +304,23 @@
 
 + (void)startTripWithOptions:(RadarTripOptions *)options {
     [RadarSettings setTripOptions:options];
-    [[RadarAPIClient sharedInstance] updateTripWithStatus:RadarTripStatusStarted];
+    [[RadarAPIClient sharedInstance] updateTripWithStatus:RadarTripStatusStarted options:options];
     [[RadarLocationManager sharedInstance] getLocationWithCompletionHandler:nil];
 }
 
-+ (void)stopTrip {
-    [self completeTrip];
++ (void)updateTripWithStatus:(RadarTripStatus)status options:(RadarTripOptions *)options {
+    [[RadarAPIClient sharedInstance] updateTripWithStatus:RadarTripStatusStarted options:options];
 }
 
 + (void)completeTrip {
-    [[RadarAPIClient sharedInstance] updateTripWithStatus:RadarTripStatusCompleted];
+    RadarTripOptions *options = [RadarSettings tripOptions];
+    [[RadarAPIClient sharedInstance] updateTripWithStatus:RadarTripStatusCompleted options:options];
     [RadarSettings setTripOptions:nil];
 }
 
 + (void)cancelTrip {
-    [[RadarAPIClient sharedInstance] updateTripWithStatus:RadarTripStatusCanceled];
+    RadarTripOptions *options = [RadarSettings tripOptions];
+    [[RadarAPIClient sharedInstance] updateTripWithStatus:RadarTripStatusCanceled options:options];
     [RadarSettings setTripOptions:nil];
 }
 

@@ -276,14 +276,13 @@
                     }];
 }
 
-- (void)updateTripWithStatus:(RadarTripStatus)status {
+- (void)updateTripWithStatus:(RadarTripStatus)status options:(RadarTripOptions *)options {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
         return;
     }
 
-    RadarTripOptions *tripOptions = [RadarSettings tripOptions];
-    if (!tripOptions || !tripOptions.externalId) {
+    if (!options || !options.externalId) {
         return;
     }
 
@@ -292,7 +291,7 @@
     params[@"status"] = [Radar stringForTripStatus:status];
 
     NSString *host = [RadarSettings host];
-    NSString *url = [NSString stringWithFormat:@"%@/v1/trips/%@", host, tripOptions.externalId];
+    NSString *url = [NSString stringWithFormat:@"%@/v1/trips/%@", host, options.externalId];
     url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
 
     NSDictionary *headers = [RadarAPIClient headersWithPublishableKey:publishableKey];

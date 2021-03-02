@@ -371,6 +371,10 @@
         return @"user.entered_beacon";
     case RadarEventTypeUserExitedBeacon:
         return @"user.exited_beacon";
+    case RadarEventTypeUserEnteredRegionPostalCode:
+        return @"user.entered_region_postal_code";
+    case RadarEventTypeUserExitedRegionPostalCode:
+        return @"user.exited_region_postal_code";
     default:
         return @"unknown";
     }

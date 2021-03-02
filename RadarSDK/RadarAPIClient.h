@@ -60,7 +60,7 @@ typedef void (^_Nullable RadarMatrixAPICompletionHandler)(RadarStatus status, NS
 
 - (void)verifyEventId:(NSString *_Nonnull)eventId verification:(RadarEventVerification)verification verifiedPlaceId:(NSString *_Nullable)verifiedPlaceId;
 
-- (void)updateTripWithStatus:(RadarTripStatus)status;
+- (void)updateTripWithStatus:(RadarTripStatus)status options:(RadarTripOptions *_Nullable)options;
 
 - (void)getContextForLocation:(CLLocation *_Nonnull)location completionHandler:(RadarContextAPICompletionHandler _Nullable)completionHandler;
 

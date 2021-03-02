@@ -465,6 +465,16 @@ typedef void (^_Nonnull RadarRouteMatrixCompletionHandler)(RadarStatus status, R
 + (void)startTripWithOptions:(RadarTripOptions *_Nonnull)options NS_SWIFT_NAME(startTrip(options:));
 
 /**
+ Manually updates a trip.
+
+ @param status The trip status.
+ @param options Configurable trip options.
+
+ @see https://radar.io/documentation/trip-tracking
+ */
++ (void)updateTripWithStatus:(RadarTripStatus)status options:(RadarTripOptions *_Nonnull)options NS_SWIFT_NAME(updateTrip(status:options:));
+
+/**
  Completes a trip.
 
  @see https://radar.io/documentation/trip-tracking
