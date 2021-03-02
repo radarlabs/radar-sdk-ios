@@ -289,6 +289,16 @@
     NSMutableDictionary *params = [NSMutableDictionary new];
 
     params[@"status"] = [Radar stringForTripStatus:status];
+    if (options.metadata) {
+        params[@"metadata"] = options.metadata;
+    }
+    if (options.destinationGeofenceTag) {
+        params[@"destinationGeofenceTag"] = options.destinationGeofenceTag;
+    }
+    if (options.destinationGeofenceExternalId) {
+        params[@"destinationGeofenceExternalId"] = options.destinationGeofenceExternalId;
+    }
+    params[@"mode"] = [Radar stringForMode:options.mode];
 
     NSString *host = [RadarSettings host];
     NSString *url = [NSString stringWithFormat:@"%@/v1/trips/%@", host, options.externalId];
