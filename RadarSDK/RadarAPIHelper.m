@@ -30,14 +30,6 @@
                       url:(NSString *)url
                   headers:(NSDictionary *)headers
                    params:(NSDictionary *)params
-        completionHandler:(RadarAPICompletionHandler)completionHandler {
-    [self requestWithMethod:method url:url headers:headers params:params sleep:NO completionHandler:completionHandler];
-}
-
-- (void)requestWithMethod:(NSString *)method
-                      url:(NSString *)url
-                  headers:(NSDictionary *)headers
-                   params:(NSDictionary *)params
                     sleep:(BOOL)sleep
         completionHandler:(RadarAPICompletionHandler)completionHandler {
     dispatch_async(_queue, ^{

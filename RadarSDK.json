@@ -37,5 +37,6 @@
   "3.1.0-beta.1": "https://github.com/radarlabs/radar-sdk-ios/releases/download/3.1.0-beta.1/RadarSDK.framework.zip",
   "3.1.0-beta.2": "https://github.com/radarlabs/radar-sdk-ios/releases/download/3.1.0-beta.2/RadarSDK.framework.zip",
   "3.1.0": "https://github.com/radarlabs/radar-sdk-ios/releases/download/3.1.0/RadarSDK.framework.zip",
-  "3.1.1": "https://github.com/radarlabs/radar-sdk-ios/releases/download/3.1.1/RadarSDK.framework.zip"
+  "3.1.1": "https://github.com/radarlabs/radar-sdk-ios/releases/download/3.1.1/RadarSDK.framework.zip",
+  "3.2.0-alpha.1": "https://github.com/radarlabs/radar-sdk-ios/releases/download/3.2.0-alpha.1/RadarSDK.framework.zip"
 }
