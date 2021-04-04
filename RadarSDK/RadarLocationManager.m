@@ -679,6 +679,10 @@ static NSString *const kSyncBeaconIdentifierPrefix = @"radar_beacon_";
 }
 
 - (void)locationManager:(CLLocationManager *)manager didEnterRegion:(CLRegion *)region {
+    if (![region.identifier hasPrefix:kIdentifierPrefix]) {
+        return;
+    }
+    
     if ([region.identifier hasPrefix:kSyncBeaconIdentifierPrefix]) {
         NSString *identifier = [region.identifier substringFromIndex:kSyncBeaconIdentifierPrefix.length];
         BOOL alreadyInside = [self.nearbyBeaconIdentifers containsObject:identifier];
@@ -703,6 +707,10 @@ static NSString *const kSyncBeaconIdentifierPrefix = @"radar_beacon_";
 }
 
 - (void)locationManager:(CLLocationManager *)manager didExitRegion:(CLRegion *)region {
+    if (![region.identifier hasPrefix:kIdentifierPrefix]) {
+        return;
+    }
+    
     if ([region.identifier hasPrefix:kSyncBeaconIdentifierPrefix]) {
         NSString *identifier = [region.identifier substringFromIndex:kSyncBeaconIdentifierPrefix.length];
         BOOL alreadyOutside = ![self.nearbyBeaconIdentifers containsObject:identifier];
