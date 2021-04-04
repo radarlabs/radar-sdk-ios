@@ -31,6 +31,15 @@
                   headers:(NSDictionary *)headers
                    params:(NSDictionary *)params
         completionHandler:(RadarAPICompletionHandler)completionHandler {
+    [self requestWithMethod:method url:url headers:headers params:params sleep:NO completionHandler:completionHandler];
+}
+
+- (void)requestWithMethod:(NSString *)method
+                      url:(NSString *)url
+                  headers:(NSDictionary *)headers
+                   params:(NSDictionary *)params
+                    sleep:(BOOL)sleep
+        completionHandler:(RadarAPICompletionHandler)completionHandler {
     dispatch_async(_queue, ^{
         NSMutableURLRequest *req = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:url]];
         req.HTTPMethod = method;
@@ -101,8 +110,9 @@
                                                                                                       completionHandler(status, res);
                                                                                                   });
 
-                                                                                                  // sleep for 1 second between API requests
-                                                                                                  [NSThread sleepForTimeInterval:1];
+                                                                                                  if (sleep) {
+                                                                                                      [NSThread sleepForTimeInterval:1];
+                                                                                                  }
                                                                                               }];
 
         [task resume];

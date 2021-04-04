@@ -194,6 +194,7 @@
                                   url:url
                               headers:headers
                                params:params
+                                sleep:YES
                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
                         if (status != RadarStatusSuccess || !res) {
                             if (options.replay == RadarTrackingOptionsReplayStops && stopped &&
