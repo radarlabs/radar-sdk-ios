@@ -40,7 +40,7 @@
         if (self.wait) {
             dispatch_semaphore_wait(self.semaphore, DISPATCH_TIME_FOREVER);
         }
-        
+
         self.wait = YES;
 
         NSMutableURLRequest *req = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:url]];
@@ -66,10 +66,10 @@
                 dispatch_async(dispatch_get_main_queue(), ^{
                     completionHandler(RadarStatusErrorNetwork, nil);
                 });
-                
+
                 self.wait = NO;
                 dispatch_semaphore_signal(self.semaphore);
-                
+
                 return;
             }
 
@@ -79,7 +79,7 @@
                 dispatch_async(dispatch_get_main_queue(), ^{
                     completionHandler(RadarStatusErrorServer, nil);
                 });
-                
+
                 self.wait = NO;
                 dispatch_semaphore_signal(self.semaphore);
 
@@ -118,7 +118,7 @@
             if (sleep) {
                 [NSThread sleepForTimeInterval:1];
             }
-            
+
             self.wait = NO;
             dispatch_semaphore_signal(self.semaphore);
         };
