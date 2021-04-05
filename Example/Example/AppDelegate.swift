@@ -21,7 +21,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         locationManager.delegate = self
         self.requestLocationPermissions()
 
-        Radar.initialize(publishableKey: "prj_test_pk_0000000000000000000000000000000000000000")
+        Radar.initialize(publishableKey: "org_test_pk_5857c63d9c1565175db8b00750808a66a002acb8")
         Radar.setDelegate(self)
         
         if UIApplication.shared.applicationState != .background {
