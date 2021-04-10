@@ -2,7 +2,6 @@
 //  RadarRouteMatrix.m
 //  Library
 //
-//  Created by Nick Patrick on 2/28/21.
 //  Copyright © 2021 Radar Labs, Inc. All rights reserved.
 //
 

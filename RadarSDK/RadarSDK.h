@@ -2,7 +2,6 @@
 //  RadarSDK.h
 //  RadarSDK
 //
-//  Created by Nick Patrick on 4/10/21.
 //  Copyright © 2021 Radar Labs, Inc. All rights reserved.
 //
 
