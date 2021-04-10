@@ -2,10 +2,19 @@
 //  RadarSDK.h
 //  RadarSDK
 //
-//  Copyright © 2019 Radar Labs, Inc. All rights reserved.
+//  Created by Nick Patrick on 4/10/21.
+//  Copyright © 2021 Radar Labs, Inc. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
+
+//! Project version number for RadarSDK.
+FOUNDATION_EXPORT double RadarSDKVersionNumber;
+
+//! Project version string for RadarSDK.
+FOUNDATION_EXPORT const unsigned char RadarSDKVersionString[];
+
+// In this header, you should import all the public headers of your framework using statements like #import <RadarSDK/PublicHeader.h>
 
 #import "Radar.h"
 #import "RadarAddress.h"
