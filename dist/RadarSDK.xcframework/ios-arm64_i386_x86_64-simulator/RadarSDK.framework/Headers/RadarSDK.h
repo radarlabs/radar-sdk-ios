@@ -13,8 +13,6 @@ FOUNDATION_EXPORT double RadarSDKVersionNumber;
 //! Project version string for RadarSDK.
 FOUNDATION_EXPORT const unsigned char RadarSDKVersionString[];
 
-// In this header, you should import all the public headers of your framework using statements like #import <RadarSDK/PublicHeader.h>
-
 #import "Radar.h"
 #import "RadarAddress.h"
 #import "RadarChain.h"
