@@ -5,7 +5,7 @@
 //  Copyright © 2019 Radar Labs, Inc. All rights reserved.
 //
 
-#import <RadarSDK/RadarSDK.h>
+@import RadarSDK;
 #import <XCTest/XCTest.h>
 
 #import "CLLocationManagerMock.h"
