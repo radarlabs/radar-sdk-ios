@@ -1,292 +1,292 @@
 {
   "warnings": [
     {
-      "file": "/Users/nickpatrick/radar/radar-sdk-ios/RadarSDK/RadarAddress.h",
+      "file": "/Users/nick/radar/radar-sdk-ios/RadarSDK/RadarAddress.h",
       "line": 124,
       "symbol": "RadarAddress.+arrayForAddresses:",
       "symbol_kind": "sourcekitten.source.lang.objc.decl.method.class",
       "warning": "undocumented"
     },
     {
-      "file": "/Users/nickpatrick/radar/radar-sdk-ios/RadarSDK/RadarAddress.h",
+      "file": "/Users/nick/radar/radar-sdk-ios/RadarSDK/RadarAddress.h",
       "line": 125,
       "symbol": "RadarAddress.-dictionaryValue",
       "symbol_kind": "sourcekitten.source.lang.objc.decl.method.instance",
       "warning": "undocumented"
     },
     {
-      "file": "/Users/nickpatrick/radar/radar-sdk-ios/RadarSDK/RadarBeacon.h",
+      "file": "/Users/nick/radar/radar-sdk-ios/RadarSDK/RadarBeacon.h",
       "line": 60,
       "symbol": "RadarBeacon.+arrayForBeacons:",
       "symbol_kind": "sourcekitten.source.lang.objc.decl.method.class",
       "warning": "undocumented"
     },
     {
-      "file": "/Users/nickpatrick/radar/radar-sdk-ios/RadarSDK/RadarBeacon.h",
+      "file": "/Users/nick/radar/radar-sdk-ios/RadarSDK/RadarBeacon.h",
       "line": 61,
       "symbol": "RadarBeacon.-dictionaryValue",
       "symbol_kind": "sourcekitten.source.lang.objc.decl.method.instance",
       "warning": "undocumented"
     },
     {
-      "file": "/Users/nickpatrick/radar/radar-sdk-ios/RadarSDK/RadarChain.h",
+      "file": "/Users/nick/radar/radar-sdk-ios/RadarSDK/RadarChain.h",
       "line": 41,
       "symbol": "RadarChain.+arrayForChains:",
       "symbol_kind": "sourcekitten.source.lang.objc.decl.method.class",
       "warning": "undocumented"
     },
     {
-      "file": "/Users/nickpatrick/radar/radar-sdk-ios/RadarSDK/RadarChain.h",
+      "file": "/Users/nick/radar/radar-sdk-ios/RadarSDK/RadarChain.h",
       "line": 42,
       "symbol": "RadarChain.-dictionaryValue",
       "symbol_kind": "sourcekitten.source.lang.objc.decl.method.instance",
       "warning": "undocumented"
     },
     {
-      "file": "/Users/nickpatrick/radar/radar-sdk-ios/RadarSDK/RadarContext.h",
+      "file": "/Users/nick/radar/radar-sdk-ios/RadarSDK/RadarContext.h",
       "line": 63,
       "symbol": "RadarContext.-dictionaryValue",
       "symbol_kind": "sourcekitten.source.lang.objc.decl.method.instance",
       "warning": "undocumented"
     },
     {
-      "file": "/Users/nickpatrick/radar/radar-sdk-ios/RadarSDK/RadarCoordinate.h",
+      "file": "/Users/nick/radar/radar-sdk-ios/RadarSDK/RadarCoordinate.h",
       "line": 21,
       "symbol": "RadarCoordinate.-dictionaryValue",
       "symbol_kind": "sourcekitten.source.lang.objc.decl.method.instance",
       "warning": "undocumented"
     },
     {
-      "file": "/Users/nickpatrick/radar/radar-sdk-ios/RadarSDK/RadarEvent.h",
+      "file": "/Users/nick/radar/radar-sdk-ios/RadarSDK/RadarEvent.h",
       "line": 181,
       "symbol": "RadarEvent.+stringForType:",
       "symbol_kind": "sourcekitten.source.lang.objc.decl.method.class",
       "warning": "undocumented"
     },
     {
-      "file": "/Users/nickpatrick/radar/radar-sdk-ios/RadarSDK/RadarEvent.h",
+      "file": "/Users/nick/radar/radar-sdk-ios/RadarSDK/RadarEvent.h",
       "line": 182,
       "symbol": "RadarEvent.+arrayForEvents:",
       "symbol_kind": "sourcekitten.source.lang.objc.decl.method.class",
       "warning": "undocumented"
     },
     {
-      "file": "/Users/nickpatrick/radar/radar-sdk-ios/RadarSDK/RadarEvent.h",
+      "file": "/Users/nick/radar/radar-sdk-ios/RadarSDK/RadarEvent.h",
       "line": 183,
       "symbol": "RadarEvent.-dictionaryValue",
       "symbol_kind": "sourcekitten.source.lang.objc.decl.method.instance",
       "warning": "undocumented"
     },
     {
-      "file": "/Users/nickpatrick/radar/radar-sdk-ios/RadarSDK/RadarGeofence.h",
+      "file": "/Users/nick/radar/radar-sdk-ios/RadarSDK/RadarGeofence.h",
       "line": 48,
       "symbol": "RadarGeofence.+arrayForGeofences:",
       "symbol_kind": "sourcekitten.source.lang.objc.decl.method.class",
       "warning": "undocumented"
     },
     {
-      "file": "/Users/nickpatrick/radar/radar-sdk-ios/RadarSDK/RadarGeofence.h",
+      "file": "/Users/nick/radar/radar-sdk-ios/RadarSDK/RadarGeofence.h",
       "line": 49,
       "symbol": "RadarGeofence.-dictionaryValue",
       "symbol_kind": "sourcekitten.source.lang.objc.decl.method.instance",
       "warning": "undocumented"
     },
     {
-      "file": "/Users/nickpatrick/radar/radar-sdk-ios/RadarSDK/RadarPlace.h",
+      "file": "/Users/nick/radar/radar-sdk-ios/RadarSDK/RadarPlace.h",
       "line": 77,
       "symbol": "RadarPlace.+arrayForPlaces:",
       "symbol_kind": "sourcekitten.source.lang.objc.decl.method.class",
       "warning": "undocumented"
     },
     {
-      "file": "/Users/nickpatrick/radar/radar-sdk-ios/RadarSDK/RadarPlace.h",
+      "file": "/Users/nick/radar/radar-sdk-ios/RadarSDK/RadarPlace.h",
       "line": 78,
       "symbol": "RadarPlace.-dictionaryValue",
       "symbol_kind": "sourcekitten.source.lang.objc.decl.method.instance",
       "warning": "undocumented"
     },
     {
-      "file": "/Users/nickpatrick/radar/radar-sdk-ios/RadarSDK/RadarRegion.h",
+      "file": "/Users/nick/radar/radar-sdk-ios/RadarSDK/RadarRegion.h",
       "line": 44,
       "symbol": "RadarRegion.-dictionaryValue",
       "symbol_kind": "sourcekitten.source.lang.objc.decl.method.instance",
       "warning": "undocumented"
     },
     {
-      "file": "/Users/nickpatrick/radar/radar-sdk-ios/RadarSDK/RadarRoute.h",
+      "file": "/Users/nick/radar/radar-sdk-ios/RadarSDK/RadarRoute.h",
       "line": 38,
       "symbol": "RadarRoute.-dictionaryValue",
       "symbol_kind": "sourcekitten.source.lang.objc.decl.method.instance",
       "warning": "undocumented"
     },
     {
-      "file": "/Users/nickpatrick/radar/radar-sdk-ios/RadarSDK/RadarRouteDistance.h",
+      "file": "/Users/nick/radar/radar-sdk-ios/RadarSDK/RadarRouteDistance.h",
       "line": 27,
       "symbol": "RadarRouteDistance.-dictionaryValue",
       "symbol_kind": "sourcekitten.source.lang.objc.decl.method.instance",
       "warning": "undocumented"
     },
     {
-      "file": "/Users/nickpatrick/radar/radar-sdk-ios/RadarSDK/RadarRouteDuration.h",
+      "file": "/Users/nick/radar/radar-sdk-ios/RadarSDK/RadarRouteDuration.h",
       "line": 27,
       "symbol": "RadarRouteDuration.-dictionaryValue",
       "symbol_kind": "sourcekitten.source.lang.objc.decl.method.instance",
       "warning": "undocumented"
     },
     {
-      "file": "/Users/nickpatrick/radar/radar-sdk-ios/RadarSDK/RadarRouteGeometry.h",
+      "file": "/Users/nick/radar/radar-sdk-ios/RadarSDK/RadarRouteGeometry.h",
       "line": 24,
       "symbol": "RadarRouteGeometry.-dictionaryValue",
       "symbol_kind": "sourcekitten.source.lang.objc.decl.method.instance",
       "warning": "undocumented"
     },
     {
-      "file": "/Users/nickpatrick/radar/radar-sdk-ios/RadarSDK/RadarRouteMatrix.h",
+      "file": "/Users/nick/radar/radar-sdk-ios/RadarSDK/RadarRouteMatrix.h",
       "line": 30,
       "symbol": "RadarRouteMatrix.-arrayValue",
       "symbol_kind": "sourcekitten.source.lang.objc.decl.method.instance",
       "warning": "undocumented"
     },
     {
-      "file": "/Users/nickpatrick/radar/radar-sdk-ios/RadarSDK/RadarRoutes.h",
+      "file": "/Users/nick/radar/radar-sdk-ios/RadarSDK/RadarRoutes.h",
       "line": 50,
       "symbol": "RadarRoutes.-dictionaryValue",
       "symbol_kind": "sourcekitten.source.lang.objc.decl.method.instance",
       "warning": "undocumented"
     },
     {
-      "file": "/Users/nickpatrick/radar/radar-sdk-ios/RadarSDK/RadarSegment.h",
+      "file": "/Users/nick/radar/radar-sdk-ios/RadarSDK/RadarSegment.h",
       "line": 27,
       "symbol": "RadarSegment.+arrayForSegments:",
       "symbol_kind": "sourcekitten.source.lang.objc.decl.method.class",
       "warning": "undocumented"
     },
     {
-      "file": "/Users/nickpatrick/radar/radar-sdk-ios/RadarSDK/RadarSegment.h",
+      "file": "/Users/nick/radar/radar-sdk-ios/RadarSDK/RadarSegment.h",
       "line": 28,
       "symbol": "RadarSegment.-dictionaryValue",
       "symbol_kind": "sourcekitten.source.lang.objc.decl.method.instance",
       "warning": "undocumented"
     },
     {
-      "file": "/Users/nickpatrick/radar/radar-sdk-ios/RadarSDK/RadarTrackingOptions.h",
+      "file": "/Users/nick/radar/radar-sdk-ios/RadarSDK/RadarTrackingOptions.h",
       "line": 188,
       "symbol": "RadarTrackingOptions.+stringForDesiredAccuracy:",
       "symbol_kind": "sourcekitten.source.lang.objc.decl.method.class",
       "warning": "undocumented"
     },
     {
-      "file": "/Users/nickpatrick/radar/radar-sdk-ios/RadarSDK/RadarTrackingOptions.h",
+      "file": "/Users/nick/radar/radar-sdk-ios/RadarSDK/RadarTrackingOptions.h",
       "line": 189,
       "symbol": "RadarTrackingOptions.+desiredAccuracyForString:",
       "symbol_kind": "sourcekitten.source.lang.objc.decl.method.class",
       "warning": "undocumented"
     },
     {
-      "file": "/Users/nickpatrick/radar/radar-sdk-ios/RadarSDK/RadarTrackingOptions.h",
+      "file": "/Users/nick/radar/radar-sdk-ios/RadarSDK/RadarTrackingOptions.h",
       "line": 190,
       "symbol": "RadarTrackingOptions.+stringForReplay:",
       "symbol_kind": "sourcekitten.source.lang.objc.decl.method.class",
       "warning": "undocumented"
     },
     {
-      "file": "/Users/nickpatrick/radar/radar-sdk-ios/RadarSDK/RadarTrackingOptions.h",
+      "file": "/Users/nick/radar/radar-sdk-ios/RadarSDK/RadarTrackingOptions.h",
       "line": 191,
       "symbol": "RadarTrackingOptions.+replayForString:",
       "symbol_kind": "sourcekitten.source.lang.objc.decl.method.class",
       "warning": "undocumented"
     },
     {
-      "file": "/Users/nickpatrick/radar/radar-sdk-ios/RadarSDK/RadarTrackingOptions.h",
+      "file": "/Users/nick/radar/radar-sdk-ios/RadarSDK/RadarTrackingOptions.h",
       "line": 192,
       "symbol": "RadarTrackingOptions.+stringForSync:",
       "symbol_kind": "sourcekitten.source.lang.objc.decl.method.class",
       "warning": "undocumented"
     },
     {
-      "file": "/Users/nickpatrick/radar/radar-sdk-ios/RadarSDK/RadarTrackingOptions.h",
+      "file": "/Users/nick/radar/radar-sdk-ios/RadarSDK/RadarTrackingOptions.h",
       "line": 193,
       "symbol": "RadarTrackingOptions.+syncForString:",
       "symbol_kind": "sourcekitten.source.lang.objc.decl.method.class",
       "warning": "undocumented"
     },
     {
-      "file": "/Users/nickpatrick/radar/radar-sdk-ios/RadarSDK/RadarTrackingOptions.h",
+      "file": "/Users/nick/radar/radar-sdk-ios/RadarSDK/RadarTrackingOptions.h",
       "line": 194,
       "symbol": "RadarTrackingOptions.+trackingOptionsFromDictionary:",
       "symbol_kind": "sourcekitten.source.lang.objc.decl.method.class",
       "warning": "undocumented"
     },
     {
-      "file": "/Users/nickpatrick/radar/radar-sdk-ios/RadarSDK/RadarTrackingOptions.h",
+      "file": "/Users/nick/radar/radar-sdk-ios/RadarSDK/RadarTrackingOptions.h",
       "line": 195,
       "symbol": "RadarTrackingOptions.-dictionaryValue",
       "symbol_kind": "sourcekitten.source.lang.objc.decl.method.instance",
       "warning": "undocumented"
     },
     {
-      "file": "/Users/nickpatrick/radar/radar-sdk-ios/RadarSDK/RadarTrip.h",
+      "file": "/Users/nick/radar/radar-sdk-ios/RadarSDK/RadarTrip.h",
       "line": 90,
       "symbol": "RadarTrip.-dictionaryValue",
       "symbol_kind": "sourcekitten.source.lang.objc.decl.method.instance",
       "warning": "undocumented"
     },
     {
-      "file": "/Users/nickpatrick/radar/radar-sdk-ios/RadarSDK/RadarTripOptions.h",
+      "file": "/Users/nick/radar/radar-sdk-ios/RadarSDK/RadarTripOptions.h",
       "line": 21,
       "symbol": "RadarTripOptions.-initWithExternalId:",
       "symbol_kind": "sourcekitten.source.lang.objc.decl.method.instance",
       "warning": "undocumented"
     },
     {
-      "file": "/Users/nickpatrick/radar/radar-sdk-ios/RadarSDK/RadarTripOptions.h",
+      "file": "/Users/nick/radar/radar-sdk-ios/RadarSDK/RadarTripOptions.h",
       "line": 48,
       "symbol": "RadarTripOptions.+tripOptionsFromDictionary:",
       "symbol_kind": "sourcekitten.source.lang.objc.decl.method.class",
       "warning": "undocumented"
     },
     {
-      "file": "/Users/nickpatrick/radar/radar-sdk-ios/RadarSDK/RadarTripOptions.h",
+      "file": "/Users/nick/radar/radar-sdk-ios/RadarSDK/RadarTripOptions.h",
       "line": 49,
       "symbol": "RadarTripOptions.-dictionaryValue",
       "symbol_kind": "sourcekitten.source.lang.objc.decl.method.instance",
       "warning": "undocumented"
     },
     {
-      "file": "/Users/nickpatrick/radar/radar-sdk-ios/RadarSDK/RadarUser.h",
+      "file": "/Users/nick/radar/radar-sdk-ios/RadarSDK/RadarUser.h",
       "line": 136,
       "symbol": "RadarUser.-dictionaryValue",
       "symbol_kind": "sourcekitten.source.lang.objc.decl.method.instance",
       "warning": "undocumented"
     },
     {
-      "file": "/Users/nickpatrick/radar/radar-sdk-ios/RadarSDK/RadarUserInsights.h",
+      "file": "/Users/nick/radar/radar-sdk-ios/RadarSDK/RadarUserInsights.h",
       "line": 34,
       "symbol": "RadarUserInsights.-dictionaryValue",
       "symbol_kind": "sourcekitten.source.lang.objc.decl.method.instance",
       "warning": "undocumented"
     },
     {
-      "file": "/Users/nickpatrick/radar/radar-sdk-ios/RadarSDK/RadarUserInsightsLocation.h",
+      "file": "/Users/nick/radar/radar-sdk-ios/RadarSDK/RadarUserInsightsLocation.h",
       "line": 86,
       "symbol": "RadarUserInsightsLocation.+stringForType:",
       "symbol_kind": "sourcekitten.source.lang.objc.decl.method.class",
       "warning": "undocumented"
     },
     {
-      "file": "/Users/nickpatrick/radar/radar-sdk-ios/RadarSDK/RadarUserInsightsLocation.h",
+      "file": "/Users/nick/radar/radar-sdk-ios/RadarSDK/RadarUserInsightsLocation.h",
       "line": 87,
       "symbol": "RadarUserInsightsLocation.-dictionaryValue",
       "symbol_kind": "sourcekitten.source.lang.objc.decl.method.instance",
       "warning": "undocumented"
     },
     {
-      "file": "/Users/nickpatrick/radar/radar-sdk-ios/RadarSDK/RadarUserInsightsState.h",
+      "file": "/Users/nick/radar/radar-sdk-ios/RadarSDK/RadarUserInsightsState.h",
       "line": 37,
       "symbol": "RadarUserInsightsState.-dictionaryValue",
       "symbol_kind": "sourcekitten.source.lang.objc.decl.method.instance",
       "warning": "undocumented"
     }
   ],
-  "source_directory": "/Users/nickpatrick/radar/radar-sdk-ios"
+  "source_directory": "/Users/nick/radar/radar-sdk-ios"
 }
