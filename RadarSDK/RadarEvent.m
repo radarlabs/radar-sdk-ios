@@ -11,6 +11,7 @@
 #import "RadarGeofence+Internal.h"
 #import "RadarPlace+Internal.h"
 #import "RadarRegion+Internal.h"
+#import "RadarTrip+Internal.h"
 
 @implementation RadarEvent
 
