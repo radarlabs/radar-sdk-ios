@@ -429,7 +429,7 @@
         NSDictionary *beaconDict = [self.beacon dictionaryValue];
         [dict setValue:beaconDict forKey:@"beacon"];
     }
-    if (self.beacon) {
+    if (self.trip) {
         NSDictionary *tripDict = [self.trip dictionaryValue];
         [dict setValue:tripDict forKey:@"trip"];
     }
