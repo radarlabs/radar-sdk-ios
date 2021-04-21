@@ -149,6 +149,11 @@ typedef NS_ENUM(NSInteger, RadarEventVerification) {
 @property (nullable, strong, nonatomic, readonly) RadarBeacon *beacon;
 
 /**
+ The trip for which the event was generated. May be `nil` for non-trip events.
+ */
+@property (nullable, strong, nonatomic, readonly) RadarTrip *trip;
+
+/**
  For place entry events, alternate place candidates. May be `nil` for non-place events.
  */
 @property (nullable, strong, nonatomic, readonly) NSArray<RadarPlace *> *alternatePlaces;

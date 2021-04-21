@@ -53,6 +53,11 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonnull, copy, nonatomic, readonly) NSString *minor;
 
 /**
+ The optional set of custom key-value pairs for the beacon.
+ */
+@property (nullable, copy, nonatomic, readonly) NSDictionary *metadata;
+
+/**
  The location of the beacon.
  */
 @property (nonnull, strong, nonatomic, readonly) RadarCoordinate *geometry;
