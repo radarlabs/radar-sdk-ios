@@ -37,6 +37,7 @@
                                 uuid:(NSString *)uuid
                                major:(NSString *)major
                                minor:(NSString *)minor
+                            metadata:(NSDictionary *_Nullable)metadata
                             geometry:(RadarCoordinate *)geometry {
     self = [super init];
     if (self) {
@@ -47,6 +48,7 @@
         _uuid = uuid;
         _major = major;
         _minor = minor;
+        _metadata = metadata;
         _geometry = geometry;
     }
     return self;
@@ -66,6 +68,7 @@
     NSString *uuid;
     NSString *major;
     NSString *minor;
+    NSDictionary *metadata;
     RadarCoordinate *geometry = [[RadarCoordinate alloc] initWithCoordinate:CLLocationCoordinate2DMake(0, 0)];
 
     id idObj = dict[@"_id"];
@@ -102,6 +105,11 @@
     if (minorObj && [minorObj isKindOfClass:[NSString class]]) {
         minor = (NSString *)minorObj;
     }
+    
+    id metadataObj = dict[@"metadata"];
+    if (metadataObj && [metadataObj isKindOfClass:[NSDictionary class]]) {
+        metadata = (NSDictionary *)metadataObj;
+    }
 
     id geometryObj = dict[@"geometry"];
     if (geometryObj && [geometryObj isKindOfClass:[NSDictionary class]]) {
@@ -134,7 +142,7 @@
         geometry = [[RadarCoordinate alloc] initWithCoordinate:coordinate];
     }
 
-    return [[RadarBeacon alloc] initWithId:_id description:description tag:tag externalId:externalId uuid:uuid major:major minor:minor geometry:geometry];
+    return [[RadarBeacon alloc] initWithId:_id description:description tag:tag externalId:externalId uuid:uuid major:major minor:minor metadata:metadata geometry:geometry];
 }
 
 + (NSArray<NSDictionary *> *)arrayForBeacons:(NSArray<RadarBeacon *> *)beacons {
@@ -159,6 +167,7 @@
     [dict setValue:self.uuid forKey:@"uuid"];
     [dict setValue:self.major forKey:@"major"];
     [dict setValue:self.minor forKey:@"minor"];
+    [dict setValue:self.metadata forKey:@"metadata"];
     return dict;
 }
 

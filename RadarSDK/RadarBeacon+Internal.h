@@ -21,6 +21,7 @@
                                 uuid:(NSString *_Nonnull)uuid
                                major:(NSString *_Nullable)major
                                minor:(NSString *_Nullable)minor
+                            metadata:(NSDictionary *_Nullable)metadata
                             geometry:(RadarCoordinate *_Nonnull)geometry;
 
 @end

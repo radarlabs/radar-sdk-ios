@@ -9,6 +9,7 @@
 #import "RadarEvent.h"
 #import "RadarGeofence.h"
 #import "RadarPlace.h"
+#import "RadarTrip.h"
 #import "RadarUser.h"
 #import <CoreLocation/CoreLocation.h>
 #import <Foundation/Foundation.h>
@@ -25,6 +26,7 @@
                                place:(RadarPlace *_Nullable)place
                               region:(RadarRegion *_Nullable)region
                               beacon:(RadarBeacon *_Nullable)beacon
+                                trip:(RadarTrip *_Nullable)trip
                      alternatePlaces:(NSArray<RadarPlace *> *_Nullable)alternatePlaces
                        verifiedPlace:(RadarPlace *_Nullable)verifiedPlace
                         verification:(RadarEventVerification)verification
