@@ -276,7 +276,7 @@
                     }];
 }
 
-- (void)updateTripWithStatus:(RadarTripStatus)status options:(RadarTripOptions *)options {
+- (void)updateTripWithOptions:(RadarTripOptions *)options status:(RadarTripStatus)status {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
         return;
@@ -288,7 +288,9 @@
 
     NSMutableDictionary *params = [NSMutableDictionary new];
 
-    params[@"status"] = [Radar stringForTripStatus:status];
+    if (status != RadarTripStatusUnknown) {
+        params[@"status"] = [Radar stringForTripStatus:status];
+    }
     if (options.metadata) {
         params[@"metadata"] = options.metadata;
     }
