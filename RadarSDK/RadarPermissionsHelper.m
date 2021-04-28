@@ -10,8 +10,19 @@
 @implementation RadarPermissionsHelper
 
 - (CLAuthorizationStatus)locationAuthorizationStatus {
-    CLAuthorizationStatus status = [CLLocationManager authorizationStatus];
-    return status;
+    CLAuthorizationStatus authorizationStatus = [CLLocationManager authorizationStatus];
+    switch (authorizationStatus) {
+    case kCLAuthorizationStatusAuthorizedWhenInUse:
+        return kCLAuthorizationStatusAuthorizedWhenInUse;
+    case kCLAuthorizationStatusAuthorizedAlways:
+        return kCLAuthorizationStatusAuthorizedAlways;
+    case kCLAuthorizationStatusDenied:
+        return kCLAuthorizationStatusDenied;
+    case kCLAuthorizationStatusRestricted:
+        return kCLAuthorizationStatusRestricted;
+    default:
+        return kCLAuthorizationStatusNotDetermined;
+    }
 }
 
 @end
