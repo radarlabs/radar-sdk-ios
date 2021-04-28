@@ -105,7 +105,7 @@
     if (minorObj && [minorObj isKindOfClass:[NSString class]]) {
         minor = (NSString *)minorObj;
     }
-    
+
     id metadataObj = dict[@"metadata"];
     if (metadataObj && [metadataObj isKindOfClass:[NSDictionary class]]) {
         metadata = (NSDictionary *)metadataObj;

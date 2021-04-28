@@ -276,23 +276,34 @@
                     }];
 }
 
-- (void)updateTripWithStatus:(RadarTripStatus)status {
+- (void)updateTripWithOptions:(RadarTripOptions *)options status:(RadarTripStatus)status {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
         return;
     }
 
-    RadarTripOptions *tripOptions = [RadarSettings tripOptions];
-    if (!tripOptions || !tripOptions.externalId) {
+    if (!options || !options.externalId) {
         return;
     }
 
     NSMutableDictionary *params = [NSMutableDictionary new];
 
-    params[@"status"] = [Radar stringForTripStatus:status];
+    if (status != RadarTripStatusUnknown) {
+        params[@"status"] = [Radar stringForTripStatus:status];
+    }
+    if (options.metadata) {
+        params[@"metadata"] = options.metadata;
+    }
+    if (options.destinationGeofenceTag) {
+        params[@"destinationGeofenceTag"] = options.destinationGeofenceTag;
+    }
+    if (options.destinationGeofenceExternalId) {
+        params[@"destinationGeofenceExternalId"] = options.destinationGeofenceExternalId;
+    }
+    params[@"mode"] = [Radar stringForMode:options.mode];
 
     NSString *host = [RadarSettings host];
-    NSString *url = [NSString stringWithFormat:@"%@/v1/trips/%@", host, tripOptions.externalId];
+    NSString *url = [NSString stringWithFormat:@"%@/v1/trips/%@", host, options.externalId];
     url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
 
     NSDictionary *headers = [RadarAPIClient headersWithPublishableKey:publishableKey];
