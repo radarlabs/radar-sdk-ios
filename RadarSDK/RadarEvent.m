@@ -11,6 +11,7 @@
 #import "RadarGeofence+Internal.h"
 #import "RadarPlace+Internal.h"
 #import "RadarRegion+Internal.h"
+#import "RadarTrip+Internal.h"
 
 @implementation RadarEvent
 
@@ -45,6 +46,7 @@
                                place:(RadarPlace *)place
                               region:(RadarRegion *)region
                               beacon:(RadarBeacon *)beacon
+                                trip:(RadarTrip *)trip
                      alternatePlaces:(NSArray<RadarPlace *> *)alternatePlaces
                        verifiedPlace:(RadarPlace *)verifiedPlace
                         verification:(RadarEventVerification)verification
@@ -62,6 +64,7 @@
         _place = place;
         _region = region;
         _beacon = beacon;
+        _trip = trip;
         _alternatePlaces = alternatePlaces;
         _verifiedPlace = verifiedPlace;
         _verification = verification;
@@ -88,6 +91,7 @@
     RadarPlace *place;
     RadarRegion *region;
     RadarBeacon *beacon;
+    RadarTrip *trip;
     NSArray<RadarPlace *> *alternatePlaces;
     RadarPlace *verifiedPlace;
     RadarEventVerification verification = RadarEventVerificationUnverify;
@@ -237,6 +241,9 @@
     id beaconObj = dict[@"beacon"];
     beacon = [[RadarBeacon alloc] initWithObject:beaconObj];
 
+    id tripObj = dict[@"trip"];
+    trip = [[RadarTrip alloc] initWithObject:tripObj];
+
     id alternatePlacesObj = dict[@"alternatePlaces"];
     if (alternatePlacesObj && [alternatePlacesObj isKindOfClass:[NSArray class]]) {
         NSMutableArray<RadarPlace *> *mutableAlternatePlaces = [NSMutableArray<RadarPlace *> new];
@@ -306,6 +313,7 @@
                                         place:place
                                        region:region
                                        beacon:beacon
+                                         trip:trip
                               alternatePlaces:alternatePlaces
                                 verifiedPlace:verifiedPlace
                                  verification:verification
@@ -418,10 +426,6 @@
     if (self.duration) {
         [dict setValue:@(self.duration) forKey:@"duration"];
     }
-    NSArray *alternatePlaces = [RadarPlace arrayForPlaces:self.alternatePlaces];
-    if (alternatePlaces) {
-        [dict setValue:alternatePlaces forKey:@"alternatePlaces"];
-    }
     if (self.region) {
         NSDictionary *regionDict = [self.region dictionaryValue];
         [dict setValue:regionDict forKey:@"region"];
@@ -429,6 +433,14 @@
     if (self.beacon) {
         NSDictionary *beaconDict = [self.beacon dictionaryValue];
         [dict setValue:beaconDict forKey:@"beacon"];
+    }
+    if (self.trip) {
+        NSDictionary *tripDict = [self.trip dictionaryValue];
+        [dict setValue:tripDict forKey:@"trip"];
+    }
+    NSArray *alternatePlaces = [RadarPlace arrayForPlaces:self.alternatePlaces];
+    if (alternatePlaces) {
+        [dict setValue:alternatePlaces forKey:@"alternatePlaces"];
     }
     NSMutableDictionary *locationDict = [NSMutableDictionary new];
     locationDict[@"type"] = @"Point";
