@@ -82,7 +82,7 @@ NSString *const kSyncNone = @"none";
     options.useMovingGeofence = NO;
     options.movingGeofenceRadius = 0;
     options.syncGeofences = YES;
-    options.useVisits = NO;
+    options.useVisits = YES;
     options.useSignificantLocationChanges = YES;
     options.beacons = NO;
     return options;
