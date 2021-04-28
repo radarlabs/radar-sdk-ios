@@ -11,6 +11,9 @@
 
 - (CLAuthorizationStatus)locationAuthorizationStatus {
     CLAuthorizationStatus status = [CLLocationManager authorizationStatus];
+    if (status == kCLAuthorizationStatusNotDetermined) {
+        return kCLAuthorizationStatusNotDetermined;
+    }
     return status;
 }
 
