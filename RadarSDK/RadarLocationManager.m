@@ -483,6 +483,13 @@ static NSString *const kSyncBeaconIdentifierPrefix = @"radar_beacon_";
         return;
     }
 
+    BOOL tracking = [RadarSettings tracking];
+    if (!force && !tracking) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Skipping location: not tracking"];
+
+        return;
+    }
+
     [self cancelTimeouts];
 
     CLLocationDistance distance = CLLocationDistanceMax;
