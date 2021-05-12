@@ -303,28 +303,52 @@
 }
 
 + (void)startTripWithOptions:(RadarTripOptions *)options {
+    [self startTripWithOptions:options completionHandler:nil];
+}
+
++ (void)startTripWithOptions:(RadarTripOptions *)options completionHandler:(RadarTripCompletionHandler)completionHandler {
     [RadarSettings setTripOptions:options];
-    [[RadarAPIClient sharedInstance] updateTripWithOptions:options status:RadarTripStatusStarted];
-    [[RadarLocationManager sharedInstance] getLocationWithCompletionHandler:nil];
+    [[RadarAPIClient sharedInstance] updateTripWithOptions:options status:RadarTripStatusStarted completionHandler:^(RadarStatus status) {
+        if (completionHandler) {
+            completionHandler(status);
+        }
+    }];
 }
 
-+ (void)updateTripWithOptions:(RadarTripOptions *)options {
-    [[RadarAPIClient sharedInstance] updateTripWithOptions:options status:RadarTripStatusUnknown];
-}
-
-+ (void)updateTripWithOptions:(RadarTripOptions *)options status:(RadarTripStatus)status {
-    [[RadarAPIClient sharedInstance] updateTripWithOptions:options status:status];
++ (void)updateTripWithOptions:(RadarTripOptions *)options status:(RadarTripStatus)status completionHandler:(RadarTripCompletionHandler)completionHandler {
+    [RadarSettings setTripOptions:options];
+    [[RadarAPIClient sharedInstance] updateTripWithOptions:options status:status completionHandler:^(RadarStatus status) {
+        if (completionHandler) {
+            completionHandler(status);
+        }
+    }];
 }
 
 + (void)completeTrip {
+    [self completeTripWithCompletionHandler:nil];
+}
+
++ (void)completeTripWithCompletionHandler:(RadarTripCompletionHandler)completionHandler {
     RadarTripOptions *options = [RadarSettings tripOptions];
-    [[RadarAPIClient sharedInstance] updateTripWithOptions:options status:RadarTripStatusCompleted];
+    [[RadarAPIClient sharedInstance] updateTripWithOptions:options status:RadarTripStatusCompleted completionHandler:^(RadarStatus status) {
+        if (completionHandler) {
+            completionHandler(status);
+        }
+    }];
     [RadarSettings setTripOptions:nil];
 }
 
 + (void)cancelTrip {
+    [self cancelTripWithCompletionHandler:nil];
+}
+
++ (void)cancelTripWithCompletionHandler:(RadarTripCompletionHandler)completionHandler {
     RadarTripOptions *options = [RadarSettings tripOptions];
-    [[RadarAPIClient sharedInstance] updateTripWithOptions:options status:RadarTripStatusCanceled];
+    [[RadarAPIClient sharedInstance] updateTripWithOptions:options status:RadarTripStatusCanceled completionHandler:^(RadarStatus status) {
+        if (completionHandler) {
+            completionHandler(status);
+        }
+    }];
     [RadarSettings setTripOptions:nil];
 }
 
