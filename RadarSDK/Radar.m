@@ -315,7 +315,9 @@
                                              }
 
                                              if (completionHandler) {
-                                                 completionHandler(status);
+                                                 [RadarUtils runOnMainThread:^{
+                                                     completionHandler(status);
+                                                 }];
                                              }
                                          }];
 }
@@ -329,7 +331,9 @@
                                              }
 
                                              if (completionHandler) {
-                                                 completionHandler(status);
+                                                 [RadarUtils runOnMainThread:^{
+                                                     completionHandler(status);
+                                                 }];
                                              }
                                          }];
 }
@@ -344,7 +348,9 @@
                                                     status:RadarTripStatusCompleted
                                          completionHandler:^(RadarStatus status) {
                                              if (completionHandler) {
-                                                 completionHandler(status);
+                                                 [RadarUtils runOnMainThread:^{
+                                                     completionHandler(status);
+                                                 }];
                                              }
                                          }];
 
@@ -361,7 +367,9 @@
                                                     status:RadarTripStatusCanceled
                                          completionHandler:^(RadarStatus status) {
                                              if (completionHandler) {
-                                                 completionHandler(status);
+                                                 [RadarUtils runOnMainThread:^{
+                                                     completionHandler(status);
+                                                 }];
                                              }
                                          }];
 
