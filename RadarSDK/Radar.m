@@ -384,6 +384,7 @@
                     completionHandler(status, nil, nil);
                 }];
             }
+
             return;
         }
 
@@ -417,9 +418,12 @@
              completionHandler:(RadarSearchPlacesCompletionHandler)completionHandler {
     [[RadarLocationManager sharedInstance] getLocationWithCompletionHandler:^(RadarStatus status, CLLocation *_Nullable location, BOOL stopped) {
         if (status != RadarStatusSuccess) {
-            [RadarUtils runOnMainThread:^{
-                completionHandler(status, nil, nil);
-            }];
+            if (completionHandler) {
+                [RadarUtils runOnMainThread:^{
+                    completionHandler(status, nil, nil);
+                }];
+            }
+
             return;
         }
 
@@ -430,9 +434,11 @@
                                                    groups:groups
                                                     limit:limit
                                         completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarPlace *> *_Nullable places) {
-                                            [RadarUtils runOnMainThread:^{
-                                                completionHandler(status, location, places);
-                                            }];
+                                            if (completionHandler) {
+                                                [RadarUtils runOnMainThread:^{
+                                                    completionHandler(status, location, places);
+                                                }];
+                                            }
                                         }];
     }];
 }
@@ -464,9 +470,12 @@
                 completionHandler:(RadarSearchGeofencesCompletionHandler)completionHandler {
     [[RadarLocationManager sharedInstance] getLocationWithCompletionHandler:^(RadarStatus status, CLLocation *_Nullable location, BOOL stopped) {
         if (status != RadarStatusSuccess) {
-            [RadarUtils runOnMainThread:^{
-                completionHandler(status, nil, nil);
-            }];
+            if (completionHandler) {
+                [RadarUtils runOnMainThread:^{
+                    completionHandler(status, nil, nil);
+                }];
+            }
+
             return;
         }
 
@@ -476,9 +485,11 @@
                                                     metadata:metadata
                                                        limit:limit
                                            completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarGeofence *> *_Nullable geofences) {
-                                               [RadarUtils runOnMainThread:^{
-                                                   completionHandler(status, location, geofences);
-                                               }];
+                                               if (completionHandler) {
+                                                   [RadarUtils runOnMainThread:^{
+                                                       completionHandler(status, location, geofences);
+                                                   }];
+                                               }
                                            }];
     }];
 }
@@ -495,9 +506,11 @@
                                                 metadata:metadata
                                                    limit:limit
                                        completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarGeofence *> *_Nullable geofences) {
-                                           [RadarUtils runOnMainThread:^{
-                                               completionHandler(status, near, geofences);
-                                           }];
+                                           if (completionHandler) {
+                                               [RadarUtils runOnMainThread:^{
+                                                   completionHandler(status, near, geofences);
+                                               }];
+                                           }
                                        }];
 }
 
@@ -506,9 +519,11 @@
                                                   near:near
                                                  limit:limit
                                      completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarAddress *> *_Nullable addresses) {
-                                         [RadarUtils runOnMainThread:^{
-                                             completionHandler(status, addresses);
-                                         }];
+                                         if (completionHandler) {
+                                             [RadarUtils runOnMainThread:^{
+                                                 completionHandler(status, addresses);
+                                             }];
+                                         }
                                      }];
 }
 
@@ -524,17 +539,22 @@
 + (void)reverseGeocodeWithCompletionHandler:(RadarGeocodeCompletionHandler)completionHandler {
     [[RadarLocationManager sharedInstance] getLocationWithCompletionHandler:^(RadarStatus status, CLLocation *_Nullable location, BOOL stopped) {
         if (status != RadarStatusSuccess) {
-            [RadarUtils runOnMainThread:^{
-                completionHandler(status, nil);
-            }];
+            if (completionHandler) {
+                [RadarUtils runOnMainThread:^{
+                    completionHandler(status, nil);
+                }];
+            }
+
             return;
         }
 
         [[RadarAPIClient sharedInstance] reverseGeocodeLocation:location
                                               completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarAddress *> *_Nullable addresses) {
-                                                  [RadarUtils runOnMainThread:^{
-                                                      completionHandler(status, addresses);
-                                                  }];
+                                                  if (completionHandler) {
+                                                      [RadarUtils runOnMainThread:^{
+                                                          completionHandler(status, addresses);
+                                                      }];
+                                                  }
                                               }];
     }];
 }
@@ -542,17 +562,21 @@
 + (void)reverseGeocodeLocation:(CLLocation *)location completionHandler:(RadarGeocodeCompletionHandler)completionHandler {
     [[RadarAPIClient sharedInstance] reverseGeocodeLocation:location
                                           completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarAddress *> *_Nullable addresses) {
-                                              [RadarUtils runOnMainThread:^{
-                                                  completionHandler(status, addresses);
-                                              }];
+                                              if (completionHandler) {
+                                                  [RadarUtils runOnMainThread:^{
+                                                      completionHandler(status, addresses);
+                                                  }];
+                                              }
                                           }];
 }
 
 + (void)ipGeocodeWithCompletionHandler:(RadarIPGeocodeCompletionHandler)completionHandler {
     [[RadarAPIClient sharedInstance] ipGeocodeWithCompletionHandler:^(RadarStatus status, NSDictionary *_Nullable res, RadarAddress *_Nullable address, BOOL proxy) {
-        [RadarUtils runOnMainThread:^{
-            completionHandler(status, address, proxy);
-        }];
+        if (completionHandler) {
+            [RadarUtils runOnMainThread:^{
+                completionHandler(status, address, proxy);
+            }];
+        }
     }];
 }
 
@@ -562,9 +586,12 @@
                completionHandler:(RadarRouteCompletionHandler)completionHandler {
     [[RadarLocationManager sharedInstance] getLocationWithCompletionHandler:^(RadarStatus status, CLLocation *_Nullable location, BOOL stopped) {
         if (status != RadarStatusSuccess) {
-            [RadarUtils runOnMainThread:^{
-                completionHandler(status, nil);
-            }];
+            if (completionHandler) {
+                [RadarUtils runOnMainThread:^{
+                    completionHandler(status, nil);
+                }];
+            }
+
             return;
         }
 
@@ -574,9 +601,11 @@
                                                          units:units
                                                 geometryPoints:-1
                                              completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, RadarRoutes *_Nullable routes) {
-                                                 [RadarUtils runOnMainThread:^{
-                                                     completionHandler(status, routes);
-                                                 }];
+                                                 if (completionHandler) {
+                                                     [RadarUtils runOnMainThread:^{
+                                                         completionHandler(status, routes);
+                                                     }];
+                                                 }
                                              }];
     }];
 }
@@ -592,9 +621,11 @@
                                                      units:units
                                             geometryPoints:-1
                                          completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, RadarRoutes *_Nullable routes) {
-                                             [RadarUtils runOnMainThread:^{
-                                                 completionHandler(status, routes);
-                                             }];
+                                             if (completionHandler) {
+                                                 [RadarUtils runOnMainThread:^{
+                                                     completionHandler(status, routes);
+                                                 }];
+                                             }
                                          }];
 }
 
@@ -608,9 +639,11 @@
                                                      mode:mode
                                                     units:units
                                         completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, RadarRouteMatrix *_Nullable matrix) {
-                                            [RadarUtils runOnMainThread:^{
-                                                completionHandler(status, matrix);
-                                            }];
+                                            if (completionHandler) {
+                                                [RadarUtils runOnMainThread:^{
+                                                    completionHandler(status, matrix);
+                                                }];
+                                            }
                                         }];
 }
 
