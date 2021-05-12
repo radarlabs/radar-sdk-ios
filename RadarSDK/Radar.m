@@ -312,6 +312,8 @@
                                          completionHandler:^(RadarStatus status) {
                                              if (status == RadarStatusSuccess) {
                                                  [RadarSettings setTripOptions:options];
+
+                                                 [[RadarLocationManager sharedInstance] getLocationWithCompletionHandler:nil];
                                              }
 
                                              if (completionHandler) {
