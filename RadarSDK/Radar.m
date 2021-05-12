@@ -307,21 +307,31 @@
 }
 
 + (void)startTripWithOptions:(RadarTripOptions *)options completionHandler:(RadarTripCompletionHandler)completionHandler {
-    [RadarSettings setTripOptions:options];
-    [[RadarAPIClient sharedInstance] updateTripWithOptions:options status:RadarTripStatusStarted completionHandler:^(RadarStatus status) {
-        if (completionHandler) {
-            completionHandler(status);
-        }
-    }];
+    [[RadarAPIClient sharedInstance] updateTripWithOptions:options
+                                                    status:RadarTripStatusStarted
+                                         completionHandler:^(RadarStatus status) {
+                                             if (status == RadarStatusSuccess) {
+                                                 [RadarSettings setTripOptions:options];
+                                             }
+
+                                             if (completionHandler) {
+                                                 completionHandler(status);
+                                             }
+                                         }];
 }
 
 + (void)updateTripWithOptions:(RadarTripOptions *)options status:(RadarTripStatus)status completionHandler:(RadarTripCompletionHandler)completionHandler {
-    [RadarSettings setTripOptions:options];
-    [[RadarAPIClient sharedInstance] updateTripWithOptions:options status:status completionHandler:^(RadarStatus status) {
-        if (completionHandler) {
-            completionHandler(status);
-        }
-    }];
+    [[RadarAPIClient sharedInstance] updateTripWithOptions:options
+                                                    status:status
+                                         completionHandler:^(RadarStatus status) {
+                                             if (status == RadarStatusSuccess) {
+                                                 [RadarSettings setTripOptions:options];
+                                             }
+
+                                             if (completionHandler) {
+                                                 completionHandler(status);
+                                             }
+                                         }];
 }
 
 + (void)completeTrip {
@@ -330,11 +340,14 @@
 
 + (void)completeTripWithCompletionHandler:(RadarTripCompletionHandler)completionHandler {
     RadarTripOptions *options = [RadarSettings tripOptions];
-    [[RadarAPIClient sharedInstance] updateTripWithOptions:options status:RadarTripStatusCompleted completionHandler:^(RadarStatus status) {
-        if (completionHandler) {
-            completionHandler(status);
-        }
-    }];
+    [[RadarAPIClient sharedInstance] updateTripWithOptions:options
+                                                    status:RadarTripStatusCompleted
+                                         completionHandler:^(RadarStatus status) {
+                                             if (completionHandler) {
+                                                 completionHandler(status);
+                                             }
+                                         }];
+
     [RadarSettings setTripOptions:nil];
 }
 
@@ -344,11 +357,14 @@
 
 + (void)cancelTripWithCompletionHandler:(RadarTripCompletionHandler)completionHandler {
     RadarTripOptions *options = [RadarSettings tripOptions];
-    [[RadarAPIClient sharedInstance] updateTripWithOptions:options status:RadarTripStatusCanceled completionHandler:^(RadarStatus status) {
-        if (completionHandler) {
-            completionHandler(status);
-        }
-    }];
+    [[RadarAPIClient sharedInstance] updateTripWithOptions:options
+                                                    status:RadarTripStatusCanceled
+                                         completionHandler:^(RadarStatus status) {
+                                             if (completionHandler) {
+                                                 completionHandler(status);
+                                             }
+                                         }];
+
     [RadarSettings setTripOptions:nil];
 }
 

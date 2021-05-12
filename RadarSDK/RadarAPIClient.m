@@ -312,8 +312,8 @@
                                   url:url
                               headers:headers
                                params:params
-                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res){
-        completionHandler(status);
+                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
+                        completionHandler(status);
                     }];
 }
 

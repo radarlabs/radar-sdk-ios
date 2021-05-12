@@ -481,7 +481,8 @@ typedef void (^_Nonnull RadarRouteMatrixCompletionHandler)(RadarStatus status, R
 
  @see https://radar.io/documentation/trip-tracking
  */
-+ (void)startTripWithOptions:(RadarTripOptions *_Nonnull)options completionHandler:(RadarTripCompletionHandler _Nullable)completionHandler NS_SWIFT_NAME(startTrip(options:completionHandler:));
++ (void)startTripWithOptions:(RadarTripOptions *_Nonnull)options
+           completionHandler:(RadarTripCompletionHandler _Nullable)completionHandler NS_SWIFT_NAME(startTrip(options:completionHandler:));
 
 /**
  Manually updates a trip.
@@ -492,7 +493,9 @@ typedef void (^_Nonnull RadarRouteMatrixCompletionHandler)(RadarStatus status, R
 
  @see https://radar.io/documentation/trip-tracking
  */
-+ (void)updateTripWithOptions:(RadarTripOptions *_Nonnull)options status:(RadarTripStatus)status completionHandler:(RadarTripCompletionHandler _Nullable)completionHandler NS_SWIFT_NAME(updateTrip(options:status:completionHandler:));
++ (void)updateTripWithOptions:(RadarTripOptions *_Nonnull)options
+                       status:(RadarTripStatus)status
+            completionHandler:(RadarTripCompletionHandler _Nullable)completionHandler NS_SWIFT_NAME(updateTrip(options:status:completionHandler:));
 
 /**
  Completes a trip.
@@ -503,7 +506,7 @@ typedef void (^_Nonnull RadarRouteMatrixCompletionHandler)(RadarStatus status, R
 
 /**
  Completes a trip.
- 
+
  @param completionHandler An optional completion handler.
 
  @see https://radar.io/documentation/trip-tracking
@@ -519,13 +522,12 @@ typedef void (^_Nonnull RadarRouteMatrixCompletionHandler)(RadarStatus status, R
 
 /**
  Cancels a trip.
- 
+
  @param completionHandler An optional completion handler.
 
  @see https://radar.io/documentation/trip-tracking
  */
 + (void)cancelTripWithCompletionHandler:(RadarTripCompletionHandler _Nullable)completionHandler NS_SWIFT_NAME(cancelTrip(completionHandler:));
-
 
 /**
  Gets the device's current location, then gets context for that location without sending device or user identifiers to the server.
