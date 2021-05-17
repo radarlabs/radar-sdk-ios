@@ -272,6 +272,7 @@
 
     NSMutableDictionary *params = [NSMutableDictionary new];
 
+    params[@"id"] = [RadarSettings _id];
     params[@"installId"] = [RadarSettings installId];
     params[@"userId"] = [RadarSettings userId];
     params[@"deviceId"] = [RadarUtils deviceId];
