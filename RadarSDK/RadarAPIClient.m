@@ -160,6 +160,22 @@
     params[@"country"] = [RadarUtils country];
     params[@"timeZoneOffset"] = [RadarUtils timeZoneOffset];
     params[@"source"] = [Radar stringForSource:source];
+    RadarTripOptions *tripOptions = [RadarSettings tripOptions];
+    if (tripOptions) {
+        NSMutableDictionary *tripOptionsDict = [NSMutableDictionary new];
+        tripOptionsDict[@"externalId"] = tripOptions.externalId;
+        if (tripOptions.metadata) {
+            tripOptionsDict[@"metadata"] = tripOptions.metadata;
+        }
+        if (tripOptions.destinationGeofenceTag) {
+            tripOptionsDict[@"destinationGeofenceTag"] = tripOptions.destinationGeofenceTag;
+        }
+        if (tripOptions.destinationGeofenceExternalId) {
+            tripOptionsDict[@"destinationGeofenceExternalId"] = tripOptions.destinationGeofenceExternalId;
+        }
+        tripOptionsDict[@"mode"] = [Radar stringForMode:tripOptions.mode];
+        params[@"tripOptions"] = tripOptionsDict;
+    }
     RadarTrackingOptions *options = [RadarSettings trackingOptions];
     if (options.syncGeofences) {
         params[@"nearbyGeofences"] = @(YES);
@@ -272,10 +288,6 @@
 
     NSMutableDictionary *params = [NSMutableDictionary new];
 
-    params[@"id"] = [RadarSettings _id];
-    params[@"installId"] = [RadarSettings installId];
-    params[@"userId"] = [RadarSettings userId];
-    params[@"deviceId"] = [RadarUtils deviceId];
     if (status != RadarTripStatusUnknown) {
         params[@"status"] = [Radar stringForTripStatus:status];
     }
