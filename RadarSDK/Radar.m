@@ -353,14 +353,19 @@
     [[RadarAPIClient sharedInstance] updateTripWithOptions:options
                                                     status:RadarTripStatusCompleted
                                          completionHandler:^(RadarStatus status) {
+                                             if (status == RadarStatusSuccess || status == RadarStatusErrorNotFound) {
+                                                 [RadarSettings setTripOptions:nil];
+                                                 
+                                                 // flush location update to generate events
+                                                 [[RadarLocationManager sharedInstance] getLocationWithCompletionHandler:nil];
+                                             }
+
                                              if (completionHandler) {
                                                  [RadarUtils runOnMainThread:^{
                                                      completionHandler(status);
                                                  }];
                                              }
                                          }];
-
-    [RadarSettings setTripOptions:nil];
 }
 
 + (void)cancelTrip {
@@ -372,14 +377,19 @@
     [[RadarAPIClient sharedInstance] updateTripWithOptions:options
                                                     status:RadarTripStatusCanceled
                                          completionHandler:^(RadarStatus status) {
+                                             if (status == RadarStatusSuccess || status == RadarStatusErrorNotFound) {
+                                                 [RadarSettings setTripOptions:nil];
+                                                 
+                                                 // flush location update to generate events
+                                                 [[RadarLocationManager sharedInstance] getLocationWithCompletionHandler:nil];
+                                             }
+
                                              if (completionHandler) {
                                                  [RadarUtils runOnMainThread:^{
                                                      completionHandler(status);
                                                  }];
                                              }
                                          }];
-
-    [RadarSettings setTripOptions:nil];
 }
 
 + (void)getContextWithCompletionHandler:(RadarContextCompletionHandler)completionHandler {
