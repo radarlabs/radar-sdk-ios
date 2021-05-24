@@ -355,7 +355,7 @@
                                          completionHandler:^(RadarStatus status) {
                                              if (status == RadarStatusSuccess || status == RadarStatusErrorNotFound) {
                                                  [RadarSettings setTripOptions:nil];
-                                                 
+
                                                  // flush location update to generate events
                                                  [[RadarLocationManager sharedInstance] getLocationWithCompletionHandler:nil];
                                              }
@@ -379,7 +379,7 @@
                                          completionHandler:^(RadarStatus status) {
                                              if (status == RadarStatusSuccess || status == RadarStatusErrorNotFound) {
                                                  [RadarSettings setTripOptions:nil];
-                                                 
+
                                                  // flush location update to generate events
                                                  [[RadarLocationManager sharedInstance] getLocationWithCompletionHandler:nil];
                                              }
