@@ -109,15 +109,15 @@
                    source:(RadarLocationSource)source
                  replayed:(BOOL)replayed
             nearbyBeacons:(NSArray<NSString *> *_Nullable)nearbyBeacons
-        completionHandler:(RadarTrackAPICompletionHandler _Nullable)completionHandler {
+        completionHandler:(RadarTrackAPICompletionHandler _Nonnull)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
         return completionHandler(RadarStatusErrorPublishableKey, nil, nil, nil, nil);
     }
 
     NSMutableDictionary *params = [NSMutableDictionary new];
-    params[@"installId"] = [RadarSettings installId];
     params[@"id"] = [RadarSettings _id];
+    params[@"installId"] = [RadarSettings installId];
     params[@"userId"] = [RadarSettings userId];
     params[@"deviceId"] = [RadarUtils deviceId];
     params[@"description"] = [RadarSettings _description];
@@ -276,14 +276,14 @@
                     }];
 }
 
-- (void)updateTripWithOptions:(RadarTripOptions *)options status:(RadarTripStatus)status {
+- (void)updateTripWithOptions:(RadarTripOptions *)options status:(RadarTripStatus)status completionHandler:(RadarTripAPICompletionHandler)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
-        return;
+        return completionHandler(RadarStatusErrorPublishableKey);
     }
 
     if (!options || !options.externalId) {
-        return;
+        return completionHandler(RadarStatusErrorBadRequest);
     }
 
     NSMutableDictionary *params = [NSMutableDictionary new];
@@ -312,12 +312,12 @@
                                   url:url
                               headers:headers
                                params:params
-                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res){
-
+                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
+                        completionHandler(status);
                     }];
 }
 
-- (void)getContextForLocation:(CLLocation *_Nonnull)location completionHandler:(RadarContextAPICompletionHandler _Nullable)completionHandler {
+- (void)getContextForLocation:(CLLocation *_Nonnull)location completionHandler:(RadarContextAPICompletionHandler _Nonnull)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
         return completionHandler(RadarStatusErrorPublishableKey, nil, nil);
