@@ -20,15 +20,19 @@
     NSMutableURLRequest *req = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:url]];
     req.HTTPMethod = method;
 
-    if (headers) {
-        for (NSString *key in headers) {
-            NSString *value = [headers valueForKey:key];
-            [req addValue:value forHTTPHeaderField:key];
+    @try {
+        if (headers) {
+            for (NSString *key in headers) {
+                NSString *value = [headers valueForKey:key];
+                [req addValue:value forHTTPHeaderField:key];
+            }
         }
-    }
 
-    if (params) {
-        [req setHTTPBody:[NSJSONSerialization dataWithJSONObject:params options:0 error:NULL]];
+        if (params) {
+            [req setHTTPBody:[NSJSONSerialization dataWithJSONObject:params options:0 error:NULL]];
+        }
+    } @catch (NSException *exception) {
+        return completionHandler(RadarStatusErrorBadRequest, nil);
     }
 
     NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];

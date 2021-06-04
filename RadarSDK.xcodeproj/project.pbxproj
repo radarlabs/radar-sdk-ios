@@ -585,7 +585,7 @@
 		DD236C6C2308797B00EB88F9 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 1240;
+				LastUpgradeCheck = 1250;
 				ORGANIZATIONNAME = "Radar Labs, Inc.";
 				TargetAttributes = {
 					0107A9E72621FFB9008AB52F = {

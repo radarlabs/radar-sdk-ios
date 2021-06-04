@@ -65,7 +65,7 @@ typedef NS_ENUM(NSInteger, RadarTripStatus) {
 /**
  For trips with a destination, the location of the destination geofence.
  */
-@property (nonnull, strong, nonatomic, readonly) RadarCoordinate *destinationLocation;
+@property (nullable, strong, nonatomic, readonly) RadarCoordinate *destinationLocation;
 
 /**
  The travel mode for the trip.

@@ -109,15 +109,15 @@
                    source:(RadarLocationSource)source
                  replayed:(BOOL)replayed
             nearbyBeacons:(NSArray<NSString *> *_Nullable)nearbyBeacons
-        completionHandler:(RadarTrackAPICompletionHandler _Nullable)completionHandler {
+        completionHandler:(RadarTrackAPICompletionHandler _Nonnull)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
         return completionHandler(RadarStatusErrorPublishableKey, nil, nil, nil, nil);
     }
 
     NSMutableDictionary *params = [NSMutableDictionary new];
-    params[@"installId"] = [RadarSettings installId];
     params[@"id"] = [RadarSettings _id];
+    params[@"installId"] = [RadarSettings installId];
     params[@"userId"] = [RadarSettings userId];
     params[@"deviceId"] = [RadarUtils deviceId];
     params[@"description"] = [RadarSettings _description];
@@ -276,23 +276,34 @@
                     }];
 }
 
-- (void)updateTripWithStatus:(RadarTripStatus)status {
+- (void)updateTripWithOptions:(RadarTripOptions *)options status:(RadarTripStatus)status completionHandler:(RadarTripAPICompletionHandler)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
-        return;
+        return completionHandler(RadarStatusErrorPublishableKey);
     }
 
-    RadarTripOptions *tripOptions = [RadarSettings tripOptions];
-    if (!tripOptions || !tripOptions.externalId) {
-        return;
+    if (!options || !options.externalId) {
+        return completionHandler(RadarStatusErrorBadRequest);
     }
 
     NSMutableDictionary *params = [NSMutableDictionary new];
 
-    params[@"status"] = [Radar stringForTripStatus:status];
+    if (status != RadarTripStatusUnknown) {
+        params[@"status"] = [Radar stringForTripStatus:status];
+    }
+    if (options.metadata) {
+        params[@"metadata"] = options.metadata;
+    }
+    if (options.destinationGeofenceTag) {
+        params[@"destinationGeofenceTag"] = options.destinationGeofenceTag;
+    }
+    if (options.destinationGeofenceExternalId) {
+        params[@"destinationGeofenceExternalId"] = options.destinationGeofenceExternalId;
+    }
+    params[@"mode"] = [Radar stringForMode:options.mode];
 
     NSString *host = [RadarSettings host];
-    NSString *url = [NSString stringWithFormat:@"%@/v1/trips/%@", host, tripOptions.externalId];
+    NSString *url = [NSString stringWithFormat:@"%@/v1/trips/%@", host, options.externalId];
     url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
 
     NSDictionary *headers = [RadarAPIClient headersWithPublishableKey:publishableKey];
@@ -301,12 +312,12 @@
                                   url:url
                               headers:headers
                                params:params
-                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res){
-
+                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
+                        completionHandler(status);
                     }];
 }
 
-- (void)getContextForLocation:(CLLocation *_Nonnull)location completionHandler:(RadarContextAPICompletionHandler _Nullable)completionHandler {
+- (void)getContextForLocation:(CLLocation *_Nonnull)location completionHandler:(RadarContextAPICompletionHandler _Nonnull)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
         return completionHandler(RadarStatusErrorPublishableKey, nil, nil);

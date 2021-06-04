@@ -7,3 +7,4 @@ sonar-reports/
 .scannerwork/
 DerivedData/
 build/
+docs/undocumented.json

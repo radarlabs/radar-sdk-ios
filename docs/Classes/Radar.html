@@ -17,7 +17,7 @@
     <a title="Radar Class Reference"></a>
     <header>
       <div class="content-wrapper">
-        <p><a href="../index.html">RadarSDK 3.1.1 Docs</a></p>
+        <p><a href="../index.html">RadarSDK 3.1.8 Docs</a></p>
         <p class="header-right"><a href="https://github.com/radarlabs/radar-sdk-ios"><img src="../img/gh.png"/>View on GitHub</a></p>
         <p class="header-right">
           <form role="search" action="../search.json">
@@ -212,6 +212,9 @@
               </li>
               <li class="nav-group-task">
                 <a href="../Type%20Definitions.html#/c:Radar.h@T@RadarTrackCompletionHandler">RadarTrackCompletionHandler</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Type%20Definitions.html#/c:Radar.h@T@RadarTripCompletionHandler">RadarTripCompletionHandler</a>
               </li>
             </ul>
           </li>
@@ -1566,6 +1569,159 @@ confidence level of future events.</p>
                 <li class="item">
                   <div>
                     <code>
+                    <a name="/c:objc(cs)Radar(cm)startTripWithOptions:completionHandler:"></a>
+                    <a name="//apple_ref/objc/Method/+startTripWithOptions:completionHandler:" class="dashAnchor"></a>
+                    <a class="token" href="#/c:objc(cs)Radar(cm)startTripWithOptions:completionHandler:">+startTripWithOptions:<wbr>completionHandler:<wbr></a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Starts a trip.</p>
+<div class="aside aside-see">
+    <p class="aside-title">See</p>
+    <p><a href="https://radar.io/documentation/trip-tracking">https://radar.io/documentation/trip-tracking</a></p>
+
+</div>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Objective-C</p>
+                          <pre class="highlight objective_c"><code><span class="k">+</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">startTripWithOptions</span><span class="p">:(</span><span class="n"><a href="../Classes/RadarTripOptions.html">RadarTripOptions</a></span> <span class="o">*</span><span class="n">_Nonnull</span><span class="p">)</span><span class="nv">options</span>
+           <span class="nf">completionHandler</span><span class="p">:</span>
+               <span class="p">(</span><span class="n"><a href="../Type%20Definitions.html#/c:Radar.h@T@RadarTripCompletionHandler">RadarTripCompletionHandler</a></span> <span class="n">_Nullable</span><span class="p">)</span><span class="nv">completionHandler</span><span class="p">;</span></code></pre>
+
+                        </div>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">class</span> <span class="kd">func</span> <span class="nf">startTrip</span><span class="p">(</span><span class="nv">options</span><span class="p">:</span> <span class="kt"><a href="../Classes/RadarTripOptions.html">RadarTripOptions</a></span><span class="p">,</span> <span class="nv">completionHandler</span><span class="p">:</span> <span class="kt"><a href="../Type%20Definitions.html#/c:Radar.h@T@RadarTripCompletionHandler">RadarTripCompletionHandler</a></span><span class="p">?</span> <span class="o">=</span> <span class="kc">nil</span><span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>options</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>Configurable trip options.</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>completionHandler</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>An optional completion handler.</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:objc(cs)Radar(cm)updateTripWithOptions:status:completionHandler:"></a>
+                    <a name="//apple_ref/objc/Method/+updateTripWithOptions:status:completionHandler:" class="dashAnchor"></a>
+                    <a class="token" href="#/c:objc(cs)Radar(cm)updateTripWithOptions:status:completionHandler:">+updateTripWithOptions:<wbr>status:<wbr>completionHandler:<wbr></a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Manually updates a trip.</p>
+<div class="aside aside-see">
+    <p class="aside-title">See</p>
+    <p><a href="https://radar.io/documentation/trip-tracking">https://radar.io/documentation/trip-tracking</a></p>
+
+</div>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Objective-C</p>
+                          <pre class="highlight objective_c"><code><span class="k">+</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">updateTripWithOptions</span><span class="p">:(</span><span class="n"><a href="../Classes/RadarTripOptions.html">RadarTripOptions</a></span> <span class="o">*</span><span class="n">_Nonnull</span><span class="p">)</span><span class="nv">options</span>
+                       <span class="nf">status</span><span class="p">:(</span><span class="n"><a href="../Enums/RadarTripStatus.html">RadarTripStatus</a></span><span class="p">)</span><span class="nv">status</span>
+            <span class="nf">completionHandler</span><span class="p">:</span>
+                <span class="p">(</span><span class="n"><a href="../Type%20Definitions.html#/c:Radar.h@T@RadarTripCompletionHandler">RadarTripCompletionHandler</a></span> <span class="n">_Nullable</span><span class="p">)</span><span class="nv">completionHandler</span><span class="p">;</span></code></pre>
+
+                        </div>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">class</span> <span class="kd">func</span> <span class="nf">updateTrip</span><span class="p">(</span><span class="nv">options</span><span class="p">:</span> <span class="kt"><a href="../Classes/RadarTripOptions.html">RadarTripOptions</a></span><span class="p">,</span> <span class="nv">status</span><span class="p">:</span> <span class="kt"><a href="../Enums/RadarTripStatus.html">RadarTripStatus</a></span><span class="p">,</span> <span class="nv">completionHandler</span><span class="p">:</span> <span class="kt"><a href="../Type%20Definitions.html#/c:Radar.h@T@RadarTripCompletionHandler">RadarTripCompletionHandler</a></span><span class="p">?</span> <span class="o">=</span> <span class="kc">nil</span><span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>options</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>Configurable trip options.</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>status</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>The trip status. To avoid updating status, pass RadarTripStatusUnknown.</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>completionHandler</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>An optional completion handler.</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
                     <a name="/c:objc(cs)Radar(cm)completeTrip"></a>
                     <a name="//apple_ref/objc/Method/+completeTrip" class="dashAnchor"></a>
                     <a class="token" href="#/c:objc(cs)Radar(cm)completeTrip">+completeTrip</a>
@@ -1603,6 +1759,63 @@ confidence level of future events.</p>
                 <li class="item">
                   <div>
                     <code>
+                    <a name="/c:objc(cs)Radar(cm)completeTripWithCompletionHandler:"></a>
+                    <a name="//apple_ref/objc/Method/+completeTripWithCompletionHandler:" class="dashAnchor"></a>
+                    <a class="token" href="#/c:objc(cs)Radar(cm)completeTripWithCompletionHandler:">+completeTripWithCompletionHandler:<wbr></a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Completes a trip.</p>
+<div class="aside aside-see">
+    <p class="aside-title">See</p>
+    <p><a href="https://radar.io/documentation/trip-tracking">https://radar.io/documentation/trip-tracking</a></p>
+
+</div>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Objective-C</p>
+                          <pre class="highlight objective_c"><code><span class="k">+</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">completeTripWithCompletionHandler</span><span class="p">:</span>
+    <span class="p">(</span><span class="n"><a href="../Type%20Definitions.html#/c:Radar.h@T@RadarTripCompletionHandler">RadarTripCompletionHandler</a></span> <span class="n">_Nullable</span><span class="p">)</span><span class="nv">completionHandler</span><span class="p">;</span></code></pre>
+
+                        </div>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">class</span> <span class="kd">func</span> <span class="nf">completeTrip</span><span class="p">(</span><span class="nv">completionHandler</span><span class="p">:</span> <span class="kt"><a href="../Type%20Definitions.html#/c:Radar.h@T@RadarTripCompletionHandler">RadarTripCompletionHandler</a></span><span class="p">?</span> <span class="o">=</span> <span class="kc">nil</span><span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>completionHandler</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>An optional completion handler.</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
                     <a name="/c:objc(cs)Radar(cm)cancelTrip"></a>
                     <a name="//apple_ref/objc/Method/+cancelTrip" class="dashAnchor"></a>
                     <a class="token" href="#/c:objc(cs)Radar(cm)cancelTrip">+cancelTrip</a>
@@ -1633,6 +1846,63 @@ confidence level of future events.</p>
                           <pre class="highlight swift"><code><span class="kd">class</span> <span class="kd">func</span> <span class="nf">cancelTrip</span><span class="p">()</span></code></pre>
 
                         </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:objc(cs)Radar(cm)cancelTripWithCompletionHandler:"></a>
+                    <a name="//apple_ref/objc/Method/+cancelTripWithCompletionHandler:" class="dashAnchor"></a>
+                    <a class="token" href="#/c:objc(cs)Radar(cm)cancelTripWithCompletionHandler:">+cancelTripWithCompletionHandler:<wbr></a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Cancels a trip.</p>
+<div class="aside aside-see">
+    <p class="aside-title">See</p>
+    <p><a href="https://radar.io/documentation/trip-tracking">https://radar.io/documentation/trip-tracking</a></p>
+
+</div>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Objective-C</p>
+                          <pre class="highlight objective_c"><code><span class="k">+</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">cancelTripWithCompletionHandler</span><span class="p">:</span>
+    <span class="p">(</span><span class="n"><a href="../Type%20Definitions.html#/c:Radar.h@T@RadarTripCompletionHandler">RadarTripCompletionHandler</a></span> <span class="n">_Nullable</span><span class="p">)</span><span class="nv">completionHandler</span><span class="p">;</span></code></pre>
+
+                        </div>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">class</span> <span class="kd">func</span> <span class="nf">cancelTrip</span><span class="p">(</span><span class="nv">completionHandler</span><span class="p">:</span> <span class="kt"><a href="../Type%20Definitions.html#/c:Radar.h@T@RadarTripCompletionHandler">RadarTripCompletionHandler</a></span><span class="p">?</span> <span class="o">=</span> <span class="kc">nil</span><span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>completionHandler</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>An optional completion handler.</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
                       </div>
                     </section>
                   </div>
@@ -3249,7 +3519,7 @@ confidence level of future events.</p>
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2021 <a class="link" href="https://radar.io" target="_blank" rel="external">Radar Labs, Inc.</a>. All rights reserved. (Last updated: 2021-02-28)</p>
+          <p>&copy; 2021 <a class="link" href="https://radar.io" target="_blank" rel="external">Radar Labs, Inc.</a>. All rights reserved. (Last updated: 2021-05-28)</p>
           <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.13.6</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
         </section>
       </article>
