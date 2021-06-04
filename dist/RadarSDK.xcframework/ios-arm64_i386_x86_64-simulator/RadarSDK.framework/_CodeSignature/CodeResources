@@ -6,7 +6,7 @@
 	<dict>
 		<key>Headers/Radar.h</key>
 		<data>
-		jIgdYLhdU59X0m3+krjA6jM7W28=
+		wVAjQmrfIWIVJFWglE39LU/5Yxo=
 		</data>
 		<key>Headers/RadarAddress.h</key>
 		<data>
@@ -14,7 +14,7 @@
 		</data>
 		<key>Headers/RadarBeacon.h</key>
 		<data>
-		UwwHLkxzF6+ke8TRx8ecpBilKY4=
+		cRj/e/pUV+z3KxCIVK2WIBcR6FM=
 		</data>
 		<key>Headers/RadarChain.h</key>
 		<data>
@@ -38,7 +38,7 @@
 		</data>
 		<key>Headers/RadarEvent.h</key>
 		<data>
-		fvVIqDLPfN9KEBkz3poIVgLMOcw=
+		dhXmIhgiYlfnbyptkjzL8RaCNuQ=
 		</data>
 		<key>Headers/RadarGeofence.h</key>
 		<data>
@@ -98,7 +98,7 @@
 		</data>
 		<key>Headers/RadarTrip.h</key>
 		<data>
-		woUcxlDtP/b9vtMSdx1kIYFX+rM=
+		m+cKQJyomJyUa6GaLw8H1tLzq/U=
 		</data>
 		<key>Headers/RadarTripOptions.h</key>
 		<data>
@@ -122,7 +122,7 @@
 		</data>
 		<key>Info.plist</key>
 		<data>
-		v00tA+zAK/ovCj+8eAxB5F4tfHY=
+		8F0LlH6MTB1hN3vDkKGSe18LZvA=
 		</data>
 		<key>Modules/module.modulemap</key>
 		<data>
@@ -133,13 +133,21 @@
 	<dict>
 		<key>Headers/Radar.h</key>
 		<dict>
+			<key>hash</key>
+			<data>
+			wVAjQmrfIWIVJFWglE39LU/5Yxo=
+			</data>
 			<key>hash2</key>
 			<data>
-			LoNuNjkV21UjFcGzCZV+PjE/SOYvg/j727Ro/oPyCeU=
+			/VDy5AIAE6PTh86jloe0Rd9BRV6HZe4rDvyEKBeHlXw=
 			</data>
 		</dict>
 		<key>Headers/RadarAddress.h</key>
 		<dict>
+			<key>hash</key>
+			<data>
+			5tddXiWrJEDWf3S2Z9tvth6Lcbg=
+			</data>
 			<key>hash2</key>
 			<data>
 			bS/x5zWOwVdDOMjFREFVEWp5n12gfrQx2ebc5bv5Zik=
@@ -147,13 +155,21 @@
 		</dict>
 		<key>Headers/RadarBeacon.h</key>
 		<dict>
+			<key>hash</key>
+			<data>
+			cRj/e/pUV+z3KxCIVK2WIBcR6FM=
+			</data>
 			<key>hash2</key>
 			<data>
-			7O7VswLG1RQsuls3dHH0jyXaqee7sfJBCOCAooOx/8A=
+			a3RzgPfEJkGCAGkoBP5GAy7A+qOXiAi3b5uR+htfLOk=
 			</data>
 		</dict>
 		<key>Headers/RadarChain.h</key>
 		<dict>
+			<key>hash</key>
+			<data>
+			qOTIMZ/ODVgBEyKFurCeDdEiex4=
+			</data>
 			<key>hash2</key>
 			<data>
 			VnQdxFPrfA+ZEinn55/ufwWGUPW+j7NtBjh93/h/CSY=
@@ -161,6 +177,10 @@
 		</dict>
 		<key>Headers/RadarCircleGeometry.h</key>
 		<dict>
+			<key>hash</key>
+			<data>
+			Ee7Bq4yqPrQlG82bOlkj77/3wEw=
+			</data>
 			<key>hash2</key>
 			<data>
 			ollunSlGnWSAV7YJDY+OzMOCOlUdVNTK5LXXNI5M0eE=
@@ -168,6 +188,10 @@
 		</dict>
 		<key>Headers/RadarContext.h</key>
 		<dict>
+			<key>hash</key>
+			<data>
+			QCkqJfZry1Y1EdpL82sfKWUzE4A=
+			</data>
 			<key>hash2</key>
 			<data>
 			+o2dM4Y6fcElRIaZdt2u3yHhMbO4ITWaGY6XtzhGrxA=
@@ -175,6 +199,10 @@
 		</dict>
 		<key>Headers/RadarCoordinate.h</key>
 		<dict>
+			<key>hash</key>
+			<data>
+			6vVS+AFXhBU3GInmfq3zDh8Ti4U=
+			</data>
 			<key>hash2</key>
 			<data>
 			HEdRPNKZpplYIco8bSQuGOFtfongsUnJJ5VIchRqdt8=
@@ -182,6 +210,10 @@
 		</dict>
 		<key>Headers/RadarDelegate.h</key>
 		<dict>
+			<key>hash</key>
+			<data>
+			GXR9gH9mfcVAiMo5LXahZ0eg3w8=
+			</data>
 			<key>hash2</key>
 			<data>
 			Xv/u/fvgeveqxzfEovUCYZXDi0PGYlC4NabvXKoZYCI=
@@ -189,13 +221,21 @@
 		</dict>
 		<key>Headers/RadarEvent.h</key>
 		<dict>
+			<key>hash</key>
+			<data>
+			dhXmIhgiYlfnbyptkjzL8RaCNuQ=
+			</data>
 			<key>hash2</key>
 			<data>
-			EkJpncEeCtRmkDiNOtXWrWz0oWkIghgsIkz5fjtlDZc=
+			FaS/mrbvCz37NTdXO85U5cmB/AMy7DkdPRDEjrQjAmU=
 			</data>
 		</dict>
 		<key>Headers/RadarGeofence.h</key>
 		<dict>
+			<key>hash</key>
+			<data>
+			7ikTUCt0h0WvUDBbW37c2XIIajo=
+			</data>
 			<key>hash2</key>
 			<data>
 			/uaR+Apn7Mhdp6qwpJ2NnFzZMH/UI1R4fTwmTmOXffc=
@@ -203,6 +243,10 @@
 		</dict>
 		<key>Headers/RadarGeofenceGeometry.h</key>
 		<dict>
+			<key>hash</key>
+			<data>
+			8dLjPk8GrgffIm6+FfXhm+izrqM=
+			</data>
 			<key>hash2</key>
 			<data>
 			HcKbjT/H1P58pzRUjjxQTknq7swoWqzU1ZJZspEfcDA=
@@ -210,6 +254,10 @@
 		</dict>
 		<key>Headers/RadarPlace.h</key>
 		<dict>
+			<key>hash</key>
+			<data>
+			1ovuCag7Ofp/6iKPDsspcPcqc2Q=
+			</data>
 			<key>hash2</key>
 			<data>
 			6kxX7gKwVbHWNi1a8F2jLhK/JugxC1QxFAis+u8H+QQ=
@@ -217,6 +265,10 @@
 		</dict>
 		<key>Headers/RadarPolygonGeometry.h</key>
 		<dict>
+			<key>hash</key>
+			<data>
+			ZSaHToYzs9hxYX30/bqOdWLhDNw=
+			</data>
 			<key>hash2</key>
 			<data>
 			n/xcA2jvxvt5LI4d01KPLuGvWJxvT/UDah0BCZhc26g=
@@ -224,6 +276,10 @@
 		</dict>
 		<key>Headers/RadarRegion.h</key>
 		<dict>
+			<key>hash</key>
+			<data>
+			lROK+BPhut5vBetCfJATVqRYVRs=
+			</data>
 			<key>hash2</key>
 			<data>
 			zp8gtkEFe0Z9+zsXao9msbfQ8fPkWS+FqEgu825HKg8=
@@ -231,6 +287,10 @@
 		</dict>
 		<key>Headers/RadarRoute.h</key>
 		<dict>
+			<key>hash</key>
+			<data>
+			BQAqFhyy9JRzr7slVThKNnh/U1s=
+			</data>
 			<key>hash2</key>
 			<data>
 			GzM+UJfiy8MLTNCb3tN6jQqRHEWRq3HooFkaQX3TkHw=
@@ -238,6 +298,10 @@
 		</dict>
 		<key>Headers/RadarRouteDistance.h</key>
 		<dict>
+			<key>hash</key>
+			<data>
+			3r4XpzKx9l3+kyxL+jTTF+wxsuI=
+			</data>
 			<key>hash2</key>
 			<data>
 			9ChGUSr6rkBkqPh/+3AY/sBOiS+0duKSkihW242w1q8=
@@ -245,6 +309,10 @@
 		</dict>
 		<key>Headers/RadarRouteDuration.h</key>
 		<dict>
+			<key>hash</key>
+			<data>
+			CjkWBtDCbgUoKiUl9g8yJAPc6Nc=
+			</data>
 			<key>hash2</key>
 			<data>
 			tWT/Dfr5OH28LfJDRjbDTBCSVBSb6PtApqKBb30QWM4=
@@ -252,6 +320,10 @@
 		</dict>
 		<key>Headers/RadarRouteGeometry.h</key>
 		<dict>
+			<key>hash</key>
+			<data>
+			2+XY0XuE1EcSTehZaLhX7aJxgi8=
+			</data>
 			<key>hash2</key>
 			<data>
 			NXATwm5Tdht6XaYBZRFlQGrSbUcD8TTAfcL3/En64ho=
@@ -259,6 +331,10 @@
 		</dict>
 		<key>Headers/RadarRouteMatrix.h</key>
 		<dict>
+			<key>hash</key>
+			<data>
+			mwH+yc8p5OhOkOGOYLLmO96vJOQ=
+			</data>
 			<key>hash2</key>
 			<data>
 			0G4+0dHXruJzprly+APYUwsVgqb1jBLXmMx06Dt+NQQ=
@@ -266,6 +342,10 @@
 		</dict>
 		<key>Headers/RadarRoutes.h</key>
 		<dict>
+			<key>hash</key>
+			<data>
+			UlLPc3vPFiKTd08Uq3UPfKWvKVs=
+			</data>
 			<key>hash2</key>
 			<data>
 			iLUCjsqofkslNhjfb6wc+dXXKzA7835Tmz000Bk6Fy8=
@@ -273,6 +353,10 @@
 		</dict>
 		<key>Headers/RadarSDK.h</key>
 		<dict>
+			<key>hash</key>
+			<data>
+			Up0lO7bFRKaIAVj3VlBVQ87sXdY=
+			</data>
 			<key>hash2</key>
 			<data>
 			0KovqYVfuxuItyZ2IFHtuLJ92484Wd/6iYfgBXgjr1w=
@@ -280,6 +364,10 @@
 		</dict>
 		<key>Headers/RadarSegment.h</key>
 		<dict>
+			<key>hash</key>
+			<data>
+			L5ZeE6JosZb4EZZdVZDuo8GQ3j0=
+			</data>
 			<key>hash2</key>
 			<data>
 			gh1YYPDSmpHiJGs/i5B3rQgMBkAVgT57xGL/tXgStM8=
@@ -287,6 +375,10 @@
 		</dict>
 		<key>Headers/RadarTrackingOptions.h</key>
 		<dict>
+			<key>hash</key>
+			<data>
+			W9eNBDZUiHxEULFfN5f8Wnikh0Y=
+			</data>
 			<key>hash2</key>
 			<data>
 			991xCHwNc8p0IkirubDQcFfH8dWnG2h9TY+XvgAHh/k=
@@ -294,13 +386,21 @@
 		</dict>
 		<key>Headers/RadarTrip.h</key>
 		<dict>
+			<key>hash</key>
+			<data>
+			m+cKQJyomJyUa6GaLw8H1tLzq/U=
+			</data>
 			<key>hash2</key>
 			<data>
-			nUBQK7tLcBMgnVuyhkfD7qI5xb3Su2WNB6hCAr96wdg=
+			A2PNe0WI+LqUZOJnim18n/nt4PlE3Vddrq2lotablMA=
 			</data>
 		</dict>
 		<key>Headers/RadarTripOptions.h</key>
 		<dict>
+			<key>hash</key>
+			<data>
+			mca2xfA+qhmyAIREqgeRQZDRf/k=
+			</data>
 			<key>hash2</key>
 			<data>
 			1oawtvC6NIalttDiVNGHP+47hAEtB2u25crYou5+PDw=
@@ -308,6 +408,10 @@
 		</dict>
 		<key>Headers/RadarUser.h</key>
 		<dict>
+			<key>hash</key>
+			<data>
+			r3bRYv9iw7vqsnk1wuOL8HMk4FA=
+			</data>
 			<key>hash2</key>
 			<data>
 			xiH2Tjcu+WfB5jT13eauZznSKSHbn3i3NdVjweCL1ns=
@@ -315,6 +419,10 @@
 		</dict>
 		<key>Headers/RadarUserInsights.h</key>
 		<dict>
+			<key>hash</key>
+			<data>
+			lZ8tCWgI3g6HFav7W3bezw/pmJA=
+			</data>
 			<key>hash2</key>
 			<data>
 			+Wr/1XlCR8eQfc4HwCK28KRJEzV7L/7Y4IeVlMDVFXM=
@@ -322,6 +430,10 @@
 		</dict>
 		<key>Headers/RadarUserInsightsLocation.h</key>
 		<dict>
+			<key>hash</key>
+			<data>
+			jwDd/4jXi5A/nNg9z9tWeCMobd4=
+			</data>
 			<key>hash2</key>
 			<data>
 			B4R/Ym4RQHYwvql1xhuK2dkmyubl+en5jjYH5vZvgo4=
@@ -329,6 +441,10 @@
 		</dict>
 		<key>Headers/RadarUserInsightsState.h</key>
 		<dict>
+			<key>hash</key>
+			<data>
+			LSJl+F1sMkLOWGc82Hx9d76punE=
+			</data>
 			<key>hash2</key>
 			<data>
 			lQONzIybbDycH1J1hVhUHDG5LY3Hsafs5FCZoUq8NwE=
@@ -336,6 +452,10 @@
 		</dict>
 		<key>Modules/module.modulemap</key>
 		<dict>
+			<key>hash</key>
+			<data>
+			dm+HrjpJGQIieG3WToD9f4aAP44=
+			</data>
 			<key>hash2</key>
 			<data>
 			GEqDCn6Ymw6IRrkoUGSGSq4hkNfbWMa0U1CEzIwKNB8=

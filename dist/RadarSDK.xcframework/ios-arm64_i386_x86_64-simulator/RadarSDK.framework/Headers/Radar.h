@@ -161,6 +161,15 @@ typedef void (^_Nullable RadarBeaconCompletionHandler)(RadarStatus status, NSArr
 typedef void (^_Nullable RadarTrackCompletionHandler)(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user);
 
 /**
+ Called when a trip update succeeds, fails, or times out.
+
+ Receives the request status.
+
+ @see https://radar.io/documentation/sdk/ios
+ */
+typedef void (^_Nullable RadarTripCompletionHandler)(RadarStatus status);
+
+/**
  Called when a context request succeeds, fails, or times out.
 
  Receives the request status and, if successful, the location and the context.
@@ -465,6 +474,30 @@ typedef void (^_Nonnull RadarRouteMatrixCompletionHandler)(RadarStatus status, R
 + (void)startTripWithOptions:(RadarTripOptions *_Nonnull)options NS_SWIFT_NAME(startTrip(options:));
 
 /**
+ Starts a trip.
+
+ @param options Configurable trip options.
+ @param completionHandler An optional completion handler.
+
+ @see https://radar.io/documentation/trip-tracking
+ */
++ (void)startTripWithOptions:(RadarTripOptions *_Nonnull)options
+           completionHandler:(RadarTripCompletionHandler _Nullable)completionHandler NS_SWIFT_NAME(startTrip(options:completionHandler:));
+
+/**
+ Manually updates a trip.
+
+ @param options Configurable trip options.
+ @param status The trip status. To avoid updating status, pass RadarTripStatusUnknown.
+ @param completionHandler An optional completion handler.
+
+ @see https://radar.io/documentation/trip-tracking
+ */
++ (void)updateTripWithOptions:(RadarTripOptions *_Nonnull)options
+                       status:(RadarTripStatus)status
+            completionHandler:(RadarTripCompletionHandler _Nullable)completionHandler NS_SWIFT_NAME(updateTrip(options:status:completionHandler:));
+
+/**
  Completes a trip.
 
  @see https://radar.io/documentation/trip-tracking
@@ -472,11 +505,29 @@ typedef void (^_Nonnull RadarRouteMatrixCompletionHandler)(RadarStatus status, R
 + (void)completeTrip;
 
 /**
+ Completes a trip.
+
+ @param completionHandler An optional completion handler.
+
+ @see https://radar.io/documentation/trip-tracking
+ */
++ (void)completeTripWithCompletionHandler:(RadarTripCompletionHandler _Nullable)completionHandler NS_SWIFT_NAME(completeTrip(completionHandler:));
+
+/**
  Cancels a trip.
 
  @see https://radar.io/documentation/trip-tracking
  */
 + (void)cancelTrip;
+
+/**
+ Cancels a trip.
+
+ @param completionHandler An optional completion handler.
+
+ @see https://radar.io/documentation/trip-tracking
+ */
++ (void)cancelTripWithCompletionHandler:(RadarTripCompletionHandler _Nullable)completionHandler NS_SWIFT_NAME(cancelTrip(completionHandler:));
 
 /**
  Gets the device's current location, then gets context for that location without sending device or user identifiers to the server.
