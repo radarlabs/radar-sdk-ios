@@ -6,10 +6,12 @@ let package = Package(
     platforms: [
         .iOS(.v10)
     ],
+    dependencies: [],
     products: [
         .library(
             name: "RadarSDK",
-            targets: ["RadarSDK"])
+            targets: ["RadarSDK"]
+        )
     ],
     targets: [
         .binaryTarget(
