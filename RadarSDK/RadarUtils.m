@@ -32,11 +32,7 @@
 }
 
 + (NSString *)sdkVersion {
-<<<<<<< HEAD
     return @"3.2.0";
-=======
-    return @"3.2.0-alpha.2";
->>>>>>> 3948b79 (dist)
 }
 
 + (NSString *)adId {
