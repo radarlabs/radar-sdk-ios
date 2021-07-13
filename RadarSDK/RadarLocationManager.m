@@ -534,7 +534,7 @@ static NSString *const kSyncBeaconIdentifierPrefix = @"radar_beacon_";
             }
         }
     } else {
-        stopped = force;
+        stopped = (force || source == RadarLocationSourceVisitArrival);
     }
     BOOL justStopped = stopped && !wasStopped;
     [RadarState setStopped:stopped];
