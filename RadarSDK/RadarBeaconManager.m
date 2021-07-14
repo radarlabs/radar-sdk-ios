@@ -145,11 +145,19 @@
     self.started = YES;
 
     for (RadarBeacon *beacon in beacons) {
-        [[RadarLogger sharedInstance]
-            logWithLevel:RadarLogLevelDebug
-                 message:[NSString stringWithFormat:@"Starting ranging beacon | _id = %@; uuid = %@; major = %@; minor = %@", beacon._id, beacon.uuid, beacon.major, beacon.minor]];
-
-        [self.locationManager startRangingBeaconsInRegion:[self regionForBeacon:beacon]];
+        CLBeaconRegion *region = [self regionForBeacon:beacon];
+        
+        if (region) {
+            [[RadarLogger sharedInstance]
+                logWithLevel:RadarLogLevelDebug
+                     message:[NSString stringWithFormat:@"Starting ranging beacon | _id = %@; uuid = %@; major = %@; minor = %@", beacon._id, beacon.uuid, beacon.major, beacon.minor]];
+            
+            [self.locationManager startRangingBeaconsInRegion:region];
+        } else {
+            [[RadarLogger sharedInstance]
+                logWithLevel:RadarLogLevelDebug
+                     message:[NSString stringWithFormat:@"Error starting ranging beacon | _id = %@; uuid = %@; major = %@; minor = %@", beacon._id, beacon.uuid, beacon.major, beacon.minor]];
+        }
     }
 }
 
