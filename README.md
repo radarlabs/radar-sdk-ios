@@ -7,11 +7,21 @@
 
 The Radar SDK abstracts away cross-platform differences between location services, allowing you to add geofencing, location tracking, trip tracking, geocoding, and search to your apps with just a few lines of code.
 
-## Documentation
+## Documentation on using the SDK
 
 See the Radar overview documentation [here](https://radar.io/documentation). See the Radar SDK documentation [here](https://radar.io/documentation/sdk).
 
 You can also see a detailed SDK reference [here](https://radarlabs.github.io/radar-sdk-ios/Classes/Radar.html).
+
+## Documentation on building the SDK
+To do development on the SDK source, use the following commands:
+
+```
+brew install cocoapods # if you do not have cocoapods installed
+pod install
+```
+
+Open the workspace in XCode to build or run tests. 
 
 ## Migrating
 
