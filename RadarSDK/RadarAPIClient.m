@@ -491,7 +491,7 @@
                     }];
 }
 
-- (void)autocompleteQuery:(NSString *)query near:(CLLocation *_Nonnull)near limit:(int)limit completionHandler:(RadarGeocodeAPICompletionHandler)completionHandler {
+- (void)autocompleteQuery:(NSString *)query near:(CLLocation *_Nonnull)near layers:(NSArray<NSString *> *_Nullable)layers limit:(int)limit completionHandler:(RadarGeocodeAPICompletionHandler)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
         return completionHandler(RadarStatusErrorPublishableKey, nil, nil);
@@ -503,6 +503,7 @@
     [queryString appendFormat:@"query=%@", query];
     [queryString appendFormat:@"&near=%.06f,%.06f", near.coordinate.latitude, near.coordinate.longitude];
     [queryString appendFormat:@"&limit=%d", finalLimit];
+    [queryString appendFormat:@"&tags=%@", [layers componentsJoinedByString:@","]];
 
     NSString *host = [RadarSettings host];
     NSString *url = [NSString stringWithFormat:@"%@/v1/search/autocomplete?%@", host, queryString];
