@@ -957,6 +957,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
                         near:near
                         layers:@[@"place"]
                        limit:10
+                       country:@"US"
            completionHandler:^(RadarStatus status, NSArray<RadarAddress *> *_Nullable addresses) {
                XCTAssertEqual(status, RadarStatusSuccess);
                AssertAddressesOk(addresses);

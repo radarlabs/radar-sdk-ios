@@ -491,7 +491,7 @@
                     }];
 }
 
-- (void)autocompleteQuery:(NSString *)query near:(CLLocation *_Nonnull)near layers:(NSArray<NSString *> *_Nullable)layers limit:(int)limit completionHandler:(RadarGeocodeAPICompletionHandler)completionHandler {
+- (void)autocompleteQuery:(NSString *)query near:(CLLocation *_Nullable)near layers:(NSArray<NSString *> *_Nullable)layers limit:(int)limit country:(NSString *_Nullable)country completionHandler:(RadarGeocodeAPICompletionHandler)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
         return completionHandler(RadarStatusErrorPublishableKey, nil, nil);
@@ -501,10 +501,17 @@
 
     NSMutableString *queryString = [NSMutableString new];
     [queryString appendFormat:@"query=%@", query];
-    [queryString appendFormat:@"&near=%.06f,%.06f", near.coordinate.latitude, near.coordinate.longitude];
-    [queryString appendFormat:@"&limit=%d", finalLimit];
+    if (near) {
+        [queryString appendFormat:@"&near=%.06f,%.06f", near.coordinate.latitude, near.coordinate.longitude];
+    }
     if (layers && [layers count] > 0) {
         [queryString appendFormat:@"&layers=%@", [layers componentsJoinedByString:@","]];
+    }
+    if (limit) {
+        [queryString appendFormat:@"&limit=%d", finalLimit];
+    }
+    if (country && [country length] == 2) {
+        [queryString appendFormat:@"country=%@", country];
     }
 
     NSString *host = [RadarSettings host];
