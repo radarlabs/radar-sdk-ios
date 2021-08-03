@@ -503,7 +503,9 @@
     [queryString appendFormat:@"query=%@", query];
     [queryString appendFormat:@"&near=%.06f,%.06f", near.coordinate.latitude, near.coordinate.longitude];
     [queryString appendFormat:@"&limit=%d", finalLimit];
-    [queryString appendFormat:@"&tags=%@", [layers componentsJoinedByString:@","]];
+    if (layers && [layers count] > 0) {
+        [queryString appendFormat:@"&layers=%@", [layers componentsJoinedByString:@","]];
+    }
 
     NSString *host = [RadarSettings host];
     NSString *url = [NSString stringWithFormat:@"%@/v1/search/autocomplete?%@", host, queryString];
