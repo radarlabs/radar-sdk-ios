@@ -539,6 +539,48 @@
                     }];
 }
 
+- (void)autocompleteQuery:(NSString *)query near:(CLLocation *_Nullable)near limit:(int)limit completionHandler:(RadarGeocodeAPICompletionHandler)completionHandler {
+    NSString *publishableKey = [RadarSettings publishableKey];
+    if (!publishableKey) {
+        return completionHandler(RadarStatusErrorPublishableKey, nil, nil);
+    }
+
+    int finalLimit = MIN(limit, 100);
+
+    NSMutableString *queryString = [NSMutableString new];
+    [queryString appendFormat:@"query=%@", query];
+    if (near) {
+        [queryString appendFormat:@"&near=%.06f,%.06f", near.coordinate.latitude, near.coordinate.longitude];
+    }
+    if (limit) {
+        [queryString appendFormat:@"&limit=%d", finalLimit];
+    }
+
+    NSString *host = [RadarSettings host];
+    NSString *url = [NSString stringWithFormat:@"%@/v1/search/autocomplete?%@", host, queryString];
+    url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
+
+    NSDictionary *headers = [RadarAPIClient headersWithPublishableKey:publishableKey];
+
+    [self.apiHelper requestWithMethod:@"GET"
+                                  url:url
+                              headers:headers
+                               params:nil
+                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
+                        if (status != RadarStatusSuccess || !res) {
+                            return completionHandler(status, nil, nil);
+                        }
+
+                        id addressesObj = res[@"addresses"];
+                        NSArray<RadarAddress *> *addresses = [RadarAddress addressesFromObject:addressesObj];
+                        if (addresses) {
+                            return completionHandler(RadarStatusSuccess, res, addresses);
+                        }
+
+                        completionHandler(RadarStatusErrorServer, nil, nil);
+                    }];
+}
+
 - (void)geocodeAddress:(NSString *)query completionHandler:(RadarGeocodeAPICompletionHandler)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {

@@ -649,6 +649,22 @@ typedef void (^_Nonnull RadarRouteMatrixCompletionHandler)(RadarStatus status, R
         completionHandler:(RadarGeocodeCompletionHandler)completionHandler NS_SWIFT_NAME(autocomplete(query:near:layers:limit:country:completionHandler:));
 
 /**
+ Autocompletes partial addresses and place names, sorted by relevance.
+
+ @param query The partial address or place name to autocomplete.
+ @param near A location for the search.
+ @param limit The max number of addresses to return. A number between 1 and 100.
+ @param completionHandler A completion handler.
+
+ @see https://radar.io/documentation/api#autocomplete
+ */
++ (void)autocompleteQuery:(NSString *_Nonnull)query
+                     near:(CLLocation *_Nullable)near
+                    limit:(int)limit
+        completionHandler:(RadarGeocodeCompletionHandler)completionHandler NS_SWIFT_NAME(autocomplete(query:near:limit:completionHandler:));
+
+
+/**
  Geocodes an address, converting address to coordinates.
 
  @param query The address to geocode.

@@ -85,6 +85,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             print("Autocomplete: status = \(Radar.stringForStatus(status)); formattedAddress = \(String(describing: addresses?.first?.formattedAddress))")
         }
 
+        Radar.autocomplete(
+            query: "brooklyn roasting",
+            near: origin,
+            layers: ["place"],
+            limit: 10,
+            country: "US"
+        ) { (status, addresses) in
+            print("Autocomplete: status = \(Radar.stringForStatus(status)); formattedAddress = \(String(describing: addresses?.first?.formattedAddress))")
+        }
+
         Radar.getDistance(
             origin: origin,
             destination: destination,
