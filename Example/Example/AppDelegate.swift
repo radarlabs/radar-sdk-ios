@@ -78,17 +78,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         let destination = CLLocation(latitude: 40.70390, longitude: -73.98670)
 
         Radar.autocomplete(
-            query: "brooklyn roasting",
+            query: "brooklyn",
             near: origin,
-            limit: 10
-        ) { (status, addresses) in
-            print("Autocomplete: status = \(Radar.stringForStatus(status)); formattedAddress = \(String(describing: addresses?.first?.formattedAddress))")
-        }
-
-        Radar.autocomplete(
-            query: "brooklyn roasting",
-            near: origin,
-            layers: ["place"],
+            layers: ["locality"],
             limit: 10,
             country: "US"
         ) { (status, addresses) in

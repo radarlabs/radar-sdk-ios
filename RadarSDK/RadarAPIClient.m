@@ -515,8 +515,8 @@
     if (limit) {
         [queryString appendFormat:@"&limit=%d", finalLimit];
     }
-    if (country && country.length == 2) {
-        [queryString appendFormat:@"country=%@", country];
+    if (country) {
+        [queryString appendFormat:@"&country=%@", country];
     }
 
     NSString *host = [RadarSettings host];
