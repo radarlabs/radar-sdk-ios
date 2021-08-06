@@ -491,7 +491,12 @@
                     }];
 }
 
-- (void)autocompleteQuery:(NSString *)query near:(CLLocation *_Nullable)near layers:(NSArray<NSString *> *_Nullable)layers limit:(int)limit country:(NSString *_Nullable)country completionHandler:(RadarGeocodeAPICompletionHandler)completionHandler {
+- (void)autocompleteQuery:(NSString *)query
+                     near:(CLLocation *_Nullable)near
+                   layers:(NSArray<NSString *> *_Nullable)layers
+                    limit:(int)limit
+                  country:(NSString *_Nullable)country
+        completionHandler:(RadarGeocodeAPICompletionHandler)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
         return completionHandler(RadarStatusErrorPublishableKey, nil, nil);

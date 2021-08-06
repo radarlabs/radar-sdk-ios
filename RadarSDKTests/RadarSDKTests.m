@@ -955,9 +955,9 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 
     [Radar autocompleteQuery:@"brooklyn roasting"
                         near:near
-                        layers:@[@"place"]
+                      layers:@[@"place"]
                        limit:10
-                       country:@"US"
+                     country:@"US"
            completionHandler:^(RadarStatus status, NSArray<RadarAddress *> *_Nullable addresses) {
                XCTAssertEqual(status, RadarStatusSuccess);
                AssertAddressesOk(addresses);

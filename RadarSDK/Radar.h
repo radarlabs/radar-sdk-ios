@@ -643,9 +643,9 @@ typedef void (^_Nonnull RadarRouteMatrixCompletionHandler)(RadarStatus status, R
  */
 + (void)autocompleteQuery:(NSString *_Nonnull)query
                      near:(CLLocation *_Nullable)near
-                    layers:(NSArray<NSString *> *_Nullable)layers
+                   layers:(NSArray<NSString *> *_Nullable)layers
                     limit:(int)limit
-                    country:(NSString *_Nullable)country
+                  country:(NSString *_Nullable)country
         completionHandler:(RadarGeocodeCompletionHandler)completionHandler NS_SWIFT_NAME(autocomplete(query:near:layers:limit:country:completionHandler:));
 
 /**
@@ -662,7 +662,6 @@ typedef void (^_Nonnull RadarRouteMatrixCompletionHandler)(RadarStatus status, R
                      near:(CLLocation *_Nullable)near
                     limit:(int)limit
         completionHandler:(RadarGeocodeCompletionHandler)completionHandler NS_SWIFT_NAME(autocomplete(query:near:limit:completionHandler:));
-
 
 /**
  Geocodes an address, converting address to coordinates.
