@@ -553,7 +553,9 @@
 + (void)autocompleteQuery:(NSString *_Nonnull)query near:(CLLocation *_Nullable)near limit:(int)limit completionHandler:(RadarGeocodeCompletionHandler)completionHandler {
     [[RadarAPIClient sharedInstance] autocompleteQuery:query
                                                   near:near
+                                                layers:nil
                                                  limit:limit
+                                               country:nil
                                      completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarAddress *> *_Nullable addresses) {
                                          if (completionHandler) {
                                              [RadarUtils runOnMainThread:^{

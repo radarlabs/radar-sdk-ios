@@ -509,13 +509,13 @@
     if (near) {
         [queryString appendFormat:@"&near=%.06f,%.06f", near.coordinate.latitude, near.coordinate.longitude];
     }
-    if (layers && [layers count] > 0) {
+    if (layers && layers.count > 0) {
         [queryString appendFormat:@"&layers=%@", [layers componentsJoinedByString:@","]];
     }
     if (limit) {
         [queryString appendFormat:@"&limit=%d", finalLimit];
     }
-    if (country && [country length] == 2) {
+    if (country && country.length == 2) {
         [queryString appendFormat:@"country=%@", country];
     }
 

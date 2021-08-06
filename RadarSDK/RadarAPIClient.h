@@ -90,11 +90,6 @@ typedef void (^_Nonnull RadarMatrixAPICompletionHandler)(RadarStatus status, NSD
                   country:(NSString *_Nullable)country
         completionHandler:(RadarGeocodeAPICompletionHandler _Nonnull)completionHandler;
 
-- (void)autocompleteQuery:(NSString *_Nonnull)query
-                     near:(CLLocation *_Nullable)near
-                    limit:(int)limit
-        completionHandler:(RadarGeocodeAPICompletionHandler _Nonnull)completionHandler;
-
 - (void)geocodeAddress:(NSString *_Nonnull)query completionHandler:(RadarGeocodeAPICompletionHandler _Nonnull)completionHandler;
 
 - (void)reverseGeocodeLocation:(CLLocation *_Nonnull)location completionHandler:(RadarGeocodeAPICompletionHandler _Nonnull)completionHandler;
