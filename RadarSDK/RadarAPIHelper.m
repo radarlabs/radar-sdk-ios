@@ -46,86 +46,90 @@
         NSMutableURLRequest *req = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:url]];
         req.HTTPMethod = method;
 
-        if (headers) {
-            for (NSString *key in headers) {
-                NSString *value = [headers valueForKey:key];
-                [req addValue:value forHTTPHeaderField:key];
-            }
-        }
-
-        if (params) {
-            [req setHTTPBody:[NSJSONSerialization dataWithJSONObject:params options:0 error:NULL]];
-        }
-
-        NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
-        configuration.timeoutIntervalForRequest = 10;
-        configuration.timeoutIntervalForResource = 10;
-
-        void (^dataTaskCompletionHandler)(NSData *data, NSURLResponse *response, NSError *error) = ^(NSData *data, NSURLResponse *response, NSError *error) {
-            if (error) {
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    completionHandler(RadarStatusErrorNetwork, nil);
-                });
-
-                self.wait = NO;
-                dispatch_semaphore_signal(self.semaphore);
-
-                return;
-            }
-
-            NSError *deserializationError = nil;
-            id resObj = [NSJSONSerialization JSONObjectWithData:data options:0 error:&deserializationError];
-            if (deserializationError || ![resObj isKindOfClass:[NSDictionary class]]) {
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    completionHandler(RadarStatusErrorServer, nil);
-                });
-
-                self.wait = NO;
-                dispatch_semaphore_signal(self.semaphore);
-
-                return;
-            }
-
-            NSDictionary *res;
-            RadarStatus status = RadarStatusErrorUnknown;
-
-            if ([response isKindOfClass:[NSHTTPURLResponse class]]) {
-                NSInteger statusCode = ((NSHTTPURLResponse *)response).statusCode;
-                if (statusCode >= 200 && statusCode < 400) {
-                    status = RadarStatusSuccess;
-                    res = (NSDictionary *)resObj;
-                } else if (statusCode == 400) {
-                    status = RadarStatusErrorBadRequest;
-                } else if (statusCode == 401) {
-                    status = RadarStatusErrorUnauthorized;
-                } else if (statusCode == 402) {
-                    status = RadarStatusErrorPaymentRequired;
-                } else if (statusCode == 403) {
-                    status = RadarStatusErrorForbidden;
-                } else if (statusCode == 404) {
-                    status = RadarStatusErrorNotFound;
-                } else if (statusCode == 429) {
-                    status = RadarStatusErrorRateLimit;
-                } else if (statusCode >= 500 && statusCode <= 599) {
-                    status = RadarStatusErrorServer;
+        @try {
+            if (headers) {
+                for (NSString *key in headers) {
+                    NSString *value = [headers valueForKey:key];
+                    [req addValue:value forHTTPHeaderField:key];
                 }
             }
 
-            dispatch_async(dispatch_get_main_queue(), ^{
-                completionHandler(status, res);
-            });
-
-            if (sleep) {
-                [NSThread sleepForTimeInterval:1];
+            if (params) {
+                [req setHTTPBody:[NSJSONSerialization dataWithJSONObject:params options:0 error:NULL]];
             }
 
-            self.wait = NO;
-            dispatch_semaphore_signal(self.semaphore);
-        };
+            NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
+            configuration.timeoutIntervalForRequest = 10;
+            configuration.timeoutIntervalForResource = 10;
 
-        NSURLSessionDataTask *task = [[NSURLSession sessionWithConfiguration:configuration] dataTaskWithRequest:req completionHandler:dataTaskCompletionHandler];
+            void (^dataTaskCompletionHandler)(NSData *data, NSURLResponse *response, NSError *error) = ^(NSData *data, NSURLResponse *response, NSError *error) {
+                if (error) {
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        completionHandler(RadarStatusErrorNetwork, nil);
+                    });
 
-        [task resume];
+                    self.wait = NO;
+                    dispatch_semaphore_signal(self.semaphore);
+
+                    return;
+                }
+
+                NSError *deserializationError = nil;
+                id resObj = [NSJSONSerialization JSONObjectWithData:data options:0 error:&deserializationError];
+                if (deserializationError || ![resObj isKindOfClass:[NSDictionary class]]) {
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        completionHandler(RadarStatusErrorServer, nil);
+                    });
+
+                    self.wait = NO;
+                    dispatch_semaphore_signal(self.semaphore);
+
+                    return;
+                }
+
+                NSDictionary *res;
+                RadarStatus status = RadarStatusErrorUnknown;
+
+                if ([response isKindOfClass:[NSHTTPURLResponse class]]) {
+                    NSInteger statusCode = ((NSHTTPURLResponse *)response).statusCode;
+                    if (statusCode >= 200 && statusCode < 400) {
+                        status = RadarStatusSuccess;
+                        res = (NSDictionary *)resObj;
+                    } else if (statusCode == 400) {
+                        status = RadarStatusErrorBadRequest;
+                    } else if (statusCode == 401) {
+                        status = RadarStatusErrorUnauthorized;
+                    } else if (statusCode == 402) {
+                        status = RadarStatusErrorPaymentRequired;
+                    } else if (statusCode == 403) {
+                        status = RadarStatusErrorForbidden;
+                    } else if (statusCode == 404) {
+                        status = RadarStatusErrorNotFound;
+                    } else if (statusCode == 429) {
+                        status = RadarStatusErrorRateLimit;
+                    } else if (statusCode >= 500 && statusCode <= 599) {
+                        status = RadarStatusErrorServer;
+                    }
+                }
+
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    completionHandler(status, res);
+                });
+
+                if (sleep) {
+                    [NSThread sleepForTimeInterval:1];
+                }
+
+                self.wait = NO;
+                dispatch_semaphore_signal(self.semaphore);
+            };
+
+            NSURLSessionDataTask *task = [[NSURLSession sessionWithConfiguration:configuration] dataTaskWithRequest:req completionHandler:dataTaskCompletionHandler];
+
+            [task resume];
+        } @catch (NSException *exception) {
+            return completionHandler(RadarStatusErrorBadRequest, nil);
+        }
     });
 }
 

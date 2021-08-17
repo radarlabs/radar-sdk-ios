@@ -9,11 +9,11 @@
 
 @implementation RadarTripOptions
 
-NSString *const kExternalId = @"externalId";
-NSString *const kMetadata = @"metadata";
-NSString *const kDestinationGeofenceTag = @"destinationGeofenceTag";
-NSString *const kDestinationGeofenceExternalId = @"destinationGeofenceExternalId";
-NSString *const kMode = @"mode";
+static NSString *const kExternalId = @"externalId";
+static NSString *const kMetadata = @"metadata";
+static NSString *const kDestinationGeofenceTag = @"destinationGeofenceTag";
+static NSString *const kDestinationGeofenceExternalId = @"destinationGeofenceExternalId";
+static NSString *const kMode = @"mode";
 
 - (instancetype)initWithExternalId:(NSString *_Nonnull)externalId {
     self = [super init];

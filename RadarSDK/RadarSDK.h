@@ -2,10 +2,16 @@
 //  RadarSDK.h
 //  RadarSDK
 //
-//  Copyright © 2019 Radar Labs, Inc. All rights reserved.
+//  Copyright © 2021 Radar Labs, Inc. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
+
+//! Project version number for RadarSDK.
+FOUNDATION_EXPORT double RadarSDKVersionNumber;
+
+//! Project version string for RadarSDK.
+FOUNDATION_EXPORT const unsigned char RadarSDKVersionString[];
 
 #import "Radar.h"
 #import "RadarAddress.h"

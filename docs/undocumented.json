@@ -16,14 +16,14 @@
     },
     {
       "file": "/Users/nick/radar/radar-sdk-ios/RadarSDK/RadarBeacon.h",
-      "line": 60,
+      "line": 65,
       "symbol": "RadarBeacon.+arrayForBeacons:",
       "symbol_kind": "sourcekitten.source.lang.objc.decl.method.class",
       "warning": "undocumented"
     },
     {
       "file": "/Users/nick/radar/radar-sdk-ios/RadarSDK/RadarBeacon.h",
-      "line": 61,
+      "line": 66,
       "symbol": "RadarBeacon.-dictionaryValue",
       "symbol_kind": "sourcekitten.source.lang.objc.decl.method.instance",
       "warning": "undocumented"
@@ -58,21 +58,21 @@
     },
     {
       "file": "/Users/nick/radar/radar-sdk-ios/RadarSDK/RadarEvent.h",
-      "line": 181,
+      "line": 190,
       "symbol": "RadarEvent.+stringForType:",
       "symbol_kind": "sourcekitten.source.lang.objc.decl.method.class",
       "warning": "undocumented"
     },
     {
       "file": "/Users/nick/radar/radar-sdk-ios/RadarSDK/RadarEvent.h",
-      "line": 182,
+      "line": 191,
       "symbol": "RadarEvent.+arrayForEvents:",
       "symbol_kind": "sourcekitten.source.lang.objc.decl.method.class",
       "warning": "undocumented"
     },
     {
       "file": "/Users/nick/radar/radar-sdk-ios/RadarSDK/RadarEvent.h",
-      "line": 183,
+      "line": 192,
       "symbol": "RadarEvent.-dictionaryValue",
       "symbol_kind": "sourcekitten.source.lang.objc.decl.method.instance",
       "warning": "undocumented"
@@ -152,6 +152,20 @@
       "line": 50,
       "symbol": "RadarRoutes.-dictionaryValue",
       "symbol_kind": "sourcekitten.source.lang.objc.decl.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/nick/radar/radar-sdk-ios/RadarSDK/RadarSDK.h",
+      "line": 11,
+      "symbol": "RadarSDKVersionNumber",
+      "symbol_kind": "sourcekitten.source.lang.objc.decl.constant",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/nick/radar/radar-sdk-ios/RadarSDK/RadarSDK.h",
+      "line": 14,
+      "symbol": "RadarSDKVersionString",
+      "symbol_kind": "sourcekitten.source.lang.objc.decl.constant",
       "warning": "undocumented"
     },
     {
