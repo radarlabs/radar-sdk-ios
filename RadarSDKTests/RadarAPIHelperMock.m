@@ -13,6 +13,7 @@
                       url:(NSString *)url
                   headers:(NSDictionary *)headers
                    params:(NSDictionary *)params
+                    sleep:(BOOL)sleep
         completionHandler:(RadarAPICompletionHandler)completionHandler {
     completionHandler(self.mockStatus, self.mockResponse);
 }

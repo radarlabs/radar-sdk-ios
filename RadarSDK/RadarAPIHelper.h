@@ -19,6 +19,7 @@ typedef void (^_Nullable RadarAPICompletionHandler)(RadarStatus status, NSDictio
                       url:(NSString *)url
                   headers:(NSDictionary *_Nullable)headers
                    params:(NSDictionary *_Nullable)params
+                    sleep:(BOOL)sleep
         completionHandler:(RadarAPICompletionHandler _Nullable)completionHandler;
 
 @end
