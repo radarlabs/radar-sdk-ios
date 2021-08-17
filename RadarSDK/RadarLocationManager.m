@@ -518,7 +518,7 @@ static NSString *const kSyncBeaconIdentifierPrefix = @"radar_beacon_";
             if (duration == 0) {
                 duration = -[location.timestamp timeIntervalSinceNow];
             }
-            stopped = (distance <= options.stopDistance && duration >= options.stopDuration) || source == RadarLocationSourceVisitArrival;
+            stopped = distance <= options.stopDistance && duration >= options.stopDuration;
 
             [[RadarLogger sharedInstance]
                 logWithLevel:RadarLogLevelDebug
