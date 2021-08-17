@@ -86,6 +86,7 @@
                                   url:url
                               headers:headers
                                params:nil
+                                sleep:NO
                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
                         if (!res) {
                             return;
@@ -194,6 +195,7 @@
                                   url:url
                               headers:headers
                                params:params
+                                sleep:YES
                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
                         if (status != RadarStatusSuccess || !res) {
                             if (options.replay == RadarTrackingOptionsReplayStops && stopped &&
@@ -271,6 +273,7 @@
                                   url:url
                               headers:headers
                                params:params
+                                sleep:NO
                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res){
 
                     }];
@@ -312,6 +315,7 @@
                                   url:url
                               headers:headers
                                params:params
+                                sleep:NO
                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
                         completionHandler(status);
                     }];
@@ -335,6 +339,7 @@
                                   url:url
                               headers:headers
                                params:nil
+                                sleep:NO
                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
                         if (status != RadarStatusSuccess || !res) {
                             return completionHandler(status, nil, nil);
@@ -388,6 +393,7 @@
                                   url:url
                               headers:headers
                                params:nil
+                                sleep:NO
                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
                         if (status != RadarStatusSuccess || !res) {
                             return completionHandler(status, nil, nil);
@@ -439,6 +445,7 @@
                                   url:url
                               headers:headers
                                params:nil
+                                sleep:NO
                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
                         if (status != RadarStatusSuccess || !res) {
                             return completionHandler(status, nil, nil);
@@ -476,6 +483,7 @@
                                   url:url
                               headers:headers
                                params:nil
+                                sleep:NO
                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
                         if (status != RadarStatusSuccess || !res) {
                             return completionHandler(status, nil, nil);
@@ -514,6 +522,7 @@
                                   url:url
                               headers:headers
                                params:nil
+                                sleep:NO
                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
                         if (status != RadarStatusSuccess || !res) {
                             return completionHandler(status, nil, nil);
@@ -548,6 +557,7 @@
                                   url:url
                               headers:headers
                                params:nil
+                                sleep:NO
                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
                         if (status != RadarStatusSuccess || !res) {
                             return completionHandler(status, nil, nil);
@@ -582,6 +592,7 @@
                                   url:url
                               headers:headers
                                params:nil
+                                sleep:NO
                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
                         if (status != RadarStatusSuccess || !res) {
                             return completionHandler(status, nil, nil);
@@ -612,6 +623,7 @@
                                   url:url
                               headers:headers
                                params:nil
+                                sleep:NO
                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
                         if (status != RadarStatusSuccess || !res) {
                             return completionHandler(status, nil, nil, NO);
@@ -687,6 +699,7 @@
                                   url:url
                               headers:headers
                                params:nil
+                                sleep:NO
                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
                         if (status != RadarStatusSuccess || !res) {
                             return completionHandler(status, nil, nil);
@@ -762,6 +775,7 @@
                                   url:url
                               headers:headers
                                params:nil
+                                sleep:NO
                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
                         if (status != RadarStatusSuccess || !res) {
                             return completionHandler(status, nil, nil);

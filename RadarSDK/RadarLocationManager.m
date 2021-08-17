@@ -23,7 +23,6 @@
 @property (assign, nonatomic) BOOL started;
 @property (assign, nonatomic) int startedInterval;
 @property (assign, nonatomic) BOOL sending;
-@property (assign, nonatomic) BOOL scheduled;
 @property (strong, nonatomic) NSTimer *timer;
 @property (nonnull, strong, nonatomic) NSMutableArray<RadarLocationCompletionHandler> *completionHandlers;
 @property (nonnull, strong, nonatomic) NSMutableSet<NSString *> *nearbyBeaconIdentifers;
@@ -219,7 +218,7 @@ static NSString *const kSyncBeaconIdentifierPrefix = @"radar_beacon_";
     self.started = NO;
     self.startedInterval = 0;
 
-    if (!self.sending && !self.scheduled) {
+    if (!self.sending) {
         NSTimeInterval delay = [RadarSettings tracking] ? 10 : 0;
 
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Scheduling shutdown"];
@@ -614,19 +613,7 @@ static NSString *const kSyncBeaconIdentifierPrefix = @"radar_beacon_";
         return;
     }
 
-    if (lastSyncInterval < 1) {
-        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Scheduling location send"];
-
-        self.scheduled = YES;
-
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            [self sendLocation:sendLocation stopped:stopped source:source replayed:replayed];
-
-            self.scheduled = NO;
-        });
-    } else {
-        [self sendLocation:sendLocation stopped:stopped source:source replayed:replayed];
-    }
+    [self sendLocation:sendLocation stopped:stopped source:source replayed:replayed];
 }
 
 - (void)sendLocation:(CLLocation *)location stopped:(BOOL)stopped source:(RadarLocationSource)source replayed:(BOOL)replayed {
