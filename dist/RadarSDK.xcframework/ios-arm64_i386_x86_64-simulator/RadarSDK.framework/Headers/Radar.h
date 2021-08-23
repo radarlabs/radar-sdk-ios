@@ -704,7 +704,7 @@ typedef void (^_Nonnull RadarRouteMatrixCompletionHandler)(RadarStatus status, R
 
  @return A display string for the location source value.
  */
-+ (NSString *)stringForSource:(RadarLocationSource)source NS_SWIFT_NAME(stringForSource(_:));
++ (NSString *)stringForLocationSource:(RadarLocationSource)source NS_SWIFT_NAME(stringForLocationSource(_:));
 
 /**
  Returns a display string for a travel mode value.

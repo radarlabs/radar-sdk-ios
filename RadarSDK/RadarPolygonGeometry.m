@@ -12,7 +12,7 @@
 - (instancetype)initWithCoordinates:(NSArray<RadarCoordinate *> *)coordinates center:(RadarCoordinate *)center radius:(double)radius {
     self = [super init];
     if (self) {
-        _coordinates = coordinates;
+        __coordinates = coordinates;
         _center = center;
         _radius = radius;
     }

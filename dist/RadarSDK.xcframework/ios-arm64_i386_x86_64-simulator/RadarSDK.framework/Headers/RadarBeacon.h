@@ -25,7 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  The description of the beacon. Not to be confused with the `NSObject` `description` property.
  */
-@property (nonnull, copy, nonatomic, readonly) NSString *_description;
+@property (nonnull, copy, nonatomic, readonly) NSString *__description;
 
 /**
  The tag of the beacon.

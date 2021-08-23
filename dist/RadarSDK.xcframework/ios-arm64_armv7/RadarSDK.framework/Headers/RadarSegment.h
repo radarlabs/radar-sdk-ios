@@ -17,7 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  The description of the segment.
  */
-@property (nonnull, copy, nonatomic, readonly) NSString *_description;
+@property (nonnull, copy, nonatomic, readonly) NSString *__description;
 
 /**
  The external ID of the segment.

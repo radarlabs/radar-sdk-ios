@@ -463,11 +463,11 @@ static NSString *const kSyncBeaconIdentifierPrefix = @"radar_beacon_";
 
 - (void)handleLocation:(CLLocation *)location source:(RadarLocationSource)source {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
-                                       message:[NSString stringWithFormat:@"Handling location | source = %@; location = %@", [Radar stringForSource:source], location]];
+                                       message:[NSString stringWithFormat:@"Handling location | source = %@; location = %@", [Radar stringForLocationSource:source], location]];
 
     if (!location || ![RadarUtils validLocation:location]) {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
-                                           message:[NSString stringWithFormat:@"Invalid location | source = %@; location = %@", [Radar stringForSource:source], location]];
+                                           message:[NSString stringWithFormat:@"Invalid location | source = %@; location = %@", [Radar stringForLocationSource:source], location]];
 
         [self callCompletionHandlersWithStatus:RadarStatusErrorLocation location:nil];
 
@@ -575,7 +575,8 @@ static NSString *const kSyncBeaconIdentifierPrefix = @"radar_beacon_";
     NSDate *now = [NSDate new];
     NSTimeInterval lastSyncInterval = [now timeIntervalSinceDate:lastSentAt];
     if (!ignoreSync) {
-        if (!force && stopped && wasStopped && distance <= options.stopDistance && (options.desiredStoppedUpdateInterval == 0 || options.sync != RadarTrackingOptionsSyncAll)) {
+        if (!force && stopped && wasStopped && distance <= options.stopDistance &&
+            (options.desiredStoppedUpdateInterval == 0 || options.syncLocations != RadarTrackingOptionsSyncAll)) {
             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
                                                message:[NSString stringWithFormat:@"Skipping sync: already stopped | stopped = %d; wasStopped = %d", stopped, wasStopped]];
 
@@ -598,18 +599,19 @@ static NSString *const kSyncBeaconIdentifierPrefix = @"radar_beacon_";
             return;
         }
 
-        if (options.sync == RadarTrackingOptionsSyncNone) {
-            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
-                                               message:[NSString stringWithFormat:@"Skipping sync: sync mode | sync = %@", [RadarTrackingOptions stringForSync:options.sync]]];
+        if (options.syncLocations == RadarTrackingOptionsSyncNone) {
+            [[RadarLogger sharedInstance]
+                logWithLevel:RadarLogLevelDebug
+                     message:[NSString stringWithFormat:@"Skipping sync: sync mode | sync = %@", [RadarTrackingOptions stringForSyncLocations:options.syncLocations]]];
 
             return;
         }
 
         BOOL canExit = [RadarState canExit];
-        if (!canExit && options.sync == RadarTrackingOptionsSyncStopsAndExits) {
-            [[RadarLogger sharedInstance]
-                logWithLevel:RadarLogLevelDebug
-                     message:[NSString stringWithFormat:@"Skipping sync: can't exit | sync = %@; canExit = %d", [RadarTrackingOptions stringForSync:options.sync], canExit]];
+        if (!canExit && options.syncLocations == RadarTrackingOptionsSyncStopsAndExits) {
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
+                                               message:[NSString stringWithFormat:@"Skipping sync: can't exit | sync = %@; canExit = %d",
+                                                                                  [RadarTrackingOptions stringForSyncLocations:options.syncLocations], canExit]];
 
             return;
         }
@@ -626,7 +628,7 @@ static NSString *const kSyncBeaconIdentifierPrefix = @"radar_beacon_";
 - (void)sendLocation:(CLLocation *)location stopped:(BOOL)stopped source:(RadarLocationSource)source replayed:(BOOL)replayed {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
                                        message:[NSString stringWithFormat:@"Sending location | source = %@; location = %@; stopped = %d; replayed = %d",
-                                                                          [Radar stringForSource:source], location, stopped, replayed]];
+                                                                          [Radar stringForLocationSource:source], location, stopped, replayed]];
 
     self.sending = YES;
 

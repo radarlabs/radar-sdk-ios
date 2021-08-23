@@ -42,7 +42,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 #define AssertGeofenceOk(geofence) [self assertGeofenceOk:geofence]
 - (void)assertGeofenceOk:(RadarGeofence *)geofence {
     XCTAssertNotNil(geofence);
-    XCTAssertNotNil(geofence._description);
+    XCTAssertNotNil(geofence.__description);
     XCTAssertNotNil(geofence.tag);
     XCTAssertNotNil(geofence.externalId);
     XCTAssertNotNil(geofence.metadata);
@@ -118,7 +118,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 #define AssertSegmentOk(segment) [self assertSegmentOk:segment]
 - (void)assertSegmentOk:(RadarSegment *)segment {
     XCTAssertNotNil(segment);
-    XCTAssertNotNil(segment._description);
+    XCTAssertNotNil(segment.__description);
     XCTAssertNotNil(segment.externalId);
 }
 
@@ -141,7 +141,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     XCTAssertNotNil(user._id);
     XCTAssertNotNil(user.userId);
     XCTAssertNotNil(user.deviceId);
-    XCTAssertNotNil(user._description);
+    XCTAssertNotNil(user.__description);
     XCTAssertNotNil(user.metadata);
     XCTAssertNotNil(user.location);
     AssertGeofencesOk(user.geofences);
@@ -523,7 +523,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 
     [Radar stopTracking];
 
-    [Radar startTrackingWithOptions:RadarTrackingOptions.efficient];
+    [Radar startTrackingWithOptions:RadarTrackingOptions.presetEfficient];
     XCTAssertFalse([Radar isTracking]);
 }
 
@@ -532,7 +532,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 
     [Radar stopTracking];
 
-    RadarTrackingOptions *options = RadarTrackingOptions.continuous;
+    RadarTrackingOptions *options = RadarTrackingOptions.presetContinuous;
     [Radar startTrackingWithOptions:options];
     XCTAssertEqualObjects(options, [Radar getTrackingOptions]);
     XCTAssertTrue([Radar isTracking]);
@@ -543,7 +543,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 
     [Radar stopTracking];
 
-    RadarTrackingOptions *options = RadarTrackingOptions.responsive;
+    RadarTrackingOptions *options = RadarTrackingOptions.presetResponsive;
     [Radar startTrackingWithOptions:options];
     XCTAssertEqualObjects(options, [Radar getTrackingOptions]);
     XCTAssertTrue([Radar isTracking]);
@@ -554,7 +554,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 
     [Radar stopTracking];
 
-    RadarTrackingOptions *options = RadarTrackingOptions.efficient;
+    RadarTrackingOptions *options = RadarTrackingOptions.presetEfficient;
     [Radar startTrackingWithOptions:options];
     XCTAssertEqualObjects(options, [Radar getTrackingOptions]);
     XCTAssertTrue([Radar isTracking]);
@@ -565,12 +565,12 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 
     [Radar stopTracking];
 
-    RadarTrackingOptions *options = RadarTrackingOptions.efficient;
+    RadarTrackingOptions *options = RadarTrackingOptions.presetEfficient;
     options.desiredAccuracy = RadarTrackingOptionsDesiredAccuracyLow;
     NSDate *now = [NSDate new];
     options.startTrackingAfter = now;
     options.stopTrackingAfter = [now dateByAddingTimeInterval:1000];
-    options.sync = RadarTrackingOptionsSyncNone;
+    options.syncLocations = RadarTrackingOptionsSyncNone;
     [Radar startTrackingWithOptions:options];
     XCTAssertEqualObjects(options, [Radar getTrackingOptions]);
     XCTAssertTrue([Radar isTracking]);
@@ -633,10 +633,10 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 }
 
 - (void)test_Radar_startTrip {
-    RadarTripOptions *options = [[RadarTripOptions alloc] initWithExternalId:@"tripExternalId"];
+    RadarTripOptions *options = [[RadarTripOptions alloc] initWithExternalId:@"tripExternalId"
+                                                      destinationGeofenceTag:@"tripDestinationGeofenceTag"
+                                               destinationGeofenceExternalId:@"tripDestinationExternalId"];
     options.metadata = @{@"foo": @"bar", @"baz": @YES, @"qux": @1};
-    options.destinationGeofenceTag = @"tripDestinationGeofenceTag";
-    options.destinationGeofenceExternalId = @"tripDestinationExternalId";
     options.mode = RadarRouteModeFoot;
     [Radar startTripWithOptions:options];
     XCTAssertEqualObjects(options, [Radar getTripOptions]);
@@ -1220,7 +1220,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 }
 
 - (void)test_RadarTrackingOptions_isEqual {
-    RadarTrackingOptions *options = RadarTrackingOptions.efficient;
+    RadarTrackingOptions *options = RadarTrackingOptions.presetEfficient;
     XCTAssertNotEqualObjects(options, nil);
     XCTAssertEqualObjects(options, options);
     XCTAssertNotEqualObjects(options, @"foo");

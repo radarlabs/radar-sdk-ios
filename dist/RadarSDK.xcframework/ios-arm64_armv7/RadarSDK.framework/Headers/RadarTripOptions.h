@@ -18,7 +18,9 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @interface RadarTripOptions : NSObject
 
-- (instancetype)initWithExternalId:(NSString *_Nonnull)externalId;
+- (instancetype)initWithExternalId:(NSString *_Nonnull)externalId
+            destinationGeofenceTag:(NSString *_Nullable)destinationGeofenceTag
+     destinationGeofenceExternalId:(NSString *_Nullable)destinationGeofenceExternalId;
 
 /**
  A stable unique ID for the trip.

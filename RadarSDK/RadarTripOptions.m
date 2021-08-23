@@ -15,10 +15,14 @@ static NSString *const kDestinationGeofenceTag = @"destinationGeofenceTag";
 static NSString *const kDestinationGeofenceExternalId = @"destinationGeofenceExternalId";
 static NSString *const kMode = @"mode";
 
-- (instancetype)initWithExternalId:(NSString *_Nonnull)externalId {
+- (instancetype)initWithExternalId:(NSString *_Nonnull)externalId
+            destinationGeofenceTag:(NSString *_Nullable)destinationGeofenceTag
+     destinationGeofenceExternalId:(NSString *_Nullable)destinationGeofenceExternalId {
     self = [super init];
     if (self) {
         _externalId = externalId;
+        _destinationGeofenceTag = destinationGeofenceTag;
+        _destinationGeofenceExternalId = destinationGeofenceExternalId;
         _mode = RadarRouteModeCar;
     }
     return self;
@@ -29,10 +33,10 @@ static NSString *const kMode = @"mode";
         return nil;
     }
 
-    RadarTripOptions *options = [[RadarTripOptions alloc] initWithExternalId:dict[kExternalId]];
+    RadarTripOptions *options = [[RadarTripOptions alloc] initWithExternalId:dict[kExternalId]
+                                                      destinationGeofenceTag:dict[kDestinationGeofenceTag]
+                                               destinationGeofenceExternalId:dict[kDestinationGeofenceExternalId]];
     options.metadata = dict[kMetadata];
-    options.destinationGeofenceTag = dict[kDestinationGeofenceTag];
-    options.destinationGeofenceExternalId = dict[kDestinationGeofenceExternalId];
     NSString *modeStr = dict[kMode];
     if ([modeStr isEqualToString:@"foot"]) {
         options.mode = RadarRouteModeFoot;

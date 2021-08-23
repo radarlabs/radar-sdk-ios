@@ -259,7 +259,6 @@
 		DD8E2F7924018C37002D51AB /* CLLocationManagerMock.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CLLocationManagerMock.m; sourceTree = "<group>"; };
 		DD8E2F7B24018C54002D51AB /* CLVisitMock.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CLVisitMock.h; sourceTree = "<group>"; };
 		DD8E2F7C24018C54002D51AB /* CLVisitMock.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CLVisitMock.m; sourceTree = "<group>"; };
-		DDC637F3238C7F9C00747FD4 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/System/Library/Frameworks/CoreLocation.framework; sourceTree = DEVELOPER_DIR; };
 		DDD7BD0225EC3015002473B3 /* RadarRouteMatrix.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarRouteMatrix.h; sourceTree = "<group>"; };
 		DDD7BD0325EC3015002473B3 /* RadarRouteMatrix.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RadarRouteMatrix.m; sourceTree = "<group>"; };
 		DDD7BD0C25EC3500002473B3 /* RadarRouteMatrix+Internal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "RadarRouteMatrix+Internal.h"; sourceTree = "<group>"; };
@@ -463,7 +462,6 @@
 		DDC637F2238C7F9C00747FD4 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				DDC637F3238C7F9C00747FD4 /* CoreLocation.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";

@@ -34,9 +34,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             }
         }
 
-        let options = RadarTrackingOptions.responsive
-        options.sync = .all
-        options.showBlueBar = true
+        let options = RadarTrackingOptions.presetContinuous
         Radar.startTracking(trackingOptions: options)
 
         Radar.getContext { (status, location, context) in
@@ -96,9 +94,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             print("Distance: status = \(Radar.stringForStatus(status)); routes.car.distance.value = \(String(describing: routes?.car?.distance.value)); routes.car.distance.text = \(String(describing: routes?.car?.distance.text)); routes.car.duration.value = \(String(describing: routes?.car?.duration.value)); routes.car.duration.text = \(String(describing: routes?.car?.duration.text))")
         }
 
-        let tripOptions = RadarTripOptions(externalId: "299")
-        tripOptions.destinationGeofenceTag = "store"
-        tripOptions.destinationGeofenceExternalId = "123"
+        let tripOptions = RadarTripOptions(externalId: "299", destinationGeofenceTag: "store", destinationGeofenceExternalId: "123")
         tripOptions.mode = .car
         Radar.startTrip(options: tripOptions)
 

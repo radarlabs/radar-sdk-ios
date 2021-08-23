@@ -68,7 +68,7 @@
 }
 
 + (NSString *_Nullable)getDescription {
-    return [RadarSettings _description];
+    return [RadarSettings __description];
 }
 
 + (void)setMetadata:(NSDictionary *)metadata {
@@ -734,7 +734,7 @@
     return str;
 }
 
-+ (NSString *)stringForSource:(RadarLocationSource)source {
++ (NSString *)stringForLocationSource:(RadarLocationSource)source {
     NSString *str;
     switch (source) {
     case RadarLocationSourceForegroundLocation:

@@ -35,7 +35,7 @@ typedef NS_ENUM(NSInteger, RadarTrackingOptionsReplay) {
 /**
  The sync options for location updates.
  */
-typedef NS_ENUM(NSInteger, RadarTrackingOptionsSync) {
+typedef NS_ENUM(NSInteger, RadarTrackingOptionsSyncLocations) {
     /// Syncs all location updates to the server
     RadarTrackingOptionsSyncAll,
     /// Syncs only stops and exits to the server
@@ -103,7 +103,7 @@ typedef NS_ENUM(NSInteger, RadarTrackingOptionsSync) {
 /**
  Determines which location updates to sync to the server.
  */
-@property (nonatomic, assign) RadarTrackingOptionsSync sync;
+@property (nonatomic, assign) RadarTrackingOptionsSyncLocations syncLocations;
 
 /**
  Determines whether the flashing blue status bar is shown when tracking.
@@ -165,7 +165,7 @@ typedef NS_ENUM(NSInteger, RadarTrackingOptionsSync) {
 
  @see https://developer.apple.com/documentation/corelocation/cllocationmanager/2923541-showsbackgroundlocationindicator
  */
-@property (class, copy, readonly) RadarTrackingOptions *continuous;
+@property (class, copy, readonly) RadarTrackingOptions *presetContinuous;
 
 /**
  Updates about every 2.5 minutes when moving and shuts down when stopped to save battery. Once stopped, the device will need to move more than 100 meters to wake up and start
@@ -173,7 +173,7 @@ typedef NS_ENUM(NSInteger, RadarTrackingOptionsSync) {
 
  Note that location updates may be delayed significantly by Low Power Mode, or if the device has connectivity issues, low battery, or wi-fi disabled.
  */
-@property (class, copy, readonly) RadarTrackingOptions *responsive;
+@property (class, copy, readonly) RadarTrackingOptions *presetResponsive;
 
 /**
  Uses the iOS visit monitoring service to update only on stops and exits. Once stopped, the device will need to move several hundred meters and trigger a visit departure to wake up
@@ -183,14 +183,14 @@ typedef NS_ENUM(NSInteger, RadarTrackingOptionsSync) {
 
  @see https://developer.apple.com/documentation/corelocation/getting_the_user_s_location/using_the_visits_location_service
  */
-@property (class, copy, readonly) RadarTrackingOptions *efficient;
+@property (class, copy, readonly) RadarTrackingOptions *presetEfficient;
 
 + (NSString *)stringForDesiredAccuracy:(RadarTrackingOptionsDesiredAccuracy)desiredAccuracy;
 + (RadarTrackingOptionsDesiredAccuracy)desiredAccuracyForString:(NSString *)str;
 + (NSString *)stringForReplay:(RadarTrackingOptionsReplay)replay;
 + (RadarTrackingOptionsReplay)replayForString:(NSString *)str;
-+ (NSString *)stringForSync:(RadarTrackingOptionsSync)sync;
-+ (RadarTrackingOptionsSync)syncForString:(NSString *)str;
++ (NSString *)stringForSyncLocations:(RadarTrackingOptionsSyncLocations)syncLocations;
++ (RadarTrackingOptionsSyncLocations)syncLocationsForString:(NSString *)str;
 + (RadarTrackingOptions *_Nonnull)trackingOptionsFromDictionary:(NSDictionary *_Nonnull)dictionary;
 - (NSDictionary *)dictionaryValue;
 
