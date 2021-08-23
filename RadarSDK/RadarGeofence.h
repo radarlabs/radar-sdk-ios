@@ -23,7 +23,7 @@
 /**
  The description of the geofence. Not to be confused with the `NSObject` `description` property.
  */
-@property (nonnull, copy, nonatomic, readonly) NSString *_description;
+@property (nonnull, copy, nonatomic, readonly) NSString *__description;
 
 /**
  The tag of the geofence.

@@ -40,7 +40,7 @@ typedef NS_ENUM(NSInteger, RadarLocationSource);
 /**
  The optional description of the user. Not to be confused with the `NSObject` `description` property.
  */
-@property (nullable, copy, nonatomic, readonly) NSString *_description;
+@property (nullable, copy, nonatomic, readonly) NSString *__description;
 
 /**
  The optional set of custom key-value pairs for the user.

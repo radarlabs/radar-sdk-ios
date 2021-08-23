@@ -121,7 +121,7 @@
     params[@"installId"] = [RadarSettings installId];
     params[@"userId"] = [RadarSettings userId];
     params[@"deviceId"] = [RadarUtils deviceId];
-    params[@"description"] = [RadarSettings _description];
+    params[@"description"] = [RadarSettings __description];
     params[@"metadata"] = [RadarSettings metadata];
     NSString *adId = [RadarUtils adId];
     if (adId && [RadarSettings adIdEnabled]) {
@@ -160,7 +160,7 @@
     params[@"deviceOS"] = [RadarUtils deviceOS];
     params[@"country"] = [RadarUtils country];
     params[@"timeZoneOffset"] = [RadarUtils timeZoneOffset];
-    params[@"source"] = [Radar stringForSource:source];
+    params[@"source"] = [Radar stringForLocationSource:source];
     RadarTripOptions *tripOptions = [RadarSettings tripOptions];
     if (tripOptions) {
         NSMutableDictionary *tripOptionsDict = [NSMutableDictionary new];

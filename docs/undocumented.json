@@ -213,14 +213,14 @@
     {
       "file": "/Users/nick/radar/radar-sdk-ios/RadarSDK/RadarTrackingOptions.h",
       "line": 192,
-      "symbol": "RadarTrackingOptions.+stringForSync:",
+      "symbol": "RadarTrackingOptions.+stringForSyncLocations:",
       "symbol_kind": "sourcekitten.source.lang.objc.decl.method.class",
       "warning": "undocumented"
     },
     {
       "file": "/Users/nick/radar/radar-sdk-ios/RadarSDK/RadarTrackingOptions.h",
       "line": 193,
-      "symbol": "RadarTrackingOptions.+syncForString:",
+      "symbol": "RadarTrackingOptions.+syncLocationsForString:",
       "symbol_kind": "sourcekitten.source.lang.objc.decl.method.class",
       "warning": "undocumented"
     },
@@ -248,20 +248,20 @@
     {
       "file": "/Users/nick/radar/radar-sdk-ios/RadarSDK/RadarTripOptions.h",
       "line": 21,
-      "symbol": "RadarTripOptions.-initWithExternalId:",
+      "symbol": "RadarTripOptions.-initWithExternalId:destinationGeofenceTag:destinationGeofenceExternalId:",
       "symbol_kind": "sourcekitten.source.lang.objc.decl.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/nick/radar/radar-sdk-ios/RadarSDK/RadarTripOptions.h",
-      "line": 48,
+      "line": 50,
       "symbol": "RadarTripOptions.+tripOptionsFromDictionary:",
       "symbol_kind": "sourcekitten.source.lang.objc.decl.method.class",
       "warning": "undocumented"
     },
     {
       "file": "/Users/nick/radar/radar-sdk-ios/RadarSDK/RadarTripOptions.h",
-      "line": 49,
+      "line": 51,
       "symbol": "RadarTripOptions.-dictionaryValue",
       "symbol_kind": "sourcekitten.source.lang.objc.decl.method.instance",
       "warning": "undocumented"

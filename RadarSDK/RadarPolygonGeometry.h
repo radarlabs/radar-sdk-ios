@@ -16,7 +16,7 @@
 /**
  The geometry of the polygon geofence. A closed ring of coordinates.
  */
-@property (nullable, copy, nonatomic, readonly) NSArray<RadarCoordinate *> *coordinates;
+@property (nullable, copy, nonatomic, readonly) NSArray<RadarCoordinate *> *_coordinates;
 
 /**
  The calculated centroid of the polygon geofence.

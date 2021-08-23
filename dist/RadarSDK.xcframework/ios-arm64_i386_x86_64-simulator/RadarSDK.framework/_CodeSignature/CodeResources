@@ -6,7 +6,7 @@
 	<dict>
 		<key>Headers/Radar.h</key>
 		<data>
-		wVAjQmrfIWIVJFWglE39LU/5Yxo=
+		mJlVAm9laWp8bOF3MuPj1D/L+cc=
 		</data>
 		<key>Headers/RadarAddress.h</key>
 		<data>
@@ -14,7 +14,7 @@
 		</data>
 		<key>Headers/RadarBeacon.h</key>
 		<data>
-		cRj/e/pUV+z3KxCIVK2WIBcR6FM=
+		W6wTEhPqMwYx2XY9uv1iNKnTh4E=
 		</data>
 		<key>Headers/RadarChain.h</key>
 		<data>
@@ -42,7 +42,7 @@
 		</data>
 		<key>Headers/RadarGeofence.h</key>
 		<data>
-		7ikTUCt0h0WvUDBbW37c2XIIajo=
+		kU8RTim/FGjavTpPLnrRyY7Z4fQ=
 		</data>
 		<key>Headers/RadarGeofenceGeometry.h</key>
 		<data>
@@ -54,7 +54,7 @@
 		</data>
 		<key>Headers/RadarPolygonGeometry.h</key>
 		<data>
-		ZSaHToYzs9hxYX30/bqOdWLhDNw=
+		5yWaFAhtofKI1NJChGapUyQc3i0=
 		</data>
 		<key>Headers/RadarRegion.h</key>
 		<data>
@@ -90,11 +90,11 @@
 		</data>
 		<key>Headers/RadarSegment.h</key>
 		<data>
-		L5ZeE6JosZb4EZZdVZDuo8GQ3j0=
+		hX9AdUji0JR0lRvUsT/8OqLXIJo=
 		</data>
 		<key>Headers/RadarTrackingOptions.h</key>
 		<data>
-		W9eNBDZUiHxEULFfN5f8Wnikh0Y=
+		x9ByZ58pnOR4ONaukxwg7ETasSk=
 		</data>
 		<key>Headers/RadarTrip.h</key>
 		<data>
@@ -102,11 +102,11 @@
 		</data>
 		<key>Headers/RadarTripOptions.h</key>
 		<data>
-		mca2xfA+qhmyAIREqgeRQZDRf/k=
+		8yTp92J/r0Qp1P4SDaSvnLsaHGU=
 		</data>
 		<key>Headers/RadarUser.h</key>
 		<data>
-		r3bRYv9iw7vqsnk1wuOL8HMk4FA=
+		D5erdgljR2MrQkrxy476hhRzxu8=
 		</data>
 		<key>Headers/RadarUserInsights.h</key>
 		<data>
@@ -135,11 +135,11 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			wVAjQmrfIWIVJFWglE39LU/5Yxo=
+			mJlVAm9laWp8bOF3MuPj1D/L+cc=
 			</data>
 			<key>hash2</key>
 			<data>
-			/VDy5AIAE6PTh86jloe0Rd9BRV6HZe4rDvyEKBeHlXw=
+			T1zvZc4Oaa/sFHb1R4YkI3f4U2WkEzY3j33t7KH+GEE=
 			</data>
 		</dict>
 		<key>Headers/RadarAddress.h</key>
@@ -157,11 +157,11 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			cRj/e/pUV+z3KxCIVK2WIBcR6FM=
+			W6wTEhPqMwYx2XY9uv1iNKnTh4E=
 			</data>
 			<key>hash2</key>
 			<data>
-			a3RzgPfEJkGCAGkoBP5GAy7A+qOXiAi3b5uR+htfLOk=
+			qZ+3QkXuz7GSO8mHxZuPVPzMOAV9XnYS+KOuzS3Kk1c=
 			</data>
 		</dict>
 		<key>Headers/RadarChain.h</key>
@@ -234,11 +234,11 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			7ikTUCt0h0WvUDBbW37c2XIIajo=
+			kU8RTim/FGjavTpPLnrRyY7Z4fQ=
 			</data>
 			<key>hash2</key>
 			<data>
-			/uaR+Apn7Mhdp6qwpJ2NnFzZMH/UI1R4fTwmTmOXffc=
+			uj4lFMziyTeF5d6WrYW10kPAOy+HzROIO8j9X0xtUdg=
 			</data>
 		</dict>
 		<key>Headers/RadarGeofenceGeometry.h</key>
@@ -267,11 +267,11 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			ZSaHToYzs9hxYX30/bqOdWLhDNw=
+			5yWaFAhtofKI1NJChGapUyQc3i0=
 			</data>
 			<key>hash2</key>
 			<data>
-			n/xcA2jvxvt5LI4d01KPLuGvWJxvT/UDah0BCZhc26g=
+			zmG85uAJlsmtBIej3DcNf60gbRIKc8jhKaaEWXQlIJ4=
 			</data>
 		</dict>
 		<key>Headers/RadarRegion.h</key>
@@ -366,22 +366,22 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			L5ZeE6JosZb4EZZdVZDuo8GQ3j0=
+			hX9AdUji0JR0lRvUsT/8OqLXIJo=
 			</data>
 			<key>hash2</key>
 			<data>
-			gh1YYPDSmpHiJGs/i5B3rQgMBkAVgT57xGL/tXgStM8=
+			RoXuhfiOm7GqZ2I8ft9N/qDONdubRw45VNrG7x3sHVE=
 			</data>
 		</dict>
 		<key>Headers/RadarTrackingOptions.h</key>
 		<dict>
 			<key>hash</key>
 			<data>
-			W9eNBDZUiHxEULFfN5f8Wnikh0Y=
+			x9ByZ58pnOR4ONaukxwg7ETasSk=
 			</data>
 			<key>hash2</key>
 			<data>
-			991xCHwNc8p0IkirubDQcFfH8dWnG2h9TY+XvgAHh/k=
+			3EB5pTAsCF9SAub/lUQxPbGU/7lvjJTjTBNnrhC5NjM=
 			</data>
 		</dict>
 		<key>Headers/RadarTrip.h</key>
@@ -399,22 +399,22 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			mca2xfA+qhmyAIREqgeRQZDRf/k=
+			8yTp92J/r0Qp1P4SDaSvnLsaHGU=
 			</data>
 			<key>hash2</key>
 			<data>
-			1oawtvC6NIalttDiVNGHP+47hAEtB2u25crYou5+PDw=
+			P2YBkR+exL9BYpxPTmnpKY+85oWQH7fAh23tLlRbN1M=
 			</data>
 		</dict>
 		<key>Headers/RadarUser.h</key>
 		<dict>
 			<key>hash</key>
 			<data>
-			r3bRYv9iw7vqsnk1wuOL8HMk4FA=
+			D5erdgljR2MrQkrxy476hhRzxu8=
 			</data>
 			<key>hash2</key>
 			<data>
-			xiH2Tjcu+WfB5jT13eauZznSKSHbn3i3NdVjweCL1ns=
+			tGuocVjaJ9v6RIT6Crh6Rdg3rxlGpgezRjr4immu3C4=
 			</data>
 		</dict>
 		<key>Headers/RadarUserInsights.h</key>

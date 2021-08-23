@@ -12,7 +12,7 @@
 - (instancetype)initWithDescription:(nonnull NSString *)description externalId:(nonnull NSString *)externalId {
     self = [super init];
     if (self) {
-        __description = description;
+        ___description = description;
         _externalId = externalId;
     }
     return self;
@@ -60,7 +60,7 @@
 
 - (NSDictionary *)dictionaryValue {
     NSMutableDictionary *dict = [NSMutableDictionary new];
-    [dict setValue:self._description forKey:@"description"];
+    [dict setValue:self.__description forKey:@"description"];
     [dict setValue:self.externalId forKey:@"externalId"];
     return dict;
 }

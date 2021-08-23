@@ -15,9 +15,9 @@ class Utils {
         
         switch event.type {
         case .userEnteredGeofence:
-            return "Entered geofence \(event.geofence!._description) with \(confidenceStr)"
+            return "Entered geofence \(event.geofence!.__description) with \(confidenceStr)"
         case .userExitedGeofence:
-            return "Exited geofence \(event.geofence!._description) with \(confidenceStr)"
+            return "Exited geofence \(event.geofence!.__description) with \(confidenceStr)"
         case .userEnteredHome:
             return "Entered home with \(confidenceStr)"
         case .userExitedHome:

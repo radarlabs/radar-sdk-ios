@@ -40,7 +40,7 @@
     self = [super init];
     if (self) {
         __id = _id;
-        __description = description;
+        ___description = description;
         _tag = tag;
         _externalId = externalId;
         _metadata = metadata;
@@ -197,7 +197,7 @@
     [dict setValue:self._id forKey:@"_id"];
     [dict setValue:self.tag forKey:@"tag"];
     [dict setValue:self.externalId forKey:@"externalId"];
-    [dict setValue:self._description forKey:@"description"];
+    [dict setValue:self.__description forKey:@"description"];
     [dict setValue:self.metadata forKey:@"metadata"];
     return dict;
 }
