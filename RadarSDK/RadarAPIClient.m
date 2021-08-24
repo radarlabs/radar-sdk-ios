@@ -21,7 +21,7 @@
 #import "RadarRoutes+Internal.h"
 #import "RadarSettings.h"
 #import "RadarState.h"
-#import "RadarTrip.h"
+#import "RadarTrip+Internal.h"
 #import "RadarTripOptions.h"
 #import "RadarUser+Internal.h"
 #import "RadarUtils.h"
@@ -184,20 +184,17 @@
     if (nearbyBeacons) {
         params[@"nearbyBeacons"] = nearbyBeacons;
     }
-
-    NSString *sessionId = [RadarSettings sessionId];
-    if (sessionId) {
-        params[@"sessionId"] = sessionId;
-    }
-
     NSString *locationAuthorization = [RadarUtils locationAuthorization];
     if (locationAuthorization) {
         params[@"locationAuthorization"] = locationAuthorization;
     }
-
     NSString *locationAccuracyAuthorization = [RadarUtils locationAccuracyAuthorization];
     if (locationAccuracyAuthorization) {
         params[@"locationAccuracyAuthorization"] = locationAccuracyAuthorization;
+    }
+    NSString *sessionId = [RadarSettings sessionId];
+    if (sessionId) {
+        params[@"sessionId"] = sessionId;
     }
 
     NSString *host = [RadarSettings host];
@@ -297,11 +294,11 @@
 - (void)updateTripWithOptions:(RadarTripOptions *)options status:(RadarTripStatus)status completionHandler:(RadarTripAPICompletionHandler)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
-        return completionHandler(RadarStatusErrorPublishableKey);
+        return completionHandler(RadarStatusErrorPublishableKey, nil, nil);
     }
 
     if (!options || !options.externalId) {
-        return completionHandler(RadarStatusErrorBadRequest);
+        return completionHandler(RadarStatusErrorBadRequest, nil, nil);
     }
 
     NSMutableDictionary *params = [NSMutableDictionary new];
@@ -332,7 +329,16 @@
                                params:params
                                 sleep:NO
                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
-                        completionHandler(status);
+                        if (status != RadarStatusSuccess || !res) {
+                            return completionHandler(status, nil, nil);
+                        }
+
+                        id tripObj = res[@"trip"];
+                        id eventsObj = res[@"events"];
+                        RadarTrip *trip = [[RadarTrip alloc] initWithObject:tripObj];
+                        NSArray<RadarEvent *> *events = [RadarEvent eventsFromObject:eventsObj];
+
+                        completionHandler(RadarStatusSuccess, trip, events);
                     }];
 }
 
