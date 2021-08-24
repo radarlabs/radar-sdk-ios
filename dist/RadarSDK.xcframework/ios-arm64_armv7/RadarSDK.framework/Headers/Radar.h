@@ -163,11 +163,11 @@ typedef void (^_Nullable RadarTrackCompletionHandler)(RadarStatus status, CLLoca
 /**
  Called when a trip update succeeds, fails, or times out.
 
- Receives the request status.
+ Receives the request status and, if successful, the trip and an array of the events generated.
 
  @see https://radar.io/documentation/sdk/ios
  */
-typedef void (^_Nullable RadarTripCompletionHandler)(RadarStatus status);
+typedef void (^_Nullable RadarTripCompletionHandler)(RadarStatus status, RadarTrip *_Nullable trip, NSArray<RadarEvent *> *_Nullable events);
 
 /**
  Called when a context request succeeds, fails, or times out.
