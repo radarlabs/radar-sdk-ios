@@ -185,6 +185,21 @@
         params[@"nearbyBeacons"] = nearbyBeacons;
     }
 
+    NSString *sessionId = [RadarSettings sessionId];
+    if (sessionId) {
+        params[@"sessionId"] = sessionId;
+    }
+
+    NSString *locationAuthorization = [RadarUtils locationAuthorization];
+    if (locationAuthorization) {
+        params[@"locationAuthorization"] = locationAuthorization;
+    }
+
+    NSString *locationAccuracyAuthorization = [RadarUtils locationAccuracyAuthorization];
+    if (locationAccuracyAuthorization) {
+        params[@"locationAccuracyAuthorization"] = locationAccuracyAuthorization;
+    }
+
     NSString *host = [RadarSettings host];
     NSString *url = [NSString stringWithFormat:@"%@/v1/track", host];
     url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
