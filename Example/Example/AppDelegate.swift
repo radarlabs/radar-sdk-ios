@@ -174,7 +174,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
     }
 
-    func didReceiveEvents(_ events: [RadarEvent], user: RadarUser) {
+    func didReceiveEvents(_ events: [RadarEvent], user: RadarUser?) {
         for event in events {
             notify(Utils.stringForRadarEvent(event))
         }

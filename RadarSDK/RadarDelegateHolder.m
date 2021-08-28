@@ -29,19 +29,10 @@
         [self.delegate didReceiveEvents:events user:user];
     }
 
-    if (user) {
-        [[RadarLogger sharedInstance]
-            logWithLevel:RadarLogLevelInfo
-                 message:[NSString stringWithFormat:@"📍 Radar location updated | coordinates = (%f, %f); accuracy = %f; link = https://radar.io/dashboard/users/%@",
-                                                    user.location.coordinate.latitude, user.location.coordinate.longitude, user.location.horizontalAccuracy, user._id]];
-    }
-
-    if (events) {
-        for (RadarEvent *event in events) {
-            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo
-                                               message:[NSString stringWithFormat:@"📍 Radar event received | type = %@; link = https://radar.io/dashboard/events/%@",
-                                                                                  [RadarEvent stringForType:event.type], event._id]];
-        }
+    for (RadarEvent *event in events) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo
+                                           message:[NSString stringWithFormat:@"📍 Radar event received | type = %@; link = https://radar.io/dashboard/events/%@",
+                                                                              [RadarEvent stringForType:event.type], event._id]];
     }
 }
 
@@ -53,6 +44,11 @@
     if (self.delegate) {
         [self.delegate didUpdateLocation:location user:user];
     }
+
+    [[RadarLogger sharedInstance]
+        logWithLevel:RadarLogLevelInfo
+             message:[NSString stringWithFormat:@"📍 Radar location updated | coordinates = (%f, %f); accuracy = %f; link = https://radar.io/dashboard/users/%@",
+                                                user.location.coordinate.latitude, user.location.coordinate.longitude, user.location.horizontalAccuracy, user._id]];
 }
 
 - (void)didUpdateClientLocation:(CLLocation *)location stopped:(BOOL)stopped source:(RadarLocationSource)source {
