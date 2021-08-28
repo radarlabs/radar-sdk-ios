@@ -338,6 +338,10 @@
                         RadarTrip *trip = [[RadarTrip alloc] initWithObject:tripObj];
                         NSArray<RadarEvent *> *events = [RadarEvent eventsFromObject:eventsObj];
 
+                        if (events && events.count) {
+                            [[RadarDelegateHolder sharedInstance] didReceiveEvents:events user:nil];
+                        }
+
                         completionHandler(RadarStatusSuccess, trip, events);
                     }];
 }
