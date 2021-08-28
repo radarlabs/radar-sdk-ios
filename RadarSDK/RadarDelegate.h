@@ -21,12 +21,12 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol RadarDelegate<NSObject>
 
 /**
- Tells the delegate that events were received for the current user.
+ Tells the delegate that events were received.
 
  @param events The events received.
- @param user The current user.
+ @param user The user, if any.
  */
-- (void)didReceiveEvents:(NSArray<RadarEvent *> *_Nonnull)events user:(RadarUser *_Nonnull)user NS_SWIFT_NAME(didReceiveEvents(_:user:));
+- (void)didReceiveEvents:(NSArray<RadarEvent *> *_Nonnull)events user:(RadarUser *_Nullable)user NS_SWIFT_NAME(didReceiveEvents(_:user:));
 
 /**
  Tells the delegate that the current user's location was updated and synced to the server.
