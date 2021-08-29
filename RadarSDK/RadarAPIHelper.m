@@ -46,6 +46,10 @@
         NSMutableURLRequest *req = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:url]];
         req.HTTPMethod = method;
 
+        [[RadarLogger sharedInstance]
+            logWithLevel:RadarLogLevelDebug
+                 message:[NSString stringWithFormat:@"📍 Radar API request | method = %@; url = %@; headers = %@; params = %@", method, url, headers, params]];
+
         @try {
             if (headers) {
                 for (NSString *key in headers) {
@@ -94,7 +98,6 @@
                     NSInteger statusCode = ((NSHTTPURLResponse *)response).statusCode;
                     if (statusCode >= 200 && statusCode < 400) {
                         status = RadarStatusSuccess;
-                        res = (NSDictionary *)resObj;
                     } else if (statusCode == 400) {
                         status = RadarStatusErrorBadRequest;
                     } else if (statusCode == 401) {
@@ -110,6 +113,12 @@
                     } else if (statusCode >= 500 && statusCode <= 599) {
                         status = RadarStatusErrorServer;
                     }
+
+                    res = (NSDictionary *)resObj;
+
+                    [[RadarLogger sharedInstance]
+                        logWithLevel:RadarLogLevelDebug
+                             message:[NSString stringWithFormat:@"📍 Radar API response | method = %@; url = %@; statusCode = %ld; res = %@", method, url, (long)statusCode, res]];
                 }
 
                 dispatch_async(dispatch_get_main_queue(), ^{
