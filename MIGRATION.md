@@ -2,6 +2,7 @@
 
 ## 3.1.x to 3.2.x
 
+- The SDK is now distributed as a `.xcframework` file instead of a `.framework` file.
 - A few methods have been renamed to avoid false positive App Store rejections for private APIs.
   - On `RadarTrackingOptions`, presets now begin with `preset`. `RadarTrackingOptions.continuous` is now `RadarTrackingOptions.presetContinuous`, `RadarTrackingOptions.responsive` is now `RadarTrackingOptions.presetResponsive`, and `RadarTrackingOptions.efficient` is now `RadarTrackingOptions.presetEfficient`.
   - On `RadarTrackingOptions`, `trackingOptions.sync` is now `trackingOptions.syncLocations`.
