@@ -15,7 +15,9 @@
 
 @property (assign, nonatomic) BOOL started;
 @property (nonnull, strong, nonatomic) NSMutableArray<RadarBeaconCompletionHandler> *completionHandlers;
-@property (nonnull, strong, nonatomic) NSMutableSet<NSString *> *nearbyBeaconIdentifers;
+@property (nonnull, strong, nonatomic) NSMutableSet<NSString *> *nearbyBeaconIdentifiers;
+@property (nonnull, strong, nonatomic) NSDictionary *nearbyBeaconIdentifierRSSI;
+@property (nonnull, strong, nonatomic) NSDictionary *nearbyBeaconIdentifierProximity;
 @property (nonnull, strong, nonatomic) NSMutableSet<NSString *> *failedBeaconIdentifiers;
 @property (nonnull, strong, nonatomic) NSArray<RadarBeacon *> *beacons;
 
@@ -49,7 +51,9 @@
         _completionHandlers = [NSMutableArray<RadarBeaconCompletionHandler> new];
 
         _beacons = @[];
-        _nearbyBeaconIdentifers = [NSMutableSet new];
+        _nearbyBeaconIdentifiers = [NSMutableSet new];
+        _nearbyBeaconIdentifierRSSI = @{};
+        _nearbyBeaconIdentifierProximity = @{};
         _failedBeaconIdentifiers = [NSMutableSet new];
 
         _permissionsHelper = [RadarPermissionsHelper new];
@@ -57,7 +61,10 @@
     return self;
 }
 
-- (void)callCompletionHandlersWithStatus:(RadarStatus)status beacons:(NSArray<NSString *> *_Nullable)nearbyBeacons {
+- (void)callCompletionHandlersWithStatus:(RadarStatus)status
+                 nearbyBeaconIdentifiers:(NSArray<NSString *> *_Nullable)nearbyBeaconIdentifiers
+              nearbyBeaconIdentifierRSSI:(NSDictionary *_Nullable)nearbyBeaconIdentifierRSSI
+         nearbyBeaconIdentifierProximity:(NSDictionary *_Nullable)nearbyBeaconIdentifierProximity {
     @synchronized(self) {
         if (!self.completionHandlers.count) {
             return;
@@ -70,7 +77,7 @@
         for (RadarBeaconCompletionHandler completionHandler in self.completionHandlers) {
             [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(timeoutWithCompletionHandler:) object:completionHandler];
 
-            completionHandler(status, nearbyBeacons);
+            completionHandler(status, nearbyBeaconIdentifiers, nearbyBeaconIdentifierRSSI, nearbyBeaconIdentifierProximity);
         }
 
         [self.completionHandlers removeAllObjects];
@@ -109,7 +116,7 @@
         [[RadarDelegateHolder sharedInstance] didFailWithStatus:RadarStatusErrorPermissions];
 
         if (completionHandler) {
-            completionHandler(RadarStatusErrorPermissions, nil);
+            completionHandler(RadarStatusErrorPermissions, nil, nil, nil);
 
             return;
         }
@@ -120,7 +127,7 @@
 
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Beacon ranging not available"];
 
-        completionHandler(RadarStatusErrorBluetooth, nil);
+        completionHandler(RadarStatusErrorBluetooth, nil, nil, nil);
 
         return;
     }
@@ -136,7 +143,7 @@
     if (!beacons || !beacons.count) {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"No beacons to range"];
 
-        completionHandler(RadarStatusSuccess, @[]);
+        completionHandler(RadarStatusSuccess, @[], @{}, @{});
 
         return;
     }
@@ -162,12 +169,17 @@
         [self.locationManager stopRangingBeaconsInRegion:[self regionForBeacon:beacon]];
     }
 
-    [self callCompletionHandlersWithStatus:RadarStatusSuccess beacons:[self.nearbyBeaconIdentifers allObjects]];
+    [self callCompletionHandlersWithStatus:RadarStatusSuccess
+                   nearbyBeaconIdentifiers:[self.nearbyBeaconIdentifiers allObjects]
+                nearbyBeaconIdentifierRSSI:self.nearbyBeaconIdentifierRSSI
+           nearbyBeaconIdentifierProximity:self.nearbyBeaconIdentifierProximity];
 
     self.beacons = @[];
     self.started = NO;
 
-    [self.nearbyBeaconIdentifers removeAllObjects];
+    [self.nearbyBeaconIdentifiers removeAllObjects];
+    self.nearbyBeaconIdentifierRSSI = @{};
+    self.nearbyBeaconIdentifierProximity = @{};
     [self.failedBeaconIdentifiers removeAllObjects];
 }
 
@@ -179,7 +191,7 @@
 }
 
 - (void)handleBeacons {
-    if (self.nearbyBeaconIdentifers.count + self.failedBeaconIdentifiers.count == self.beacons.count) {
+    if (self.nearbyBeaconIdentifiers.count + self.failedBeaconIdentifiers.count == self.beacons.count) {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Finished ranging"]];
 
         [self stopRanging];
@@ -208,7 +220,9 @@
                                            message:[NSString stringWithFormat:@"Ranged beacon | region.identifier = %@; beacon.rssi = %ld; beacon.proximity = %ld",
                                                                               region.identifier, (long)beacon.rssi, (long)beacon.proximity]];
 
-        [self.nearbyBeaconIdentifers addObject:region.identifier];
+        [self.nearbyBeaconIdentifiers addObject:region.identifier];
+        [self.nearbyBeaconIdentifierRSSI setValue:@(beacon.rssi) forKey:region.identifier];
+        [self.nearbyBeaconIdentifierProximity setValue:@(beacon.proximity) forKey:region.identifier];
     }
 
     [self handleBeacons];

@@ -14,11 +14,11 @@ NS_ASSUME_NONNULL_BEGIN
  The location accuracy options.
  */
 typedef NS_ENUM(NSInteger, RadarTrackingOptionsDesiredAccuracy) {
-    /// Uses `kCLLocationAccuracyBest`
+    /// Uses `kCLLocationAccuracyBest`.
     RadarTrackingOptionsDesiredAccuracyHigh,
-    /// Uses `kCLLocationAccuracyHundredMeters`, the default
+    /// Uses `kCLLocationAccuracyHundredMeters`. The default.
     RadarTrackingOptionsDesiredAccuracyMedium,
-    /// Uses `kCLLocationAccuracyKilometer`
+    /// Uses `kCLLocationAccuracyKilometer`.
     RadarTrackingOptionsDesiredAccuracyLow
 };
 
@@ -26,9 +26,9 @@ typedef NS_ENUM(NSInteger, RadarTrackingOptionsDesiredAccuracy) {
  The replay options for failed location updates.
  */
 typedef NS_ENUM(NSInteger, RadarTrackingOptionsReplay) {
-    /// Replays failed stops
+    /// Replays failed stops.
     RadarTrackingOptionsReplayStops,
-    /// Replays no failed location updates
+    /// Replays no failed location updates.
     RadarTrackingOptionsReplayNone
 };
 
@@ -36,12 +36,24 @@ typedef NS_ENUM(NSInteger, RadarTrackingOptionsReplay) {
  The sync options for location updates.
  */
 typedef NS_ENUM(NSInteger, RadarTrackingOptionsSyncLocations) {
-    /// Syncs all location updates to the server
+    /// Syncs all location updates to the server.
     RadarTrackingOptionsSyncAll,
-    /// Syncs only stops and exits to the server
+    /// Syncs only stops and exits to the server.
     RadarTrackingOptionsSyncStopsAndExits,
-    /// Syncs no location updates to the server
+    /// Does not sync location updates to the server.
     RadarTrackingOptionsSyncNone
+};
+
+/**
+ The beacon monitoring and ranging options.
+ */
+typedef NS_ENUM(NSInteger, RadarTrackingOptionsBeacons) {
+    /// Does not monitor or range beacons.
+    RadarTrackingOptionsBeaconsOff,
+    /// Monitors beacons without measuring signal strength. High battery efficiency.
+    RadarTrackingOptionsBeaconsMonitoring,
+    /// Ranges beacons and measures signal strength. Moderate battery efficiency.
+    RadarTrackingOptionsBeaconsRanging
 };
 
 /**
@@ -156,9 +168,9 @@ typedef NS_ENUM(NSInteger, RadarTrackingOptionsSyncLocations) {
 @property (nonatomic, assign) BOOL useSignificantLocationChanges;
 
 /**
- Determines whether to monitor beacons.
+ Determines whether to monitor or range beacons.
  */
-@property (nonatomic, assign) BOOL beacons;
+@property (nonatomic, assign) RadarTrackingOptionsBeacons beacons;
 
 /**
  A preset that updates about every 30 seconds and syncs all locations to the server. High battery usage. Shows the flashing blue status bar when tracking.
@@ -191,6 +203,8 @@ typedef NS_ENUM(NSInteger, RadarTrackingOptionsSyncLocations) {
 + (RadarTrackingOptionsReplay)replayForString:(NSString *)str;
 + (NSString *)stringForSyncLocations:(RadarTrackingOptionsSyncLocations)syncLocations;
 + (RadarTrackingOptionsSyncLocations)syncLocationsForString:(NSString *)str;
++ (NSString *)stringForBeacons:(RadarTrackingOptionsBeacons)beacons;
++ (RadarTrackingOptionsBeacons)beaconsForString:(NSString *)str;
 + (RadarTrackingOptions *_Nonnull)trackingOptionsFromDictionary:(NSDictionary *_Nonnull)dictionary;
 - (NSDictionary *)dictionaryValue;
 

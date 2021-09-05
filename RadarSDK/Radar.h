@@ -145,11 +145,14 @@ typedef void (^_Nullable RadarLocationCompletionHandler)(RadarStatus status, CLL
 /**
  Called when a beacon ranging request succeeds, fails, or times out.
 
- Receives the request status and, if successful, the nearby beacon identifiers.
+ Receives the request status and, if successful, the nearby beacon identifiers, RSSI, and proximity.
 
  @see https://radar.io/documentation/beacons
  */
-typedef void (^_Nullable RadarBeaconCompletionHandler)(RadarStatus status, NSArray<NSString *> *_Nullable nearbyBeacons);
+typedef void (^_Nullable RadarBeaconCompletionHandler)(RadarStatus status,
+                                                       NSArray<NSString *> *_Nullable nearbyBeaconIdentifiers,
+                                                       NSDictionary *_Nullable nearbyBeaconRSSI,
+                                                       NSDictionary *_Nullable nearbyBeaconProximity);
 
 /**
  Called when a track request succeeds, fails, or times out.

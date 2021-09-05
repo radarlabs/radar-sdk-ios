@@ -36,9 +36,13 @@ NSString *const kDesiredAccuracyLow = @"low";
 NSString *const kReplayStops = @"stops";
 NSString *const kReplayNone = @"none";
 
-NSString *const kSyncAll = @"all";
-NSString *const kSyncStopsAndExits = @"stopsAndExits";
-NSString *const kSyncNone = @"none";
+NSString *const kSyncLocationsAll = @"all";
+NSString *const kSyncLocationsStopsAndExits = @"stopsAndExits";
+NSString *const kSyncLocationsNone = @"none";
+
+NSString *const kBeaconsOff = @"off";
+NSString *const kBeaconsMonitoring = @"monitoring";
+NSString *const kBeaconsRanging = @"ranging";
 
 + (RadarTrackingOptions *)presetContinuous {
     RadarTrackingOptions *options = [RadarTrackingOptions new];
@@ -60,7 +64,7 @@ NSString *const kSyncNone = @"none";
     options.syncGeofences = NO;
     options.useVisits = NO;
     options.useSignificantLocationChanges = NO;
-    options.beacons = NO;
+    options.beacons = RadarTrackingOptionsBeaconsOff;
     return options;
 }
 
@@ -84,7 +88,7 @@ NSString *const kSyncNone = @"none";
     options.syncGeofences = YES;
     options.useVisits = YES;
     options.useSignificantLocationChanges = YES;
-    options.beacons = NO;
+    options.beacons = RadarTrackingOptionsBeaconsOff;
     return options;
 }
 
@@ -108,7 +112,7 @@ NSString *const kSyncNone = @"none";
     options.syncGeofences = YES;
     options.useVisits = YES;
     options.useSignificantLocationChanges = NO;
-    options.beacons = NO;
+    options.beacons = RadarTrackingOptionsBeaconsOff;
     return options;
 }
 
@@ -161,30 +165,65 @@ NSString *const kSyncNone = @"none";
     return replay;
 }
 
-+ (NSString *)stringForSyncLocations:(RadarTrackingOptionsSyncLocations)sync {
++ (NSString *)stringForSyncLocations:(RadarTrackingOptionsSyncLocations)syncLocations {
     NSString *str;
-    switch (sync) {
+    switch (syncLocations) {
     case RadarTrackingOptionsSyncNone:
-        str = kSyncNone;
+        str = kSyncLocationsNone;
         break;
     case RadarTrackingOptionsSyncStopsAndExits:
-        str = kSyncStopsAndExits;
+        str = kSyncLocationsStopsAndExits;
         break;
     case RadarTrackingOptionsSyncAll:
     default:
-        str = kSyncAll;
+        str = kSyncLocationsAll;
     }
     return str;
 }
 
 + (RadarTrackingOptionsSyncLocations)syncLocationsForString:(NSString *)str {
-    RadarTrackingOptionsSyncLocations sync = RadarTrackingOptionsSyncAll;
-    if ([str isEqualToString:kSyncStopsAndExits]) {
-        sync = RadarTrackingOptionsSyncStopsAndExits;
-    } else if ([str isEqualToString:kSyncNone]) {
-        sync = RadarTrackingOptionsSyncNone;
+    RadarTrackingOptionsSyncLocations syncLocations = RadarTrackingOptionsSyncAll;
+    if ([str isEqualToString:kSyncLocationsStopsAndExits]) {
+        syncLocations = RadarTrackingOptionsSyncStopsAndExits;
+    } else if ([str isEqualToString:kSyncLocationsNone]) {
+        syncLocations = RadarTrackingOptionsSyncNone;
     }
-    return sync;
+    return syncLocations;
+}
+
++ (NSString *)stringForBeacons:(RadarTrackingOptionsBeacons)sync {
+    NSString *str;
+    switch (sync) {
+    case RadarTrackingOptionsBeaconsOff:
+        str = kBeaconsOff;
+        break;
+    case RadarTrackingOptionsBeaconsMonitoring:
+        str = kBeaconsRanging;
+        break;
+    case RadarTrackingOptionsBeaconsRanging:
+    default:
+        str = kBeaconsMonitoring;
+    }
+    return str;
+}
+
++ (RadarTrackingOptionsBeacons)beaconsForString:(NSString *)str {
+    RadarTrackingOptionsBeacons beacons = RadarTrackingOptionsBeaconsOff;
+    if ([str isKindOfClass:[NSNumber class]]) {
+        BOOL oldBeacons = [(NSNumber *)str boolValue];
+        if (oldBeacons) {
+            beacons = RadarTrackingOptionsBeaconsMonitoring;
+        } else {
+            beacons = RadarTrackingOptionsBeaconsOff;
+        }
+    } else {
+        if ([str isEqualToString:kBeaconsMonitoring]) {
+            beacons = RadarTrackingOptionsBeaconsMonitoring;
+        } else if ([str isEqualToString:kBeaconsRanging]) {
+            beacons = RadarTrackingOptionsBeaconsRanging;
+        }
+    }
+    return beacons;
 }
 
 + (RadarTrackingOptions *)trackingOptionsFromDictionary:(NSDictionary *)dict {
@@ -207,7 +246,7 @@ NSString *const kSyncNone = @"none";
     options.syncGeofences = [dict[kSyncGeofences] boolValue];
     options.useVisits = [dict[kUseVisits] boolValue];
     options.useSignificantLocationChanges = [dict[kUseSignificantLocationChanges] boolValue];
-    options.beacons = [dict[kBeacons] boolValue];
+    options.beacons = [RadarTrackingOptions beaconsForString:dict[kBeacons]];
     return options;
 }
 
@@ -231,7 +270,7 @@ NSString *const kSyncNone = @"none";
     dict[kSyncGeofences] = @(self.syncGeofences);
     dict[kUseVisits] = @(self.useVisits);
     dict[kUseSignificantLocationChanges] = @(self.useSignificantLocationChanges);
-    dict[kBeacons] = @(self.beacons);
+    dict[kBeacons] = [RadarTrackingOptions stringForBeacons:self.beacons];
     return dict;
 }
 

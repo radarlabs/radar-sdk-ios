@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>RadarRouteGeometry Class Reference</title>
+    <title>RadarTrackingOptionsBeacons Enumeration Reference</title>
     <link rel="stylesheet" type="text/css" href="../css/jazzy.css" />
     <link rel="stylesheet" type="text/css" href="../css/highlight.css" />
     <meta charset='utf-8'>
@@ -13,8 +13,8 @@
     <script src="../js/jazzy.search.js" defer></script>
   </head>
   <body>
-    <a name="//apple_ref/objc/Class/RadarRouteGeometry" class="dashAnchor"></a>
-    <a title="RadarRouteGeometry Class Reference"></a>
+    <a name="//apple_ref/objc/Enum/RadarTrackingOptionsBeacons" class="dashAnchor"></a>
+    <a title="RadarTrackingOptionsBeacons Enumeration Reference"></a>
     <header>
       <div class="content-wrapper">
         <p><a href="../index.html">RadarSDK 3.2.0 Docs</a></p>
@@ -30,7 +30,7 @@
       <p id="breadcrumbs">
         <a href="../index.html">RadarSDK Reference</a>
         <img id="carat" src="../img/carat.png" />
-        RadarRouteGeometry Class Reference
+        RadarTrackingOptionsBeacons Enumeration Reference
       </p>
     </div>
     <div class="content-wrapper">
@@ -226,20 +226,20 @@
       <article class="main-content">
         <section>
           <section class="section">
-            <h1>RadarRouteGeometry</h1>
+            <h1>RadarTrackingOptionsBeacons</h1>
               <div class="declaration">
                 <div class="language">
                   <p class="aside-title">Objective-C</p>
-                  <pre class="highlight objective_c"><code><span class="k">@interface</span> <span class="nc">RadarRouteGeometry</span> <span class="p">:</span> <span class="nc">NSObject</span></code></pre>
+                  <pre class="highlight objective_c"><code><span class="k">enum</span> <span class="n">RadarTrackingOptionsBeacons</span> <span class="o">:</span> <span class="n">NSInteger</span> <span class="p">{}</span></code></pre>
 
                 </div>
                 <div class="language">
                   <p class="aside-title">Swift</p>
-                  <pre class="highlight swift"><code><span class="kd">class</span> <span class="kt">RadarRouteGeometry</span> <span class="p">:</span> <span class="kt">NSObject</span></code></pre>
+                  <pre class="highlight swift"><code><span class="kd">enum</span> <span class="kt">RadarTrackingOptionsBeacons</span> <span class="p">:</span> <span class="kt">Int</span></code></pre>
 
                 </div>
               </div>
-            <p>Represents the geometry of a route.</p>
+            <p>The beacon monitoring and ranging options.</p>
 
           </section>
           <section class="section task-group-section">
@@ -248,9 +248,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/c:objc(cs)RadarRouteGeometry(py)coordinates"></a>
-                    <a name="//apple_ref/objc/Property/coordinates" class="dashAnchor"></a>
-                    <a class="token" href="#/c:objc(cs)RadarRouteGeometry(py)coordinates">coordinates</a>
+                    <a name="/c:@E@RadarTrackingOptionsBeacons@RadarTrackingOptionsBeaconsOff"></a>
+                    <a name="//apple_ref/objc/Case/RadarTrackingOptionsBeaconsOff" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@E@RadarTrackingOptionsBeacons@RadarTrackingOptionsBeaconsOff">RadarTrackingOptionsBeaconsOff</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -258,19 +258,83 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>The geometry of the route.</p>
+                        <p>Does not monitor or range beacons.</p>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Objective-C</p>
-                          <pre class="highlight objective_c"><code><span class="k">@property</span> <span class="p">(</span><span class="n">nonatomic</span><span class="p">,</span> <span class="n">copy</span><span class="p">,</span> <span class="n">readonly</span><span class="p">,</span> <span class="n">nullable</span><span class="p">)</span> <span class="n">NSArray</span><span class="o">&lt;</span><span class="n"><a href="../Classes/RadarCoordinate.html">RadarCoordinate</a></span> <span class="o">*&gt;</span> <span class="o">*</span><span class="n">coordinates</span><span class="p">;</span></code></pre>
+                          <pre class="highlight objective_c"><code><span class="n">RadarTrackingOptionsBeaconsOff</span></code></pre>
 
                         </div>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="k">var</span> <span class="nv">coordinates</span><span class="p">:</span> <span class="p">[</span><span class="kt"><a href="../Classes/RadarCoordinate.html">RadarCoordinate</a></span><span class="p">]?</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span></code></pre>
+                          <pre class="highlight swift"><code><span class="k">case</span> <span class="n">off</span> <span class="o">=</span> <span class="mi">0</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:@E@RadarTrackingOptionsBeacons@RadarTrackingOptionsBeaconsMonitoring"></a>
+                    <a name="//apple_ref/objc/Case/RadarTrackingOptionsBeaconsMonitoring" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@E@RadarTrackingOptionsBeacons@RadarTrackingOptionsBeaconsMonitoring">RadarTrackingOptionsBeaconsMonitoring</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Monitors beacons without measuring signal strength. High battery efficiency.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Objective-C</p>
+                          <pre class="highlight objective_c"><code><span class="n">RadarTrackingOptionsBeaconsMonitoring</span></code></pre>
+
+                        </div>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="k">case</span> <span class="n">monitoring</span> <span class="o">=</span> <span class="mi">1</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:@E@RadarTrackingOptionsBeacons@RadarTrackingOptionsBeaconsRanging"></a>
+                    <a name="//apple_ref/objc/Case/RadarTrackingOptionsBeaconsRanging" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@E@RadarTrackingOptionsBeacons@RadarTrackingOptionsBeaconsRanging">RadarTrackingOptionsBeaconsRanging</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Ranges beacons and measures signal strength. Moderate battery efficiency.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Objective-C</p>
+                          <pre class="highlight objective_c"><code><span class="n">RadarTrackingOptionsBeaconsRanging</span></code></pre>
+
+                        </div>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="k">case</span> <span class="n">ranging</span> <span class="o">=</span> <span class="mi">2</span></code></pre>
 
                         </div>
                       </div>

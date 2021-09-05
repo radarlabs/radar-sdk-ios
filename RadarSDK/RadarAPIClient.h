@@ -53,12 +53,14 @@ typedef void (^_Nonnull RadarMatrixAPICompletionHandler)(RadarStatus status, NSD
 - (void)getConfig;
 
 - (void)trackWithLocation:(CLLocation *_Nonnull)location
-                  stopped:(BOOL)stopped
-               foreground:(BOOL)foreground
-                   source:(RadarLocationSource)source
-                 replayed:(BOOL)replayed
-            nearbyBeacons:(NSArray<NSString *> *_Nullable)nearbyBeacons
-        completionHandler:(RadarTrackAPICompletionHandler _Nonnull)completionHandler;
+                             stopped:(BOOL)stopped
+                          foreground:(BOOL)foreground
+                              source:(RadarLocationSource)source
+                            replayed:(BOOL)replayed
+             nearbyBeaconIdentifiers:(NSArray<NSString *> *_Nullable)nearbyBeaconIdentifiers
+         nearbyBeaconIdentifiersRSSI:(NSDictionary *_Nullable)nearbyBeaconIdentifiersRSSI
+    nearbyBeaconIdentifiersProximity:(NSDictionary *_Nullable)nearbyBeaconIdentifiersProximity
+                   completionHandler:(RadarTrackAPICompletionHandler _Nonnull)completionHandler;
 
 - (void)verifyEventId:(NSString *_Nonnull)eventId verification:(RadarEventVerification)verification verifiedPlaceId:(NSString *_Nullable)verifiedPlaceId;
 

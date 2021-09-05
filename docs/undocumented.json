@@ -184,56 +184,70 @@
     },
     {
       "file": "/Users/nick/radar/radar-sdk-ios/RadarSDK/RadarTrackingOptions.h",
-      "line": 188,
+      "line": 200,
       "symbol": "RadarTrackingOptions.+stringForDesiredAccuracy:",
       "symbol_kind": "sourcekitten.source.lang.objc.decl.method.class",
       "warning": "undocumented"
     },
     {
       "file": "/Users/nick/radar/radar-sdk-ios/RadarSDK/RadarTrackingOptions.h",
-      "line": 189,
+      "line": 201,
       "symbol": "RadarTrackingOptions.+desiredAccuracyForString:",
       "symbol_kind": "sourcekitten.source.lang.objc.decl.method.class",
       "warning": "undocumented"
     },
     {
       "file": "/Users/nick/radar/radar-sdk-ios/RadarSDK/RadarTrackingOptions.h",
-      "line": 190,
+      "line": 202,
       "symbol": "RadarTrackingOptions.+stringForReplay:",
       "symbol_kind": "sourcekitten.source.lang.objc.decl.method.class",
       "warning": "undocumented"
     },
     {
       "file": "/Users/nick/radar/radar-sdk-ios/RadarSDK/RadarTrackingOptions.h",
-      "line": 191,
+      "line": 203,
       "symbol": "RadarTrackingOptions.+replayForString:",
       "symbol_kind": "sourcekitten.source.lang.objc.decl.method.class",
       "warning": "undocumented"
     },
     {
       "file": "/Users/nick/radar/radar-sdk-ios/RadarSDK/RadarTrackingOptions.h",
-      "line": 192,
+      "line": 204,
       "symbol": "RadarTrackingOptions.+stringForSyncLocations:",
       "symbol_kind": "sourcekitten.source.lang.objc.decl.method.class",
       "warning": "undocumented"
     },
     {
       "file": "/Users/nick/radar/radar-sdk-ios/RadarSDK/RadarTrackingOptions.h",
-      "line": 193,
+      "line": 205,
       "symbol": "RadarTrackingOptions.+syncLocationsForString:",
       "symbol_kind": "sourcekitten.source.lang.objc.decl.method.class",
       "warning": "undocumented"
     },
     {
       "file": "/Users/nick/radar/radar-sdk-ios/RadarSDK/RadarTrackingOptions.h",
-      "line": 194,
+      "line": 206,
+      "symbol": "RadarTrackingOptions.+stringForBeacons:",
+      "symbol_kind": "sourcekitten.source.lang.objc.decl.method.class",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/nick/radar/radar-sdk-ios/RadarSDK/RadarTrackingOptions.h",
+      "line": 207,
+      "symbol": "RadarTrackingOptions.+beaconsForString:",
+      "symbol_kind": "sourcekitten.source.lang.objc.decl.method.class",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/nick/radar/radar-sdk-ios/RadarSDK/RadarTrackingOptions.h",
+      "line": 208,
       "symbol": "RadarTrackingOptions.+trackingOptionsFromDictionary:",
       "symbol_kind": "sourcekitten.source.lang.objc.decl.method.class",
       "warning": "undocumented"
     },
     {
       "file": "/Users/nick/radar/radar-sdk-ios/RadarSDK/RadarTrackingOptions.h",
-      "line": 195,
+      "line": 209,
       "symbol": "RadarTrackingOptions.-dictionaryValue",
       "symbol_kind": "sourcekitten.source.lang.objc.decl.method.instance",
       "warning": "undocumented"
