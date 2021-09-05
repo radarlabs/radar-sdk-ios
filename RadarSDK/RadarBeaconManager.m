@@ -18,7 +18,7 @@
 @property (nonnull, strong, nonatomic) NSMutableSet<NSString *> *nearbyBeaconIdentifiers;
 @property (nonnull, strong, nonatomic) NSDictionary *nearbyBeaconRSSI;
 @property (nonnull, strong, nonatomic) NSDictionary *nearbyBeaconProximity;
-@property (nonnull, strong, nonatomic) NSMutableSet<NSString *> *failedBeacons;
+@property (nonnull, strong, nonatomic) NSMutableSet<NSString *> *failedBeaconIdentifiers;
 @property (nonnull, strong, nonatomic) NSArray<RadarBeacon *> *beacons;
 
 @end
@@ -54,7 +54,7 @@
         _nearbyBeaconIdentifiers = [NSMutableSet new];
         _nearbyBeaconRSSI = @{};
         _nearbyBeaconProximity = @{};
-        _failedBeacons = [NSMutableSet new];
+        _failedBeaconIdentifiers = [NSMutableSet new];
 
         _permissionsHelper = [RadarPermissionsHelper new];
     }
@@ -180,7 +180,7 @@
     [self.nearbyBeaconIdentifiers removeAllObjects];
     self.nearbyBeaconRSSI = @{};
     self.nearbyBeaconProximity = @{};
-    [self.failedBeacons removeAllObjects];
+    [self.failedBeaconIdentifiers removeAllObjects];
 }
 
 - (CLBeaconRegion *)regionForBeacon:(RadarBeacon *)beacon {
@@ -191,7 +191,7 @@
 }
 
 - (void)handleBeacons {
-    if (self.nearbyBeaconIdentifiers.count + self.failedBeacons.count == self.beacons.count) {
+    if (self.nearbyBeaconIdentifiers.count + self.failedBeaconIdentifiers.count == self.beacons.count) {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Finished ranging"]];
 
         [self stopRanging];
@@ -201,7 +201,7 @@
 - (void)locationManager:(CLLocationManager *)manager monitoringDidFailForRegion:(CLRegion *)region withError:(NSError *)error {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Failed to monitor beacon | region.identifier = %@", region.identifier]];
 
-    [self.failedBeacons addObject:region.identifier];
+    [self.failedBeaconIdentifiers addObject:region.identifier];
 
     [self handleBeacons];
 }
@@ -209,7 +209,7 @@
 - (void)locationManager:(CLLocationManager *)manager rangingBeaconsDidFailForRegion:(CLBeaconRegion *)region withError:(NSError *)error {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Failed to range beacon | region.identifier = %@", region.identifier]];
 
-    [self.failedBeacons addObject:region.identifier];
+    [self.failedBeaconIdentifiers addObject:region.identifier];
 
     [self handleBeacons];
 }
