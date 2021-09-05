@@ -105,14 +105,14 @@
 }
 
 - (void)trackWithLocation:(CLLocation *_Nonnull)location
-                             stopped:(BOOL)stopped
-                          foreground:(BOOL)foreground
-                              source:(RadarLocationSource)source
-                            replayed:(BOOL)replayed
-             nearbyBeaconIdentifiers:(NSArray<NSString *> *_Nullable)nearbyBeaconIdentifiers
-         nearbyBeaconIdentifiersRSSI:(NSDictionary *_Nullable)nearbyBeaconIdentifiersRSSI
-    nearbyBeaconIdentifiersProximity:(NSDictionary *_Nullable)nearbyBeaconIdentifiersProximity
-                   completionHandler:(RadarTrackAPICompletionHandler _Nonnull)completionHandler {
+                  stopped:(BOOL)stopped
+               foreground:(BOOL)foreground
+                   source:(RadarLocationSource)source
+                 replayed:(BOOL)replayed
+            nearbyBeacons:(NSArray<NSString *> *_Nullable)nearbyBeacons
+         nearbyBeaconRSSI:(NSDictionary *_Nullable)nearbyBeaconRSSI
+    nearbyBeaconProximity:(NSDictionary *_Nullable)nearbyBeaconProximity
+        completionHandler:(RadarTrackAPICompletionHandler _Nonnull)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
         return completionHandler(RadarStatusErrorPublishableKey, nil, nil, nil, nil);
@@ -183,13 +183,13 @@
     if (options.syncGeofences) {
         params[@"nearbyGeofences"] = @(YES);
     }
-    if (nearbyBeaconIdentifiers) {
-        params[@"nearbyBeacons"] = nearbyBeaconIdentifiers;
-        if (nearbyBeaconIdentifiersRSSI) {
-            params[@"nearbyBeaconsRSSI"] = nearbyBeaconIdentifiersRSSI;
+    if (nearbyBeacons) {
+        params[@"nearbyBeacons"] = nearbyBeacons;
+        if (nearbyBeaconRSSI) {
+            params[@"nearbyBeaconRSSI"] = nearbyBeaconRSSI;
         }
-        if (nearbyBeaconIdentifiersProximity) {
-            params[@"nearbyBeaconsProximity"] = nearbyBeaconIdentifiersRSSI;
+        if (nearbyBeaconProximity) {
+            params[@"nearbyBeaconProximity"] = nearbyBeaconProximity;
         }
     }
     NSString *locationAuthorization = [RadarUtils locationAuthorization];

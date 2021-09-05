@@ -119,16 +119,15 @@
                          }
 
                          void (^callTrackAPI)(NSArray<NSString *> *_Nullable, NSDictionary *_Nullable, NSDictionary *_Nullable) =
-                             ^(NSArray<NSString *> *_Nullable nearbyBeaconIdentifiers, NSDictionary *_Nullable nearbyBeaconIdentifiersRSSI,
-                               NSDictionary *_Nullable nearbyBeaconIdentifiersProximity) {
+                             ^(NSArray<NSString *> *_Nullable nearbyBeacons, NSDictionary *_Nullable nearbyBeaconRSSI, NSDictionary *_Nullable nearbyBeaconProximity) {
                                  [[RadarAPIClient sharedInstance] trackWithLocation:location
                                                                             stopped:stopped
                                                                          foreground:YES
                                                                              source:RadarLocationSourceForegroundLocation
                                                                            replayed:NO
-                                                            nearbyBeaconIdentifiers:nearbyBeaconIdentifiers
-                                                        nearbyBeaconIdentifiersRSSI:nearbyBeaconIdentifiersRSSI
-                                                   nearbyBeaconIdentifiersProximity:nearbyBeaconIdentifiersProximity
+                                                                      nearbyBeacons:nearbyBeacons
+                                                                   nearbyBeaconRSSI:nearbyBeaconRSSI
+                                                              nearbyBeaconProximity:nearbyBeaconProximity
                                                                   completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events,
                                                                                       RadarUser *_Nullable user, NSArray<RadarGeofence *> *_Nullable nearbyGeofences) {
                                                                       if (completionHandler) {
@@ -156,15 +155,15 @@
                                      [RadarUtils runOnMainThread:^{
                                          [[RadarBeaconManager sharedInstance]
                                                   rangeBeacons:beacons
-                                             completionHandler:^(RadarStatus status, NSArray<NSString *> *_Nullable nearbyBeaconIdentifiers,
-                                                                 NSDictionary *_Nullable nearbyBeaconIdentifiersRSSI, NSDictionary *_Nullable nearbyBeaconIdentifiersProximity) {
-                                                 if (status != RadarStatusSuccess || !nearbyBeaconIdentifiers) {
+                                             completionHandler:^(RadarStatus status, NSArray<NSString *> *_Nullable nearbyBeacons, NSDictionary *_Nullable nearbyBeaconRSSI,
+                                                                 NSDictionary *_Nullable nearbyBeaconProximity) {
+                                                 if (status != RadarStatusSuccess || !nearbyBeacons) {
                                                      callTrackAPI(nil, nil, nil);
 
                                                      return;
                                                  }
 
-                                                 callTrackAPI(nearbyBeaconIdentifiers, nearbyBeaconIdentifiersRSSI, nearbyBeaconIdentifiersProximity);
+                                                 callTrackAPI(nearbyBeacons, nearbyBeaconRSSI, nearbyBeaconProximity);
                                              }];
                                      }];
                                  }];
@@ -180,9 +179,9 @@
                                             foreground:YES
                                                 source:RadarLocationSourceManualLocation
                                               replayed:NO
-                               nearbyBeaconIdentifiers:nil
-                           nearbyBeaconIdentifiersRSSI:nil
-                      nearbyBeaconIdentifiersProximity:nil
+                                         nearbyBeacons:nil
+                                      nearbyBeaconRSSI:nil
+                                 nearbyBeaconProximity:nil
                                      completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user,
                                                          NSArray<RadarGeofence *> *_Nullable nearbyGeofences) {
                                          if (completionHandler) {
@@ -256,28 +255,28 @@
                     BOOL stopped = (i == 0) || (i == coordinates.count - 1);
 
                     [[RadarAPIClient sharedInstance]
-                                       trackWithLocation:location
-                                                 stopped:stopped
-                                              foreground:NO
-                                                  source:RadarLocationSourceMockLocation
-                                                replayed:NO
-                                 nearbyBeaconIdentifiers:nil
-                             nearbyBeaconIdentifiersRSSI:nil
-                        nearbyBeaconIdentifiersProximity:nil
-                                       completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user,
-                                                           NSArray<RadarGeofence *> *_Nullable nearbyGeofences) {
-                                           if (completionHandler) {
-                                               [RadarUtils runOnMainThread:^{
-                                                   completionHandler(status, location, events, user);
-                                               }];
-                                           }
+                            trackWithLocation:location
+                                      stopped:stopped
+                                   foreground:NO
+                                       source:RadarLocationSourceMockLocation
+                                     replayed:NO
+                                nearbyBeacons:nil
+                             nearbyBeaconRSSI:nil
+                        nearbyBeaconProximity:nil
+                            completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user,
+                                                NSArray<RadarGeofence *> *_Nullable nearbyGeofences) {
+                                if (completionHandler) {
+                                    [RadarUtils runOnMainThread:^{
+                                        completionHandler(status, location, events, user);
+                                    }];
+                                }
 
-                                           if (i < coordinates.count - 1) {
-                                               dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(intervalLimit * NSEC_PER_SEC)), dispatch_get_main_queue(), weakTrack);
-                                           }
+                                if (i < coordinates.count - 1) {
+                                    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(intervalLimit * NSEC_PER_SEC)), dispatch_get_main_queue(), weakTrack);
+                                }
 
-                                           i++;
-                                       }];
+                                i++;
+                            }];
                 };
 
                 track();

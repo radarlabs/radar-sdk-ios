@@ -640,15 +640,15 @@ static NSString *const kSyncBeaconIdentifierPrefix = @"radar_beacon_";
     self.sending = YES;
 
     void (^callTrackAPI)(NSArray<NSString *> *_Nullable, NSDictionary *_Nullable, NSDictionary *_Nullable) =
-        ^(NSArray<NSString *> *_Nullable nearbyBeaconIdentifiers, NSDictionary *_Nullable nearbyBeaconIdentifiersRSSI, NSDictionary *_Nullable nearbyBeaconIdentifiersProximity) {
+        ^(NSArray<NSString *> *_Nullable nearbyBeacons, NSDictionary *_Nullable nearbyBeaconRSSI, NSDictionary *_Nullable nearbyBeaconProximity) {
             [[RadarAPIClient sharedInstance] trackWithLocation:location
                                                        stopped:stopped
                                                     foreground:[RadarUtils foreground]
                                                         source:source
                                                       replayed:replayed
-                                       nearbyBeaconIdentifiers:nearbyBeaconIdentifiers
-                                   nearbyBeaconIdentifiersRSSI:nearbyBeaconIdentifiersRSSI
-                              nearbyBeaconIdentifiersProximity:nearbyBeaconIdentifiersProximity
+                                                 nearbyBeacons:nearbyBeacons
+                                              nearbyBeaconRSSI:nearbyBeaconRSSI
+                                         nearbyBeaconProximity:nearbyBeaconProximity
                                              completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events,
                                                                  RadarUser *_Nullable user, NSArray<RadarGeofence *> *_Nullable nearbyGeofences) {
                                                  if (user) {
@@ -685,20 +685,19 @@ static NSString *const kSyncBeaconIdentifierPrefix = @"radar_beacon_";
                                                  if (options.beacons == RadarTrackingOptionsBeaconsMonitoring) {
                                                      callTrackAPI(nearbyBeacons, nil, nil);
                                                  } else if (options.beacons == RadarTrackingOptionsBeaconsRanging) {
-                                                     [[RadarBeaconManager sharedInstance]
-                                                              rangeBeacons:beacons
-                                                         completionHandler:^(RadarStatus status,
-                                                                             NSArray<NSString *> *_Nullable nearbyBeaconIdentifiers,
-                                                                             NSDictionary *_Nullable nearbyBeaconIdentifiersRSSI,
-                                                                             NSDictionary *_Nullable nearbyBeaconIdentifiersProximity) {
-                                                             if (status != RadarStatusSuccess || !nearbyBeaconIdentifiers) {
-                                                                 callTrackAPI(nil, nil, nil);
+                                                     [[RadarBeaconManager sharedInstance] rangeBeacons:beacons
+                                                                                     completionHandler:^(RadarStatus status,
+                                                                                                         NSArray<NSString *> *_Nullable nearbyBeacons,
+                                                                                                         NSDictionary *_Nullable nearbyBeaconRSSI,
+                                                                                                         NSDictionary *_Nullable nearbyBeaconProximity) {
+                                                                                         if (status != RadarStatusSuccess || !nearbyBeacons) {
+                                                                                             callTrackAPI(nil, nil, nil);
 
-                                                                 return;
-                                                             }
+                                                                                             return;
+                                                                                         }
 
-                                                             callTrackAPI(nearbyBeaconIdentifiers, nearbyBeaconIdentifiersRSSI, nearbyBeaconIdentifiersProximity);
-                                                         }];
+                                                                                         callTrackAPI(nearbyBeacons, nearbyBeaconRSSI, nearbyBeaconProximity);
+                                                                                     }];
                                                  }
                                              }];
         }
