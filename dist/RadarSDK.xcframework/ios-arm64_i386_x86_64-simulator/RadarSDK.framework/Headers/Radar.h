@@ -161,6 +161,15 @@ typedef void (^_Nullable RadarBeaconCompletionHandler)(RadarStatus status, NSArr
 typedef void (^_Nullable RadarTrackCompletionHandler)(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user);
 
 /**
+ Called when a trip update succeeds, fails, or times out.
+
+ Receives the request status and, if successful, the trip and an array of the events generated.
+
+ @see https://radar.io/documentation/sdk/ios
+ */
+typedef void (^_Nullable RadarTripCompletionHandler)(RadarStatus status, RadarTrip *_Nullable trip, NSArray<RadarEvent *> *_Nullable events);
+
+/**
  Called when a context request succeeds, fails, or times out.
 
  Receives the request status and, if successful, the location and the context.
@@ -389,7 +398,8 @@ typedef void (^_Nonnull RadarRouteMatrixCompletionHandler)(RadarStatus status, R
                           mode:(RadarRouteMode)mode
                          steps:(int)steps
                       interval:(NSTimeInterval)interval
-             completionHandler:(RadarTrackCompletionHandler _Nullable)completionHandler NS_SWIFT_NAME(mockTracking(origin:destination:mode:steps:interval:completionHandler:));
+             completionHandler:(RadarTrackCompletionHandler _Nullable)completionHandler
+    NS_SWIFT_NAME(mockTracking(origin:destination:mode:steps:interval:completionHandler:));
 
 /**
  Stops tracking the user's location in the background.
@@ -465,6 +475,30 @@ typedef void (^_Nonnull RadarRouteMatrixCompletionHandler)(RadarStatus status, R
 + (void)startTripWithOptions:(RadarTripOptions *_Nonnull)options NS_SWIFT_NAME(startTrip(options:));
 
 /**
+ Starts a trip.
+
+ @param options Configurable trip options.
+ @param completionHandler An optional completion handler.
+
+ @see https://radar.io/documentation/trip-tracking
+ */
++ (void)startTripWithOptions:(RadarTripOptions *_Nonnull)options
+           completionHandler:(RadarTripCompletionHandler _Nullable)completionHandler NS_SWIFT_NAME(startTrip(options:completionHandler:));
+
+/**
+ Manually updates a trip.
+
+ @param options Configurable trip options.
+ @param status The trip status. To avoid updating status, pass RadarTripStatusUnknown.
+ @param completionHandler An optional completion handler.
+
+ @see https://radar.io/documentation/trip-tracking
+ */
++ (void)updateTripWithOptions:(RadarTripOptions *_Nonnull)options
+                       status:(RadarTripStatus)status
+            completionHandler:(RadarTripCompletionHandler _Nullable)completionHandler NS_SWIFT_NAME(updateTrip(options:status:completionHandler:));
+
+/**
  Completes a trip.
 
  @see https://radar.io/documentation/trip-tracking
@@ -472,11 +506,29 @@ typedef void (^_Nonnull RadarRouteMatrixCompletionHandler)(RadarStatus status, R
 + (void)completeTrip;
 
 /**
+ Completes a trip.
+
+ @param completionHandler An optional completion handler.
+
+ @see https://radar.io/documentation/trip-tracking
+ */
++ (void)completeTripWithCompletionHandler:(RadarTripCompletionHandler _Nullable)completionHandler NS_SWIFT_NAME(completeTrip(completionHandler:));
+
+/**
  Cancels a trip.
 
  @see https://radar.io/documentation/trip-tracking
  */
 + (void)cancelTrip;
+
+/**
+ Cancels a trip.
+
+ @param completionHandler An optional completion handler.
+
+ @see https://radar.io/documentation/trip-tracking
+ */
++ (void)cancelTripWithCompletionHandler:(RadarTripCompletionHandler _Nullable)completionHandler NS_SWIFT_NAME(cancelTrip(completionHandler:));
 
 /**
  Gets the device's current location, then gets context for that location without sending device or user identifiers to the server.
@@ -517,7 +569,8 @@ typedef void (^_Nonnull RadarRouteMatrixCompletionHandler)(RadarStatus status, R
                     categories:(NSArray<NSString *> *_Nullable)categories
                         groups:(NSArray<NSString *> *_Nullable)groups
                          limit:(int)limit
-             completionHandler:(RadarSearchPlacesCompletionHandler)completionHandler NS_SWIFT_NAME(searchPlaces(radius:chains:categories:groups:limit:completionHandler:));
+             completionHandler:(RadarSearchPlacesCompletionHandler)completionHandler
+    NS_SWIFT_NAME(searchPlaces(radius:chains:categories:groups:limit:completionHandler:));
 
 /**
  Searches for places near a location, sorted by distance.
@@ -540,7 +593,8 @@ typedef void (^_Nonnull RadarRouteMatrixCompletionHandler)(RadarStatus status, R
               categories:(NSArray<NSString *> *_Nullable)categories
                   groups:(NSArray<NSString *> *_Nullable)groups
                    limit:(int)limit
-       completionHandler:(RadarSearchPlacesCompletionHandler)completionHandler NS_SWIFT_NAME(searchPlaces(near:radius:chains:categories:groups:limit:completionHandler:));
+       completionHandler:(RadarSearchPlacesCompletionHandler)completionHandler
+    NS_SWIFT_NAME(searchPlaces(near:radius:chains:categories:groups:limit:completionHandler:));
 
 /**
  Gets the device's current location, then searches for geofences near that location, sorted by distance.
@@ -583,13 +637,32 @@ typedef void (^_Nonnull RadarRouteMatrixCompletionHandler)(RadarStatus status, R
 
  @param query The partial address or place name to autocomplete.
  @param near A location for the search.
+ @param layers Optional layer filters.
+ @param limit The max number of addresses to return. A number between 1 and 100.
+ @param country An optional country filter. A string, the unique 2-letter country code.
+ @param completionHandler A completion handler.
+
+ @see https://radar.io/documentation/api#autocomplete
+ */
++ (void)autocompleteQuery:(NSString *_Nonnull)query
+                     near:(CLLocation *_Nullable)near
+                   layers:(NSArray<NSString *> *_Nullable)layers
+                    limit:(int)limit
+                  country:(NSString *_Nullable)country
+        completionHandler:(RadarGeocodeCompletionHandler)completionHandler NS_SWIFT_NAME(autocomplete(query:near:layers:limit:country:completionHandler:));
+
+/**
+ Autocompletes partial addresses and place names, sorted by relevance.
+
+ @param query The partial address or place name to autocomplete.
+ @param near A location for the search.
  @param limit The max number of addresses to return. A number between 1 and 100.
  @param completionHandler A completion handler.
 
  @see https://radar.io/documentation/api#autocomplete
  */
 + (void)autocompleteQuery:(NSString *_Nonnull)query
-                     near:(CLLocation *_Nonnull)near
+                     near:(CLLocation *_Nullable)near
                     limit:(int)limit
         completionHandler:(RadarGeocodeCompletionHandler)completionHandler NS_SWIFT_NAME(autocomplete(query:near:limit:completionHandler:));
 

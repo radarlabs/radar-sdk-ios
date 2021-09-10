@@ -562,6 +562,7 @@
                                   url:url
                               headers:headers
                                params:nil
+                                sleep:NO
                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
                         if (status != RadarStatusSuccess || !res) {
                             return completionHandler(status, nil, nil);

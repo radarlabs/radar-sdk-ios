@@ -6,7 +6,7 @@
 	<dict>
 		<key>Headers/Radar.h</key>
 		<data>
-		xhG5O5t41dp0enBPm0mpxHNY6qQ=
+		nuiL6fXAoiYCX1C2QyCb8+vy1Fo=
 		</data>
 		<key>Headers/RadarAddress.h</key>
 		<data>
@@ -34,7 +34,7 @@
 		</data>
 		<key>Headers/RadarDelegate.h</key>
 		<data>
-		Xfsrj1iqZzRQMhShKmUN0+d9C0Q=
+		dPvpjfECQeKsrh1J/O27mCaQ2EU=
 		</data>
 		<key>Headers/RadarEvent.h</key>
 		<data>
@@ -78,7 +78,7 @@
 		</data>
 		<key>Headers/RadarRouteMatrix.h</key>
 		<data>
-		mwH+yc8p5OhOkOGOYLLmO96vJOQ=
+		brsK2TCXdus9M/++3XwezD7XkRI=
 		</data>
 		<key>Headers/RadarRoutes.h</key>
 		<data>
@@ -94,7 +94,7 @@
 		</data>
 		<key>Headers/RadarTrackingOptions.h</key>
 		<data>
-		x9ByZ58pnOR4ONaukxwg7ETasSk=
+		usO2ddgjuYBpEraftkHIqlfCY8A=
 		</data>
 		<key>Headers/RadarTrip.h</key>
 		<data>
@@ -122,7 +122,7 @@
 		</data>
 		<key>Info.plist</key>
 		<data>
-		3qe26IFOhJzkeeXaGOKa+Vs3bFU=
+		fn3+ReSGskqC/p1vKaNEUe9A/vE=
 		</data>
 		<key>Modules/module.modulemap</key>
 		<data>
@@ -135,11 +135,11 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			xhG5O5t41dp0enBPm0mpxHNY6qQ=
+			nuiL6fXAoiYCX1C2QyCb8+vy1Fo=
 			</data>
 			<key>hash2</key>
 			<data>
-			jYjkl7GnQ4CipIhOGSztEAm0bq+Zv8Z+avm4hIwRgC0=
+			aSQAyzxSg4bRztokslYM9BSkQmh+r60IaxDKUnjbXtE=
 			</data>
 		</dict>
 		<key>Headers/RadarAddress.h</key>
@@ -212,11 +212,11 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			Xfsrj1iqZzRQMhShKmUN0+d9C0Q=
+			dPvpjfECQeKsrh1J/O27mCaQ2EU=
 			</data>
 			<key>hash2</key>
 			<data>
-			DsqH12iWn66vjyJQFHJ0HVvs8pn/qI0XQKhRsZ2WP+A=
+			yDK3v1zHFzL4xbSe6Nrz9a43SQzrxyP4BMikzS0zZus=
 			</data>
 		</dict>
 		<key>Headers/RadarEvent.h</key>
@@ -333,11 +333,11 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			mwH+yc8p5OhOkOGOYLLmO96vJOQ=
+			brsK2TCXdus9M/++3XwezD7XkRI=
 			</data>
 			<key>hash2</key>
 			<data>
-			0G4+0dHXruJzprly+APYUwsVgqb1jBLXmMx06Dt+NQQ=
+			04FT1czgGNdwgUigZNofUTQnt+i5cdnP0m3Z2HPfLEQ=
 			</data>
 		</dict>
 		<key>Headers/RadarRoutes.h</key>
@@ -377,11 +377,11 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			x9ByZ58pnOR4ONaukxwg7ETasSk=
+			usO2ddgjuYBpEraftkHIqlfCY8A=
 			</data>
 			<key>hash2</key>
 			<data>
-			3EB5pTAsCF9SAub/lUQxPbGU/7lvjJTjTBNnrhC5NjM=
+			9UtoW5njgimPwkF6jn4dzHTMDyhtdaAnLNAkO+meIxc=
 			</data>
 		</dict>
 		<key>Headers/RadarTrip.h</key>
