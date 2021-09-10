@@ -40,7 +40,7 @@ NSString *const kSyncAll = @"all";
 NSString *const kSyncStopsAndExits = @"stopsAndExits";
 NSString *const kSyncNone = @"none";
 
-+ (RadarTrackingOptions *)continuous {
++ (RadarTrackingOptions *)presetContinuous {
     RadarTrackingOptions *options = [RadarTrackingOptions new];
     options.desiredStoppedUpdateInterval = 30;
     options.desiredMovingUpdateInterval = 30;
@@ -50,7 +50,7 @@ NSString *const kSyncNone = @"none";
     options.stopDistance = 70;
     options.startTrackingAfter = nil;
     options.stopTrackingAfter = nil;
-    options.sync = RadarTrackingOptionsSyncAll;
+    options.syncLocations = RadarTrackingOptionsSyncAll;
     options.replay = RadarTrackingOptionsReplayNone;
     options.showBlueBar = YES;
     options.useStoppedGeofence = NO;
@@ -64,7 +64,7 @@ NSString *const kSyncNone = @"none";
     return options;
 }
 
-+ (RadarTrackingOptions *)responsive {
++ (RadarTrackingOptions *)presetResponsive {
     RadarTrackingOptions *options = [RadarTrackingOptions new];
     options.desiredStoppedUpdateInterval = 0;
     options.desiredMovingUpdateInterval = 150;
@@ -74,7 +74,7 @@ NSString *const kSyncNone = @"none";
     options.stopDistance = 70;
     options.startTrackingAfter = nil;
     options.stopTrackingAfter = nil;
-    options.sync = RadarTrackingOptionsSyncAll;
+    options.syncLocations = RadarTrackingOptionsSyncAll;
     options.replay = RadarTrackingOptionsReplayStops;
     options.showBlueBar = NO;
     options.useStoppedGeofence = YES;
@@ -88,7 +88,7 @@ NSString *const kSyncNone = @"none";
     return options;
 }
 
-+ (RadarTrackingOptions *)efficient {
++ (RadarTrackingOptions *)presetEfficient {
     RadarTrackingOptions *options = [RadarTrackingOptions new];
     options.desiredStoppedUpdateInterval = 0;
     options.desiredMovingUpdateInterval = 0;
@@ -98,7 +98,7 @@ NSString *const kSyncNone = @"none";
     options.stopDistance = 0;
     options.startTrackingAfter = nil;
     options.stopTrackingAfter = nil;
-    options.sync = RadarTrackingOptionsSyncAll;
+    options.syncLocations = RadarTrackingOptionsSyncAll;
     options.replay = RadarTrackingOptionsReplayStops;
     options.showBlueBar = NO;
     options.useStoppedGeofence = NO;
@@ -161,7 +161,7 @@ NSString *const kSyncNone = @"none";
     return replay;
 }
 
-+ (NSString *)stringForSync:(RadarTrackingOptionsSync)sync {
++ (NSString *)stringForSyncLocations:(RadarTrackingOptionsSyncLocations)sync {
     NSString *str;
     switch (sync) {
     case RadarTrackingOptionsSyncNone:
@@ -177,8 +177,8 @@ NSString *const kSyncNone = @"none";
     return str;
 }
 
-+ (RadarTrackingOptionsSync)syncForString:(NSString *)str {
-    RadarTrackingOptionsSync sync = RadarTrackingOptionsSyncAll;
++ (RadarTrackingOptionsSyncLocations)syncLocationsForString:(NSString *)str {
+    RadarTrackingOptionsSyncLocations sync = RadarTrackingOptionsSyncAll;
     if ([str isEqualToString:kSyncStopsAndExits]) {
         sync = RadarTrackingOptionsSyncStopsAndExits;
     } else if ([str isEqualToString:kSyncNone]) {
@@ -197,7 +197,7 @@ NSString *const kSyncNone = @"none";
     options.stopDistance = [dict[kStopDistance] intValue];
     options.startTrackingAfter = dict[kStartTrackingAfter];
     options.stopTrackingAfter = dict[kStopTrackingAfter];
-    options.sync = [RadarTrackingOptions syncForString:dict[kSync]];
+    options.syncLocations = [RadarTrackingOptions syncLocationsForString:dict[kSync]];
     options.replay = [RadarTrackingOptions replayForString:dict[kReplay]];
     options.showBlueBar = [dict[kShowBlueBar] boolValue];
     options.useStoppedGeofence = [dict[kUseStoppedGeofence] boolValue];
@@ -221,7 +221,7 @@ NSString *const kSyncNone = @"none";
     dict[kStopDistance] = @(self.stopDistance);
     dict[kStartTrackingAfter] = self.startTrackingAfter;
     dict[kStopTrackingAfter] = self.stopTrackingAfter;
-    dict[kSync] = [RadarTrackingOptions stringForSync:self.sync];
+    dict[kSync] = [RadarTrackingOptions stringForSyncLocations:self.syncLocations];
     dict[kReplay] = [RadarTrackingOptions stringForReplay:self.replay];
     dict[kShowBlueBar] = @(self.showBlueBar);
     dict[kUseStoppedGeofence] = @(self.useStoppedGeofence);
@@ -254,11 +254,11 @@ NSString *const kSyncNone = @"none";
            self.desiredSyncInterval == options.desiredSyncInterval && self.desiredAccuracy == options.desiredAccuracy && self.stopDuration == options.stopDuration &&
            self.stopDistance == options.stopDistance &&
            (self.startTrackingAfter == nil ? options.startTrackingAfter == nil : [self.startTrackingAfter isEqual:options.startTrackingAfter]) &&
-           (self.stopTrackingAfter == nil ? options.stopTrackingAfter == nil : [self.stopTrackingAfter isEqual:options.stopTrackingAfter]) && self.sync == options.sync &&
-           self.replay == options.replay && self.showBlueBar == options.showBlueBar && self.useStoppedGeofence == options.useStoppedGeofence &&
-           self.stoppedGeofenceRadius == options.stoppedGeofenceRadius && self.useMovingGeofence == options.useMovingGeofence &&
-           self.movingGeofenceRadius == options.movingGeofenceRadius && self.syncGeofences == options.syncGeofences && self.useVisits == options.useVisits &&
-           self.useSignificantLocationChanges == options.useSignificantLocationChanges && self.beacons == options.beacons;
+           (self.stopTrackingAfter == nil ? options.stopTrackingAfter == nil : [self.stopTrackingAfter isEqual:options.stopTrackingAfter]) &&
+           self.syncLocations == options.syncLocations && self.replay == options.replay && self.showBlueBar == options.showBlueBar &&
+           self.useStoppedGeofence == options.useStoppedGeofence && self.stoppedGeofenceRadius == options.stoppedGeofenceRadius &&
+           self.useMovingGeofence == options.useMovingGeofence && self.movingGeofenceRadius == options.movingGeofenceRadius && self.syncGeofences == options.syncGeofences &&
+           self.useVisits == options.useVisits && self.useSignificantLocationChanges == options.useSignificantLocationChanges && self.beacons == options.beacons;
 }
 
 @end

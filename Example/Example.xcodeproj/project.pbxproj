@@ -7,14 +7,22 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		013D7AF226D327C400574AD5 /* RadarSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0107AA77262200DA008AB52F /* RadarSDK.framework */; };
+		013D7AF326D327C400574AD5 /* RadarSDK.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 0107AA77262200DA008AB52F /* RadarSDK.framework */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		DD236D27230A006700EB88F9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD236D26230A006700EB88F9 /* AppDelegate.swift */; };
 		DD236D30230A006900EB88F9 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DD236D2F230A006900EB88F9 /* Assets.xcassets */; };
 		DD291169230D0AF900049D3A /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD291168230D0AF900049D3A /* Utils.swift */; };
-		DD86FD0A23918B04003225F6 /* libRadarSDK.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DD86FD0923918B04003225F6 /* libRadarSDK.a */; };
 		DDB861D32385FC3E00770661 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DDB861D22385FC3E00770661 /* Default-568h@2x.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		0107AA76262200DA008AB52F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = DD86FCF9239185F4003225F6 /* RadarSDK.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0107A9E82621FFB9008AB52F;
+			remoteInfo = RadarSDK;
+		};
 		DD55C3BB2395D25600C34B40 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = DD86FCF9239185F4003225F6 /* RadarSDK.xcodeproj */;
@@ -22,22 +30,16 @@
 			remoteGlobalIDString = DD236C7E2308797B00EB88F9;
 			remoteInfo = RadarSDKTests;
 		};
-		DD55C3BD2395D25600C34B40 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = DD86FCF9239185F4003225F6 /* RadarSDK.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = DDC637C8238C7E6100747FD4;
-			remoteInfo = Library;
-		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		DD236D53230A05A600EB88F9 /* Embed Frameworks */ = {
+		013D7AF426D327C400574AD5 /* Embed Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				013D7AF326D327C400574AD5 /* RadarSDK.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -51,7 +53,6 @@
 		DD236D34230A006900EB88F9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		DD291168230D0AF900049D3A /* Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
 		DD86FCF9239185F4003225F6 /* RadarSDK.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RadarSDK.xcodeproj; path = ../RadarSDK.xcodeproj; sourceTree = SOURCE_ROOT; };
-		DD86FD0923918B04003225F6 /* libRadarSDK.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libRadarSDK.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		DD86FD0B23918B3C003225F6 /* Example-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Example-Bridging-Header.h"; sourceTree = "<group>"; };
 		DDB861D22385FC3E00770661 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -61,7 +62,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DD86FD0A23918B04003225F6 /* libRadarSDK.a in Frameworks */,
+				013D7AF226D327C400574AD5 /* RadarSDK.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -103,7 +104,7 @@
 			isa = PBXGroup;
 			children = (
 				DD55C3BC2395D25600C34B40 /* RadarSDKTests.xctest */,
-				DD55C3BE2395D25600C34B40 /* libRadarSDK.a */,
+				0107AA77262200DA008AB52F /* RadarSDK.framework */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -111,7 +112,6 @@
 		DD86FD03239185FB003225F6 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				DD86FD0923918B04003225F6 /* libRadarSDK.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -126,7 +126,7 @@
 				DD236D1F230A006700EB88F9 /* Sources */,
 				DD236D20230A006700EB88F9 /* Frameworks */,
 				DD236D21230A006700EB88F9 /* Resources */,
-				DD236D53230A05A600EB88F9 /* Embed Frameworks */,
+				013D7AF426D327C400574AD5 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -177,18 +177,18 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
+		0107AA77262200DA008AB52F /* RadarSDK.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = RadarSDK.framework;
+			remoteRef = 0107AA76262200DA008AB52F /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		DD55C3BC2395D25600C34B40 /* RadarSDKTests.xctest */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.cfbundle;
 			path = RadarSDKTests.xctest;
 			remoteRef = DD55C3BB2395D25600C34B40 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		DD55C3BE2395D25600C34B40 /* libRadarSDK.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libRadarSDK.a;
-			remoteRef = DD55C3BD2395D25600C34B40 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */

@@ -82,12 +82,12 @@ static NSString *const kDefaultHost = @"https://api.radar.io";
     [[NSUserDefaults standardUserDefaults] setObject:userId forKey:kUserId];
 }
 
-+ (NSString *)_description {
++ (NSString *)__description {
     return [[NSUserDefaults standardUserDefaults] stringForKey:kDescription];
 }
 
-+ (void)setDescription:(NSString *)_description {
-    [[NSUserDefaults standardUserDefaults] setObject:_description forKey:kDescription];
++ (void)setDescription:(NSString *)description {
+    [[NSUserDefaults standardUserDefaults] setObject:description forKey:kDescription];
 }
 
 + (NSDictionary *)metadata {

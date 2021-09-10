@@ -2,7 +2,6 @@
 //  RadarRoutes+Internal.h
 //  RadarSDK
 //
-//  Created by Nick Patrick on 2/1/20.
 //  Copyright © 2020 Radar Labs, Inc. All rights reserved.
 //
 

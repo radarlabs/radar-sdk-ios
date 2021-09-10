@@ -42,7 +42,7 @@
     self = [super init];
     if (self) {
         __id = _id;
-        __description = description;
+        ___description = description;
         _tag = tag;
         _externalId = externalId;
         _uuid = uuid;
@@ -161,7 +161,7 @@
 - (NSDictionary *)dictionaryValue {
     NSMutableDictionary *dict = [NSMutableDictionary new];
     [dict setValue:self._id forKey:@"_id"];
-    [dict setValue:self._description forKey:@"description"];
+    [dict setValue:self.__description forKey:@"description"];
     [dict setValue:self.tag forKey:@"tag"];
     [dict setValue:self.externalId forKey:@"externalId"];
     [dict setValue:self.uuid forKey:@"uuid"];

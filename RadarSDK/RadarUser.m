@@ -46,7 +46,7 @@
         __id = _id;
         _userId = userId;
         _deviceId = deviceId;
-        __description = description;
+        ___description = description;
         _metadata = metadata;
         _location = location;
         _geofences = geofences;
@@ -323,7 +323,7 @@
     [dict setValue:self._id forKey:@"_id"];
     [dict setValue:self.userId forKey:@"userId"];
     [dict setValue:self.deviceId forKey:@"deviceId"];
-    [dict setValue:self._description forKey:@"description"];
+    [dict setValue:self.__description forKey:@"description"];
     [dict setValue:self.metadata forKey:@"metadata"];
     NSMutableDictionary *locationDict = [NSMutableDictionary new];
     locationDict[@"type"] = @"Point";
@@ -368,7 +368,7 @@
     [dict setValue:segmentsArr forKey:@"segments"];
     NSArray *topChainsArr = [RadarChain arrayForChains:self.topChains];
     [dict setValue:topChainsArr forKey:@"topChains"];
-    [dict setValue:[Radar stringForSource:self.source] forKey:@"source"];
+    [dict setValue:[Radar stringForLocationSource:self.source] forKey:@"source"];
     NSDictionary *fraudDict = @{@"proxy": @(self.proxy)};
     [dict setValue:fraudDict forKey:@"fraud"];
     if (self.trip) {

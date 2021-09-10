@@ -68,7 +68,7 @@
 }
 
 + (NSString *_Nullable)getDescription {
-    return [RadarSettings _description];
+    return [RadarSettings __description];
 }
 
 + (void)setMetadata:(NSDictionary *)metadata {
@@ -309,7 +309,7 @@
 + (void)startTripWithOptions:(RadarTripOptions *)options completionHandler:(RadarTripCompletionHandler)completionHandler {
     [[RadarAPIClient sharedInstance] updateTripWithOptions:options
                                                     status:RadarTripStatusStarted
-                                         completionHandler:^(RadarStatus status) {
+                                         completionHandler:^(RadarStatus status, RadarTrip *trip, NSArray<RadarEvent *> *events) {
                                              if (status == RadarStatusSuccess) {
                                                  [RadarSettings setTripOptions:options];
 
@@ -319,7 +319,7 @@
 
                                              if (completionHandler) {
                                                  [RadarUtils runOnMainThread:^{
-                                                     completionHandler(status);
+                                                     completionHandler(status, trip, events);
                                                  }];
                                              }
                                          }];
@@ -328,7 +328,7 @@
 + (void)updateTripWithOptions:(RadarTripOptions *)options status:(RadarTripStatus)status completionHandler:(RadarTripCompletionHandler)completionHandler {
     [[RadarAPIClient sharedInstance] updateTripWithOptions:options
                                                     status:status
-                                         completionHandler:^(RadarStatus status) {
+                                         completionHandler:^(RadarStatus status, RadarTrip *trip, NSArray<RadarEvent *> *events) {
                                              if (status == RadarStatusSuccess) {
                                                  [RadarSettings setTripOptions:options];
 
@@ -338,7 +338,7 @@
 
                                              if (completionHandler) {
                                                  [RadarUtils runOnMainThread:^{
-                                                     completionHandler(status);
+                                                     completionHandler(status, trip, events);
                                                  }];
                                              }
                                          }];
@@ -352,7 +352,7 @@
     RadarTripOptions *options = [RadarSettings tripOptions];
     [[RadarAPIClient sharedInstance] updateTripWithOptions:options
                                                     status:RadarTripStatusCompleted
-                                         completionHandler:^(RadarStatus status) {
+                                         completionHandler:^(RadarStatus status, RadarTrip *trip, NSArray<RadarEvent *> *events) {
                                              if (status == RadarStatusSuccess || status == RadarStatusErrorNotFound) {
                                                  [RadarSettings setTripOptions:nil];
 
@@ -362,7 +362,7 @@
 
                                              if (completionHandler) {
                                                  [RadarUtils runOnMainThread:^{
-                                                     completionHandler(status);
+                                                     completionHandler(status, trip, events);
                                                  }];
                                              }
                                          }];
@@ -376,7 +376,7 @@
     RadarTripOptions *options = [RadarSettings tripOptions];
     [[RadarAPIClient sharedInstance] updateTripWithOptions:options
                                                     status:RadarTripStatusCanceled
-                                         completionHandler:^(RadarStatus status) {
+                                         completionHandler:^(RadarStatus status, RadarTrip *trip, NSArray<RadarEvent *> *events) {
                                              if (status == RadarStatusSuccess || status == RadarStatusErrorNotFound) {
                                                  [RadarSettings setTripOptions:nil];
 
@@ -386,7 +386,7 @@
 
                                              if (completionHandler) {
                                                  [RadarUtils runOnMainThread:^{
-                                                     completionHandler(status);
+                                                     completionHandler(status, trip, events);
                                                  }];
                                              }
                                          }];
@@ -734,7 +734,7 @@
     return str;
 }
 
-+ (NSString *)stringForSource:(RadarLocationSource)source {
++ (NSString *)stringForLocationSource:(RadarLocationSource)source {
     NSString *str;
     switch (source) {
     case RadarLocationSourceForegroundLocation:

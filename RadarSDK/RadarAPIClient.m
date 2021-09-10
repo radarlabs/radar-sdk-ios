@@ -21,7 +21,7 @@
 #import "RadarRoutes+Internal.h"
 #import "RadarSettings.h"
 #import "RadarState.h"
-#import "RadarTrip.h"
+#import "RadarTrip+Internal.h"
 #import "RadarTripOptions.h"
 #import "RadarUser+Internal.h"
 #import "RadarUtils.h"
@@ -86,6 +86,7 @@
                                   url:url
                               headers:headers
                                params:nil
+                                sleep:NO
                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
                         if (!res) {
                             return;
@@ -120,7 +121,7 @@
     params[@"installId"] = [RadarSettings installId];
     params[@"userId"] = [RadarSettings userId];
     params[@"deviceId"] = [RadarUtils deviceId];
-    params[@"description"] = [RadarSettings _description];
+    params[@"description"] = [RadarSettings __description];
     params[@"metadata"] = [RadarSettings metadata];
     NSString *adId = [RadarUtils adId];
     if (adId && [RadarSettings adIdEnabled]) {
@@ -159,7 +160,7 @@
     params[@"deviceOS"] = [RadarUtils deviceOS];
     params[@"country"] = [RadarUtils country];
     params[@"timeZoneOffset"] = [RadarUtils timeZoneOffset];
-    params[@"source"] = [Radar stringForSource:source];
+    params[@"source"] = [Radar stringForLocationSource:source];
     RadarTripOptions *tripOptions = [RadarSettings tripOptions];
     if (tripOptions) {
         NSMutableDictionary *tripOptionsDict = [NSMutableDictionary new];
@@ -183,6 +184,18 @@
     if (nearbyBeacons) {
         params[@"nearbyBeacons"] = nearbyBeacons;
     }
+    NSString *locationAuthorization = [RadarUtils locationAuthorization];
+    if (locationAuthorization) {
+        params[@"locationAuthorization"] = locationAuthorization;
+    }
+    NSString *locationAccuracyAuthorization = [RadarUtils locationAccuracyAuthorization];
+    if (locationAccuracyAuthorization) {
+        params[@"locationAccuracyAuthorization"] = locationAccuracyAuthorization;
+    }
+    NSString *sessionId = [RadarSettings sessionId];
+    if (sessionId) {
+        params[@"sessionId"] = sessionId;
+    }
 
     NSString *host = [RadarSettings host];
     NSString *url = [NSString stringWithFormat:@"%@/v1/track", host];
@@ -194,6 +207,7 @@
                                   url:url
                               headers:headers
                                params:params
+                                sleep:YES
                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
                         if (status != RadarStatusSuccess || !res) {
                             if (options.replay == RadarTrackingOptionsReplayStops && stopped &&
@@ -271,6 +285,7 @@
                                   url:url
                               headers:headers
                                params:params
+                                sleep:NO
                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res){
 
                     }];
@@ -279,11 +294,11 @@
 - (void)updateTripWithOptions:(RadarTripOptions *)options status:(RadarTripStatus)status completionHandler:(RadarTripAPICompletionHandler)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
-        return completionHandler(RadarStatusErrorPublishableKey);
+        return completionHandler(RadarStatusErrorPublishableKey, nil, nil);
     }
 
     if (!options || !options.externalId) {
-        return completionHandler(RadarStatusErrorBadRequest);
+        return completionHandler(RadarStatusErrorBadRequest, nil, nil);
     }
 
     NSMutableDictionary *params = [NSMutableDictionary new];
@@ -312,8 +327,22 @@
                                   url:url
                               headers:headers
                                params:params
+                                sleep:NO
                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
-                        completionHandler(status);
+                        if (status != RadarStatusSuccess || !res) {
+                            return completionHandler(status, nil, nil);
+                        }
+
+                        id tripObj = res[@"trip"];
+                        id eventsObj = res[@"events"];
+                        RadarTrip *trip = [[RadarTrip alloc] initWithObject:tripObj];
+                        NSArray<RadarEvent *> *events = [RadarEvent eventsFromObject:eventsObj];
+
+                        if (events && events.count) {
+                            [[RadarDelegateHolder sharedInstance] didReceiveEvents:events user:nil];
+                        }
+
+                        completionHandler(RadarStatusSuccess, trip, events);
                     }];
 }
 
@@ -335,6 +364,7 @@
                                   url:url
                               headers:headers
                                params:nil
+                                sleep:NO
                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
                         if (status != RadarStatusSuccess || !res) {
                             return completionHandler(status, nil, nil);
@@ -388,6 +418,7 @@
                                   url:url
                               headers:headers
                                params:nil
+                                sleep:NO
                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
                         if (status != RadarStatusSuccess || !res) {
                             return completionHandler(status, nil, nil);
@@ -439,6 +470,7 @@
                                   url:url
                               headers:headers
                                params:nil
+                                sleep:NO
                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
                         if (status != RadarStatusSuccess || !res) {
                             return completionHandler(status, nil, nil);
@@ -476,6 +508,7 @@
                                   url:url
                               headers:headers
                                params:nil
+                                sleep:NO
                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
                         if (status != RadarStatusSuccess || !res) {
                             return completionHandler(status, nil, nil);
@@ -529,6 +562,7 @@
                                   url:url
                               headers:headers
                                params:nil
+                                sleep:NO
                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
                         if (status != RadarStatusSuccess || !res) {
                             return completionHandler(status, nil, nil);
@@ -571,6 +605,7 @@
                                   url:url
                               headers:headers
                                params:nil
+                                sleep:NO
                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
                         if (status != RadarStatusSuccess || !res) {
                             return completionHandler(status, nil, nil);
@@ -605,6 +640,7 @@
                                   url:url
                               headers:headers
                                params:nil
+                                sleep:NO
                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
                         if (status != RadarStatusSuccess || !res) {
                             return completionHandler(status, nil, nil);
@@ -639,6 +675,7 @@
                                   url:url
                               headers:headers
                                params:nil
+                                sleep:NO
                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
                         if (status != RadarStatusSuccess || !res) {
                             return completionHandler(status, nil, nil);
@@ -669,6 +706,7 @@
                                   url:url
                               headers:headers
                                params:nil
+                                sleep:NO
                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
                         if (status != RadarStatusSuccess || !res) {
                             return completionHandler(status, nil, nil, NO);
@@ -744,6 +782,7 @@
                                   url:url
                               headers:headers
                                params:nil
+                                sleep:NO
                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
                         if (status != RadarStatusSuccess || !res) {
                             return completionHandler(status, nil, nil);
@@ -819,6 +858,7 @@
                                   url:url
                               headers:headers
                                params:nil
+                                sleep:NO
                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
                         if (status != RadarStatusSuccess || !res) {
                             return completionHandler(status, nil, nil);

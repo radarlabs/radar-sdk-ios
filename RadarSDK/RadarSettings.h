@@ -24,8 +24,8 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)setId:(NSString *_Nullable)_id;
 + (NSString *_Nullable)userId;
 + (void)setUserId:(NSString *_Nullable)userId;
-+ (NSString *_Nullable)_description;
-+ (void)setDescription:(NSString *_Nullable)_description;
++ (NSString *_Nullable)__description;
++ (void)setDescription:(NSString *_Nullable)description;
 + (NSDictionary *_Nullable)metadata;
 + (void)setMetadata:(NSDictionary *_Nullable)metadata;
 + (BOOL)adIdEnabled;
