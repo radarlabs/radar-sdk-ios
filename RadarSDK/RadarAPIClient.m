@@ -58,7 +58,32 @@
     };
 }
 
-- (void)getConfig {
++ (void)parseMetaAndConfigure:(NSDictionary *_Nullable)res {
+    if (!res) {
+        return;
+    }
+
+    id metaObj = res[@"meta"];
+    if (!metaObj || ![metaObj isKindOfClass:[NSDictionary class]]) {
+        return;
+    }
+
+    NSDictionary *meta = (NSDictionary *)metaObj;
+    id configObj = meta[@"config"];
+    if (configObj && [configObj isKindOfClass:[NSDictionary class]]) {
+        NSDictionary *config = (NSDictionary *)configObj;
+        [RadarSettings setConfig:config];
+    }
+
+    id trackingOptionsObj = meta[@"trackingOptions"];
+    BOOL listenToServerTrackingOptions = [RadarSettings listenToServerTrackingOptions];
+    if (listenToServerTrackingOptions && trackingOptionsObj && [trackingOptionsObj isKindOfClass:[NSDictionary class]]) {
+        NSDictionary *trackingOptions = (NSDictionary *)trackingOptionsObj;
+        [RadarSettings setTrackingOptions:[RadarTrackingOptions trackingOptionsFromDictionary:trackingOptions]];
+    }
+}
+
+- (void)getConfig:(RadarConfigAPICompletionHandler _Nullable)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
         return;
@@ -88,20 +113,12 @@
                                params:nil
                                 sleep:NO
                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
-                        if (!res) {
-                            return;
+                        [RadarAPIClient parseMetaAndConfigure:res];
+                        if (completionHandler) {
+                            completionHandler(status);
                         }
-
-                        id metaObj = res[@"meta"];
-                        if (metaObj && [metaObj isKindOfClass:[NSDictionary class]]) {
-                            NSDictionary *meta = (NSDictionary *)metaObj;
-                            id configObj = meta[@"config"];
-                            if (configObj && [configObj isKindOfClass:[NSDictionary class]]) {
-                                NSDictionary *config = (NSDictionary *)configObj;
-                                [RadarSettings setConfig:config];
-                            }
-                        }
-                    }];
+                    }
+     ];
 }
 
 - (void)trackWithLocation:(CLLocation *_Nonnull)location
@@ -177,6 +194,7 @@
         tripOptionsDict[@"mode"] = [Radar stringForMode:tripOptions.mode];
         params[@"tripOptions"] = tripOptionsDict;
     }
+    
     RadarTrackingOptions *options = [RadarSettings trackingOptions];
     if (options.syncGeofences) {
         params[@"nearbyGeofences"] = @(YES);
@@ -195,6 +213,16 @@
     NSString *sessionId = [RadarSettings sessionId];
     if (sessionId) {
         params[@"sessionId"] = sessionId;
+    }
+
+    // NOTE: this is sent up for debugging purposes and can be seen
+    // in the locations debug page for a user
+    params[@"trackingOptions"] = [options dictionaryValue];
+
+    // NOTE: this is sent up for measuring number of clients set on
+    // remote tracking options
+    if ([RadarSettings listenToServerTrackingOptions]) {
+        params[@"listenToServer"] = @(YES);
     }
 
     NSString *host = [RadarSettings host];
@@ -222,15 +250,7 @@
 
                         [RadarState setLastFailedStoppedLocation:nil];
 
-                        id metaObj = res[@"meta"];
-                        if (metaObj && [metaObj isKindOfClass:[NSDictionary class]]) {
-                            NSDictionary *meta = (NSDictionary *)metaObj;
-                            id configObj = meta[@"config"];
-                            if (configObj && [configObj isKindOfClass:[NSDictionary class]]) {
-                                NSDictionary *config = (NSDictionary *)configObj;
-                                [RadarSettings setConfig:config];
-                            }
-                        }
+                        [RadarAPIClient parseMetaAndConfigure:res];
 
                         id eventsObj = res[@"events"];
                         id userObj = res[@"user"];

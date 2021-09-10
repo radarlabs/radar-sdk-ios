@@ -42,6 +42,8 @@ typedef void (^_Nonnull RadarDistanceAPICompletionHandler)(RadarStatus status, N
 
 typedef void (^_Nonnull RadarMatrixAPICompletionHandler)(RadarStatus status, NSDictionary *_Nullable res, RadarRouteMatrix *_Nullable matrix);
 
+typedef void (^_Nullable RadarConfigAPICompletionHandler)(RadarStatus status);
+
 @interface RadarAPIClient : NSObject
 
 @property (nonnull, strong, nonatomic) RadarAPIHelper *apiHelper;
@@ -50,7 +52,9 @@ typedef void (^_Nonnull RadarMatrixAPICompletionHandler)(RadarStatus status, NSD
 
 + (NSDictionary *)headersWithPublishableKey:(NSString *)publishableKey;
 
-- (void)getConfig;
++ (void)parseMetaAndConfigure:(NSDictionary *_Nullable)res;
+
+- (void)getConfig:(RadarConfigAPICompletionHandler _Nullable)completionHandler;
 
 - (void)trackWithLocation:(CLLocation *_Nonnull)location
                   stopped:(BOOL)stopped
