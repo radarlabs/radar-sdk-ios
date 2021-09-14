@@ -25,8 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
 
  @return The route between the specified origin and destination.
  */
-- (RadarRoute *_Nullable)routeBetweenOriginIndex:(NSUInteger)originIndex
-                                destinationIndex:(NSUInteger)destinationIndex NS_SWIFT_NAME(routeBetween(originIndex:destinationIndex:));
+- (RadarRoute *_Nullable)routeBetweenOriginIndex:(NSUInteger)originIndex destinationIndex:(NSUInteger)destinationIndex NS_SWIFT_NAME(routeBetween(originIndex:destinationIndex:));
 
 - (NSArray<NSArray<NSDictionary *> *> *_Nonnull)arrayValue;
 
