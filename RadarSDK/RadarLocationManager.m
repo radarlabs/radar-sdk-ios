@@ -165,7 +165,6 @@ static NSString *const kSyncBeaconIdentifierPrefix = @"radar_beacon_";
     CLAuthorizationStatus authorizationStatus = [self.permissionsHelper locationAuthorizationStatus];
     if (!(authorizationStatus == kCLAuthorizationStatusAuthorizedWhenInUse || authorizationStatus == kCLAuthorizationStatusAuthorizedAlways)) {
         [[RadarDelegateHolder sharedInstance] didFailWithStatus:RadarStatusErrorPermissions];
-
         return;
     }
 

@@ -48,7 +48,7 @@
 
     [RadarSettings setPublishableKey:publishableKey];
     [[RadarLocationManager sharedInstance] updateTracking];
-    [[RadarAPIClient sharedInstance] getConfig];
+    [[RadarAPIClient sharedInstance] getConfig:nil];
 }
 
 + (NSString *_Nullable)getPublishableKey {
@@ -186,7 +186,15 @@
 }
 
 + (void)startTrackingWithOptions:(RadarTrackingOptions *)options {
+    [RadarSettings setListenToServerTrackingOptions:NO];
     [[RadarLocationManager sharedInstance] startTrackingWithOptions:options];
+}
+
++ (void)startTrackingWithRemoteOptions {
+    [RadarSettings setListenToServerTrackingOptions:YES];
+    [[RadarAPIClient sharedInstance] getConfig:^(RadarStatus status) {
+        [[RadarLocationManager sharedInstance] startTrackingWithOptions:[RadarSettings trackingOptions]];
+    }];
 }
 
 + (void)mockTrackingWithOrigin:(CLLocation *)origin
@@ -841,7 +849,7 @@
 - (void)applicationWillEnterForeground {
     BOOL updated = [RadarSettings updateSessionId];
     if (updated) {
-        [[RadarAPIClient sharedInstance] getConfig];
+        [[RadarAPIClient sharedInstance] getConfig:nil];
     }
 }
 
