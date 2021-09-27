@@ -173,23 +173,23 @@ typedef NS_ENUM(NSInteger, RadarTrackingOptionsBeacons) {
 @property (nonatomic, assign) RadarTrackingOptionsBeacons beacons;
 
 /**
- A preset that updates about every 30 seconds and syncs all locations to the server. High battery usage. Shows the flashing blue status bar when tracking.
+ Updates about every 30 seconds while moving or stopped. Moderate battery usage. Shows the flashing blue status bar during tracking.
 
  @see https://developer.apple.com/documentation/corelocation/cllocationmanager/2923541-showsbackgroundlocationindicator
  */
 @property (class, copy, readonly) RadarTrackingOptions *presetContinuous;
 
 /**
- A preset that updates about every 2.5 minutes when moving, shuts down when stopped, and only syncs stops and exits to the server. Requires the `location`
- background mode. Must move at least 200 meters to start moving again after a stop. Low battery usage.
+ Updates about every 2.5 minutes when moving and shuts down when stopped to save battery. Once stopped, the device will need to move more than 100 meters to wake up and start
+ moving again. Low battery usage. Requires the `location` background mode.
 
  Note that location updates may be delayed significantly by Low Power Mode, or if the device has connectivity issues, low battery, or wi-fi disabled.
  */
 @property (class, copy, readonly) RadarTrackingOptions *presetResponsive;
 
 /**
- A preset that uses the iOS visit monitoring service to update only on stops and exits. Must move a significant distance to start moving again after a stop.
- Lowest battery usage. Recommended.
+ Uses the iOS visit monitoring service to update only on stops and exits. Once stopped, the device will need to move several hundred meters and trigger a visit departure to wake up
+ and start moving again. Lowest battery usage.
 
  Note that location updates may be delayed significantly by Low Power Mode, or if the device has connectivity issues, low battery, or wi-fi disabled.
 

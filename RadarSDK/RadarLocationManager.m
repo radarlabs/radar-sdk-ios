@@ -430,13 +430,24 @@ static NSString *const kSyncBeaconIdentifierPrefix = @"radar_beacon_";
                                                                          major:[beacon.major intValue]
                                                                          minor:[beacon.minor intValue]
                                                                     identifier:identifier];
-        region.notifyEntryStateOnDisplay = YES;
-        [self.locationManager startMonitoringForRegion:region];
-        [self.locationManager requestStateForRegion:region];
 
-        [[RadarLogger sharedInstance]
-            logWithLevel:RadarLogLevelDebug
-                 message:[NSString stringWithFormat:@"Synced beacon | identifier = %@; uuid = %@; major = %@; minor = %@", identifier, beacon.uuid, beacon.major, beacon.minor]];
+        if (region) {
+            region.notifyEntryStateOnDisplay = YES;
+            [self.locationManager startMonitoringForRegion:region];
+            [self.locationManager requestStateForRegion:region];
+
+            [[RadarLogger sharedInstance]
+                logWithLevel:RadarLogLevelDebug
+                     message:[NSString
+                                 stringWithFormat:@"Synced beacon | identifier = %@; uuid = %@; major = %@; minor = %@", identifier, beacon.uuid, beacon.major, beacon.minor]];
+        } else {
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
+                                               message:[NSString stringWithFormat:@"Error syncing beacon | identifier = %@; uuid = %@; major = %@; minor = %@",
+                                                                                  identifier,
+                                                                                  beacon.uuid,
+                                                                                  beacon.major,
+                                                                                  beacon.minor]];
+        }
     }
 }
 
