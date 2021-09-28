@@ -16,8 +16,8 @@
 @property (assign, nonatomic) BOOL started;
 @property (nonnull, strong, nonatomic) NSMutableArray<RadarBeaconCompletionHandler> *completionHandlers;
 @property (nonnull, strong, nonatomic) NSMutableSet<NSString *> *nearbyBeaconIdentifiers;
-@property (nonnull, strong, nonatomic) NSDictionary *nearbyBeaconRSSI;
-@property (nonnull, strong, nonatomic) NSDictionary *nearbyBeaconProximity;
+@property (nonnull, strong, nonatomic) NSMutableDictionary *nearbyBeaconRSSI;
+@property (nonnull, strong, nonatomic) NSMutableDictionary *nearbyBeaconProximity;
 @property (nonnull, strong, nonatomic) NSMutableSet<NSString *> *failedBeaconIdentifiers;
 @property (nonnull, strong, nonatomic) NSArray<RadarBeacon *> *beacons;
 
@@ -229,8 +229,8 @@
                                                                               region.identifier, (long)beacon.rssi, (long)beacon.proximity]];
 
         [self.nearbyBeaconIdentifiers addObject:region.identifier];
-        [self.nearbyBeaconRSSI setValue:@(beacon.rssi) forKey:region.identifier];
-        [self.nearbyBeaconProximity setValue:@(beacon.proximity) forKey:region.identifier];
+        self.nearbyBeaconRSSI[region.identifier] = @(beacon.rssi);
+        self.nearbyBeaconProximity[region.identifier] = @(beacon.proximity);
     }
 
     [self handleBeacons];
