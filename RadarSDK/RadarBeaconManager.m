@@ -50,10 +50,10 @@
 
         _completionHandlers = [NSMutableArray<RadarBeaconCompletionHandler> new];
 
-        _beacons = @[];
+        _beacons = [NSMutableArray new];
         _nearbyBeaconIdentifiers = [NSMutableSet new];
-        _nearbyBeaconRSSI = @{};
-        _nearbyBeaconProximity = @{};
+        _nearbyBeaconRSSI = [NSMutableDictionary new];
+        _nearbyBeaconProximity = [NSMutableDictionary new];
         _failedBeaconIdentifiers = [NSMutableSet new];
 
         _permissionsHelper = [RadarPermissionsHelper new];
@@ -182,12 +182,12 @@
                           nearbyBeaconRSSI:self.nearbyBeaconRSSI
                      nearbyBeaconProximity:self.nearbyBeaconProximity];
 
-    self.beacons = @[];
+    self.beacons = [NSMutableArray new];
     self.started = NO;
 
     [self.nearbyBeaconIdentifiers removeAllObjects];
-    self.nearbyBeaconRSSI = @{};
-    self.nearbyBeaconProximity = @{};
+    self.nearbyBeaconRSSI = [NSMutableDictionary new];
+    self.nearbyBeaconProximity = [NSMutableDictionary new];
     [self.failedBeaconIdentifiers removeAllObjects];
 }
 
@@ -229,8 +229,10 @@
                                                                               region.identifier, (long)beacon.rssi, (long)beacon.proximity]];
 
         [self.nearbyBeaconIdentifiers addObject:region.identifier];
-        self.nearbyBeaconRSSI[region.identifier] = @(beacon.rssi);
-        self.nearbyBeaconProximity[region.identifier] = @(beacon.proximity);
+        if (beacon.rssi != 0) {
+            [self.nearbyBeaconRSSI setObject:@(beacon.rssi) forKey:region.identifier];
+            [self.nearbyBeaconProximity setObject:@(beacon.proximity) forKey:region.identifier];
+        }
     }
 
     [self handleBeacons];
