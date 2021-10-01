@@ -352,7 +352,7 @@ static NSString *const kSyncBeaconIdentifierPrefix = @"radar_beacon_";
              [RadarSettings setTrackingOptions:[meta trackingOptions]];
         } else {
              [RadarSettings setListenToServerTrackingOptions:NO];
-             [RadarSettings setTrackingOptions:[RadarSettings fallbackTrackingOptions]];
+             [RadarSettings revertToFallbackTrackingOptions];
         }
         
         [self updateTracking];
