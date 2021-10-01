@@ -13,6 +13,7 @@
 #import "RadarCircleGeometry.h"
 #import "RadarDelegateHolder.h"
 #import "RadarLogger.h"
+#import "RadarMeta.h"
 #import "RadarPolygonGeometry.h"
 #import "RadarSettings.h"
 #import "RadarState.h"
@@ -170,11 +171,13 @@ static NSString *const kSyncBeaconIdentifierPrefix = @"radar_beacon_";
 
     [RadarSettings setTracking:YES];
     [RadarSettings setTrackingOptions:trackingOptions];
+    [RadarSettings setFallbackTrackingOptions:trackingOptions];
     [self updateTracking];
 }
 
 - (void)stopTracking {
     [RadarSettings setTracking:NO];
+    [RadarSettings setListenToServerTrackingOptions:NO];
     [self updateTracking];
 }
 
@@ -340,6 +343,20 @@ static NSString *const kSyncBeaconIdentifierPrefix = @"radar_beacon_";
             [self.locationManager stopMonitoringSignificantLocationChanges];
         }
     });
+}
+
+- (void)updateTrackingFromMeta:(RadarMeta *_Nullable)meta {
+    if (meta) {
+        if ([meta trackingOptions]) {
+             [RadarSettings setListenToServerTrackingOptions:YES];
+             [RadarSettings setTrackingOptions:[meta trackingOptions]];
+        } else {
+             [RadarSettings setListenToServerTrackingOptions:NO];
+             [RadarSettings setTrackingOptions:[RadarSettings fallbackTrackingOptions]];
+        }
+        
+        [self updateTracking];
+    }
 }
 
 - (void)replaceBubbleGeofence:(CLLocation *)location radius:(int)radius {
@@ -661,7 +678,7 @@ static NSString *const kSyncBeaconIdentifierPrefix = @"radar_beacon_";
                                               replayed:replayed
                                          nearbyBeacons:nearbyBeacons
                                      completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user,
-                                                         NSArray<RadarGeofence *> *_Nullable nearbyGeofences) {
+                                                         NSArray<RadarGeofence *> *_Nullable nearbyGeofences, RadarMeta *_Nullable meta) {
                                          if (user) {
                                              BOOL inGeofences = user.geofences && user.geofences.count;
                                              BOOL atPlace = user.place != nil;
@@ -673,7 +690,7 @@ static NSString *const kSyncBeaconIdentifierPrefix = @"radar_beacon_";
 
                                          self.sending = NO;
 
-                                         [self updateTracking];
+                                         [self updateTrackingFromMeta:meta];
                                          [self replaceSyncedGeofences:nearbyGeofences];
                                      }];
 }

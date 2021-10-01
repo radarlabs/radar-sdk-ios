@@ -22,6 +22,7 @@ static NSString *const kMetadata = @"radar-metadata";
 static NSString *const kAdIdEnabled = @"radar-adIdEnabled";
 static NSString *const kTracking = @"radar-tracking";
 static NSString *const kTrackingOptions = @"radar-trackingOptions";
+static NSString *const kFallbackTrackingOptions = @"radar-fallbackTrackingOptions";
 static NSString *const kListenToServerTrackingOptions = @"radar-listenToServerTrackingOptions";
 static NSString *const kTripOptions = @"radar-tripOptions";
 static NSString *const kLogLevel = @"radar-logLevel";
@@ -131,6 +132,20 @@ static NSString *const kDefaultHost = @"https://api.radar.io";
 + (void)setTrackingOptions:(RadarTrackingOptions *)options {
     NSDictionary *optionsDict = [options dictionaryValue];
     [[NSUserDefaults standardUserDefaults] setObject:optionsDict forKey:kTrackingOptions];
+}
+
++ (void)revertToFallbackTrackingOptions {
+    [[NSUserDefaults standardUserDefaults] setObject:[self trackingOptions] forKey:kTrackingOptions];
+}
+
++ (RadarTrackingOptions *)fallbackTrackingOptions {
+    NSDictionary *optionsDict = [[NSUserDefaults standardUserDefaults] dictionaryForKey:kFallbackTrackingOptions];
+    return [RadarTrackingOptions trackingOptionsFromDictionary:optionsDict];
+}
+
++ (void)setFallbackTrackingOptions:(RadarTrackingOptions *_Nonnull)options {
+    NSDictionary *optionsDict = [options dictionaryValue];
+    [[NSUserDefaults standardUserDefaults] setObject:optionsDict forKey:kFallbackTrackingOptions];
 }
 
 + (RadarTripOptions *)tripOptions {

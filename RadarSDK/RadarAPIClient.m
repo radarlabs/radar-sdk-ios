@@ -25,6 +25,7 @@
 #import "RadarTripOptions.h"
 #import "RadarUser+Internal.h"
 #import "RadarUtils.h"
+#import "RadarMeta+Internal.h"
 
 @implementation RadarAPIClient
 
@@ -58,32 +59,21 @@
     };
 }
 
-+ (void)parseMetaAndConfigure:(NSDictionary *_Nullable)res {
++ (RadarMeta *_Nullable)parseMeta:(NSDictionary *_Nullable)res {
     if (!res) {
-        return;
+        return nil;
     }
 
     id metaObj = res[@"meta"];
     if (!metaObj || ![metaObj isKindOfClass:[NSDictionary class]]) {
-        return;
+        return nil;
     }
 
     NSDictionary *meta = (NSDictionary *)metaObj;
-    id configObj = meta[@"config"];
-    if (configObj && [configObj isKindOfClass:[NSDictionary class]]) {
-        NSDictionary *config = (NSDictionary *)configObj;
-        [RadarSettings setConfig:config];
-    }
-
-    id trackingOptionsObj = meta[@"trackingOptions"];
-    BOOL listenToServerTrackingOptions = [RadarSettings listenToServerTrackingOptions];
-    if (listenToServerTrackingOptions && trackingOptionsObj && [trackingOptionsObj isKindOfClass:[NSDictionary class]]) {
-        NSDictionary *trackingOptions = (NSDictionary *)trackingOptionsObj;
-        [RadarSettings setTrackingOptions:[RadarTrackingOptions trackingOptionsFromDictionary:trackingOptions]];
-    }
+    return [RadarMeta metaFromDictionary:meta];
 }
 
-- (void)getConfig:(RadarConfigAPICompletionHandler _Nullable)completionHandler {
+- (void)getConfig:(RadarConfigAPICompletionHandler _Nonnull)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
         return;
@@ -113,10 +103,8 @@
                                params:nil
                                 sleep:NO
                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
-                        [RadarAPIClient parseMetaAndConfigure:res];
-                        if (completionHandler) {
-                            completionHandler(status);
-                        }
+                        RadarMeta *meta = [RadarAPIClient parseMeta:res];
+                        completionHandler(status, meta);
                     }
      ];
 }
@@ -130,7 +118,7 @@
         completionHandler:(RadarTrackAPICompletionHandler _Nonnull)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
-        return completionHandler(RadarStatusErrorPublishableKey, nil, nil, nil, nil);
+        return completionHandler(RadarStatusErrorPublishableKey, nil, nil, nil, nil, nil);
     }
 
     NSMutableDictionary *params = [NSMutableDictionary new];
@@ -245,12 +233,12 @@
 
                             [[RadarDelegateHolder sharedInstance] didFailWithStatus:status];
 
-                            return completionHandler(status, nil, nil, nil, nil);
+                            return completionHandler(status, nil, nil, nil, nil, nil);
                         }
 
                         [RadarState setLastFailedStoppedLocation:nil];
 
-                        [RadarAPIClient parseMetaAndConfigure:res];
+                        RadarMeta *_Nullable meta = [RadarAPIClient parseMeta:res];
 
                         id eventsObj = res[@"events"];
                         id userObj = res[@"user"];
@@ -273,12 +261,12 @@
                                 [[RadarDelegateHolder sharedInstance] didReceiveEvents:events user:user];
                             }
 
-                            return completionHandler(RadarStatusSuccess, res, events, user, nearbyGeofences);
+                            return completionHandler(RadarStatusSuccess, res, events, user, nearbyGeofences, meta);
                         }
 
                         [[RadarDelegateHolder sharedInstance] didFailWithStatus:status];
 
-                        completionHandler(RadarStatusErrorServer, nil, nil, nil, nil);
+                        completionHandler(RadarStatusErrorServer, nil, nil, nil, nil, nil);
                     }];
 }
 
