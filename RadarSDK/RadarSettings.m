@@ -135,7 +135,9 @@ static NSString *const kDefaultHost = @"https://api.radar.io";
 }
 
 + (void)revertToFallbackTrackingOptions {
-    [[NSUserDefaults standardUserDefaults] setObject:[self trackingOptions] forKey:kTrackingOptions];
+    if ([self fallbackTrackingOptions]) {
+        [[NSUserDefaults standardUserDefaults] setObject:[[self fallbackTrackingOptions] dictionaryValue] forKey:kTrackingOptions];
+    }
 }
 
 + (RadarTrackingOptions *)fallbackTrackingOptions {
