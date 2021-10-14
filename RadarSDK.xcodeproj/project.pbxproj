@@ -123,6 +123,7 @@
 		0107AB2C262201F7008AB52F /* RadarTripOptions.m in Sources */ = {isa = PBXBuildFile; fileRef = DD8CCDF7246872360011690D /* RadarTripOptions.m */; };
 		0107AB2F262201FB008AB52F /* RadarUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = DD236D0423099B8400EB88F9 /* RadarUtils.m */; };
 		0107AB7A2622061A008AB52F /* RadarSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0107A9E82621FFB9008AB52F /* RadarSDK.framework */; };
+		4F1970002707BEC600328E25 /* RadarMeta.m in Sources */ = {isa = PBXBuildFile; fileRef = 4F196FFF2707BEC600328E25 /* RadarMeta.m */; };
 		53B3B26B23EE41B400080818 /* context.json in Resources */ = {isa = PBXBuildFile; fileRef = 53B3B26A23EE41B400080818 /* context.json */; };
 		78D8CE3C23AD78A1009E91F5 /* geocode.json in Resources */ = {isa = PBXBuildFile; fileRef = 78D8CE3B23AD78A1009E91F5 /* geocode.json */; };
 		78D8CE3E23AD7FEE009E91F5 /* geocode_ip.json in Resources */ = {isa = PBXBuildFile; fileRef = 78D8CE3D23AD7FEE009E91F5 /* geocode_ip.json */; };
@@ -142,6 +143,9 @@
 
 /* Begin PBXFileReference section */
 		0107A9E82621FFB9008AB52F /* RadarSDK.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = RadarSDK.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		4F196FFD2707BAE500328E25 /* RadarMeta.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarMeta.h; sourceTree = "<group>"; };
+		4F196FFE2707BE5B00328E25 /* RadarMeta+Internal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "RadarMeta+Internal.h"; sourceTree = "<group>"; };
+		4F196FFF2707BEC600328E25 /* RadarMeta.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RadarMeta.m; sourceTree = "<group>"; };
 		5343FFD723E2310D00808D93 /* RadarContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RadarContext.h; sourceTree = "<group>"; };
 		5343FFD923E38BA300808D93 /* RadarContext.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RadarContext.m; sourceTree = "<group>"; };
 		5343FFDA23E3A76900808D93 /* RadarContext+Internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "RadarContext+Internal.h"; sourceTree = "<group>"; };
@@ -455,6 +459,9 @@
 				DD236CC02308812700EB88F9 /* RadarUserInsightsState.h */,
 				DD236CB42308812600EB88F9 /* RadarUserInsightsState+Internal.h */,
 				DD236CC12308812700EB88F9 /* RadarUserInsightsState.m */,
+				4F196FFD2707BAE500328E25 /* RadarMeta.h */,
+				4F196FFE2707BE5B00328E25 /* RadarMeta+Internal.h */,
+				4F196FFF2707BEC600328E25 /* RadarMeta.m */,
 			);
 			name = Models;
 			sourceTree = "<group>";
@@ -583,7 +590,7 @@
 		DD236C6C2308797B00EB88F9 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 1250;
+				LastUpgradeCheck = 1300;
 				ORGANIZATIONNAME = "Radar Labs, Inc.";
 				TargetAttributes = {
 					0107A9E72621FFB9008AB52F = {
@@ -699,6 +706,7 @@
 				0107AB0E262201D5008AB52F /* RadarBeaconManager.m in Sources */,
 				0107AADA26220195008AB52F /* RadarRouteMatrix.m in Sources */,
 				0107AA7A26220128008AB52F /* RadarAddress.m in Sources */,
+				4F1970002707BEC600328E25 /* RadarMeta.m in Sources */,
 				0107AABC26220178008AB52F /* RadarRegion.m in Sources */,
 				0107AB26262201F0008AB52F /* RadarState.m in Sources */,
 				0107AAA126220159008AB52F /* RadarEvent.m in Sources */,
@@ -737,7 +745,7 @@
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				INFOPLIST_FILE = RadarSDK/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -750,7 +758,7 @@
 				"PROVISIONING_PROFILE_SPECIFIER[sdk=macosx*]" = "";
 				SKIP_INSTALL = YES;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TVOS_DEPLOYMENT_TARGET = 10.0;
+				TVOS_DEPLOYMENT_TARGET = 12.0;
 			};
 			name = Debug;
 		};
@@ -765,7 +773,7 @@
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				INFOPLIST_FILE = RadarSDK/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -778,7 +786,7 @@
 				"PROVISIONING_PROFILE_SPECIFIER[sdk=macosx*]" = "";
 				SKIP_INSTALL = YES;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TVOS_DEPLOYMENT_TARGET = 10.0;
+				TVOS_DEPLOYMENT_TARGET = 12.0;
 			};
 			name = Release;
 		};
@@ -853,7 +861,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -911,7 +919,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				OTHER_CFLAGS = "-fembed-bitcode";

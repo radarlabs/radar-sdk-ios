@@ -383,13 +383,6 @@ typedef void (^_Nonnull RadarRouteMatrixCompletionHandler)(RadarStatus status, R
 + (void)startTrackingWithOptions:(RadarTrackingOptions *)options NS_SWIFT_NAME(startTracking(trackingOptions:));
 
 /**
- Starts tracking the user's location in the background with remotely configured tracking options.
-
- @see https://radar.io/documentation/sdk/ios#background-tracking-for-geofencing
- */
-+ (void)startTrackingWithRemoteOptions NS_SWIFT_NAME(startTracking());
-
-/**
  Mocks tracking the user's location from an origin to a destination.
 
  @param origin The origin.
