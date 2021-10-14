@@ -28,7 +28,7 @@
 			<key>SupportedArchitectures</key>
 			<array>
 				<string>arm64</string>
-				<string>arm7</string>
+				<string>armv7</string>
 			</array>
 			<key>SupportedPlatform</key>
 			<string>ios</string>
