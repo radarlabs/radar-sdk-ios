@@ -202,7 +202,7 @@
         if (sourceInformation) {
             if (sourceInformation.isSimulatedBySoftware) {
                 params[@"mocked"] = @(YES);
-            } else if (sourceInformation.isProducedByAccessory) {
+            } else {
                 params[@"mocked"] = @(NO);
             }
         }
