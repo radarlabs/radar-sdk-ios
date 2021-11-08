@@ -197,6 +197,17 @@
         params[@"sessionId"] = sessionId;
     }
 
+    if (@available(iOS 15.0, *)) {
+        CLLocationSourceInformation *sourceInformation = location.sourceInformation;
+        if (sourceInformation) {
+            if (sourceInformation.isSimulatedBySoftware) {
+                params[@"mocked"] = @(YES);
+            } else if (sourceInformation.isProducedByAccessory) {
+                params[@"mocked"] = @(NO);
+            }
+        }
+    }
+
     NSString *host = [RadarSettings host];
     NSString *url = [NSString stringWithFormat:@"%@/v1/track", host];
     url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
