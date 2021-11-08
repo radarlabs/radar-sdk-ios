@@ -120,13 +120,23 @@
 }
 
 + (NSDictionary *)dictionaryForLocation:(CLLocation *)location {
-    return @{
-        @"latitude": @(location.coordinate.latitude),
-        @"longitude": @(location.coordinate.longitude),
-        @"horizontalAccuracy": @(location.horizontalAccuracy),
-        @"verticalAccuracy": @(location.verticalAccuracy),
-        @"timestamp": location.timestamp,
-    };
+    NSMutableDictionary *dict = [NSMutableDictionary new];
+    dict[@"latitude"] = @(location.coordinate.latitude);
+    dict[@"longitude"] =  @(location.coordinate.longitude);
+    dict[@"horizontalAccuracy"] = @(location.horizontalAccuracy);
+    dict[@"verticalAccuracy"] = @(location.verticalAccuracy);
+    dict[@"timestamp"] = location.timestamp;
+    if (@available(iOS 15.0, *)) {
+        CLLocationSourceInformation *sourceInformation = location.sourceInformation;
+        if (sourceInformation) {
+            if (sourceInformation.isSimulatedBySoftware) {
+                dict[@"mocked"] = @(YES);
+            } else {
+                dict[@"mocked"] = @(NO);
+            }
+        }
+    }
+    return dict;
 }
 
 + (BOOL)validLocation:(CLLocation *)location {

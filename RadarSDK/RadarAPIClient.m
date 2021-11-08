@@ -161,6 +161,16 @@
     params[@"country"] = [RadarUtils country];
     params[@"timeZoneOffset"] = [RadarUtils timeZoneOffset];
     params[@"source"] = [Radar stringForLocationSource:source];
+    if (@available(iOS 15.0, *)) {
+        CLLocationSourceInformation *sourceInformation = location.sourceInformation;
+        if (sourceInformation) {
+            if (sourceInformation.isSimulatedBySoftware) {
+                params[@"mocked"] = @(YES);
+            } else {
+                params[@"mocked"] = @(NO);
+            }
+        }
+    }
     RadarTripOptions *tripOptions = [RadarSettings tripOptions];
     if (tripOptions) {
         NSMutableDictionary *tripOptionsDict = [NSMutableDictionary new];
