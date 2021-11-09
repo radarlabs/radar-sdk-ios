@@ -32,7 +32,7 @@
 }
 
 + (NSString *)sdkVersion {
-    return @"3.3.0";
+    return @"3.3.0-beta.1";
 }
 
 + (NSString *)adId {
