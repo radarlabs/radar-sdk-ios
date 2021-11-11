@@ -135,14 +135,16 @@ static NSString *const kDefaultHost = @"https://api.radar.io";
 }
 
 + (void)revertToFallbackTrackingOptions {
-    if ([self fallbackTrackingOptions]) {
-        [[NSUserDefaults standardUserDefaults] setObject:[[self fallbackTrackingOptions] dictionaryValue] forKey:kTrackingOptions];
+    RadarTrackingOptions *_Nullable fallbackOptions = [self fallbackTrackingOptions];
+    if (fallbackOptions != nil) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Reverting to fallback options = %@", fallbackOptions]];
+        [[NSUserDefaults standardUserDefaults] setObject:[fallbackOptions dictionaryValue] forKey:kTrackingOptions];
     }
 }
 
-+ (RadarTrackingOptions *)fallbackTrackingOptions {
++ (RadarTrackingOptions *_Nullable)fallbackTrackingOptions {
     NSDictionary *optionsDict = [[NSUserDefaults standardUserDefaults] dictionaryForKey:kFallbackTrackingOptions];
-    return [RadarTrackingOptions trackingOptionsFromDictionary:optionsDict];
+    return optionsDict ?  [RadarTrackingOptions trackingOptionsFromDictionary:optionsDict] : nil;
 }
 
 + (void)setFallbackTrackingOptions:(RadarTrackingOptions *_Nonnull)options {
