@@ -835,6 +835,16 @@
     if (@available(iOS 13.4, *)) {
         dict[@"courseAccuracy"] = @(location.courseAccuracy);
     }
+    if (@available(iOS 15.0, *)) {
+        CLLocationSourceInformation *sourceInformation = location.sourceInformation;
+        if (sourceInformation) {
+            if (sourceInformation.isSimulatedBySoftware) {
+                dict[@"mocked"] = @(YES);
+            } else {
+                dict[@"mocked"] = @(NO);
+            }
+        }
+    }
     return dict;
 }
 
