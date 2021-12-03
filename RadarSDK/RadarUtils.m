@@ -32,7 +32,7 @@
 }
 
 + (NSString *)sdkVersion {
-    return @"3.2.0";
+    return @"3.2.1";
 }
 
 + (NSString *)adId {
@@ -122,7 +122,7 @@
 + (NSDictionary *)dictionaryForLocation:(CLLocation *)location {
     NSMutableDictionary *dict = [NSMutableDictionary new];
     dict[@"latitude"] = @(location.coordinate.latitude);
-    dict[@"longitude"] =  @(location.coordinate.longitude);
+    dict[@"longitude"] = @(location.coordinate.longitude);
     dict[@"horizontalAccuracy"] = @(location.horizontalAccuracy);
     dict[@"verticalAccuracy"] = @(location.verticalAccuracy);
     dict[@"timestamp"] = location.timestamp;
