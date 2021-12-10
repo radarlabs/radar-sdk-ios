@@ -7,6 +7,7 @@
 
 #import "RadarAPIClient.h"
 
+#import <RadarSDK/RadarSDK-Swift.h>
 #import "Radar.h"
 #import "RadarAddress+Internal.h"
 #import "RadarBeacon+Internal.h"
@@ -54,7 +55,7 @@
         @"X-Radar-Device-Model": [RadarUtils deviceModel],
         @"X-Radar-Device-OS": [RadarUtils deviceOS],
         @"X-Radar-Device-Type": [RadarUtils deviceType],
-        @"X-Radar-SDK-Version": [RadarUtils sdkVersion]
+        @"X-Radar-SDK-Version": Radar.sdkVersion
     };
 }
 
@@ -155,7 +156,7 @@
     params[@"replayed"] = @(replayed);
     params[@"deviceType"] = [RadarUtils deviceType];
     params[@"deviceMake"] = [RadarUtils deviceMake];
-    params[@"sdkVersion"] = [RadarUtils sdkVersion];
+    params[@"sdkVersion"] = Radar.sdkVersion;
     params[@"deviceModel"] = [RadarUtils deviceModel];
     params[@"deviceOS"] = [RadarUtils deviceOS];
     params[@"country"] = [RadarUtils country];

@@ -250,8 +250,6 @@ typedef void (^_Nonnull RadarRouteMatrixCompletionHandler)(RadarStatus status, R
  */
 + (void)initializeWithPublishableKey:(NSString *_Nonnull)publishableKey NS_SWIFT_NAME(initialize(publishableKey:));
 
-@property (class, readonly) NSString *sdkVersion;
-
 /**
  Identifies the user.
 

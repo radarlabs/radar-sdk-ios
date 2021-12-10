@@ -51,10 +51,6 @@
     [[RadarAPIClient sharedInstance] getConfig];
 }
 
-+ (NSString *)sdkVersion {
-    return [RadarUtils sdkVersion];
-}
-
 + (NSString *_Nullable)getPublishableKey {
     return [RadarSettings publishableKey];
 }

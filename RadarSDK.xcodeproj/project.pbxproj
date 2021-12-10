@@ -126,6 +126,7 @@
 		53B3B26B23EE41B400080818 /* context.json in Resources */ = {isa = PBXBuildFile; fileRef = 53B3B26A23EE41B400080818 /* context.json */; };
 		78D8CE3C23AD78A1009E91F5 /* geocode.json in Resources */ = {isa = PBXBuildFile; fileRef = 78D8CE3B23AD78A1009E91F5 /* geocode.json */; };
 		78D8CE3E23AD7FEE009E91F5 /* geocode_ip.json in Resources */ = {isa = PBXBuildFile; fileRef = 78D8CE3D23AD7FEE009E91F5 /* geocode_ip.json */; };
+		96CD873B2763A38C002AC4FE /* Radar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96CD873A2763A38C002AC4FE /* Radar.swift */; };
 		DD103211237E0C47003DD408 /* RadarSDKTests.m in Sources */ = {isa = PBXBuildFile; fileRef = DD103210237E0C47003DD408 /* RadarSDKTests.m */; };
 		DD103215237F1795003DD408 /* track.json in Resources */ = {isa = PBXBuildFile; fileRef = DD103214237F1795003DD408 /* track.json */; };
 		DD4D4D2523E648D000D36C1D /* search_autocomplete.json in Resources */ = {isa = PBXBuildFile; fileRef = DD4D4D2423E648D000D36C1D /* search_autocomplete.json */; };
@@ -153,6 +154,7 @@
 		78156B9B23A834FA0094410E /* RadarAddress+Internal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "RadarAddress+Internal.h"; sourceTree = "<group>"; };
 		78D8CE3B23AD78A1009E91F5 /* geocode.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = geocode.json; sourceTree = "<group>"; };
 		78D8CE3D23AD7FEE009E91F5 /* geocode_ip.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = geocode_ip.json; sourceTree = "<group>"; };
+		96CD873A2763A38C002AC4FE /* Radar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Radar.swift; sourceTree = "<group>"; };
 		DD103210237E0C47003DD408 /* RadarSDKTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RadarSDKTests.m; sourceTree = "<group>"; };
 		DD103214237F1795003DD408 /* track.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = track.json; sourceTree = "<group>"; };
 		DD14FD4A23CE783500E80AC8 /* RadarSegment.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarSegment.h; sourceTree = "<group>"; };
@@ -329,6 +331,7 @@
 				DD236C782308797B00EB88F9 /* RadarSDK.h */,
 				DD236C8F23087A3500EB88F9 /* Radar.h */,
 				DD236C9023087A3500EB88F9 /* Radar.m */,
+				96CD873A2763A38C002AC4FE /* Radar.swift */,
 				DD236C9823087F9200EB88F9 /* RadarAPIClient.h */,
 				DD236C9923087F9200EB88F9 /* RadarAPIClient.m */,
 				DD633EC1237C5B800026C91A /* RadarAPIHelper.h */,
@@ -588,6 +591,7 @@
 				TargetAttributes = {
 					0107A9E72621FFB9008AB52F = {
 						CreatedOnToolsVersion = 12.4;
+						LastSwiftMigration = 1310;
 					};
 					0107AB3826220308008AB52F = {
 						CreatedOnToolsVersion = 12.4;
@@ -672,6 +676,7 @@
 				0107AAA726220160008AB52F /* RadarGeofence.m in Sources */,
 				0107AAFC262201BE008AB52F /* RadarUserInsightsLocation.m in Sources */,
 				0107AAC826220184008AB52F /* RadarRouteDistance.m in Sources */,
+				96CD873B2763A38C002AC4FE /* Radar.swift in Sources */,
 				0107AAF8262201B8008AB52F /* RadarUserInsights.m in Sources */,
 				0107AA952622014C008AB52F /* RadarCoordinate.m in Sources */,
 				0107AA8F26220146008AB52F /* RadarCircleGeometry.m in Sources */,
@@ -729,6 +734,7 @@
 		0107A9ED2621FFB9008AB52F /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Manual;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = "";
@@ -749,6 +755,8 @@
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				"PROVISIONING_PROFILE_SPECIFIER[sdk=macosx*]" = "";
 				SKIP_INSTALL = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TVOS_DEPLOYMENT_TARGET = 10.0;
 			};
@@ -757,6 +765,7 @@
 		0107A9EE2621FFB9008AB52F /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Manual;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = "";
@@ -777,6 +786,8 @@
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				"PROVISIONING_PROFILE_SPECIFIER[sdk=macosx*]" = "";
 				SKIP_INSTALL = YES;
+				SWIFT_COMPILATION_MODE = singlefile;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TVOS_DEPLOYMENT_TARGET = 10.0;
 			};

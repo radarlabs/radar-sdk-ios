@@ -15,7 +15,6 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSString *)deviceOS;
 + (NSString *)country;
 + (NSNumber *)timeZoneOffset;
-+ (NSString *)sdkVersion;
 + (NSString *)adId;
 + (NSString *)deviceId;
 + (NSString *)deviceType;

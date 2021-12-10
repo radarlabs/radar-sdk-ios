@@ -31,10 +31,6 @@
     return @((int)[[NSTimeZone localTimeZone] secondsFromGMT]);
 }
 
-+ (NSString *)sdkVersion {
-    return @"3.2.1";
-}
-
 + (NSString *)adId {
     Class ASIdentifierManagerClass = NSClassFromString(@"ASIdentifierManager");
     if (ASIdentifierManagerClass) {
