@@ -7,7 +7,10 @@ public extension Radar {
     /// The SDK version number, taken from the bundle's
     /// `CFBundleShortVersionString`.
     @objc class var sdkVersion: String {
-        guard let marketingVersion =  Bundle(for: Radar.self).object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String else {
+        let bundle = Bundle(for: Radar.self)
+        let key = "CFBundleShortVersionString"
+
+        guard let marketingVersion = bundle.object(forInfoDictionaryKey: key) as? String else {
             return "unknown"
         }
 
