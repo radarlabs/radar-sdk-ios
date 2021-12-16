@@ -588,6 +588,7 @@
 				TargetAttributes = {
 					0107A9E72621FFB9008AB52F = {
 						CreatedOnToolsVersion = 12.4;
+						LastSwiftMigration = 1310;
 					};
 					0107AB3826220308008AB52F = {
 						CreatedOnToolsVersion = 12.4;
@@ -729,9 +730,10 @@
 		0107A9ED2621FFB9008AB52F /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Manual;
 				DEFINES_MODULE = YES;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = 96GHH65B9D;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
@@ -757,9 +759,10 @@
 		0107A9EE2621FFB9008AB52F /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Manual;
 				DEFINES_MODULE = YES;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = 96GHH65B9D;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
