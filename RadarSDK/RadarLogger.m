@@ -7,6 +7,7 @@
 
 #import "RadarLogger.h"
 
+#import "Radar.h"
 #import "RadarDelegateHolder.h"
 #import "RadarSettings.h"
 #import "RadarUtils.h"
@@ -24,6 +25,9 @@
 
 - (void)logWithLevel:(RadarLogLevel)level message:(NSString *)message {
     dispatch_async(dispatch_get_main_queue(), ^{
+
+        [Radar sendLog:level message:message];
+
         RadarLogLevel logLevel = [RadarSettings logLevel];
         if (logLevel >= level) {
             NSString *log = [NSString stringWithFormat:@"%@ | backgroundTimeRemaining = %g", message, [RadarUtils backgroundTimeRemaining]];

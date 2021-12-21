@@ -12,6 +12,7 @@
 #import "RadarCoordinate+Internal.h"
 #import "RadarDelegateHolder.h"
 #import "RadarLocationManager.h"
+#import "RadarLogBuffer.h"
 #import "RadarLogger.h"
 #import "RadarSettings.h"
 #import "RadarState.h"
@@ -822,6 +823,29 @@
     return str;
 }
 
+// move to a util?
++ (NSString *)stringForLogLevel:(RadarLogLevel)level {
+    NSString *str;
+    switch (level) {
+        case RadarLogLevelNone:
+            str = @"none";
+            break;
+        case RadarLogLevelError:
+            str = @"error";
+            break;
+        case RadarLogLevelWarning:
+            str = @"warning";
+            break;
+        case RadarLogLevelInfo:
+            str = @"info";
+            break;
+        case RadarLogLevelDebug:
+            str = @"debug";
+            break;
+    }
+    return str;
+}
+
 + (NSDictionary *)dictionaryForLocation:(CLLocation *)location {
     NSMutableDictionary *dict = [NSMutableDictionary new];
     dict[@"latitude"] = @(location.coordinate.latitude);
@@ -847,6 +871,55 @@
 
 - (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+
++ (BOOL)isTestKey {
+    NSString *publishableKey = [RadarSettings publishableKey];
+    if ([publishableKey hasPrefix:@"prj_test_pk"] ||
+        [publishableKey hasPrefix:@"org_test_pk"]) {
+        return YES;
+    }
+    return NO;
+}
+
++ (void)sendLog:(RadarLogLevel)level message:(NSString *_Nonnull)message {
+    [[RadarLogBuffer sharedInstance] write:level message:message];
+}
+
+/**
+ * Sends Radar log events to the server
+ */
++ (void)flushLogs {
+    
+    // user _id has to exist
+
+    if (![self isTestKey]) {
+        return;
+    }
+    
+    NSArray<RadarLog *> *flushableLogs = [[RadarLogBuffer sharedInstance] getFlushableLogs];
+    
+    NSUInteger pendingLogCount = [flushableLogs count];
+    if (pendingLogCount == 0) {
+        return;
+    }
+    
+    RadarSyncLogsAPICompletionHandler onSuccess = ^(RadarStatus status){
+        if (status == RadarStatusSuccess) {
+            NSLog(@"syncLogs API onSuccess");
+            // clear the logs up to pendinglog count
+        }
+    };
+
+    [[RadarAPIClient sharedInstance] syncLogs:flushableLogs
+                            completionHandler:^(RadarStatus status) {
+                                  if (onSuccess) {
+                                      [RadarUtils runOnMainThread:^{
+                                          onSuccess(status);
+                                      }];
+                                  }
+                              }];
 }
 
 @end

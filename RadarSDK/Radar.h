@@ -794,6 +794,16 @@ typedef void (^_Nonnull RadarRouteMatrixCompletionHandler)(RadarStatus status, R
  */
 + (NSString *)stringForTripStatus:(RadarTripStatus)status NS_SWIFT_NAME(stringForTripStatus(_:));
 
+
+/**
+ Returns a display string for a log level.
+
+ @param level A log level
+
+ @return A display string for the log level.
+ */
++ (NSString *)stringForLogLevel:(RadarLogLevel)level NS_SWIFT_NAME(stringForLogLevel(_:));
+
 /**
  Returns a dictionary for a location.
 
@@ -802,6 +812,13 @@ typedef void (^_Nonnull RadarRouteMatrixCompletionHandler)(RadarStatus status, R
  @return A dictionary for the location.
  */
 + (NSDictionary *)dictionaryForLocation:(CLLocation *)location NS_SWIFT_NAME(dictionaryForLocation(_:));
+
+
++ (BOOL)isTestKey;
+
++ (void)sendLog:(RadarLogLevel)level message:(NSString *_Nonnull)message;
+
++ (void)flushLogs;
 
 @end
 
