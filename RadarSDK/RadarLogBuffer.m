@@ -9,8 +9,8 @@
 #import "RadarLog.h"
 #import "RadarLogBuffer.h"
 
-static const int MAX_BUFFER_SIZE = 40;
-static const int PURGE_AMOUNT = 15;
+static const int MAX_BUFFER_SIZE = 1000;
+static const int PURGE_AMOUNT = 500;
 
 static NSString *const kPurgedLogLine = @"----purged oldest logs! ----";
 
@@ -51,9 +51,16 @@ static NSString *const kPurgedLogLine = @"----purged oldest logs! ----";
  */
 - (void)purgeOldestLogs {
     // drop the oldest N logs from the buffer
+    NSLog(@"----- Purging Oldest Logs -----");
     [mutableLogBuffer removeObjectsInRange:NSMakeRange(0, PURGE_AMOUNT)];
     RadarLog *purgeLog = [[RadarLog alloc] initWithMessage:kPurgedLogLine level:RadarLogLevelDebug];
     [mutableLogBuffer insertObject:purgeLog atIndex:0];
+}
+/**
+ * Clears logs that have been successfuly synced to server
+ */
+- (void)clearSyncedLogsFromBuffer:(NSUInteger)numLogs {
+    [mutableLogBuffer removeObjectsInRange:NSMakeRange(0, numLogs)];
 }
 
 /**
@@ -64,7 +71,5 @@ static NSString *const kPurgedLogLine = @"----purged oldest logs! ----";
     return flushableLogs;
 }
 
-
-//- (void)purgeOldestLog
 
 @end

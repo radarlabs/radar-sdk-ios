@@ -20,6 +20,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)write:(RadarLogLevel)level message:(NSString *)message;
 
+- (void)purgeOldestLogs;
+
+- (void)clearSyncedLogsFromBuffer:(NSUInteger)numLogs;
+
 - (NSArray<RadarLog *> *)getFlushableLogs;
 
 @end
