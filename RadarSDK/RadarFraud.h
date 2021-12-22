@@ -11,7 +11,7 @@
 @interface RadarFraud : NSObject
 
 /**
- A boolean indicating whether the user's location is being mocked, such as in a simulation. May be `false` is Fraud is not enabled.
+ A boolean indicating whether the user's location is being mocked, such as in a simulation. May be `false` if Fraud is not enabled.
  */
 @property (nonatomic, readonly) bool mocked;
 
