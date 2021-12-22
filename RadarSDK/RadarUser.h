@@ -7,6 +7,7 @@
 
 #import "RadarBeacon.h"
 #import "RadarChain.h"
+#import "RadarFraud.h"
 #import "RadarGeofence.h"
 #import "RadarPlace.h"
 #import "RadarRegion.h"
@@ -149,6 +150,8 @@ typedef NS_ENUM(NSInteger, RadarLocationSource);
  A boolean indicating whether the user's IP address is being mocked, such as in a simulation. May be `false` if Fraud is not enabled.
  */
 @property (assign, nonatomic, readonly) BOOL mocked;
+
+@property (nonnull, copy, nonatomic, readonly) RadarFraud *fraud;
 
 /**
  The user's current trip.

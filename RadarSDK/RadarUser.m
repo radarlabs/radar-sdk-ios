@@ -9,6 +9,7 @@
 #import "Radar.h"
 #import "RadarBeacon+Internal.h"
 #import "RadarChain+Internal.h"
+#import "RadarFraud+Internal.h"
 #import "RadarGeofence+Internal.h"
 #import "RadarPlace+Internal.h"
 #import "RadarRegion+Internal.h"
@@ -64,8 +65,7 @@
         _segments = segments;
         _topChains = topChains;
         _source = source;
-        _proxy = proxy;
-        _mocked = mocked;
+        _fraud = [[RadarFraud alloc] initWithProxy:proxy mocked:mocked];
         _trip = trip;
     }
     return self;
@@ -317,14 +317,12 @@
     return nil;
 }
 
-- (bool)asBool:(NSObject *)object {
-    if (object && [object isKindOfClass:[NSNumber class]]) {
-        NSNumber *number = (NSNumber *)object;
+- (bool)proxy {
+    return self.fraud.proxy;
+}
 
-        return [number boolValue];
-    } else {
-        return false;
-    }
+- (bool)mocked {
+    return self.fraud.mocked;
 }
 
 - (NSDictionary *)dictionaryValue {
@@ -378,12 +376,21 @@
     NSArray *topChainsArr = [RadarChain arrayForChains:self.topChains];
     [dict setValue:topChainsArr forKey:@"topChains"];
     [dict setValue:[Radar stringForLocationSource:self.source] forKey:@"source"];
-    NSDictionary *fraudDict = @{@"proxy": @(self.proxy), @"mocked": @(self.mocked)};
-    [dict setValue:fraudDict forKey:@"fraud"];
+    [dict setValue:[self.fraud dictionaryValue] forKey:@"fraud"];
     if (self.trip) {
         [dict setValue:[self.trip dictionaryValue] forKey:@"trip"];
     }
     return dict;
+}
+
+- (bool)asBool:(NSObject *)object {
+    if (object && [object isKindOfClass:[NSNumber class]]) {
+        NSNumber *number = (NSNumber *)object;
+
+        return [number boolValue];
+    } else {
+        return false;
+    }
 }
 
 @end
