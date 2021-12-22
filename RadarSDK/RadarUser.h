@@ -142,17 +142,17 @@ typedef NS_ENUM(NSInteger, RadarLocationSource);
 @property (assign, nonatomic, readonly) RadarLocationSource source;
 
 /**
- `true` if the user's IP address is a known proxy. May be `false` if Fraud is not enabled.
+ A boolean indicating whether the user's IP address is a known proxy. May be `false` if Fraud is not enabled.
  */
 @property (assign, nonatomic, readonly) BOOL proxy;
 
 /**
- `true` if` the user's IP address is being mocked, such as in a simulation. May be `false` if Fraud is not enabled.
+ A boolean indicating whether the user's IP address is being mocked or simulated. May be `false` if Fraud is not enabled.
  */
 @property (assign, nonatomic, readonly) BOOL mocked;
 
 /**
- If Fraud is enabled, this will be non-`nil`, and will indicate whether the user's IP address or location is being mocked or proxied.
+ Learned fraud state for the user. May be nil if Fraud is not enabled
  */
 @property (nonnull, copy, nonatomic, readonly) RadarFraud *fraud;
 
