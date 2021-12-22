@@ -152,7 +152,7 @@ typedef NS_ENUM(NSInteger, RadarLocationSource);
 @property (assign, nonatomic, readonly) BOOL mocked;
 
 /**
- Learned fraud state for the user. May be nil if Fraud is not enabled
+ Learned fraud state for the user. May be `nil` if Fraud is not enabled
  */
 @property (nonnull, copy, nonatomic, readonly) RadarFraud *fraud;
 
