@@ -10,8 +10,14 @@
 
 @interface RadarFraud : NSObject
 
+/**
+ `true` if` the user's IP address is being mocked, such as in a simulation. May be `false` if Fraud is not enabled.
+ */
 @property (nonatomic, readonly) bool mocked;
 
+/**
+ `true` if the user's IP address is a known proxy. May be `false` if Fraud is not enabled.
+ */
 @property (nonatomic, readonly) bool proxy;
 
 - (NSDictionary *_Nonnull)dictionaryValue;
