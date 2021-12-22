@@ -11,7 +11,7 @@
 @interface RadarFraud : NSObject
 
 /**
- `true` if` the user's IP address is being mocked, such as in a simulation. May be `false` if Fraud is not enabled.
+ `true` if` the user's location is being mocked, such as in a simulation. May be `false` if Fraud is not enabled.
  */
 @property (nonatomic, readonly) bool mocked;
 

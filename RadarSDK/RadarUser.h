@@ -147,7 +147,7 @@ typedef NS_ENUM(NSInteger, RadarLocationSource);
 @property (assign, nonatomic, readonly) BOOL proxy;
 
 /**
- A boolean indicating whether the user's IP address is being mocked or simulated. May be `false` if Fraud is not enabled.
+ `true` if` the user's location is being mocked, such as in a simulation. May be `false` if Fraud is not enabled.
  */
 @property (assign, nonatomic, readonly) BOOL mocked;
 
