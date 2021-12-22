@@ -24,17 +24,15 @@
     NSMutableDictionary *dict = [NSMutableDictionary new];
     dict[@"level"] = [Radar stringForLogLevel:self.level];
     dict[@"message"] = self.message;
-    // dict[@"createdAt"] = self.createdAt;
-    dict[@"createdAt"] = @"2021-12-22T02:17:00.000Z";
 
-    //    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-    //    NSLocale *enUSPOSIXLocale = [NSLocale localeWithLocaleIdentifier:@"en_US_POSIX"];
-    //    [dateFormatter setLocale:enUSPOSIXLocale];
-    //    [dateFormatter setDateFormat:@"yyyy-MM-dd'T'HH:mm:ssZZZZZ"];
-    //    [dateFormatter setCalendar:[NSCalendar calendarWithIdentifier:NSCalendarIdentifierGregorian]];
-    //
-    //    NSDate *now = [NSDate date];
-    //    NSString *iso8601String = [dateFormatter stringFromDate:now];
+    // convert (NSDate)createdAt to ISO8601 string
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    dateFormatter.locale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US_POSIX"];
+    dateFormatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
+    [dateFormatter setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss.SSSZ"];
+
+    NSString *createdAtString = [dateFormatter stringFromDate:self.createdAt];
+    dict[@"createdAt"] = createdAtString;
 
     return dict;
 }
