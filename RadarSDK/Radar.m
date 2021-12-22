@@ -891,8 +891,6 @@
  * Sends Radar log events to the server
  */
 + (void)flushLogs {
-    
-    NSLog(@"----- Radar.flushLogs() -----");
     // user _id has to exist
 
     if (![self isTestKey]) {
@@ -908,7 +906,6 @@
     
     RadarSyncLogsAPICompletionHandler onSuccess = ^(RadarStatus status){
         if (status == RadarStatusSuccess) {
-            NSLog(@"----- Sync logs success response -----");
             // clear the logs up to pendinglog count
             [[RadarLogBuffer sharedInstance] clearSyncedLogsFromBuffer:pendingLogCount];
         }

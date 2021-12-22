@@ -92,7 +92,6 @@
                             return;
                         }
         
-                        NSLog(@"----- Config response, flushing logs -----");
                         [Radar flushLogs];
 
                         id metaObj = res[@"meta"];
@@ -233,7 +232,6 @@
                             return completionHandler(status, nil, nil, nil, nil);
                         }
         
-                        NSLog(@"----- Track response, flushing logs -----");
                         [Radar flushLogs];
                         [RadarState setLastFailedStoppedLocation:nil];
 
@@ -890,8 +888,6 @@
 }
 
 - (void)syncLogs:(NSArray<RadarLog *> *)logs completionHandler:(RadarSyncLogsAPICompletionHandler)completionHandler {
-    NSLog(@"----- APIClient.syncLogs -----");
-    
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
         return completionHandler(RadarStatusErrorPublishableKey);
