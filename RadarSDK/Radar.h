@@ -26,7 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  The status types for a request.
 
- @see https://radar.io/documentation/sdk/ios#foreground-tracking
+ @see https://radar.com/documentation/sdk/ios#foreground-tracking
  */
 typedef NS_ENUM(NSInteger, RadarStatus) {
     /// Success
@@ -106,7 +106,7 @@ typedef NS_ENUM(NSInteger, RadarLogLevel) {
 /**
  The travel modes for routes.
 
- @see https://radar.io/documentation/api#routing
+ @see https://radar.com/documentation/api#routing
  */
 typedef NS_OPTIONS(NSInteger, RadarRouteMode) {
     /// Foot
@@ -124,7 +124,7 @@ typedef NS_OPTIONS(NSInteger, RadarRouteMode) {
 /**
  The distance units for routes.
 
- @see https://radar.io/documentation/api#routing
+ @see https://radar.com/documentation/api#routing
  */
 typedef NS_ENUM(NSInteger, RadarRouteUnits) {
     /// Imperial (feet)
@@ -138,7 +138,7 @@ typedef NS_ENUM(NSInteger, RadarRouteUnits) {
 
  Receives the request status and, if successful, the location.
 
- @see https://radar.io/documentation/sdk/ios#get-location
+ @see https://radar.com/documentation/sdk/ios#get-location
  */
 typedef void (^_Nullable RadarLocationCompletionHandler)(RadarStatus status, CLLocation *_Nullable location, BOOL stopped);
 
@@ -147,7 +147,7 @@ typedef void (^_Nullable RadarLocationCompletionHandler)(RadarStatus status, CLL
 
  Receives the request status and, if successful, the nearby beacon identifiers.
 
- @see https://radar.io/documentation/beacons
+ @see https://radar.com/documentation/beacons
  */
 typedef void (^_Nullable RadarBeaconCompletionHandler)(RadarStatus status, NSArray<NSString *> *_Nullable nearbyBeacons);
 
@@ -156,7 +156,7 @@ typedef void (^_Nullable RadarBeaconCompletionHandler)(RadarStatus status, NSArr
 
  Receives the request status and, if successful, the user's location, an array of the events generated, and the user.
 
- @see https://radar.io/documentation/sdk/ios
+ @see https://radar.com/documentation/sdk/ios
  */
 typedef void (^_Nullable RadarTrackCompletionHandler)(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user);
 
@@ -165,7 +165,7 @@ typedef void (^_Nullable RadarTrackCompletionHandler)(RadarStatus status, CLLoca
 
  Receives the request status and, if successful, the trip and an array of the events generated.
 
- @see https://radar.io/documentation/sdk/ios
+ @see https://radar.com/documentation/sdk/ios
  */
 typedef void (^_Nullable RadarTripCompletionHandler)(RadarStatus status, RadarTrip *_Nullable trip, NSArray<RadarEvent *> *_Nullable events);
 
@@ -174,7 +174,7 @@ typedef void (^_Nullable RadarTripCompletionHandler)(RadarStatus status, RadarTr
 
  Receives the request status and, if successful, the location and the context.
 
- @see https://radar.io/documentation/api#context
+ @see https://radar.com/documentation/api#context
  */
 typedef void (^_Nonnull RadarContextCompletionHandler)(RadarStatus status, CLLocation *_Nullable location, RadarContext *_Nullable context);
 
@@ -183,7 +183,7 @@ typedef void (^_Nonnull RadarContextCompletionHandler)(RadarStatus status, CLLoc
 
  Receives the request status and, if successful, the location and an array of places sorted by distance.
 
- @see https://radar.io/documentation/api#search-places
+ @see https://radar.com/documentation/api#search-places
  */
 typedef void (^_Nonnull RadarSearchPlacesCompletionHandler)(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarPlace *> *_Nullable places);
 
@@ -192,7 +192,7 @@ typedef void (^_Nonnull RadarSearchPlacesCompletionHandler)(RadarStatus status, 
 
  Receives the request status and, if successful, the location and an array of geofences sorted by distance.
 
- @see https://radar.io/documentation/api#search-geofences
+ @see https://radar.com/documentation/api#search-geofences
  */
 typedef void (^_Nonnull RadarSearchGeofencesCompletionHandler)(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarGeofence *> *_Nullable geofences);
 
@@ -201,7 +201,7 @@ typedef void (^_Nonnull RadarSearchGeofencesCompletionHandler)(RadarStatus statu
 
  Receives the request status and, if successful, the geocoding results (an array of addresses).
 
- @see https://radar.io/documentation/api#forward-geocode
+ @see https://radar.com/documentation/api#forward-geocode
  */
 typedef void (^_Nonnull RadarGeocodeCompletionHandler)(RadarStatus status, NSArray<RadarAddress *> *_Nullable addresses);
 
@@ -210,7 +210,7 @@ typedef void (^_Nonnull RadarGeocodeCompletionHandler)(RadarStatus status, NSArr
 
  Receives the request status and, if successful, the geocoding result (a partial address) and a boolean indicating whether the IP address is a known proxy.
 
- @see https://radar.io/documentation/api#ip-geocode
+ @see https://radar.com/documentation/api#ip-geocode
  */
 typedef void (^_Nonnull RadarIPGeocodeCompletionHandler)(RadarStatus status, RadarAddress *_Nullable address, BOOL proxy);
 
@@ -219,7 +219,7 @@ typedef void (^_Nonnull RadarIPGeocodeCompletionHandler)(RadarStatus status, Rad
 
  Receives the request status and, if successful, the routes.
 
- @see https://radar.io/documentation/api#distance
+ @see https://radar.com/documentation/api#distance
  */
 typedef void (^_Nonnull RadarRouteCompletionHandler)(RadarStatus status, RadarRoutes *_Nullable routes);
 
@@ -228,14 +228,14 @@ typedef void (^_Nonnull RadarRouteCompletionHandler)(RadarStatus status, RadarRo
 
  Receives the request status and, if successful, the matrix.
 
- @see https://radar.io/documentation/api#matrix
+ @see https://radar.com/documentation/api#matrix
  */
 typedef void (^_Nonnull RadarRouteMatrixCompletionHandler)(RadarStatus status, RadarRouteMatrix *_Nullable matrix);
 
 /**
  The main class used to interact with the Radar SDK.
 
- @see https://radar.io/documentation/sdk
+ @see https://radar.com/documentation/sdk
  */
 @interface Radar : NSObject
 
@@ -246,7 +246,7 @@ typedef void (^_Nonnull RadarRouteMatrixCompletionHandler)(RadarStatus status, R
 
  @param publishableKey Your publishable API key.
 
- @see https://radar.io/documentation/sdk/ios#initialize-sdk
+ @see https://radar.com/documentation/sdk/ios#initialize-sdk
  */
 + (void)initializeWithPublishableKey:(NSString *_Nonnull)publishableKey NS_SWIFT_NAME(initialize(publishableKey:));
 
@@ -257,7 +257,7 @@ typedef void (^_Nonnull RadarRouteMatrixCompletionHandler)(RadarStatus status, R
 
  @param userId A stable unique ID for the user. If `nil`, the previous `userId` will be cleared.
 
- @see https://radar.io/documentation/sdk/ios#identify-user
+ @see https://radar.com/documentation/sdk/ios#identify-user
  */
 + (void)setUserId:(NSString *_Nullable)userId;
 
@@ -266,7 +266,7 @@ typedef void (^_Nonnull RadarRouteMatrixCompletionHandler)(RadarStatus status, R
 
  @return The current `userId`.
 
- @see https://radar.io/documentation/sdk/ios#identify-user
+ @see https://radar.com/documentation/sdk/ios#identify-user
  */
 + (NSString *_Nullable)getUserId;
 
@@ -275,7 +275,7 @@ typedef void (^_Nonnull RadarRouteMatrixCompletionHandler)(RadarStatus status, R
 
  @param description A description for the user. If `nil`, the previous `description` will be cleared.
 
- @see https://radar.io/documentation/sdk/ios#identify-user
+ @see https://radar.com/documentation/sdk/ios#identify-user
  */
 + (void)setDescription:(NSString *_Nullable)description;
 
@@ -284,7 +284,7 @@ typedef void (^_Nonnull RadarRouteMatrixCompletionHandler)(RadarStatus status, R
 
  @return The current `description`.
 
- @see https://radar.io/documentation/sdk/ios#identify-user
+ @see https://radar.com/documentation/sdk/ios#identify-user
  */
 + (NSString *_Nullable)getDescription;
 
@@ -294,7 +294,7 @@ typedef void (^_Nonnull RadarRouteMatrixCompletionHandler)(RadarStatus status, R
  @param metadata A set of custom key-value pairs for the user. Must have 16 or fewer keys and values of type string, boolean, or number. If `nil`, the previous
  `metadata` will be cleared.
 
- @see https://radar.io/documentation/sdk/ios#identify-user
+ @see https://radar.com/documentation/sdk/ios#identify-user
  */
 + (void)setMetadata:(NSDictionary *_Nullable)metadata;
 
@@ -303,7 +303,7 @@ typedef void (^_Nonnull RadarRouteMatrixCompletionHandler)(RadarStatus status, R
 
  @return The current `metadata`.
 
- @see https://radar.io/documentation/sdk/ios#identify-user
+ @see https://radar.com/documentation/sdk/ios#identify-user
  */
 + (NSDictionary *_Nullable)getMetadata;
 
@@ -319,7 +319,7 @@ typedef void (^_Nonnull RadarRouteMatrixCompletionHandler)(RadarStatus status, R
 
  @param completionHandler An optional completion handler.
 
- @see https://radar.io/documentation/sdk/ios#get-location
+ @see https://radar.com/documentation/sdk/ios#get-location
  */
 + (void)getLocationWithCompletionHandler:(RadarLocationCompletionHandler _Nullable)completionHandler NS_SWIFT_NAME(getLocation(completionHandler:));
 
@@ -329,7 +329,7 @@ typedef void (^_Nonnull RadarRouteMatrixCompletionHandler)(RadarStatus status, R
  @param desiredAccuracy The desired accuracy.
  @param completionHandler An optional completion handler.
 
- @see https://radar.io/documentation/sdk/ios#get-location
+ @see https://radar.com/documentation/sdk/ios#get-location
  */
 + (void)getLocationWithDesiredAccuracy:(RadarTrackingOptionsDesiredAccuracy)desiredAccuracy
                      completionHandler:(RadarLocationCompletionHandler _Nullable)completionHandler NS_SWIFT_NAME(getLocation(desiredAccuracy:completionHandler:));
@@ -341,7 +341,7 @@ typedef void (^_Nonnull RadarRouteMatrixCompletionHandler)(RadarStatus status, R
 
  @param completionHandler An optional completion handler.
 
- @see https://radar.io/documentation/sdk/ios#foreground-tracking
+ @see https://radar.com/documentation/sdk/ios#foreground-tracking
  */
 + (void)trackOnceWithCompletionHandler:(RadarTrackCompletionHandler _Nullable)completionHandler NS_SWIFT_NAME(trackOnce(completionHandler:));
 
@@ -354,7 +354,7 @@ typedef void (^_Nonnull RadarRouteMatrixCompletionHandler)(RadarStatus status, R
  @param beacons A boolean indicating whether to range beacons.
  @param completionHandler An optional completion handler.
 
- @see https://radar.io/documentation/sdk/ios#foreground-tracking
+ @see https://radar.com/documentation/sdk/ios#foreground-tracking
  */
 + (void)trackOnceWithDesiredAccuracy:(RadarTrackingOptionsDesiredAccuracy)desiredAccuracy
                              beacons:(BOOL)beacons
@@ -368,7 +368,7 @@ typedef void (^_Nonnull RadarRouteMatrixCompletionHandler)(RadarStatus status, R
  @param location A location for the user.
  @param completionHandler An optional completion handler.
 
- @see https://radar.io/documentation/sdk/ios#foreground-tracking
+ @see https://radar.com/documentation/sdk/ios#foreground-tracking
  */
 + (void)trackOnceWithLocation:(CLLocation *_Nonnull)location
             completionHandler:(RadarTrackCompletionHandler _Nullable)completionHandler NS_SWIFT_NAME(trackOnce(location:completionHandler:));
@@ -378,7 +378,7 @@ typedef void (^_Nonnull RadarRouteMatrixCompletionHandler)(RadarStatus status, R
 
  @param options Configurable tracking options.
 
- @see https://radar.io/documentation/sdk/ios#background-tracking-for-geofencing
+ @see https://radar.com/documentation/sdk/ios#background-tracking-for-geofencing
  */
 + (void)startTrackingWithOptions:(RadarTrackingOptions *)options NS_SWIFT_NAME(startTracking(trackingOptions:));
 
@@ -391,7 +391,7 @@ typedef void (^_Nonnull RadarRouteMatrixCompletionHandler)(RadarStatus status, R
  @param steps The number of mock location updates.
  @param interval The interval in seconds between each mock location update. A number between 1 and 60.
 
- @see https://radar.io/documentation/sdk/ios#mock-tracking-for-testing
+ @see https://radar.com/documentation/sdk/ios#mock-tracking-for-testing
  */
 + (void)mockTrackingWithOrigin:(CLLocation *_Nonnull)origin
                    destination:(CLLocation *_Nonnull)destination
@@ -403,7 +403,7 @@ typedef void (^_Nonnull RadarRouteMatrixCompletionHandler)(RadarStatus status, R
 /**
  Stops tracking the user's location in the background.
 
- @see https://radar.io/documentation/sdk/ios#background-tracking-for-geofencing
+ @see https://radar.com/documentation/sdk/ios#background-tracking-for-geofencing
  */
 + (void)stopTracking;
 
@@ -412,7 +412,7 @@ typedef void (^_Nonnull RadarRouteMatrixCompletionHandler)(RadarStatus status, R
 
  @return A boolean indicating whether tracking has been started.
 
- @see https://radar.io/documentation/sdk/ios#background-tracking-for-geofencing
+ @see https://radar.com/documentation/sdk/ios#background-tracking-for-geofencing
  */
 + (BOOL)isTracking;
 
@@ -421,7 +421,7 @@ typedef void (^_Nonnull RadarRouteMatrixCompletionHandler)(RadarStatus status, R
 
  @return The current tracking options.
 
- @see https://radar.io/documentation/sdk/tracking
+ @see https://radar.com/documentation/sdk/tracking
  */
 + (RadarTrackingOptions *)getTrackingOptions;
 
@@ -430,7 +430,7 @@ typedef void (^_Nonnull RadarRouteMatrixCompletionHandler)(RadarStatus status, R
 
  @param delegate A delegate for client-side delivery of events, location updates, and debug logs. If `nil`, the previous delegate will be cleared.
 
- @see https://radar.io/documentation/sdk/ios#listening-for-events-with-a-delegate
+ @see https://radar.com/documentation/sdk/ios#listening-for-events-with-a-delegate
  */
 + (void)setDelegate:(nullable id<RadarDelegate>)delegate;
 
@@ -441,7 +441,7 @@ typedef void (^_Nonnull RadarRouteMatrixCompletionHandler)(RadarStatus status, R
  @param eventId The ID of the event to accept.
  @param verifiedPlaceId For place entry events, the ID of the verified place. May be `nil`.
 
- @see https://radar.io/documentation/places#verify-events
+ @see https://radar.com/documentation/places#verify-events
  */
 + (void)acceptEventId:(NSString *_Nonnull)eventId verifiedPlaceId:(NSString *_Nullable)verifiedPlaceId NS_SWIFT_NAME(acceptEventId(_:verifiedPlaceId:));
 
@@ -451,7 +451,7 @@ typedef void (^_Nonnull RadarRouteMatrixCompletionHandler)(RadarStatus status, R
 
  @param eventId The ID of the event to reject.
 
- @see https://radar.io/documentation/places#verify-events
+ @see https://radar.com/documentation/places#verify-events
  */
 + (void)rejectEventId:(NSString *_Nonnull)eventId NS_SWIFT_NAME(rejectEventId(_:));
 
@@ -460,7 +460,7 @@ typedef void (^_Nonnull RadarRouteMatrixCompletionHandler)(RadarStatus status, R
 
  @return The current trip options.
 
- @see https://radar.io/documentation/trip-tracking
+ @see https://radar.com/documentation/trip-tracking
  */
 + (RadarTripOptions *_Nullable)getTripOptions;
 
@@ -469,7 +469,7 @@ typedef void (^_Nonnull RadarRouteMatrixCompletionHandler)(RadarStatus status, R
 
  @param options Configurable trip options.
 
- @see https://radar.io/documentation/trip-tracking
+ @see https://radar.com/documentation/trip-tracking
  */
 + (void)startTripWithOptions:(RadarTripOptions *_Nonnull)options NS_SWIFT_NAME(startTrip(options:));
 
@@ -479,7 +479,7 @@ typedef void (^_Nonnull RadarRouteMatrixCompletionHandler)(RadarStatus status, R
  @param options Configurable trip options.
  @param completionHandler An optional completion handler.
 
- @see https://radar.io/documentation/trip-tracking
+ @see https://radar.com/documentation/trip-tracking
  */
 + (void)startTripWithOptions:(RadarTripOptions *_Nonnull)options
            completionHandler:(RadarTripCompletionHandler _Nullable)completionHandler NS_SWIFT_NAME(startTrip(options:completionHandler:));
@@ -491,7 +491,7 @@ typedef void (^_Nonnull RadarRouteMatrixCompletionHandler)(RadarStatus status, R
  @param status The trip status. To avoid updating status, pass RadarTripStatusUnknown.
  @param completionHandler An optional completion handler.
 
- @see https://radar.io/documentation/trip-tracking
+ @see https://radar.com/documentation/trip-tracking
  */
 + (void)updateTripWithOptions:(RadarTripOptions *_Nonnull)options
                        status:(RadarTripStatus)status
@@ -500,7 +500,7 @@ typedef void (^_Nonnull RadarRouteMatrixCompletionHandler)(RadarStatus status, R
 /**
  Completes a trip.
 
- @see https://radar.io/documentation/trip-tracking
+ @see https://radar.com/documentation/trip-tracking
  */
 + (void)completeTrip;
 
@@ -509,14 +509,14 @@ typedef void (^_Nonnull RadarRouteMatrixCompletionHandler)(RadarStatus status, R
 
  @param completionHandler An optional completion handler.
 
- @see https://radar.io/documentation/trip-tracking
+ @see https://radar.com/documentation/trip-tracking
  */
 + (void)completeTripWithCompletionHandler:(RadarTripCompletionHandler _Nullable)completionHandler NS_SWIFT_NAME(completeTrip(completionHandler:));
 
 /**
  Cancels a trip.
 
- @see https://radar.io/documentation/trip-tracking
+ @see https://radar.com/documentation/trip-tracking
  */
 + (void)cancelTrip;
 
@@ -525,7 +525,7 @@ typedef void (^_Nonnull RadarRouteMatrixCompletionHandler)(RadarStatus status, R
 
  @param completionHandler An optional completion handler.
 
- @see https://radar.io/documentation/trip-tracking
+ @see https://radar.com/documentation/trip-tracking
  */
 + (void)cancelTripWithCompletionHandler:(RadarTripCompletionHandler _Nullable)completionHandler NS_SWIFT_NAME(cancelTrip(completionHandler:));
 
@@ -534,7 +534,7 @@ typedef void (^_Nonnull RadarRouteMatrixCompletionHandler)(RadarStatus status, R
 
  @param completionHandler An optional completion handler.
 
- @see https://radar.io/documentation/api#search-geofences
+ @see https://radar.com/documentation/api#search-geofences
  */
 + (void)getContextWithCompletionHandler:(RadarContextCompletionHandler _Nonnull)completionHandler NS_SWIFT_NAME(getContext(completionHandler:));
 
@@ -544,7 +544,7 @@ typedef void (^_Nonnull RadarRouteMatrixCompletionHandler)(RadarStatus status, R
  @param location The location.
  @param completionHandler An optional completion handler.
 
- @see https://radar.io/documentation/api#context
+ @see https://radar.com/documentation/api#context
  */
 + (void)getContextForLocation:(CLLocation *_Nonnull)location
             completionHandler:(RadarContextCompletionHandler _Nonnull)completionHandler NS_SWIFT_NAME(getContext(location:completionHandler:));
@@ -555,13 +555,13 @@ typedef void (^_Nonnull RadarRouteMatrixCompletionHandler)(RadarStatus status, R
  @warning You may specify only one of chains, categories, or groups.
 
  @param radius The radius to search, in meters. A number between 100 and 10000.
- @param chains An array of chain slugs to filter. See https://radar.io/documentation/places/chains
- @param categories An array of categories to filter. See: https://radar.io/documentation/places/categories
- @param groups An array of groups to filter. See https://radar.io/documentation/places/groups
+ @param chains An array of chain slugs to filter. See https://radar.com/documentation/places/chains
+ @param categories An array of categories to filter. See: https://radar.com/documentation/places/categories
+ @param groups An array of groups to filter. See https://radar.com/documentation/places/groups
  @param limit The max number of places to return. A number between 1 and 100.
  @param completionHandler A completion handler.
 
- @see https://radar.io/documentation/api#search-places
+ @see https://radar.com/documentation/api#search-places
  */
 + (void)searchPlacesWithRadius:(int)radius
                         chains:(NSArray<NSString *> *_Nullable)chains
@@ -577,13 +577,13 @@ typedef void (^_Nonnull RadarRouteMatrixCompletionHandler)(RadarStatus status, R
 
  @param near The location to search.
  @param radius The radius to search, in meters. A number between 100 and 10000.
- @param chains An array of chain slugs to filter. See https://radar.io/documentation/places/chains
- @param categories An array of categories to filter. See: https://radar.io/documentation/places/categories
- @param groups An array of groups to filter. See https://radar.io/documentation/places/groups
+ @param chains An array of chain slugs to filter. See https://radar.com/documentation/places/chains
+ @param categories An array of categories to filter. See: https://radar.com/documentation/places/categories
+ @param groups An array of groups to filter. See https://radar.com/documentation/places/groups
  @param limit The max number of places to return. A number between 1 and 100.
  @param completionHandler A completion handler.
 
- @see https://radar.io/documentation/api#search-places
+ @see https://radar.com/documentation/api#search-places
  */
 + (void)searchPlacesNear:(CLLocation *)near
                   radius:(int)radius
@@ -597,12 +597,12 @@ typedef void (^_Nonnull RadarRouteMatrixCompletionHandler)(RadarStatus status, R
  Gets the device's current location, then searches for geofences near that location, sorted by distance.
 
  @param radius The radius to search, in meters. A number between 100 and 10000.
- @param tags An array of tags to filter. See https://radar.io/documentation/geofences
- @param metadata A dictionary of metadata to filter. See https://radar.io/documentation/geofences
+ @param tags An array of tags to filter. See https://radar.com/documentation/geofences
+ @param metadata A dictionary of metadata to filter. See https://radar.com/documentation/geofences
  @param limit The max number of geofences to return. A number between 1 and 100.
  @param completionHandler A completion handler.
 
- @see https://radar.io/documentation/api#search-geofences
+ @see https://radar.com/documentation/api#search-geofences
  */
 + (void)searchGeofencesWithRadius:(int)radius
                              tags:(NSArray<NSString *> *_Nullable)tags
@@ -615,12 +615,12 @@ typedef void (^_Nonnull RadarRouteMatrixCompletionHandler)(RadarStatus status, R
 
  @param near The location to search.
  @param radius The radius to search, in meters. A number between 100 and 10000.
- @param tags An array of tags to filter. See https://radar.io/documentation/geofences
- @param metadata A dictionary of metadata to filter. See https://radar.io/documentation/geofences
+ @param tags An array of tags to filter. See https://radar.com/documentation/geofences
+ @param metadata A dictionary of metadata to filter. See https://radar.com/documentation/geofences
  @param limit The max number of geofences to return. A number between 1 and 100.
  @param completionHandler A completion handler.
 
- @see https://radar.io/documentation/api#search-geofences
+ @see https://radar.com/documentation/api#search-geofences
  */
 + (void)searchGeofencesNear:(CLLocation *)near
                      radius:(int)radius
@@ -639,7 +639,7 @@ typedef void (^_Nonnull RadarRouteMatrixCompletionHandler)(RadarStatus status, R
  @param country An optional country filter. A string, the unique 2-letter country code.
  @param completionHandler A completion handler.
 
- @see https://radar.io/documentation/api#autocomplete
+ @see https://radar.com/documentation/api#autocomplete
  */
 + (void)autocompleteQuery:(NSString *_Nonnull)query
                      near:(CLLocation *_Nullable)near
@@ -656,7 +656,7 @@ typedef void (^_Nonnull RadarRouteMatrixCompletionHandler)(RadarStatus status, R
  @param limit The max number of addresses to return. A number between 1 and 100.
  @param completionHandler A completion handler.
 
- @see https://radar.io/documentation/api#autocomplete
+ @see https://radar.com/documentation/api#autocomplete
  */
 + (void)autocompleteQuery:(NSString *_Nonnull)query
                      near:(CLLocation *_Nullable)near
@@ -669,7 +669,7 @@ typedef void (^_Nonnull RadarRouteMatrixCompletionHandler)(RadarStatus status, R
  @param query The address to geocode.
  @param completionHandler A completion handler.
 
- @see https://radar.io/documentation/api#forward-geocode
+ @see https://radar.com/documentation/api#forward-geocode
  */
 + (void)geocodeAddress:(NSString *_Nonnull)query completionHandler:(RadarGeocodeCompletionHandler)completionHandler NS_SWIFT_NAME(geocode(address:completionHandler:));
 
@@ -678,7 +678,7 @@ typedef void (^_Nonnull RadarRouteMatrixCompletionHandler)(RadarStatus status, R
 
  @param completionHandler A completion handler.
 
- @see https://radar.io/documentation/api#reverse-geocode
+ @see https://radar.com/documentation/api#reverse-geocode
  */
 + (void)reverseGeocodeWithCompletionHandler:(RadarGeocodeCompletionHandler)completionHandler NS_SWIFT_NAME(reverseGeocode(completionHandler:));
 
@@ -688,7 +688,7 @@ typedef void (^_Nonnull RadarRouteMatrixCompletionHandler)(RadarStatus status, R
  @param location The location to reverse geocode.
  @param completionHandler A completion handler.
 
- @see https://radar.io/documentation/api#reverse-geocode
+ @see https://radar.com/documentation/api#reverse-geocode
  */
 + (void)reverseGeocodeLocation:(CLLocation *_Nonnull)location
              completionHandler:(RadarGeocodeCompletionHandler)completionHandler NS_SWIFT_NAME(reverseGeocode(location:completionHandler:));
@@ -698,7 +698,7 @@ typedef void (^_Nonnull RadarRouteMatrixCompletionHandler)(RadarStatus status, R
 
  @param completionHandler A completion handler.
 
- @see https://radar.io/documentation/api#ip-geocode
+ @see https://radar.com/documentation/api#ip-geocode
  */
 + (void)ipGeocodeWithCompletionHandler:(RadarIPGeocodeCompletionHandler)completionHandler NS_SWIFT_NAME(ipGeocode(completionHandler:));
 
@@ -710,7 +710,7 @@ typedef void (^_Nonnull RadarRouteMatrixCompletionHandler)(RadarStatus status, R
  @param units The distance units.
  @param completionHandler A completion handler.
 
- @see https://radar.io/documentation/api#distance
+ @see https://radar.com/documentation/api#distance
  */
 + (void)getDistanceToDestination:(CLLocation *_Nonnull)destination
                            modes:(RadarRouteMode)modes
@@ -726,7 +726,7 @@ typedef void (^_Nonnull RadarRouteMatrixCompletionHandler)(RadarStatus status, R
  @param units The distance units.
  @param completionHandler A completion handler.
 
- @see https://radar.io/documentation/api#distance
+ @see https://radar.com/documentation/api#distance
  */
 + (void)getDistanceFromOrigin:(CLLocation *_Nonnull)origin
                   destination:(CLLocation *_Nonnull)destination
@@ -743,7 +743,7 @@ typedef void (^_Nonnull RadarRouteMatrixCompletionHandler)(RadarStatus status, R
  @param units The distance units.
  @param completionHandler A completion handler.
 
- @see https://radar.io/documentation/api#matrix
+ @see https://radar.com/documentation/api#matrix
  */
 + (void)getMatrixFromOrigins:(NSArray<CLLocation *> *_Nonnull)origins
                 destinations:(NSArray<CLLocation *> *_Nonnull)destinations

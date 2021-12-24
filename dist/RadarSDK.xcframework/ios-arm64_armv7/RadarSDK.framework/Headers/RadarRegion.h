@@ -12,7 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  Represents a region.
 
- @see https://radar.io/documentation/regions
+ @see https://radar.com/documentation/regions
  */
 @interface RadarRegion : NSObject
 

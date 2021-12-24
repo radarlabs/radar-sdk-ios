@@ -78,6 +78,13 @@
       "warning": "undocumented"
     },
     {
+      "file": "/Users/nick/radar/radar-sdk-ios/RadarSDK/RadarFraud.h",
+      "line": 11,
+      "symbol": "RadarFraud",
+      "symbol_kind": "sourcekitten.source.lang.objc.decl.class",
+      "warning": "undocumented"
+    },
+    {
       "file": "/Users/nick/radar/radar-sdk-ios/RadarSDK/RadarGeofence.h",
       "line": 48,
       "symbol": "RadarGeofence.+arrayForGeofences:",
@@ -268,7 +275,7 @@
     },
     {
       "file": "/Users/nick/radar/radar-sdk-ios/RadarSDK/RadarUser.h",
-      "line": 136,
+      "line": 137,
       "symbol": "RadarUser.-dictionaryValue",
       "symbol_kind": "sourcekitten.source.lang.objc.decl.method.instance",
       "warning": "undocumented"

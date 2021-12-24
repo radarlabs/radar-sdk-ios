@@ -47,7 +47,7 @@ typedef NS_ENUM(NSInteger, RadarTrackingOptionsSyncLocations) {
 /**
  An options class used to configure background tracking.
 
- @see https://radar.io/documentation/sdk/ios
+ @see https://radar.com/documentation/sdk/ios
  */
 @interface RadarTrackingOptions : NSObject
 

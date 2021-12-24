@@ -13,7 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  Represents a Bluetooth beacon.
 
- @see https://radar.io/documentation/beacons
+ @see https://radar.com/documentation/beacons
  */
 @interface RadarBeacon : NSObject
 
