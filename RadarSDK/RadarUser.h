@@ -56,28 +56,28 @@ typedef NS_ENUM(NSInteger, RadarLocationSource);
 /**
  An array of the user's current geofences. May be `nil` or empty if the user is not in any geofences.
 
- @see https://radar.io/documentation/geofences
+ @see https://radar.com/documentation/geofences
  */
 @property (nullable, copy, nonatomic, readonly) NSArray<RadarGeofence *> *geofences;
 
 /**
  The user's current place. May be `nil` if the user is not at a place or if Places is not enabled.
 
- @see https://radar.io/documentation/places
+ @see https://radar.com/documentation/places
  */
 @property (nullable, copy, nonatomic, readonly) RadarPlace *place;
 
 /**
  Learned insights for the user. May be `nil` if no insights are available or if Insights is not enabled.
 
- @see https://radar.io/documentation/insights
+ @see https://radar.com/documentation/insights
  */
 @property (nullable, strong, nonatomic, readonly) RadarUserInsights *insights;
 
 /**
  An array of the user's nearby beacons. May be `nil` or empty if the user is not near any beacons or if Beacons is not enabled.
 
- @see https://radar.io/documentation/beacons
+ @see https://radar.com/documentation/beacons
  */
 @property (nullable, copy, nonatomic, readonly) NSArray<RadarBeacon *> *beacons;
 
@@ -94,28 +94,28 @@ typedef NS_ENUM(NSInteger, RadarLocationSource);
 /**
  The user's current country. May be `nil` if country is not available or if Regions is not enabled.
 
- @see https://radar.io/documentation/regions
+ @see https://radar.com/documentation/regions
  */
 @property (nullable, strong, nonatomic, readonly) RadarRegion *country;
 
 /**
  The user's current state. May be `nil` if state is not available or if Regions is not enabled.
 
- @see https://radar.io/documentation/regions
+ @see https://radar.com/documentation/regions
  */
 @property (nullable, strong, nonatomic, readonly) RadarRegion *state;
 
 /**
  The user's current designated market area (DMA). May be `nil` if DMA is not available or if Regions is not enabled.
 
- @see https://radar.io/documentation/regions
+ @see https://radar.com/documentation/regions
  */
 @property (nullable, strong, nonatomic, readonly) RadarRegion *dma;
 
 /**
  The user's current postal code. May be `nil` if postal code is not available or if Regions is not enabled.
 
- @see https://radar.io/documentation/regions
+ @see https://radar.com/documentation/regions
  */
 @property (nullable, strong, nonatomic, readonly) RadarRegion *postalCode;
 
@@ -159,7 +159,7 @@ typedef NS_ENUM(NSInteger, RadarLocationSource);
 /**
  The user's current trip.
 
- @see https://radar.io/documentation/trip-tracking
+ @see https://radar.com/documentation/trip-tracking
  */
 @property (nullable, strong, nonatomic, readonly) RadarTrip *trip;
 

@@ -317,11 +317,11 @@
     return nil;
 }
 
-- (bool)proxy {
+- (BOOL)proxy {
     return self.fraud.proxy;
 }
 
-- (bool)mocked {
+- (BOOL)mocked {
     return self.fraud.mocked;
 }
 
@@ -383,7 +383,7 @@
     return dict;
 }
 
-- (bool)asBool:(NSObject *)object {
+- (BOOL)asBool:(NSObject *)object {
     if (object && [object isKindOfClass:[NSNumber class]]) {
         NSNumber *number = (NSNumber *)object;
 

@@ -9,11 +9,10 @@
 
 @implementation RadarFraud
 
-- (instancetype _Nonnull)initWithProxy:(bool)proxy
-                                mocked:(bool)mocked {
+- (instancetype _Nonnull)initWithProxy:(BOOL)proxy mocked:(BOOL)mocked {
     _proxy = proxy;
     _mocked = mocked;
-    
+
     return self;
 }
 
@@ -34,7 +33,7 @@
     return @{@"proxy": @(self.proxy), @"mocked": @(self.mocked)};
 }
 
-- (bool)asBool:(NSObject *)object {
+- (BOOL)asBool:(NSObject *)object {
     if (object && [object isKindOfClass:[NSNumber class]]) {
         NSNumber *number = (NSNumber *)object;
 

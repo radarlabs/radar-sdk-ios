@@ -27,7 +27,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  Represents an address.
 
- @see https://radar.io/documentation/api#geocoding
+ @see https://radar.com/documentation/api#geocoding
  */
 @interface RadarAddress : NSObject
 

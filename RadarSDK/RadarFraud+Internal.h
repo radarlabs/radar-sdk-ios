@@ -12,8 +12,7 @@
 
 @interface RadarFraud ()
 
-- (instancetype _Nonnull)initWithProxy:(bool)proxy
-                                mocked:(bool)mocked;
+- (instancetype _Nonnull)initWithProxy:(BOOL)proxy mocked:(BOOL)mocked;
 
 @end
 

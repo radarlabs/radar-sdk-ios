@@ -14,9 +14,9 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- A delegate for client-side delivery of events, location updates, and debug logs. For more information, see https://radar.io/documentation/sdk/ios
+ A delegate for client-side delivery of events, location updates, and debug logs. For more information, see https://radar.com/documentation/sdk/ios
 
- @see https://radar.io/documentation/sdk/ios
+ @see https://radar.com/documentation/sdk/ios
  */
 @protocol RadarDelegate<NSObject>
 
