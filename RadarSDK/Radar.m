@@ -823,29 +823,6 @@
     return str;
 }
 
-// move to a util?
-+ (NSString *)stringForLogLevel:(RadarLogLevel)level {
-    NSString *str;
-    switch (level) {
-        case RadarLogLevelNone:
-            str = @"none";
-            break;
-        case RadarLogLevelError:
-            str = @"error";
-            break;
-        case RadarLogLevelWarning:
-            str = @"warning";
-            break;
-        case RadarLogLevelInfo:
-            str = @"info";
-            break;
-        case RadarLogLevelDebug:
-            str = @"debug";
-            break;
-    }
-    return str;
-}
-
 + (NSDictionary *)dictionaryForLocation:(CLLocation *)location {
     NSMutableDictionary *dict = [NSMutableDictionary new];
     dict[@"latitude"] = @(location.coordinate.latitude);
@@ -897,7 +874,7 @@
         return;
     }
     
-    NSArray<RadarLog *> *flushableLogs = [[RadarLogBuffer sharedInstance] getFlushableLogs];
+    NSArray<RadarLog *> *flushableLogs = [[RadarLogBuffer sharedInstance] flushableLogs];
     
     NSUInteger pendingLogCount = [flushableLogs count];
     if (pendingLogCount == 0) {

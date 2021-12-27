@@ -20,9 +20,31 @@
     return self;
 }
 
++ (NSString *)stringForLogLevel:(RadarLogLevel)level {
+    NSString *str;
+    switch (level) {
+        case RadarLogLevelNone:
+            str = @"none";
+            break;
+        case RadarLogLevelError:
+            str = @"error";
+            break;
+        case RadarLogLevelWarning:
+            str = @"warning";
+            break;
+        case RadarLogLevelInfo:
+            str = @"info";
+            break;
+        case RadarLogLevelDebug:
+            str = @"debug";
+            break;
+    }
+    return str;
+}
+
 - (NSDictionary *)dictionaryValue {
     NSMutableDictionary *dict = [NSMutableDictionary new];
-    dict[@"level"] = [Radar stringForLogLevel:self.level];
+    dict[@"level"] = [RadarLog stringForLogLevel:self.level];
     dict[@"message"] = self.message;
 
     // convert (NSDate)createdAt to ISO8601 string

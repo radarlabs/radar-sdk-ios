@@ -47,6 +47,14 @@ static NSString *const kPurgedLogLine = @"----purged oldest logs! ----";
 }
 
 /**
+ * Return copy of logs from the buffer to flush
+ */
+- (NSArray<RadarLog *> *)flushableLogs {
+    NSArray *flushableLogs = [mutableLogBuffer copy];
+    return flushableLogs;
+}
+
+/**
  * Clears oldest logs and adds a "purged" log line
  */
 - (void)purgeOldestLogs {
@@ -61,14 +69,5 @@ static NSString *const kPurgedLogLine = @"----purged oldest logs! ----";
 - (void)clearSyncedLogsFromBuffer:(NSUInteger)numLogs {
     [mutableLogBuffer removeObjectsInRange:NSMakeRange(0, numLogs)];
 }
-
-/**
- * Return copy of logs from the buffer to flush
- */
-- (NSArray<RadarLog *> *)getFlushableLogs {
-    NSArray *flushableLogs = [mutableLogBuffer copy];
-    return flushableLogs;
-}
-
 
 @end

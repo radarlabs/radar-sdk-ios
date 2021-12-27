@@ -14,6 +14,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface RadarLogBuffer : NSObject
 
+@property (assign, nonatomic, readonly) NSArray<RadarLog *> *flushableLogs;
+
 - (instancetype)init;
 
 + (instancetype)sharedInstance;
@@ -23,8 +25,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)purgeOldestLogs;
 
 - (void)clearSyncedLogsFromBuffer:(NSUInteger)numLogs;
-
-- (NSArray<RadarLog *> *)getFlushableLogs;
 
 @end
 

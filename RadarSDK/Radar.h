@@ -796,15 +796,6 @@ typedef void (^_Nonnull RadarRouteMatrixCompletionHandler)(RadarStatus status, R
 
 
 /**
- Returns a display string for a log level.
-
- @param level A log level
-
- @return A display string for the log level.
- */
-+ (NSString *)stringForLogLevel:(RadarLogLevel)level NS_SWIFT_NAME(stringForLogLevel(_:));
-
-/**
  Returns a dictionary for a location.
 
  @param location A location.
