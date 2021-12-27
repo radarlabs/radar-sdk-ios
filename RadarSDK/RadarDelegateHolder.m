@@ -31,7 +31,7 @@
 
     for (RadarEvent *event in events) {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo
-                                           message:[NSString stringWithFormat:@"📍 Radar event received | type = %@; link = https://radar.io/dashboard/events/%@",
+                                           message:[NSString stringWithFormat:@"📍 Radar event received | type = %@; link = https://radar.com/dashboard/events/%@",
                                                                               [RadarEvent stringForType:event.type], event._id]];
     }
 }
@@ -47,7 +47,7 @@
 
     [[RadarLogger sharedInstance]
         logWithLevel:RadarLogLevelInfo
-             message:[NSString stringWithFormat:@"📍 Radar location updated | coordinates = (%f, %f); accuracy = %f; link = https://radar.io/dashboard/users/%@",
+             message:[NSString stringWithFormat:@"📍 Radar location updated | coordinates = (%f, %f); accuracy = %f; link = https://radar.com/dashboard/users/%@",
                                                 user.location.coordinate.latitude, user.location.coordinate.longitude, user.location.horizontalAccuracy, user._id]];
 }
 

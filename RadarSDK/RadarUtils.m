@@ -32,14 +32,7 @@
 }
 
 + (NSString *)sdkVersion {
-    NSBundle *bundle = [NSBundle bundleForClass:RadarUtils.class];
-    NSString *versionNumber = bundle.infoDictionary[@"CFBundleShortVersionString"];
-    
-    if (versionNumber == nil) {
-        return @"(unknown version)";
-    } else {
-        return versionNumber;
-    }
+    return @"3.2.3";
 }
 
 + (NSString *)adId {

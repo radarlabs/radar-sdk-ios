@@ -13,7 +13,7 @@
 /**
  Represents a place.
 
- @see https://radar.io/documentation/places
+ @see https://radar.com/documentation/places
  */
 @interface RadarPlace : NSObject
 
@@ -28,16 +28,16 @@
 @property (nonnull, copy, nonatomic, readonly) NSString *name;
 
 /**
- The categories of the place. For a full list of categories, see https://radar.io/documentation/places/categories.
+ The categories of the place. For a full list of categories, see https://radar.com/documentation/places/categories.
 
- @see https://radar.io/documentation/places/categories
+ @see https://radar.com/documentation/places/categories
  */
 @property (nonnull, copy, nonatomic, readonly) NSArray<NSString *> *categories;
 
 /**
- The chain of the place, if known. May be `nil` for places without a chain. For a full list of chains, see https://radar.io/documentation/places/chains.
+ The chain of the place, if known. May be `nil` for places without a chain. For a full list of chains, see https://radar.com/documentation/places/chains.
 
- @see https://radar.io/documentation/places/chains
+ @see https://radar.com/documentation/places/chains
  */
 @property (nullable, strong, nonatomic, readonly) RadarChain *chain;
 
@@ -47,16 +47,16 @@
 @property (nonnull, strong, nonatomic, readonly) RadarCoordinate *location;
 
 /**
- The group for the place, if any. For a full list of groups, see https://radar.io/documentation/places/groups.
+ The group for the place, if any. For a full list of groups, see https://radar.com/documentation/places/groups.
 
- @see https://radar.io/documentation/places/groups
+ @see https://radar.com/documentation/places/groups
  */
 @property (nullable, strong, nonatomic, readonly) NSString *group;
 
 /**
- The metadata for the place, if part of a group. For details of metadata fields see https://radar.io/documentation/places/groups.
+ The metadata for the place, if part of a group. For details of metadata fields see https://radar.com/documentation/places/groups.
 
- @see https://radar.io/documentation/places/groups
+ @see https://radar.com/documentation/places/groups
  */
 @property (nullable, strong, nonatomic, readonly) NSDictionary *metadata;
 

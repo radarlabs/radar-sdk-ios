@@ -12,7 +12,7 @@
 /**
  Represents the learned home, work, traveling and commuting state and locations of the current user.
 
- @see https://radar.io/documentation/insights
+ @see https://radar.com/documentation/insights
  */
 @interface RadarUserInsights : NSObject
 
