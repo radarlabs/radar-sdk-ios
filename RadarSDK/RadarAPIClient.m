@@ -8,6 +8,7 @@
 #import "RadarAPIClient.h"
 
 #import "Radar.h"
+#import "Radar+Internal.h"
 #import "RadarAddress+Internal.h"
 #import "RadarBeacon+Internal.h"
 #import "RadarContext+Internal.h"

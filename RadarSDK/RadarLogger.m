@@ -8,6 +8,7 @@
 #import "RadarLogger.h"
 
 #import "Radar.h"
+#import "Radar+Internal.h"
 #import "RadarDelegateHolder.h"
 #import "RadarSettings.h"
 #import "RadarUtils.h"

@@ -813,13 +813,6 @@ typedef void (^_Nonnull RadarRouteMatrixCompletionHandler)(RadarStatus status, R
  */
 + (NSDictionary *)dictionaryForLocation:(CLLocation *)location NS_SWIFT_NAME(dictionaryForLocation(_:));
 
-
-+ (BOOL)isTestKey;
-
-+ (void)sendLog:(RadarLogLevel)level message:(NSString *_Nonnull)message;
-
-+ (void)flushLogs;
-
 @end
 
 NS_ASSUME_NONNULL_END

@@ -9,8 +9,8 @@
 #import "RadarLog.h"
 #import "RadarLogBuffer.h"
 
-static const int MAX_BUFFER_SIZE = 1000;
-static const int PURGE_AMOUNT = 500;
+static const int MAX_BUFFER_SIZE = 500;
+static const int PURGE_AMOUNT = 200;
 
 static NSString *const kPurgedLogLine = @"----purged oldest logs! ----";
 

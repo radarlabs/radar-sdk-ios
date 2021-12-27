@@ -123,6 +123,7 @@
 		0107AB2C262201F7008AB52F /* RadarTripOptions.m in Sources */ = {isa = PBXBuildFile; fileRef = DD8CCDF7246872360011690D /* RadarTripOptions.m */; };
 		0107AB2F262201FB008AB52F /* RadarUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = DD236D0423099B8400EB88F9 /* RadarUtils.m */; };
 		0107AB7A2622061A008AB52F /* RadarSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0107A9E82621FFB9008AB52F /* RadarSDK.framework */; };
+		532FC304277A790600989279 /* Radar+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 532FC303277A783900989279 /* Radar+Internal.h */; };
 		5367FFB42769393F00A2D0D3 /* RadarLog.m in Sources */ = {isa = PBXBuildFile; fileRef = 5367FFB32769393F00A2D0D3 /* RadarLog.m */; };
 		53B3B26B23EE41B400080818 /* context.json in Resources */ = {isa = PBXBuildFile; fileRef = 53B3B26A23EE41B400080818 /* context.json */; };
 		53CCD783275E579800F79CC8 /* RadarLogBuffer.m in Sources */ = {isa = PBXBuildFile; fileRef = 53CCD782275E579800F79CC8 /* RadarLogBuffer.m */; };
@@ -144,6 +145,7 @@
 
 /* Begin PBXFileReference section */
 		0107A9E82621FFB9008AB52F /* RadarSDK.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = RadarSDK.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		532FC303277A783900989279 /* Radar+Internal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Radar+Internal.h"; sourceTree = "<group>"; };
 		5343FFD723E2310D00808D93 /* RadarContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RadarContext.h; sourceTree = "<group>"; };
 		5343FFD923E38BA300808D93 /* RadarContext.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RadarContext.m; sourceTree = "<group>"; };
 		5343FFDA23E3A76900808D93 /* RadarContext+Internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "RadarContext+Internal.h"; sourceTree = "<group>"; };
@@ -373,6 +375,7 @@
 				DD236D0323099B8400EB88F9 /* RadarUtils.h */,
 				DD236D0423099B8400EB88F9 /* RadarUtils.m */,
 				DD236C792308797B00EB88F9 /* Info.plist */,
+				532FC303277A783900989279 /* Radar+Internal.h */,
 			);
 			path = RadarSDK;
 			sourceTree = "<group>";
@@ -547,6 +550,7 @@
 				0107AA1F26220059008AB52F /* RadarSettings.h in Headers */,
 				0107AA2B26220066008AB52F /* RadarUtils.h in Headers */,
 				0107AA1926220052008AB52F /* RadarLocationManager.h in Headers */,
+				532FC304277A790600989279 /* Radar+Internal.h in Headers */,
 				0107AA9226220149008AB52F /* RadarCoordinate+Internal.h in Headers */,
 				0107AA232622005E008AB52F /* RadarTrackingOptions.h in Headers */,
 				0107AA7D2622012F008AB52F /* RadarAddress+Internal.h in Headers */,
