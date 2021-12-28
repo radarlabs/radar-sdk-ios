@@ -112,7 +112,7 @@ typedef void (^_Nonnull RadarSyncLogsAPICompletionHandler)(RadarStatus status);
                        units:(RadarRouteUnits)units
            completionHandler:(RadarMatrixAPICompletionHandler _Nonnull)completionHandler;
 
-- (void)syncLogs:(NSArray<RadarLog *> *)logs completionHandler:(RadarSyncLogsAPICompletionHandler _Nonnull)completionHandler; // !! align with android name
+- (void)syncLogs:(NSArray<RadarLog *> *)logs completionHandler:(RadarSyncLogsAPICompletionHandler _Nonnull)completionHandler;
 
 
 @end
