@@ -9,8 +9,8 @@
 
 @implementation RadarLog
 
-- (instancetype _Nullable)initWithMessage:(NSString *_Nullable)message
-                                    level:(RadarLogLevel)level {
+- (instancetype _Nullable)initWithLevel:(RadarLogLevel)level
+                                message:(NSString *_Nullable)message {
     self = [super init];
     if (self) {
         _level = level;

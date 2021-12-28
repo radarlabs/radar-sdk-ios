@@ -27,8 +27,8 @@
  */
 @property (nonnull, copy, nonatomic, readonly) NSDate *createdAt;
 
-- (instancetype _Nullable)initWithMessage:(NSString *_Nullable)message
-                                    level:(RadarLogLevel)level;
+- (instancetype _Nullable)initWithLevel:(RadarLogLevel)level
+                                message:(NSString *_Nullable)message;
 
 - (NSDictionary *_Nonnull)dictionaryValue;
 

@@ -42,7 +42,7 @@ static NSString *const kPurgedLogLine = @"----purged oldest logs! ----";
         [self purgeOldestLogs];
     }
     // add new log to buffer
-    RadarLog *radarLog = [[RadarLog alloc] initWithMessage:message level:level];
+    RadarLog *radarLog = [[RadarLog alloc] initWithLevel:level message:message];
     [mutableLogBuffer addObject:radarLog];
 }
 
@@ -60,7 +60,7 @@ static NSString *const kPurgedLogLine = @"----purged oldest logs! ----";
 - (void)purgeOldestLogs {
     // drop the oldest N logs from the buffer
     [mutableLogBuffer removeObjectsInRange:NSMakeRange(0, PURGE_AMOUNT)];
-    RadarLog *purgeLog = [[RadarLog alloc] initWithMessage:kPurgedLogLine level:RadarLogLevelDebug];
+    RadarLog *purgeLog = [[RadarLog alloc] initWithLevel:RadarLogLevelDebug message:kPurgedLogLine];
     [mutableLogBuffer insertObject:purgeLog atIndex:0];
 }
 /**

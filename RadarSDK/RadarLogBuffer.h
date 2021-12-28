@@ -16,8 +16,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (assign, nonatomic, readonly) NSArray<RadarLog *> *flushableLogs;
 
-- (instancetype)init;
-
 + (instancetype)sharedInstance;
 
 - (void)write:(RadarLogLevel)level message:(NSString *)message;
