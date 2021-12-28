@@ -22,7 +22,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)purgeOldestLogs;
 
-- (void)clearSyncedLogsFromBuffer:(NSUInteger)numLogs;
+- (void)removeLogsFromBuffer:(NSUInteger)numLogs;
+
+- (void)addLogsToBuffer:(NSArray<RadarLog *> *)logs;
 
 @end
 

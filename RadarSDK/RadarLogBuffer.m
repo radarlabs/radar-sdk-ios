@@ -66,8 +66,12 @@ static NSString *const kPurgedLogLine = @"----purged oldest logs! ----";
 /**
  * Clears logs that have been successfuly synced to server
  */
-- (void)clearSyncedLogsFromBuffer:(NSUInteger)numLogs {
+- (void)removeLogsFromBuffer:(NSUInteger)numLogs {
     [mutableLogBuffer removeObjectsInRange:NSMakeRange(0, numLogs)];
+}
+
+- (void)addLogsToBuffer:(NSArray<RadarLog *> *)logs {
+    [mutableLogBuffer addObjectsFromArray:logs];
 }
 
 @end

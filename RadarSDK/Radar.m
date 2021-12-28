@@ -873,7 +873,7 @@
     if (![self isTestKey]) {
         return;
     }
-    
+
     NSArray<RadarLog *> *flushableLogs = [[RadarLogBuffer sharedInstance] flushableLogs];
     
     NSUInteger pendingLogCount = [flushableLogs count];
@@ -881,18 +881,21 @@
         return;
     }
     
-    RadarSyncLogsAPICompletionHandler onSuccess = ^(RadarStatus status){
-        if (status == RadarStatusSuccess) {
-            // clear the logs up to pendinglog count
-            [[RadarLogBuffer sharedInstance] clearSyncedLogsFromBuffer:pendingLogCount];
+    // remove from buffer to handle multiple flushLogs calls
+    [[RadarLogBuffer sharedInstance] removeLogsFromBuffer:pendingLogCount];
+    
+    RadarSyncLogsAPICompletionHandler onComplete = ^(RadarStatus status){
+        // if an error occurs in syncing, add the logs back to the buffer
+        if (status != RadarStatusSuccess) {
+            [[RadarLogBuffer sharedInstance] addLogsToBuffer:flushableLogs];
         }
     };
 
     [[RadarAPIClient sharedInstance] syncLogs:flushableLogs
                             completionHandler:^(RadarStatus status) {
-                                  if (onSuccess) {
+                                  if (onComplete) {
                                       [RadarUtils runOnMainThread:^{
-                                          onSuccess(status);
+                                          onComplete(status);
                                       }];
                                   }
                               }];
