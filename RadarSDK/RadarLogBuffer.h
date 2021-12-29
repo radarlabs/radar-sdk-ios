@@ -7,7 +7,6 @@
 
 #import <Foundation/Foundation.h>
 
-#import "Radar.h"
 #import "RadarLog.h"
 
 NS_ASSUME_NONNULL_BEGIN

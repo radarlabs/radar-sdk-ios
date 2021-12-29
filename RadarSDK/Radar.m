@@ -850,7 +850,6 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-
 + (BOOL)isTestKey {
     NSString *publishableKey = [RadarSettings publishableKey];
     if ([publishableKey hasPrefix:@"prj_test_pk"] ||

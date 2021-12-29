@@ -794,7 +794,6 @@ typedef void (^_Nonnull RadarRouteMatrixCompletionHandler)(RadarStatus status, R
  */
 + (NSString *)stringForTripStatus:(RadarTripStatus)status NS_SWIFT_NAME(stringForTripStatus(_:));
 
-
 /**
  Returns a dictionary for a location.
 

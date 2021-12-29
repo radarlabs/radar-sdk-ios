@@ -5,7 +5,6 @@
 //  Copyright © 2021 Radar Labs, Inc. All rights reserved.
 //
 
-#import "Radar.h"
 #import "RadarLog.h"
 #import "RadarLogBuffer.h"
 
