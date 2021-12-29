@@ -13,14 +13,18 @@
 
 @implementation RadarUtils
 
-+ (NSDateFormatter *)isoDateFormatter {
-    // Perhaps the NSISODateFormatter can do this for us.
-    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-    dateFormatter.locale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US_POSIX"];
-    dateFormatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
-    [dateFormatter setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss.SSSZ"];
+static NSDateFormatter *_isoDateFormatter;
 
-    return dateFormatter;
++ (NSDateFormatter *)isoDateFormatter {
+    if (_isoDateFormatter == NULL) {
+        // Perhaps the NSISODateFormatter can do this for us.
+        _isoDateFormatter = [[NSDateFormatter alloc] init];
+        _isoDateFormatter.locale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US_POSIX"];
+        _isoDateFormatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
+        [_isoDateFormatter setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss.SSSZ"];
+    }
+    
+    return _isoDateFormatter;
 }
 
 + (NSString *)deviceModel {
