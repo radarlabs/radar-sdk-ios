@@ -37,4 +37,4 @@ jobs:
         run: xcodebuild -create-xcframework -framework RadarSDK-iphonesimulator.xcarchive/Products/Library/Frameworks/RadarSDK.framework -framework RadarSDK-iphoneos.xcarchive/Products/Library/Frameworks/RadarSDK.framework -output RadarSDK.xcframework
 
       - name: Zip XCFramework
-        run: zip -r RadarSDK.xcframework.zip
+        run: zip -r RadarSDK.xcframework.zip RadarSDK.xcframework -x ".*" -x "__MACOSX" -D
