@@ -7,6 +7,8 @@ on:
   # Triggered when a new release is tagged in GitHub.
   release:
     types: [ published ]
+  pull_request:
+    branches: [ master ]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -23,4 +25,34 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Build, test, and analyze
-        run: xcodebuild -workspace RadarSDK.xcodeproj/project.xcworkspace -scheme XCFramework -destination "platform=iOS Simulator,name=iPhone 11" clean build analyze test | xcpretty
+        run: xcodebuild clean build analyze test \
+          -workspace RadarSDK.xcodeproj/project.xcworkspace \
+          -scheme XCFramework \
+          -destination "platform=iOS Simulator,name=iPhone 11" | xcpretty
+      
+      - name: Build archive for iPhone simulator
+        run: xcodebuild archive \
+            -scheme RadarSDK \
+            -archivePath "RadarSDK-iphonesimulator.xcarchive" \
+            -sdk iphonesimulator \
+            SKIP_INSTALL=NO \
+            CODE_SIGN_IDENTITY= \
+            CODE_SIGNING_REQUIRED=NO
+      
+      - name: Build archive for iPhone device
+        run: xcodebuild archive \
+            -scheme RadarSDK \
+            -archivePath "RadarSDK-iphoneos.xcarchive" \
+            -sdk iphoneos \
+            SKIP_INSTALL=NO \
+            CODE_SIGN_IDENTITY= \
+            CODE_SIGNING_REQUIRED=NO
+
+      - name: Build XCFramework
+        run: xcodebuild -create-xcframework \
+            -framework RadarSDK-iphonesimulator.xcarchive/Products/Library/Frameworks/RadarSDK.framework \
+            -framework RadarSDK-iphoneos.xcarchive/Products/Library/Frameworks/RadarSDK.framework \
+            -output RadarSDK.xcframework
+
+      - name: Zip XCFramework
+        run: zip -r RadarSDK.xcframework.zip
