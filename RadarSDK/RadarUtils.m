@@ -13,6 +13,16 @@
 
 @implementation RadarUtils
 
++ (NSDateFormatter *)isoDateFormatter {
+    // Perhaps the NSISODateFormatter can do this for us.
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    dateFormatter.locale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US_POSIX"];
+    dateFormatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
+    [dateFormatter setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss.SSSZ"];
+
+    return dateFormatter;
+}
+
 + (NSString *)deviceModel {
     struct utsname systemInfo;
     uname(&systemInfo);

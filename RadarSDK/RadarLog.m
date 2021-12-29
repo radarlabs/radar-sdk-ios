@@ -6,6 +6,7 @@
 //
 
 #import "RadarLog.h"
+#import "RadarUtils.h"
 
 @implementation RadarLog
 
@@ -46,14 +47,7 @@
     NSMutableDictionary *dict = [NSMutableDictionary new];
     dict[@"level"] = [RadarLog stringForLogLevel:self.level];
     dict[@"message"] = self.message;
-
-    // convert (NSDate)createdAt to ISO8601 string
-    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-    dateFormatter.locale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US_POSIX"];
-    dateFormatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
-    [dateFormatter setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss.SSSZ"];
-
-    NSString *createdAtString = [dateFormatter stringFromDate:self.createdAt];
+    NSString *createdAtString = [RadarUtils.isoDateFormatter stringFromDate:self.createdAt];
     dict[@"createdAt"] = createdAtString;
 
     return dict;
