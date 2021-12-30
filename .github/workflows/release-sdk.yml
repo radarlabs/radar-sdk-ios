@@ -28,7 +28,7 @@ jobs:
         run: xcodebuild clean build analyze test -workspace Example/Example.xcodeproj/project.xcworkspace -scheme RadarSDK -destination "platform=iOS Simulator,name=iPhone 11" | xcpretty
       
       - name: Build archive for iPhone simulator
-        run: xcodebuild archive -workspace Example/Example.xcodeproj/project.xcworkspace -scheme RadarSDK -archivePath "RadarSDK-iphonesimulator.xcarchive" -sdk iphonesimulator SKIP_INSTALL=NO CODE_SIGN_IDENTITY= CODE_SIGNING_REQUIRED=NO
+        run: xcodebuild archive -scheme RadarSDK -archivePath "RadarSDK-iphonesimulator.xcarchive" -sdk iphonesimulator SKIP_INSTALL=NO CODE_SIGN_IDENTITY= CODE_SIGNING_REQUIRED=NO
       
       - name: Build archive for iPhone device
         run: xcodebuild archive -scheme RadarSDK -archivePath "RadarSDK-iphoneos.xcarchive" -sdk iphoneos SKIP_INSTALL=NO CODE_SIGN_IDENTITY= CODE_SIGNING_REQUIRED=NO
