@@ -16,8 +16,7 @@
 static NSDateFormatter *_isoDateFormatter;
 
 + (NSDateFormatter *)isoDateFormatter {
-    if (_isoDateFormatter == NULL) {
-        // Perhaps the NSISODateFormatter can do this for us.
+    if (_isoDateFormatter == nil) {
         _isoDateFormatter = [[NSDateFormatter alloc] init];
         _isoDateFormatter.locale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US_POSIX"];
         _isoDateFormatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
