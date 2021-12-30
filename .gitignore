@@ -8,3 +8,5 @@ sonar-reports/
 DerivedData/
 build/
 docs/undocumented.json
+*.xcarchive
+

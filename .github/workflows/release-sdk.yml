@@ -24,9 +24,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Generate SDK docs
-        run: jazzy
-
       - name: Build, test, and analyze
         run: xcodebuild clean build analyze test -workspace Example/Example.xcodeproj/project.xcworkspace -scheme RadarSDK -destination "platform=iOS Simulator,name=iPhone 11" | xcpretty
       
@@ -41,3 +38,9 @@ jobs:
 
       - name: Zip XCFramework
         run: zip -r RadarSDK.xcframework.zip RadarSDK.xcframework -x ".*" -x "__MACOSX" -D
+
+      - name: Generate SDK docs
+        run: jazzy
+
+      - name: Zip SDK docs
+        run: zip -r docs.zip docs -x ".*" -x "__MACOSX" -D
