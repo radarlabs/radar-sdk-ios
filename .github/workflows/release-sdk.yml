@@ -44,3 +44,7 @@ jobs:
 
       - name: Zip SDK docs
         run: zip -r docs.zip docs -x ".*" -x "__MACOSX" -D
+      
+      - name: Lint CocoaPods spec
+        run: pod lib lint --verbose
+        
