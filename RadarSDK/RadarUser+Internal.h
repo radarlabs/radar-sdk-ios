@@ -34,6 +34,7 @@
                            topChains:(nullable NSArray<RadarChain *> *)topChains
                               source:(RadarLocationSource)source
                                proxy:(BOOL)proxy
+                              mocked:(BOOL)mocked
                                 trip:(RadarTrip *_Nullable)trip;
 - (instancetype _Nullable)initWithObject:(id _Nonnull)object;
 

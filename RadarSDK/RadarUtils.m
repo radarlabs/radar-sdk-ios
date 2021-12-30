@@ -45,7 +45,7 @@ static NSDateFormatter *_isoDateFormatter;
 }
 
 + (NSString *)sdkVersion {
-    return @"3.2.0";
+    return @"3.2.3";
 }
 
 + (NSString *)adId {
@@ -135,7 +135,7 @@ static NSDateFormatter *_isoDateFormatter;
 + (NSDictionary *)dictionaryForLocation:(CLLocation *)location {
     NSMutableDictionary *dict = [NSMutableDictionary new];
     dict[@"latitude"] = @(location.coordinate.latitude);
-    dict[@"longitude"] =  @(location.coordinate.longitude);
+    dict[@"longitude"] = @(location.coordinate.longitude);
     dict[@"horizontalAccuracy"] = @(location.horizontalAccuracy);
     dict[@"verticalAccuracy"] = @(location.verticalAccuracy);
     dict[@"timestamp"] = location.timestamp;

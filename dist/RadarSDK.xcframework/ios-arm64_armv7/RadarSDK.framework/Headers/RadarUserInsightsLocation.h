@@ -13,7 +13,7 @@
 /**
  Represents a learned home or work location.
 
- @see https://radar.io/documentation/insights
+ @see https://radar.com/documentation/insights
  */
 @interface RadarUserInsightsLocation : NSObject
 
