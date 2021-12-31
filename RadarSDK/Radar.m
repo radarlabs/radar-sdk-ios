@@ -25,10 +25,6 @@
 
 @implementation Radar
 
-+ (NSString *)sdkVersion {
-    return [RadarUtils sdkVersion];
-}
-
 + (id)sharedInstance {
     static dispatch_once_t once;
     static id sharedInstance;

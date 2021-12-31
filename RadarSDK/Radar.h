@@ -239,8 +239,6 @@ typedef void (^_Nonnull RadarRouteMatrixCompletionHandler)(RadarStatus status, R
  */
 @interface Radar : NSObject
 
-@property (class, readonly) NSString *sdkVersion;
-
 /**
  Initializes the Radar SDK.
 
