@@ -12,6 +12,7 @@
 #import "RadarCoordinate+Internal.h"
 #import "RadarDelegateHolder.h"
 #import "RadarLocationManager.h"
+#import "RadarLogBuffer.h"
 #import "RadarLogger.h"
 #import "RadarSettings.h"
 #import "RadarState.h"
@@ -857,6 +858,56 @@
 
 - (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
++ (BOOL)isTestKey {
+    NSString *publishableKey = [RadarSettings publishableKey];
+    if ([publishableKey hasPrefix:@"prj_test_pk"] ||
+        [publishableKey hasPrefix:@"org_test_pk"]) {
+        return YES;
+    }
+    return NO;
+}
+
++ (void)sendLog:(RadarLogLevel)level message:(NSString *_Nonnull)message {
+    [[RadarLogBuffer sharedInstance] write:level message:message];
+}
+
+/**
+ * Sends Radar log events to the server
+ */
++ (void)flushLogs {
+    // user _id has to exist
+
+    if (![self isTestKey]) {
+        return;
+    }
+
+    NSArray<RadarLog *> *flushableLogs = [[RadarLogBuffer sharedInstance] flushableLogs];
+    
+    NSUInteger pendingLogCount = [flushableLogs count];
+    if (pendingLogCount == 0) {
+        return;
+    }
+    
+    // remove from buffer to handle multiple flushLogs calls
+    [[RadarLogBuffer sharedInstance] removeLogsFromBuffer:pendingLogCount];
+    
+    RadarSyncLogsAPICompletionHandler onComplete = ^(RadarStatus status){
+        // if an error occurs in syncing, add the logs back to the buffer
+        if (status != RadarStatusSuccess) {
+            [[RadarLogBuffer sharedInstance] addLogsToBuffer:flushableLogs];
+        }
+    };
+
+    [[RadarAPIClient sharedInstance] syncLogs:flushableLogs
+                            completionHandler:^(RadarStatus status) {
+                                  if (onComplete) {
+                                      [RadarUtils runOnMainThread:^{
+                                          onComplete(status);
+                                      }];
+                                  }
+                              }];
 }
 
 @end
