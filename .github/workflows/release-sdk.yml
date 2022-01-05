@@ -41,5 +41,6 @@ jobs:
         run: zip -r docs.zip docs -x ".*" -x "__MACOSX" -D
       
       # Lint and deploy the spec to the CocoaPods trunk
-      - uses: michaelhenry/deploy-to-cocoapods-github-action@1.0.10
+      - name: Push to CocoaPods trunk
+        uses: michaelhenry/deploy-to-cocoapods-github-action@1.0.10
         env: COCOAPODS_TRUNK_TOKEN: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}       
