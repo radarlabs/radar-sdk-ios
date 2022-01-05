@@ -22,7 +22,7 @@ static NSDateFormatter *_isoDateFormatter;
         _isoDateFormatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
         [_isoDateFormatter setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss.SSSZ"];
     }
-    
+
     return _isoDateFormatter;
 }
 
@@ -45,7 +45,7 @@ static NSDateFormatter *_isoDateFormatter;
 }
 
 + (NSString *)sdkVersion {
-    return @"3.2.3";
+    return @"3.2.4";
 }
 
 + (NSString *)adId {
