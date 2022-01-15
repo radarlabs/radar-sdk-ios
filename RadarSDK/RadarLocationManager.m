@@ -247,6 +247,10 @@ static NSString *const kSyncBeaconIdentifierPrefix = @"radar_beacon_";
     [self updateTracking:nil fromInitialize:fromInitialize];
 }
 
+- (void)updateTracking:(CLLocation *)location {
+    [self updateTracking:location fromInitialize:NO];
+}
+
 - (void)updateTracking:(CLLocation *)location
         fromInitialize:(BOOL)fromInitialize {
     dispatch_async(dispatch_get_main_queue(), ^{
@@ -492,7 +496,7 @@ static NSString *const kSyncBeaconIdentifierPrefix = @"radar_beacon_";
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
                                            message:[NSString stringWithFormat:@"Skipping location: inaccurate | accuracy = %f", location.horizontalAccuracy]];
 
-        [self updateTracking:location fromInitialize:NO];
+        [self updateTracking:location];
 
         return;
     }
@@ -558,7 +562,7 @@ static NSString *const kSyncBeaconIdentifierPrefix = @"radar_beacon_";
     [[RadarDelegateHolder sharedInstance] didUpdateClientLocation:location stopped:stopped source:source];
 
     if (source != RadarLocationSourceManualLocation) {
-        [self updateTracking:location fromInitialize:NO];
+        [self updateTracking:location];
     }
 
     [self callCompletionHandlersWithStatus:RadarStatusSuccess location:location];
