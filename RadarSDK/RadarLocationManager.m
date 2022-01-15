@@ -240,10 +240,15 @@ static NSString *const kSyncBeaconIdentifierPrefix = @"radar_beacon_";
 }
 
 - (void)updateTracking {
-    [self updateTracking:nil];
+    [self updateTracking:nil fromInitialize:NO];
 }
 
-- (void)updateTracking:(CLLocation *)location {
+- (void)updateTrackingFromInitialize:(BOOL)fromInitialize {
+    [self updateTracking:nil fromInitialize:fromInitialize];
+}
+
+- (void)updateTracking:(CLLocation *)location
+        fromInitialize:(BOOL)fromInitialize {
     dispatch_async(dispatch_get_main_queue(), ^{
         BOOL tracking = [RadarSettings tracking];
         RadarTrackingOptions *options = [RadarSettings trackingOptions];
@@ -337,8 +342,11 @@ static NSString *const kSyncBeaconIdentifierPrefix = @"radar_beacon_";
         } else {
             [self stopUpdates];
             [self removeAllRegions];
-            [self.locationManager stopMonitoringVisits];
-            [self.locationManager stopMonitoringSignificantLocationChanges];
+            
+            if (!fromInitialize) {
+                [self.locationManager stopMonitoringVisits];
+                [self.locationManager stopMonitoringSignificantLocationChanges];
+            }
         }
     });
 }
@@ -484,7 +492,7 @@ static NSString *const kSyncBeaconIdentifierPrefix = @"radar_beacon_";
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
                                            message:[NSString stringWithFormat:@"Skipping location: inaccurate | accuracy = %f", location.horizontalAccuracy]];
 
-        [self updateTracking:location];
+        [self updateTracking:location fromInitialize:NO];
 
         return;
     }
@@ -550,7 +558,7 @@ static NSString *const kSyncBeaconIdentifierPrefix = @"radar_beacon_";
     [[RadarDelegateHolder sharedInstance] didUpdateClientLocation:location stopped:stopped source:source];
 
     if (source != RadarLocationSourceManualLocation) {
-        [self updateTracking:location];
+        [self updateTracking:location fromInitialize:NO];
     }
 
     [self callCompletionHandlersWithStatus:RadarStatusSuccess location:location];
