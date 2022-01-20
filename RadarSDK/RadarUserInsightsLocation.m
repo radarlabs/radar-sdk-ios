@@ -109,7 +109,13 @@
     id updatedAtObj = dict[@"updatedAt"];
     if (updatedAtObj && [updatedAtObj isKindOfClass:[NSString class]]) {
         NSString *userInsightsLocationUpdatedAtStr = (NSString *)updatedAtObj;
-        updatedAt = [RadarUtils.isoDateFormatter dateFromString:userInsightsLocationUpdatedAtStr];
+
+        NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+        dateFormatter.locale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US_POSIX"];
+        dateFormatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
+        [dateFormatter setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss.SSSZ"];
+
+        updatedAt = [dateFormatter dateFromString:userInsightsLocationUpdatedAtStr];
     }
 
     id countryObj = dict[@"country"];

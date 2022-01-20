@@ -11,8 +11,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface RadarUtils : NSObject
 
-@property (class, nonatomic, assign, readonly) NSDateFormatter *isoDateFormatter;
-
 + (NSString *)deviceModel;
 + (NSString *)deviceOS;
 + (NSString *)country;
