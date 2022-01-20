@@ -243,8 +243,8 @@ static NSString *const kSyncBeaconIdentifierPrefix = @"radar_beacon_";
     [self updateTracking:nil fromInitialize:NO];
 }
 
-- (void)updateTrackingFromInitialize:(BOOL)fromInitialize {
-    [self updateTracking:nil fromInitialize:fromInitialize];
+- (void)updateTrackingFromInitialize {
+    [self updateTracking:nil fromInitialize:YES];
 }
 
 - (void)updateTracking:(CLLocation *)location {
