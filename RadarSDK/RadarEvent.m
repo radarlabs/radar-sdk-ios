@@ -12,7 +12,6 @@
 #import "RadarPlace+Internal.h"
 #import "RadarRegion+Internal.h"
 #import "RadarTrip+Internal.h"
-#import "RadarUtils.h"
 
 @implementation RadarEvent
 
@@ -108,13 +107,25 @@
     id createdAtObj = dict[@"createdAt"];
     if (createdAtObj && [createdAtObj isKindOfClass:[NSString class]]) {
         NSString *createdAtStr = (NSString *)createdAtObj;
-        createdAt = [RadarUtils.isoDateFormatter dateFromString:createdAtStr];
+
+        NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+        dateFormatter.locale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US_POSIX"];
+        dateFormatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
+        [dateFormatter setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss.SSSZ"];
+
+        createdAt = [dateFormatter dateFromString:createdAtStr];
     }
 
     id actualCreatedAtObj = dict[@"actualCreatedAt"];
     if ([actualCreatedAtObj isKindOfClass:[NSString class]]) {
         NSString *actualCreatedAtStr = (NSString *)actualCreatedAtObj;
-        actualCreatedAt = [RadarUtils.isoDateFormatter dateFromString:actualCreatedAtStr];
+
+        NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+        dateFormatter.locale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US_POSIX"];
+        dateFormatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
+        [dateFormatter setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss.SSSZ"];
+
+        actualCreatedAt = [dateFormatter dateFromString:actualCreatedAtStr];
     }
 
     id typeObj = dict[@"type"];

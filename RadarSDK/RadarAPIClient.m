@@ -8,7 +8,6 @@
 #import "RadarAPIClient.h"
 
 #import "Radar.h"
-#import "Radar+Internal.h"
 #import "RadarAddress+Internal.h"
 #import "RadarBeacon+Internal.h"
 #import "RadarContext+Internal.h"
@@ -92,8 +91,6 @@
                         if (!res) {
                             return;
                         }
-        
-                        [Radar flushLogs];
 
                         id metaObj = res[@"meta"];
                         if (metaObj && [metaObj isKindOfClass:[NSDictionary class]]) {
@@ -232,8 +229,7 @@
 
                             return completionHandler(status, nil, nil, nil, nil);
                         }
-        
-                        [Radar flushLogs];
+
                         [RadarState setLastFailedStoppedLocation:nil];
 
                         id metaObj = res[@"meta"];
@@ -885,39 +881,6 @@
                         }
 
                         completionHandler(RadarStatusErrorServer, nil, nil);
-                    }];
-}
-
-- (void)syncLogs:(NSArray<RadarLog *> *)logs completionHandler:(RadarSyncLogsAPICompletionHandler)completionHandler {
-    NSString *publishableKey = [RadarSettings publishableKey];
-    if (!publishableKey) {
-        return completionHandler(RadarStatusErrorPublishableKey);
-    }
-
-    NSString *host = [RadarSettings host];
-    NSString *url = [NSString stringWithFormat:@"%@/v1/logs", host];
-
-    NSDictionary *headers = [RadarAPIClient headersWithPublishableKey:publishableKey];
-
-    NSMutableDictionary *params = [NSMutableDictionary new];
-    
-    params[@"id"] = [RadarSettings _id];
-    params[@"installId"] = [RadarSettings installId];
-    params[@"deviceId"] = [RadarUtils deviceId];
-    NSString *sessionId = [RadarSettings sessionId];
-    if (sessionId) {
-        params[@"sessionId"] = sessionId;
-    }
-    NSArray *logsArray = [RadarLog arrayForLogs:logs];
-    [params setValue:logsArray forKey:@"logs"];
-
-    [self.apiHelper requestWithMethod:@"POST"
-                                  url:url
-                              headers:headers
-                               params:params
-                                sleep:NO
-                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
-                        return completionHandler(status);
                     }];
 }
 
