@@ -23,6 +23,8 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol RadarDelegate;
 @class RadarTripOptions;
 
+#pragma mark - Enumerations
+
 /**
  The status types for a request.
 
@@ -133,6 +135,8 @@ typedef NS_ENUM(NSInteger, RadarRouteUnits) {
     RadarRouteUnitsMetric NS_SWIFT_NAME(metric)
 };
 
+#pragma mark - Callback typedefs
+
 /**
  Called when a location request succeeds, fails, or times out.
 
@@ -239,6 +243,8 @@ typedef void (^_Nonnull RadarRouteMatrixCompletionHandler)(RadarStatus status, R
  */
 @interface Radar : NSObject
 
+#pragma mark - Initialization
+
 /**
  Initializes the Radar SDK.
 
@@ -249,6 +255,8 @@ typedef void (^_Nonnull RadarRouteMatrixCompletionHandler)(RadarStatus status, R
  @see https://radar.com/documentation/sdk/ios#initialize-sdk
  */
 + (void)initializeWithPublishableKey:(NSString *_Nonnull)publishableKey NS_SWIFT_NAME(initialize(publishableKey:));
+
+#pragma mark - Properties
 
 /**
  Identifies the user.
@@ -314,6 +322,8 @@ typedef void (^_Nonnull RadarRouteMatrixCompletionHandler)(RadarStatus status, R
  */
 + (void)setAdIdEnabled:(BOOL)enabled;
 
+#pragma mark - Get Location
+
 /**
  Gets the device's current location.
 
@@ -333,6 +343,8 @@ typedef void (^_Nonnull RadarRouteMatrixCompletionHandler)(RadarStatus status, R
  */
 + (void)getLocationWithDesiredAccuracy:(RadarTrackingOptionsDesiredAccuracy)desiredAccuracy
                      completionHandler:(RadarLocationCompletionHandler _Nullable)completionHandler NS_SWIFT_NAME(getLocation(desiredAccuracy:completionHandler:));
+
+#pragma mark - Tracking
 
 /**
  Tracks the user's location once in the foreground.
@@ -425,6 +437,8 @@ typedef void (^_Nonnull RadarRouteMatrixCompletionHandler)(RadarStatus status, R
  */
 + (RadarTrackingOptions *)getTrackingOptions;
 
+#pragma mark - Delegation
+
 /**
  Sets a delegate for client-side delivery of events, location updates, and debug logs.
 
@@ -433,6 +447,8 @@ typedef void (^_Nonnull RadarRouteMatrixCompletionHandler)(RadarStatus status, R
  @see https://radar.com/documentation/sdk/ios#listening-for-events-with-a-delegate
  */
 + (void)setDelegate:(nullable id<RadarDelegate>)delegate;
+
+#pragma mark - Event IDs
 
 /**
  Accepts an event. Events can be accepted after user check-ins or other forms of verification. Event verifications will be used to improve the accuracy and
@@ -454,6 +470,8 @@ typedef void (^_Nonnull RadarRouteMatrixCompletionHandler)(RadarStatus status, R
  @see https://radar.com/documentation/places#verify-events
  */
 + (void)rejectEventId:(NSString *_Nonnull)eventId NS_SWIFT_NAME(rejectEventId(_:));
+
+#pragma mark - Trips
 
 /**
  Returns the current trip options.
@@ -529,6 +547,8 @@ typedef void (^_Nonnull RadarRouteMatrixCompletionHandler)(RadarStatus status, R
  */
 + (void)cancelTripWithCompletionHandler:(RadarTripCompletionHandler _Nullable)completionHandler NS_SWIFT_NAME(cancelTrip(completionHandler:));
 
+#pragma mark - Device Context
+
 /**
  Gets the device's current location, then gets context for that location without sending device or user identifiers to the server.
 
@@ -548,6 +568,8 @@ typedef void (^_Nonnull RadarRouteMatrixCompletionHandler)(RadarStatus status, R
  */
 + (void)getContextForLocation:(CLLocation *_Nonnull)location
             completionHandler:(RadarContextCompletionHandler _Nonnull)completionHandler NS_SWIFT_NAME(getContext(location:completionHandler:));
+
+#pragma mark - Search
 
 /**
  Gets the device's current location, then searches for places near that location, sorted by distance.
@@ -663,6 +685,8 @@ typedef void (^_Nonnull RadarRouteMatrixCompletionHandler)(RadarStatus status, R
                     limit:(int)limit
         completionHandler:(RadarGeocodeCompletionHandler)completionHandler NS_SWIFT_NAME(autocomplete(query:near:limit:completionHandler:));
 
+#pragma mark - Geocoding
+
 /**
  Geocodes an address, converting address to coordinates.
 
@@ -701,6 +725,8 @@ typedef void (^_Nonnull RadarRouteMatrixCompletionHandler)(RadarStatus status, R
  @see https://radar.com/documentation/api#ip-geocode
  */
 + (void)ipGeocodeWithCompletionHandler:(RadarIPGeocodeCompletionHandler)completionHandler NS_SWIFT_NAME(ipGeocode(completionHandler:));
+
+#pragma mark - Distances
 
 /**
  Gets the device's current location, then calculates the travel distance and duration to a destination.
@@ -751,12 +777,16 @@ typedef void (^_Nonnull RadarRouteMatrixCompletionHandler)(RadarStatus status, R
                        units:(RadarRouteUnits)units
            completionHandler:(RadarRouteMatrixCompletionHandler)completionHandler NS_SWIFT_NAME(getMatrix(origins:destinations:mode:units:completionHandler:));
 
+#pragma mark - Logging
+
 /**
  Sets the log level for debug logs.
 
  @param level The log level.
  */
 + (void)setLogLevel:(RadarLogLevel)level;
+
+#pragma mark - Utilities
 
 /**
  Returns a display string for a status value.
