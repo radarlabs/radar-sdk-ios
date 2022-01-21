@@ -347,7 +347,11 @@ static NSString *const kSyncBeaconIdentifierPrefix = @"radar_beacon_";
             [self stopUpdates];
             [self removeAllRegions];
 
-            // Don't modify the location services when the Radar SDK is being initialized.
+            // If updateTracking() was called from the RadarLocationManager
+            // intializer, don't tell the CLLocationManager to stop, because
+            // the location manager may be in use by other location-based
+            // services. Currently, only the initializer passes in YES, and all
+            // subsequent calls to updateTracking() get NO.
             if (!fromInitialize) {
                 [self.locationManager stopMonitoringVisits];
                 [self.locationManager stopMonitoringSignificantLocationChanges];
