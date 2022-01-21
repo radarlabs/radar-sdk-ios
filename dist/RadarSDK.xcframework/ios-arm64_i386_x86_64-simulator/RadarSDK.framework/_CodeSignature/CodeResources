@@ -6,7 +6,7 @@
 	<dict>
 		<key>Headers/Radar.h</key>
 		<data>
-		QEx45J4OhRqv6psOrpXqmAi8fDA=
+		sUU2aJCZ+bv/VP2oVKlDnCsls8k=
 		</data>
 		<key>Headers/RadarAddress.h</key>
 		<data>
@@ -126,7 +126,7 @@
 		</data>
 		<key>Info.plist</key>
 		<data>
-		l/5PH5doMLDcwQSm5X7gBpeVfcQ=
+		lLcU8fWP5UA5a7PbDFLliGSw7I4=
 		</data>
 		<key>Modules/module.modulemap</key>
 		<data>
@@ -139,11 +139,11 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			QEx45J4OhRqv6psOrpXqmAi8fDA=
+			sUU2aJCZ+bv/VP2oVKlDnCsls8k=
 			</data>
 			<key>hash2</key>
 			<data>
-			qAGv7G+A7+eQRnkej+mlGyABlGmWbIir/kh2pQOMpDQ=
+			KTrr2Y7hRh/eMQXE7FDsJnKTM6pLRCoi4QJ97xiPMkE=
 			</data>
 		</dict>
 		<key>Headers/RadarAddress.h</key>
