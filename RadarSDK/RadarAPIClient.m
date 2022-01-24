@@ -927,7 +927,7 @@
     [params setValue:logsArray forKey:@"logs"];
 
     // "logPayload = false" enforces "don't log the logging call".
-    // Otherwise, all log entries would continue coalesce and would never fully clear from the buffer
+    // Otherwise, all log entries would continue to coalesce and would never fully clear from the buffer.
     [self.apiHelper requestWithMethod:@"POST"
                                   url:url
                               headers:headers
