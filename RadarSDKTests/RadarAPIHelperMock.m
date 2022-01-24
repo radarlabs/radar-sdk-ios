@@ -14,6 +14,7 @@
                   headers:(NSDictionary *)headers
                    params:(NSDictionary *)params
                     sleep:(BOOL)sleep
+               logPayload:(BOOL)logPayload
         completionHandler:(RadarAPICompletionHandler)completionHandler {
     completionHandler(self.mockStatus, self.mockResponse);
 }
