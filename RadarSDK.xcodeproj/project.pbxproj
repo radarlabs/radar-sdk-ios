@@ -722,7 +722,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "SCHEME_NAME=\"RadarSDK\"\nFRAMEWORK_NAME=\"RadarSDK\"\n\nSIMULATOR_ARCHIVE_PATH=\"${BUILD_DIR}/${CONFIGURATION}/${FRAMEWORK_NAME}-iphonesimulator.xcarchive\"\nDEVICE_ARCHIVE_PATH=\"${BUILD_DIR}/${CONFIGURATION}/${FRAMEWORK_NAME}-iphoneos.xcarchive\"\nDIST_DIR=\"dist\"\nXCFRAMEWORK_FILE=\"${FRAMEWORK_NAME}.xcframework\"\nXCFRAMEWORK_PATH=\"${DIST_DIR}/${XCFRAMEWORK_FILE}\"\nXCFRAMEWORK_ZIP_FILE=\"${XCFRAMEWORK_PATH}.zip\"\nXCFRAMEWORK_ZIP_PATH=\"../${XCFRAMEWORK_ZIP_FILE}\"\n\necho \"Building ${SIMULATOR_ARCHIVE_PATH}\"\n\nxcodebuild archive \\\n  -scheme RadarSDK \\\n  -archivePath ${SIMULATOR_ARCHIVE_PATH} \\\n  -sdk iphonesimulator \\\n  SKIP_INSTALL=NO \\\n  CODE_SIGN_IDENTITY= \\\n  CODE_SIGNING_REQUIRED=NO\n\necho \"Building ${DEVICE_ARCHIVE_PATH}\"\n\nxcodebuild archive \\\n  -scheme ${SCHEME_NAME} \\\n  -archivePath ${DEVICE_ARCHIVE_PATH} \\\n  -sdk iphoneos \\\n  SKIP_INSTALL=NO \\\n  CODE_SIGN_IDENTITY= \\\n  CODE_SIGNING_REQUIRED=NO\n  \nrm -rf ${DIST_DIR}\nmkdir -p ${DIST_DIR}\n\necho \"Building ${XCFRAMEWORK_FILE}\"\n\nxcodebuild -create-xcframework \\\n  -framework ${SIMULATOR_ARCHIVE_PATH}/Products/Library/Frameworks/${FRAMEWORK_NAME}.framework \\\n  -framework ${DEVICE_ARCHIVE_PATH}/Products/Library/Frameworks/${FRAMEWORK_NAME}.framework \\\n  -output ${XCFRAMEWORK_PATH}\n\necho \"Zipping ${XCFRAMEWORK_ZIP_FILE}\"\n\ncd ${DIST_DIR}\n\nzip -r ${XCFRAMEWORK_ZIP_PATH} ${XCFRAMEWORK_FILE} -x \".*\" -x \"__MACOSX\" -D\n\nopen .\n";
+			shellScript = "SCHEME_NAME=\"RadarSDK\"\nFRAMEWORK_NAME=\"RadarSDK\"\n\nSIMULATOR_ARCHIVE_PATH=\"${BUILD_DIR}/${CONFIGURATION}/${FRAMEWORK_NAME}-iphonesimulator.xcarchive\"\nDEVICE_ARCHIVE_PATH=\"${BUILD_DIR}/${CONFIGURATION}/${FRAMEWORK_NAME}-iphoneos.xcarchive\"\nDIST_DIR=\"dist\"\nXCFRAMEWORK_FILE=\"${FRAMEWORK_NAME}.xcframework\"\nXCFRAMEWORK_PATH=\"${DIST_DIR}/${XCFRAMEWORK_FILE}\"\nXCFRAMEWORK_ZIP_FILE=\"${XCFRAMEWORK_PATH}.zip\"\nXCFRAMEWORK_ZIP_PATH=\"../${XCFRAMEWORK_ZIP_FILE}\"\n\necho \"Building ${SIMULATOR_ARCHIVE_PATH}\"\n\nxcodebuild archive \\\n  -scheme RadarSDK \\\n  -archivePath ${SIMULATOR_ARCHIVE_PATH} \\\n  -sdk iphonesimulator \\\n  SKIP_INSTALL=NO \\\n  CODE_SIGN_IDENTITY= \\\n  CODE_SIGNING_REQUIRED=NO\n\necho \"Building ${DEVICE_ARCHIVE_PATH}\"\n\nxcodebuild archive \\\n  -scheme ${SCHEME_NAME} \\\n  -archivePath ${DEVICE_ARCHIVE_PATH} \\\n  -sdk iphoneos \\\n  SKIP_INSTALL=NO \\\n  CODE_SIGN_IDENTITY= \\\n  CODE_SIGNING_REQUIRED=NO\n  \nrm -rf ${DIST_DIR}\nmkdir -p ${DIST_DIR}\n\necho \"Building ${XCFRAMEWORK_FILE}\"\n\n# The -debug-symbols option was added in Xcode 12 beta 3\nxcodebuild -create-xcframework \\\n  -framework ${SIMULATOR_ARCHIVE_PATH}/Products/Library/Frameworks/${FRAMEWORK_NAME}.framework \\\n  -debug-symbols ${SIMULATOR_ARCHIVE_PATH}/dSYMs/${FRAMEWORK_NAME}.framework.dSYM \\\n  -framework ${DEVICE_ARCHIVE_PATH}/Products/Library/Frameworks/${FRAMEWORK_NAME}.framework \\\n  -debug-symbols ${DEVICE_ARCHIVE_PATH}/dSYMs/${FRAMEWORK_NAME}.framework.dSYM \\\n  -output ${XCFRAMEWORK_PATH}\n\necho \"Zipping ${XCFRAMEWORK_ZIP_FILE}\"\n\ncd ${DIST_DIR}\n\nzip -r ${XCFRAMEWORK_ZIP_PATH} ${XCFRAMEWORK_FILE} -x \".*\" -x \"__MACOSX\" -D\n\nopen .\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -809,7 +809,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = 3.2.3;
+				MARKETING_VERSION = 3.2.4;
 				PRODUCT_BUNDLE_IDENTIFIER = io.radar.sdk;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -838,7 +838,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = 3.2.3;
+				MARKETING_VERSION = 3.2.4;
 				PRODUCT_BUNDLE_IDENTIFIER = io.radar.sdk;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

@@ -48,7 +48,7 @@
     }
 
     [RadarSettings setPublishableKey:publishableKey];
-    [[RadarLocationManager sharedInstance] updateTracking];
+    [[RadarLocationManager sharedInstance] updateTrackingFromInitialize];
     [[RadarAPIClient sharedInstance] getConfig];
 }
 

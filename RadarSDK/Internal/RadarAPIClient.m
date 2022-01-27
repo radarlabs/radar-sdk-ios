@@ -88,6 +88,7 @@
                               headers:headers
                                params:nil
                                 sleep:NO
+                           logPayload:YES
                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
                         if (!res) {
                             return;
@@ -221,6 +222,7 @@
                               headers:headers
                                params:params
                                 sleep:YES
+                           logPayload:YES
                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
                         if (status != RadarStatusSuccess || !res) {
                             if (options.replay == RadarTrackingOptionsReplayStops && stopped &&
@@ -300,6 +302,7 @@
                               headers:headers
                                params:params
                                 sleep:NO
+                           logPayload:YES
                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res){
 
                     }];
@@ -342,6 +345,7 @@
                               headers:headers
                                params:params
                                 sleep:NO
+                           logPayload:YES
                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
                         if (status != RadarStatusSuccess || !res) {
                             return completionHandler(status, nil, nil);
@@ -379,6 +383,7 @@
                               headers:headers
                                params:nil
                                 sleep:NO
+                           logPayload:YES
                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
                         if (status != RadarStatusSuccess || !res) {
                             return completionHandler(status, nil, nil);
@@ -433,6 +438,7 @@
                               headers:headers
                                params:nil
                                 sleep:NO
+                           logPayload:YES
                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
                         if (status != RadarStatusSuccess || !res) {
                             return completionHandler(status, nil, nil);
@@ -485,6 +491,7 @@
                               headers:headers
                                params:nil
                                 sleep:NO
+                           logPayload:YES
                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
                         if (status != RadarStatusSuccess || !res) {
                             return completionHandler(status, nil, nil);
@@ -523,6 +530,7 @@
                               headers:headers
                                params:nil
                                 sleep:NO
+                           logPayload:YES
                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
                         if (status != RadarStatusSuccess || !res) {
                             return completionHandler(status, nil, nil);
@@ -577,6 +585,7 @@
                               headers:headers
                                params:nil
                                 sleep:NO
+                           logPayload:YES
                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
                         if (status != RadarStatusSuccess || !res) {
                             return completionHandler(status, nil, nil);
@@ -620,6 +629,7 @@
                               headers:headers
                                params:nil
                                 sleep:NO
+                           logPayload:YES
                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
                         if (status != RadarStatusSuccess || !res) {
                             return completionHandler(status, nil, nil);
@@ -655,6 +665,7 @@
                               headers:headers
                                params:nil
                                 sleep:NO
+                           logPayload:YES
                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
                         if (status != RadarStatusSuccess || !res) {
                             return completionHandler(status, nil, nil);
@@ -690,6 +701,7 @@
                               headers:headers
                                params:nil
                                 sleep:NO
+                           logPayload:YES
                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
                         if (status != RadarStatusSuccess || !res) {
                             return completionHandler(status, nil, nil);
@@ -721,6 +733,7 @@
                               headers:headers
                                params:nil
                                 sleep:NO
+                           logPayload:YES
                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
                         if (status != RadarStatusSuccess || !res) {
                             return completionHandler(status, nil, nil, NO);
@@ -797,6 +810,7 @@
                               headers:headers
                                params:nil
                                 sleep:NO
+                           logPayload:YES
                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
                         if (status != RadarStatusSuccess || !res) {
                             return completionHandler(status, nil, nil);
@@ -873,6 +887,7 @@
                               headers:headers
                                params:nil
                                 sleep:NO
+                           logPayload:YES
                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
                         if (status != RadarStatusSuccess || !res) {
                             return completionHandler(status, nil, nil);
@@ -911,11 +926,14 @@
     NSArray *logsArray = [RadarLog arrayForLogs:logs];
     [params setValue:logsArray forKey:@"logs"];
 
+    // "logPayload = false" enforces "don't log the logging call".
+    // Otherwise, all log entries would continue to coalesce and would never fully clear from the buffer.
     [self.apiHelper requestWithMethod:@"POST"
                                   url:url
                               headers:headers
                                params:params
                                 sleep:NO
+                           logPayload:NO
                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
                         return completionHandler(status);
                     }];
