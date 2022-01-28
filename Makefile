@@ -45,6 +45,6 @@ build-example-pretty:
 docs:
 	jazzy
 
-dist: clean-pretty test-pretty build-pretty lint jazzy
+dist: clean-pretty test-pretty build-pretty lint docs
 
 .PHONY: bootstrap clean test build lint format docs dist
