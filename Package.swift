@@ -14,9 +14,12 @@ let package = Package(
     ],
     dependencies: [],
     targets: [
-        .binaryTarget(
+        .target(
             name: "RadarSDK",
-            path: "dist/RadarSDK.xcframework"
+            path: "RadarSDK",
+            cSettings: [
+                .headerSearchPath("Internal")
+            ]
         )
     ]
 )
