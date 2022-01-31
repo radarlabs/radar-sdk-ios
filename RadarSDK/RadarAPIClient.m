@@ -105,21 +105,18 @@
                                 sleep:NO
                            logPayload:YES
                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
-                        if (!res) {
-                            return;
-                        }
+        if (!res) {
+            return;
+        }
         
-                        RadarMeta *meta = [RadarAPIClient parseMeta:res];
-                        id configObj = meta.config
-
-                        if (configObj && [configObj isKindOfClass:[NSDictionary class]]) {
-                            NSDictionary *config = (NSDictionary *)configObj;
-                            [RadarSettings setConfig:config];
-                        }
-
-                        completionHandler(status, meta);
-                    }
-                ];
+        RadarMeta *meta = [RadarAPIClient parseMeta:res];
+        if (meta.config) {
+            [RadarSettings setConfig:meta.config];
+        }
+        
+        completionHandler(status, meta);
+    }
+    ];
 }
 
 - (void)trackWithLocation:(CLLocation *_Nonnull)location

@@ -17,6 +17,9 @@
     RadarMeta *meta = [RadarMeta new];
     
     if (dict) {
+        id configObj = dict[@"config"];
+        meta.config = (NSDictionary *)configObj;
+
         id trackingOptionsObj = dict[@"trackingOptions"];
         if (trackingOptionsObj && [trackingOptionsObj isKindOfClass:[NSDictionary class]]) {
             meta.trackingOptions = [RadarTrackingOptions trackingOptionsFromDictionary:trackingOptionsObj];
