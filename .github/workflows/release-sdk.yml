@@ -1,0 +1,29 @@
+# When a new release is created on GitHub, this workflow builds the SDK as an XCFramework,
+# generates the API documents, and pushes a CocoaPods update.
+name: Radar SDK iOS Release
+
+on:
+  # Triggered when a new release is tagged in GitHub.
+  release:
+    types: [ published ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+
+  build:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Build, test, and analyze
+        run: xcodebuild clean build analyze test -workspace Example/Example.xcodeproj/project.xcworkspace -scheme RadarSDK -destination "platform=iOS Simulator,name=iPhone 11" | xcpretty
+      
+      # Lint and deploy the spec to the CocoaPods trunk
+      - uses: michaelhenry/deploy-to-cocoapods-github-action@1.0.10
+        env:
+          COCOAPODS_TRUNK_TOKEN: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}
+

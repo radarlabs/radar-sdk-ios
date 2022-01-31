@@ -28,6 +28,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)replaceSyncedBeacons:(NSArray<RadarBeacon *> *)beacons;
 - (void)updateTracking;
 - (void)updateTrackingFromMeta:(RadarMeta *_Nullable)meta;
+- (void)updateTrackingFromInitialize;
 
 @end
 

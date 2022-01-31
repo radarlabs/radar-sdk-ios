@@ -4,7 +4,7 @@ umbrella_header: RadarSDK/RadarSDK.h
 framework_root: RadarSDK
 sdk: iphonesimulator
 author: Radar Labs, Inc.
-author_url: https://radar.io
+author_url: https://radar.com
 github_url: https://github.com/radarlabs/radar-sdk-ios
 module: RadarSDK
 skip_undocumented: true

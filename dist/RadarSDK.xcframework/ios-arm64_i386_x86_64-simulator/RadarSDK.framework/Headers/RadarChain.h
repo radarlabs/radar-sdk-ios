@@ -10,21 +10,21 @@
 /**
  Represents the chain of a place.
 
- @see https://radar.io/documentation/places
+ @see https://radar.com/documentation/places
  */
 @interface RadarChain : NSObject
 
 /**
- The unique ID of the chain. For a full list of chains, see https://radar.io/documentation/places/chains.
+ The unique ID of the chain. For a full list of chains, see https://radar.com/documentation/places/chains.
 
- @see https://radar.io/documentation/places/chains
+ @see https://radar.com/documentation/places/chains
  */
 @property (nonnull, copy, nonatomic, readonly) NSString *slug;
 
 /**
- The name of the chain. For a full list of chains, see https://radar.io/documentation/places/chains.
+ The name of the chain. For a full list of chains, see https://radar.com/documentation/places/chains.
 
- @see https://radar.io/documentation/places/chains
+ @see https://radar.com/documentation/places/chains
  */
 @property (nonnull, copy, nonatomic, readonly) NSString *name;
 

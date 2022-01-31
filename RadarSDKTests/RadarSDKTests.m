@@ -156,6 +156,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     AssertChainsOk(user.topChains);
     XCTAssertNotEqual(user.source, RadarLocationSourceUnknown);
     XCTAssertTrue(user.proxy);
+    XCTAssertTrue(user.mocked);
     AssertTripOk(user.trip);
 }
 
