@@ -11,7 +11,7 @@
 static const int MAX_BUFFER_SIZE = 500;
 static const int PURGE_AMOUNT = 200;
 
-static NSString *const kPurgedLogLine = @"----purged oldest logs! ----";
+static NSString *const kPurgedLogLine = @"----- purged oldest logs -----";
 
 @implementation RadarLogBuffer {
     NSMutableArray<RadarLog *> *mutableLogBuffer; // define log buffer
