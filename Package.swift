@@ -22,23 +22,6 @@ let package = Package(
             cSettings: [
                 .headerSearchPath("Internal")
             ]
-        ),
-        .testTarget(
-            name: "RadarSDKTests",
-            dependencies: ["RadarSDK"],
-            path: "RadarSDKTests",
-            exclude: ["Info.plist"],
-            resources: [
-                .copy("Resources/context.json"),
-                .copy("Resources/events_verification.json"),
-                .copy("Resources/geocode.json"),
-                .copy("Resources/geocode_ip.json"),
-                .copy("Resources/route_distance.json"),
-                .copy("Resources/search_autocomplete.json"),
-                .copy("Resources/search_geofences.json"),
-                .copy("Resources/search_places.json"),
-                .copy("Resources/track.json"),
-            ]
         )
     ]
 )
