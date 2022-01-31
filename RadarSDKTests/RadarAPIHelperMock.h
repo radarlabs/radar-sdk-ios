@@ -6,9 +6,8 @@
 //
 
 #import <Foundation/Foundation.h>
-#import <RadarSDK/RadarSDK.h>
-
-#import "RadarAPIHelper.h"
+#import <RadarSDK.h>
+#import "../RadarSDK/Internal/RadarAPIHelper.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
