@@ -111,7 +111,7 @@
         
         RadarMeta *meta = [RadarAPIClient parseMeta:res];
         if (meta.config) {
-            [RadarSettings setConfig:meta.config];
+            [RadarSettings setTrackingOptions:meta.trackingOptions];
         }
         
         completionHandler(status, meta);

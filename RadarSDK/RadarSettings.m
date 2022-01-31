@@ -26,7 +26,6 @@ static NSString *const kFallbackTrackingOptions = @"radar-fallbackTrackingOption
 static NSString *const kListenToServerTrackingOptions = @"radar-listenToServerTrackingOptions";
 static NSString *const kTripOptions = @"radar-tripOptions";
 static NSString *const kLogLevel = @"radar-logLevel";
-static NSString *const kConfig = @"radar-config";
 static NSString *const kHost = @"radar-host";
 static NSString *const kDefaultHost = @"https://api.radar.io";
 
@@ -160,10 +159,6 @@ static NSString *const kDefaultHost = @"https://api.radar.io";
 + (void)setTripOptions:(RadarTripOptions *)options {
     NSDictionary *optionsDict = [options dictionaryValue];
     [[NSUserDefaults standardUserDefaults] setObject:optionsDict forKey:kTripOptions];
-}
-
-+ (void)setConfig:(NSDictionary *)config {
-    [[NSUserDefaults standardUserDefaults] setObject:config forKey:kConfig];
 }
 
 + (RadarLogLevel)logLevel {
