@@ -105,6 +105,8 @@
                                 sleep:NO
                            logPayload:YES
                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
+        [Radar flushLogs];
+
         if (!res) {
             return;
         }

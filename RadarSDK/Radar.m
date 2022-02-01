@@ -49,7 +49,7 @@
 
     [RadarSettings setPublishableKey:publishableKey];
     [[RadarLocationManager sharedInstance] updateTrackingFromInitialize];
-    [[RadarAPIClient sharedInstance] getConfig:^(RadarStatus status, RadarMeta *_Nullable meta) {
+    [[RadarAPIClient sharedInstance] getConfig:^(RadarStatus unused, RadarMeta *_Nullable meta) {
         [[RadarLocationManager sharedInstance] updateTrackingFromMeta:meta];
     }];
 }
