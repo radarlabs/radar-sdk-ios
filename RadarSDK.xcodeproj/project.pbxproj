@@ -159,7 +159,7 @@
 		78156B9623A8210E0094410E /* RadarAddress.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RadarAddress.m; sourceTree = "<group>"; };
 		78D8CE3B23AD78A1009E91F5 /* geocode.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = geocode.json; sourceTree = "<group>"; };
 		78D8CE3D23AD7FEE009E91F5 /* geocode_ip.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = geocode_ip.json; sourceTree = "<group>"; };
-		96C0459727AAF4A6004F688A /* Package.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Package.swift; sourceTree = "<group>"; };
+		96C0459927AAF615004F688A /* Package.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Package.swift; sourceTree = "<group>"; };
 		96C136E927A4D27000F1F613 /* RadarEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RadarEvent.h; sourceTree = "<group>"; };
 		96C136EA27A4D27000F1F613 /* RadarRegion.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RadarRegion.h; sourceTree = "<group>"; };
 		96C136EB27A4D27000F1F613 /* RadarUserInsightsLocation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RadarUserInsightsLocation.h; sourceTree = "<group>"; };
@@ -448,6 +448,7 @@
 		DD236C6B2308797B00EB88F9 = {
 			isa = PBXGroup;
 			children = (
+				96C0459927AAF615004F688A /* Package.swift */,
 				DD236C772308797B00EB88F9 /* RadarSDK */,
 				DD236C822308797B00EB88F9 /* RadarSDKTests */,
 				DD236C762308797B00EB88F9 /* Products */,
@@ -467,7 +468,6 @@
 		DD236C772308797B00EB88F9 /* RadarSDK */ = {
 			isa = PBXGroup;
 			children = (
-				96C0459727AAF4A6004F688A /* Package.swift */,
 				96C136FB27A4D27000F1F613 /* RadarSDK.h */,
 				DD236C9023087A3500EB88F9 /* Radar.m */,
 				DD4C104925D87E3E009C2E36 /* RadarDelegateHolder.m */,
@@ -642,7 +642,7 @@
 					};
 					DD236C7D2308797B00EB88F9 = {
 						CreatedOnToolsVersion = 11.0;
-						LastSwiftMigration = 1120;
+						LastSwiftMigration = 1320;
 					};
 				};
 			};
