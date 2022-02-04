@@ -8,14 +8,14 @@
 @import RadarSDK;
 #import <XCTest/XCTest.h>
 
+#import "../RadarSDK/RadarAPIClient.h"
+#import "../RadarSDK/RadarAPIHelper.h"
+#import "../RadarSDK/RadarLocationManager.h"
+#import "../RadarSDK/RadarSettings.h"
 #import "CLLocationManagerMock.h"
 #import "CLVisitMock.h"
-#import "../RadarSDK/Internal/RadarAPIClient.h"
-#import "../RadarSDK/Internal/RadarAPIHelper.h"
 #import "RadarAPIHelperMock.h"
-#import "../RadarSDK/Internal/RadarLocationManager.h"
 #import "RadarPermissionsHelperMock.h"
-#import "../RadarSDK/Internal/RadarSettings.h"
 #import "RadarTestUtils.h"
 #import "RadarTripOptions.h"
 

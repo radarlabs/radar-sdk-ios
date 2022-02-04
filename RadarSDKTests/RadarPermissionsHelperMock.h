@@ -8,7 +8,7 @@
 #import <CoreLocation/CoreLocation.h>
 #import <Foundation/Foundation.h>
 #import <RadarSDK.h>
-#import "../RadarSDK/Internal/RadarPermissionsHelper.h"
+#import "../RadarSDK/RadarPermissionsHelper.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

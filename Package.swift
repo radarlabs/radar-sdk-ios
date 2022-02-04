@@ -20,7 +20,7 @@ let package = Package(
             exclude: ["Info.plist", "RadarSDK.h"],
             publicHeadersPath: "Include",
             cSettings: [
-                .headerSearchPath("Internal")
+                .headerSearchPath(".")
             ]
         )
     ]
