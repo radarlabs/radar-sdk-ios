@@ -1,0 +1,16 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "RadarSDK",
+        "repositoryURL": "https://github.com/radarlabs/radar-sdk-ios.git",
+        "state": {
+          "branch": "experiment/8281-distribute-via-source",
+          "revision": "a5b3f1fc5ebb7eb1a6f29519b433b305a98c5758",
+          "version": null
+        }
+      }
+    ]
+  },
+  "version": 1
+}

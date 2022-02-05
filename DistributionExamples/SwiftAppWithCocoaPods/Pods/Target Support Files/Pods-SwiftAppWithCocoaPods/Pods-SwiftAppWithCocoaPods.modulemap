@@ -1,0 +1,6 @@
+framework module Pods_SwiftAppWithCocoaPods {
+  umbrella header "Pods-SwiftAppWithCocoaPods-umbrella.h"
+
+  export *
+  module * { export * }
+}

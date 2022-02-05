@@ -1,0 +1,17 @@
+PODS:
+  - RadarSDK (3.3.1-beta.1)
+
+DEPENDENCIES:
+  - RadarSDK (from `../../radar-sdk-ios`)
+
+EXTERNAL SOURCES:
+  RadarSDK:
+    :path: "../../radar-sdk-ios"
+    :tag: 3.3.1-beta.1
+
+SPEC CHECKSUMS:
+  RadarSDK: 67dc9f6d12b2fa244abeb55af3c30312542947b3
+
+PODFILE CHECKSUM: c76a9629cc8c4eb3c348c564dddfde5fd9b5d8eb
+
+COCOAPODS: 1.11.2
