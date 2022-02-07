@@ -1,8 +1,8 @@
 .DS_Store
 xcuserdata/
 .idea/
-Carthage/Checkouts/
-Carthage/Build/
+**/Carthage/Checkouts/
+**/Carthage/Build/
 sonar-reports/
 .scannerwork/
 DerivedData/

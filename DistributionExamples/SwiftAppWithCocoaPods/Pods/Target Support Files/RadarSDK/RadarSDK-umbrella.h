@@ -10,7 +10,6 @@
 #endif
 #endif
 
-#import "RadarSDK.h"
 #import "Radar+Internal.h"
 #import "RadarAddress+Internal.h"
 #import "RadarAPIClient.h"
@@ -40,6 +39,7 @@
 #import "RadarRouteGeometry+Internal.h"
 #import "RadarRouteMatrix+Internal.h"
 #import "RadarRoutes+Internal.h"
+#import "RadarSDK.h"
 #import "RadarSegment+Internal.h"
 #import "RadarSettings.h"
 #import "RadarState.h"

@@ -6,5 +6,5 @@ target 'SwiftAppWithCocoaPods' do
   use_frameworks!
 
   # Pods for SwiftAppWithCocoaPods
-  pod 'RadarSDK', :path => '../../radar-sdk-ios', :tag => '3.3.1-beta.1'
+  pod 'RadarSDK', :path => '../..', :tag => '3.3.1-beta.1'
 end
