@@ -105,12 +105,12 @@
                                 sleep:NO
                            logPayload:YES
                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
-        [Radar flushLogs];
-
         if (!res) {
             return;
         }
-        
+
+        [Radar flushLogs];
+
         RadarMeta *meta = [RadarAPIClient parseMeta:res];
         completionHandler(status, meta);
     }
