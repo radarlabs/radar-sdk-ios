@@ -20,6 +20,5 @@
  The tracking options returned from enabling tracking options in the Radar dashboard.
  */
 @property (nullable, strong, nonatomic, readwrite) RadarTrackingOptions *trackingOptions;
-@property (nullable, strong, nonatomic, readwrite) NSDictionary *config;
 
 @end
