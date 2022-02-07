@@ -365,11 +365,15 @@ static NSString *const kSyncBeaconIdentifierPrefix = @"radar_beacon_";
 - (void)updateTrackingFromMeta:(RadarMeta *_Nullable)meta {
     if (meta) {
         if ([meta trackingOptions]) {
-             [RadarSettings setListenToServerTrackingOptions:YES];
-             [RadarSettings setTrackingOptions:[meta trackingOptions]];
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
+                                               message:@"Listening to server tracking options"];
+            [RadarSettings setListenToServerTrackingOptions:YES];
+            [RadarSettings setTrackingOptions:[meta trackingOptions]];
         } else {
-             [RadarSettings setListenToServerTrackingOptions:NO];
-             [RadarSettings revertToFallbackTrackingOptions];
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
+                                               message:@"Not listening to server tracking options; reverting to fallback values"];
+            [RadarSettings setListenToServerTrackingOptions:NO];
+            [RadarSettings revertToFallbackTrackingOptions];
         }
         [self updateTracking];
     }
