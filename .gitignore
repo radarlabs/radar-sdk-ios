@@ -6,6 +6,7 @@ Carthage/Build/
 sonar-reports/
 .scannerwork/
 DerivedData/
+dist/
 build/
 docs/undocumented.json
 *.xcarchive
