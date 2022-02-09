@@ -17,7 +17,7 @@ let package = Package(
         .target(
             name: "RadarSDK",
             path: "RadarSDK",
-            exclude: ["Info.plist", "RadarSDK.h"],
+            exclude: ["Info.plist"],
             publicHeadersPath: "Include",
             cSettings: [
                 .headerSearchPath(".")
