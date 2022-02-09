@@ -22,7 +22,7 @@ static NSString *const kMetadata = @"radar-metadata";
 static NSString *const kAdIdEnabled = @"radar-adIdEnabled";
 static NSString *const kTracking = @"radar-tracking";
 static NSString *const kTrackingOptions = @"radar-trackingOptions";
-static NSString *const kFallbackTrackingOptions = @"radar-fallbackTrackingOptions";
+static NSString *const kRemoteTrackingOptions = @"radar-remoteTrackingOptions";
 static NSString *const kListenToServerTrackingOptions = @"radar-listenToServerTrackingOptions";
 static NSString *const kTripOptions = @"radar-tripOptions";
 static NSString *const kLogLevel = @"radar-logLevel";
@@ -133,22 +133,18 @@ static NSString *const kDefaultHost = @"https://api.radar.io";
     [[NSUserDefaults standardUserDefaults] setObject:optionsDict forKey:kTrackingOptions];
 }
 
-+ (void)revertToFallbackTrackingOptions {
-    RadarTrackingOptions *_Nullable fallbackOptions = [self fallbackTrackingOptions];
-    if (fallbackOptions != nil) {
-        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Reverting to fallback options = %@", fallbackOptions]];
-        [[NSUserDefaults standardUserDefaults] setObject:[fallbackOptions dictionaryValue] forKey:kTrackingOptions];
-    }
++ (void)removeRemoteTrackingOptions {
+    [[NSUserDefaults standardUserDefaults] removeObjectForKey:kRemoteTrackingOptions];
 }
 
-+ (RadarTrackingOptions *_Nullable)fallbackTrackingOptions {
-    NSDictionary *optionsDict = [[NSUserDefaults standardUserDefaults] dictionaryForKey:kFallbackTrackingOptions];
++ (RadarTrackingOptions *_Nullable)remoteTrackingOptions {
+    NSDictionary *optionsDict = [[NSUserDefaults standardUserDefaults] dictionaryForKey:kRemoteTrackingOptions];
     return optionsDict ?  [RadarTrackingOptions trackingOptionsFromDictionary:optionsDict] : nil;
 }
 
-+ (void)setFallbackTrackingOptions:(RadarTrackingOptions *_Nonnull)options {
++ (void)setRemoteTrackingOptions:(RadarTrackingOptions *_Nonnull)options {
     NSDictionary *optionsDict = [options dictionaryValue];
-    [[NSUserDefaults standardUserDefaults] setObject:optionsDict forKey:kFallbackTrackingOptions];
+    [[NSUserDefaults standardUserDefaults] setObject:optionsDict forKey:kRemoteTrackingOptions];
 }
 
 + (RadarTripOptions *)tripOptions {

@@ -36,9 +36,9 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)setListenToServerTrackingOptions:(BOOL)listenToServerTrackingOptions;
 + (RadarTrackingOptions *_Nullable)trackingOptions;
 + (void)setTrackingOptions:(RadarTrackingOptions *_Nonnull)options;
-+ (RadarTrackingOptions *_Nullable)fallbackTrackingOptions;
-+ (void)setFallbackTrackingOptions:(RadarTrackingOptions *_Nonnull)options;
-+ (void)revertToFallbackTrackingOptions;
++ (RadarTrackingOptions *_Nullable)remoteTrackingOptions;
++ (void)setRemoteTrackingOptions:(RadarTrackingOptions *_Nonnull)options;
++ (void)removeRemoteTrackingOptions;
 + (RadarTripOptions *_Nullable)tripOptions;
 + (void)setTripOptions:(RadarTripOptions *_Nullable)options;
 + (RadarLogLevel)logLevel;

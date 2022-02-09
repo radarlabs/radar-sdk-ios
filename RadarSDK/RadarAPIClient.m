@@ -201,7 +201,7 @@
         params[@"tripOptions"] = tripOptionsDict;
     }
     
-    RadarTrackingOptions *options = [RadarSettings trackingOptions];
+    RadarTrackingOptions *options = [Radar getTrackingOptions];
     if (options.syncGeofences) {
         params[@"nearbyGeofences"] = @(YES);
     }

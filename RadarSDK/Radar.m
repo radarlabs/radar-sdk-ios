@@ -286,7 +286,7 @@
 }
 
 + (RadarTrackingOptions *)getTrackingOptions {
-    return [RadarSettings trackingOptions];
+    return [RadarSettings remoteTrackingOptions] ? [RadarSettings remoteTrackingOptions] : [RadarSettings trackingOptions];
 }
 
 + (void)setDelegate:(id<RadarDelegate>)delegate {

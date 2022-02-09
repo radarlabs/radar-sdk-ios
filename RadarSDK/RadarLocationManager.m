@@ -171,7 +171,7 @@ static NSString *const kSyncBeaconIdentifierPrefix = @"radar_beacon_";
 
     [RadarSettings setTracking:YES];
     [RadarSettings setTrackingOptions:trackingOptions];
-    [RadarSettings setFallbackTrackingOptions:trackingOptions];
+    //[RadarSettings setFallbackTrackingOptions:trackingOptions];
     [self updateTracking];
 }
 
@@ -257,7 +257,7 @@ static NSString *const kSyncBeaconIdentifierPrefix = @"radar_beacon_";
         fromInitialize:(BOOL)fromInitialize {
     dispatch_async(dispatch_get_main_queue(), ^{
         BOOL tracking = [RadarSettings tracking];
-        RadarTrackingOptions *options = [RadarSettings trackingOptions];
+        RadarTrackingOptions *options = [Radar getTrackingOptions];
 
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
                                            message:[NSString stringWithFormat:@"Updating tracking | options = %@; location = %@", [options dictionaryValue], location]];
@@ -368,12 +368,12 @@ static NSString *const kSyncBeaconIdentifierPrefix = @"radar_beacon_";
             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
                                                message:@"Listening to server tracking options"];
             [RadarSettings setListenToServerTrackingOptions:YES];
-            [RadarSettings setTrackingOptions:[meta trackingOptions]];
+            [RadarSettings setRemoteTrackingOptions:[meta trackingOptions]];
         } else {
             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
                                                message:@"Not listening to server tracking options; reverting to fallback values"];
             [RadarSettings setListenToServerTrackingOptions:NO];
-            [RadarSettings revertToFallbackTrackingOptions];
+            [RadarSettings removeRemoteTrackingOptions];
         }
         [self updateTracking];
     }
@@ -404,7 +404,7 @@ static NSString *const kSyncBeaconIdentifierPrefix = @"radar_beacon_";
     [self removeSyncedGeofences];
 
     BOOL tracking = [RadarSettings tracking];
-    RadarTrackingOptions *options = [RadarSettings trackingOptions];
+    RadarTrackingOptions *options = [Radar getTrackingOptions];
     if (!tracking || !options.syncGeofences || !geofences) {
         return;
     }
@@ -448,7 +448,7 @@ static NSString *const kSyncBeaconIdentifierPrefix = @"radar_beacon_";
     [self removeSyncedBeacons];
 
     BOOL tracking = [RadarSettings tracking];
-    RadarTrackingOptions *options = [RadarSettings trackingOptions];
+    RadarTrackingOptions *options = [Radar getTrackingOptions];
     if (!tracking || !options.beacons || !beacons) {
         return;
     }
@@ -510,7 +510,7 @@ static NSString *const kSyncBeaconIdentifierPrefix = @"radar_beacon_";
         return;
     }
 
-    RadarTrackingOptions *options = [RadarSettings trackingOptions];
+    RadarTrackingOptions *options = [Radar getTrackingOptions];
     BOOL wasStopped = [RadarState stopped];
     BOOL stopped = NO;
 
@@ -669,7 +669,7 @@ static NSString *const kSyncBeaconIdentifierPrefix = @"radar_beacon_";
     self.sending = YES;
 
     NSArray<NSString *> *nearbyBeacons;
-    RadarTrackingOptions *options = [RadarSettings trackingOptions];
+    RadarTrackingOptions *options = [Radar getTrackingOptions];
     if (options.beacons) {
         nearbyBeacons = [self.nearbyBeaconIdentifers allObjects];
 
