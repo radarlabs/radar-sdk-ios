@@ -240,10 +240,19 @@ static NSString *const kSyncBeaconIdentifierPrefix = @"radar_beacon_";
 }
 
 - (void)updateTracking {
-    [self updateTracking:nil];
+    [self updateTracking:nil fromInitialize:NO];
+}
+
+- (void)updateTrackingFromInitialize {
+    [self updateTracking:nil fromInitialize:YES];
 }
 
 - (void)updateTracking:(CLLocation *)location {
+    [self updateTracking:location fromInitialize:NO];
+}
+
+- (void)updateTracking:(CLLocation *)location
+        fromInitialize:(BOOL)fromInitialize {
     dispatch_async(dispatch_get_main_queue(), ^{
         BOOL tracking = [RadarSettings tracking];
         RadarTrackingOptions *options = [RadarSettings trackingOptions];
@@ -337,8 +346,16 @@ static NSString *const kSyncBeaconIdentifierPrefix = @"radar_beacon_";
         } else {
             [self stopUpdates];
             [self removeAllRegions];
-            [self.locationManager stopMonitoringVisits];
-            [self.locationManager stopMonitoringSignificantLocationChanges];
+
+            // If updateTracking() was called from the RadarLocationManager
+            // intializer, don't tell the CLLocationManager to stop, because
+            // the location manager may be in use by other location-based
+            // services. Currently, only the initializer passes in YES, and all
+            // subsequent calls to updateTracking() get NO.
+            if (!fromInitialize) {
+                [self.locationManager stopMonitoringVisits];
+                [self.locationManager stopMonitoringSignificantLocationChanges];
+            }
         }
     });
 }

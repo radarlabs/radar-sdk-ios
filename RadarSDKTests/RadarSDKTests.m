@@ -8,14 +8,14 @@
 @import RadarSDK;
 #import <XCTest/XCTest.h>
 
+#import "../RadarSDK/RadarAPIClient.h"
+#import "../RadarSDK/RadarAPIHelper.h"
+#import "../RadarSDK/RadarLocationManager.h"
+#import "../RadarSDK/RadarSettings.h"
 #import "CLLocationManagerMock.h"
 #import "CLVisitMock.h"
-#import "RadarAPIClient.h"
-#import "RadarAPIHelper.h"
 #import "RadarAPIHelperMock.h"
-#import "RadarLocationManager.h"
 #import "RadarPermissionsHelperMock.h"
-#import "RadarSettings.h"
 #import "RadarTestUtils.h"
 #import "RadarTripOptions.h"
 
@@ -156,6 +156,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     AssertChainsOk(user.topChains);
     XCTAssertNotEqual(user.source, RadarLocationSourceUnknown);
     XCTAssertTrue(user.proxy);
+    XCTAssertTrue(user.mocked);
     AssertTripOk(user.trip);
 }
 
