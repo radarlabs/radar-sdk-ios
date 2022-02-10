@@ -5,9 +5,9 @@
         "package": "RadarSDK",
         "repositoryURL": "https://github.com/radarlabs/radar-sdk-ios.git",
         "state": {
-          "branch": "experiment/8281-distribute-via-source",
-          "revision": "a5b3f1fc5ebb7eb1a6f29519b433b305a98c5758",
-          "version": null
+          "branch": null,
+          "revision": "85c2e3c638c9f42d8cb92f2103de09c3cc9863e4",
+          "version": "3.3.1-beta.1"
         }
       }
     ]

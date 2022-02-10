@@ -376,8 +376,8 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/radarlabs/radar-sdk-ios.git";
 			requirement = {
-				branch = "experiment/8281-distribute-via-source";
-				kind = branch;
+				kind = upToNextMajorVersion;
+				minimumVersion = "3.3.1-beta.1";
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
