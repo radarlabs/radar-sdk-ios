@@ -2,7 +2,7 @@
 //  AppDelegate.swift
 //  SwiftAppWithCarthage
 //
-//  Created by Jason Tibbetts on 2/2/22.
+//  Copyright © 2022 Radar Labs, Inc. All rights reserved.
 //
 
 import RadarSDK

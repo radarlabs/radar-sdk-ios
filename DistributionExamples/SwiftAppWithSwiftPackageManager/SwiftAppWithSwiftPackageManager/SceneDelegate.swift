@@ -2,7 +2,7 @@
 //  SceneDelegate.swift
 //  SwiftAppWithSwiftPackageManager
 //
-//  Created by Jason Tibbetts on 2/1/22.
+//  Copyright © 2022 Radar Labs, Inc. All rights reserved.
 //
 
 import UIKit
