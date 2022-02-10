@@ -1,5 +1,5 @@
 PODS:
-  - RadarSDK (3.3.1-beta.1)
+  - RadarSDK (3.3.1)
 
 DEPENDENCIES:
   - RadarSDK (from `../..`)
@@ -10,7 +10,7 @@ EXTERNAL SOURCES:
     :tag: 3.3.1-beta.1
 
 SPEC CHECKSUMS:
-  RadarSDK: 67dc9f6d12b2fa244abeb55af3c30312542947b3
+  RadarSDK: ae1663460d8ebc4ece2c196a256cd332abc466a1
 
 PODFILE CHECKSUM: e87a94f1f571b385160025abc85f832e062939ba
 

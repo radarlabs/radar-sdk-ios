@@ -1,6 +1,6 @@
 {
   "name": "RadarSDK",
-  "version": "3.3.1-beta.1",
+  "version": "3.3.1",
   "summary": "iOS SDK for Radar, the leading geofencing and location tracking platform",
   "homepage": "https://radar.com",
   "authors": {
@@ -11,7 +11,7 @@
   },
   "source": {
     "git": "https://github.com/radarlabs/radar-sdk-ios.git",
-    "tag": "3.3.1-beta.1"
+    "tag": "3.3.1"
   },
   "source_files": [
     "RadarSDK/*.{h,m}",
