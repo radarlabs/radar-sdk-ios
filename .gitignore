@@ -3,6 +3,7 @@ xcuserdata/
 .idea/
 **/Carthage/Checkouts/
 **/Carthage/Build/
+**/Pods
 sonar-reports/
 .scannerwork/
 DerivedData/
