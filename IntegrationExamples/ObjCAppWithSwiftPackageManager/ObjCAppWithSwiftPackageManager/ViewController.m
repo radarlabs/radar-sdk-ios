@@ -6,7 +6,7 @@
 //
 
 #import "ViewController.h"
-#import <RadarSDK/RadarSDK.h>
+#import <Radar.h>
 
 @interface ViewController ()
 

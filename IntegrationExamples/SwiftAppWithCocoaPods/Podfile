@@ -7,5 +7,5 @@ target 'SwiftAppWithCocoaPods' do
   use_frameworks!
 
   # Pods for SwiftAppWithCocoaPods
-  pod 'RadarSDK', '3.3.1-beta.1'
+  pod 'RadarSDK', '3.3.1'
 end

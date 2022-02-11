@@ -7,5 +7,5 @@ target 'ObjCAppWithCocoaPods' do
   use_frameworks!
 
   # Pods for ObjCAppWithCocoaPods
-  pod 'RadarSDK', '3.3.1-beta.1'
+  pod 'RadarSDK', '3.3.1'
 end

@@ -1,16 +1,16 @@
 PODS:
-  - RadarSDK (3.3.1-beta.1)
+  - RadarSDK (3.3.1)
 
 DEPENDENCIES:
-  - RadarSDK (= 3.3.1-beta.1)
+  - RadarSDK (= 3.3.1)
 
 SPEC REPOS:
   https://github.com/CocoaPods/Specs.git:
     - RadarSDK
 
 SPEC CHECKSUMS:
-  RadarSDK: 67dc9f6d12b2fa244abeb55af3c30312542947b3
+  RadarSDK: ae1663460d8ebc4ece2c196a256cd332abc466a1
 
-PODFILE CHECKSUM: 784bff3074945b0996c9c8961c50f29543ee8cae
+PODFILE CHECKSUM: 2c5203ccef3861bcfb62504b2f19b454e245ed40
 
 COCOAPODS: 1.11.2
