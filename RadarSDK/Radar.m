@@ -58,10 +58,6 @@
     return [RadarUtils sdkVersion];
 }
 
-+ (NSString *)sdkVersion {
-    return [RadarUtils sdkVersion];
-}
-
 + (NSString *_Nullable)getPublishableKey {
     return [RadarSettings publishableKey];
 }
