@@ -258,6 +258,8 @@ typedef void (^_Nonnull RadarRouteMatrixCompletionHandler)(RadarStatus status, R
 
 #pragma mark - Properties
 
+@property (readonly, class) NSString *sdkVersion;
+
 /**
  Identifies the user.
 
