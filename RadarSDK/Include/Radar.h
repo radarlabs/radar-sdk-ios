@@ -259,6 +259,11 @@ typedef void (^_Nonnull RadarRouteMatrixCompletionHandler)(RadarStatus status, R
 #pragma mark - Properties
 
 /**
+ Gets the version number of the Radar SDK, such as "3.3.1" or "3.4.1-beta.2."
+ */
+@property (readonly, class) NSString *sdkVersion;
+
+/**
  Identifies the user.
 
  @note Until you identify the user, Radar will automatically identify the user by `deviceId` (IDFV).
