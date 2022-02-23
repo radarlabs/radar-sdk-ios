@@ -21,11 +21,33 @@
 
 @interface RadarLocationManager ()
 
+/**
+ `YES` if `startUpdates()` has started the `timer` for location updates.
+ */
 @property (assign, nonatomic) BOOL started;
+
+/**
+ The number of seconds between the `timer`'s location updates.
+ */
 @property (assign, nonatomic) int startedInterval;
+
+/**
+ `YES` if `RadarAPIClient.trackWithLocation() has been called, but the
+ response hasn't been received yet.
+ */
 @property (assign, nonatomic) BOOL sending;
+
+/**
+ The timer for checking the location at regular intervals, such as in
+ continuous tracking mode.
+ */
 @property (strong, nonatomic) NSTimer *timer;
+
+/**
+ Callbacks for sending events.
+ */
 @property (nonnull, strong, nonatomic) NSMutableArray<RadarLocationCompletionHandler> *completionHandlers;
+
 @property (nonnull, strong, nonatomic) NSMutableSet<NSString *> *nearbyBeaconIdentifers;
 
 @end
