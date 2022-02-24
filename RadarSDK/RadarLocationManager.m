@@ -522,7 +522,7 @@ static NSString *const kSyncBeaconIdentifierPrefix = @"radar_beacon_";
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
                                        message:[NSString stringWithFormat:@"Handling location | source = %@; location = %@", [Radar stringForLocationSource:source], location]];
 
-    if (!location || ![RadarUtils validLocation:location]) {
+    if (![RadarUtils validLocation:location]) {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
                                            message:[NSString stringWithFormat:@"Invalid location | source = %@; location = %@", [Radar stringForLocationSource:source], location]];
 

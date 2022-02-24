@@ -31,7 +31,7 @@ static NSString *const kLastFailedStoppedLocation = @"radar-lastFailedStoppedLoc
 }
 
 + (void)setLastLocation:(CLLocation *)lastLocation {
-    if (!lastLocation || ![RadarUtils validLocation:lastLocation]) {
+    if (![RadarUtils validLocation:lastLocation]) {
         return;
     }
 
@@ -51,7 +51,7 @@ static NSString *const kLastFailedStoppedLocation = @"radar-lastFailedStoppedLoc
 }
 
 + (void)setLastMovedLocation:(CLLocation *)lastMovedLocation {
-    if (!lastMovedLocation || ![RadarUtils validLocation:lastMovedLocation]) {
+    if (![RadarUtils validLocation:lastMovedLocation]) {
         return;
     }
 
@@ -96,7 +96,7 @@ static NSString *const kLastFailedStoppedLocation = @"radar-lastFailedStoppedLoc
     NSDictionary *dict = [[NSUserDefaults standardUserDefaults] dictionaryForKey:kLastFailedStoppedLocation];
     CLLocation *lastFailedStoppedLocation = [RadarUtils locationForDictionary:dict];
 
-    if (!lastFailedStoppedLocation || ![RadarUtils validLocation:lastFailedStoppedLocation]) {
+    if (![RadarUtils validLocation:lastFailedStoppedLocation]) {
         return nil;
     }
 
@@ -104,7 +104,7 @@ static NSString *const kLastFailedStoppedLocation = @"radar-lastFailedStoppedLoc
 }
 
 + (void)setLastFailedStoppedLocation:(CLLocation *)lastFailedStoppedLocation {
-    if (!lastFailedStoppedLocation || ![RadarUtils validLocation:lastFailedStoppedLocation]) {
+    if (![RadarUtils validLocation:lastFailedStoppedLocation]) {
         [[NSUserDefaults standardUserDefaults] setObject:nil forKey:kLastFailedStoppedLocation];
 
         return;
