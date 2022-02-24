@@ -49,7 +49,9 @@
 
     [RadarSettings setPublishableKey:publishableKey];
     [[RadarLocationManager sharedInstance] updateTrackingFromInitialize];
-    [[RadarAPIClient sharedInstance] getConfig];
+    [[RadarAPIClient sharedInstance] getConfig:^(RadarStatus unused, RadarMeta *_Nullable meta) {
+        [[RadarLocationManager sharedInstance] updateTrackingFromMeta:meta];
+    }];
 }
 
 + (NSString *)sdkVersion {
@@ -131,7 +133,7 @@
                                                                        replayed:NO
                                                                   nearbyBeacons:nearbyBeacons
                                                               completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events,
-                                                                                  RadarUser *_Nullable user, NSArray<RadarGeofence *> *_Nullable nearbyGeofences) {
+                                                                                  RadarUser *_Nullable user, NSArray<RadarGeofence *> *_Nullable nearbyGeofences, RadarMeta *_Nullable meta) {
                                                                   if (completionHandler) {
                                                                       [RadarUtils runOnMainThread:^{
                                                                           completionHandler(status, location, events, user);
@@ -181,7 +183,7 @@
                                               replayed:NO
                                          nearbyBeacons:nil
                                      completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user,
-                                                         NSArray<RadarGeofence *> *_Nullable nearbyGeofences) {
+                                                         NSArray<RadarGeofence *> *_Nullable nearbyGeofences, RadarMeta *_Nullable meta) {
                                          if (completionHandler) {
                                              [RadarUtils runOnMainThread:^{
                                                  completionHandler(status, location, events, user);
@@ -260,7 +262,7 @@
                                  replayed:NO
                             nearbyBeacons:nil
                         completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user,
-                                            NSArray<RadarGeofence *> *_Nullable nearbyGeofences) {
+                                            NSArray<RadarGeofence *> *_Nullable nearbyGeofences, RadarMeta *_Nullable meta) {
                             if (completionHandler) {
                                 [RadarUtils runOnMainThread:^{
                                     completionHandler(status, location, events, user);
@@ -288,7 +290,7 @@
 }
 
 + (RadarTrackingOptions *)getTrackingOptions {
-    return [RadarSettings trackingOptions];
+    return [RadarSettings remoteTrackingOptions] ? [RadarSettings remoteTrackingOptions] : [RadarSettings trackingOptions];
 }
 
 + (void)setDelegate:(id<RadarDelegate>)delegate {
@@ -856,7 +858,9 @@
 - (void)applicationWillEnterForeground {
     BOOL updated = [RadarSettings updateSessionId];
     if (updated) {
-        [[RadarAPIClient sharedInstance] getConfig];
+        [[RadarAPIClient sharedInstance] getConfig:^(RadarStatus status, RadarMeta *_Nullable meta) {
+            [[RadarLocationManager sharedInstance] updateTrackingFromMeta:meta];
+        }];
     }
 }
 

@@ -13,6 +13,7 @@
 #import "RadarCircleGeometry.h"
 #import "RadarDelegateHolder.h"
 #import "RadarLogger.h"
+#import "RadarMeta.h"
 #import "RadarPolygonGeometry.h"
 #import "RadarSettings.h"
 #import "RadarState.h"
@@ -20,11 +21,33 @@
 
 @interface RadarLocationManager ()
 
+/**
+ `YES` if `startUpdates()` has started the `timer` for location updates.
+ */
 @property (assign, nonatomic) BOOL started;
+
+/**
+ The number of seconds between the `timer`'s location updates.
+ */
 @property (assign, nonatomic) int startedInterval;
+
+/**
+ `YES` if `RadarAPIClient.trackWithLocation() has been called, but the
+ response hasn't been received yet.
+ */
 @property (assign, nonatomic) BOOL sending;
+
+/**
+ The timer for checking the location at regular intervals, such as in
+ continuous tracking mode.
+ */
 @property (strong, nonatomic) NSTimer *timer;
+
+/**
+ Callbacks for sending events.
+ */
 @property (nonnull, strong, nonatomic) NSMutableArray<RadarLocationCompletionHandler> *completionHandlers;
+
 @property (nonnull, strong, nonatomic) NSMutableSet<NSString *> *nearbyBeaconIdentifers;
 
 @end
@@ -165,7 +188,6 @@ static NSString *const kSyncBeaconIdentifierPrefix = @"radar_beacon_";
     CLAuthorizationStatus authorizationStatus = [self.permissionsHelper locationAuthorizationStatus];
     if (!(authorizationStatus == kCLAuthorizationStatusAuthorizedWhenInUse || authorizationStatus == kCLAuthorizationStatusAuthorizedAlways)) {
         [[RadarDelegateHolder sharedInstance] didFailWithStatus:RadarStatusErrorPermissions];
-
         return;
     }
 
@@ -176,6 +198,7 @@ static NSString *const kSyncBeaconIdentifierPrefix = @"radar_beacon_";
 
 - (void)stopTracking {
     [RadarSettings setTracking:NO];
+    [RadarSettings setListenToServerTrackingOptions:NO];
     [self updateTracking];
 }
 
@@ -255,7 +278,7 @@ static NSString *const kSyncBeaconIdentifierPrefix = @"radar_beacon_";
         fromInitialize:(BOOL)fromInitialize {
     dispatch_async(dispatch_get_main_queue(), ^{
         BOOL tracking = [RadarSettings tracking];
-        RadarTrackingOptions *options = [RadarSettings trackingOptions];
+        RadarTrackingOptions *options = [Radar getTrackingOptions];
 
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
                                            message:[NSString stringWithFormat:@"Updating tracking | options = %@; location = %@", [options dictionaryValue], location]];
@@ -360,6 +383,23 @@ static NSString *const kSyncBeaconIdentifierPrefix = @"radar_beacon_";
     });
 }
 
+- (void)updateTrackingFromMeta:(RadarMeta *_Nullable)meta {
+    if (meta) {
+        if ([meta trackingOptions]) {
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
+                                               message:@"Listening to server tracking options"];
+            [RadarSettings setListenToServerTrackingOptions:YES];
+            [RadarSettings setRemoteTrackingOptions:[meta trackingOptions]];
+        } else {
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
+                                               message:@"Not listening to server tracking options; reverting to fallback values"];
+            [RadarSettings setListenToServerTrackingOptions:NO];
+            [RadarSettings removeRemoteTrackingOptions];
+        }
+        [self updateTracking];
+    }
+}
+
 - (void)replaceBubbleGeofence:(CLLocation *)location radius:(int)radius {
     [self removeBubbleGeofence];
 
@@ -385,7 +425,7 @@ static NSString *const kSyncBeaconIdentifierPrefix = @"radar_beacon_";
     [self removeSyncedGeofences];
 
     BOOL tracking = [RadarSettings tracking];
-    RadarTrackingOptions *options = [RadarSettings trackingOptions];
+    RadarTrackingOptions *options = [Radar getTrackingOptions];
     if (!tracking || !options.syncGeofences || !geofences) {
         return;
     }
@@ -429,7 +469,7 @@ static NSString *const kSyncBeaconIdentifierPrefix = @"radar_beacon_";
     [self removeSyncedBeacons];
 
     BOOL tracking = [RadarSettings tracking];
-    RadarTrackingOptions *options = [RadarSettings trackingOptions];
+    RadarTrackingOptions *options = [Radar getTrackingOptions];
     if (!tracking || !options.beacons || !beacons) {
         return;
     }
@@ -491,7 +531,7 @@ static NSString *const kSyncBeaconIdentifierPrefix = @"radar_beacon_";
         return;
     }
 
-    RadarTrackingOptions *options = [RadarSettings trackingOptions];
+    RadarTrackingOptions *options = [Radar getTrackingOptions];
     BOOL wasStopped = [RadarState stopped];
     BOOL stopped = NO;
 
@@ -650,7 +690,7 @@ static NSString *const kSyncBeaconIdentifierPrefix = @"radar_beacon_";
     self.sending = YES;
 
     NSArray<NSString *> *nearbyBeacons;
-    RadarTrackingOptions *options = [RadarSettings trackingOptions];
+    RadarTrackingOptions *options = [Radar getTrackingOptions];
     if (options.beacons) {
         nearbyBeacons = [self.nearbyBeaconIdentifers allObjects];
 
@@ -679,7 +719,7 @@ static NSString *const kSyncBeaconIdentifierPrefix = @"radar_beacon_";
                                               replayed:replayed
                                          nearbyBeacons:nearbyBeacons
                                      completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user,
-                                                         NSArray<RadarGeofence *> *_Nullable nearbyGeofences) {
+                                                         NSArray<RadarGeofence *> *_Nullable nearbyGeofences, RadarMeta *_Nullable meta) {
                                          if (user) {
                                              BOOL inGeofences = user.geofences && user.geofences.count;
                                              BOOL atPlace = user.place != nil;
@@ -691,7 +731,7 @@ static NSString *const kSyncBeaconIdentifierPrefix = @"radar_beacon_";
 
                                          self.sending = NO;
 
-                                         [self updateTracking];
+                                         [self updateTrackingFromMeta:meta];
                                          [self replaceSyncedGeofences:nearbyGeofences];
                                      }];
 }
