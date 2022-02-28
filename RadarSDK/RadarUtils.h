@@ -29,8 +29,6 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSTimeInterval)backgroundTimeRemaining;
 + (CLLocation *)locationForDictionary:(NSDictionary *_Nonnull)dict;
 + (NSDictionary *)dictionaryForLocation:(CLLocation *)location;
-+ (BOOL)validLocation:(CLLocation *)location;
-
 + (void)runOnMainThread:(dispatch_block_t)block;
 
 @end
