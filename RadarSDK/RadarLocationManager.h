@@ -9,6 +9,7 @@
 
 #import "Radar.h"
 #import "RadarDelegate.h"
+#import "RadarMeta.h"
 #import "RadarPermissionsHelper.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -26,6 +27,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)stopTracking;
 - (void)replaceSyncedBeacons:(NSArray<RadarBeacon *> *)beacons;
 - (void)updateTracking;
+- (void)updateTrackingFromMeta:(RadarMeta *_Nullable)meta;
 - (void)updateTrackingFromInitialize;
 
 @end
