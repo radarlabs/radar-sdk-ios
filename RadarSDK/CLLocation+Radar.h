@@ -2,7 +2,6 @@
 //  CLLocation+Radar.h
 //  RadarSDK
 //
-//  Created by Jason Tibbetts on 2/28/22.
 //  Copyright © 2022 Radar Labs, Inc. All rights reserved.
 //
 

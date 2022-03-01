@@ -8,16 +8,16 @@
 #import <Foundation/Foundation.h>
 #import "CLLocation+Radar.h"
 
-@implementation CLLocation
+@implementation CLLocation(Radar)
 
 -(BOOL)isValid {
     if (!self) {
         return NO;
     }
 
-    BOOL latitudeValid = _coordinate.latitude != 0 && _coordinate.latitude > -90 && _coordinate.latitude < 90;
-    BOOL longitudeValid = _coordinate.longitude != 0 && _coordinate.longitude > -180 && _coordinate.latitude < 180;
-    BOOL horizontalAccuracyValid = _horizontalAccuracy > 0;
+    BOOL latitudeValid = self.coordinate.latitude != 0 && self.coordinate.latitude > -90 && self.coordinate.latitude < 90;
+    BOOL longitudeValid = self.coordinate.longitude != 0 && self.coordinate.longitude > -180 && self.coordinate.latitude < 180;
+    BOOL horizontalAccuracyValid = self.horizontalAccuracy > 0;
     return latitudeValid && longitudeValid && horizontalAccuracyValid;
 }
 
