@@ -1,0 +1,57 @@
+module RadarSDK {
+    umbrella header "RadarSDK/RadarSDK.h"
+
+    export *
+    module * { export * }
+
+    explicit module Private {
+        header "RadarSDK/Radar+Internal.h"
+        header "RadarSDK/RadarAddress+Internal.h"
+        header "RadarSDK/RadarAPIClient.h"
+        header "RadarSDK/RadarAPIHelper.h"
+        header "RadarSDK/RadarBeacon+Internal.h"
+        header "RadarSDK/RadarBeaconManager.h"
+        header "RadarSDK/RadarChain+Internal.h"
+        header "RadarSDK/RadarCircleGeometry+Internal.h"
+        header "RadarSDK/RadarCollectionAdditions.h"
+        header "RadarSDK/RadarCoordinate+Internal.h"
+        header "RadarSDK/RadarContext+Internal.h"
+        header "RadarSDK/RadarDelegateHolder.h"
+        header "RadarSDK/RadarEvent+Internal.h"
+        header "RadarSDK/RadarFraud+Internal.h"
+        header "RadarSDK/RadarGeofence+Internal.h"
+        header "RadarSDK/RadarLocationManager.h"
+        header "RadarSDK/RadarLog.h"
+        header "RadarSDK/RadarLogBuffer.h"
+        header "RadarSDK/RadarLogger.h"
+        header "RadarSDK/RadarMeta+Internal.h"
+        header "RadarSDK/RadarPlace+Internal.h"
+        header "RadarSDK/RadarPolygonGeometry+Internal.h"
+        header "RadarSDK/RadarRegion+Internal.h"
+        header "RadarSDK/RadarRoute+Internal.h"
+        header "RadarSDK/RadarRouteDistance+Internal.h"
+        header "RadarSDK/RadarRouteDuration+Internal.h"
+        header "RadarSDK/RadarRouteGeometry+Internal.h"
+        header "RadarSDK/RadarRouteMatrix+Internal.h"
+        header "RadarSDK/RadarRoutes+Internal.h"
+        header "RadarSDK/RadarSegment+Internal.h"
+        header "RadarSDK/RadarSettings.h"
+        header "RadarSDK/RadarState.h"
+        header "RadarSDK/RadarTrip+Internal.h"
+        header "RadarSDK/RadarUser+Internal.h"
+        header "RadarSDK/RadarUserInsights+Internal.h"
+        header "RadarSDK/RadarUserInsightsLocation+Internal.h"
+        header "RadarSDK/RadarUserInsightsState+Internal.h"
+        header "RadarSDK/RadarUtils.h"
+
+        export *
+    }
+
+    explicit module Swift {
+//        header "RadarSDK/RadarSDK-Swift.h"
+        requires objc
+
+        export *
+    }
+
+}
