@@ -172,7 +172,6 @@
 		9679F4A427CD902400800797 /* RadarSDKTests-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "RadarSDKTests-Bridging-Header.h"; sourceTree = "<group>"; };
 		9679F4A527CD902400800797 /* CLLocation+RadarTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CLLocation+RadarTests.swift"; sourceTree = "<group>"; };
 		9679F4A727CDD42200800797 /* CLLocation+Radar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CLLocation+Radar.swift"; sourceTree = "<group>"; };
-		9679F4A927CDD56E00800797 /* module.modulemap */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.module-map"; path = module.modulemap; sourceTree = "<group>"; };
 		9683FD6127B36C26009EBB6B /* RadarMeta.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RadarMeta.h; sourceTree = "<group>"; };
 		9683FD6227B36C26009EBB6B /* RadarMeta.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RadarMeta.m; sourceTree = "<group>"; };
 		9683FD6327B36C26009EBB6B /* RadarMeta+Internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "RadarMeta+Internal.h"; sourceTree = "<group>"; };
@@ -398,7 +397,6 @@
 				96D3F20527C6B291007578B9 /* clang_format.sh */,
 				96D3F20327C6B290007578B9 /* Gemfile */,
 				96D3F20727C6B291007578B9 /* Makefile */,
-				9679F4A927CDD56E00800797 /* module.modulemap */,
 				96D3F20927C6B291007578B9 /* MIGRATION.md */,
 				96D3F20827C6B291007578B9 /* RadarSDK.podspec */,
 				96D3F20627C6B291007578B9 /* README.md */,
@@ -849,7 +847,6 @@
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				"PROVISIONING_PROFILE_SPECIFIER[sdk=macosx*]" = "";
 				SKIP_INSTALL = YES;
-				SWIFT_INCLUDE_PATHS = "$(SRCROOT)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -883,7 +880,6 @@
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				"PROVISIONING_PROFILE_SPECIFIER[sdk=macosx*]" = "";
 				SKIP_INSTALL = YES;
-				SWIFT_INCLUDE_PATHS = "$(SRCROOT)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TVOS_DEPLOYMENT_TARGET = 10.0;
