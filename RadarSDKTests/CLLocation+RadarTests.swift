@@ -17,8 +17,48 @@ class CLLocation_RadarTests: XCTestCase {
     let lon: CLLocationDegrees = -87.656036
 
     func testValidLocationOk() {
-        let location = CLLocation(latitude: lat, longitude: lon)
+        let location = CLLocation(coordinate: .init(latitude: lat, longitude: lon),
+                                  altitude: 1.0,
+                                  horizontalAccuracy: 1.0,
+                                  verticalAccuracy: 1.0,
+                                  timestamp: Date())
         XCTAssertTrue(location.isValid)
+    }
+
+    func testIsValidForLocationWithInvalidLatitudeReturnsFalse() {
+        let location = CLLocation(coordinate: .init(latitude: 0.0, longitude: lon),
+                                  altitude: 1.0,
+                                  horizontalAccuracy: 1.0,
+                                  verticalAccuracy: 1.0,
+                                  timestamp: Date())
+        XCTAssertFalse(location.isValid)
+    }
+
+    func testIsValidForLocationWithLatitudeNearZeroReturnsTrue() {
+        let location = CLLocation(coordinate: .init(latitude: 0.00001, longitude: lon),
+                                  altitude: 1.0,
+                                  horizontalAccuracy: 1.0,
+                                  verticalAccuracy: 1.0,
+                                  timestamp: Date())
+        XCTAssertTrue(location.isValid)
+    }
+
+    func testIsValidForLocationWithInvalidLongitudeReturnsFalse() {
+        let location = CLLocation(coordinate: .init(latitude: lat, longitude: 0.0),
+                                  altitude: 1.0,
+                                  horizontalAccuracy: 1.0,
+                                  verticalAccuracy: 1.0,
+                                  timestamp: Date())
+        XCTAssertFalse(location.isValid)
+    }
+
+    func testIsValidForLocationWithInvalidHorizontalAccuracyReturnsFalse() {
+        let location = CLLocation(coordinate: .init(latitude: lat, longitude: lon),
+                                  altitude: 1.0,
+                                  horizontalAccuracy: 0.0,
+                                  verticalAccuracy: 1.0,
+                                  timestamp: Date())
+        XCTAssertFalse(location.isValid)
     }
 
 }
