@@ -11,8 +11,11 @@
 @implementation CLLocation(Radar)
 
 -(BOOL)isValid {
-    BOOL latitudeValid = self.coordinate.latitude != 0 && self.coordinate.latitude > -90 && self.coordinate.latitude < 90;
-    BOOL longitudeValid = self.coordinate.longitude != 0 && self.coordinate.longitude > -180 && self.coordinate.latitude < 180;
+    CLLocationDegrees lat = self.coordinate.latitude;
+    CLLocationDegrees lon = self.coordinate.longitude;
+
+    BOOL latitudeValid = lat != 0.0 && lat > -90.0 && lat < 90.0;
+    BOOL longitudeValid = lon != 0.0 && lon > -180.0 && lon < 180;
     BOOL horizontalAccuracyValid = self.horizontalAccuracy > 0;
 
     return latitudeValid && longitudeValid && horizontalAccuracyValid;
