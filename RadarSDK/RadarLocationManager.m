@@ -683,9 +683,7 @@ static NSString *const kSyncBeaconIdentifierPrefix = @"radar_beacon_";
                                          if (user) {
                                              BOOL inGeofences = user.geofences && user.geofences.count;
                                              BOOL atPlace = user.place != nil;
-                                             BOOL atHome = user.insights && user.insights.state && user.insights.state.home;
-                                             BOOL atOffice = user.insights && user.insights.state && user.insights.state.office;
-                                             BOOL canExit = inGeofences || atPlace || atHome || atOffice;
+                                             BOOL canExit = inGeofences || atPlace;
                                              [RadarState setCanExit:canExit];
                                          }
 

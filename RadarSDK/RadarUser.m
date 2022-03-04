@@ -16,7 +16,6 @@
 #import "RadarSegment+Internal.h"
 #import "RadarTrip+Internal.h"
 #import "RadarUser+Internal.h"
-#import "RadarUserInsights+Internal.h"
 
 @implementation RadarUser
 
@@ -28,7 +27,6 @@
                             location:(CLLocation *)location
                            geofences:(NSArray *)geofences
                                place:(RadarPlace *)place
-                            insights:(RadarUserInsights *)insights
                              beacons:(NSArray *)beacons
                              stopped:(BOOL)stopped
                           foreground:(BOOL)foreground
@@ -53,7 +51,6 @@
         _location = location;
         _geofences = geofences;
         _place = place;
-        _insights = insights;
         _beacons = beacons;
         _stopped = stopped;
         _foreground = foreground;
@@ -86,7 +83,6 @@
     CLLocation *location;
     NSArray<RadarGeofence *> *geofences;
     RadarPlace *place;
-    RadarUserInsights *insights;
     NSArray<RadarBeacon *> *beacons;
     BOOL stopped = NO;
     BOOL foreground = NO;
@@ -173,11 +169,6 @@
 
     id placeObj = dict[@"place"];
     place = [[RadarPlace alloc] initWithObject:placeObj];
-
-    id insightsObj = dict[@"insights"];
-    if (insightsObj && [insightsObj isKindOfClass:[NSDictionary class]]) {
-        insights = [[RadarUserInsights alloc] initWithObject:insightsObj];
-    }
 
     id beaconsObj = dict[@"beacons"];
     if (beaconsObj && [beaconsObj isKindOfClass:[NSArray class]]) {
@@ -297,7 +288,6 @@
                                     location:location
                                    geofences:geofences
                                        place:place
-                                    insights:insights
                                      beacons:beacons
                                      stopped:stopped
                                   foreground:foreground
@@ -342,10 +332,6 @@
     if (self.place) {
         NSDictionary *placeDict = [self.place dictionaryValue];
         [dict setValue:placeDict forKey:@"place"];
-    }
-    if (self.insights) {
-        NSDictionary *insightsDict = [self.insights dictionaryValue];
-        [dict setValue:insightsDict forKey:@"insights"];
     }
     if (self.beacons) {
         NSArray *beaconsArr = [RadarBeacon arrayForBeacons:self.beacons];

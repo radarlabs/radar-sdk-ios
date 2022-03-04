@@ -86,18 +86,6 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     XCTAssertNotNil(place.location);
 }
 
-#define AssertInsightsOk(insights) [self assertInsightsOk:insights]
-- (void)assertInsightsOk:(RadarUserInsights *)insights {
-    XCTAssertNotNil(insights);
-    XCTAssertNotNil(insights.homeLocation);
-    XCTAssertTrue(insights.homeLocation.updatedAt);
-    XCTAssertNotEqual(insights.homeLocation.confidence, RadarUserInsightsLocationConfidenceNone);
-    XCTAssertNotNil(insights.officeLocation);
-    XCTAssertNotNil(insights.officeLocation.updatedAt);
-    XCTAssertNotEqual(insights.officeLocation.confidence, RadarUserInsightsLocationConfidenceNone);
-    XCTAssertNotNil(insights.state);
-}
-
 #define AssertRegionOk(region) [self assertRegionOk:region]
 - (void)assertRegionOk:(RadarRegion *)region {
     XCTAssertNotNil(region);
@@ -146,7 +134,6 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     XCTAssertNotNil(user.location);
     AssertGeofencesOk(user.geofences);
     AssertPlaceOk(user.place);
-    AssertInsightsOk(user.insights);
     AssertRegionOk(user.country);
     AssertRegionOk(user.state);
     AssertRegionOk(user.dma);
