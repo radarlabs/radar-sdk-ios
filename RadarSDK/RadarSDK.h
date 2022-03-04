@@ -22,6 +22,7 @@ FOUNDATION_EXPORT const unsigned char RadarSDKVersionString[];
 #import "RadarEvent.h"
 #import "RadarGeofence.h"
 #import "RadarGeofenceGeometry.h"
+#import "RadarMeta.h"
 #import "RadarPlace.h"
 #import "RadarPolygonGeometry.h"
 #import "RadarRegion.h"
