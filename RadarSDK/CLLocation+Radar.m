@@ -5,7 +5,7 @@
 //  Copyright © 2022 Radar Labs, Inc. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
+@import Foundation;
 #import "CLLocation+Radar.h"
 
 @implementation CLLocation(Radar)
