@@ -53,9 +53,6 @@
 		0107AAE6262201A1008AB52F /* RadarSegment.m in Sources */ = {isa = PBXBuildFile; fileRef = DD14FD4B23CE783500E80AC8 /* RadarSegment.m */; };
 		0107AAEC262201A6008AB52F /* RadarTrip.m in Sources */ = {isa = PBXBuildFile; fileRef = DDF1157C2524E18100D575C4 /* RadarTrip.m */; };
 		0107AAF2262201B2008AB52F /* RadarUser.m in Sources */ = {isa = PBXBuildFile; fileRef = DD236CBB2308812700EB88F9 /* RadarUser.m */; };
-		0107AAF8262201B8008AB52F /* RadarUserInsights.m in Sources */ = {isa = PBXBuildFile; fileRef = DD236CB32308812600EB88F9 /* RadarUserInsights.m */; };
-		0107AAFC262201BE008AB52F /* RadarUserInsightsLocation.m in Sources */ = {isa = PBXBuildFile; fileRef = DD236CAD2308812600EB88F9 /* RadarUserInsightsLocation.m */; };
-		0107AB02262201C7008AB52F /* RadarUserInsightsState.m in Sources */ = {isa = PBXBuildFile; fileRef = DD236CC12308812700EB88F9 /* RadarUserInsightsState.m */; };
 		0107AB05262201CB008AB52F /* Radar.m in Sources */ = {isa = PBXBuildFile; fileRef = DD236C9023087A3500EB88F9 /* Radar.m */; };
 		0107AB08262201CE008AB52F /* RadarAPIClient.m in Sources */ = {isa = PBXBuildFile; fileRef = DD236C9923087F9200EB88F9 /* RadarAPIClient.m */; };
 		0107AB0B262201D1008AB52F /* RadarAPIHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = DD633EC2237C5B800026C91A /* RadarAPIHelper.m */; };
@@ -84,10 +81,8 @@
 		96A5A0C027AD9F41007B960B /* RadarRouteDistance+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 96A5A0A827AD9F40007B960B /* RadarRouteDistance+Internal.h */; };
 		96A5A0C127AD9F41007B960B /* RadarRoutes+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 96A5A0A927AD9F40007B960B /* RadarRoutes+Internal.h */; };
 		96A5A0C227AD9F41007B960B /* RadarSegment+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 96A5A0AA27AD9F40007B960B /* RadarSegment+Internal.h */; };
-		96A5A0C327AD9F41007B960B /* RadarUserInsights+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 96A5A0AB27AD9F40007B960B /* RadarUserInsights+Internal.h */; };
 		96A5A0C427AD9F41007B960B /* RadarCircleGeometry+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 96A5A0AC27AD9F40007B960B /* RadarCircleGeometry+Internal.h */; };
 		96A5A0C527AD9F41007B960B /* RadarFraud+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 96A5A0AD27AD9F40007B960B /* RadarFraud+Internal.h */; };
-		96A5A0C627AD9F41007B960B /* RadarUserInsightsState+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 96A5A0AE27AD9F40007B960B /* RadarUserInsightsState+Internal.h */; };
 		96A5A0C727AD9F41007B960B /* RadarChain+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 96A5A0AF27AD9F40007B960B /* RadarChain+Internal.h */; };
 		96A5A0C827AD9F41007B960B /* RadarBeacon+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 96A5A0B027AD9F40007B960B /* RadarBeacon+Internal.h */; };
 		96A5A0C927AD9F41007B960B /* RadarPlace+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 96A5A0B127AD9F40007B960B /* RadarPlace+Internal.h */; };
@@ -104,20 +99,16 @@
 		96A5A0D427AD9F41007B960B /* RadarGeofence+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 96A5A0BC27AD9F41007B960B /* RadarGeofence+Internal.h */; };
 		96A5A0D527AD9F41007B960B /* RadarRouteDuration+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 96A5A0BD27AD9F41007B960B /* RadarRouteDuration+Internal.h */; };
 		96A5A0D627AD9F41007B960B /* RadarRouteMatrix+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 96A5A0BE27AD9F41007B960B /* RadarRouteMatrix+Internal.h */; };
-		96A5A0D727AD9F41007B960B /* RadarUserInsightsLocation+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 96A5A0BF27AD9F41007B960B /* RadarUserInsightsLocation+Internal.h */; };
 		96A5A0F627AD9F7F007B960B /* RadarRouteGeometry.h in Headers */ = {isa = PBXBuildFile; fileRef = 96A5A0D927AD9F7F007B960B /* RadarRouteGeometry.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		96A5A0F727AD9F7F007B960B /* RadarEvent.h in Headers */ = {isa = PBXBuildFile; fileRef = 96A5A0DA27AD9F7F007B960B /* RadarEvent.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		96A5A0F827AD9F7F007B960B /* RadarRegion.h in Headers */ = {isa = PBXBuildFile; fileRef = 96A5A0DB27AD9F7F007B960B /* RadarRegion.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		96A5A0F927AD9F7F007B960B /* RadarUserInsightsLocation.h in Headers */ = {isa = PBXBuildFile; fileRef = 96A5A0DC27AD9F7F007B960B /* RadarUserInsightsLocation.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		96A5A0FA27AD9F7F007B960B /* RadarRouteMatrix.h in Headers */ = {isa = PBXBuildFile; fileRef = 96A5A0DD27AD9F7F007B960B /* RadarRouteMatrix.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		96A5A0FB27AD9F7F007B960B /* RadarChain.h in Headers */ = {isa = PBXBuildFile; fileRef = 96A5A0DE27AD9F7F007B960B /* RadarChain.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		96A5A0FC27AD9F7F007B960B /* RadarUserInsights.h in Headers */ = {isa = PBXBuildFile; fileRef = 96A5A0DF27AD9F7F007B960B /* RadarUserInsights.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		96A5A0FD27AD9F7F007B960B /* RadarUser.h in Headers */ = {isa = PBXBuildFile; fileRef = 96A5A0E027AD9F7F007B960B /* RadarUser.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		96A5A0FE27AD9F7F007B960B /* RadarTrip.h in Headers */ = {isa = PBXBuildFile; fileRef = 96A5A0E127AD9F7F007B960B /* RadarTrip.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		96A5A0FF27AD9F7F007B960B /* RadarGeofenceGeometry.h in Headers */ = {isa = PBXBuildFile; fileRef = 96A5A0E227AD9F7F007B960B /* RadarGeofenceGeometry.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		96A5A10027AD9F7F007B960B /* RadarCoordinate.h in Headers */ = {isa = PBXBuildFile; fileRef = 96A5A0E327AD9F7F007B960B /* RadarCoordinate.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		96A5A10127AD9F7F007B960B /* RadarRoute.h in Headers */ = {isa = PBXBuildFile; fileRef = 96A5A0E427AD9F7F007B960B /* RadarRoute.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		96A5A10227AD9F7F007B960B /* RadarUserInsightsState.h in Headers */ = {isa = PBXBuildFile; fileRef = 96A5A0E527AD9F7F007B960B /* RadarUserInsightsState.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		96A5A10327AD9F7F007B960B /* RadarGeofence.h in Headers */ = {isa = PBXBuildFile; fileRef = 96A5A0E627AD9F7F007B960B /* RadarGeofence.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		96A5A10427AD9F7F007B960B /* RadarDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 96A5A0E727AD9F7F007B960B /* RadarDelegate.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		96A5A10527AD9F7F007B960B /* RadarTrackingOptions.h in Headers */ = {isa = PBXBuildFile; fileRef = 96A5A0E827AD9F7F007B960B /* RadarTrackingOptions.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -174,10 +165,8 @@
 		96A5A0A827AD9F40007B960B /* RadarRouteDistance+Internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "RadarRouteDistance+Internal.h"; sourceTree = "<group>"; };
 		96A5A0A927AD9F40007B960B /* RadarRoutes+Internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "RadarRoutes+Internal.h"; sourceTree = "<group>"; };
 		96A5A0AA27AD9F40007B960B /* RadarSegment+Internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "RadarSegment+Internal.h"; sourceTree = "<group>"; };
-		96A5A0AB27AD9F40007B960B /* RadarUserInsights+Internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "RadarUserInsights+Internal.h"; sourceTree = "<group>"; };
 		96A5A0AC27AD9F40007B960B /* RadarCircleGeometry+Internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "RadarCircleGeometry+Internal.h"; sourceTree = "<group>"; };
 		96A5A0AD27AD9F40007B960B /* RadarFraud+Internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "RadarFraud+Internal.h"; sourceTree = "<group>"; };
-		96A5A0AE27AD9F40007B960B /* RadarUserInsightsState+Internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "RadarUserInsightsState+Internal.h"; sourceTree = "<group>"; };
 		96A5A0AF27AD9F40007B960B /* RadarChain+Internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "RadarChain+Internal.h"; sourceTree = "<group>"; };
 		96A5A0B027AD9F40007B960B /* RadarBeacon+Internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "RadarBeacon+Internal.h"; sourceTree = "<group>"; };
 		96A5A0B127AD9F40007B960B /* RadarPlace+Internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "RadarPlace+Internal.h"; sourceTree = "<group>"; };
@@ -194,20 +183,16 @@
 		96A5A0BC27AD9F41007B960B /* RadarGeofence+Internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "RadarGeofence+Internal.h"; sourceTree = "<group>"; };
 		96A5A0BD27AD9F41007B960B /* RadarRouteDuration+Internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "RadarRouteDuration+Internal.h"; sourceTree = "<group>"; };
 		96A5A0BE27AD9F41007B960B /* RadarRouteMatrix+Internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "RadarRouteMatrix+Internal.h"; sourceTree = "<group>"; };
-		96A5A0BF27AD9F41007B960B /* RadarUserInsightsLocation+Internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "RadarUserInsightsLocation+Internal.h"; sourceTree = "<group>"; };
 		96A5A0D927AD9F7F007B960B /* RadarRouteGeometry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RadarRouteGeometry.h; sourceTree = "<group>"; };
 		96A5A0DA27AD9F7F007B960B /* RadarEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RadarEvent.h; sourceTree = "<group>"; };
 		96A5A0DB27AD9F7F007B960B /* RadarRegion.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RadarRegion.h; sourceTree = "<group>"; };
-		96A5A0DC27AD9F7F007B960B /* RadarUserInsightsLocation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RadarUserInsightsLocation.h; sourceTree = "<group>"; };
 		96A5A0DD27AD9F7F007B960B /* RadarRouteMatrix.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RadarRouteMatrix.h; sourceTree = "<group>"; };
 		96A5A0DE27AD9F7F007B960B /* RadarChain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RadarChain.h; sourceTree = "<group>"; };
-		96A5A0DF27AD9F7F007B960B /* RadarUserInsights.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RadarUserInsights.h; sourceTree = "<group>"; };
 		96A5A0E027AD9F7F007B960B /* RadarUser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RadarUser.h; sourceTree = "<group>"; };
 		96A5A0E127AD9F7F007B960B /* RadarTrip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RadarTrip.h; sourceTree = "<group>"; };
 		96A5A0E227AD9F7F007B960B /* RadarGeofenceGeometry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RadarGeofenceGeometry.h; sourceTree = "<group>"; };
 		96A5A0E327AD9F7F007B960B /* RadarCoordinate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RadarCoordinate.h; sourceTree = "<group>"; };
 		96A5A0E427AD9F7F007B960B /* RadarRoute.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RadarRoute.h; sourceTree = "<group>"; };
-		96A5A0E527AD9F7F007B960B /* RadarUserInsightsState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RadarUserInsightsState.h; sourceTree = "<group>"; };
 		96A5A0E627AD9F7F007B960B /* RadarGeofence.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RadarGeofence.h; sourceTree = "<group>"; };
 		96A5A0E727AD9F7F007B960B /* RadarDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RadarDelegate.h; sourceTree = "<group>"; };
 		96A5A0E827AD9F7F007B960B /* RadarTrackingOptions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RadarTrackingOptions.h; sourceTree = "<group>"; };
@@ -250,16 +235,13 @@
 		DD236CA52308812600EB88F9 /* RadarCircleGeometry.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RadarCircleGeometry.m; sourceTree = "<group>"; };
 		DD236CA92308812600EB88F9 /* RadarGeofence.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RadarGeofence.m; sourceTree = "<group>"; };
 		DD236CAB2308812600EB88F9 /* RadarPolygonGeometry.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RadarPolygonGeometry.m; sourceTree = "<group>"; };
-		DD236CAD2308812600EB88F9 /* RadarUserInsightsLocation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RadarUserInsightsLocation.m; sourceTree = "<group>"; };
 		DD236CAE2308812600EB88F9 /* RadarGeofenceGeometry.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RadarGeofenceGeometry.m; sourceTree = "<group>"; };
 		DD236CB22308812600EB88F9 /* RadarPlace.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RadarPlace.m; sourceTree = "<group>"; };
-		DD236CB32308812600EB88F9 /* RadarUserInsights.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RadarUserInsights.m; sourceTree = "<group>"; };
 		DD236CB62308812700EB88F9 /* RadarChain.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RadarChain.m; sourceTree = "<group>"; };
 		DD236CB82308812700EB88F9 /* RadarEvent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RadarEvent.m; sourceTree = "<group>"; };
 		DD236CBA2308812700EB88F9 /* RadarCoordinate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RadarCoordinate.m; sourceTree = "<group>"; };
 		DD236CBB2308812700EB88F9 /* RadarUser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RadarUser.m; sourceTree = "<group>"; };
 		DD236CBC2308812700EB88F9 /* RadarRegion.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RadarRegion.m; sourceTree = "<group>"; };
-		DD236CC12308812700EB88F9 /* RadarUserInsightsState.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RadarUserInsightsState.m; sourceTree = "<group>"; };
 		DD236CEB2308821600EB88F9 /* RadarTrackingOptions.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RadarTrackingOptions.m; sourceTree = "<group>"; };
 		DD236CF723088F8400EB88F9 /* RadarLocationManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarLocationManager.h; sourceTree = "<group>"; };
 		DD236CF823088F8400EB88F9 /* RadarLocationManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RadarLocationManager.m; sourceTree = "<group>"; };
@@ -363,9 +345,6 @@
 				96A5A0E127AD9F7F007B960B /* RadarTrip.h */,
 				96A5A0EE27AD9F7F007B960B /* RadarTripOptions.h */,
 				96A5A0E027AD9F7F007B960B /* RadarUser.h */,
-				96A5A0DF27AD9F7F007B960B /* RadarUserInsights.h */,
-				96A5A0DC27AD9F7F007B960B /* RadarUserInsightsLocation.h */,
-				96A5A0E527AD9F7F007B960B /* RadarUserInsightsState.h */,
 			);
 			path = Include;
 			sourceTree = "<group>";
@@ -523,12 +502,6 @@
 				DDF1157C2524E18100D575C4 /* RadarTrip.m */,
 				96A5A0B427AD9F40007B960B /* RadarUser+Internal.h */,
 				DD236CBB2308812700EB88F9 /* RadarUser.m */,
-				96A5A0AB27AD9F40007B960B /* RadarUserInsights+Internal.h */,
-				DD236CB32308812600EB88F9 /* RadarUserInsights.m */,
-				96A5A0BF27AD9F41007B960B /* RadarUserInsightsLocation+Internal.h */,
-				DD236CAD2308812600EB88F9 /* RadarUserInsightsLocation.m */,
-				96A5A0AE27AD9F40007B960B /* RadarUserInsightsState+Internal.h */,
-				DD236CC12308812700EB88F9 /* RadarUserInsightsState.m */,
 			);
 			name = Models;
 			sourceTree = "<group>";
@@ -570,9 +543,7 @@
 				96A5A10F27AD9F7F007B960B /* RadarRouteDuration.h in Headers */,
 				96A5A10627AD9F7F007B960B /* RadarFraud.h in Headers */,
 				96A5A0CF27AD9F41007B960B /* RadarAddress+Internal.h in Headers */,
-				96A5A0FC27AD9F7F007B960B /* RadarUserInsights.h in Headers */,
 				96A5A11127AD9F7F007B960B /* RadarBeacon.h in Headers */,
-				96A5A0C627AD9F41007B960B /* RadarUserInsightsState+Internal.h in Headers */,
 				96A5A10B27AD9F7F007B960B /* RadarTripOptions.h in Headers */,
 				96A5A0C727AD9F41007B960B /* RadarChain+Internal.h in Headers */,
 				96A5A0C827AD9F41007B960B /* RadarBeacon+Internal.h in Headers */,
@@ -593,19 +564,15 @@
 				0107AA1F26220059008AB52F /* RadarSettings.h in Headers */,
 				96A5A0C027AD9F41007B960B /* RadarRouteDistance+Internal.h in Headers */,
 				96A5A0D227AD9F41007B960B /* RadarContext+Internal.h in Headers */,
-				96A5A0D727AD9F41007B960B /* RadarUserInsightsLocation+Internal.h in Headers */,
 				96A5A10E27AD9F7F007B960B /* RadarRouteDistance.h in Headers */,
-				96A5A0F927AD9F7F007B960B /* RadarUserInsightsLocation.h in Headers */,
 				96A5A10727AD9F7F007B960B /* RadarCircleGeometry.h in Headers */,
 				96A5A0F827AD9F7F007B960B /* RadarRegion.h in Headers */,
-				96A5A0C327AD9F41007B960B /* RadarUserInsights+Internal.h in Headers */,
 				0107AA2B26220066008AB52F /* RadarUtils.h in Headers */,
 				9679F4A127CD8D0600800797 /* CLLocation+Radar.h in Headers */,
 				96A5A0D127AD9F41007B960B /* RadarEvent+Internal.h in Headers */,
 				96A5A0D327AD9F41007B960B /* RadarPolygonGeometry+Internal.h in Headers */,
 				9683FD6427B36C26009EBB6B /* RadarMeta.h in Headers */,
 				96A5A11027AD9F7F007B960B /* RadarPlace.h in Headers */,
-				96A5A10227AD9F7F007B960B /* RadarUserInsightsState.h in Headers */,
 				96A5A0D427AD9F41007B960B /* RadarGeofence+Internal.h in Headers */,
 				96A5A0C427AD9F41007B960B /* RadarCircleGeometry+Internal.h in Headers */,
 				96A5A0D527AD9F41007B960B /* RadarRouteDuration+Internal.h in Headers */,
@@ -753,9 +720,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				0107AAA726220160008AB52F /* RadarGeofence.m in Sources */,
-				0107AAFC262201BE008AB52F /* RadarUserInsightsLocation.m in Sources */,
 				0107AAC826220184008AB52F /* RadarRouteDistance.m in Sources */,
-				0107AAF8262201B8008AB52F /* RadarUserInsights.m in Sources */,
 				0107AA952622014C008AB52F /* RadarCoordinate.m in Sources */,
 				0107AA8F26220146008AB52F /* RadarCircleGeometry.m in Sources */,
 				0107AAD426220190008AB52F /* RadarRouteGeometry.m in Sources */,
@@ -791,7 +756,6 @@
 				0107AAA126220159008AB52F /* RadarEvent.m in Sources */,
 				0107AAE02622019B008AB52F /* RadarRoutes.m in Sources */,
 				96A5A11827ADA02F007B960B /* RadarLog.m in Sources */,
-				0107AB02262201C7008AB52F /* RadarUserInsightsState.m in Sources */,
 				0107AB1A262201E2008AB52F /* RadarLogger.m in Sources */,
 				0107AACE2622018A008AB52F /* RadarRouteDuration.m in Sources */,
 				0107AB17262201DE008AB52F /* RadarDelegateHolder.m in Sources */,
