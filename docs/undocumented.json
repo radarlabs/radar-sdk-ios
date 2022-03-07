@@ -58,21 +58,21 @@
     },
     {
       "file": "/Users/nick/radar/radar-sdk-ios/RadarSDK/Include/RadarEvent.h",
-      "line": 190,
+      "line": 173,
       "symbol": "RadarEvent.+stringForType:",
       "symbol_kind": "sourcekitten.source.lang.objc.decl.method.class",
       "warning": "undocumented"
     },
     {
       "file": "/Users/nick/radar/radar-sdk-ios/RadarSDK/Include/RadarEvent.h",
-      "line": 191,
+      "line": 174,
       "symbol": "RadarEvent.+arrayForEvents:",
       "symbol_kind": "sourcekitten.source.lang.objc.decl.method.class",
       "warning": "undocumented"
     },
     {
       "file": "/Users/nick/radar/radar-sdk-ios/RadarSDK/Include/RadarEvent.h",
-      "line": 192,
+      "line": 175,
       "symbol": "RadarEvent.-dictionaryValue",
       "symbol_kind": "sourcekitten.source.lang.objc.decl.method.instance",
       "warning": "undocumented"
