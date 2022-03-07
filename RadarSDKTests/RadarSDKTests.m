@@ -172,18 +172,6 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
         AssertGeofenceOk(event.geofence);
         XCTAssertNotEqual(event.duration, 0);
         break;
-    case RadarEventTypeUserEnteredHome:
-        break;
-    case RadarEventTypeUserExitedHome:
-        break;
-    case RadarEventTypeUserEnteredOffice:
-        break;
-    case RadarEventTypeUserExitedOffice:
-        break;
-    case RadarEventTypeUserStartedTraveling:
-        break;
-    case RadarEventTypeUserStoppedTraveling:
-        break;
     case RadarEventTypeUserEnteredPlace:
         AssertPlaceOk(event.place);
         break;
@@ -211,10 +199,6 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
         break;
     case RadarEventTypeUserExitedRegionDMA:
         AssertRegionOk(event.region);
-        break;
-    case RadarEventTypeUserStartedCommuting:
-        break;
-    case RadarEventTypeUserStoppedCommuting:
         break;
     default:
         break;
