@@ -125,22 +125,6 @@
             type = RadarEventTypeUserEnteredGeofence;
         } else if ([typeStr isEqualToString:@"user.exited_geofence"]) {
             type = RadarEventTypeUserExitedGeofence;
-        } else if ([typeStr isEqualToString:@"user.entered_home"]) {
-            type = RadarEventTypeUserEnteredHome;
-        } else if ([typeStr isEqualToString:@"user.exited_home"]) {
-            type = RadarEventTypeUserExitedHome;
-        } else if ([typeStr isEqualToString:@"user.entered_office"]) {
-            type = RadarEventTypeUserEnteredOffice;
-        } else if ([typeStr isEqualToString:@"user.exited_office"]) {
-            type = RadarEventTypeUserExitedOffice;
-        } else if ([typeStr isEqualToString:@"user.started_traveling"]) {
-            type = RadarEventTypeUserStartedTraveling;
-        } else if ([typeStr isEqualToString:@"user.stopped_traveling"]) {
-            type = RadarEventTypeUserStoppedTraveling;
-        } else if ([typeStr isEqualToString:@"user.started_commuting"]) {
-            type = RadarEventTypeUserStartedCommuting;
-        } else if ([typeStr isEqualToString:@"user.stopped_commuting"]) {
-            type = RadarEventTypeUserStoppedCommuting;
         } else if ([typeStr isEqualToString:@"user.entered_place"]) {
             type = RadarEventTypeUserEnteredPlace;
         } else if ([typeStr isEqualToString:@"user.exited_place"]) {
@@ -320,18 +304,6 @@
         return @"user.entered_geofence";
     case RadarEventTypeUserExitedGeofence:
         return @"user.exited_geofence";
-    case RadarEventTypeUserEnteredHome:
-        return @"user.entered_home";
-    case RadarEventTypeUserExitedHome:
-        return @"user.exited_home";
-    case RadarEventTypeUserEnteredOffice:
-        return @"user.entered_office";
-    case RadarEventTypeUserExitedOffice:
-        return @"user.exited_office";
-    case RadarEventTypeUserStartedTraveling:
-        return @"user.started_traveling";
-    case RadarEventTypeUserStoppedTraveling:
-        return @"user.stopped_traveling";
     case RadarEventTypeUserEnteredPlace:
         return @"user.entered_place";
     case RadarEventTypeUserExitedPlace:
@@ -350,10 +322,6 @@
         return @"user.entered_region_dma";
     case RadarEventTypeUserExitedRegionDMA:
         return @"user.exited_region_country";
-    case RadarEventTypeUserStartedCommuting:
-        return @"user.started_commuting";
-    case RadarEventTypeUserStoppedCommuting:
-        return @"user.stopped_commuting";
     case RadarEventTypeUserStartedTrip:
         return @"user.started_trip";
     case RadarEventTypeUserUpdatedTrip:

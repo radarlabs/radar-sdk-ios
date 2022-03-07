@@ -27,19 +27,6 @@ typedef NS_ENUM(NSInteger, RadarEventType) {
     RadarEventTypeUserEnteredGeofence NS_SWIFT_NAME(userEnteredGeofence),
     /// `user.exited_geofence`
     RadarEventTypeUserExitedGeofence NS_SWIFT_NAME(userExitedGeofence),
-    /// `user.entered_home`
-    RadarEventTypeUserEnteredHome NS_SWIFT_NAME(userEnteredHome),
-    /// `user.exited_home`
-    RadarEventTypeUserExitedHome NS_SWIFT_NAME(userExitedHome),
-    /// `user.entered_office`
-    RadarEventTypeUserEnteredOffice NS_SWIFT_NAME(userEnteredOffice),
-    /// `user.exited_office`
-    RadarEventTypeUserExitedOffice NS_SWIFT_NAME(userExitedOffice),
-    /// `user.started_traveling`
-    RadarEventTypeUserStartedTraveling NS_SWIFT_NAME(userStartedTraveling),
-    /// `user.stopped_traveling`
-    RadarEventTypeUserStoppedTraveling NS_SWIFT_NAME(userStoppedTraveling),
-    /// `user.entered_place`
     RadarEventTypeUserEnteredPlace NS_SWIFT_NAME(userEnteredPlace),
     /// `user.exited_place`
     RadarEventTypeUserExitedPlace NS_SWIFT_NAME(userExitedPlace),
@@ -57,10 +44,6 @@ typedef NS_ENUM(NSInteger, RadarEventType) {
     RadarEventTypeUserEnteredRegionDMA NS_SWIFT_NAME(userEnteredRegionDMA),
     /// `user.exited_region_dma`
     RadarEventTypeUserExitedRegionDMA NS_SWIFT_NAME(userExitedRegionDMA),
-    /// `user.started_commuting`
-    RadarEventTypeUserStartedCommuting NS_SWIFT_NAME(userStartedCommuting),
-    /// `user.stopped_commuting`
-    RadarEventTypeUserStoppedCommuting NS_SWIFT_NAME(userStoppedCommuting),
     /// `user.started_trip`
     RadarEventTypeUserStartedTrip NS_SWIFT_NAME(userStartedTrip),
     /// `user.updated_trip`
