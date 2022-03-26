@@ -411,6 +411,9 @@ static NSString *const kSyncBeaconIdentifierPrefix = @"radar_beacon_";
     NSString *identifier = [NSString stringWithFormat:@"%@%@", kBubbleGeofenceIdentifierPrefix, [[NSUUID UUID] UUIDString]];
     CLRegion *region = [[CLCircularRegion alloc] initWithCenter:location.coordinate radius:radius identifier:identifier];
     [self.locationManager startMonitoringForRegion:region];
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug 
+                                       message:@"Adding bubble geofence | latitude = %f; longitude = %f; radius = %f; identifier = %@", location.coordinate.latitude,
+                                               location.coordinate.longitude, radius, identifier]];
 }
 
 - (void)removeBubbleGeofence {
@@ -419,6 +422,7 @@ static NSString *const kSyncBeaconIdentifierPrefix = @"radar_beacon_";
             [self.locationManager stopMonitoringForRegion:region];
         }
     }
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Removed bubble geofences"];
 }
 
 - (void)replaceSyncedGeofences:(NSArray<RadarGeofence *> *)geofences {
@@ -463,6 +467,7 @@ static NSString *const kSyncBeaconIdentifierPrefix = @"radar_beacon_";
             [self.locationManager stopMonitoringForRegion:region];
         }
     }
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Removed synced geofences"];
 }
 
 - (void)replaceSyncedBeacons:(NSArray<RadarBeacon *> *)beacons {
