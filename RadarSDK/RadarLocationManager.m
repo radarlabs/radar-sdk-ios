@@ -412,8 +412,8 @@ static NSString *const kSyncBeaconIdentifierPrefix = @"radar_beacon_";
     CLRegion *region = [[CLCircularRegion alloc] initWithCenter:location.coordinate radius:radius identifier:identifier];
     [self.locationManager startMonitoringForRegion:region];
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug 
-                                       message:@"Adding bubble geofence | latitude = %f; longitude = %f; radius = %f; identifier = %@", location.coordinate.latitude,
-                                               location.coordinate.longitude, radius, identifier]];
+                                       message:[NSString stringWithFormat:@"Adding bubble geofence | latitude = %f; longitude = %f; radius = %f; identifier = %@", 
+                                                                          location.coordinate.latitude, location.coordinate.longitude, radius, identifier]];
 }
 
 - (void)removeBubbleGeofence {
