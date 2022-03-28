@@ -8,7 +8,6 @@
 #import "RadarGeofence.h"
 #import "RadarTrip.h"
 #import "RadarUser.h"
-#import "RadarUserInsights.h"
 #import <Foundation/Foundation.h>
 
 @interface RadarUser ()
@@ -21,7 +20,6 @@
                             location:(CLLocation *_Nonnull)location
                            geofences:(NSArray *_Nullable)geofences
                                place:(RadarPlace *_Nullable)place
-                            insights:(RadarUserInsights *_Nullable)insights
                              beacons:(NSArray *_Nullable)beacons
                              stopped:(BOOL)stopped
                           foreground:(BOOL)foreground
