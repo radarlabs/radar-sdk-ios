@@ -22,48 +22,36 @@
 @implementation CLLocation_RadarTests
 
 - (void)testValidLocationOk {
-    CLLocation *location = [[CLLocation alloc] initWithCoordinate: CLLocationCoordinate2DMake(LAT, LON)
-                                                         altitude:1.0
-                                               horizontalAccuracy:1.0
-                                                 verticalAccuracy:1.0
-                                                        timestamp:[NSDate new]];
-    XCTAssertTrue(location.isValid);
+    [self assertValidLocation:LAT longitude:LON horizontalAccuracy:1.0 shouldBeValid:true];
 }
 
 - (void)testIsValidForLocationWithInvalidLatitudeReturnsFalse {
-    CLLocation *location = [[CLLocation alloc] initWithCoordinate: CLLocationCoordinate2DMake(0.0, LON)
-                                                         altitude:1.0
-                                               horizontalAccuracy:1.0
-                                                 verticalAccuracy:1.0
-                                                        timestamp:[NSDate new]];
-    XCTAssertFalse(location.isValid);
+    [self assertValidLocation:0.0 longitude:LON horizontalAccuracy:1.0 shouldBeValid:false];
 }
 
 - (void)testIsValidForLocationWithLatitudeNearZeroReturnsTrue {
-    CLLocation *location = [[CLLocation alloc] initWithCoordinate: CLLocationCoordinate2DMake(0.00001, LON)
-                                                         altitude:1.0
-                                               horizontalAccuracy:1.0
-                                                 verticalAccuracy:1.0
-                                                        timestamp:[NSDate new]];
-    XCTAssertTrue(location.isValid);
+    [self assertValidLocation:0.0001 longitude:LON horizontalAccuracy:1.0 shouldBeValid:true];
 }
 
 - (void)testIsValidForLocationWithInvalidLongitudeReturnsFalse {
-    CLLocation *location = [[CLLocation alloc] initWithCoordinate: CLLocationCoordinate2DMake(LAT, 0.0)
-                                                         altitude:1.0
-                                               horizontalAccuracy:1.0
-                                                 verticalAccuracy:1.0
-                                                        timestamp:[NSDate new]];
-    XCTAssertFalse(location.isValid);
+    [self assertValidLocation:LAT longitude:0.0 horizontalAccuracy:1.0 shouldBeValid:false];
 }
 
 - (void)testIsValidForLocationWithInvalidHorizontalAccuracyReturnsFalse {
-    CLLocation *location = [[CLLocation alloc] initWithCoordinate: CLLocationCoordinate2DMake(LAT, LON)
+    [self assertValidLocation:LAT longitude:LON horizontalAccuracy:0.0 shouldBeValid:false];
+}
+
+- (void)assertValidLocation:(CLLocationDegrees)latitude
+                  longitude:(CLLocationDegrees)longitude
+         horizontalAccuracy:(CLLocationDegrees)horizontalAccuracy
+              shouldBeValid:(BOOL)isValid {
+    CLLocationCoordinate2D coords = CLLocationCoordinate2DMake(latitude, longitude);
+    CLLocation *location = [[CLLocation alloc] initWithCoordinate:coords
                                                          altitude:1.0
-                                               horizontalAccuracy:0.0
+                                               horizontalAccuracy:horizontalAccuracy
                                                  verticalAccuracy:1.0
                                                         timestamp:[NSDate new]];
-    XCTAssertFalse(location.isValid);
+    XCTAssertEqual(location.isValid, isValid);
 }
 
 @end
