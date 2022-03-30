@@ -13,7 +13,6 @@
 #import "RadarRegion.h"
 #import "RadarSegment.h"
 #import "RadarTrip.h"
-#import "RadarUserInsights.h"
 #import <Foundation/Foundation.h>
 
 typedef NS_ENUM(NSInteger, RadarLocationSource);
@@ -66,13 +65,6 @@ typedef NS_ENUM(NSInteger, RadarLocationSource);
  @see https://radar.com/documentation/places
  */
 @property (nullable, copy, nonatomic, readonly) RadarPlace *place;
-
-/**
- Learned insights for the user. May be `nil` if no insights are available or if Insights is not enabled.
-
- @see https://radar.com/documentation/insights
- */
-@property (nullable, strong, nonatomic, readonly) RadarUserInsights *insights;
 
 /**
  An array of the user's nearby beacons. May be `nil` or empty if the user is not near any beacons or if Beacons is not enabled.
