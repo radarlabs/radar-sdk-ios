@@ -20,7 +20,7 @@ jobs:
           'radarlabs/radar-sdk-xamarin',
           'radarlabs/cordova-plugin-radar',
         ]
-    runs-on: -latest
+    runs-on: macos-latest
     steps:
       - name: Dispatch to downtream SDKs
         uses: peter-evans/repository-dispatch@v2
@@ -28,4 +28,4 @@ jobs:
           token: ${{ secrets.RADAR_CIRCLECI_PAT }}
           repository: ${{ matrix.repo }}
           event-type: ios-sdk-release
-          client-payload: '{"release": "${{ github.event.release.tag_name }}"}'
+          client-payload: '{"release": "${{ github.event.release.tag_name }}", "platform": "ios"}'
