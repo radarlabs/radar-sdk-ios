@@ -76,6 +76,9 @@
             void (^dataTaskCompletionHandler)(NSData *data, NSURLResponse *response, NSError *error) = ^(NSData *data, NSURLResponse *response, NSError *error) {
                 if (error) {
                     dispatch_async(dispatch_get_main_queue(), ^{
+                        [[RadarLogger sharedInstance]
+                            logWithLevel:RadarLogLevelError
+                                message:[NSString stringWithFormat:@"Received network error | error = %@", error]];
                         completionHandler(RadarStatusErrorNetwork, nil);
                     });
 
