@@ -23,7 +23,6 @@ static NSString *const kAdIdEnabled = @"radar-adIdEnabled";
 static NSString *const kTracking = @"radar-tracking";
 static NSString *const kTrackingOptions = @"radar-trackingOptions";
 static NSString *const kRemoteTrackingOptions = @"radar-remoteTrackingOptions";
-static NSString *const kListenToServerTrackingOptions = @"radar-listenToServerTrackingOptions";
 static NSString *const kTripOptions = @"radar-tripOptions";
 static NSString *const kLogLevel = @"radar-logLevel";
 static NSString *const kHost = @"radar-host";
@@ -113,14 +112,6 @@ static NSString *const kDefaultHost = @"https://api.radar.io";
 
 + (void)setTracking:(BOOL)tracking {
     [[NSUserDefaults standardUserDefaults] setBool:tracking forKey:kTracking];
-}
-
-+ (void)setListenToServerTrackingOptions:(BOOL)listenToServerTrackingOptions {
-    [[NSUserDefaults standardUserDefaults] setBool:listenToServerTrackingOptions forKey:kListenToServerTrackingOptions];
-}
-
-+(BOOL)listenToServerTrackingOptions {
-    return [[NSUserDefaults standardUserDefaults] boolForKey:kListenToServerTrackingOptions];
 }
 
 + (RadarTrackingOptions *)trackingOptions {
