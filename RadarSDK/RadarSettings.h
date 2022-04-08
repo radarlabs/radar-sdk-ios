@@ -32,8 +32,6 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)setAdIdEnabled:(BOOL)enabled;
 + (BOOL)tracking;
 + (void)setTracking:(BOOL)tracking;
-+ (BOOL)listenToServerTrackingOptions;
-+ (void)setListenToServerTrackingOptions:(BOOL)listenToServerTrackingOptions;
 + (RadarTrackingOptions *_Nullable)trackingOptions;
 + (void)setTrackingOptions:(RadarTrackingOptions *_Nonnull)options;
 + (RadarTrackingOptions *_Nullable)remoteTrackingOptions;

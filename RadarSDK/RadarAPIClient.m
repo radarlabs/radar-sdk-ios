@@ -227,9 +227,8 @@
 
     // NOTE: this is sent up for measuring number of clients set on
     // remote tracking options
-    if ([RadarSettings listenToServerTrackingOptions]) {
-        params[@"listenToServer"] = @(YES);
-    }
+    BOOL usingRemoteTrackingOptions = RadarSettings.tracking && RadarSettings.remoteTrackingOptions;
+    params[@"usingRemoteTrackingOptions"] = @(usingRemoteTrackingOptions);
 
     NSString *host = [RadarSettings host];
     NSString *url = [NSString stringWithFormat:@"%@/v1/track", host];
