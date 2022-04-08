@@ -29,6 +29,7 @@
 #import "RadarLog.h"
 #import "RadarLogBuffer.h"
 #import "RadarLogger.h"
+#import "RadarMeta+Internal.h"
 #import "RadarPermissionsHelper.h"
 #import "RadarPlace+Internal.h"
 #import "RadarPolygonGeometry+Internal.h"
@@ -45,9 +46,6 @@
 #import "RadarState.h"
 #import "RadarTrip+Internal.h"
 #import "RadarUser+Internal.h"
-#import "RadarUserInsights+Internal.h"
-#import "RadarUserInsightsLocation+Internal.h"
-#import "RadarUserInsightsState+Internal.h"
 #import "RadarUtils.h"
 #import "Radar.h"
 #import "RadarAddress.h"
@@ -61,6 +59,7 @@
 #import "RadarFraud.h"
 #import "RadarGeofence.h"
 #import "RadarGeofenceGeometry.h"
+#import "RadarMeta.h"
 #import "RadarPlace.h"
 #import "RadarPolygonGeometry.h"
 #import "RadarRegion.h"
@@ -75,9 +74,6 @@
 #import "RadarTrip.h"
 #import "RadarTripOptions.h"
 #import "RadarUser.h"
-#import "RadarUserInsights.h"
-#import "RadarUserInsightsLocation.h"
-#import "RadarUserInsightsState.h"
 
 FOUNDATION_EXPORT double RadarSDKVersionNumber;
 FOUNDATION_EXPORT const unsigned char RadarSDKVersionString[];

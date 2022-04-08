@@ -6,7 +6,7 @@
 //
 
 #import "ViewController.h"
-#import <RadarSDK/RadarSDK.h>
+@import RadarSDK;
 
 @interface ViewController ()
 
@@ -17,9 +17,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
 
-    NSBundle *radarBundle = [NSBundle bundleForClass:Radar.class];
-    NSString *versionString = [radarBundle infoDictionary][@"CFBundleShortVersionString"];
-    self.versionNumberLabel.text = versionString;
+    self.versionNumberLabel.text = Radar.sdkVersion;
 }
 
 

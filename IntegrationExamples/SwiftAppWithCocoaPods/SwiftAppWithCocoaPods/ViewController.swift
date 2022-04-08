@@ -15,9 +15,7 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        let radarBundle = Bundle(for: Radar.self)
-        let versionString = radarBundle.infoDictionary!["CFBundleShortVersionString"] as? String
-        versionNumberLabel.text = versionString
+        versionNumberLabel.text = Radar.sdkVersion
     }
 
 }
