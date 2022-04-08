@@ -198,7 +198,6 @@ static NSString *const kSyncBeaconIdentifierPrefix = @"radar_beacon_";
 
 - (void)stopTracking {
     [RadarSettings setTracking:NO];
-    [RadarSettings setListenToServerTrackingOptions:NO];
     [self updateTracking];
 }
 
@@ -387,14 +386,12 @@ static NSString *const kSyncBeaconIdentifierPrefix = @"radar_beacon_";
     if (meta) {
         if ([meta trackingOptions]) {
             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
-                                               message:@"Listening to server tracking options"];
-            [RadarSettings setListenToServerTrackingOptions:YES];
+                                               message:[NSString stringWithFormat:@"Setting remote tracking options | trackingOptions = %@", meta.trackingOptions]];
             [RadarSettings setRemoteTrackingOptions:[meta trackingOptions]];
         } else {
-            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
-                                               message:@"Not listening to server tracking options; reverting to fallback values"];
-            [RadarSettings setListenToServerTrackingOptions:NO];
             [RadarSettings removeRemoteTrackingOptions];
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
+                                               message:[NSString stringWithFormat:@"Removed remote tracking options | trackingOptions = %@", Radar.getTrackingOptions]];
         }
         [self updateTracking];
     }
