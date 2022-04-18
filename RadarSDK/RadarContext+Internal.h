@@ -7,7 +7,6 @@
 
 #import "RadarContext.h"
 #import "RadarGeofence.h"
-#import "RadarUserInsights.h"
 #import <Foundation/Foundation.h>
 
 @interface RadarContext ()

@@ -22,9 +22,9 @@ static NSString *const kMetadata = @"radar-metadata";
 static NSString *const kAdIdEnabled = @"radar-adIdEnabled";
 static NSString *const kTracking = @"radar-tracking";
 static NSString *const kTrackingOptions = @"radar-trackingOptions";
+static NSString *const kRemoteTrackingOptions = @"radar-remoteTrackingOptions";
 static NSString *const kTripOptions = @"radar-tripOptions";
 static NSString *const kLogLevel = @"radar-logLevel";
-static NSString *const kConfig = @"radar-config";
 static NSString *const kHost = @"radar-host";
 static NSString *const kDefaultHost = @"https://api.radar.io";
 
@@ -124,6 +124,20 @@ static NSString *const kDefaultHost = @"https://api.radar.io";
     [[NSUserDefaults standardUserDefaults] setObject:optionsDict forKey:kTrackingOptions];
 }
 
++ (void)removeRemoteTrackingOptions {
+    [[NSUserDefaults standardUserDefaults] removeObjectForKey:kRemoteTrackingOptions];
+}
+
++ (RadarTrackingOptions *_Nullable)remoteTrackingOptions {
+    NSDictionary *optionsDict = [[NSUserDefaults standardUserDefaults] dictionaryForKey:kRemoteTrackingOptions];
+    return optionsDict ?  [RadarTrackingOptions trackingOptionsFromDictionary:optionsDict] : nil;
+}
+
++ (void)setRemoteTrackingOptions:(RadarTrackingOptions *_Nonnull)options {
+    NSDictionary *optionsDict = [options dictionaryValue];
+    [[NSUserDefaults standardUserDefaults] setObject:optionsDict forKey:kRemoteTrackingOptions];
+}
+
 + (RadarTripOptions *)tripOptions {
     NSDictionary *optionsDict = [[NSUserDefaults standardUserDefaults] dictionaryForKey:kTripOptions];
     return [RadarTripOptions tripOptionsFromDictionary:optionsDict];
@@ -132,10 +146,6 @@ static NSString *const kDefaultHost = @"https://api.radar.io";
 + (void)setTripOptions:(RadarTripOptions *)options {
     NSDictionary *optionsDict = [options dictionaryValue];
     [[NSUserDefaults standardUserDefaults] setObject:optionsDict forKey:kTripOptions];
-}
-
-+ (void)setConfig:(NSDictionary *)config {
-    [[NSUserDefaults standardUserDefaults] setObject:config forKey:kConfig];
 }
 
 + (RadarLogLevel)logLevel {

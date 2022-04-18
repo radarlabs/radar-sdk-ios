@@ -14,15 +14,17 @@
 #import "RadarBeacon.h"
 #import "RadarContext.h"
 #import "RadarEvent.h"
+#import "RadarLog.h"
 #import "RadarRegion.h"
 #import "RadarRouteMatrix.h"
 #import "RadarRoutes.h"
 #import "RadarUser.h"
+#import "RadarMeta.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 typedef void (^_Nonnull RadarTrackAPICompletionHandler)(
-    RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user, NSArray<RadarGeofence *> *_Nullable nearbyGeofences);
+    RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user, NSArray<RadarGeofence *> *_Nullable nearbyGeofences, RadarMeta *_Nullable meta);
 
 typedef void (^_Nonnull RadarTripAPICompletionHandler)(RadarStatus status, RadarTrip *_Nullable trip, NSArray<RadarEvent *> *_Nullable events);
 
@@ -42,6 +44,9 @@ typedef void (^_Nonnull RadarDistanceAPICompletionHandler)(RadarStatus status, N
 
 typedef void (^_Nonnull RadarMatrixAPICompletionHandler)(RadarStatus status, NSDictionary *_Nullable res, RadarRouteMatrix *_Nullable matrix);
 
+typedef void (^_Nonnull RadarConfigAPICompletionHandler)(RadarStatus status, RadarMeta *_Nullable meta);
+typedef void (^_Nonnull RadarSyncLogsAPICompletionHandler)(RadarStatus status);
+
 @interface RadarAPIClient : NSObject
 
 @property (nonnull, strong, nonatomic) RadarAPIHelper *apiHelper;
@@ -50,7 +55,9 @@ typedef void (^_Nonnull RadarMatrixAPICompletionHandler)(RadarStatus status, NSD
 
 + (NSDictionary *)headersWithPublishableKey:(NSString *)publishableKey;
 
-- (void)getConfig;
++ (RadarMeta *_Nullable)parseMeta:(NSDictionary *_Nullable)res;
+
+- (void)getConfig:(RadarConfigAPICompletionHandler _Nonnull)completionHandler;
 
 - (void)trackWithLocation:(CLLocation *_Nonnull)location
                   stopped:(BOOL)stopped
@@ -110,6 +117,8 @@ typedef void (^_Nonnull RadarMatrixAPICompletionHandler)(RadarStatus status, NSD
                         mode:(RadarRouteMode)mode
                        units:(RadarRouteUnits)units
            completionHandler:(RadarMatrixAPICompletionHandler _Nonnull)completionHandler;
+
+- (void)syncLogs:(NSArray<RadarLog *> *)logs completionHandler:(RadarSyncLogsAPICompletionHandler _Nonnull)completionHandler;
 
 @end
 

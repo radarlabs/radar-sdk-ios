@@ -14,6 +14,7 @@
 #import "RadarCircleGeometry.h"
 #import "RadarDelegateHolder.h"
 #import "RadarLogger.h"
+#import "RadarMeta.h"
 #import "RadarPolygonGeometry.h"
 #import "RadarSettings.h"
 #import "RadarState.h"
@@ -21,11 +22,33 @@
 
 @interface RadarLocationManager ()
 
+/**
+ `YES` if `startUpdates()` has started the `timer` for location updates.
+ */
 @property (assign, nonatomic) BOOL started;
+
+/**
+ The number of seconds between the `timer`'s location updates.
+ */
 @property (assign, nonatomic) int startedInterval;
+
+/**
+ `YES` if `RadarAPIClient.trackWithLocation() has been called, but the
+ response hasn't been received yet.
+ */
 @property (assign, nonatomic) BOOL sending;
+
+/**
+ The timer for checking the location at regular intervals, such as in
+ continuous tracking mode.
+ */
 @property (strong, nonatomic) NSTimer *timer;
+
+/**
+ Callbacks for sending events.
+ */
 @property (nonnull, strong, nonatomic) NSMutableArray<RadarLocationCompletionHandler> *completionHandlers;
+
 @property (nonnull, strong, nonatomic) NSMutableSet<NSString *> *nearbyBeaconIdentifers;
 
 @end
@@ -166,7 +189,6 @@ static NSString *const kSyncBeaconIdentifierPrefix = @"radar_beacon_";
     CLAuthorizationStatus authorizationStatus = [self.permissionsHelper locationAuthorizationStatus];
     if (!(authorizationStatus == kCLAuthorizationStatusAuthorizedWhenInUse || authorizationStatus == kCLAuthorizationStatusAuthorizedAlways)) {
         [[RadarDelegateHolder sharedInstance] didFailWithStatus:RadarStatusErrorPermissions];
-
         return;
     }
 
@@ -241,13 +263,22 @@ static NSString *const kSyncBeaconIdentifierPrefix = @"radar_beacon_";
 }
 
 - (void)updateTracking {
-    [self updateTracking:nil];
+    [self updateTracking:nil fromInitialize:NO];
+}
+
+- (void)updateTrackingFromInitialize {
+    [self updateTracking:nil fromInitialize:YES];
 }
 
 - (void)updateTracking:(CLLocation *)location {
+    [self updateTracking:location fromInitialize:NO];
+}
+
+- (void)updateTracking:(CLLocation *)location
+        fromInitialize:(BOOL)fromInitialize {
     dispatch_async(dispatch_get_main_queue(), ^{
         BOOL tracking = [RadarSettings tracking];
-        RadarTrackingOptions *options = [RadarSettings trackingOptions];
+        RadarTrackingOptions *options = [Radar getTrackingOptions];
 
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
                                            message:[NSString stringWithFormat:@"Updating tracking | options = %@; location = %@", [options dictionaryValue], location]];
@@ -338,10 +369,33 @@ static NSString *const kSyncBeaconIdentifierPrefix = @"radar_beacon_";
         } else {
             [self stopUpdates];
             [self removeAllRegions];
-            [self.locationManager stopMonitoringVisits];
-            [self.locationManager stopMonitoringSignificantLocationChanges];
+
+            // If updateTracking() was called from the RadarLocationManager
+            // intializer, don't tell the CLLocationManager to stop, because
+            // the location manager may be in use by other location-based
+            // services. Currently, only the initializer passes in YES, and all
+            // subsequent calls to updateTracking() get NO.
+            if (!fromInitialize) {
+                [self.locationManager stopMonitoringVisits];
+                [self.locationManager stopMonitoringSignificantLocationChanges];
+            }
         }
     });
+}
+
+- (void)updateTrackingFromMeta:(RadarMeta *_Nullable)meta {
+    if (meta) {
+        if ([meta trackingOptions]) {
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
+                                               message:[NSString stringWithFormat:@"Setting remote tracking options | trackingOptions = %@", meta.trackingOptions]];
+            [RadarSettings setRemoteTrackingOptions:[meta trackingOptions]];
+        } else {
+            [RadarSettings removeRemoteTrackingOptions];
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
+                                               message:[NSString stringWithFormat:@"Removed remote tracking options | trackingOptions = %@", Radar.getTrackingOptions]];
+        }
+        [self updateTracking];
+    }
 }
 
 - (void)replaceBubbleGeofence:(CLLocation *)location radius:(int)radius {
@@ -355,6 +409,9 @@ static NSString *const kSyncBeaconIdentifierPrefix = @"radar_beacon_";
     NSString *identifier = [NSString stringWithFormat:@"%@%@", kBubbleGeofenceIdentifierPrefix, [[NSUUID UUID] UUIDString]];
     CLRegion *region = [[CLCircularRegion alloc] initWithCenter:location.coordinate radius:radius identifier:identifier];
     [self.locationManager startMonitoringForRegion:region];
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug 
+                                       message:[NSString stringWithFormat:@"Successfully added bubble geofence | latitude = %f; longitude = %f; radius = %d; identifier = %@", 
+                                                                          location.coordinate.latitude, location.coordinate.longitude, radius, identifier]];
 }
 
 - (void)removeBubbleGeofence {
@@ -363,13 +420,14 @@ static NSString *const kSyncBeaconIdentifierPrefix = @"radar_beacon_";
             [self.locationManager stopMonitoringForRegion:region];
         }
     }
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Removed bubble geofences"];
 }
 
 - (void)replaceSyncedGeofences:(NSArray<RadarGeofence *> *)geofences {
     [self removeSyncedGeofences];
 
     BOOL tracking = [RadarSettings tracking];
-    RadarTrackingOptions *options = [RadarSettings trackingOptions];
+    RadarTrackingOptions *options = [Radar getTrackingOptions];
     if (!tracking || !options.syncGeofences || !geofences) {
         return;
     }
@@ -410,13 +468,14 @@ static NSString *const kSyncBeaconIdentifierPrefix = @"radar_beacon_";
             [self.locationManager stopMonitoringForRegion:region];
         }
     }
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Removed synced geofences"];
 }
 
 - (void)replaceSyncedBeacons:(NSArray<RadarBeacon *> *)beacons {
     [self removeSyncedBeacons];
 
     BOOL tracking = [RadarSettings tracking];
-    RadarTrackingOptions *options = [RadarSettings trackingOptions];
+    RadarTrackingOptions *options = [Radar getTrackingOptions];
     if (!tracking || !options.beacons || !beacons) {
         return;
     }
@@ -482,7 +541,7 @@ static NSString *const kSyncBeaconIdentifierPrefix = @"radar_beacon_";
         return;
     }
 
-    RadarTrackingOptions *options = [RadarSettings trackingOptions];
+    RadarTrackingOptions *options = [Radar getTrackingOptions];
     BOOL wasStopped = [RadarState stopped];
     BOOL stopped = NO;
 

@@ -8,14 +8,14 @@
 @import RadarSDK;
 #import <XCTest/XCTest.h>
 
+#import "../RadarSDK/RadarAPIClient.h"
+#import "../RadarSDK/RadarAPIHelper.h"
+#import "../RadarSDK/RadarLocationManager.h"
+#import "../RadarSDK/RadarSettings.h"
 #import "CLLocationManagerMock.h"
 #import "CLVisitMock.h"
-#import "RadarAPIClient.h"
-#import "RadarAPIHelper.h"
 #import "RadarAPIHelperMock.h"
-#import "RadarLocationManager.h"
 #import "RadarPermissionsHelperMock.h"
-#import "RadarSettings.h"
 #import "RadarTestUtils.h"
 #import "RadarTripOptions.h"
 
@@ -86,18 +86,6 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     XCTAssertNotNil(place.location);
 }
 
-#define AssertInsightsOk(insights) [self assertInsightsOk:insights]
-- (void)assertInsightsOk:(RadarUserInsights *)insights {
-    XCTAssertNotNil(insights);
-    XCTAssertNotNil(insights.homeLocation);
-    XCTAssertTrue(insights.homeLocation.updatedAt);
-    XCTAssertNotEqual(insights.homeLocation.confidence, RadarUserInsightsLocationConfidenceNone);
-    XCTAssertNotNil(insights.officeLocation);
-    XCTAssertNotNil(insights.officeLocation.updatedAt);
-    XCTAssertNotEqual(insights.officeLocation.confidence, RadarUserInsightsLocationConfidenceNone);
-    XCTAssertNotNil(insights.state);
-}
-
 #define AssertRegionOk(region) [self assertRegionOk:region]
 - (void)assertRegionOk:(RadarRegion *)region {
     XCTAssertNotNil(region);
@@ -146,7 +134,6 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     XCTAssertNotNil(user.location);
     AssertGeofencesOk(user.geofences);
     AssertPlaceOk(user.place);
-    AssertInsightsOk(user.insights);
     AssertRegionOk(user.country);
     AssertRegionOk(user.state);
     AssertRegionOk(user.dma);
@@ -156,6 +143,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     AssertChainsOk(user.topChains);
     XCTAssertNotEqual(user.source, RadarLocationSourceUnknown);
     XCTAssertTrue(user.proxy);
+    XCTAssertTrue(user.mocked);
     AssertTripOk(user.trip);
 }
 
@@ -184,18 +172,6 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
         AssertGeofenceOk(event.geofence);
         XCTAssertNotEqual(event.duration, 0);
         break;
-    case RadarEventTypeUserEnteredHome:
-        break;
-    case RadarEventTypeUserExitedHome:
-        break;
-    case RadarEventTypeUserEnteredOffice:
-        break;
-    case RadarEventTypeUserExitedOffice:
-        break;
-    case RadarEventTypeUserStartedTraveling:
-        break;
-    case RadarEventTypeUserStoppedTraveling:
-        break;
     case RadarEventTypeUserEnteredPlace:
         AssertPlaceOk(event.place);
         break;
@@ -223,10 +199,6 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
         break;
     case RadarEventTypeUserExitedRegionDMA:
         AssertRegionOk(event.region);
-        break;
-    case RadarEventTypeUserStartedCommuting:
-        break;
-    case RadarEventTypeUserStoppedCommuting:
         break;
     default:
         break;

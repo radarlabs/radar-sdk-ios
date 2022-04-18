@@ -9,13 +9,13 @@
 #import "Radar.h"
 #import "RadarBeacon+Internal.h"
 #import "RadarChain+Internal.h"
+#import "RadarFraud+Internal.h"
 #import "RadarGeofence+Internal.h"
 #import "RadarPlace+Internal.h"
 #import "RadarRegion+Internal.h"
 #import "RadarSegment+Internal.h"
 #import "RadarTrip+Internal.h"
 #import "RadarUser+Internal.h"
-#import "RadarUserInsights+Internal.h"
 
 @implementation RadarUser
 
@@ -27,7 +27,6 @@
                             location:(CLLocation *)location
                            geofences:(NSArray *)geofences
                                place:(RadarPlace *)place
-                            insights:(RadarUserInsights *)insights
                              beacons:(NSArray *)beacons
                              stopped:(BOOL)stopped
                           foreground:(BOOL)foreground
@@ -40,6 +39,7 @@
                            topChains:(nullable NSArray<RadarChain *> *)topChains
                               source:(RadarLocationSource)source
                                proxy:(BOOL)proxy
+                              mocked:(BOOL)mocked
                                 trip:(RadarTrip *_Nullable)trip {
     self = [super init];
     if (self) {
@@ -51,7 +51,6 @@
         _location = location;
         _geofences = geofences;
         _place = place;
-        _insights = insights;
         _beacons = beacons;
         _stopped = stopped;
         _foreground = foreground;
@@ -63,7 +62,7 @@
         _segments = segments;
         _topChains = topChains;
         _source = source;
-        _proxy = proxy;
+        _fraud = [[RadarFraud alloc] initWithProxy:proxy mocked:mocked];
         _trip = trip;
     }
     return self;
@@ -84,7 +83,6 @@
     CLLocation *location;
     NSArray<RadarGeofence *> *geofences;
     RadarPlace *place;
-    RadarUserInsights *insights;
     NSArray<RadarBeacon *> *beacons;
     BOOL stopped = NO;
     BOOL foreground = NO;
@@ -97,6 +95,7 @@
     NSArray<RadarChain *> *topChains;
     RadarLocationSource source = RadarLocationSourceUnknown;
     BOOL proxy = false;
+    BOOL mocked = false;
     RadarTrip *trip;
 
     id idObj = dict[@"_id"];
@@ -170,11 +169,6 @@
 
     id placeObj = dict[@"place"];
     place = [[RadarPlace alloc] initWithObject:placeObj];
-
-    id insightsObj = dict[@"insights"];
-    if (insightsObj && [insightsObj isKindOfClass:[NSDictionary class]]) {
-        insights = [[RadarUserInsights alloc] initWithObject:insightsObj];
-    }
 
     id beaconsObj = dict[@"beacons"];
     if (beaconsObj && [beaconsObj isKindOfClass:[NSArray class]]) {
@@ -278,13 +272,8 @@
     id fraudObj = dict[@"fraud"];
     if (fraudObj && [fraudObj isKindOfClass:[NSDictionary class]]) {
         NSDictionary *fraudDict = (NSDictionary *)fraudObj;
-
-        id proxyObj = fraudDict[@"proxy"];
-        if (proxyObj && [proxyObj isKindOfClass:[NSNumber class]]) {
-            NSNumber *proxyNumber = (NSNumber *)proxyObj;
-
-            proxy = [proxyNumber boolValue];
-        }
+        proxy = [self asBool:fraudDict[@"proxy"]];
+        mocked = [self asBool:fraudDict[@"mocked"]];
     }
 
     id tripObj = dict[@"trip"];
@@ -299,7 +288,6 @@
                                     location:location
                                    geofences:geofences
                                        place:place
-                                    insights:insights
                                      beacons:beacons
                                      stopped:stopped
                                   foreground:foreground
@@ -312,10 +300,19 @@
                                    topChains:topChains
                                       source:source
                                        proxy:proxy
+                                      mocked:mocked
                                         trip:trip];
     }
 
     return nil;
+}
+
+- (BOOL)proxy {
+    return self.fraud.proxy;
+}
+
+- (BOOL)mocked {
+    return self.fraud.mocked;
 }
 
 - (NSDictionary *)dictionaryValue {
@@ -335,10 +332,6 @@
     if (self.place) {
         NSDictionary *placeDict = [self.place dictionaryValue];
         [dict setValue:placeDict forKey:@"place"];
-    }
-    if (self.insights) {
-        NSDictionary *insightsDict = [self.insights dictionaryValue];
-        [dict setValue:insightsDict forKey:@"insights"];
     }
     if (self.beacons) {
         NSArray *beaconsArr = [RadarBeacon arrayForBeacons:self.beacons];
@@ -369,12 +362,21 @@
     NSArray *topChainsArr = [RadarChain arrayForChains:self.topChains];
     [dict setValue:topChainsArr forKey:@"topChains"];
     [dict setValue:[Radar stringForLocationSource:self.source] forKey:@"source"];
-    NSDictionary *fraudDict = @{@"proxy": @(self.proxy)};
-    [dict setValue:fraudDict forKey:@"fraud"];
+    [dict setValue:[self.fraud dictionaryValue] forKey:@"fraud"];
     if (self.trip) {
         [dict setValue:[self.trip dictionaryValue] forKey:@"trip"];
     }
     return dict;
+}
+
+- (BOOL)asBool:(NSObject *)object {
+    if (object && [object isKindOfClass:[NSNumber class]]) {
+        NSNumber *number = (NSNumber *)object;
+
+        return [number boolValue];
+    } else {
+        return false;
+    }
 }
 
 @end

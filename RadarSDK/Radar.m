@@ -12,6 +12,7 @@
 #import "RadarCoordinate+Internal.h"
 #import "RadarDelegateHolder.h"
 #import "RadarLocationManager.h"
+#import "RadarLogBuffer.h"
 #import "RadarLogger.h"
 #import "RadarSettings.h"
 #import "RadarState.h"
@@ -47,8 +48,14 @@
     }
 
     [RadarSettings setPublishableKey:publishableKey];
-    [[RadarLocationManager sharedInstance] updateTracking];
-    [[RadarAPIClient sharedInstance] getConfig];
+    [[RadarLocationManager sharedInstance] updateTrackingFromInitialize];
+    [[RadarAPIClient sharedInstance] getConfig:^(RadarStatus unused, RadarMeta *_Nullable meta) {
+        [[RadarLocationManager sharedInstance] updateTrackingFromMeta:meta];
+    }];
+}
+
++ (NSString *)sdkVersion {
+    return [RadarUtils sdkVersion];
 }
 
 + (NSString *_Nullable)getPublishableKey {
@@ -183,7 +190,7 @@
                                       nearbyBeaconRSSI:nil
                                  nearbyBeaconProximity:nil
                                      completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user,
-                                                         NSArray<RadarGeofence *> *_Nullable nearbyGeofences) {
+                                                         NSArray<RadarGeofence *> *_Nullable nearbyGeofences, RadarMeta *_Nullable meta) {
                                          if (completionHandler) {
                                              [RadarUtils runOnMainThread:^{
                                                  completionHandler(status, location, events, user);
@@ -292,7 +299,7 @@
 }
 
 + (RadarTrackingOptions *)getTrackingOptions {
-    return [RadarSettings trackingOptions];
+    return [RadarSettings remoteTrackingOptions] ? [RadarSettings remoteTrackingOptions] : [RadarSettings trackingOptions];
 }
 
 + (void)setDelegate:(id<RadarDelegate>)delegate {
@@ -844,18 +851,80 @@
     if (@available(iOS 13.4, *)) {
         dict[@"courseAccuracy"] = @(location.courseAccuracy);
     }
+    if (@available(iOS 15.0, *)) {
+        CLLocationSourceInformation *sourceInformation = location.sourceInformation;
+        if (sourceInformation) {
+            if (sourceInformation.isSimulatedBySoftware) {
+                dict[@"mocked"] = @(YES);
+            } else {
+                dict[@"mocked"] = @(NO);
+            }
+        }
+    }
     return dict;
 }
 
 - (void)applicationWillEnterForeground {
     BOOL updated = [RadarSettings updateSessionId];
     if (updated) {
-        [[RadarAPIClient sharedInstance] getConfig];
+        [[RadarAPIClient sharedInstance] getConfig:^(RadarStatus status, RadarMeta *_Nullable meta) {
+            [[RadarLocationManager sharedInstance] updateTrackingFromMeta:meta];
+        }];
     }
 }
 
 - (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
++ (BOOL)isTestKey {
+    NSString *publishableKey = [RadarSettings publishableKey];
+    if ([publishableKey hasPrefix:@"prj_test_pk"] ||
+        [publishableKey hasPrefix:@"org_test_pk"]) {
+        return YES;
+    }
+    return NO;
+}
+
++ (void)sendLog:(RadarLogLevel)level message:(NSString *_Nonnull)message {
+    [[RadarLogBuffer sharedInstance] write:level message:message];
+}
+
+/**
+ * Sends Radar log events to the server
+ */
++ (void)flushLogs {
+    // user _id has to exist
+
+    if (![self isTestKey]) {
+        return;
+    }
+
+    NSArray<RadarLog *> *flushableLogs = [[RadarLogBuffer sharedInstance] flushableLogs];
+    
+    NSUInteger pendingLogCount = [flushableLogs count];
+    if (pendingLogCount == 0) {
+        return;
+    }
+    
+    // remove from buffer to handle multiple flushLogs calls
+    [[RadarLogBuffer sharedInstance] removeLogsFromBuffer:pendingLogCount];
+    
+    RadarSyncLogsAPICompletionHandler onComplete = ^(RadarStatus status){
+        // if an error occurs in syncing, add the logs back to the buffer
+        if (status != RadarStatusSuccess) {
+            [[RadarLogBuffer sharedInstance] addLogsToBuffer:flushableLogs];
+        }
+    };
+
+    [[RadarAPIClient sharedInstance] syncLogs:flushableLogs
+                            completionHandler:^(RadarStatus status) {
+                                  if (onComplete) {
+                                      [RadarUtils runOnMainThread:^{
+                                          onComplete(status);
+                                      }];
+                                  }
+                              }];
 }
 
 @end

@@ -35,6 +35,7 @@
                   headers:(NSDictionary *)headers
                    params:(NSDictionary *)params
                     sleep:(BOOL)sleep
+               logPayload:(BOOL)logPayload
         completionHandler:(RadarAPICompletionHandler)completionHandler {
     dispatch_async(self.queue, ^{
         if (self.wait) {
@@ -46,9 +47,15 @@
         NSMutableURLRequest *req = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:url]];
         req.HTTPMethod = method;
 
-        [[RadarLogger sharedInstance]
-            logWithLevel:RadarLogLevelDebug
-                 message:[NSString stringWithFormat:@"📍 Radar API request | method = %@; url = %@; headers = %@; params = %@", method, url, headers, params]];
+        if (logPayload) {
+            [[RadarLogger sharedInstance]
+                logWithLevel:RadarLogLevelDebug
+                     message:[NSString stringWithFormat:@"📍 Radar API request | method = %@; url = %@; headers = %@; params = %@", method, url, headers, params]];
+        } else {
+            [[RadarLogger sharedInstance]
+                logWithLevel:RadarLogLevelDebug
+                     message:[NSString stringWithFormat:@"📍 Radar API request | method = %@; url = %@; headers = %@", method, url, headers]];
+        }
 
         @try {
             if (headers) {
@@ -69,6 +76,9 @@
             void (^dataTaskCompletionHandler)(NSData *data, NSURLResponse *response, NSError *error) = ^(NSData *data, NSURLResponse *response, NSError *error) {
                 if (error) {
                     dispatch_async(dispatch_get_main_queue(), ^{
+                        [[RadarLogger sharedInstance]
+                            logWithLevel:RadarLogLevelError
+                                message:[NSString stringWithFormat:@"Received network error | error = %@", error]];
                         completionHandler(RadarStatusErrorNetwork, nil);
                     });
 

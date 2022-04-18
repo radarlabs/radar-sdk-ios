@@ -8,7 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		013D7AF226D327C400574AD5 /* RadarSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0107AA77262200DA008AB52F /* RadarSDK.framework */; };
-		013D7AF326D327C400574AD5 /* RadarSDK.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 0107AA77262200DA008AB52F /* RadarSDK.framework */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		013D7AF326D327C400574AD5 /* RadarSDK.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 0107AA77262200DA008AB52F /* RadarSDK.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		DD236D27230A006700EB88F9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD236D26230A006700EB88F9 /* AppDelegate.swift */; };
 		DD236D30230A006900EB88F9 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DD236D2F230A006900EB88F9 /* Assets.xcassets */; };
 		DD291169230D0AF900049D3A /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD291168230D0AF900049D3A /* Utils.swift */; };
@@ -89,13 +89,13 @@
 		DD236D25230A006700EB88F9 /* Example */ = {
 			isa = PBXGroup;
 			children = (
-				DD86FCF9239185F4003225F6 /* RadarSDK.xcodeproj */,
+				DD86FD0B23918B3C003225F6 /* Example-Bridging-Header.h */,
+				DD236D34230A006900EB88F9 /* Info.plist */,
+				DDB861D22385FC3E00770661 /* Default-568h@2x.png */,
 				DD236D26230A006700EB88F9 /* AppDelegate.swift */,
 				DD291168230D0AF900049D3A /* Utils.swift */,
 				DD236D2F230A006900EB88F9 /* Assets.xcassets */,
-				DDB861D22385FC3E00770661 /* Default-568h@2x.png */,
-				DD236D34230A006900EB88F9 /* Info.plist */,
-				DD86FD0B23918B3C003225F6 /* Example-Bridging-Header.h */,
+				DD86FCF9239185F4003225F6 /* RadarSDK.xcodeproj */,
 			);
 			path = Example;
 			sourceTree = "<group>";
@@ -144,7 +144,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 1100;
-				LastUpgradeCheck = 1220;
+				LastUpgradeCheck = 1320;
 				ORGANIZATIONNAME = "Radar Labs, Inc.";
 				TargetAttributes = {
 					DD236D22230A006700EB88F9 = {
@@ -353,6 +353,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				MARKETING_VERSION = 3.3.1;
 				PRODUCT_BUNDLE_IDENTIFIER = io.radar.example;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -380,6 +381,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				MARKETING_VERSION = 3.3.1;
 				PRODUCT_BUNDLE_IDENTIFIER = io.radar.example;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
