@@ -15,16 +15,20 @@
 #import "RadarContext.h"
 #import "RadarEvent.h"
 #import "RadarLog.h"
+#import "RadarMeta.h"
 #import "RadarRegion.h"
 #import "RadarRouteMatrix.h"
 #import "RadarRoutes.h"
 #import "RadarUser.h"
-#import "RadarMeta.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-typedef void (^_Nonnull RadarTrackAPICompletionHandler)(
-    RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user, NSArray<RadarGeofence *> *_Nullable nearbyGeofences, RadarMeta *_Nullable meta);
+typedef void (^_Nonnull RadarTrackAPICompletionHandler)(RadarStatus status,
+                                                        NSDictionary *_Nullable res,
+                                                        NSArray<RadarEvent *> *_Nullable events,
+                                                        RadarUser *_Nullable user,
+                                                        NSArray<RadarGeofence *> *_Nullable nearbyGeofences,
+                                                        RadarMeta *_Nullable meta);
 
 typedef void (^_Nonnull RadarTripAPICompletionHandler)(RadarStatus status, RadarTrip *_Nullable trip, NSArray<RadarEvent *> *_Nullable events);
 

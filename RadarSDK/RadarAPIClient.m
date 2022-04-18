@@ -7,8 +7,8 @@
 
 #import "RadarAPIClient.h"
 
-#import "Radar.h"
 #import "Radar+Internal.h"
+#import "Radar.h"
 #import "RadarAddress+Internal.h"
 #import "RadarBeacon+Internal.h"
 #import "RadarContext+Internal.h"
@@ -17,6 +17,7 @@
 #import "RadarEvent+Internal.h"
 #import "RadarGeofence+Internal.h"
 #import "RadarLogger.h"
+#import "RadarMeta+Internal.h"
 #import "RadarPlace+Internal.h"
 #import "RadarRouteMatrix+Internal.h"
 #import "RadarRoutes+Internal.h"
@@ -26,7 +27,6 @@
 #import "RadarTripOptions.h"
 #import "RadarUser+Internal.h"
 #import "RadarUtils.h"
-#import "RadarMeta+Internal.h"
 
 @implementation RadarAPIClient
 
@@ -105,16 +105,15 @@
                                 sleep:NO
                            logPayload:YES
                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
-        if (!res) {
-            return;
-        }
+                        if (!res) {
+                            return;
+                        }
 
-        [Radar flushLogs];
+                        [Radar flushLogs];
 
-        RadarMeta *meta = [RadarAPIClient parseMeta:res];
-        completionHandler(status, meta);
-    }
-    ];
+                        RadarMeta *meta = [RadarAPIClient parseMeta:res];
+                        completionHandler(status, meta);
+                    }];
 }
 
 - (void)trackWithLocation:(CLLocation *_Nonnull)location
@@ -202,7 +201,7 @@
         tripOptionsDict[@"mode"] = [Radar stringForMode:tripOptions.mode];
         params[@"tripOptions"] = tripOptionsDict;
     }
-    
+
     RadarTrackingOptions *options = [Radar getTrackingOptions];
     if (options.syncGeofences) {
         params[@"nearbyGeofences"] = @(YES);
@@ -261,7 +260,7 @@
 
                             return completionHandler(status, nil, nil, nil, nil, nil);
                         }
-        
+
                         [Radar flushLogs];
                         [RadarState setLastFailedStoppedLocation:nil];
 
@@ -934,7 +933,7 @@
     NSDictionary *headers = [RadarAPIClient headersWithPublishableKey:publishableKey];
 
     NSMutableDictionary *params = [NSMutableDictionary new];
-    
+
     params[@"id"] = [RadarSettings _id];
     params[@"installId"] = [RadarSettings installId];
     params[@"deviceId"] = [RadarUtils deviceId];

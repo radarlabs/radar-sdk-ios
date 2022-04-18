@@ -274,8 +274,7 @@ static NSString *const kSyncBeaconIdentifierPrefix = @"radar_beacon_";
     [self updateTracking:location fromInitialize:NO];
 }
 
-- (void)updateTracking:(CLLocation *)location
-        fromInitialize:(BOOL)fromInitialize {
+- (void)updateTracking:(CLLocation *)location fromInitialize:(BOOL)fromInitialize {
     dispatch_async(dispatch_get_main_queue(), ^{
         BOOL tracking = [RadarSettings tracking];
         RadarTrackingOptions *options = [Radar getTrackingOptions];
@@ -409,9 +408,12 @@ static NSString *const kSyncBeaconIdentifierPrefix = @"radar_beacon_";
     NSString *identifier = [NSString stringWithFormat:@"%@%@", kBubbleGeofenceIdentifierPrefix, [[NSUUID UUID] UUIDString]];
     CLRegion *region = [[CLCircularRegion alloc] initWithCenter:location.coordinate radius:radius identifier:identifier];
     [self.locationManager startMonitoringForRegion:region];
-    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug 
-                                       message:[NSString stringWithFormat:@"Successfully added bubble geofence | latitude = %f; longitude = %f; radius = %d; identifier = %@", 
-                                                                          location.coordinate.latitude, location.coordinate.longitude, radius, identifier]];
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
+                                       message:[NSString stringWithFormat:@"Successfully added bubble geofence | latitude = %f; longitude = %f; radius = %d; identifier = %@",
+                                                                          location.coordinate.latitude,
+                                                                          location.coordinate.longitude,
+                                                                          radius,
+                                                                          identifier]];
 }
 
 - (void)removeBubbleGeofence {
@@ -720,19 +722,17 @@ static NSString *const kSyncBeaconIdentifierPrefix = @"radar_beacon_";
                                               nearbyBeaconRSSI:nearbyBeaconRSSI
                                          nearbyBeaconProximity:nearbyBeaconProximity
                                              completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events,
-                                                                 RadarUser *_Nullable user, NSArray<RadarGeofence *> *_Nullable nearbyGeofences) {
+                                                                 RadarUser *_Nullable user, NSArray<RadarGeofence *> *_Nullable nearbyGeofences, RadarMeta *_Nullable meta) {
                                                  if (user) {
                                                      BOOL inGeofences = user.geofences && user.geofences.count;
                                                      BOOL atPlace = user.place != nil;
-                                                     BOOL atHome = user.insights && user.insights.state && user.insights.state.home;
-                                                     BOOL atOffice = user.insights && user.insights.state && user.insights.state.office;
-                                                     BOOL canExit = inGeofences || atPlace || atHome || atOffice;
+                                                     BOOL canExit = inGeofences || atPlace;
                                                      [RadarState setCanExit:canExit];
                                                  }
 
                                                  self.sending = NO;
 
-                                                 [self updateTracking];
+                                                 [self updateTrackingFromMeta:meta];
                                                  [self replaceSyncedGeofences:nearbyGeofences];
                                              }];
         };
