@@ -49,7 +49,7 @@
 
     [RadarSettings setPublishableKey:publishableKey];
     [[RadarLocationManager sharedInstance] updateTrackingFromInitialize];
-    [[RadarAPIClient sharedInstance] getConfig:^(RadarStatus unused, RadarMeta *_Nullable meta) {
+    [[RadarAPIClient sharedInstance] getConfig:^(RadarStatus status, RadarMeta *_Nullable meta) {
         [[RadarLocationManager sharedInstance] updateTrackingFromMeta:meta];
     }];
 }
@@ -136,7 +136,7 @@
                                                                    nearbyBeaconRSSI:nearbyBeaconRSSI
                                                               nearbyBeaconProximity:nearbyBeaconProximity
                                                                   completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events,
-                                                                                      RadarUser *_Nullable user, NSArray<RadarGeofence *> *_Nullable nearbyGeofences) {
+                                                                                      RadarUser *_Nullable user, NSArray<RadarGeofence *> *_Nullable nearbyGeofences, RadarMeta *_Nullable meta) {
                                                                       if (completionHandler) {
                                                                           [RadarUtils runOnMainThread:^{
                                                                               completionHandler(status, location, events, user);
@@ -271,7 +271,7 @@
                              nearbyBeaconRSSI:nil
                         nearbyBeaconProximity:nil
                             completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user,
-                                                NSArray<RadarGeofence *> *_Nullable nearbyGeofences) {
+                                                NSArray<RadarGeofence *> *_Nullable nearbyGeofences, RadarMeta *_Nullable meta) {
                                 if (completionHandler) {
                                     [RadarUtils runOnMainThread:^{
                                         completionHandler(status, location, events, user);
