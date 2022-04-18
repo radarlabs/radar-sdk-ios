@@ -128,7 +128,7 @@
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Beacon ranging not available"];
 
         if (completionHandler) {
-            completionHandler(RadarStatusErrorBluetooth, nil);
+            completionHandler(RadarStatusErrorBluetooth, nil, nil, nil);
         }
 
         return;
