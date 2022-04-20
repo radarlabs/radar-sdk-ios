@@ -254,12 +254,7 @@
 }
 
 - (NSDictionary *)dictionaryForRegion:(CLBeaconRegion *)region {
-    return @{
-        @"uuid": region.proximityUUID,
-        @"major": region.major,
-        @"minor": region.minor
-
-    };
+    return @{@"uuid": region.proximityUUID, @"major": region.major, @"minor": region.minor};
 }
 
 - (NSDictionary *)dictionaryForBeacon:(CLBeacon *)beacon {

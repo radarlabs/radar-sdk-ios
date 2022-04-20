@@ -161,15 +161,15 @@
 
                                          [RadarUtils runOnMainThread:^{
                                              [[RadarBeaconManager sharedInstance] rangeBeaconUUIDs:beaconUUIDs
-                                                                           completionHandler:^(RadarStatus status, NSArray<NSDictionary *> *_Nullable beacons) {
-                                                                               if (status != RadarStatusSuccess || !beacons) {
-                                                                                   callTrackAPI(nil);
+                                                                                 completionHandler:^(RadarStatus status, NSArray<NSDictionary *> *_Nullable beacons) {
+                                                                                     if (status != RadarStatusSuccess || !beacons) {
+                                                                                         callTrackAPI(nil);
 
-                                                                                   return;
-                                                                               }
+                                                                                         return;
+                                                                                     }
 
-                                                                               callTrackAPI(beacons);
-                                                                           }];
+                                                                                     callTrackAPI(beacons);
+                                                                                 }];
                                          }];
                                      } else if (beacons) {
                                          [[RadarLocationManager sharedInstance] replaceSyncedBeacons:beacons];
