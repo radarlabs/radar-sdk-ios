@@ -25,6 +25,7 @@ static NSString *const kTrackingOptions = @"radar-trackingOptions";
 static NSString *const kRemoteTrackingOptions = @"radar-remoteTrackingOptions";
 static NSString *const kTripOptions = @"radar-tripOptions";
 static NSString *const kLogLevel = @"radar-logLevel";
+static NSString *const kBeaconUUIDs = @"radar-beaconUUIDs";
 static NSString *const kHost = @"radar-host";
 static NSString *const kDefaultHost = @"https://api.radar.io";
 
@@ -161,6 +162,15 @@ static NSString *const kDefaultHost = @"https://api.radar.io";
 + (void)setLogLevel:(RadarLogLevel)level {
     NSInteger logLevelInteger = (int)level;
     [[NSUserDefaults standardUserDefaults] setInteger:logLevelInteger forKey:kLogLevel];
+}
+
++ (NSArray<NSString *> *_Nullable)beaconUUIDs {
+    NSArray<NSString *> *beaconUUIDs = [[NSUserDefaults standardUserDefaults] valueForKey:kBeaconUUIDs];
+    return beaconUUIDs;
+}
+
++ (void)setBeaconUUIDs:(NSArray<NSString *> *_Nullable)beaconUUIDs {
+    [[NSUserDefaults standardUserDefaults] setValue:beaconUUIDs forKey:kBeaconUUIDs];
 }
 
 + (NSString *)host {

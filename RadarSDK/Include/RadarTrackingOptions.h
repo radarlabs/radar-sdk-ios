@@ -14,11 +14,11 @@ NS_ASSUME_NONNULL_BEGIN
  The location accuracy options.
  */
 typedef NS_ENUM(NSInteger, RadarTrackingOptionsDesiredAccuracy) {
-    /// Uses `kCLLocationAccuracyBest`.
+    /// Uses `kCLLocationAccuracyBest`
     RadarTrackingOptionsDesiredAccuracyHigh,
-    /// Uses `kCLLocationAccuracyHundredMeters`. The default.
+    /// Uses `kCLLocationAccuracyHundredMeters`, the default
     RadarTrackingOptionsDesiredAccuracyMedium,
-    /// Uses `kCLLocationAccuracyKilometer`.
+    /// Uses `kCLLocationAccuracyKilometer`
     RadarTrackingOptionsDesiredAccuracyLow
 };
 
@@ -26,9 +26,9 @@ typedef NS_ENUM(NSInteger, RadarTrackingOptionsDesiredAccuracy) {
  The replay options for failed location updates.
  */
 typedef NS_ENUM(NSInteger, RadarTrackingOptionsReplay) {
-    /// Replays failed stops.
+    /// Replays failed stops
     RadarTrackingOptionsReplayStops,
-    /// Replays no failed location updates.
+    /// Replays no failed location updates
     RadarTrackingOptionsReplayNone
 };
 
@@ -36,43 +36,28 @@ typedef NS_ENUM(NSInteger, RadarTrackingOptionsReplay) {
  The sync options for location updates.
  */
 typedef NS_ENUM(NSInteger, RadarTrackingOptionsSyncLocations) {
-    /// Syncs all location updates to the server.
+    /// Syncs all location updates to the server
     RadarTrackingOptionsSyncAll,
-    /// Syncs only stops and exits to the server.
+    /// Syncs only stops and exits to the server
     RadarTrackingOptionsSyncStopsAndExits,
-    /// Does not sync location updates to the server.
+    /// Syncs no location updates to the server
     RadarTrackingOptionsSyncNone
 };
 
 /**
- The beacon monitoring and ranging options.
- */
-typedef NS_ENUM(NSInteger, RadarTrackingOptionsBeacons) {
-    /// Does not monitor or range beacons.
-    RadarTrackingOptionsBeaconsOff,
-    /// Monitors beacons without measuring signal strength. High battery efficiency.
-    RadarTrackingOptionsBeaconsMonitoring,
-    /// Ranges beacons and measures signal strength. Moderate battery efficiency.
-    RadarTrackingOptionsBeaconsRanging
-};
-
-/**
  An options class used to configure background tracking.
-
  @see https://radar.com/documentation/sdk/ios
  */
 @interface RadarTrackingOptions : NSObject
 
 /**
  Determines the desired location update interval in seconds when stopped. Use 0 to shut down when stopped.
-
  @warning Note that location updates may be delayed significantly by Low Power Mode, or if the device has connectivity issues, low battery, or wi-fi disabled.
  */
 @property (nonatomic, assign) int desiredStoppedUpdateInterval;
 
 /**
  Determines the desired location update interval in seconds when moving.
-
  @warning Note that location updates may be delayed significantly by Low Power Mode, or if the device has connectivity issues, low battery, or wi-fi disabled.
  */
 @property (nonatomic, assign) int desiredMovingUpdateInterval;
@@ -119,14 +104,12 @@ typedef NS_ENUM(NSInteger, RadarTrackingOptionsBeacons) {
 
 /**
  Determines whether the flashing blue status bar is shown when tracking.
-
  @see https://developer.apple.com/documentation/corelocation/cllocationmanager/2923541-showsbackgroundlocationindicator
  */
 @property (nonatomic, assign) BOOL showBlueBar;
 
 /**
  Determines whether to use the iOS region monitoring service (geofencing) to create a client geofence around the device's current location when stopped.
-
  @see https://developer.apple.com/documentation/corelocation/monitoring_the_user_s_proximity_to_geographic_regions
  */
 @property (nonatomic, assign) BOOL useStoppedGeofence;
@@ -138,7 +121,6 @@ typedef NS_ENUM(NSInteger, RadarTrackingOptionsBeacons) {
 
 /**
  Determines whether to use the iOS region monitoring service (geofencing) to create a client geofence around the device's current location when moving.
-
  @see https://developer.apple.com/documentation/corelocation/monitoring_the_user_s_proximity_to_geographic_regions
  */
 @property (nonatomic, assign) BOOL useMovingGeofence;
@@ -155,26 +137,23 @@ typedef NS_ENUM(NSInteger, RadarTrackingOptionsBeacons) {
 
 /**
  Determines whether to use the iOS visit monitoring service.
-
  @see https://developer.apple.com/documentation/corelocation/getting_the_user_s_location/using_the_visits_location_service
  */
 @property (nonatomic, assign) BOOL useVisits;
 
 /**
  Determines whether to use the iOS significant location change service.
-
  @see https://developer.apple.com/documentation/corelocation/getting_the_user_s_location/using_the_significant-change_location_service
  */
 @property (nonatomic, assign) BOOL useSignificantLocationChanges;
 
 /**
- Determines whether to monitor or range beacons.
+ Determines whether to monitor beacons.
  */
-@property (nonatomic, assign) RadarTrackingOptionsBeacons beacons;
+@property (nonatomic, assign) BOOL beacons;
 
 /**
  Updates about every 30 seconds while moving or stopped. Moderate battery usage. Shows the flashing blue status bar during tracking.
-
  @see https://developer.apple.com/documentation/corelocation/cllocationmanager/2923541-showsbackgroundlocationindicator
  */
 @property (class, copy, readonly) RadarTrackingOptions *presetContinuous;
@@ -182,7 +161,6 @@ typedef NS_ENUM(NSInteger, RadarTrackingOptionsBeacons) {
 /**
  Updates about every 2.5 minutes when moving and shuts down when stopped to save battery. Once stopped, the device will need to move more than 100 meters to wake up and start
  moving again. Low battery usage. Requires the `location` background mode.
-
  Note that location updates may be delayed significantly by Low Power Mode, or if the device has connectivity issues, low battery, or wi-fi disabled.
  */
 @property (class, copy, readonly) RadarTrackingOptions *presetResponsive;
@@ -190,9 +168,7 @@ typedef NS_ENUM(NSInteger, RadarTrackingOptionsBeacons) {
 /**
  Uses the iOS visit monitoring service to update only on stops and exits. Once stopped, the device will need to move several hundred meters and trigger a visit departure to wake up
  and start moving again. Lowest battery usage.
-
  Note that location updates may be delayed significantly by Low Power Mode, or if the device has connectivity issues, low battery, or wi-fi disabled.
-
  @see https://developer.apple.com/documentation/corelocation/getting_the_user_s_location/using_the_visits_location_service
  */
 @property (class, copy, readonly) RadarTrackingOptions *presetEfficient;
@@ -203,8 +179,6 @@ typedef NS_ENUM(NSInteger, RadarTrackingOptionsBeacons) {
 + (RadarTrackingOptionsReplay)replayForString:(NSString *)str;
 + (NSString *)stringForSyncLocations:(RadarTrackingOptionsSyncLocations)syncLocations;
 + (RadarTrackingOptionsSyncLocations)syncLocationsForString:(NSString *)str;
-+ (NSString *)stringForBeacons:(RadarTrackingOptionsBeacons)beacons;
-+ (RadarTrackingOptionsBeacons)beaconsForString:(NSString *)str;
 + (RadarTrackingOptions *_Nonnull)trackingOptionsFromDictionary:(NSDictionary *_Nonnull)dictionary;
 - (NSDictionary *)dictionaryValue;
 

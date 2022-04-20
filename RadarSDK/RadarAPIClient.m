@@ -121,9 +121,7 @@
                foreground:(BOOL)foreground
                    source:(RadarLocationSource)source
                  replayed:(BOOL)replayed
-            nearbyBeacons:(NSArray<NSString *> *_Nullable)nearbyBeacons
-         nearbyBeaconRSSI:(NSDictionary *_Nullable)nearbyBeaconRSSI
-    nearbyBeaconProximity:(NSDictionary *_Nullable)nearbyBeaconProximity
+                  beacons:(NSArray<NSDictionary *> *_Nullable)beacons
         completionHandler:(RadarTrackAPICompletionHandler _Nonnull)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
@@ -206,14 +204,8 @@
     if (options.syncGeofences) {
         params[@"nearbyGeofences"] = @(YES);
     }
-    if (nearbyBeacons) {
-        params[@"nearbyBeacons"] = nearbyBeacons;
-        if (nearbyBeaconRSSI) {
-            params[@"nearbyBeaconRSSI"] = nearbyBeaconRSSI;
-        }
-        if (nearbyBeaconProximity) {
-            params[@"nearbyBeaconProximity"] = nearbyBeaconProximity;
-        }
+    if (beacons) {
+        params[@"beacons"] = beacons;
     }
     NSString *sessionId = [RadarSettings sessionId];
     if (sessionId) {
@@ -528,7 +520,7 @@
 - (void)searchBeaconsNear:(CLLocation *)near radius:(int)radius limit:(int)limit completionHandler:(RadarSearchBeaconsAPICompletionHandler)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
-        return completionHandler(RadarStatusErrorPublishableKey, nil, nil);
+        return completionHandler(RadarStatusErrorPublishableKey, nil, nil, nil);
     }
 
     int finalLimit = MIN(limit, 100);
@@ -551,16 +543,22 @@
                            logPayload:YES
                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
                         if (status != RadarStatusSuccess || !res) {
-                            return completionHandler(status, nil, nil);
+                            return completionHandler(status, nil, nil, nil);
                         }
 
                         id beaconsObj = res[@"beacons"];
                         NSArray<RadarBeacon *> *beacons = [RadarBeacon beaconsFromObject:beaconsObj];
-                        if (beacons) {
-                            return completionHandler(RadarStatusSuccess, res, beacons);
+
+                        id beaconUUIDsObj = res[@"beaconUUIDs"];
+                        NSArray<NSString *> *beaconUUIDs;
+                        if (beaconUUIDsObj) {
+                            beaconUUIDs = (NSArray<NSString *> *)beaconUUIDsObj;
+                            [RadarSettings setBeaconUUIDs:beaconUUIDs];
+                        } else {
+                            [RadarSettings setBeaconUUIDs:nil];
                         }
 
-                        completionHandler(RadarStatusErrorServer, nil, nil);
+                        completionHandler(RadarStatusErrorServer, res, beacons, beaconUUIDs);
                     }];
 }
 

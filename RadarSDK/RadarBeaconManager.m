@@ -10,16 +10,17 @@
 #import "RadarBeacon+Internal.h"
 #import "RadarDelegateHolder.h"
 #import "RadarLogger.h"
+#import "RadarSettings.h"
 
 @interface RadarBeaconManager ()
 
 @property (assign, nonatomic) BOOL started;
 @property (nonnull, strong, nonatomic) NSMutableArray<RadarBeaconCompletionHandler> *completionHandlers;
 @property (nonnull, strong, nonatomic) NSMutableSet<NSString *> *nearbyBeaconIdentifiers;
-@property (nonnull, strong, nonatomic) NSMutableDictionary *nearbyBeaconRSSI;
-@property (nonnull, strong, nonatomic) NSMutableDictionary *nearbyBeaconProximity;
 @property (nonnull, strong, nonatomic) NSMutableSet<NSString *> *failedBeaconIdentifiers;
+@property (nonnull, strong, nonatomic) NSMutableSet<NSDictionary *> *nearbyBeacons;
 @property (nonnull, strong, nonatomic) NSArray<RadarBeacon *> *beacons;
+@property (nonnull, strong, nonatomic) NSArray<NSString *> *beaconUUIDs;
 
 @end
 
@@ -52,19 +53,15 @@
 
         _beacons = [NSMutableArray new];
         _nearbyBeaconIdentifiers = [NSMutableSet new];
-        _nearbyBeaconRSSI = [NSMutableDictionary new];
-        _nearbyBeaconProximity = [NSMutableDictionary new];
         _failedBeaconIdentifiers = [NSMutableSet new];
+        _nearbyBeacons = [NSMutableSet new];
 
         _permissionsHelper = [RadarPermissionsHelper new];
     }
     return self;
 }
 
-- (void)callCompletionHandlersWithStatus:(RadarStatus)status
-                           nearbyBeacons:(NSArray<NSString *> *_Nullable)nearbyBeacons
-                        nearbyBeaconRSSI:(NSDictionary *_Nullable)nearbyBeaconRSSI
-                   nearbyBeaconProximity:(NSDictionary *_Nullable)nearbyBeaconProximity {
+- (void)callCompletionHandlersWithStatus:(RadarStatus)status nearbyBeacons:(NSArray<NSDictionary *> *_Nullable)nearbyBeacons {
     @synchronized(self) {
         if (!self.completionHandlers.count) {
             return;
@@ -77,7 +74,7 @@
         for (RadarBeaconCompletionHandler completionHandler in self.completionHandlers) {
             [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(timeoutWithCompletionHandler:) object:completionHandler];
 
-            completionHandler(status, nearbyBeacons, nearbyBeaconRSSI, nearbyBeaconProximity);
+            completionHandler(status, nearbyBeacons);
         }
 
         [self.completionHandlers removeAllObjects];
@@ -116,7 +113,7 @@
         [[RadarDelegateHolder sharedInstance] didFailWithStatus:RadarStatusErrorPermissions];
 
         if (completionHandler) {
-            completionHandler(RadarStatusErrorPermissions, nil, nil, nil);
+            completionHandler(RadarStatusErrorPermissions, nil);
 
             return;
         }
@@ -128,7 +125,7 @@
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Beacon ranging not available"];
 
         if (completionHandler) {
-            completionHandler(RadarStatusErrorBluetooth, nil, nil, nil);
+            completionHandler(RadarStatusErrorBluetooth, nil);
         }
 
         return;
@@ -145,7 +142,7 @@
     if (!beacons || !beacons.count) {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"No beacons to range"];
 
-        completionHandler(RadarStatusSuccess, @[], @{}, @{});
+        completionHandler(RadarStatusSuccess, @[]);
 
         return;
     }
@@ -170,6 +167,62 @@
     }
 }
 
+- (void)rangeUUIDs:(NSArray<NSString *> *_Nonnull)uuids completionHandler:(RadarBeaconCompletionHandler)completionHandler {
+    CLAuthorizationStatus authorizationStatus = [self.permissionsHelper locationAuthorizationStatus];
+    if (!(authorizationStatus == kCLAuthorizationStatusAuthorizedWhenInUse || authorizationStatus == kCLAuthorizationStatusAuthorizedAlways)) {
+        [[RadarDelegateHolder sharedInstance] didFailWithStatus:RadarStatusErrorPermissions];
+
+        if (completionHandler) {
+            completionHandler(RadarStatusErrorPermissions, nil);
+
+            return;
+        }
+    }
+
+    if (!CLLocationManager.isRangingAvailable) {
+        [[RadarDelegateHolder sharedInstance] didFailWithStatus:RadarStatusErrorBluetooth];
+
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Beacon ranging not available"];
+
+        if (completionHandler) {
+            completionHandler(RadarStatusErrorBluetooth, nil);
+        }
+
+        return;
+    }
+
+    [self addCompletionHandler:completionHandler];
+
+    if (self.started) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Already ranging beacons"];
+
+        return;
+    }
+
+    if (!uuids || !uuids.count) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"No UUIDs to range"];
+
+        completionHandler(RadarStatusSuccess, @[]);
+
+        return;
+    }
+
+    self.beaconUUIDs = uuids;
+    self.started = YES;
+
+    for (NSString *uuid in uuids) {
+        CLBeaconRegion *region = [self regionForUUID:uuid];
+
+        if (region) {
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Starting ranging UUID | uuid = %@", uuid]];
+
+            [self.locationManager startRangingBeaconsInRegion:region];
+        } else {
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Error starting ranging UUID | uuid = %@", uuid]];
+        }
+    }
+}
+
 - (void)stopRanging {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Stopping ranging"]];
 
@@ -179,18 +232,14 @@
         [self.locationManager stopRangingBeaconsInRegion:[self regionForBeacon:beacon]];
     }
 
-    [self callCompletionHandlersWithStatus:RadarStatusSuccess
-                             nearbyBeacons:[self.nearbyBeaconIdentifiers allObjects]
-                          nearbyBeaconRSSI:self.nearbyBeaconRSSI
-                     nearbyBeaconProximity:self.nearbyBeaconProximity];
+    [self callCompletionHandlersWithStatus:RadarStatusSuccess nearbyBeacons:[self.nearbyBeacons allObjects]];
 
     self.beacons = [NSMutableArray new];
     self.started = NO;
 
     [self.nearbyBeaconIdentifiers removeAllObjects];
-    self.nearbyBeaconRSSI = [NSMutableDictionary new];
-    self.nearbyBeaconProximity = [NSMutableDictionary new];
     [self.failedBeaconIdentifiers removeAllObjects];
+    [self.nearbyBeacons removeAllObjects];
 }
 
 - (CLBeaconRegion *)regionForBeacon:(RadarBeacon *)beacon {
@@ -198,6 +247,23 @@
                                                    major:[beacon.major intValue]
                                                    minor:[beacon.minor intValue]
                                               identifier:beacon._id];
+}
+
+- (CLBeaconRegion *)regionForUUID:(NSString *)uuid {
+    return [[CLBeaconRegion alloc] initWithProximityUUID:[[NSUUID alloc] initWithUUIDString:uuid] identifier:uuid];
+}
+
+- (NSDictionary *)dictionaryForRegion:(CLBeaconRegion *)region {
+    return @{
+        @"uuid": region.proximityUUID,
+        @"major": region.major,
+        @"minor": region.minor
+
+    };
+}
+
+- (NSDictionary *)dictionaryForBeacon:(CLBeacon *)beacon {
+    return @{@"uuid": beacon.proximityUUID, @"major": beacon.major, @"minor": beacon.minor, @"rssi": @(beacon.rssi), @"proximity": @(beacon.proximity)};
 }
 
 - (void)handleBeacons {
@@ -231,13 +297,50 @@
                                                                               region.identifier, (long)beacon.rssi, (long)beacon.proximity]];
 
         [self.nearbyBeaconIdentifiers addObject:region.identifier];
-        if (beacon.rssi != 0) {
-            [self.nearbyBeaconRSSI setObject:@(beacon.rssi) forKey:region.identifier];
-            [self.nearbyBeaconProximity setObject:@(beacon.proximity) forKey:region.identifier];
-        }
+        [self.nearbyBeacons addObject:[self dictionaryForBeacon:beacon]];
     }
 
     [self handleBeacons];
+}
+
+- (void)handleBeaconEntryForRegion:(CLBeaconRegion *)region completionHandler:(RadarBeaconCompletionHandler)completionHandler {
+    NSString *identifier = region.identifier;
+    BOOL alreadyInside = [self.nearbyBeaconIdentifiers containsObject:region.identifier];
+    if (alreadyInside) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Already inside beacon region | identifier = %@", identifier]];
+    } else {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Entered beacon region | identifier = %@", identifier]];
+
+        [self.nearbyBeaconIdentifiers addObject:identifier];
+        [self.nearbyBeacons addObject:[self dictionaryForRegion:region]];
+
+        completionHandler(RadarStatusSuccess, [self.nearbyBeacons allObjects]);
+    }
+}
+
+- (void)handleBeaconExitForRegion:(CLBeaconRegion *)region completionHandler:(RadarBeaconCompletionHandler)completionHandler {
+    NSString *identifier = region.identifier;
+    BOOL alreadyOutside = ![self.nearbyBeaconIdentifiers containsObject:identifier];
+    if (alreadyOutside) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Already outside beacon region | identifier = %@", identifier]];
+    } else {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Exited beacon region | identifier = %@", identifier]];
+
+        [self.nearbyBeaconIdentifiers removeObject:identifier];
+        [self.nearbyBeacons removeObject:[self dictionaryForRegion:region]];
+
+        completionHandler(RadarStatusSuccess, [self.nearbyBeacons allObjects]);
+    }
+}
+
+- (void)handleBeaconUUIDEntryForRegion:(CLBeaconRegion *)region completionHandler:(RadarBeaconCompletionHandler)completionHandler {
+    NSArray<NSString *> *beaconUUIDs = [RadarSettings beaconUUIDs];
+    [self rangeUUIDs:beaconUUIDs completionHandler:completionHandler];
+}
+
+- (void)handleBeaconUUIDExitForRegion:(CLBeaconRegion *)region completionHandler:(RadarBeaconCompletionHandler)completionHandler {
+    NSArray<NSString *> *beaconUUIDs = [RadarSettings beaconUUIDs];
+    [self rangeUUIDs:beaconUUIDs completionHandler:completionHandler];
 }
 
 @end

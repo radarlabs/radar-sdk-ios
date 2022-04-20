@@ -38,7 +38,10 @@ typedef void (^_Nonnull RadarSearchPlacesAPICompletionHandler)(RadarStatus statu
 
 typedef void (^_Nonnull RadarSearchGeofencesAPICompletionHandler)(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarGeofence *> *_Nullable geofences);
 
-typedef void (^_Nonnull RadarSearchBeaconsAPICompletionHandler)(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarBeacon *> *_Nullable beacons);
+typedef void (^_Nonnull RadarSearchBeaconsAPICompletionHandler)(RadarStatus status,
+                                                                NSDictionary *_Nullable res,
+                                                                NSArray<RadarBeacon *> *_Nullable beacons,
+                                                                NSArray<NSString *> *_Nullable beaconUUIDs);
 
 typedef void (^_Nonnull RadarGeocodeAPICompletionHandler)(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarAddress *> *_Nullable addresses);
 
@@ -68,9 +71,7 @@ typedef void (^_Nonnull RadarSyncLogsAPICompletionHandler)(RadarStatus status);
                foreground:(BOOL)foreground
                    source:(RadarLocationSource)source
                  replayed:(BOOL)replayed
-            nearbyBeacons:(NSArray<NSString *> *_Nullable)nearbyBeacons
-         nearbyBeaconRSSI:(NSDictionary *_Nullable)nearbyBeaconRSSI
-    nearbyBeaconProximity:(NSDictionary *_Nullable)nearbyBeaconProximity
+                  beacons:(NSArray<NSDictionary *> *_Nullable)beacons
         completionHandler:(RadarTrackAPICompletionHandler _Nonnull)completionHandler;
 
 - (void)verifyEventId:(NSString *_Nonnull)eventId verification:(RadarEventVerification)verification verifiedPlaceId:(NSString *_Nullable)verifiedPlaceId;
