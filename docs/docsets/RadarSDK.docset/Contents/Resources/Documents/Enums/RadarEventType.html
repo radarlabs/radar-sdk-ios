@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>RadarEventType Enumeration Reference</title>
+    <link rel="stylesheet" type="text/css" href="../css/jazzy.css" />
+    <link rel="stylesheet" type="text/css" href="../css/highlight.css" />
+    <meta charset='utf-8'>
+    <script src="../js/jquery.min.js" defer></script>
+    <script src="../js/jazzy.js" defer></script>
+    
+    <script src="../js/lunr.min.js" defer></script>
+    <script src="../js/typeahead.jquery.js" defer></script>
+    <script src="../js/jazzy.search.js" defer></script>
+  </head>
+  <body>
+    <a name="//apple_ref/objc/Enum/RadarEventType" class="dashAnchor"></a>
+    <a title="RadarEventType Enumeration Reference"></a>
+    <header>
+      <div class="content-wrapper">
+        <p><a href="../index.html">RadarSDK 3.4.0 Docs</a></p>
+        <p class="header-right"><a href="https://github.com/radarlabs/radar-sdk-ios"><img src="../img/gh.png" alt="GitHub"/>View on GitHub</a></p>
+        <div class="header-right">
+          <form role="search" action="../search.json">
+            <input type="text" placeholder="Search documentation" data-typeahead>
+          </form>
+        </div>
+      </div>
+    </header>
+    <div class="content-wrapper">
+      <p id="breadcrumbs">
+        <a href="../index.html">RadarSDK Reference</a>
+        <img id="carat" src="../img/carat.png" alt=""/>
+        RadarEventType Enumeration Reference
+      </p>
+    </div>
+    <div class="content-wrapper">
+      <nav class="sidebar">
+        <ul class="nav-groups">
+          <li class="nav-group-name">
+            <a href="../Classes.html">Classes</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Classes/Radar.html">Radar</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/RadarAddress.html">RadarAddress</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/RadarBeacon.html">RadarBeacon</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/RadarChain.html">RadarChain</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/RadarCircleGeometry.html">RadarCircleGeometry</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/RadarContext.html">RadarContext</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/RadarCoordinate.html">RadarCoordinate</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/RadarEvent.html">RadarEvent</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/RadarGeofence.html">RadarGeofence</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes.html#/c:objc(cs)RadarGeofenceGeometry">RadarGeofenceGeometry</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/RadarMeta.html">RadarMeta</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/RadarPlace.html">RadarPlace</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/RadarPolygonGeometry.html">RadarPolygonGeometry</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/RadarRegion.html">RadarRegion</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/RadarRoute.html">RadarRoute</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/RadarRouteDistance.html">RadarRouteDistance</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/RadarRouteDuration.html">RadarRouteDuration</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/RadarRouteGeometry.html">RadarRouteGeometry</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/RadarRouteMatrix.html">RadarRouteMatrix</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/RadarRoutes.html">RadarRoutes</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/RadarSegment.html">RadarSegment</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/RadarTrackingOptions.html">RadarTrackingOptions</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/RadarTrip.html">RadarTrip</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/RadarTripOptions.html">RadarTripOptions</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/RadarUser.html">RadarUser</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Enums.html">Enumerations</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Enums/RadarAddressConfidence.html">RadarAddressConfidence</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Enums/RadarEventConfidence.html">RadarEventConfidence</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Enums/RadarEventType.html">RadarEventType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Enums/RadarEventVerification.html">RadarEventVerification</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Enums/RadarLocationSource.html">RadarLocationSource</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Enums/RadarLogLevel.html">RadarLogLevel</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Enums/RadarRouteMode.html">RadarRouteMode</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Enums/RadarRouteUnits.html">RadarRouteUnits</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Enums/RadarStatus.html">RadarStatus</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Enums/RadarTrackingOptionsDesiredAccuracy.html">RadarTrackingOptionsDesiredAccuracy</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Enums/RadarTrackingOptionsReplay.html">RadarTrackingOptionsReplay</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Enums/RadarTrackingOptionsSyncLocations.html">RadarTrackingOptionsSyncLocations</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Enums/RadarTripStatus.html">RadarTripStatus</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Protocols.html">Protocols</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Protocols/RadarDelegate.html">RadarDelegate</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Type%20Definitions.html">Type Definitions</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Type%20Definitions.html#/c:Radar.h@T@RadarBeaconCompletionHandler">RadarBeaconCompletionHandler</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Type%20Definitions.html#/c:Radar.h@T@RadarContextCompletionHandler">RadarContextCompletionHandler</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Type%20Definitions.html#/c:Radar.h@T@RadarGeocodeCompletionHandler">RadarGeocodeCompletionHandler</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Type%20Definitions.html#/c:Radar.h@T@RadarIPGeocodeCompletionHandler">RadarIPGeocodeCompletionHandler</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Type%20Definitions.html#/c:Radar.h@T@RadarLocationCompletionHandler">RadarLocationCompletionHandler</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Type%20Definitions.html#/c:Radar.h@T@RadarRouteCompletionHandler">RadarRouteCompletionHandler</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Type%20Definitions.html#/c:Radar.h@T@RadarRouteMatrixCompletionHandler">RadarRouteMatrixCompletionHandler</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Type%20Definitions.html#/c:Radar.h@T@RadarSearchGeofencesCompletionHandler">RadarSearchGeofencesCompletionHandler</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Type%20Definitions.html#/c:Radar.h@T@RadarSearchPlacesCompletionHandler">RadarSearchPlacesCompletionHandler</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Type%20Definitions.html#/c:Radar.h@T@RadarTrackCompletionHandler">RadarTrackCompletionHandler</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Type%20Definitions.html#/c:Radar.h@T@RadarTripCompletionHandler">RadarTripCompletionHandler</a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
+      <article class="main-content">
+        <section>
+          <section class="section">
+            <h1>RadarEventType</h1>
+              <div class="declaration">
+                <div class="language">
+                  <p class="aside-title">Objective-C</p>
+                  <pre class="highlight objective_c"><code><span class="k">enum</span> <span class="n">RadarEventType</span> <span class="o">:</span> <span class="n">NSInteger</span> <span class="p">{}</span></code></pre>
+
+                </div>
+                <div class="language">
+                  <p class="aside-title">Swift</p>
+                  <pre class="highlight swift"><code><span class="kd">enum</span> <span class="kt">RadarEventType</span> <span class="p">:</span> <span class="kt">Int</span></code></pre>
+
+                </div>
+              </div>
+            <p>The types for events.</p>
+
+          </section>
+          <section class="section task-group-section">
+            <div class="task-group">
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:@E@RadarEventType@RadarEventTypeUnknown"></a>
+                    <a name="//apple_ref/objc/Case/RadarEventTypeUnknown" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@E@RadarEventType@RadarEventTypeUnknown">RadarEventTypeUnknown</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Unknown</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Objective-C</p>
+                          <pre class="highlight objective_c"><code><span class="n">RadarEventTypeUnknown</span></code></pre>
+
+                        </div>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="k">case</span> <span class="n">unknown</span> <span class="o">=</span> <span class="mi">0</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:@E@RadarEventType@RadarEventTypeUserEnteredGeofence"></a>
+                    <a name="//apple_ref/objc/Case/RadarEventTypeUserEnteredGeofence" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@E@RadarEventType@RadarEventTypeUserEnteredGeofence">RadarEventTypeUserEnteredGeofence</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p><code>user.entered_geofence</code></p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Objective-C</p>
+                          <pre class="highlight objective_c"><code><span class="n">RadarEventTypeUserEnteredGeofence</span></code></pre>
+
+                        </div>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="k">case</span> <span class="n">userEnteredGeofence</span> <span class="o">=</span> <span class="mi">1</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:@E@RadarEventType@RadarEventTypeUserExitedGeofence"></a>
+                    <a name="//apple_ref/objc/Case/RadarEventTypeUserExitedGeofence" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@E@RadarEventType@RadarEventTypeUserExitedGeofence">RadarEventTypeUserExitedGeofence</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p><code>user.exited_geofence</code></p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Objective-C</p>
+                          <pre class="highlight objective_c"><code><span class="n">RadarEventTypeUserExitedGeofence</span></code></pre>
+
+                        </div>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="k">case</span> <span class="n">userExitedGeofence</span> <span class="o">=</span> <span class="mi">2</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:@E@RadarEventType@RadarEventTypeUserEnteredPlace"></a>
+                    <a name="//apple_ref/objc/Case/RadarEventTypeUserEnteredPlace" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@E@RadarEventType@RadarEventTypeUserEnteredPlace">RadarEventTypeUserEnteredPlace</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p><code>user.exited_geofence</code></p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Objective-C</p>
+                          <pre class="highlight objective_c"><code><span class="n">RadarEventTypeUserEnteredPlace</span></code></pre>
+
+                        </div>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="k">case</span> <span class="n">userEnteredPlace</span> <span class="o">=</span> <span class="mi">3</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:@E@RadarEventType@RadarEventTypeUserExitedPlace"></a>
+                    <a name="//apple_ref/objc/Case/RadarEventTypeUserExitedPlace" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@E@RadarEventType@RadarEventTypeUserExitedPlace">RadarEventTypeUserExitedPlace</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p><code>user.exited_place</code></p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Objective-C</p>
+                          <pre class="highlight objective_c"><code><span class="n">RadarEventTypeUserExitedPlace</span></code></pre>
+
+                        </div>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="k">case</span> <span class="n">userExitedPlace</span> <span class="o">=</span> <span class="mi">4</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:@E@RadarEventType@RadarEventTypeUserNearbyPlaceChain"></a>
+                    <a name="//apple_ref/objc/Case/RadarEventTypeUserNearbyPlaceChain" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@E@RadarEventType@RadarEventTypeUserNearbyPlaceChain">RadarEventTypeUserNearbyPlaceChain</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p><code>user.nearby_place_chain</code></p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Objective-C</p>
+                          <pre class="highlight objective_c"><code><span class="n">RadarEventTypeUserNearbyPlaceChain</span></code></pre>
+
+                        </div>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="k">case</span> <span class="n">userNearbyPlaceChain</span> <span class="o">=</span> <span class="mi">5</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:@E@RadarEventType@RadarEventTypeUserEnteredRegionCountry"></a>
+                    <a name="//apple_ref/objc/Case/RadarEventTypeUserEnteredRegionCountry" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@E@RadarEventType@RadarEventTypeUserEnteredRegionCountry">RadarEventTypeUserEnteredRegionCountry</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p><code>user.entered_region_country</code></p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Objective-C</p>
+                          <pre class="highlight objective_c"><code><span class="n">RadarEventTypeUserEnteredRegionCountry</span></code></pre>
+
+                        </div>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="k">case</span> <span class="n">userEnteredRegionCountry</span> <span class="o">=</span> <span class="mi">6</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:@E@RadarEventType@RadarEventTypeUserExitedRegionCountry"></a>
+                    <a name="//apple_ref/objc/Case/RadarEventTypeUserExitedRegionCountry" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@E@RadarEventType@RadarEventTypeUserExitedRegionCountry">RadarEventTypeUserExitedRegionCountry</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p><code>user.exited_region_country</code></p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Objective-C</p>
+                          <pre class="highlight objective_c"><code><span class="n">RadarEventTypeUserExitedRegionCountry</span></code></pre>
+
+                        </div>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="k">case</span> <span class="n">userExitedRegionCountry</span> <span class="o">=</span> <span class="mi">7</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:@E@RadarEventType@RadarEventTypeUserEnteredRegionState"></a>
+                    <a name="//apple_ref/objc/Case/RadarEventTypeUserEnteredRegionState" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@E@RadarEventType@RadarEventTypeUserEnteredRegionState">RadarEventTypeUserEnteredRegionState</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p><code>user.entered_region_state</code></p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Objective-C</p>
+                          <pre class="highlight objective_c"><code><span class="n">RadarEventTypeUserEnteredRegionState</span></code></pre>
+
+                        </div>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="k">case</span> <span class="n">userEnteredRegionState</span> <span class="o">=</span> <span class="mi">8</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:@E@RadarEventType@RadarEventTypeUserExitedRegionState"></a>
+                    <a name="//apple_ref/objc/Case/RadarEventTypeUserExitedRegionState" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@E@RadarEventType@RadarEventTypeUserExitedRegionState">RadarEventTypeUserExitedRegionState</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p><code>user.exited_region_state</code></p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Objective-C</p>
+                          <pre class="highlight objective_c"><code><span class="n">RadarEventTypeUserExitedRegionState</span></code></pre>
+
+                        </div>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="k">case</span> <span class="n">userExitedRegionState</span> <span class="o">=</span> <span class="mi">9</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:@E@RadarEventType@RadarEventTypeUserEnteredRegionDMA"></a>
+                    <a name="//apple_ref/objc/Case/RadarEventTypeUserEnteredRegionDMA" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@E@RadarEventType@RadarEventTypeUserEnteredRegionDMA">RadarEventTypeUserEnteredRegionDMA</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p><code>user.entered_region_dma</code></p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Objective-C</p>
+                          <pre class="highlight objective_c"><code><span class="n">RadarEventTypeUserEnteredRegionDMA</span></code></pre>
+
+                        </div>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="k">case</span> <span class="n">userEnteredRegionDMA</span> <span class="o">=</span> <span class="mi">10</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:@E@RadarEventType@RadarEventTypeUserExitedRegionDMA"></a>
+                    <a name="//apple_ref/objc/Case/RadarEventTypeUserExitedRegionDMA" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@E@RadarEventType@RadarEventTypeUserExitedRegionDMA">RadarEventTypeUserExitedRegionDMA</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p><code>user.exited_region_dma</code></p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Objective-C</p>
+                          <pre class="highlight objective_c"><code><span class="n">RadarEventTypeUserExitedRegionDMA</span></code></pre>
+
+                        </div>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="k">case</span> <span class="n">userExitedRegionDMA</span> <span class="o">=</span> <span class="mi">11</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:@E@RadarEventType@RadarEventTypeUserStartedTrip"></a>
+                    <a name="//apple_ref/objc/Case/RadarEventTypeUserStartedTrip" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@E@RadarEventType@RadarEventTypeUserStartedTrip">RadarEventTypeUserStartedTrip</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p><code>user.started_trip</code></p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Objective-C</p>
+                          <pre class="highlight objective_c"><code><span class="n">RadarEventTypeUserStartedTrip</span></code></pre>
+
+                        </div>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="k">case</span> <span class="n">userStartedTrip</span> <span class="o">=</span> <span class="mi">12</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:@E@RadarEventType@RadarEventTypeUserUpdatedTrip"></a>
+                    <a name="//apple_ref/objc/Case/RadarEventTypeUserUpdatedTrip" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@E@RadarEventType@RadarEventTypeUserUpdatedTrip">RadarEventTypeUserUpdatedTrip</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p><code>user.updated_trip</code></p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Objective-C</p>
+                          <pre class="highlight objective_c"><code><span class="n">RadarEventTypeUserUpdatedTrip</span></code></pre>
+
+                        </div>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="k">case</span> <span class="n">userUpdatedTrip</span> <span class="o">=</span> <span class="mi">13</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:@E@RadarEventType@RadarEventTypeUserApproachingTripDestination"></a>
+                    <a name="//apple_ref/objc/Case/RadarEventTypeUserApproachingTripDestination" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@E@RadarEventType@RadarEventTypeUserApproachingTripDestination">RadarEventTypeUserApproachingTripDestination</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p><code>user.approaching_trip_destination</code></p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Objective-C</p>
+                          <pre class="highlight objective_c"><code><span class="n">RadarEventTypeUserApproachingTripDestination</span></code></pre>
+
+                        </div>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="k">case</span> <span class="n">userApproachingTripDestination</span> <span class="o">=</span> <span class="mi">14</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:@E@RadarEventType@RadarEventTypeUserArrivedAtTripDestination"></a>
+                    <a name="//apple_ref/objc/Case/RadarEventTypeUserArrivedAtTripDestination" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@E@RadarEventType@RadarEventTypeUserArrivedAtTripDestination">RadarEventTypeUserArrivedAtTripDestination</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p><code>user.arrived_at_trip_destination</code></p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Objective-C</p>
+                          <pre class="highlight objective_c"><code><span class="n">RadarEventTypeUserArrivedAtTripDestination</span></code></pre>
+
+                        </div>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="k">case</span> <span class="n">userArrivedAtTripDestination</span> <span class="o">=</span> <span class="mi">15</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:@E@RadarEventType@RadarEventTypeUserStoppedTrip"></a>
+                    <a name="//apple_ref/objc/Case/RadarEventTypeUserStoppedTrip" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@E@RadarEventType@RadarEventTypeUserStoppedTrip">RadarEventTypeUserStoppedTrip</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p><code>user.stopped_trip</code></p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Objective-C</p>
+                          <pre class="highlight objective_c"><code><span class="n">RadarEventTypeUserStoppedTrip</span></code></pre>
+
+                        </div>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="k">case</span> <span class="n">userStoppedTrip</span> <span class="o">=</span> <span class="mi">16</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:@E@RadarEventType@RadarEventTypeUserEnteredBeacon"></a>
+                    <a name="//apple_ref/objc/Case/RadarEventTypeUserEnteredBeacon" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@E@RadarEventType@RadarEventTypeUserEnteredBeacon">RadarEventTypeUserEnteredBeacon</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p><code>user.entered_beacon</code></p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Objective-C</p>
+                          <pre class="highlight objective_c"><code><span class="n">RadarEventTypeUserEnteredBeacon</span></code></pre>
+
+                        </div>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="k">case</span> <span class="n">userEnteredBeacon</span> <span class="o">=</span> <span class="mi">17</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:@E@RadarEventType@RadarEventTypeUserExitedBeacon"></a>
+                    <a name="//apple_ref/objc/Case/RadarEventTypeUserExitedBeacon" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@E@RadarEventType@RadarEventTypeUserExitedBeacon">RadarEventTypeUserExitedBeacon</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p><code>user.exited_beacon</code></p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Objective-C</p>
+                          <pre class="highlight objective_c"><code><span class="n">RadarEventTypeUserExitedBeacon</span></code></pre>
+
+                        </div>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="k">case</span> <span class="n">userExitedBeacon</span> <span class="o">=</span> <span class="mi">18</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:@E@RadarEventType@RadarEventTypeUserEnteredRegionPostalCode"></a>
+                    <a name="//apple_ref/objc/Case/RadarEventTypeUserEnteredRegionPostalCode" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@E@RadarEventType@RadarEventTypeUserEnteredRegionPostalCode">RadarEventTypeUserEnteredRegionPostalCode</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p><code>user.entered_region_postal_code</code></p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Objective-C</p>
+                          <pre class="highlight objective_c"><code><span class="n">RadarEventTypeUserEnteredRegionPostalCode</span></code></pre>
+
+                        </div>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="k">case</span> <span class="n">userEnteredRegionPostalCode</span> <span class="o">=</span> <span class="mi">19</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:@E@RadarEventType@RadarEventTypeUserExitedRegionPostalCode"></a>
+                    <a name="//apple_ref/objc/Case/RadarEventTypeUserExitedRegionPostalCode" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@E@RadarEventType@RadarEventTypeUserExitedRegionPostalCode">RadarEventTypeUserExitedRegionPostalCode</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p><code>user.exited_region_postal_code</code></p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Objective-C</p>
+                          <pre class="highlight objective_c"><code><span class="n">RadarEventTypeUserExitedRegionPostalCode</span></code></pre>
+
+                        </div>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="k">case</span> <span class="n">userExitedRegionPostalCode</span> <span class="o">=</span> <span class="mi">20</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </section>
+        </section>
+        <section id="footer">
+          <p>&copy; 2022 <a class="link" href="https://radar.com" target="_blank" rel="external noopener">Radar Labs, Inc.</a>. All rights reserved. (Last updated: 2022-04-06)</p>
+          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external noopener">jazzy ♪♫ v0.14.1</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external noopener">Realm</a> project.</p>
+        </section>
+      </article>
+    </div>
+  </body>
+</html>
