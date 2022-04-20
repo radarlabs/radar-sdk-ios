@@ -167,7 +167,7 @@
     }
 }
 
-- (void)rangeUUIDs:(NSArray<NSString *> *_Nonnull)uuids completionHandler:(RadarBeaconCompletionHandler)completionHandler {
+- (void)rangeBeaconUUIDs:(NSArray<NSString *> *_Nonnull)beaconUUIDs completionHandler:(RadarBeaconCompletionHandler)completionHandler {
     CLAuthorizationStatus authorizationStatus = [self.permissionsHelper locationAuthorizationStatus];
     if (!(authorizationStatus == kCLAuthorizationStatusAuthorizedWhenInUse || authorizationStatus == kCLAuthorizationStatusAuthorizedAlways)) {
         [[RadarDelegateHolder sharedInstance] didFailWithStatus:RadarStatusErrorPermissions];
@@ -199,7 +199,7 @@
         return;
     }
 
-    if (!uuids || !uuids.count) {
+    if (!beaconUUIDs || !beaconUUIDs.count) {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"No UUIDs to range"];
 
         completionHandler(RadarStatusSuccess, @[]);
@@ -207,18 +207,18 @@
         return;
     }
 
-    self.beaconUUIDs = uuids;
+    self.beaconUUIDs = beaconUUIDs;
     self.started = YES;
 
-    for (NSString *uuid in uuids) {
-        CLBeaconRegion *region = [self regionForUUID:uuid];
+    for (NSString *beaconUUID in beaconUUIDs) {
+        CLBeaconRegion *region = [self regionForUUID:beaconUUID];
 
         if (region) {
-            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Starting ranging UUID | uuid = %@", uuid]];
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Starting ranging UUID | beaconUUID = %@", beaconUUID]];
 
             [self.locationManager startRangingBeaconsInRegion:region];
         } else {
-            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Error starting ranging UUID | uuid = %@", uuid]];
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Error starting ranging UUID | beaconUUID = %@", beaconUUID]];
         }
     }
 }
@@ -335,12 +335,12 @@
 
 - (void)handleBeaconUUIDEntryForRegion:(CLBeaconRegion *)region completionHandler:(RadarBeaconCompletionHandler)completionHandler {
     NSArray<NSString *> *beaconUUIDs = [RadarSettings beaconUUIDs];
-    [self rangeUUIDs:beaconUUIDs completionHandler:completionHandler];
+    [self rangeBeaconUUIDs:beaconUUIDs completionHandler:completionHandler];
 }
 
 - (void)handleBeaconUUIDExitForRegion:(CLBeaconRegion *)region completionHandler:(RadarBeaconCompletionHandler)completionHandler {
     NSArray<NSString *> *beaconUUIDs = [RadarSettings beaconUUIDs];
-    [self rangeUUIDs:beaconUUIDs completionHandler:completionHandler];
+    [self rangeBeaconUUIDs:beaconUUIDs completionHandler:completionHandler];
 }
 
 @end
