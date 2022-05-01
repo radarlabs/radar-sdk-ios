@@ -156,7 +156,7 @@
                                          return;
                                      }
 
-                                     if (beaconUUIDs) {
+                                     if (beaconUUIDs && beaconUUIDs.count) {
                                          [[RadarLocationManager sharedInstance] replaceSyncedBeaconUUIDs:beaconUUIDs];
 
                                          [RadarUtils runOnMainThread:^{
@@ -171,7 +171,7 @@
                                                                                      callTrackAPI(beacons);
                                                                                  }];
                                          }];
-                                     } else if (beacons) {
+                                     } else {
                                          [[RadarLocationManager sharedInstance] replaceSyncedBeacons:beacons];
 
                                          [RadarUtils runOnMainThread:^{
