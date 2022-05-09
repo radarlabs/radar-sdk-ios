@@ -231,7 +231,7 @@
     for (RadarBeacon *beacon in self.beacons) {
         [self.locationManager stopRangingBeaconsInRegion:[self regionForBeacon:beacon]];
     }
-    
+
     for (NSString *beaconUUID in self.beaconUUIDs) {
         [self.locationManager stopRangingBeaconsInRegion:[self regionForUUID:beaconUUID]];
     }
@@ -293,10 +293,12 @@
     for (CLBeacon *beacon in beacons) {
         [self.nearbyBeaconIdentifiers addObject:region.identifier];
         [self.nearbyBeacons addObject:[RadarBeacon fromCLBeacon:beacon]];
-        
+
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
-                                           message:[NSString stringWithFormat:@"Ranged beacon | nearbyBeacons.count = %lu; region.identifier = %@; beacon.uuid = %@; beacon.major = %@; beacon.minor = %@; beacon.rssi = %ld; beacon.proximity = %ld",
-                                                    self.nearbyBeacons.count, region.identifier, [beacon.proximityUUID UUIDString], beacon.major, beacon.minor, (long)beacon.rssi, (long)beacon.proximity]];
+                                           message:[NSString stringWithFormat:@"Ranged beacon | nearbyBeacons.count = %lu; region.identifier = %@; beacon.uuid = %@; beacon.major "
+                                                                              @"= %@; beacon.minor = %@; beacon.rssi = %ld; beacon.proximity = %ld",
+                                                                              self.nearbyBeacons.count, region.identifier, [beacon.proximityUUID UUIDString], beacon.major,
+                                                                              beacon.minor, (long)beacon.rssi, (long)beacon.proximity]];
     }
 
     [self handleBeacons];

@@ -549,7 +549,7 @@
                         id beaconsObj = res[@"beacons"];
                         NSArray<RadarBeacon *> *beacons = [RadarBeacon beaconsFromObject:beaconsObj];
 
-                        NSArray<NSString *> *beaconUUIDs;
+                        NSMutableArray<NSString *> *beaconUUIDs = [NSMutableArray new];
                         id metaObj = res[@"meta"];
                         if (metaObj) {
                             NSDictionary *meta = (NSDictionary *)metaObj;
@@ -559,12 +559,13 @@
                                 id beaconsObj = settings[@"beacons"];
                                 if (beaconsObj) {
                                     NSDictionary *beacons = (NSDictionary *)beaconsObj;
-                                    beaconUUIDs = beacons[@"uuids"];
-                                    if (beaconUUIDs) {
-                                        [RadarSettings setBeaconUUIDs:beaconUUIDs];
-                                    } else {
-                                        [RadarSettings setBeaconUUIDs:nil];
+                                    NSArray<NSString *> *uuids = beacons[@"uuids"];
+                                    for (NSString *uuid in uuids) {
+                                        if (uuid && uuid.length) {
+                                            [beaconUUIDs addObject:uuid];
+                                        }
                                     }
+                                    [RadarSettings setBeaconUUIDs:beaconUUIDs];
                                 }
                             }
                         }
