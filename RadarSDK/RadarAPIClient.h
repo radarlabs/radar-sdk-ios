@@ -71,7 +71,7 @@ typedef void (^_Nonnull RadarSyncLogsAPICompletionHandler)(RadarStatus status);
                foreground:(BOOL)foreground
                    source:(RadarLocationSource)source
                  replayed:(BOOL)replayed
-                  beacons:(NSArray<NSDictionary *> *_Nullable)beacons
+                  beacons:(NSArray<RadarBeacon *> *_Nullable)beacons
         completionHandler:(RadarTrackAPICompletionHandler _Nonnull)completionHandler;
 
 - (void)verifyEventId:(NSString *_Nonnull)eventId verification:(RadarEventVerification)verification verifiedPlaceId:(NSString *_Nullable)verifiedPlaceId;

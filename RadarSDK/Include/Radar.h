@@ -153,7 +153,7 @@ typedef void (^_Nullable RadarLocationCompletionHandler)(RadarStatus status, CLL
 
  @see https://radar.com/documentation/beacons
  */
-typedef void (^_Nullable RadarBeaconCompletionHandler)(RadarStatus status, NSArray<NSDictionary *> *_Nullable beacons);
+typedef void (^_Nullable RadarBeaconCompletionHandler)(RadarStatus status, NSArray<RadarBeacon *> *_Nullable beacons);
 
 /**
  Called when a track request succeeds, fails, or times out.

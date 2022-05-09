@@ -121,7 +121,7 @@
                foreground:(BOOL)foreground
                    source:(RadarLocationSource)source
                  replayed:(BOOL)replayed
-                  beacons:(NSArray<NSDictionary *> *_Nullable)beacons
+                  beacons:(NSArray<RadarBeacon *> *_Nullable)beacons
         completionHandler:(RadarTrackAPICompletionHandler _Nonnull)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
@@ -205,7 +205,7 @@
         params[@"nearbyGeofences"] = @(YES);
     }
     if (beacons) {
-        params[@"beacons"] = beacons;
+        params[@"beacons"] = [RadarBeacon arrayForBeacons:beacons];
     }
     NSString *sessionId = [RadarSettings sessionId];
     if (sessionId) {
@@ -569,7 +569,7 @@
                             }
                         }
 
-                        completionHandler(RadarStatusErrorServer, res, beacons, beaconUUIDs);
+                        completionHandler(RadarStatusSuccess, res, beacons, beaconUUIDs);
                     }];
 }
 
