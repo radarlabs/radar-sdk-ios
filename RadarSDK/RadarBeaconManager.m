@@ -298,7 +298,7 @@
 
 - (void)handleBeaconEntryForRegion:(CLBeaconRegion *)region completionHandler:(RadarBeaconCompletionHandler)completionHandler {
     NSString *identifier = region.identifier;
-    BOOL alreadyInside = [self.nearbyBeaconIdentifiers containsObject:region.identifier];
+    BOOL alreadyInside = [self.nearbyBeaconIdentifiers containsObject:identifier];
     if (alreadyInside) {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Already inside beacon region | identifier = %@", identifier]];
     } else {
