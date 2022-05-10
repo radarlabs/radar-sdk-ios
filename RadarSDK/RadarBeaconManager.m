@@ -257,14 +257,6 @@
     return [[CLBeaconRegion alloc] initWithProximityUUID:[[NSUUID alloc] initWithUUIDString:uuid] identifier:uuid];
 }
 
-- (NSDictionary *)dictionaryForRegion:(CLBeaconRegion *)region {
-    return @{@"uuid": region.proximityUUID, @"major": region.major, @"minor": region.minor};
-}
-
-- (NSDictionary *)dictionaryForBeacon:(CLBeacon *)beacon {
-    return @{@"uuid": beacon.proximityUUID, @"major": [beacon.major stringValue], @"minor": [beacon.minor stringValue], @"rssi": @(beacon.rssi), @"proximity": @(beacon.proximity)};
-}
-
 - (void)handleBeacons {
     if (self.beaconUUIDs.count == 0 && self.nearbyBeaconIdentifiers.count + self.failedBeaconIdentifiers.count == self.beacons.count) {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Finished ranging"]];
