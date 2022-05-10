@@ -289,8 +289,8 @@
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
                                            message:[NSString stringWithFormat:@"Ranged beacon | nearbyBeacons.count = %lu; region.identifier = %@; beacon.uuid = %@; beacon.major "
                                                                               @"= %@; beacon.minor = %@; beacon.rssi = %ld; beacon.proximity = %ld",
-                                                                              self.nearbyBeacons.count, region.identifier, [beacon.proximityUUID UUIDString], beacon.major,
-                                                                              beacon.minor, (long)beacon.rssi, (long)beacon.proximity]];
+                                                                              (unsigned long)self.nearbyBeacons.count, region.identifier, [beacon.proximityUUID UUIDString],
+                                                                              beacon.major, beacon.minor, (unsigned long)beacon.rssi, (unsigned long)beacon.proximity]];
     }
 
     [self handleBeacons];

@@ -21,9 +21,22 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         locationManager.delegate = self
         self.requestLocationPermissions()
 
-        Radar.initialize(publishableKey: "prj_test_pk_0000000000000000000000000000000000000000")
+        Radar.initialize(publishableKey: "org_test_pk_e6d0bb91ac41b187b84f21ba18ca4e5794401997")
         Radar.setDelegate(self)
         
+        Radar.setLogLevel(.debug)
+        
+        UserDefaults.standard.set("https://api-andrew-dev.radar.io", forKey: "radar-host")
+        
+        Radar.trackOnce(desiredAccuracy: .medium, beacons: true) { (status, location, events, user) in
+            print("Track once: status = \(Radar.stringForStatus(status)); location = \(String(describing: location)); events = \(String(describing: events)); user = \(String(describing: user))")
+        }
+        
+        let trackingOptions = RadarTrackingOptions.presetResponsive
+        trackingOptions.beacons = true
+        Radar.startTracking(trackingOptions: trackingOptions)
+        
+        /*
         if UIApplication.shared.applicationState != .background {
             Radar.getLocation { (status, location, stopped) in
                 print("Location: status = \(Radar.stringForStatus(status)); location = \(String(describing: location))")
@@ -127,6 +140,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         Radar.getMatrix(origins: origins, destinations: destinations, mode: .car, units: .imperial) { (status, matrix) in
             print("Matrix: status = \(Radar.stringForStatus(status)); matrix[0][0].duration.text = \(String(describing: matrix?.routeBetween(originIndex: 0, destinationIndex: 0)?.duration.text)); matrix[0][1].duration.text = \(String(describing: matrix?.routeBetween(originIndex: 0, destinationIndex: 1)?.duration.text)); matrix[1][0].duration.text = \(String(describing: matrix?.routeBetween(originIndex: 1, destinationIndex: 0)?.duration.text)); matrix[1][1].duration.text = \(String(describing: matrix?.routeBetween(originIndex: 1, destinationIndex: 1)?.duration.text))")
         }
+         */
 
         return true
     }
@@ -201,3 +215,4 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
 
 }
+
