@@ -5,10 +5,10 @@
 //  Copyright © 2020 Radar Labs, Inc. All rights reserved.
 //
 
+#import "../RadarSDK/RadarPermissionsHelper.h"
 #import <CoreLocation/CoreLocation.h>
 #import <Foundation/Foundation.h>
 #import <RadarSDK.h>
-#import "../RadarSDK/RadarPermissionsHelper.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
