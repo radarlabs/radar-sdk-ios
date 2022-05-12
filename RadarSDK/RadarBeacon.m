@@ -192,7 +192,9 @@
     if (self.externalId) {
         [dict setValue:self.externalId forKey:@"externalId"];
     }
-    [dict setValue:self.uuid forKey:@"uuid"];
+    if (self.uuid) {
+        [dict setValue:[self.uuid lowercaseString] forKey:@"uuid"];
+    }
     [dict setValue:self.major forKey:@"major"];
     [dict setValue:self.minor forKey:@"minor"];
     if (self.rssi) {

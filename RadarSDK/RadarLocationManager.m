@@ -425,6 +425,8 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     BOOL tracking = [RadarSettings tracking];
     RadarTrackingOptions *options = [Radar getTrackingOptions];
     if (!tracking || !options.syncGeofences || !geofences) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Skipping replacing synced geofences"];
+        
         return;
     }
 
@@ -470,6 +472,8 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     BOOL tracking = [RadarSettings tracking];
     RadarTrackingOptions *options = [Radar getTrackingOptions];
     if (!tracking || !options.beacons || !beacons) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Skipping replacing synced beacons"];
+        
         return;
     }
 
