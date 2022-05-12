@@ -7,8 +7,8 @@
 
 #import "RadarAPIClient.h"
 
-#import "Radar.h"
 #import "Radar+Internal.h"
+#import "Radar.h"
 #import "RadarAddress+Internal.h"
 #import "RadarBeacon+Internal.h"
 #import "RadarContext+Internal.h"
@@ -17,6 +17,7 @@
 #import "RadarEvent+Internal.h"
 #import "RadarGeofence+Internal.h"
 #import "RadarLogger.h"
+#import "RadarMeta+Internal.h"
 #import "RadarPlace+Internal.h"
 #import "RadarRouteMatrix+Internal.h"
 #import "RadarRoutes+Internal.h"
@@ -26,7 +27,6 @@
 #import "RadarTripOptions.h"
 #import "RadarUser+Internal.h"
 #import "RadarUtils.h"
-#import "RadarMeta+Internal.h"
 
 @implementation RadarAPIClient
 
@@ -105,16 +105,15 @@
                                 sleep:NO
                            logPayload:YES
                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
-        if (!res) {
-            return;
-        }
+                        if (!res) {
+                            return;
+                        }
 
-        [Radar flushLogs];
+                        [Radar flushLogs];
 
-        RadarMeta *meta = [RadarAPIClient parseMeta:res];
-        completionHandler(status, meta);
-    }
-    ];
+                        RadarMeta *meta = [RadarAPIClient parseMeta:res];
+                        completionHandler(status, meta);
+                    }];
 }
 
 - (void)trackWithLocation:(CLLocation *_Nonnull)location
@@ -122,7 +121,7 @@
                foreground:(BOOL)foreground
                    source:(RadarLocationSource)source
                  replayed:(BOOL)replayed
-            nearbyBeacons:(NSArray<NSString *> *_Nullable)nearbyBeacons
+                  beacons:(NSArray<RadarBeacon *> *_Nullable)beacons
         completionHandler:(RadarTrackAPICompletionHandler _Nonnull)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
@@ -200,13 +199,17 @@
         tripOptionsDict[@"mode"] = [Radar stringForMode:tripOptions.mode];
         params[@"tripOptions"] = tripOptionsDict;
     }
-    
+
     RadarTrackingOptions *options = [Radar getTrackingOptions];
     if (options.syncGeofences) {
         params[@"nearbyGeofences"] = @(YES);
     }
-    if (nearbyBeacons) {
-        params[@"nearbyBeacons"] = nearbyBeacons;
+    if (beacons) {
+        params[@"beacons"] = [RadarBeacon arrayForBeacons:beacons];
+    }
+    NSString *sessionId = [RadarSettings sessionId];
+    if (sessionId) {
+        params[@"sessionId"] = sessionId;
     }
     NSString *locationAuthorization = [RadarUtils locationAuthorization];
     if (locationAuthorization) {
@@ -215,10 +218,6 @@
     NSString *locationAccuracyAuthorization = [RadarUtils locationAccuracyAuthorization];
     if (locationAccuracyAuthorization) {
         params[@"locationAccuracyAuthorization"] = locationAccuracyAuthorization;
-    }
-    NSString *sessionId = [RadarSettings sessionId];
-    if (sessionId) {
-        params[@"sessionId"] = sessionId;
     }
 
     // NOTE: this is sent up for debugging purposes and can be seen
@@ -253,7 +252,7 @@
 
                             return completionHandler(status, nil, nil, nil, nil, nil);
                         }
-        
+
                         [Radar flushLogs];
                         [RadarState setLastFailedStoppedLocation:nil];
 
@@ -521,7 +520,7 @@
 - (void)searchBeaconsNear:(CLLocation *)near radius:(int)radius limit:(int)limit completionHandler:(RadarSearchBeaconsAPICompletionHandler)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
-        return completionHandler(RadarStatusErrorPublishableKey, nil, nil);
+        return completionHandler(RadarStatusErrorPublishableKey, nil, nil, nil);
     }
 
     int finalLimit = MIN(limit, 100);
@@ -544,16 +543,34 @@
                            logPayload:YES
                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
                         if (status != RadarStatusSuccess || !res) {
-                            return completionHandler(status, nil, nil);
+                            return completionHandler(status, nil, nil, nil);
                         }
 
                         id beaconsObj = res[@"beacons"];
                         NSArray<RadarBeacon *> *beacons = [RadarBeacon beaconsFromObject:beaconsObj];
-                        if (beacons) {
-                            return completionHandler(RadarStatusSuccess, res, beacons);
+
+                        NSMutableArray<NSString *> *beaconUUIDs = [NSMutableArray new];
+                        id metaObj = res[@"meta"];
+                        if (metaObj) {
+                            NSDictionary *meta = (NSDictionary *)metaObj;
+                            id settingsObj = meta[@"settings"];
+                            if (settingsObj) {
+                                NSDictionary *settings = (NSDictionary *)settingsObj;
+                                id beaconsObj = settings[@"beacons"];
+                                if (beaconsObj) {
+                                    NSDictionary *beacons = (NSDictionary *)beaconsObj;
+                                    NSArray<NSString *> *uuids = beacons[@"uuids"];
+                                    for (NSString *uuid in uuids) {
+                                        if (uuid && uuid.length) {
+                                            [beaconUUIDs addObject:uuid];
+                                        }
+                                    }
+                                    [RadarSettings setBeaconUUIDs:beaconUUIDs];
+                                }
+                            }
                         }
 
-                        completionHandler(RadarStatusErrorServer, nil, nil);
+                        completionHandler(RadarStatusSuccess, res, beacons, beaconUUIDs);
                     }];
 }
 
@@ -926,7 +943,7 @@
     NSDictionary *headers = [RadarAPIClient headersWithPublishableKey:publishableKey];
 
     NSMutableDictionary *params = [NSMutableDictionary new];
-    
+
     params[@"id"] = [RadarSettings _id];
     params[@"installId"] = [RadarSettings installId];
     params[@"deviceId"] = [RadarUtils deviceId];
