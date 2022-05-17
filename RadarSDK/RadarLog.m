@@ -10,8 +10,7 @@
 
 @implementation RadarLog
 
-- (instancetype _Nullable)initWithLevel:(RadarLogLevel)level
-                                message:(NSString *_Nullable)message {
+- (instancetype _Nullable)initWithLevel:(RadarLogLevel)level message:(NSString *_Nullable)message {
     self = [super init];
     if (self) {
         _level = level;
@@ -24,21 +23,21 @@
 + (NSString *)stringForLogLevel:(RadarLogLevel)level {
     NSString *str;
     switch (level) {
-        case RadarLogLevelNone:
-            str = @"none";
-            break;
-        case RadarLogLevelError:
-            str = @"error";
-            break;
-        case RadarLogLevelWarning:
-            str = @"warning";
-            break;
-        case RadarLogLevelInfo:
-            str = @"info";
-            break;
-        case RadarLogLevelDebug:
-            str = @"debug";
-            break;
+    case RadarLogLevelNone:
+        str = @"none";
+        break;
+    case RadarLogLevelError:
+        str = @"error";
+        break;
+    case RadarLogLevelWarning:
+        str = @"warning";
+        break;
+    case RadarLogLevelInfo:
+        str = @"info";
+        break;
+    case RadarLogLevelDebug:
+        str = @"debug";
+        break;
     }
     return str;
 }
