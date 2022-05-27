@@ -372,6 +372,8 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
             // services. Currently, only the initializer passes in YES, and all
             // subsequent calls to updateTracking() get NO.
             if (!fromInitialize) {
+                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Stopping monitoring visits and SLCs"]];
+
                 [self.locationManager stopMonitoringVisits];
                 [self.locationManager stopMonitoringSignificantLocationChanges];
             }
@@ -426,7 +428,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     RadarTrackingOptions *options = [Radar getTrackingOptions];
     if (!tracking || !options.syncGeofences || !geofences) {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Skipping replacing synced geofences"];
-        
+
         return;
     }
 
@@ -473,7 +475,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     RadarTrackingOptions *options = [Radar getTrackingOptions];
     if (!tracking || !options.beacons || !beacons) {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Skipping replacing synced beacons"];
-        
+
         return;
     }
 
@@ -789,7 +791,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 
             return;
         }
-        
+
         [self handleLocation:location source:RadarLocationSourceBackgroundLocation];
     }
 }
@@ -797,10 +799,10 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 - (void)locationManager:(CLLocationManager *)manager didEnterRegion:(CLRegion *)region {
     if (![region.identifier hasPrefix:kIdentifierPrefix]) {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Ignoring region entry: wrong prefix"];
-        
+
         return;
     }
-    
+
     BOOL tracking = [RadarSettings tracking];
     if (!tracking) {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Ignoring region entry: not tracking"];
@@ -833,10 +835,10 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 - (void)locationManager:(CLLocationManager *)manager didExitRegion:(CLRegion *)region {
     if (![region.identifier hasPrefix:kIdentifierPrefix]) {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Ignoring region exit: wrong prefix"];
-        
+
         return;
     }
-    
+
     BOOL tracking = [RadarSettings tracking];
     if (!tracking) {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Ignoring region exit: not tracking"];
@@ -913,7 +915,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     if (!manager.location) {
         return;
     }
-    
+
     BOOL tracking = [RadarSettings tracking];
     if (!tracking) {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Ignoring visit: not tracking"];
