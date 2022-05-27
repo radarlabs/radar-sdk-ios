@@ -27,6 +27,7 @@
 #import "RadarTripOptions.h"
 #import "RadarUser+Internal.h"
 #import "RadarUtils.h"
+#import <os/log.h>
 
 @implementation RadarAPIClient
 
@@ -901,8 +902,6 @@
         unitsStr = @"imperial";
     }
     [queryString appendFormat:@"&units=%@", unitsStr];
-
-    NSLog(@"%@", queryString);
 
     NSString *host = [RadarSettings host];
     NSString *url = [NSString stringWithFormat:@"%@/v1/route/matrix?%@", host, queryString];

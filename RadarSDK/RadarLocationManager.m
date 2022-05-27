@@ -367,11 +367,13 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
             [self removeAllRegions];
 
             // If updateTracking() was called from the RadarLocationManager
-            // intializer, don't tell the CLLocationManager to stop, because
+            // initializer, don't tell the CLLocationManager to stop, because
             // the location manager may be in use by other location-based
             // services. Currently, only the initializer passes in YES, and all
             // subsequent calls to updateTracking() get NO.
             if (!fromInitialize) {
+                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Stopping monitoring visits and SLCs"]];
+
                 [self.locationManager stopMonitoringVisits];
                 [self.locationManager stopMonitoringSignificantLocationChanges];
             }
@@ -390,7 +392,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
                                                message:[NSString stringWithFormat:@"Removed remote tracking options | trackingOptions = %@", Radar.getTrackingOptions]];
         }
-        [self updateTracking];
+        [self updateTrackingFromInitialize];
     }
 }
 
@@ -426,7 +428,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     RadarTrackingOptions *options = [Radar getTrackingOptions];
     if (!tracking || !options.syncGeofences || !geofences) {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Skipping replacing synced geofences"];
-        
+
         return;
     }
 
@@ -473,7 +475,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     RadarTrackingOptions *options = [Radar getTrackingOptions];
     if (!tracking || !options.beacons || !beacons) {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Skipping replacing synced beacons"];
-        
+
         return;
     }
 
@@ -783,12 +785,28 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     if (self.completionHandlers.count) {
         [self handleLocation:location source:RadarLocationSourceForegroundLocation];
     } else {
+        BOOL tracking = [RadarSettings tracking];
+        if (!tracking) {
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Ignoring location: not tracking"];
+
+            return;
+        }
+
         [self handleLocation:location source:RadarLocationSourceBackgroundLocation];
     }
 }
 
 - (void)locationManager:(CLLocationManager *)manager didEnterRegion:(CLRegion *)region {
     if (![region.identifier hasPrefix:kIdentifierPrefix]) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Ignoring region entry: wrong prefix"];
+
+        return;
+    }
+
+    BOOL tracking = [RadarSettings tracking];
+    if (!tracking) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Ignoring region entry: not tracking"];
+
         return;
     }
 
@@ -816,6 +834,15 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 
 - (void)locationManager:(CLLocationManager *)manager didExitRegion:(CLRegion *)region {
     if (![region.identifier hasPrefix:kIdentifierPrefix]) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Ignoring region exit: wrong prefix"];
+
+        return;
+    }
+
+    BOOL tracking = [RadarSettings tracking];
+    if (!tracking) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Ignoring region exit: not tracking"];
+
         return;
     }
 
@@ -886,6 +913,13 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 
 - (void)locationManager:(CLLocationManager *)manager didVisit:(CLVisit *)visit {
     if (!manager.location) {
+        return;
+    }
+
+    BOOL tracking = [RadarSettings tracking];
+    if (!tracking) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Ignoring visit: not tracking"];
+
         return;
     }
 
