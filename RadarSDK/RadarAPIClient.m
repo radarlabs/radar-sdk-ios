@@ -903,8 +903,6 @@
     }
     [queryString appendFormat:@"&units=%@", unitsStr];
 
-    os_log(OS_LOG_DEFAULT, "%@", queryString);
-
     NSString *host = [RadarSettings host];
     NSString *url = [NSString stringWithFormat:@"%@/v1/route/matrix?%@", host, queryString];
     url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
