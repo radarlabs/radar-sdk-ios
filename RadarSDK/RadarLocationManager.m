@@ -367,7 +367,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
             [self removeAllRegions];
 
             // If updateTracking() was called from the RadarLocationManager
-            // intializer, don't tell the CLLocationManager to stop, because
+            // initializer, don't tell the CLLocationManager to stop, because
             // the location manager may be in use by other location-based
             // services. Currently, only the initializer passes in YES, and all
             // subsequent calls to updateTracking() get NO.
@@ -390,7 +390,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
                                                message:[NSString stringWithFormat:@"Removed remote tracking options | trackingOptions = %@", Radar.getTrackingOptions]];
         }
-        [self updateTracking];
+        [self updateTrackingFromInitialize];
     }
 }
 
