@@ -372,6 +372,10 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
             // services. Currently, only the initializer passes in YES, and all
             // subsequent calls to updateTracking() get NO.
             if (!fromInitialize) {
+                [[RadarLogger sharedInstance]
+                    logWithLevel:RadarLogLevelDebug
+                         message:[NSString stringWithFormat:@"Stopping monitoring visits and SLCs"]];
+                
                 [self.locationManager stopMonitoringVisits];
                 [self.locationManager stopMonitoringSignificantLocationChanges];
             }
