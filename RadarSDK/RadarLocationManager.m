@@ -467,7 +467,8 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                         content.title = [NSString localizedUserNotificationStringForKey:notificationTitle arguments:nil];
                     }
                     content.body = [NSString localizedUserNotificationStringForKey:notificationText arguments:nil];
-
+                    content.userInfo = geofence.metadata;
+                    
                     UNLocationNotificationTrigger *trigger = [UNLocationNotificationTrigger triggerWithRegion:region repeats:YES];
 
                     UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:identifier content:content trigger:trigger];
