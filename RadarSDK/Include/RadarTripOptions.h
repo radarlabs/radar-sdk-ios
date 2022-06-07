@@ -22,6 +22,11 @@ NS_ASSUME_NONNULL_BEGIN
             destinationGeofenceTag:(NSString *_Nullable)destinationGeofenceTag
      destinationGeofenceExternalId:(NSString *_Nullable)destinationGeofenceExternalId;
 
+- (instancetype)initWithExternalId:(NSString *_Nonnull)externalId
+            destinationGeofenceTag:(NSString *_Nullable)destinationGeofenceTag
+     destinationGeofenceExternalId:(NSString *_Nullable)destinationGeofenceExternalId
+                scheduledArrivalAt:(NSDate *_Nullable)scheduledArrivalAt;
+
 /**
  A stable unique ID for the trip.
  */
@@ -41,6 +46,11 @@ NS_ASSUME_NONNULL_BEGIN
  For trips with a destination, the external ID of the destination geofence.
  */
 @property (nullable, nonatomic, copy) NSString *destinationGeofenceExternalId;
+
+/**
+ * The scheduled arrival time for the trip.
+ */
+@property (nullable, nonatomic, copy) NSDate *scheduledArrivalAt;
 
 /**
  For trips with a destination, the travel mode.
