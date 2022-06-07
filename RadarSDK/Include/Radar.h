@@ -14,6 +14,7 @@
 #import "RadarEvent.h"
 #import "RadarRegion.h"
 #import "RadarRouteMatrix.h"
+#import "RadarRouteMode.h"
 #import "RadarRoutes.h"
 #import "RadarTrackingOptions.h"
 #import "RadarUser.h"
@@ -103,24 +104,6 @@ typedef NS_ENUM(NSInteger, RadarLogLevel) {
     RadarLogLevelInfo = 3,
     /// Debug
     RadarLogLevelDebug = 4
-};
-
-/**
- The travel modes for routes.
-
- @see https://radar.com/documentation/api#routing
- */
-typedef NS_OPTIONS(NSInteger, RadarRouteMode) {
-    /// Foot
-    RadarRouteModeFoot NS_SWIFT_NAME(foot) = 1 << 0,
-    /// Bike
-    RadarRouteModeBike NS_SWIFT_NAME(bike) = 1 << 1,
-    /// Car
-    RadarRouteModeCar NS_SWIFT_NAME(car) = 1 << 2,
-    /// Truck
-    RadarRouteModeTruck NS_SWIFT_NAME(truck) = 1 << 3,
-    /// Motorbike
-    RadarRouteModeMotorbike NS_SWIFT_NAME(motorbike) = 1 << 4
 };
 
 /**
