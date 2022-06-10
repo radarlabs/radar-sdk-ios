@@ -340,6 +340,8 @@
         return @"user.entered_region_postal_code";
     case RadarEventTypeUserExitedRegionPostalCode:
         return @"user.exited_region_postal_code";
+    case RadarEventTypeUserDwelledInGeofence:
+        return @"user.dwelled_in_geofence";
     default:
         return @"unknown";
     }
