@@ -157,6 +157,12 @@
             type = RadarEventTypeUserEnteredBeacon;
         } else if ([typeStr isEqualToString:@"user.exited_beacon"]) {
             type = RadarEventTypeUserExitedBeacon;
+        } else if ([typeStr isEqualToString:@"user.entered_region_postal_code"]) {
+            type = RadarEventTypeUserEnteredRegionPostalCode;
+        } else if ([typeStr isEqualToString:@"user.exited_region_postal_code"]) {
+            type = RadarEventTypeUserExitedRegionPostalCode;
+        } else if ([typeStr isEqualToString:@"user.dwelled_in_geofence"]) {
+            type = RadarEventTypeUserDwelledInGeofence;
         }
     }
 
