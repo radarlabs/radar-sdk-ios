@@ -748,6 +748,9 @@
     case RadarStatusErrorForbidden:
         str = @"ERROR_FORBIDDEN";
         break;
+    case RadarStatusErrorNotFound:
+        str = @"ERROR_NOT_FOUND";
+        break;
     case RadarStatusErrorRateLimit:
         str = @"ERROR_RATE_LIMIT";
         break;
