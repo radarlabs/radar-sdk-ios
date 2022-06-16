@@ -220,6 +220,7 @@
     if (locationAccuracyAuthorization) {
         params[@"locationAccuracyAuthorization"] = locationAccuracyAuthorization;
     }
+    params[@"locationBackgroundMode"] = @([RadarUtils locationBackgroundMode]);
 
     // NOTE: this is sent up for debugging purposes and can be seen
     // in the locations debug page for a user
