@@ -174,6 +174,7 @@ typedef NS_ENUM(NSInteger, RadarEventVerification) {
 
 + (NSString *_Nullable)stringForType:(RadarEventType)type;
 + (NSArray<NSDictionary *> *_Nullable)arrayForEvents:(NSArray<RadarEvent *> *_Nullable)events;
++ (RadarEvent *_Nullable)eventFromObject:(id _Nonnull)object;
 - (NSDictionary *_Nonnull)dictionaryValue;
 
 @end

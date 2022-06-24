@@ -932,6 +932,50 @@
                     }];
 }
 
+- (void)sendEvent:(NSString *)name
+     withLocation:(CLLocation *_Nullable)location
+         metadata:(NSDictionary *_Nullable)metadata
+completionHandler:(RadarSendEventsAPICompletionHandler _Nonnull)completionHandler {
+    NSString *publishableKey = [RadarSettings publishableKey];
+    if (!publishableKey) {
+        return completionHandler(RadarStatusErrorPublishableKey, nil, nil);
+    }
+
+    NSMutableDictionary *params = [NSMutableDictionary new];
+    params[@"id"] = [RadarSettings _id];
+    params[@"installId"] = [RadarSettings installId];
+    params[@"userId"] = [RadarSettings userId];
+    params[@"deviceId"] = [RadarUtils deviceId];
+    params[@"name"] = name;
+    params[@"metadata"] = metadata;
+
+    NSString *host = [RadarSettings host];
+    NSString *url = [NSString stringWithFormat:@"%@/v1/events", host];
+    url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
+
+    NSDictionary *headers = [RadarAPIClient headersWithPublishableKey:publishableKey];
+
+    [self.apiHelper requestWithMethod:@"POST"
+                                  url:url
+                              headers:headers
+                               params:nil
+                                sleep:NO
+                           logPayload:YES
+                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
+        if (status != RadarStatusSuccess || !res) {
+            return completionHandler(status, nil, nil);
+        }
+
+        id eventObj = res[@"event"];
+        RadarEvent *event = [RadarEvent eventFromObject:eventObj];
+        if (event) {
+            return completionHandler(RadarStatusSuccess, res, event);
+        }
+
+        completionHandler(RadarStatusErrorServer, nil, nil);
+    }];
+}
+
 - (void)syncLogs:(NSArray<RadarLog *> *)logs completionHandler:(RadarSyncLogsAPICompletionHandler)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {

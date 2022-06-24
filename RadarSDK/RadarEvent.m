@@ -38,6 +38,22 @@
     return mutableEvents;
 }
 
++ (RadarEvent *_Nullable)eventFromObject:(id _Nonnull)object {
+    if (!object || ![object isKindOfClass:[NSDictionary class]]) {
+        return nil;
+    }
+
+    NSDictionary *eventObj = (NSDictionary *)object;
+
+    RadarEvent *event = [[RadarEvent alloc] initWithObject:eventObj];
+
+    if (!event) {
+        return nil;
+    }
+
+    return event;
+}
+
 - (instancetype _Nullable)initWithId:(NSString *)_id
                            createdAt:(NSDate *)createdAt
                      actualCreatedAt:(NSDate *)actualCreatedAt

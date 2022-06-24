@@ -711,6 +711,53 @@
                                         }];
 }
 
++ (void)sendEvent:(NSString *)name
+     withMetadata:(NSDictionary *_Nullable)metadata
+completionHandler:(RadarSendEventCompletionHandler)completionHandler {
+
+    // TODO(jsani): check if permissions are enabled for events that can occur before location permission prompts
+    // if not, send the request with location = NULL
+
+    [[RadarLocationManager sharedInstance] getLocationWithCompletionHandler:^(RadarStatus status, CLLocation * _Nullable location, BOOL stopped) {
+        if (status != RadarStatusSuccess) {
+            if (completionHandler) {
+                [RadarUtils runOnMainThread:^{
+                    completionHandler(status, nil);
+                }];
+            }
+
+            return;
+        }
+
+        [[RadarAPIClient sharedInstance] sendEvent:name
+                                      withLocation:location
+                                          metadata:metadata
+                                 completionHandler:^(RadarStatus status, NSDictionary * _Nullable res, RadarEvent *_Nullable event) {
+            if (completionHandler) {
+                [RadarUtils runOnMainThread:^{
+                    completionHandler(status, event);
+                }];
+            }
+        }];
+    }];
+}
+
++ (void)sendEvent:(NSString *)name
+     withLocation:(CLLocation *_Nullable)location
+         metadata:(NSDictionary *_Nullable)metadata
+completionHandler:(RadarSendEventCompletionHandler)completionHandler {
+    [[RadarAPIClient sharedInstance] sendEvent:name
+                                  withLocation:location
+                                      metadata:metadata
+                             completionHandler:^(RadarStatus status, NSDictionary * _Nullable res, RadarEvent *_Nullable event) {
+        if (completionHandler) {
+            [RadarUtils runOnMainThread:^{
+                completionHandler(status, event);
+            }];
+        }
+    }];
+}
+
 + (void)setLogLevel:(RadarLogLevel)level {
     [RadarSettings setLogLevel:level];
 }
