@@ -45,13 +45,7 @@
 
     NSDictionary *eventObj = (NSDictionary *)object;
 
-    RadarEvent *event = [[RadarEvent alloc] initWithObject:eventObj];
-
-    if (!event) {
-        return nil;
-    }
-
-    return event;
+    return [[RadarEvent alloc] initWithObject:eventObj];
 }
 
 - (instancetype _Nullable)initWithId:(NSString *)_id

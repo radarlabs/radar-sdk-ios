@@ -222,9 +222,9 @@ typedef void (^_Nonnull RadarRouteMatrixCompletionHandler)(RadarStatus status, R
 /**
  Called when a request to send a custom event succeeds, fails, or times out.
 
- Receives the request status and, if successful, the events.
+ Receives the request status and, if successful, the event.
 
- @see https://radar.com/documentation/api#sendEvent
+ @see https://radar.com/documentation/api#send-event
  */
 typedef void(^_Nonnull RadarSendEventCompletionHandler)(RadarStatus status, RadarEvent *_Nullable event);
 
@@ -792,6 +792,7 @@ completionHandler:(RadarSendEventCompletionHandler)completionHandler NS_SWIFT_NA
 
  @param name The name of the event.
  @param location The location of the event.
+ @param metadata The metadata associated with the event.
  @param completionHandler A completion handler.
 
  @see https://radar.com/documentation/api#send-event
