@@ -732,6 +732,8 @@ completionHandler:(RadarSendEventCompletionHandler)completionHandler {
         [[RadarAPIClient sharedInstance] sendEvent:name
                                       withLocation:location
                                           metadata:metadata
+                                           stopped:stopped
+                                            source:RadarLocationSourceForegroundLocation
                                  completionHandler:^(RadarStatus status, NSDictionary * _Nullable res, RadarEvent *_Nullable event) {
             if (completionHandler) {
                 [RadarUtils runOnMainThread:^{
@@ -749,6 +751,8 @@ completionHandler:(RadarSendEventCompletionHandler)completionHandler {
     [[RadarAPIClient sharedInstance] sendEvent:name
                                   withLocation:location
                                       metadata:metadata
+                                       stopped:NO
+                                        source:RadarLocationSourceManualLocation
                              completionHandler:^(RadarStatus status, NSDictionary * _Nullable res, RadarEvent *_Nullable event) {
         if (completionHandler) {
             [RadarUtils runOnMainThread:^{
