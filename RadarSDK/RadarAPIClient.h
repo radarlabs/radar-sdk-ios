@@ -127,10 +127,8 @@ typedef void (^_Nonnull RadarSyncLogsAPICompletionHandler)(RadarStatus status);
            completionHandler:(RadarMatrixAPICompletionHandler _Nonnull)completionHandler;
 
 - (void)sendEvent:(NSString *)name
-     withLocation:(CLLocation *_Nullable)location
-         metadata:(NSDictionary *_Nullable)metadata
-          stopped:(BOOL)stopped
-           source:(RadarLocationSource)source
+     withMetadata:(NSDictionary *_Nullable)metadata
+             user:(RadarUser *_Nullable)user
 completionHandler:(RadarSendEventsAPICompletionHandler _Nonnull)completionHandler;
 
 - (void)syncLogs:(NSArray<RadarLog *> *)logs completionHandler:(RadarSyncLogsAPICompletionHandler _Nonnull)completionHandler;

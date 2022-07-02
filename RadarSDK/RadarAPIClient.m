@@ -933,10 +933,8 @@
 }
 
 - (void)sendEvent:(NSString *)name
-     withLocation:(CLLocation *_Nullable)location
-         metadata:(NSDictionary *_Nullable)metadata
-          stopped:(BOOL)stopped
-           source:(RadarLocationSource)source
+     withMetadata:(NSDictionary *_Nullable)metadata
+             user:(RadarUser *_Nullable)user
 completionHandler:(RadarSendEventsAPICompletionHandler _Nonnull)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
@@ -948,37 +946,11 @@ completionHandler:(RadarSendEventsAPICompletionHandler _Nonnull)completionHandle
     params[@"installId"] = [RadarSettings installId];
     params[@"userId"] = [RadarSettings userId];
     params[@"deviceId"] = [RadarUtils deviceId];
+
     params[@"type"] = name;
     params[@"metadata"] = metadata;
-
-    CLLocationAccuracy accuracy = location.horizontalAccuracy;
-    if (accuracy <= 0) {
-        accuracy = 1;
-    }
-    params[@"accuracy"] = @(accuracy);
-    params[@"altitude"] = @(location.altitude);
-    params[@"verticalAccuracy"] = @(location.verticalAccuracy);
-    params[@"speed"] = @(location.speed);
-    params[@"speedAccuracy"] = @(location.speedAccuracy);
-    params[@"course"] = @(location.course);
-    if (@available(iOS 13.4, *)) {
-        params[@"courseAccuracy"] = @(location.courseAccuracy);
-    }
-    if (location.floor) {
-        params[@"floorLevel"] = @(location.floor.level);
-    }
-
-    params[@"foreground"] = @(YES);
-    params[@"stopped"] = @(stopped);
-    params[@"replayed"] = @(NO);
-    params[@"deviceType"] = [RadarUtils deviceType];
-    params[@"deviceMake"] = [RadarUtils deviceMake];
-    params[@"sdkVersion"] = [RadarUtils sdkVersion];
-    params[@"deviceModel"] = [RadarUtils deviceModel];
-    params[@"deviceOS"] = [RadarUtils deviceOS];
-    params[@"country"] = [RadarUtils country];
-    params[@"timeZoneOffset"] = [RadarUtils timeZoneOffset];
-    params[@"source"] = [Radar stringForLocationSource:source];
+    // user object returned from /track
+    params[@"user"] = user;
 
     NSString *host = [RadarSettings host];
     NSString *url = [NSString stringWithFormat:@"%@/v1/events", host];
@@ -998,7 +970,7 @@ completionHandler:(RadarSendEventsAPICompletionHandler _Nonnull)completionHandle
         }
 
         id eventObj = res[@"event"];
-        RadarEvent *event = [RadarEvent eventFromObject:eventObj];
+        RadarEvent *event = [[RadarEvent alloc] initWithObject:eventObj];
         if (event) {
             return completionHandler(RadarStatusSuccess, res, event);
         }

@@ -718,7 +718,7 @@ completionHandler:(RadarSendEventCompletionHandler)completionHandler {
     // TODO(jsani): check if permissions are enabled for events that can occur before location permission prompts
     // if not, send the request with location = NULL
 
-    [[RadarLocationManager sharedInstance] getLocationWithCompletionHandler:^(RadarStatus status, CLLocation * _Nullable location, BOOL stopped) {
+    [self trackOnceWithCompletionHandler:^(RadarStatus status, CLLocation * _Nullable location, NSArray<RadarEvent *> * _Nullable events, RadarUser * _Nullable user) {
         if (status != RadarStatusSuccess) {
             if (completionHandler) {
                 [RadarUtils runOnMainThread:^{
@@ -729,12 +729,7 @@ completionHandler:(RadarSendEventCompletionHandler)completionHandler {
             return;
         }
 
-        [[RadarAPIClient sharedInstance] sendEvent:name
-                                      withLocation:location
-                                          metadata:metadata
-                                           stopped:stopped
-                                            source:RadarLocationSourceForegroundLocation
-                                 completionHandler:^(RadarStatus status, NSDictionary * _Nullable res, RadarEvent *_Nullable event) {
+        [[RadarAPIClient sharedInstance] sendEvent:name withMetadata:metadata user:user completionHandler:^(RadarStatus status, NSDictionary * _Nullable res, RadarEvent * _Nullable event) {
             if (completionHandler) {
                 [RadarUtils runOnMainThread:^{
                     completionHandler(status, event);
@@ -748,17 +743,25 @@ completionHandler:(RadarSendEventCompletionHandler)completionHandler {
      withLocation:(CLLocation *_Nullable)location
          metadata:(NSDictionary *_Nullable)metadata
 completionHandler:(RadarSendEventCompletionHandler)completionHandler {
-    [[RadarAPIClient sharedInstance] sendEvent:name
-                                  withLocation:location
-                                      metadata:metadata
-                                       stopped:NO
-                                        source:RadarLocationSourceManualLocation
-                             completionHandler:^(RadarStatus status, NSDictionary * _Nullable res, RadarEvent *_Nullable event) {
-        if (completionHandler) {
-            [RadarUtils runOnMainThread:^{
-                completionHandler(status, event);
-            }];
+
+    [self trackOnceWithLocation:location completionHandler:^(RadarStatus status, CLLocation * _Nullable location, NSArray<RadarEvent *> * _Nullable events, RadarUser * _Nullable user) {
+        if (status != RadarStatusSuccess) {
+            if (completionHandler) {
+                [RadarUtils runOnMainThread:^{
+                    completionHandler(status, nil);
+                }];
+            }
+
+            return;
         }
+
+        [[RadarAPIClient sharedInstance] sendEvent:name withMetadata:metadata user:user completionHandler:^(RadarStatus status, NSDictionary * _Nullable res, RadarEvent * _Nullable event) {
+            if (completionHandler) {
+                [RadarUtils runOnMainThread:^{
+                    completionHandler(status, event);
+                }];
+            }
+        }];
     }];
 }
 
