@@ -722,7 +722,7 @@ completionHandler:(RadarSendEventCompletionHandler)completionHandler {
         if (status != RadarStatusSuccess) {
             if (completionHandler) {
                 [RadarUtils runOnMainThread:^{
-                    completionHandler(status, nil);
+                    completionHandler(status, nil, nil, nil);
                 }];
             }
 
@@ -731,8 +731,11 @@ completionHandler:(RadarSendEventCompletionHandler)completionHandler {
 
         [[RadarAPIClient sharedInstance] sendEvent:name withMetadata:metadata user:user completionHandler:^(RadarStatus status, NSDictionary * _Nullable res, RadarEvent * _Nullable event) {
             if (completionHandler) {
+                NSMutableArray *finalEvents = [NSMutableArray arrayWithArray:events];
+                [finalEvents insertObject:event atIndex:0];
+
                 [RadarUtils runOnMainThread:^{
-                    completionHandler(status, event);
+                    completionHandler(status, location, finalEvents, user);
                 }];
             }
         }];
@@ -748,7 +751,7 @@ completionHandler:(RadarSendEventCompletionHandler)completionHandler {
         if (status != RadarStatusSuccess) {
             if (completionHandler) {
                 [RadarUtils runOnMainThread:^{
-                    completionHandler(status, nil);
+                    completionHandler(status, nil, nil, nil);
                 }];
             }
 
@@ -757,8 +760,11 @@ completionHandler:(RadarSendEventCompletionHandler)completionHandler {
 
         [[RadarAPIClient sharedInstance] sendEvent:name withMetadata:metadata user:user completionHandler:^(RadarStatus status, NSDictionary * _Nullable res, RadarEvent * _Nullable event) {
             if (completionHandler) {
+                NSMutableArray *finalEvents = [NSMutableArray arrayWithArray:events];
+                [finalEvents insertObject:event atIndex:0];
+
                 [RadarUtils runOnMainThread:^{
-                    completionHandler(status, event);
+                    completionHandler(status, location, finalEvents, user);
                 }];
             }
         }];

@@ -222,11 +222,11 @@ typedef void (^_Nonnull RadarRouteMatrixCompletionHandler)(RadarStatus status, R
 /**
  Called when a request to send a custom event succeeds, fails, or times out.
 
- Receives the request status and, if successful, the event.
+ Receives the request status and, if successful, the user's location, an array of the events generated with the custom event at index 0, and the user.
 
  @see https://radar.com/documentation/api#send-event
  */
-typedef void(^_Nonnull RadarSendEventCompletionHandler)(RadarStatus status, RadarEvent *_Nullable event);
+typedef void(^_Nonnull RadarSendEventCompletionHandler)(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user);
 
 /**
  The main class used to interact with the Radar SDK.
