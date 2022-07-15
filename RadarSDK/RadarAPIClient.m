@@ -949,8 +949,6 @@ completionHandler:(RadarSendEventsAPICompletionHandler _Nonnull)completionHandle
 
     params[@"type"] = name;
     params[@"metadata"] = metadata;
-    // user object returned from /track
-    params[@"user"] = user;
 
     NSString *host = [RadarSettings host];
     NSString *url = [NSString stringWithFormat:@"%@/v1/events", host];
