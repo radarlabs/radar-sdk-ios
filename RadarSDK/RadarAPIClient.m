@@ -938,6 +938,14 @@
         return completionHandler(RadarStatusErrorPublishableKey);
     }
 
+    NSString *radarId = [RadarSettings _id];
+    if (!radarId) {
+        // Either [Radar initializeWithPublishableKey] hasn't been called yet,
+        // or [RadarAPIClient trackWithLocation:stopped:foreground:source:replayed:beacons:completionHandler:]
+        // hasn't been called, or hasn't succeeded.
+        return completionHandler(RadarStatusErrorBadRequest);
+    }
+
     NSString *host = [RadarSettings host];
     NSString *url = [NSString stringWithFormat:@"%@/v1/logs", host];
 
