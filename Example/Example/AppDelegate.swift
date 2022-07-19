@@ -135,7 +135,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         // Test custom event with a manual location
         Radar.getLocation { (status, location, stopped) in
-            Radar.sendEvent(name: "app_launched", location: location, metadata: nil) { (status, location, events, user) in
+            Radar.sendEvent(name: "app_launched_manual", location: location, metadata: ["Data": "test"]) { (status, location, events, user) in
                 print("Send event: status = \(Radar.stringForStatus(status)); location = \(String(describing: location)); events = \(String(describing: events)); user = \(String(describing: user))")
             }
         }
