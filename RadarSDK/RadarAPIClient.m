@@ -959,7 +959,7 @@ completionHandler:(RadarSendEventsAPICompletionHandler _Nonnull)completionHandle
     [self.apiHelper requestWithMethod:@"POST"
                                   url:url
                               headers:headers
-                               params:nil
+                               params:params
                                 sleep:NO
                            logPayload:YES
                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
