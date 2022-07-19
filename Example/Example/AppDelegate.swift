@@ -21,9 +21,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         locationManager.delegate = self
         self.requestLocationPermissions()
 
-        // Set to staging to test custom evnets endpoints
-        UserDefaults.standard.set("https://api-staging.radar.io", forKey: "radar-host")
-
+        // Replace with a valid test publishable key
         Radar.initialize(publishableKey: "prj_test_pk_0000000000000000000000000000000000000000")
         Radar.setDelegate(self)
 
