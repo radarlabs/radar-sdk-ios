@@ -6,8 +6,8 @@
 //
 
 #import "RadarState.h"
-
 #import "RadarUtils.h"
+#import "CLLocation+Radar.h"
 
 @implementation RadarState
 
@@ -23,7 +23,7 @@ static NSString *const kLastFailedStoppedLocation = @"radar-lastFailedStoppedLoc
     NSDictionary *dict = [[NSUserDefaults standardUserDefaults] dictionaryForKey:kLastLocation];
     CLLocation *lastLocation = [RadarUtils locationForDictionary:dict];
 
-    if (![RadarUtils validLocation:lastLocation]) {
+    if (!lastLocation.isValid) {
         return nil;
     }
 
@@ -31,7 +31,7 @@ static NSString *const kLastFailedStoppedLocation = @"radar-lastFailedStoppedLoc
 }
 
 + (void)setLastLocation:(CLLocation *)lastLocation {
-    if (!lastLocation || ![RadarUtils validLocation:lastLocation]) {
+    if (!lastLocation.isValid) {
         return;
     }
 
@@ -43,7 +43,7 @@ static NSString *const kLastFailedStoppedLocation = @"radar-lastFailedStoppedLoc
     NSDictionary *dict = [[NSUserDefaults standardUserDefaults] dictionaryForKey:kLastMovedLocation];
     CLLocation *lastMovedLocation = [RadarUtils locationForDictionary:dict];
 
-    if (![RadarUtils validLocation:lastMovedLocation]) {
+    if (!lastMovedLocation.isValid) {
         return nil;
     }
 
@@ -51,7 +51,7 @@ static NSString *const kLastFailedStoppedLocation = @"radar-lastFailedStoppedLoc
 }
 
 + (void)setLastMovedLocation:(CLLocation *)lastMovedLocation {
-    if (!lastMovedLocation || ![RadarUtils validLocation:lastMovedLocation]) {
+    if (!lastMovedLocation.isValid) {
         return;
     }
 
@@ -96,7 +96,7 @@ static NSString *const kLastFailedStoppedLocation = @"radar-lastFailedStoppedLoc
     NSDictionary *dict = [[NSUserDefaults standardUserDefaults] dictionaryForKey:kLastFailedStoppedLocation];
     CLLocation *lastFailedStoppedLocation = [RadarUtils locationForDictionary:dict];
 
-    if (!lastFailedStoppedLocation || ![RadarUtils validLocation:lastFailedStoppedLocation]) {
+    if (!lastFailedStoppedLocation.isValid) {
         return nil;
     }
 
@@ -104,7 +104,7 @@ static NSString *const kLastFailedStoppedLocation = @"radar-lastFailedStoppedLoc
 }
 
 + (void)setLastFailedStoppedLocation:(CLLocation *)lastFailedStoppedLocation {
-    if (!lastFailedStoppedLocation || ![RadarUtils validLocation:lastFailedStoppedLocation]) {
+    if (!lastFailedStoppedLocation.isValid) {
         [[NSUserDefaults standardUserDefaults] setObject:nil forKey:kLastFailedStoppedLocation];
 
         return;

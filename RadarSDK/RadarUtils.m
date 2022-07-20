@@ -152,13 +152,6 @@ static NSDateFormatter *_isoDateFormatter;
     return dict;
 }
 
-+ (BOOL)validLocation:(CLLocation *)location {
-    BOOL latitudeValid = location.coordinate.latitude != 0 && location.coordinate.latitude > -90 && location.coordinate.latitude < 90;
-    BOOL longitudeValid = location.coordinate.longitude != 0 && location.coordinate.longitude > -180 && location.coordinate.latitude < 180;
-    BOOL horizontalAccuracyValid = location.horizontalAccuracy > 0;
-    return latitudeValid && longitudeValid && horizontalAccuracyValid;
-}
-
 #pragma mark - threading
 
 + (void)runOnMainThread:(dispatch_block_t)block {
