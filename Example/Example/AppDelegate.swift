@@ -6,23 +6,26 @@
 //
 
 import UIKit
-import UserNotifications
 import RadarSDK
 
 @UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate, CLLocationManagerDelegate, RadarDelegate {
+class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate, RadarDelegate {
 
     let locationManager = CLLocationManager()
 
-    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { (_, _) in }
-        UNUserNotificationCenter.current().delegate = self
+    var window: UIWindow?
+
+    func application(_ application: UIApplication,
+                     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        self.window = UIWindow(frame: UIScreen.main.bounds)
+        self.window?.rootViewController = EventTableViewController(style: .plain)
+        self.window?.makeKeyAndVisible()
 
         locationManager.delegate = self
-        self.requestLocationPermissions()
+        requestLocationPermissions()
 
         // Replace with a valid test publishable key
-        Radar.initialize(publishableKey: "prj_test_pk_0000000000000000000000000000000000000000")
+        Radar.initialize(publishableKey: "prj_test_pk_f167aca6660da9222af391d41210cedd7d8a6516")
         Radar.setDelegate(self)
 
         if UIApplication.shared.applicationState != .background {
@@ -147,7 +150,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         var status: CLAuthorizationStatus = .notDetermined
         if #available(iOS 14.0, *) {
             // On iOS 14.0 and later, use the authorizationStatus instance property.
-            status = self.locationManager.authorizationStatus
+            status = locationManager.authorizationStatus
         } else {
             // Before iOS 14.0, use the authorizationStatus class method.
             status = CLLocationManager.authorizationStatus()
@@ -156,36 +159,22 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         if #available(iOS 13.4, *) {
             // On iOS 13.4 and later, prompt for foreground first. If granted, prompt for background. The OS will show the background prompt in-app.
             if status == .notDetermined {
-                self.locationManager.requestWhenInUseAuthorization()
+                locationManager.requestWhenInUseAuthorization()
             } else if status == .authorizedWhenInUse {
-                self.locationManager.requestAlwaysAuthorization()
+                locationManager.requestAlwaysAuthorization()
             }
         } else {
             // Before iOS 13.4, prompt for background first. On iOS 13, the OS will show a foreground prompt in-app. The OS will show the background prompt outside of the app later, at a time determined by the OS.
-            self.locationManager.requestAlwaysAuthorization()
+            locationManager.requestAlwaysAuthorization()
         }
     }
     
     func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
-        self.requestLocationPermissions()
-    }
-
-    func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
-        completionHandler([.alert, .sound])
+        requestLocationPermissions()
     }
 
     func notify(_ body: String) {
-        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { (granted, error) in
-            if granted {
-                let content = UNMutableNotificationContent()
-                content.body = body
-                content.sound = UNNotificationSound.default
-                content.categoryIdentifier = "example"
-
-                let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: nil)
-                UNUserNotificationCenter.current().add(request, withCompletionHandler: { (_) in })
-            }
-        }
+        (window?.rootViewController as? EventTableViewController)?.events.append((Date(), body))
     }
 
     func didReceiveEvents(_ events: [RadarEvent], user: RadarUser?) {
@@ -196,20 +185,58 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     func didUpdateLocation(_ location: CLLocation, user: RadarUser) {
         let body = "\(user.stopped ? "Stopped at" : "Moved to") location (\(location.coordinate.latitude), \(location.coordinate.longitude)) with accuracy \(location.horizontalAccuracy) meters"
-        self.notify(body)
+        notify(body)
     }
 
     func didUpdateClientLocation(_ location: CLLocation, stopped: Bool, source: RadarLocationSource) {
         let body = "\(stopped ? "Client stopped at" : "Client moved to") location (\(location.coordinate.latitude), \(location.coordinate.longitude)) with accuracy \(location.horizontalAccuracy) meters and source \(Utils.stringForRadarLocationSource(source))"
-        self.notify(body)
+        notify(body)
     }
 
     func didFail(status: RadarStatus) {
-        self.notify(Radar.stringForStatus(status))
+        notify(Radar.stringForStatus(status))
     }
 
     func didLog(message: String) {
-        self.notify(message)
+        notify(message)
+    }
+
+}
+
+class EventTableViewController: UITableViewController {
+
+    var events: [(Date, String)] = [] {
+        didSet {
+            tableView.reloadData()
+        }
+    }
+
+    override init(style: UITableView.Style) {
+        super.init(style: .plain)
+
+        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "eventCell")
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    override func numberOfSections(in tableView: UITableView) -> Int {
+        return 1
+    }
+
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let event = events[events.count - indexPath.row - 1]
+        let cell = tableView.dequeueReusableCell(withIdentifier: "eventCell", for: indexPath)
+        cell.textLabel?.text = event.1
+        cell.textLabel?.numberOfLines = 0
+        cell.detailTextLabel?.text = String(describing: event.0)
+
+        return cell
+    }
+
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return events.count
     }
 
 }
