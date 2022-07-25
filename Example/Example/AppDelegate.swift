@@ -21,9 +21,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         locationManager.delegate = self
         self.requestLocationPermissions()
 
+        // Replace with a valid test publishable key
         Radar.initialize(publishableKey: "prj_test_pk_0000000000000000000000000000000000000000")
         Radar.setDelegate(self)
-        
+
         if UIApplication.shared.applicationState != .background {
             Radar.getLocation { (status, location, stopped) in
                 print("Location: status = \(Radar.stringForStatus(status)); location = \(String(describing: location))")
@@ -123,14 +124,25 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             CLLocation(latitude: 40.64189, longitude: -73.78779),
             CLLocation(latitude: 35.99801, longitude: -78.94294)
         ]
-        
+
         Radar.getMatrix(origins: origins, destinations: destinations, mode: .car, units: .imperial) { (status, matrix) in
             print("Matrix: status = \(Radar.stringForStatus(status)); matrix[0][0].duration.text = \(String(describing: matrix?.routeBetween(originIndex: 0, destinationIndex: 0)?.duration.text)); matrix[0][1].duration.text = \(String(describing: matrix?.routeBetween(originIndex: 0, destinationIndex: 1)?.duration.text)); matrix[1][0].duration.text = \(String(describing: matrix?.routeBetween(originIndex: 1, destinationIndex: 0)?.duration.text)); matrix[1][1].duration.text = \(String(describing: matrix?.routeBetween(originIndex: 1, destinationIndex: 1)?.duration.text))")
         }
 
+        Radar.sendEvent(name: "app_launched", metadata: ["data": "test"]) { (status, location, events, user) in
+            print("Send event: status = \(Radar.stringForStatus(status)); location = \(String(describing: location)); events = \(String(describing: events)); user = \(String(describing: user))")
+        }
+
+        // Test custom event with a manual location
+        Radar.getLocation { (status, location, stopped) in
+            Radar.sendEvent(name: "app_launched_manual", location: location, metadata: ["data": "test"]) { (status, location, events, user) in
+                print("Send event: status = \(Radar.stringForStatus(status)); location = \(String(describing: location)); events = \(String(describing: events)); user = \(String(describing: user))")
+            }
+        }
+
         return true
     }
-    
+
     func requestLocationPermissions() {
         var status: CLAuthorizationStatus = .notDetermined
         if #available(iOS 14.0, *) {
