@@ -604,6 +604,31 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     [Radar rejectEventId:@"eventId"];
 }
 
+- (void)test_Radar_sendEvent {
+    self.apiHelperMock.mockStatus = RadarStatusSuccess;
+    self.apiHelperMock.mockResponse = [RadarTestUtils jsonDictionaryFromResource:@"custom_event"];
+    [Radar sendEvent:@"customEvent4"
+        withMetadata:nil
+   completionHandler:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user) {}
+    ];
+}
+
+- (void)test_Radar_sendEvent_withLocation {
+    self.apiHelperMock.mockStatus = RadarStatusSuccess;
+    self.apiHelperMock.mockResponse = [RadarTestUtils jsonDictionaryFromResource:@"custom_event"];
+    CLLocation *mockLocation = [[CLLocation alloc] initWithCoordinate:CLLocationCoordinate2DMake(40.78382, -73.97536)
+                                                    altitude:-1
+                                        horizontalAccuracy:65
+                                            verticalAccuracy:-1
+                                                timestamp:[NSDate new]];
+
+    [Radar sendEvent:@"customEvent4"
+        withLocation:mockLocation
+            metadata:@{@"foo": @"bar", @"baz": @YES, @"qux": @1}
+    completionHandler:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user) {}
+    ];
+}
+
 - (void)test_Radar_startTrip {
     RadarTripOptions *options = [[RadarTripOptions alloc] initWithExternalId:@"tripExternalId"
                                                       destinationGeofenceTag:@"tripDestinationGeofenceTag"
