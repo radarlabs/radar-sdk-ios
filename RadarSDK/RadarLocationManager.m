@@ -8,7 +8,6 @@
 #import <UIKit/UIKit.h>
 
 #import "RadarLocationManager.h"
-
 #import "RadarAPIClient.h"
 #import "RadarBeaconManager.h"
 #import "RadarCircleGeometry.h"
@@ -19,6 +18,7 @@
 #import "RadarSettings.h"
 #import "RadarState.h"
 #import "RadarUtils.h"
+#import "CLLocation+Radar.h"
 
 @interface RadarLocationManager ()
 
@@ -561,7 +561,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
                                        message:[NSString stringWithFormat:@"Handling location | source = %@; location = %@", [Radar stringForLocationSource:source], location]];
 
-    if (!location || ![RadarUtils validLocation:location]) {
+    if (!location.isValid) {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
                                            message:[NSString stringWithFormat:@"Invalid location | source = %@; location = %@", [Radar stringForLocationSource:source], location]];
 
@@ -811,7 +811,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     }
 
     CLLocation *location;
-    if ([RadarUtils validLocation:manager.location]) {
+    if (manager.location.isValid) {
         location = manager.location;
     } else {
         location = [RadarState lastLocation];
@@ -847,7 +847,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     }
 
     CLLocation *location;
-    if ([RadarUtils validLocation:manager.location]) {
+    if (manager.location.isValid) {
         location = manager.location;
     } else {
         location = [RadarState lastLocation];
@@ -874,7 +874,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     }
 
     CLLocation *location;
-    if ([RadarUtils validLocation:manager.location]) {
+    if (manager.location.isValid) {
         location = manager.location;
     } else {
         location = [RadarState lastLocation];
