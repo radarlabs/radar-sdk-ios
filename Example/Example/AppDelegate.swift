@@ -9,7 +9,7 @@ import UIKit
 import RadarSDK
 
 @UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate, RadarDelegate {
+class AppDelegate: UIResponder, UIApplicationDelegate {
 
     let locationManager = CLLocationManager()
 
@@ -24,6 +24,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
         locationManager.delegate = self
         requestLocationPermissions()
 
+        return true
+    }
+
+    func runTests() {
         // Replace with a valid test publishable key
         Radar.initialize(publishableKey: "prj_test_pk_f167aca6660da9222af391d41210cedd7d8a6516")
         Radar.setDelegate(self)
@@ -142,8 +146,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
                 print("Send event: status = \(Radar.stringForStatus(status)); location = \(String(describing: location)); events = \(String(describing: events)); user = \(String(describing: user))")
             }
         }
-
-        return true
     }
 
     func requestLocationPermissions() {
@@ -168,14 +170,26 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
             locationManager.requestAlwaysAuthorization()
         }
     }
-    
-    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
-        requestLocationPermissions()
-    }
 
     func notify(_ body: String) {
         (window?.rootViewController as? EventTableViewController)?.events.append((Date(), body))
     }
+
+}
+
+extension AppDelegate: CLLocationManagerDelegate {
+
+    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
+        requestLocationPermissions()
+
+        if status == .authorizedAlways {
+            runTests()
+        }
+    }
+
+}
+
+extension AppDelegate: RadarDelegate {
 
     func didReceiveEvents(_ events: [RadarEvent], user: RadarUser?) {
         for event in events {
