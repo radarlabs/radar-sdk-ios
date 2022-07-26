@@ -53,7 +53,8 @@
                         verification:(RadarEventVerification)verification
                           confidence:(RadarEventConfidence)confidence
                             duration:(float)duration
-                            location:(CLLocation *)location {
+                            location:(CLLocation *)location
+                            metadata:(NSDictionary *)metadata {
     self = [super init];
     if (self) {
         __id = _id;
@@ -72,6 +73,7 @@
         _confidence = confidence;
         _duration = duration;
         _location = location;
+        _metadata = metadata;
     }
     return self;
 }
@@ -99,6 +101,7 @@
     RadarEventConfidence confidence = RadarEventConfidenceNone;
     float duration = 0;
     CLLocation *location;
+    NSDictionary *metadata;
 
     id idObj = dict[@"_id"];
     if (idObj && [idObj isKindOfClass:[NSString class]]) {
@@ -282,6 +285,11 @@
                                              verticalAccuracy:-1
                                                     timestamp:(createdAt ? createdAt : [NSDate date])];
         }
+
+        id metadataObj = dict[@"metadata"];
+        if (metadataObj && [metadataObj isKindOfClass:[NSDictionary class]]) {
+            metadata = (NSDictionary *)metadataObj;
+        }
     }
 
     if (_id && createdAt) {
@@ -300,7 +308,8 @@
                                  verification:verification
                                    confidence:confidence
                                      duration:duration
-                                     location:location];
+                                     location:location
+                                     metadata:metadata];
     }
 
     return nil;
@@ -416,6 +425,7 @@
     NSArray *coordinates = @[@(self.location.coordinate.longitude), @(self.location.coordinate.latitude)];
     locationDict[@"coordinates"] = coordinates;
     [dict setValue:locationDict forKey:@"location"];
+    [dict setValue:self.metadata forKey:@"metadata"];
     return dict;
 }
 

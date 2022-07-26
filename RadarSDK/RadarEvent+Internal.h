@@ -32,7 +32,8 @@
                         verification:(RadarEventVerification)verification
                           confidence:(RadarEventConfidence)confidence
                             duration:(float)duration
-                            location:(CLLocation *_Nonnull)location;
+                            location:(CLLocation *_Nonnull)location
+                            metadata:(NSDictionary *_Nullable)metadata;
 - (instancetype _Nullable)initWithObject:(id _Nonnull)object;
 
 @end

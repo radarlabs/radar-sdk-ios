@@ -172,6 +172,11 @@ typedef NS_ENUM(NSInteger, RadarEventVerification) {
  */
 @property (nonnull, strong, nonatomic, readonly) CLLocation *location;
 
+/**
+ The metadata of the event. Present on custom events only.
+ */
+@property (nonnull, copy, nonatomic, readonly) NSDictionary *metadata;
+
 + (NSString *_Nullable)stringForType:(RadarEventType)type;
 + (NSArray<NSDictionary *> *_Nullable)arrayForEvents:(NSArray<RadarEvent *> *_Nullable)events;
 - (NSDictionary *_Nonnull)dictionaryValue;
