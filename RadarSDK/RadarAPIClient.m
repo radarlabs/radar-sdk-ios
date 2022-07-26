@@ -935,6 +935,7 @@
 - (void)sendEvent:(NSString *)type
      withMetadata:(NSDictionary *_Nullable)metadata
              user:(RadarUser *_Nullable)user
+      trackEvents:(NSArray<RadarEvent *> *_Nullable)trackEvents
 completionHandler:(RadarSendEventsAPICompletionHandler _Nonnull)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
@@ -968,9 +969,18 @@ completionHandler:(RadarSendEventsAPICompletionHandler _Nonnull)completionHandle
         }
 
         id eventObj = res[@"event"];
-        RadarEvent *event = [[RadarEvent alloc] initWithObject:eventObj];
-        if (event) {
-            return completionHandler(RadarStatusSuccess, res, event);
+        RadarEvent *customEvent = [[RadarEvent alloc] initWithObject:eventObj];
+        if (customEvent) {
+            // construct the array of events to return in the callback - custom event at index 0, followed by track events
+            NSMutableArray *finalEvents;
+            if (trackEvents.count > 0) {
+                finalEvents = [NSMutableArray arrayWithArray:trackEvents];
+                [finalEvents insertObject:customEvent atIndex:0];
+            } else {
+                finalEvents = [NSMutableArray arrayWithObject:customEvent];
+            }
+
+            return completionHandler(RadarStatusSuccess, res, finalEvents);
         }
 
         completionHandler(RadarStatusErrorServer, nil, nil);

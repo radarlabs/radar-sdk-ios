@@ -725,7 +725,7 @@ completionHandler:(RadarSendEventCompletionHandler)completionHandler {
             return;
         }
 
-        [[RadarAPIClient sharedInstance] sendEvent:type withMetadata:metadata user:user completionHandler:^(RadarStatus status, NSDictionary * _Nullable res, RadarEvent * _Nullable event) {
+        [[RadarAPIClient sharedInstance] sendEvent:type withMetadata:metadata user:user trackEvents:events completionHandler:^(RadarStatus status, NSDictionary * _Nullable res, NSArray<RadarEvent *> * _Nullable events) {
             if (status != RadarStatusSuccess) {
                 if (completionHandler) {
                     [RadarUtils runOnMainThread:^{
@@ -737,17 +737,8 @@ completionHandler:(RadarSendEventCompletionHandler)completionHandler {
             }
 
             if (completionHandler) {
-                // construct the array of events to return in the callback - custom event at index 0, followed by track events
-                NSMutableArray *finalEvents;
-                if (events.count > 0) {
-                    finalEvents = [NSMutableArray arrayWithArray:events];
-                    [finalEvents insertObject:event atIndex:0];
-                } else {
-                    finalEvents = [NSMutableArray arrayWithObject:event];
-                }
-
                 [RadarUtils runOnMainThread:^{
-                    completionHandler(status, location, finalEvents, user);
+                    completionHandler(status, location, events, user);
                 }];
             }
         }];
@@ -769,7 +760,7 @@ completionHandler:(RadarSendEventCompletionHandler)completionHandler {
             return;
         }
 
-        [[RadarAPIClient sharedInstance] sendEvent:type withMetadata:metadata user:user completionHandler:^(RadarStatus status, NSDictionary * _Nullable res, RadarEvent * _Nullable event) {
+        [[RadarAPIClient sharedInstance] sendEvent:type withMetadata:metadata user:user trackEvents:events completionHandler:^(RadarStatus status, NSDictionary * _Nullable res, NSArray<RadarEvent *> * _Nullable events) {
             if (status != RadarStatusSuccess) {
                 if (completionHandler) {
                     [RadarUtils runOnMainThread:^{
@@ -781,17 +772,8 @@ completionHandler:(RadarSendEventCompletionHandler)completionHandler {
             }
 
             if (completionHandler) {
-                // construct the array of events to return in the callback - custom event at index 0, followed by track events
-                NSMutableArray *finalEvents;
-                if (events.count > 0) {
-                    finalEvents = [NSMutableArray arrayWithArray:events];
-                    [finalEvents insertObject:event atIndex:0];
-                } else {
-                    finalEvents = [NSMutableArray arrayWithObject:event];
-                }
-
                 [RadarUtils runOnMainThread:^{
-                    completionHandler(status, location, finalEvents, user);
+                    completionHandler(status, location, events, user);
                 }];
             }
         }];
