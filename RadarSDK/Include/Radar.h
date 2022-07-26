@@ -777,30 +777,30 @@ typedef void(^_Nonnull RadarSendEventCompletionHandler)(RadarStatus status, CLLo
 /**
  Sends a custom event.
 
- @param name The name of the event.
+ @param type The type of the event.
  @param metadata The metadata associated with the event.
  @param completionHandler A completion handler.
 
- @see https://radar.com/documentation/api#create-a-custom-event
+ @see https://radar.com/documentation/api#send-a-custom-event
  */
-+ (void)sendEvent:(NSString *)name
++ (void)sendEvent:(NSString *)type
      withMetadata:(NSDictionary *_Nullable)metadata
-completionHandler:(RadarSendEventCompletionHandler)completionHandler NS_SWIFT_NAME(sendEvent(name:metadata:completionHandler:));
+completionHandler:(RadarSendEventCompletionHandler)completionHandler NS_SWIFT_NAME(sendEvent(type:metadata:completionHandler:));
 
 /**
  Sends a custom event with a manually provided location.
 
- @param name The name of the event.
+ @param type The type of the event.
  @param location The location of the event.
  @param metadata The metadata associated with the event.
  @param completionHandler A completion handler.
 
- @see https://radar.com/documentation/api#create-a-custom-event
+ @see https://radar.com/documentation/api#send-a-custom-event
  */
-+ (void)sendEvent:(NSString *)name
++ (void)sendEvent:(NSString *)type
      withLocation:(CLLocation *_Nullable)location
          metadata:(NSDictionary *_Nullable)metadata
-completionHandler:(RadarSendEventCompletionHandler)completionHandler NS_SWIFT_NAME(sendEvent(name:location:metadata:completionHandler:));
+completionHandler:(RadarSendEventCompletionHandler)completionHandler NS_SWIFT_NAME(sendEvent(type:location:metadata:completionHandler:));
 
 #pragma mark - Logging
 

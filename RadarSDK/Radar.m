@@ -711,7 +711,7 @@
                                         }];
 }
 
-+ (void)sendEvent:(NSString *)name
++ (void)sendEvent:(NSString *)type
      withMetadata:(NSDictionary *_Nullable)metadata
 completionHandler:(RadarSendEventCompletionHandler)completionHandler {
     [self trackOnceWithCompletionHandler:^(RadarStatus status, CLLocation * _Nullable location, NSArray<RadarEvent *> * _Nullable events, RadarUser * _Nullable user) {
@@ -725,7 +725,7 @@ completionHandler:(RadarSendEventCompletionHandler)completionHandler {
             return;
         }
 
-        [[RadarAPIClient sharedInstance] sendEvent:name withMetadata:metadata user:user completionHandler:^(RadarStatus status, NSDictionary * _Nullable res, RadarEvent * _Nullable event) {
+        [[RadarAPIClient sharedInstance] sendEvent:type withMetadata:metadata user:user completionHandler:^(RadarStatus status, NSDictionary * _Nullable res, RadarEvent * _Nullable event) {
             if (status != RadarStatusSuccess) {
                 if (completionHandler) {
                     [RadarUtils runOnMainThread:^{
@@ -754,7 +754,7 @@ completionHandler:(RadarSendEventCompletionHandler)completionHandler {
     }];
 }
 
-+ (void)sendEvent:(NSString *)name
++ (void)sendEvent:(NSString *)type
      withLocation:(CLLocation *_Nullable)location
          metadata:(NSDictionary *_Nullable)metadata
 completionHandler:(RadarSendEventCompletionHandler)completionHandler {
@@ -769,7 +769,7 @@ completionHandler:(RadarSendEventCompletionHandler)completionHandler {
             return;
         }
 
-        [[RadarAPIClient sharedInstance] sendEvent:name withMetadata:metadata user:user completionHandler:^(RadarStatus status, NSDictionary * _Nullable res, RadarEvent * _Nullable event) {
+        [[RadarAPIClient sharedInstance] sendEvent:type withMetadata:metadata user:user completionHandler:^(RadarStatus status, NSDictionary * _Nullable res, RadarEvent * _Nullable event) {
             if (status != RadarStatusSuccess) {
                 if (completionHandler) {
                     [RadarUtils runOnMainThread:^{
