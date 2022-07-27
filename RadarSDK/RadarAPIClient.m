@@ -980,6 +980,11 @@ completionHandler:(RadarSendEventsAPICompletionHandler _Nonnull)completionHandle
                 finalEvents = [NSMutableArray arrayWithObject:customEvent];
             }
 
+            // The events are returned in the completion handler, but they're
+            // also sent back via the RadarDelegate, just like
+            // -updateTripWithOptions:status:completionHandler: does.
+            [[RadarDelegateHolder sharedInstance] didReceiveEvents:finalEvents user:user];
+
             return completionHandler(RadarStatusSuccess, res, finalEvents);
         }
 

@@ -711,7 +711,7 @@
                                         }];
 }
 
-+ (void)sendEvent:(NSString *)type
++ (void)sendEvent:(NSString *)name
      withMetadata:(NSDictionary *_Nullable)metadata
 completionHandler:(RadarSendEventCompletionHandler)completionHandler {
     [self trackOnceWithCompletionHandler:^(RadarStatus status, CLLocation * _Nullable location, NSArray<RadarEvent *> * _Nullable events, RadarUser * _Nullable user) {
@@ -725,7 +725,7 @@ completionHandler:(RadarSendEventCompletionHandler)completionHandler {
             return;
         }
 
-        [[RadarAPIClient sharedInstance] sendEvent:type withMetadata:metadata user:user trackEvents:events completionHandler:^(RadarStatus status, NSDictionary * _Nullable res, NSArray<RadarEvent *> * _Nullable events) {
+        [[RadarAPIClient sharedInstance] sendEvent:name withMetadata:metadata user:user trackEvents:events completionHandler:^(RadarStatus status, NSDictionary * _Nullable res, NSArray<RadarEvent *> * _Nullable events) {
             if (status != RadarStatusSuccess) {
                 if (completionHandler) {
                     [RadarUtils runOnMainThread:^{

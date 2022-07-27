@@ -224,7 +224,7 @@ typedef void (^_Nonnull RadarRouteMatrixCompletionHandler)(RadarStatus status, R
 
  Receives the request status and, if successful, the user's location, an array of the events generated with the custom event at index 0, and the user.
 
- @see https://radar.com/documentation/api#create-a-custom-event
+ @see https://radar.com/documentation/api#send-a-custom-event
  */
 typedef void(^_Nonnull RadarSendEventCompletionHandler)(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user);
 
@@ -777,30 +777,30 @@ typedef void(^_Nonnull RadarSendEventCompletionHandler)(RadarStatus status, CLLo
 /**
  Sends a custom event.
 
- @param type The type of the event.
+ @param name The name of the event.
  @param metadata The metadata associated with the event.
  @param completionHandler A completion handler.
 
  @see https://radar.com/documentation/api#send-a-custom-event
  */
-+ (void)sendEvent:(NSString *)type
++ (void)sendEvent:(NSString *)name
      withMetadata:(NSDictionary *_Nullable)metadata
-completionHandler:(RadarSendEventCompletionHandler)completionHandler NS_SWIFT_NAME(sendEvent(type:metadata:completionHandler:));
+completionHandler:(RadarSendEventCompletionHandler)completionHandler NS_SWIFT_NAME(sendEvent(name:metadata:completionHandler:));
 
 /**
  Sends a custom event with a manually provided location.
 
- @param type The type of the event.
+ @param name The name of the event.
  @param location The location of the event.
  @param metadata The metadata associated with the event.
  @param completionHandler A completion handler.
 
  @see https://radar.com/documentation/api#send-a-custom-event
  */
-+ (void)sendEvent:(NSString *)type
++ (void)sendEvent:(NSString *)name
      withLocation:(CLLocation *_Nullable)location
          metadata:(NSDictionary *_Nullable)metadata
-completionHandler:(RadarSendEventCompletionHandler)completionHandler NS_SWIFT_NAME(sendEvent(type:location:metadata:completionHandler:));
+completionHandler:(RadarSendEventCompletionHandler)completionHandler NS_SWIFT_NAME(sendEvent(name:location:metadata:completionHandler:));
 
 #pragma mark - Logging
 
