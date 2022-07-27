@@ -622,11 +622,18 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
                                             verticalAccuracy:-1
                                                 timestamp:[NSDate new]];
 
+    XCTestExpectation *exp = [self expectationWithDescription:@"sendEventWithLocation"];
+
     [Radar sendEvent:@"customEvent4"
         withLocation:mockLocation
             metadata:@{@"foo": @"bar", @"baz": @YES, @"qux": @1}
-    completionHandler:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user) {}
+    completionHandler:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user) {
+        XCTAssertNotNil(events);
+        [exp fulfill];
+    }
     ];
+
+    [self waitForExpectations:@[exp] timeout:10.0];
 }
 
 - (void)test_Radar_startTrip {
