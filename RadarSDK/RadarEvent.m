@@ -43,6 +43,7 @@
                      actualCreatedAt:(NSDate *)actualCreatedAt
                                 live:(BOOL)live
                                 type:(RadarEventType)type
+                          customType:(NSString *)customType
                             geofence:(RadarGeofence *)geofence
                                place:(RadarPlace *)place
                               region:(RadarRegion *)region
@@ -62,6 +63,7 @@
         _actualCreatedAt = actualCreatedAt;
         _live = live;
         _type = type;
+        _customType = customType;
         _geofence = geofence;
         _place = place;
         _region = region;
@@ -90,6 +92,7 @@
     NSDate *actualCreatedAt;
     BOOL live = NO;
     RadarEventType type = RadarEventTypeUnknown;
+    NSString *customType;
     RadarGeofence *geofence;
     RadarPlace *place;
     RadarRegion *region;
@@ -168,6 +171,9 @@
             type = RadarEventTypeUserApproachingTripDestination;
         } else if ([typeStr isEqualToString:@"user.arrived_at_trip_destination"]) {
             type = RadarEventTypeUserArrivedAtTripDestination;
+        } else {
+            type = RadarEventTypeCustom;
+            customType = typeStr;
         }
     }
 
@@ -298,6 +304,7 @@
                               actualCreatedAt:actualCreatedAt
                                          live:live
                                          type:type
+                                   customType:customType
                                      geofence:geofence
                                         place:place
                                        region:region

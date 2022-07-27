@@ -129,13 +129,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             print("Matrix: status = \(Radar.stringForStatus(status)); matrix[0][0].duration.text = \(String(describing: matrix?.routeBetween(originIndex: 0, destinationIndex: 0)?.duration.text)); matrix[0][1].duration.text = \(String(describing: matrix?.routeBetween(originIndex: 0, destinationIndex: 1)?.duration.text)); matrix[1][0].duration.text = \(String(describing: matrix?.routeBetween(originIndex: 1, destinationIndex: 0)?.duration.text)); matrix[1][1].duration.text = \(String(describing: matrix?.routeBetween(originIndex: 1, destinationIndex: 1)?.duration.text))")
         }
 
-        Radar.sendEvent(name: "app_launched", metadata: ["data": "test"]) { (status, location, events, user) in
+        Radar.sendEvent(customType: "app_launched", metadata: ["data": "test"]) { (status, location, events, user) in
             print("Send event: status = \(Radar.stringForStatus(status)); location = \(String(describing: location)); events = \(String(describing: events)); user = \(String(describing: user))")
         }
 
         // Test custom event with a manual location
         Radar.getLocation { (status, location, stopped) in
-            Radar.sendEvent(name: "app_launched_manual", location: location, metadata: ["data": "test"]) { (status, location, events, user) in
+            Radar.sendEvent(customType: "app_launched_manual", location: location, metadata: ["data": "test"]) { (status, location, events, user) in
                 print("Send event: status = \(Radar.stringForStatus(status)); location = \(String(describing: location)); events = \(String(describing: events)); user = \(String(describing: user))")
             }
         }

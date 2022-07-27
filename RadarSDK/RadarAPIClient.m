@@ -932,7 +932,7 @@
                     }];
 }
 
-- (void)sendEvent:(NSString *)type
+- (void)sendEvent:(NSString *)customType
      withMetadata:(NSDictionary *_Nullable)metadata
              user:(RadarUser *_Nullable)user
       trackEvents:(NSArray<RadarEvent *> *_Nullable)trackEvents
@@ -948,7 +948,7 @@ completionHandler:(RadarSendEventsAPICompletionHandler _Nonnull)completionHandle
     params[@"userId"] = [RadarSettings userId];
     params[@"deviceId"] = [RadarUtils deviceId];
 
-    params[@"type"] = type;
+    params[@"type"] = customType;
     params[@"metadata"] = metadata;
 
     NSString *host = [RadarSettings host];
