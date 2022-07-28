@@ -612,7 +612,10 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
                                                                 horizontalAccuracy:65
                                                                   verticalAccuracy:-1
                                                                          timestamp:[NSDate new]];
-    self.apiHelperMock.mockResponse = [RadarTestUtils jsonDictionaryFromResource:@"custom_event"];
+    [self.apiHelperMock setMockResponse:[RadarTestUtils jsonDictionaryFromResource:@"track"]
+                               forMethod:@"https://api.radar.io/v1/track"];
+    [self.apiHelperMock setMockResponse:[RadarTestUtils jsonDictionaryFromResource:@"custom_event"]
+                              forMethod:@"https://api.radar.io/v1/events"];
 
     XCTestExpectation *exp = [self expectationWithDescription:@"sendEvent"];
 
@@ -624,17 +627,22 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
         [exp fulfill];
     }
     ];
+
+    [self waitForExpectations:@[exp] timeout:10.0];
 }
 
 - (void)test_Radar_sendEvent_withLocation {
     self.apiHelperMock.mockStatus = RadarStatusSuccess;
     self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusAuthorizedWhenInUse;
-    self.apiHelperMock.mockResponse = [RadarTestUtils jsonDictionaryFromResource:@"custom_event"];
     CLLocation *mockLocation = [[CLLocation alloc] initWithCoordinate:CLLocationCoordinate2DMake(40.78382, -73.97536)
                                                     altitude:-1
                                         horizontalAccuracy:65
                                             verticalAccuracy:-1
                                                 timestamp:[NSDate new]];
+    [self.apiHelperMock setMockResponse:[RadarTestUtils jsonDictionaryFromResource:@"track"]
+                              forMethod:@"https://api.radar.io/v1/track"];
+    [self.apiHelperMock setMockResponse:[RadarTestUtils jsonDictionaryFromResource:@"custom_event"]
+                              forMethod:@"https://api.radar.io/v1/events"];
 
     XCTestExpectation *exp = [self expectationWithDescription:@"sendEventWithLocation"];
 
