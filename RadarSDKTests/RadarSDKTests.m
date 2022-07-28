@@ -607,9 +607,16 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 - (void)test_Radar_sendEvent {
     self.apiHelperMock.mockStatus = RadarStatusSuccess;
     self.apiHelperMock.mockResponse = [RadarTestUtils jsonDictionaryFromResource:@"custom_event"];
+
+    XCTestExpectation *exp = [self expectationWithDescription:@"sendEvent"];
+
     [Radar sendEvent:@"customEvent4"
         withMetadata:nil
-   completionHandler:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user) {}
+   completionHandler:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user) {
+        XCTAssertEqual(status, RadarStatusSuccess);
+        XCTAssertNotNil(events);
+        [exp fulfill];
+    }
     ];
 }
 
@@ -628,6 +635,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
         withLocation:mockLocation
             metadata:@{@"foo": @"bar", @"baz": @YES, @"qux": @1}
     completionHandler:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user) {
+        XCTAssertEqual(status, RadarStatusSuccess);
         XCTAssertNotNil(events);
         [exp fulfill];
     }
