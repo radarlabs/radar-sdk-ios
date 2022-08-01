@@ -129,8 +129,24 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             print("Matrix: status = \(Radar.stringForStatus(status)); matrix[0][0].duration.text = \(String(describing: matrix?.routeBetween(originIndex: 0, destinationIndex: 0)?.duration.text)); matrix[0][1].duration.text = \(String(describing: matrix?.routeBetween(originIndex: 0, destinationIndex: 1)?.duration.text)); matrix[1][0].duration.text = \(String(describing: matrix?.routeBetween(originIndex: 1, destinationIndex: 0)?.duration.text)); matrix[1][1].duration.text = \(String(describing: matrix?.routeBetween(originIndex: 1, destinationIndex: 1)?.duration.text))")
         }
 
-        Radar.sendEvent(customType: "app_launched", metadata: ["data": "test"]) { (status, location, events, user) in
+        Radar.sendEvent(customType: "custom_event", metadata: ["data": "test"]) { (status, location, events, user) in
+            if let customEvent = events?.first,
+               customEvent.type == .custom {
+                print("Custom type: \(customEvent.customType!)")
+            }
+
             print("Send event: status = \(Radar.stringForStatus(status)); location = \(String(describing: location)); events = \(String(describing: events)); user = \(String(describing: user))")
+        }
+
+        let customLocation = CLLocation(latitude: 38.87896275702961, longitude: -77.18228972761578)
+
+        Radar.sendEvent(customType: "custom_event_with_location", location: customLocation, metadata: ["data": "test"]) { (status, location, events, user) in
+            if let customEvent = events?.first,
+               customEvent.type == .custom {
+                print("Custom type: \(customEvent.customType!)")
+            }
+
+            print("Send event with custom location: status = \(Radar.stringForStatus(status)); location = \(String(describing: location)); events = \(String(describing: events)); user = \(String(describing: user))")
         }
 
         // Test custom event with a manual location
