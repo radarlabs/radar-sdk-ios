@@ -251,7 +251,7 @@ typedef void(^_Nonnull RadarSendEventCompletionHandler)(RadarStatus status, CLLo
 #pragma mark - Properties
 
 /**
- Gets the version number of the Radar SDK, such as "3.3.1" or "3.4.1-beta.2."
+ Gets the version number of the Radar SDK, such as "3.5.0" or "3.5.0-beta.2".
  */
 @property (readonly, class) NSString *sdkVersion;
 
