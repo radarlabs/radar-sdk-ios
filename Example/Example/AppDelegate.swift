@@ -327,27 +327,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
     }
 
+    /// Search for partial addresses, place names, geofences, or places.
+    ///
     /// @see https://radar.com/documentation/sdk/ios#search
+    /// @see https://radar.com/documentation/api#autocomplete
+    /// @see https://radar.com/documentation/api#search-geofences
+    /// @see https://radar.com/documentation/api#search-places
     func search() {
-        Radar.searchPlaces(
-            radius: 1000,
-            chains: ["mcdonalds"],
-            categories: nil,
-            groups: nil,
-            limit: 10
-        ) { (status, location, places) in
-            print("Search places: status = \(Radar.stringForStatus(status)); places = \(String(describing: places))")
-        }
-
-        Radar.searchGeofences(
-            radius: 1000,
-            tags: ["store"],
-            metadata: nil,
-            limit: 10
-        ) { (status, location, geofences) in
-            print("Search geofences: status = \(Radar.stringForStatus(status)); geofences = \(String(describing: geofences))")
-        }
-
+        // With the autocomplete API, autocomplete partial addresses and place
+        // names, sorted by relevance:
         let origin = CLLocation(latitude: 40.78382, longitude: -73.97536)
 
         Radar.autocomplete(
@@ -358,6 +346,29 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             country: "US"
         ) { (status, addresses) in
             print("Autocomplete: status = \(Radar.stringForStatus(status)); formattedAddress = \(String(describing: addresses?.first?.formattedAddress))")
+        }
+
+        // With the geofence search API, search for geofences near a location,
+        // sorted by distance:
+        Radar.searchGeofences(
+            radius: 1000,
+            tags: ["store"],
+            metadata: nil,
+            limit: 10
+        ) { (status, location, geofences) in
+            print("Search geofences: status = \(Radar.stringForStatus(status)); geofences = \(String(describing: geofences))")
+        }
+
+        // With the places search API, search for places near a location,
+        // sorted by distance:
+        Radar.searchPlaces(
+            radius: 1000,
+            chains: ["mcdonalds"],
+            categories: nil,
+            groups: nil,
+            limit: 10
+        ) { (status, location, places) in
+            print("Search places: status = \(Radar.stringForStatus(status)); places = \(String(describing: places))")
         }
     }
 
@@ -401,6 +412,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
     }
 
+    /// With the [matrix API](https://radar.com/documentation/api#matrix),
+    /// calculate the travel distance and duration between multiple origins and
+    /// destinations for up to 25 routes.
+    ///
     /// @see https://radar.com/documentation/sdk/ios#matrix
     func matrix() {
         let origins = [
