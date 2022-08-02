@@ -43,6 +43,7 @@
                      actualCreatedAt:(NSDate *)actualCreatedAt
                                 live:(BOOL)live
                                 type:(RadarEventType)type
+                          customType:(NSString *)customType
                             geofence:(RadarGeofence *)geofence
                                place:(RadarPlace *)place
                               region:(RadarRegion *)region
@@ -53,7 +54,8 @@
                         verification:(RadarEventVerification)verification
                           confidence:(RadarEventConfidence)confidence
                             duration:(float)duration
-                            location:(CLLocation *)location {
+                            location:(CLLocation *)location
+                            metadata:(NSDictionary *)metadata {
     self = [super init];
     if (self) {
         __id = _id;
@@ -61,6 +63,7 @@
         _actualCreatedAt = actualCreatedAt;
         _live = live;
         _type = type;
+        _customType = customType;
         _geofence = geofence;
         _place = place;
         _region = region;
@@ -72,6 +75,7 @@
         _confidence = confidence;
         _duration = duration;
         _location = location;
+        _metadata = metadata;
     }
     return self;
 }
@@ -88,6 +92,7 @@
     NSDate *actualCreatedAt;
     BOOL live = NO;
     RadarEventType type = RadarEventTypeUnknown;
+    NSString *customType;
     RadarGeofence *geofence;
     RadarPlace *place;
     RadarRegion *region;
@@ -99,6 +104,7 @@
     RadarEventConfidence confidence = RadarEventConfidenceNone;
     float duration = 0;
     CLLocation *location;
+    NSDictionary *metadata;
 
     id idObj = dict[@"_id"];
     if (idObj && [idObj isKindOfClass:[NSString class]]) {
@@ -165,6 +171,9 @@
             type = RadarEventTypeUserApproachingTripDestination;
         } else if ([typeStr isEqualToString:@"user.arrived_at_trip_destination"]) {
             type = RadarEventTypeUserArrivedAtTripDestination;
+        } else {
+            type = RadarEventTypeCustom;
+            customType = typeStr;
         }
     }
 
@@ -282,6 +291,11 @@
                                              verticalAccuracy:-1
                                                     timestamp:(createdAt ? createdAt : [NSDate date])];
         }
+
+        id metadataObj = dict[@"metadata"];
+        if (metadataObj && [metadataObj isKindOfClass:[NSDictionary class]]) {
+            metadata = (NSDictionary *)metadataObj;
+        }
     }
 
     if (_id && createdAt) {
@@ -290,6 +304,7 @@
                               actualCreatedAt:actualCreatedAt
                                          live:live
                                          type:type
+                                   customType:customType
                                      geofence:geofence
                                         place:place
                                        region:region
@@ -300,7 +315,8 @@
                                  verification:verification
                                    confidence:confidence
                                      duration:duration
-                                     location:location];
+                                     location:location
+                                     metadata:metadata];
     }
 
     return nil;
@@ -416,6 +432,7 @@
     NSArray *coordinates = @[@(self.location.coordinate.longitude), @(self.location.coordinate.latitude)];
     locationDict[@"coordinates"] = coordinates;
     [dict setValue:locationDict forKey:@"location"];
+    [dict setValue:self.metadata forKey:@"metadata"];
     return dict;
 }
 

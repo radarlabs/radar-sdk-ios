@@ -7,7 +7,23 @@
 
 #import "RadarAPIHelperMock.h"
 
+@interface RadarAPIHelperMock ()
+
+@property (nonnull, strong, nonatomic) NSMutableDictionary *mockResponses;
+
+@end
+
 @implementation RadarAPIHelperMock
+
+- (instancetype)init {
+    self = [super init];
+
+    if (self) {
+        self.mockResponses = [NSMutableDictionary new];
+    }
+
+    return self;
+}
 
 - (void)requestWithMethod:(NSString *)method
                       url:(NSString *)url
@@ -16,7 +32,19 @@
                     sleep:(BOOL)sleep
                logPayload:(BOOL)logPayload
         completionHandler:(RadarAPICompletionHandler)completionHandler {
-    completionHandler(self.mockStatus, self.mockResponse);
+
+    NSDictionary *mockResponseForUrl = self.mockResponses[url];
+
+    if (mockResponseForUrl) {
+        completionHandler(self.mockStatus, mockResponseForUrl);
+    } else {
+        completionHandler(self.mockStatus, self.mockResponse);
+    }
+}
+
+- (void)setMockResponse:(NSDictionary *)response
+              forMethod:(NSString *)urlString {
+    self.mockResponses[urlString] = response;
 }
 
 @end

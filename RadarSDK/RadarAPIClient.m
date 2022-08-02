@@ -932,6 +932,66 @@
                     }];
 }
 
+- (void)sendEvent:(NSString *)customType
+     withMetadata:(NSDictionary *_Nullable)metadata
+             user:(RadarUser *_Nullable)user
+      trackEvents:(NSArray<RadarEvent *> *_Nullable)trackEvents
+completionHandler:(RadarSendEventAPICompletionHandler _Nonnull)completionHandler {
+    NSString *publishableKey = [RadarSettings publishableKey];
+    if (!publishableKey) {
+        return completionHandler(RadarStatusErrorPublishableKey, nil, nil);
+    }
+
+    NSMutableDictionary *params = [NSMutableDictionary new];
+    params[@"id"] = [RadarSettings _id];
+    params[@"installId"] = [RadarSettings installId];
+    params[@"userId"] = [RadarSettings userId];
+    params[@"deviceId"] = [RadarUtils deviceId];
+
+    params[@"type"] = customType;
+    params[@"metadata"] = metadata;
+
+    NSString *host = [RadarSettings host];
+    NSString *url = [NSString stringWithFormat:@"%@/v1/events", host];
+    url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
+
+    NSDictionary *headers = [RadarAPIClient headersWithPublishableKey:publishableKey];
+
+    [self.apiHelper requestWithMethod:@"POST"
+                                  url:url
+                              headers:headers
+                               params:params
+                                sleep:NO
+                           logPayload:YES
+                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
+        if (status != RadarStatusSuccess || !res) {
+            return completionHandler(status, nil, nil);
+        }
+
+        id eventObj = res[@"event"];
+        RadarEvent *customEvent = [[RadarEvent alloc] initWithObject:eventObj];
+        if (customEvent) {
+            // construct the array of events to return in the callback - custom event at index 0, followed by track events
+            NSMutableArray *finalEvents;
+            if (trackEvents.count > 0) {
+                finalEvents = [NSMutableArray arrayWithArray:trackEvents];
+                [finalEvents insertObject:customEvent atIndex:0];
+            } else {
+                finalEvents = [NSMutableArray arrayWithObject:customEvent];
+            }
+
+            // The events are returned in the completion handler, but they're
+            // also sent back via the RadarDelegate, just like
+            // -updateTripWithOptions:status:completionHandler: does.
+            [[RadarDelegateHolder sharedInstance] didReceiveEvents:finalEvents user:user];
+
+            return completionHandler(RadarStatusSuccess, res, finalEvents);
+        }
+
+        completionHandler(RadarStatusErrorServer, nil, nil);
+    }];
+}
+
 - (void)syncLogs:(NSArray<RadarLog *> *)logs completionHandler:(RadarSyncLogsAPICompletionHandler)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
