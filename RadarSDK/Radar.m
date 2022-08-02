@@ -26,6 +26,8 @@
 
 @implementation Radar
 
+#pragma mark - Initialization
+
 + (id)sharedInstance {
     static dispatch_once_t once;
     static id sharedInstance;
@@ -53,6 +55,8 @@
         [[RadarLocationManager sharedInstance] updateTrackingFromMeta:meta];
     }];
 }
+
+#pragma mark - Properties
 
 + (NSString *)sdkVersion {
     return [RadarUtils sdkVersion];
@@ -90,6 +94,8 @@
     [RadarSettings setAdIdEnabled:enabled];
 }
 
+#pragma mark - Get Location
+
 + (void)getLocationWithCompletionHandler:(RadarLocationCompletionHandler)completionHandler {
     [[RadarLocationManager sharedInstance] getLocationWithCompletionHandler:^(RadarStatus status, CLLocation *_Nullable location, BOOL stopped) {
         [RadarUtils runOnMainThread:^{
@@ -106,6 +112,8 @@
                                                             }];
                                                         }];
 }
+
+#pragma mark - Tracking
 
 + (void)trackOnceWithCompletionHandler:(RadarTrackCompletionHandler)completionHandler {
     [self trackOnceWithDesiredAccuracy:RadarTrackingOptionsDesiredAccuracyMedium beacons:NO completionHandler:completionHandler];
@@ -312,9 +320,13 @@
     return [RadarSettings remoteTrackingOptions] ? [RadarSettings remoteTrackingOptions] : [RadarSettings trackingOptions];
 }
 
+#pragma mark - Delegation
+
 + (void)setDelegate:(id<RadarDelegate>)delegate {
     [RadarDelegateHolder sharedInstance].delegate = delegate;
 }
+
+#pragma mark - Events
 
 + (void)acceptEventId:(NSString *)eventId verifiedPlaceId:(NSString *)verifiedPlaceId {
     [[RadarAPIClient sharedInstance] verifyEventId:eventId verification:RadarEventVerificationAccept verifiedPlaceId:verifiedPlaceId];
@@ -323,6 +335,77 @@
 + (void)rejectEventId:(NSString *)eventId {
     [[RadarAPIClient sharedInstance] verifyEventId:eventId verification:RadarEventVerificationReject verifiedPlaceId:nil];
 }
+
++ (void)sendEvent:(NSString *)customType
+     withMetadata:(NSDictionary *_Nullable)metadata
+completionHandler:(RadarSendEventCompletionHandler)completionHandler {
+    [self trackOnceWithCompletionHandler:^(RadarStatus status, CLLocation * _Nullable location, NSArray<RadarEvent *> * _Nullable events, RadarUser * _Nullable user) {
+        if (status != RadarStatusSuccess) {
+            if (completionHandler) {
+                [RadarUtils runOnMainThread:^{
+                    completionHandler(status, nil, nil, nil);
+                }];
+            }
+
+            return;
+        }
+
+        [[RadarAPIClient sharedInstance] sendEvent:customType withMetadata:metadata user:user trackEvents:events completionHandler:^(RadarStatus status, NSDictionary * _Nullable res, NSArray<RadarEvent *> * _Nullable events) {
+            if (status != RadarStatusSuccess) {
+                if (completionHandler) {
+                    [RadarUtils runOnMainThread:^{
+                        completionHandler(status, nil, nil, nil);
+                    }];
+                }
+
+                return;
+            }
+
+            if (completionHandler) {
+                [RadarUtils runOnMainThread:^{
+                    completionHandler(status, location, events, user);
+                }];
+            }
+        }];
+    }];
+}
+
++ (void)sendEvent:(NSString *)customType
+     withLocation:(CLLocation *_Nullable)location
+         metadata:(NSDictionary *_Nullable)metadata
+completionHandler:(RadarSendEventCompletionHandler)completionHandler {
+    [self trackOnceWithLocation:location completionHandler:^(RadarStatus status, CLLocation * _Nullable location, NSArray<RadarEvent *> * _Nullable events, RadarUser * _Nullable user) {
+        if (status != RadarStatusSuccess) {
+            if (completionHandler) {
+                [RadarUtils runOnMainThread:^{
+                    completionHandler(status, nil, nil, nil);
+                }];
+            }
+
+            return;
+        }
+
+        [[RadarAPIClient sharedInstance] sendEvent:customType withMetadata:metadata user:user trackEvents:events completionHandler:^(RadarStatus status, NSDictionary * _Nullable res, NSArray<RadarEvent *> * _Nullable events) {
+            if (status != RadarStatusSuccess) {
+                if (completionHandler) {
+                    [RadarUtils runOnMainThread:^{
+                        completionHandler(status, nil, nil, nil);
+                    }];
+                }
+
+                return;
+            }
+
+            if (completionHandler) {
+                [RadarUtils runOnMainThread:^{
+                    completionHandler(status, location, events, user);
+                }];
+            }
+        }];
+    }];
+}
+
+#pragma mark - Trips
 
 + (RadarTripOptions *)getTripOptions {
     return [RadarSettings tripOptions];
@@ -418,6 +501,8 @@
                                          }];
 }
 
+#pragma mark - Device Context
+
 + (void)getContextWithCompletionHandler:(RadarContextCompletionHandler)completionHandler {
     [[RadarLocationManager sharedInstance] getLocationWithCompletionHandler:^(RadarStatus status, CLLocation *_Nullable location, BOOL stopped) {
         if (status != RadarStatusSuccess) {
@@ -451,6 +536,8 @@
                                              }
                                          }];
 }
+
+#pragma mark - Search
 
 + (void)searchPlacesWithRadius:(int)radius
                         chains:(NSArray *_Nullable)chains
@@ -591,6 +678,8 @@
                                      }];
 }
 
+#pragma mark - Geocoding
+
 + (void)geocodeAddress:(NSString *)query completionHandler:(RadarGeocodeCompletionHandler)completionHandler {
     [[RadarAPIClient sharedInstance] geocodeAddress:query
                                   completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarAddress *> *_Nullable addresses) {
@@ -643,6 +732,8 @@
         }
     }];
 }
+
+#pragma mark - Distances
 
 + (void)getDistanceToDestination:(CLLocation *)destination
                            modes:(RadarRouteMode)modes
@@ -711,96 +802,13 @@
                                         }];
 }
 
-+ (void)sendEvent:(NSString *)name
-     withMetadata:(NSDictionary *_Nullable)metadata
-completionHandler:(RadarSendEventCompletionHandler)completionHandler {
-    [self trackOnceWithCompletionHandler:^(RadarStatus status, CLLocation * _Nullable location, NSArray<RadarEvent *> * _Nullable events, RadarUser * _Nullable user) {
-        if (status != RadarStatusSuccess) {
-            if (completionHandler) {
-                [RadarUtils runOnMainThread:^{
-                    completionHandler(status, nil, nil, nil);
-                }];
-            }
-
-            return;
-        }
-
-        [[RadarAPIClient sharedInstance] sendEvent:name withMetadata:metadata user:user completionHandler:^(RadarStatus status, NSDictionary * _Nullable res, RadarEvent * _Nullable event) {
-            if (status != RadarStatusSuccess) {
-                if (completionHandler) {
-                    [RadarUtils runOnMainThread:^{
-                        completionHandler(status, nil, nil, nil);
-                    }];
-                }
-
-                return;
-            }
-
-            if (completionHandler) {
-                // construct the array of events to return in the callback - custom event at index 0, followed by track events
-                NSMutableArray *finalEvents;
-                if (events.count > 0) {
-                    finalEvents = [NSMutableArray arrayWithArray:events];
-                    [finalEvents insertObject:event atIndex:0];
-                } else {
-                    finalEvents = [NSMutableArray arrayWithObject:event];
-                }
-
-                [RadarUtils runOnMainThread:^{
-                    completionHandler(status, location, finalEvents, user);
-                }];
-            }
-        }];
-    }];
-}
-
-+ (void)sendEvent:(NSString *)name
-     withLocation:(CLLocation *_Nullable)location
-         metadata:(NSDictionary *_Nullable)metadata
-completionHandler:(RadarSendEventCompletionHandler)completionHandler {
-    [self trackOnceWithLocation:location completionHandler:^(RadarStatus status, CLLocation * _Nullable location, NSArray<RadarEvent *> * _Nullable events, RadarUser * _Nullable user) {
-        if (status != RadarStatusSuccess) {
-            if (completionHandler) {
-                [RadarUtils runOnMainThread:^{
-                    completionHandler(status, nil, nil, nil);
-                }];
-            }
-
-            return;
-        }
-
-        [[RadarAPIClient sharedInstance] sendEvent:name withMetadata:metadata user:user completionHandler:^(RadarStatus status, NSDictionary * _Nullable res, RadarEvent * _Nullable event) {
-            if (status != RadarStatusSuccess) {
-                if (completionHandler) {
-                    [RadarUtils runOnMainThread:^{
-                        completionHandler(status, nil, nil, nil);
-                    }];
-                }
-
-                return;
-            }
-
-            if (completionHandler) {
-                // construct the array of events to return in the callback - custom event at index 0, followed by track events
-                NSMutableArray *finalEvents;
-                if (events.count > 0) {
-                    finalEvents = [NSMutableArray arrayWithArray:events];
-                    [finalEvents insertObject:event atIndex:0];
-                } else {
-                    finalEvents = [NSMutableArray arrayWithObject:event];
-                }
-
-                [RadarUtils runOnMainThread:^{
-                    completionHandler(status, location, finalEvents, user);
-                }];
-            }
-        }];
-    }];
-}
+#pragma mark - Logging
 
 + (void)setLogLevel:(RadarLogLevel)level {
     [RadarSettings setLogLevel:level];
 }
+
+#pragma mark - Utilities
 
 + (NSString *)stringForStatus:(RadarStatus)status {
     NSString *str;

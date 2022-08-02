@@ -932,10 +932,11 @@
                     }];
 }
 
-- (void)sendEvent:(NSString *)name
+- (void)sendEvent:(NSString *)customType
      withMetadata:(NSDictionary *_Nullable)metadata
              user:(RadarUser *_Nullable)user
-completionHandler:(RadarSendEventsAPICompletionHandler _Nonnull)completionHandler {
+      trackEvents:(NSArray<RadarEvent *> *_Nullable)trackEvents
+completionHandler:(RadarSendEventAPICompletionHandler _Nonnull)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
         return completionHandler(RadarStatusErrorPublishableKey, nil, nil);
@@ -947,7 +948,7 @@ completionHandler:(RadarSendEventsAPICompletionHandler _Nonnull)completionHandle
     params[@"userId"] = [RadarSettings userId];
     params[@"deviceId"] = [RadarUtils deviceId];
 
-    params[@"type"] = name;
+    params[@"type"] = customType;
     params[@"metadata"] = metadata;
 
     NSString *host = [RadarSettings host];
@@ -968,9 +969,23 @@ completionHandler:(RadarSendEventsAPICompletionHandler _Nonnull)completionHandle
         }
 
         id eventObj = res[@"event"];
-        RadarEvent *event = [[RadarEvent alloc] initWithObject:eventObj];
-        if (event) {
-            return completionHandler(RadarStatusSuccess, res, event);
+        RadarEvent *customEvent = [[RadarEvent alloc] initWithObject:eventObj];
+        if (customEvent) {
+            // construct the array of events to return in the callback - custom event at index 0, followed by track events
+            NSMutableArray *finalEvents;
+            if (trackEvents.count > 0) {
+                finalEvents = [NSMutableArray arrayWithArray:trackEvents];
+                [finalEvents insertObject:customEvent atIndex:0];
+            } else {
+                finalEvents = [NSMutableArray arrayWithObject:customEvent];
+            }
+
+            // The events are returned in the completion handler, but they're
+            // also sent back via the RadarDelegate, just like
+            // -updateTripWithOptions:status:completionHandler: does.
+            [[RadarDelegateHolder sharedInstance] didReceiveEvents:finalEvents user:user];
+
+            return completionHandler(RadarStatusSuccess, res, finalEvents);
         }
 
         completionHandler(RadarStatusErrorServer, nil, nil);

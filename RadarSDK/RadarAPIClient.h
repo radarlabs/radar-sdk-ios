@@ -53,7 +53,7 @@ typedef void (^_Nonnull RadarMatrixAPICompletionHandler)(RadarStatus status, NSD
 
 typedef void (^_Nonnull RadarConfigAPICompletionHandler)(RadarStatus status, RadarMeta *_Nullable meta);
 
-typedef void (^_Nonnull RadarSendEventsAPICompletionHandler)(RadarStatus status, NSDictionary *_Nullable res, RadarEvent *_Nullable event);
+typedef void (^_Nonnull RadarSendEventAPICompletionHandler)(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable event);
 
 typedef void (^_Nonnull RadarSyncLogsAPICompletionHandler)(RadarStatus status);
 
@@ -126,10 +126,11 @@ typedef void (^_Nonnull RadarSyncLogsAPICompletionHandler)(RadarStatus status);
                        units:(RadarRouteUnits)units
            completionHandler:(RadarMatrixAPICompletionHandler _Nonnull)completionHandler;
 
-- (void)sendEvent:(NSString *)name
+- (void)sendEvent:(NSString *)type
      withMetadata:(NSDictionary *_Nullable)metadata
              user:(RadarUser *_Nullable)user
-completionHandler:(RadarSendEventsAPICompletionHandler _Nonnull)completionHandler;
+      trackEvents:(NSArray<RadarEvent *> *_Nullable)trackEvents
+completionHandler:(RadarSendEventAPICompletionHandler _Nonnull)completionHandler;
 
 - (void)syncLogs:(NSArray<RadarLog *> *)logs completionHandler:(RadarSyncLogsAPICompletionHandler _Nonnull)completionHandler;
 

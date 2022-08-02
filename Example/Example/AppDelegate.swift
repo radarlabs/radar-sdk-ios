@@ -63,7 +63,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Initialize SDK
         // https://radar.com/documentation/sdk/ios#initialize-sdk
         // Replace with a valid test publishable key
-        Radar.initialize(publishableKey: "prj_test_pk_f167aca6660da9222af391d41210cedd7d8a6516")
+        Radar.initialize(publishableKey: "prj_test_pk_0000000000000000000000000000000000000000")
 
         // To listen for events, location updates, and errors client-side, set
         // a RadarDelegate. Set your RadarDelegate in a codepath that will be
@@ -319,29 +319,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
     }
 
-    func requestLocationPermissions() {
-        var status: CLAuthorizationStatus = .notDetermined
-        if #available(iOS 14.0, *) {
-            // On iOS 14.0 and later, use the authorizationStatus instance property.
-            status = locationManager.authorizationStatus
-        } else {
-            // Before iOS 14.0, use the authorizationStatus class method.
-            status = CLLocationManager.authorizationStatus()
-        }
-        
-        if #available(iOS 13.4, *) {
-            // On iOS 13.4 and later, prompt for foreground first. If granted, prompt for background. The OS will show the background prompt in-app.
-            if status == .notDetermined {
-                locationManager.requestWhenInUseAuthorization()
-            } else if status == .authorizedWhenInUse {
-                locationManager.requestAlwaysAuthorization()
-            }
-        } else {
-            // Before iOS 13.4, prompt for background first. On iOS 13, the OS will show a foreground prompt in-app. The OS will show the background prompt outside of the app later, at a time determined by the OS.
-            locationManager.requestAlwaysAuthorization()
-        }
-    }
-
     /// @see https://radar.com/documentation/sdk/ios#search
     func search() {
         Radar.searchPlaces(
@@ -377,15 +354,25 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func customEvents() {
-        Radar.sendEvent(name: "app_launched", metadata: ["data": "test"]) { (status, location, events, user) in
+        Radar.sendEvent(customType: "custom_event", metadata: ["data": "test"]) { (status, location, events, user) in
+            if let customEvent = events?.first,
+               customEvent.type == .custom {
+                print("Custom type: \(customEvent.customType!)")
+            }
+
             print("Send event: status = \(Radar.stringForStatus(status)); location = \(String(describing: location)); events = \(String(describing: events)); user = \(String(describing: user))")
         }
 
         // Test custom event with a manual location
-        Radar.getLocation { (status, location, stopped) in
-            Radar.sendEvent(name: "app_launched_manual", location: location, metadata: ["data": "test"]) { (status, location, events, user) in
-                print("Send event: status = \(Radar.stringForStatus(status)); location = \(String(describing: location)); events = \(String(describing: events)); user = \(String(describing: user))")
+        let customLocation = CLLocation(latitude: 38.87896275702961, longitude: -77.18228972761578)
+
+        Radar.sendEvent(customType: "custom_event_with_location", location: customLocation, metadata: ["data": "test"]) { (status, location, events, user) in
+            if let customEvent = events?.first,
+               customEvent.type == .custom {
+                print("Custom type: \(customEvent.customType!)")
             }
+
+            print("Send event with custom location: status = \(Radar.stringForStatus(status)); location = \(String(describing: location)); events = \(String(describing: events)); user = \(String(describing: user))")
         }
     }
 
@@ -422,10 +409,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
     }
 
-    func notify(_ body: String) {
-        (window?.rootViewController as? EventTableViewController)?.events.append((Date(), body))
-    }
-
 }
 
 // MARK: - CLLocationManagerDelegate
@@ -437,6 +420,29 @@ extension AppDelegate: CLLocationManagerDelegate {
 
         if status == .authorizedAlways {
             runDemo()
+        }
+    }
+
+    func requestLocationPermissions() {
+        var status: CLAuthorizationStatus = .notDetermined
+        if #available(iOS 14.0, *) {
+            // On iOS 14.0 and later, use the authorizationStatus instance property.
+            status = locationManager.authorizationStatus
+        } else {
+            // Before iOS 14.0, use the authorizationStatus class method.
+            status = CLLocationManager.authorizationStatus()
+        }
+
+        if #available(iOS 13.4, *) {
+            // On iOS 13.4 and later, prompt for foreground first. If granted, prompt for background. The OS will show the background prompt in-app.
+            if status == .notDetermined {
+                locationManager.requestWhenInUseAuthorization()
+            } else if status == .authorizedWhenInUse {
+                locationManager.requestAlwaysAuthorization()
+            }
+        } else {
+            // Before iOS 13.4, prompt for background first. On iOS 13, the OS will show a foreground prompt in-app. The OS will show the background prompt outside of the app later, at a time determined by the OS.
+            locationManager.requestAlwaysAuthorization()
         }
     }
 
@@ -469,6 +475,10 @@ extension AppDelegate: RadarDelegate {
 
     func didLog(message: String) {
         notify(message)
+    }
+
+    func notify(_ body: String) {
+        (window?.rootViewController as? EventTableViewController)?.events.append((Date(), body))
     }
 
 }
