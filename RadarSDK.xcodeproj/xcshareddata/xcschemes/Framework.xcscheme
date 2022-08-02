@@ -66,8 +66,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "DD236D22230A006700EB88F9"
-            BuildableName = "Example.app"
-            BlueprintName = "Example"
+            BuildableName = "Radar Demo.app"
+            BlueprintName = "Radar Demo"
             ReferencedContainer = "container:Example/Radar Demo.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
