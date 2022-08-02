@@ -16,8 +16,8 @@
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "DD236D22230A006700EB88F9"
                BuildableName = "Example.app"
-               BlueprintName = "Example"
-               ReferencedContainer = "container:Example.xcodeproj">
+               BlueprintName = "Radar Demo"
+               ReferencedContainer = "container:Radar Demo.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -34,8 +34,8 @@
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "DD236D22230A006700EB88F9"
             BuildableName = "Example.app"
-            BlueprintName = "Example"
-            ReferencedContainer = "container:Example.xcodeproj">
+            BlueprintName = "Radar Demo"
+            ReferencedContainer = "container:Radar Demo.xcodeproj">
          </BuildableReference>
          <BuildableReference
             BuildableIdentifier = "primary"
@@ -74,8 +74,8 @@
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "DD236D22230A006700EB88F9"
             BuildableName = "Example.app"
-            BlueprintName = "Example"
-            ReferencedContainer = "container:Example.xcodeproj">
+            BlueprintName = "Radar Demo"
+            ReferencedContainer = "container:Radar Demo.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -91,8 +91,8 @@
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "DD236D22230A006700EB88F9"
             BuildableName = "Example.app"
-            BlueprintName = "Example"
-            ReferencedContainer = "container:Example.xcodeproj">
+            BlueprintName = "Radar Demo"
+            ReferencedContainer = "container:Radar Demo.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>
