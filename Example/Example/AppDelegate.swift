@@ -11,7 +11,7 @@ import RadarSDK
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
-    let locationManager = CLLocationManager()
+    var locationManager: CLLocationManager!
 
     var window: UIWindow?
 
@@ -21,8 +21,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         self.window?.rootViewController = EventTableViewController(style: .plain)
         self.window?.makeKeyAndVisible()
 
-        locationManager.delegate = self
-        requestLocationPermissions()
+        let alert = UIAlertController(title: "Radar SDK Example App",
+                                      message: "When prompted for location permissions, grant \"Allow While Using the App\", and then \"Change to Always Allow,\" to start the demo.", preferredStyle: .alert)
+        let defaultAction = UIAlertAction(title: "Let's go!", style: .default) { (action) in
+            self.locationManager = CLLocationManager()
+            self.locationManager.delegate = self
+            self.requestLocationPermissions()
+        }
+        alert.addAction(defaultAction)
+
+        self.window?.rootViewController?.present(alert, animated: true)
 
         return true
     }
@@ -483,40 +491,3 @@ extension AppDelegate: RadarDelegate {
 
 }
 
-class EventTableViewController: UITableViewController {
-
-    var events: [(Date, String)] = [] {
-        didSet {
-            tableView.reloadData()
-        }
-    }
-
-    override init(style: UITableView.Style) {
-        super.init(style: .plain)
-
-        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "eventCell")
-    }
-
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
-    override func numberOfSections(in tableView: UITableView) -> Int {
-        return 1
-    }
-
-    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let event = events[events.count - indexPath.row - 1]
-        let cell = tableView.dequeueReusableCell(withIdentifier: "eventCell", for: indexPath)
-        cell.textLabel?.text = event.1
-        cell.textLabel?.numberOfLines = 0
-        cell.detailTextLabel?.text = String(describing: event.0)
-
-        return cell
-    }
-
-    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return events.count
-    }
-
-}
