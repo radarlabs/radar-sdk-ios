@@ -478,7 +478,7 @@ extension AppDelegate: RadarDelegate {
 
     func didReceiveEvents(_ events: [RadarEvent], user: RadarUser?) {
         for event in events {
-            notify(Utils.stringForRadarEvent(event))
+            notify(event.stringValue)
         }
     }
 
@@ -488,7 +488,7 @@ extension AppDelegate: RadarDelegate {
     }
 
     func didUpdateClientLocation(_ location: CLLocation, stopped: Bool, source: RadarLocationSource) {
-        let body = "\(stopped ? "Client stopped at" : "Client moved to") location (\(location.coordinate.latitude), \(location.coordinate.longitude)) with accuracy \(location.horizontalAccuracy) meters and source \(Utils.stringForRadarLocationSource(source))"
+        let body = "\(stopped ? "Client stopped at" : "Client moved to") location (\(location.coordinate.latitude), \(location.coordinate.longitude)) with accuracy \(location.horizontalAccuracy) meters and source \(source.stringValue)"
         notify(body)
     }
 
