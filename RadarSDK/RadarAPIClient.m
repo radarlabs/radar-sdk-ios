@@ -936,7 +936,7 @@
      withMetadata:(NSDictionary *_Nullable)metadata
              user:(RadarUser *_Nullable)user
       trackEvents:(NSArray<RadarEvent *> *_Nullable)trackEvents
-completionHandler:(RadarSendEventsAPICompletionHandler _Nonnull)completionHandler {
+completionHandler:(RadarSendEventAPICompletionHandler _Nonnull)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
         return completionHandler(RadarStatusErrorPublishableKey, nil, nil);
