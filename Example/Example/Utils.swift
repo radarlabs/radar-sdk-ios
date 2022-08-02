@@ -36,6 +36,8 @@ class Utils {
             return "Entered country \(event.region!.name) (\(event.region!.code)) with \(confidenceStr)"
         case .userExitedRegionCountry:
             return "Exited country \(event.region!.name) (\(event.region!.code)) with \(confidenceStr)"
+        case .custom:
+            return "Custom event '\(event.customType!)'"
         default:
             return "Unknown"
         }

@@ -383,7 +383,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
 
         // Test custom event with a manual location
-        let customLocation = CLLocation(latitude: 38.87896275702961, longitude: -77.18228972761578)
+        let customLocation = CLLocation(latitude: 38.8789, longitude: -77.1822)
 
         Radar.sendEvent(customType: "custom_event_with_location", location: customLocation, metadata: ["data": "test"]) { (status, location, events, user) in
             if let customEvent = events?.first,
