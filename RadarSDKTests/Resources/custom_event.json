@@ -16,14 +16,14 @@
         "live": 0,
         "locationAccuracyAuthorization": "FULL",
         "locationAuthorization": "GRANTED_BACKGROUND",
-        "sdkVersion": "3.5.0",
+        "sdkVersion": "3.5.1",
         "stopped": 1,
         "type": "settings_opened",
         "user": {
             "_id": "userId",
             "deviceId": "deviceId",
             "installId": "installId",
-            "sdkVersion": "3.5.0",
+            "sdkVersion": "3.5.1",
             "userId": "userId",
         }
     }
