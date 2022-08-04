@@ -123,7 +123,7 @@ typedef NS_ENUM(NSInteger, RadarEventVerification) {
 /**
  The custom type of the event. This will only be set if the `type` is `RadarEventTypeCustom`.
  */
-@property (assign, nonatomic, readonly) NSString * _Nullable customType;
+@property (nullable, copy, nonatomic, readonly) NSString *customType;
 
 /**
  The geofence for which the event was generated. May be `nil` for non-geofence events.
