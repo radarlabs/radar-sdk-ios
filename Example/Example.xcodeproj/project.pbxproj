@@ -49,7 +49,7 @@
 
 /* Begin PBXFileReference section */
 		96758F232899708A00DDA59A /* EventTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventTableViewController.swift; sourceTree = "<group>"; };
-		DD236D23230A006700EB88F9 /* Radar Demo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Radar Demo.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		DD236D23230A006700EB88F9 /* Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DD236D26230A006700EB88F9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		DD236D2F230A006900EB88F9 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		DD236D34230A006900EB88F9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -83,7 +83,7 @@
 		DD236D24230A006700EB88F9 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				DD236D23230A006700EB88F9 /* Radar Demo.app */,
+				DD236D23230A006700EB88F9 /* Example.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -122,9 +122,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		DD236D22230A006700EB88F9 /* Radar Demo */ = {
+		DD236D22230A006700EB88F9 /* Example */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = DD236D37230A006900EB88F9 /* Build configuration list for PBXNativeTarget "Radar Demo" */;
+			buildConfigurationList = DD236D37230A006900EB88F9 /* Build configuration list for PBXNativeTarget "Example" */;
 			buildPhases = (
 				DD236D1F230A006700EB88F9 /* Sources */,
 				DD236D20230A006700EB88F9 /* Frameworks */,
@@ -135,9 +135,9 @@
 			);
 			dependencies = (
 			);
-			name = "Radar Demo";
+			name = Example;
 			productName = Example;
-			productReference = DD236D23230A006700EB88F9 /* Radar Demo.app */;
+			productReference = DD236D23230A006700EB88F9 /* Example.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -155,7 +155,7 @@
 					};
 				};
 			};
-			buildConfigurationList = DD236D1E230A006700EB88F9 /* Build configuration list for PBXProject "Radar Demo" */;
+			buildConfigurationList = DD236D1E230A006700EB88F9 /* Build configuration list for PBXProject "Example" */;
 			compatibilityVersion = "Xcode 9.3";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -174,7 +174,7 @@
 			);
 			projectRoot = "";
 			targets = (
-				DD236D22230A006700EB88F9 /* Radar Demo */,
+				DD236D22230A006700EB88F9 /* Example */,
 			);
 		};
 /* End PBXProject section */
@@ -397,7 +397,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		DD236D1E230A006700EB88F9 /* Build configuration list for PBXProject "Radar Demo" */ = {
+		DD236D1E230A006700EB88F9 /* Build configuration list for PBXProject "Example" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				DD236D35230A006900EB88F9 /* Debug */,
@@ -406,7 +406,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		DD236D37230A006900EB88F9 /* Build configuration list for PBXNativeTarget "Radar Demo" */ = {
+		DD236D37230A006900EB88F9 /* Build configuration list for PBXNativeTarget "Example" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				DD236D38230A006900EB88F9 /* Debug */,
