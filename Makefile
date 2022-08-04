@@ -1,13 +1,13 @@
 SDK ?= "iphonesimulator"
 DESTINATION ?= "platform=iOS Simulator,name=iPhone 11"
 PROJECT := RadarSDK
-PROJECT_EXAMPLE := Example/Radar Demo
+PROJECT_EXAMPLE := Example/Example
 SCHEME := XCFramework
 SCHEME_TEST := RadarSDKTests
-SCHEME_EXAMPLE := Demo
+SCHEME_EXAMPLE := Example
 XC_ARGS := -sdk $(SDK) -project $(PROJECT).xcodeproj -scheme $(SCHEME) -destination $(DESTINATION) ONLY_ACTIVE_ARCH=NO OTHER_CFLAGS="-fembed-bitcode"
 XC_TEST_ARGS := -sdk $(SDK) -project $(PROJECT).xcodeproj -scheme $(SCHEME_TEST) -destination $(DESTINATION) GCC_INSTRUMENT_PROGRAM_FLOW_ARCS=YES
-XC_EXAMPLE_ARGS := -sdk $(SDK) -project "$(PROJECT_EXAMPLE).xcodeproj" -scheme $(SCHEME_EXAMPLE) -destination $(DESTINATION) ONLY_ACTIVE_ARCH=NO OTHER_CFLAGS="-fembed-bitcode"
+XC_EXAMPLE_ARGS := -sdk $(SDK) -project $(PROJECT_EXAMPLE).xcodeproj -scheme $(SCHEME_EXAMPLE) -destination $(DESTINATION) ONLY_ACTIVE_ARCH=NO OTHER_CFLAGS="-fembed-bitcode"
 
 bootstrap:
 	./bootstrap.sh
