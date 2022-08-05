@@ -45,7 +45,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         Radar.searchPlaces(
             radius: 1000,
             chains: ["mcdonalds"],
-            chainMetadata: ["key1": "value1", "key2": "value2"],
+            chainMetadata: ["orderActive": "true"],
             categories: nil,
             groups: nil,
             limit: 10
