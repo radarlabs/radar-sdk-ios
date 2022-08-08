@@ -442,7 +442,7 @@
     }
 
     [chainMetadata enumerateKeysAndObjectsUsingBlock:^(NSString * _Nonnull key, NSString * _Nonnull value, BOOL * _Nonnull stop) {
-        [queryString appendFormat:@"&chainMetadata[:%@]=:\"%@\"", key, value];
+        [queryString appendFormat:@"&chainMetadata[%@]=\"%@\"", key, value];
     }];
 
     NSString *host = [RadarSettings host];
