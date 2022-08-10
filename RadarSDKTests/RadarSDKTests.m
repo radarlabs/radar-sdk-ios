@@ -858,6 +858,43 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
                                  }];
 }
 
+- (void)test_Radar_searchPlaces_chainsAndMetadata_success {
+    self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusAuthorizedWhenInUse;
+    self.locationManagerMock.mockLocation = [[CLLocation alloc] initWithCoordinate:CLLocationCoordinate2DMake(40.78382, -73.97536)
+                                                                          altitude:-1
+                                                                horizontalAccuracy:65
+                                                                  verticalAccuracy:-1
+                                                                         timestamp:[NSDate new]];
+    self.apiHelperMock.mockStatus = RadarStatusSuccess;
+    self.apiHelperMock.mockResponse = [RadarTestUtils jsonDictionaryFromResource:@"search_places_chain_metadata"];
+
+    XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
+
+    [Radar searchPlacesWithRadius:1000
+                           chains:@[@"walmart"]
+                    chainMetadata:@{@"orderActive": @"true"}
+                       categories:nil
+                           groups:nil
+                            limit:100
+                completionHandler:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarPlace *> *_Nullable places) {
+        XCTAssertEqual(status, RadarStatusSuccess);
+        XCTAssertNotNil(location);
+        XCTAssertNotNil(places);
+        XCTAssertEqual(places.count, 2);
+        NSDictionary<NSString *, NSString *> *firstPlaceMetadata = places[0].chain.metadata;
+        XCTAssertTrue([firstPlaceMetadata[@"orderActive"] isEqualToString: @"true"]);
+
+        [expectation fulfill];
+    }];
+
+    [self waitForExpectationsWithTimeout:30
+                                 handler:^(NSError *_Nullable error) {
+        if (error) {
+            XCTFail();
+        }
+    }];
+}
+
 - (void)test_Radar_searchPlacesNear_categories_success {
     self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusNotDetermined;
     CLLocation *mockLocation = [[CLLocation alloc] initWithCoordinate:CLLocationCoordinate2DMake(40.78382, -73.97536)
