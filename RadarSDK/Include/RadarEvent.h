@@ -23,6 +23,9 @@
 typedef NS_ENUM(NSInteger, RadarEventType) {
     /// Unknown
     RadarEventTypeUnknown NS_SWIFT_NAME(unknown),
+    // A custom type, created by calling `Radar.sendEvent()`. The custom value
+    // will be assigned to the `customType` property.
+    RadarEventTypeCustom NS_SWIFT_NAME(custom),
     /// `user.entered_geofence`
     RadarEventTypeUserEnteredGeofence NS_SWIFT_NAME(userEnteredGeofence),
     /// `user.exited_geofence`
@@ -118,6 +121,11 @@ typedef NS_ENUM(NSInteger, RadarEventVerification) {
 @property (assign, nonatomic, readonly) RadarEventType type;
 
 /**
+ The custom type of the event. This will only be set if the `type` is `RadarEventTypeCustom`.
+ */
+@property (nullable, copy, nonatomic, readonly) NSString *customType;
+
+/**
  The geofence for which the event was generated. May be `nil` for non-geofence events.
  */
 @property (nullable, strong, nonatomic, readonly) RadarGeofence *geofence;
@@ -171,6 +179,11 @@ typedef NS_ENUM(NSInteger, RadarEventVerification) {
  The location of the event.
  */
 @property (nonnull, strong, nonatomic, readonly) CLLocation *location;
+
+/**
+ The metadata of the event. Present on custom events only.
+ */
+@property (nonnull, copy, nonatomic, readonly) NSDictionary *metadata;
 
 + (NSString *_Nullable)stringForType:(RadarEventType)type;
 + (NSArray<NSDictionary *> *_Nullable)arrayForEvents:(NSArray<RadarEvent *> *_Nullable)events;

@@ -43,6 +43,7 @@
                      actualCreatedAt:(NSDate *)actualCreatedAt
                                 live:(BOOL)live
                                 type:(RadarEventType)type
+                          customType:(NSString *)customType
                             geofence:(RadarGeofence *)geofence
                                place:(RadarPlace *)place
                               region:(RadarRegion *)region
@@ -53,7 +54,8 @@
                         verification:(RadarEventVerification)verification
                           confidence:(RadarEventConfidence)confidence
                             duration:(float)duration
-                            location:(CLLocation *)location {
+                            location:(CLLocation *)location
+                            metadata:(NSDictionary *)metadata {
     self = [super init];
     if (self) {
         __id = _id;
@@ -61,6 +63,7 @@
         _actualCreatedAt = actualCreatedAt;
         _live = live;
         _type = type;
+        _customType = customType;
         _geofence = geofence;
         _place = place;
         _region = region;
@@ -72,6 +75,7 @@
         _confidence = confidence;
         _duration = duration;
         _location = location;
+        _metadata = metadata;
     }
     return self;
 }
@@ -88,6 +92,7 @@
     NSDate *actualCreatedAt;
     BOOL live = NO;
     RadarEventType type = RadarEventTypeUnknown;
+    NSString *customType;
     RadarGeofence *geofence;
     RadarPlace *place;
     RadarRegion *region;
@@ -99,6 +104,7 @@
     RadarEventConfidence confidence = RadarEventConfidenceNone;
     float duration = 0;
     CLLocation *location;
+    NSDictionary *metadata;
 
     id idObj = dict[@"_id"];
     if (idObj && [idObj isKindOfClass:[NSString class]]) {
@@ -121,48 +127,53 @@
     if (typeObj && [typeObj isKindOfClass:[NSString class]]) {
         NSString *typeStr = (NSString *)typeObj;
 
+        // These strings should match the values (and order) of the server's event
+        // constants.
         if ([typeStr isEqualToString:@"user.entered_geofence"]) {
             type = RadarEventTypeUserEnteredGeofence;
         } else if ([typeStr isEqualToString:@"user.exited_geofence"]) {
             type = RadarEventTypeUserExitedGeofence;
+        } else if ([typeStr isEqualToString:@"user.dwelled_in_geofence"]) {
+            type = RadarEventTypeUserDwelledInGeofence;
         } else if ([typeStr isEqualToString:@"user.entered_place"]) {
             type = RadarEventTypeUserEnteredPlace;
         } else if ([typeStr isEqualToString:@"user.exited_place"]) {
             type = RadarEventTypeUserExitedPlace;
-        } else if ([typeStr isEqualToString:@"user.nearby_place_chain"]) {
-            type = RadarEventTypeUserNearbyPlaceChain;
         } else if ([typeStr isEqualToString:@"user.entered_region_country"]) {
             type = RadarEventTypeUserEnteredRegionCountry;
         } else if ([typeStr isEqualToString:@"user.exited_region_country"]) {
             type = RadarEventTypeUserExitedRegionCountry;
-        } else if ([typeStr isEqualToString:@"user.entered_region_state"]) {
-            type = RadarEventTypeUserEnteredRegionState;
-        } else if ([typeStr isEqualToString:@"user.exited_region_state"]) {
-            type = RadarEventTypeUserExitedRegionState;
         } else if ([typeStr isEqualToString:@"user.entered_region_dma"]) {
             type = RadarEventTypeUserEnteredRegionDMA;
         } else if ([typeStr isEqualToString:@"user.exited_region_dma"]) {
             type = RadarEventTypeUserExitedRegionDMA;
-        } else if ([typeStr isEqualToString:@"user.started_trip"]) {
-            type = RadarEventTypeUserStartedTrip;
-        } else if ([typeStr isEqualToString:@"user.updated_trip"]) {
-            type = RadarEventTypeUserUpdatedTrip;
-        } else if ([typeStr isEqualToString:@"user.approaching_trip_destination"]) {
-            type = RadarEventTypeUserApproachingTripDestination;
-        } else if ([typeStr isEqualToString:@"user.arrived_at_trip_destination"]) {
-            type = RadarEventTypeUserArrivedAtTripDestination;
-        } else if ([typeStr isEqualToString:@"user.stopped_trip"]) {
-            type = RadarEventTypeUserStoppedTrip;
-        } else if ([typeStr isEqualToString:@"user.entered_beacon"]) {
-            type = RadarEventTypeUserEnteredBeacon;
-        } else if ([typeStr isEqualToString:@"user.exited_beacon"]) {
-            type = RadarEventTypeUserExitedBeacon;
+        } else if ([typeStr isEqualToString:@"user.entered_region_state"]) {
+            type = RadarEventTypeUserEnteredRegionState;
+        } else if ([typeStr isEqualToString:@"user.exited_region_state"]) {
+            type = RadarEventTypeUserExitedRegionState;
         } else if ([typeStr isEqualToString:@"user.entered_region_postal_code"]) {
             type = RadarEventTypeUserEnteredRegionPostalCode;
         } else if ([typeStr isEqualToString:@"user.exited_region_postal_code"]) {
             type = RadarEventTypeUserExitedRegionPostalCode;
-        } else if ([typeStr isEqualToString:@"user.dwelled_in_geofence"]) {
-            type = RadarEventTypeUserDwelledInGeofence;
+        } else if ([typeStr isEqualToString:@"user.nearby_place_chain"]) {
+            type = RadarEventTypeUserNearbyPlaceChain;
+        } else if ([typeStr isEqualToString:@"user.entered_beacon"]) {
+            type = RadarEventTypeUserEnteredBeacon;
+        } else if ([typeStr isEqualToString:@"user.exited_beacon"]) {
+            type = RadarEventTypeUserExitedBeacon;
+        } else if ([typeStr isEqualToString:@"user.started_trip"]) {
+            type = RadarEventTypeUserStartedTrip;
+        } else if ([typeStr isEqualToString:@"user.updated_trip"]) {
+            type = RadarEventTypeUserUpdatedTrip;
+        } else if ([typeStr isEqualToString:@"user.stopped_trip"]) {
+            type = RadarEventTypeUserStoppedTrip;
+        } else if ([typeStr isEqualToString:@"user.approaching_trip_destination"]) {
+            type = RadarEventTypeUserApproachingTripDestination;
+        } else if ([typeStr isEqualToString:@"user.arrived_at_trip_destination"]) {
+            type = RadarEventTypeUserArrivedAtTripDestination;
+        } else {
+            type = RadarEventTypeCustom;
+            customType = typeStr;
         }
     }
 
@@ -280,6 +291,11 @@
                                              verticalAccuracy:-1
                                                     timestamp:(createdAt ? createdAt : [NSDate date])];
         }
+
+        id metadataObj = dict[@"metadata"];
+        if (metadataObj && [metadataObj isKindOfClass:[NSDictionary class]]) {
+            metadata = (NSDictionary *)metadataObj;
+        }
     }
 
     if (_id && createdAt) {
@@ -288,6 +304,7 @@
                               actualCreatedAt:actualCreatedAt
                                          live:live
                                          type:type
+                                   customType:customType
                                      geofence:geofence
                                         place:place
                                        region:region
@@ -298,56 +315,59 @@
                                  verification:verification
                                    confidence:confidence
                                      duration:duration
-                                     location:location];
+                                     location:location
+                                     metadata:metadata];
     }
 
     return nil;
 }
 
 + (NSString *)stringForType:(RadarEventType)type {
+    // These strings should match the values (and order) of the server's event
+    // constants.
     switch (type) {
     case RadarEventTypeUserEnteredGeofence:
         return @"user.entered_geofence";
     case RadarEventTypeUserExitedGeofence:
         return @"user.exited_geofence";
+    case RadarEventTypeUserDwelledInGeofence:
+        return @"user.dwelled_in_geofence";
     case RadarEventTypeUserEnteredPlace:
         return @"user.entered_place";
     case RadarEventTypeUserExitedPlace:
         return @"user.exited_place";
-    case RadarEventTypeUserNearbyPlaceChain:
-        return @"user.nearby_place_chain";
     case RadarEventTypeUserEnteredRegionCountry:
         return @"user.entered_region_country";
     case RadarEventTypeUserExitedRegionCountry:
         return @"user.exited_region_country";
+    case RadarEventTypeUserEnteredRegionDMA:
+        return @"user.entered_region_dma";
+    case RadarEventTypeUserExitedRegionDMA:
+        return @"user.exited_region_dma";
     case RadarEventTypeUserEnteredRegionState:
         return @"user.entered_region_state";
     case RadarEventTypeUserExitedRegionState:
         return @"user.exited_region_state";
-    case RadarEventTypeUserEnteredRegionDMA:
-        return @"user.entered_region_dma";
-    case RadarEventTypeUserExitedRegionDMA:
-        return @"user.exited_region_country";
-    case RadarEventTypeUserStartedTrip:
-        return @"user.started_trip";
-    case RadarEventTypeUserUpdatedTrip:
-        return @"user.updated_trip";
-    case RadarEventTypeUserApproachingTripDestination:
-        return @"user.approaching_trip_destination";
-    case RadarEventTypeUserArrivedAtTripDestination:
-        return @"user.arrived_at_trip_destination";
-    case RadarEventTypeUserStoppedTrip:
-        return @"user.stopped_trip";
-    case RadarEventTypeUserEnteredBeacon:
-        return @"user.entered_beacon";
-    case RadarEventTypeUserExitedBeacon:
-        return @"user.exited_beacon";
     case RadarEventTypeUserEnteredRegionPostalCode:
         return @"user.entered_region_postal_code";
     case RadarEventTypeUserExitedRegionPostalCode:
         return @"user.exited_region_postal_code";
-    case RadarEventTypeUserDwelledInGeofence:
-        return @"user.dwelled_in_geofence";
+    case RadarEventTypeUserNearbyPlaceChain:
+        return @"user.nearby_place_chain";
+    case RadarEventTypeUserEnteredBeacon:
+        return @"user.entered_beacon";
+    case RadarEventTypeUserExitedBeacon:
+        return @"user.exited_beacon";
+    case RadarEventTypeUserStartedTrip:
+        return @"user.started_trip";
+    case RadarEventTypeUserUpdatedTrip:
+        return @"user.updated_trip";
+    case RadarEventTypeUserStoppedTrip:
+        return @"user.stopped_trip";
+    case RadarEventTypeUserApproachingTripDestination:
+        return @"user.approaching_trip_destination";
+    case RadarEventTypeUserArrivedAtTripDestination:
+        return @"user.arrived_at_trip_destination";
     default:
         return @"unknown";
     }
@@ -412,6 +432,7 @@
     NSArray *coordinates = @[@(self.location.coordinate.longitude), @(self.location.coordinate.latitude)];
     locationDict[@"coordinates"] = coordinates;
     [dict setValue:locationDict forKey:@"location"];
+    [dict setValue:self.metadata forKey:@"metadata"];
     return dict;
 }
 

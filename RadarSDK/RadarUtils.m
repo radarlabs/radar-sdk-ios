@@ -45,7 +45,7 @@ static NSDateFormatter *_isoDateFormatter;
 }
 
 + (NSString *)sdkVersion {
-    return @"3.4.4";
+    return @"3.5.1";
 }
 
 + (NSString *)adId {
@@ -150,13 +150,6 @@ static NSDateFormatter *_isoDateFormatter;
         }
     }
     return dict;
-}
-
-+ (BOOL)validLocation:(CLLocation *)location {
-    BOOL latitudeValid = location.coordinate.latitude != 0 && location.coordinate.latitude > -90 && location.coordinate.latitude < 90;
-    BOOL longitudeValid = location.coordinate.longitude != 0 && location.coordinate.longitude > -180 && location.coordinate.latitude < 180;
-    BOOL horizontalAccuracyValid = location.horizontalAccuracy > 0;
-    return latitudeValid && longitudeValid && horizontalAccuracyValid;
 }
 
 #pragma mark - threading
