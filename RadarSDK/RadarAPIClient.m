@@ -995,8 +995,6 @@ completionHandler:(RadarSendEventAPICompletionHandler _Nonnull)completionHandler
 
             return completionHandler(RadarStatusSuccess, res, finalEvents);
         }
-
-        completionHandler(RadarStatusErrorServer, nil, nil);
     }];
 }
 
