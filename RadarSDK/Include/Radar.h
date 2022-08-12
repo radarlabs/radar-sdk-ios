@@ -224,7 +224,7 @@ typedef void (^_Nonnull RadarRouteMatrixCompletionHandler)(RadarStatus status, R
 
  Receives the request status and, if successful, the user's location, an array of the events generated with the custom event at index 0, and the user.
 
- @see https://radar.com/documentation/api#create-a-custom-event
+ @see https://radar.com/documentation/api#send-a-custom-event
  */
 typedef void(^_Nonnull RadarSendEventCompletionHandler)(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user);
 
@@ -251,7 +251,7 @@ typedef void(^_Nonnull RadarSendEventCompletionHandler)(RadarStatus status, CLLo
 #pragma mark - Properties
 
 /**
- Gets the version number of the Radar SDK, such as "3.3.1" or "3.4.1-beta.2."
+ Gets the version number of the Radar SDK, such as "3.5.1" or "3.5.1-beta.2".
  */
 @property (readonly, class) NSString *sdkVersion;
 
@@ -445,7 +445,7 @@ typedef void(^_Nonnull RadarSendEventCompletionHandler)(RadarStatus status, CLLo
  */
 + (void)setDelegate:(nullable id<RadarDelegate>)delegate;
 
-#pragma mark - Event IDs
+#pragma mark - Events
 
 /**
  Accepts an event. Events can be accepted after user check-ins or other forms of verification. Event verifications will be used to improve the accuracy and
@@ -467,6 +467,34 @@ typedef void(^_Nonnull RadarSendEventCompletionHandler)(RadarStatus status, CLLo
  @see https://radar.com/documentation/places#verify-events
  */
 + (void)rejectEventId:(NSString *_Nonnull)eventId NS_SWIFT_NAME(rejectEventId(_:));
+
+/**
+ Sends a custom event.
+
+ @param customType The user-defined type of the event.
+ @param metadata The metadata associated with the event.
+ @param completionHandler A completion handler.
+
+ @see https://radar.com/documentation/api#send-a-custom-event
+ */
++ (void)sendEvent:(NSString *)customType
+     withMetadata:(NSDictionary *_Nullable)metadata
+completionHandler:(RadarSendEventCompletionHandler)completionHandler NS_SWIFT_NAME(sendEvent(customType:metadata:completionHandler:));
+
+/**
+ Sends a custom event with a manually provided location.
+
+ @param customType The user-defined type of the event.
+ @param location The location of the event.
+ @param metadata The metadata associated with the event.
+ @param completionHandler A completion handler.
+
+ @see https://radar.com/documentation/api#send-a-custom-event
+ */
++ (void)sendEvent:(NSString *)customType
+     withLocation:(CLLocation *_Nullable)location
+         metadata:(NSDictionary *_Nullable)metadata
+completionHandler:(RadarSendEventCompletionHandler)completionHandler NS_SWIFT_NAME(sendEvent(customType:location:metadata:completionHandler:));
 
 #pragma mark - Trips
 
@@ -773,34 +801,6 @@ typedef void(^_Nonnull RadarSendEventCompletionHandler)(RadarStatus status, CLLo
                         mode:(RadarRouteMode)mode
                        units:(RadarRouteUnits)units
            completionHandler:(RadarRouteMatrixCompletionHandler)completionHandler NS_SWIFT_NAME(getMatrix(origins:destinations:mode:units:completionHandler:));
-
-/**
- Sends a custom event.
-
- @param name The name of the event.
- @param metadata The metadata associated with the event.
- @param completionHandler A completion handler.
-
- @see https://radar.com/documentation/api#create-a-custom-event
- */
-+ (void)sendEvent:(NSString *)name
-     withMetadata:(NSDictionary *_Nullable)metadata
-completionHandler:(RadarSendEventCompletionHandler)completionHandler NS_SWIFT_NAME(sendEvent(name:metadata:completionHandler:));
-
-/**
- Sends a custom event with a manually provided location.
-
- @param name The name of the event.
- @param location The location of the event.
- @param metadata The metadata associated with the event.
- @param completionHandler A completion handler.
-
- @see https://radar.com/documentation/api#create-a-custom-event
- */
-+ (void)sendEvent:(NSString *)name
-     withLocation:(CLLocation *_Nullable)location
-         metadata:(NSDictionary *_Nullable)metadata
-completionHandler:(RadarSendEventCompletionHandler)completionHandler NS_SWIFT_NAME(sendEvent(name:location:metadata:completionHandler:));
 
 #pragma mark - Logging
 
