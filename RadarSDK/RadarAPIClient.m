@@ -970,7 +970,15 @@ completionHandler:(RadarSendEventAPICompletionHandler _Nonnull)completionHandler
 
         id eventObj = res[@"event"];
         RadarEvent *customEvent = [[RadarEvent alloc] initWithObject:eventObj];
-        if (customEvent) {
+
+        if (!customEvent) {
+            // If the server didn't send back an event, then there was a
+            // problem.
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelError
+                                               message:@"POST /events did not return a new event"];
+
+            return completionHandler(RadarStatusErrorServer, nil, nil);
+        } else {
             // construct the array of events to return in the callback - custom event at index 0, followed by track events
             NSMutableArray *finalEvents;
             if (trackEvents.count > 0) {
@@ -987,8 +995,6 @@ completionHandler:(RadarSendEventAPICompletionHandler _Nonnull)completionHandler
 
             return completionHandler(RadarStatusSuccess, res, finalEvents);
         }
-
-        completionHandler(RadarStatusErrorServer, nil, nil);
     }];
 }
 
