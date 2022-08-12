@@ -974,7 +974,8 @@ completionHandler:(RadarSendEventAPICompletionHandler _Nonnull)completionHandler
         if (!customEvent) {
             // If the server didn't send back an event, then there was a
             // problem.
-            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelError message:@"POST /event did not return a new event"];
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelError
+                                               message:@"POST /event did not return a new event"];
 
             return completionHandler(RadarStatusErrorServer, nil, nil);
         } else {
