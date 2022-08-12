@@ -86,6 +86,7 @@ typedef void (^_Nonnull RadarSyncLogsAPICompletionHandler)(RadarStatus status);
 - (void)searchPlacesNear:(CLLocation *_Nonnull)near
                   radius:(int)radius
                   chains:(NSArray *_Nullable)chains
+           chainMetadata:(NSDictionary<NSString *, NSString *> *_Nullable)chainMetadata
               categories:(NSArray *_Nullable)categories
                   groups:(NSArray *_Nullable)groups
                    limit:(int)limit

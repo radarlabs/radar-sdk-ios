@@ -364,6 +364,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         Radar.searchPlaces(
             radius: 1000,
             chains: ["mcdonalds"],
+            chainMetadata: ["orderActive": "true"],
             categories: nil,
             groups: nil,
             limit: 10

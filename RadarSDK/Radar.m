@@ -545,6 +545,22 @@ completionHandler:(RadarSendEventCompletionHandler)completionHandler {
                         groups:(NSArray *_Nullable)groups
                          limit:(int)limit
              completionHandler:(RadarSearchPlacesCompletionHandler)completionHandler {
+    [Radar searchPlacesWithRadius:radius
+                           chains:chains
+                    chainMetadata:nil
+                       categories:categories
+                           groups:groups
+                            limit:limit
+                completionHandler:completionHandler];
+}
+
++ (void)searchPlacesWithRadius:(int)radius
+                        chains:(NSArray *_Nullable)chains
+                 chainMetadata:(NSDictionary<NSString *, NSString *> *_Nullable)chainMetadata
+                    categories:(NSArray *_Nullable)categories
+                        groups:(NSArray *_Nullable)groups
+                         limit:(int)limit
+             completionHandler:(RadarSearchPlacesCompletionHandler)completionHandler {
     [[RadarLocationManager sharedInstance] getLocationWithCompletionHandler:^(RadarStatus status, CLLocation *_Nullable location, BOOL stopped) {
         if (status != RadarStatusSuccess) {
             if (completionHandler) {
@@ -559,6 +575,7 @@ completionHandler:(RadarSendEventCompletionHandler)completionHandler {
         [[RadarAPIClient sharedInstance] searchPlacesNear:location
                                                    radius:radius
                                                    chains:chains
+                                            chainMetadata:chainMetadata
                                                categories:categories
                                                    groups:groups
                                                     limit:limit
@@ -579,17 +596,36 @@ completionHandler:(RadarSendEventCompletionHandler)completionHandler {
                   groups:(NSArray *_Nullable)groups
                    limit:(int)limit
        completionHandler:(RadarSearchPlacesCompletionHandler)completionHandler {
+    [Radar searchPlacesNear:near
+                     radius:radius
+                     chains:chains
+              chainMetadata:nil
+                 categories:categories
+                     groups:groups
+                      limit:limit
+          completionHandler:completionHandler];
+}
+
++ (void)searchPlacesNear:(CLLocation *_Nonnull)near
+                  radius:(int)radius
+                  chains:(NSArray *_Nullable)chains
+           chainMetadata:(NSDictionary<NSString *, NSString *> *_Nullable)chainMetadata
+              categories:(NSArray *_Nullable)categories
+                  groups:(NSArray *_Nullable)groups
+                   limit:(int)limit
+       completionHandler:(RadarSearchPlacesCompletionHandler)completionHandler {
     [[RadarAPIClient sharedInstance] searchPlacesNear:near
                                                radius:radius
                                                chains:chains
+                                        chainMetadata:chainMetadata
                                            categories:categories
                                                groups:groups
                                                 limit:limit
                                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarPlace *> *_Nullable places) {
-                                        [RadarUtils runOnMainThread:^{
-                                            completionHandler(status, near, places);
-                                        }];
-                                    }];
+        [RadarUtils runOnMainThread:^{
+            completionHandler(status, near, places);
+        }];
+    }];
 }
 
 + (void)searchGeofencesWithRadius:(int)radius
