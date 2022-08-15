@@ -335,7 +335,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     /// @see https://radar.com/documentation/api#search-places
     func search() {
         // With the autocomplete API, autocomplete partial addresses and place
-        // names, sorted by relevance:
+        // names, sorted by relevance.
         let origin = CLLocation(latitude: 40.78382, longitude: -73.97536)
 
         Radar.autocomplete(
@@ -349,7 +349,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
 
         // With the geofence search API, search for geofences near a location,
-        // sorted by distance:
+        // sorted by distance.
         Radar.searchGeofences(
             radius: 1000,
             tags: ["store"],
@@ -360,7 +360,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
 
         // With the places search API, search for places near a location,
-        // sorted by distance:
+        // sorted by distance.
+        // (In the Radar dashboard settings
+        // (https://radar.com/dashboard/settings), add this to the chain
+        // metadata: {"mcdonalds":{"orderActive":"true"}})
         Radar.searchPlaces(
             radius: 1000,
             chains: ["mcdonalds"],
