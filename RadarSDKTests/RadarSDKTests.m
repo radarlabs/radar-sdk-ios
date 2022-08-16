@@ -620,10 +620,16 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     XCTestExpectation *exp = [self expectationWithDescription:@"sendEvent"];
 
     [Radar sendEvent:@"customEvent4"
-        withMetadata:nil
+        withMetadata:@{@"foo": @"bar"}
    completionHandler:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user) {
         XCTAssertEqual(status, RadarStatusSuccess);
         XCTAssertNotNil(events);
+
+        RadarEvent *customEvent = events[0];
+        XCTAssertNotNil(customEvent);
+        NSDictionary *metadata = customEvent.metadata;
+        XCTAssertNotNil(metadata);
+        XCTAssertTrue([metadata[@"foo"] isEqual:@"bar"]);
         [exp fulfill];
     }
     ];
@@ -675,10 +681,17 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 
     [Radar sendEvent:@"customEvent4"
         withLocation:mockLocation
-            metadata:@{@"foo": @"bar", @"baz": @YES, @"qux": @1}
+            metadata:@{@"foo": @"bar"}
     completionHandler:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user) {
         XCTAssertEqual(status, RadarStatusSuccess);
         XCTAssertNotNil(events);
+
+        RadarEvent *customEvent = events[0];
+        XCTAssertNotNil(customEvent);
+        NSDictionary *metadata = customEvent.metadata;
+        XCTAssertNotNil(metadata);
+        XCTAssertTrue([metadata[@"foo"] isEqual:@"bar"]);
+
         [exp fulfill];
     }
     ];
