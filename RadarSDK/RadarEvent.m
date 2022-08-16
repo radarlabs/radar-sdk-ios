@@ -291,11 +291,11 @@
                                              verticalAccuracy:-1
                                                     timestamp:(createdAt ? createdAt : [NSDate date])];
         }
+    }
 
-        id metadataObj = dict[@"metadata"];
-        if (metadataObj && [metadataObj isKindOfClass:[NSDictionary class]]) {
-            metadata = (NSDictionary *)metadataObj;
-        }
+    id metadataObj = dict[@"metadata"];
+    if (metadataObj && [metadataObj isKindOfClass:[NSDictionary class]]) {
+        metadata = (NSDictionary *)metadataObj;
     }
 
     if (_id && createdAt) {
@@ -368,6 +368,8 @@
         return @"user.approaching_trip_destination";
     case RadarEventTypeUserArrivedAtTripDestination:
         return @"user.arrived_at_trip_destination";
+    case RadarEventTypeCustom:
+        return @"custom";
     default:
         return @"unknown";
     }
