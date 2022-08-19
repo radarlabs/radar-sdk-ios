@@ -101,6 +101,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         let tripOptions = RadarTripOptions(externalId: "299", destinationGeofenceTag: "store", destinationGeofenceExternalId: "123")
         tripOptions.mode = .car
+        tripOptions.approachingThreshold = 9
         Radar.startTrip(options: tripOptions)
 
         var i = 0
