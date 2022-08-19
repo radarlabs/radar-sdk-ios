@@ -415,6 +415,7 @@
 - (void)searchPlacesNear:(CLLocation *_Nonnull)near
                   radius:(int)radius
                   chains:(NSArray *_Nullable)chains
+           chainMetadata:(NSDictionary<NSString *, NSString *> *_Nullable)chainMetadata
               categories:(NSArray *_Nullable)categories
                   groups:(NSArray *_Nullable)groups
                    limit:(int)limit
@@ -439,6 +440,10 @@
     if (groups && [groups count] > 0) {
         [queryString appendFormat:@"&groups=%@", [groups componentsJoinedByString:@","]];
     }
+
+    [chainMetadata enumerateKeysAndObjectsUsingBlock:^(NSString * _Nonnull key, NSString * _Nonnull value, BOOL * _Nonnull stop) {
+        [queryString appendFormat:@"&chainMetadata[%@]=\"%@\"", key, value];
+    }];
 
     NSString *host = [RadarSettings host];
     NSString *url = [NSString stringWithFormat:@"%@/v1/search/places?%@", host, queryString];
