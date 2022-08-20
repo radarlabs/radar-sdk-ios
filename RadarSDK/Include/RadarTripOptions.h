@@ -57,6 +57,8 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property (nonatomic, assign) RadarRouteMode mode;
 
+@property (nonatomic, assign) UInt8 approachingThreshold;
+
 + (RadarTripOptions *)tripOptionsFromDictionary:(NSDictionary *)dict;
 - (NSDictionary *)dictionaryValue;
 
