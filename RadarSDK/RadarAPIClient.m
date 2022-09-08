@@ -130,15 +130,23 @@
     }
 
     NSMutableDictionary *params = [NSMutableDictionary new];
-    params[@"id"] = [RadarSettings _id];
-    params[@"installId"] = [RadarSettings installId];
-    params[@"userId"] = [RadarSettings userId];
-    params[@"deviceId"] = [RadarUtils deviceId];
-    params[@"description"] = [RadarSettings __description];
-    params[@"metadata"] = [RadarSettings metadata];
-    NSString *adId = [RadarUtils adId];
-    if (adId && [RadarSettings adIdEnabled]) {
-        params[@"adId"] = adId;
+    BOOL anonymous = [RadarSettings anonymousTrackingEnabled];
+    params[@"anonymous"] = @(anonymous);
+    if (!anonymous) {
+        params[@"id"] = [RadarSettings _id];
+        params[@"installId"] = [RadarSettings installId];
+        params[@"userId"] = [RadarSettings userId];
+        params[@"deviceId"] = [RadarUtils deviceId];
+        params[@"description"] = [RadarSettings __description];
+        params[@"metadata"] = [RadarSettings metadata];
+        NSString *adId = [RadarUtils adId];
+        if (adId && [RadarSettings adIdEnabled]) {
+            params[@"adId"] = adId;
+        }
+        NSString *sessionId = [RadarSettings sessionId];
+        if (sessionId) {
+            params[@"sessionId"] = sessionId;
+        }
     }
     params[@"latitude"] = @(location.coordinate.latitude);
     params[@"longitude"] = @(location.coordinate.longitude);
@@ -207,10 +215,6 @@
     }
     if (beacons) {
         params[@"beacons"] = [RadarBeacon arrayForBeacons:beacons];
-    }
-    NSString *sessionId = [RadarSettings sessionId];
-    if (sessionId) {
-        params[@"sessionId"] = sessionId;
     }
     NSString *locationAuthorization = [RadarUtils locationAuthorization];
     if (locationAuthorization) {
