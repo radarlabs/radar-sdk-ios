@@ -50,6 +50,18 @@
         _minor = minor;
         _metadata = metadata;
         _geometry = geometry;
+        _rssi = 0;
+    }
+    return self;
+}
+
+- (instancetype _Nullable)initWithUUID:(NSString *)uuid major:(NSString *)major minor:(NSString *)minor rssi:(NSInteger)rssi {
+    self = [super init];
+    if (self) {
+        _uuid = uuid;
+        _major = major;
+        _minor = minor;
+        _rssi = rssi;
     }
     return self;
 }
@@ -145,6 +157,14 @@
     return [[RadarBeacon alloc] initWithId:_id description:description tag:tag externalId:externalId uuid:uuid major:major minor:minor metadata:metadata geometry:geometry];
 }
 
++ (RadarBeacon *)fromCLBeaconRegion:(CLBeaconRegion *_Nonnull)region {
+    return [[RadarBeacon alloc] initWithUUID:[region.proximityUUID UUIDString] major:[region.major stringValue] minor:[region.minor stringValue] rssi:0];
+}
+
++ (RadarBeacon *)fromCLBeacon:(CLBeacon *_Nonnull)beacon {
+    return [[RadarBeacon alloc] initWithUUID:[beacon.proximityUUID UUIDString] major:[beacon.major stringValue] minor:[beacon.minor stringValue] rssi:beacon.rssi];
+}
+
 + (NSArray<NSDictionary *> *)arrayForBeacons:(NSArray<RadarBeacon *> *)beacons {
     if (!beacons) {
         return nil;
@@ -160,15 +180,53 @@
 
 - (NSDictionary *)dictionaryValue {
     NSMutableDictionary *dict = [NSMutableDictionary new];
-    [dict setValue:self._id forKey:@"_id"];
-    [dict setValue:self.__description forKey:@"description"];
-    [dict setValue:self.tag forKey:@"tag"];
-    [dict setValue:self.externalId forKey:@"externalId"];
-    [dict setValue:self.uuid forKey:@"uuid"];
+    if (self._id) {
+        [dict setValue:self._id forKey:@"_id"];
+    }
+    if (self.__description) {
+        [dict setValue:self.__description forKey:@"description"];
+    }
+    if (self.tag) {
+        [dict setValue:self.tag forKey:@"tag"];
+    }
+    if (self.externalId) {
+        [dict setValue:self.externalId forKey:@"externalId"];
+    }
+    if (self.uuid) {
+        [dict setValue:[self.uuid lowercaseString] forKey:@"uuid"];
+    }
     [dict setValue:self.major forKey:@"major"];
     [dict setValue:self.minor forKey:@"minor"];
-    [dict setValue:self.metadata forKey:@"metadata"];
+    if (self.rssi) {
+        [dict setValue:@(self.rssi) forKey:@"rssi"];
+    }
+    if (self.externalId) {
+        [dict setValue:self.metadata forKey:@"metadata"];
+    }
+    [dict setValue:@"ibeacon" forKey:@"type"];
     return dict;
+}
+
+- (BOOL)isEqual:(id)object {
+    if (!object) {
+        return NO;
+    }
+
+    if (self == object) {
+        return YES;
+    }
+
+    if (![object isKindOfClass:[RadarBeacon class]]) {
+        return NO;
+    }
+
+    RadarBeacon *beacon = (RadarBeacon *)object;
+
+    return [self.uuid isEqualToString:beacon.uuid] && [self.major isEqualToString:beacon.major] && [self.minor isEqualToString:beacon.minor];
+}
+
+- (NSUInteger)hash {
+    return [self.uuid hash] ^ [self.major hash] ^ [self.minor hash];
 }
 
 @end

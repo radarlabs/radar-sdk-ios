@@ -20,12 +20,12 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  The Radar ID of the beacon.
  */
-@property (nonnull, copy, nonatomic, readonly) NSString *_id;
+@property (nullable, copy, nonatomic, readonly) NSString *_id;
 
 /**
  The description of the beacon. Not to be confused with the `NSObject` `description` property.
  */
-@property (nonnull, copy, nonatomic, readonly) NSString *__description;
+@property (nullable, copy, nonatomic, readonly) NSString *__description;
 
 /**
  The tag of the beacon.
@@ -60,7 +60,12 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  The location of the beacon.
  */
-@property (nonnull, strong, nonatomic, readonly) RadarCoordinate *geometry;
+@property (nullable, strong, nonatomic, readonly) RadarCoordinate *geometry;
+
+/**
+ The RSSI of the beacon, or 0 if not available.
+ */
+@property (nonatomic, readonly) NSInteger rssi;
 
 + (NSArray<NSDictionary *> *_Nullable)arrayForBeacons:(NSArray<RadarBeacon *> *_Nullable)beacons;
 - (NSDictionary *_Nonnull)dictionaryValue;

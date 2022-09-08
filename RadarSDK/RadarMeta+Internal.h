@@ -13,4 +13,3 @@
 + (RadarMeta *)metaFromDictionary:(NSDictionary *)dict;
 
 @end
-

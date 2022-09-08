@@ -5,8 +5,8 @@
 //  Copyright © 2021 Radar Labs, Inc. All rights reserved.
 //
 
-#import "RadarLog.h"
 #import "RadarLogBuffer.h"
+#import "RadarLog.h"
 
 static const int MAX_BUFFER_SIZE = 500;
 static const int PURGE_AMOUNT = 200;
