@@ -132,7 +132,12 @@
     NSMutableDictionary *params = [NSMutableDictionary new];
     BOOL anonymous = [RadarSettings anonymousTrackingEnabled];
     params[@"anonymous"] = @(anonymous);
-    if (!anonymous) {
+    if (anonymous) {
+        params[@"geofenceIds"] = [RadarState geofenceIds];
+        params[@"placeId"] = [RadarState placeId];
+        params[@"regionIds"] = [RadarState regionIds];
+        params[@"beaconIds"] = [RadarState beaconIds];
+    } else {
         params[@"id"] = [RadarSettings _id];
         params[@"installId"] = [RadarSettings installId];
         params[@"userId"] = [RadarSettings userId];
@@ -269,9 +274,56 @@
                         NSArray<RadarEvent *> *events = [RadarEvent eventsFromObject:eventsObj];
                         RadarUser *user = [[RadarUser alloc] initWithObject:userObj];
                         NSArray<RadarGeofence *> *nearbyGeofences = [RadarGeofence geofencesFromObject:nearbyGeofencesObj];
+        
+                        if (user) {
+                            BOOL inGeofences = user.geofences && user.geofences.count;
+                            BOOL atPlace = user.place != nil;
+                            BOOL canExit = inGeofences || atPlace;
+                            [RadarState setCanExit:canExit];
+                            
+                            NSMutableArray *geofenceIds = [NSMutableArray new];
+                            if (user.geofences) {
+                                for (RadarGeofence *geofence in user.geofences) {
+                                    [geofenceIds addObject:geofence._id];
+                                }
+                                
+                            }
+                            [RadarState setGeofenceIds:geofenceIds];
+                            
+                            NSString *placeId = nil;
+                            if (user.place) {
+                                placeId = user.place._id;
+                            }
+                            [RadarState setPlaceId:placeId];
+                            
+                            NSMutableArray *regionIds = [NSMutableArray new];
+                            if (user.country) {
+                                [regionIds addObject:user.country._id];
+                            }
+                            if (user.state) {
+                                [regionIds addObject:user.state._id];
+                            }
+                            if (user.dma) {
+                                [regionIds addObject:user.dma._id];
+                            }
+                            if (user.postalCode) {
+                                [regionIds addObject:user.postalCode._id];
+                            }
+                            [RadarState setRegionIds:regionIds];
+                            
+                            NSMutableArray *beaconIds = [NSMutableArray new];
+                            if (user.beacons) {
+                                for (RadarBeacon *beacon in user.beacons) {
+                                    [beaconIds addObject:beacon._id];
+                                }
+                                
+                            }
+                            [RadarState setBeaconIds:beaconIds];
+                        }
+        
                         if (events && user) {
                             [RadarSettings setId:user._id];
-
+                            
                             if (!user.trip) {
                                 [RadarSettings setTripOptions:nil];
                             }

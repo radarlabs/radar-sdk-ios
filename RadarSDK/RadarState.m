@@ -18,6 +18,10 @@ static NSString *const kStopped = @"radar-stopped";
 static NSString *const kLastSentAt = @"radar-lastSentAt";
 static NSString *const kCanExit = @"radar-canExit";
 static NSString *const kLastFailedStoppedLocation = @"radar-lastFailedStoppedLocation";
+static NSString *const kGeofenceIds = @"radar-geofenceIds";
+static NSString *const kPlaceId = @"radar-placeId";
+static NSString *const kRegionIds = @"radar-regionIds";
+static NSString *const kBeaconIds = @"radar-beaconIds";
 
 + (CLLocation *)lastLocation {
     NSDictionary *dict = [[NSUserDefaults standardUserDefaults] dictionaryForKey:kLastLocation];
@@ -81,7 +85,7 @@ static NSString *const kLastFailedStoppedLocation = @"radar-lastFailedStoppedLoc
 }
 
 + (NSDate *)lastSentAt {
-    return [[NSUserDefaults standardUserDefaults] valueForKey:kLastSentAt];
+    return [[NSUserDefaults standardUserDefaults] objectForKey:kLastSentAt];
 }
 
 + (BOOL)canExit {
@@ -112,6 +116,38 @@ static NSString *const kLastFailedStoppedLocation = @"radar-lastFailedStoppedLoc
 
     NSDictionary *dict = [RadarUtils dictionaryForLocation:lastFailedStoppedLocation];
     [[NSUserDefaults standardUserDefaults] setObject:dict forKey:kLastFailedStoppedLocation];
+}
+
++ (NSArray<NSString *> *)geofenceIds {
+    return [[NSUserDefaults standardUserDefaults] objectForKey:kGeofenceIds];
+}
+
++ (void)setGeofenceIds:(NSArray<NSString *> *)geofenceIds {
+    [[NSUserDefaults standardUserDefaults] setObject:geofenceIds forKey:kGeofenceIds];
+}
+
++ (NSString *)placeId {
+    return [[NSUserDefaults standardUserDefaults] stringForKey:kPlaceId];
+}
+
++ (void)setPlaceId:(NSString *)placeId {
+    [[NSUserDefaults standardUserDefaults] setObject:placeId forKey:kPlaceId];
+}
+
++ (NSArray<NSString *> *)regionIds {
+    return [[NSUserDefaults standardUserDefaults] objectForKey:kRegionIds];
+}
+
++ (void)setRegionIds:(NSArray<NSString *> *)regionIds {
+    [[NSUserDefaults standardUserDefaults] setObject:regionIds forKey:kRegionIds];
+}
+
++ (NSArray<NSString *> *)beaconIds {
+    return [[NSUserDefaults standardUserDefaults] objectForKey:kBeaconIds];
+}
+
++ (void)setBeaconIds:(NSArray<NSString *> *)beaconIds {
+    [[NSUserDefaults standardUserDefaults] setObject:beaconIds forKey:kBeaconIds];
 }
 
 @end
