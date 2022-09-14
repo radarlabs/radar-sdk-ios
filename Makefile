@@ -6,7 +6,7 @@ SCHEME := XCFramework
 SCHEME_TEST := RadarSDKTests
 SCHEME_EXAMPLE := Example
 XC_ARGS := -sdk $(SDK) -project $(PROJECT).xcodeproj -scheme $(SCHEME) -destination $(DESTINATION) ONLY_ACTIVE_ARCH=NO OTHER_CFLAGS="-fembed-bitcode"
-XC_TEST_ARGS := -sdk $(SDK) -project $(PROJECT).xcodeproj -scheme $(SCHEME_TEST) -destination $(DESTINATION) GCC_INSTRUMENT_PROGRAM_FLOW_ARCS=YES
+XC_TEST_ARGS := $(XC_ARGS) GCC_INSTRUMENT_PROGRAM_FLOW_ARCS=YES
 XC_EXAMPLE_ARGS := -sdk $(SDK) -project $(PROJECT_EXAMPLE).xcodeproj -scheme $(SCHEME_EXAMPLE) -destination $(DESTINATION) ONLY_ACTIVE_ARCH=NO OTHER_CFLAGS="-fembed-bitcode"
 
 bootstrap:
@@ -16,13 +16,13 @@ clean:
 	xcodebuild $(XC_ARGS) clean
 
 build:
-	xcodebuild $(XC_ARGS) $(XC_BUILD_ARGS)
+	xcodebuild $(XC_ARGS)
 
 test:
-	xcodebuild test $(XC_TEST_ARGS)
+	xcodebuild $(XC_TEST_ARGS) test
 
 build-example:
-	xcodebuild $(XC_EXAMPLE_ARGS) $(XC_BUILD_ARGS)
+	xcodebuild $(XC_EXAMPLE_ARGS)
 
 lint:
 	pod lib lint --verbose
@@ -34,13 +34,13 @@ clean-pretty:
 	set -o pipefail && xcodebuild $(XC_ARGS) clean | xcpretty
 
 build-pretty:
-	set -o pipefail && xcodebuild $(XC_ARGS) $(XC_BUILD_ARGS) | xcpretty
+	set -o pipefail && xcodebuild $(XC_ARGS) | xcpretty
 
 test-pretty:
 	set -o pipefail && xcodebuild test $(XC_TEST_ARGS) | xcpretty --report junit
 
 build-example-pretty:
-	set -o pipefail && xcodebuild $(XC_EXAMPLE_ARGS) $(XC_BUILD_ARGS) | xcpretty
+	set -o pipefail && xcodebuild $(XC_EXAMPLE_ARGS) | xcpretty
 
 docs:
 	jazzy

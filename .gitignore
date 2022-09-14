@@ -11,4 +11,5 @@ dist/
 build/
 docs/undocumented.json
 *.xcarchive
+IntegrationExamples
 
