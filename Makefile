@@ -6,7 +6,7 @@ SCHEME := XCFramework
 SCHEME_TEST := RadarSDKTests
 SCHEME_EXAMPLE := Example
 XC_ARGS := -sdk $(SDK) -project $(PROJECT).xcodeproj -scheme $(SCHEME) -destination $(DESTINATION) ONLY_ACTIVE_ARCH=NO OTHER_CFLAGS="-fembed-bitcode"
-XC_TEST_ARGS := GCC_INSTRUMENT_PROGRAM_FLOW_ARCS=YES
+XC_TEST_ARGS := $(XC_ARGS) GCC_INSTRUMENT_PROGRAM_FLOW_ARCS=YES
 XC_EXAMPLE_ARGS := -sdk $(SDK) -project $(PROJECT_EXAMPLE).xcodeproj -scheme $(SCHEME_EXAMPLE) -destination $(DESTINATION) ONLY_ACTIVE_ARCH=NO OTHER_CFLAGS="-fembed-bitcode"
 
 bootstrap:
@@ -19,7 +19,7 @@ build:
 	xcodebuild $(XC_ARGS)
 
 test:
-	xcodebuild $(XC_ARGS) $(XC_TEST_ARGS) test
+	xcodebuild $(XC_TEST_ARGS) test
 
 build-example:
 	xcodebuild $(XC_EXAMPLE_ARGS)
