@@ -2,8 +2,7 @@ SDK ?= "iphonesimulator"
 DESTINATION ?= "platform=iOS Simulator,name=iPhone 11"
 PROJECT := RadarSDK
 PROJECT_EXAMPLE := Example/Example
-SCHEME := XCFramework
-SCHEME_TEST := RadarSDKTests
+SCHEME := RadarSDK
 SCHEME_EXAMPLE := Example
 XC_ARGS := -sdk $(SDK) -project $(PROJECT).xcodeproj -scheme $(SCHEME) -destination $(DESTINATION) ONLY_ACTIVE_ARCH=NO OTHER_CFLAGS="-fembed-bitcode"
 XC_TEST_ARGS := $(XC_ARGS) GCC_INSTRUMENT_PROGRAM_FLOW_ARCS=YES
