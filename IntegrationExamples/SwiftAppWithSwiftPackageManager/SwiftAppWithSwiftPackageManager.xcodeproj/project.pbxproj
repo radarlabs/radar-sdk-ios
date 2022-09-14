@@ -377,7 +377,7 @@
 			repositoryURL = "https://github.com/radarlabs/radar-sdk-ios.git";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 3.4.0;
+				minimumVersion = 3.5.3;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */

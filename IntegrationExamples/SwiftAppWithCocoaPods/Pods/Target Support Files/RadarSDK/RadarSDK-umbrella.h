@@ -10,6 +10,7 @@
 #endif
 #endif
 
+#import "CLLocation+Radar.h"
 #import "Radar+Internal.h"
 #import "RadarAddress+Internal.h"
 #import "RadarAPIClient.h"
@@ -68,6 +69,7 @@
 #import "RadarRouteDuration.h"
 #import "RadarRouteGeometry.h"
 #import "RadarRouteMatrix.h"
+#import "RadarRouteMode.h"
 #import "RadarRoutes.h"
 #import "RadarSegment.h"
 #import "RadarTrackingOptions.h"

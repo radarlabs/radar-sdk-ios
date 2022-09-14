@@ -14,7 +14,6 @@
 		9683FDE327B5AB75009EBB6B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9683FDE227B5AB75009EBB6B /* Assets.xcassets */; };
 		9683FDE627B5AB75009EBB6B /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9683FDE427B5AB75009EBB6B /* LaunchScreen.storyboard */; };
 		9683FDE927B5AB75009EBB6B /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 9683FDE827B5AB75009EBB6B /* main.m */; };
-		9683FDF127B5AC29009EBB6B /* RadarSDK in Frameworks */ = {isa = PBXBuildFile; productRef = 9683FDF027B5AC29009EBB6B /* RadarSDK */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -37,7 +36,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9683FDF127B5AC29009EBB6B /* RadarSDK in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -95,7 +93,6 @@
 			);
 			name = ObjCAppWithSwiftPackageManager;
 			packageProductDependencies = (
-				9683FDF027B5AC29009EBB6B /* RadarSDK */,
 			);
 			productName = ObjCAppWithSwiftPackageManager;
 			productReference = 9683FDD327B5AB74009EBB6B /* ObjCAppWithSwiftPackageManager.app */;
@@ -125,7 +122,7 @@
 			);
 			mainGroup = 9683FDCA27B5AB74009EBB6B;
 			packageReferences = (
-				9683FDEF27B5AC29009EBB6B /* XCRemoteSwiftPackageReference "radar-sdk-ios" */,
+				961D5A1F28D21B7400CAD0E3 /* XCRemoteSwiftPackageReference "radar-sdk-ios" */,
 			);
 			productRefGroup = 9683FDD427B5AB74009EBB6B /* Products */;
 			projectDirPath = "";
@@ -373,23 +370,15 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		9683FDEF27B5AC29009EBB6B /* XCRemoteSwiftPackageReference "radar-sdk-ios" */ = {
+		961D5A1F28D21B7400CAD0E3 /* XCRemoteSwiftPackageReference "radar-sdk-ios" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/radarlabs/radar-sdk-ios.git";
 			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 3.4.0;
+				kind = upToNextMinorVersion;
+				minimumVersion = 3.5.3;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
-
-/* Begin XCSwiftPackageProductDependency section */
-		9683FDF027B5AC29009EBB6B /* RadarSDK */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 9683FDEF27B5AC29009EBB6B /* XCRemoteSwiftPackageReference "radar-sdk-ios" */;
-			productName = RadarSDK;
-		};
-/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 9683FDCB27B5AB74009EBB6B /* Project object */;
 }
