@@ -6,14 +6,15 @@ jobs:
     steps:
       - checkout
       - run:
+          name: Xcode version
+          command: xcode-select -p
+      - run:
           name: List simulators
           command: xcrun simctl list
       - run:
           name: Install dependencies
           command: |
-            sudo gem install xcpretty
-            sudo gem install cocoapods
-            sudo gem install jazzy
+            gem install xcpretty cocoapods jazzy
       - run:
           name: Test
           command: make test-pretty
