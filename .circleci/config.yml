@@ -18,9 +18,6 @@ jobs:
           name: Test
           command: make test-pretty
       - run:
-          name: Build
-          command: make build-pretty
-      - run:
           name: Docs
           command: make docs
       - run:
