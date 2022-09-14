@@ -14,6 +14,8 @@
 
 - (instancetype _Nullable)initWithObject:(id _Nonnull)object;
 
+- (instancetype _Nullable)initWithUUID:(NSString *_Nonnull)uuid major:(NSString *_Nonnull)major minor:(NSString *_Nonnull)minor rssi:(NSInteger)rssi;
+
 - (instancetype _Nullable)initWithId:(NSString *_Nonnull)_id
                          description:(NSString *_Nullable)description
                                  tag:(NSString *_Nonnull)tag
@@ -23,5 +25,9 @@
                                minor:(NSString *_Nullable)minor
                             metadata:(NSDictionary *_Nullable)metadata
                             geometry:(RadarCoordinate *_Nonnull)geometry;
+
++ (RadarBeacon *_Nonnull)fromCLBeaconRegion:(CLBeaconRegion *_Nonnull)region;
+
++ (RadarBeacon *_Nonnull)fromCLBeacon:(CLBeacon *_Nonnull)beacon;
 
 @end

@@ -5,9 +5,9 @@
 //  Copyright © 2020 Radar Labs, Inc. All rights reserved.
 //
 
+#import "../RadarSDK/RadarAPIHelper.h"
 #import <Foundation/Foundation.h>
 #import <RadarSDK.h>
-#import "../RadarSDK/RadarAPIHelper.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -15,6 +15,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (assign, nonatomic) RadarStatus mockStatus;
 @property (nonnull, strong, nonatomic) NSDictionary *mockResponse;
+
+- (void)setMockResponse:(NSDictionary *)response
+              forMethod:(NSString *)urlString;
 
 @end
 

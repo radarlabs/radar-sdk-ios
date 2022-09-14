@@ -46,21 +46,18 @@ typedef NS_ENUM(NSInteger, RadarTrackingOptionsSyncLocations) {
 
 /**
  An options class used to configure background tracking.
-
  @see https://radar.com/documentation/sdk/ios
  */
 @interface RadarTrackingOptions : NSObject
 
 /**
  Determines the desired location update interval in seconds when stopped. Use 0 to shut down when stopped.
-
  @warning Note that location updates may be delayed significantly by Low Power Mode, or if the device has connectivity issues, low battery, or wi-fi disabled.
  */
 @property (nonatomic, assign) int desiredStoppedUpdateInterval;
 
 /**
  Determines the desired location update interval in seconds when moving.
-
  @warning Note that location updates may be delayed significantly by Low Power Mode, or if the device has connectivity issues, low battery, or wi-fi disabled.
  */
 @property (nonatomic, assign) int desiredMovingUpdateInterval;
@@ -107,14 +104,12 @@ typedef NS_ENUM(NSInteger, RadarTrackingOptionsSyncLocations) {
 
 /**
  Determines whether the flashing blue status bar is shown when tracking.
-
  @see https://developer.apple.com/documentation/corelocation/cllocationmanager/2923541-showsbackgroundlocationindicator
  */
 @property (nonatomic, assign) BOOL showBlueBar;
 
 /**
  Determines whether to use the iOS region monitoring service (geofencing) to create a client geofence around the device's current location when stopped.
-
  @see https://developer.apple.com/documentation/corelocation/monitoring_the_user_s_proximity_to_geographic_regions
  */
 @property (nonatomic, assign) BOOL useStoppedGeofence;
@@ -126,7 +121,6 @@ typedef NS_ENUM(NSInteger, RadarTrackingOptionsSyncLocations) {
 
 /**
  Determines whether to use the iOS region monitoring service (geofencing) to create a client geofence around the device's current location when moving.
-
  @see https://developer.apple.com/documentation/corelocation/monitoring_the_user_s_proximity_to_geographic_regions
  */
 @property (nonatomic, assign) BOOL useMovingGeofence;
@@ -143,14 +137,12 @@ typedef NS_ENUM(NSInteger, RadarTrackingOptionsSyncLocations) {
 
 /**
  Determines whether to use the iOS visit monitoring service.
-
  @see https://developer.apple.com/documentation/corelocation/getting_the_user_s_location/using_the_visits_location_service
  */
 @property (nonatomic, assign) BOOL useVisits;
 
 /**
  Determines whether to use the iOS significant location change service.
-
  @see https://developer.apple.com/documentation/corelocation/getting_the_user_s_location/using_the_significant-change_location_service
  */
 @property (nonatomic, assign) BOOL useSignificantLocationChanges;
@@ -162,7 +154,6 @@ typedef NS_ENUM(NSInteger, RadarTrackingOptionsSyncLocations) {
 
 /**
  Updates about every 30 seconds while moving or stopped. Moderate battery usage. Shows the flashing blue status bar during tracking.
-
  @see https://developer.apple.com/documentation/corelocation/cllocationmanager/2923541-showsbackgroundlocationindicator
  */
 @property (class, copy, readonly) RadarTrackingOptions *presetContinuous;
@@ -170,7 +161,6 @@ typedef NS_ENUM(NSInteger, RadarTrackingOptionsSyncLocations) {
 /**
  Updates about every 2.5 minutes when moving and shuts down when stopped to save battery. Once stopped, the device will need to move more than 100 meters to wake up and start
  moving again. Low battery usage. Requires the `location` background mode.
-
  Note that location updates may be delayed significantly by Low Power Mode, or if the device has connectivity issues, low battery, or wi-fi disabled.
  */
 @property (class, copy, readonly) RadarTrackingOptions *presetResponsive;
@@ -178,9 +168,7 @@ typedef NS_ENUM(NSInteger, RadarTrackingOptionsSyncLocations) {
 /**
  Uses the iOS visit monitoring service to update only on stops and exits. Once stopped, the device will need to move several hundred meters and trigger a visit departure to wake up
  and start moving again. Lowest battery usage.
-
  Note that location updates may be delayed significantly by Low Power Mode, or if the device has connectivity issues, low battery, or wi-fi disabled.
-
  @see https://developer.apple.com/documentation/corelocation/getting_the_user_s_location/using_the_visits_location_service
  */
 @property (class, copy, readonly) RadarTrackingOptions *presetEfficient;

@@ -17,7 +17,7 @@
     <a title="Radar Class Reference"></a>
     <header>
       <div class="content-wrapper">
-        <p><a href="../index.html">RadarSDK 3.4.0 Docs</a></p>
+        <p><a href="../index.html">RadarSDK 3.5.3 Docs</a></p>
         <p class="header-right"><a href="https://github.com/radarlabs/radar-sdk-ios"><img src="../img/gh.png" alt="GitHub"/>View on GitHub</a></p>
         <div class="header-right">
           <form role="search" action="../search.json">
@@ -199,6 +199,9 @@
                 <a href="../Type%20Definitions.html#/c:Radar.h@T@RadarSearchPlacesCompletionHandler">RadarSearchPlacesCompletionHandler</a>
               </li>
               <li class="nav-group-task">
+                <a href="../Type%20Definitions.html#/c:Radar.h@T@RadarSendEventCompletionHandler">RadarSendEventCompletionHandler</a>
+              </li>
+              <li class="nav-group-task">
                 <a href="../Type%20Definitions.html#/c:Radar.h@T@RadarTrackCompletionHandler">RadarTrackCompletionHandler</a>
               </li>
               <li class="nav-group-task">
@@ -330,7 +333,7 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Gets the version number of the Radar SDK, such as &ldquo;3.3.1&rdquo; or &ldquo;3.4.1-beta.2.&rdquo;</p>
+                        <p>Gets the version number of the Radar SDK, such as &ldquo;3.5.1&rdquo; or &ldquo;3.5.1-beta.2&rdquo;.</p>
 
                       </div>
                       <div class="declaration">
@@ -1427,11 +1430,11 @@
             </div>
             <div class="task-group">
               <div class="task-name-container">
-                <a name="/Event%20IDs"></a>
-                <a name="//apple_ref/objc/Section/Event IDs" class="dashAnchor"></a>
+                <a name="/Events"></a>
+                <a name="//apple_ref/objc/Section/Events" class="dashAnchor"></a>
                 <div class="section-name-container">
-                  <a class="section-name-link" href="#/Event%20IDs"></a>
-                  <h3 class="section-name"><span>Event IDs</span>
+                  <a class="section-name-link" href="#/Events"></a>
+                  <h3 class="section-name"><span>Events</span>
 </h3>
                 </div>
               </div>
@@ -1554,6 +1557,183 @@ confidence level of future events.</p>
                               <td>
                                 <div>
                                   <p>The ID of the event to reject.</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:objc(cs)Radar(cm)sendEvent:withMetadata:completionHandler:"></a>
+                    <a name="//apple_ref/objc/Method/+sendEvent:withMetadata:completionHandler:" class="dashAnchor"></a>
+                    <a class="token" href="#/c:objc(cs)Radar(cm)sendEvent:withMetadata:completionHandler:">+sendEvent:<wbr>withMetadata:<wbr>completionHandler:<wbr></a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Sends a custom event.</p>
+<div class="aside aside-see">
+    <p class="aside-title">See</p>
+    <p><a href="https://radar.com/documentation/api#send-a-custom-event">https://radar.com/documentation/api#send-a-custom-event</a></p>
+
+</div>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Objective-C</p>
+                          <pre class="highlight objective_c"><code><span class="k">+</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">sendEvent</span><span class="p">:(</span><span class="n">nonnull</span> <span class="n">NSString</span> <span class="o">*</span><span class="p">)</span><span class="nv">customType</span>
+         <span class="nf">withMetadata</span><span class="p">:(</span><span class="n">NSDictionary</span> <span class="o">*</span><span class="n">_Nullable</span><span class="p">)</span><span class="nv">metadata</span>
+    <span class="nf">completionHandler</span><span class="p">:(</span><span class="n"><a href="../Type%20Definitions.html#/c:Radar.h@T@RadarSendEventCompletionHandler">RadarSendEventCompletionHandler</a></span><span class="p">)</span><span class="nv">completionHandler</span><span class="p">;</span></code></pre>
+
+                        </div>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">class</span> <span class="kd">func</span> <span class="nf">sendEvent</span><span class="p">(</span><span class="nv">customType</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span> <span class="nv">metadata</span><span class="p">:</span> <span class="p">[</span><span class="kt">AnyHashable</span> <span class="p">:</span> <span class="kt">Any</span><span class="p">]?)</span> <span class="k">async</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="kt"><a href="../Enums/RadarStatus.html">RadarStatus</a></span><span class="p">,</span> <span class="kt">CLLocation</span><span class="p">?,</span> <span class="p">[</span><span class="kt"><a href="../Classes/RadarEvent.html">RadarEvent</a></span><span class="p">]?,</span> <span class="kt"><a href="../Classes/RadarUser.html">RadarUser</a></span><span class="p">?)</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>customType</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>The user-defined type of the event.</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>metadata</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>The metadata associated with the event.</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>completionHandler</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>A completion handler.</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:objc(cs)Radar(cm)sendEvent:withLocation:metadata:completionHandler:"></a>
+                    <a name="//apple_ref/objc/Method/+sendEvent:withLocation:metadata:completionHandler:" class="dashAnchor"></a>
+                    <a class="token" href="#/c:objc(cs)Radar(cm)sendEvent:withLocation:metadata:completionHandler:">+sendEvent:<wbr>withLocation:<wbr>metadata:<wbr>completionHandler:<wbr></a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Sends a custom event with a manually provided location.</p>
+<div class="aside aside-see">
+    <p class="aside-title">See</p>
+    <p><a href="https://radar.com/documentation/api#send-a-custom-event">https://radar.com/documentation/api#send-a-custom-event</a></p>
+
+</div>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Objective-C</p>
+                          <pre class="highlight objective_c"><code><span class="k">+</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">sendEvent</span><span class="p">:(</span><span class="n">nonnull</span> <span class="n">NSString</span> <span class="o">*</span><span class="p">)</span><span class="nv">customType</span>
+         <span class="nf">withLocation</span><span class="p">:(</span><span class="n">CLLocation</span> <span class="o">*</span><span class="n">_Nullable</span><span class="p">)</span><span class="nv">location</span>
+             <span class="nf">metadata</span><span class="p">:(</span><span class="n">NSDictionary</span> <span class="o">*</span><span class="n">_Nullable</span><span class="p">)</span><span class="nv">metadata</span>
+    <span class="nf">completionHandler</span><span class="p">:(</span><span class="n"><a href="../Type%20Definitions.html#/c:Radar.h@T@RadarSendEventCompletionHandler">RadarSendEventCompletionHandler</a></span><span class="p">)</span><span class="nv">completionHandler</span><span class="p">;</span></code></pre>
+
+                        </div>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">class</span> <span class="kd">func</span> <span class="nf">sendEvent</span><span class="p">(</span><span class="nv">customType</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span> <span class="nv">location</span><span class="p">:</span> <span class="kt">CLLocation</span><span class="p">?,</span> <span class="nv">metadata</span><span class="p">:</span> <span class="p">[</span><span class="kt">AnyHashable</span> <span class="p">:</span> <span class="kt">Any</span><span class="p">]?)</span> <span class="k">async</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="kt"><a href="../Enums/RadarStatus.html">RadarStatus</a></span><span class="p">,</span> <span class="kt">CLLocation</span><span class="p">?,</span> <span class="p">[</span><span class="kt"><a href="../Classes/RadarEvent.html">RadarEvent</a></span><span class="p">]?,</span> <span class="kt"><a href="../Classes/RadarUser.html">RadarUser</a></span><span class="p">?)</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>customType</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>The user-defined type of the event.</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>location</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>The location of the event.</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>metadata</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>The metadata associated with the event.</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>completionHandler</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>A completion handler.</p>
                                 </div>
                               </td>
                             </tr>
@@ -2247,7 +2427,147 @@ confidence level of future events.</p>
                               </td>
                               <td>
                                 <div>
-                                  <p>An array of categories to filter. See: <a href="https://radar.com/documentation/places/categories">https://radar.com/documentation/places/categories</a></p>
+                                  <p>An array of categories to filter. See <a href="https://radar.com/documentation/places/categories">https://radar.com/documentation/places/categories</a></p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>groups</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>An array of groups to filter. See <a href="https://radar.com/documentation/places/groups">https://radar.com/documentation/places/groups</a></p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>limit</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>The max number of places to return. A number between 1 and 100.</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>completionHandler</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>A completion handler.</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:objc(cs)Radar(cm)searchPlacesWithRadius:chains:chainMetadata:categories:groups:limit:completionHandler:"></a>
+                    <a name="//apple_ref/objc/Method/+searchPlacesWithRadius:chains:chainMetadata:categories:groups:limit:completionHandler:" class="dashAnchor"></a>
+                    <a class="token" href="#/c:objc(cs)Radar(cm)searchPlacesWithRadius:chains:chainMetadata:categories:groups:limit:completionHandler:">+searchPlacesWithRadius:<wbr>chains:<wbr>chainMetadata:<wbr>categories:<wbr>groups:<wbr>limit:<wbr>completionHandler:<wbr></a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Gets the device&rsquo;s current location, then searches for places near that location, sorted by distance.</p>
+<div class="aside aside-warning">
+    <p class="aside-title">Warning</p>
+    <p>You may specify only one of chains, categories, or groups; if chains are specified, <code>chainMetadata</code> can also be specified.</p>
+
+</div><div class="aside aside-see">
+    <p class="aside-title">See</p>
+    <p><a href="https://radar.com/documentation/api#search-places">https://radar.com/documentation/api#search-places</a></p>
+
+</div>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Objective-C</p>
+                          <pre class="highlight objective_c"><code><span class="k">+</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">searchPlacesWithRadius</span><span class="p">:(</span><span class="kt">int</span><span class="p">)</span><span class="nv">radius</span>
+                        <span class="nf">chains</span><span class="p">:(</span><span class="n">NSArray</span><span class="o">&lt;</span><span class="n">NSString</span> <span class="o">*&gt;</span> <span class="o">*</span><span class="n">_Nullable</span><span class="p">)</span><span class="nv">chains</span>
+                 <span class="nf">chainMetadata</span><span class="p">:(</span><span class="n">NSDictionary</span><span class="o">&lt;</span><span class="n">NSString</span> <span class="o">*</span><span class="p">,</span> <span class="n">NSString</span> <span class="o">*&gt;</span> <span class="o">*</span><span class="n">_Nullable</span><span class="p">)</span>
+                                   <span class="n">chainMetadata</span>
+                    <span class="n">categories</span><span class="o">:</span><span class="p">(</span><span class="n">NSArray</span><span class="o">&lt;</span><span class="n">NSString</span> <span class="o">*&gt;</span> <span class="o">*</span><span class="n">_Nullable</span><span class="p">)</span><span class="n">categories</span>
+                        <span class="n">groups</span><span class="o">:</span><span class="p">(</span><span class="n">NSArray</span><span class="o">&lt;</span><span class="n">NSString</span> <span class="o">*&gt;</span> <span class="o">*</span><span class="n">_Nullable</span><span class="p">)</span><span class="n">groups</span>
+                         <span class="n">limit</span><span class="o">:</span><span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="n">limit</span>
+             <span class="n">completionHandler</span><span class="o">:</span>
+                 <span class="p">(</span><span class="n"><a href="../Type%20Definitions.html#/c:Radar.h@T@RadarSearchPlacesCompletionHandler">RadarSearchPlacesCompletionHandler</a></span><span class="p">)</span><span class="n">completionHandler</span><span class="p">;</span></code></pre>
+
+                        </div>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">class</span> <span class="kd">func</span> <span class="nf">searchPlaces</span><span class="p">(</span><span class="nv">radius</span><span class="p">:</span> <span class="kt">Int32</span><span class="p">,</span> <span class="nv">chains</span><span class="p">:</span> <span class="p">[</span><span class="kt">String</span><span class="p">]?,</span> <span class="nv">chainMetadata</span><span class="p">:</span> <span class="p">[</span><span class="kt">String</span> <span class="p">:</span> <span class="kt">String</span><span class="p">]?,</span> <span class="nv">categories</span><span class="p">:</span> <span class="p">[</span><span class="kt">String</span><span class="p">]?,</span> <span class="nv">groups</span><span class="p">:</span> <span class="p">[</span><span class="kt">String</span><span class="p">]?,</span> <span class="nv">limit</span><span class="p">:</span> <span class="kt">Int32</span><span class="p">)</span> <span class="k">async</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="kt"><a href="../Enums/RadarStatus.html">RadarStatus</a></span><span class="p">,</span> <span class="kt">CLLocation</span><span class="p">?,</span> <span class="p">[</span><span class="kt"><a href="../Classes/RadarPlace.html">RadarPlace</a></span><span class="p">]?)</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>radius</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>The radius to search, in meters. A number between 100 and 10000.</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>chains</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>An array of chain slugs to filter. See <a href="https://radar.com/documentation/places/chains">https://radar.com/documentation/places/chains</a></p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>chainMetadata</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>Optional chain metadata filters. Keys and values must be strings. See <a href="https://radar.com/documentation/places#metadata">https://radar.com/documentation/places#metadata</a>.</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>categories</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>An array of categories to filter. See <a href="https://radar.com/documentation/places/categories">https://radar.com/documentation/places/categories</a></p>
                                 </div>
                               </td>
                             </tr>
@@ -2385,7 +2705,159 @@ confidence level of future events.</p>
                               </td>
                               <td>
                                 <div>
-                                  <p>An array of categories to filter. See: <a href="https://radar.com/documentation/places/categories">https://radar.com/documentation/places/categories</a></p>
+                                  <p>An array of categories to filter. See <a href="https://radar.com/documentation/places/categories">https://radar.com/documentation/places/categories</a></p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>groups</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>An array of groups to filter. See <a href="https://radar.com/documentation/places/groups">https://radar.com/documentation/places/groups</a></p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>limit</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>The max number of places to return. A number between 1 and 100.</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>completionHandler</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>A completion handler.</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:objc(cs)Radar(cm)searchPlacesNear:radius:chains:chainMetadata:categories:groups:limit:completionHandler:"></a>
+                    <a name="//apple_ref/objc/Method/+searchPlacesNear:radius:chains:chainMetadata:categories:groups:limit:completionHandler:" class="dashAnchor"></a>
+                    <a class="token" href="#/c:objc(cs)Radar(cm)searchPlacesNear:radius:chains:chainMetadata:categories:groups:limit:completionHandler:">+searchPlacesNear:<wbr>radius:<wbr>chains:<wbr>chainMetadata:<wbr>categories:<wbr>groups:<wbr>limit:<wbr>completionHandler:<wbr></a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Searches for places near a location, sorted by distance.</p>
+<div class="aside aside-warning">
+    <p class="aside-title">Warning</p>
+    <p>You may specify only one of chains, categories, or groups.</p>
+
+</div><div class="aside aside-see">
+    <p class="aside-title">See</p>
+    <p><a href="https://radar.com/documentation/api#search-places">https://radar.com/documentation/api#search-places</a></p>
+
+</div>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Objective-C</p>
+                          <pre class="highlight objective_c"><code><span class="k">+</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">searchPlacesNear</span><span class="p">:(</span><span class="n">nonnull</span> <span class="n">CLLocation</span> <span class="o">*</span><span class="p">)</span><span class="nv">near</span>
+                  <span class="nf">radius</span><span class="p">:(</span><span class="kt">int</span><span class="p">)</span><span class="nv">radius</span>
+                  <span class="nf">chains</span><span class="p">:(</span><span class="n">NSArray</span><span class="o">&lt;</span><span class="n">NSString</span> <span class="o">*&gt;</span> <span class="o">*</span><span class="n">_Nullable</span><span class="p">)</span><span class="nv">chains</span>
+           <span class="nf">chainMetadata</span><span class="p">:</span>
+               <span class="p">(</span><span class="n">NSDictionary</span><span class="o">&lt;</span><span class="n">NSString</span> <span class="o">*</span><span class="p">,</span> <span class="n">NSString</span> <span class="o">*&gt;</span> <span class="o">*</span><span class="n">_Nullable</span><span class="p">)</span><span class="nv">chainMetadata</span>
+              <span class="nf">categories</span><span class="p">:(</span><span class="n">NSArray</span><span class="o">&lt;</span><span class="n">NSString</span> <span class="o">*&gt;</span> <span class="o">*</span><span class="n">_Nullable</span><span class="p">)</span><span class="nv">categories</span>
+                  <span class="nf">groups</span><span class="p">:(</span><span class="n">NSArray</span><span class="o">&lt;</span><span class="n">NSString</span> <span class="o">*&gt;</span> <span class="o">*</span><span class="n">_Nullable</span><span class="p">)</span><span class="nv">groups</span>
+                   <span class="nf">limit</span><span class="p">:(</span><span class="kt">int</span><span class="p">)</span><span class="nv">limit</span>
+       <span class="nf">completionHandler</span><span class="p">:(</span><span class="n"><a href="../Type%20Definitions.html#/c:Radar.h@T@RadarSearchPlacesCompletionHandler">RadarSearchPlacesCompletionHandler</a></span><span class="p">)</span><span class="nv">completionHandler</span><span class="p">;</span></code></pre>
+
+                        </div>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">class</span> <span class="kd">func</span> <span class="nf">searchPlaces</span><span class="p">(</span><span class="nv">near</span><span class="p">:</span> <span class="kt">CLLocation</span><span class="p">,</span> <span class="nv">radius</span><span class="p">:</span> <span class="kt">Int32</span><span class="p">,</span> <span class="nv">chains</span><span class="p">:</span> <span class="p">[</span><span class="kt">String</span><span class="p">]?,</span> <span class="nv">chainMetadata</span><span class="p">:</span> <span class="p">[</span><span class="kt">String</span> <span class="p">:</span> <span class="kt">String</span><span class="p">]?,</span> <span class="nv">categories</span><span class="p">:</span> <span class="p">[</span><span class="kt">String</span><span class="p">]?,</span> <span class="nv">groups</span><span class="p">:</span> <span class="p">[</span><span class="kt">String</span><span class="p">]?,</span> <span class="nv">limit</span><span class="p">:</span> <span class="kt">Int32</span><span class="p">)</span> <span class="k">async</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="kt"><a href="../Enums/RadarStatus.html">RadarStatus</a></span><span class="p">,</span> <span class="kt">CLLocation</span><span class="p">?,</span> <span class="p">[</span><span class="kt"><a href="../Classes/RadarPlace.html">RadarPlace</a></span><span class="p">]?)</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>near</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>The location to search.</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>radius</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>The radius to search, in meters. A number between 100 and 10000.</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>chains</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>An array of chain slugs to filter. See <a href="https://radar.com/documentation/places/chains">https://radar.com/documentation/places/chains</a></p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>chainMetadata</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>Optional chain metadata filters. Keys and values must be strings. See <a href="https://radar.com/documentation/places#metadata">https://radar.com/documentation/places#metadata</a>.</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>categories</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>An array of categories to filter. See <a href="https://radar.com/documentation/places/categories">https://radar.com/documentation/places/categories</a></p>
                                 </div>
                               </td>
                             </tr>
@@ -3825,7 +4297,7 @@ confidence level of future events.</p>
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2022 <a class="link" href="https://radar.com" target="_blank" rel="external noopener">Radar Labs, Inc.</a>. All rights reserved. (Last updated: 2022-04-06)</p>
+          <p>&copy; 2022 <a class="link" href="https://radar.com" target="_blank" rel="external noopener">Radar Labs, Inc.</a>. All rights reserved. (Last updated: 2022-08-31)</p>
           <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external noopener">jazzy ♪♫ v0.14.1</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external noopener">Realm</a> project.</p>
         </section>
       </article>

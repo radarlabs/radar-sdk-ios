@@ -6,9 +6,8 @@
 //
 
 #import "RadarCoordinate.h"
+#import "RadarRouteMode.h"
 #import <Foundation/Foundation.h>
-
-typedef NS_OPTIONS(NSInteger, RadarRouteMode);
 
 /**
  Represents a trip.

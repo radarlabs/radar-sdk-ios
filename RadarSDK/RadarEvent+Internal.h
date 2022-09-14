@@ -22,6 +22,7 @@
                      actualCreatedAt:(NSDate *_Nonnull)actualCreatedAt
                                 live:(BOOL)live
                                 type:(RadarEventType)type
+                          customType:(NSString *_Nullable)customType
                             geofence:(RadarGeofence *_Nullable)geofence
                                place:(RadarPlace *_Nullable)place
                               region:(RadarRegion *_Nullable)region
@@ -32,7 +33,8 @@
                         verification:(RadarEventVerification)verification
                           confidence:(RadarEventConfidence)confidence
                             duration:(float)duration
-                            location:(CLLocation *_Nonnull)location;
+                            location:(CLLocation *_Nonnull)location
+                            metadata:(NSDictionary *_Nullable)metadata;
 - (instancetype _Nullable)initWithObject:(id _Nonnull)object;
 
 @end

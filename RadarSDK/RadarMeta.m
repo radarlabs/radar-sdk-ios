@@ -10,20 +10,18 @@
 #import "RadarMeta+Internal.h"
 #import "RadarTrackingOptions.h"
 
-
 @implementation RadarMeta
 
 + (RadarMeta *)metaFromDictionary:(NSDictionary *)dict {
     RadarMeta *meta = [RadarMeta new];
-    
+
     if (dict) {
         id trackingOptionsObj = dict[@"trackingOptions"];
         if (trackingOptionsObj && [trackingOptionsObj isKindOfClass:[NSDictionary class]]) {
             meta.trackingOptions = [RadarTrackingOptions trackingOptionsFromDictionary:trackingOptionsObj];
         }
     }
-    
-    
+
     return meta;
 }
 
