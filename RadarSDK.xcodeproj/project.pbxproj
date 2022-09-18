@@ -77,6 +77,7 @@
 		966D8860288F7404008C0D00 /* custom_event.json in Resources */ = {isa = PBXBuildFile; fileRef = 966D885F288F7404008C0D00 /* custom_event.json */; };
 		9679F4A127CD8D0600800797 /* CLLocation+Radar.h in Headers */ = {isa = PBXBuildFile; fileRef = 9679F4A027CD8D0600800797 /* CLLocation+Radar.h */; };
 		9679F4A327CD8DE200800797 /* CLLocation+Radar.m in Sources */ = {isa = PBXBuildFile; fileRef = 9679F4A227CD8DE200800797 /* CLLocation+Radar.m */; };
+		967BE4FD28D7754F0024CC67 /* RadarTrackingOptionsTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 967BE4FC28D7754F0024CC67 /* RadarTrackingOptionsTests.m */; };
 		9683FD6427B36C26009EBB6B /* RadarMeta.h in Headers */ = {isa = PBXBuildFile; fileRef = 9683FD6127B36C26009EBB6B /* RadarMeta.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		9683FD6527B36C26009EBB6B /* RadarMeta.m in Sources */ = {isa = PBXBuildFile; fileRef = 9683FD6227B36C26009EBB6B /* RadarMeta.m */; };
 		9683FD6627B36C26009EBB6B /* RadarMeta+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 9683FD6327B36C26009EBB6B /* RadarMeta+Internal.h */; };
@@ -165,6 +166,7 @@
 		96711A8F2790C87A009ED205 /* Package.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Package.swift; sourceTree = "<group>"; };
 		9679F4A027CD8D0600800797 /* CLLocation+Radar.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "CLLocation+Radar.h"; sourceTree = "<group>"; };
 		9679F4A227CD8DE200800797 /* CLLocation+Radar.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "CLLocation+Radar.m"; sourceTree = "<group>"; };
+		967BE4FC28D7754F0024CC67 /* RadarTrackingOptionsTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RadarTrackingOptionsTests.m; sourceTree = "<group>"; };
 		9683FD6127B36C26009EBB6B /* RadarMeta.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RadarMeta.h; sourceTree = "<group>"; };
 		9683FD6227B36C26009EBB6B /* RadarMeta.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RadarMeta.m; sourceTree = "<group>"; };
 		9683FD6327B36C26009EBB6B /* RadarMeta+Internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "RadarMeta+Internal.h"; sourceTree = "<group>"; };
@@ -463,6 +465,7 @@
 				DD103210237E0C47003DD408 /* RadarSDKTests.m */,
 				DD8E2F6F24018BF8002D51AB /* RadarTestUtils.h */,
 				DD8E2F7024018BF8002D51AB /* RadarTestUtils.m */,
+				967BE4FC28D7754F0024CC67 /* RadarTrackingOptionsTests.m */,
 				DD103213237F1778003DD408 /* Resources */,
 			);
 			path = RadarSDKTests;
@@ -784,6 +787,7 @@
 			files = (
 				DD8E2F7424018C17002D51AB /* RadarPermissionsHelperMock.m in Sources */,
 				DD8E2F7724018C25002D51AB /* RadarAPIHelperMock.m in Sources */,
+				967BE4FD28D7754F0024CC67 /* RadarTrackingOptionsTests.m in Sources */,
 				96B465BC27D6732500D7119B /* CLLocation+RadarTests.m in Sources */,
 				DD103211237E0C47003DD408 /* RadarSDKTests.m in Sources */,
 				DD8E2F7124018BF9002D51AB /* RadarTestUtils.m in Sources */,

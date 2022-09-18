@@ -188,6 +188,11 @@ NSString *const kSyncNone = @"none";
 }
 
 + (RadarTrackingOptions *)trackingOptionsFromDictionary:(NSDictionary *)dict {
+    NSDateFormatter * isoDateFormatter = [[NSDateFormatter alloc] init];
+    isoDateFormatter.locale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US_POSIX"];
+    isoDateFormatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
+    [isoDateFormatter setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss.SSSZ"];
+
     RadarTrackingOptions *options = [RadarTrackingOptions new];
     options.desiredStoppedUpdateInterval = [dict[kDesiredStoppedUpdateInterval] intValue];
     options.desiredMovingUpdateInterval = [dict[kDesiredMovingUpdateInterval] intValue];
@@ -195,8 +200,21 @@ NSString *const kSyncNone = @"none";
     options.desiredAccuracy = [RadarTrackingOptions desiredAccuracyForString:dict[kDesiredAccuracy]];
     options.stopDuration = [dict[kStopDuration] intValue];
     options.stopDistance = [dict[kStopDistance] intValue];
-    options.startTrackingAfter = dict[kStartTrackingAfter];
-    options.stopTrackingAfter = dict[kStopTrackingAfter];
+
+    NSString *startTrackingAfterString = (NSString *)dict[kStartTrackingAfter];
+    if (startTrackingAfterString) {
+        options.startTrackingAfter = [isoDateFormatter dateFromString:startTrackingAfterString];
+    } else {
+        options.startTrackingAfter = dict[kStartTrackingAfter];
+    }
+
+    NSString *stopTrackingAfterString = (NSString *)dict[kStopTrackingAfter];
+    if (stopTrackingAfterString) {
+        options.stopTrackingAfter = [isoDateFormatter dateFromString:stopTrackingAfterString];
+    } else {
+        options.stopTrackingAfter = dict[kStopTrackingAfter];
+    }
+
     options.syncLocations = [RadarTrackingOptions syncLocationsForString:dict[kSync]];
     options.replay = [RadarTrackingOptions replayForString:dict[kReplay]];
     options.showBlueBar = [dict[kShowBlueBar] boolValue];
@@ -212,6 +230,11 @@ NSString *const kSyncNone = @"none";
 }
 
 - (NSDictionary *)dictionaryValue {
+    NSDateFormatter * isoDateFormatter = [[NSDateFormatter alloc] init];
+    isoDateFormatter.locale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US_POSIX"];
+    isoDateFormatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
+    [isoDateFormatter setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss.SSSZ"];
+
     NSMutableDictionary *dict = [NSMutableDictionary new];
     dict[kDesiredStoppedUpdateInterval] = @(self.desiredStoppedUpdateInterval);
     dict[kDesiredMovingUpdateInterval] = @(self.desiredMovingUpdateInterval);
@@ -219,8 +242,19 @@ NSString *const kSyncNone = @"none";
     dict[kDesiredAccuracy] = [RadarTrackingOptions stringForDesiredAccuracy:self.desiredAccuracy];
     dict[kStopDuration] = @(self.stopDuration);
     dict[kStopDistance] = @(self.stopDistance);
-    dict[kStartTrackingAfter] = self.startTrackingAfter;
-    dict[kStopTrackingAfter] = self.stopTrackingAfter;
+
+    if (self.startTrackingAfter) {
+        dict[kStartTrackingAfter] = [isoDateFormatter stringFromDate:self.startTrackingAfter];
+    } else  {
+        dict[kStartTrackingAfter] = self.startTrackingAfter;
+    }
+
+    if (self.stopTrackingAfter) {
+        dict[kStopTrackingAfter] = [isoDateFormatter stringFromDate:self.stopTrackingAfter];
+    } else {
+        dict[kStopTrackingAfter] = self.stopTrackingAfter;
+    }
+
     dict[kSync] = [RadarTrackingOptions stringForSyncLocations:self.syncLocations];
     dict[kReplay] = [RadarTrackingOptions stringForReplay:self.replay];
     dict[kShowBlueBar] = @(self.showBlueBar);
@@ -253,8 +287,8 @@ NSString *const kSyncNone = @"none";
     return self.desiredStoppedUpdateInterval == options.desiredStoppedUpdateInterval && self.desiredMovingUpdateInterval == options.desiredMovingUpdateInterval &&
            self.desiredSyncInterval == options.desiredSyncInterval && self.desiredAccuracy == options.desiredAccuracy && self.stopDuration == options.stopDuration &&
            self.stopDistance == options.stopDistance &&
-           (self.startTrackingAfter == nil ? options.startTrackingAfter == nil : [self.startTrackingAfter isEqual:options.startTrackingAfter]) &&
-           (self.stopTrackingAfter == nil ? options.stopTrackingAfter == nil : [self.stopTrackingAfter isEqual:options.stopTrackingAfter]) &&
+           (self.startTrackingAfter == nil ? options.startTrackingAfter == nil : fabs([self.startTrackingAfter timeIntervalSinceDate:options.startTrackingAfter]) < 0.5) &&
+           (self.stopTrackingAfter == nil ? options.stopTrackingAfter == nil : fabs([self.stopTrackingAfter timeIntervalSinceDate:options.stopTrackingAfter]) < 0.5) &&
            self.syncLocations == options.syncLocations && self.replay == options.replay && self.showBlueBar == options.showBlueBar &&
            self.useStoppedGeofence == options.useStoppedGeofence && self.stoppedGeofenceRadius == options.stoppedGeofenceRadius &&
            self.useMovingGeofence == options.useMovingGeofence && self.movingGeofenceRadius == options.movingGeofenceRadius && self.syncGeofences == options.syncGeofences &&
