@@ -188,11 +188,6 @@ NSString *const kSyncNone = @"none";
 }
 
 + (RadarTrackingOptions *)trackingOptionsFromDictionary:(NSDictionary *)dict {
-    NSDateFormatter * isoDateFormatter = [[NSDateFormatter alloc] init];
-    isoDateFormatter.locale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US_POSIX"];
-    isoDateFormatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
-    [isoDateFormatter setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss.SSSZ"];
-
     RadarTrackingOptions *options = [RadarTrackingOptions new];
     options.desiredStoppedUpdateInterval = [dict[kDesiredStoppedUpdateInterval] intValue];
     options.desiredMovingUpdateInterval = [dict[kDesiredMovingUpdateInterval] intValue];
@@ -203,14 +198,14 @@ NSString *const kSyncNone = @"none";
 
     NSString *startTrackingAfterString = (NSString *)dict[kStartTrackingAfter];
     if (startTrackingAfterString) {
-        options.startTrackingAfter = [isoDateFormatter dateFromString:startTrackingAfterString];
+        options.startTrackingAfter = [RadarTrackingOptions.dateFormatter dateFromString:startTrackingAfterString];
     } else {
         options.startTrackingAfter = dict[kStartTrackingAfter];
     }
 
     NSString *stopTrackingAfterString = (NSString *)dict[kStopTrackingAfter];
     if (stopTrackingAfterString) {
-        options.stopTrackingAfter = [isoDateFormatter dateFromString:stopTrackingAfterString];
+        options.stopTrackingAfter = [RadarTrackingOptions.dateFormatter dateFromString:stopTrackingAfterString];
     } else {
         options.stopTrackingAfter = dict[kStopTrackingAfter];
     }
@@ -230,11 +225,6 @@ NSString *const kSyncNone = @"none";
 }
 
 - (NSDictionary *)dictionaryValue {
-    NSDateFormatter * isoDateFormatter = [[NSDateFormatter alloc] init];
-    isoDateFormatter.locale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US_POSIX"];
-    isoDateFormatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
-    [isoDateFormatter setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss.SSSZ"];
-
     NSMutableDictionary *dict = [NSMutableDictionary new];
     dict[kDesiredStoppedUpdateInterval] = @(self.desiredStoppedUpdateInterval);
     dict[kDesiredMovingUpdateInterval] = @(self.desiredMovingUpdateInterval);
@@ -244,13 +234,13 @@ NSString *const kSyncNone = @"none";
     dict[kStopDistance] = @(self.stopDistance);
 
     if (self.startTrackingAfter) {
-        dict[kStartTrackingAfter] = [isoDateFormatter stringFromDate:self.startTrackingAfter];
+        dict[kStartTrackingAfter] = [RadarTrackingOptions.dateFormatter stringFromDate:self.startTrackingAfter];
     } else  {
         dict[kStartTrackingAfter] = self.startTrackingAfter;
     }
 
     if (self.stopTrackingAfter) {
-        dict[kStopTrackingAfter] = [isoDateFormatter stringFromDate:self.stopTrackingAfter];
+        dict[kStopTrackingAfter] = [RadarTrackingOptions.dateFormatter stringFromDate:self.stopTrackingAfter];
     } else {
         dict[kStopTrackingAfter] = self.stopTrackingAfter;
     }
@@ -293,6 +283,12 @@ NSString *const kSyncNone = @"none";
            self.useStoppedGeofence == options.useStoppedGeofence && self.stoppedGeofenceRadius == options.stoppedGeofenceRadius &&
            self.useMovingGeofence == options.useMovingGeofence && self.movingGeofenceRadius == options.movingGeofenceRadius && self.syncGeofences == options.syncGeofences &&
            self.useVisits == options.useVisits && self.useSignificantLocationChanges == options.useSignificantLocationChanges && self.beacons == options.beacons;
+}
+
+static NSISO8601DateFormatter *dateFormatter;
+
++ (NSISO8601DateFormatter *)dateFormatter {
+    return [[NSISO8601DateFormatter alloc] init];
 }
 
 @end
