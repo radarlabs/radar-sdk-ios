@@ -196,6 +196,8 @@ NSString *const kSyncNone = @"none";
     options.stopDuration = [dict[kStopDuration] intValue];
     options.stopDistance = [dict[kStopDistance] intValue];
 
+    // Dates are stored as ISO8601 strings in the dictionary. See
+    // dictionaryValue below for an explanation.
     NSString *startTrackingAfterString = (NSString *)dict[kStartTrackingAfter];
     if (startTrackingAfterString) {
         options.startTrackingAfter = [RadarTrackingOptions.dateFormatter dateFromString:startTrackingAfterString];
@@ -233,6 +235,10 @@ NSString *const kSyncNone = @"none";
     dict[kStopDuration] = @(self.stopDuration);
     dict[kStopDistance] = @(self.stopDistance);
 
+    // When Radar.trackOnce() or Radar.startTracking() is called, it includes
+    // the tracking options in the JSON request body. However, NSDates are not
+    // JSON-serializable in Objective-C, so we have to store them as ISO8601
+    // strings to prevent parsing errors.
     if (self.startTrackingAfter) {
         dict[kStartTrackingAfter] = [RadarTrackingOptions.dateFormatter stringFromDate:self.startTrackingAfter];
     } else  {
@@ -277,6 +283,10 @@ NSString *const kSyncNone = @"none";
     return self.desiredStoppedUpdateInterval == options.desiredStoppedUpdateInterval && self.desiredMovingUpdateInterval == options.desiredMovingUpdateInterval &&
            self.desiredSyncInterval == options.desiredSyncInterval && self.desiredAccuracy == options.desiredAccuracy && self.stopDuration == options.stopDuration &&
            self.stopDistance == options.stopDistance &&
+           // Serializing NSDates in and out of ISO8601 strings can sometimes
+           // cause the milliseconds to drift slightly, so we have to do a
+           // floating-point comparison for equality. Even
+           // +[NSDate isEqualToDate:] is too strict.
            (self.startTrackingAfter == nil ? options.startTrackingAfter == nil : fabs([self.startTrackingAfter timeIntervalSinceDate:options.startTrackingAfter]) < 0.5) &&
            (self.stopTrackingAfter == nil ? options.stopTrackingAfter == nil : fabs([self.stopTrackingAfter timeIntervalSinceDate:options.stopTrackingAfter]) < 0.5) &&
            self.syncLocations == options.syncLocations && self.replay == options.replay && self.showBlueBar == options.showBlueBar &&
