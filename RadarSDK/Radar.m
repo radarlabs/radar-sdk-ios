@@ -449,6 +449,7 @@ completionHandler:(RadarSendEventCompletionHandler)completionHandler {
             [RadarSettings setPreviousTrackingOptions:[RadarSettings trackingOptions]];
             [RadarSettings setTrackingOptions:trackingOptions];
             [self startTrackingWithOptions:trackingOptions];
+            [self trackOnceWithCompletionHandler:nil];
         }
 
         if (completionHandler) {
