@@ -255,13 +255,20 @@
     {
       "file": "/Users/jason/Developer/toolkit-ios/radar-sdk-ios/RadarSDK/Include/RadarTripOptions.h",
       "line": 60,
+      "symbol": "RadarTripOptions.approachingThreshold",
+      "symbol_kind": "sourcekitten.source.lang.objc.decl.property",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/jason/Developer/toolkit-ios/radar-sdk-ios/RadarSDK/Include/RadarTripOptions.h",
+      "line": 62,
       "symbol": "RadarTripOptions.+tripOptionsFromDictionary:",
       "symbol_kind": "sourcekitten.source.lang.objc.decl.method.class",
       "warning": "undocumented"
     },
     {
       "file": "/Users/jason/Developer/toolkit-ios/radar-sdk-ios/RadarSDK/Include/RadarTripOptions.h",
-      "line": 61,
+      "line": 63,
       "symbol": "RadarTripOptions.-dictionaryValue",
       "symbol_kind": "sourcekitten.source.lang.objc.decl.method.instance",
       "warning": "undocumented"

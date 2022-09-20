@@ -2,24 +2,22 @@ version: 2
 jobs:
   build_and_test:
     macos:
-      xcode: 13.1.0
+      xcode: 13.4.1
     steps:
       - checkout
+      - run:
+          name: Xcode version
+          command: xcode-select -p
       - run:
           name: List simulators
           command: xcrun simctl list
       - run:
           name: Install dependencies
           command: |
-            sudo gem install xcpretty
-            sudo gem install cocoapods
-            sudo gem install jazzy
+            gem install xcpretty cocoapods jazzy
       - run:
           name: Test
-          command: make test-pretty
-      - run:
-          name: Build
-          command: make build-pretty
+          command: make clean test-pretty
       - run:
           name: Docs
           command: make docs
