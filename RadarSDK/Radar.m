@@ -94,6 +94,10 @@
     [RadarSettings setAdIdEnabled:enabled];
 }
 
++ (void)setAnonymousTrackingEnabled:(BOOL)enabled {
+    [RadarSettings setAnonymousTrackingEnabled:enabled];
+}
+
 #pragma mark - Get Location
 
 + (void)getLocationWithCompletionHandler:(RadarLocationCompletionHandler)completionHandler {

@@ -313,6 +313,14 @@ typedef void(^_Nonnull RadarSendEventCompletionHandler)(RadarStatus status, CLLo
 + (NSDictionary *_Nullable)getMetadata;
 
 /**
+ Enables anonymous tracking for privacy reasons. Avoids creating user records on the server and avoids sending any stable device IDs, user IDs, and user metadata
+ to the server when calling `trackOnce()` or `startTracking()`. Disabled by default.
+
+ @param enabled A boolean indicating whether anonymous tracking should be enabled.
+ */
++ (void)setAnonymousTrackingEnabled:(BOOL)enabled;
+
+/**
  Enables `adId` (IDFA) collection. Disabled by default.
 
  @param enabled A boolean indicating whether `adId` should be collected.
