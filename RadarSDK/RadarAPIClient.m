@@ -133,6 +133,7 @@
     BOOL anonymous = [RadarSettings anonymousTrackingEnabled];
     params[@"anonymous"] = @(anonymous);
     if (anonymous) {
+        params[@"deviceId"] = @"anonymous";
         params[@"geofenceIds"] = [RadarState geofenceIds];
         params[@"placeId"] = [RadarState placeId];
         params[@"regionIds"] = [RadarState regionIds];

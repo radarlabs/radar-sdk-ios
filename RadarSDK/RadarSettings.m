@@ -101,7 +101,7 @@ static NSString *const kDefaultHost = @"https://api.radar.io";
 }
 
 + (BOOL)anonymousTrackingEnabled {
-    return [[NSUserDefaults standardUserDefaults] boolForKey:kAdIdEnabled];
+    return [[NSUserDefaults standardUserDefaults] boolForKey:kAnonymous];
 }
 
 + (void)setAnonymousTrackingEnabled:(BOOL)enabled {
