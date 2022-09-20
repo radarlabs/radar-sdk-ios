@@ -493,8 +493,12 @@ completionHandler:(RadarSendEventCompletionHandler)completionHandler {
                                                  [RadarSettings setTripOptions:nil];
 
                                                  // return to previous tracking options after trip
-                                                 [RadarSettings setTrackingOptions:[RadarSettings previousTrackingOptions]];
-                                                 [RadarSettings setPreviousTrackingOptions:nil];
+                                                 RadarTrackingOptions *previousOptions = [RadarSettings previousTrackingOptions];
+
+                                                 if (previousOptions) {
+                                                     [RadarSettings setPreviousTrackingOptions:nil];
+                                                     [self startTrackingWithOptions:previousOptions];
+                                                 }
 
                                                  // flush location update to generate events
                                                  [[RadarLocationManager sharedInstance] getLocationWithCompletionHandler:nil];
@@ -521,8 +525,12 @@ completionHandler:(RadarSendEventCompletionHandler)completionHandler {
                                                  [RadarSettings setTripOptions:nil];
 
                                                  // return to previous tracking options after trip
-                                                 [RadarSettings setTrackingOptions:[RadarSettings previousTrackingOptions]];
-                                                 [RadarSettings setPreviousTrackingOptions:nil];
+                                                 RadarTrackingOptions *previousOptions = [RadarSettings previousTrackingOptions];
+
+                                                 if (previousOptions) {
+                                                     [RadarSettings setPreviousTrackingOptions:nil];
+                                                     [self startTrackingWithOptions:previousOptions];
+                                                 }
 
                                                  // flush location update to generate events
                                                  [[RadarLocationManager sharedInstance] getLocationWithCompletionHandler:nil];
