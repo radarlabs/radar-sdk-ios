@@ -522,7 +522,8 @@ completionHandler:(RadarSendEventCompletionHandler)completionHandler NS_SWIFT_NA
 
  @see https://radar.com/documentation/trip-tracking
  */
-+ (void)startTripWithOptions:(RadarTripOptions *_Nonnull)options NS_SWIFT_NAME(startTrip(options:));
++ (void)startTripWithOptions:(RadarTripOptions *_Nonnull)options
+    NS_SWIFT_NAME(startTrip(options:)) __deprecated_msg("Use +[Radar startTripWithOptions:trackingOptions:completionHandler:] instead.");
 
 /**
  Starts a trip.
@@ -533,7 +534,13 @@ completionHandler:(RadarSendEventCompletionHandler)completionHandler NS_SWIFT_NA
  @see https://radar.com/documentation/trip-tracking
  */
 + (void)startTripWithOptions:(RadarTripOptions *_Nonnull)options
-           completionHandler:(RadarTripCompletionHandler _Nullable)completionHandler NS_SWIFT_NAME(startTrip(options:completionHandler:));
+           completionHandler:(RadarTripCompletionHandler _Nullable)completionHandler
+    NS_SWIFT_NAME(startTrip(options:completionHandler:)) __deprecated_msg("Use +[Radar startTripWithOptions:trackingOptions:completionHandler:] instead.");
+
++ (void)startTripWithOptions:(RadarTripOptions *)tripOptions
+             trackingOptions:(RadarTrackingOptions *)trackingOptions
+           completionHandler:(RadarTripCompletionHandler)completionHandler
+    NS_SWIFT_NAME(startTrip(options:trackingOptions:completionHandler:));
 
 /**
  Manually updates a trip.

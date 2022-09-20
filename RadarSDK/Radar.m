@@ -438,6 +438,28 @@ completionHandler:(RadarSendEventCompletionHandler)completionHandler {
                                          }];
 }
 
++ (void)startTripWithOptions:(RadarTripOptions *)tripOptions
+             trackingOptions:(RadarTrackingOptions *)trackingOptions
+           completionHandler:(RadarTripCompletionHandler)completionHandler {
+    [self startTripWithOptions:tripOptions
+             completionHandler:^(RadarStatus status,
+                                 RadarTrip * _Nullable trip,
+                                 NSArray<RadarEvent *> * _Nullable events) {
+        if (trackingOptions) {
+            [RadarSettings setPreviousTrackingOptions:[RadarSettings trackingOptions]];
+            [RadarSettings setTrackingOptions:trackingOptions];
+            [self startTrackingWithOptions:trackingOptions];
+        }
+
+        if (completionHandler) {
+            [RadarUtils runOnMainThread:^{
+                completionHandler(status, trip, events);
+            }];
+        }
+    }
+    ];
+}
+
 + (void)updateTripWithOptions:(RadarTripOptions *)options status:(RadarTripStatus)status completionHandler:(RadarTripCompletionHandler)completionHandler {
     [[RadarAPIClient sharedInstance] updateTripWithOptions:options
                                                     status:status
@@ -469,6 +491,10 @@ completionHandler:(RadarSendEventCompletionHandler)completionHandler {
                                              if (status == RadarStatusSuccess || status == RadarStatusErrorNotFound) {
                                                  [RadarSettings setTripOptions:nil];
 
+                                                 // return to previous tracking options after trip
+                                                 [RadarSettings setTrackingOptions:[RadarSettings previousTrackingOptions]];
+                                                 [RadarSettings setPreviousTrackingOptions:nil];
+
                                                  // flush location update to generate events
                                                  [[RadarLocationManager sharedInstance] getLocationWithCompletionHandler:nil];
                                              }
@@ -492,6 +518,10 @@ completionHandler:(RadarSendEventCompletionHandler)completionHandler {
                                          completionHandler:^(RadarStatus status, RadarTrip *trip, NSArray<RadarEvent *> *events) {
                                              if (status == RadarStatusSuccess || status == RadarStatusErrorNotFound) {
                                                  [RadarSettings setTripOptions:nil];
+
+                                                 // return to previous tracking options after trip
+                                                 [RadarSettings setTrackingOptions:[RadarSettings previousTrackingOptions]];
+                                                 [RadarSettings setPreviousTrackingOptions:nil];
 
                                                  // flush location update to generate events
                                                  [[RadarLocationManager sharedInstance] getLocationWithCompletionHandler:nil];

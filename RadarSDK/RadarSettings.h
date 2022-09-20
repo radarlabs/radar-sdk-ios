@@ -36,6 +36,8 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)setTracking:(BOOL)tracking;
 + (RadarTrackingOptions *_Nullable)trackingOptions;
 + (void)setTrackingOptions:(RadarTrackingOptions *_Nonnull)options;
++ (RadarTrackingOptions *_Nullable)previousTrackingOptions;
++ (void)setPreviousTrackingOptions:(RadarTrackingOptions *_Nullable)options;
 + (RadarTrackingOptions *_Nullable)remoteTrackingOptions;
 + (void)setRemoteTrackingOptions:(RadarTrackingOptions *_Nonnull)options;
 + (void)removeRemoteTrackingOptions;

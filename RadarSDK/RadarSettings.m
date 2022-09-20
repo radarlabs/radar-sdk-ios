@@ -23,6 +23,7 @@ static NSString *const kAnonymous = @"radar-anonymous";
 static NSString *const kAdIdEnabled = @"radar-adIdEnabled";
 static NSString *const kTracking = @"radar-tracking";
 static NSString *const kTrackingOptions = @"radar-trackingOptions";
+static NSString *const kPreviousTrackingOptions = @"radar-previousTrackingOptions";
 static NSString *const kRemoteTrackingOptions = @"radar-remoteTrackingOptions";
 static NSString *const kTripOptions = @"radar-tripOptions";
 static NSString *const kLogLevel = @"radar-logLevel";
@@ -132,6 +133,16 @@ static NSString *const kDefaultHost = @"https://api.radar.io";
 + (void)setTrackingOptions:(RadarTrackingOptions *)options {
     NSDictionary *optionsDict = [options dictionaryValue];
     [[NSUserDefaults standardUserDefaults] setObject:optionsDict forKey:kTrackingOptions];
+}
+
++ (RadarTrackingOptions *)previousTrackingOptions {
+    NSDictionary *optionsDict = [[NSUserDefaults standardUserDefaults] dictionaryForKey:kPreviousTrackingOptions];
+    return [RadarTrackingOptions trackingOptionsFromDictionary:optionsDict];
+}
+
++ (void)setPreviousTrackingOptions:(RadarTrackingOptions *)options {
+    NSDictionary *optionsDict = [options dictionaryValue];
+    [[NSUserDefaults standardUserDefaults] setObject:optionsDict forKey:kPreviousTrackingOptions];
 }
 
 + (void)removeRemoteTrackingOptions {
