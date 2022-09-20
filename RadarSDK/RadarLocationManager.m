@@ -760,13 +760,6 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                                                beacons:beacons
                                      completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user,
                                                          NSArray<RadarGeofence *> *_Nullable nearbyGeofences, RadarMeta *_Nullable meta) {
-                                         if (user) {
-                                             BOOL inGeofences = user.geofences && user.geofences.count;
-                                             BOOL atPlace = user.place != nil;
-                                             BOOL canExit = inGeofences || atPlace;
-                                             [RadarState setCanExit:canExit];
-                                         }
-
                                          self.sending = NO;
 
                                          [self updateTrackingFromMeta:meta];
