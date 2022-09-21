@@ -288,12 +288,26 @@ NSString *const kSyncNone = @"none";
            // cause the milliseconds to drift slightly, so we have to do a
            // floating-point comparison for equality. Even
            // +[NSDate isEqualToDate:] is too strict.
-           (self.startTrackingAfter == nil ? options.startTrackingAfter == nil : fabs([self.startTrackingAfter timeIntervalSinceDate:options.startTrackingAfter]) < 0.9) &&
-           (self.stopTrackingAfter == nil ? options.stopTrackingAfter == nil : fabs([self.stopTrackingAfter timeIntervalSinceDate:options.stopTrackingAfter]) < 0.9) &&
+           [self isDate:self.startTrackingAfter equalToDate:options.startTrackingAfter withinInterval:1.0] &&
+           [self isDate:self.stopTrackingAfter equalToDate:options.stopTrackingAfter withinInterval:1.0] &&
            self.syncLocations == options.syncLocations && self.replay == options.replay && self.showBlueBar == options.showBlueBar &&
            self.useStoppedGeofence == options.useStoppedGeofence && self.stoppedGeofenceRadius == options.stoppedGeofenceRadius &&
            self.useMovingGeofence == options.useMovingGeofence && self.movingGeofenceRadius == options.movingGeofenceRadius && self.syncGeofences == options.syncGeofences &&
            self.useVisits == options.useVisits && self.useSignificantLocationChanges == options.useSignificantLocationChanges && self.beacons == options.beacons;
+}
+
+- (BOOL)isDate:(NSDate *)dateA
+   equalToDate:(NSDate *)dateB
+withinInterval:(NSTimeInterval)threshold {
+    if (dateA == nil && dateB == nil) {
+        return true;
+    } else if (dateA == nil || dateB == nil) {
+        return false;
+    } else {
+        NSTimeInterval interval = [dateA timeIntervalSinceDate: dateB];
+
+        return (-threshold < interval && interval < threshold);
+    }
 }
 
 @end
