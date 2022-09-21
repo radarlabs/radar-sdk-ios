@@ -441,15 +441,21 @@ completionHandler:(RadarSendEventCompletionHandler)completionHandler {
 + (void)startTripWithOptions:(RadarTripOptions *)tripOptions
              trackingOptions:(RadarTrackingOptions *)trackingOptions
            completionHandler:(RadarTripCompletionHandler)completionHandler {
-    [self startTripWithOptions:tripOptions
-             completionHandler:^(RadarStatus status,
-                                 RadarTrip * _Nullable trip,
-                                 NSArray<RadarEvent *> * _Nullable events) {
-        if (trackingOptions) {
-            [RadarSettings setPreviousTrackingOptions:[RadarSettings trackingOptions]];
-            [RadarSettings setTrackingOptions:trackingOptions];
-            [self startTrackingWithOptions:trackingOptions];
-            [self trackOnceWithCompletionHandler:nil];
+    [[RadarAPIClient sharedInstance] updateTripWithOptions:tripOptions
+                                                    status:RadarTripStatusStarted
+                                         completionHandler:^(RadarStatus status, RadarTrip *trip, NSArray<RadarEvent *> *events) {
+        if (status == RadarStatusSuccess) {
+            [RadarSettings setTripOptions:tripOptions];
+
+            if (trackingOptions) {
+                [RadarSettings setPreviousTrackingOptions:[RadarSettings trackingOptions]];
+                [RadarSettings setTrackingOptions:trackingOptions];
+                [self startTrackingWithOptions:trackingOptions];
+                [self trackOnceWithCompletionHandler:nil];
+            }
+
+            // flush location update to generate events
+            [[RadarLocationManager sharedInstance] getLocationWithCompletionHandler:nil];
         }
 
         if (completionHandler) {
@@ -457,8 +463,7 @@ completionHandler:(RadarSendEventCompletionHandler)completionHandler {
                 completionHandler(status, trip, events);
             }];
         }
-    }
-    ];
+    }];
 }
 
 + (void)updateTripWithOptions:(RadarTripOptions *)options status:(RadarTripStatus)status completionHandler:(RadarTripCompletionHandler)completionHandler {
