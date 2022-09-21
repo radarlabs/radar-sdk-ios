@@ -50,4 +50,47 @@
     XCTAssertTrue([options isEqual:deserializedOptions]);
 }
 
+- (void)testDictionaryWithDates {
+    RadarTrackingOptions *options = RadarTrackingOptions.presetResponsive;
+    NSDate *startTrackingAfter = [NSDate new];
+    options.startTrackingAfter = startTrackingAfter;
+    NSDate *stopTrackingAfter = [startTrackingAfter dateByAddingTimeInterval:10000];
+    options.stopTrackingAfter = stopTrackingAfter;
+
+    NSMutableDictionary *optionsDict = [[NSMutableDictionary alloc] initWithDictionary: options.dictionaryValue];
+    XCTAssertTrue([optionsDict[@"startTrackingAfter"] isKindOfClass:NSString.class]);
+    XCTAssertTrue([optionsDict[@"stopTrackingAfter"] isKindOfClass:NSString.class]);
+
+    RadarTrackingOptions *deserializedFromDateOptions = [RadarTrackingOptions trackingOptionsFromDictionary:optionsDict];
+    NSTimeInterval startInterval = [deserializedFromDateOptions.startTrackingAfter timeIntervalSinceDate: startTrackingAfter];
+    XCTAssertTrue(-1.0 < startInterval && startInterval < 1.0);
+
+    NSTimeInterval stopInterval = [deserializedFromDateOptions.stopTrackingAfter timeIntervalSinceDate: stopTrackingAfter];
+    XCTAssertTrue(-1.0 < stopInterval && stopInterval < 1.0);
+}
+
+- (void)testDictionaryWithDateStrings {
+    RadarTrackingOptions *options = RadarTrackingOptions.presetResponsive;
+    NSDate *startTrackingAfter = [NSDate new];
+    options.startTrackingAfter = startTrackingAfter;
+    NSDate *stopTrackingAfter = [startTrackingAfter dateByAddingTimeInterval:10000];
+    options.stopTrackingAfter = stopTrackingAfter;
+
+    NSMutableDictionary *optionsDict = [[NSMutableDictionary alloc] initWithDictionary: options.dictionaryValue];
+
+    // Convert the tracking dates into ISO8601 strings.
+    optionsDict[@"startTrackingAfter"] = [NSISO8601DateFormatter stringFromDate:startTrackingAfter
+                                                                       timeZone:[NSTimeZone timeZoneWithAbbreviation:@"GMT"]
+                                                                  formatOptions:NSISO8601DateFormatWithInternetDateTime];
+    optionsDict[@"stopTrackingAfter"] = [NSISO8601DateFormatter stringFromDate:stopTrackingAfter
+                                                                      timeZone:[NSTimeZone timeZoneWithAbbreviation:@"GMT"]
+                                                                 formatOptions:NSISO8601DateFormatWithInternetDateTime];
+    RadarTrackingOptions *deserializedFromStringOptions = [RadarTrackingOptions trackingOptionsFromDictionary:optionsDict];
+    NSTimeInterval startInterval = [deserializedFromStringOptions.startTrackingAfter timeIntervalSinceDate: startTrackingAfter];
+    XCTAssertTrue(-1.0 < startInterval && startInterval < 1.0);
+
+    NSTimeInterval stopInterval = [deserializedFromStringOptions.stopTrackingAfter timeIntervalSinceDate: stopTrackingAfter];
+    XCTAssertTrue(-1.0 < stopInterval && stopInterval < 1.0);
+}
+
 @end

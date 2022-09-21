@@ -6,6 +6,7 @@
 //
 
 #import "RadarTrackingOptions.h"
+#import "RadarUtils.h"
 
 @implementation RadarTrackingOptions
 
@@ -198,16 +199,16 @@ NSString *const kSyncNone = @"none";
 
     // Dates are stored as ISO8601 strings in the dictionary. See
     // dictionaryValue below for an explanation.
-    NSString *startTrackingAfterString = (NSString *)dict[kStartTrackingAfter];
-    if (startTrackingAfterString) {
-        options.startTrackingAfter = [RadarTrackingOptions.dateFormatter dateFromString:startTrackingAfterString];
+    id startTrackingAfter = (NSString *)dict[kStartTrackingAfter];
+    if ([startTrackingAfter isKindOfClass:NSString.class]) {
+        options.startTrackingAfter = [RadarUtils.isoDateFormatter dateFromString:startTrackingAfter];
     } else {
         options.startTrackingAfter = dict[kStartTrackingAfter];
     }
 
-    NSString *stopTrackingAfterString = (NSString *)dict[kStopTrackingAfter];
-    if (stopTrackingAfterString) {
-        options.stopTrackingAfter = [RadarTrackingOptions.dateFormatter dateFromString:stopTrackingAfterString];
+    id stopTrackingAfter = (NSString *)dict[kStopTrackingAfter];
+    if ([stopTrackingAfter isKindOfClass:NSString.class]) {
+        options.stopTrackingAfter = [RadarUtils.isoDateFormatter dateFromString:stopTrackingAfter];
     } else {
         options.stopTrackingAfter = dict[kStopTrackingAfter];
     }
@@ -239,14 +240,14 @@ NSString *const kSyncNone = @"none";
     // the tracking options in the JSON request body. However, NSDates are not
     // JSON-serializable in Objective-C, so we have to store them as ISO8601
     // strings to prevent parsing errors.
-    if (self.startTrackingAfter) {
-        dict[kStartTrackingAfter] = [RadarTrackingOptions.dateFormatter stringFromDate:self.startTrackingAfter];
+    if ([self.startTrackingAfter isKindOfClass:NSDate.class]) {
+        dict[kStartTrackingAfter] = [RadarUtils.isoDateFormatter stringFromDate:self.startTrackingAfter];
     } else  {
         dict[kStartTrackingAfter] = self.startTrackingAfter;
     }
 
-    if (self.stopTrackingAfter) {
-        dict[kStopTrackingAfter] = [RadarTrackingOptions.dateFormatter stringFromDate:self.stopTrackingAfter];
+    if ([self.stopTrackingAfter isKindOfClass:NSDate.class]) {
+        dict[kStopTrackingAfter] = [RadarUtils.isoDateFormatter stringFromDate:self.stopTrackingAfter];
     } else {
         dict[kStopTrackingAfter] = self.stopTrackingAfter;
     }
@@ -287,18 +288,12 @@ NSString *const kSyncNone = @"none";
            // cause the milliseconds to drift slightly, so we have to do a
            // floating-point comparison for equality. Even
            // +[NSDate isEqualToDate:] is too strict.
-           (self.startTrackingAfter == nil ? options.startTrackingAfter == nil : fabs([self.startTrackingAfter timeIntervalSinceDate:options.startTrackingAfter]) < 0.5) &&
-           (self.stopTrackingAfter == nil ? options.stopTrackingAfter == nil : fabs([self.stopTrackingAfter timeIntervalSinceDate:options.stopTrackingAfter]) < 0.5) &&
+           (self.startTrackingAfter == nil ? options.startTrackingAfter == nil : fabs([self.startTrackingAfter timeIntervalSinceDate:options.startTrackingAfter]) < 0.9) &&
+           (self.stopTrackingAfter == nil ? options.stopTrackingAfter == nil : fabs([self.stopTrackingAfter timeIntervalSinceDate:options.stopTrackingAfter]) < 0.9) &&
            self.syncLocations == options.syncLocations && self.replay == options.replay && self.showBlueBar == options.showBlueBar &&
            self.useStoppedGeofence == options.useStoppedGeofence && self.stoppedGeofenceRadius == options.stoppedGeofenceRadius &&
            self.useMovingGeofence == options.useMovingGeofence && self.movingGeofenceRadius == options.movingGeofenceRadius && self.syncGeofences == options.syncGeofences &&
            self.useVisits == options.useVisits && self.useSignificantLocationChanges == options.useSignificantLocationChanges && self.beacons == options.beacons;
-}
-
-static NSISO8601DateFormatter *dateFormatter;
-
-+ (NSISO8601DateFormatter *)dateFormatter {
-    return [[NSISO8601DateFormatter alloc] init];
 }
 
 @end
