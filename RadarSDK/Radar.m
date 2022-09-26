@@ -441,8 +441,7 @@ completionHandler:(RadarSendEventCompletionHandler)completionHandler {
 + (void)startTripWithOptions:(RadarTripOptions *)tripOptions
              trackingOptions:(RadarTrackingOptions *)trackingOptions
            completionHandler:(RadarTripCompletionHandler)completionHandler {
-    [[RadarAPIClient sharedInstance] updateTripWithOptions:tripOptions
-                                                    status:RadarTripStatusStarted
+    [[RadarAPIClient sharedInstance] createTripWithOptions:tripOptions
                                          completionHandler:^(RadarStatus status, RadarTrip *trip, NSArray<RadarEvent *> *events) {
         if (status == RadarStatusSuccess) {
             [RadarSettings setTripOptions:tripOptions];

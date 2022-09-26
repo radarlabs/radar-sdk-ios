@@ -376,6 +376,79 @@
                     }];
 }
 
+- (void)createTripWithOptions:(RadarTripOptions *)options
+            completionHandler:(RadarTripAPICompletionHandler)completionHandler {
+    NSString *publishableKey = [RadarSettings publishableKey];
+    if (!publishableKey) {
+        return completionHandler(RadarStatusErrorPublishableKey, nil, nil);
+    }
+
+    if (!options || !options.externalId) {
+        return completionHandler(RadarStatusErrorBadRequest, nil, nil);
+    }
+
+    NSMutableDictionary *params = [NSMutableDictionary dictionaryWithDictionary:[self paramsFromTripOptions:options]];
+    params[@"externalId"] = options.externalId;
+    params[@"status"] = [Radar stringForTripStatus:RadarTripStatusStarted];
+
+    NSString *host = [RadarSettings host];
+    NSString *url = [NSString stringWithFormat:@"%@/v1/trips", host];
+    url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
+
+    NSDictionary *headers = [RadarAPIClient headersWithPublishableKey:publishableKey];
+
+    [self.apiHelper requestWithMethod:@"POST"
+                                  url:url
+                              headers:headers
+                               params:params
+                                sleep:NO
+                           logPayload:YES
+                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
+        if (status != RadarStatusSuccess || !res) {
+            return completionHandler(status, nil, nil);
+        }
+
+        id tripObj = res[@"trip"];
+        id eventsObj = res[@"events"];
+        RadarTrip *trip = [[RadarTrip alloc] initWithObject:tripObj];
+        NSArray<RadarEvent *> *events = [RadarEvent eventsFromObject:eventsObj];
+
+        if (events && events.count) {
+            [[RadarDelegateHolder sharedInstance] didReceiveEvents:events user:nil];
+        }
+
+        completionHandler(RadarStatusSuccess, trip, events);
+    }];
+}
+
+- (NSDictionary *)paramsFromTripOptions:(RadarTripOptions *)options {
+    NSMutableDictionary *params = [NSMutableDictionary new];
+
+    if (options.metadata) {
+        params[@"metadata"] = options.metadata;
+    }
+
+    if (options.destinationGeofenceTag) {
+        params[@"destinationGeofenceTag"] = options.destinationGeofenceTag;
+    }
+
+    if (options.destinationGeofenceExternalId) {
+        params[@"destinationGeofenceExternalId"] = options.destinationGeofenceExternalId;
+    }
+
+    params[@"mode"] = [Radar stringForMode:options.mode];
+
+    if (options.scheduledArrivalAt) {
+        params[@"scheduledArrivalAt"] = [[RadarUtils isoDateFormatter] stringFromDate:options.scheduledArrivalAt];
+    }
+
+    if (options.approachingThreshold > 0) {
+        params[@"approachingThreshold"] = [NSString stringWithFormat:@"%d", options.approachingThreshold];
+    }
+
+    return params;
+}
+
 - (void)updateTripWithOptions:(RadarTripOptions *)options status:(RadarTripStatus)status completionHandler:(RadarTripAPICompletionHandler)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
@@ -386,29 +459,16 @@
         return completionHandler(RadarStatusErrorBadRequest, nil, nil);
     }
 
-    NSMutableDictionary *params = [NSMutableDictionary new];
+    NSMutableDictionary *params = [NSMutableDictionary dictionaryWithDictionary:[self paramsFromTripOptions:options]];
+
+    params[@"userId"] = [RadarSettings userId];
 
     if (status != RadarTripStatusUnknown) {
         params[@"status"] = [Radar stringForTripStatus:status];
     }
-    if (options.metadata) {
-        params[@"metadata"] = options.metadata;
-    }
-    if (options.destinationGeofenceTag) {
-        params[@"destinationGeofenceTag"] = options.destinationGeofenceTag;
-    }
-    if (options.destinationGeofenceExternalId) {
-        params[@"destinationGeofenceExternalId"] = options.destinationGeofenceExternalId;
-    }
-    params[@"mode"] = [Radar stringForMode:options.mode];
-    if (options.scheduledArrivalAt) {
-        params[@"scheduledArrivalAt"] = [[RadarUtils isoDateFormatter] stringFromDate:options.scheduledArrivalAt];
-    }
-    if (options.approachingThreshold > 0) {
-        params[@"approachingThreshold"] = [NSString stringWithFormat:@"%d", options.approachingThreshold];
-    }
+
     NSString *host = [RadarSettings host];
-    NSString *url = [NSString stringWithFormat:@"%@/v1/trips/%@", host, options.externalId];
+    NSString *url = [NSString stringWithFormat:@"%@/v1/trips/%@/update", host, options.externalId];
     url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
 
     NSDictionary *headers = [RadarAPIClient headersWithPublishableKey:publishableKey];
