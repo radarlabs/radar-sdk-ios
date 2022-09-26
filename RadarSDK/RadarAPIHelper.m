@@ -87,7 +87,6 @@
                 }
 
                 NSError *deserializationError = nil;
-                NSString *dataString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
                 id resObj = [NSJSONSerialization JSONObjectWithData:data options:0 error:&deserializationError];
                 if (deserializationError || ![resObj isKindOfClass:[NSDictionary class]]) {
                     dispatch_async(dispatch_get_main_queue(), ^{
