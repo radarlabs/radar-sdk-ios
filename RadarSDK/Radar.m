@@ -536,7 +536,7 @@ completionHandler:(RadarSendEventCompletionHandler)completionHandler {
                                                  RadarTrackingOptions *previousOptions = [RadarSettings previousTrackingOptions];
 
                                                  if (previousOptions) {
-                                                     [RadarSettings setPreviousTrackingOptions:nil];
+                                                     [RadarSettings removePreviousTrackingOptions];
                                                      [self startTrackingWithOptions:previousOptions];
                                                  }
 
