@@ -193,8 +193,12 @@ static NSString *const kDefaultHost = @"https://api.radar.io";
 }
 
 + (void)setTripOptions:(RadarTripOptions *)options {
-    NSDictionary *optionsDict = [options dictionaryValue];
-    [[NSUserDefaults standardUserDefaults] setObject:optionsDict forKey:kTripOptions];
+    if (options) {
+        NSDictionary *optionsDict = [options dictionaryValue];
+        [[NSUserDefaults standardUserDefaults] setObject:optionsDict forKey:kTripOptions];
+    } else {
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:kTripOptions];
+    }
 }
 
 + (RadarLogLevel)logLevel {
