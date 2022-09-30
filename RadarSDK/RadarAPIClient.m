@@ -16,6 +16,7 @@
 #import "RadarDelegateHolder.h"
 #import "RadarEvent+Internal.h"
 #import "RadarGeofence+Internal.h"
+#import "RadarLocationManager.h"
 #import "RadarLogger.h"
 #import "RadarMeta+Internal.h"
 #import "RadarPlace+Internal.h"
@@ -198,22 +199,6 @@
             }
         }
     }
-    RadarTripOptions *tripOptions = [RadarSettings tripOptions];
-    if (tripOptions) {
-        NSMutableDictionary *tripOptionsDict = [NSMutableDictionary new];
-        tripOptionsDict[@"externalId"] = tripOptions.externalId;
-        if (tripOptions.metadata) {
-            tripOptionsDict[@"metadata"] = tripOptions.metadata;
-        }
-        if (tripOptions.destinationGeofenceTag) {
-            tripOptionsDict[@"destinationGeofenceTag"] = tripOptions.destinationGeofenceTag;
-        }
-        if (tripOptions.destinationGeofenceExternalId) {
-            tripOptionsDict[@"destinationGeofenceExternalId"] = tripOptions.destinationGeofenceExternalId;
-        }
-        tripOptionsDict[@"mode"] = [Radar stringForMode:tripOptions.mode];
-        params[@"tripOptions"] = tripOptionsDict;
-    }
 
     RadarTrackingOptions *options = [Radar getTrackingOptions];
     if (options.syncGeofences) {
@@ -325,7 +310,9 @@
                         if (events && user) {
                             [RadarSettings setId:user._id];
                             
-                            if (!user.trip) {
+                            // if user was on a trip that ended server side, restore previous tracking options
+                            if (!user.trip && [RadarSettings tripOptions]) {
+                                [[RadarLocationManager sharedInstance] restartPreviousTrackingOptions];
                                 [RadarSettings setTripOptions:nil];
                             }
 
@@ -376,6 +363,8 @@
                     }];
 }
 
+#pragma mark - Trips
+
 - (void)createTripWithOptions:(RadarTripOptions *)options
             completionHandler:(RadarTripAPICompletionHandler)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
@@ -388,8 +377,8 @@
     }
 
     NSMutableDictionary *params = [NSMutableDictionary dictionaryWithDictionary:[self paramsFromTripOptions:options]];
-    params[@"externalId"] = options.externalId;
     params[@"userId"] = RadarSettings.userId;
+    params[@"externalId"] = options.externalId;
     params[@"status"] = [Radar stringForTripStatus:RadarTripStatusStarted];
 
     NSString *host = [RadarSettings host];
@@ -420,34 +409,6 @@
 
         completionHandler(RadarStatusSuccess, trip, events);
     }];
-}
-
-- (NSDictionary *)paramsFromTripOptions:(RadarTripOptions *)options {
-    NSMutableDictionary *params = [NSMutableDictionary new];
-
-    if (options.metadata) {
-        params[@"metadata"] = options.metadata;
-    }
-
-    if (options.destinationGeofenceTag) {
-        params[@"destinationGeofenceTag"] = options.destinationGeofenceTag;
-    }
-
-    if (options.destinationGeofenceExternalId) {
-        params[@"destinationGeofenceExternalId"] = options.destinationGeofenceExternalId;
-    }
-
-    params[@"mode"] = [Radar stringForMode:options.mode];
-
-    if (options.scheduledArrivalAt) {
-        params[@"scheduledArrivalAt"] = [[RadarUtils isoDateFormatter] stringFromDate:options.scheduledArrivalAt];
-    }
-
-    if (options.approachingThreshold > 0) {
-        params[@"approachingThreshold"] = [NSString stringWithFormat:@"%d", options.approachingThreshold];
-    }
-
-    return params;
 }
 
 - (void)updateTripWithOptions:(RadarTripOptions *)options status:(RadarTripStatus)status completionHandler:(RadarTripAPICompletionHandler)completionHandler {
@@ -497,6 +458,40 @@
                         completionHandler(RadarStatusSuccess, trip, events);
                     }];
 }
+
+/**
+ Returns an `NSDictionary` of the trip options. This is *not* the same as
+ `+[RadarTripOptions dictionaryValue]`, because this one omits entries for
+ `nil` values, and the latter doesn't.
+ */
+- (NSDictionary *)paramsFromTripOptions:(RadarTripOptions *)options {
+    NSMutableDictionary *params = [NSMutableDictionary new];
+
+    if (options.metadata) {
+        params[@"metadata"] = options.metadata;
+    }
+
+    if (options.destinationGeofenceTag) {
+        params[@"destinationGeofenceTag"] = options.destinationGeofenceTag;
+    }
+
+    if (options.destinationGeofenceExternalId) {
+        params[@"destinationGeofenceExternalId"] = options.destinationGeofenceExternalId;
+    }
+
+    params[@"mode"] = [Radar stringForMode:options.mode];
+
+    if (options.scheduledArrivalAt) {
+        params[@"scheduledArrivalAt"] = [[RadarUtils isoDateFormatter] stringFromDate:options.scheduledArrivalAt];
+    }
+
+    if (options.approachingThreshold > 0) {
+        params[@"approachingThreshold"] = [NSString stringWithFormat:@"%d", options.approachingThreshold];
+    }
+
+    return params;
+}
+
 
 - (void)getContextForLocation:(CLLocation *_Nonnull)location completionHandler:(RadarContextAPICompletionHandler _Nonnull)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];

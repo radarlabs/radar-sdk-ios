@@ -30,6 +30,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)updateTracking;
 - (void)updateTrackingFromMeta:(RadarMeta *_Nullable)meta;
 - (void)updateTrackingFromInitialize;
+- (void)restartPreviousTrackingOptions;
 
 @end
 
