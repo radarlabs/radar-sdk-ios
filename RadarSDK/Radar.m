@@ -446,11 +446,14 @@ completionHandler:(RadarSendEventCompletionHandler)completionHandler {
         if (status == RadarStatusSuccess) {
             [RadarSettings setTripOptions:tripOptions];
 
-            if (trackingOptions) {
+            if (Radar.isTracking) {
                 [RadarSettings setPreviousTrackingOptions:[RadarSettings trackingOptions]];
-                [RadarSettings setTrackingOptions:trackingOptions];
+            } else {
+                [RadarSettings removePreviousTrackingOptions];
+            }
+
+            if (trackingOptions) {
                 [self startTrackingWithOptions:trackingOptions];
-                [self trackOnceWithCompletionHandler:nil];
             }
 
             // flush location update to generate events
