@@ -389,6 +389,7 @@
 
     NSMutableDictionary *params = [NSMutableDictionary dictionaryWithDictionary:[self paramsFromTripOptions:options]];
     params[@"externalId"] = options.externalId;
+    params[@"userId"] = RadarSettings.userId;
     params[@"status"] = [Radar stringForTripStatus:RadarTripStatusStarted];
 
     NSString *host = [RadarSettings host];
