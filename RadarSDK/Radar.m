@@ -497,6 +497,8 @@ completionHandler:(RadarSendEventCompletionHandler)completionHandler {
                                                     status:RadarTripStatusCompleted
                                          completionHandler:^(RadarStatus status, RadarTrip *trip, NSArray<RadarEvent *> *events) {
                                              if (status == RadarStatusSuccess || status == RadarStatusErrorNotFound) {
+                                                 [RadarSettings setTripOptions:nil];
+
                                                  [RadarSettings removeTrackingOptions];
 
                                                  // return to previous tracking options after trip
@@ -507,7 +509,6 @@ completionHandler:(RadarSendEventCompletionHandler)completionHandler {
                                                      // Starting tracking will set the trip options and tracking flag.
                                                      [self startTrackingWithOptions:previousOptions];
                                                  } else {
-                                                     [RadarSettings setTripOptions:nil];
                                                      [RadarSettings setTracking:false];
                                                  }
 
