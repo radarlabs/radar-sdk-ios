@@ -9,7 +9,6 @@
 
 #import "RadarLogger.h"
 #import "RadarSettings.h"
-@import Foundation;
 
 @interface RadarAPIHelper ()
 

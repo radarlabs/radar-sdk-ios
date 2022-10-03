@@ -30,6 +30,13 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)updateTracking;
 - (void)updateTrackingFromMeta:(RadarMeta *_Nullable)meta;
 - (void)updateTrackingFromInitialize;
+
+/**
+ If `[RadarSettings previousTrackingOptions]` is not `nil`, remove them and
+ replace the `[RadarSettings trackingOptions]` with them, and restart tracking.
+ If they *are* `nil`, then tracking wasn't active prior to the trip, so don't
+ restart tracking. This is called when completing or canceling a trip.
+ */
 - (void)restartPreviousTrackingOptions;
 
 @end
