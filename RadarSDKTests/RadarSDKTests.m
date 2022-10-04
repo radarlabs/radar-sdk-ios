@@ -805,7 +805,6 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 
     [Radar completeTrip];
     XCTAssertNil([RadarSettings previousTrackingOptions]);
-    XCTAssertNil([RadarSettings trackingOptions]);
     XCTAssertFalse(Radar.isTracking);
 }
 
