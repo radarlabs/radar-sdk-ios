@@ -376,10 +376,31 @@
         return completionHandler(RadarStatusErrorBadRequest, nil, nil);
     }
 
-    NSMutableDictionary *params = [NSMutableDictionary dictionaryWithDictionary:[self paramsFromTripOptions:options]];
+    NSMutableDictionary *params = [NSMutableDictionary new];
     params[@"userId"] = RadarSettings.userId;
     params[@"externalId"] = options.externalId;
-    params[@"status"] = [Radar stringForTripStatus:RadarTripStatusStarted];
+
+    if (options.metadata) {
+        params[@"metadata"] = options.metadata;
+    }
+
+    if (options.destinationGeofenceTag) {
+        params[@"destinationGeofenceTag"] = options.destinationGeofenceTag;
+    }
+
+    if (options.destinationGeofenceExternalId) {
+        params[@"destinationGeofenceExternalId"] = options.destinationGeofenceExternalId;
+    }
+
+    params[@"mode"] = [Radar stringForMode:options.mode];
+
+    if (options.scheduledArrivalAt) {
+        params[@"scheduledArrivalAt"] = [[RadarUtils isoDateFormatter] stringFromDate:options.scheduledArrivalAt];
+    }
+
+    if (options.approachingThreshold > 0) {
+        params[@"approachingThreshold"] = [NSString stringWithFormat:@"%d", options.approachingThreshold];
+    }
 
     NSString *host = [RadarSettings host];
     NSString *url = [NSString stringWithFormat:@"%@/v1/trips", host];
@@ -421,12 +442,34 @@
         return completionHandler(RadarStatusErrorBadRequest, nil, nil);
     }
 
-    NSMutableDictionary *params = [NSMutableDictionary dictionaryWithDictionary:[self paramsFromTripOptions:options]];
-
+    NSMutableDictionary *params = [NSMutableDictionary new];
     params[@"userId"] = [RadarSettings userId];
+    // don't pass the externalId like createTrip() does.
 
     if (status != RadarTripStatusUnknown) {
         params[@"status"] = [Radar stringForTripStatus:status];
+    }
+
+    if (options.metadata) {
+        params[@"metadata"] = options.metadata;
+    }
+
+    if (options.destinationGeofenceTag) {
+        params[@"destinationGeofenceTag"] = options.destinationGeofenceTag;
+    }
+
+    if (options.destinationGeofenceExternalId) {
+        params[@"destinationGeofenceExternalId"] = options.destinationGeofenceExternalId;
+    }
+
+    params[@"mode"] = [Radar stringForMode:options.mode];
+
+    if (options.scheduledArrivalAt) {
+        params[@"scheduledArrivalAt"] = [[RadarUtils isoDateFormatter] stringFromDate:options.scheduledArrivalAt];
+    }
+
+    if (options.approachingThreshold > 0) {
+        params[@"approachingThreshold"] = [NSString stringWithFormat:@"%d", options.approachingThreshold];
     }
 
     NSString *host = [RadarSettings host];
@@ -458,40 +501,6 @@
                         completionHandler(RadarStatusSuccess, trip, events);
                     }];
 }
-
-/**
- Returns an `NSDictionary` of the trip options. This is *not* the same as
- `+[RadarTripOptions dictionaryValue]`, because this one omits entries for
- `nil` values, and the latter doesn't.
- */
-- (NSDictionary *)paramsFromTripOptions:(RadarTripOptions *)options {
-    NSMutableDictionary *params = [NSMutableDictionary new];
-
-    if (options.metadata) {
-        params[@"metadata"] = options.metadata;
-    }
-
-    if (options.destinationGeofenceTag) {
-        params[@"destinationGeofenceTag"] = options.destinationGeofenceTag;
-    }
-
-    if (options.destinationGeofenceExternalId) {
-        params[@"destinationGeofenceExternalId"] = options.destinationGeofenceExternalId;
-    }
-
-    params[@"mode"] = [Radar stringForMode:options.mode];
-
-    if (options.scheduledArrivalAt) {
-        params[@"scheduledArrivalAt"] = [[RadarUtils isoDateFormatter] stringFromDate:options.scheduledArrivalAt];
-    }
-
-    if (options.approachingThreshold > 0) {
-        params[@"approachingThreshold"] = [NSString stringWithFormat:@"%d", options.approachingThreshold];
-    }
-
-    return params;
-}
-
 
 - (void)getContextForLocation:(CLLocation *_Nonnull)location completionHandler:(RadarContextAPICompletionHandler _Nonnull)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
