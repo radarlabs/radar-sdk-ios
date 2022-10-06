@@ -420,22 +420,7 @@ completionHandler:(RadarSendEventCompletionHandler)completionHandler {
 }
 
 + (void)startTripWithOptions:(RadarTripOptions *)options completionHandler:(RadarTripCompletionHandler)completionHandler {
-    [[RadarAPIClient sharedInstance] updateTripWithOptions:options
-                                                    status:RadarTripStatusStarted
-                                         completionHandler:^(RadarStatus status, RadarTrip *trip, NSArray<RadarEvent *> *events) {
-                                             if (status == RadarStatusSuccess) {
-                                                 [RadarSettings setTripOptions:options];
-
-                                                 // flush location update to generate events
-                                                 [[RadarLocationManager sharedInstance] getLocationWithCompletionHandler:nil];
-                                             }
-
-                                             if (completionHandler) {
-                                                 [RadarUtils runOnMainThread:^{
-                                                     completionHandler(status, trip, events);
-                                                 }];
-                                             }
-                                         }];
+    [self startTripWithOptions:options trackingOptions:nil completionHandler:completionHandler];
 }
 
 + (void)startTripWithOptions:(RadarTripOptions *)tripOptions

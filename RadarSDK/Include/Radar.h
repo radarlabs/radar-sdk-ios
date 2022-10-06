@@ -523,7 +523,7 @@ completionHandler:(RadarSendEventCompletionHandler)completionHandler NS_SWIFT_NA
  @see https://radar.com/documentation/trip-tracking
  */
 + (void)startTripWithOptions:(RadarTripOptions *_Nonnull)options
-    NS_SWIFT_NAME(startTrip(options:)) __deprecated_msg("Use +[Radar startTripWithOptions:trackingOptions:completionHandler:] instead.");
+    NS_SWIFT_NAME(startTrip(options:));
 
 /**
  Starts a trip.
@@ -535,11 +535,20 @@ completionHandler:(RadarSendEventCompletionHandler)completionHandler NS_SWIFT_NA
  */
 + (void)startTripWithOptions:(RadarTripOptions *_Nonnull)options
            completionHandler:(RadarTripCompletionHandler _Nullable)completionHandler
-    NS_SWIFT_NAME(startTrip(options:completionHandler:)) __deprecated_msg("Use +[Radar startTripWithOptions:trackingOptions:completionHandler:] instead.");
+    NS_SWIFT_NAME(startTrip(options:completionHandler:));
 
-+ (void)startTripWithOptions:(RadarTripOptions *)tripOptions
-             trackingOptions:(RadarTrackingOptions *)trackingOptions
-           completionHandler:(RadarTripCompletionHandler)completionHandler
+/**
+ Starts a trip.
+
+ @param tripOptions Configurable trip options.
+ @param trackingOptions Tracking options to use during the trip.
+ @param completionHandler An optional completion handler.
+
+ @see https://radar.com/documentation/trip-tracking
+ */
++ (void)startTripWithOptions:(RadarTripOptions *_Nonnull)tripOptions
+             trackingOptions:(RadarTrackingOptions *_Nullable)trackingOptions
+           completionHandler:(RadarTripCompletionHandler _Nullable)completionHandler
     NS_SWIFT_NAME(startTrip(options:trackingOptions:completionHandler:));
 
 /**
