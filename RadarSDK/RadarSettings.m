@@ -166,11 +166,7 @@ static NSString *const kDefaultHost = @"https://api.radar.io";
 + (RadarTrackingOptions *_Nullable)remoteTrackingOptions {
     NSDictionary *optionsDict = [[NSUserDefaults standardUserDefaults] dictionaryForKey:kRemoteTrackingOptions];
 
-    if (optionsDict != nil) {
-        return optionsDict ? [RadarTrackingOptions trackingOptionsFromDictionary:optionsDict] : nil;
-    } else {
-        return nil;
-    }
+    return optionsDict ? [RadarTrackingOptions trackingOptionsFromDictionary:optionsDict] : nil;
 }
 
 + (void)setRemoteTrackingOptions:(RadarTrackingOptions *_Nonnull)options {
