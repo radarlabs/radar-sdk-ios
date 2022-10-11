@@ -153,6 +153,20 @@ typedef NS_ENUM(NSInteger, RadarTrackingOptionsSyncLocations) {
 @property (nonatomic, assign) BOOL beacons;
 
 /**
+ Either `default` if these options were set by the server, `on-trip` if they were set specifically for using during trips, or `nil` if they weren't set by the server.
+ */
+@property (nonatomic, copy) NSString *optionsType;
+
+/**
+ Returns `YES` if these are remote options specifically for trips; `NO` otherwise.
+ */
+@property (nonatomic, readonly) BOOL isRemoteTrip;
+
+/**
+ One of `"efficient"`, `"responsive"`, `"continuous"`, or `"custom"`.
+ */
+@property (nonatomic, readonly) NSString *mode;
+/**
  Updates about every 30 seconds while moving or stopped. Moderate battery usage. Shows the flashing blue status bar during tracking.
  @see https://developer.apple.com/documentation/corelocation/cllocationmanager/2923541-showsbackgroundlocationindicator
  */

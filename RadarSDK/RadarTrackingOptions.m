@@ -39,6 +39,7 @@ NSString *const kReplayNone = @"none";
 NSString *const kSyncAll = @"all";
 NSString *const kSyncStopsAndExits = @"stopsAndExits";
 NSString *const kSyncNone = @"none";
+NSString *const kType = @"type";
 
 + (RadarTrackingOptions *)presetContinuous {
     RadarTrackingOptions *options = [RadarTrackingOptions new];
@@ -208,6 +209,8 @@ NSString *const kSyncNone = @"none";
     options.useVisits = [dict[kUseVisits] boolValue];
     options.useSignificantLocationChanges = [dict[kUseSignificantLocationChanges] boolValue];
     options.beacons = [dict[kBeacons] boolValue];
+    options.optionsType = dict[kType];
+
     return options;
 }
 
@@ -232,7 +235,30 @@ NSString *const kSyncNone = @"none";
     dict[kUseVisits] = @(self.useVisits);
     dict[kUseSignificantLocationChanges] = @(self.useSignificantLocationChanges);
     dict[kBeacons] = @(self.beacons);
+
+    if (self.optionsType) {
+        dict[kType] = self.optionsType;
+    } else {
+        [dict removeObjectForKey:kType];
+    }
+
     return dict;
+}
+
+- (BOOL)isRemoteTrip {
+    return [self.optionsType isEqualToString:@"on-trip"];
+}
+
+- (NSString *)mode {
+    if ([self isEqual:RadarTrackingOptions.presetContinuous]) {
+        return @"continuous";
+    } else if ([self isEqual:RadarTrackingOptions.presetEfficient]) {
+        return @"efficient";
+    } else if ([self isEqual:RadarTrackingOptions.presetResponsive]) {
+        return @"responsive";
+    } else {
+        return @"custom";
+    }
 }
 
 - (BOOL)isEqual:(id)object {
