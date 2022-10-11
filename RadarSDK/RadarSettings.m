@@ -23,6 +23,7 @@ static NSString *const kAnonymous = @"radar-anonymous";
 static NSString *const kAdIdEnabled = @"radar-adIdEnabled";
 static NSString *const kTracking = @"radar-tracking";
 static NSString *const kTrackingOptions = @"radar-trackingOptions";
+static NSString *const kPreviousTrackingOptions = @"radar-previousTrackingOptions";
 static NSString *const kRemoteTrackingOptions = @"radar-remoteTrackingOptions";
 static NSString *const kTripOptions = @"radar-tripOptions";
 static NSString *const kLogLevel = @"radar-logLevel";
@@ -126,7 +127,12 @@ static NSString *const kDefaultHost = @"https://api.radar.io";
 
 + (RadarTrackingOptions *)trackingOptions {
     NSDictionary *optionsDict = [[NSUserDefaults standardUserDefaults] dictionaryForKey:kTrackingOptions];
-    return [RadarTrackingOptions trackingOptionsFromDictionary:optionsDict];
+
+    if (optionsDict != nil) {
+        return [RadarTrackingOptions trackingOptionsFromDictionary:optionsDict];
+    } else {
+        return nil;
+    }
 }
 
 + (void)setTrackingOptions:(RadarTrackingOptions *)options {
@@ -134,12 +140,32 @@ static NSString *const kDefaultHost = @"https://api.radar.io";
     [[NSUserDefaults standardUserDefaults] setObject:optionsDict forKey:kTrackingOptions];
 }
 
-+ (void)removeRemoteTrackingOptions {
-    [[NSUserDefaults standardUserDefaults] removeObjectForKey:kRemoteTrackingOptions];
++ (void)removeTrackingOptions {
+    [[NSUserDefaults standardUserDefaults] removeObjectForKey:kTrackingOptions];
+}
+
++ (RadarTrackingOptions *)previousTrackingOptions {
+    NSDictionary *optionsDict = [[NSUserDefaults standardUserDefaults] dictionaryForKey:kPreviousTrackingOptions];
+
+    if (optionsDict != nil) {
+        return [RadarTrackingOptions trackingOptionsFromDictionary:optionsDict];
+    } else {
+        return nil;
+    }
+}
+
++ (void)setPreviousTrackingOptions:(RadarTrackingOptions *)options {
+    NSDictionary *optionsDict = [options dictionaryValue];
+    [[NSUserDefaults standardUserDefaults] setObject:optionsDict forKey:kPreviousTrackingOptions];
+}
+
++ (void)removePreviousTrackingOptions {
+    [[NSUserDefaults standardUserDefaults] removeObjectForKey:kPreviousTrackingOptions];
 }
 
 + (RadarTrackingOptions *_Nullable)remoteTrackingOptions {
     NSDictionary *optionsDict = [[NSUserDefaults standardUserDefaults] dictionaryForKey:kRemoteTrackingOptions];
+
     return optionsDict ? [RadarTrackingOptions trackingOptionsFromDictionary:optionsDict] : nil;
 }
 
@@ -153,14 +179,27 @@ static NSString *const kDefaultHost = @"https://api.radar.io";
     [[NSUserDefaults standardUserDefaults] setObject:optionsDict forKey:kRemoteTrackingOptions];
 }
 
++ (void)removeRemoteTrackingOptions {
+    [[NSUserDefaults standardUserDefaults] removeObjectForKey:kRemoteTrackingOptions];
+}
+
 + (RadarTripOptions *)tripOptions {
     NSDictionary *optionsDict = [[NSUserDefaults standardUserDefaults] dictionaryForKey:kTripOptions];
-    return [RadarTripOptions tripOptionsFromDictionary:optionsDict];
+
+    if (optionsDict != nil) {
+        return [RadarTripOptions tripOptionsFromDictionary:optionsDict];
+    } else {
+        return nil;
+    }
 }
 
 + (void)setTripOptions:(RadarTripOptions *)options {
-    NSDictionary *optionsDict = [options dictionaryValue];
-    [[NSUserDefaults standardUserDefaults] setObject:optionsDict forKey:kTripOptions];
+    if (options) {
+        NSDictionary *optionsDict = [options dictionaryValue];
+        [[NSUserDefaults standardUserDefaults] setObject:optionsDict forKey:kTripOptions];
+    } else {
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:kTripOptions];
+    }
 }
 
 + (RadarLogLevel)logLevel {
