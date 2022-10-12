@@ -200,6 +200,19 @@
         }
     }
 
+    RadarTripOptions *tripOptions = Radar.getTripOptions;
+
+    if (tripOptions) {
+        NSMutableDictionary *tripParams = [NSMutableDictionary new];
+        tripParams[@"v2"] = @(YES);
+        [tripParams setValue:tripOptions.externalId forKey:@"externalId"];
+        [tripParams setValue:tripOptions.metadata forKey:@"metadata"];
+        [tripParams setValue:tripOptions.destinationGeofenceTag forKey:@"destinationGeofenceTag"];
+        [tripParams setValue:tripOptions.destinationGeofenceExternalId forKey:@"destinationGeofenceExternalId"];
+        [tripParams setValue:[Radar stringForMode:tripOptions.mode] forKey:@"mode"];
+        params[@"tripOptions"] = tripParams;
+    }
+
     RadarTrackingOptions *options = [Radar getTrackingOptions];
     if (options.syncGeofences) {
         params[@"nearbyGeofences"] = @(YES);
