@@ -61,7 +61,7 @@ static NSString *const kScheduledArrivalAt = @"scheduledArrivalAt";
     RadarTripOptions *options = [[RadarTripOptions alloc] initWithExternalId:dict[kExternalId]
                                                       destinationGeofenceTag:dict[kDestinationGeofenceTag]
                                                destinationGeofenceExternalId:dict[kDestinationGeofenceExternalId]
-                                                          scheduledArrivalAt:dict[kScheduledArrivalAt]];
+                                                          scheduledArrivalAt:scheduledArrivalAt];
     options.metadata = dict[kMetadata];
     NSString *modeStr = dict[kMode];
     if ([modeStr isEqualToString:@"foot"]) {
