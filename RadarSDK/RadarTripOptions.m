@@ -6,6 +6,7 @@
 //
 
 #import "RadarTripOptions.h"
+#import "RadarUtils.h"
 
 @implementation RadarTripOptions
 
@@ -47,6 +48,14 @@ static NSString *const kScheduledArrivalAt = @"scheduledArrivalAt";
 + (RadarTripOptions *)tripOptionsFromDictionary:(NSDictionary *)dict {
     if (!dict) {
         return nil;
+    }
+
+    NSDate *scheduledArrivalAt;
+    NSObject *scheduledArrivalAtObj = dict[kScheduledArrivalAt];
+    if (scheduledArrivalAtObj && [scheduledArrivalAtObj isKindOfClass:[NSString class]]) {
+        scheduledArrivalAt = [RadarUtils.isoDateFormatter dateFromString:(NSString *)scheduledArrivalAtObj];
+    } else if (scheduledArrivalAtObj && [scheduledArrivalAtObj isKindOfClass:[NSDate class]]) {
+        scheduledArrivalAt = (NSDate *)scheduledArrivalAtObj;
     }
 
     RadarTripOptions *options = [[RadarTripOptions alloc] initWithExternalId:dict[kExternalId]
