@@ -204,7 +204,7 @@
 
     if (tripOptions) {
         NSMutableDictionary *tripParams = [NSMutableDictionary new];
-        tripParams[@"v2"] = @(YES);
+        tripParams[@"version"] = @("2");
         [tripParams setValue:tripOptions.externalId forKey:@"externalId"];
         [tripParams setValue:tripOptions.metadata forKey:@"metadata"];
         [tripParams setValue:tripOptions.destinationGeofenceTag forKey:@"destinationGeofenceTag"];
