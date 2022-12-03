@@ -79,7 +79,12 @@ typedef void (^_Nonnull RadarSyncLogsAPICompletionHandler)(RadarStatus status);
 
 - (void)verifyEventId:(NSString *_Nonnull)eventId verification:(RadarEventVerification)verification verifiedPlaceId:(NSString *_Nullable)verifiedPlaceId;
 
-- (void)updateTripWithOptions:(RadarTripOptions *_Nullable)options status:(RadarTripStatus)status completionHandler:(RadarTripAPICompletionHandler _Nonnull)completionHandler;
+- (void)createTripWithOptions:(RadarTripOptions *_Nullable)options
+            completionHandler:(RadarTripAPICompletionHandler _Nonnull)completionHandler;
+
+- (void)updateTripWithOptions:(RadarTripOptions *_Nullable)options
+                       status:(RadarTripStatus)status
+            completionHandler:(RadarTripAPICompletionHandler _Nonnull)completionHandler;
 
 - (void)getContextForLocation:(CLLocation *_Nonnull)location completionHandler:(RadarContextAPICompletionHandler _Nonnull)completionHandler;
 

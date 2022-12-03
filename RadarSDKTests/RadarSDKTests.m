@@ -747,6 +747,68 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     XCTAssertNil([Radar getTripOptions]);
 }
 
+- (void)test_Radar_startTripWithTrackingOptionsWhenTrackingIsInProgress {
+    self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusAuthorizedAlways;
+
+    XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
+
+    [RadarSettings removePreviousTrackingOptions];
+    RadarTrackingOptions *originalTrackingOptions = RadarTrackingOptions.presetEfficient;
+    [Radar startTrackingWithOptions:originalTrackingOptions];
+
+    RadarTripOptions *tripOptions = [[RadarTripOptions alloc]
+                                     initWithExternalId:@"testTrip"
+                                     destinationGeofenceTag:@"someTag"
+                                     destinationGeofenceExternalId:@"someId"];
+    RadarTrackingOptions *tripTrackingOptions = RadarTrackingOptions.presetContinuous;
+    [Radar startTripWithOptions:tripOptions
+                trackingOptions:tripTrackingOptions
+              completionHandler:^(RadarStatus status, RadarTrip * _Nullable trip, NSArray<RadarEvent *> * _Nullable events) {
+        RadarTrackingOptions *previousTrackingOptions = [RadarSettings previousTrackingOptions];
+        XCTAssertTrue([previousTrackingOptions isEqual: originalTrackingOptions]);
+        RadarTrackingOptions *currentTrackingOptions = [RadarSettings trackingOptions];
+        XCTAssertTrue([currentTrackingOptions isEqual: tripTrackingOptions]);
+        [expectation fulfill];
+    }];
+
+    [self waitForExpectations:@[expectation] timeout:10];
+
+    [Radar completeTrip];
+    XCTAssertNil([RadarSettings previousTrackingOptions]);
+    XCTAssertTrue([[RadarSettings trackingOptions] isEqual: originalTrackingOptions]);
+    XCTAssertTrue(Radar.isTracking);
+}
+
+- (void)test_Radar_startTripWithTrackingOptionsWhenTrackingIsNotInProgress {
+    self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusAuthorizedAlways;
+
+    XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
+
+    [RadarSettings removePreviousTrackingOptions];
+    [RadarSettings removeTrackingOptions];
+
+    RadarTripOptions *tripOptions = [[RadarTripOptions alloc]
+                                     initWithExternalId:@"testTrip"
+                                     destinationGeofenceTag:@"someTag"
+                                     destinationGeofenceExternalId:@"someId"];
+    RadarTrackingOptions *tripTrackingOptions = RadarTrackingOptions.presetContinuous;
+    [Radar startTripWithOptions:tripOptions
+                trackingOptions:tripTrackingOptions
+              completionHandler:^(RadarStatus status, RadarTrip * _Nullable trip, NSArray<RadarEvent *> * _Nullable events) {
+        XCTAssertNil([RadarSettings previousTrackingOptions]);
+        RadarTrackingOptions *currentTrackingOptions = [RadarSettings trackingOptions];
+        XCTAssertTrue([currentTrackingOptions isEqual: tripTrackingOptions]);
+        [expectation fulfill];
+    }];
+
+    [self waitForExpectations:@[expectation] timeout:10];
+
+    [Radar completeTrip];
+    XCTAssertNil([RadarSettings previousTrackingOptions]);
+    XCTAssertFalse(Radar.isTracking);
+}
+
+
 - (void)test_Radar_getContext_errorPermissions {
     self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusNotDetermined;
     self.locationManagerMock.mockLocation = nil;

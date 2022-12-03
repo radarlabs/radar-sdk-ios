@@ -59,7 +59,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, assign) UInt8 approachingThreshold;
 
-+ (RadarTripOptions *)tripOptionsFromDictionary:(NSDictionary *)dict;
++ (RadarTripOptions *_Nullable)tripOptionsFromDictionary:(NSDictionary *)dict;
 - (NSDictionary *)dictionaryValue;
 
 @end
