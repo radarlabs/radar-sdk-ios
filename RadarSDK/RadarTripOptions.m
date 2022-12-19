@@ -15,6 +15,7 @@ static NSString *const kDestinationGeofenceTag = @"destinationGeofenceTag";
 static NSString *const kDestinationGeofenceExternalId = @"destinationGeofenceExternalId";
 static NSString *const kMode = @"mode";
 static NSString *const kScheduledArrivalAt = @"scheduledArrivalAt";
+static NSString *const kApproachingThreshold = @"approachingThreshold";
 
 - (instancetype)initWithExternalId:(NSString *_Nonnull)externalId
             destinationGeofenceTag:(NSString *_Nullable)destinationGeofenceTag
@@ -66,6 +67,7 @@ static NSString *const kScheduledArrivalAt = @"scheduledArrivalAt";
     } else {
         options.mode = RadarRouteModeCar;
     }
+    options.approachingThreshold = [dict[kApproachingThreshold] intValue];
     return options;
 }
 
@@ -77,6 +79,7 @@ static NSString *const kScheduledArrivalAt = @"scheduledArrivalAt";
     dict[kDestinationGeofenceExternalId] = self.destinationGeofenceExternalId;
     dict[kMode] = [Radar stringForMode:self.mode];
     dict[kScheduledArrivalAt] = self.scheduledArrivalAt;
+    dict[kApproachingThreshold] = @(self.approachingThreshold);
     return dict;
 }
 
