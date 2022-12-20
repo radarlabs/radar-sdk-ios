@@ -108,7 +108,8 @@ static NSString *const kApproachingThreshold = @"approachingThreshold";
            ((!self.scheduledArrivalAt && !options.scheduledArrivalAt) ||
             (self.scheduledArrivalAt != nil && options.scheduledArrivalAt != nil &&
             [self.scheduledArrivalAt isEqualToDate:options.scheduledArrivalAt])) &&
-           self.mode == options.mode;
+           self.mode == options.mode &&
+              self.approachingThreshold == options.approachingThreshold;
 }
 
 @end
