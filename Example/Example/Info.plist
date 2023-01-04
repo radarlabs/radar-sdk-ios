@@ -47,5 +47,27 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+    <key>NSAppTransportSecurity</key>
+    <dict>
+        <key>NSPinnedDomains</key>
+        <dict>
+            <key>api-foo.radar.io</key>
+            <dict>
+                <key>NSIncludesSubdomains</key>
+                <true/>
+                <key>NSPinnedCAIdentities</key>
+                <array>
+                    <dict>
+                        <key>SPKI-SHA256-BASE64</key>
+                        <string>9hdyeJFIEmx2Y01oXXXXXXXXXXmmSFZhBXXXXXXXXXX=</string>
+                    </dict>
+                    <dict>
+                        <key>SPKI-SHA256-BASE64</key>
+                        <string>9hdyeJFIEmx2Y01oXXXXXXXXXXmmSFZhBXXXXXXXXXX=</string>
+                    </dict>
+                </array>
+            </dict>
+        </dict>
+    </dict>
 </dict>
 </plist>
