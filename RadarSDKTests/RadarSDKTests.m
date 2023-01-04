@@ -126,6 +126,8 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 #define AssertFraudOk(fraud) [self assertFraudOk:fraud]
 - (void)assertFraudOk:(RadarFraud *)fraud {
     XCTAssertNotNil(fraud);
+    XCTAssertTrue(fraud.passed);
+    XCTAssertTrue(fraud.bypassed);
     XCTAssertTrue(fraud.proxy);
     XCTAssertTrue(fraud.mocked);
     XCTAssertTrue(fraud.compromised);
