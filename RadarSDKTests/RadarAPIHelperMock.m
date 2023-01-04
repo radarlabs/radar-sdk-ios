@@ -32,7 +32,6 @@
                     sleep:(BOOL)sleep
                logPayload:(BOOL)logPayload
         completionHandler:(RadarAPICompletionHandler)completionHandler {
-
     NSDictionary *mockResponseForUrl = self.mockResponses[url];
 
     if (mockResponseForUrl) {
@@ -42,8 +41,7 @@
     }
 }
 
-- (void)setMockResponse:(NSDictionary *)response
-              forMethod:(NSString *)urlString {
+- (void)setMockResponse:(NSDictionary *)response forMethod:(NSString *)urlString {
     self.mockResponses[urlString] = response;
 }
 

@@ -7,18 +7,18 @@
 
 #import <UIKit/UIKit.h>
 
-#import "RadarLocationManager.h"
+#import "CLLocation+Radar.h"
 #import "RadarAPIClient.h"
 #import "RadarBeaconManager.h"
 #import "RadarCircleGeometry.h"
 #import "RadarDelegateHolder.h"
+#import "RadarLocationManager.h"
 #import "RadarLogger.h"
 #import "RadarMeta.h"
 #import "RadarPolygonGeometry.h"
 #import "RadarSettings.h"
 #import "RadarState.h"
 #import "RadarUtils.h"
-#import "CLLocation+Radar.h"
 
 @interface RadarLocationManager ()
 
@@ -772,10 +772,10 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                                               replayed:replayed
                                                beacons:beacons
                                      completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user,
-                                                         NSArray<RadarGeofence *> *_Nullable nearbyGeofences, RadarMeta *_Nullable meta) {
+                                                         NSArray<RadarGeofence *> *_Nullable nearbyGeofences, RadarConfig *_Nullable config) {
                                          self.sending = NO;
 
-                                         [self updateTrackingFromMeta:meta];
+                                         [self updateTrackingFromMeta:config.meta];
                                          [self replaceSyncedGeofences:nearbyGeofences];
                                      }];
 }

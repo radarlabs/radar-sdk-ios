@@ -8,9 +8,9 @@
 @import Foundation;
 #import "CLLocation+Radar.h"
 
-@implementation CLLocation(Radar)
+@implementation CLLocation (Radar)
 
--(BOOL)isValid {
+- (BOOL)isValid {
     CLLocationDegrees lat = self.coordinate.latitude;
     CLLocationDegrees lon = self.coordinate.longitude;
 

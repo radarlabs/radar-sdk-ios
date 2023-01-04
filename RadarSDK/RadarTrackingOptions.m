@@ -191,7 +191,7 @@ NSString *const kSyncNone = @"none";
     if (!dict) {
         return nil;
     }
-    
+
     RadarTrackingOptions *options = [RadarTrackingOptions new];
     options.desiredStoppedUpdateInterval = [dict[kDesiredStoppedUpdateInterval] intValue];
     options.desiredMovingUpdateInterval = [dict[kDesiredMovingUpdateInterval] intValue];

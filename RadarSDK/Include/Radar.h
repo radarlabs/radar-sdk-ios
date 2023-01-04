@@ -226,7 +226,7 @@ typedef void (^_Nonnull RadarRouteMatrixCompletionHandler)(RadarStatus status, R
 
  @see https://radar.com/documentation/api#send-a-custom-event
  */
-typedef void(^_Nonnull RadarSendEventCompletionHandler)(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user);
+typedef void (^_Nonnull RadarSendEventCompletionHandler)(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user);
 
 /**
  The main class used to interact with the Radar SDK.
@@ -391,6 +391,26 @@ typedef void(^_Nonnull RadarSendEventCompletionHandler)(RadarStatus status, CLLo
             completionHandler:(RadarTrackCompletionHandler _Nullable)completionHandler NS_SWIFT_NAME(trackOnce(location:completionHandler:));
 
 /**
+ Tracks the user's location with device integrity information for location verification use cases.
+
+ @warning Note that you must call `setVerifiedHost()` and configure SSL pinning before calling this method.
+
+ @param completionHandler An optional completion handler.
+
+ @see https://radar.com/documentation/fraud
+ */
++ (void)trackVerifiedWithCompletionHandler:(RadarTrackCompletionHandler _Nullable)completionHandler NS_SWIFT_NAME(trackVerified(completionHandler:));
+
+/**
+ Sets the host for `trackVerify()`.
+
+ @warning Note that you must configure SSL pinning before calling this method.
+
+ @param verifiedHost The host.
+ */
++ (void)setVerifiedHost:(NSString *_Nullable)verifiedHost;
+
+/**
  Starts tracking the user's location in the background with configurable tracking options.
 
  @param options Configurable tracking options.
@@ -486,8 +506,8 @@ typedef void(^_Nonnull RadarSendEventCompletionHandler)(RadarStatus status, CLLo
  @see https://radar.com/documentation/api#send-a-custom-event
  */
 + (void)sendEvent:(NSString *)customType
-     withMetadata:(NSDictionary *_Nullable)metadata
-completionHandler:(RadarSendEventCompletionHandler)completionHandler NS_SWIFT_NAME(sendEvent(customType:metadata:completionHandler:));
+         withMetadata:(NSDictionary *_Nullable)metadata
+    completionHandler:(RadarSendEventCompletionHandler)completionHandler NS_SWIFT_NAME(sendEvent(customType:metadata:completionHandler:));
 
 /**
  Sends a custom event with a manually provided location.
@@ -500,9 +520,9 @@ completionHandler:(RadarSendEventCompletionHandler)completionHandler NS_SWIFT_NA
  @see https://radar.com/documentation/api#send-a-custom-event
  */
 + (void)sendEvent:(NSString *)customType
-     withLocation:(CLLocation *_Nullable)location
-         metadata:(NSDictionary *_Nullable)metadata
-completionHandler:(RadarSendEventCompletionHandler)completionHandler NS_SWIFT_NAME(sendEvent(customType:location:metadata:completionHandler:));
+         withLocation:(CLLocation *_Nullable)location
+             metadata:(NSDictionary *_Nullable)metadata
+    completionHandler:(RadarSendEventCompletionHandler)completionHandler NS_SWIFT_NAME(sendEvent(customType:location:metadata:completionHandler:));
 
 #pragma mark - Trips
 
@@ -522,8 +542,7 @@ completionHandler:(RadarSendEventCompletionHandler)completionHandler NS_SWIFT_NA
 
  @see https://radar.com/documentation/trip-tracking
  */
-+ (void)startTripWithOptions:(RadarTripOptions *_Nonnull)options
-    NS_SWIFT_NAME(startTrip(options:));
++ (void)startTripWithOptions:(RadarTripOptions *_Nonnull)options NS_SWIFT_NAME(startTrip(options:));
 
 /**
  Starts a trip.
@@ -534,8 +553,7 @@ completionHandler:(RadarSendEventCompletionHandler)completionHandler NS_SWIFT_NA
  @see https://radar.com/documentation/trip-tracking
  */
 + (void)startTripWithOptions:(RadarTripOptions *_Nonnull)options
-           completionHandler:(RadarTripCompletionHandler _Nullable)completionHandler
-    NS_SWIFT_NAME(startTrip(options:completionHandler:));
+           completionHandler:(RadarTripCompletionHandler _Nullable)completionHandler NS_SWIFT_NAME(startTrip(options:completionHandler:));
 
 /**
  Starts a trip.
@@ -548,8 +566,7 @@ completionHandler:(RadarSendEventCompletionHandler)completionHandler NS_SWIFT_NA
  */
 + (void)startTripWithOptions:(RadarTripOptions *_Nonnull)tripOptions
              trackingOptions:(RadarTrackingOptions *_Nullable)trackingOptions
-           completionHandler:(RadarTripCompletionHandler _Nullable)completionHandler
-    NS_SWIFT_NAME(startTrip(options:trackingOptions:completionHandler:));
+           completionHandler:(RadarTripCompletionHandler _Nullable)completionHandler NS_SWIFT_NAME(startTrip(options:trackingOptions:completionHandler:));
 
 /**
  Manually updates a trip.
@@ -639,8 +656,7 @@ completionHandler:(RadarSendEventCompletionHandler)completionHandler NS_SWIFT_NA
                     categories:(NSArray<NSString *> *_Nullable)categories
                         groups:(NSArray<NSString *> *_Nullable)groups
                          limit:(int)limit
-             completionHandler:(RadarSearchPlacesCompletionHandler)completionHandler
-    NS_SWIFT_NAME(searchPlaces(radius:chains:categories:groups:limit:completionHandler:));
+             completionHandler:(RadarSearchPlacesCompletionHandler)completionHandler NS_SWIFT_NAME(searchPlaces(radius:chains:categories:groups:limit:completionHandler:));
 
 /**
  Gets the device's current location, then searches for places near that location, sorted by distance.
@@ -663,8 +679,7 @@ completionHandler:(RadarSendEventCompletionHandler)completionHandler NS_SWIFT_NA
                     categories:(NSArray<NSString *> *_Nullable)categories
                         groups:(NSArray<NSString *> *_Nullable)groups
                          limit:(int)limit
-             completionHandler:(RadarSearchPlacesCompletionHandler)completionHandler
-    NS_SWIFT_NAME(searchPlaces(radius:chains:chainMetadata:categories:groups:limit:completionHandler:));
+             completionHandler:(RadarSearchPlacesCompletionHandler)completionHandler NS_SWIFT_NAME(searchPlaces(radius:chains:chainMetadata:categories:groups:limit:completionHandler:));
 
 /**
  Searches for places near a location, sorted by distance.
@@ -687,8 +702,7 @@ completionHandler:(RadarSendEventCompletionHandler)completionHandler NS_SWIFT_NA
               categories:(NSArray<NSString *> *_Nullable)categories
                   groups:(NSArray<NSString *> *_Nullable)groups
                    limit:(int)limit
-       completionHandler:(RadarSearchPlacesCompletionHandler)completionHandler
-    NS_SWIFT_NAME(searchPlaces(near:radius:chains:categories:groups:limit:completionHandler:));
+       completionHandler:(RadarSearchPlacesCompletionHandler)completionHandler NS_SWIFT_NAME(searchPlaces(near:radius:chains:categories:groups:limit:completionHandler:));
 
 /**
  Searches for places near a location, sorted by distance.
@@ -713,8 +727,7 @@ completionHandler:(RadarSendEventCompletionHandler)completionHandler NS_SWIFT_NA
               categories:(NSArray<NSString *> *_Nullable)categories
                   groups:(NSArray<NSString *> *_Nullable)groups
                    limit:(int)limit
-       completionHandler:(RadarSearchPlacesCompletionHandler)completionHandler
-    NS_SWIFT_NAME(searchPlaces(near:radius:chains:chainMetadata:categories:groups:limit:completionHandler:));
+       completionHandler:(RadarSearchPlacesCompletionHandler)completionHandler NS_SWIFT_NAME(searchPlaces(near:radius:chains:chainMetadata:categories:groups:limit:completionHandler:));
 
 /**
  Gets the device's current location, then searches for geofences near that location, sorted by distance.

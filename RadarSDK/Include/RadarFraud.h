@@ -4,24 +4,39 @@
 //
 //  Copyright © 2021 Radar Labs, Inc. All rights reserved.
 
-#ifndef RadarFraud_h
-#define RadarFraud_h
 #import <Foundation/Foundation.h>
 
-@interface RadarFraud : NSObject
-
 /**
- A boolean indicating whether the user's location is being mocked, such as in a simulation. May be `false` if Fraud is not enabled.
+ Represents fraud detection signals for location verification.
+
+ @warning Note that these values should not be trusted unless you called `trackVerified()` instead of `trackOnce()`.
+
+ @see https://radar.com/documentation/fraud
  */
-@property (nonatomic, readonly) bool mocked;
+@interface RadarFraud : NSObject
 
 /**
  A boolean indicating whether the user's IP address is a known proxy. May be `false` if Fraud is not enabled.
  */
 @property (nonatomic, readonly) bool proxy;
 
+/**
+ A boolean indicating whether the user's location is being mocked, such as in the simulator or using a location spoofing app. May be `false` if Fraud is not enabled.
+ */
+@property (nonatomic, readonly) bool mocked;
+
+/**
+ A boolean indicating whether the user's device or app has been compromised according to `DeviceCheck`. May be `false` if Fraud is not enabled.
+
+ @see https://developer.apple.com/documentation/devicecheck
+ */
+@property (nonatomic, readonly) bool compromised;
+
+/**
+ A boolean indicating whether the user moved too far too fast. May be `false` if Fraud is not enabled.
+ */
+@property (nonatomic, readonly) bool jumped;
+
 - (NSDictionary *_Nonnull)dictionaryValue;
 
 @end
-
-#endif /* RadarFraud_h */
