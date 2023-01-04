@@ -9,7 +9,7 @@
 
 @implementation RadarRegion
 
-- (instancetype)initWithId:(nonnull NSString *)_id name:(nonnull NSString *)name code:(nonnull NSString *)code type:(nonnull NSString *)type flag:(nullable NSString *)flag {
+- (instancetype)initWithId:(nonnull NSString *)_id name:(nonnull NSString *)name code:(nonnull NSString *)code type:(nonnull NSString *)type flag:(nullable NSString *)flag allowed:(BOOL)allowed {
     self = [super init];
     if (self) {
         __id = _id;
@@ -17,6 +17,7 @@
         _code = code;
         _type = type;
         _flag = flag;
+        _allowed = allowed;
     }
     return self;
 }
@@ -33,6 +34,7 @@
     NSString *code = @"";
     NSString *type = @"";
     NSString *flag = @"";
+    BOOL allowed = false;
 
     id idObj = dict[@"_id"];
     if ([idObj isKindOfClass:[NSString class]]) {
@@ -58,9 +60,16 @@
     if (flagObj && [flagObj isKindOfClass:[NSString class]]) {
         flag = (NSString *)flagObj;
     }
+    
+    id allowedObj = dict[@"allowed"];
+    if (allowedObj && [allowedObj isKindOfClass:[NSNumber class]]) {
+        NSNumber *allowedNumber = (NSNumber *)allowedObj;
+
+        allowed = [allowedNumber boolValue];
+    }
 
     if (_id && name && code && type) {
-        return [[RadarRegion alloc] initWithId:_id name:name code:code type:type flag:flag];
+        return [[RadarRegion alloc] initWithId:_id name:name code:code type:type flag:flag allowed:allowed];
     }
 
     return nil;
@@ -75,6 +84,7 @@
     if (self.flag) {
         [dict setValue:self.flag forKey:@"flag"];
     }
+    [dict setValue:@(self.allowed) forKey:@"allowed"];
     return dict;
 }
 
