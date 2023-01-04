@@ -9,7 +9,9 @@
 
 @implementation RadarFraud
 
-- (instancetype _Nonnull)initWithProxy:(BOOL)proxy mocked:(BOOL)mocked compromised:(BOOL)compromised jumped:(BOOL)jumped {
+- (instancetype _Nonnull)initWithPassed:(BOOL)passed bypassed:(BOOL)bypassed proxy:(BOOL)proxy mocked:(BOOL)mocked compromised:(BOOL)compromised jumped:(BOOL)jumped {
+    _passed = passed;
+    _bypassed = bypassed;
     _proxy = proxy;
     _mocked = mocked;
     _compromised = compromised;
@@ -25,6 +27,8 @@
 
     NSDictionary *dict = (NSDictionary *)object;
 
+    _passed = [self asBool:dict[@"passed"]];
+    _bypassed = [self asBool:dict[@"bypassed"]];
     _proxy = [self asBool:dict[@"proxy"]];
     _mocked = [self asBool:dict[@"mocked"]];
     _compromised = [self asBool:dict[@"compromised"]];
@@ -34,7 +38,14 @@
 }
 
 - (NSDictionary *)dictionaryValue {
-    return @{@"proxy": @(self.proxy), @"mocked": @(self.mocked), @"compromised": @(self.compromised), @"jumped": @(self.jumped)};
+    return @{
+        @"passed": @(self.passed),
+        @"bypassed": @(self.bypassed),
+        @"proxy": @(self.proxy),
+        @"mocked": @(self.mocked),
+        @"compromised": @(self.compromised),
+        @"jumped": @(self.jumped)
+    };
 }
 
 - (BOOL)asBool:(NSObject *)object {
