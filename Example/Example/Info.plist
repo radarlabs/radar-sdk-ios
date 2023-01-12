@@ -50,42 +50,44 @@
     <key>NSAppTransportSecurity</key>
     <dict>
         <key>NSPinnedDomains</key>
-        <dict>
-            <key>api-verified.radar.io</key>
+        <array>
             <dict>
-                <key>NSIncludesSubdomains</key>
-                <true/>
-                <key>NSPinnedCAIdentities</key>
-                <array>
-                    <dict>
-                        <key>SPKI-SHA256-BASE64</key>
-                        <string>15ktYXSSU2llpy7YyCgeqUKDBkjcimK/weUcec960sI=</string>
-                    </dict>
-                    <dict>
-                        <key>SPKI-SHA256-BASE64</key>
-                        <string>15ktYXSSU2llpy7YyCgeqUKDBkjcimK/weUcec960sI=</string>
-                    </dict>
-                </array>
+                <key>api-verified.radar.io</key>
+                <dict>
+                    <key>NSIncludesSubdomains</key>
+                    <true/>
+                    <key>NSPinnedCAIdentities</key>
+                    <array>
+                        <dict>
+                            <key>SPKI-SHA256-BASE64</key>
+                            <string>15ktYXSSU2llpy7YyCgeqUKDBkjcimK/weUcec960sI=</string>
+                        </dict>
+                        <dict>
+                            <key>SPKI-SHA256-BASE64</key>
+                            <string>15ktYXSSU2llpy7YyCgeqUKDBkjcimK/weUcec960sI=</string>
+                        </dict>
+                    </array>
+                </dict>
             </dict>
-        </dict>
-        <dict>
-            <key>api-verified.radar-staging.com</key>
             <dict>
-                <key>NSIncludesSubdomains</key>
-                <true/>
-                <key>NSPinnedCAIdentities</key>
-                <array>
-                    <dict>
-                        <key>SPKI-SHA256-BASE64</key>
-                        <string>09MICn++JSUz2tk36fH+5qiuUAbbxx4JzrAHR3QHu/I=</string>
-                    </dict>
-                    <dict>
-                        <key>SPKI-SHA256-BASE64</key>
-                        <string>09MICn++JSUz2tk36fH+5qiuUAbbxx4JzrAHR3QHu/I=</string>
-                    </dict>
-                </array>
+                <key>api-verified.radar-staging.com</key>
+                <dict>
+                    <key>NSIncludesSubdomains</key>
+                    <true/>
+                    <key>NSPinnedCAIdentities</key>
+                    <array>
+                        <dict>
+                            <key>SPKI-SHA256-BASE64</key>
+                            <string>09MICn++JSUz2tk36fH+5qiuUAbbxx4JzrAHR3QHu/I=</string>
+                        </dict>
+                        <dict>
+                            <key>SPKI-SHA256-BASE64</key>
+                            <string>09MICn++JSUz2tk36fH+5qiuUAbbxx4JzrAHR3QHu/I=</string>
+                        </dict>
+                    </array>
+                </dict>
             </dict>
-        </dict>
+        </array>
     </dict>
 </dict>
 </plist>
