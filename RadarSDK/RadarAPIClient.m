@@ -63,11 +63,16 @@
 }
 
 - (void)getConfig:(RadarConfigAPICompletionHandler _Nonnull)completionHandler {
+    [self getConfigWithVerified:NO completionHandler:completionHandler];
+}
+
+- (void)getConfigWithVerified:(BOOL)verified
+            completionHandler:(RadarConfigAPICompletionHandler _Nonnull)completionHandler:(RadarConfigAPICompletionHandler _Nonnull)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
         return;
     }
-
+    
     NSMutableString *queryString = [NSMutableString new];
     [queryString appendFormat:@"installId=%@", [RadarSettings installId]];
     [queryString appendFormat:@"&sessionId=%@", [RadarSettings sessionId]];
@@ -79,13 +84,14 @@
     if (locationAccuracyAuthorization) {
         [queryString appendFormat:@"&locationAccuracyAuthorization=%@", locationAccuracyAuthorization];
     }
-
+    [queryString appendFormat:@"&verified=%@", verified ? @"true" : @"false"];
+    
     NSString *host = [RadarSettings host];
     NSString *url = [NSString stringWithFormat:@"%@/v1/config?%@", host, queryString];
     url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
-
+    
     NSDictionary *headers = [RadarAPIClient headersWithPublishableKey:publishableKey];
-
+    
     [self.apiHelper requestWithMethod:@"GET"
                                   url:url
                               headers:headers
@@ -93,16 +99,16 @@
                                 sleep:NO
                            logPayload:YES
                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
-                        if (!res) {
-                            return;
-                        }
-
-                        [Radar flushLogs];
-
-                        RadarConfig *config = [RadarConfig fromDictionary:res];
-
-                        completionHandler(status, config);
-                    }];
+        if (!res) {
+            return;
+        }
+        
+        [Radar flushLogs];
+        
+        RadarConfig *config = [RadarConfig fromDictionary:res];
+        
+        completionHandler(status, config);
+    }];
 }
 
 - (void)trackWithLocation:(CLLocation *_Nonnull)location
@@ -247,6 +253,7 @@
     BOOL usingRemoteTrackingOptions = RadarSettings.tracking && RadarSettings.remoteTrackingOptions;
     params[@"usingRemoteTrackingOptions"] = @(usingRemoteTrackingOptions);
 
+    params[@"verified"] = @(verified);
     if (verified) {
         params[@"attestationString"] = attestationString;
         params[@"attestationError"] = attestationError;

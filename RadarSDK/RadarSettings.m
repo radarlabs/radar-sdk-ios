@@ -31,6 +31,7 @@ static NSString *const kBeaconUUIDs = @"radar-beaconUUIDs";
 static NSString *const kHost = @"radar-host";
 static NSString *const kDefaultHost = @"https://api.radar.io";
 static NSString *const kVerifiedHost = @"radar-verifiedHost";
+static NSString *const kDefaultVerifiedHost = @"https://api-verified.radar-staging.com";
 
 + (NSString *)publishableKey {
     return [[NSUserDefaults standardUserDefaults] stringForKey:kPublishableKey];
@@ -229,11 +230,7 @@ static NSString *const kVerifiedHost = @"radar-verifiedHost";
 
 + (NSString *)verifiedHost {
     NSString *verifiedHost = [[NSUserDefaults standardUserDefaults] stringForKey:kVerifiedHost];
-    return verifiedHost ? verifiedHost : kDefaultHost;
-}
-
-+ (void)setVerifiedHost:(NSString *)verifiedHost {
-    [[NSUserDefaults standardUserDefaults] setValue:verifiedHost forKey:kVerifiedHost];
+    return verifiedHost ? verifiedHost : kDefaultVerifiedHost;
 }
 
 @end

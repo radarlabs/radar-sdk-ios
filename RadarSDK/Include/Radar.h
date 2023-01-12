@@ -393,22 +393,13 @@ typedef void (^_Nonnull RadarSendEventCompletionHandler)(RadarStatus status, CLL
 /**
  Tracks the user's location with device integrity information for location verification use cases.
 
- @warning Note that you must call `setVerifiedHost()` and configure SSL pinning before calling this method.
+ @warning Note that you configure SSL pinning before calling this method.
 
  @param completionHandler An optional completion handler.
 
  @see https://radar.com/documentation/fraud
  */
 + (void)trackVerifiedWithCompletionHandler:(RadarTrackCompletionHandler _Nullable)completionHandler NS_SWIFT_NAME(trackVerified(completionHandler:));
-
-/**
- Sets the host for `trackVerify()`.
-
- @warning Note that you must configure SSL pinning before calling this method.
-
- @param verifiedHost The host.
- */
-+ (void)setVerifiedHost:(NSString *_Nullable)verifiedHost;
 
 /**
  Starts tracking the user's location in the background with configurable tracking options.
