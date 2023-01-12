@@ -226,7 +226,7 @@
 }
 
 + (void)trackVerifiedWithCompletionHandler:(RadarTrackCompletionHandler)completionHandler {
-    [[RadarAPIClient sharedInstance] getConfig:^(RadarStatus status, RadarConfig *_Nullable config) {
+    [[RadarAPIClient sharedInstance] getConfigWithVerified:YES completionHandler:^(RadarStatus status, RadarConfig *_Nullable config) {
         [[RadarLocationManager sharedInstance]
             getLocationWithDesiredAccuracy:RadarTrackingOptionsDesiredAccuracyHigh
                          completionHandler:^(RadarStatus status, CLLocation *_Nullable location, BOOL stopped) {
