@@ -170,6 +170,11 @@ static NSString *const kDefaultHost = @"https://api.radar.io";
 }
 
 + (void)setRemoteTrackingOptions:(RadarTrackingOptions *_Nonnull)options {
+    if (options.isRemoteTrip) {
+        NSString *message = [NSString stringWithFormat:@"Using remote tracking options | type = %@; mode = %@", options.optionsType, options.mode];
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:message];
+    }
+
     NSDictionary *optionsDict = [options dictionaryValue];
     [[NSUserDefaults standardUserDefaults] setObject:optionsDict forKey:kRemoteTrackingOptions];
 }
