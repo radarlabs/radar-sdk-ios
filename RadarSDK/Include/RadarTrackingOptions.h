@@ -160,7 +160,7 @@ typedef NS_ENUM(NSInteger, RadarTrackingOptionsSyncLocations) {
 /**
  One of `"efficient"`, `"responsive"`, `"continuous"`, or `"custom"`.
  */
-@property (nonatomic, readonly) NSString *mode;
+@property (nonatomic, readonly) NSString *preset;
 
 /**
  Updates about every 30 seconds while moving or stopped. Moderate battery usage. Shows the flashing blue status bar during tracking.

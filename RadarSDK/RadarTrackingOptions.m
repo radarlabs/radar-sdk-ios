@@ -246,7 +246,7 @@ NSString *const kType = @"type";
     return dict;
 }
 
-- (NSString *)mode {
+- (NSString *)preset {
     if ([self isEqual:RadarTrackingOptions.presetContinuous]) {
         return @"continuous";
     } else if ([self isEqual:RadarTrackingOptions.presetEfficient]) {
