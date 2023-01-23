@@ -158,11 +158,6 @@ typedef NS_ENUM(NSInteger, RadarTrackingOptionsSyncLocations) {
 @property (nonatomic, copy) NSString *optionsType;
 
 /**
- Returns `YES` if these are remote options specifically for trips; `NO` otherwise.
- */
-@property (nonatomic, readonly) BOOL isRemoteTrip;
-
-/**
  One of `"efficient"`, `"responsive"`, `"continuous"`, or `"custom"`.
  */
 @property (nonatomic, readonly) NSString *mode;

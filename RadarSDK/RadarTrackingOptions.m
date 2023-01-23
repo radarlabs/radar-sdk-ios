@@ -246,10 +246,6 @@ NSString *const kType = @"type";
     return dict;
 }
 
-- (BOOL)isRemoteTrip {
-    return [self.optionsType isEqualToString:@"on-trip"];
-}
-
 - (NSString *)mode {
     if ([self isEqual:RadarTrackingOptions.presetContinuous]) {
         return @"continuous";
