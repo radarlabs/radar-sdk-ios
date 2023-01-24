@@ -124,6 +124,13 @@
 }
 
 + (void)trackOnceWithDesiredAccuracy:(RadarTrackingOptionsDesiredAccuracy)desiredAccuracy beacons:(BOOL)beacons completionHandler:(RadarTrackCompletionHandler)completionHandler {
+    BOOL anonymous = [RadarSettings anonymousTrackingEnabled];
+    if (anonymous) {
+        [[RadarAPIClient sharedInstance] getConfig:^(RadarStatus status, RadarMeta *_Nullable meta) {
+            [[RadarLocationManager sharedInstance] updateTrackingFromMeta:meta];
+        }];
+    }
+
     [[RadarLocationManager sharedInstance]
         getLocationWithDesiredAccuracy:desiredAccuracy
                      completionHandler:^(RadarStatus status, CLLocation *_Nullable location, BOOL stopped) {
