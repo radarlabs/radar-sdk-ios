@@ -51,8 +51,8 @@
 
     [RadarSettings setPublishableKey:publishableKey];
     [[RadarLocationManager sharedInstance] updateTrackingFromInitialize];
-    [[RadarAPIClient sharedInstance] getConfig:NO
-        completionHandler:^(RadarStatus status, RadarMeta *_Nullable meta) {
+    [[RadarAPIClient sharedInstance] getConfig:^(RadarStatus status, RadarMeta *_Nullable meta)
+                                         usage:'initialize' {
         [[RadarLocationManager sharedInstance] updateTrackingFromMeta:meta];
     }];
 }
@@ -128,8 +128,8 @@
     BOOL anonymous = [RadarSettings anonymousTrackingEnabled];
     if (anonymous) {
         BOOL trackUsage = 
-        [[RadarAPIClient sharedInstance] getConfig:YES
-            completionHandler:^(RadarStatus status, RadarMeta *_Nullable meta) {
+        [[RadarAPIClient sharedInstance] getConfig:^(RadarStatus status, RadarMeta *_Nullable meta)
+                                             usage:'track' {
             [[RadarLocationManager sharedInstance] updateTrackingFromMeta:meta];
         }];
     }
@@ -1046,7 +1046,8 @@ completionHandler:(RadarSendEventCompletionHandler)completionHandler {
 - (void)applicationWillEnterForeground {
     BOOL updated = [RadarSettings updateSessionId];
     if (updated) {
-        [[RadarAPIClient sharedInstance] getConfig:NO
+        [[RadarAPIClient sharedInstance] getConfig:^(RadarStatus status, RadarMeta *_Nullable meta)
+                                             usage:'track'
             completionHandler:^(RadarStatus status, RadarMeta *_Nullable meta) {
             [[RadarLocationManager sharedInstance] updateTrackingFromMeta:meta];
         }];

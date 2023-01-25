@@ -76,8 +76,8 @@
     return [RadarMeta metaFromDictionary:meta];
 }
 
-- (void)getConfig:(BOOL)trackUsage
-completionHandler:(RadarConfigAPICompletionHandler _Nonnull)completionHandler {
+- (void)getConfig:(RadarConfigAPICompletionHandler _Nonnull)completionHandler
+            usage:(NSString *_Nullable)usage {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
         return;
@@ -94,8 +94,8 @@ completionHandler:(RadarConfigAPICompletionHandler _Nonnull)completionHandler {
     if (locationAccuracyAuthorization) {
         [queryString appendFormat:@"&locationAccuracyAuthorization=%@", locationAccuracyAuthorization];
     }
-    if (trackUsage) {
-        [queryString appendFormat:@"&track=%@", trackUsage];
+    if (usage) {
+        [queryString appendFormat:@"&usage=%@", usage];
     }
 
     NSString *host = [RadarSettings host];
