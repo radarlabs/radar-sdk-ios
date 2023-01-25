@@ -76,8 +76,8 @@
     return [RadarMeta metaFromDictionary:meta];
 }
 
-- (void)getConfig:(RadarConfigAPICompletionHandler _Nonnull)completionHandler
-            usage:(NSString *_Nullable)usage {
+- (void)getConfig:(NSString *_Nullable)usage
+completionHandler:(RadarConfigAPICompletionHandler _Nonnull)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
         return;
