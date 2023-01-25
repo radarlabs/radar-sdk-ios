@@ -1047,7 +1047,7 @@ completionHandler:(RadarSendEventCompletionHandler)completionHandler {
     BOOL updated = [RadarSettings updateSessionId];
     if (updated) {
         [[RadarAPIClient sharedInstance] getConfig:^(RadarStatus status, RadarMeta *_Nullable meta)
-                                             usage:'track'
+                                             usage:'resume'
             completionHandler:^(RadarStatus status, RadarMeta *_Nullable meta) {
             [[RadarLocationManager sharedInstance] updateTrackingFromMeta:meta];
         }];
