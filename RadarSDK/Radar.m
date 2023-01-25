@@ -51,8 +51,9 @@
 
     [RadarSettings setPublishableKey:publishableKey];
     [[RadarLocationManager sharedInstance] updateTrackingFromInitialize];
+    NSString *const usage = @"initialize";
     [[RadarAPIClient sharedInstance] getConfig:^(RadarStatus status, RadarMeta *_Nullable meta)
-                                         usage:'initialize' {
+                                         usage:usage {
         [[RadarLocationManager sharedInstance] updateTrackingFromMeta:meta];
     }];
 }
@@ -127,9 +128,9 @@
 + (void)trackOnceWithDesiredAccuracy:(RadarTrackingOptionsDesiredAccuracy)desiredAccuracy beacons:(BOOL)beacons completionHandler:(RadarTrackCompletionHandler)completionHandler {
     BOOL anonymous = [RadarSettings anonymousTrackingEnabled];
     if (anonymous) {
-        BOOL trackUsage = 
+        NSString *const usage = @"track";
         [[RadarAPIClient sharedInstance] getConfig:^(RadarStatus status, RadarMeta *_Nullable meta)
-                                             usage:'track' {
+                                             usage:usage {
             [[RadarLocationManager sharedInstance] updateTrackingFromMeta:meta];
         }];
     }
@@ -1046,8 +1047,9 @@ completionHandler:(RadarSendEventCompletionHandler)completionHandler {
 - (void)applicationWillEnterForeground {
     BOOL updated = [RadarSettings updateSessionId];
     if (updated) {
+        NSString *const usage = @"resume";
         [[RadarAPIClient sharedInstance] getConfig:^(RadarStatus status, RadarMeta *_Nullable meta)
-                                             usage:'resume'
+                                             usage:usage
             completionHandler:^(RadarStatus status, RadarMeta *_Nullable meta) {
             [[RadarLocationManager sharedInstance] updateTrackingFromMeta:meta];
         }];
