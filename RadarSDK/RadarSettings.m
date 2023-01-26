@@ -29,7 +29,7 @@ static NSString *const kTripOptions = @"radar-tripOptions";
 static NSString *const kLogLevel = @"radar-logLevel";
 static NSString *const kBeaconUUIDs = @"radar-beaconUUIDs";
 static NSString *const kHost = @"radar-host";
-static NSString *const kDefaultHost = @"https://api-liam.radar-staging.com";
+static NSString *const kDefaultHost = @"https://api.radar.io";
 
 + (NSString *)publishableKey {
     return [[NSUserDefaults standardUserDefaults] stringForKey:kPublishableKey];
