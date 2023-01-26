@@ -120,94 +120,6 @@
                     }];
 }
 
-- (void)handleTrackResponse:(RadarStatus) status
-                        res:(NSDictionary *_Nullable) res
-                   location:(CLLocation *_Nonnull)location
-          completionHandler:(RadarTrackAPICompletionHandler) completionHandler {
-    
-    [Radar flushLogs];
-    [RadarState setLastFailedStoppedLocation:nil];
-    
-    RadarMeta *_Nullable meta = [RadarAPIClient parseMeta:res];
-    
-    id eventsObj = res[@"events"];
-    id userObj = res[@"user"];
-    id nearbyGeofencesObj = res[@"nearbyGeofences"];
-    NSArray<RadarEvent *> *events = [RadarEvent eventsFromObject:eventsObj];
-    RadarUser *user = [[RadarUser alloc] initWithObject:userObj];
-    NSArray<RadarGeofence *> *nearbyGeofences = [RadarGeofence geofencesFromObject:nearbyGeofencesObj];
-    
-    if (user) {
-        BOOL inGeofences = user.geofences && user.geofences.count;
-        BOOL atPlace = user.place != nil;
-        BOOL canExit = inGeofences || atPlace;
-        [RadarState setCanExit:canExit];
-        
-        NSMutableArray *geofenceIds = [NSMutableArray new];
-        if (user.geofences) {
-            for (RadarGeofence *geofence in user.geofences) {
-                [geofenceIds addObject:geofence._id];
-            }
-            
-        }
-        [RadarState setGeofenceIds:geofenceIds];
-        
-        NSString *placeId = nil;
-        if (user.place) {
-            placeId = user.place._id;
-        }
-        [RadarState setPlaceId:placeId];
-        
-        NSMutableArray *regionIds = [NSMutableArray new];
-        if (user.country) {
-            [regionIds addObject:user.country._id];
-        }
-        if (user.state) {
-            [regionIds addObject:user.state._id];
-        }
-        if (user.dma) {
-            [regionIds addObject:user.dma._id];
-        }
-        if (user.postalCode) {
-            [regionIds addObject:user.postalCode._id];
-        }
-        [RadarState setRegionIds:regionIds];
-        
-        NSMutableArray *beaconIds = [NSMutableArray new];
-        if (user.beacons) {
-            for (RadarBeacon *beacon in user.beacons) {
-                [beaconIds addObject:beacon._id];
-            }
-            
-        }
-        [RadarState setBeaconIds:beaconIds];
-    }
-    
-    if (events && user) {
-        [RadarSettings setId:user._id];
-        
-        // if user was on a trip that ended server side, restore previous tracking options
-        if (!user.trip && [RadarSettings tripOptions]) {
-            [[RadarLocationManager sharedInstance] restartPreviousTrackingOptions];
-            [RadarSettings setTripOptions:nil];
-        }
-        
-        if (location) {
-            [[RadarDelegateHolder sharedInstance] didUpdateLocation:location user:user];
-        }
-        
-        if (events.count) {
-            [[RadarDelegateHolder sharedInstance] didReceiveEvents:events user:user];
-        }
-        
-        return completionHandler(RadarStatusSuccess, res, events, user, nearbyGeofences, meta);
-    }
-    
-    [[RadarDelegateHolder sharedInstance] didFailWithStatus:status];
-    
-    completionHandler(RadarStatusErrorServer, nil, nil, nil, nil, nil);
-}
-
 - (void)trackWithLocation:(CLLocation *_Nonnull)location
                   stopped:(BOOL)stopped
                foreground:(BOOL)foreground
@@ -328,71 +240,146 @@
     params[@"usingRemoteTrackingOptions"] = @(usingRemoteTrackingOptions);
 
     NSString *host = [RadarSettings host];
-    NSString *url = [NSString stringWithFormat:@"%@/v1/track", host];
-    url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
+    NSString *url;
 
     NSDictionary *headers = [RadarAPIClient headersWithPublishableKey:publishableKey];
+    
+    NSArray<RadarReplay *> *replays = [[RadarReplayBuffer sharedInstance] flushableReplays];
+    NSUInteger replayCount = replays.count;
 
-    if (options.replay == RadarTrackingOptionsReplayAll) {
-        NSArray<RadarReplay *> *replays = [[RadarReplayBuffer sharedInstance] flushableReplays];
+    NSMutableDictionary *bufferParams = [params mutableCopy];
+    bufferParams[@"replayed"] = @(YES);
 
-        NSMutableDictionary *bufferParams = [params mutableCopy];
-        bufferParams[@"replayed"] = @(YES);
+    // initialize requestsParmams dictionary
+    NSMutableDictionary *requestsParams = [NSMutableDictionary new];
+
+    if (options.replay == RadarTrackingOptionsReplayAll && replayCount > 0) {
+        NSMutableArray *replaysArray = [RadarReplay arrayForReplays:replays];
+        [replaysArray addObject:params];
         
-        NSMutableArray *trackParams = [RadarReplay arrayForReplays:replays];
-        [trackParams addObject:params];
-        
-        NSString *bulkUrl = [NSString stringWithFormat:@"%@/v1/track/bulk", host];
-        bulkUrl = [bulkUrl stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
+        url = [NSString stringWithFormat:@"%@/v1/track/replay", host];
+        url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
 
-        NSDictionary *trackParamsDict = @{@"tracks": trackParams};
-        
-        [self.apiHelper requestWithMethod:@"POST"
-                                       url:bulkUrl
-                                      headers:headers
-                                        params:trackParamsDict
-                                    sleep:YES
-                               logPayload:YES
-                        completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
-            if (status != RadarStatusSuccess || !res) {
-                [[RadarReplayBuffer sharedInstance] writeNewReplayToBuffer:bufferParams];
-                
-                return completionHandler(status, nil, nil, nil, nil, nil);
-            }
-
-            // succesfull bulk track, clear the buffer
-            [[RadarReplayBuffer sharedInstance] clearBuffer];
-            
-            [self handleTrackResponse:status
-                                  res:res
-                             location:location
-                    completionHandler:completionHandler];
-        }];
+        // NSDictionary *requestsDict = @{@"replays": replaysArray};
+        requestsParams[@"replays"] = replaysArray;
     } else {
-        [self.apiHelper requestWithMethod:@"POST"
-                                      url:url
-                                  headers:headers
-                                   params:params
-                                    sleep:YES
-                               logPayload:YES
-                        completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
-            if (status != RadarStatusSuccess || !res) {
-                if (options.replay == RadarTrackingOptionsReplayStops && stopped &&
-                           !(source == RadarLocationSourceForegroundLocation || source == RadarLocationSourceManualLocation)) {
-                    [RadarState setLastFailedStoppedLocation:location];
-                }
-                
-                [[RadarDelegateHolder sharedInstance] didFailWithStatus:status];
-                
-                return completionHandler(status, nil, nil, nil, nil, nil);
+        url = [NSString stringWithFormat:@"%@/v1/track", host];
+        url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
+
+        // make requestParams a copy of params
+        requestsParams = [params mutableCopy];
+
+    }
+
+        
+    [self.apiHelper requestWithMethod:@"POST"
+                                    url:url
+                                    headers:headers
+                                    params:requestsParams
+                                sleep:YES
+                            logPayload:YES
+                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
+        if (status != RadarStatusSuccess || !res) {
+            if (options.replay == RadarTrackingOptionsReplayAll) {
+                [[RadarReplayBuffer sharedInstance] writeNewReplayToBuffer:bufferParams];
+            } else if (options.replay == RadarTrackingOptionsReplayStops && stopped &&
+                        !(source == RadarLocationSourceForegroundLocation || source == RadarLocationSourceManualLocation)) {
+                [RadarState setLastFailedStoppedLocation:location];
+            }
+
+            [[RadarDelegateHolder sharedInstance] didFailWithStatus:status];
+
+            return completionHandler(status, nil, nil, nil, nil, nil); 
+        } 
+
+    [Radar flushLogs];
+    if (options.replay == RadarTrackingOptionsReplayAll) {
+        // clear buffer
+        [[RadarReplayBuffer sharedInstance] clearBuffer];
+    } else {
+        [RadarState setLastFailedStoppedLocation:nil];
+    }
+
+    
+    RadarMeta *_Nullable meta = [RadarAPIClient parseMeta:res];
+    
+    id eventsObj = res[@"events"];
+    id userObj = res[@"user"];
+    id nearbyGeofencesObj = res[@"nearbyGeofences"];
+    NSArray<RadarEvent *> *events = [RadarEvent eventsFromObject:eventsObj];
+    RadarUser *user = [[RadarUser alloc] initWithObject:userObj];
+    NSArray<RadarGeofence *> *nearbyGeofences = [RadarGeofence geofencesFromObject:nearbyGeofencesObj];
+    
+    if (user) {
+        BOOL inGeofences = user.geofences && user.geofences.count;
+        BOOL atPlace = user.place != nil;
+        BOOL canExit = inGeofences || atPlace;
+        [RadarState setCanExit:canExit];
+        
+        NSMutableArray *geofenceIds = [NSMutableArray new];
+        if (user.geofences) {
+            for (RadarGeofence *geofence in user.geofences) {
+                [geofenceIds addObject:geofence._id];
             }
             
-            [self handleTrackResponse:status
-                                  res:res
-                             location:location
-                    completionHandler:completionHandler];
-        }];
+        }
+        [RadarState setGeofenceIds:geofenceIds];
+        
+        NSString *placeId = nil;
+        if (user.place) {
+            placeId = user.place._id;
+        }
+        [RadarState setPlaceId:placeId];
+        
+        NSMutableArray *regionIds = [NSMutableArray new];
+        if (user.country) {
+            [regionIds addObject:user.country._id];
+        }
+        if (user.state) {
+            [regionIds addObject:user.state._id];
+        }
+        if (user.dma) {
+            [regionIds addObject:user.dma._id];
+        }
+        if (user.postalCode) {
+            [regionIds addObject:user.postalCode._id];
+        }
+        [RadarState setRegionIds:regionIds];
+        
+        NSMutableArray *beaconIds = [NSMutableArray new];
+        if (user.beacons) {
+            for (RadarBeacon *beacon in user.beacons) {
+                [beaconIds addObject:beacon._id];
+            }
+            
+        }
+        [RadarState setBeaconIds:beaconIds];
     }
+    
+    if (events && user) {
+        [RadarSettings setId:user._id];
+        
+        // if user was on a trip that ended server side, restore previous tracking options
+        if (!user.trip && [RadarSettings tripOptions]) {
+            [[RadarLocationManager sharedInstance] restartPreviousTrackingOptions];
+            [RadarSettings setTripOptions:nil];
+        }
+        
+        if (location) {
+            [[RadarDelegateHolder sharedInstance] didUpdateLocation:location user:user];
+        }
+        
+        if (events.count) {
+            [[RadarDelegateHolder sharedInstance] didReceiveEvents:events user:user];
+        }
+        
+        return completionHandler(RadarStatusSuccess, res, events, user, nearbyGeofences, meta);
+    }
+    
+    [[RadarDelegateHolder sharedInstance] didFailWithStatus:status];
+    
+    completionHandler(RadarStatusErrorServer, nil, nil, nil, nil, nil);
+    }];
 }
 
 - (void)verifyEventId:(NSString *)eventId verification:(RadarEventVerification)verification verifiedPlaceId:(NSString *)verifiedPlaceId {
