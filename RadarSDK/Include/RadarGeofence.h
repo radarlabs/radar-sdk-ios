@@ -7,6 +7,7 @@
 
 #import "RadarGeofenceGeometry.h"
 #import <Foundation/Foundation.h>
+#import "RadarCoordinate.h"
 
 /**
  Represents a geofence.
@@ -39,6 +40,16 @@
  The optional set of custom key-value pairs for the geofence.
  */
 @property (nullable, copy, nonatomic, readonly) NSDictionary *metadata;
+
+/**
+Coordinates of the center
+*/
+@property (nonnull, strong, nonatomic, readonly) RadarCoordinate *geometryCenter;
+
+/**
+ The radius of the circle geofence in meters.
+ */
+@property (assign, nonatomic, readonly) double geometryRadius;
 
 /**
  The geometry of the geofence, which can be cast to either `RadarCircleGeometry` or `RadarPolygonGeometry`.

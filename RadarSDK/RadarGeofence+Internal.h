@@ -6,6 +6,7 @@
 //
 
 #import "RadarGeofence.h"
+#import "RadarCoordinate.h"
 #import <Foundation/Foundation.h>
 
 @interface RadarGeofence ()
@@ -16,7 +17,9 @@
                                  tag:(NSString *_Nullable)tag
                           externalId:(NSString *_Nullable)externalId
                             metadata:(NSDictionary *_Nullable)metadata
-                            geometry:(RadarGeofenceGeometry *_Nonnull)geometry;
+                            geometry:(RadarGeofenceGeometry *_Nonnull)geometry
+                            geometryRadius:(double)geometryRadius
+                            geometryCenter:(RadarCoordinate *_Nonnull)geometryCenter;
 - (instancetype _Nullable)initWithObject:(id _Nonnull)object;
 
 @end

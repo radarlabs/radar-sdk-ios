@@ -6,6 +6,7 @@
 //
 
 #import "RadarCircleGeometry+Internal.h"
+#import "RadarCoordinate.h"
 #import "RadarCoordinate+Internal.h"
 #import "RadarGeofence+Internal.h"
 #import "RadarPolygonGeometry+Internal.h"
@@ -36,7 +37,10 @@
                                  tag:(NSString *)tag
                           externalId:(NSString *_Nullable)externalId
                             metadata:(NSDictionary *_Nullable)metadata
-                            geometry:(RadarGeofenceGeometry *_Nonnull)geometry {
+                            geometry:(RadarGeofenceGeometry *_Nonnull)geometry
+                      geometryRadius:(double)geometryRadius 
+                      geometryCenter:(RadarCoordinate *_Nonnull)geometryCenter
+                            {
     self = [super init];
     if (self) {
         __id = _id;
@@ -45,6 +49,8 @@
         _externalId = externalId;
         _metadata = metadata;
         _geometry = geometry;
+        _geometryRadius = geometryRadius;
+        _geometryCenter = geometryCenter;
     }
     return self;
 }
@@ -62,6 +68,8 @@
     NSString *externalId;
     NSDictionary *metadata;
     RadarGeofenceGeometry *geometry;
+    float radius = 0.0;
+    RadarCoordinate *center = [[RadarCoordinate alloc] initWithCoordinate:CLLocationCoordinate2DMake(0, 0)];
 
     id idObj = dict[@"_id"];
     if (idObj && [idObj isKindOfClass:[NSString class]]) {
@@ -94,9 +102,6 @@
 
         id radiusObj = dict[@"geometryRadius"];
         id centerObj = dict[@"geometryCenter"];
-
-        RadarCoordinate *center = [[RadarCoordinate alloc] initWithCoordinate:CLLocationCoordinate2DMake(0, 0)];
-        float radius = 0.0;
 
         if ([radiusObj isKindOfClass:[NSNumber class]] && [centerObj isKindOfClass:[NSDictionary class]]) {
             id centerCoordinatesObj = ((NSDictionary *)centerObj)[@"coordinates"];
@@ -176,7 +181,7 @@
         }
     }
 
-    return [[RadarGeofence alloc] initWithId:_id description:description tag:tag externalId:externalId metadata:metadata geometry:geometry];
+    return [[RadarGeofence alloc] initWithId:_id description:description tag:tag externalId:externalId metadata:metadata geometry:geometry geometryRadius:radius geometryCenter:center];
 }
 
 + (NSArray<NSDictionary *> *)arrayForGeofences:(NSArray<RadarGeofence *> *)geofences {
@@ -199,6 +204,8 @@
     [dict setValue:self.externalId forKey:@"externalId"];
     [dict setValue:self.__description forKey:@"description"];
     [dict setValue:self.metadata forKey:@"metadata"];
+    [dict setValue:[self.geometryCenter dictionaryValue] forKey:@"geometryCenter"];
+    [dict setValue:[NSNumber numberWithDouble:self.geometryRadius] forKey:@"geometryRadius"];
     return dict;
 }
 
