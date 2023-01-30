@@ -174,9 +174,9 @@
     if (location.floor) {
         params[@"floorLevel"] = @(location.floor.level);
     }
+    long nowMs = (long)([NSDate date].timeIntervalSince1970 * 1000);
     if (!foreground) {
         long timeInMs = (long)(location.timestamp.timeIntervalSince1970 * 1000);
-        long nowMs = (long)([NSDate date].timeIntervalSince1970 * 1000);
         params[@"updatedAtMsDiff"] = @(nowMs - timeInMs);
     }
     params[@"foreground"] = @(foreground);
@@ -250,6 +250,9 @@
     // create a copy of params that we can use to write to the buffer in case of request failure
     NSMutableDictionary *bufferParams = [params mutableCopy];
     bufferParams[@"replayed"] = @(YES);
+    bufferParams[@"updatedAtMs"] = @(nowMs);
+    // remove the updatedAtMsDiff key because for replays we want to rely on the updatedAtMs key for the time instead
+    [bufferParams removeObjectForKey:@"updatedAtMsDiff"];
     
     NSMutableDictionary *requestsParams = [NSMutableDictionary new];
     
