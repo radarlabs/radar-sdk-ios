@@ -6,7 +6,6 @@
 //
 
 #import "RadarCircleGeometry+Internal.h"
-#import "RadarCoordinate.h"
 #import "RadarCoordinate+Internal.h"
 #import "RadarGeofence+Internal.h"
 #import "RadarPolygonGeometry+Internal.h"
@@ -37,8 +36,7 @@
                                  tag:(NSString *)tag
                           externalId:(NSString *_Nullable)externalId
                             metadata:(NSDictionary *_Nullable)metadata
-                            geometry:(RadarGeofenceGeometry *_Nonnull)geometry
-                            {
+                            geometry:(RadarGeofenceGeometry *_Nonnull)geometry {
     self = [super init];
     if (self) {
         __id = _id;
@@ -178,7 +176,7 @@
         }
     }
 
-   return [[RadarGeofence alloc] initWithId:_id description:description tag:tag externalId:externalId metadata:metadata geometry:geometry];
+    return [[RadarGeofence alloc] initWithId:_id description:description tag:tag externalId:externalId metadata:metadata geometry:geometry];
 }
 
 + (NSArray<NSDictionary *> *)arrayForGeofences:(NSArray<RadarGeofence *> *)geofences {
