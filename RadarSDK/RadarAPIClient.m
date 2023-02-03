@@ -255,8 +255,10 @@
     [bufferParams removeObjectForKey:@"updatedAtMsDiff"];
     
     NSMutableDictionary *requestsParams = [NSMutableDictionary new];
+
+    BOOL replaying = options.replay == RadarTrackingOptionsReplayAll && replayCount > 0;
     
-    if (options.replay == RadarTrackingOptionsReplayAll && replayCount > 0) {
+    if (replaying) {
         NSMutableArray *replaysArray = [RadarReplay arrayForReplays:replays];
         [replaysArray addObject:params];
         
@@ -277,7 +279,7 @@
                               headers:headers
                                params:requestsParams
                                 sleep:YES
-                           logPayload:YES
+                           logPayload:!replaying
                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
         if (status != RadarStatusSuccess || !res) {
             if (options.replay == RadarTrackingOptionsReplayAll) {
@@ -292,7 +294,6 @@
             return completionHandler(status, nil, nil, nil, nil, nil);
         }
 
-        [Radar flushLogs];
         if (options.replay == RadarTrackingOptionsReplayAll) {
             // clear buffer
             [[RadarReplayBuffer sharedInstance] clearBuffer];
@@ -300,6 +301,7 @@
             [RadarState setLastFailedStoppedLocation:nil];
         }
         
+        [Radar flushLogs];
         
         RadarMeta *_Nullable meta = [RadarAPIClient parseMeta:res];
         
