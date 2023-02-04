@@ -242,6 +242,13 @@ completionHandler:(RadarConfigAPICompletionHandler _Nonnull)completionHandler {
     BOOL usingRemoteTrackingOptions = RadarSettings.tracking && RadarSettings.remoteTrackingOptions;
     params[@"usingRemoteTrackingOptions"] = @(usingRemoteTrackingOptions);
 
+    if (anonymous) {
+        NSString *const usage = @"track";
+        [[RadarAPIClient sharedInstance] getConfig:usage
+                                 completionHandler:^(RadarStatus status, RadarMeta *_Nullable meta) {
+        }];
+    }
+
     NSString *host = [RadarSettings host];
     NSString *url = [NSString stringWithFormat:@"%@/v1/track", host];
     url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
