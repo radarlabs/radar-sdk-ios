@@ -51,8 +51,7 @@
 
     [RadarSettings setPublishableKey:publishableKey];
     [[RadarLocationManager sharedInstance] updateTrackingFromInitialize];
-    NSString *const usage = @"initialize";
-    [[RadarAPIClient sharedInstance] getConfig:usage
+    [[RadarAPIClient sharedInstance] getConfigForUsage:@"initialize"
                              completionHandler:^(RadarStatus status, RadarMeta *_Nullable meta) {
         [[RadarLocationManager sharedInstance] updateTrackingFromMeta:meta];
     }];
@@ -1039,8 +1038,7 @@ completionHandler:(RadarSendEventCompletionHandler)completionHandler {
 - (void)applicationWillEnterForeground {
     BOOL updated = [RadarSettings updateSessionId];
     if (updated) {
-        NSString *const usage = @"resume";
-        [[RadarAPIClient sharedInstance] getConfig:usage
+        [[RadarAPIClient sharedInstance] getConfigForUsage:@"resume"
                                  completionHandler:^(RadarStatus status, RadarMeta *_Nullable meta) {
             [[RadarLocationManager sharedInstance] updateTrackingFromMeta:meta];
         }];

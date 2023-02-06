@@ -76,7 +76,7 @@
     return [RadarMeta metaFromDictionary:meta];
 }
 
-- (void)getConfig:(NSString *_Nullable)usage
+- (void)getConfigForUsage:(NSString *_Nullable)usage
 completionHandler:(RadarConfigAPICompletionHandler _Nonnull)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
@@ -243,8 +243,7 @@ completionHandler:(RadarConfigAPICompletionHandler _Nonnull)completionHandler {
     params[@"usingRemoteTrackingOptions"] = @(usingRemoteTrackingOptions);
 
     if (anonymous) {
-        NSString *const usage = @"track";
-        [[RadarAPIClient sharedInstance] getConfig:usage
+        [[RadarAPIClient sharedInstance] getConfigForUsage:@"track"
                                  completionHandler:^(RadarStatus status, RadarMeta *_Nullable meta) {
         }];
     }
