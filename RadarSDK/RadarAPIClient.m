@@ -76,7 +76,8 @@
     return [RadarMeta metaFromDictionary:meta];
 }
 
-- (void)getConfig:(RadarConfigAPICompletionHandler _Nonnull)completionHandler {
+- (void)getConfigForUsage:(NSString *_Nullable)usage
+completionHandler:(RadarConfigAPICompletionHandler _Nonnull)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
         return;
@@ -92,6 +93,9 @@
     NSString *locationAccuracyAuthorization = [RadarUtils locationAccuracyAuthorization];
     if (locationAccuracyAuthorization) {
         [queryString appendFormat:@"&locationAccuracyAuthorization=%@", locationAccuracyAuthorization];
+    }
+    if (usage) {
+        [queryString appendFormat:@"&usage=%@", usage];
     }
 
     NSString *host = [RadarSettings host];
@@ -237,6 +241,12 @@
     // remote tracking options
     BOOL usingRemoteTrackingOptions = RadarSettings.tracking && RadarSettings.remoteTrackingOptions;
     params[@"usingRemoteTrackingOptions"] = @(usingRemoteTrackingOptions);
+
+    if (anonymous) {
+        [[RadarAPIClient sharedInstance] getConfigForUsage:@"track"
+                                 completionHandler:^(RadarStatus status, RadarMeta *_Nullable meta) {
+        }];
+    }
 
     NSString *host = [RadarSettings host];
     NSString *url = [NSString stringWithFormat:@"%@/v1/track", host];
