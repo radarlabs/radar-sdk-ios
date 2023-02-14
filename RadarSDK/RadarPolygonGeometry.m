@@ -6,6 +6,7 @@
 //
 
 #import "RadarPolygonGeometry+Internal.h"
+#import "RadarCoordinate+Internal.h"
 
 @implementation RadarPolygonGeometry
 
@@ -17,6 +18,14 @@
         _radius = radius;
     }
     return self;
+}
+
+- (NSDictionary *)dictionaryValue {
+    NSMutableArray *coordinatesArr = [NSMutableArray new];
+    for (RadarCoordinate *coordinate in self._coordinates) {
+        [coordinatesArr addObject:[coordinate dictionaryValue]];
+    }
+    return @{@"type": @"Polygon", @"coordinates": @[coordinatesArr]};
 }
 
 @end

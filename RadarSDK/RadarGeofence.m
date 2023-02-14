@@ -207,6 +207,8 @@
         RadarPolygonGeometry *polygonGeometry = (RadarPolygonGeometry *)self.geometry;
         [dict setValue:@(polygonGeometry.radius) forKey:@"geometryRadius"];
         [dict setValue:[polygonGeometry.center dictionaryValue] forKey:@"geometryCenter"];
+        // Not yet necessary because we don't get polygon geometry from the server
+        [dict setValue:[polygonGeometry dictionaryValue] forKey:@"geometry"];
     }
 
     return dict;
