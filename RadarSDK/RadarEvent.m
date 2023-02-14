@@ -425,6 +425,11 @@
         NSDictionary *tripDict = [self.trip dictionaryValue];
         [dict setValue:tripDict forKey:@"trip"];
     }
+    if (self.createdAt) {
+        NSTimeInterval timestamp = [self.createdAt timeIntervalSince1970];
+        NSNumber *createdAtTimestamp = @(timestamp);
+        [dict setValue:createdAtTimestamp forKey:@"createdAt"];
+    }
     NSArray *alternatePlaces = [RadarPlace arrayForPlaces:self.alternatePlaces];
     if (alternatePlaces) {
         [dict setValue:alternatePlaces forKey:@"alternatePlaces"];
