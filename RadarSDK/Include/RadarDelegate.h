@@ -10,6 +10,7 @@
 #import "Radar.h"
 #import "RadarEvent.h"
 #import "RadarUser.h"
+#import "RadarGeofence.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -35,6 +36,14 @@ NS_ASSUME_NONNULL_BEGIN
  @param user The current user.
  */
 - (void)didUpdateLocation:(CLLocation *_Nonnull)location user:(RadarUser *_Nonnull)user NS_SWIFT_NAME(didUpdateLocation(_:user:));
+
+/**
+ Tells the delegate that nearbyGeofences were updated.
+
+    @param nearbyGeofences The nearby geofences.
+    @param user The current user.
+ */
+- (void)didUpdateNearbyGeofences:(NSArray<RadarGeofence *> *_Nonnull)nearbyGeofences user:(RadarUser *_Nonnull)user NS_SWIFT_NAME(didUpdateNearbyGeofences(_:user:));
 
 /**
  Tells the delegate that the client's location was updated but not necessarily synced to the server. To receive only server-synced location updates and user

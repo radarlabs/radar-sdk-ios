@@ -374,6 +374,11 @@
                             [RadarState setBeaconIds:beaconIds];
                         }
 
+                        if (user && nearbyGeofences && nearbyGeofences.count) {
+                            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"About to emit geofence events for nearby geofences:"], nil];
+                            [[RadarDelegateHolder sharedInstance] didUpdateNearbyGeofences:nearbyGeofences user:user];
+                        }
+
                         if (events && user) {
                             [RadarSettings setId:user._id];
 
