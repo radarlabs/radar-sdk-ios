@@ -51,6 +51,24 @@
                                                 user.location.coordinate.latitude, user.location.coordinate.longitude, user.location.horizontalAccuracy, user._id]];
 }
 
+- (void)didUpdateNearbyGeofences:(NSArray<RadarGeofence *> *)geofences user:(RadarUser *)user {
+    if (!geofences || !geofences.count) {
+        return;
+    }
+
+    if (self.delegate) {
+        [self.delegate didUpdateNearbyGeofences:geofences user:user];
+    }
+
+    // Save the ids of the geofences in an array that we'll log
+    NSMutableArray *geofenceIds = [NSMutableArray new];
+    for (RadarGeofence *geofence in geofences) {
+        [geofenceIds addObject:geofence._id];
+    }
+    
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"📍 Nearby geofences updated | geofences = %@", [geofenceIds componentsJoinedByString:@", "]]];
+}
+
 - (void)didUpdateClientLocation:(CLLocation *)location stopped:(BOOL)stopped source:(RadarLocationSource)source {
     if (!location) {
         return;
