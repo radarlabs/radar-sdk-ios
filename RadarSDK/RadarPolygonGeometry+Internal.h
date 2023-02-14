@@ -11,4 +11,6 @@
 
 - (instancetype)initWithCoordinates:(NSArray<RadarCoordinate *> *)coordinates center:(RadarCoordinate *)center radius:(double)radius;
 
+- (NSDictionary *)dictionaryValue;
+
 @end
