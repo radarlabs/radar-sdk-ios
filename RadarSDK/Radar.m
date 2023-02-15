@@ -341,8 +341,8 @@
 }
 
 + (void)logConversionWithName:(NSString *)name
-     metadata:(NSDictionary *_Nullable)metadata
-completionHandler:(RadarLogConversionCompletionHandler)completionHandler {
+                     metadata:(NSDictionary *_Nullable)metadata
+            completionHandler:(RadarLogConversionCompletionHandler)completionHandler {
     [self trackOnceWithCompletionHandler:^(RadarStatus status, CLLocation * _Nullable location, NSArray<RadarEvent *> * _Nullable events, RadarUser * _Nullable user) {
         if (status != RadarStatusSuccess) {
             if (completionHandler) {
@@ -386,9 +386,9 @@ completionHandler:(RadarLogConversionCompletionHandler)completionHandler {
 }
 
 + (void)logConversionWithName:(NSString *)name
-     location:(CLLocation *_Nullable)location
-         metadata:(NSDictionary *_Nullable)metadata
-completionHandler:(RadarLogConversionCompletionHandler)completionHandler {
+                     location:(CLLocation *_Nullable)location
+                     metadata:(NSDictionary *_Nullable)metadata
+            completionHandler:(RadarLogConversionCompletionHandler)completionHandler {
     [self trackOnceWithLocation:location completionHandler:^(RadarStatus status, CLLocation * _Nullable location, NSArray<RadarEvent *> * _Nullable events, RadarUser * _Nullable user) {
         if (status != RadarStatusSuccess) {
             if (completionHandler) {

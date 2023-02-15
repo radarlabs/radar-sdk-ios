@@ -486,8 +486,8 @@ typedef void(^_Nonnull RadarLogConversionCompletionHandler)(RadarStatus status, 
  @see https://radar.com/documentation/api#send-a-custom-event
  */
 + (void)logConversionWithName:(NSString *)name
-     metadata:(NSDictionary *_Nullable)metadata
-completionHandler:(RadarLogConversionCompletionHandler)completionHandler NS_SWIFT_NAME(logConversion(name:metadata:completionHandler:));
+                     metadata:(NSDictionary *_Nullable)metadata
+            completionHandler:(RadarLogConversionCompletionHandler)completionHandler NS_SWIFT_NAME(logConversion(name:metadata:completionHandler:));
 
 /**
  Logs a custom conversion
@@ -515,9 +515,9 @@ completionHandler:(RadarLogConversionCompletionHandler)completionHandler NS_SWIF
  @see https://radar.com/documentation/api#send-a-custom-event
  */
 + (void)logConversionWithName:(NSString *)name
-     location:(CLLocation *_Nullable)location
-         metadata:(NSDictionary *_Nullable)metadata
-completionHandler:(RadarLogConversionCompletionHandler)completionHandler NS_SWIFT_NAME(logConversion(name:location:metadata:completionHandler:));
+                     location:(CLLocation *_Nullable)location
+                     metadata:(NSDictionary *_Nullable)metadata
+            completionHandler:(RadarLogConversionCompletionHandler)completionHandler NS_SWIFT_NAME(logConversion(name:location:metadata:completionHandler:));
 
 #pragma mark - Trips
 
