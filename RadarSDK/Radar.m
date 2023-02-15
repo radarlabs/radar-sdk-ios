@@ -340,9 +340,9 @@
     [[RadarAPIClient sharedInstance] verifyEventId:eventId verification:RadarEventVerificationReject verifiedPlaceId:nil];
 }
 
-+ (void)sendEvent:(NSString *)customType
-     withMetadata:(NSDictionary *_Nullable)metadata
-completionHandler:(RadarSendEventCompletionHandler)completionHandler {
++ (void)logConversionWithName:(NSString *)name
+     metadata:(NSDictionary *_Nullable)metadata
+completionHandler:(RadarLogConversionCompletionHandler)completionHandler {
     [self trackOnceWithCompletionHandler:^(RadarStatus status, CLLocation * _Nullable location, NSArray<RadarEvent *> * _Nullable events, RadarUser * _Nullable user) {
         if (status != RadarStatusSuccess) {
             if (completionHandler) {
@@ -354,7 +354,7 @@ completionHandler:(RadarSendEventCompletionHandler)completionHandler {
             return;
         }
 
-        [[RadarAPIClient sharedInstance] sendEvent:customType withMetadata:metadata user:user trackEvents:events completionHandler:^(RadarStatus status, NSDictionary * _Nullable res, NSArray<RadarEvent *> * _Nullable events) {
+        [[RadarAPIClient sharedInstance] sendEvent:name withMetadata:metadata user:user trackEvents:events completionHandler:^(RadarStatus status, NSDictionary * _Nullable res, NSArray<RadarEvent *> * _Nullable events) {
             if (status != RadarStatusSuccess) {
                 if (completionHandler) {
                     [RadarUtils runOnMainThread:^{
@@ -374,10 +374,21 @@ completionHandler:(RadarSendEventCompletionHandler)completionHandler {
     }];
 }
 
-+ (void)sendEvent:(NSString *)customType
-     withLocation:(CLLocation *_Nullable)location
++ (void)logConversionWithName:(NSString *)name
+                      revenue:(NSNumber *)revenue
+                     metadata:(NSDictionary * _Nullable)metadata
+            completionHandler:(RadarLogConversionCompletionHandler)completionHandler {
+    NSMutableDictionary *mutableMetadata = [[NSMutableDictionary alloc] initWithDictionary:metadata];
+    
+    [mutableMetadata setValue:revenue forKey:@"revenue"];
+    
+    [self logConversionWithName:name metadata:mutableMetadata completionHandler:completionHandler];
+}
+
++ (void)logConversionWithName:(NSString *)name
+     location:(CLLocation *_Nullable)location
          metadata:(NSDictionary *_Nullable)metadata
-completionHandler:(RadarSendEventCompletionHandler)completionHandler {
+completionHandler:(RadarLogConversionCompletionHandler)completionHandler {
     [self trackOnceWithLocation:location completionHandler:^(RadarStatus status, CLLocation * _Nullable location, NSArray<RadarEvent *> * _Nullable events, RadarUser * _Nullable user) {
         if (status != RadarStatusSuccess) {
             if (completionHandler) {
@@ -389,7 +400,7 @@ completionHandler:(RadarSendEventCompletionHandler)completionHandler {
             return;
         }
 
-        [[RadarAPIClient sharedInstance] sendEvent:customType withMetadata:metadata user:user trackEvents:events completionHandler:^(RadarStatus status, NSDictionary * _Nullable res, NSArray<RadarEvent *> * _Nullable events) {
+        [[RadarAPIClient sharedInstance] sendEvent:name withMetadata:metadata user:user trackEvents:events completionHandler:^(RadarStatus status, NSDictionary * _Nullable res, NSArray<RadarEvent *> * _Nullable events) {
             if (status != RadarStatusSuccess) {
                 if (completionHandler) {
                     [RadarUtils runOnMainThread:^{

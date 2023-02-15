@@ -604,7 +604,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     [Radar rejectEventId:@"eventId"];
 }
 
-- (void)test_Radar_sendEvent {
+- (void)test_Radar_logConversion {
     self.apiHelperMock.mockStatus = RadarStatusSuccess;
     self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusAuthorizedWhenInUse;
     self.locationManagerMock.mockLocation = [[CLLocation alloc] initWithCoordinate:CLLocationCoordinate2DMake(40.78382, -73.97536)
@@ -617,10 +617,10 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     [self.apiHelperMock setMockResponse:[RadarTestUtils jsonDictionaryFromResource:@"custom_event"]
                               forMethod:@"https://api.radar.io/v1/events"];
 
-    XCTestExpectation *exp = [self expectationWithDescription:@"sendEvent"];
+    XCTestExpectation *exp = [self expectationWithDescription:@"logConversion"];
 
-    [Radar sendEvent:@"customEvent4"
-        withMetadata:@{@"foo": @"bar"}
+    [Radar logConversionWithName:@"customEvent4"
+        metadata:@{@"foo": @"bar"}
    completionHandler:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user) {
         XCTAssertEqual(status, RadarStatusSuccess);
         XCTAssertNotNil(events);
@@ -637,7 +637,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     [self waitForExpectations:@[exp] timeout:10.0];
 }
 
-- (void)test_Radar_sendEvent_statusOkButEventIsNil_fails {
+- (void)test_Radar_logConversion_statusOkButEventIsNil_fails {
     self.apiHelperMock.mockStatus = RadarStatusSuccess;
     self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusAuthorizedWhenInUse;
     self.locationManagerMock.mockLocation = [[CLLocation alloc] initWithCoordinate:CLLocationCoordinate2DMake(40.78382, -73.97536)
@@ -650,10 +650,10 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     [self.apiHelperMock setMockResponse:[RadarTestUtils jsonDictionaryFromResource:@"custom_event_nil_event"]
                               forMethod:@"https://api.radar.io/v1/events"];
 
-    XCTestExpectation *exp = [self expectationWithDescription:@"sendEvent"];
+    XCTestExpectation *exp = [self expectationWithDescription:@"logConversion"];
 
-    [Radar sendEvent:@"customEvent4"
-        withMetadata:nil
+    [Radar logConversionWithName:@"customEvent4"
+        metadata:nil
    completionHandler:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user) {
         XCTAssertEqual(status, RadarStatusErrorServer);
         XCTAssertNil(events);
@@ -664,7 +664,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     [self waitForExpectations:@[exp] timeout:10.0];
 }
 
-- (void)test_Radar_sendEvent_withLocation {
+- (void)test_Radar_logConversion_withLocation {
     self.apiHelperMock.mockStatus = RadarStatusSuccess;
     self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusAuthorizedWhenInUse;
     CLLocation *mockLocation = [[CLLocation alloc] initWithCoordinate:CLLocationCoordinate2DMake(40.78382, -73.97536)
@@ -677,10 +677,10 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     [self.apiHelperMock setMockResponse:[RadarTestUtils jsonDictionaryFromResource:@"custom_event"]
                               forMethod:@"https://api.radar.io/v1/events"];
 
-    XCTestExpectation *exp = [self expectationWithDescription:@"sendEventWithLocation"];
+    XCTestExpectation *exp = [self expectationWithDescription:@"logConversionWithLocation"];
 
-    [Radar sendEvent:@"customEvent4"
-        withLocation:mockLocation
+    [Radar logConversionWithName:@"customEvent4"
+        location:mockLocation
             metadata:@{@"foo": @"bar"}
     completionHandler:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user) {
         XCTAssertEqual(status, RadarStatusSuccess);
@@ -699,7 +699,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     [self waitForExpectations:@[exp] timeout:10.0];
 }
 
-- (void)test_Radar_sendEvent_withLocation_statusOkButEventIsNil_fails {
+- (void)test_Radar_logConversion_withLocation_statusOkButEventIsNil_fails {
     self.apiHelperMock.mockStatus = RadarStatusSuccess;
     self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusAuthorizedWhenInUse;
     CLLocation *mockLocation = [[CLLocation alloc] initWithCoordinate:CLLocationCoordinate2DMake(40.78382, -73.97536)
@@ -712,10 +712,10 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     [self.apiHelperMock setMockResponse:[RadarTestUtils jsonDictionaryFromResource:@"custom_event_nil_event"]
                               forMethod:@"https://api.radar.io/v1/events"];
 
-    XCTestExpectation *exp = [self expectationWithDescription:@"sendEventWithLocationStatusOkButEventIsNil"];
+    XCTestExpectation *exp = [self expectationWithDescription:@"logConversionWithLocationStatusOkButEventIsNil"];
 
-    [Radar sendEvent:@"customEvent5"
-        withLocation:mockLocation
+    [Radar logConversionWithName:@"customEvent5"
+        location:mockLocation
             metadata:@{@"foo": @"bar", @"baz": @YES, @"qux": @1}
    completionHandler:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user) {
         XCTAssertEqual(status, RadarStatusErrorServer);
