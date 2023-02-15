@@ -502,7 +502,7 @@ typedef void(^_Nonnull RadarLogConversionCompletionHandler)(RadarStatus status, 
 + (void)logConversionWithName:(NSString *)name
                       revenue:(NSNumber *)revenue
                      metadata:(NSDictionary *_Nullable)metadata
-            completionHandler:(RadarLogConversionCompletionHandler)completionHandler NS_SWIFT_NAME(logConversion(name:metadata:completionHandler:));
+            completionHandler:(RadarLogConversionCompletionHandler)completionHandler NS_SWIFT_NAME(logConversion(name:revenue:metadata:completionHandler:));
 
 /**
  Sends a custom event with a manually provided location.

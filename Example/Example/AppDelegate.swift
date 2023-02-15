@@ -140,7 +140,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 print("Custom type: \(customEvent.customType!)")
             }
 
-            print("Send event: status = \(Radar.stringForStatus(status)); location = \(String(describing: location)); events = \(String(describing: events)); user = \(String(describing: user))")
+            print("Log Conversion: status = \(Radar.stringForStatus(status)); location = \(String(describing: location)); events = \(String(describing: events)); user = \(String(describing: user))")
         }
 
         let customLocation = CLLocation(latitude: 38.87896275702961, longitude: -77.18228972761578)
@@ -151,13 +151,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 print("Custom type: \(customEvent.customType!)")
             }
 
-            print("Send event with custom location: status = \(Radar.stringForStatus(status)); location = \(String(describing: location)); events = \(String(describing: events)); user = \(String(describing: user))")
+            print("Log Conversion with custom location: status = \(Radar.stringForStatus(status)); location = \(String(describing: location)); events = \(String(describing: events)); user = \(String(describing: user))")
         }
 
         // Test custom event with a manual location
         Radar.getLocation { (status, location, stopped) in
-            Radar.sendEvent(customType: "app_launched_manual", location: location, metadata: ["data": "test"]) { (status, location, events, user) in
-                print("Send event: status = \(Radar.stringForStatus(status)); location = \(String(describing: location)); events = \(String(describing: events)); user = \(String(describing: user))")
+            Radar.logConversion(name: "app_launched_manual", location: location, metadata: ["data": "test"]) { (status, location, events, user) in
+                print("Log Conversion: status = \(Radar.stringForStatus(status)); location = \(String(describing: location)); events = \(String(describing: events)); user = \(String(describing: user))")
             }
         }
 
