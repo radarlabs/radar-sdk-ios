@@ -36,6 +36,7 @@
                    params:(NSDictionary *)params
                     sleep:(BOOL)sleep
                logPayload:(BOOL)logPayload
+          extendedTimeout:(BOOL)extendedTimeout
         completionHandler:(RadarAPICompletionHandler)completionHandler {
     dispatch_async(self.queue, ^{
         if (self.wait) {
@@ -69,8 +70,13 @@
             }
 
             NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
-            configuration.timeoutIntervalForRequest = 10;
-            configuration.timeoutIntervalForResource = 10;
+            if (extendedTimeout) {
+                configuration.timeoutIntervalForRequest = 25;
+                configuration.timeoutIntervalForResource = 25;
+            } else {
+                configuration.timeoutIntervalForRequest = 10;
+                configuration.timeoutIntervalForResource = 10;
+            }
 
             void (^dataTaskCompletionHandler)(NSData *data, NSURLResponse *response, NSError *error) = ^(NSData *data, NSURLResponse *response, NSError *error) {
                 if (error) {
