@@ -67,7 +67,7 @@
 }
 
 - (void)getConfigWithVerified:(BOOL)verified
-            completionHandler:(RadarConfigAPICompletionHandler _Nonnull)completionHandler:(RadarConfigAPICompletionHandler _Nonnull)completionHandler {
+            completionHandler:(RadarConfigAPICompletionHandler _Nonnull)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
         return;
