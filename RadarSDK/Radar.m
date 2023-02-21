@@ -269,10 +269,6 @@
             }];
 }
 
-+ (void)setVerifiedHost:(NSString *)verifiedHost {
-    [RadarSettings setVerifiedHost:verifiedHost];
-}
-
 + (void)startTrackingWithOptions:(RadarTrackingOptions *)options {
     [[RadarLocationManager sharedInstance] startTrackingWithOptions:options];
 }
