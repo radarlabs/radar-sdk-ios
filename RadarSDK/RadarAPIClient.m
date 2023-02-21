@@ -274,24 +274,26 @@
     // remove the updatedAtMsDiff key because for replays we want to rely on the updatedAtMs key for the time instead
     [bufferParams removeObjectForKey:@"updatedAtMsDiff"];
     
-    NSMutableDictionary *requestsParams = [NSMutableDictionary new];
+    NSMutableDictionary *requestParams = [NSMutableDictionary new];
 
     BOOL replaying = options.replay == RadarTrackingOptionsReplayAll && replayCount > 0;
     
     if (verified) {
         url = [NSString stringWithFormat:@"%@/v1/track", host];
+        
+        requestParams = [params mutableCopy];
     } else if (replaying) {
         NSMutableArray *replaysArray = [RadarReplay arrayForReplays:replays];
         [replaysArray addObject:params];
         
         url = [NSString stringWithFormat:@"%@/v1/track/replay", host];
         
-        requestsParams[@"replays"] = replaysArray;
+        requestParams[@"replays"] = replaysArray;
     } else {
         url = [NSString stringWithFormat:@"%@/v1/track", host];
         
         // if we're not sending up replays, the requestParams are just the ordinary params
-        requestsParams = [params mutableCopy];
+        requestParams = [params mutableCopy];
     }
     
     url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
@@ -299,7 +301,7 @@
     [self.apiHelper requestWithMethod:@"POST"
                                   url:url
                               headers:headers
-                               params:requestsParams
+                               params:requestParams
                                 sleep:YES
                            logPayload:!replaying
                       extendedTimeout:replaying
