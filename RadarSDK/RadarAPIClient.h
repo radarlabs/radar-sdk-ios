@@ -64,9 +64,7 @@ typedef void (^_Nonnull RadarSyncLogsAPICompletionHandler)(RadarStatus status);
 
 + (NSDictionary *)headersWithPublishableKey:(NSString *)publishableKey;
 
-- (void)getConfig:(RadarConfigAPICompletionHandler _Nonnull)completionHandler;
-
-- (void)getConfigWithVerified:(BOOL)verified completionHandler:(RadarConfigAPICompletionHandler _Nonnull)completionHandler;
+- (void)getConfigForUsage:(NSString *_Nullable)usage verified:(BOOL)verified completionHandler:(RadarConfigAPICompletionHandler _Nonnull)completionHandler;
 
 - (void)trackWithLocation:(CLLocation *_Nonnull)location
                   stopped:(BOOL)stopped

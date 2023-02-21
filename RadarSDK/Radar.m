@@ -53,7 +53,7 @@
 
     [RadarSettings setPublishableKey:publishableKey];
     [[RadarLocationManager sharedInstance] updateTrackingFromInitialize];
-    [[RadarAPIClient sharedInstance] getConfig:^(RadarStatus status, RadarConfig *config) {
+    [[RadarAPIClient sharedInstance] getConfigForUsage:@"initialize" verified:NO completionHandler:^(RadarStatus status, RadarConfig *config) {
         [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
     }];
 }
@@ -126,6 +126,7 @@
 }
 
 + (void)trackOnceWithDesiredAccuracy:(RadarTrackingOptionsDesiredAccuracy)desiredAccuracy beacons:(BOOL)beacons completionHandler:(RadarTrackCompletionHandler)completionHandler {
+
     [[RadarLocationManager sharedInstance]
         getLocationWithDesiredAccuracy:desiredAccuracy
                      completionHandler:^(RadarStatus status, CLLocation *_Nullable location, BOOL stopped) {
@@ -1076,7 +1077,7 @@
 - (void)applicationWillEnterForeground {
     BOOL updated = [RadarSettings updateSessionId];
     if (updated) {
-        [[RadarAPIClient sharedInstance] getConfig:^(RadarStatus status, RadarConfig *_Nullable config) {
+        [[RadarAPIClient sharedInstance] getConfigForUsage:@"resume" verified:NO completionHandler:^(RadarStatus status, RadarConfig *_Nullable config) {
             [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
         }];
     }

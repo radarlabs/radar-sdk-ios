@@ -35,6 +35,7 @@ NSString *const kDesiredAccuracyLow = @"low";
 
 NSString *const kReplayStops = @"stops";
 NSString *const kReplayNone = @"none";
+NSString *const kReplayAll = @"all";
 
 NSString *const kSyncAll = @"all";
 NSString *const kSyncStopsAndExits = @"stopsAndExits";
@@ -51,7 +52,7 @@ NSString *const kSyncNone = @"none";
     options.startTrackingAfter = nil;
     options.stopTrackingAfter = nil;
     options.syncLocations = RadarTrackingOptionsSyncAll;
-    options.replay = RadarTrackingOptionsReplayNone;
+    options.replay = RadarTrackingOptionsReplayAll;
     options.showBlueBar = YES;
     options.useStoppedGeofence = NO;
     options.stoppedGeofenceRadius = 0;
@@ -146,6 +147,9 @@ NSString *const kSyncNone = @"none";
     case RadarTrackingOptionsReplayStops:
         str = kReplayStops;
         break;
+    case RadarTrackingOptionsReplayAll:
+        str = kReplayAll;
+        break;
     case RadarTrackingOptionsReplayNone:
     default:
         str = kReplayNone;
@@ -157,7 +161,9 @@ NSString *const kSyncNone = @"none";
     RadarTrackingOptionsReplay replay = RadarTrackingOptionsReplayNone;
     if ([str isEqualToString:kReplayStops]) {
         replay = RadarTrackingOptionsReplayStops;
-    }
+    } else if ([str isEqualToString:kReplayAll]) {
+        replay = RadarTrackingOptionsReplayAll;
+    }   
     return replay;
 }
 
