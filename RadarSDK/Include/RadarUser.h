@@ -145,6 +145,6 @@ typedef NS_ENUM(NSInteger, RadarLocationSource);
 
  @see https://radar.com/documentation/fraud
  */
-@property (nonnull, copy, nonatomic, readonly) RadarFraud *fraud;
+@property (nullable, copy, nonatomic, readonly) RadarFraud *fraud;
 
 @end
