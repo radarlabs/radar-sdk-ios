@@ -76,7 +76,12 @@
                 configuration.timeoutIntervalForResource = 10;
             }
 
+            NSDate *requestStart = [NSDate date];
+
             void (^dataTaskCompletionHandler)(NSData *data, NSURLResponse *response, NSError *error) = ^(NSData *data, NSURLResponse *response, NSError *error) {
+                NSTimeInterval latency = [requestStart timeIntervalSinceNow] * -1;
+
+
                 if (error) {
                     dispatch_async(dispatch_get_main_queue(), ^{
                         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelError message:[NSString stringWithFormat:@"Received network error | error = %@", error]];
@@ -131,9 +136,17 @@
 
                     res = (NSDictionary *)resObj;
 
-                    [[RadarLogger sharedInstance]
-                        logWithLevel:RadarLogLevelDebug
-                             message:[NSString stringWithFormat:@"📍 Radar API response | method = %@; url = %@; statusCode = %ld; res = %@", method, url, (long)statusCode, res]];
+                    if (params && [params objectForKey:@"replays"]) {
+                        NSArray *replays = [params objectForKey:@"replays"];
+                        [[RadarLogger sharedInstance]
+                            logWithLevel:RadarLogLevelDebug
+                                 message:[NSString stringWithFormat:@"📍 Radar API response | method = %@; url = %@; statusCode = %ld; res = %@; latency = %f; replays = %lu", method, url, (long)statusCode, res, latency, (unsigned long)replays.count]];
+                    } else {
+                        [[RadarLogger sharedInstance]
+                            logWithLevel:RadarLogLevelDebug
+                                 message:[NSString stringWithFormat:@"📍 Radar API response | method = %@; url = %@; statusCode = %ld; res = %@; latency = %f", method, url, (long)statusCode, res, latency]];
+                    }
+
                 }
 
                 dispatch_async(dispatch_get_main_queue(), ^{
