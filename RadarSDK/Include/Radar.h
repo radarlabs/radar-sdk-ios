@@ -393,7 +393,7 @@ typedef void (^_Nonnull RadarSendEventCompletionHandler)(RadarStatus status, CLL
 /**
  Tracks the user's location with device integrity information for location verification use cases.
 
- @warning Note that you configure SSL pinning before calling this method.
+ @warning Note that you must configure SSL pinning before calling this method.
 
  @param completionHandler An optional completion handler.
 

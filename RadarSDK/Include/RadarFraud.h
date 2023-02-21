@@ -26,6 +26,11 @@
 @property (assign, nonatomic, readonly) bool bypassed;
 
 /**
+ A boolean indicating whether the request was made with SSL pinning configured successfully. May be `false` if Fraud is not enabled.
+ */
+@property (assign, nonatomic, readonly) bool verified;
+
+/**
  A boolean indicating whether the user's IP address is a known proxy. May be `false` if Fraud is not enabled.
  */
 @property (assign, nonatomic, readonly) bool proxy;

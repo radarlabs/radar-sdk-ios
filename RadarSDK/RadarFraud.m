@@ -9,9 +9,10 @@
 
 @implementation RadarFraud
 
-- (instancetype _Nonnull)initWithPassed:(BOOL)passed bypassed:(BOOL)bypassed proxy:(BOOL)proxy mocked:(BOOL)mocked compromised:(BOOL)compromised jumped:(BOOL)jumped {
+- (instancetype _Nonnull)initWithPassed:(BOOL)passed bypassed:(BOOL)bypassed verified:(BOOL)verified proxy:(BOOL)proxy mocked:(BOOL)mocked compromised:(BOOL)compromised jumped:(BOOL)jumped {
     _passed = passed;
     _bypassed = bypassed;
+    _verified = verified;
     _proxy = proxy;
     _mocked = mocked;
     _compromised = compromised;
@@ -29,6 +30,7 @@
 
     _passed = [self asBool:dict[@"passed"]];
     _bypassed = [self asBool:dict[@"bypassed"]];
+    _verified = [self asBool:dict[@"verified"]];
     _proxy = [self asBool:dict[@"proxy"]];
     _mocked = [self asBool:dict[@"mocked"]];
     _compromised = [self asBool:dict[@"compromised"]];
@@ -41,6 +43,7 @@
     return @{
         @"passed": @(self.passed),
         @"bypassed": @(self.bypassed),
+        @"verified": @(self.verified),
         @"proxy": @(self.proxy),
         @"mocked": @(self.mocked),
         @"compromised": @(self.compromised),
