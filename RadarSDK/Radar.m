@@ -228,7 +228,7 @@
 
 + (void)trackVerifiedWithCompletionHandler:(RadarTrackCompletionHandler)completionHandler {
     [[RadarAPIClient sharedInstance]
-        getConfigWithVerified:YES
+     getConfigForUsage:@"verify" verified:YES
             completionHandler:^(RadarStatus status, RadarConfig *_Nullable config) {
                 [[RadarLocationManager sharedInstance]
                     getLocationWithDesiredAccuracy:RadarTrackingOptionsDesiredAccuracyHigh

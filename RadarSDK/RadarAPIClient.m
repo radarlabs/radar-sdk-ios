@@ -64,10 +64,6 @@
     };
 }
 
-- (void)getConfig:(RadarConfigAPICompletionHandler _Nonnull)completionHandler {
-    [self getConfigWithVerified:NO completionHandler:completionHandler];
-}
-
 - (void)getConfigForUsage:(NSString *_Nullable)usage verified:(BOOL)verified completionHandler:(RadarConfigAPICompletionHandler _Nonnull)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
@@ -90,7 +86,7 @@
     }
     [queryString appendFormat:@"&verified=%@", verified ? @"true" : @"false"];
 
-    NSString *host = [RadarSettings host];
+    NSString *host = verified ? [RadarSettings verifiedHost] : [RadarSettings host];
     NSString *url = [NSString stringWithFormat:@"%@/v1/config?%@", host, queryString];
     url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
 
@@ -263,6 +259,9 @@
         params[@"attestationError"] = attestationError;
     }
     
+    NSString *host = verified ? [RadarSettings verifiedHost] : [RadarSettings host];
+    NSString *url;
+    
     NSDictionary *headers = [RadarAPIClient headersWithPublishableKey:publishableKey];
     
     NSArray<RadarReplay *> *replays = [[RadarReplayBuffer sharedInstance] flushableReplays];
@@ -280,22 +279,22 @@
     BOOL replaying = options.replay == RadarTrackingOptionsReplayAll && replayCount > 0;
     
     if (verified) {
-      url = [NSString stringWithFormat:@"%@/v1/track", host]
+        url = [NSString stringWithFormat:@"%@/v1/track", host];
     } else if (replaying) {
         NSMutableArray *replaysArray = [RadarReplay arrayForReplays:replays];
         [replaysArray addObject:params];
         
         url = [NSString stringWithFormat:@"%@/v1/track/replay", host];
-        url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
         
         requestsParams[@"replays"] = replaysArray;
     } else {
         url = [NSString stringWithFormat:@"%@/v1/track", host];
-        url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
         
         // if we're not sending up replays, the requestParams are just the ordinary params
         requestsParams = [params mutableCopy];
     }
+    
+    url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
 
     [self.apiHelper requestWithMethod:@"POST"
                                   url:url
