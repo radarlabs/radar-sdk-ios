@@ -51,7 +51,6 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)setBeaconUUIDs:(NSArray<NSString *> *_Nullable)beaconUUIDs;
 + (NSString *)host;
 + (NSString *)verifiedHost;
-+ (void)setVerifiedHost:(NSString *)verifiedHost;
 
 @end
 

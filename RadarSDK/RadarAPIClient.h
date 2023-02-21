@@ -66,8 +66,7 @@ typedef void (^_Nonnull RadarSyncLogsAPICompletionHandler)(RadarStatus status);
 
 - (void)getConfig:(RadarConfigAPICompletionHandler _Nonnull)completionHandler;
 
-- (void)getConfigWithVerified:(BOOL)verified
-            completionHandler:(RadarConfigAPICompletionHandler _Nonnull)completionHandler;
+- (void)getConfigWithVerified:(BOOL)verified completionHandler:(RadarConfigAPICompletionHandler _Nonnull)completionHandler;
 
 - (void)trackWithLocation:(CLLocation *_Nonnull)location
                   stopped:(BOOL)stopped

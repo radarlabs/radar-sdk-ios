@@ -670,7 +670,8 @@ typedef void (^_Nonnull RadarSendEventCompletionHandler)(RadarStatus status, CLL
                     categories:(NSArray<NSString *> *_Nullable)categories
                         groups:(NSArray<NSString *> *_Nullable)groups
                          limit:(int)limit
-             completionHandler:(RadarSearchPlacesCompletionHandler)completionHandler NS_SWIFT_NAME(searchPlaces(radius:chains:chainMetadata:categories:groups:limit:completionHandler:));
+             completionHandler:(RadarSearchPlacesCompletionHandler)completionHandler NS_SWIFT_NAME(searchPlaces(radius:chains:chainMetadata:categories:groups:limit:
+                                                                                                                completionHandler:));
 
 /**
  Searches for places near a location, sorted by distance.
@@ -718,7 +719,8 @@ typedef void (^_Nonnull RadarSendEventCompletionHandler)(RadarStatus status, CLL
               categories:(NSArray<NSString *> *_Nullable)categories
                   groups:(NSArray<NSString *> *_Nullable)groups
                    limit:(int)limit
-       completionHandler:(RadarSearchPlacesCompletionHandler)completionHandler NS_SWIFT_NAME(searchPlaces(near:radius:chains:chainMetadata:categories:groups:limit:completionHandler:));
+       completionHandler:(RadarSearchPlacesCompletionHandler)completionHandler NS_SWIFT_NAME(searchPlaces(near:radius:chains:chainMetadata:categories:groups:limit:
+                                                                                                          completionHandler:));
 
 /**
  Gets the device's current location, then searches for geofences near that location, sorted by distance.
