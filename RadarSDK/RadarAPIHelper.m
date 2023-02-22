@@ -25,7 +25,6 @@
     if (self) {
         _queue = dispatch_queue_create("io.radar.api", DISPATCH_QUEUE_SERIAL);
         _semaphore = dispatch_semaphore_create(1);
-        _wait = NO;
     }
     return self;
 }
@@ -39,13 +38,10 @@
           extendedTimeout:(BOOL)extendedTimeout
         completionHandler:(RadarAPICompletionHandler)completionHandler {
     dispatch_async(self.queue, ^{
-        BOOL didWait = NO;
-        if (self.wait) {
+        if (sleep) {
             dispatch_semaphore_wait(self.semaphore, DISPATCH_TIME_FOREVER);
-            didWait = YES;
         }
 
-        self.wait = YES;
 
         NSMutableURLRequest *req = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:url]];
         req.HTTPMethod = method;
@@ -87,8 +83,7 @@
                         completionHandler(RadarStatusErrorNetwork, nil);
                     });
 
-                    self.wait = NO;
-                    if (didWait) {
+                    if (sleep) {
                         dispatch_semaphore_signal(self.semaphore);
                     }
 
@@ -102,8 +97,7 @@
                         completionHandler(RadarStatusErrorServer, nil);
                     });
 
-                    self.wait = NO;
-                    if (didWait) {
+                    if (sleep) {
                         dispatch_semaphore_signal(self.semaphore);
                     }
 
@@ -146,10 +140,6 @@
 
                 if (sleep) {
                     [NSThread sleepForTimeInterval:1];
-                }
-
-                self.wait = NO;
-                if (didWait) {
                     dispatch_semaphore_signal(self.semaphore);
                 }
             };
