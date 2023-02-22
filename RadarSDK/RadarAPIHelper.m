@@ -84,6 +84,7 @@
                     });
 
                     if (sleep) {
+                        [NSThread sleepForTimeInterval:1];
                         dispatch_semaphore_signal(self.semaphore);
                     }
 
@@ -98,6 +99,7 @@
                     });
 
                     if (sleep) {
+                        [NSThread sleepForTimeInterval:1];
                         dispatch_semaphore_signal(self.semaphore);
                     }
 
