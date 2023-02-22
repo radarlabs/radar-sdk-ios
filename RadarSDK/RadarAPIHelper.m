@@ -79,8 +79,8 @@
             NSDate *requestStart = [NSDate date];
 
             void (^dataTaskCompletionHandler)(NSData *data, NSURLResponse *response, NSError *error) = ^(NSData *data, NSURLResponse *response, NSError *error) {
+                // Calculate request latency (s), multiplying by -1 because timeIntervalSinceNow returns a negative value
                 NSTimeInterval latency = [requestStart timeIntervalSinceNow] * -1;
-
 
                 if (error) {
                     dispatch_async(dispatch_get_main_queue(), ^{
@@ -146,7 +146,6 @@
                             logWithLevel:RadarLogLevelDebug
                                  message:[NSString stringWithFormat:@"📍 Radar API response | method = %@; url = %@; statusCode = %ld; res = %@; latency = %f", method, url, (long)statusCode, res, latency]];
                     }
-
                 }
 
                 dispatch_async(dispatch_get_main_queue(), ^{
