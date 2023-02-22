@@ -24,7 +24,7 @@
     self = [super init];
     if (self) {
         _queue = dispatch_queue_create("io.radar.api", DISPATCH_QUEUE_SERIAL);
-        _semaphore = dispatch_semaphore_create(0);
+        _semaphore = dispatch_semaphore_create(1);
         _wait = NO;
     }
     return self;
@@ -39,8 +39,10 @@
           extendedTimeout:(BOOL)extendedTimeout
         completionHandler:(RadarAPICompletionHandler)completionHandler {
     dispatch_async(self.queue, ^{
+        BOOL didWait = NO;
         if (self.wait) {
             dispatch_semaphore_wait(self.semaphore, DISPATCH_TIME_FOREVER);
+            didWait = YES;
         }
 
         self.wait = YES;
@@ -86,7 +88,9 @@
                     });
 
                     self.wait = NO;
-                    dispatch_semaphore_signal(self.semaphore);
+                    if (didWait) {
+                        dispatch_semaphore_signal(self.semaphore);
+                    }
 
                     return;
                 }
@@ -99,7 +103,9 @@
                     });
 
                     self.wait = NO;
-                    dispatch_semaphore_signal(self.semaphore);
+                    if (didWait) {
+                        dispatch_semaphore_signal(self.semaphore);
+                    }
 
                     return;
                 }
@@ -143,7 +149,9 @@
                 }
 
                 self.wait = NO;
-                dispatch_semaphore_signal(self.semaphore);
+                if (didWait) {
+                    dispatch_semaphore_signal(self.semaphore);
+                }
             };
 
             NSURLSessionDataTask *task = [[NSURLSession sessionWithConfiguration:configuration] dataTaskWithRequest:req completionHandler:dataTaskCompletionHandler];
