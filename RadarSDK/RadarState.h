@@ -26,6 +26,14 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)setCanExit:(BOOL)canExit;
 + (CLLocation *)lastFailedStoppedLocation;
 + (void)setLastFailedStoppedLocation:(CLLocation *_Nullable)lastFailedStoppedLocation;
++ (NSArray<NSString *> *)geofenceIds;
++ (void)setGeofenceIds:(NSArray<NSString *> *_Nullable)geofenceIds;
++ (NSArray<NSString *> *)placeId;
++ (void)setPlaceId:(NSString *_Nullable)placeId;
++ (NSArray<NSString *> *)regionIds;
++ (void)setRegionIds:(NSArray<NSString *> *_Nullable)regionIds;
++ (NSArray<NSString *> *)beaconIds;
++ (void)setBeaconIds:(NSArray<NSString *> *_Nullable)beaconIds;
 
 @end
 

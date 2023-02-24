@@ -14,6 +14,7 @@
 #import "RadarEvent.h"
 #import "RadarRegion.h"
 #import "RadarRouteMatrix.h"
+#import "RadarRouteMode.h"
 #import "RadarRoutes.h"
 #import "RadarTrackingOptions.h"
 #import "RadarUser.h"
@@ -103,24 +104,6 @@ typedef NS_ENUM(NSInteger, RadarLogLevel) {
     RadarLogLevelInfo = 3,
     /// Debug
     RadarLogLevelDebug = 4
-};
-
-/**
- The travel modes for routes.
-
- @see https://radar.com/documentation/api#routing
- */
-typedef NS_OPTIONS(NSInteger, RadarRouteMode) {
-    /// Foot
-    RadarRouteModeFoot NS_SWIFT_NAME(foot) = 1 << 0,
-    /// Bike
-    RadarRouteModeBike NS_SWIFT_NAME(bike) = 1 << 1,
-    /// Car
-    RadarRouteModeCar NS_SWIFT_NAME(car) = 1 << 2,
-    /// Truck
-    RadarRouteModeTruck NS_SWIFT_NAME(truck) = 1 << 3,
-    /// Motorbike
-    RadarRouteModeMotorbike NS_SWIFT_NAME(motorbike) = 1 << 4
 };
 
 /**
@@ -237,6 +220,15 @@ typedef void (^_Nonnull RadarRouteCompletionHandler)(RadarStatus status, RadarRo
 typedef void (^_Nonnull RadarRouteMatrixCompletionHandler)(RadarStatus status, RadarRouteMatrix *_Nullable matrix);
 
 /**
+ Called when a request to send a custom event succeeds, fails, or times out.
+
+ Receives the request status and, if successful, the user's location, an array of the events generated with the custom event at index 0, and the user.
+
+ @see https://radar.com/documentation/api#send-a-custom-event
+ */
+typedef void (^_Nonnull RadarSendEventCompletionHandler)(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user);
+
+/**
  The main class used to interact with the Radar SDK.
 
  @see https://radar.com/documentation/sdk
@@ -259,7 +251,7 @@ typedef void (^_Nonnull RadarRouteMatrixCompletionHandler)(RadarStatus status, R
 #pragma mark - Properties
 
 /**
- Gets the version number of the Radar SDK, such as "3.3.1" or "3.4.1-beta.2."
+ Gets the version number of the Radar SDK, such as "3.5.1" or "3.5.1-beta.2".
  */
 @property (readonly, class) NSString *sdkVersion;
 
@@ -319,6 +311,14 @@ typedef void (^_Nonnull RadarRouteMatrixCompletionHandler)(RadarStatus status, R
  @see https://radar.com/documentation/sdk/ios#identify-user
  */
 + (NSDictionary *_Nullable)getMetadata;
+
+/**
+ Enables anonymous tracking for privacy reasons. Avoids creating user records on the server and avoids sending any stable device IDs, user IDs, and user metadata
+ to the server when calling `trackOnce()` or `startTracking()`. Disabled by default.
+
+ @param enabled A boolean indicating whether anonymous tracking should be enabled.
+ */
++ (void)setAnonymousTrackingEnabled:(BOOL)enabled;
 
 /**
  Enables `adId` (IDFA) collection. Disabled by default.
@@ -391,6 +391,17 @@ typedef void (^_Nonnull RadarRouteMatrixCompletionHandler)(RadarStatus status, R
             completionHandler:(RadarTrackCompletionHandler _Nullable)completionHandler NS_SWIFT_NAME(trackOnce(location:completionHandler:));
 
 /**
+ Tracks the user's location with device integrity information for location verification use cases.
+
+ @warning Note that you must configure SSL pinning before calling this method.
+
+ @param completionHandler An optional completion handler.
+
+ @see https://radar.com/documentation/fraud
+ */
++ (void)trackVerifiedWithCompletionHandler:(RadarTrackCompletionHandler _Nullable)completionHandler NS_SWIFT_NAME(trackVerified(completionHandler:));
+
+/**
  Starts tracking the user's location in the background with configurable tracking options.
 
  @param options Configurable tracking options.
@@ -453,7 +464,7 @@ typedef void (^_Nonnull RadarRouteMatrixCompletionHandler)(RadarStatus status, R
  */
 + (void)setDelegate:(nullable id<RadarDelegate>)delegate;
 
-#pragma mark - Event IDs
+#pragma mark - Events
 
 /**
  Accepts an event. Events can be accepted after user check-ins or other forms of verification. Event verifications will be used to improve the accuracy and
@@ -475,6 +486,34 @@ typedef void (^_Nonnull RadarRouteMatrixCompletionHandler)(RadarStatus status, R
  @see https://radar.com/documentation/places#verify-events
  */
 + (void)rejectEventId:(NSString *_Nonnull)eventId NS_SWIFT_NAME(rejectEventId(_:));
+
+/**
+ Sends a custom event.
+
+ @param customType The user-defined type of the event.
+ @param metadata The metadata associated with the event.
+ @param completionHandler A completion handler.
+
+ @see https://radar.com/documentation/api#send-a-custom-event
+ */
++ (void)sendEvent:(NSString *)customType
+         withMetadata:(NSDictionary *_Nullable)metadata
+    completionHandler:(RadarSendEventCompletionHandler)completionHandler NS_SWIFT_NAME(sendEvent(customType:metadata:completionHandler:));
+
+/**
+ Sends a custom event with a manually provided location.
+
+ @param customType The user-defined type of the event.
+ @param location The location of the event.
+ @param metadata The metadata associated with the event.
+ @param completionHandler A completion handler.
+
+ @see https://radar.com/documentation/api#send-a-custom-event
+ */
++ (void)sendEvent:(NSString *)customType
+         withLocation:(CLLocation *_Nullable)location
+             metadata:(NSDictionary *_Nullable)metadata
+    completionHandler:(RadarSendEventCompletionHandler)completionHandler NS_SWIFT_NAME(sendEvent(customType:location:metadata:completionHandler:));
 
 #pragma mark - Trips
 
@@ -506,6 +545,19 @@ typedef void (^_Nonnull RadarRouteMatrixCompletionHandler)(RadarStatus status, R
  */
 + (void)startTripWithOptions:(RadarTripOptions *_Nonnull)options
            completionHandler:(RadarTripCompletionHandler _Nullable)completionHandler NS_SWIFT_NAME(startTrip(options:completionHandler:));
+
+/**
+ Starts a trip.
+
+ @param tripOptions Configurable trip options.
+ @param trackingOptions Tracking options to use during the trip.
+ @param completionHandler An optional completion handler.
+
+ @see https://radar.com/documentation/trip-tracking
+ */
++ (void)startTripWithOptions:(RadarTripOptions *_Nonnull)tripOptions
+             trackingOptions:(RadarTrackingOptions *_Nullable)trackingOptions
+           completionHandler:(RadarTripCompletionHandler _Nullable)completionHandler NS_SWIFT_NAME(startTrip(options:trackingOptions:completionHandler:));
 
 /**
  Manually updates a trip.
@@ -583,7 +635,7 @@ typedef void (^_Nonnull RadarRouteMatrixCompletionHandler)(RadarStatus status, R
 
  @param radius The radius to search, in meters. A number between 100 and 10000.
  @param chains An array of chain slugs to filter. See https://radar.com/documentation/places/chains
- @param categories An array of categories to filter. See: https://radar.com/documentation/places/categories
+ @param categories An array of categories to filter. See https://radar.com/documentation/places/categories
  @param groups An array of groups to filter. See https://radar.com/documentation/places/groups
  @param limit The max number of places to return. A number between 1 and 100.
  @param completionHandler A completion handler.
@@ -598,6 +650,29 @@ typedef void (^_Nonnull RadarRouteMatrixCompletionHandler)(RadarStatus status, R
              completionHandler:(RadarSearchPlacesCompletionHandler)completionHandler NS_SWIFT_NAME(searchPlaces(radius:chains:categories:groups:limit:completionHandler:));
 
 /**
+ Gets the device's current location, then searches for places near that location, sorted by distance.
+
+ @warning You may specify only one of chains, categories, or groups; if chains are specified, `chainMetadata` can also be specified.
+
+ @param radius The radius to search, in meters. A number between 100 and 10000.
+ @param chains An array of chain slugs to filter. See https://radar.com/documentation/places/chains
+ @param chainMetadata Optional chain metadata filters. Keys and values must be strings. See https://radar.com/documentation/places#metadata.
+ @param categories An array of categories to filter. See https://radar.com/documentation/places/categories
+ @param groups An array of groups to filter. See https://radar.com/documentation/places/groups
+ @param limit The max number of places to return. A number between 1 and 100.
+ @param completionHandler A completion handler.
+
+ @see https://radar.com/documentation/api#search-places
+ */
++ (void)searchPlacesWithRadius:(int)radius
+                        chains:(NSArray<NSString *> *_Nullable)chains
+                 chainMetadata:(NSDictionary<NSString *, NSString *> *_Nullable)chainMetadata
+                    categories:(NSArray<NSString *> *_Nullable)categories
+                        groups:(NSArray<NSString *> *_Nullable)groups
+                         limit:(int)limit
+             completionHandler:(RadarSearchPlacesCompletionHandler)completionHandler NS_SWIFT_NAME(searchPlaces(radius:chains:chainMetadata:categories:groups:limit:completionHandler:));
+
+/**
  Searches for places near a location, sorted by distance.
 
  @warning You may specify only one of chains, categories, or groups.
@@ -605,7 +680,7 @@ typedef void (^_Nonnull RadarRouteMatrixCompletionHandler)(RadarStatus status, R
  @param near The location to search.
  @param radius The radius to search, in meters. A number between 100 and 10000.
  @param chains An array of chain slugs to filter. See https://radar.com/documentation/places/chains
- @param categories An array of categories to filter. See: https://radar.com/documentation/places/categories
+ @param categories An array of categories to filter. See https://radar.com/documentation/places/categories
  @param groups An array of groups to filter. See https://radar.com/documentation/places/groups
  @param limit The max number of places to return. A number between 1 and 100.
  @param completionHandler A completion handler.
@@ -619,6 +694,31 @@ typedef void (^_Nonnull RadarRouteMatrixCompletionHandler)(RadarStatus status, R
                   groups:(NSArray<NSString *> *_Nullable)groups
                    limit:(int)limit
        completionHandler:(RadarSearchPlacesCompletionHandler)completionHandler NS_SWIFT_NAME(searchPlaces(near:radius:chains:categories:groups:limit:completionHandler:));
+
+/**
+ Searches for places near a location, sorted by distance.
+
+ @warning You may specify only one of chains, categories, or groups.
+
+ @param near The location to search.
+ @param radius The radius to search, in meters. A number between 100 and 10000.
+ @param chains An array of chain slugs to filter. See https://radar.com/documentation/places/chains
+ @param chainMetadata Optional chain metadata filters. Keys and values must be strings. See https://radar.com/documentation/places#metadata.
+ @param categories An array of categories to filter. See https://radar.com/documentation/places/categories
+ @param groups An array of groups to filter. See https://radar.com/documentation/places/groups
+ @param limit The max number of places to return. A number between 1 and 100.
+ @param completionHandler A completion handler.
+
+ @see https://radar.com/documentation/api#search-places
+ */
++ (void)searchPlacesNear:(CLLocation *)near
+                  radius:(int)radius
+                  chains:(NSArray<NSString *> *_Nullable)chains
+           chainMetadata:(NSDictionary<NSString *, NSString *> *_Nullable)chainMetadata
+              categories:(NSArray<NSString *> *_Nullable)categories
+                  groups:(NSArray<NSString *> *_Nullable)groups
+                   limit:(int)limit
+       completionHandler:(RadarSearchPlacesCompletionHandler)completionHandler NS_SWIFT_NAME(searchPlaces(near:radius:chains:chainMetadata:categories:groups:limit:completionHandler:));
 
 /**
  Gets the device's current location, then searches for geofences near that location, sorted by distance.

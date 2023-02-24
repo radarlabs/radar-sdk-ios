@@ -14,6 +14,7 @@ static NSString *const kMetadata = @"metadata";
 static NSString *const kDestinationGeofenceTag = @"destinationGeofenceTag";
 static NSString *const kDestinationGeofenceExternalId = @"destinationGeofenceExternalId";
 static NSString *const kMode = @"mode";
+static NSString *const kScheduledArrivalAt = @"scheduledArrivalAt";
 
 - (instancetype)initWithExternalId:(NSString *_Nonnull)externalId
             destinationGeofenceTag:(NSString *_Nullable)destinationGeofenceTag
@@ -28,6 +29,19 @@ static NSString *const kMode = @"mode";
     return self;
 }
 
+- (instancetype)initWithExternalId:(NSString *_Nonnull)externalId
+            destinationGeofenceTag:(NSString *_Nullable)destinationGeofenceTag
+     destinationGeofenceExternalId:(NSString *_Nullable)destinationGeofenceExternalId
+                scheduledArrivalAt:(NSDate *_Nullable)scheduledArrivalAt {
+    self = [self initWithExternalId:externalId destinationGeofenceTag:destinationGeofenceTag destinationGeofenceExternalId:destinationGeofenceExternalId];
+
+    if (self) {
+        _scheduledArrivalAt = scheduledArrivalAt;
+    }
+
+    return self;
+}
+
 + (RadarTripOptions *)tripOptionsFromDictionary:(NSDictionary *)dict {
     if (!dict) {
         return nil;
@@ -35,7 +49,8 @@ static NSString *const kMode = @"mode";
 
     RadarTripOptions *options = [[RadarTripOptions alloc] initWithExternalId:dict[kExternalId]
                                                       destinationGeofenceTag:dict[kDestinationGeofenceTag]
-                                               destinationGeofenceExternalId:dict[kDestinationGeofenceExternalId]];
+                                               destinationGeofenceExternalId:dict[kDestinationGeofenceExternalId]
+                                                          scheduledArrivalAt:dict[kScheduledArrivalAt]];
     options.metadata = dict[kMetadata];
     NSString *modeStr = dict[kMode];
     if ([modeStr isEqualToString:@"foot"]) {
@@ -59,6 +74,7 @@ static NSString *const kMode = @"mode";
     dict[kDestinationGeofenceTag] = self.destinationGeofenceTag;
     dict[kDestinationGeofenceExternalId] = self.destinationGeofenceExternalId;
     dict[kMode] = [Radar stringForMode:self.mode];
+    dict[kScheduledArrivalAt] = self.scheduledArrivalAt;
     return dict;
 }
 
@@ -84,6 +100,8 @@ static NSString *const kMode = @"mode";
            ((!self.destinationGeofenceExternalId && !options.destinationGeofenceExternalId) ||
             (self.destinationGeofenceExternalId != nil && options.destinationGeofenceExternalId != nil &&
              [self.destinationGeofenceExternalId isEqualToString:options.destinationGeofenceExternalId])) &&
+           ((!self.scheduledArrivalAt && !options.scheduledArrivalAt) ||
+            (self.scheduledArrivalAt != nil && options.scheduledArrivalAt != nil && [self.scheduledArrivalAt isEqualToDate:options.scheduledArrivalAt])) &&
            self.mode == options.mode;
 }
 

@@ -29,7 +29,9 @@ typedef NS_ENUM(NSInteger, RadarTrackingOptionsReplay) {
     /// Replays failed stops
     RadarTrackingOptionsReplayStops,
     /// Replays no failed location updates
-    RadarTrackingOptionsReplayNone
+    RadarTrackingOptionsReplayNone,
+    /// Replays all failed location updates
+    RadarTrackingOptionsReplayAll
 };
 
 /**
@@ -179,7 +181,7 @@ typedef NS_ENUM(NSInteger, RadarTrackingOptionsSyncLocations) {
 + (RadarTrackingOptionsReplay)replayForString:(NSString *)str;
 + (NSString *)stringForSyncLocations:(RadarTrackingOptionsSyncLocations)syncLocations;
 + (RadarTrackingOptionsSyncLocations)syncLocationsForString:(NSString *)str;
-+ (RadarTrackingOptions *_Nonnull)trackingOptionsFromDictionary:(NSDictionary *_Nonnull)dictionary;
++ (RadarTrackingOptions *_Nullable)trackingOptionsFromDictionary:(NSDictionary *_Nonnull)dictionary;
 - (NSDictionary *)dictionaryValue;
 
 @end

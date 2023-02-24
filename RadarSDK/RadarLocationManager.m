@@ -8,12 +8,12 @@
 #import <UIKit/UIKit.h>
 #import <UserNotifications/UserNotifications.h>
 
-#import "RadarLocationManager.h"
-
+#import "CLLocation+Radar.h"
 #import "RadarAPIClient.h"
 #import "RadarBeaconManager.h"
 #import "RadarCircleGeometry.h"
 #import "RadarDelegateHolder.h"
+#import "RadarLocationManager.h"
 #import "RadarLogger.h"
 #import "RadarMeta.h"
 #import "RadarPolygonGeometry.h"
@@ -397,6 +397,19 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     }
 }
 
+- (void)restartPreviousTrackingOptions {
+    RadarTrackingOptions *previousTrackingOptions = [RadarSettings previousTrackingOptions];
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Restarting previous tracking options"];
+
+    if (previousTrackingOptions) {
+        [Radar startTrackingWithOptions:previousTrackingOptions];
+    } else {
+        [Radar stopTracking];
+    }
+
+    [RadarSettings removePreviousTrackingOptions];
+}
+
 - (void)replaceBubbleGeofence:(CLLocation *)location radius:(int)radius {
     [self removeBubbleGeofence];
 
@@ -599,7 +612,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
                                        message:[NSString stringWithFormat:@"Handling location | source = %@; location = %@", [Radar stringForLocationSource:source], location]];
 
-    if (!location || ![RadarUtils validLocation:location]) {
+    if (!location.isValid) {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
                                            message:[NSString stringWithFormat:@"Invalid location | source = %@; location = %@", [Radar stringForLocationSource:source], location]];
 
@@ -797,17 +810,10 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                                               replayed:replayed
                                                beacons:beacons
                                      completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user,
-                                                         NSArray<RadarGeofence *> *_Nullable nearbyGeofences, RadarMeta *_Nullable meta) {
-                                         if (user) {
-                                             BOOL inGeofences = user.geofences && user.geofences.count;
-                                             BOOL atPlace = user.place != nil;
-                                             BOOL canExit = inGeofences || atPlace;
-                                             [RadarState setCanExit:canExit];
-                                         }
-
+                                                         NSArray<RadarGeofence *> *_Nullable nearbyGeofences, RadarConfig *_Nullable config) {
                                          self.sending = NO;
 
-                                         [self updateTrackingFromMeta:meta];
+                                         [self updateTrackingFromMeta:config.meta];
                                          [self replaceSyncedGeofences:nearbyGeofences];
                                      }];
 }
@@ -849,7 +855,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     }
 
     CLLocation *location;
-    if ([RadarUtils validLocation:manager.location]) {
+    if (manager.location.isValid) {
         location = manager.location;
     } else {
         location = [RadarState lastLocation];
@@ -885,7 +891,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     }
 
     CLLocation *location;
-    if ([RadarUtils validLocation:manager.location]) {
+    if (manager.location.isValid) {
         location = manager.location;
     } else {
         location = [RadarState lastLocation];
@@ -912,7 +918,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     }
 
     CLLocation *location;
-    if ([RadarUtils validLocation:manager.location]) {
+    if (manager.location.isValid) {
         location = manager.location;
     } else {
         location = [RadarState lastLocation];

@@ -9,13 +9,12 @@
 
 #import "Radar.h"
 #import "RadarAPIHelper.h"
-
 #import "RadarAddress.h"
 #import "RadarBeacon.h"
+#import "RadarConfig.h"
 #import "RadarContext.h"
 #import "RadarEvent.h"
 #import "RadarLog.h"
-#import "RadarMeta.h"
 #import "RadarRegion.h"
 #import "RadarRouteMatrix.h"
 #import "RadarRoutes.h"
@@ -28,7 +27,7 @@ typedef void (^_Nonnull RadarTrackAPICompletionHandler)(RadarStatus status,
                                                         NSArray<RadarEvent *> *_Nullable events,
                                                         RadarUser *_Nullable user,
                                                         NSArray<RadarGeofence *> *_Nullable nearbyGeofences,
-                                                        RadarMeta *_Nullable meta);
+                                                        RadarConfig *_Nullable config);
 
 typedef void (^_Nonnull RadarTripAPICompletionHandler)(RadarStatus status, RadarTrip *_Nullable trip, NSArray<RadarEvent *> *_Nullable events);
 
@@ -51,7 +50,10 @@ typedef void (^_Nonnull RadarDistanceAPICompletionHandler)(RadarStatus status, N
 
 typedef void (^_Nonnull RadarMatrixAPICompletionHandler)(RadarStatus status, NSDictionary *_Nullable res, RadarRouteMatrix *_Nullable matrix);
 
-typedef void (^_Nonnull RadarConfigAPICompletionHandler)(RadarStatus status, RadarMeta *_Nullable meta);
+typedef void (^_Nonnull RadarConfigAPICompletionHandler)(RadarStatus status, RadarConfig *_Nullable config);
+
+typedef void (^_Nonnull RadarSendEventAPICompletionHandler)(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable event);
+
 typedef void (^_Nonnull RadarSyncLogsAPICompletionHandler)(RadarStatus status);
 
 @interface RadarAPIClient : NSObject
@@ -62,9 +64,7 @@ typedef void (^_Nonnull RadarSyncLogsAPICompletionHandler)(RadarStatus status);
 
 + (NSDictionary *)headersWithPublishableKey:(NSString *)publishableKey;
 
-+ (RadarMeta *_Nullable)parseMeta:(NSDictionary *_Nullable)res;
-
-- (void)getConfig:(RadarConfigAPICompletionHandler _Nonnull)completionHandler;
+- (void)getConfigForUsage:(NSString *_Nullable)usage verified:(BOOL)verified completionHandler:(RadarConfigAPICompletionHandler _Nonnull)completionHandler;
 
 - (void)trackWithLocation:(CLLocation *_Nonnull)location
                   stopped:(BOOL)stopped
@@ -74,7 +74,20 @@ typedef void (^_Nonnull RadarSyncLogsAPICompletionHandler)(RadarStatus status);
                   beacons:(NSArray<RadarBeacon *> *_Nullable)beacons
         completionHandler:(RadarTrackAPICompletionHandler _Nonnull)completionHandler;
 
+- (void)trackWithLocation:(CLLocation *_Nonnull)location
+                  stopped:(BOOL)stopped
+               foreground:(BOOL)foreground
+                   source:(RadarLocationSource)source
+                 replayed:(BOOL)replayed
+                  beacons:(NSArray<RadarBeacon *> *_Nullable)beacons
+                 verified:(BOOL)verified
+        attestationString:(NSString *_Nullable)attestationString
+         attestationError:(NSString *_Nullable)attestationError
+        completionHandler:(RadarTrackAPICompletionHandler _Nonnull)completionHandler;
+
 - (void)verifyEventId:(NSString *_Nonnull)eventId verification:(RadarEventVerification)verification verifiedPlaceId:(NSString *_Nullable)verifiedPlaceId;
+
+- (void)createTripWithOptions:(RadarTripOptions *_Nullable)options completionHandler:(RadarTripAPICompletionHandler _Nonnull)completionHandler;
 
 - (void)updateTripWithOptions:(RadarTripOptions *_Nullable)options status:(RadarTripStatus)status completionHandler:(RadarTripAPICompletionHandler _Nonnull)completionHandler;
 
@@ -83,6 +96,7 @@ typedef void (^_Nonnull RadarSyncLogsAPICompletionHandler)(RadarStatus status);
 - (void)searchPlacesNear:(CLLocation *_Nonnull)near
                   radius:(int)radius
                   chains:(NSArray *_Nullable)chains
+           chainMetadata:(NSDictionary<NSString *, NSString *> *_Nullable)chainMetadata
               categories:(NSArray *_Nullable)categories
                   groups:(NSArray *_Nullable)groups
                    limit:(int)limit
@@ -122,6 +136,12 @@ typedef void (^_Nonnull RadarSyncLogsAPICompletionHandler)(RadarStatus status);
                         mode:(RadarRouteMode)mode
                        units:(RadarRouteUnits)units
            completionHandler:(RadarMatrixAPICompletionHandler _Nonnull)completionHandler;
+
+- (void)sendEvent:(NSString *)type
+         withMetadata:(NSDictionary *_Nullable)metadata
+                 user:(RadarUser *_Nullable)user
+          trackEvents:(NSArray<RadarEvent *> *_Nullable)trackEvents
+    completionHandler:(RadarSendEventAPICompletionHandler _Nonnull)completionHandler;
 
 - (void)syncLogs:(NSArray<RadarLog *> *)logs completionHandler:(RadarSyncLogsAPICompletionHandler _Nonnull)completionHandler;
 

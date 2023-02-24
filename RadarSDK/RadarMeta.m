@@ -7,12 +7,11 @@
 //
 
 #import "RadarMeta.h"
-#import "RadarMeta+Internal.h"
 #import "RadarTrackingOptions.h"
 
 @implementation RadarMeta
 
-+ (RadarMeta *)metaFromDictionary:(NSDictionary *)dict {
++ (RadarMeta *)fromDictionary:(NSDictionary *)dict {
     RadarMeta *meta = [RadarMeta new];
 
     if (dict) {

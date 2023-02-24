@@ -123,6 +123,17 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     XCTAssertEqual(trip.status, RadarTripStatusStarted);
 }
 
+#define AssertFraudOk(fraud) [self assertFraudOk:fraud]
+- (void)assertFraudOk:(RadarFraud *)fraud {
+    XCTAssertNotNil(fraud);
+    XCTAssertTrue(fraud.passed);
+    XCTAssertTrue(fraud.bypassed);
+    XCTAssertTrue(fraud.proxy);
+    XCTAssertTrue(fraud.mocked);
+    XCTAssertTrue(fraud.compromised);
+    XCTAssertTrue(fraud.jumped);
+}
+
 #define AssertUserOk(user) [self assertUserOk:user]
 - (void)assertUserOk:(RadarUser *)user {
     XCTAssertNotNil(user);
@@ -142,9 +153,8 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     AssertSegmentsOk(user.segments);
     AssertChainsOk(user.topChains);
     XCTAssertNotEqual(user.source, RadarLocationSourceUnknown);
-    XCTAssertTrue(user.proxy);
-    XCTAssertTrue(user.mocked);
     AssertTripOk(user.trip);
+    AssertFraudOk(user.fraud);
 }
 
 #define AssertEventsOk(events) [self assertEventsOk:events]
@@ -604,6 +614,117 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     [Radar rejectEventId:@"eventId"];
 }
 
+- (void)test_Radar_sendEvent {
+    self.apiHelperMock.mockStatus = RadarStatusSuccess;
+    self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusAuthorizedWhenInUse;
+    self.locationManagerMock.mockLocation = [[CLLocation alloc] initWithCoordinate:CLLocationCoordinate2DMake(40.78382, -73.97536)
+                                                                          altitude:-1
+                                                                horizontalAccuracy:65
+                                                                  verticalAccuracy:-1
+                                                                         timestamp:[NSDate new]];
+    [self.apiHelperMock setMockResponse:[RadarTestUtils jsonDictionaryFromResource:@"track"] forMethod:@"https://api.radar.io/v1/track"];
+    [self.apiHelperMock setMockResponse:[RadarTestUtils jsonDictionaryFromResource:@"custom_event"] forMethod:@"https://api.radar.io/v1/events"];
+
+    XCTestExpectation *exp = [self expectationWithDescription:@"sendEvent"];
+
+    [Radar sendEvent:@"customEvent4"
+             withMetadata:@{@"foo": @"bar"}
+        completionHandler:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user) {
+            XCTAssertEqual(status, RadarStatusSuccess);
+            XCTAssertNotNil(events);
+
+            RadarEvent *customEvent = events[0];
+            XCTAssertNotNil(customEvent);
+            NSDictionary *metadata = customEvent.metadata;
+            XCTAssertNotNil(metadata);
+            XCTAssertTrue([metadata[@"foo"] isEqual:@"bar"]);
+            [exp fulfill];
+        }];
+
+    [self waitForExpectations:@[exp] timeout:10.0];
+}
+
+- (void)test_Radar_sendEvent_statusOkButEventIsNil_fails {
+    self.apiHelperMock.mockStatus = RadarStatusSuccess;
+    self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusAuthorizedWhenInUse;
+    self.locationManagerMock.mockLocation = [[CLLocation alloc] initWithCoordinate:CLLocationCoordinate2DMake(40.78382, -73.97536)
+                                                                          altitude:-1
+                                                                horizontalAccuracy:65
+                                                                  verticalAccuracy:-1
+                                                                         timestamp:[NSDate new]];
+    [self.apiHelperMock setMockResponse:[RadarTestUtils jsonDictionaryFromResource:@"track"] forMethod:@"https://api.radar.io/v1/track"];
+    [self.apiHelperMock setMockResponse:[RadarTestUtils jsonDictionaryFromResource:@"custom_event_nil_event"] forMethod:@"https://api.radar.io/v1/events"];
+
+    XCTestExpectation *exp = [self expectationWithDescription:@"sendEvent"];
+
+    [Radar sendEvent:@"customEvent4"
+             withMetadata:nil
+        completionHandler:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user) {
+            XCTAssertEqual(status, RadarStatusErrorServer);
+            XCTAssertNil(events);
+            [exp fulfill];
+        }];
+
+    [self waitForExpectations:@[exp] timeout:10.0];
+}
+
+- (void)test_Radar_sendEvent_withLocation {
+    self.apiHelperMock.mockStatus = RadarStatusSuccess;
+    self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusAuthorizedWhenInUse;
+    CLLocation *mockLocation = [[CLLocation alloc] initWithCoordinate:CLLocationCoordinate2DMake(40.78382, -73.97536)
+                                                             altitude:-1
+                                                   horizontalAccuracy:65
+                                                     verticalAccuracy:-1
+                                                            timestamp:[NSDate new]];
+    [self.apiHelperMock setMockResponse:[RadarTestUtils jsonDictionaryFromResource:@"track"] forMethod:@"https://api.radar.io/v1/track"];
+    [self.apiHelperMock setMockResponse:[RadarTestUtils jsonDictionaryFromResource:@"custom_event"] forMethod:@"https://api.radar.io/v1/events"];
+
+    XCTestExpectation *exp = [self expectationWithDescription:@"sendEventWithLocation"];
+
+    [Radar sendEvent:@"customEvent4"
+             withLocation:mockLocation
+                 metadata:@{@"foo": @"bar"}
+        completionHandler:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user) {
+            XCTAssertEqual(status, RadarStatusSuccess);
+            XCTAssertNotNil(events);
+
+            RadarEvent *customEvent = events[0];
+            XCTAssertNotNil(customEvent);
+            NSDictionary *metadata = customEvent.metadata;
+            XCTAssertNotNil(metadata);
+            XCTAssertTrue([metadata[@"foo"] isEqual:@"bar"]);
+
+            [exp fulfill];
+        }];
+
+    [self waitForExpectations:@[exp] timeout:10.0];
+}
+
+- (void)test_Radar_sendEvent_withLocation_statusOkButEventIsNil_fails {
+    self.apiHelperMock.mockStatus = RadarStatusSuccess;
+    self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusAuthorizedWhenInUse;
+    CLLocation *mockLocation = [[CLLocation alloc] initWithCoordinate:CLLocationCoordinate2DMake(40.78382, -73.97536)
+                                                             altitude:-1
+                                                   horizontalAccuracy:65
+                                                     verticalAccuracy:-1
+                                                            timestamp:[NSDate new]];
+    [self.apiHelperMock setMockResponse:[RadarTestUtils jsonDictionaryFromResource:@"track"] forMethod:@"https://api.radar.io/v1/track"];
+    [self.apiHelperMock setMockResponse:[RadarTestUtils jsonDictionaryFromResource:@"custom_event_nil_event"] forMethod:@"https://api.radar.io/v1/events"];
+
+    XCTestExpectation *exp = [self expectationWithDescription:@"sendEventWithLocationStatusOkButEventIsNil"];
+
+    [Radar sendEvent:@"customEvent5"
+             withLocation:mockLocation
+                 metadata:@{@"foo": @"bar", @"baz": @YES, @"qux": @1}
+        completionHandler:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user) {
+            XCTAssertEqual(status, RadarStatusErrorServer);
+            XCTAssertNil(events);
+            [exp fulfill];
+        }];
+
+    [self waitForExpectations:@[exp] timeout:10.0];
+}
+
 - (void)test_Radar_startTrip {
     RadarTripOptions *options = [[RadarTripOptions alloc] initWithExternalId:@"tripExternalId"
                                                       destinationGeofenceTag:@"tripDestinationGeofenceTag"
@@ -622,6 +743,61 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 - (void)test_Radar_cancelTrip {
     [Radar cancelTrip];
     XCTAssertNil([Radar getTripOptions]);
+}
+
+- (void)test_Radar_startTripWithTrackingOptionsWhenTrackingIsInProgress {
+    self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusAuthorizedAlways;
+
+    XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
+
+    [RadarSettings removePreviousTrackingOptions];
+    RadarTrackingOptions *originalTrackingOptions = RadarTrackingOptions.presetEfficient;
+    [Radar startTrackingWithOptions:originalTrackingOptions];
+
+    RadarTripOptions *tripOptions = [[RadarTripOptions alloc] initWithExternalId:@"testTrip" destinationGeofenceTag:@"someTag" destinationGeofenceExternalId:@"someId"];
+    RadarTrackingOptions *tripTrackingOptions = RadarTrackingOptions.presetContinuous;
+    [Radar startTripWithOptions:tripOptions
+                trackingOptions:tripTrackingOptions
+              completionHandler:^(RadarStatus status, RadarTrip *_Nullable trip, NSArray<RadarEvent *> *_Nullable events) {
+                  RadarTrackingOptions *previousTrackingOptions = [RadarSettings previousTrackingOptions];
+                  XCTAssertTrue([previousTrackingOptions isEqual:originalTrackingOptions]);
+                  RadarTrackingOptions *currentTrackingOptions = [RadarSettings trackingOptions];
+                  XCTAssertTrue([currentTrackingOptions isEqual:tripTrackingOptions]);
+                  [expectation fulfill];
+              }];
+
+    [self waitForExpectations:@[expectation] timeout:10];
+
+    [Radar completeTrip];
+    XCTAssertNil([RadarSettings previousTrackingOptions]);
+    XCTAssertTrue([[RadarSettings trackingOptions] isEqual:originalTrackingOptions]);
+    XCTAssertTrue(Radar.isTracking);
+}
+
+- (void)test_Radar_startTripWithTrackingOptionsWhenTrackingIsNotInProgress {
+    self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusAuthorizedAlways;
+
+    XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
+
+    [RadarSettings removePreviousTrackingOptions];
+    [RadarSettings removeTrackingOptions];
+
+    RadarTripOptions *tripOptions = [[RadarTripOptions alloc] initWithExternalId:@"testTrip" destinationGeofenceTag:@"someTag" destinationGeofenceExternalId:@"someId"];
+    RadarTrackingOptions *tripTrackingOptions = RadarTrackingOptions.presetContinuous;
+    [Radar startTripWithOptions:tripOptions
+                trackingOptions:tripTrackingOptions
+              completionHandler:^(RadarStatus status, RadarTrip *_Nullable trip, NSArray<RadarEvent *> *_Nullable events) {
+                  XCTAssertNil([RadarSettings previousTrackingOptions]);
+                  RadarTrackingOptions *currentTrackingOptions = [RadarSettings trackingOptions];
+                  XCTAssertTrue([currentTrackingOptions isEqual:tripTrackingOptions]);
+                  [expectation fulfill];
+              }];
+
+    [self waitForExpectations:@[expectation] timeout:10];
+
+    [Radar completeTrip];
+    XCTAssertNil([RadarSettings previousTrackingOptions]);
+    XCTAssertFalse(Radar.isTracking);
 }
 
 - (void)test_Radar_getContext_errorPermissions {
@@ -803,6 +979,43 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
                                  }];
 }
 
+- (void)test_Radar_searchPlaces_chainsAndMetadata_success {
+    self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusAuthorizedWhenInUse;
+    self.locationManagerMock.mockLocation = [[CLLocation alloc] initWithCoordinate:CLLocationCoordinate2DMake(40.78382, -73.97536)
+                                                                          altitude:-1
+                                                                horizontalAccuracy:65
+                                                                  verticalAccuracy:-1
+                                                                         timestamp:[NSDate new]];
+    self.apiHelperMock.mockStatus = RadarStatusSuccess;
+    self.apiHelperMock.mockResponse = [RadarTestUtils jsonDictionaryFromResource:@"search_places_chain_metadata"];
+
+    XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
+
+    [Radar searchPlacesWithRadius:1000
+                           chains:@[@"walmart"]
+                    chainMetadata:@{@"orderActive": @"true"}
+                       categories:nil
+                           groups:nil
+                            limit:100
+                completionHandler:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarPlace *> *_Nullable places) {
+                    XCTAssertEqual(status, RadarStatusSuccess);
+                    XCTAssertNotNil(location);
+                    XCTAssertNotNil(places);
+                    XCTAssertEqual(places.count, 2);
+                    NSDictionary<NSString *, NSString *> *firstPlaceMetadata = places[0].chain.metadata;
+                    XCTAssertTrue([firstPlaceMetadata[@"orderActive"] isEqualToString:@"true"]);
+
+                    [expectation fulfill];
+                }];
+
+    [self waitForExpectationsWithTimeout:30
+                                 handler:^(NSError *_Nullable error) {
+                                     if (error) {
+                                         XCTFail();
+                                     }
+                                 }];
+}
+
 - (void)test_Radar_searchPlacesNear_categories_success {
     self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusNotDetermined;
     CLLocation *mockLocation = [[CLLocation alloc] initWithCoordinate:CLLocationCoordinate2DMake(40.78382, -73.97536)
@@ -905,6 +1118,11 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
                        XCTAssertEqual(status, RadarStatusSuccess);
                        XCTAssertNotNil(location);
                        AssertGeofencesOk(geofences);
+
+                        RadarGeofence *geofence = geofences[0];
+                        NSDictionary *geofenceDict = [geofence dictionaryValue];
+                        XCTAssertNotNil(geofenceDict[@"geometryCenter"]);
+                        XCTAssertNotNil(geofenceDict[@"geometryRadius"]);
 
                        [expectation fulfill];
                    }];

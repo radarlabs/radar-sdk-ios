@@ -38,9 +38,8 @@
                             segments:(nullable NSArray<RadarSegment *> *)segments
                            topChains:(nullable NSArray<RadarChain *> *)topChains
                               source:(RadarLocationSource)source
-                               proxy:(BOOL)proxy
-                              mocked:(BOOL)mocked
-                                trip:(RadarTrip *_Nullable)trip {
+                                trip:(RadarTrip *_Nullable)trip
+                               fraud:(RadarFraud *_Nullable)fraud {
     self = [super init];
     if (self) {
         __id = _id;
@@ -62,8 +61,8 @@
         _segments = segments;
         _topChains = topChains;
         _source = source;
-        _fraud = [[RadarFraud alloc] initWithProxy:proxy mocked:mocked];
         _trip = trip;
+        _fraud = fraud;
     }
     return self;
 }
@@ -94,9 +93,8 @@
     NSArray<RadarSegment *> *segments;
     NSArray<RadarChain *> *topChains;
     RadarLocationSource source = RadarLocationSourceUnknown;
-    BOOL proxy = false;
-    BOOL mocked = false;
     RadarTrip *trip;
+    RadarFraud *fraud;
 
     id idObj = dict[@"_id"];
     if (idObj && [idObj isKindOfClass:[NSString class]]) {
@@ -269,15 +267,11 @@
         }
     }
 
-    id fraudObj = dict[@"fraud"];
-    if (fraudObj && [fraudObj isKindOfClass:[NSDictionary class]]) {
-        NSDictionary *fraudDict = (NSDictionary *)fraudObj;
-        proxy = [self asBool:fraudDict[@"proxy"]];
-        mocked = [self asBool:fraudDict[@"mocked"]];
-    }
-
     id tripObj = dict[@"trip"];
     trip = [[RadarTrip alloc] initWithObject:tripObj];
+
+    id fraudObj = dict[@"fraud"];
+    fraud = [[RadarFraud alloc] initWithObject:fraudObj];
 
     if (_id && location) {
         return [[RadarUser alloc] initWithId:_id
@@ -299,20 +293,11 @@
                                     segments:segments
                                    topChains:topChains
                                       source:source
-                                       proxy:proxy
-                                      mocked:mocked
-                                        trip:trip];
+                                        trip:trip
+                                       fraud:fraud];
     }
 
     return nil;
-}
-
-- (BOOL)proxy {
-    return self.fraud.proxy;
-}
-
-- (BOOL)mocked {
-    return self.fraud.mocked;
 }
 
 - (NSDictionary *)dictionaryValue {
@@ -362,9 +347,11 @@
     NSArray *topChainsArr = [RadarChain arrayForChains:self.topChains];
     [dict setValue:topChainsArr forKey:@"topChains"];
     [dict setValue:[Radar stringForLocationSource:self.source] forKey:@"source"];
-    [dict setValue:[self.fraud dictionaryValue] forKey:@"fraud"];
     if (self.trip) {
         [dict setValue:[self.trip dictionaryValue] forKey:@"trip"];
+    }
+    if (self.fraud) {
+        [dict setValue:[self.fraud dictionaryValue] forKey:@"fraud"];
     }
     return dict;
 }

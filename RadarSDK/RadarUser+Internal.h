@@ -31,9 +31,8 @@
                             segments:(nullable NSArray<RadarSegment *> *)segments
                            topChains:(nullable NSArray<RadarChain *> *)topChains
                               source:(RadarLocationSource)source
-                               proxy:(BOOL)proxy
-                              mocked:(BOOL)mocked
-                                trip:(RadarTrip *_Nullable)trip;
+                                trip:(RadarTrip *_Nullable)trip
+                               fraud:(RadarFraud *_Nullable)fraud;
 - (instancetype _Nullable)initWithObject:(id _Nonnull)object;
 
 @end

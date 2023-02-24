@@ -21,9 +21,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         locationManager.delegate = self
         self.requestLocationPermissions()
 
+        // Replace with a valid test publishable key
         Radar.initialize(publishableKey: "prj_test_pk_0000000000000000000000000000000000000000")
         Radar.setDelegate(self)
-        
+
         if UIApplication.shared.applicationState != .background {
             Radar.getLocation { (status, location, stopped) in
                 print("Location: status = \(Radar.stringForStatus(status)); location = \(String(describing: location))")
@@ -40,10 +41,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         Radar.getContext { (status, location, context) in
             print("Context: status = \(Radar.stringForStatus(status)); location = \(String(describing: location)); context?.geofences = \(String(describing: context?.geofences)); context?.place = \(String(describing: context?.place)); context?.country = \(String(describing: context?.country))")
         }
-
+        
+        // In the Radar dashboard settings
+        // (https://radar.com/dashboard/settings), add this to the chain
+        // metadata: {"mcdonalds":{"orderActive":"true"}}.
         Radar.searchPlaces(
             radius: 1000,
             chains: ["mcdonalds"],
+            chainMetadata: ["orderActive": "true"],
             categories: nil,
             groups: nil,
             limit: 10
@@ -96,6 +101,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         let tripOptions = RadarTripOptions(externalId: "299", destinationGeofenceTag: "store", destinationGeofenceExternalId: "123")
         tripOptions.mode = .car
+        tripOptions.approachingThreshold = 9
         Radar.startTrip(options: tripOptions)
 
         var i = 0
@@ -114,7 +120,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
             i += 1
         }
-        
+
         let origins = [
             CLLocation(latitude: 40.78382, longitude: -73.97536),
             CLLocation(latitude: 40.70390, longitude: -73.98670)
@@ -123,14 +129,41 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             CLLocation(latitude: 40.64189, longitude: -73.78779),
             CLLocation(latitude: 35.99801, longitude: -78.94294)
         ]
-        
+
         Radar.getMatrix(origins: origins, destinations: destinations, mode: .car, units: .imperial) { (status, matrix) in
             print("Matrix: status = \(Radar.stringForStatus(status)); matrix[0][0].duration.text = \(String(describing: matrix?.routeBetween(originIndex: 0, destinationIndex: 0)?.duration.text)); matrix[0][1].duration.text = \(String(describing: matrix?.routeBetween(originIndex: 0, destinationIndex: 1)?.duration.text)); matrix[1][0].duration.text = \(String(describing: matrix?.routeBetween(originIndex: 1, destinationIndex: 0)?.duration.text)); matrix[1][1].duration.text = \(String(describing: matrix?.routeBetween(originIndex: 1, destinationIndex: 1)?.duration.text))")
         }
 
+        Radar.sendEvent(customType: "custom_event", metadata: ["data": "test"]) { (status, location, events, user) in
+            if let customEvent = events?.first,
+               customEvent.type == .custom {
+                print("Custom type: \(customEvent.customType!)")
+            }
+
+            print("Send event: status = \(Radar.stringForStatus(status)); location = \(String(describing: location)); events = \(String(describing: events)); user = \(String(describing: user))")
+        }
+
+        let customLocation = CLLocation(latitude: 38.87896275702961, longitude: -77.18228972761578)
+
+        Radar.sendEvent(customType: "custom_event_with_location", location: customLocation, metadata: ["data": "test"]) { (status, location, events, user) in
+            if let customEvent = events?.first,
+               customEvent.type == .custom {
+                print("Custom type: \(customEvent.customType!)")
+            }
+
+            print("Send event with custom location: status = \(Radar.stringForStatus(status)); location = \(String(describing: location)); events = \(String(describing: events)); user = \(String(describing: user))")
+        }
+
+        // Test custom event with a manual location
+        Radar.getLocation { (status, location, stopped) in
+            Radar.sendEvent(customType: "app_launched_manual", location: location, metadata: ["data": "test"]) { (status, location, events, user) in
+                print("Send event: status = \(Radar.stringForStatus(status)); location = \(String(describing: location)); events = \(String(describing: events)); user = \(String(describing: user))")
+            }
+        }
+
         return true
     }
-    
+
     func requestLocationPermissions() {
         var status: CLAuthorizationStatus = .notDetermined
         if #available(iOS 14.0, *) {
@@ -140,7 +173,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             // Before iOS 14.0, use the authorizationStatus class method.
             status = CLLocationManager.authorizationStatus()
         }
-        
+
         if #available(iOS 13.4, *) {
             // On iOS 13.4 and later, prompt for foreground first. If granted, prompt for background. The OS will show the background prompt in-app.
             if status == .notDetermined {
@@ -153,7 +186,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             self.locationManager.requestAlwaysAuthorization()
         }
     }
-    
+
     func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
         self.requestLocationPermissions()
     }
