@@ -79,7 +79,9 @@ static NSString *const kApproachingThreshold = @"approachingThreshold";
     dict[kDestinationGeofenceExternalId] = self.destinationGeofenceExternalId;
     dict[kMode] = [Radar stringForMode:self.mode];
     dict[kScheduledArrivalAt] = self.scheduledArrivalAt;
-    dict[kApproachingThreshold] = @(self.approachingThreshold);
+    if (self.approachingThreshold && self.approachingThreshold > 0) {
+        dict[kApproachingThreshold] = @(self.approachingThreshold);
+    }
     return dict;
 }
 
@@ -109,7 +111,8 @@ static NSString *const kApproachingThreshold = @"approachingThreshold";
             (self.scheduledArrivalAt != nil && options.scheduledArrivalAt != nil &&
             [self.scheduledArrivalAt isEqualToDate:options.scheduledArrivalAt])) &&
            self.mode == options.mode &&
-              self.approachingThreshold == options.approachingThreshold;
+            ((!self.approachingThreshold && !options.approachingThreshold) ||
+              (self.approachingThreshold == options.approachingThreshold));
 }
 
 @end
