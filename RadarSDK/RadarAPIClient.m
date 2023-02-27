@@ -307,12 +307,10 @@ completionHandler:(RadarConfigAPICompletionHandler _Nonnull)completionHandler {
         }
 
         if (options.replay == RadarTrackingOptionsReplayAll) {
-            // clear buffer
             [[RadarReplayBuffer sharedInstance] clearBuffer];
-        } else {
-            [RadarState setLastFailedStoppedLocation:nil];
         }
-        
+
+        [RadarState setLastFailedStoppedLocation:nil];
         [Radar flushLogs];
         
         RadarMeta *_Nullable meta = [RadarAPIClient parseMeta:res];
