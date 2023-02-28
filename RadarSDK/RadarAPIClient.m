@@ -306,10 +306,7 @@ completionHandler:(RadarConfigAPICompletionHandler _Nonnull)completionHandler {
             return completionHandler(status, nil, nil, nil, nil, nil);
         }
 
-        if (options.replay == RadarTrackingOptionsReplayAll) {
-            [[RadarReplayBuffer sharedInstance] clearBuffer];
-        }
-
+        [[RadarReplayBuffer sharedInstance] clearBuffer];
         [RadarState setLastFailedStoppedLocation:nil];
         [Radar flushLogs];
         
