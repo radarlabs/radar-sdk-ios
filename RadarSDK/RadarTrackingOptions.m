@@ -6,6 +6,7 @@
 //
 
 #import "RadarTrackingOptions.h"
+#import "RadarUtils.h"
 
 @implementation RadarTrackingOptions
 
@@ -205,8 +206,28 @@ NSString *const kSyncNone = @"none";
     options.desiredAccuracy = [RadarTrackingOptions desiredAccuracyForString:dict[kDesiredAccuracy]];
     options.stopDuration = [dict[kStopDuration] intValue];
     options.stopDistance = [dict[kStopDistance] intValue];
-    options.startTrackingAfter = dict[kStartTrackingAfter];
-    options.stopTrackingAfter = dict[kStopTrackingAfter];
+    if (dict[kStartTrackingAfter] != nil) {
+        NSObject *startTrackingAfterObj = dict[kStartTrackingAfter];
+        if([startTrackingAfterObj isKindOfClass:[NSDate class]]) {
+            options.startTrackingAfter = (NSDate *)startTrackingAfterObj;
+        } else if([startTrackingAfterObj isKindOfClass:[NSString class]]) {
+            options.startTrackingAfter = [RadarUtils.isoDateFormatter dateFromString:(NSString *)startTrackingAfterObj];
+        } else if([startTrackingAfterObj isKindOfClass:[NSNumber class]]){
+            double startTrackingAfterDouble = (double)((NSNumber *)startTrackingAfterObj).longValue / 1000;
+            options.startTrackingAfter = [NSDate dateWithTimeIntervalSince1970:startTrackingAfterDouble];
+        }
+    }
+    if (dict[kStopTrackingAfter] != nil) {
+        NSObject *stopTrackingAfterObj = dict[kStopTrackingAfter];
+        if([stopTrackingAfterObj isKindOfClass:[NSDate class]]) {
+            options.stopTrackingAfter = (NSDate *)stopTrackingAfterObj;
+        } else if([stopTrackingAfterObj isKindOfClass:[NSString class]]) {
+            options.stopTrackingAfter = [RadarUtils.isoDateFormatter dateFromString:(NSString *)stopTrackingAfterObj];
+        } else if([stopTrackingAfterObj isKindOfClass:[NSNumber class]]){
+            double stopTrackingAfterDouble = (double)((NSNumber *)stopTrackingAfterObj).longValue / 1000;
+            options.stopTrackingAfter = [NSDate dateWithTimeIntervalSince1970:stopTrackingAfterDouble];
+        }
+    }
     options.syncLocations = [RadarTrackingOptions syncLocationsForString:dict[kSync]];
     options.replay = [RadarTrackingOptions replayForString:dict[kReplay]];
     options.showBlueBar = [dict[kShowBlueBar] boolValue];
@@ -229,8 +250,16 @@ NSString *const kSyncNone = @"none";
     dict[kDesiredAccuracy] = [RadarTrackingOptions stringForDesiredAccuracy:self.desiredAccuracy];
     dict[kStopDuration] = @(self.stopDuration);
     dict[kStopDistance] = @(self.stopDistance);
-    dict[kStartTrackingAfter] = self.startTrackingAfter;
-    dict[kStopTrackingAfter] = self.stopTrackingAfter;
+    if (self.startTrackingAfter != nil) {
+        dict[kStartTrackingAfter] = @((long)self.startTrackingAfter.timeIntervalSince1970 * 1000);
+    } else {
+        dict[kStartTrackingAfter] = nil;
+    }
+    if (self.stopTrackingAfter != nil) {
+        dict[kStopTrackingAfter] = @((long)self.stopTrackingAfter.timeIntervalSince1970 * 1000);
+    } else {
+        dict[kStopTrackingAfter] = nil;
+    }
     dict[kSync] = [RadarTrackingOptions stringForSyncLocations:self.syncLocations];
     dict[kReplay] = [RadarTrackingOptions stringForReplay:self.replay];
     dict[kShowBlueBar] = @(self.showBlueBar);
