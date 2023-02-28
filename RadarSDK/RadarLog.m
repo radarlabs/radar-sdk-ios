@@ -42,6 +42,31 @@
     return str;
 }
 
++ (NSString *)stringForLogType:(RadarLogType)type {
+    NSString *str;
+    switch (type) {
+    case RadarLogTypeNone:
+        // str = @"NONE";
+        break;
+    case RadarLogTypeSDKCall:
+        str = @"SDK_CALL";
+        break;
+    case RadarLogTypeSDKError:
+        str = @"SDK_ERROR";
+        break;
+    case RadarLogTypeSDKException:
+        str = @"SDK_EXCEPTION";
+        break;
+    case RadarLogTypeAppLifecycleEvent:
+        str = @"APP_LIFECYCLE_EVENT";
+        break;
+    case RadarLogTypePermissionEvent:
+        str = @"PERMISSION_EVENT";
+        break;
+    }
+    return str;
+}
+
 - (NSDictionary *)dictionaryValue {
     NSMutableDictionary *dict = [NSMutableDictionary new];
     dict[@"level"] = [RadarLog stringForLogLevel:self.level];

@@ -24,6 +24,10 @@
 }
 
 - (void)logWithLevel:(RadarLogLevel)level message:(NSString *)message {
+    [self logWithLevel:level type:RadarLogTypeNone message:message];
+}
+
+- (void)logWithLevel:(RadarLogLevel)level type:(RadarLogType)type message:(NSString *)message {
     dispatch_async(dispatch_get_main_queue(), ^{
         [Radar sendLog:level message:message];
 
