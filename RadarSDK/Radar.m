@@ -1051,6 +1051,10 @@
             [[RadarLocationManager sharedInstance] updateTrackingFromMeta:meta];
         }];
     }
+    
+    [[RadarAPIClient sharedInstance] sendEvent:@"app_open" withMetadata:nil user:nil trackEvents:nil completionHandler:^(RadarStatus status, NSDictionary * _Nullable res, NSArray<RadarEvent *> * _Nullable events) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"Custom event type = app_open: status = %ld; events = %@", (long)status, events]];
+    }];
 }
 
 - (void)dealloc {
