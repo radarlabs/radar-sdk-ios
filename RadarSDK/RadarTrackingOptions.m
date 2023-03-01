@@ -292,8 +292,8 @@ NSString *const kSyncNone = @"none";
     return self.desiredStoppedUpdateInterval == options.desiredStoppedUpdateInterval && self.desiredMovingUpdateInterval == options.desiredMovingUpdateInterval &&
            self.desiredSyncInterval == options.desiredSyncInterval && self.desiredAccuracy == options.desiredAccuracy && self.stopDuration == options.stopDuration &&
            self.stopDistance == options.stopDistance &&
-           (self.startTrackingAfter == nil ? options.startTrackingAfter == nil : [self.startTrackingAfter isEqual:options.startTrackingAfter]) &&
-           (self.stopTrackingAfter == nil ? options.stopTrackingAfter == nil : [self.stopTrackingAfter isEqual:options.stopTrackingAfter]) &&
+           (self.startTrackingAfter == nil ? options.startTrackingAfter == nil : self.startTrackingAfter.timeIntervalSince1970 - options.startTrackingAfter.timeIntervalSince1970 < DBL_EPSILON) &&
+           (self.stopTrackingAfter == nil ? options.stopTrackingAfter == nil : self.stopTrackingAfter.timeIntervalSince1970 - options.stopTrackingAfter.timeIntervalSince1970 < DBL_EPSILON) &&
            self.syncLocations == options.syncLocations && self.replay == options.replay && self.showBlueBar == options.showBlueBar &&
            self.useStoppedGeofence == options.useStoppedGeofence && self.stoppedGeofenceRadius == options.stoppedGeofenceRadius &&
            self.useMovingGeofence == options.useMovingGeofence && self.movingGeofenceRadius == options.movingGeofenceRadius && self.syncGeofences == options.syncGeofences &&
