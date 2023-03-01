@@ -9,6 +9,7 @@
 
 #import "Radar.h"
 #import "RadarDelegate.h"
+#import "RadarMeta.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -17,6 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nullable, weak, nonatomic) id<RadarDelegate> delegate;
 
 + (instancetype)sharedInstance;
+- (void)didFailWithStatus:(RadarStatus)status meta:(RadarMeta *_Nullable)meta;
 
 @end
 

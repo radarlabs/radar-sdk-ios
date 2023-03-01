@@ -17,7 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (instancetype)sharedInstance;
 
-- (void)write:(RadarLogLevel)level message:(NSString *)message;
+- (void)write:(RadarLogLevel)level type:(RadarLogType *)type message:(NSString *)message;
 
 - (void)purgeOldestLogs;
 

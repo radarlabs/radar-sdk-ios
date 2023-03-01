@@ -293,6 +293,7 @@ completionHandler:(RadarConfigAPICompletionHandler _Nonnull)completionHandler {
                            logPayload:!replaying
                       extendedTimeout:replaying
                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
+
         if (status != RadarStatusSuccess || !res) {
             if (options.replay == RadarTrackingOptionsReplayAll) {
                 [[RadarReplayBuffer sharedInstance] writeNewReplayToBuffer:bufferParams];
@@ -300,8 +301,10 @@ completionHandler:(RadarConfigAPICompletionHandler _Nonnull)completionHandler {
                        !(source == RadarLocationSourceForegroundLocation || source == RadarLocationSourceManualLocation)) {
                 [RadarState setLastFailedStoppedLocation:location];
             }
-            
-            [[RadarDelegateHolder sharedInstance] didFailWithStatus:status];
+
+            // full dict available? meta.param, meta.message, meta.type (rate limit)
+            RadarMeta *_Nullable meta = [RadarAPIClient parseMeta:res];
+            [[RadarDelegateHolder sharedInstance] didFailWithStatus:status meta:meta];
             
             return completionHandler(status, nil, nil, nil, nil, nil);
         }
@@ -314,7 +317,7 @@ completionHandler:(RadarConfigAPICompletionHandler _Nonnull)completionHandler {
         }
         
         [Radar flushLogs];
-        
+
         RadarMeta *_Nullable meta = [RadarAPIClient parseMeta:res];
         
         id eventsObj = res[@"events"];

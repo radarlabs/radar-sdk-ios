@@ -1083,8 +1083,8 @@ completionHandler:(RadarSendEventCompletionHandler)completionHandler {
     return NO;
 }
 
-+ (void)sendLog:(RadarLogLevel)level message:(NSString *_Nonnull)message {
-    [[RadarLogBuffer sharedInstance] write:level message:message];
++ (void)sendLog:(RadarLogLevel)level type:(RadarLogType)type message:(NSString *_Nonnull)message {
+    [[RadarLogBuffer sharedInstance] write:level type:type message:message ];
 }
 
 /**

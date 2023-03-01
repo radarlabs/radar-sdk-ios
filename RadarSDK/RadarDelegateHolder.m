@@ -7,6 +7,7 @@
 
 #import "RadarDelegateHolder.h"
 
+#import "RadarMeta+Internal.h"
 #import "RadarLogger.h"
 
 @implementation RadarDelegateHolder
@@ -66,7 +67,15 @@
         [self.delegate didFailWithStatus:status];
     }
 
-    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"📍 Radar error received | status = %@", [Radar stringForStatus:status]]];
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelError type:RadarLogTypeSDKError message:[NSString stringWithFormat:@"📍 Radar error received | status = %@", [Radar stringForStatus:status]]];
+}
+
+- (void)didFailWithStatus:(RadarStatus)status meta:(RadarMeta *_Nullable)meta {
+    if (self.delegate) {
+        [self.delegate didFailWithStatus:status];
+    }
+
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelError type:RadarLogTypeSDKError message:[NSString stringWithFormat:@"📍 Radar error received | status = %@; meta = %@", [Radar stringForStatus:status], meta]];
 }
 
 - (void)didLogMessage:(NSString *)message {

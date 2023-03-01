@@ -29,7 +29,7 @@
 
 - (void)logWithLevel:(RadarLogLevel)level type:(RadarLogType)type message:(NSString *)message {
     dispatch_async(dispatch_get_main_queue(), ^{
-        [Radar sendLog:level message:message];
+        [Radar sendLog:level type:type message:message];
 
         RadarLogLevel logLevel = [RadarSettings logLevel];
         if (logLevel >= level) {
