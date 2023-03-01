@@ -213,7 +213,7 @@ NSString *const kSyncNone = @"none";
         } else if([startTrackingAfterObj isKindOfClass:[NSString class]]) {
             options.startTrackingAfter = [RadarUtils.isoDateFormatter dateFromString:(NSString *)startTrackingAfterObj];
         } else if([startTrackingAfterObj isKindOfClass:[NSNumber class]]){
-            double startTrackingAfterDouble = (double)((NSNumber *)startTrackingAfterObj).longValue / 1000;
+            double startTrackingAfterDouble = ((NSNumber *)startTrackingAfterObj).doubleValue / 1000;
             options.startTrackingAfter = [NSDate dateWithTimeIntervalSince1970:startTrackingAfterDouble];
         }
     }
@@ -224,7 +224,7 @@ NSString *const kSyncNone = @"none";
         } else if([stopTrackingAfterObj isKindOfClass:[NSString class]]) {
             options.stopTrackingAfter = [RadarUtils.isoDateFormatter dateFromString:(NSString *)stopTrackingAfterObj];
         } else if([stopTrackingAfterObj isKindOfClass:[NSNumber class]]){
-            double stopTrackingAfterDouble = (double)((NSNumber *)stopTrackingAfterObj).longValue / 1000;
+            double stopTrackingAfterDouble = ((NSNumber *)stopTrackingAfterObj).doubleValue / 1000;
             options.stopTrackingAfter = [NSDate dateWithTimeIntervalSince1970:stopTrackingAfterDouble];
         }
     }
@@ -251,12 +251,12 @@ NSString *const kSyncNone = @"none";
     dict[kStopDuration] = @(self.stopDuration);
     dict[kStopDistance] = @(self.stopDistance);
     if (self.startTrackingAfter != nil) {
-        dict[kStartTrackingAfter] = @((long)self.startTrackingAfter.timeIntervalSince1970 * 1000);
+        dict[kStartTrackingAfter] = @(self.startTrackingAfter.timeIntervalSince1970 * 1000);
     } else {
         dict[kStartTrackingAfter] = nil;
     }
     if (self.stopTrackingAfter != nil) {
-        dict[kStopTrackingAfter] = @((long)self.stopTrackingAfter.timeIntervalSince1970 * 1000);
+        dict[kStopTrackingAfter] = @(self.stopTrackingAfter.timeIntervalSince1970 * 1000);
     } else {
         dict[kStopTrackingAfter] = nil;
     }
