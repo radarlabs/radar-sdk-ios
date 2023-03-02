@@ -81,7 +81,7 @@
             void (^dataTaskCompletionHandler)(NSData *data, NSURLResponse *response, NSError *error) = ^(NSData *data, NSURLResponse *response, NSError *error) {
                 if (error) {
                     dispatch_async(dispatch_get_main_queue(), ^{
-                        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelError message:[NSString stringWithFormat:@"Received network error | error = %@", error]];
+                        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelError type:RadarLogTypeSDKError message:[NSString stringWithFormat:@"Received network error | error = %@", error]];
                         completionHandler(RadarStatusErrorNetwork, nil);
                     });
 
@@ -129,9 +129,16 @@
 
                     res = (NSDictionary *)resObj;
 
-                    [[RadarLogger sharedInstance]
-                        logWithLevel:RadarLogLevelDebug
-                             message:[NSString stringWithFormat:@"📍 Radar API response | method = %@; url = %@; statusCode = %ld; res = %@", method, url, (long)statusCode, res]];
+                    if (status == RadarStatusSuccess) {
+                        [[RadarLogger sharedInstance]
+                            logWithLevel:RadarLogLevelDebug
+                                message:[NSString stringWithFormat:@"📍 Radar API response | method = %@; url = %@; statusCode = %ld; res = %@", method, url, (long)statusCode, res]];
+                    } else {
+                        [[RadarLogger sharedInstance]
+                            logWithLevel:RadarLogLevelError
+                                type:RadarLogTypeSDKError
+                                message:[NSString stringWithFormat:@"📍 Radar API response | method = %@; url = %@; statusCode = %ld; res = %@", method, url, (long)statusCode, res]];
+                    }
                 }
 
                 dispatch_async(dispatch_get_main_queue(), ^{

@@ -302,9 +302,7 @@ completionHandler:(RadarConfigAPICompletionHandler _Nonnull)completionHandler {
                 [RadarState setLastFailedStoppedLocation:location];
             }
 
-            // full dict available? meta.param, meta.message, meta.type (rate limit)
-            RadarMeta *_Nullable meta = [RadarAPIClient parseMeta:res];
-            [[RadarDelegateHolder sharedInstance] didFailWithStatus:status meta:meta];
+            [[RadarDelegateHolder sharedInstance] didFailWithStatus:status];
             
             return completionHandler(status, nil, nil, nil, nil, nil);
         }
