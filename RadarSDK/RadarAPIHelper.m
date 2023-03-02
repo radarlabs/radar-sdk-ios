@@ -24,8 +24,7 @@
     self = [super init];
     if (self) {
         _queue = dispatch_queue_create("io.radar.api", DISPATCH_QUEUE_SERIAL);
-        _semaphore = dispatch_semaphore_create(0);
-        _wait = NO;
+        _semaphore = dispatch_semaphore_create(1);
     }
     return self;
 }
@@ -39,11 +38,10 @@
           extendedTimeout:(BOOL)extendedTimeout
         completionHandler:(RadarAPICompletionHandler)completionHandler {
     dispatch_async(self.queue, ^{
-        if (self.wait) {
+        if (sleep) {
             dispatch_semaphore_wait(self.semaphore, DISPATCH_TIME_FOREVER);
         }
 
-        self.wait = YES;
 
         NSMutableURLRequest *req = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:url]];
         req.HTTPMethod = method;
@@ -85,8 +83,10 @@
                         completionHandler(RadarStatusErrorNetwork, nil);
                     });
 
-                    self.wait = NO;
-                    dispatch_semaphore_signal(self.semaphore);
+                    if (sleep) {
+                        [NSThread sleepForTimeInterval:1];
+                        dispatch_semaphore_signal(self.semaphore);
+                    }
 
                     return;
                 }
@@ -98,8 +98,10 @@
                         completionHandler(RadarStatusErrorServer, nil);
                     });
 
-                    self.wait = NO;
-                    dispatch_semaphore_signal(self.semaphore);
+                    if (sleep) {
+                        [NSThread sleepForTimeInterval:1];
+                        dispatch_semaphore_signal(self.semaphore);
+                    }
 
                     return;
                 }
@@ -140,10 +142,8 @@
 
                 if (sleep) {
                     [NSThread sleepForTimeInterval:1];
+                    dispatch_semaphore_signal(self.semaphore);
                 }
-
-                self.wait = NO;
-                dispatch_semaphore_signal(self.semaphore);
             };
 
             NSURLSessionDataTask *task = [[NSURLSession sessionWithConfiguration:configuration] dataTaskWithRequest:req completionHandler:dataTaskCompletionHandler];
