@@ -74,6 +74,10 @@
 		53CCD783275E579800F79CC8 /* RadarLogBuffer.m in Sources */ = {isa = PBXBuildFile; fileRef = 53CCD782275E579800F79CC8 /* RadarLogBuffer.m */; };
 		78D8CE3C23AD78A1009E91F5 /* geocode.json in Resources */ = {isa = PBXBuildFile; fileRef = 78D8CE3B23AD78A1009E91F5 /* geocode.json */; };
 		78D8CE3E23AD7FEE009E91F5 /* geocode_ip.json in Resources */ = {isa = PBXBuildFile; fileRef = 78D8CE3D23AD7FEE009E91F5 /* geocode_ip.json */; };
+		82D04ABB29722ED20036619F /* RadarReplay.h in Headers */ = {isa = PBXBuildFile; fileRef = 82D04AB829722ED20036619F /* RadarReplay.h */; };
+		82D04ABC29722ED20036619F /* RadarReplayBuffer.m in Sources */ = {isa = PBXBuildFile; fileRef = 82D04AB929722ED20036619F /* RadarReplayBuffer.m */; };
+		82D04ABD29722ED20036619F /* RadarReplayBuffer.h in Headers */ = {isa = PBXBuildFile; fileRef = 82D04ABA29722ED20036619F /* RadarReplayBuffer.h */; };
+		82D04AC729771BF10036619F /* RadarReplay.m in Sources */ = {isa = PBXBuildFile; fileRef = 82D04AC629771BF10036619F /* RadarReplay.m */; };
 		966D8860288F7404008C0D00 /* custom_event.json in Resources */ = {isa = PBXBuildFile; fileRef = 966D885F288F7404008C0D00 /* custom_event.json */; };
 		9679F4A127CD8D0600800797 /* CLLocation+Radar.h in Headers */ = {isa = PBXBuildFile; fileRef = 9679F4A027CD8D0600800797 /* CLLocation+Radar.h */; };
 		9679F4A327CD8DE200800797 /* CLLocation+Radar.m in Sources */ = {isa = PBXBuildFile; fileRef = 9679F4A227CD8DE200800797 /* CLLocation+Radar.m */; };
@@ -161,6 +165,10 @@
 		78156B9623A8210E0094410E /* RadarAddress.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RadarAddress.m; sourceTree = "<group>"; };
 		78D8CE3B23AD78A1009E91F5 /* geocode.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = geocode.json; sourceTree = "<group>"; };
 		78D8CE3D23AD7FEE009E91F5 /* geocode_ip.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = geocode_ip.json; sourceTree = "<group>"; };
+		82D04AB829722ED20036619F /* RadarReplay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RadarReplay.h; sourceTree = "<group>"; };
+		82D04AB929722ED20036619F /* RadarReplayBuffer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RadarReplayBuffer.m; sourceTree = "<group>"; };
+		82D04ABA29722ED20036619F /* RadarReplayBuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RadarReplayBuffer.h; sourceTree = "<group>"; };
+		82D04AC629771BF10036619F /* RadarReplay.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RadarReplay.m; sourceTree = "<group>"; };
 		966D885F288F7404008C0D00 /* custom_event.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = custom_event.json; sourceTree = "<group>"; };
 		96711A8F2790C87A009ED205 /* Package.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Package.swift; sourceTree = "<group>"; };
 		9679F4A027CD8D0600800797 /* CLLocation+Radar.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "CLLocation+Radar.h"; sourceTree = "<group>"; };
@@ -407,6 +415,7 @@
 		DD236C772308797B00EB88F9 /* RadarSDK */ = {
 			isa = PBXGroup;
 			children = (
+				82D04AC629771BF10036619F /* RadarReplay.m */,
 				96A5A0D827AD9F7F007B960B /* Include */,
 				DD236C792308797B00EB88F9 /* Info.plist */,
 				532FC303277A783900989279 /* Radar+Internal.h */,
@@ -414,6 +423,9 @@
 				DD236C9823087F9200EB88F9 /* RadarAPIClient.h */,
 				DD236C9923087F9200EB88F9 /* RadarAPIClient.m */,
 				DD633EC1237C5B800026C91A /* RadarAPIHelper.h */,
+				82D04AB829722ED20036619F /* RadarReplay.h */,
+				82D04ABA29722ED20036619F /* RadarReplayBuffer.h */,
+				82D04AB929722ED20036619F /* RadarReplayBuffer.m */,
 				DD633EC2237C5B800026C91A /* RadarAPIHelper.m */,
 				DD6F4F662573174400AFA38B /* RadarBeaconManager.h */,
 				DD64416E25B398A7003C3E63 /* RadarBeaconManager.m */,
@@ -550,6 +562,7 @@
 				0107AA0C26220045008AB52F /* RadarAPIHelper.h in Headers */,
 				96A5A0C127AD9F41007B960B /* RadarRoutes+Internal.h in Headers */,
 				96A5A10C27AD9F7F007B960B /* RadarRoutes.h in Headers */,
+				82D04ABD29722ED20036619F /* RadarReplayBuffer.h in Headers */,
 				96A5A11B27ADA02F007B960B /* RadarDelegateHolder.h in Headers */,
 				9683FD6627B36C26009EBB6B /* RadarMeta+Internal.h in Headers */,
 				96A5A10F27AD9F7F007B960B /* RadarRouteDuration.h in Headers */,
@@ -577,6 +590,7 @@
 				96A5A0C027AD9F41007B960B /* RadarRouteDistance+Internal.h in Headers */,
 				96A5A0D227AD9F41007B960B /* RadarContext+Internal.h in Headers */,
 				96A5A10E27AD9F7F007B960B /* RadarRouteDistance.h in Headers */,
+				82D04ABB29722ED20036619F /* RadarReplay.h in Headers */,
 				96A5A10727AD9F7F007B960B /* RadarCircleGeometry.h in Headers */,
 				96A5A0F827AD9F7F007B960B /* RadarRegion.h in Headers */,
 				0107AA2B26220066008AB52F /* RadarUtils.h in Headers */,
@@ -762,9 +776,11 @@
 				0107AAC22622017E008AB52F /* RadarRoute.m in Sources */,
 				0107AAF2262201B2008AB52F /* RadarUser.m in Sources */,
 				53CCD783275E579800F79CC8 /* RadarLogBuffer.m in Sources */,
+				82D04ABC29722ED20036619F /* RadarReplayBuffer.m in Sources */,
 				0107AA832622013A008AB52F /* RadarBeacon.m in Sources */,
 				0107AAB626220172008AB52F /* RadarPolygonGeometry.m in Sources */,
 				0107AB0E262201D5008AB52F /* RadarBeaconManager.m in Sources */,
+				82D04AC729771BF10036619F /* RadarReplay.m in Sources */,
 				0107AADA26220195008AB52F /* RadarRouteMatrix.m in Sources */,
 				0107AA7A26220128008AB52F /* RadarAddress.m in Sources */,
 				0107AABC26220178008AB52F /* RadarRegion.m in Sources */,
@@ -800,7 +816,7 @@
 			buildSettings = {
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = NO;
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 3;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = "";
 				DYLIB_COMPATIBILITY_VERSION = 1;
@@ -814,7 +830,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = 3.5.11;
+				MARKETING_VERSION = 3.5.12;
 				PRODUCT_BUNDLE_IDENTIFIER = io.radar.sdk;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -830,7 +846,7 @@
 			buildSettings = {
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = NO;
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 3;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = "";
 				DYLIB_COMPATIBILITY_VERSION = 1;
@@ -844,7 +860,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = 3.5.11;
+				MARKETING_VERSION = 3.5.12;
 				PRODUCT_BUNDLE_IDENTIFIER = io.radar.sdk;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -908,7 +924,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 3;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
@@ -927,7 +943,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				MARKETING_VERSION = 3.5.11;
+				MARKETING_VERSION = 3.5.12;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -973,7 +989,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 3;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -986,7 +1002,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				MARKETING_VERSION = 3.5.11;
+				MARKETING_VERSION = 3.5.12;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				OTHER_CFLAGS = "-fembed-bitcode";
