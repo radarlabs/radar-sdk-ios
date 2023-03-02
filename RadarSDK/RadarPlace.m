@@ -175,6 +175,7 @@
         NSDictionary *chainDict = [self.chain dictionaryValue];
         [dict setValue:chainDict forKey:@"chain"];
     }
+    [dict setValue:[self.location dictionaryValue] forKey:@"location"];
     [dict setValue:self.group forKey:@"group"];
     [dict setValue:self.metadata forKey:@"metadata"];
     return dict;

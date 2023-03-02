@@ -31,6 +31,7 @@
                    params:(NSDictionary *)params
                     sleep:(BOOL)sleep
                logPayload:(BOOL)logPayload
+          extendedTimeout:(BOOL)extendedTimeout
         completionHandler:(RadarAPICompletionHandler)completionHandler {
 
     NSDictionary *mockResponseForUrl = self.mockResponses[url];

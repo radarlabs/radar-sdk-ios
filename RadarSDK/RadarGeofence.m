@@ -199,6 +199,16 @@
     [dict setValue:self.externalId forKey:@"externalId"];
     [dict setValue:self.__description forKey:@"description"];
     [dict setValue:self.metadata forKey:@"metadata"];
+    if ([self.geometry isKindOfClass:[RadarCircleGeometry class]]) {
+        RadarCircleGeometry *circleGeometry = (RadarCircleGeometry *)self.geometry;
+        [dict setValue:@(circleGeometry.radius) forKey:@"geometryRadius"];
+        [dict setValue:[circleGeometry.center dictionaryValue] forKey:@"geometryCenter"];
+    } else if ([self.geometry isKindOfClass:[RadarPolygonGeometry class]]) {
+        RadarPolygonGeometry *polygonGeometry = (RadarPolygonGeometry *)self.geometry;
+        [dict setValue:@(polygonGeometry.radius) forKey:@"geometryRadius"];
+        [dict setValue:[polygonGeometry.center dictionaryValue] forKey:@"geometryCenter"];
+    }
+
     return dict;
 }
 
