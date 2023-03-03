@@ -465,7 +465,6 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         if (center) {
             CLRegion *region = [[CLCircularRegion alloc] initWithCenter:center.coordinate radius:radius identifier:identifier];
             [self.locationManager startMonitoringForRegion:region];
-
             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
                                                message:[NSString stringWithFormat:@"Synced geofence | latitude = %f; longitude = %f; radius = %f; identifier = %@",
                                                                                   center.coordinate.latitude, center.coordinate.longitude, radius, identifier]];
@@ -487,7 +486,6 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                     UNLocationNotificationTrigger *trigger = [UNLocationNotificationTrigger triggerWithRegion:region repeats:YES];
 
                     UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:identifier content:content trigger:trigger];
-
                     UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
                     [center addNotificationRequest:request
                              withCompletionHandler:^(NSError *_Nullable error) {
