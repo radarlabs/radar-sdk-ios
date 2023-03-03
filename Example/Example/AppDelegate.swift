@@ -219,6 +219,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         self.notify(body)
     }
 
+    func didUpdateNearbyGeofences(_ geofences: [RadarGeofence], user: RadarUser) {
+        for geofence in geofences {
+            let text = "Updated nearby geofence \(geofence._id) with tag \(geofence.tag ?? "nil")"
+            self.notify(text)
+        }
+    }
+
     func didUpdateClientLocation(_ location: CLLocation, stopped: Bool, source: RadarLocationSource) {
         let body = "\(stopped ? "Client stopped at" : "Client moved to") location (\(location.coordinate.latitude), \(location.coordinate.longitude)) with accuracy \(location.horizontalAccuracy) meters and source \(Utils.stringForRadarLocationSource(source))"
         self.notify(body)
