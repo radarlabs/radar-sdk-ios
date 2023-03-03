@@ -373,13 +373,11 @@
 + (void)logConversionWithType:(NSString *)type
                      metadata:(NSDictionary *_Nullable)metadata
             completionHandler:(RadarLogConversionCompletionHandler)completionHandler {
-    CLAuthorizationStatus authorizationStatus = [[RadarLocationManager sharedInstance].permissionsHelper locationAuthorizationStatus];
     NSTimeInterval lastTrackedTimeInterval = [[NSDate date] timeIntervalSinceDate:[RadarSettings lastTrackedTime]];
     BOOL isLastTrackRecent = lastTrackedTimeInterval < 60;
-    
-    BOOL hasLocationPermission = authorizationStatus == kCLAuthorizationStatusAuthorizedWhenInUse || authorizationStatus == kCLAuthorizationStatusAuthorizedAlways;
-    
-    if (!hasLocationPermission || isLastTrackRecent) {
+
+    CLAuthorizationStatus authorizationStatus = [[RadarLocationManager sharedInstance].permissionsHelper locationAuthorizationStatus];
+    if (authorizationStatus == kCLAuthorizationStatusDenied || isLastTrackRecent) {
         [self sendLogConversionRequestWithType:type metadata:metadata completionHandler:completionHandler];
         
         return;
