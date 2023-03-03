@@ -102,7 +102,7 @@
 #pragma mark - Get Location
 
 + (void)getLocationWithCompletionHandler:(RadarLocationCompletionHandler)completionHandler {
-    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"Radar.getLocation"];
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"getLocation()"];
     [[RadarLocationManager sharedInstance] getLocationWithCompletionHandler:^(RadarStatus status, CLLocation *_Nullable location, BOOL stopped) {
         [RadarUtils runOnMainThread:^{
             completionHandler(status, location, stopped);
@@ -111,7 +111,7 @@
 }
 
 + (void)getLocationWithDesiredAccuracy:(RadarTrackingOptionsDesiredAccuracy)desiredAccuracy completionHandler:(RadarLocationCompletionHandler)completionHandler {
-    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"Radar.getLocation"];
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"getLocation()"];
     [[RadarLocationManager sharedInstance] getLocationWithDesiredAccuracy:desiredAccuracy
                                                         completionHandler:^(RadarStatus status, CLLocation *_Nullable location, BOOL stopped) {
                                                             [RadarUtils runOnMainThread:^{
@@ -127,7 +127,7 @@
 }
 
 + (void)trackOnceWithDesiredAccuracy:(RadarTrackingOptionsDesiredAccuracy)desiredAccuracy beacons:(BOOL)beacons completionHandler:(RadarTrackCompletionHandler)completionHandler {
-    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"Radar.trackOnce"];
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"trackOnce()"];
     [[RadarLocationManager sharedInstance]
         getLocationWithDesiredAccuracy:desiredAccuracy
                      completionHandler:^(RadarStatus status, CLLocation *_Nullable location, BOOL stopped) {
@@ -211,7 +211,7 @@
 }
 
 + (void)trackOnceWithLocation:(CLLocation *)location completionHandler:(RadarTrackCompletionHandler)completionHandler {
-    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"Radar.trackOnce"];
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"trackOnce()"];
     [[RadarAPIClient sharedInstance] trackWithLocation:location
                                                stopped:NO
                                             foreground:YES
@@ -229,7 +229,7 @@
 }
 
 + (void)startTrackingWithOptions:(RadarTrackingOptions *)options {
-    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"Radar.startTracking"];
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"startTracking()"];
     [[RadarLocationManager sharedInstance] startTrackingWithOptions:options];
 }
 
@@ -319,7 +319,7 @@
 }
 
 + (void)stopTracking {
-    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"Radar.stopTracking"];
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"stopTracking()"];
     [[RadarLocationManager sharedInstance] stopTracking];
 }
 
@@ -350,7 +350,7 @@
 + (void)sendEvent:(NSString *)customType
      withMetadata:(NSDictionary *_Nullable)metadata
 completionHandler:(RadarSendEventCompletionHandler)completionHandler {
-    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"Radar.sendEvent"]; // TODO: merge with logConversion
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"sendEvent()"]; // TODO: merge with logConversion
     [self trackOnceWithCompletionHandler:^(RadarStatus status, CLLocation * _Nullable location, NSArray<RadarEvent *> * _Nullable events, RadarUser * _Nullable user) {
         if (status != RadarStatusSuccess) {
             if (completionHandler) {
@@ -386,7 +386,7 @@ completionHandler:(RadarSendEventCompletionHandler)completionHandler {
      withLocation:(CLLocation *_Nullable)location
          metadata:(NSDictionary *_Nullable)metadata
 completionHandler:(RadarSendEventCompletionHandler)completionHandler {
-    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"Radar.sendEvent"]; // TODO: merge with logConversion
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"sendEvent()"]; // TODO: merge with logConversion
     [self trackOnceWithLocation:location completionHandler:^(RadarStatus status, CLLocation * _Nullable location, NSArray<RadarEvent *> * _Nullable events, RadarUser * _Nullable user) {
         if (status != RadarStatusSuccess) {
             if (completionHandler) {
@@ -435,7 +435,7 @@ completionHandler:(RadarSendEventCompletionHandler)completionHandler {
 + (void)startTripWithOptions:(RadarTripOptions *)tripOptions
              trackingOptions:(RadarTrackingOptions *)trackingOptions
            completionHandler:(RadarTripCompletionHandler)completionHandler {
-    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"Radar.startTrip"];
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"startTrip()"];
     [[RadarAPIClient sharedInstance] createTripWithOptions:tripOptions
                                          completionHandler:^(RadarStatus status, RadarTrip *trip, NSArray<RadarEvent *> *events) {
         if (status == RadarStatusSuccess) {
@@ -464,7 +464,7 @@ completionHandler:(RadarSendEventCompletionHandler)completionHandler {
 }
 
 + (void)updateTripWithOptions:(RadarTripOptions *)options status:(RadarTripStatus)status completionHandler:(RadarTripCompletionHandler)completionHandler {
-    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"Radar.updateTrip"];
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"updateTrip()"];
     [[RadarAPIClient sharedInstance] updateTripWithOptions:options
                                                     status:status
                                          completionHandler:^(RadarStatus status, RadarTrip *trip, NSArray<RadarEvent *> *events) {
@@ -488,7 +488,7 @@ completionHandler:(RadarSendEventCompletionHandler)completionHandler {
 }
 
 + (void)completeTripWithCompletionHandler:(RadarTripCompletionHandler)completionHandler {
-    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"Radar.completeTrip"];
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"completeTrip()"];
     RadarTripOptions *options = [RadarSettings tripOptions];
     [[RadarAPIClient sharedInstance] updateTripWithOptions:options
                                                     status:RadarTripStatusCompleted
@@ -516,7 +516,7 @@ completionHandler:(RadarSendEventCompletionHandler)completionHandler {
 }
 
 + (void)cancelTripWithCompletionHandler:(RadarTripCompletionHandler)completionHandler {
-    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"Radar.cancelTrip"];
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"cancelTrip()"];
     RadarTripOptions *options = [RadarSettings tripOptions];
     [[RadarAPIClient sharedInstance] updateTripWithOptions:options
                                                     status:RadarTripStatusCanceled
@@ -542,7 +542,7 @@ completionHandler:(RadarSendEventCompletionHandler)completionHandler {
 #pragma mark - Device Context
 
 + (void)getContextWithCompletionHandler:(RadarContextCompletionHandler)completionHandler {
-    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"Radar.getContext"];
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"getContext()"];
     [[RadarLocationManager sharedInstance] getLocationWithCompletionHandler:^(RadarStatus status, CLLocation *_Nullable location, BOOL stopped) {
         if (status != RadarStatusSuccess) {
             if (completionHandler) {
@@ -566,7 +566,7 @@ completionHandler:(RadarSendEventCompletionHandler)completionHandler {
 }
 
 + (void)getContextForLocation:(CLLocation *)location completionHandler:(RadarContextCompletionHandler)completionHandler {
-    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"Radar.getContext"];
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"getContext()"];
     [[RadarAPIClient sharedInstance] getContextForLocation:location
                                          completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, RadarContext *_Nullable context) {
                                              if (completionHandler) {
@@ -601,7 +601,7 @@ completionHandler:(RadarSendEventCompletionHandler)completionHandler {
                         groups:(NSArray *_Nullable)groups
                          limit:(int)limit
              completionHandler:(RadarSearchPlacesCompletionHandler)completionHandler {
-    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"Radar.searchPlaces"];
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"searchPlaces()"];
     [[RadarLocationManager sharedInstance] getLocationWithCompletionHandler:^(RadarStatus status, CLLocation *_Nullable location, BOOL stopped) {
         if (status != RadarStatusSuccess) {
             if (completionHandler) {
@@ -655,7 +655,7 @@ completionHandler:(RadarSendEventCompletionHandler)completionHandler {
                   groups:(NSArray *_Nullable)groups
                    limit:(int)limit
        completionHandler:(RadarSearchPlacesCompletionHandler)completionHandler {
-    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"Radar.searchPlaces"];
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"searchPlaces()"];
     [[RadarAPIClient sharedInstance] searchPlacesNear:near
                                                radius:radius
                                                chains:chains
@@ -675,7 +675,7 @@ completionHandler:(RadarSendEventCompletionHandler)completionHandler {
                          metadata:(NSDictionary *_Nullable)metadata
                             limit:(int)limit
                 completionHandler:(RadarSearchGeofencesCompletionHandler)completionHandler {
-    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"Radar.searchGeofences"];
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"searchGeofences()"];
     [[RadarLocationManager sharedInstance] getLocationWithCompletionHandler:^(RadarStatus status, CLLocation *_Nullable location, BOOL stopped) {
         if (status != RadarStatusSuccess) {
             if (completionHandler) {
@@ -708,7 +708,7 @@ completionHandler:(RadarSendEventCompletionHandler)completionHandler {
                    metadata:(NSDictionary *_Nullable)metadata
                       limit:(int)limit
           completionHandler:(RadarSearchGeofencesCompletionHandler)completionHandler {
-    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"Radar.searchGeofences"];
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"searchGeofences()"];
     [[RadarAPIClient sharedInstance] searchGeofencesNear:near
                                                   radius:radius
                                                     tags:tags
@@ -729,7 +729,7 @@ completionHandler:(RadarSendEventCompletionHandler)completionHandler {
                     limit:(int)limit
                   country:(NSString *_Nullable)country
         completionHandler:(RadarGeocodeCompletionHandler)completionHandler {
-    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"Radar.autocomplete"];
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"autocomplete()"];
     [[RadarAPIClient sharedInstance] autocompleteQuery:query
                                                   near:near
                                                 layers:layers
@@ -745,7 +745,7 @@ completionHandler:(RadarSendEventCompletionHandler)completionHandler {
 }
 
 + (void)autocompleteQuery:(NSString *_Nonnull)query near:(CLLocation *_Nullable)near limit:(int)limit completionHandler:(RadarGeocodeCompletionHandler)completionHandler {
-    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"Radar.autocomplete"];
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"autocomplete()"];
     [[RadarAPIClient sharedInstance] autocompleteQuery:query
                                                   near:near
                                                 layers:nil
@@ -763,7 +763,7 @@ completionHandler:(RadarSendEventCompletionHandler)completionHandler {
 #pragma mark - Geocoding
 
 + (void)geocodeAddress:(NSString *)query completionHandler:(RadarGeocodeCompletionHandler)completionHandler {
-    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"Radar.geocode"];
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"geocode()"];
     [[RadarAPIClient sharedInstance] geocodeAddress:query
                                   completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarAddress *> *_Nullable addresses) {
                                       [RadarUtils runOnMainThread:^{
@@ -773,7 +773,7 @@ completionHandler:(RadarSendEventCompletionHandler)completionHandler {
 }
 
 + (void)reverseGeocodeWithCompletionHandler:(RadarGeocodeCompletionHandler)completionHandler {
-    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"Radar.reverseGeocode"];
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"reverseGeocode()"];
     [[RadarLocationManager sharedInstance] getLocationWithCompletionHandler:^(RadarStatus status, CLLocation *_Nullable location, BOOL stopped) {
         if (status != RadarStatusSuccess) {
             if (completionHandler) {
@@ -797,7 +797,7 @@ completionHandler:(RadarSendEventCompletionHandler)completionHandler {
 }
 
 + (void)reverseGeocodeLocation:(CLLocation *)location completionHandler:(RadarGeocodeCompletionHandler)completionHandler {
-    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"Radar.reverseGeocode"];
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"reverseGeocode()"];
     [[RadarAPIClient sharedInstance] reverseGeocodeLocation:location
                                           completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarAddress *> *_Nullable addresses) {
                                               if (completionHandler) {
@@ -809,7 +809,7 @@ completionHandler:(RadarSendEventCompletionHandler)completionHandler {
 }
 
 + (void)ipGeocodeWithCompletionHandler:(RadarIPGeocodeCompletionHandler)completionHandler {
-    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"Radar.ipGeocode"];
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"ipGeocode()"];
     [[RadarAPIClient sharedInstance] ipGeocodeWithCompletionHandler:^(RadarStatus status, NSDictionary *_Nullable res, RadarAddress *_Nullable address, BOOL proxy) {
         if (completionHandler) {
             [RadarUtils runOnMainThread:^{
@@ -825,7 +825,7 @@ completionHandler:(RadarSendEventCompletionHandler)completionHandler {
                            modes:(RadarRouteMode)modes
                            units:(RadarRouteUnits)units
                completionHandler:(RadarRouteCompletionHandler)completionHandler {
-    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"Radar.getDistance"];
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"getDistance()"];
     [[RadarLocationManager sharedInstance] getLocationWithCompletionHandler:^(RadarStatus status, CLLocation *_Nullable location, BOOL stopped) {
         if (status != RadarStatusSuccess) {
             if (completionHandler) {
@@ -857,7 +857,7 @@ completionHandler:(RadarSendEventCompletionHandler)completionHandler {
                         modes:(RadarRouteMode)modes
                         units:(RadarRouteUnits)units
             completionHandler:(RadarRouteCompletionHandler)completionHandler {
-    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"Radar.getDistance"];
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"getDistance()"];
     [[RadarAPIClient sharedInstance] getDistanceFromOrigin:origin
                                                destination:destination
                                                      modes:modes
@@ -877,7 +877,7 @@ completionHandler:(RadarSendEventCompletionHandler)completionHandler {
                         mode:(RadarRouteMode)mode
                        units:(RadarRouteUnits)units
            completionHandler:(RadarRouteMatrixCompletionHandler)completionHandler {
-    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"Radar.getMatrix"];
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"getMatrix()"];
     [[RadarAPIClient sharedInstance] getMatrixFromOrigins:origins
                                              destinations:destinations
                                                      mode:mode
