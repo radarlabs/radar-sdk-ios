@@ -6,6 +6,7 @@
 //
 
 #import "RadarTripOptions.h"
+#import "RadarUtils.h"
 
 @implementation RadarTripOptions
 
@@ -50,10 +51,18 @@ static NSString *const kApproachingThreshold = @"approachingThreshold";
         return nil;
     }
 
+    NSDate *scheduledArrivalAt;
+    NSObject *scheduledArrivalAtObj = dict[kScheduledArrivalAt];
+    if (scheduledArrivalAtObj && [scheduledArrivalAtObj isKindOfClass:[NSString class]]) {
+        scheduledArrivalAt = [RadarUtils.isoDateFormatter dateFromString:(NSString *)scheduledArrivalAtObj];
+    } else if (scheduledArrivalAtObj && [scheduledArrivalAtObj isKindOfClass:[NSDate class]]) {
+        scheduledArrivalAt = (NSDate *)scheduledArrivalAtObj;
+    }
+
     RadarTripOptions *options = [[RadarTripOptions alloc] initWithExternalId:dict[kExternalId]
                                                       destinationGeofenceTag:dict[kDestinationGeofenceTag]
                                                destinationGeofenceExternalId:dict[kDestinationGeofenceExternalId]
-                                                          scheduledArrivalAt:dict[kScheduledArrivalAt]];
+                                                          scheduledArrivalAt:scheduledArrivalAt];
     options.metadata = dict[kMetadata];
     NSString *modeStr = dict[kMode];
     if ([modeStr isEqualToString:@"foot"]) {
