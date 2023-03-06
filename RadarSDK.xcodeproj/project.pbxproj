@@ -830,7 +830,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = "3.5.13-beta.1";
+				MARKETING_VERSION = 3.5.13;
 				PRODUCT_BUNDLE_IDENTIFIER = io.radar.sdk;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -860,7 +860,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = "3.5.13-beta.1";
+				MARKETING_VERSION = 3.5.13;
 				PRODUCT_BUNDLE_IDENTIFIER = io.radar.sdk;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
