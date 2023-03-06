@@ -6,6 +6,7 @@
 //
 
 #import "RadarTripOptions.h"
+#import "RadarUtils.h"
 
 @implementation RadarTripOptions
 
@@ -15,6 +16,7 @@ static NSString *const kDestinationGeofenceTag = @"destinationGeofenceTag";
 static NSString *const kDestinationGeofenceExternalId = @"destinationGeofenceExternalId";
 static NSString *const kMode = @"mode";
 static NSString *const kScheduledArrivalAt = @"scheduledArrivalAt";
+static NSString *const kApproachingThreshold = @"approachingThreshold";
 
 - (instancetype)initWithExternalId:(NSString *_Nonnull)externalId
             destinationGeofenceTag:(NSString *_Nullable)destinationGeofenceTag
@@ -49,10 +51,18 @@ static NSString *const kScheduledArrivalAt = @"scheduledArrivalAt";
         return nil;
     }
 
+    NSDate *scheduledArrivalAt;
+    NSObject *scheduledArrivalAtObj = dict[kScheduledArrivalAt];
+    if (scheduledArrivalAtObj && [scheduledArrivalAtObj isKindOfClass:[NSString class]]) {
+        scheduledArrivalAt = [RadarUtils.isoDateFormatter dateFromString:(NSString *)scheduledArrivalAtObj];
+    } else if (scheduledArrivalAtObj && [scheduledArrivalAtObj isKindOfClass:[NSDate class]]) {
+        scheduledArrivalAt = (NSDate *)scheduledArrivalAtObj;
+    }
+
     RadarTripOptions *options = [[RadarTripOptions alloc] initWithExternalId:dict[kExternalId]
                                                       destinationGeofenceTag:dict[kDestinationGeofenceTag]
                                                destinationGeofenceExternalId:dict[kDestinationGeofenceExternalId]
-                                                          scheduledArrivalAt:dict[kScheduledArrivalAt]];
+                                                          scheduledArrivalAt:scheduledArrivalAt];
     options.metadata = dict[kMetadata];
     NSString *modeStr = dict[kMode];
     if ([modeStr isEqualToString:@"foot"]) {
@@ -66,6 +76,7 @@ static NSString *const kScheduledArrivalAt = @"scheduledArrivalAt";
     } else {
         options.mode = RadarRouteModeCar;
     }
+    options.approachingThreshold = [dict[kApproachingThreshold] intValue];
     return options;
 }
 
@@ -77,6 +88,9 @@ static NSString *const kScheduledArrivalAt = @"scheduledArrivalAt";
     dict[kDestinationGeofenceExternalId] = self.destinationGeofenceExternalId;
     dict[kMode] = [Radar stringForMode:self.mode];
     dict[kScheduledArrivalAt] = self.scheduledArrivalAt;
+    if (self.approachingThreshold && self.approachingThreshold > 0) {
+        dict[kApproachingThreshold] = @(self.approachingThreshold);
+    }
     return dict;
 }
 
@@ -105,7 +119,9 @@ static NSString *const kScheduledArrivalAt = @"scheduledArrivalAt";
            ((!self.scheduledArrivalAt && !options.scheduledArrivalAt) ||
             (self.scheduledArrivalAt != nil && options.scheduledArrivalAt != nil &&
             [self.scheduledArrivalAt isEqualToDate:options.scheduledArrivalAt])) &&
-           self.mode == options.mode;
+           self.mode == options.mode &&
+            ((!self.approachingThreshold && !options.approachingThreshold) ||
+              (self.approachingThreshold == options.approachingThreshold));
 }
 
 @end
