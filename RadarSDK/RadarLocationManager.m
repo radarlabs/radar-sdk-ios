@@ -396,6 +396,19 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     }
 }
 
+- (void)restartPreviousTrackingOptions {
+    RadarTrackingOptions *previousTrackingOptions = [RadarSettings previousTrackingOptions];
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Restarting previous tracking options"];
+
+    if (previousTrackingOptions) {
+        [Radar startTrackingWithOptions:previousTrackingOptions];
+    } else {
+        [Radar stopTracking];
+    }
+
+    [RadarSettings removePreviousTrackingOptions];
+}
+
 - (void)replaceBubbleGeofence:(CLLocation *)location radius:(int)radius {
     [self removeBubbleGeofence];
 
@@ -862,7 +875,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 }
 
 - (void)locationManager:(CLLocationManager *)manager didDetermineState:(CLRegionState)state forRegion:(CLRegion *)region {
-    if (![region.identifier hasPrefix:kSyncBeaconIdentifierPrefix]) {
+    if (!([region.identifier hasPrefix:kSyncBeaconIdentifierPrefix] || [region.identifier hasPrefix:kSyncBeaconUUIDIdentifierPrefix])) {
         return;
     }
 
