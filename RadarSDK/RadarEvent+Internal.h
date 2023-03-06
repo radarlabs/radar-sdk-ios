@@ -22,7 +22,7 @@
                      actualCreatedAt:(NSDate *_Nonnull)actualCreatedAt
                                 live:(BOOL)live
                                 type:(RadarEventType)type
-                          customType:(NSString *_Nullable)customType
+                      conversionType:(NSString *_Nullable)conversionType
                             geofence:(RadarGeofence *_Nullable)geofence
                                place:(RadarPlace *_Nullable)place
                               region:(RadarRegion *_Nullable)region

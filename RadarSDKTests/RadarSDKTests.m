@@ -614,20 +614,19 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
                                                                          timestamp:[NSDate new]];
     [self.apiHelperMock setMockResponse:[RadarTestUtils jsonDictionaryFromResource:@"track"]
                                forMethod:@"https://api.radar.io/v1/track"];
-    [self.apiHelperMock setMockResponse:[RadarTestUtils jsonDictionaryFromResource:@"custom_event"]
+    [self.apiHelperMock setMockResponse:[RadarTestUtils jsonDictionaryFromResource:@"conversion_event"]
                               forMethod:@"https://api.radar.io/v1/events"];
 
     XCTestExpectation *exp = [self expectationWithDescription:@"logConversion"];
 
-    [Radar logConversionWithName:@"customEvent4"
+    [Radar logConversionWithType:@"conversion4"
         metadata:@{@"foo": @"bar"}
-   completionHandler:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user) {
+   completionHandler:^(RadarStatus status, RadarEvent *_Nullable event) {
         XCTAssertEqual(status, RadarStatusSuccess);
-        XCTAssertNotNil(events);
+        XCTAssertNotNil(event);
 
-        RadarEvent *customEvent = events[0];
-        XCTAssertNotNil(customEvent);
-        NSDictionary *metadata = customEvent.metadata;
+        XCTAssertNotNil(event);
+        NSDictionary *metadata = event.metadata;
         XCTAssertNotNil(metadata);
         XCTAssertTrue([metadata[@"foo"] isEqual:@"bar"]);
         [exp fulfill];
@@ -647,79 +646,16 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
                                                                          timestamp:[NSDate new]];
     [self.apiHelperMock setMockResponse:[RadarTestUtils jsonDictionaryFromResource:@"track"]
                               forMethod:@"https://api.radar.io/v1/track"];
-    [self.apiHelperMock setMockResponse:[RadarTestUtils jsonDictionaryFromResource:@"custom_event_nil_event"]
+    [self.apiHelperMock setMockResponse:[RadarTestUtils jsonDictionaryFromResource:@"conversion_event_nil_event"]
                               forMethod:@"https://api.radar.io/v1/events"];
 
     XCTestExpectation *exp = [self expectationWithDescription:@"logConversion"];
 
-    [Radar logConversionWithName:@"customEvent4"
+    [Radar logConversionWithType:@"conversion4"
         metadata:nil
-   completionHandler:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user) {
+   completionHandler:^(RadarStatus status, RadarEvent *_Nullable event) {
         XCTAssertEqual(status, RadarStatusErrorServer);
-        XCTAssertNil(events);
-        [exp fulfill];
-    }
-    ];
-
-    [self waitForExpectations:@[exp] timeout:10.0];
-}
-
-- (void)test_Radar_logConversion_withLocation {
-    self.apiHelperMock.mockStatus = RadarStatusSuccess;
-    self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusAuthorizedWhenInUse;
-    CLLocation *mockLocation = [[CLLocation alloc] initWithCoordinate:CLLocationCoordinate2DMake(40.78382, -73.97536)
-                                                    altitude:-1
-                                        horizontalAccuracy:65
-                                            verticalAccuracy:-1
-                                                timestamp:[NSDate new]];
-    [self.apiHelperMock setMockResponse:[RadarTestUtils jsonDictionaryFromResource:@"track"]
-                              forMethod:@"https://api.radar.io/v1/track"];
-    [self.apiHelperMock setMockResponse:[RadarTestUtils jsonDictionaryFromResource:@"custom_event"]
-                              forMethod:@"https://api.radar.io/v1/events"];
-
-    XCTestExpectation *exp = [self expectationWithDescription:@"logConversionWithLocation"];
-
-    [Radar logConversionWithName:@"customEvent4"
-        location:mockLocation
-            metadata:@{@"foo": @"bar"}
-    completionHandler:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user) {
-        XCTAssertEqual(status, RadarStatusSuccess);
-        XCTAssertNotNil(events);
-
-        RadarEvent *customEvent = events[0];
-        XCTAssertNotNil(customEvent);
-        NSDictionary *metadata = customEvent.metadata;
-        XCTAssertNotNil(metadata);
-        XCTAssertTrue([metadata[@"foo"] isEqual:@"bar"]);
-
-        [exp fulfill];
-    }
-    ];
-
-    [self waitForExpectations:@[exp] timeout:10.0];
-}
-
-- (void)test_Radar_logConversion_withLocation_statusOkButEventIsNil_fails {
-    self.apiHelperMock.mockStatus = RadarStatusSuccess;
-    self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusAuthorizedWhenInUse;
-    CLLocation *mockLocation = [[CLLocation alloc] initWithCoordinate:CLLocationCoordinate2DMake(40.78382, -73.97536)
-                                                             altitude:-1
-                                                   horizontalAccuracy:65
-                                                     verticalAccuracy:-1
-                                                            timestamp:[NSDate new]];
-    [self.apiHelperMock setMockResponse:[RadarTestUtils jsonDictionaryFromResource:@"track"]
-                              forMethod:@"https://api.radar.io/v1/track"];
-    [self.apiHelperMock setMockResponse:[RadarTestUtils jsonDictionaryFromResource:@"custom_event_nil_event"]
-                              forMethod:@"https://api.radar.io/v1/events"];
-
-    XCTestExpectation *exp = [self expectationWithDescription:@"logConversionWithLocationStatusOkButEventIsNil"];
-
-    [Radar logConversionWithName:@"customEvent5"
-        location:mockLocation
-            metadata:@{@"foo": @"bar", @"baz": @YES, @"qux": @1}
-   completionHandler:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user) {
-        XCTAssertEqual(status, RadarStatusErrorServer);
-        XCTAssertNil(events);
+        XCTAssertNil(event);
         [exp fulfill];
     }
     ];

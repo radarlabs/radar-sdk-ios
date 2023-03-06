@@ -43,7 +43,7 @@
                      actualCreatedAt:(NSDate *)actualCreatedAt
                                 live:(BOOL)live
                                 type:(RadarEventType)type
-                          customType:(NSString *)customType
+                      conversionType:(NSString *)conversionType
                             geofence:(RadarGeofence *)geofence
                                place:(RadarPlace *)place
                               region:(RadarRegion *)region
@@ -63,7 +63,7 @@
         _actualCreatedAt = actualCreatedAt;
         _live = live;
         _type = type;
-        _customType = customType;
+        _conversionType = conversionType;
         _geofence = geofence;
         _place = place;
         _region = region;
@@ -92,7 +92,7 @@
     NSDate *actualCreatedAt;
     BOOL live = NO;
     RadarEventType type = RadarEventTypeUnknown;
-    NSString *customType;
+    NSString *conversionType;
     RadarGeofence *geofence;
     RadarPlace *place;
     RadarRegion *region;
@@ -172,8 +172,8 @@
         } else if ([typeStr isEqualToString:@"user.arrived_at_trip_destination"]) {
             type = RadarEventTypeUserArrivedAtTripDestination;
         } else {
-            type = RadarEventTypeCustom;
-            customType = typeStr;
+            type = RadarEventTypeConversion;
+            conversionType = typeStr;
         }
     }
 
@@ -304,7 +304,7 @@
                               actualCreatedAt:actualCreatedAt
                                          live:live
                                          type:type
-                                   customType:customType
+                               conversionType:conversionType
                                      geofence:geofence
                                         place:place
                                        region:region
@@ -368,7 +368,7 @@
         return @"user.approaching_trip_destination";
     case RadarEventTypeUserArrivedAtTripDestination:
         return @"user.arrived_at_trip_destination";
-    case RadarEventTypeCustom:
+    case RadarEventTypeConversion:
         return @"custom";
     default:
         return @"unknown";

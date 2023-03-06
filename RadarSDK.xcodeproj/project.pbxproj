@@ -78,13 +78,13 @@
 		82D04ABC29722ED20036619F /* RadarReplayBuffer.m in Sources */ = {isa = PBXBuildFile; fileRef = 82D04AB929722ED20036619F /* RadarReplayBuffer.m */; };
 		82D04ABD29722ED20036619F /* RadarReplayBuffer.h in Headers */ = {isa = PBXBuildFile; fileRef = 82D04ABA29722ED20036619F /* RadarReplayBuffer.h */; };
 		82D04AC729771BF10036619F /* RadarReplay.m in Sources */ = {isa = PBXBuildFile; fileRef = 82D04AC629771BF10036619F /* RadarReplay.m */; };
-		966D8860288F7404008C0D00 /* custom_event.json in Resources */ = {isa = PBXBuildFile; fileRef = 966D885F288F7404008C0D00 /* custom_event.json */; };
+		966D8860288F7404008C0D00 /* conversion_event.json in Resources */ = {isa = PBXBuildFile; fileRef = 966D885F288F7404008C0D00 /* conversion_event.json */; };
 		9679F4A127CD8D0600800797 /* CLLocation+Radar.h in Headers */ = {isa = PBXBuildFile; fileRef = 9679F4A027CD8D0600800797 /* CLLocation+Radar.h */; };
 		9679F4A327CD8DE200800797 /* CLLocation+Radar.m in Sources */ = {isa = PBXBuildFile; fileRef = 9679F4A227CD8DE200800797 /* CLLocation+Radar.m */; };
 		9683FD6427B36C26009EBB6B /* RadarMeta.h in Headers */ = {isa = PBXBuildFile; fileRef = 9683FD6127B36C26009EBB6B /* RadarMeta.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		9683FD6527B36C26009EBB6B /* RadarMeta.m in Sources */ = {isa = PBXBuildFile; fileRef = 9683FD6227B36C26009EBB6B /* RadarMeta.m */; };
 		9683FD6627B36C26009EBB6B /* RadarMeta+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 9683FD6327B36C26009EBB6B /* RadarMeta+Internal.h */; };
-		968C839928A6D8350030103E /* custom_event_nil_event.json in Resources */ = {isa = PBXBuildFile; fileRef = 968C839828A6D8350030103E /* custom_event_nil_event.json */; };
+		968C839928A6D8350030103E /* conversion_event_nil_event.json in Resources */ = {isa = PBXBuildFile; fileRef = 968C839828A6D8350030103E /* conversion_event_nil_event.json */; };
 		96A0AC2728A4066D00B41D40 /* search_places_chain_metadata.json in Resources */ = {isa = PBXBuildFile; fileRef = 96A0AC2628A4066D00B41D40 /* search_places_chain_metadata.json */; };
 		96A5A0C027AD9F41007B960B /* RadarRouteDistance+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 96A5A0A827AD9F40007B960B /* RadarRouteDistance+Internal.h */; };
 		96A5A0C127AD9F41007B960B /* RadarRoutes+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 96A5A0A927AD9F40007B960B /* RadarRoutes+Internal.h */; };
@@ -169,14 +169,14 @@
 		82D04AB929722ED20036619F /* RadarReplayBuffer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RadarReplayBuffer.m; sourceTree = "<group>"; };
 		82D04ABA29722ED20036619F /* RadarReplayBuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RadarReplayBuffer.h; sourceTree = "<group>"; };
 		82D04AC629771BF10036619F /* RadarReplay.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RadarReplay.m; sourceTree = "<group>"; };
-		966D885F288F7404008C0D00 /* custom_event.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = custom_event.json; sourceTree = "<group>"; };
+		966D885F288F7404008C0D00 /* conversion_event.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = conversion_event.json; sourceTree = "<group>"; };
 		96711A8F2790C87A009ED205 /* Package.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Package.swift; sourceTree = "<group>"; };
 		9679F4A027CD8D0600800797 /* CLLocation+Radar.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "CLLocation+Radar.h"; sourceTree = "<group>"; };
 		9679F4A227CD8DE200800797 /* CLLocation+Radar.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "CLLocation+Radar.m"; sourceTree = "<group>"; };
 		9683FD6127B36C26009EBB6B /* RadarMeta.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RadarMeta.h; sourceTree = "<group>"; };
 		9683FD6227B36C26009EBB6B /* RadarMeta.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RadarMeta.m; sourceTree = "<group>"; };
 		9683FD6327B36C26009EBB6B /* RadarMeta+Internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "RadarMeta+Internal.h"; sourceTree = "<group>"; };
-		968C839828A6D8350030103E /* custom_event_nil_event.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = custom_event_nil_event.json; sourceTree = "<group>"; };
+		968C839828A6D8350030103E /* conversion_event_nil_event.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = conversion_event_nil_event.json; sourceTree = "<group>"; };
 		96A0AC2628A4066D00B41D40 /* search_places_chain_metadata.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = search_places_chain_metadata.json; sourceTree = "<group>"; };
 		96A5A0A827AD9F40007B960B /* RadarRouteDistance+Internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "RadarRouteDistance+Internal.h"; sourceTree = "<group>"; };
 		96A5A0A927AD9F40007B960B /* RadarRoutes+Internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "RadarRoutes+Internal.h"; sourceTree = "<group>"; };
@@ -370,8 +370,8 @@
 			isa = PBXGroup;
 			children = (
 				53B3B26A23EE41B400080818 /* context.json */,
-				966D885F288F7404008C0D00 /* custom_event.json */,
-				968C839828A6D8350030103E /* custom_event_nil_event.json */,
+				966D885F288F7404008C0D00 /* conversion_event.json */,
+				968C839828A6D8350030103E /* conversion_event_nil_event.json */,
 				DD5E35E0238205FF002D93FF /* events_verification.json */,
 				78D8CE3D23AD7FEE009E91F5 /* geocode_ip.json */,
 				78D8CE3B23AD78A1009E91F5 /* geocode.json */,
@@ -707,14 +707,14 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				966D8860288F7404008C0D00 /* custom_event.json in Resources */,
+				966D8860288F7404008C0D00 /* conversion_event.json in Resources */,
 				DD4D4D2523E648D000D36C1D /* search_autocomplete.json in Resources */,
 				DD5E35E1238205FF002D93FF /* events_verification.json in Resources */,
 				96A0AC2728A4066D00B41D40 /* search_places_chain_metadata.json in Resources */,
 				53B3B26B23EE41B400080818 /* context.json in Resources */,
 				78D8CE3C23AD78A1009E91F5 /* geocode.json in Resources */,
 				DE1E7644239724FD006F34A1 /* search_geofences.json in Resources */,
-				968C839928A6D8350030103E /* custom_event_nil_event.json in Resources */,
+				968C839928A6D8350030103E /* conversion_event_nil_event.json in Resources */,
 				DD4D4D2723E648FF00D36C1D /* route_distance.json in Resources */,
 				78D8CE3E23AD7FEE009E91F5 /* geocode_ip.json in Resources */,
 				DD5E35E323820796002D93FF /* search_places.json in Resources */,
