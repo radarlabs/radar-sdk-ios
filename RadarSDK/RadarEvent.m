@@ -304,7 +304,7 @@
                               actualCreatedAt:actualCreatedAt
                                          live:live
                                          type:type
-                                   conversionType:conversionType
+                               conversionType:conversionType
                                      geofence:geofence
                                         place:place
                                        region:region

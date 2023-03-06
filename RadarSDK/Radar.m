@@ -358,7 +358,7 @@
                     completionHandler(status, nil);
                 }];
             }
-            
+
             return;
         }
         
@@ -1042,7 +1042,7 @@
     }
     
     [Radar logConversionWithType:@"app_open" metadata:nil completionHandler:^(RadarStatus status, RadarEvent * _Nullable event) {
-        NSString *message = [NSString stringWithFormat:@"Custom event type = app_open: status = %@; event = %@", [Radar stringForStatus:status], event];
+        NSString *message = [NSString stringWithFormat:@"Conversion type = app_open: status = %@; event = %@", [Radar stringForStatus:status], event];
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:message];
     }];
 }

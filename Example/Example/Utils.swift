@@ -37,7 +37,7 @@ class Utils {
         case .userExitedRegionCountry:
             return "Exited country \(event.region!.name) (\(event.region!.code)) with \(confidenceStr)"
         case .conversion:
-            return "Received conversion event of type \(event.conversionType)"
+            return "Received conversion event of type \(event.conversionType!)"
         default:
             return "Unknown"
         }

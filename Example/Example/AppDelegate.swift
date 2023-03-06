@@ -22,7 +22,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         self.requestLocationPermissions()
 
         // Replace with a valid test publishable key
-        Radar.initialize(publishableKey: "prj_test_pk_0000000000000000000000000000000000000000")
+        Radar.initialize(publishableKey: "prj_test_pk_45454a5f7c6d931ff3e49bbb87dad0e362e77ac4")
         Radar.setDelegate(self)
 
         if UIApplication.shared.applicationState != .background {
@@ -134,9 +134,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             print("Matrix: status = \(Radar.stringForStatus(status)); matrix[0][0].duration.text = \(String(describing: matrix?.routeBetween(originIndex: 0, destinationIndex: 0)?.duration.text)); matrix[0][1].duration.text = \(String(describing: matrix?.routeBetween(originIndex: 0, destinationIndex: 1)?.duration.text)); matrix[1][0].duration.text = \(String(describing: matrix?.routeBetween(originIndex: 1, destinationIndex: 0)?.duration.text)); matrix[1][1].duration.text = \(String(describing: matrix?.routeBetween(originIndex: 1, destinationIndex: 1)?.duration.text))")
         }
 
-        Radar.logConversion(name: "conversion_event", metadata: ["data": "test"]) { (status, event) in
-            if event.type == .conversion {
-                print("Conversion type: \(event.conversionType!)")
+        Radar.logConversion(type: "conversion_event", metadata: ["data": "test"]) { (status, event) in
+            if let conversionEvent = event, conversionEvent.type == .conversion {
+                print("Conversion type: \(conversionEvent.conversionType!)")
             }
 
             print("Log Conversion: status = \(Radar.stringForStatus(status)); event = \(String(describing: event))")
