@@ -636,6 +636,40 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     [self waitForExpectations:@[exp] timeout:10.0];
 }
 
+- (void)test_Radar_logConversion_revenue {
+    self.apiHelperMock.mockStatus = RadarStatusSuccess;
+    self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusAuthorizedWhenInUse;
+    self.locationManagerMock.mockLocation = [[CLLocation alloc] initWithCoordinate:CLLocationCoordinate2DMake(40.78382, -73.97536)
+                                                                          altitude:-1
+                                                                horizontalAccuracy:65
+                                                                  verticalAccuracy:-1
+                                                                         timestamp:[NSDate new]];
+    [self.apiHelperMock setMockResponse:[RadarTestUtils jsonDictionaryFromResource:@"track"]
+                               forMethod:@"https://api.radar.io/v1/track"];
+    [self.apiHelperMock setMockResponse:[RadarTestUtils jsonDictionaryFromResource:@"conversion_event"]
+                              forMethod:@"https://api.radar.io/v1/events"];
+
+    XCTestExpectation *exp = [self expectationWithDescription:@"logConversion"];
+
+    [Radar logConversionWithType:@"conversion4"
+                         revenue:@0.2
+                        metadata:@{@"foo": @"bar"}
+   completionHandler:^(RadarStatus status, RadarEvent *_Nullable event) {
+        XCTAssertEqual(status, RadarStatusSuccess);
+        XCTAssertNotNil(event);
+
+        XCTAssertNotNil(event);
+        NSDictionary *metadata = event.metadata;
+        XCTAssertNotNil(metadata);
+        XCTAssertTrue([metadata[@"foo"] isEqual:@"bar"]);
+        XCTAssertTrue([metadata[@"revenue"] isEqual:@0.2]);
+        [exp fulfill];
+    }
+    ];
+
+    [self waitForExpectations:@[exp] timeout:10.0];
+}
+
 - (void)test_Radar_logConversion_statusOkButEventIsNil_fails {
     self.apiHelperMock.mockStatus = RadarStatusSuccess;
     self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusAuthorizedWhenInUse;
