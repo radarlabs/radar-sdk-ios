@@ -121,7 +121,7 @@ typedef NS_ENUM(NSInteger, RadarEventVerification) {
 @property (assign, nonatomic, readonly) RadarEventType type;
 
 /**
- The type of the conversion event. This will only be set if the `type` is `RadarEventTypeConversion`.
+ The name of the conversion event. This will only be set if the `type` is `RadarEventTypeConversion`.
  */
 @property (nullable, copy, nonatomic, readonly) NSString *conversionName;
 
