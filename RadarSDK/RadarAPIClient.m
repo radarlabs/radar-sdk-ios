@@ -1132,7 +1132,7 @@ completionHandler:(RadarConfigAPICompletionHandler _Nonnull)completionHandler {
                     }];
 }
 
-- (void)sendEvent:(NSString *)conversionType
+- (void)sendEvent:(NSString *)conversionName
      withMetadata:(NSDictionary *_Nullable)metadata
 completionHandler:(RadarSendEventAPICompletionHandler _Nonnull)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
@@ -1146,7 +1146,7 @@ completionHandler:(RadarSendEventAPICompletionHandler _Nonnull)completionHandler
     params[@"userId"] = [RadarSettings userId];
     params[@"deviceId"] = [RadarUtils deviceId];
 
-    params[@"type"] = conversionType;
+    params[@"type"] = conversionName;
     params[@"metadata"] = metadata;
 
     NSString *host = [RadarSettings host];

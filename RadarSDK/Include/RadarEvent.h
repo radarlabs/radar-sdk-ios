@@ -24,7 +24,7 @@ typedef NS_ENUM(NSInteger, RadarEventType) {
     /// Unknown
     RadarEventTypeUnknown NS_SWIFT_NAME(unknown),
     // A conversion type, created by calling `Radar.sendEvent()`. The type value
-    // will be assigned to the `conversionType` property.
+    // will be assigned to the `conversionName` property.
     RadarEventTypeConversion NS_SWIFT_NAME(conversion),
     /// `user.entered_geofence`
     RadarEventTypeUserEnteredGeofence NS_SWIFT_NAME(userEnteredGeofence),
@@ -123,7 +123,7 @@ typedef NS_ENUM(NSInteger, RadarEventVerification) {
 /**
  The type of the conversion event. This will only be set if the `type` is `RadarEventTypeConversion`.
  */
-@property (nullable, copy, nonatomic, readonly) NSString *conversionType;
+@property (nullable, copy, nonatomic, readonly) NSString *conversionName;
 
 /**
  The geofence for which the event was generated. May be `nil` for non-geofence events.

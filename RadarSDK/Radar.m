@@ -350,10 +350,10 @@
     [[RadarAPIClient sharedInstance] verifyEventId:eventId verification:RadarEventVerificationReject verifiedPlaceId:nil];
 }
 
-+ (void)sendLogConversionRequestWithType:(NSString * _Nonnull) type
++ (void)sendLogConversionRequestWithName:(NSString * _Nonnull) name
                                 metadata:(NSDictionary * _Nullable) metadata
                        completionHandler:(RadarLogConversionCompletionHandler) completionHandler {
-    [[RadarAPIClient sharedInstance] sendEvent:type withMetadata:metadata completionHandler:^(RadarStatus status, NSDictionary * _Nullable res, RadarEvent * _Nullable event) {
+    [[RadarAPIClient sharedInstance] sendEvent:name withMetadata:metadata completionHandler:^(RadarStatus status, NSDictionary * _Nullable res, RadarEvent * _Nullable event) {
         if (status != RadarStatusSuccess) {
             if (completionHandler) {
                 [RadarUtils runOnMainThread:^{
@@ -372,7 +372,7 @@
     }];
 }
 
-+ (void)logConversionWithType:(NSString *)type
++ (void)logConversionWithName:(NSString *)name
                      metadata:(NSDictionary *_Nullable)metadata
             completionHandler:(RadarLogConversionCompletionHandler)completionHandler {
     NSTimeInterval lastTrackedTimeInterval = [[NSDate date] timeIntervalSinceDate:[RadarSettings lastTrackedTime]];
@@ -380,7 +380,7 @@
 
     CLAuthorizationStatus authorizationStatus = [[RadarLocationManager sharedInstance].permissionsHelper locationAuthorizationStatus];
     if (authorizationStatus == kCLAuthorizationStatusDenied || isLastTrackRecent) {
-        [self sendLogConversionRequestWithType:type metadata:metadata completionHandler:completionHandler];
+        [self sendLogConversionRequestWithName:name metadata:metadata completionHandler:completionHandler];
         
         return;
     }
@@ -396,11 +396,11 @@
             return;
         }
 
-        [self sendLogConversionRequestWithType:type metadata:metadata completionHandler:completionHandler];
+        [self sendLogConversionRequestWithName:name metadata:metadata completionHandler:completionHandler];
     }];
 }
 
-+ (void)logConversionWithType:(NSString *)type
++ (void)logConversionWithName:(NSString *)name
                       revenue:(NSNumber *)revenue
                      metadata:(NSDictionary * _Nullable)metadata
             completionHandler:(RadarLogConversionCompletionHandler)completionHandler {
@@ -408,7 +408,7 @@
     
     [mutableMetadata setValue:revenue forKey:@"revenue"];
     
-    [self logConversionWithType:type metadata:mutableMetadata completionHandler:completionHandler];
+    [self logConversionWithName:name metadata:mutableMetadata completionHandler:completionHandler];
 }
 
 #pragma mark - Trips
@@ -1044,8 +1044,8 @@
         }];
     }
     
-    [Radar logConversionWithType:@"app_open" metadata:nil completionHandler:^(RadarStatus status, RadarEvent * _Nullable event) {
-        NSString *message = [NSString stringWithFormat:@"Conversion type = app_open: status = %@; event = %@", [Radar stringForStatus:status], event];
+    [Radar logConversionWithName:@"app_open" metadata:nil completionHandler:^(RadarStatus status, RadarEvent * _Nullable event) {
+        NSString *message = [NSString stringWithFormat:@"Conversion name = %@: status = %@; event = %@", event.conversionName, [Radar stringForStatus:status], event];
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:message];
     }];
 }

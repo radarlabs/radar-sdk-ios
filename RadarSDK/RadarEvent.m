@@ -43,7 +43,7 @@
                      actualCreatedAt:(NSDate *)actualCreatedAt
                                 live:(BOOL)live
                                 type:(RadarEventType)type
-                      conversionType:(NSString *)conversionType
+                      conversionName:(NSString *)conversionName
                             geofence:(RadarGeofence *)geofence
                                place:(RadarPlace *)place
                               region:(RadarRegion *)region
@@ -63,7 +63,7 @@
         _actualCreatedAt = actualCreatedAt;
         _live = live;
         _type = type;
-        _conversionType = conversionType;
+        _conversionName = conversionName;
         _geofence = geofence;
         _place = place;
         _region = region;
@@ -92,7 +92,7 @@
     NSDate *actualCreatedAt;
     BOOL live = NO;
     RadarEventType type = RadarEventTypeUnknown;
-    NSString *conversionType;
+    NSString *conversionName;
     RadarGeofence *geofence;
     RadarPlace *place;
     RadarRegion *region;
@@ -173,7 +173,7 @@
             type = RadarEventTypeUserArrivedAtTripDestination;
         } else {
             type = RadarEventTypeConversion;
-            conversionType = typeStr;
+            conversionName = typeStr;
         }
     }
 
@@ -304,7 +304,7 @@
                               actualCreatedAt:actualCreatedAt
                                          live:live
                                          type:type
-                               conversionType:conversionType
+                               conversionName:conversionName
                                      geofence:geofence
                                         place:place
                                        region:region

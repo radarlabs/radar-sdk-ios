@@ -485,7 +485,7 @@ typedef void(^_Nonnull RadarLogConversionCompletionHandler)(RadarStatus status, 
 
  @see https://radar.com/documentation/api#send-a-custom-event
  */
-+ (void)logConversionWithType:(NSString *)type
++ (void)logConversionWithName:(NSString *)name
                      metadata:(NSDictionary *_Nullable)metadata
             completionHandler:(RadarLogConversionCompletionHandler)completionHandler NS_SWIFT_NAME(logConversion(type:metadata:completionHandler:));
 
@@ -499,7 +499,7 @@ typedef void(^_Nonnull RadarLogConversionCompletionHandler)(RadarStatus status, 
 
  @see https://radar.com/documentation/api#send-a-custom-event
  */
-+ (void)logConversionWithType:(NSString *)type
++ (void)logConversionWithName:(NSString *)name
                       revenue:(NSNumber *)revenue
                      metadata:(NSDictionary *_Nullable)metadata
             completionHandler:(RadarLogConversionCompletionHandler)completionHandler NS_SWIFT_NAME(logConversion(type:revenue:metadata:completionHandler:));

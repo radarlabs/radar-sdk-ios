@@ -136,7 +136,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         Radar.logConversion(type: "conversion_event", metadata: ["data": "test"]) { (status, event) in
             if let conversionEvent = event, conversionEvent.type == .conversion {
-                print("Conversion type: \(conversionEvent.conversionType!)")
+                print("Conversion name: \(conversionEvent.conversionName!)")
             }
 
             print("Log Conversion: status = \(Radar.stringForStatus(status)); event = \(String(describing: event))")

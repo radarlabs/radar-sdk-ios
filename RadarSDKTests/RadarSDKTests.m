@@ -619,7 +619,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 
     XCTestExpectation *exp = [self expectationWithDescription:@"logConversion"];
 
-    [Radar logConversionWithType:@"conversion4"
+    [Radar logConversionWithName:@"conversion4"
         metadata:@{@"foo": @"bar"}
    completionHandler:^(RadarStatus status, RadarEvent *_Nullable event) {
         XCTAssertEqual(status, RadarStatusSuccess);
@@ -651,7 +651,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 
     XCTestExpectation *exp = [self expectationWithDescription:@"logConversion"];
 
-    [Radar logConversionWithType:@"conversion4"
+    [Radar logConversionWithName:@"conversion4"
                          revenue:@0.2
                         metadata:@{@"foo": @"bar"}
    completionHandler:^(RadarStatus status, RadarEvent *_Nullable event) {
@@ -685,7 +685,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 
     XCTestExpectation *exp = [self expectationWithDescription:@"logConversion"];
 
-    [Radar logConversionWithType:@"conversion4"
+    [Radar logConversionWithName:@"conversion4"
         metadata:nil
    completionHandler:^(RadarStatus status, RadarEvent *_Nullable event) {
         XCTAssertEqual(status, RadarStatusErrorServer);
