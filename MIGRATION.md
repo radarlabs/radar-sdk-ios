@@ -1,5 +1,28 @@
 # Migration guides
 
+## 3.6.0 to 3.6.x
+- Custom events have been renamed to conversions.
+      - `Radar.sendEvent(customType:metadata:completionHandler:)` is now `Radar.logConversion(name:metadata:completionHandler)`.
+      - `Radar.logConversion(name:revenue:metadata:callback:)` has been added.
+      - `Radar.sendEvent(customType:metadata:location:callback:)` has been removed.
+      - `RadarSendEventCompletionHandler(status, location, events, user)` is now `RadarLogConversionCompletionHandler(status, event)`.
+            - `location` and `user` are no longer available, and only the conversion event is returned as `event` instead of a coalesced list of events.
+      - On `RadarEvent`, `customType` is now `conversionName`, and `RadarEventType.custom` is now `RadarEventType.conversion`.
+
+```swift
+// 3.6.x
+let metadata = ["foo": "bar"]
+
+Radar.logConversion(name: "conversion_event", metadata: metadata) { (status, event) in
+    let conversionName = event?.conversionName // should be "conversion_event"
+    let conversionType = event?.type // should be RadarEventType.conversion
+}
+
+Radar.logConversion(name: "conversion_with_revenue", revenue: 0.2, metadata: metadata) { (status, event) in
+    let revenue = event?.metadata?["revenue"] // should be 0.2
+}
+```
+
 ## 3.1.x to 3.2.x
 
 - The SDK is now distributed as a `.xcframework` file instead of a `.framework` file.
