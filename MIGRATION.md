@@ -1,6 +1,6 @@
 # Migration guides
 
-## 3.6.0 to 3.6.x
+## 3.5.12 to 3.5.13
 - Custom events have been renamed to conversions.
       - `Radar.sendEvent(customType:metadata:completionHandler:)` is now `Radar.logConversion(name:metadata:completionHandler)`.
       - `Radar.logConversion(name:revenue:metadata:callback:)` has been added.
@@ -10,7 +10,7 @@
       - On `RadarEvent`, `customType` is now `conversionName`, and `RadarEventType.custom` is now `RadarEventType.conversion`.
 
 ```swift
-// 3.6.x
+// 3.5.13
 let metadata = ["foo": "bar"]
 
 Radar.logConversion(name: "conversion_event", metadata: metadata) { (status, event) in
