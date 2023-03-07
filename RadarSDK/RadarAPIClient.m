@@ -260,40 +260,22 @@
     }
     
     NSString *host = verified ? [RadarSettings verifiedHost] : [RadarSettings host];
-    NSString *url;
+    NSString *url = [NSString stringWithFormat:@"%@/v1/track", host];
     
     NSDictionary *headers = [RadarAPIClient headersWithPublishableKey:publishableKey];
     
     NSArray<RadarReplay *> *replays = [[RadarReplayBuffer sharedInstance] flushableReplays];
     NSUInteger replayCount = replays.count;
-   
-    // create a copy of params that we can use to write to the buffer in case of request failure
-    NSMutableDictionary *bufferParams = [params mutableCopy];
-    bufferParams[@"replayed"] = @(YES);
-    bufferParams[@"updatedAtMs"] = @(nowMs);
-    // remove the updatedAtMsDiff key because for replays we want to rely on the updatedAtMs key for the time instead
-    [bufferParams removeObjectForKey:@"updatedAtMsDiff"];
-    
-    NSMutableDictionary *requestParams = [NSMutableDictionary new];
+    NSMutableDictionary *requestParams = [params mutableCopy];
 
     BOOL replaying = options.replay == RadarTrackingOptionsReplayAll && replayCount > 0;
-    
-    if (verified) {
-        url = [NSString stringWithFormat:@"%@/v1/track", host];
-        
-        requestParams = [params mutableCopy];
-    } else if (replaying) {
+    if (replaying) {
         NSMutableArray *replaysArray = [RadarReplay arrayForReplays:replays];
         [replaysArray addObject:params];
         
         url = [NSString stringWithFormat:@"%@/v1/track/replay", host];
         
         requestParams[@"replays"] = replaysArray;
-    } else {
-        url = [NSString stringWithFormat:@"%@/v1/track", host];
-        
-        // if we're not sending up replays, the requestParams are just the ordinary params
-        requestParams = [params mutableCopy];
     }
     
     url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
@@ -308,6 +290,13 @@
                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
         if (status != RadarStatusSuccess || !res) {
             if (options.replay == RadarTrackingOptionsReplayAll) {
+                // create a copy of params that we can use to write to the buffer in case of request failure
+                NSMutableDictionary *bufferParams = [params mutableCopy];
+                bufferParams[@"replayed"] = @(YES);
+                bufferParams[@"updatedAtMs"] = @(nowMs);
+                // remove the updatedAtMsDiff key because for replays we want to rely on the updatedAtMs key for the time instead
+                [bufferParams removeObjectForKey:@"updatedAtMsDiff"];
+                
                 [[RadarReplayBuffer sharedInstance] writeNewReplayToBuffer:bufferParams];
             } else if (options.replay == RadarTrackingOptionsReplayStops && stopped &&
                        !(source == RadarLocationSourceForegroundLocation || source == RadarLocationSourceManualLocation)) {

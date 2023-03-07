@@ -73,6 +73,7 @@
                 configuration.timeoutIntervalForRequest = 25;
                 configuration.timeoutIntervalForResource = 25;
             } else {
+                // avoid SSL or credential caching
                 configuration = [NSURLSessionConfiguration ephemeralSessionConfiguration];
                 configuration.timeoutIntervalForRequest = 10;
                 configuration.timeoutIntervalForResource = 10;
@@ -81,7 +82,7 @@
             NSDate *requestStart = [NSDate date];
 
             void (^dataTaskCompletionHandler)(NSData *data, NSURLResponse *response, NSError *error) = ^(NSData *data, NSURLResponse *response, NSError *error) {
-                // Calculate request latency (s), multiplying by -1 because timeIntervalSinceNow returns a negative value
+                // calculate request latencies, multiplying by -1 because timeIntervalSinceNow returns a negative value
                 NSTimeInterval latency = [requestStart timeIntervalSinceNow] * -1;
 
                 if (error) {
