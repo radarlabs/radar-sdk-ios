@@ -319,13 +319,8 @@
             return completionHandler(status, nil, nil, nil, nil, nil);
         }
 
-        if (options.replay == RadarTrackingOptionsReplayAll) {
-            // clear buffer
-            [[RadarReplayBuffer sharedInstance] clearBuffer];
-        } else {
-            [RadarState setLastFailedStoppedLocation:nil];
-        }
-        
+        [[RadarReplayBuffer sharedInstance] clearBuffer];
+        [RadarState setLastFailedStoppedLocation:nil];
         [Radar flushLogs];
         
         RadarConfig *config = [RadarConfig fromDictionary:res];

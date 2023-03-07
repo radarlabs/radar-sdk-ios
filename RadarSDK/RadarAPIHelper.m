@@ -24,8 +24,7 @@
     self = [super init];
     if (self) {
         _queue = dispatch_queue_create("io.radar.api", DISPATCH_QUEUE_SERIAL);
-        _semaphore = dispatch_semaphore_create(0);
-        _wait = NO;
+        _semaphore = dispatch_semaphore_create(1);
     }
     return self;
 }
@@ -39,11 +38,10 @@
           extendedTimeout:(BOOL)extendedTimeout
         completionHandler:(RadarAPICompletionHandler)completionHandler {
     dispatch_async(self.queue, ^{
-        if (self.wait) {
+        if (sleep) {
             dispatch_semaphore_wait(self.semaphore, DISPATCH_TIME_FOREVER);
         }
 
-        self.wait = YES;
 
         NSMutableURLRequest *req = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:url]];
         req.HTTPMethod = method;
@@ -80,15 +78,22 @@
                 configuration.timeoutIntervalForResource = 10;
             }
 
+            NSDate *requestStart = [NSDate date];
+
             void (^dataTaskCompletionHandler)(NSData *data, NSURLResponse *response, NSError *error) = ^(NSData *data, NSURLResponse *response, NSError *error) {
+                // Calculate request latency (s), multiplying by -1 because timeIntervalSinceNow returns a negative value
+                NSTimeInterval latency = [requestStart timeIntervalSinceNow] * -1;
+
                 if (error) {
                     dispatch_async(dispatch_get_main_queue(), ^{
                         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelError message:[NSString stringWithFormat:@"Received network error | error = %@", error]];
                         completionHandler(RadarStatusErrorNetwork, nil);
                     });
 
-                    self.wait = NO;
-                    dispatch_semaphore_signal(self.semaphore);
+                    if (sleep) {
+                        [NSThread sleepForTimeInterval:1];
+                        dispatch_semaphore_signal(self.semaphore);
+                    }
 
                     return;
                 }
@@ -100,8 +105,10 @@
                         completionHandler(RadarStatusErrorServer, nil);
                     });
 
-                    self.wait = NO;
-                    dispatch_semaphore_signal(self.semaphore);
+                    if (sleep) {
+                        [NSThread sleepForTimeInterval:1];
+                        dispatch_semaphore_signal(self.semaphore);
+                    }
 
                     return;
                 }
@@ -131,9 +138,16 @@
 
                     res = (NSDictionary *)resObj;
 
-                    [[RadarLogger sharedInstance]
-                        logWithLevel:RadarLogLevelDebug
-                             message:[NSString stringWithFormat:@"📍 Radar API response | method = %@; url = %@; statusCode = %ld; res = %@", method, url, (long)statusCode, res]];
+                    if (params && [params objectForKey:@"replays"]) {
+                        NSArray *replays = [params objectForKey:@"replays"];
+                        [[RadarLogger sharedInstance]
+                            logWithLevel:RadarLogLevelDebug
+                                 message:[NSString stringWithFormat:@"📍 Radar API response | method = %@; url = %@; statusCode = %ld; res = %@; latency = %f; replays = %lu", method, url, (long)statusCode, res, latency, (unsigned long)replays.count]];
+                    } else {
+                        [[RadarLogger sharedInstance]
+                            logWithLevel:RadarLogLevelDebug
+                                 message:[NSString stringWithFormat:@"📍 Radar API response | method = %@; url = %@; statusCode = %ld; res = %@; latency = %f", method, url, (long)statusCode, res, latency]];
+                    }
                 }
 
                 dispatch_async(dispatch_get_main_queue(), ^{
@@ -142,10 +156,8 @@
 
                 if (sleep) {
                     [NSThread sleepForTimeInterval:1];
+                    dispatch_semaphore_signal(self.semaphore);
                 }
-
-                self.wait = NO;
-                dispatch_semaphore_signal(self.semaphore);
             };
 
             NSURLSessionDataTask *task = [[NSURLSession sessionWithConfiguration:configuration] dataTaskWithRequest:req completionHandler:dataTaskCompletionHandler];
