@@ -259,6 +259,12 @@
         params[@"attestationError"] = attestationError;
     }
     
+    if (anonymous) {
+        [[RadarAPIClient sharedInstance] getConfigForUsage:@"track" verified:verified completionHandler:^(RadarStatus status, RadarConfig *_Nullable config) {
+            
+        }];
+    }
+    
     NSString *host = verified ? [RadarSettings verifiedHost] : [RadarSettings host];
     NSString *url = [NSString stringWithFormat:@"%@/v1/track", host];
     
