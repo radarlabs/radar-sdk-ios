@@ -487,7 +487,7 @@ typedef void(^_Nonnull RadarLogConversionCompletionHandler)(RadarStatus status, 
  */
 + (void)logConversionWithName:(NSString *)name
                      metadata:(NSDictionary *_Nullable)metadata
-            completionHandler:(RadarLogConversionCompletionHandler)completionHandler NS_SWIFT_NAME(logConversion(type:metadata:completionHandler:));
+            completionHandler:(RadarLogConversionCompletionHandler)completionHandler NS_SWIFT_NAME(logConversion(name:metadata:completionHandler:));
 
 /**
  Logs a conversion with revenue
@@ -502,7 +502,7 @@ typedef void(^_Nonnull RadarLogConversionCompletionHandler)(RadarStatus status, 
 + (void)logConversionWithName:(NSString *)name
                       revenue:(NSNumber *)revenue
                      metadata:(NSDictionary *_Nullable)metadata
-            completionHandler:(RadarLogConversionCompletionHandler)completionHandler NS_SWIFT_NAME(logConversion(type:revenue:metadata:completionHandler:));
+            completionHandler:(RadarLogConversionCompletionHandler)completionHandler NS_SWIFT_NAME(logConversion(name:revenue:metadata:completionHandler:));
 
 #pragma mark - Trips
 
