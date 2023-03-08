@@ -69,8 +69,8 @@
 		0107AB2F262201FB008AB52F /* RadarUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = DD236D0423099B8400EB88F9 /* RadarUtils.m */; };
 		0107AB7A2622061A008AB52F /* RadarSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0107A9E82621FFB9008AB52F /* RadarSDK.framework */; };
 		0114F058284EFDB700ADA4E4 /* RadarRouteMode.h in Headers */ = {isa = PBXBuildFile; fileRef = 0114F057284EFDB700ADA4E4 /* RadarRouteMode.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		01DDC7C729FC387400C0D039 /* RadarNotificationHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 01DDC7C529FC387400C0D039 /* RadarNotificationHelper.m */; };
-		01DDC7C829FC387400C0D039 /* RadarNotificationHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = 01DDC7C629FC387400C0D039 /* RadarNotificationHelper.h */; };
+		015C53AD29B8E8BA004F53A6 /* RadarVerificationManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 015C53AB29B8E8BA004F53A6 /* RadarVerificationManager.h */; };
+		015C53AE29B8E8BA004F53A6 /* RadarVerificationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 015C53AC29B8E8BA004F53A6 /* RadarVerificationManager.m */; };
 		01F99CFB2965C182004E8CF3 /* RadarConfig.h in Headers */ = {isa = PBXBuildFile; fileRef = 01F99CFA2965C182004E8CF3 /* RadarConfig.h */; };
 		01F99CFD2965C1C4004E8CF3 /* RadarConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = 01F99CFC2965C1C4004E8CF3 /* RadarConfig.m */; };
 		532FC304277A790600989279 /* Radar+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 532FC303277A783900989279 /* Radar+Internal.h */; };
@@ -462,6 +462,8 @@
 				DD8CCDF7246872360011690D /* RadarTripOptions.m */,
 				DD236D0323099B8400EB88F9 /* RadarUtils.h */,
 				DD236D0423099B8400EB88F9 /* RadarUtils.m */,
+				015C53AB29B8E8BA004F53A6 /* RadarVerificationManager.h */,
+				015C53AC29B8E8BA004F53A6 /* RadarVerificationManager.m */,
 				DD27CB7D235D13F000299FEC /* Models */,
 				53CCD781275E576B00F79CC8 /* Util */,
 			);
@@ -589,6 +591,7 @@
 				96A5A10527AD9F7F007B960B /* RadarTrackingOptions.h in Headers */,
 				96A5A10927AD9F7F007B960B /* RadarContext.h in Headers */,
 				0107AA1226220049008AB52F /* RadarCollectionAdditions.h in Headers */,
+				015C53AD29B8E8BA004F53A6 /* RadarVerificationManager.h in Headers */,
 				0107AA1C26220055008AB52F /* RadarPermissionsHelper.h in Headers */,
 				96A5A11227AD9F7F007B960B /* Radar.h in Headers */,
 				96A5A10827AD9F7F007B960B /* RadarSegment.h in Headers */,
@@ -769,6 +772,7 @@
 				0107AB0B262201D1008AB52F /* RadarAPIHelper.m in Sources */,
 				9683FD6527B36C26009EBB6B /* RadarMeta.m in Sources */,
 				0107AA9B26220153008AB52F /* RadarContext.m in Sources */,
+				015C53AE29B8E8BA004F53A6 /* RadarVerificationManager.m in Sources */,
 				0107AB23262201EC008AB52F /* RadarSettings.m in Sources */,
 				0107AAAA26220165008AB52F /* RadarGeofenceGeometry.m in Sources */,
 				0107AAEC262201A6008AB52F /* RadarTrip.m in Sources */,
