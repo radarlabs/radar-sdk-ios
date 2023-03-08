@@ -9,6 +9,7 @@
 
 #import "RadarLogger.h"
 #import "RadarSettings.h"
+#import "RadarUtils.h"
 
 @interface RadarAPIHelper ()
 
@@ -48,13 +49,16 @@
         NSMutableURLRequest *req = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:url]];
         req.HTTPMethod = method;
 
+        NSString * paramJsonStr = [RadarUtils dictionaryToJson:params];
+        NSString * headersJsonStr = [RadarUtils dictionaryToJson:headers];
+
         if (logPayload) {
             [[RadarLogger sharedInstance]
                 logWithLevel:RadarLogLevelDebug
-                     message:[NSString stringWithFormat:@"📍 Radar API request | method = %@; url = %@; headers = %@; params = %@", method, url, headers, params]];
+                     message:[NSString stringWithFormat:@"📍 Radar API request | method = %@; url = %@; headers = %@; params = %@", method, url, headersJsonStr, paramJsonStr]];
         } else {
             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
-                                               message:[NSString stringWithFormat:@"📍 Radar API request | method = %@; url = %@; headers = %@", method, url, headers]];
+                                               message:[NSString stringWithFormat:@"📍 Radar API request | method = %@; url = %@; headers = %@", method, url, headersJsonStr]];
         }
 
         @try {
@@ -128,16 +132,17 @@
                     }
 
                     res = (NSDictionary *)resObj;
+                    NSString * resJsonStr = [RadarUtils dictionaryToJson:res];
 
                     if (status == RadarStatusSuccess) {
                         [[RadarLogger sharedInstance]
                             logWithLevel:RadarLogLevelDebug
-                                message:[NSString stringWithFormat:@"📍 Radar API response | method = %@; url = %@; statusCode = %ld; res = %@", method, url, (long)statusCode, res]];
+                                message:[NSString stringWithFormat:@"📍 Radar API response | method = %@; url = %@; statusCode = %ld; res = %@", method, url, (long)statusCode, resJsonStr]];
                     } else {
                         [[RadarLogger sharedInstance]
                             logWithLevel:RadarLogLevelError
                                 type:RadarLogTypeSDKError
-                                message:[NSString stringWithFormat:@"📍 Radar API response | method = %@; url = %@; statusCode = %ld; res = %@", method, url, (long)statusCode, res]];
+                                message:[NSString stringWithFormat:@"📍 Radar API response | method = %@; url = %@; statusCode = %ld; res = %@", method, url, (long)statusCode, resJsonStr]];
                     }
                 }
 
