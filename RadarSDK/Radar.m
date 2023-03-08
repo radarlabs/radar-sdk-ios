@@ -93,10 +93,6 @@
     return [RadarSettings metadata];
 }
 
-+ (void)setAdIdEnabled:(BOOL)enabled {
-    [RadarSettings setAdIdEnabled:enabled];
-}
-
 + (void)setAnonymousTrackingEnabled:(BOOL)enabled {
     [RadarSettings setAnonymousTrackingEnabled:enabled];
 }

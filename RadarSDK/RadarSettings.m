@@ -20,7 +20,6 @@ static NSString *const kUserId = @"radar-userId";
 static NSString *const kDescription = @"radar-description";
 static NSString *const kMetadata = @"radar-metadata";
 static NSString *const kAnonymous = @"radar-anonymous";
-static NSString *const kAdIdEnabled = @"radar-adIdEnabled";
 static NSString *const kTracking = @"radar-tracking";
 static NSString *const kTrackingOptions = @"radar-trackingOptions";
 static NSString *const kPreviousTrackingOptions = @"radar-previousTrackingOptions";
@@ -109,14 +108,6 @@ static NSString *const kDefaultVerifiedHost = @"https://api-verified.radar.io";
 
 + (void)setAnonymousTrackingEnabled:(BOOL)enabled {
     [[NSUserDefaults standardUserDefaults] setBool:enabled forKey:kAnonymous];
-}
-
-+ (BOOL)adIdEnabled {
-    return [[NSUserDefaults standardUserDefaults] boolForKey:kAdIdEnabled];
-}
-
-+ (void)setAdIdEnabled:(BOOL)enabled {
-    [[NSUserDefaults standardUserDefaults] setBool:enabled forKey:kAdIdEnabled];
 }
 
 + (BOOL)tracking {

@@ -320,13 +320,6 @@ typedef void (^_Nonnull RadarSendEventCompletionHandler)(RadarStatus status, CLL
  */
 + (void)setAnonymousTrackingEnabled:(BOOL)enabled;
 
-/**
- Enables `adId` (IDFA) collection. Disabled by default.
-
- @param enabled A boolean indicating whether `adId` should be collected.
- */
-+ (void)setAdIdEnabled:(BOOL)enabled;
-
 #pragma mark - Get Location
 
 /**
