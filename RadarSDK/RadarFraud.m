@@ -9,7 +9,13 @@
 
 @implementation RadarFraud
 
-- (instancetype _Nonnull)initWithPassed:(BOOL)passed bypassed:(BOOL)bypassed verified:(BOOL)verified proxy:(BOOL)proxy mocked:(BOOL)mocked compromised:(BOOL)compromised jumped:(BOOL)jumped {
+- (instancetype _Nonnull)initWithPassed:(BOOL)passed
+                               bypassed:(BOOL)bypassed
+                               verified:(BOOL)verified
+                                  proxy:(BOOL)proxy
+                                 mocked:(BOOL)mocked
+                            compromised:(BOOL)compromised
+                                 jumped:(BOOL)jumped {
     _passed = passed;
     _bypassed = bypassed;
     _verified = verified;

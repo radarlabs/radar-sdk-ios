@@ -18,7 +18,6 @@
 #import "RadarSettings.h"
 #import "RadarState.h"
 #import "RadarUtils.h"
-#import "RadarVerificationManager.h"
 
 @interface Radar ()
 
@@ -53,9 +52,11 @@
 
     [RadarSettings setPublishableKey:publishableKey];
     [[RadarLocationManager sharedInstance] updateTrackingFromInitialize];
-    [[RadarAPIClient sharedInstance] getConfigForUsage:@"initialize" verified:NO completionHandler:^(RadarStatus status, RadarConfig *config) {
-        [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
-    }];
+    [[RadarAPIClient sharedInstance] getConfigForUsage:@"initialize"
+                                              verified:NO
+                                     completionHandler:^(RadarStatus status, RadarConfig *config) {
+                                         [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
+                                     }];
 }
 
 #pragma mark - Properties
@@ -126,7 +127,6 @@
 }
 
 + (void)trackOnceWithDesiredAccuracy:(RadarTrackingOptionsDesiredAccuracy)desiredAccuracy beacons:(BOOL)beacons completionHandler:(RadarTrackCompletionHandler)completionHandler {
-
     [[RadarLocationManager sharedInstance]
         getLocationWithDesiredAccuracy:desiredAccuracy
                      completionHandler:^(RadarStatus status, CLLocation *_Nullable location, BOOL stopped) {
@@ -228,46 +228,42 @@
 
 + (void)trackVerifiedWithCompletionHandler:(RadarTrackCompletionHandler)completionHandler {
     [[RadarAPIClient sharedInstance]
-     getConfigForUsage:@"verify" verified:YES
-            completionHandler:^(RadarStatus status, RadarConfig *_Nullable config) {
-                [[RadarLocationManager sharedInstance]
-                    getLocationWithDesiredAccuracy:RadarTrackingOptionsDesiredAccuracyHigh
-                                 completionHandler:^(RadarStatus status, CLLocation *_Nullable location, BOOL stopped) {
-                                     if (status != RadarStatusSuccess) {
+        getConfigForUsage:@"verify"
+                 verified:YES
+        completionHandler:^(RadarStatus status, RadarConfig *_Nullable config) {
+            [[RadarLocationManager sharedInstance]
+                getLocationWithDesiredAccuracy:RadarTrackingOptionsDesiredAccuracyHigh
+                             completionHandler:^(RadarStatus status, CLLocation *_Nullable location, BOOL stopped) {
+                                 if (status != RadarStatusSuccess) {
+                                     if (completionHandler) {
+                                         [RadarUtils runOnMainThread:^{
+                                             completionHandler(status, nil, nil, nil);
+                                         }];
+                                     }
+
+                                     return;
+                                 }
+
+                                 [[RadarAPIClient sharedInstance]
+                                     trackWithLocation:location
+                                               stopped:RadarState.stopped
+                                            foreground:[RadarUtils foreground]
+                                                source:RadarLocationSourceForegroundLocation
+                                              replayed:NO
+                                               beacons:nil
+                                              verified:YES
+                                     attestationString:nil
+                                      attestationError:nil
+                                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user,
+                                                         NSArray<RadarGeofence *> *_Nullable nearbyGeofences, RadarConfig *_Nullable config) {
                                          if (completionHandler) {
                                              [RadarUtils runOnMainThread:^{
                                                  completionHandler(status, nil, nil, nil);
                                              }];
                                          }
-
-                                         return;
-                                     }
-
-                                     [[RadarVerificationManager sharedInstance]
-                                         getAttestationWithNonce:config.nonce
-                                               completionHandler:^(NSString *_Nullable attestationString, NSString *_Nullable attestationError) {
-                                                   [[RadarAPIClient sharedInstance]
-                                                       trackWithLocation:location
-                                                                 stopped:RadarState.stopped
-                                                              foreground:[RadarUtils foreground]
-                                                                  source:RadarLocationSourceForegroundLocation
-                                                                replayed:NO
-                                                                 beacons:nil
-                                                                verified:YES
-                                                       attestationString:attestationString
-                                                        attestationError:attestationError
-                                                       completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events,
-                                                                           RadarUser *_Nullable user, NSArray<RadarGeofence *> *_Nullable nearbyGeofences,
-                                                                           RadarConfig *_Nullable config) {
-                                                           if (completionHandler) {
-                                                               [RadarUtils runOnMainThread:^{
-                                                                   completionHandler(status, nil, nil, nil);
-                                                               }];
-                                                           }
-                                                       }];
-                                               }];
-                                 }];
-            }];
+                                     }];
+                             }];
+        }];
 }
 
 + (void)startTrackingWithOptions:(RadarTrackingOptions *)options {
@@ -1077,9 +1073,11 @@
 - (void)applicationWillEnterForeground {
     BOOL updated = [RadarSettings updateSessionId];
     if (updated) {
-        [[RadarAPIClient sharedInstance] getConfigForUsage:@"resume" verified:NO completionHandler:^(RadarStatus status, RadarConfig *_Nullable config) {
-            [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
-        }];
+        [[RadarAPIClient sharedInstance] getConfigForUsage:@"resume"
+                                                  verified:NO
+                                         completionHandler:^(RadarStatus status, RadarConfig *_Nullable config) {
+                                             [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
+                                         }];
     }
 }
 

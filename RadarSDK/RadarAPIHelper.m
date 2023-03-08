@@ -42,7 +42,6 @@
             dispatch_semaphore_wait(self.semaphore, DISPATCH_TIME_FOREVER);
         }
 
-
         NSMutableURLRequest *req = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:url]];
         req.HTTPMethod = method;
 
@@ -143,11 +142,13 @@
                         NSArray *replays = [params objectForKey:@"replays"];
                         [[RadarLogger sharedInstance]
                             logWithLevel:RadarLogLevelDebug
-                                 message:[NSString stringWithFormat:@"📍 Radar API response | method = %@; url = %@; statusCode = %ld; res = %@; latency = %f; replays = %lu", method, url, (long)statusCode, res, latency, (unsigned long)replays.count]];
+                                 message:[NSString stringWithFormat:@"📍 Radar API response | method = %@; url = %@; statusCode = %ld; res = %@; latency = %f; replays = %lu",
+                                                                    method, url, (long)statusCode, res, latency, (unsigned long)replays.count]];
                     } else {
                         [[RadarLogger sharedInstance]
                             logWithLevel:RadarLogLevelDebug
-                                 message:[NSString stringWithFormat:@"📍 Radar API response | method = %@; url = %@; statusCode = %ld; res = %@; latency = %f", method, url, (long)statusCode, res, latency]];
+                                 message:[NSString stringWithFormat:@"📍 Radar API response | method = %@; url = %@; statusCode = %ld; res = %@; latency = %f", method, url,
+                                                                    (long)statusCode, res, latency]];
                     }
                 }
 
