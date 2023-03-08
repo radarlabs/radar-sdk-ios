@@ -42,7 +42,6 @@
             dispatch_semaphore_wait(self.semaphore, DISPATCH_TIME_FOREVER);
         }
 
-
         NSMutableURLRequest *req = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:url]];
         req.HTTPMethod = method;
 
@@ -67,11 +66,14 @@
                 [req setHTTPBody:[NSJSONSerialization dataWithJSONObject:params options:0 error:NULL]];
             }
 
-            NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
+            NSURLSessionConfiguration *configuration;
             if (extendedTimeout) {
+                configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
                 configuration.timeoutIntervalForRequest = 25;
                 configuration.timeoutIntervalForResource = 25;
             } else {
+                // avoid SSL or credential caching
+                configuration = [NSURLSessionConfiguration ephemeralSessionConfiguration];
                 configuration.timeoutIntervalForRequest = 10;
                 configuration.timeoutIntervalForResource = 10;
             }
@@ -79,7 +81,7 @@
             NSDate *requestStart = [NSDate date];
 
             void (^dataTaskCompletionHandler)(NSData *data, NSURLResponse *response, NSError *error) = ^(NSData *data, NSURLResponse *response, NSError *error) {
-                // Calculate request latency (s), multiplying by -1 because timeIntervalSinceNow returns a negative value
+                // calculate request latencies, multiplying by -1 because timeIntervalSinceNow returns a negative value
                 NSTimeInterval latency = [requestStart timeIntervalSinceNow] * -1;
 
                 if (error) {
@@ -140,11 +142,13 @@
                         NSArray *replays = [params objectForKey:@"replays"];
                         [[RadarLogger sharedInstance]
                             logWithLevel:RadarLogLevelDebug
-                                 message:[NSString stringWithFormat:@"📍 Radar API response | method = %@; url = %@; statusCode = %ld; res = %@; latency = %f; replays = %lu", method, url, (long)statusCode, res, latency, (unsigned long)replays.count]];
+                                 message:[NSString stringWithFormat:@"📍 Radar API response | method = %@; url = %@; statusCode = %ld; res = %@; latency = %f; replays = %lu",
+                                                                    method, url, (long)statusCode, res, latency, (unsigned long)replays.count]];
                     } else {
                         [[RadarLogger sharedInstance]
                             logWithLevel:RadarLogLevelDebug
-                                 message:[NSString stringWithFormat:@"📍 Radar API response | method = %@; url = %@; statusCode = %ld; res = %@; latency = %f", method, url, (long)statusCode, res, latency]];
+                                 message:[NSString stringWithFormat:@"📍 Radar API response | method = %@; url = %@; statusCode = %ld; res = %@; latency = %f", method, url,
+                                                                    (long)statusCode, res, latency]];
                     }
                 }
 

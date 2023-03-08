@@ -34,10 +34,8 @@ static NSString *const kApproachingThreshold = @"approachingThreshold";
 - (instancetype)initWithExternalId:(NSString *_Nonnull)externalId
             destinationGeofenceTag:(NSString *_Nullable)destinationGeofenceTag
      destinationGeofenceExternalId:(NSString *_Nullable)destinationGeofenceExternalId
-                scheduledArrivalAt:(NSDate * _Nullable)scheduledArrivalAt {
-    self = [self initWithExternalId:externalId
-             destinationGeofenceTag:destinationGeofenceTag
-      destinationGeofenceExternalId:destinationGeofenceExternalId];
+                scheduledArrivalAt:(NSDate *_Nullable)scheduledArrivalAt {
+    self = [self initWithExternalId:externalId destinationGeofenceTag:destinationGeofenceTag destinationGeofenceExternalId:destinationGeofenceExternalId];
 
     if (self) {
         _scheduledArrivalAt = scheduledArrivalAt;
@@ -117,11 +115,8 @@ static NSString *const kApproachingThreshold = @"approachingThreshold";
             (self.destinationGeofenceExternalId != nil && options.destinationGeofenceExternalId != nil &&
              [self.destinationGeofenceExternalId isEqualToString:options.destinationGeofenceExternalId])) &&
            ((!self.scheduledArrivalAt && !options.scheduledArrivalAt) ||
-            (self.scheduledArrivalAt != nil && options.scheduledArrivalAt != nil &&
-            [self.scheduledArrivalAt isEqualToDate:options.scheduledArrivalAt])) &&
-           self.mode == options.mode &&
-            ((!self.approachingThreshold && !options.approachingThreshold) ||
-              (self.approachingThreshold == options.approachingThreshold));
+            (self.scheduledArrivalAt != nil && options.scheduledArrivalAt != nil && [self.scheduledArrivalAt isEqualToDate:options.scheduledArrivalAt])) &&
+           self.mode == options.mode && ((!self.approachingThreshold && !options.approachingThreshold) || (self.approachingThreshold == options.approachingThreshold));
 }
 
 @end

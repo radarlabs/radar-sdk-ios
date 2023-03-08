@@ -16,8 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (assign, nonatomic) RadarStatus mockStatus;
 @property (nonnull, strong, nonatomic) NSDictionary *mockResponse;
 
-- (void)setMockResponse:(NSDictionary *)response
-              forMethod:(NSString *)urlString;
+- (void)setMockResponse:(NSDictionary *)response forMethod:(NSString *)urlString;
 
 @end
 

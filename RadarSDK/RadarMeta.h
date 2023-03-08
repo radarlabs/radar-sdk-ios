@@ -9,16 +9,14 @@
 #import "RadarTrackingOptions.h"
 #import <Foundation/Foundation.h>
 
-/**
- Represents the meta block returned by a Radar API request
+NS_ASSUME_NONNULL_BEGIN
 
- @see https://radar.io/documentation/api#track
- */
 @interface RadarMeta : NSObject
 
-/**
- The tracking options returned from enabling tracking options in the Radar dashboard.
- */
 @property (nullable, strong, nonatomic, readwrite) RadarTrackingOptions *trackingOptions;
 
++ (RadarMeta *_Nullable)fromDictionary:(NSDictionary *_Nullable)dict;
+
 @end
+
+NS_ASSUME_NONNULL_END
