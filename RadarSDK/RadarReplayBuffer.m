@@ -41,7 +41,7 @@ static const int MAX_BUFFER_SIZE = 120; // one hour of updates
     }
     // add new replay to buffer
     RadarReplay *radarReplay = [[RadarReplay alloc] initWithParams:replayParams];
-    [mutableReplayBuffer addObject: radarReplay];
+    [mutableReplayBuffer addObject:radarReplay];
 }
 
 /**

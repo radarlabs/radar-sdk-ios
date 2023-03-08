@@ -123,6 +123,17 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     XCTAssertEqual(trip.status, RadarTripStatusStarted);
 }
 
+#define AssertFraudOk(fraud) [self assertFraudOk:fraud]
+- (void)assertFraudOk:(RadarFraud *)fraud {
+    XCTAssertNotNil(fraud);
+    XCTAssertTrue(fraud.passed);
+    XCTAssertTrue(fraud.bypassed);
+    XCTAssertTrue(fraud.proxy);
+    XCTAssertTrue(fraud.mocked);
+    XCTAssertTrue(fraud.compromised);
+    XCTAssertTrue(fraud.jumped);
+}
+
 #define AssertUserOk(user) [self assertUserOk:user]
 - (void)assertUserOk:(RadarUser *)user {
     XCTAssertNotNil(user);
@@ -142,9 +153,8 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     AssertSegmentsOk(user.segments);
     AssertChainsOk(user.topChains);
     XCTAssertNotEqual(user.source, RadarLocationSourceUnknown);
-    XCTAssertTrue(user.proxy);
-    XCTAssertTrue(user.mocked);
     AssertTripOk(user.trip);
+    AssertFraudOk(user.fraud);
 }
 
 #define AssertEventsOk(events) [self assertEventsOk:events]
@@ -612,10 +622,8 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
                                                                 horizontalAccuracy:65
                                                                   verticalAccuracy:-1
                                                                          timestamp:[NSDate new]];
-    [self.apiHelperMock setMockResponse:[RadarTestUtils jsonDictionaryFromResource:@"track"]
-                               forMethod:@"https://api.radar.io/v1/track"];
-    [self.apiHelperMock setMockResponse:[RadarTestUtils jsonDictionaryFromResource:@"conversion_event"]
-                              forMethod:@"https://api.radar.io/v1/events"];
+    [self.apiHelperMock setMockResponse:[RadarTestUtils jsonDictionaryFromResource:@"track"] forMethod:@"https://api.radar.io/v1/track"];
+    [self.apiHelperMock setMockResponse:[RadarTestUtils jsonDictionaryFromResource:@"conversion_event"] forMethod:@"https://api.radar.io/v1/events"];
 
     XCTestExpectation *exp = [self expectationWithDescription:@"logConversion"];
 
@@ -678,10 +686,8 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
                                                                 horizontalAccuracy:65
                                                                   verticalAccuracy:-1
                                                                          timestamp:[NSDate new]];
-    [self.apiHelperMock setMockResponse:[RadarTestUtils jsonDictionaryFromResource:@"track"]
-                              forMethod:@"https://api.radar.io/v1/track"];
-    [self.apiHelperMock setMockResponse:[RadarTestUtils jsonDictionaryFromResource:@"conversion_event_nil_event"]
-                              forMethod:@"https://api.radar.io/v1/events"];
+    [self.apiHelperMock setMockResponse:[RadarTestUtils jsonDictionaryFromResource:@"track"] forMethod:@"https://api.radar.io/v1/track"];
+    [self.apiHelperMock setMockResponse:[RadarTestUtils jsonDictionaryFromResource:@"conversion_event_nil_event"] forMethod:@"https://api.radar.io/v1/events"];
 
     XCTestExpectation *exp = [self expectationWithDescription:@"logConversion"];
 
@@ -726,26 +732,23 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     RadarTrackingOptions *originalTrackingOptions = RadarTrackingOptions.presetEfficient;
     [Radar startTrackingWithOptions:originalTrackingOptions];
 
-    RadarTripOptions *tripOptions = [[RadarTripOptions alloc]
-                                     initWithExternalId:@"testTrip"
-                                     destinationGeofenceTag:@"someTag"
-                                     destinationGeofenceExternalId:@"someId"];
+    RadarTripOptions *tripOptions = [[RadarTripOptions alloc] initWithExternalId:@"testTrip" destinationGeofenceTag:@"someTag" destinationGeofenceExternalId:@"someId"];
     RadarTrackingOptions *tripTrackingOptions = RadarTrackingOptions.presetContinuous;
     [Radar startTripWithOptions:tripOptions
                 trackingOptions:tripTrackingOptions
-              completionHandler:^(RadarStatus status, RadarTrip * _Nullable trip, NSArray<RadarEvent *> * _Nullable events) {
-        RadarTrackingOptions *previousTrackingOptions = [RadarSettings previousTrackingOptions];
-        XCTAssertTrue([previousTrackingOptions isEqual: originalTrackingOptions]);
-        RadarTrackingOptions *currentTrackingOptions = [RadarSettings trackingOptions];
-        XCTAssertTrue([currentTrackingOptions isEqual: tripTrackingOptions]);
-        [expectation fulfill];
-    }];
+              completionHandler:^(RadarStatus status, RadarTrip *_Nullable trip, NSArray<RadarEvent *> *_Nullable events) {
+                  RadarTrackingOptions *previousTrackingOptions = [RadarSettings previousTrackingOptions];
+                  XCTAssertTrue([previousTrackingOptions isEqual:originalTrackingOptions]);
+                  RadarTrackingOptions *currentTrackingOptions = [RadarSettings trackingOptions];
+                  XCTAssertTrue([currentTrackingOptions isEqual:tripTrackingOptions]);
+                  [expectation fulfill];
+              }];
 
     [self waitForExpectations:@[expectation] timeout:10];
 
     [Radar completeTrip];
     XCTAssertNil([RadarSettings previousTrackingOptions]);
-    XCTAssertTrue([[RadarSettings trackingOptions] isEqual: originalTrackingOptions]);
+    XCTAssertTrue([[RadarSettings trackingOptions] isEqual:originalTrackingOptions]);
     XCTAssertTrue(Radar.isTracking);
 }
 
@@ -757,19 +760,16 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     [RadarSettings removePreviousTrackingOptions];
     [RadarSettings removeTrackingOptions];
 
-    RadarTripOptions *tripOptions = [[RadarTripOptions alloc]
-                                     initWithExternalId:@"testTrip"
-                                     destinationGeofenceTag:@"someTag"
-                                     destinationGeofenceExternalId:@"someId"];
+    RadarTripOptions *tripOptions = [[RadarTripOptions alloc] initWithExternalId:@"testTrip" destinationGeofenceTag:@"someTag" destinationGeofenceExternalId:@"someId"];
     RadarTrackingOptions *tripTrackingOptions = RadarTrackingOptions.presetContinuous;
     [Radar startTripWithOptions:tripOptions
                 trackingOptions:tripTrackingOptions
-              completionHandler:^(RadarStatus status, RadarTrip * _Nullable trip, NSArray<RadarEvent *> * _Nullable events) {
-        XCTAssertNil([RadarSettings previousTrackingOptions]);
-        RadarTrackingOptions *currentTrackingOptions = [RadarSettings trackingOptions];
-        XCTAssertTrue([currentTrackingOptions isEqual: tripTrackingOptions]);
-        [expectation fulfill];
-    }];
+              completionHandler:^(RadarStatus status, RadarTrip *_Nullable trip, NSArray<RadarEvent *> *_Nullable events) {
+                  XCTAssertNil([RadarSettings previousTrackingOptions]);
+                  RadarTrackingOptions *currentTrackingOptions = [RadarSettings trackingOptions];
+                  XCTAssertTrue([currentTrackingOptions isEqual:tripTrackingOptions]);
+                  [expectation fulfill];
+              }];
 
     [self waitForExpectations:@[expectation] timeout:10];
 
@@ -777,7 +777,6 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     XCTAssertNil([RadarSettings previousTrackingOptions]);
     XCTAssertFalse(Radar.isTracking);
 }
-
 
 - (void)test_Radar_getContext_errorPermissions {
     self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusNotDetermined;
@@ -977,22 +976,22 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
                            groups:nil
                             limit:100
                 completionHandler:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarPlace *> *_Nullable places) {
-        XCTAssertEqual(status, RadarStatusSuccess);
-        XCTAssertNotNil(location);
-        XCTAssertNotNil(places);
-        XCTAssertEqual(places.count, 2);
-        NSDictionary<NSString *, NSString *> *firstPlaceMetadata = places[0].chain.metadata;
-        XCTAssertTrue([firstPlaceMetadata[@"orderActive"] isEqualToString: @"true"]);
+                    XCTAssertEqual(status, RadarStatusSuccess);
+                    XCTAssertNotNil(location);
+                    XCTAssertNotNil(places);
+                    XCTAssertEqual(places.count, 2);
+                    NSDictionary<NSString *, NSString *> *firstPlaceMetadata = places[0].chain.metadata;
+                    XCTAssertTrue([firstPlaceMetadata[@"orderActive"] isEqualToString:@"true"]);
 
-        [expectation fulfill];
-    }];
+                    [expectation fulfill];
+                }];
 
     [self waitForExpectationsWithTimeout:30
                                  handler:^(NSError *_Nullable error) {
-        if (error) {
-            XCTFail();
-        }
-    }];
+                                     if (error) {
+                                         XCTFail();
+                                     }
+                                 }];
 }
 
 - (void)test_Radar_searchPlacesNear_categories_success {
@@ -1098,10 +1097,10 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
                        XCTAssertNotNil(location);
                        AssertGeofencesOk(geofences);
 
-                        RadarGeofence *geofence = geofences[0];
-                        NSDictionary *geofenceDict = [geofence dictionaryValue];
-                        XCTAssertNotNil(geofenceDict[@"geometryCenter"]);
-                        XCTAssertNotNil(geofenceDict[@"geometryRadius"]);
+                       RadarGeofence *geofence = geofences[0];
+                       NSDictionary *geofenceDict = [geofence dictionaryValue];
+                       XCTAssertNotNil(geofenceDict[@"geometryCenter"]);
+                       XCTAssertNotNil(geofenceDict[@"geometryRadius"]);
 
                        [expectation fulfill];
                    }];

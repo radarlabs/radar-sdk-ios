@@ -5,15 +5,21 @@
 //  Copyright © 2021 Radar Labs, Inc. All rights reserved.
 //
 
-#ifndef RadarFraud_Internal_h
-#define RadarFraud_Internal_h
-
 #import "RadarFraud+Internal.h"
+
+NS_ASSUME_NONNULL_BEGIN
 
 @interface RadarFraud ()
 
-- (instancetype _Nonnull)initWithProxy:(BOOL)proxy mocked:(BOOL)mocked;
+- (instancetype _Nonnull)initWithPassed:(BOOL)passed
+                               bypassed:(BOOL)bypassed
+                               verified:(BOOL)verified
+                                  proxy:(BOOL)proxy
+                                 mocked:(BOOL)mocked
+                            compromised:(BOOL)compromised
+                                 jumped:(BOOL)jumped;
+- (instancetype _Nullable)initWithObject:(id _Nonnull)object;
 
 @end
 
-#endif /* RadarFraud_Internal_h */
+NS_ASSUME_NONNULL_END

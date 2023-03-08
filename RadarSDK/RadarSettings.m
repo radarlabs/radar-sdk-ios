@@ -31,6 +31,8 @@ static NSString *const kBeaconUUIDs = @"radar-beaconUUIDs";
 static NSString *const kHost = @"radar-host";
 static NSString *const kDefaultHost = @"https://api.radar.io";
 static NSString *const kLastTrackedTime = @"radar-lastTrackedTime";
+static NSString *const kVerifiedHost = @"radar-verifiedHost";
+static NSString *const kDefaultVerifiedHost = @"https://api-verified.radar.io";
 
 + (NSString *)publishableKey {
     return [[NSUserDefaults standardUserDefaults] stringForKey:kPublishableKey];
@@ -234,6 +236,11 @@ static NSString *const kLastTrackedTime = @"radar-lastTrackedTime";
 
 + (NSDate *)lastTrackedTime {
     return [[NSUserDefaults standardUserDefaults] valueForKey:kLastTrackedTime];
+}
+
++ (NSString *)verifiedHost {
+    NSString *verifiedHost = [[NSUserDefaults standardUserDefaults] stringForKey:kVerifiedHost];
+    return verifiedHost ? verifiedHost : kDefaultVerifiedHost;
 }
 
 @end

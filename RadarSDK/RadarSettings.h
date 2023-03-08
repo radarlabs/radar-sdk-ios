@@ -52,6 +52,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSString *)host;
 + (void)updateLastTrackedTime;
 + (NSDate *)lastTrackedTime;
++ (NSString *)verifiedHost;
 
 @end
 
