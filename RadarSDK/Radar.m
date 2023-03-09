@@ -150,10 +150,6 @@
                                            beacons:beacons
                                  completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user,
                                                      NSArray<RadarGeofence *> *_Nullable nearbyGeofences, RadarConfig *_Nullable config) {
-                                     if (status == RadarStatusSuccess) {
-                                         [RadarSettings updateLastTrackedTime];
-                                     }
-
                                      if (completionHandler) {
                                          [RadarUtils runOnMainThread:^{
                                              completionHandler(status, location, events, user);
@@ -420,7 +416,7 @@
     BOOL isLastTrackRecent = lastTrackedTimeInterval < 60;
 
     CLAuthorizationStatus authorizationStatus = [[RadarLocationManager sharedInstance].permissionsHelper locationAuthorizationStatus];
-    if (authorizationStatus == kCLAuthorizationStatusDenied || isLastTrackRecent) {
+    if (!(authorizationStatus == kCLAuthorizationStatusAuthorizedWhenInUse || authorizationStatus == kCLAuthorizationStatusAuthorizedAlways) || isLastTrackRecent) {
         [self sendLogConversionRequestWithName:name metadata:metadata completionHandler:completionHandler];
         
         return;

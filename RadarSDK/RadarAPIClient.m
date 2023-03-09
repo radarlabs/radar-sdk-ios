@@ -319,6 +319,7 @@
                         [[RadarReplayBuffer sharedInstance] clearBuffer];
                         [RadarState setLastFailedStoppedLocation:nil];
                         [Radar flushLogs];
+                        [RadarSettings updateLastTrackedTime];
 
                         RadarConfig *config = [RadarConfig fromDictionary:res];
 
