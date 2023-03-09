@@ -30,10 +30,13 @@
                                       county:(NSString *_Nullable)county
                                 neighborhood:(NSString *_Nullable)neighborhood
                                       number:(NSString *_Nullable)number
+                                      street:(NSString *_Nullable)street
                                 addressLabel:(NSString *_Nullable)addressLabel
                                   placeLabel:(NSString *_Nullable)placeLabel
                                         unit:(NSString *_Nullable)unit
                                        plus4:(NSString *_Nullable)plus4
+                                propertyType:(NSString *_Nullable)propertyType
+                          verificationStatus:(RadarAddressVerificationStatus)verificationStatus
                                   confidence:(RadarAddressConfidence)confidence;
 
 @end

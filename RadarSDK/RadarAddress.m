@@ -44,10 +44,13 @@
                                       county:(NSString *_Nullable)county
                                 neighborhood:(NSString *_Nullable)neighborhood
                                       number:(NSString *_Nullable)number
+                                      street:(NSString *_Nullable)street
                                 addressLabel:(NSString *_Nullable)addressLabel
                                   placeLabel:(NSString *_Nullable)placeLabel
                                         unit:(NSString *_Nullable)unit
                                        plus4:(NSString *_Nullable)plus4
+                                propertyType:(NSString *_Nullable)propertyType
+                          verificationStatus:(RadarAddressVerificationStatus)verificationStatus
                                   confidence:(RadarAddressConfidence)confidence {
     self = [super init];
     if (self) {
@@ -66,10 +69,13 @@
         _county = county;
         _neighborhood = neighborhood;
         _number = number;
+        _street = street;
         _addressLabel = addressLabel;
         _placeLabel = placeLabel;
         _unit = unit;
         _plus4 = plus4;
+        _propertyType = propertyType;
+        _verificationStatus = verificationStatus;
         _confidence = confidence;
     }
     return self;
@@ -100,11 +106,14 @@
     NSString *county;
     NSString *neighborhood;
     NSString *number;
+    NSString *street;
     NSString *addressLabel;
     NSString *placeLabel;
     NSString *unit;
     NSString *plus4;
+    NSString *propertyType;
 
+    RadarAddressVerificationStatus verificationStatus = RadarAddressVerificationStatusNone;
     RadarAddressConfidence confidence = RadarAddressConfidenceNone;
 
     id latitudeObj = dict[@"latitude"];
@@ -193,6 +202,11 @@
         number = (NSString *)addressNumberObj;
     }
 
+    id streetObj = dict[@"street"];
+    if (streetObj && [streetObj isKindOfClass:[NSString class]]) {
+        street = (NSString *)streetObj;
+    }
+
     id addressLabelObj = dict[@"addressLabel"];
     if (addressLabelObj && [addressLabelObj isKindOfClass:[NSString class]]) {
         addressLabel = (NSString *)addressLabelObj;
@@ -213,6 +227,28 @@
         plus4 = (NSString *)plus4Obj;
     }
 
+    id propertyTypeObj = dict[@"propertyType"];
+    if (propertyTypeObj && [propertyTypeObj isKindOfClass:[NSString class]]) {
+        propertyType = (NSString *)propertyTypeObj;
+    }
+
+    id verificationStatusObj = dict[@"verificationStatus"];
+    if (verificationStatusObj && [verificationStatusObj isKindOfClass:[NSString class]]) {
+        NSString *verificationStatusStr = (NSString *)verificationStatusObj;
+
+        if ([verificationStatusStr isEqualToString:@"V"]) {
+            verificationStatus = RadarAddressVerificationStatusVerified;
+        } else if ([verificationStatusStr isEqualToString:@"P"]) {
+            verificationStatus = RadarAddressVerificationStatusPartiallyVerified;
+        } else if ([verificationStatusStr isEqualToString:@"A"]) {
+            verificationStatus = RadarAddressVerificationStatusAmbiguous;
+        } else if ([verificationStatusStr isEqualToString:@"R"]) {
+            verificationStatus = RadarAddressVerificationStatusReverted;
+        } else if ([verificationStatusStr isEqualToString:@"U"]) {
+            verificationStatus = RadarAddressVerificationStatusUnverified;
+        }
+    }
+
     id confidenceObj = dict[@"confidence"];
     if (confidenceObj && [confidenceObj isKindOfClass:[NSString class]]) {
         NSString *confidenceStr = (NSString *)confidenceObj;
@@ -225,6 +261,7 @@
             confidence = RadarAddressConfidenceFallback;
         }
     }
+
 
     return [[RadarAddress alloc] initWithCoordinate:coordinate
                                    formattedAddress:formattedAddress
@@ -241,10 +278,13 @@
                                              county:county
                                        neighborhood:neighborhood
                                              number:number
+                                             street:street
                                        addressLabel:addressLabel
                                          placeLabel:placeLabel
                                                unit:unit
                                               plus4:plus4
+                                       propertyType:propertyType
+                                 verificationStatus:verificationStatus
                                          confidence:confidence];
 }
 
@@ -274,6 +314,23 @@
     }
 }
 
++ (NSString *)stringForVerificationStatus:(RadarAddressVerificationStatus)verificationStatus {
+    switch (verificationStatus) {
+    case RadarAddressVerificationStatusVerified:
+        return @"V";
+    case RadarAddressVerificationStatusPartiallyVerified:
+        return @"P";
+    case RadarAddressVerificationStatusAmbiguous:
+        return @"A";
+    case RadarAddressVerificationStatusReverted:
+        return @"R";
+    case RadarAddressVerificationStatusUnverified:
+        return @"U";
+    default:
+        return @"?";
+    }
+}
+
 - (NSDictionary *)dictionaryValue {
     NSMutableDictionary *dict = [NSMutableDictionary new];
     [dict setValue:@(self.coordinate.latitude) forKey:@"latitude"];
@@ -292,10 +349,13 @@
     [dict setValue:self.county forKey:@"county"];
     [dict setValue:self.neighborhood forKey:@"neighborhood"];
     [dict setValue:self.number forKey:@"number"];
+    [dict setValue:self.street forKey:@"street"];
     [dict setValue:self.addressLabel forKey:@"addressLabel"];
     [dict setValue:self.placeLabel forKey:@"placeLabel"];
     [dict setValue:self.unit forKey:@"unit"];
     [dict setValue:self.plus4 forKey:@"plus4"];
+    [dict setValue:self.propertyType forKey:@"propertyType"];
+    [dict setValue:[RadarAddress stringForVerificationStatus:self.verificationStatus] forKey:@"verificationStatus"];
     [dict setValue:[RadarAddress stringForConfidence:self.confidence] forKey:@"confidence"];
     return dict;
 }

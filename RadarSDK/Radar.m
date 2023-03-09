@@ -774,6 +774,17 @@
                                      }];
 }
 
+#pragma mark - Validating Adressses
+
++ (void)validateAddress:(RadarAddress *_Nonnull)address completionHandler:(RadarValidateAddressCompletionHandler)completionHandler {
+    [[RadarAPIClient sharedInstance] validateAddress:address
+                                  completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, RadarAddress *_Nullable address) {
+                                      [RadarUtils runOnMainThread:^{
+                                          completionHandler(status, address);
+                                      }];
+                                  }];
+}
+
 #pragma mark - Geocoding
 
 + (void)geocodeAddress:(NSString *)query completionHandler:(RadarGeocodeCompletionHandler)completionHandler {

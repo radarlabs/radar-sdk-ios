@@ -22,6 +22,22 @@ typedef NS_ENUM(NSInteger, RadarAddressConfidence) {
     RadarAddressConfidenceFallback NS_SWIFT_NAME(fallback) = 3
 };
 
+// Verification status enum for RadarAddress with values 'V', 'P', 'A', 'R', and 'U'
+typedef NS_ENUM(NSInteger, RadarAddressVerificationStatus) {
+    /// Unknown
+    RadarAddressVerificationStatusNone NS_SWIFT_NAME(none) = 0,
+    /// Verified: complete match was made between the input data and a single record from the available reference data
+    RadarAddressVerificationStatusVerified NS_SWIFT_NAME(verified) = 1,
+    /// Partially verified: a partial match was made between the input data and a single record from the available reference data
+    RadarAddressVerificationStatusPartiallyVerified NS_SWIFT_NAME(partiallyVerified) = 2,
+    /// Ambiguous: more than one close reference data match
+    RadarAddressVerificationStatusAmbiguous NS_SWIFT_NAME(ambiguous) = 3,
+    /// Reverted: record could not be verified to the specified minimum acceptable level. The output fields will contain the input data
+    RadarAddressVerificationStatusReverted NS_SWIFT_NAME(reverted) = 4,
+    /// Unverified: unable to verify. The output fields will contain the input data
+    RadarAddressVerificationStatusUnverified NS_SWIFT_NAME(unverified) = 5
+};
+
 NS_ASSUME_NONNULL_BEGIN
 
 /**
@@ -107,6 +123,11 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nullable, copy, nonatomic, readonly) NSString *number;
 
 /**
+ The street name of the address.
+ */
+@property (nullable, copy, nonatomic, readonly) NSString *street;
+
+/**
  The label of the address.
  */
 @property (nullable, copy, nonatomic, readonly) NSString *addressLabel;
@@ -125,6 +146,16 @@ The unit of the address.
 The plus4 value for the zip of the address.
 */
 @property (nullable, copy, nonatomic, readonly) NSString *plus4;
+
+/**
+The property type of the address.
+*/
+@property (nullable, copy, nonatomic, readonly) NSString *propertyType;
+
+/**
+The verification status of the address.
+*/
+@property (nonatomic, assign) enum RadarAddressVerificationStatus verificationStatus;
 
 /**
   The confidence level of the geocoding result.

@@ -44,6 +44,8 @@ typedef void (^_Nonnull RadarSearchBeaconsAPICompletionHandler)(RadarStatus stat
 
 typedef void (^_Nonnull RadarGeocodeAPICompletionHandler)(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarAddress *> *_Nullable addresses);
 
+typedef void (^_Nonnull RadarValidateAddressAPICompletionHandler)(RadarStatus status, NSDictionary *_Nullable res, RadarAddress *_Nullable address);
+
 typedef void (^_Nonnull RadarIPGeocodeAPICompletionHandler)(RadarStatus status, NSDictionary *_Nullable res, RadarAddress *_Nullable address, BOOL proxy);
 
 typedef void (^_Nonnull RadarDistanceAPICompletionHandler)(RadarStatus status, NSDictionary *_Nullable res, RadarRoutes *_Nullable routes);
@@ -125,6 +127,8 @@ typedef void (^_Nonnull RadarSyncLogsAPICompletionHandler)(RadarStatus status);
                     limit:(int)limit
                   country:(NSString *_Nullable)country
         completionHandler:(RadarGeocodeAPICompletionHandler _Nonnull)completionHandler;
+
+- (void)validateAddress:(RadarAddress *_Nonnull)address completionHandler:(RadarValidateAddressAPICompletionHandler _Nonnull)completionHandler;
 
 - (void)geocodeAddress:(NSString *_Nonnull)query completionHandler:(RadarGeocodeAPICompletionHandler _Nonnull)completionHandler;
 

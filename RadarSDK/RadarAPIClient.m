@@ -942,6 +942,62 @@
                     }];
 }
 
+- (void)validateAddress:(RadarAddress *)address completionHandler:(RadarValidateAddressAPICompletionHandler)completionHandler {
+    NSString *publishableKey = [RadarSettings publishableKey];
+    if (!publishableKey) {
+        return completionHandler(RadarStatusErrorPublishableKey, nil, nil);
+    }
+
+    NSMutableString *queryString = [NSMutableString new];
+    if (!address.countryCode || !address.stateCode || !address.city || !address.number || !address.postalCode || !address.street) {
+        if (completionHandler) {
+            [RadarUtils runOnMainThread:^{
+                completionHandler(RadarStatusErrorBadRequest, nil, nil);
+            }];
+        }
+
+        return;
+    } else {
+        [queryString appendFormat:@"countryCode=%@", address.countryCode];
+        [queryString appendFormat:@"&stateCode=%@", address.stateCode];
+        [queryString appendFormat:@"&city=%@", address.city];
+        [queryString appendFormat:@"&number=%@", address.number];
+        [queryString appendFormat:@"&postalCode=%@", address.postalCode];
+        [queryString appendFormat:@"&street=%@", address.street];
+    }
+
+    if (address.unit) {
+        [queryString appendFormat:@"&unit=%@", address.unit];
+    }
+
+    NSString *host = [RadarSettings host];
+    NSString *url = [NSString stringWithFormat:@"%@/v1/addresses/validate?%@", host, queryString];
+    url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
+
+    NSDictionary *headers = [RadarAPIClient headersWithPublishableKey:publishableKey];
+
+    [self.apiHelper requestWithMethod:@"GET"
+                                  url:url
+                              headers:headers
+                               params:nil
+                                sleep:NO
+                           logPayload:YES
+                      extendedTimeout:NO
+                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
+                        if (status != RadarStatusSuccess || !res) {
+                            return completionHandler(status, nil, nil);
+                        }
+
+                        id addressObj = res[@"address"];
+                        RadarAddress *address = [[RadarAddress alloc] initWithObject:addressObj];
+                        if (address) {
+                            return completionHandler(RadarStatusSuccess, res, address);
+                        }
+
+                        completionHandler(RadarStatusErrorServer, nil, nil);
+                    }];
+}
+
 - (void)geocodeAddress:(NSString *)query completionHandler:(RadarGeocodeAPICompletionHandler)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
