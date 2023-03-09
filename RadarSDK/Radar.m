@@ -218,9 +218,6 @@
                                                beacons:nil
                                      completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user,
                                                          NSArray<RadarGeofence *> *_Nullable nearbyGeofences, RadarConfig *_Nullable config) {
-                                         if (status == RadarStatusSuccess) {
-                                             [RadarSettings updateLastTrackedTime];
-                                         }
 
                                          if (completionHandler) {
                                              [RadarUtils runOnMainThread:^{
