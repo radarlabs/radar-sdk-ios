@@ -91,8 +91,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         ) { (status, addresses) in
             print("Autocomplete: status = \(Radar.stringForStatus(status)); formattedAddress = \(String(describing: addresses?.first?.formattedAddress))")
 
-            Radar.validateAddress(address: addresses?.first?) { (status, address) in
-                print("Validate address: status = \(Radar.stringForStatus(status)); address = \(String(describing: address.verificationStatus))")
+            if let address = addresses?.first {
+                Radar.validateAddress(address: address) { (status, address) in
+                    print("Validate address: status = \(Radar.stringForStatus(status)); address = \(String(describing: address.verificationStatus))")
+                }
             }
         }
 
@@ -105,8 +107,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         ) { (status, addresses) in
             print("Autocomplete: status = \(Radar.stringForStatus(status)); formattedAddress = \(String(describing: addresses?.first?.formattedAddress))")
         }
-
-        Radar.validateAddress()
 
         Radar.getDistance(
             origin: origin,
