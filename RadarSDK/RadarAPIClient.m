@@ -1186,14 +1186,9 @@ completionHandler:(RadarSendEventAPICompletionHandler _Nonnull)completionHandler
                             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelError message:@"POST /events did not return a new event"];
 
                             return completionHandler(RadarStatusErrorServer, nil, nil);
-                        } else {
-                            // The events are returned in the completion handler, but they're
-                            // also sent back via the RadarDelegate, just like
-                            // -updateTripWithOptions:status:completionHandler: does.
-                            [[RadarDelegateHolder sharedInstance] didReceiveEvents:[NSMutableArray arrayWithObject:customEvent] user:nil];
-
-                            return completionHandler(RadarStatusSuccess, res, customEvent);
                         }
+
+                        return completionHandler(RadarStatusSuccess, res, customEvent);
                     }];
 }
 
