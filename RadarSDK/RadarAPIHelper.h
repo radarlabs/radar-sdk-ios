@@ -21,7 +21,7 @@ typedef void (^_Nullable RadarAPICompletionHandler)(RadarStatus status, NSDictio
                    params:(NSDictionary *_Nullable)params
                     sleep:(BOOL)sleep
                logPayload:(BOOL)logPayload
-          extendedTimeout:(BOOL)extendedTimeout 
+          extendedTimeout:(BOOL)extendedTimeout
         completionHandler:(RadarAPICompletionHandler _Nullable)completionHandler;
 
 @end

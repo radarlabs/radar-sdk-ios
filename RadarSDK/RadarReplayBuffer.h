@@ -18,7 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (instancetype)sharedInstance;
 
-- (void)writeNewReplayToBuffer:(NSMutableDictionary* )replayParams;
+- (void)writeNewReplayToBuffer:(NSMutableDictionary *)replayParams;
 
 - (void)dropOldestReplay;
 
