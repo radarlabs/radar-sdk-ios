@@ -117,6 +117,16 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nullable, copy, nonatomic, readonly) NSString *placeLabel;
 
 /**
+The unit of the address.
+*/
+@property (nullable, copy, nonatomic, readonly) NSString *unit;
+
+/**
+The plus4 value for the zip of the address.
+*/
+@property (nullable, copy, nonatomic, readonly) NSString *plus4;
+
+/**
   The confidence level of the geocoding result.
  */
 @property (nonatomic, assign) enum RadarAddressConfidence confidence;

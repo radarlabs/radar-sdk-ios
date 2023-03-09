@@ -32,6 +32,8 @@
                                       number:(NSString *_Nullable)number
                                 addressLabel:(NSString *_Nullable)addressLabel
                                   placeLabel:(NSString *_Nullable)placeLabel
+                                        unit:(NSString *_Nullable)unit
+                                       plus4:(NSString *_Nullable)plus4
                                   confidence:(RadarAddressConfidence)confidence;
 
 @end

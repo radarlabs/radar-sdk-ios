@@ -46,6 +46,8 @@
                                       number:(NSString *_Nullable)number
                                 addressLabel:(NSString *_Nullable)addressLabel
                                   placeLabel:(NSString *_Nullable)placeLabel
+                                        unit:(NSString *_Nullable)unit
+                                       plus4:(NSString *_Nullable)plus4
                                   confidence:(RadarAddressConfidence)confidence {
     self = [super init];
     if (self) {
@@ -66,6 +68,8 @@
         _number = number;
         _addressLabel = addressLabel;
         _placeLabel = placeLabel;
+        _unit = unit;
+        _plus4 = plus4;
         _confidence = confidence;
     }
     return self;
@@ -98,6 +102,8 @@
     NSString *number;
     NSString *addressLabel;
     NSString *placeLabel;
+    NSString *unit;
+    NSString *plus4;
 
     RadarAddressConfidence confidence = RadarAddressConfidenceNone;
 
@@ -197,6 +203,16 @@
         placeLabel = (NSString *)placeLabelObj;
     }
 
+    id unitObj = dict[@"unit"];
+    if (unitObj && [unitObj isKindOfClass:[NSString class]]) {
+        unit = (NSString *)unitObj;
+    }
+
+    id plus4Obj = dict[@"plus4"];
+    if (plus4Obj && [plus4Obj isKindOfClass:[NSString class]]) {
+        plus4 = (NSString *)plus4Obj;
+    }
+
     id confidenceObj = dict[@"confidence"];
     if (confidenceObj && [confidenceObj isKindOfClass:[NSString class]]) {
         NSString *confidenceStr = (NSString *)confidenceObj;
@@ -227,6 +243,8 @@
                                              number:number
                                        addressLabel:addressLabel
                                          placeLabel:placeLabel
+                                               unit:unit
+                                              plus4:plus4
                                          confidence:confidence];
 }
 
@@ -276,6 +294,8 @@
     [dict setValue:self.number forKey:@"number"];
     [dict setValue:self.addressLabel forKey:@"addressLabel"];
     [dict setValue:self.placeLabel forKey:@"placeLabel"];
+    [dict setValue:self.unit forKey:@"unit"];
+    [dict setValue:self.plus4 forKey:@"plus4"];
     [dict setValue:[RadarAddress stringForConfidence:self.confidence] forKey:@"confidence"];
     return dict;
 }

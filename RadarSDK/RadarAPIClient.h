@@ -116,6 +116,14 @@ typedef void (^_Nonnull RadarSyncLogsAPICompletionHandler)(RadarStatus status);
                    layers:(NSArray<NSString *> *_Nullable)layers
                     limit:(int)limit
                   country:(NSString *_Nullable)country
+              expandUnits:(BOOL)expandUnits
+        completionHandler:(RadarGeocodeAPICompletionHandler _Nonnull)completionHandler;
+
+- (void)autocompleteQuery:(NSString *_Nonnull)query
+                     near:(CLLocation *_Nullable)near
+                   layers:(NSArray<NSString *> *_Nullable)layers
+                    limit:(int)limit
+                  country:(NSString *_Nullable)country
         completionHandler:(RadarGeocodeAPICompletionHandler _Nonnull)completionHandler;
 
 - (void)geocodeAddress:(NSString *_Nonnull)query completionHandler:(RadarGeocodeAPICompletionHandler _Nonnull)completionHandler;

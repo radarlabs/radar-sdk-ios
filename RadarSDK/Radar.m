@@ -746,6 +746,28 @@
                    layers:(NSArray *_Nullable)layers
                     limit:(int)limit
                   country:(NSString *_Nullable)country
+              expandUnits:(BOOL)expandUnits
+        completionHandler:(RadarGeocodeCompletionHandler)completionHandler {
+    [[RadarAPIClient sharedInstance] autocompleteQuery:query
+                                                  near:near
+                                                layers:layers
+                                                 limit:limit
+                                               country:country
+                                           expandUnits:expandUnits
+                                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarAddress *> *_Nullable addresses) {
+                                         if (completionHandler) {
+                                             [RadarUtils runOnMainThread:^{
+                                                 completionHandler(status, addresses);
+                                             }];
+                                         }
+                                     }];
+}
+
++ (void)autocompleteQuery:(NSString *_Nonnull)query
+                     near:(CLLocation *_Nullable)near
+                   layers:(NSArray *_Nullable)layers
+                    limit:(int)limit
+                  country:(NSString *_Nullable)country
         completionHandler:(RadarGeocodeCompletionHandler)completionHandler {
     [[RadarAPIClient sharedInstance] autocompleteQuery:query
                                                   near:near
