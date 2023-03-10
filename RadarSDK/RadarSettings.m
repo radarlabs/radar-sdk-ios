@@ -30,6 +30,7 @@ static NSString *const kLogLevel = @"radar-logLevel";
 static NSString *const kBeaconUUIDs = @"radar-beaconUUIDs";
 static NSString *const kHost = @"radar-host";
 static NSString *const kDefaultHost = @"https://api.radar.io";
+static NSString *const kLastTrackedTime = @"radar-lastTrackedTime";
 static NSString *const kVerifiedHost = @"radar-verifiedHost";
 static NSString *const kDefaultVerifiedHost = @"https://api-verified.radar.io";
 
@@ -226,6 +227,15 @@ static NSString *const kDefaultVerifiedHost = @"https://api-verified.radar.io";
 + (NSString *)host {
     NSString *host = [[NSUserDefaults standardUserDefaults] stringForKey:kHost];
     return host ? host : kDefaultHost;
+}
+
++ (void)updateLastTrackedTime {
+    NSDate *timeStamp = [NSDate date];
+    [[NSUserDefaults standardUserDefaults] setObject:timeStamp forKey:kLastTrackedTime];
+}
+
++ (NSDate *)lastTrackedTime {
+    return [[NSUserDefaults standardUserDefaults] valueForKey:kLastTrackedTime];
 }
 
 + (NSString *)verifiedHost {

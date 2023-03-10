@@ -218,6 +218,7 @@
                                                beacons:nil
                                      completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user,
                                                          NSArray<RadarGeofence *> *_Nullable nearbyGeofences, RadarConfig *_Nullable config) {
+
                                          if (completionHandler) {
                                              [RadarUtils runOnMainThread:^{
                                                  completionHandler(status, location, events, user);
@@ -383,80 +384,55 @@
     [[RadarAPIClient sharedInstance] verifyEventId:eventId verification:RadarEventVerificationReject verifiedPlaceId:nil];
 }
 
-+ (void)sendEvent:(NSString *)customType withMetadata:(NSDictionary *_Nullable)metadata completionHandler:(RadarSendEventCompletionHandler)completionHandler {
-    [self trackOnceWithCompletionHandler:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user) {
++ (void)sendLogConversionRequestWithName:(NSString * _Nonnull) name
+                                metadata:(NSDictionary * _Nullable) metadata
+                       completionHandler:(RadarLogConversionCompletionHandler) completionHandler {
+    [[RadarAPIClient sharedInstance] sendEvent:name withMetadata:metadata completionHandler:^(RadarStatus status, NSDictionary * _Nullable res, RadarEvent * _Nullable event) {
         if (status != RadarStatusSuccess) {
             if (completionHandler) {
                 [RadarUtils runOnMainThread:^{
-                    completionHandler(status, nil, nil, nil);
+                    completionHandler(status, nil);
                 }];
             }
 
             return;
         }
-
-        [[RadarAPIClient sharedInstance] sendEvent:customType
-                                      withMetadata:metadata
-                                              user:user
-                                       trackEvents:events
-                                 completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events) {
-                                     if (status != RadarStatusSuccess) {
-                                         if (completionHandler) {
-                                             [RadarUtils runOnMainThread:^{
-                                                 completionHandler(status, nil, nil, nil);
-                                             }];
-                                         }
-
-                                         return;
-                                     }
-
-                                     if (completionHandler) {
-                                         [RadarUtils runOnMainThread:^{
-                                             completionHandler(status, location, events, user);
-                                         }];
-                                     }
-                                 }];
+        
+        if (completionHandler) {
+            [RadarUtils runOnMainThread:^{
+                completionHandler(status, event);
+            }];
+        }
     }];
 }
 
-+ (void)sendEvent:(NSString *)customType
-         withLocation:(CLLocation *_Nullable)location
-             metadata:(NSDictionary *_Nullable)metadata
-    completionHandler:(RadarSendEventCompletionHandler)completionHandler {
-    [self trackOnceWithLocation:location
-              completionHandler:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user) {
-                  if (status != RadarStatusSuccess) {
-                      if (completionHandler) {
-                          [RadarUtils runOnMainThread:^{
-                              completionHandler(status, nil, nil, nil);
-                          }];
-                      }
++ (void)logConversionWithName:(NSString *)name
+                     metadata:(NSDictionary *_Nullable)metadata
+            completionHandler:(RadarLogConversionCompletionHandler)completionHandler {
+    NSTimeInterval lastTrackedTimeInterval = [[NSDate date] timeIntervalSinceDate:[RadarSettings lastTrackedTime]];
+    BOOL isLastTrackRecent = lastTrackedTimeInterval < 60;
 
-                      return;
-                  }
+    CLAuthorizationStatus authorizationStatus = [[RadarLocationManager sharedInstance].permissionsHelper locationAuthorizationStatus];
+    if (!(authorizationStatus == kCLAuthorizationStatusAuthorizedWhenInUse || authorizationStatus == kCLAuthorizationStatusAuthorizedAlways) || isLastTrackRecent) {
+        [self sendLogConversionRequestWithName:name metadata:metadata completionHandler:completionHandler];
+        
+        return;
+    }
+    
+    [self trackOnceWithCompletionHandler:^(RadarStatus status, CLLocation * _Nullable location, NSArray<RadarEvent *> * _Nullable events, RadarUser * _Nullable user) {
+        [self sendLogConversionRequestWithName:name metadata:metadata completionHandler:completionHandler];
+    }];
+}
 
-                  [[RadarAPIClient sharedInstance] sendEvent:customType
-                                                withMetadata:metadata
-                                                        user:user
-                                                 trackEvents:events
-                                           completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events) {
-                                               if (status != RadarStatusSuccess) {
-                                                   if (completionHandler) {
-                                                       [RadarUtils runOnMainThread:^{
-                                                           completionHandler(status, nil, nil, nil);
-                                                       }];
-                                                   }
-
-                                                   return;
-                                               }
-
-                                               if (completionHandler) {
-                                                   [RadarUtils runOnMainThread:^{
-                                                       completionHandler(status, location, events, user);
-                                                   }];
-                                               }
-                                           }];
-              }];
++ (void)logConversionWithName:(NSString *)name
+                      revenue:(NSNumber *)revenue
+                     metadata:(NSDictionary * _Nullable)metadata
+            completionHandler:(RadarLogConversionCompletionHandler)completionHandler {
+    NSMutableDictionary *mutableMetadata = [[NSMutableDictionary alloc] initWithDictionary:metadata];
+    
+    [mutableMetadata setValue:revenue forKey:@"revenue"];
+    
+    [self logConversionWithName:name metadata:mutableMetadata completionHandler:completionHandler];
 }
 
 #pragma mark - Trips
@@ -1079,6 +1055,11 @@
                                              [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
                                          }];
     }
+    
+    [Radar logConversionWithName:@"app_open" metadata:nil completionHandler:^(RadarStatus status, RadarEvent * _Nullable event) {
+        NSString *message = [NSString stringWithFormat:@"Conversion name = %@: status = %@; event = %@", event.conversionName, [Radar stringForStatus:status], event];
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:message];
+    }];
 }
 
 - (void)dealloc {

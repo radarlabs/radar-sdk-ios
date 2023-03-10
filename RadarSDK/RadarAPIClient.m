@@ -319,6 +319,7 @@
                         [[RadarReplayBuffer sharedInstance] clearBuffer];
                         [RadarState setLastFailedStoppedLocation:nil];
                         [Radar flushLogs];
+                        [RadarSettings updateLastTrackedTime];
 
                         RadarConfig *config = [RadarConfig fromDictionary:res];
 
@@ -1141,11 +1142,9 @@
                     }];
 }
 
-- (void)sendEvent:(NSString *)customType
-         withMetadata:(NSDictionary *_Nullable)metadata
-                 user:(RadarUser *_Nullable)user
-          trackEvents:(NSArray<RadarEvent *> *_Nullable)trackEvents
-    completionHandler:(RadarSendEventAPICompletionHandler _Nonnull)completionHandler {
+- (void)sendEvent:(NSString *)conversionName
+     withMetadata:(NSDictionary *_Nullable)metadata
+completionHandler:(RadarSendEventAPICompletionHandler _Nonnull)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
         return completionHandler(RadarStatusErrorPublishableKey, nil, nil);
@@ -1157,7 +1156,7 @@
     params[@"userId"] = [RadarSettings userId];
     params[@"deviceId"] = [RadarUtils deviceId];
 
-    params[@"type"] = customType;
+    params[@"type"] = conversionName;
     params[@"metadata"] = metadata;
 
     NSString *host = [RadarSettings host];
@@ -1187,18 +1186,9 @@
                             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelError message:@"POST /events did not return a new event"];
 
                             return completionHandler(RadarStatusErrorServer, nil, nil);
-                        } else {
-                            // construct the array of events to return in the callback - custom event at index 0, followed by track events
-                            NSMutableArray *finalEvents;
-                            if (trackEvents.count > 0) {
-                                finalEvents = [NSMutableArray arrayWithArray:trackEvents];
-                                [finalEvents insertObject:customEvent atIndex:0];
-                            } else {
-                                finalEvents = [NSMutableArray arrayWithObject:customEvent];
-                            }
-
-                            return completionHandler(RadarStatusSuccess, res, finalEvents);
                         }
+
+                        return completionHandler(RadarStatusSuccess, res, customEvent);
                     }];
 }
 

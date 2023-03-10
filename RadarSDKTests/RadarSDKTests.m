@@ -614,7 +614,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     [Radar rejectEventId:@"eventId"];
 }
 
-- (void)test_Radar_sendEvent {
+- (void)test_Radar_logConversion {
     self.apiHelperMock.mockStatus = RadarStatusSuccess;
     self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusAuthorizedWhenInUse;
     self.locationManagerMock.mockLocation = [[CLLocation alloc] initWithCoordinate:CLLocationCoordinate2DMake(40.78382, -73.97536)
@@ -623,28 +623,62 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
                                                                   verticalAccuracy:-1
                                                                          timestamp:[NSDate new]];
     [self.apiHelperMock setMockResponse:[RadarTestUtils jsonDictionaryFromResource:@"track"] forMethod:@"https://api.radar.io/v1/track"];
-    [self.apiHelperMock setMockResponse:[RadarTestUtils jsonDictionaryFromResource:@"custom_event"] forMethod:@"https://api.radar.io/v1/events"];
+    [self.apiHelperMock setMockResponse:[RadarTestUtils jsonDictionaryFromResource:@"conversion_event"] forMethod:@"https://api.radar.io/v1/events"];
 
-    XCTestExpectation *exp = [self expectationWithDescription:@"sendEvent"];
+    XCTestExpectation *exp = [self expectationWithDescription:@"logConversion"];
 
-    [Radar sendEvent:@"customEvent4"
-             withMetadata:@{@"foo": @"bar"}
-        completionHandler:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user) {
-            XCTAssertEqual(status, RadarStatusSuccess);
-            XCTAssertNotNil(events);
+    [Radar logConversionWithName:@"conversion4"
+        metadata:@{@"foo": @"bar"}
+   completionHandler:^(RadarStatus status, RadarEvent *_Nullable event) {
+        XCTAssertEqual(status, RadarStatusSuccess);
+        XCTAssertNotNil(event);
 
-            RadarEvent *customEvent = events[0];
-            XCTAssertNotNil(customEvent);
-            NSDictionary *metadata = customEvent.metadata;
-            XCTAssertNotNil(metadata);
-            XCTAssertTrue([metadata[@"foo"] isEqual:@"bar"]);
-            [exp fulfill];
-        }];
+        XCTAssertNotNil(event);
+        NSDictionary *metadata = event.metadata;
+        XCTAssertNotNil(metadata);
+        XCTAssertTrue([metadata[@"foo"] isEqual:@"bar"]);
+        [exp fulfill];
+    }
+    ];
 
     [self waitForExpectations:@[exp] timeout:10.0];
 }
 
-- (void)test_Radar_sendEvent_statusOkButEventIsNil_fails {
+- (void)test_Radar_logConversion_revenue {
+    self.apiHelperMock.mockStatus = RadarStatusSuccess;
+    self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusAuthorizedWhenInUse;
+    self.locationManagerMock.mockLocation = [[CLLocation alloc] initWithCoordinate:CLLocationCoordinate2DMake(40.78382, -73.97536)
+                                                                          altitude:-1
+                                                                horizontalAccuracy:65
+                                                                  verticalAccuracy:-1
+                                                                         timestamp:[NSDate new]];
+    [self.apiHelperMock setMockResponse:[RadarTestUtils jsonDictionaryFromResource:@"track"]
+                               forMethod:@"https://api.radar.io/v1/track"];
+    [self.apiHelperMock setMockResponse:[RadarTestUtils jsonDictionaryFromResource:@"conversion_event"]
+                              forMethod:@"https://api.radar.io/v1/events"];
+
+    XCTestExpectation *exp = [self expectationWithDescription:@"logConversion"];
+
+    [Radar logConversionWithName:@"conversion4"
+                         revenue:@0.2
+                        metadata:@{@"foo": @"bar"}
+   completionHandler:^(RadarStatus status, RadarEvent *_Nullable event) {
+        XCTAssertEqual(status, RadarStatusSuccess);
+        XCTAssertNotNil(event);
+
+        XCTAssertNotNil(event);
+        NSDictionary *metadata = event.metadata;
+        XCTAssertNotNil(metadata);
+        XCTAssertTrue([metadata[@"foo"] isEqual:@"bar"]);
+        XCTAssertTrue([metadata[@"revenue"] isEqual:@0.2]);
+        [exp fulfill];
+    }
+    ];
+
+    [self waitForExpectations:@[exp] timeout:10.0];
+}
+
+- (void)test_Radar_logConversion_statusOkButEventIsNil_fails {
     self.apiHelperMock.mockStatus = RadarStatusSuccess;
     self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusAuthorizedWhenInUse;
     self.locationManagerMock.mockLocation = [[CLLocation alloc] initWithCoordinate:CLLocationCoordinate2DMake(40.78382, -73.97536)
@@ -653,74 +687,18 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
                                                                   verticalAccuracy:-1
                                                                          timestamp:[NSDate new]];
     [self.apiHelperMock setMockResponse:[RadarTestUtils jsonDictionaryFromResource:@"track"] forMethod:@"https://api.radar.io/v1/track"];
-    [self.apiHelperMock setMockResponse:[RadarTestUtils jsonDictionaryFromResource:@"custom_event_nil_event"] forMethod:@"https://api.radar.io/v1/events"];
+    [self.apiHelperMock setMockResponse:[RadarTestUtils jsonDictionaryFromResource:@"conversion_event_nil_event"] forMethod:@"https://api.radar.io/v1/events"];
 
-    XCTestExpectation *exp = [self expectationWithDescription:@"sendEvent"];
+    XCTestExpectation *exp = [self expectationWithDescription:@"logConversion"];
 
-    [Radar sendEvent:@"customEvent4"
-             withMetadata:nil
-        completionHandler:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user) {
-            XCTAssertEqual(status, RadarStatusErrorServer);
-            XCTAssertNil(events);
-            [exp fulfill];
-        }];
-
-    [self waitForExpectations:@[exp] timeout:10.0];
-}
-
-- (void)test_Radar_sendEvent_withLocation {
-    self.apiHelperMock.mockStatus = RadarStatusSuccess;
-    self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusAuthorizedWhenInUse;
-    CLLocation *mockLocation = [[CLLocation alloc] initWithCoordinate:CLLocationCoordinate2DMake(40.78382, -73.97536)
-                                                             altitude:-1
-                                                   horizontalAccuracy:65
-                                                     verticalAccuracy:-1
-                                                            timestamp:[NSDate new]];
-    [self.apiHelperMock setMockResponse:[RadarTestUtils jsonDictionaryFromResource:@"track"] forMethod:@"https://api.radar.io/v1/track"];
-    [self.apiHelperMock setMockResponse:[RadarTestUtils jsonDictionaryFromResource:@"custom_event"] forMethod:@"https://api.radar.io/v1/events"];
-
-    XCTestExpectation *exp = [self expectationWithDescription:@"sendEventWithLocation"];
-
-    [Radar sendEvent:@"customEvent4"
-             withLocation:mockLocation
-                 metadata:@{@"foo": @"bar"}
-        completionHandler:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user) {
-            XCTAssertEqual(status, RadarStatusSuccess);
-            XCTAssertNotNil(events);
-
-            RadarEvent *customEvent = events[0];
-            XCTAssertNotNil(customEvent);
-            NSDictionary *metadata = customEvent.metadata;
-            XCTAssertNotNil(metadata);
-            XCTAssertTrue([metadata[@"foo"] isEqual:@"bar"]);
-
-            [exp fulfill];
-        }];
-
-    [self waitForExpectations:@[exp] timeout:10.0];
-}
-
-- (void)test_Radar_sendEvent_withLocation_statusOkButEventIsNil_fails {
-    self.apiHelperMock.mockStatus = RadarStatusSuccess;
-    self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusAuthorizedWhenInUse;
-    CLLocation *mockLocation = [[CLLocation alloc] initWithCoordinate:CLLocationCoordinate2DMake(40.78382, -73.97536)
-                                                             altitude:-1
-                                                   horizontalAccuracy:65
-                                                     verticalAccuracy:-1
-                                                            timestamp:[NSDate new]];
-    [self.apiHelperMock setMockResponse:[RadarTestUtils jsonDictionaryFromResource:@"track"] forMethod:@"https://api.radar.io/v1/track"];
-    [self.apiHelperMock setMockResponse:[RadarTestUtils jsonDictionaryFromResource:@"custom_event_nil_event"] forMethod:@"https://api.radar.io/v1/events"];
-
-    XCTestExpectation *exp = [self expectationWithDescription:@"sendEventWithLocationStatusOkButEventIsNil"];
-
-    [Radar sendEvent:@"customEvent5"
-             withLocation:mockLocation
-                 metadata:@{@"foo": @"bar", @"baz": @YES, @"qux": @1}
-        completionHandler:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user) {
-            XCTAssertEqual(status, RadarStatusErrorServer);
-            XCTAssertNil(events);
-            [exp fulfill];
-        }];
+    [Radar logConversionWithName:@"conversion4"
+        metadata:nil
+   completionHandler:^(RadarStatus status, RadarEvent *_Nullable event) {
+        XCTAssertEqual(status, RadarStatusErrorServer);
+        XCTAssertNil(event);
+        [exp fulfill];
+    }
+    ];
 
     [self waitForExpectations:@[exp] timeout:10.0];
 }
