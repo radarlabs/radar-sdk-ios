@@ -92,8 +92,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             print("Autocomplete: status = \(Radar.stringForStatus(status)); formattedAddress = \(String(describing: addresses?.first?.formattedAddress))")
 
             if let address = addresses?.first {
-                Radar.validateAddress(address: address) { (status, address) in
-                    print("Validate address: status = \(Radar.stringForStatus(status)); address = \(String(describing: address.verificationStatus))")
+                Radar.validateAddress(address: address) { (status, address, verificationStatus) in
+                    print("Validate address: status = \(Radar.stringForStatus(status)); address = \(String(describing: address)); verificationStatus = \(Radar.stringForVerificationStatus(verificationStatus))")
                 }
             }
         }

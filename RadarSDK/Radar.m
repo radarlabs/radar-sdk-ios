@@ -778,9 +778,9 @@
 
 + (void)validateAddress:(RadarAddress *_Nonnull)address completionHandler:(RadarValidateAddressCompletionHandler)completionHandler {
     [[RadarAPIClient sharedInstance] validateAddress:address
-                                  completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, RadarAddress *_Nullable address) {
+                                  completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, RadarAddress *_Nullable address, RadarAddressVerificationStatus verificationStatus) {
                                       [RadarUtils runOnMainThread:^{
-                                          completionHandler(status, address);
+                                          completionHandler(status, address, verificationStatus);
                                       }];
                                   }];
 }
@@ -961,6 +961,27 @@
         break;
     default:
         str = @"ERROR_UNKNOWN";
+    }
+    return str;
+}
+
++ (NSString *)stringForVerificationStatus:(RadarAddressVerificationStatus)status {
+    NSString *str;
+    switch (status) {
+    case RadarAddressVerificationStatusVerified:
+        str = @"VERIFIED";
+        break;
+    case RadarAddressVerificationStatusPartiallyVerified:
+        str = @"PARTIALLY_VERIFIED";
+        break;
+    case RadarAddressVerificationStatusAmbiguous:
+        str = @"AMBIGUOUS";
+        break;
+    case RadarAddressVerificationStatusUnverified:
+        str = @"UNVERIFIED";
+        break;
+    default:
+        str = @"UNKNOWN";
     }
     return str;
 }

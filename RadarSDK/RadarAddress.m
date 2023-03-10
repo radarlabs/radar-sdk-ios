@@ -29,6 +29,20 @@
     return mutableAddresses;
 }
 
++ (RadarAddress *_Nullable)addressFromObject:(id _Nonnull)object {
+    if (!object || ![object isKindOfClass:[NSDictionary class]]) {
+        return nil;
+    }
+
+    RadarAddress *address = [[RadarAddress alloc] initWithObject:object];
+    if (!address) {
+        return nil;
+    }
+
+    return address;
+}
+
+
 - (instancetype _Nullable)initWithCoordinate:(CLLocationCoordinate2D)coordinate
                             formattedAddress:(NSString *_Nullable)formattedAddress
                                      country:(NSString *_Nullable)country
@@ -50,7 +64,6 @@
                                         unit:(NSString *_Nullable)unit
                                        plus4:(NSString *_Nullable)plus4
                                 propertyType:(NSString *_Nullable)propertyType
-                          verificationStatus:(RadarAddressVerificationStatus)verificationStatus
                                   confidence:(RadarAddressConfidence)confidence {
     self = [super init];
     if (self) {
@@ -75,7 +88,6 @@
         _unit = unit;
         _plus4 = plus4;
         _propertyType = propertyType;
-        _verificationStatus = verificationStatus;
         _confidence = confidence;
     }
     return self;
@@ -113,7 +125,6 @@
     NSString *plus4;
     NSString *propertyType;
 
-    RadarAddressVerificationStatus verificationStatus = RadarAddressVerificationStatusNone;
     RadarAddressConfidence confidence = RadarAddressConfidenceNone;
 
     id latitudeObj = dict[@"latitude"];
@@ -232,23 +243,6 @@
         propertyType = (NSString *)propertyTypeObj;
     }
 
-    id verificationStatusObj = dict[@"verificationStatus"];
-    if (verificationStatusObj && [verificationStatusObj isKindOfClass:[NSString class]]) {
-        NSString *verificationStatusStr = (NSString *)verificationStatusObj;
-
-        if ([verificationStatusStr isEqualToString:@"V"]) {
-            verificationStatus = RadarAddressVerificationStatusVerified;
-        } else if ([verificationStatusStr isEqualToString:@"P"]) {
-            verificationStatus = RadarAddressVerificationStatusPartiallyVerified;
-        } else if ([verificationStatusStr isEqualToString:@"A"]) {
-            verificationStatus = RadarAddressVerificationStatusAmbiguous;
-        } else if ([verificationStatusStr isEqualToString:@"R"]) {
-            verificationStatus = RadarAddressVerificationStatusReverted;
-        } else if ([verificationStatusStr isEqualToString:@"U"]) {
-            verificationStatus = RadarAddressVerificationStatusUnverified;
-        }
-    }
-
     id confidenceObj = dict[@"confidence"];
     if (confidenceObj && [confidenceObj isKindOfClass:[NSString class]]) {
         NSString *confidenceStr = (NSString *)confidenceObj;
@@ -284,7 +278,6 @@
                                                unit:unit
                                               plus4:plus4
                                        propertyType:propertyType
-                                 verificationStatus:verificationStatus
                                          confidence:confidence];
 }
 
@@ -314,20 +307,17 @@
     }
 }
 
-+ (NSString *)stringForVerificationStatus:(RadarAddressVerificationStatus)verificationStatus {
-    switch (verificationStatus) {
-    case RadarAddressVerificationStatusVerified:
-        return @"V";
-    case RadarAddressVerificationStatusPartiallyVerified:
-        return @"P";
-    case RadarAddressVerificationStatusAmbiguous:
-        return @"A";
-    case RadarAddressVerificationStatusReverted:
-        return @"R";
-    case RadarAddressVerificationStatusUnverified:
-        return @"U";
-    default:
-        return @"?";
++ (RadarAddressVerificationStatus)addressVerificationStatusForString:(NSString *)string {
+    if ([string isEqualToString:@"v"]) {
+        return RadarAddressVerificationStatusVerified;
+    } else if ([string isEqualToString:@"p"]) {
+        return RadarAddressVerificationStatusPartiallyVerified;
+    } else if ([string isEqualToString:@"a"]) {
+        return RadarAddressVerificationStatusAmbiguous;
+    } else if ([string isEqualToString:@"u"]) {
+        return RadarAddressVerificationStatusUnverified;
+    } else {
+        return RadarAddressVerificationStatusNone;
     }
 }
 
@@ -355,7 +345,6 @@
     [dict setValue:self.unit forKey:@"unit"];
     [dict setValue:self.plus4 forKey:@"plus4"];
     [dict setValue:self.propertyType forKey:@"propertyType"];
-    [dict setValue:[RadarAddress stringForVerificationStatus:self.verificationStatus] forKey:@"verificationStatus"];
     [dict setValue:[RadarAddress stringForConfidence:self.confidence] forKey:@"confidence"];
     return dict;
 }

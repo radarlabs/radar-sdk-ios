@@ -945,14 +945,14 @@
 - (void)validateAddress:(RadarAddress *)address completionHandler:(RadarValidateAddressAPICompletionHandler)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
-        return completionHandler(RadarStatusErrorPublishableKey, nil, nil);
+        return completionHandler(RadarStatusErrorPublishableKey, nil, nil, RadarAddressVerificationStatusNone);
     }
 
     NSMutableString *queryString = [NSMutableString new];
     if (!address.countryCode || !address.stateCode || !address.city || !address.number || !address.postalCode || !address.street) {
         if (completionHandler) {
             [RadarUtils runOnMainThread:^{
-                completionHandler(RadarStatusErrorBadRequest, nil, nil);
+                completionHandler(RadarStatusErrorBadRequest, nil, nil, RadarAddressVerificationStatusNone);
             }];
         }
 
@@ -985,16 +985,29 @@
                       extendedTimeout:NO
                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
                         if (status != RadarStatusSuccess || !res) {
-                            return completionHandler(status, nil, nil);
+                            return completionHandler(status, nil, nil, RadarAddressVerificationStatusNone);
                         }
 
                         id addressObj = res[@"address"];
-                        RadarAddress *address = [[RadarAddress alloc] initWithObject:addressObj];
-                        if (address) {
-                            return completionHandler(RadarStatusSuccess, res, address);
+                        id resultObj = res[@"result"];
+                        if (!addressObj || !resultObj) {
+                            return completionHandler(RadarStatusErrorServer, nil, nil, RadarAddressVerificationStatusNone);
                         }
 
-                        completionHandler(RadarStatusErrorServer, nil, nil);
+                        RadarAddress *address = [[RadarAddress alloc] initWithObject:addressObj];
+
+                        NSDictionary *result = res[@"result"];
+                        if (result[@"verificationStatus"]) {
+                            RadarAddressVerificationStatus verificationStatus = [RadarAddress addressVerificationStatusForString:result[@"verificationStatus"]];
+
+                            if (completionHandler) {
+                                [RadarUtils runOnMainThread:^{
+                                    completionHandler(RadarStatusSuccess, res, address, verificationStatus);
+                                }];
+                            }
+                        }
+
+                        completionHandler(RadarStatusErrorServer, nil, nil, RadarAddressVerificationStatusNone);
                     }];
 }
 

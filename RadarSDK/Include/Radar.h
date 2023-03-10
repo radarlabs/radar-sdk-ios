@@ -118,6 +118,25 @@ typedef NS_ENUM(NSInteger, RadarRouteUnits) {
     RadarRouteUnitsMetric NS_SWIFT_NAME(metric)
 };
 
+/**
+Verification status enum for RadarAddress with values 'V', 'P', 'A', 'R', and 'U'
+
+@see https://radar.com/documentation/api#address-verification
+*/
+typedef NS_ENUM(NSInteger, RadarAddressVerificationStatus) {
+    /// Unknown
+    RadarAddressVerificationStatusNone NS_SWIFT_NAME(none) = 0,
+    /// Verified: complete match was made between the input data and a single record from the available reference data
+    RadarAddressVerificationStatusVerified NS_SWIFT_NAME(verified) = 1,
+    /// Partially verified: a partial match was made between the input data and a single record from the available reference data
+    RadarAddressVerificationStatusPartiallyVerified NS_SWIFT_NAME(partiallyVerified) = 2,
+    /// Ambiguous: more than one close reference data match
+    RadarAddressVerificationStatusAmbiguous NS_SWIFT_NAME(ambiguous) = 3,
+    /// Unverified: unable to verify. The output fields will contain the input data
+    RadarAddressVerificationStatusUnverified NS_SWIFT_NAME(unverified) = 4
+};
+
+
 #pragma mark - Callback typedefs
 
 /**
@@ -195,11 +214,11 @@ typedef void (^_Nonnull RadarGeocodeCompletionHandler)(RadarStatus status, NSArr
 /**
   Called when a validateAddress request succeeds, fails, or times out.
 
-    Receives the request status and, if successful, the address populated with a verification status.
+    Receives the request status and, if successful, the address and a verification status.
 
     @see https://radar.com/documentation/api#validate-address
 */
-typedef void (^_Nonnull RadarValidateAddressCompletionHandler)(RadarStatus status, RadarAddress *_Nullable address);
+typedef void (^_Nonnull RadarValidateAddressCompletionHandler)(RadarStatus status, RadarAddress *_Nullable address, RadarAddressVerificationStatus verificationStatus);
 
 /**
  Called when an IP geocoding request succeeds, fails, or times out.
@@ -943,6 +962,16 @@ typedef void (^_Nonnull RadarLogConversionCompletionHandler)(RadarStatus status,
  @return A display string for the status value.
  */
 + (NSString *)stringForStatus:(RadarStatus)status NS_SWIFT_NAME(stringForStatus(_:));
+
+/**
+ Returns a string for address validation status value.
+
+ @param verificationStatus An address verification status value.
+
+ @return A string for the address verification status value.
+*/
++ (NSString *)stringForVerificationStatus:(RadarAddressVerificationStatus)verificationStatus NS_SWIFT_NAME(stringForVerificationStatus(_:));
+
 
 /**
  Returns a display string for a location source value.

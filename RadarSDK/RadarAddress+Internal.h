@@ -5,6 +5,7 @@
 //  Copyright © 2019 Radar Labs, Inc. All rights reserved.
 //
 
+#import "Radar.h"
 #import "RadarAddress.h"
 #import "RadarCoordinate.h"
 #import <Foundation/Foundation.h>
@@ -12,6 +13,10 @@
 @interface RadarAddress ()
 
 + (NSArray<RadarAddress *> *_Nullable)addressesFromObject:(id _Nonnull)object;
+
++ (RadarAddress *_Nullable)addressFromObject:(id _Nonnull)object;
+
++ (RadarAddressVerificationStatus)addressVerificationStatusForString:(NSString *_Nullable)string;
 
 - (instancetype _Nullable)initWithObject:(id _Nonnull)object;
 
@@ -36,7 +41,6 @@
                                         unit:(NSString *_Nullable)unit
                                        plus4:(NSString *_Nullable)plus4
                                 propertyType:(NSString *_Nullable)propertyType
-                          verificationStatus:(RadarAddressVerificationStatus)verificationStatus
                                   confidence:(RadarAddressConfidence)confidence;
 
 @end
