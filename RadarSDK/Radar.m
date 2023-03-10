@@ -161,12 +161,6 @@
                                              limit:10
                                  completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarBeacon *> *_Nullable beacons,
                                                      NSArray<NSString *> *_Nullable beaconUUIDs) {
-                                     if (status != RadarStatusSuccess) {
-                                         callTrackAPI(nil);
-
-                                         return;
-                                     }
-
                                      if (beaconUUIDs && beaconUUIDs.count) {
                                          [[RadarLocationManager sharedInstance] replaceSyncedBeaconUUIDs:beaconUUIDs];
 

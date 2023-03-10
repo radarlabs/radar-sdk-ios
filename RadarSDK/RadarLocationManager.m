@@ -792,11 +792,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                            radius:1000
                             limit:10
                 completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarBeacon *> *_Nullable beacons, NSArray<NSString *> *_Nullable beaconUUIDs) {
-                    if (status != RadarStatusSuccess || !beacons) {
-                        return;
-                    }
-
-                    if (beaconUUIDs) {
+                    if (beaconUUIDs && beaconUUIDs.count) {
                         [self replaceSyncedBeaconUUIDs:beaconUUIDs];
                     } else {
                         [self replaceSyncedBeacons:beacons];
