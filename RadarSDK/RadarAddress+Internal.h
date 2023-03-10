@@ -14,7 +14,6 @@
 
 + (NSArray<RadarAddress *> *_Nullable)addressesFromObject:(id _Nonnull)object;
 
-+ (RadarAddress *_Nullable)addressFromObject:(id _Nonnull)object;
 
 + (RadarAddressVerificationStatus)addressVerificationStatusForString:(NSString *_Nullable)string;
 

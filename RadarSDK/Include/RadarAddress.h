@@ -142,7 +142,7 @@ The property type of the address.
   The confidence level of the geocoding result.
  */
 @property (nonatomic, assign) enum RadarAddressConfidence confidence;
-
++ (RadarAddress *_Nullable)addressFromObject:(id _Nonnull)object;
 + (NSArray<NSDictionary *> *_Nullable)arrayForAddresses:(NSArray<RadarAddress *> *_Nullable)addresses;
 - (NSDictionary *_Nonnull)dictionaryValue;
 
