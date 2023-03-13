@@ -1114,7 +1114,7 @@
                                          }];
     }
     
-    [Radar logConversionWithName:@"app_open" metadata:nil completionHandler:^(RadarStatus status, RadarEvent * _Nullable event) {
+    [Radar logConversionWithName:@"opened_app" metadata:nil completionHandler:^(RadarStatus status, RadarEvent * _Nullable event) {
         NSString *message = [NSString stringWithFormat:@"Conversion name = %@: status = %@; event = %@", event.conversionName, [Radar stringForStatus:status], event];
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:message];
     }];
