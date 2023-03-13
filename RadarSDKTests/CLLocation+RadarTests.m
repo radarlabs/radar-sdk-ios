@@ -46,11 +46,7 @@
          horizontalAccuracy:(CLLocationDegrees)horizontalAccuracy
               shouldBeValid:(BOOL)isValid {
     CLLocationCoordinate2D coords = CLLocationCoordinate2DMake(latitude, longitude);
-    CLLocation *location = [[CLLocation alloc] initWithCoordinate:coords
-                                                         altitude:1.0
-                                               horizontalAccuracy:horizontalAccuracy
-                                                 verticalAccuracy:1.0
-                                                        timestamp:[NSDate new]];
+    CLLocation *location = [[CLLocation alloc] initWithCoordinate:coords altitude:1.0 horizontalAccuracy:horizontalAccuracy verticalAccuracy:1.0 timestamp:[NSDate new]];
     XCTAssertEqual(location.isValid, isValid);
 }
 

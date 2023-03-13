@@ -6,8 +6,8 @@
 //
 
 #import "RadarState.h"
-#import "RadarUtils.h"
 #import "CLLocation+Radar.h"
+#import "RadarUtils.h"
 
 @implementation RadarState
 
