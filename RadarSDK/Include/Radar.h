@@ -216,7 +216,7 @@ typedef void (^_Nonnull RadarGeocodeCompletionHandler)(RadarStatus status, NSArr
 
     Receives the request status and, if successful, the address and a verification status.
 
-    @see https://radar.com/documentation/api#validate-address
+    @see https://radar.com/documentation/api#validate-an-address
 */
 typedef void (^_Nonnull RadarValidateAddressCompletionHandler)(RadarStatus status, RadarAddress *_Nullable address, RadarAddressVerificationStatus verificationStatus);
 
@@ -846,7 +846,7 @@ typedef void (^_Nonnull RadarLogConversionCompletionHandler)(RadarStatus status,
  @param address The address to validate.
  @param completionHandler A completion handler.
 
- @see https://radar.com/documentation/api#validate-address
+ @see https://radar.com/documentation/api#validate-an-address
  */
 
 + (void)validateAddress:(RadarAddress *_Nonnull)address completionHandler:(RadarValidateAddressCompletionHandler)completionHandler NS_SWIFT_NAME(validateAddress(address:completionHandler:));
