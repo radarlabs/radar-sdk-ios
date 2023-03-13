@@ -57,6 +57,10 @@
                                      completionHandler:^(RadarStatus status, RadarConfig *config) {
                                          [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
                                      }];
+    [self logConversionWithName:@"opened_app" metadata:nil completionHandler:^(RadarStatus status, RadarEvent * _Nullable event) {
+        NSString *message = [NSString stringWithFormat:@"Conversion name = %@: status = %@; event = %@", event.conversionName, [Radar stringForStatus:status], event];
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:message];
+    }];
 }
 
 #pragma mark - Properties
