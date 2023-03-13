@@ -73,7 +73,7 @@
     dict[@"level"] = [RadarLog stringForLogLevel:self.level];
     dict[@"message"] = self.message;
     if (self.type) {
-        dict[@"type"] = [RadarLog stringForLogType:self.type];
+        dict[@"type"] = [RadarLog stringForLogType:*(self.type)];
     }
     NSString *createdAtString = [RadarUtils.isoDateFormatter stringFromDate:self.createdAt];
     dict[@"createdAt"] = createdAtString;

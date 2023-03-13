@@ -1101,7 +1101,7 @@
 }
 
 + (void)sendLog:(RadarLogLevel)level type:(RadarLogType)type message:(NSString *_Nonnull)message {
-    [[RadarLogBuffer sharedInstance] write:level type:type message:message ];
+    [[RadarLogBuffer sharedInstance] write:level type:&type message:message ];
 }
 
 /**
