@@ -22,6 +22,7 @@ typedef NS_ENUM(NSInteger, RadarAddressConfidence) {
     RadarAddressConfidenceFallback NS_SWIFT_NAME(fallback) = 3
 };
 
+
 NS_ASSUME_NONNULL_BEGIN
 
 /**
@@ -107,6 +108,11 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nullable, copy, nonatomic, readonly) NSString *number;
 
 /**
+ The street name of the address.
+ */
+@property (nullable, copy, nonatomic, readonly) NSString *street;
+
+/**
  The label of the address.
  */
 @property (nullable, copy, nonatomic, readonly) NSString *addressLabel;
@@ -117,10 +123,26 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nullable, copy, nonatomic, readonly) NSString *placeLabel;
 
 /**
+The unit of the address.
+*/
+@property (nullable, copy, nonatomic, readonly) NSString *unit;
+
+/**
+The plus4 value for the zip of the address.
+*/
+@property (nullable, copy, nonatomic, readonly) NSString *plus4;
+
+/**
+The property type of the address.
+*/
+@property (nullable, copy, nonatomic, readonly) NSString *propertyType;
+
+
+/**
   The confidence level of the geocoding result.
  */
 @property (nonatomic, assign) enum RadarAddressConfidence confidence;
-
++ (RadarAddress *_Nullable)addressFromObject:(id _Nonnull)object;
 + (NSArray<NSDictionary *> *_Nullable)arrayForAddresses:(NSArray<RadarAddress *> *_Nullable)addresses;
 - (NSDictionary *_Nonnull)dictionaryValue;
 
