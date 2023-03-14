@@ -137,6 +137,10 @@ The property type of the address.
 */
 @property (nullable, copy, nonatomic, readonly) NSString *propertyType;
 
+/**
+The metadata of the address.
+*/
+@property (nullable, copy, nonatomic, readonly) NSDictionary *metadata;
 
 /**
   The confidence level of the geocoding result.

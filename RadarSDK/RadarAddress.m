@@ -63,7 +63,7 @@
                                   placeLabel:(NSString *_Nullable)placeLabel
                                         unit:(NSString *_Nullable)unit
                                        plus4:(NSString *_Nullable)plus4
-                                propertyType:(NSString *_Nullable)propertyType
+                                    metadata:(NSDictionary *_Nullable)metadata
                                   confidence:(RadarAddressConfidence)confidence {
     self = [super init];
     if (self) {
@@ -87,7 +87,7 @@
         _placeLabel = placeLabel;
         _unit = unit;
         _plus4 = plus4;
-        _propertyType = propertyType;
+        _metadata = metadata;
         _confidence = confidence;
     }
     return self;
@@ -123,7 +123,7 @@
     NSString *placeLabel;
     NSString *unit;
     NSString *plus4;
-    NSString *propertyType;
+    NSMutableDictionary *metadata;
 
     RadarAddressConfidence confidence = RadarAddressConfidenceNone;
 
@@ -238,9 +238,9 @@
         plus4 = (NSString *)plus4Obj;
     }
 
-    id propertyTypeObj = dict[@"propertyType"];
-    if (propertyTypeObj && [propertyTypeObj isKindOfClass:[NSString class]]) {
-        propertyType = (NSString *)propertyTypeObj;
+    id metadataObj = dict[@"metadata"];
+    if (metadataObj && [metadataObj isKindOfClass:[NSDictionary class]]) {
+        metadata = [NSMutableDictionary dictionaryWithDictionary:(NSDictionary *)metadataObj];
     }
 
     id confidenceObj = dict[@"confidence"];
@@ -277,7 +277,7 @@
                                          placeLabel:placeLabel
                                                unit:unit
                                               plus4:plus4
-                                       propertyType:propertyType
+                                             metadata:metadata
                                          confidence:confidence];
 }
 
@@ -344,7 +344,9 @@
     [dict setValue:self.placeLabel forKey:@"placeLabel"];
     [dict setValue:self.unit forKey:@"unit"];
     [dict setValue:self.plus4 forKey:@"plus4"];
-    [dict setValue:self.propertyType forKey:@"propertyType"];
+    if (self.metadata) {
+        [dict setValue:self.metadata forKey:@"metadata"];
+    }
     [dict setValue:[RadarAddress stringForConfidence:self.confidence] forKey:@"confidence"];
     return dict;
 }
