@@ -1114,10 +1114,11 @@
                                          }];
     }
     
-    [Radar logConversionWithName:@"opened_app" metadata:nil completionHandler:^(RadarStatus status, RadarEvent * _Nullable event) {
-        NSString *message = [NSString stringWithFormat:@"Conversion name = %@: status = %@; event = %@", event.conversionName, [Radar stringForStatus:status], event];
-        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:message];
-    }];
+    // TODO: log opened_app conversions once the desired logic is hashed out
+//    [Radar logConversionWithName:@"opened_app" metadata:nil completionHandler:^(RadarStatus status, RadarEvent * _Nullable event) {
+//        NSString *message = [NSString stringWithFormat:@"Conversion name = %@: status = %@; event = %@", event.conversionName, [Radar stringForStatus:status], event];
+//        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:message];
+//    }];
 }
 
 - (void)dealloc {
