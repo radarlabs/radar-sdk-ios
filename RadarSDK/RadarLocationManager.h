@@ -25,6 +25,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)getLocationWithDesiredAccuracy:(RadarTrackingOptionsDesiredAccuracy)desiredAccuracy completionHandler:(RadarLocationCompletionHandler _Nullable)completionHandler;
 - (void)startTrackingWithOptions:(RadarTrackingOptions *)trackingOptions;
 - (void)stopTracking;
+- (NSDictionary *)updateSyncedNotifications:(NSArray<RadarGeofence *> *)geofences beacons:(BOOL)beacons;
+- (void)replaceSyncedGeofences:(NSArray<RadarGeofence *> *)geofences numAvailableRegions:(int)numAvailableRegions;
 - (void)replaceSyncedBeacons:(NSArray<RadarBeacon *> *)beacons;
 - (void)replaceSyncedBeaconUUIDs:(NSArray<NSString *> *)uuids;
 - (void)updateTracking;
