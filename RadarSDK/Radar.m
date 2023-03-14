@@ -18,6 +18,7 @@
 #import "RadarSettings.h"
 #import "RadarState.h"
 #import "RadarUtils.h"
+#import "RadarGeofence+Internal.h"
 
 @interface Radar ()
 
@@ -154,6 +155,17 @@
                                            beacons:beacons
                                  completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user,
                                                      NSArray<RadarGeofence *> *_Nullable nearbyGeofences, RadarConfig *_Nullable config) {
+
+                                 NSDictionary *notificationSyncResponse = [[RadarLocationManager sharedInstance] updateSyncedNotifications:nearbyGeofences beacons:beacons];
+                                    NSArray<RadarGeofence *> *nearbyGeofencesWithoutNotifications;
+                                    if (notificationSyncResponse) {
+                                        nearbyGeofencesWithoutNotifications = [RadarGeofence geofencesFromObject:notificationSyncResponse[@"nearbyGeofencesWithoutNotifications"]];
+                                    }
+                                    // nearbyGeofencesWithoutNotifications = notificationSyncResponse[@"nearbyGeofencesWithoutNotifications"];
+                                    int numAvailableRegions = [notificationSyncResponse[@"numAvailableRegions"] intValue];
+                                    [[RadarLocationManager sharedInstance] replaceSyncedGeofences:nearbyGeofencesWithoutNotifications numAvailableRegions:numAvailableRegions];
+
+
                                      if (completionHandler) {
                                          [RadarUtils runOnMainThread:^{
                                              completionHandler(status, location, events, user);
