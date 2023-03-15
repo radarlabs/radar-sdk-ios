@@ -10,7 +10,7 @@
 
 @implementation RadarLog
 
-- (instancetype _Nullable)initWithLevel:(RadarLogLevel)level type:(RadarLogType *_Nullable)type message:(NSString *_Nullable)message {
+- (instancetype _Nullable)initWithLevel:(RadarLogLevel)level type:(RadarLogType)type message:(NSString *_Nullable)message {
     self = [super init];
     if (self) {
         _level = level;
@@ -73,7 +73,7 @@
     dict[@"level"] = [RadarLog stringForLogLevel:self.level];
     dict[@"message"] = self.message;
     if (self.type) {
-        dict[@"type"] = [RadarLog stringForLogType:*(self.type)];
+        dict[@"type"] = [RadarLog stringForLogType:self.type];
     }
     NSString *createdAtString = [RadarUtils.isoDateFormatter stringFromDate:self.createdAt];
     dict[@"createdAt"] = createdAtString;

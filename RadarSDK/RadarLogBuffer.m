@@ -34,7 +34,7 @@ static NSString *const kPurgedLogLine = @"----- purged oldest logs -----";
     return sharedInstance;
 }
 
-- (void)write:(RadarLogLevel)level type:(RadarLogType *)type message:(NSString *)message {
+- (void)write:(RadarLogLevel)level type:(RadarLogType)type message:(NSString *)message {
     // purge oldest if reached the max buffer size
     NSUInteger logLength = [mutableLogBuffer count];
     if (logLength >= MAX_BUFFER_SIZE) {
@@ -59,7 +59,7 @@ static NSString *const kPurgedLogLine = @"----- purged oldest logs -----";
 - (void)purgeOldestLogs {
     // drop the oldest N logs from the buffer
     [mutableLogBuffer removeObjectsInRange:NSMakeRange(0, PURGE_AMOUNT)];
-    RadarLog *purgeLog = [[RadarLog alloc] initWithLevel:RadarLogLevelDebug type:NULL message:kPurgedLogLine];
+    RadarLog *purgeLog = [[RadarLog alloc] initWithLevel:RadarLogLevelDebug type:RadarLogTypeNone message:kPurgedLogLine];
     [mutableLogBuffer insertObject:purgeLog atIndex:0];
 }
 /**
