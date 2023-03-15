@@ -133,11 +133,6 @@ The plus4 value for the zip of the address.
 @property (nullable, copy, nonatomic, readonly) NSString *plus4;
 
 /**
-The property type of the address.
-*/
-@property (nullable, copy, nonatomic, readonly) NSString *propertyType;
-
-/**
 The metadata of the address.
 */
 @property (nullable, copy, nonatomic, readonly) NSDictionary *metadata;
