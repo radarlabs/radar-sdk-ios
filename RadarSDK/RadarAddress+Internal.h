@@ -39,7 +39,7 @@
                                   placeLabel:(NSString *_Nullable)placeLabel
                                         unit:(NSString *_Nullable)unit
                                        plus4:(NSString *_Nullable)plus4
-                                propertyType:(NSString *_Nullable)propertyType
+                                    metadata:(NSDictionary *_Nullable)metadata
                                   confidence:(RadarAddressConfidence)confidence;
 
 @end
