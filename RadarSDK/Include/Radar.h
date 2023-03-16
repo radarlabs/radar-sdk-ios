@@ -961,6 +961,9 @@ typedef void (^_Nonnull RadarLogConversionCompletionHandler)(RadarStatus status,
                        units:(RadarRouteUnits)units
            completionHandler:(RadarRouteMatrixCompletionHandler)completionHandler NS_SWIFT_NAME(getMatrix(origins:destinations:mode:units:completionHandler:));
 
++ (void)logNotifications NS_SWIFT_NAME(logNotifications());
+
+
 #pragma mark - Logging
 
 /**

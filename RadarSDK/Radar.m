@@ -19,6 +19,7 @@
 #import "RadarState.h"
 #import "RadarUtils.h"
 #import "RadarGeofence+Internal.h"
+#import <UserNotifications/UserNotifications.h>
 
 @interface Radar ()
 
@@ -958,6 +959,29 @@
                                                 }];
                                             }
                                         }];
+}
+
+// function to log all of the current notifications in notification center to the console
++ (void)logNotifications {
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Logging notifications"];
+    if (@available(iOS 10.0, *)) {
+        UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
+        [center getPendingNotificationRequestsWithCompletionHandler:^(NSArray<UNNotificationRequest *> *_Nonnull requests) {
+            for (UNNotificationRequest *request in requests) {
+                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Notification: %@", request]];
+            }
+        }];
+    } else {
+        NSArray *notifications = [[UIApplication sharedApplication] scheduledLocalNotifications];
+        for (UILocalNotification *notification in notifications) {
+            NSLog(@"Notification: %@", notification);
+        }
+    }
+
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Done logging notifications"];
+    
+    // flushLogs
+    [Radar flushLogs];
 }
 
 #pragma mark - Logging
