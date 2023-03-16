@@ -5,6 +5,7 @@
 //  Copyright © 2019 Radar Labs, Inc. All rights reserved.
 //
 
+#import "Radar.h"
 #import "RadarAddress.h"
 #import "RadarCoordinate.h"
 #import <Foundation/Foundation.h>
@@ -12,6 +13,9 @@
 @interface RadarAddress ()
 
 + (NSArray<RadarAddress *> *_Nullable)addressesFromObject:(id _Nonnull)object;
+
+
++ (RadarAddressVerificationStatus)addressVerificationStatusForString:(NSString *_Nullable)string;
 
 - (instancetype _Nullable)initWithObject:(id _Nonnull)object;
 
@@ -30,8 +34,12 @@
                                       county:(NSString *_Nullable)county
                                 neighborhood:(NSString *_Nullable)neighborhood
                                       number:(NSString *_Nullable)number
+                                      street:(NSString *_Nullable)street
                                 addressLabel:(NSString *_Nullable)addressLabel
                                   placeLabel:(NSString *_Nullable)placeLabel
+                                        unit:(NSString *_Nullable)unit
+                                       plus4:(NSString *_Nullable)plus4
+                                    metadata:(NSDictionary *_Nullable)metadata
                                   confidence:(RadarAddressConfidence)confidence;
 
 @end

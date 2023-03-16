@@ -739,6 +739,28 @@
                    layers:(NSArray *_Nullable)layers
                     limit:(int)limit
                   country:(NSString *_Nullable)country
+              expandUnits:(BOOL)expandUnits
+        completionHandler:(RadarGeocodeCompletionHandler)completionHandler {
+    [[RadarAPIClient sharedInstance] autocompleteQuery:query
+                                                  near:near
+                                                layers:layers
+                                                 limit:limit
+                                               country:country
+                                           expandUnits:expandUnits
+                                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarAddress *> *_Nullable addresses) {
+                                         if (completionHandler) {
+                                             [RadarUtils runOnMainThread:^{
+                                                 completionHandler(status, addresses);
+                                             }];
+                                         }
+                                     }];
+}
+
++ (void)autocompleteQuery:(NSString *_Nonnull)query
+                     near:(CLLocation *_Nullable)near
+                   layers:(NSArray *_Nullable)layers
+                    limit:(int)limit
+                  country:(NSString *_Nullable)country
         completionHandler:(RadarGeocodeCompletionHandler)completionHandler {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"autocomplete()"];
     [[RadarAPIClient sharedInstance] autocompleteQuery:query
@@ -769,6 +791,17 @@
                                              }];
                                          }
                                      }];
+}
+
+#pragma mark - Validating Adressses
+
++ (void)validateAddress:(RadarAddress *_Nonnull)address completionHandler:(RadarValidateAddressCompletionHandler)completionHandler {
+    [[RadarAPIClient sharedInstance] validateAddress:address
+                                  completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, RadarAddress *_Nullable address, RadarAddressVerificationStatus verificationStatus) {
+                                      [RadarUtils runOnMainThread:^{
+                                          completionHandler(status, address, verificationStatus);
+                                      }];
+                                  }];
 }
 
 #pragma mark - Geocoding
@@ -958,6 +991,27 @@
     return str;
 }
 
++ (NSString *)stringForVerificationStatus:(RadarAddressVerificationStatus)status {
+    NSString *str;
+    switch (status) {
+    case RadarAddressVerificationStatusVerified:
+        str = @"VERIFIED";
+        break;
+    case RadarAddressVerificationStatusPartiallyVerified:
+        str = @"PARTIALLY_VERIFIED";
+        break;
+    case RadarAddressVerificationStatusAmbiguous:
+        str = @"AMBIGUOUS";
+        break;
+    case RadarAddressVerificationStatusUnverified:
+        str = @"UNVERIFIED";
+        break;
+    default:
+        str = @"UNKNOWN";
+    }
+    return str;
+}
+
 + (NSString *)stringForLocationSource:(RadarLocationSource)source {
     NSString *str;
     switch (source) {
@@ -1082,10 +1136,11 @@
                                          }];
     }
     
-    [Radar logConversionWithName:@"app_open" metadata:nil completionHandler:^(RadarStatus status, RadarEvent * _Nullable event) {
-        NSString *message = [NSString stringWithFormat:@"Conversion name = %@: status = %@; event = %@", event.conversionName, [Radar stringForStatus:status], event];
-        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:message];
-    }];
+    // TODO: log opened_app conversions once the desired logic is hashed out
+//    [Radar logConversionWithName:@"opened_app" metadata:nil completionHandler:^(RadarStatus status, RadarEvent * _Nullable event) {
+//        NSString *message = [NSString stringWithFormat:@"Conversion name = %@: status = %@; event = %@", event.conversionName, [Radar stringForStatus:status], event];
+//        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:message];
+//    }];
 }
 
 - (void)dealloc {
