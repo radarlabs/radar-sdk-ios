@@ -14,4 +14,6 @@
 
 + (void)flushLogs;
 
++ (void)logOpenedAppConversion;
+
 @end
