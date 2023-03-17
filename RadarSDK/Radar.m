@@ -408,9 +408,9 @@
 }
 
 + (void)logOpenedAppConversion {
-    // if opened_app has been logged in the last 250 milliseconds, don't log it again
+    // if opened_app has been logged in the last 1000 milliseconds, don't log it again
     NSTimeInterval lastAppOpenTimeInterval =[[NSDate date] timeIntervalSinceDate:[RadarSettings lastAppOpenTime]];
-    if (lastAppOpenTimeInterval * 1000 > 250) {
+    if (lastAppOpenTimeInterval * 1000 > 1000) {
         [RadarSettings updateLastAppOpenTime];
         [self sendLogConversionRequestWithName:@"opened_app" metadata:nil completionHandler:^(RadarStatus status, RadarEvent * _Nullable event) {
             NSString *message = [NSString stringWithFormat:@"Conversion name = %@: status = %@; event = %@", event.conversionName, [Radar stringForStatus:status], event];
