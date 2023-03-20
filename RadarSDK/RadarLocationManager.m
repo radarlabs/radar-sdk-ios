@@ -474,6 +474,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 }
 
 - (void)removeSyncedGeofences {
+
     NSMutableArray *identifiers = [NSMutableArray new];
     for (CLRegion *region in self.locationManager.monitoredRegions) {
         if ([region.identifier hasPrefix:kSyncGeofenceIdentifierPrefix]) {
@@ -489,6 +490,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 }
 
 - (void)removeSyncedNotifications {
+
     NSMutableArray *identifiers = [NSMutableArray new];
     for (CLRegion *region in self.locationManager.monitoredRegions) {
         if ([region.identifier hasPrefix:kSyncNotificationIdentifierPrefix]) {
@@ -498,6 +500,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 
     UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
     [center removePendingNotificationRequestsWithIdentifiers:identifiers];
+    [center removeAllPendingNotificationRequests];
 
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Removed synced notifications"];
 }
@@ -547,7 +550,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         // identifier that has prefix, geofenceId, and timestamp
         NSString *geofenceId = geofence._id;
         NSString *timestamp = [NSString stringWithFormat:@"ts%f", [[NSDate date] timeIntervalSince1970]];
-        NSString *identifier = [NSString stringWithFormat:@"%@%@%@", kSyncNotificationIdentifierPrefix, geofenceId, timestamp];
+        NSString *identifier = [NSString stringWithFormat:@"%@%@_%@", kSyncNotificationIdentifierPrefix, geofenceId, timestamp];
 
         CLRegion *region = [[CLCircularRegion alloc] initWithCenter:center.coordinate radius:radius identifier:identifier];
         [self.locationManager startMonitoringForRegion:region];

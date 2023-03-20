@@ -437,6 +437,13 @@
     }
 }
 
++ (void)logOpenedNotificationConversionWithMetadata:(NSDictionary *_Nullable)metadata {
+    [self sendLogConversionRequestWithName:@"opened_notification" metadata:metadata completionHandler:^(RadarStatus status, RadarEvent * _Nullable event) {
+        NSString *message = [NSString stringWithFormat:@"Conversion name = %@: status = %@; event = %@", event.conversionName, [Radar stringForStatus:status], event];
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:message];
+    }];
+}
+
 + (void)logConversionWithName:(NSString *)name
                      metadata:(NSDictionary *_Nullable)metadata
             completionHandler:(RadarLogConversionCompletionHandler)completionHandler {
@@ -1156,6 +1163,8 @@
 }
 
 - (void)applicationWillEnterForeground {
+    // log 'foregrounding'
+    [[RadarLogBuffer sharedInstance] write:RadarLogLevelDebug message:@"foregrounding"];
     BOOL updated = [RadarSettings updateSessionId];
     if (updated) {
         [[RadarAPIClient sharedInstance] getConfigForUsage:@"resume"
