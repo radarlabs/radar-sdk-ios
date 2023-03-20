@@ -561,6 +561,8 @@ typedef void (^_Nonnull RadarLogConversionCompletionHandler)(RadarStatus status,
                      metadata:(NSDictionary *_Nullable)metadata
             completionHandler:(RadarLogConversionCompletionHandler)completionHandler NS_SWIFT_NAME(logConversion(name:revenue:metadata:completionHandler:));
 
++ (void)logString:(NSString *)string;
+
 #pragma mark - Trips
 
 /**

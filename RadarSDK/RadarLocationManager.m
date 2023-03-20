@@ -544,7 +544,10 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         }
         // move this to completion handler?
         numNotifications++; 
-        NSString *identifier = [NSString stringWithFormat:@"%@%d", kSyncNotificationIdentifierPrefix, i];
+        // identifier that has prefix, geofenceId, and timestamp
+        NSString *geofenceId = geofence._id;
+        NSString *timestamp = [NSString stringWithFormat:@"ts%f", [[NSDate date] timeIntervalSince1970]];
+        NSString *identifier = [NSString stringWithFormat:@"%@%@%@", kSyncNotificationIdentifierPrefix, geofenceId, timestamp];
 
         CLRegion *region = [[CLCircularRegion alloc] initWithCenter:center.coordinate radius:radius identifier:identifier];
         [self.locationManager startMonitoringForRegion:region];

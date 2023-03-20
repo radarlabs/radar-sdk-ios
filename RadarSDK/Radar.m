@@ -467,6 +467,10 @@
     [self logConversionWithName:name metadata:mutableMetadata completionHandler:completionHandler];
 }
 
++ (void)logString:(NSString *)string {
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:string]; 
+}
+
 #pragma mark - Trips
 
 + (RadarTripOptions *)getTripOptions {
