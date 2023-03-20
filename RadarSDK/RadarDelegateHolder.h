@@ -17,6 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nullable, weak, nonatomic) id<RadarDelegate> delegate;
 
 + (instancetype)sharedInstance;
+- (void)didFailWithStatus:(RadarStatus)status;
 
 @end
 

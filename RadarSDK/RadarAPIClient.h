@@ -44,6 +44,8 @@ typedef void (^_Nonnull RadarSearchBeaconsAPICompletionHandler)(RadarStatus stat
 
 typedef void (^_Nonnull RadarGeocodeAPICompletionHandler)(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarAddress *> *_Nullable addresses);
 
+typedef void (^_Nonnull RadarValidateAddressAPICompletionHandler)(RadarStatus status, NSDictionary *_Nullable res, RadarAddress *_Nullable address, RadarAddressVerificationStatus verificationStatus);
+
 typedef void (^_Nonnull RadarIPGeocodeAPICompletionHandler)(RadarStatus status, NSDictionary *_Nullable res, RadarAddress *_Nullable address, BOOL proxy);
 
 typedef void (^_Nonnull RadarDistanceAPICompletionHandler)(RadarStatus status, NSDictionary *_Nullable res, RadarRoutes *_Nullable routes);
@@ -52,7 +54,7 @@ typedef void (^_Nonnull RadarMatrixAPICompletionHandler)(RadarStatus status, NSD
 
 typedef void (^_Nonnull RadarConfigAPICompletionHandler)(RadarStatus status, RadarConfig *_Nullable config);
 
-typedef void (^_Nonnull RadarSendEventAPICompletionHandler)(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable event);
+typedef void (^_Nonnull RadarSendEventAPICompletionHandler)(RadarStatus status, NSDictionary *_Nullable res, RadarEvent *_Nullable event);
 
 typedef void (^_Nonnull RadarSyncLogsAPICompletionHandler)(RadarStatus status);
 
@@ -116,7 +118,17 @@ typedef void (^_Nonnull RadarSyncLogsAPICompletionHandler)(RadarStatus status);
                    layers:(NSArray<NSString *> *_Nullable)layers
                     limit:(int)limit
                   country:(NSString *_Nullable)country
+              expandUnits:(BOOL)expandUnits
         completionHandler:(RadarGeocodeAPICompletionHandler _Nonnull)completionHandler;
+
+- (void)autocompleteQuery:(NSString *_Nonnull)query
+                     near:(CLLocation *_Nullable)near
+                   layers:(NSArray<NSString *> *_Nullable)layers
+                    limit:(int)limit
+                  country:(NSString *_Nullable)country
+        completionHandler:(RadarGeocodeAPICompletionHandler _Nonnull)completionHandler;
+
+- (void)validateAddress:(RadarAddress *_Nonnull)address completionHandler:(RadarValidateAddressAPICompletionHandler _Nonnull)completionHandler;
 
 - (void)geocodeAddress:(NSString *_Nonnull)query completionHandler:(RadarGeocodeAPICompletionHandler _Nonnull)completionHandler;
 
@@ -138,10 +150,8 @@ typedef void (^_Nonnull RadarSyncLogsAPICompletionHandler)(RadarStatus status);
            completionHandler:(RadarMatrixAPICompletionHandler _Nonnull)completionHandler;
 
 - (void)sendEvent:(NSString *)type
-         withMetadata:(NSDictionary *_Nullable)metadata
-                 user:(RadarUser *_Nullable)user
-          trackEvents:(NSArray<RadarEvent *> *_Nullable)trackEvents
-    completionHandler:(RadarSendEventAPICompletionHandler _Nonnull)completionHandler;
+     withMetadata:(NSDictionary *_Nullable)metadata
+completionHandler:(RadarSendEventAPICompletionHandler _Nonnull)completionHandler;
 
 - (void)syncLogs:(NSArray<RadarLog *> *)logs completionHandler:(RadarSyncLogsAPICompletionHandler _Nonnull)completionHandler;
 

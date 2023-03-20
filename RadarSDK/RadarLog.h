@@ -23,11 +23,16 @@
 @property (nonnull, copy, nonatomic, readonly) NSString *message;
 
 /**
+ The log type.
+ */
+@property (assign, nonatomic, readonly) RadarLogType type;
+
+/**
  The datetime when the log occurred on the device.
  */
 @property (nonnull, copy, nonatomic, readonly) NSDate *createdAt;
 
-- (instancetype _Nullable)initWithLevel:(RadarLogLevel)level message:(NSString *_Nullable)message;
+- (instancetype _Nullable)initWithLevel:(RadarLogLevel)level type:(RadarLogType)type message:(NSString *_Nullable)message;
 
 - (NSDictionary *_Nonnull)dictionaryValue;
 

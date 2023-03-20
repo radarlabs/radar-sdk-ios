@@ -29,6 +29,20 @@
     return mutableAddresses;
 }
 
++ (RadarAddress *_Nullable)addressFromObject:(id _Nonnull)object {
+    if (!object || ![object isKindOfClass:[NSDictionary class]]) {
+        return nil;
+    }
+
+    RadarAddress *address = [[RadarAddress alloc] initWithObject:object];
+    if (!address) {
+        return nil;
+    }
+
+    return address;
+}
+
+
 - (instancetype _Nullable)initWithCoordinate:(CLLocationCoordinate2D)coordinate
                             formattedAddress:(NSString *_Nullable)formattedAddress
                                      country:(NSString *_Nullable)country
@@ -44,8 +58,12 @@
                                       county:(NSString *_Nullable)county
                                 neighborhood:(NSString *_Nullable)neighborhood
                                       number:(NSString *_Nullable)number
+                                      street:(NSString *_Nullable)street
                                 addressLabel:(NSString *_Nullable)addressLabel
                                   placeLabel:(NSString *_Nullable)placeLabel
+                                        unit:(NSString *_Nullable)unit
+                                       plus4:(NSString *_Nullable)plus4
+                                    metadata:(NSDictionary *_Nullable)metadata
                                   confidence:(RadarAddressConfidence)confidence {
     self = [super init];
     if (self) {
@@ -64,8 +82,12 @@
         _county = county;
         _neighborhood = neighborhood;
         _number = number;
+        _street = street;
         _addressLabel = addressLabel;
         _placeLabel = placeLabel;
+        _unit = unit;
+        _plus4 = plus4;
+        _metadata = metadata;
         _confidence = confidence;
     }
     return self;
@@ -96,8 +118,12 @@
     NSString *county;
     NSString *neighborhood;
     NSString *number;
+    NSString *street;
     NSString *addressLabel;
     NSString *placeLabel;
+    NSString *unit;
+    NSString *plus4;
+    NSMutableDictionary *metadata;
 
     RadarAddressConfidence confidence = RadarAddressConfidenceNone;
 
@@ -187,6 +213,11 @@
         number = (NSString *)addressNumberObj;
     }
 
+    id streetObj = dict[@"street"];
+    if (streetObj && [streetObj isKindOfClass:[NSString class]]) {
+        street = (NSString *)streetObj;
+    }
+
     id addressLabelObj = dict[@"addressLabel"];
     if (addressLabelObj && [addressLabelObj isKindOfClass:[NSString class]]) {
         addressLabel = (NSString *)addressLabelObj;
@@ -195,6 +226,21 @@
     id placeLabelObj = dict[@"placeLabel"];
     if (placeLabelObj && [placeLabelObj isKindOfClass:[NSString class]]) {
         placeLabel = (NSString *)placeLabelObj;
+    }
+
+    id unitObj = dict[@"unit"];
+    if (unitObj && [unitObj isKindOfClass:[NSString class]]) {
+        unit = (NSString *)unitObj;
+    }
+
+    id plus4Obj = dict[@"plus4"];
+    if (plus4Obj && [plus4Obj isKindOfClass:[NSString class]]) {
+        plus4 = (NSString *)plus4Obj;
+    }
+
+    id metadataObj = dict[@"metadata"];
+    if (metadataObj && [metadataObj isKindOfClass:[NSDictionary class]]) {
+        metadata = [NSMutableDictionary dictionaryWithDictionary:(NSDictionary *)metadataObj];
     }
 
     id confidenceObj = dict[@"confidence"];
@@ -209,6 +255,7 @@
             confidence = RadarAddressConfidenceFallback;
         }
     }
+
 
     return [[RadarAddress alloc] initWithCoordinate:coordinate
                                    formattedAddress:formattedAddress
@@ -225,8 +272,12 @@
                                              county:county
                                        neighborhood:neighborhood
                                              number:number
+                                             street:street
                                        addressLabel:addressLabel
                                          placeLabel:placeLabel
+                                               unit:unit
+                                              plus4:plus4
+                                             metadata:metadata
                                          confidence:confidence];
 }
 
@@ -256,6 +307,20 @@
     }
 }
 
++ (RadarAddressVerificationStatus)addressVerificationStatusForString:(NSString *)string {
+    if ([string isEqualToString:@"v"]) {
+        return RadarAddressVerificationStatusVerified;
+    } else if ([string isEqualToString:@"p"]) {
+        return RadarAddressVerificationStatusPartiallyVerified;
+    } else if ([string isEqualToString:@"a"]) {
+        return RadarAddressVerificationStatusAmbiguous;
+    } else if ([string isEqualToString:@"u"]) {
+        return RadarAddressVerificationStatusUnverified;
+    } else {
+        return RadarAddressVerificationStatusNone;
+    }
+}
+
 - (NSDictionary *)dictionaryValue {
     NSMutableDictionary *dict = [NSMutableDictionary new];
     [dict setValue:@(self.coordinate.latitude) forKey:@"latitude"];
@@ -274,8 +339,12 @@
     [dict setValue:self.county forKey:@"county"];
     [dict setValue:self.neighborhood forKey:@"neighborhood"];
     [dict setValue:self.number forKey:@"number"];
+    [dict setValue:self.street forKey:@"street"];
     [dict setValue:self.addressLabel forKey:@"addressLabel"];
     [dict setValue:self.placeLabel forKey:@"placeLabel"];
+    [dict setValue:self.unit forKey:@"unit"];
+    [dict setValue:self.plus4 forKey:@"plus4"];
+    [dict setValue:self.metadata forKey:@"metadata"];
     [dict setValue:[RadarAddress stringForConfidence:self.confidence] forKey:@"confidence"];
     return dict;
 }
