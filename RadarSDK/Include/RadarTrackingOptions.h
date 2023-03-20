@@ -155,9 +155,9 @@ typedef NS_ENUM(NSInteger, RadarTrackingOptionsSyncLocations) {
 @property (nonatomic, assign) BOOL beacons;
 
 /**
- Either `default` if these options were set by the server, `on-trip` if they were set specifically for using during trips, or `nil` if they weren't set by the server.
+ Remote tracking options rule applied. Either `default`, `on-trip`, or `nil` if not set by the server.
  */
-@property (nonatomic, copy) NSString *optionsType;
+@property (nonatomic, copy) NSString *rule;
 
 /**
  One of `"efficient"`, `"responsive"`, `"continuous"`, or `"custom"`.

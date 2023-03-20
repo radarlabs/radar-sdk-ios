@@ -172,8 +172,8 @@ static NSString *const kDefaultVerifiedHost = @"https://api-verified.radar.io";
 }
 
 + (void)setRemoteTrackingOptions:(RadarTrackingOptions *_Nonnull)options {
-    if (options.optionsType) {
-        NSString *message = [NSString stringWithFormat:@"Using remote tracking options | type = %@; preset = %@", options.optionsType, options.preset];
+    if (options.rule) {
+        NSString *message = [NSString stringWithFormat:@"Using remote tracking options | rule = %@; preset = %@", options.rule, options.preset];
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:message];
     }
 
