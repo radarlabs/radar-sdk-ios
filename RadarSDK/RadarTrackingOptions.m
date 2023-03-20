@@ -282,18 +282,6 @@ NSString *const TEMPORARY_TYPE = @"type";
     return dict;
 }
 
-- (NSString *)preset {
-    if ([self isEqual:RadarTrackingOptions.presetContinuous]) {
-        return @"continuous";
-    } else if ([self isEqual:RadarTrackingOptions.presetEfficient]) {
-        return @"efficient";
-    } else if ([self isEqual:RadarTrackingOptions.presetResponsive]) {
-        return @"responsive";
-    } else {
-        return @"custom";
-    }
-}
-
 - (BOOL)isEqual:(id)object {
     if (!object) {
         return NO;

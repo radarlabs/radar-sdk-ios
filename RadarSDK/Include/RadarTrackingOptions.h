@@ -155,14 +155,9 @@ typedef NS_ENUM(NSInteger, RadarTrackingOptionsSyncLocations) {
 @property (nonatomic, assign) BOOL beacons;
 
 /**
- Remote tracking options rule applied. Either `default`, `on-trip`, or `nil` if not set by the server.
+ Remote tracking options rule in use. Either `default`, `on-trip`, or `nil` if not set by the server.
  */
 @property (nonatomic, copy) NSString *rule;
-
-/**
- One of `"efficient"`, `"responsive"`, `"continuous"`, or `"custom"`.
- */
-@property (nonatomic, readonly) NSString *preset;
 
 /**
  Updates about every 30 seconds while moving or stopped. Moderate battery usage. Shows the flashing blue status bar during tracking.
