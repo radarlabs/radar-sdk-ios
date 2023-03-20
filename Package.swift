@@ -14,7 +14,7 @@ let package = Package(
     ],
     dependencies: [],
     targets: [
-        .target(`
+        .target(
             name: "RadarSDK",
             path: "RadarSDK",
             exclude: ["Info.plist"],
