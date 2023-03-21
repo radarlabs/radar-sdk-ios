@@ -58,7 +58,6 @@ static NSString *const kLastAppOpenTime = @"radar-lastAppOpenTime";
 }
 
 + (BOOL)updateSessionId {
-    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"New call to updateSessionId"]];
     double timestampSeconds = [[NSDate date] timeIntervalSince1970];
     double sessionIdSeconds = [[NSUserDefaults standardUserDefaults] doubleForKey:kSessionId];
     if (timestampSeconds - sessionIdSeconds > 300) {
@@ -66,7 +65,7 @@ static NSString *const kLastAppOpenTime = @"radar-lastAppOpenTime";
 
         [Radar logOpenedAppConversion];
         
-        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"New session (TEST) | sessionId = %@", [RadarSettings sessionId]]];
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"New session | sessionId = %@", [RadarSettings sessionId]]];
 
         return YES;
     }
