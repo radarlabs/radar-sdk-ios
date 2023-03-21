@@ -1115,7 +1115,6 @@
 }
 
 - (void)applicationWillEnterForeground {
-    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"In application will enter foreground"]];
     BOOL updated = [RadarSettings updateSessionId];
     if (updated) {
         [[RadarAPIClient sharedInstance] getConfigForUsage:@"resume"
