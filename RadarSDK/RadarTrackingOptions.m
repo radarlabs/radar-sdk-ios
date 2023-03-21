@@ -41,8 +41,6 @@ NSString *const kReplayAll = @"all";
 NSString *const kSyncAll = @"all";
 NSString *const kSyncStopsAndExits = @"stopsAndExits";
 NSString *const kSyncNone = @"none";
-NSString *const kRule = @"rule";
-NSString *const TEMPORARY_TYPE = @"type";
 
 + (RadarTrackingOptions *)presetContinuous {
     RadarTrackingOptions *options = [RadarTrackingOptions new];
@@ -241,7 +239,6 @@ NSString *const TEMPORARY_TYPE = @"type";
     options.useVisits = [dict[kUseVisits] boolValue];
     options.useSignificantLocationChanges = [dict[kUseSignificantLocationChanges] boolValue];
     options.beacons = [dict[kBeacons] boolValue];
-    options.rule = dict[TEMPORARY_TYPE]; // update server to `rule`
     return options;
 }
 
@@ -274,11 +271,6 @@ NSString *const TEMPORARY_TYPE = @"type";
     dict[kUseVisits] = @(self.useVisits);
     dict[kUseSignificantLocationChanges] = @(self.useSignificantLocationChanges);
     dict[kBeacons] = @(self.beacons);
-    if (self.rule) {
-        dict[kRule] = self.rule;
-    } else {
-        [dict removeObjectForKey:kRule];
-    }
     return dict;
 }
 
