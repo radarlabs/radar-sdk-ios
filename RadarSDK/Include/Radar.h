@@ -567,12 +567,13 @@ typedef void (^_Nonnull RadarLogConversionCompletionHandler)(RadarStatus status,
 /**
 logOpenedNotificationConversionWithMetadata
     
-     @param metadata The metadata associated with the conversion.
-     @param completionHandler A completion handler.
+    @param metadata The metadata associated with the notification
+    @param completionHandler A completion handler.
     
-     @see https://radar.com/documentation/api#send-a-custom-event
-     */
-    + (void)logOpenedNotificationConversionWithMetadata:(NSDictionary *_Nullable)metadata NS_SWIFT_NAME(logOpenedNotificationConversion(metadata:));
+    @see https://radar.com/documentation/api#send-a-custom-event
+    */
++ (void)logOpenedNotificationConversionWithMetadata:(NSDictionary *_Nullable)metadata NS_SWIFT_NAME(logOpenedNotificationConversion(metadata:));
+
 
 + (void)logString:(NSString *)string;
 

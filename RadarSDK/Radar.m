@@ -1163,7 +1163,6 @@
 }
 
 - (void)applicationWillEnterForeground {
-    // log 'foregrounding'
     [[RadarLogBuffer sharedInstance] write:RadarLogLevelDebug message:@"foregrounding"];
     BOOL updated = [RadarSettings updateSessionId];
     if (updated) {
