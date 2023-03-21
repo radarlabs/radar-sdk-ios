@@ -107,6 +107,24 @@ typedef NS_ENUM(NSInteger, RadarLogLevel) {
 };
 
 /**
+ The classification type for debug logs.
+ */
+typedef NS_ENUM(NSInteger, RadarLogType) {
+    /// None
+    RadarLogTypeNone = 0,
+    /// SDK Call
+    RadarLogTypeSDKCall = 1,
+    /// SDK Error
+    RadarLogTypeSDKError = 2,
+    /// SDK Exception
+    RadarLogTypeSDKException = 3,
+    /// App Lifecycle Event
+    RadarLogTypeAppLifecycleEvent = 4,
+    /// Permission Event
+    RadarLogTypePermissionEvent = 5,
+};
+
+/**
  The distance units for routes.
 
  @see https://radar.com/documentation/api#routing

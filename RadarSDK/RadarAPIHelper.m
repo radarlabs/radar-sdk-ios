@@ -9,6 +9,7 @@
 
 #import "RadarLogger.h"
 #import "RadarSettings.h"
+#import "RadarUtils.h"
 
 @interface RadarAPIHelper ()
 
@@ -45,13 +46,16 @@
         NSMutableURLRequest *req = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:url]];
         req.HTTPMethod = method;
 
+        NSString * paramJsonStr = [RadarUtils dictionaryToJson:params];
+        NSString * headersJsonStr = [RadarUtils dictionaryToJson:headers];
+
         if (logPayload) {
             [[RadarLogger sharedInstance]
                 logWithLevel:RadarLogLevelDebug
-                     message:[NSString stringWithFormat:@"📍 Radar API request | method = %@; url = %@; headers = %@; params = %@", method, url, headers, params]];
+                     message:[NSString stringWithFormat:@"📍 Radar API request | method = %@; url = %@; headers = %@; params = %@", method, url, headersJsonStr, paramJsonStr]];
         } else {
             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
-                                               message:[NSString stringWithFormat:@"📍 Radar API request | method = %@; url = %@; headers = %@", method, url, headers]];
+                                               message:[NSString stringWithFormat:@"📍 Radar API request | method = %@; url = %@; headers = %@", method, url, headersJsonStr]];
         }
 
         @try {
@@ -86,7 +90,7 @@
 
                 if (error) {
                     dispatch_async(dispatch_get_main_queue(), ^{
-                        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelError message:[NSString stringWithFormat:@"Received network error | error = %@", error]];
+                        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelError type:RadarLogTypeSDKError message:[NSString stringWithFormat:@"Received network error | error = %@", error]];
                         completionHandler(RadarStatusErrorNetwork, nil);
                     });
 
@@ -137,18 +141,19 @@
                     }
 
                     res = (NSDictionary *)resObj;
+                    NSString * resJsonStr = [RadarUtils dictionaryToJson:res];
 
                     if (params && [params objectForKey:@"replays"]) {
                         NSArray *replays = [params objectForKey:@"replays"];
                         [[RadarLogger sharedInstance]
                             logWithLevel:RadarLogLevelDebug
-                                 message:[NSString stringWithFormat:@"📍 Radar API response | method = %@; url = %@; statusCode = %ld; res = %@; latency = %f; replays = %lu",
-                                                                    method, url, (long)statusCode, res, latency, (unsigned long)replays.count]];
+                                 message:[NSString stringWithFormat:@"📍 Radar API response | method = %@; url = %@; statusCode = %ld; latency = %f; replays = %lu; res = %@",
+                                                                    method, url, (long)statusCode, latency, (unsigned long)replays.count, resJsonStr]];
                     } else {
                         [[RadarLogger sharedInstance]
                             logWithLevel:RadarLogLevelDebug
-                                 message:[NSString stringWithFormat:@"📍 Radar API response | method = %@; url = %@; statusCode = %ld; res = %@; latency = %f", method, url,
-                                                                    (long)statusCode, res, latency]];
+                                 message:[NSString stringWithFormat:@"📍 Radar API response | method = %@; url = %@; statusCode = %ld; latency = %f; res = %@", method, url,
+                                                                    (long)statusCode, latency, resJsonStr]];
                     }
                 }
 

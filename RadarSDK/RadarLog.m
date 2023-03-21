@@ -10,10 +10,11 @@
 
 @implementation RadarLog
 
-- (instancetype _Nullable)initWithLevel:(RadarLogLevel)level message:(NSString *_Nullable)message {
+- (instancetype _Nullable)initWithLevel:(RadarLogLevel)level type:(RadarLogType)type message:(NSString *_Nullable)message {
     self = [super init];
     if (self) {
         _level = level;
+        _type = type;
         _message = message;
         _createdAt = [NSDate new];
     }
@@ -42,10 +43,38 @@
     return str;
 }
 
++ (NSString *)stringForLogType:(RadarLogType)type {
+    NSString *str;
+    switch (type) {
+    case RadarLogTypeNone:
+        str = @"NONE";
+        break;
+    case RadarLogTypeSDKCall:
+        str = @"SDK_CALL";
+        break;
+    case RadarLogTypeSDKError:
+        str = @"SDK_ERROR";
+        break;
+    case RadarLogTypeSDKException:
+        str = @"SDK_EXCEPTION";
+        break;
+    case RadarLogTypeAppLifecycleEvent:
+        str = @"APP_LIFECYCLE_EVENT";
+        break;
+    case RadarLogTypePermissionEvent:
+        str = @"PERMISSION_EVENT";
+        break;
+    }
+    return str;
+}
+
 - (NSDictionary *)dictionaryValue {
     NSMutableDictionary *dict = [NSMutableDictionary new];
     dict[@"level"] = [RadarLog stringForLogLevel:self.level];
     dict[@"message"] = self.message;
+    if (self.type) {
+        dict[@"type"] = [RadarLog stringForLogType:self.type];
+    }
     NSString *createdAtString = [RadarUtils.isoDateFormatter stringFromDate:self.createdAt];
     dict[@"createdAt"] = createdAtString;
 
