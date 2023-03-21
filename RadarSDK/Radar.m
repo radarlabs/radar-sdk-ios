@@ -409,15 +409,14 @@
 
 + (void)logOpenedAppConversion {
     // if opened_app has been logged within the last second, don't log it again
-    NSTimeInterval lastAppOpenTimeInterval =[[NSDate date] timeIntervalSinceDate:[RadarSettings lastAppOpenTime]];
+    NSTimeInterval lastAppOpenTimeInterval = [[NSDate date] timeIntervalSinceDate:[RadarSettings lastAppOpenTime]];
     if (lastAppOpenTimeInterval > 1) {
-//        [RadarSettings updateLastAppOpenTime];
+        [RadarSettings updateLastAppOpenTime];
         [self sendLogConversionRequestWithName:@"opened_app" metadata:nil completionHandler:^(RadarStatus status, RadarEvent * _Nullable event) {
             NSString *message = [NSString stringWithFormat:@"Conversion name = %@: status = %@; event = %@", event.conversionName, [Radar stringForStatus:status], event];
             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:message];
         }];
     }
-    [RadarSettings updateLastAppOpenTime];
 }
 
 + (void)logConversionWithName:(NSString *)name

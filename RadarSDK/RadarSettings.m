@@ -239,7 +239,8 @@ static NSString *const kLastAppOpenTime = @"radar-lastAppOpenTime";
 }
 
 + (NSDate *)lastTrackedTime {
-    return [[NSUserDefaults standardUserDefaults] valueForKey:kLastTrackedTime];
+    NSDate *lastTrackedTime = [[NSUserDefaults standardUserDefaults] objectForKey:kLastTrackedTime];
+    return lastTrackedTime ? lastTrackedTime : [NSDate dateWithTimeIntervalSince1970:0];
 }
 
 + (NSString *)verifiedHost {
@@ -253,7 +254,8 @@ static NSString *const kLastAppOpenTime = @"radar-lastAppOpenTime";
 }
 
 + (NSDate *)lastAppOpenTime {
-    return [[NSUserDefaults standardUserDefaults] valueForKey:kLastAppOpenTime];
+    NSDate *lastAppOpenTime = [[NSUserDefaults standardUserDefaults] objectForKey:kLastAppOpenTime];
+    return lastAppOpenTime ? lastAppOpenTime : [NSDate dateWithTimeIntervalSince1970:0];
 }
 
 @end
