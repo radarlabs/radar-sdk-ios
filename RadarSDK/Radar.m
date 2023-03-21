@@ -435,7 +435,6 @@
             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:message];
         }];
     }
-    [RadarSettings updateLastAppOpenTime];
 }
 
 + (void)logConversionWithName:(NSString *)name
