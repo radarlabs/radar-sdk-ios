@@ -533,7 +533,6 @@ typedef void (^_Nonnull RadarLogConversionCompletionHandler)(RadarStatus status,
  */
 + (void)rejectEventId:(NSString *_Nonnull)eventId NS_SWIFT_NAME(rejectEventId(_:));
 
-// TODO replace the docs url once the docs are updated
 /**
  Logs a conversion.
 
@@ -547,7 +546,6 @@ typedef void (^_Nonnull RadarLogConversionCompletionHandler)(RadarStatus status,
                      metadata:(NSDictionary *_Nullable)metadata
             completionHandler:(RadarLogConversionCompletionHandler)completionHandler NS_SWIFT_NAME(logConversion(name:metadata:completionHandler:));
 
-// TODO replace the docs url once the docs are updated
 /**
  Logs a conversion with revenue
 
