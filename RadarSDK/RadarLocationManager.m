@@ -567,17 +567,20 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         region.notifyOnEntry = YES;
         region.notifyOnExit = NO;
 
-        NSString *notificationRepeats = [geofence.metadata objectForKey:@"radar:notificationRepeats"];
         BOOL repeats = NO;
-        if (notificationRepeats && notificationRepeats == @"true") {
+        // check if repeats is true or false
+        NSString *notificationRepeats = [geofence.metadata objectForKey:@"radar:notificationRepeats"];
+        if (notificationRepeats) {
+            repeats = [notificationRepeats boolValue];
             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
-                                                message:[NSString stringWithFormat:@"repeats = YES"]];
-            repeats = YES;
+                                                message:[NSString stringWithFormat:@"repeats is bool vaue: %d",
+                                                                                    repeats]];
         }
 
-        NSString *launchCenterName = [geofence.metadata objectForKey:@"radar:launchCenterName"];
-        if (launchCenterName) {
-            content.launchImageName = launchCenterName;
+
+        NSString *launchImageName = [geofence.metadata objectForKey:@"radar:launchImageName"];
+        if (launchImageName) {
+            content.launchImageName = launchImageName;
         }
 
         NSString *notificationSound = [geofence.metadata objectForKey:@"radar:notificationSound"];
@@ -590,7 +593,11 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
             content.categoryIdentifier = notificationCategory;
         }
 
-        content.UNNotificationInteruptionLevel = UNNotificationInterruptionLevelTimeSensitive;
+        if (@available(iOS 15.0, *)) {
+            content.interruptionLevel = UNNotificationInterruptionLevelTimeSensitive;
+        } else {
+            // Fallback on earlier versions
+        }
 
         UNLocationNotificationTrigger *trigger = [UNLocationNotificationTrigger triggerWithRegion:region repeats:repeats];
 
