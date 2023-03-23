@@ -7,6 +7,7 @@
 
 #import "RadarSettings.h"
 
+#import "Radar+Internal.h"
 #import "RadarLogger.h"
 #import "RadarTripOptions.h"
 
@@ -33,6 +34,7 @@ static NSString *const kDefaultHost = @"https://api.radar.io";
 static NSString *const kLastTrackedTime = @"radar-lastTrackedTime";
 static NSString *const kVerifiedHost = @"radar-verifiedHost";
 static NSString *const kDefaultVerifiedHost = @"https://api-verified.radar.io";
+static NSString *const kLastAppOpenTime = @"radar-lastAppOpenTime";
 
 + (NSString *)publishableKey {
     return [[NSUserDefaults standardUserDefaults] stringForKey:kPublishableKey];
@@ -61,6 +63,8 @@ static NSString *const kDefaultVerifiedHost = @"https://api-verified.radar.io";
     if (timestampSeconds - sessionIdSeconds > 300) {
         [[NSUserDefaults standardUserDefaults] setDouble:timestampSeconds forKey:kSessionId];
 
+        [Radar logOpenedAppConversion];
+        
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"New session | sessionId = %@", [RadarSettings sessionId]]];
 
         return YES;
@@ -235,12 +239,23 @@ static NSString *const kDefaultVerifiedHost = @"https://api-verified.radar.io";
 }
 
 + (NSDate *)lastTrackedTime {
-    return [[NSUserDefaults standardUserDefaults] valueForKey:kLastTrackedTime];
+    NSDate *lastTrackedTime = [[NSUserDefaults standardUserDefaults] objectForKey:kLastTrackedTime];
+    return lastTrackedTime ? lastTrackedTime : [NSDate dateWithTimeIntervalSince1970:0];
 }
 
 + (NSString *)verifiedHost {
     NSString *verifiedHost = [[NSUserDefaults standardUserDefaults] stringForKey:kVerifiedHost];
     return verifiedHost ? verifiedHost : kDefaultVerifiedHost;
+}
+
++ (void)updateLastAppOpenTime {
+    NSDate *timeStamp = [NSDate date];
+    [[NSUserDefaults standardUserDefaults] setObject:timeStamp forKey:kLastAppOpenTime];
+}
+
++ (NSDate *)lastAppOpenTime {
+    NSDate *lastAppOpenTime = [[NSUserDefaults standardUserDefaults] objectForKey:kLastAppOpenTime];
+    return lastAppOpenTime ? lastAppOpenTime : [NSDate dateWithTimeIntervalSince1970:0];
 }
 
 @end

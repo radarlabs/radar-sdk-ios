@@ -45,12 +45,13 @@
                                              selector:@selector(applicationWillEnterForeground)
                                                  name:UIApplicationWillEnterForegroundNotification
                                                object:nil];
+    
+    [RadarSettings setPublishableKey:publishableKey];
 
     if ([[UIApplication sharedApplication] applicationState] != UIApplicationStateBackground) {
         [RadarSettings updateSessionId];
     }
 
-    [RadarSettings setPublishableKey:publishableKey];
     [[RadarLocationManager sharedInstance] updateTrackingFromInitialize];
     [[RadarAPIClient sharedInstance] getConfigForUsage:@"initialize"
                                               verified:NO
@@ -410,6 +411,18 @@
             }];
         }
     }];
+}
+
++ (void)logOpenedAppConversion {
+    // if opened_app has been logged within the last second, don't log it again
+    NSTimeInterval lastAppOpenTimeInterval = [[NSDate date] timeIntervalSinceDate:[RadarSettings lastAppOpenTime]];
+    if (lastAppOpenTimeInterval > 1) {
+        [RadarSettings updateLastAppOpenTime];
+        [self sendLogConversionRequestWithName:@"opened_app" metadata:nil completionHandler:^(RadarStatus status, RadarEvent * _Nullable event) {
+            NSString *message = [NSString stringWithFormat:@"Conversion name = %@: status = %@; event = %@", event.conversionName, [Radar stringForStatus:status], event];
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:message];
+        }];
+    }
 }
 
 + (void)logConversionWithName:(NSString *)name
@@ -1135,12 +1148,7 @@
                                              [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
                                          }];
     }
-    
-    // TODO: log opened_app conversions once the desired logic is hashed out
-//    [Radar logConversionWithName:@"opened_app" metadata:nil completionHandler:^(RadarStatus status, RadarEvent * _Nullable event) {
-//        NSString *message = [NSString stringWithFormat:@"Conversion name = %@: status = %@; event = %@", event.conversionName, [Radar stringForStatus:status], event];
-//        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:message];
-//    }];
+    [Radar logOpenedAppConversion];
 }
 
 - (void)dealloc {
