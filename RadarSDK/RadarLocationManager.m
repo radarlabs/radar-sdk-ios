@@ -547,7 +547,9 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         }
         // move this to completion handler?
         numNotifications++; 
-        NSString *identifier = [NSString stringWithFormat:@"%@%d", kSyncNotificationIdentifierPrefix, i];
+        NSString *geofenceId = geofence._id;
+        NSString *timestamp = [NSString stringWithFormat:@"ts%f", [[NSDate date] timeIntervalSince1970]];
+        NSString *identifier = [NSString stringWithFormat:@"%@%@_%@", kSyncNotificationIdentifierPrefix, geofenceId, timestamp];
 
         CLRegion *region = [[CLCircularRegion alloc] initWithCenter:center.coordinate radius:radius identifier:identifier];
         [self.locationManager startMonitoringForRegion:region];
@@ -593,15 +595,16 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
             content.categoryIdentifier = notificationCategory;
         }
 
-        if (@available(iOS 15.0, *)) {
-            content.interruptionLevel = UNNotificationInterruptionLevelTimeSensitive;
-        } else {
-            // Fallback on earlier versions
-        }
+        // if (@available(iOS 15.0, *)) {
+        //     content.interruptionLevel = UNNotificationInterruptionLevelTimeSensitive;
+        // } else {
+        //     // Fallback on earlier versions
+        // }
 
         UNLocationNotificationTrigger *trigger = [UNLocationNotificationTrigger triggerWithRegion:region repeats:repeats];
 
         UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:identifier content:content trigger:trigger];
+
 
         UNUserNotificationCenter *notificationCenter = [UNUserNotificationCenter currentNotificationCenter];
         [notificationCenter addNotificationRequest:request

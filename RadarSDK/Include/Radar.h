@@ -561,6 +561,16 @@ typedef void (^_Nonnull RadarLogConversionCompletionHandler)(RadarStatus status,
                      metadata:(NSDictionary *_Nullable)metadata
             completionHandler:(RadarLogConversionCompletionHandler)completionHandler NS_SWIFT_NAME(logConversion(name:revenue:metadata:completionHandler:));
 
+/**
+logOpenedNotificationConversionWithMetadata
+
+ @param metadata The metadata associated with the notification
+ @param completionHandler A completion handler.
+
+ @see https://radar.com/documentation/api#send-a-custom-event
+ */
++ (void)logOpenedNotificationConversionWithMetadata:(NSDictionary *_Nullable)metadata NS_SWIFT_NAME(logOpenedNotificationConversion(metadata:));
+
 #pragma mark - Trips
 
 /**
