@@ -492,6 +492,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     NSMutableArray *identifiers = [NSMutableArray new];
     for (CLRegion *region in self.locationManager.monitoredRegions) {
         if ([region.identifier hasPrefix:kSyncNotificationIdentifierPrefix]) {
+            [self.locationManager stopMonitoringForRegion:region];
             [identifiers addObject:region.identifier];
         }
     }
@@ -570,7 +571,6 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         region.notifyOnExit = NO;
 
         BOOL repeats = NO;
-        // check if repeats is true or false
         NSString *notificationRepeats = [geofence.metadata objectForKey:@"radar:notificationRepeats"];
         if (notificationRepeats) {
             repeats = [notificationRepeats boolValue];
@@ -578,7 +578,6 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                                                 message:[NSString stringWithFormat:@"repeats is bool vaue: %d",
                                                                                     repeats]];
         }
-
 
         NSString *launchImageName = [geofence.metadata objectForKey:@"radar:launchImageName"];
         if (launchImageName) {
@@ -595,11 +594,9 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
             content.categoryIdentifier = notificationCategory;
         }
 
-        // if (@available(iOS 15.0, *)) {
-        //     content.interruptionLevel = UNNotificationInterruptionLevelTimeSensitive;
-        // } else {
-        //     // Fallback on earlier versions
-        // }
+        if (@available(iOS 15.0, *)) {
+            content.interruptionLevel = UNNotificationInterruptionLevelTimeSensitive;
+        }
 
         UNLocationNotificationTrigger *trigger = [UNLocationNotificationTrigger triggerWithRegion:region repeats:repeats];
 
