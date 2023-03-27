@@ -565,7 +565,6 @@ typedef void (^_Nonnull RadarLogConversionCompletionHandler)(RadarStatus status,
 logOpenedNotificationConversionWithMetadata
 
  @param metadata The metadata associated with the notification
- @param completionHandler A completion handler.
 
  @see https://radar.com/documentation/api#send-a-custom-event
  */
