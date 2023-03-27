@@ -673,12 +673,13 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
             if (duration == 0) {
                 duration = -[location.timestamp timeIntervalSinceNow];
             }
-            stopped = distance <= options.stopDistance && duration >= options.stopDuration;
+            BOOL arrival = source == RadarLocationSourceVisitArrival;
+            stopped = (distance <= options.stopDistance && duration >= options.stopDuration) || arrival;
 
             [[RadarLogger sharedInstance]
                 logWithLevel:RadarLogLevelDebug
-                     message:[NSString stringWithFormat:@"Calculating stopped | stopped = %d; distance = %f; duration = %f; location.timestamp = %@; lastMovedAt = %@", stopped,
-                                                        distance, duration, location.timestamp, lastMovedAt]];
+                     message:[NSString stringWithFormat:@"Calculating stopped | stopped = %d; arrival = %d; distance = %f; duration = %f; location.timestamp = %@; lastMovedAt = %@", stopped,
+                              arrival, distance, duration, location.timestamp, lastMovedAt]];
 
             if (distance > options.stopDistance) {
                 [RadarState setLastMovedLocation:location];
