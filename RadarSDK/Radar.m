@@ -180,7 +180,7 @@
                                                                                      callTrackAPI(beacons);
                                                                                  }];
                                          }];
-                                     } else {
+                                     } else if (beacons && beacons.count) {
                                          [[RadarLocationManager sharedInstance] replaceSyncedBeacons:beacons];
 
                                          [RadarUtils runOnMainThread:^{
@@ -195,6 +195,8 @@
                                                                                  callTrackAPI(beacons);
                                                                              }];
                                          }];
+                                     } else {
+                                         callTrackAPI(nil);
                                      }
                                  }];
                          } else {
