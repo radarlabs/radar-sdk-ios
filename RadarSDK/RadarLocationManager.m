@@ -482,9 +482,6 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         }
     }
 
-    UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
-    [center removePendingNotificationRequestsWithIdentifiers:identifiers];
-
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Removed synced geofences"];
 }
 
@@ -497,6 +494,10 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         }
     }
 
+    if (identifiers.count == 0) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"No regions monitored for notification, so no synced notifications to remove"];
+        return;
+    }
     UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
     [center removePendingNotificationRequestsWithIdentifiers:identifiers];
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"clearing all pending notifcations"]];
