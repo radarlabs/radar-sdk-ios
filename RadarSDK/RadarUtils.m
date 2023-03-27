@@ -45,7 +45,7 @@ static NSDateFormatter *_isoDateFormatter;
 }
 
 + (NSString *)sdkVersion {
-    return @"3.6.1";
+    return @"3.7.4-beta.1";
 }
 
 + (NSString *)deviceId {
@@ -137,6 +137,23 @@ static NSDateFormatter *_isoDateFormatter;
         }
     }
     return dict;
+}
+
++ (NSString *)dictionaryToJson:(NSDictionary *)dict {
+    if (!dict) {
+        return @"{}";
+    };
+
+    NSError *error;
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:dict
+                                                       options:0
+                                                         error:&error];
+    if (!jsonData) {
+        NSLog(@"bv_jsonStringWithPrettyPrint: error: %@", error.localizedDescription);
+        return @"{}";
+    } else {
+        return [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+    } 
 }
 
 #pragma mark - threading

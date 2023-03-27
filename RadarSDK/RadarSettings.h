@@ -48,7 +48,11 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSArray<NSString *> *_Nullable)beaconUUIDs;
 + (void)setBeaconUUIDs:(NSArray<NSString *> *_Nullable)beaconUUIDs;
 + (NSString *)host;
++ (void)updateLastTrackedTime;
++ (NSDate *)lastTrackedTime;
 + (NSString *)verifiedHost;
++ (void)updateLastAppOpenTime;
++ (NSDate *)lastAppOpenTime;
 
 @end
 

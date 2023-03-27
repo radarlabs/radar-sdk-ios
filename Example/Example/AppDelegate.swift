@@ -80,6 +80,24 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         let origin = CLLocation(latitude: 40.78382, longitude: -73.97536)
         let destination = CLLocation(latitude: 40.70390, longitude: -73.98670)
 
+
+        Radar.autocomplete(
+            query: "brooklyn",
+            near: origin,
+            layers: ["locality"],
+            limit: 10,
+            country: "US",
+            expandUnits:true
+        ) { (status, addresses) in
+            print("Autocomplete: status = \(Radar.stringForStatus(status)); formattedAddress = \(String(describing: addresses?.first?.formattedAddress))")
+
+            if let address = addresses?.first {
+                Radar.validateAddress(address: address) { (status, address, verificationStatus) in
+                    print("Validate address: status = \(Radar.stringForStatus(status)); address = \(String(describing: address)); verificationStatus = \(Radar.stringForVerificationStatus(verificationStatus))")
+                }
+            }
+        }
+
         Radar.autocomplete(
             query: "brooklyn",
             near: origin,
@@ -134,31 +152,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             print("Matrix: status = \(Radar.stringForStatus(status)); matrix[0][0].duration.text = \(String(describing: matrix?.routeBetween(originIndex: 0, destinationIndex: 0)?.duration.text)); matrix[0][1].duration.text = \(String(describing: matrix?.routeBetween(originIndex: 0, destinationIndex: 1)?.duration.text)); matrix[1][0].duration.text = \(String(describing: matrix?.routeBetween(originIndex: 1, destinationIndex: 0)?.duration.text)); matrix[1][1].duration.text = \(String(describing: matrix?.routeBetween(originIndex: 1, destinationIndex: 1)?.duration.text))")
         }
 
-        Radar.sendEvent(customType: "custom_event", metadata: ["data": "test"]) { (status, location, events, user) in
-            if let customEvent = events?.first,
-               customEvent.type == .custom {
-                print("Custom type: \(customEvent.customType!)")
+        Radar.logConversion(name: "conversion_event", metadata: ["data": "test"]) { (status, event) in
+            if let conversionEvent = event, conversionEvent.type == .conversion {
+                print("Conversion name: \(conversionEvent.conversionName!)")
             }
 
-            print("Send event: status = \(Radar.stringForStatus(status)); location = \(String(describing: location)); events = \(String(describing: events)); user = \(String(describing: user))")
-        }
-
-        let customLocation = CLLocation(latitude: 38.87896275702961, longitude: -77.18228972761578)
-
-        Radar.sendEvent(customType: "custom_event_with_location", location: customLocation, metadata: ["data": "test"]) { (status, location, events, user) in
-            if let customEvent = events?.first,
-               customEvent.type == .custom {
-                print("Custom type: \(customEvent.customType!)")
-            }
-
-            print("Send event with custom location: status = \(Radar.stringForStatus(status)); location = \(String(describing: location)); events = \(String(describing: events)); user = \(String(describing: user))")
-        }
-
-        // Test custom event with a manual location
-        Radar.getLocation { (status, location, stopped) in
-            Radar.sendEvent(customType: "app_launched_manual", location: location, metadata: ["data": "test"]) { (status, location, events, user) in
-                print("Send event: status = \(Radar.stringForStatus(status)); location = \(String(describing: location)); events = \(String(describing: events)); user = \(String(describing: user))")
-            }
+            print("Log Conversion: status = \(Radar.stringForStatus(status)); event = \(String(describing: event))")
         }
 
         return true

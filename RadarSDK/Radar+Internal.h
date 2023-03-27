@@ -10,8 +10,10 @@
 
 @interface Radar ()
 
-+ (void)sendLog:(RadarLogLevel)level message:(NSString *_Nonnull)message;
++ (void)sendLog:(RadarLogLevel)level type:(RadarLogType)type message:(NSString *_Nonnull)message;
 
 + (void)flushLogs;
+
++ (void)logOpenedAppConversion;
 
 @end

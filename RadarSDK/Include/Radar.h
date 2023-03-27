@@ -107,6 +107,24 @@ typedef NS_ENUM(NSInteger, RadarLogLevel) {
 };
 
 /**
+ The classification type for debug logs.
+ */
+typedef NS_ENUM(NSInteger, RadarLogType) {
+    /// None
+    RadarLogTypeNone = 0,
+    /// SDK Call
+    RadarLogTypeSDKCall = 1,
+    /// SDK Error
+    RadarLogTypeSDKError = 2,
+    /// SDK Exception
+    RadarLogTypeSDKException = 3,
+    /// App Lifecycle Event
+    RadarLogTypeAppLifecycleEvent = 4,
+    /// Permission Event
+    RadarLogTypePermissionEvent = 5,
+};
+
+/**
  The distance units for routes.
 
  @see https://radar.com/documentation/api#routing
@@ -117,6 +135,25 @@ typedef NS_ENUM(NSInteger, RadarRouteUnits) {
     /// Metric (meters)
     RadarRouteUnitsMetric NS_SWIFT_NAME(metric)
 };
+
+/**
+Verification status enum for RadarAddress with values 'V', 'P', 'A', 'R', and 'U'
+
+@see https://radar.com/documentation/api#address-verification
+*/
+typedef NS_ENUM(NSInteger, RadarAddressVerificationStatus) {
+    /// Unknown
+    RadarAddressVerificationStatusNone NS_SWIFT_NAME(none) = 0,
+    /// Verified: complete match was made between the input data and a single record from the available reference data
+    RadarAddressVerificationStatusVerified NS_SWIFT_NAME(verified) = 1,
+    /// Partially verified: a partial match was made between the input data and a single record from the available reference data
+    RadarAddressVerificationStatusPartiallyVerified NS_SWIFT_NAME(partiallyVerified) = 2,
+    /// Ambiguous: more than one close reference data match
+    RadarAddressVerificationStatusAmbiguous NS_SWIFT_NAME(ambiguous) = 3,
+    /// Unverified: unable to verify. The output fields will contain the input data
+    RadarAddressVerificationStatusUnverified NS_SWIFT_NAME(unverified) = 4
+};
+
 
 #pragma mark - Callback typedefs
 
@@ -193,6 +230,15 @@ typedef void (^_Nonnull RadarSearchGeofencesCompletionHandler)(RadarStatus statu
 typedef void (^_Nonnull RadarGeocodeCompletionHandler)(RadarStatus status, NSArray<RadarAddress *> *_Nullable addresses);
 
 /**
+  Called when a validateAddress request succeeds, fails, or times out.
+
+    Receives the request status and, if successful, the address and a verification status.
+
+    @see https://radar.com/documentation/api#validate-an-address
+*/
+typedef void (^_Nonnull RadarValidateAddressCompletionHandler)(RadarStatus status, RadarAddress *_Nullable address, RadarAddressVerificationStatus verificationStatus);
+
+/**
  Called when an IP geocoding request succeeds, fails, or times out.
 
  Receives the request status and, if successful, the geocoding result (a partial address) and a boolean indicating whether the IP address is a known proxy.
@@ -220,13 +266,13 @@ typedef void (^_Nonnull RadarRouteCompletionHandler)(RadarStatus status, RadarRo
 typedef void (^_Nonnull RadarRouteMatrixCompletionHandler)(RadarStatus status, RadarRouteMatrix *_Nullable matrix);
 
 /**
- Called when a request to send a custom event succeeds, fails, or times out.
+ Called when a request to log a conversion succeeds, fails, or times out.
 
- Receives the request status and, if successful, the user's location, an array of the events generated with the custom event at index 0, and the user.
+ Receives the request status and, if successful, the conversion event generated.
 
  @see https://radar.com/documentation/api#send-a-custom-event
  */
-typedef void (^_Nonnull RadarSendEventCompletionHandler)(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user);
+typedef void (^_Nonnull RadarLogConversionCompletionHandler)(RadarStatus status, RadarEvent *_Nullable event);
 
 /**
  The main class used to interact with the Radar SDK.
@@ -481,32 +527,32 @@ typedef void (^_Nonnull RadarSendEventCompletionHandler)(RadarStatus status, CLL
 + (void)rejectEventId:(NSString *_Nonnull)eventId NS_SWIFT_NAME(rejectEventId(_:));
 
 /**
- Sends a custom event.
+ Logs a conversion.
 
- @param customType The user-defined type of the event.
- @param metadata The metadata associated with the event.
+ @param name The name of the conversion.
+ @param metadata The metadata associated with the conversion.
  @param completionHandler A completion handler.
 
  @see https://radar.com/documentation/api#send-a-custom-event
  */
-+ (void)sendEvent:(NSString *)customType
-         withMetadata:(NSDictionary *_Nullable)metadata
-    completionHandler:(RadarSendEventCompletionHandler)completionHandler NS_SWIFT_NAME(sendEvent(customType:metadata:completionHandler:));
++ (void)logConversionWithName:(NSString *)name
+                     metadata:(NSDictionary *_Nullable)metadata
+            completionHandler:(RadarLogConversionCompletionHandler)completionHandler NS_SWIFT_NAME(logConversion(name:metadata:completionHandler:));
 
 /**
- Sends a custom event with a manually provided location.
+ Logs a conversion with revenue
 
- @param customType The user-defined type of the event.
- @param location The location of the event.
- @param metadata The metadata associated with the event.
+ @param name The name of the conversion.
+ @param revenue The revenue generated by the conversion.
+ @param metadata The metadata associated with the conversion.
  @param completionHandler A completion handler.
 
  @see https://radar.com/documentation/api#send-a-custom-event
  */
-+ (void)sendEvent:(NSString *)customType
-         withLocation:(CLLocation *_Nullable)location
-             metadata:(NSDictionary *_Nullable)metadata
-    completionHandler:(RadarSendEventCompletionHandler)completionHandler NS_SWIFT_NAME(sendEvent(customType:location:metadata:completionHandler:));
++ (void)logConversionWithName:(NSString *)name
+                      revenue:(NSNumber *)revenue
+                     metadata:(NSDictionary *_Nullable)metadata
+            completionHandler:(RadarLogConversionCompletionHandler)completionHandler NS_SWIFT_NAME(logConversion(name:revenue:metadata:completionHandler:));
 
 #pragma mark - Trips
 
@@ -757,6 +803,27 @@ typedef void (^_Nonnull RadarSendEventCompletionHandler)(RadarStatus status, CLL
  @param layers Optional layer filters.
  @param limit The max number of addresses to return. A number between 1 and 100.
  @param country An optional country filter. A string, the unique 2-letter country code.
+ @param expandUnits Whether to expand units. Default behavior in other function signatures is false.
+ @param completionHandler A completion handler.
+
+ @see https://radar.com/documentation/api#autocomplete
+ */
++ (void)autocompleteQuery:(NSString *_Nonnull)query
+                     near:(CLLocation *_Nullable)near
+                   layers:(NSArray<NSString *> *_Nullable)layers
+                    limit:(int)limit
+                  country:(NSString *_Nullable)country
+              expandUnits:(BOOL)expandUnits
+        completionHandler:(RadarGeocodeCompletionHandler)completionHandler NS_SWIFT_NAME(autocomplete(query:near:layers:limit:country:expandUnits:completionHandler:));
+
+/**
+ Autocompletes partial addresses and place names, sorted by relevance.
+
+ @param query The partial address or place name to autocomplete.
+ @param near A location for the search.
+ @param layers Optional layer filters.
+ @param limit The max number of addresses to return. A number between 1 and 100.
+ @param country An optional country filter. A string, the unique 2-letter country code.
  @param completionHandler A completion handler.
 
  @see https://radar.com/documentation/api#autocomplete
@@ -782,6 +849,18 @@ typedef void (^_Nonnull RadarSendEventCompletionHandler)(RadarStatus status, CLL
                      near:(CLLocation *_Nullable)near
                     limit:(int)limit
         completionHandler:(RadarGeocodeCompletionHandler)completionHandler NS_SWIFT_NAME(autocomplete(query:near:limit:completionHandler:));
+#pragma mark - Validating addresses
+
+/**
+ Validates an address, attaching to a verification status, property type, and plus4.
+
+ @param address The address to validate.
+ @param completionHandler A completion handler.
+
+ @see https://radar.com/documentation/api#validate-an-address
+ */
+
++ (void)validateAddress:(RadarAddress *_Nonnull)address completionHandler:(RadarValidateAddressCompletionHandler)completionHandler NS_SWIFT_NAME(validateAddress(address:completionHandler:));
 
 #pragma mark - Geocoding
 
@@ -894,6 +973,16 @@ typedef void (^_Nonnull RadarSendEventCompletionHandler)(RadarStatus status, CLL
  @return A display string for the status value.
  */
 + (NSString *)stringForStatus:(RadarStatus)status NS_SWIFT_NAME(stringForStatus(_:));
+
+/**
+ Returns a string for address validation status value.
+
+ @param verificationStatus An address verification status value.
+
+ @return A string for the address verification status value.
+*/
++ (NSString *)stringForVerificationStatus:(RadarAddressVerificationStatus)verificationStatus NS_SWIFT_NAME(stringForVerificationStatus(_:));
+
 
 /**
  Returns a display string for a location source value.
