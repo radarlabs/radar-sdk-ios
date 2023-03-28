@@ -45,20 +45,7 @@ static NSDateFormatter *_isoDateFormatter;
 }
 
 + (NSString *)sdkVersion {
-    return @"3.7.2";
-}
-
-+ (NSString *)adId {
-    Class ASIdentifierManagerClass = NSClassFromString(@"ASIdentifierManager");
-    if (ASIdentifierManagerClass) {
-        id manager = [ASIdentifierManagerClass valueForKey:@"sharedManager"];
-        if ([[manager valueForKey:@"advertisingTrackingEnabled"] isEqual:@1]) {
-            return [[manager valueForKey:@"advertisingIdentifier"] UUIDString];
-        } else {
-            return @"OptedOut";
-        }
-    }
-    return nil;
+    return @"3.7.3";
 }
 
 + (NSString *)deviceId {

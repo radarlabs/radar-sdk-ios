@@ -39,7 +39,7 @@
 }
 
 + (void)initializeWithPublishableKey:(NSString *)publishableKey {
-    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"Initialize()"];
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"initialize()"];
 
     [[NSNotificationCenter defaultCenter] addObserver:[self sharedInstance]
                                              selector:@selector(applicationWillEnterForeground)
@@ -92,10 +92,6 @@
 
 + (NSDictionary *_Nullable)getMetadata {
     return [RadarSettings metadata];
-}
-
-+ (void)setAdIdEnabled:(BOOL)enabled {
-    [RadarSettings setAdIdEnabled:enabled];
 }
 
 + (void)setAnonymousTrackingEnabled:(BOOL)enabled {
@@ -169,12 +165,6 @@
                                              limit:10
                                  completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarBeacon *> *_Nullable beacons,
                                                      NSArray<NSString *> *_Nullable beaconUUIDs) {
-                                     if (status != RadarStatusSuccess) {
-                                         callTrackAPI(nil);
-
-                                         return;
-                                     }
-
                                      if (beaconUUIDs && beaconUUIDs.count) {
                                          [[RadarLocationManager sharedInstance] replaceSyncedBeaconUUIDs:beaconUUIDs];
 
@@ -190,7 +180,7 @@
                                                                                      callTrackAPI(beacons);
                                                                                  }];
                                          }];
-                                     } else {
+                                     } else if (beacons && beacons.count) {
                                          [[RadarLocationManager sharedInstance] replaceSyncedBeacons:beacons];
 
                                          [RadarUtils runOnMainThread:^{
@@ -205,6 +195,8 @@
                                                                                  callTrackAPI(beacons);
                                                                              }];
                                          }];
+                                     } else {
+                                         callTrackAPI(nil);
                                      }
                                  }];
                          } else {

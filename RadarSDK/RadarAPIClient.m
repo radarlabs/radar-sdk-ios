@@ -162,10 +162,6 @@
         params[@"deviceId"] = [RadarUtils deviceId];
         params[@"description"] = [RadarSettings __description];
         params[@"metadata"] = [RadarSettings metadata];
-        NSString *adId = [RadarUtils adId];
-        if (adId && [RadarSettings adIdEnabled]) {
-            params[@"adId"] = adId;
-        }
         NSString *sessionId = [RadarSettings sessionId];
         if (sessionId) {
             params[@"sessionId"] = sessionId;

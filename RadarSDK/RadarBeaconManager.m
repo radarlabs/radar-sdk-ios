@@ -229,11 +229,17 @@
     [self cancelTimeouts];
 
     for (RadarBeacon *beacon in self.beacons) {
-        [self.locationManager stopRangingBeaconsInRegion:[self regionForBeacon:beacon]];
+        CLBeaconRegion *region = [self regionForBeacon:beacon];
+        if (region != nil) {
+            [self.locationManager stopRangingBeaconsInRegion:region];
+        }
     }
 
     for (NSString *beaconUUID in self.beaconUUIDs) {
-        [self.locationManager stopRangingBeaconsInRegion:[self regionForUUID:beaconUUID]];
+        CLBeaconRegion *region = [self regionForUUID:beaconUUID];
+        if (region != nil) {
+            [self.locationManager stopRangingBeaconsInRegion:region];
+        }
     }
 
     [self callCompletionHandlersWithStatus:RadarStatusSuccess nearbyBeacons:[self.nearbyBeacons allObjects]];
