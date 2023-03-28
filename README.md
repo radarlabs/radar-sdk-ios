@@ -25,4 +25,4 @@ To run the example app, clone this repository, add your publishable API key in `
 
 ## Support
 
-Have questions? We're here to help! Email us at [support@radar.io](mailto:support@radar.io).
+Have questions? We're here to help! Email us at [support@radar.com](mailto:support@radar.com).
