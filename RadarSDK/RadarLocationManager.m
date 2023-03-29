@@ -440,7 +440,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 
     BOOL tracking = [RadarSettings tracking];
     RadarTrackingOptions *options = [Radar getTrackingOptions];
-    if (!tracking || !options.syncGeofences || !geofences) {
+    if (!geofences) {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Skipping replacing synced geofences"];
 
         return;
@@ -450,7 +450,9 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 
     for (int i = 0; i < numGeofences; i++) {
         RadarGeofence *geofence = [geofences objectAtIndex:i];
-        NSString *identifier = [NSString stringWithFormat:@"%@%d", kSyncGeofenceIdentifierPrefix, i];
+        NSString *geofenceId = geofence._id;
+        NSString *timestamp = [NSString stringWithFormat:@"ts%f", [[NSDate date] timeIntervalSince1970]];
+        NSString *identifier = [NSString stringWithFormat:@"%@%@_%@", kSyncGeofenceIdentifierPrefix, geofenceId, timestamp];
         RadarCoordinate *center;
         double radius = 100;
         if ([geofence.geometry isKindOfClass:[RadarCircleGeometry class]]) {
@@ -474,17 +476,28 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
             if (metadata) {
                 NSString *notificationText = [geofence.metadata objectForKey:@"radar:notificationText"];
                 NSString *notificationTitle = [geofence.metadata objectForKey:@"radar:notificationTitle"];
+                NSString *notificationSubtitle = [geofence.metadata objectForKey:@"radar:notificationSubtitle"];
                 if (notificationText) {
                     UNMutableNotificationContent *content = [UNMutableNotificationContent new];
                     if (notificationTitle) {
                         content.title = [NSString localizedUserNotificationStringForKey:notificationTitle arguments:nil];
+                    }
+                    if (notificationSubtitle) {
+                        content.subtitle = [NSString localizedUserNotificationStringForKey:notificationSubtitle arguments:nil];
                     }
                     content.body = [NSString localizedUserNotificationStringForKey:notificationText arguments:nil];
                     content.userInfo = geofence.metadata;
 
                     region.notifyOnEntry = YES;
                     region.notifyOnExit = NO;
-                    UNLocationNotificationTrigger *trigger = [UNLocationNotificationTrigger triggerWithRegion:region repeats:YES];
+                    BOOL repeats = NO;
+                    NSString *notificationRepeats = [geofence.metadata objectForKey:@"radar:notificationRepeats"];
+                    if (notificationRepeats) {
+                        repeats = [notificationRepeats boolValue];
+                        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"repeats is bool vaue: %d", repeats]];
+                    }
+
+                    UNLocationNotificationTrigger *trigger = [UNLocationNotificationTrigger triggerWithRegion:region repeats:repeats];
 
                     UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:identifier content:content trigger:trigger];
 
@@ -500,6 +513,9 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                                                                         message:[NSString stringWithFormat:@"Added local notification | identifier = %@", identifier]];
                                  }
                              }];
+                } else {
+                    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
+                                                       message:[NSString stringWithFormat:@"No notification for synced geofence | identifier = %@", identifier]];
                 }
             }
         }
@@ -509,7 +525,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 - (void)removeSyncedGeofences {
     NSMutableArray *identifiers = [NSMutableArray new];
     for (CLRegion *region in self.locationManager.monitoredRegions) {
-        if ([region.identifier hasPrefix:kSyncGeofenceIdentifierPrefix]) {
+        if ([region.identifier hasPrefix:kSyncGeofenceIdentifierPrefix] || [region.identifier hasPrefix:kBubbleGeofenceIdentifierPrefix]) {
             [self.locationManager stopMonitoringForRegion:region];
             [identifiers addObject:region.identifier];
         }
