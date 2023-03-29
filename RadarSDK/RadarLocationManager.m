@@ -526,14 +526,13 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 - (void)removeSyncedGeofences {
     NSMutableArray *identifiers = [NSMutableArray new];
     for (CLRegion *region in self.locationManager.monitoredRegions) {
-        if ([region.identifier hasPrefix:kSyncGeofenceIdentifierPrefix] || [region.identifier hasPrefix:kSyncNotificationIdentifierPrefix]) {
+        if ([region.identifier hasPrefix:kSyncGeofenceIdentifierPrefix]) {
             [self.locationManager stopMonitoringForRegion:region];
             [identifiers addObject:region.identifier];
         }
     }
 
     UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
-    [center removeAllPendingNotificationRequests];
 
     if (identifiers.count > 0) {
         [center removePendingNotificationRequestsWithIdentifiers:identifiers];
