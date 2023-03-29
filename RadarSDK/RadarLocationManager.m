@@ -57,6 +57,7 @@
 static NSString *const kIdentifierPrefix = @"radar_";
 static NSString *const kBubbleGeofenceIdentifierPrefix = @"radar_bubble_";
 static NSString *const kSyncGeofenceIdentifierPrefix = @"radar_geofence_";
+static NSString *const kSyncNotificationIdentifierPrefix = @"radar_notification_";
 static NSString *const kSyncBeaconIdentifierPrefix = @"radar_beacon_";
 static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 
@@ -525,7 +526,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 - (void)removeSyncedGeofences {
     NSMutableArray *identifiers = [NSMutableArray new];
     for (CLRegion *region in self.locationManager.monitoredRegions) {
-        if ([region.identifier hasPrefix:kSyncGeofenceIdentifierPrefix] || [region.identifier hasPrefix:kBubbleGeofenceIdentifierPrefix]) {
+        if ([region.identifier hasPrefix:kSyncGeofenceIdentifierPrefix] || [region.identifier hasPrefix:kSyncNotificationIdentifierPrefix]) {
             [self.locationManager stopMonitoringForRegion:region];
             [identifiers addObject:region.identifier];
         }
@@ -533,6 +534,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 
     UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
     [center removePendingNotificationRequestsWithIdentifiers:identifiers];
+    [center removeAllPendingNotificationRequests];
 
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Removed synced geofences"];
 }
