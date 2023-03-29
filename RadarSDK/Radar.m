@@ -41,7 +41,7 @@
 }
 
 + (void)initializeWithPublishableKey:(NSString *)publishableKey {
-    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"Initialize()"];
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"initialize()"];
 
     [[NSNotificationCenter defaultCenter] addObserver:[self sharedInstance]
                                              selector:@selector(applicationWillEnterForeground)
@@ -94,10 +94,6 @@
 
 + (NSDictionary *_Nullable)getMetadata {
     return [RadarSettings metadata];
-}
-
-+ (void)setAdIdEnabled:(BOOL)enabled {
-    [RadarSettings setAdIdEnabled:enabled];
 }
 
 + (void)setAnonymousTrackingEnabled:(BOOL)enabled {
@@ -156,16 +152,11 @@
                                            beacons:beacons
                                  completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user,
                                                      NSArray<RadarGeofence *> *_Nullable nearbyGeofences, RadarConfig *_Nullable config) {
-
-                                 NSDictionary *notificationSyncResponse = [[RadarLocationManager sharedInstance] updateSyncedNotifications:nearbyGeofences beacons:beacons];
-                                    NSArray<RadarGeofence *> *nearbyGeofencesWithoutNotifications;
-                                    if (notificationSyncResponse) {
-                                        nearbyGeofencesWithoutNotifications = [RadarGeofence geofencesFromObject:notificationSyncResponse[@"nearbyGeofencesWithoutNotifications"]];
-                                    }
-                                    // nearbyGeofencesWithoutNotifications = notificationSyncResponse[@"nearbyGeofencesWithoutNotifications"];
-                                    int numAvailableRegions = [notificationSyncResponse[@"numAvailableRegions"] intValue];
-                                    [[RadarLocationManager sharedInstance] replaceSyncedGeofences:nearbyGeofencesWithoutNotifications numAvailableRegions:numAvailableRegions];
-
+                                                        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"trackOnce() API response status: %@", [Radar stringForStatus:status]]];
+                                                        // [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message: [NSString stringWithFormat:@"trackOnce() API response body: %@", res]];
+                                     if (status == RadarStatusSuccess) {
+                                         [[RadarLocationManager sharedInstance] replaceSyncedGeofences:nearbyGeofences];
+                                     }
 
                                      if (completionHandler) {
                                          [RadarUtils runOnMainThread:^{
@@ -182,12 +173,6 @@
                                              limit:10
                                  completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarBeacon *> *_Nullable beacons,
                                                      NSArray<NSString *> *_Nullable beaconUUIDs) {
-                                     if (status != RadarStatusSuccess) {
-                                         callTrackAPI(nil);
-
-                                         return;
-                                     }
-
                                      if (beaconUUIDs && beaconUUIDs.count) {
                                          [[RadarLocationManager sharedInstance] replaceSyncedBeaconUUIDs:beaconUUIDs];
 
@@ -203,7 +188,7 @@
                                                                                      callTrackAPI(beacons);
                                                                                  }];
                                          }];
-                                     } else {
+                                     } else if (beacons && beacons.count) {
                                          [[RadarLocationManager sharedInstance] replaceSyncedBeacons:beacons];
 
                                          [RadarUtils runOnMainThread:^{
@@ -218,6 +203,8 @@
                                                                                  callTrackAPI(beacons);
                                                                              }];
                                          }];
+                                     } else {
+                                         callTrackAPI(nil);
                                      }
                                  }];
                          } else {

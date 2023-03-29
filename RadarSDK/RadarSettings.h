@@ -30,8 +30,6 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)setMetadata:(NSDictionary *_Nullable)metadata;
 + (BOOL)anonymousTrackingEnabled;
 + (void)setAnonymousTrackingEnabled:(BOOL)enabled;
-+ (BOOL)adIdEnabled;
-+ (void)setAdIdEnabled:(BOOL)enabled;
 + (BOOL)tracking;
 + (void)setTracking:(BOOL)tracking;
 + (RadarTrackingOptions *_Nullable)trackingOptions;
