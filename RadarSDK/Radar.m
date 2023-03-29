@@ -150,6 +150,12 @@
                                            beacons:beacons
                                  completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user,
                                                      NSArray<RadarGeofence *> *_Nullable nearbyGeofences, RadarConfig *_Nullable config) {
+                                                        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"trackOnce() API response status: %@", [Radar stringForStatus:status]]];
+                                                        // [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message: [NSString stringWithFormat:@"trackOnce() API response body: %@", res]];
+                                     if (status == RadarStatusSuccess) {
+                                         [[RadarLocationManager sharedInstance] replaceSyncedGeofences:nearbyGeofences];
+                                     }
+
                                      if (completionHandler) {
                                          [RadarUtils runOnMainThread:^{
                                              completionHandler(status, location, events, user);
