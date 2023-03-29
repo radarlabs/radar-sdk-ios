@@ -507,16 +507,17 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Removed synced notifications"];
 }
 
-- (NSDictionary*)updateSyncedNotifications:(NSArray<RadarGeofence *> *)geofences beacons:(BOOL)beacons {
+- (NSDictionary*)updateSyncedNotifications:(NSArray<RadarGeofence *> *)geofences beacons:(NSArray<RadarBeacon *> *)beacons {
     // think about diff removing here
     [self removeSyncedNotifications];
     // do this preemtptively in case we had more geofences synced before
     [self removeSyncedGeofences];
-    NSUInteger numGeofences = MIN(geofences.count, 9);
+    [self removeOtherSyncedBeacons:beacons];
+    NSUInteger maxGeofences = 18 - beacons.count;
+    NSUInteger numGeofences = MIN(geofences.count, maxGeofences);
     NSUInteger numNotifications = 0;
 
     NSMutableArray *geofencesWithoutNotifications = [NSMutableArray new];
-
 
     for (int i = 0; i < numGeofences; i++) {
         RadarGeofence *geofence = [geofences objectAtIndex:i];
@@ -699,6 +700,24 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
             [self.locationManager stopMonitoringForRegion:region];
         } else if ([region.identifier hasPrefix:kSyncBeaconIdentifierPrefix]) {
             [self.locationManager stopMonitoringForRegion:region];
+        }
+    }
+}
+
+- (void)removeOtherSyncedBeacons:(NSArray<RadarBeacon *> *)beacons {
+    for (CLRegion *region in self.locationManager.monitoredRegions) {
+        if ([region.identifier hasPrefix:kSyncBeaconIdentifierPrefix]) {
+            BOOL found = NO;
+            for (RadarBeacon *beacon in beacons) {
+                NSString *identifier = [NSString stringWithFormat:@"%@%@", kSyncBeaconIdentifierPrefix, beacon._id];
+                if ([region.identifier isEqualToString:identifier]) {
+                    found = YES;
+                    break;
+                }
+            }
+            if (!found) {
+                [self.locationManager stopMonitoringForRegion:region];
+            }
         }
     }
 }
