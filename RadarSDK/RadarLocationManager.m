@@ -533,8 +533,11 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     }
 
     UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
-    [center removePendingNotificationRequestsWithIdentifiers:identifiers];
     [center removeAllPendingNotificationRequests];
+
+    if (identifiers.count > 0) {
+        [center removePendingNotificationRequestsWithIdentifiers:identifiers];
+    }
 
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Removed synced geofences"];
 }
