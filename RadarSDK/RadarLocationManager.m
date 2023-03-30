@@ -95,6 +95,11 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         _lowPowerLocationManager.allowsBackgroundLocationUpdates = [RadarUtils locationBackgroundMode];
 
         _permissionsHelper = [RadarPermissionsHelper new];
+
+        // if not testing, set _notificationCenter to the real UNUserNotificationCenter
+        if (![[NSProcessInfo processInfo] environment][@"XCTestConfigurationFilePath"]) {
+            _notificationCenter = [UNUserNotificationCenter currentNotificationCenter];
+        }
     }
     return self;
 }
@@ -502,8 +507,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 
                     UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:identifier content:content trigger:trigger];
 
-                    UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
-                    [center addNotificationRequest:request
+                    [self.notificationCenter addNotificationRequest:request
                              withCompletionHandler:^(NSError *_Nullable error) {
                                  if (error) {
                                      [[RadarLogger sharedInstance]
@@ -534,8 +538,8 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 }
 
 - (void)removePendingNotifications {
-    UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
-    [center getPendingNotificationRequestsWithCompletionHandler:^(NSArray<UNNotificationRequest *> *_Nonnull requests) {
+    // UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
+    [self.notificationCenter getPendingNotificationRequestsWithCompletionHandler:^(NSArray<UNNotificationRequest *> *_Nonnull requests) {
         NSMutableArray *identifiers = [NSMutableArray new];
         for (UNNotificationRequest *request in requests) {
             if ([request.identifier hasPrefix:kSyncGeofenceIdentifierPrefix]) {
@@ -544,7 +548,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         }
 
         if (identifiers.count > 0) {
-            [center removePendingNotificationRequestsWithIdentifiers:identifiers];
+            [self.notificationCenter removePendingNotificationRequestsWithIdentifiers:identifiers];
             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Removed pending notifications"];
         }
     }];
