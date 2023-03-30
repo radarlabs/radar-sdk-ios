@@ -1,5 +1,5 @@
 SDK ?= "iphonesimulator"
-DESTINATION ?= "platform=iOS Simulator,name=iPhone 11"
+DESTINATION ?= "platform=iOS Simulator,name=iPhone 14"
 PROJECT := RadarSDK
 PROJECT_EXAMPLE := Example/Example
 SCHEME := XCFramework
