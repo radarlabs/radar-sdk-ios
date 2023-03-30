@@ -438,6 +438,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 
 - (void)replaceSyncedGeofences:(NSArray<RadarGeofence *> *)geofences {
     [self removeSyncedGeofences];
+    [self removePendingNotifications];
 
     BOOL tracking = [RadarSettings tracking];
     RadarTrackingOptions *options = [Radar getTrackingOptions];
@@ -452,8 +453,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     for (int i = 0; i < numGeofences; i++) {
         RadarGeofence *geofence = [geofences objectAtIndex:i];
         NSString *geofenceId = geofence._id;
-        NSString *timestamp = [NSString stringWithFormat:@"ts%f", [[NSDate date] timeIntervalSince1970]];
-        NSString *identifier = [NSString stringWithFormat:@"%@%@_%@", kSyncGeofenceIdentifierPrefix, geofenceId, timestamp];
+        NSString *identifier = [NSString stringWithFormat:@"%@%@", kSyncGeofenceIdentifierPrefix, geofenceId];
         RadarCoordinate *center;
         double radius = 100;
         if ([geofence.geometry isKindOfClass:[RadarCircleGeometry class]]) {
@@ -524,21 +524,30 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 }
 
 - (void)removeSyncedGeofences {
-    NSMutableArray *identifiers = [NSMutableArray new];
     for (CLRegion *region in self.locationManager.monitoredRegions) {
         if ([region.identifier hasPrefix:kSyncGeofenceIdentifierPrefix]) {
             [self.locationManager stopMonitoringForRegion:region];
-            [identifiers addObject:region.identifier];
         }
     }
 
-    UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
-
-    if (identifiers.count > 0) {
-        [center removePendingNotificationRequestsWithIdentifiers:identifiers];
-    }
-
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Removed synced geofences"];
+}
+
+- (void)removePendingNotifications {
+    UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
+    [center getPendingNotificationRequestsWithCompletionHandler:^(NSArray<UNNotificationRequest *> *_Nonnull requests) {
+        NSMutableArray *identifiers = [NSMutableArray new];
+        for (UNNotificationRequest *request in requests) {
+            if ([request.identifier hasPrefix:kSyncGeofenceIdentifierPrefix]) {
+                [identifiers addObject:request.identifier];
+            }
+        }
+
+        if (identifiers.count > 0) {
+            [center removePendingNotificationRequestsWithIdentifiers:identifiers];
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Removed pending notifications"];
+        }
+    }];
 }
 
 - (void)replaceSyncedBeacons:(NSArray<RadarBeacon *> *)beacons {
