@@ -451,7 +451,11 @@
     [self logConversionWithName:name metadata:mutableMetadata completionHandler:completionHandler];
 }
 
-+ (void)logOpenedNotificationConversionWithMetadata:(NSDictionary *_Nullable)metadata {
+
++ (void)logOpenedNotificationConversionWithRequest:(UNNotificationRequest *)request {
+    NSMutableDictionary *metadata = [[NSMutableDictionary alloc] initWithDictionary:request.content.userInfo];
+    [metadata setValue:request.identifier forKey:@"identifier"];
+    
     [self sendLogConversionRequestWithName:@"opened_notification" metadata:metadata completionHandler:^(RadarStatus status, RadarEvent * _Nullable event) {
         NSString *message = [NSString stringWithFormat:@"Conversion name = %@: status = %@; event = %@", event.conversionName, [Radar stringForStatus:status], event];
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:message];
