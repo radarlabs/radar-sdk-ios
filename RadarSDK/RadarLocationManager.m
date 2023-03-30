@@ -96,7 +96,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 
         _permissionsHelper = [RadarPermissionsHelper new];
 
-        // if not testing, set _notificationCenter to the real UNUserNotificationCenter
+        // If not testing, set _notificationCenter to the currentNotificationCenter
         if (![[NSProcessInfo processInfo] environment][@"XCTestConfigurationFilePath"]) {
             _notificationCenter = [UNUserNotificationCenter currentNotificationCenter];
         }
@@ -538,7 +538,6 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 }
 
 - (void)removePendingNotifications {
-    // UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
     [self.notificationCenter getPendingNotificationRequestsWithCompletionHandler:^(NSArray<UNNotificationRequest *> *_Nonnull requests) {
         NSMutableArray *identifiers = [NSMutableArray new];
         for (UNNotificationRequest *request in requests) {
