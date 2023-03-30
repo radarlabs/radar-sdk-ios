@@ -445,8 +445,6 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     [self removeSyncedGeofences];
     [self removePendingNotifications];
 
-    BOOL tracking = [RadarSettings tracking];
-    RadarTrackingOptions *options = [Radar getTrackingOptions];
     if (!geofences) {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Skipping replacing synced geofences"];
 
