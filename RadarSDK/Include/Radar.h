@@ -366,7 +366,7 @@ typedef void (^_Nonnull RadarLogConversionCompletionHandler)(RadarStatus status,
  */
 + (void)setAnonymousTrackingEnabled:(BOOL)enabled;
 
-#pragma mark - Get Location
+#pragma mark - Location
 
 /**
  Gets the device's current location.
@@ -492,7 +492,7 @@ typedef void (^_Nonnull RadarLogConversionCompletionHandler)(RadarStatus status,
  */
 + (RadarTrackingOptions *)getTrackingOptions;
 
-#pragma mark - Delegation
+#pragma mark - Delegate
 
 /**
  Sets a delegate for client-side delivery of events, location updates, and debug logs.
@@ -643,7 +643,7 @@ typedef void (^_Nonnull RadarLogConversionCompletionHandler)(RadarStatus status,
  */
 + (void)cancelTripWithCompletionHandler:(RadarTripCompletionHandler _Nullable)completionHandler NS_SWIFT_NAME(cancelTrip(completionHandler:));
 
-#pragma mark - Device Context
+#pragma mark - Context
 
 /**
  Gets the device's current location, then gets context for that location without sending device or user identifiers to the server.
@@ -849,7 +849,8 @@ typedef void (^_Nonnull RadarLogConversionCompletionHandler)(RadarStatus status,
                      near:(CLLocation *_Nullable)near
                     limit:(int)limit
         completionHandler:(RadarGeocodeCompletionHandler)completionHandler NS_SWIFT_NAME(autocomplete(query:near:limit:completionHandler:));
-#pragma mark - Validating addresses
+
+#pragma mark - Address validation
 
 /**
  Validates an address, attaching to a verification status, property type, and plus4.
@@ -903,7 +904,7 @@ typedef void (^_Nonnull RadarLogConversionCompletionHandler)(RadarStatus status,
  */
 + (void)ipGeocodeWithCompletionHandler:(RadarIPGeocodeCompletionHandler)completionHandler NS_SWIFT_NAME(ipGeocode(completionHandler:));
 
-#pragma mark - Distances
+#pragma mark - Distance
 
 /**
  Gets the device's current location, then calculates the travel distance and duration to a destination.
@@ -963,7 +964,7 @@ typedef void (^_Nonnull RadarLogConversionCompletionHandler)(RadarStatus status,
  */
 + (void)setLogLevel:(RadarLogLevel)level;
 
-#pragma mark - Utilities
+#pragma mark - Helpers
 
 /**
  Returns a display string for a status value.

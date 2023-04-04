@@ -98,7 +98,7 @@
     [RadarSettings setAnonymousTrackingEnabled:enabled];
 }
 
-#pragma mark - Get Location
+#pragma mark - Location
 
 + (void)getLocationWithCompletionHandler:(RadarLocationCompletionHandler)completionHandler {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"getLocation()"];
@@ -367,7 +367,7 @@
     return [RadarSettings remoteTrackingOptions] ? [RadarSettings remoteTrackingOptions] : [RadarSettings trackingOptions];
 }
 
-#pragma mark - Delegation
+#pragma mark - Delegates
 
 + (void)setDelegate:(id<RadarDelegate>)delegate {
     [RadarDelegateHolder sharedInstance].delegate = delegate;
@@ -568,7 +568,7 @@
                                          }];
 }
 
-#pragma mark - Device Context
+#pragma mark - Context
 
 + (void)getContextWithCompletionHandler:(RadarContextCompletionHandler)completionHandler {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"getContext()"];
@@ -798,7 +798,7 @@
                                      }];
 }
 
-#pragma mark - Validating Adressses
+#pragma mark - Address validation
 
 + (void)validateAddress:(RadarAddress *_Nonnull)address completionHandler:(RadarValidateAddressCompletionHandler)completionHandler {
     [[RadarAPIClient sharedInstance] validateAddress:address
@@ -868,7 +868,7 @@
     }];
 }
 
-#pragma mark - Distances
+#pragma mark - Distance
 
 + (void)getDistanceToDestination:(CLLocation *)destination
                            modes:(RadarRouteMode)modes
@@ -946,7 +946,7 @@
     [RadarSettings setLogLevel:level];
 }
 
-#pragma mark - Utilities
+#pragma mark - Helpers
 
 + (NSString *)stringForStatus:(RadarStatus)status {
     NSString *str;
@@ -1159,12 +1159,7 @@
     [[RadarLogBuffer sharedInstance] write:level type:type message:message ];
 }
 
-/**
- * Sends Radar log events to the server
- */
 + (void)flushLogs {
-    // user _id has to exist
-
     if (![self isTestKey]) {
         return;
     }
@@ -1176,7 +1171,7 @@
         return;
     }
 
-    // remove from buffer to handle multiple flushLogs calls
+    // remove logs from buffer to handle multiple flushLogs calls
     [[RadarLogBuffer sharedInstance] removeLogsFromBuffer:pendingLogCount];
 
     RadarSyncLogsAPICompletionHandler onComplete = ^(RadarStatus status) {
