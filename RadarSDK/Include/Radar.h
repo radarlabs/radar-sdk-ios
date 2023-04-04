@@ -24,7 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol RadarDelegate;
 @class RadarTripOptions;
 
-#pragma mark - Enumerations
+#pragma mark - Enums
 
 /**
  The status types for a request.
@@ -230,15 +230,6 @@ typedef void (^_Nonnull RadarSearchGeofencesCompletionHandler)(RadarStatus statu
 typedef void (^_Nonnull RadarGeocodeCompletionHandler)(RadarStatus status, NSArray<RadarAddress *> *_Nullable addresses);
 
 /**
-  Called when a validateAddress request succeeds, fails, or times out.
-
-    Receives the request status and, if successful, the address and a verification status.
-
-    @see https://radar.com/documentation/api#validate-an-address
-*/
-typedef void (^_Nonnull RadarValidateAddressCompletionHandler)(RadarStatus status, RadarAddress *_Nullable address, RadarAddressVerificationStatus verificationStatus);
-
-/**
  Called when an IP geocoding request succeeds, fails, or times out.
 
  Receives the request status and, if successful, the geocoding result (a partial address) and a boolean indicating whether the IP address is a known proxy.
@@ -246,6 +237,15 @@ typedef void (^_Nonnull RadarValidateAddressCompletionHandler)(RadarStatus statu
  @see https://radar.com/documentation/api#ip-geocode
  */
 typedef void (^_Nonnull RadarIPGeocodeCompletionHandler)(RadarStatus status, RadarAddress *_Nullable address, BOOL proxy);
+
+/**
+ Called when an address validation request succeeds, fails, or times out.
+
+ Receives the request status and, if successful, the address and a verification status.
+
+ @see https://radar.com/documentation/api#validate-an-address
+*/
+typedef void (^_Nonnull RadarValidateAddressCompletionHandler)(RadarStatus status, RadarAddress *_Nullable address, RadarAddressVerificationStatus verificationStatus);
 
 /**
  Called when a distance request succeeds, fails, or times out.
@@ -850,19 +850,6 @@ typedef void (^_Nonnull RadarLogConversionCompletionHandler)(RadarStatus status,
                     limit:(int)limit
         completionHandler:(RadarGeocodeCompletionHandler)completionHandler NS_SWIFT_NAME(autocomplete(query:near:limit:completionHandler:));
 
-#pragma mark - Address validation
-
-/**
- Validates an address, attaching to a verification status, property type, and plus4.
-
- @param address The address to validate.
- @param completionHandler A completion handler.
-
- @see https://radar.com/documentation/api#validate-an-address
- */
-
-+ (void)validateAddress:(RadarAddress *_Nonnull)address completionHandler:(RadarValidateAddressCompletionHandler)completionHandler NS_SWIFT_NAME(validateAddress(address:completionHandler:));
-
 #pragma mark - Geocoding
 
 /**
@@ -903,6 +890,18 @@ typedef void (^_Nonnull RadarLogConversionCompletionHandler)(RadarStatus status,
  @see https://radar.com/documentation/api#ip-geocode
  */
 + (void)ipGeocodeWithCompletionHandler:(RadarIPGeocodeCompletionHandler)completionHandler NS_SWIFT_NAME(ipGeocode(completionHandler:));
+
+
+/**
+ Validates an address, attaching a verification status, property type, and ZIP+4.
+
+ @param address The address to validate.
+ @param completionHandler A completion handler.
+
+ @see https://radar.com/documentation/api#validate-an-address
+ */
+
++ (void)validateAddress:(RadarAddress *_Nonnull)address completionHandler:(RadarValidateAddressCompletionHandler)completionHandler NS_SWIFT_NAME(validateAddress(address:completionHandler:));
 
 #pragma mark - Distance
 

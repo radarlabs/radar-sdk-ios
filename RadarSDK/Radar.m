@@ -798,17 +798,6 @@
                                      }];
 }
 
-#pragma mark - Address validation
-
-+ (void)validateAddress:(RadarAddress *_Nonnull)address completionHandler:(RadarValidateAddressCompletionHandler)completionHandler {
-    [[RadarAPIClient sharedInstance] validateAddress:address
-                                  completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, RadarAddress *_Nullable address, RadarAddressVerificationStatus verificationStatus) {
-                                      [RadarUtils runOnMainThread:^{
-                                          completionHandler(status, address, verificationStatus);
-                                      }];
-                                  }];
-}
-
 #pragma mark - Geocoding
 
 + (void)geocodeAddress:(NSString *)query completionHandler:(RadarGeocodeCompletionHandler)completionHandler {
@@ -866,6 +855,15 @@
             }];
         }
     }];
+}
+
++ (void)validateAddress:(RadarAddress *_Nonnull)address completionHandler:(RadarValidateAddressCompletionHandler)completionHandler {
+    [[RadarAPIClient sharedInstance] validateAddress:address
+                                  completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, RadarAddress *_Nullable address, RadarAddressVerificationStatus verificationStatus) {
+                                      [RadarUtils runOnMainThread:^{
+                                          completionHandler(status, address, verificationStatus);
+                                      }];
+                                  }];
 }
 
 #pragma mark - Distance
