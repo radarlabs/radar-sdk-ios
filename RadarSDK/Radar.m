@@ -452,7 +452,7 @@
 }
 
 
-+ (void)logOpenedNotificationConversionWithRequest:(UNNotificationRequest *)request {
++ (void)logConversionWithNotification:(UNNotificationRequest *)request {
     NSMutableDictionary *metadata = [[NSMutableDictionary alloc] initWithDictionary:request.content.userInfo];
     [metadata setValue:request.identifier forKey:@"identifier"];
     

@@ -556,12 +556,12 @@ typedef void (^_Nonnull RadarLogConversionCompletionHandler)(RadarStatus status,
             completionHandler:(RadarLogConversionCompletionHandler)completionHandler NS_SWIFT_NAME(logConversion(name:revenue:metadata:completionHandler:));
 
 /**
-logOpenedNotificationConversionWithRequest
+logConversionWithNotification
  @param request The request associated with the notification
 
  @see https://radar.com/documentation/api#send-a-custom-event
  */
-+ (void)logOpenedNotificationConversionWithRequest:(UNNotificationRequest *_Nullable)request NS_SWIFT_NAME(logOpenedNotificationConversion(request:));
++ (void)logConversionWithNotification:(UNNotificationRequest *_Nullable)request NS_SWIFT_NAME(logConversion(request:));
 
 #pragma mark - Trips
 
