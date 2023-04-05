@@ -226,7 +226,7 @@
     }
 
     RadarTrackingOptions *options = [Radar getTrackingOptions];
-    if (options.syncGeofences || foreground) {
+    if (options.syncGeofences) {
         params[@"nearbyGeofences"] = @(YES);
     }
     if (beacons) {
