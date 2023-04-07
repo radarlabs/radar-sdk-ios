@@ -94,6 +94,11 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         _lowPowerLocationManager.allowsBackgroundLocationUpdates = [RadarUtils locationBackgroundMode];
 
         _permissionsHelper = [RadarPermissionsHelper new];
+
+        // If not testing, set _notificationCenter to the currentNotificationCenter
+        if (![[NSProcessInfo processInfo] environment][@"XCTestConfigurationFilePath"]) {
+            _notificationCenter = [UNUserNotificationCenter currentNotificationCenter];
+        }
     }
     return self;
 }
@@ -438,19 +443,19 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 - (void)replaceSyncedGeofences:(NSArray<RadarGeofence *> *)geofences {
     [self removeSyncedGeofences];
 
-    BOOL tracking = [RadarSettings tracking];
-    RadarTrackingOptions *options = [Radar getTrackingOptions];
-    if (!tracking || !options.syncGeofences || !geofences) {
+    if (!geofences) {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Skipping replacing synced geofences"];
 
         return;
     }
 
     NSUInteger numGeofences = MIN(geofences.count, 9);
+    NSMutableArray *requests = [NSMutableArray array]; 
 
     for (int i = 0; i < numGeofences; i++) {
         RadarGeofence *geofence = [geofences objectAtIndex:i];
-        NSString *identifier = [NSString stringWithFormat:@"%@%d", kSyncGeofenceIdentifierPrefix, i];
+        NSString *geofenceId = geofence._id;
+        NSString *identifier = [NSString stringWithFormat:@"%@%@", kSyncGeofenceIdentifierPrefix, geofenceId];
         RadarCoordinate *center;
         double radius = 100;
         if ([geofence.geometry isKindOfClass:[RadarCircleGeometry class]]) {
@@ -467,58 +472,89 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
             [self.locationManager startMonitoringForRegion:region];
 
             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
-                                               message:[NSString stringWithFormat:@"Synced geofence | latitude = %f; longitude = %f; radius = %f; identifier = %@",
-                                                                                  center.coordinate.latitude, center.coordinate.longitude, radius, identifier]];
+                                            message:[NSString stringWithFormat:@"Synced geofence | latitude = %f; longitude = %f; radius = %f; identifier = %@",
+                                                                                center.coordinate.latitude, center.coordinate.longitude, radius, identifier]];
 
             NSDictionary *metadata = geofence.metadata;
             if (metadata) {
                 NSString *notificationText = [geofence.metadata objectForKey:@"radar:notificationText"];
                 NSString *notificationTitle = [geofence.metadata objectForKey:@"radar:notificationTitle"];
+                NSString *notificationSubtitle = [geofence.metadata objectForKey:@"radar:notificationSubtitle"];
                 if (notificationText) {
                     UNMutableNotificationContent *content = [UNMutableNotificationContent new];
                     if (notificationTitle) {
                         content.title = [NSString localizedUserNotificationStringForKey:notificationTitle arguments:nil];
+                    }
+                    if (notificationSubtitle) {
+                        content.subtitle = [NSString localizedUserNotificationStringForKey:notificationSubtitle arguments:nil];
                     }
                     content.body = [NSString localizedUserNotificationStringForKey:notificationText arguments:nil];
                     content.userInfo = geofence.metadata;
 
                     region.notifyOnEntry = YES;
                     region.notifyOnExit = NO;
-                    UNLocationNotificationTrigger *trigger = [UNLocationNotificationTrigger triggerWithRegion:region repeats:YES];
+                    BOOL repeats = NO;
+                    NSString *notificationRepeats = [geofence.metadata objectForKey:@"radar:notificationRepeats"];
+                    if (notificationRepeats) {
+                        repeats = [notificationRepeats boolValue];
+                        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"repeats is bool vaue: %d", repeats]];
+                    }
+
+                    UNLocationNotificationTrigger *trigger = [UNLocationNotificationTrigger triggerWithRegion:region repeats:repeats];
 
                     UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:identifier content:content trigger:trigger];
-
-                    UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
-                    [center addNotificationRequest:request
-                             withCompletionHandler:^(NSError *_Nullable error) {
-                                 if (error) {
-                                     [[RadarLogger sharedInstance]
-                                         logWithLevel:RadarLogLevelDebug
-                                              message:[NSString stringWithFormat:@"Error adding local notification | identifier = %@; error = %@", identifier, error]];
-                                 } else {
-                                     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
-                                                                        message:[NSString stringWithFormat:@"Added local notification | identifier = %@", identifier]];
-                                 }
-                             }];
+                    [requests addObject:request];
+                } else {
+                    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"No notification text for geofence | geofenceId = %@", geofenceId]];
                 }
             }
         }
     }
+
+    [self removePendingNotificationsWithCompletionHandler: ^{
+        for (UNNotificationRequest *request in requests) {
+            [self.notificationCenter addNotificationRequest:request withCompletionHandler:^(NSError *_Nullable error) {
+                if (error) {
+                    [[RadarLogger sharedInstance]
+                        logWithLevel:RadarLogLevelDebug
+                            message:[NSString stringWithFormat:@"Error adding local notification | identifier = %@; error = %@", request.identifier, error]];
+                } else {
+                    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
+                                                        message:[NSString stringWithFormat:@"Added local notification | identifier = %@", request.identifier]];
+                }
+            }];
+        }
+    }];
 }
 
 - (void)removeSyncedGeofences {
-    NSMutableArray *identifiers = [NSMutableArray new];
     for (CLRegion *region in self.locationManager.monitoredRegions) {
         if ([region.identifier hasPrefix:kSyncGeofenceIdentifierPrefix]) {
             [self.locationManager stopMonitoringForRegion:region];
-            [identifiers addObject:region.identifier];
         }
     }
 
-    UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
-    [center removePendingNotificationRequestsWithIdentifiers:identifiers];
-
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Removed synced geofences"];
+}
+
+- (void)removePendingNotificationsWithCompletionHandler:(void (^)(void))completionHandler {
+    [self.notificationCenter getPendingNotificationRequestsWithCompletionHandler:^(NSArray<UNNotificationRequest *> *_Nonnull requests) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Found %lu pending notifications", (unsigned long)requests.count]];
+        NSMutableArray *identifiers = [NSMutableArray new];
+        for (UNNotificationRequest *request in requests) {
+            if ([request.identifier hasPrefix:kSyncGeofenceIdentifierPrefix]) {
+                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Found pending notification | identifier = %@", request.identifier]];
+                [identifiers addObject:request.identifier];
+            }
+        }
+
+        if (identifiers.count > 0) {
+            [self.notificationCenter removePendingNotificationRequestsWithIdentifiers:identifiers];
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Removed pending notifications"];
+        }
+
+        completionHandler();
+    }];
 }
 
 - (void)replaceSyncedBeacons:(NSArray<RadarBeacon *> *)beacons {

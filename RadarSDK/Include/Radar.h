@@ -8,6 +8,7 @@
 #import <CoreLocation/CoreLocation.h>
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
+#import <UserNotifications/UserNotifications.h>
 
 #import "RadarAddress.h"
 #import "RadarContext.h"
@@ -553,6 +554,14 @@ typedef void (^_Nonnull RadarLogConversionCompletionHandler)(RadarStatus status,
                       revenue:(NSNumber *)revenue
                      metadata:(NSDictionary *_Nullable)metadata
             completionHandler:(RadarLogConversionCompletionHandler)completionHandler NS_SWIFT_NAME(logConversion(name:revenue:metadata:completionHandler:));
+
+/**
+logConversionWithNotification
+ @param request The request associated with the notification
+
+ @see https://radar.com/documentation/api#send-a-custom-event
+ */
++ (void)logConversionWithNotification:(UNNotificationRequest *_Nullable)request NS_SWIFT_NAME(logConversion(request:));
 
 #pragma mark - Trips
 

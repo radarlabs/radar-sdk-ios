@@ -150,6 +150,10 @@
                                            beacons:beacons
                                  completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user,
                                                      NSArray<RadarGeofence *> *_Nullable nearbyGeofences, RadarConfig *_Nullable config) {
+                                     if (status == RadarStatusSuccess) {
+                                         [[RadarLocationManager sharedInstance] replaceSyncedGeofences:nearbyGeofences];
+                                     }
+
                                      if (completionHandler) {
                                          [RadarUtils runOnMainThread:^{
                                              completionHandler(status, location, events, user);
@@ -445,6 +449,17 @@
     [mutableMetadata setValue:revenue forKey:@"revenue"];
     
     [self logConversionWithName:name metadata:mutableMetadata completionHandler:completionHandler];
+}
+
+
++ (void)logConversionWithNotification:(UNNotificationRequest *)request {
+    NSMutableDictionary *metadata = [[NSMutableDictionary alloc] initWithDictionary:request.content.userInfo];
+    [metadata setValue:request.identifier forKey:@"identifier"];
+    
+    [self sendLogConversionRequestWithName:@"opened_notification" metadata:metadata completionHandler:^(RadarStatus status, RadarEvent * _Nullable event) {
+        NSString *message = [NSString stringWithFormat:@"Conversion name = %@: status = %@; event = %@", event.conversionName, [Radar stringForStatus:status], event];
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:message];
+    }];
 }
 
 #pragma mark - Trips
