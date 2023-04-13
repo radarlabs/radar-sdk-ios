@@ -260,7 +260,7 @@
                                                          NSArray<RadarGeofence *> *_Nullable nearbyGeofences, RadarConfig *_Nullable config) {
                                          if (completionHandler) {
                                              [RadarUtils runOnMainThread:^{
-                                                 completionHandler(status, nil, nil, nil);
+                                                 completionHandler(status, location, events, user);
                                              }];
                                          }
                                      }];
