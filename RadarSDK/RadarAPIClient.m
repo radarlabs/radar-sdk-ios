@@ -273,7 +273,7 @@
     NSUInteger replayCount = replays.count;
     NSMutableDictionary *requestParams = [params mutableCopy];
 
-    BOOL replaying = options.replay == RadarTrackingOptionsReplayAll && replayCount > 0;
+    BOOL replaying = options.replay == RadarTrackingOptionsReplayAll && replayCount > 0 && !verified;
     if (replaying) {
         NSMutableArray *replaysArray = [RadarReplay arrayForReplays:replays];
         [replaysArray addObject:params];
