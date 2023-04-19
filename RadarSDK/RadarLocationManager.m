@@ -85,7 +85,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 
         _locationManager = [CLLocationManager new];
         _locationManager.delegate = self;
-        _locationManager.desiredAccuracy = kCLLocationAccuracyThreeKilometers;
+        _locationManager.desiredAccuracy = kCLLocationAccuracyThreeKilometers; // use "lowest power" desired accuracy until a location update is requested
         _locationManager.distanceFilter = kCLDistanceFilterNone;
         _locationManager.pausesLocationUpdatesAutomatically = NO;
         _locationManager.allowsBackgroundLocationUpdates = [RadarUtils locationBackgroundMode] && [CLLocationManager authorizationStatus] == kCLAuthorizationStatusAuthorizedAlways;
