@@ -85,14 +85,10 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 
         _locationManager = [CLLocationManager new];
         _locationManager.delegate = self;
-        _locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters;
+        _locationManager.desiredAccuracy = kCLLocationAccuracyThreeKilometers;
         _locationManager.distanceFilter = kCLDistanceFilterNone;
+        _locationManager.pausesLocationUpdatesAutomatically = NO;
         _locationManager.allowsBackgroundLocationUpdates = [RadarUtils locationBackgroundMode] && [CLLocationManager authorizationStatus] == kCLAuthorizationStatusAuthorizedAlways;
-
-        _lowPowerLocationManager = [CLLocationManager new];
-        _lowPowerLocationManager.desiredAccuracy = kCLLocationAccuracyThreeKilometers;
-        _lowPowerLocationManager.distanceFilter = 3000;
-        _lowPowerLocationManager.allowsBackgroundLocationUpdates = [RadarUtils locationBackgroundMode];
 
         _permissionsHelper = [RadarPermissionsHelper new];
 
@@ -185,8 +181,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         accuracy = kCLLocationAccuracyHundredMeters;
     }
 
-    self.locationManager.desiredAccuracy = accuracy;
-    [self requestLocation];
+    [self requestLocationWithDesiredAccuracy:accuracy];
 }
 
 - (void)startTrackingWithOptions:(RadarTrackingOptions *)trackingOptions {
@@ -212,9 +207,9 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     [self updateTracking];
 }
 
-- (void)startUpdates:(int)interval {
+- (void)startUpdates:(int)interval desiredAccuracy:(CLLocationAccuracy)desiredAccuracy {
     if (!self.started || interval != self.startedInterval) {
-        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Starting timer | interval = %d", interval]];
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Starting timer | interval = %d; desiredAccuracy = %f", interval, desiredAccuracy]];
 
         [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(shutDown) object:nil];
 
@@ -227,10 +222,10 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                                                        block:^(NSTimer *_Nonnull timer) {
                                                            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Timer fired"];
 
-                                                           [self requestLocation];
+                                                           [self requestLocationWithDesiredAccuracy:desiredAccuracy];
                                                        }];
 
-        [self.lowPowerLocationManager startUpdatingLocation];
+        [self.locationManager startUpdatingLocation];
 
         self.started = YES;
         self.startedInterval = interval;
@@ -263,12 +258,13 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 - (void)shutDown {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Shutting down"];
 
-    [self.lowPowerLocationManager stopUpdatingLocation];
+    [self.locationManager stopUpdatingLocation];
 }
 
-- (void)requestLocation {
-    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Requesting location"];
+- (void)requestLocationWithDesiredAccuracy:(CLLocationAccuracy)desiredAccuracy {
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Requesting location | desiredAccuracy = %f", desiredAccuracy]];
 
+    self.locationManager.desiredAccuracy = desiredAccuracy;
     [self.locationManager requestLocation];
 }
 
@@ -311,9 +307,6 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                 [RadarUtils locationBackgroundMode] && [CLLocationManager authorizationStatus] == kCLAuthorizationStatusAuthorizedAlways;
             self.locationManager.pausesLocationUpdatesAutomatically = NO;
 
-            self.lowPowerLocationManager.allowsBackgroundLocationUpdates = [RadarUtils locationBackgroundMode];
-            self.lowPowerLocationManager.pausesLocationUpdatesAutomatically = NO;
-
             CLLocationAccuracy desiredAccuracy;
             switch (options.desiredAccuracy) {
             case RadarTrackingOptionsDesiredAccuracyHigh:
@@ -328,10 +321,10 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
             default:
                 desiredAccuracy = kCLLocationAccuracyHundredMeters;
             }
-            self.locationManager.desiredAccuracy = desiredAccuracy;
+            self.locationManager.desiredAccuracy = kCLLocationAccuracyThreeKilometers;
 
             if (@available(iOS 11.0, *)) {
-                self.lowPowerLocationManager.showsBackgroundLocationIndicator = options.showBlueBar;
+                self.locationManager.showsBackgroundLocationIndicator = options.showBlueBar;
             }
 
             BOOL startUpdates = options.showBlueBar || [CLLocationManager authorizationStatus] == kCLAuthorizationStatusAuthorizedAlways;
@@ -340,7 +333,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                 if (options.desiredStoppedUpdateInterval == 0) {
                     [self stopUpdates];
                 } else if (startUpdates) {
-                    [self startUpdates:options.desiredStoppedUpdateInterval];
+                    [self startUpdates:options.desiredStoppedUpdateInterval desiredAccuracy:desiredAccuracy];
                 }
                 if (options.useStoppedGeofence) {
                     if (location) {
@@ -353,7 +346,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                 if (options.desiredMovingUpdateInterval == 0) {
                     [self stopUpdates];
                 } else if (startUpdates) {
-                    [self startUpdates:options.desiredMovingUpdateInterval];
+                    [self startUpdates:options.desiredMovingUpdateInterval desiredAccuracy:desiredAccuracy];
                 }
                 if (options.useMovingGeofence) {
                     if (location) {
@@ -675,9 +668,13 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 
     BOOL force = (source == RadarLocationSourceForegroundLocation || source == RadarLocationSourceManualLocation || source == RadarLocationSourceBeaconEnter ||
                   source == RadarLocationSourceBeaconExit || source == RadarLocationSourceVisitArrival);
-    if (wasStopped && !force && location.horizontalAccuracy >= 1000 && options.desiredAccuracy != RadarTrackingOptionsDesiredAccuracyLow) {
+    int accuracyThreshold = options.accuracyThreshold;
+    if (accuracyThreshold <= 0) {
+        accuracyThreshold = 1000;
+    }
+    if (!force && location.horizontalAccuracy >= accuracyThreshold && options.desiredAccuracy != RadarTrackingOptionsDesiredAccuracyLow) {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
-                                           message:[NSString stringWithFormat:@"Skipping location: inaccurate | accuracy = %f", location.horizontalAccuracy]];
+                                           message:[NSString stringWithFormat:@"Skipping location: inaccurate | accuracy = %f; accuracyThreshold = %d", location.horizontalAccuracy, accuracyThreshold]];
 
         [self updateTracking:location];
 

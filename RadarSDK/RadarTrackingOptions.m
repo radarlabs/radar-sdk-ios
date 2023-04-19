@@ -14,6 +14,7 @@ NSString *const kDesiredStoppedUpdateInterval = @"desiredStoppedUpdateInterval";
 NSString *const kDesiredMovingUpdateInterval = @"desiredMovingUpdateInterval";
 NSString *const kDesiredSyncInterval = @"desiredSyncInterval";
 NSString *const kDesiredAccuracy = @"desiredAccuracy";
+NSString *const kAccuracyThreshold = @"accuracyThreshold";
 NSString *const kStopDuration = @"stopDuration";
 NSString *const kStopDistance = @"stopDistance";
 NSString *const kStartTrackingAfter = @"startTrackingAfter";
@@ -48,6 +49,7 @@ NSString *const kSyncNone = @"none";
     options.desiredMovingUpdateInterval = 30;
     options.desiredSyncInterval = 20;
     options.desiredAccuracy = RadarTrackingOptionsDesiredAccuracyHigh;
+    options.accuracyThreshold = 1000;
     options.stopDuration = 140;
     options.stopDistance = 70;
     options.startTrackingAfter = nil;
@@ -72,6 +74,7 @@ NSString *const kSyncNone = @"none";
     options.desiredMovingUpdateInterval = 150;
     options.desiredSyncInterval = 20;
     options.desiredAccuracy = RadarTrackingOptionsDesiredAccuracyMedium;
+    options.accuracyThreshold = 1000;
     options.stopDuration = 140;
     options.stopDistance = 70;
     options.startTrackingAfter = nil;
@@ -96,6 +99,7 @@ NSString *const kSyncNone = @"none";
     options.desiredMovingUpdateInterval = 0;
     options.desiredSyncInterval = 0;
     options.desiredAccuracy = RadarTrackingOptionsDesiredAccuracyMedium;
+    options.accuracyThreshold = 1000;
     options.stopDuration = 0;
     options.stopDistance = 0;
     options.startTrackingAfter = nil;
@@ -204,6 +208,7 @@ NSString *const kSyncNone = @"none";
     options.desiredMovingUpdateInterval = [dict[kDesiredMovingUpdateInterval] intValue];
     options.desiredSyncInterval = [dict[kDesiredSyncInterval] intValue];
     options.desiredAccuracy = [RadarTrackingOptions desiredAccuracyForString:dict[kDesiredAccuracy]];
+    options.accuracyThreshold = [dict[kAccuracyThreshold] intValue];
     options.stopDuration = [dict[kStopDuration] intValue];
     options.stopDistance = [dict[kStopDistance] intValue];
     if (dict[kStartTrackingAfter] != nil) {
@@ -248,6 +253,7 @@ NSString *const kSyncNone = @"none";
     dict[kDesiredMovingUpdateInterval] = @(self.desiredMovingUpdateInterval);
     dict[kDesiredSyncInterval] = @(self.desiredSyncInterval);
     dict[kDesiredAccuracy] = [RadarTrackingOptions stringForDesiredAccuracy:self.desiredAccuracy];
+    dict[kAccuracyThreshold] = @(self.accuracyThreshold);
     dict[kStopDuration] = @(self.stopDuration);
     dict[kStopDistance] = @(self.stopDistance);
     if (self.startTrackingAfter != nil) {
@@ -290,7 +296,7 @@ NSString *const kSyncNone = @"none";
     RadarTrackingOptions *options = (RadarTrackingOptions *)object;
 
     return self.desiredStoppedUpdateInterval == options.desiredStoppedUpdateInterval && self.desiredMovingUpdateInterval == options.desiredMovingUpdateInterval &&
-           self.desiredSyncInterval == options.desiredSyncInterval && self.desiredAccuracy == options.desiredAccuracy && self.stopDuration == options.stopDuration &&
+           self.desiredSyncInterval == options.desiredSyncInterval && self.desiredAccuracy == options.desiredAccuracy && self.accuracyThreshold == options.accuracyThreshold && self.stopDuration == options.stopDuration &&
            self.stopDistance == options.stopDistance &&
            (self.startTrackingAfter == nil ? options.startTrackingAfter == nil :
                                              self.startTrackingAfter.timeIntervalSince1970 - options.startTrackingAfter.timeIntervalSince1970 < DBL_EPSILON) &&
