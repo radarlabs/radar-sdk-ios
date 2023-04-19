@@ -63,6 +63,7 @@
                                   placeLabel:(NSString *_Nullable)placeLabel
                                         unit:(NSString *_Nullable)unit
                                        plus4:(NSString *_Nullable)plus4
+                                       layer:(NSString *_Nullable)layer
                                     metadata:(NSDictionary *_Nullable)metadata
                                   confidence:(RadarAddressConfidence)confidence {
     self = [super init];
@@ -87,6 +88,7 @@
         _placeLabel = placeLabel;
         _unit = unit;
         _plus4 = plus4;
+        _layer = layer;
         _metadata = metadata;
         _confidence = confidence;
     }
@@ -123,6 +125,7 @@
     NSString *placeLabel;
     NSString *unit;
     NSString *plus4;
+    NSString *layer;
     NSMutableDictionary *metadata;
 
     RadarAddressConfidence confidence = RadarAddressConfidenceNone;
@@ -238,6 +241,11 @@
         plus4 = (NSString *)plus4Obj;
     }
 
+    id layerObj = dict[@"layer"];
+    if (layerObj && [layerObj isKindOfClass:[NSString class]]) {
+        layer = (NSString *)layerObj;
+    }
+
     id metadataObj = dict[@"metadata"];
     if (metadataObj && [metadataObj isKindOfClass:[NSDictionary class]]) {
         metadata = [NSMutableDictionary dictionaryWithDictionary:(NSDictionary *)metadataObj];
@@ -277,6 +285,7 @@
                                          placeLabel:placeLabel
                                                unit:unit
                                               plus4:plus4
+                                              layer:layer
                                              metadata:metadata
                                          confidence:confidence];
 }
@@ -344,6 +353,7 @@
     [dict setValue:self.placeLabel forKey:@"placeLabel"];
     [dict setValue:self.unit forKey:@"unit"];
     [dict setValue:self.plus4 forKey:@"plus4"];
+    [dict setValue:self.layer forKey:@"layer"];
     [dict setValue:self.metadata forKey:@"metadata"];
     [dict setValue:[RadarAddress stringForConfidence:self.confidence] forKey:@"confidence"];
     return dict;
