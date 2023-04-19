@@ -321,6 +321,8 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
             default:
                 desiredAccuracy = kCLLocationAccuracyHundredMeters;
             }
+            
+            // use "lowest power" desired accuracy until a location update is requested
             self.locationManager.desiredAccuracy = kCLLocationAccuracyThreeKilometers;
 
             if (@available(iOS 11.0, *)) {
