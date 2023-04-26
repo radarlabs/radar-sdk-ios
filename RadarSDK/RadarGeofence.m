@@ -124,7 +124,7 @@
 
         if ([type isEqualToString:@"circle"]) {
             geometry = [[RadarCircleGeometry alloc] initWithCenter:center radius:radius];
-        } else if ([type isEqualToString:@"polygon"] || [type isEqualToString:@"isochrone"]) {
+        } else if ([type isEqualToString:@"polygon"] || [type isEqualToString:@"Polygon"] || [type isEqualToString:@"isochrone"]) {
             id geometryObj = dict[@"geometry"];
 
             if (![geometryObj isKindOfClass:[NSDictionary class]]) {
@@ -203,10 +203,13 @@
         RadarCircleGeometry *circleGeometry = (RadarCircleGeometry *)self.geometry;
         [dict setValue:@(circleGeometry.radius) forKey:@"geometryRadius"];
         [dict setValue:[circleGeometry.center dictionaryValue] forKey:@"geometryCenter"];
+        [dict setValue:@"circle" forKey:@"type"];
     } else if ([self.geometry isKindOfClass:[RadarPolygonGeometry class]]) {
         RadarPolygonGeometry *polygonGeometry = (RadarPolygonGeometry *)self.geometry;
         [dict setValue:@(polygonGeometry.radius) forKey:@"geometryRadius"];
         [dict setValue:[polygonGeometry.center dictionaryValue] forKey:@"geometryCenter"];
+        [dict setValue:[RadarCoordinate arrayForCoordinates:polygonGeometry._coordinates] forKey:@"geometry"];
+        [dict setValue:@"polygon" forKey:@"type"];
     }
 
     return dict;
