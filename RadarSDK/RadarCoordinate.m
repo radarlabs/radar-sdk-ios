@@ -78,4 +78,12 @@
     return @{@"type": @"Point", @"coordinates": @[@(self.coordinate.longitude), @(self.coordinate.latitude)]};
 }
 
++ (NSArray<NSArray *>*)arrayForCoordinates:(NSArray<RadarCoordinate *> *)coordinates {
+    NSMutableArray *mutableArray = [NSMutableArray new];
+    for (RadarCoordinate *coordinate in coordinates) {
+        [mutableArray addObject:@[@(coordinate.coordinate.longitude), @(coordinate.coordinate.latitude)]];
+    }
+    return mutableArray;
+}
+
 @end

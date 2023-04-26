@@ -20,4 +20,6 @@
 
 - (NSDictionary* _Nonnull)dictionaryValue;
 
++ (NSArray<NSArray *>*_Nullable)arrayForCoordinates:(NSArray<NSDictionary *> *_Nonnull)coordinates;
+
 @end
