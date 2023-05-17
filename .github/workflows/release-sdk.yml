@@ -33,3 +33,12 @@ jobs:
         with:
           file: dist/RadarSDK.xcframework.zip
           asset_name: RadarSDK.xcframework.zip
+
+      - name: Zip docs
+        run: zip -r RadarSDK.docs.zip docs
+          
+      - name: Upload docs
+        uses: svenstaro/upload-release-action@2.5.0
+        with:
+          file: RadarSDK.docs.zip
+          asset_name: RadarSDK.docs.zip
