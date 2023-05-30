@@ -50,8 +50,6 @@
             content.body = [NSString localizedUserNotificationStringForKey:notificationText arguments:nil];
             content.userInfo = metadata;
             content.categoryIdentifier = categoryIdentifier;
-            [content setValue:@(YES) forKeyPath:@"shouldAlwaysAlertWhileAppIsForeground"];
-
 
             UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:identifier content:content trigger:nil];
             [UNUserNotificationCenter.currentNotificationCenter addNotificationRequest:request withCompletionHandler:^(NSError *_Nullable error) {
