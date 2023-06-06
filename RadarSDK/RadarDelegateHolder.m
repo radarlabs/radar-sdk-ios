@@ -8,6 +8,7 @@
 #import "RadarDelegateHolder.h"
 
 #import "RadarLogger.h"
+#import "RadarNotificationHelper.h"
 
 @implementation RadarDelegateHolder
 
@@ -28,6 +29,8 @@
     if (self.delegate) {
         [self.delegate didReceiveEvents:events user:user];
     }
+    
+    [RadarNotificationHelper showNotificationsForEvents:events];
 
     for (RadarEvent *event in events) {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo
