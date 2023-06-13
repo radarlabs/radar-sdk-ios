@@ -380,6 +380,8 @@
                                 [RadarSettings setTripOptions:nil];
                             }
 
+                            [RadarSettings setUserDebug:user.debug];
+
                             if (location) {
                                 [[RadarDelegateHolder sharedInstance] didUpdateLocation:location user:user];
                             }
