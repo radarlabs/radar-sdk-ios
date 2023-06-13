@@ -39,6 +39,7 @@
                            topChains:(nullable NSArray<RadarChain *> *)topChains
                               source:(RadarLocationSource)source
                                 trip:(RadarTrip *_Nullable)trip
+                               debug:(BOOL)debug
                                fraud:(RadarFraud *_Nullable)fraud {
     self = [super init];
     if (self) {
@@ -62,6 +63,7 @@
         _topChains = topChains;
         _source = source;
         _trip = trip;
+        _debug = debug;
         _fraud = fraud;
     }
     return self;
@@ -95,6 +97,7 @@
     RadarLocationSource source = RadarLocationSourceUnknown;
     RadarTrip *trip;
     RadarFraud *fraud;
+    BOOL debug = YES;
 
     id idObj = dict[@"_id"];
     if (idObj && [idObj isKindOfClass:[NSString class]]) {
@@ -270,6 +273,9 @@
     id tripObj = dict[@"trip"];
     trip = [[RadarTrip alloc] initWithObject:tripObj];
 
+    id debugObj = dict[@"debug"];
+    debug = [self asBool:debugObj];
+
     id fraudObj = dict[@"fraud"];
     fraud = [[RadarFraud alloc] initWithObject:fraudObj];
 
@@ -294,6 +300,7 @@
                                    topChains:topChains
                                       source:source
                                         trip:trip
+                                       debug:debug
                                        fraud:fraud];
     }
 
@@ -350,6 +357,7 @@
     if (self.trip) {
         [dict setValue:[self.trip dictionaryValue] forKey:@"trip"];
     }
+    [dict setValue:@(self.debug) forKey:@"debug"];
     if (self.fraud) {
         [dict setValue:[self.fraud dictionaryValue] forKey:@"fraud"];
     }

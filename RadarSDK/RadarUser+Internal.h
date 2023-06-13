@@ -32,6 +32,7 @@
                            topChains:(nullable NSArray<RadarChain *> *)topChains
                               source:(RadarLocationSource)source
                                 trip:(RadarTrip *_Nullable)trip
+                               debug:(BOOL)debug
                                fraud:(RadarFraud *_Nullable)fraud;
 - (instancetype _Nullable)initWithObject:(id _Nonnull)object;
 
