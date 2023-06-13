@@ -241,7 +241,6 @@ static NSString *const kUserDebug = @"radar-userDebug";
 }
 
 + (BOOL)userDebug {
-    // use objectForKey instead of boolForKey to handle case where key is not set
     NSNumber *userDebug = [[NSUserDefaults standardUserDefaults] objectForKey:kUserDebug];
     return userDebug ? [userDebug boolValue] : YES;
 }
