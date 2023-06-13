@@ -176,19 +176,8 @@
         beacons = [RadarBeacon beaconsFromObject:beaconsObj];
     }
 
-    id stoppedObj = dict[@"stopped"];
-    if (stoppedObj && [stoppedObj isKindOfClass:[NSNumber class]]) {
-        NSNumber *stoppedNumber = (NSNumber *)stoppedObj;
-
-        stopped = [stoppedNumber boolValue];
-    }
-
-    id foregroundObj = dict[@"foreground"];
-    if (foregroundObj && [foregroundObj isKindOfClass:[NSNumber class]]) {
-        NSNumber *foregroundNumber = (NSNumber *)foregroundObj;
-
-        foreground = [foregroundNumber boolValue];
-    }
+    stopped = [self asBool:dict[@"stopped"]];
+    foreground = [self asBool:dict[@"foreground"]];
 
     id countryObj = dict[@"country"];
     country = [[RadarRegion alloc] initWithObject:countryObj];
@@ -273,8 +262,7 @@
     id tripObj = dict[@"trip"];
     trip = [[RadarTrip alloc] initWithObject:tripObj];
 
-    id debugObj = dict[@"debug"];
-    debug = [self asBool:debugObj];
+    debug = [self asBool:dict[@"debug"]];
 
     id fraudObj = dict[@"fraud"];
     fraud = [[RadarFraud alloc] initWithObject:fraudObj];
