@@ -198,7 +198,9 @@ static NSString *const kUserDebug = @"radar-userDebug";
 
 + (RadarLogLevel)logLevel {
     RadarLogLevel logLevel;
-    if ([[NSUserDefaults standardUserDefaults] objectForKey:kLogLevel] == nil) {
+    if ([RadarSettings userDebug]) {
+        logLevel = RadarLogLevelDebug;
+    } else if ([[NSUserDefaults standardUserDefaults] objectForKey:kLogLevel] == nil) {
         logLevel = RadarLogLevelInfo;
     } else {
         logLevel = (RadarLogLevel)[[NSUserDefaults standardUserDefaults] integerForKey:kLogLevel];
