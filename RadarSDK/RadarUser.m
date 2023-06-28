@@ -97,7 +97,7 @@
     RadarLocationSource source = RadarLocationSourceUnknown;
     RadarTrip *trip;
     RadarFraud *fraud;
-    BOOL debug = YES;
+    BOOL debug = NO;
 
     id idObj = dict[@"_id"];
     if (idObj && [idObj isKindOfClass:[NSString class]]) {
