@@ -51,10 +51,14 @@ static NSString *const kApproachingThreshold = @"approachingThreshold";
 
     NSDate *scheduledArrivalAt;
     NSObject *scheduledArrivalAtObj = dict[kScheduledArrivalAt];
-    if (scheduledArrivalAtObj && [scheduledArrivalAtObj isKindOfClass:[NSString class]]) {
-        scheduledArrivalAt = [RadarUtils.isoDateFormatter dateFromString:(NSString *)scheduledArrivalAtObj];
-    } else if (scheduledArrivalAtObj && [scheduledArrivalAtObj isKindOfClass:[NSDate class]]) {
-        scheduledArrivalAt = (NSDate *)scheduledArrivalAtObj;
+    if (scheduledArrivalAtObj) {
+        if ([scheduledArrivalAtObj isKindOfClass:[NSString class]]) {
+            scheduledArrivalAt = [RadarUtils.isoDateFormatter dateFromString:(NSString *)scheduledArrivalAtObj];
+        } else if ([scheduledArrivalAtObj isKindOfClass:[NSDate class]]) {
+            scheduledArrivalAt = (NSDate *)scheduledArrivalAtObj;
+        } else if ([scheduledArrivalAtObj isKindOfClass:[NSNumber class]]) {
+            scheduledArrivalAt = [NSDate dateWithTimeIntervalSince1970:([(NSNumber *)scheduledArrivalAtObj doubleValue] / 1000.0)];
+        }
     }
 
     RadarTripOptions *options = [[RadarTripOptions alloc] initWithExternalId:dict[kExternalId]
