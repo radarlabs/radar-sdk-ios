@@ -141,6 +141,11 @@ typedef NS_ENUM(NSInteger, RadarLocationSource);
 @property (nullable, strong, nonatomic, readonly) RadarTrip *trip;
 
 /**
+ A boolean indicating whether the user is marked as debug
+*/
+@property (assign, nonatomic, readonly) BOOL debug;
+
+/**
  The user's current fraud state. May be `nil` if Fraud is not enabled.
 
  @see https://radar.com/documentation/fraud

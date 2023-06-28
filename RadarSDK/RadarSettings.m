@@ -34,6 +34,7 @@ static NSString *const kLastTrackedTime = @"radar-lastTrackedTime";
 static NSString *const kVerifiedHost = @"radar-verifiedHost";
 static NSString *const kDefaultVerifiedHost = @"https://api-verified.radar.io";
 static NSString *const kLastAppOpenTime = @"radar-lastAppOpenTime";
+static NSString *const kUserDebug = @"radar-userDebug";
 
 + (NSString *)publishableKey {
     return [[NSUserDefaults standardUserDefaults] stringForKey:kPublishableKey];
@@ -197,7 +198,9 @@ static NSString *const kLastAppOpenTime = @"radar-lastAppOpenTime";
 
 + (RadarLogLevel)logLevel {
     RadarLogLevel logLevel;
-    if ([[NSUserDefaults standardUserDefaults] objectForKey:kLogLevel] == nil) {
+    if ([RadarSettings userDebug]) {
+        logLevel = RadarLogLevelDebug;
+    } else if ([[NSUserDefaults standardUserDefaults] objectForKey:kLogLevel] == nil) {
         logLevel = RadarLogLevelInfo;
     } else {
         logLevel = (RadarLogLevel)[[NSUserDefaults standardUserDefaults] integerForKey:kLogLevel];
@@ -237,6 +240,15 @@ static NSString *const kLastAppOpenTime = @"radar-lastAppOpenTime";
 + (NSString *)verifiedHost {
     NSString *verifiedHost = [[NSUserDefaults standardUserDefaults] stringForKey:kVerifiedHost];
     return verifiedHost ? verifiedHost : kDefaultVerifiedHost;
+}
+
++ (BOOL)userDebug {
+    NSNumber *userDebug = [[NSUserDefaults standardUserDefaults] objectForKey:kUserDebug];
+    return userDebug ? [userDebug boolValue] : YES;
+}
+
++ (void)setUserDebug:(BOOL)userDebug {
+    [[NSUserDefaults standardUserDefaults] setBool:userDebug forKey:kUserDebug];
 }
 
 + (void)updateLastAppOpenTime {

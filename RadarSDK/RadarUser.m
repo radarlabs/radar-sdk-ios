@@ -39,6 +39,7 @@
                            topChains:(nullable NSArray<RadarChain *> *)topChains
                               source:(RadarLocationSource)source
                                 trip:(RadarTrip *_Nullable)trip
+                               debug:(BOOL)debug
                                fraud:(RadarFraud *_Nullable)fraud {
     self = [super init];
     if (self) {
@@ -62,6 +63,7 @@
         _topChains = topChains;
         _source = source;
         _trip = trip;
+        _debug = debug;
         _fraud = fraud;
     }
     return self;
@@ -95,6 +97,7 @@
     RadarLocationSource source = RadarLocationSourceUnknown;
     RadarTrip *trip;
     RadarFraud *fraud;
+    BOOL debug = NO;
 
     id idObj = dict[@"_id"];
     if (idObj && [idObj isKindOfClass:[NSString class]]) {
@@ -173,19 +176,8 @@
         beacons = [RadarBeacon beaconsFromObject:beaconsObj];
     }
 
-    id stoppedObj = dict[@"stopped"];
-    if (stoppedObj && [stoppedObj isKindOfClass:[NSNumber class]]) {
-        NSNumber *stoppedNumber = (NSNumber *)stoppedObj;
-
-        stopped = [stoppedNumber boolValue];
-    }
-
-    id foregroundObj = dict[@"foreground"];
-    if (foregroundObj && [foregroundObj isKindOfClass:[NSNumber class]]) {
-        NSNumber *foregroundNumber = (NSNumber *)foregroundObj;
-
-        foreground = [foregroundNumber boolValue];
-    }
+    stopped = [self asBool:dict[@"stopped"]];
+    foreground = [self asBool:dict[@"foreground"]];
 
     id countryObj = dict[@"country"];
     country = [[RadarRegion alloc] initWithObject:countryObj];
@@ -270,6 +262,8 @@
     id tripObj = dict[@"trip"];
     trip = [[RadarTrip alloc] initWithObject:tripObj];
 
+    debug = [self asBool:dict[@"debug"]];
+
     id fraudObj = dict[@"fraud"];
     fraud = [[RadarFraud alloc] initWithObject:fraudObj];
 
@@ -294,6 +288,7 @@
                                    topChains:topChains
                                       source:source
                                         trip:trip
+                                       debug:debug
                                        fraud:fraud];
     }
 
@@ -350,6 +345,7 @@
     if (self.trip) {
         [dict setValue:[self.trip dictionaryValue] forKey:@"trip"];
     }
+    [dict setValue:@(self.debug) forKey:@"debug"];
     if (self.fraud) {
         [dict setValue:[self.fraud dictionaryValue] forKey:@"fraud"];
     }
