@@ -239,7 +239,7 @@
                                      if (status != RadarStatusSuccess) {
                                          if (completionHandler) {
                                              [RadarUtils runOnMainThread:^{
-                                                 completionHandler(status, location, events, user);
+                                                 completionHandler(status, nil, nil, nil);
                                              }];
                                          }
 
