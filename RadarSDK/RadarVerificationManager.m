@@ -67,7 +67,7 @@
                 }];
         }];
     } else {
-        completionHandler(nil, keyId, @"OS unsupported");
+        completionHandler(nil, nil, @"OS unsupported");
     }
 }
 
