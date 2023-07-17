@@ -128,6 +128,7 @@
                     beacons:beacons
                    verified:NO
           attestationString:nil
+                      keyId:nil
            attestationError:nil
           completionHandler:completionHandler];
 }
@@ -140,6 +141,7 @@
                   beacons:(NSArray<RadarBeacon *> *_Nullable)beacons
                  verified:(BOOL)verified
         attestationString:(NSString *_Nullable)attestationString
+                    keyId:(NSString *_Nullable)keyId
          attestationError:(NSString *_Nullable)attestationError
         completionHandler:(RadarTrackAPICompletionHandler _Nonnull)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
@@ -253,6 +255,7 @@
     params[@"verified"] = @(verified);
     if (verified) {
         params[@"attestationString"] = attestationString;
+        params[@"keyId"] = keyId;
         params[@"attestationError"] = attestationError;
     }
 

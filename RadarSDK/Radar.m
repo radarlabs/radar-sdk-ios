@@ -248,7 +248,7 @@
 
                                      [[RadarVerificationManager sharedInstance]
                                          getAttestationWithNonce:config.nonce
-                                               completionHandler:^(NSString *_Nullable attestationString, NSString *_Nullable attestationError) {
+                                               completionHandler:^(NSString *_Nullable attestationString, NSString *_Nullable keyId, NSString *_Nullable attestationError) {
                                                    [[RadarAPIClient sharedInstance]
                                                        trackWithLocation:location
                                                                  stopped:RadarState.stopped
@@ -258,6 +258,7 @@
                                                                  beacons:nil
                                                                 verified:YES
                                                        attestationString:attestationString
+                                                                    keyId:keyId
                                                         attestationError:attestationError
                                                        completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events,
                                                                            RadarUser *_Nullable user, NSArray<RadarGeofence *> *_Nullable nearbyGeofences,

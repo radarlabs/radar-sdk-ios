@@ -36,20 +36,20 @@
         DCAppAttestService *service = [DCAppAttestService sharedService];
 
         if (!service.isSupported) {
-            completionHandler(nil, @"Service unsupported");
+            completionHandler(nil, nil, @"Service unsupported");
 
             return;
         }
 
         if (!nonce) {
-            completionHandler(nil, @"Missing nonce");
+            completionHandler(nil, nil, @"Missing nonce");
 
             return;
         }
 
         [service generateKeyWithCompletionHandler:^(NSString *_Nullable keyId, NSError *_Nullable error) {
             if (error) {
-                completionHandler(nil, error.localizedDescription);
+                completionHandler(nil, nil, error.localizedDescription);
 
                 return;
             }
@@ -63,11 +63,11 @@
                 completionHandler:^(NSData *_Nullable attestationObject, NSError *_Nullable error) {
                     NSString *assertionString = [attestationObject base64EncodedStringWithOptions:0];
 
-                    completionHandler(assertionString, nil);
+                    completionHandler(assertionString, keyId, nil);
                 }];
         }];
     } else {
-        completionHandler(nil, @"OS unsupported");
+        completionHandler(nil, keyId, @"OS unsupported");
     }
 }
 

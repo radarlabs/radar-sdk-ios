@@ -84,6 +84,7 @@ typedef void (^_Nonnull RadarSyncLogsAPICompletionHandler)(RadarStatus status);
                   beacons:(NSArray<RadarBeacon *> *_Nullable)beacons
                  verified:(BOOL)verified
         attestationString:(NSString *_Nullable)attestationString
+                    keyId:(NSString *_Nullable)keyId
          attestationError:(NSString *_Nullable)attestationError
         completionHandler:(RadarTrackAPICompletionHandler _Nonnull)completionHandler;
 
