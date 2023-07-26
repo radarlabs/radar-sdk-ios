@@ -213,7 +213,7 @@
             }
         }
     }
-
+    
     RadarTripOptions *tripOptions = Radar.getTripOptions;
 
     if (tripOptions) {
@@ -258,6 +258,7 @@
         params[@"keyId"] = keyId;
         params[@"attestationError"] = attestationError;
     }
+    params[@"appId"] = [[NSBundle mainBundle] bundleIdentifier];
 
     if (anonymous) {
         [[RadarAPIClient sharedInstance] getConfigForUsage:@"track"
