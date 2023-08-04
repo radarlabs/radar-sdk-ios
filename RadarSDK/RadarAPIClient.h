@@ -114,19 +114,28 @@ typedef void (^_Nonnull RadarSyncLogsAPICompletionHandler)(RadarStatus status);
 
 - (void)searchBeaconsNear:(CLLocation *_Nonnull)near radius:(int)radius limit:(int)limit completionHandler:(RadarSearchBeaconsAPICompletionHandler _Nonnull)completionHandler;
 
-- (void)autocompleteQuery:(NSString *_Nonnull)query
-                     near:(CLLocation *_Nullable)near
-                   layers:(NSArray<NSString *> *_Nullable)layers
-                    limit:(int)limit
-                  country:(NSString *_Nullable)country
-              expandUnits:(BOOL)expandUnits
-        completionHandler:(RadarGeocodeAPICompletionHandler _Nonnull)completionHandler;
+// - (void)autocompleteQuery:(NSString *_Nonnull)query
+//                      near:(CLLocation *_Nullable)near
+//                    layers:(NSArray<NSString *> *_Nullable)layers
+//                     limit:(int)limit
+//                   country:(NSString *_Nullable)country
+//               expandUnits:(BOOL)expandUnits
+//         completionHandler:(RadarGeocodeAPICompletionHandler _Nonnull)completionHandler;
+
+// - (void)autocompleteQuery:(NSString *_Nonnull)query
+//                      near:(CLLocation *_Nullable)near
+//                    layers:(NSArray<NSString *> *_Nullable)layers
+//                     limit:(int)limit
+//                   country:(NSString *_Nullable)country
+//         completionHandler:(RadarGeocodeAPICompletionHandler _Nonnull)completionHandler;
 
 - (void)autocompleteQuery:(NSString *_Nonnull)query
                      near:(CLLocation *_Nullable)near
                    layers:(NSArray<NSString *> *_Nullable)layers
                     limit:(int)limit
-                  country:(NSString *_Nullable)country
+                    country:(NSString *_Nullable)country
+                  countryCode:(NSString *_Nullable)countryCode
+              expandUnits:(BOOL)expandUnits
         completionHandler:(RadarGeocodeAPICompletionHandler _Nonnull)completionHandler;
 
 - (void)validateAddress:(RadarAddress *_Nonnull)address completionHandler:(RadarValidateAddressAPICompletionHandler _Nonnull)completionHandler;

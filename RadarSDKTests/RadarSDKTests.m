@@ -1113,7 +1113,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
                                  }];
 }
 
-- (void)test_Radar_autocomplete_success {
+- (void)test_Radar_autocomplete_deprecated_success {
     self.apiHelperMock.mockStatus = RadarStatusSuccess;
     self.apiHelperMock.mockResponse = [RadarTestUtils jsonDictionaryFromResource:@"search_autocomplete"];
 
@@ -1126,6 +1126,35 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
                       layers:@[@"place"]
                        limit:10
                      country:@"US"
+           completionHandler:^(RadarStatus status, NSArray<RadarAddress *> *_Nullable addresses) {
+               XCTAssertEqual(status, RadarStatusSuccess);
+               AssertAddressesOk(addresses);
+
+               [expectation fulfill];
+           }];
+
+    [self waitForExpectationsWithTimeout:30
+                                 handler:^(NSError *_Nullable error) {
+                                     if (error) {
+                                         XCTFail();
+                                     }
+                                 }];
+}
+
+- (void)test_Radar_autocomplete_success {
+    self.apiHelperMock.mockStatus = RadarStatusSuccess;
+    self.apiHelperMock.mockResponse = [RadarTestUtils jsonDictionaryFromResource:@"search_autocomplete"];
+
+    CLLocation *near = [[CLLocation alloc] initWithLatitude:40.78382 longitude:-73.97536];
+
+    XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
+
+    [Radar autocompleteQuery:@"brooklyn roasting"
+                        near:near
+                      layers:@[@"place"]
+                       limit:10
+                     countryCode:@"US"
+                     expandUnits:false
            completionHandler:^(RadarStatus status, NSArray<RadarAddress *> *_Nullable addresses) {
                XCTAssertEqual(status, RadarStatusSuccess);
                AssertAddressesOk(addresses);

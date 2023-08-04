@@ -805,7 +805,7 @@ logConversionWithNotification
           completionHandler:(RadarSearchGeofencesCompletionHandler)completionHandler NS_SWIFT_NAME(searchGeofences(near:radius:tags:metadata:limit:completionHandler:));
 
 /**
- Autocompletes partial addresses and place names, sorted by relevance.
+ Autocompletes partial addresses and place names, sorted by relevance. (Deprecated)
 
  @param query The partial address or place name to autocomplete.
  @param near A location for the search.
@@ -826,7 +826,7 @@ logConversionWithNotification
         completionHandler:(RadarGeocodeCompletionHandler)completionHandler NS_SWIFT_NAME(autocomplete(query:near:layers:limit:country:expandUnits:completionHandler:));
 
 /**
- Autocompletes partial addresses and place names, sorted by relevance.
+ Autocompletes partial addresses and place names, sorted by relevance. (Deprecated)
 
  @param query The partial address or place name to autocomplete.
  @param near A location for the search.
@@ -845,7 +845,7 @@ logConversionWithNotification
         completionHandler:(RadarGeocodeCompletionHandler)completionHandler NS_SWIFT_NAME(autocomplete(query:near:layers:limit:country:completionHandler:));
 
 /**
- Autocompletes partial addresses and place names, sorted by relevance.
+ Autocompletes partial addresses and place names, sorted by relevance. (Deprecated)
 
  @param query The partial address or place name to autocomplete.
  @param near A location for the search.
@@ -859,6 +859,26 @@ logConversionWithNotification
                     limit:(int)limit
         completionHandler:(RadarGeocodeCompletionHandler)completionHandler NS_SWIFT_NAME(autocomplete(query:near:limit:completionHandler:));
 
+/**
+ Autocompletes partial addresses and place names, sorted by relevance.
+
+ @param query The partial address or place name to autocomplete.
+ @param near A location for the search.
+ @param layers Optional layer filters.
+ @param limit The max number of addresses to return. A number between 1 and 100. 
+ @param countryCode An optional country filter. A string, the unique 2-letter country code.
+ @param expandUnits Whether to expand units. 
+ @param completionHandler A completion handler.
+
+ @see https://radar.com/documentation/api#autocomplete
+ */
++ (void)autocompleteQuery:(NSString *_Nonnull)query
+                     near:(CLLocation *_Nullable)near
+                   layers:(NSArray<NSString *> *_Nullable)layers
+                    limit:(int)limit
+                  countryCode:(NSString *_Nullable)countryCode
+              expandUnits:(BOOL)expandUnits
+        completionHandler:(RadarGeocodeCompletionHandler)completionHandler NS_SWIFT_NAME(autocomplete(query:near:layers:limit:country:expandUnits:completionHandler:));
 #pragma mark - Geocoding
 
 /**

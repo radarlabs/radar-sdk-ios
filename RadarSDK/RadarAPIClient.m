@@ -783,11 +783,174 @@
                     }];
 }
 
+// - (void)autocompleteQuery:(NSString *)query
+//                      near:(CLLocation *_Nullable)near
+//                    layers:(NSArray<NSString *> *_Nullable)layers
+//                     limit:(int)limit
+//                   country:(NSString *_Nullable)country
+//               expandUnits:(BOOL)expandUnits
+//         completionHandler:(RadarGeocodeAPICompletionHandler)completionHandler {
+//     NSString *publishableKey = [RadarSettings publishableKey];
+//     if (!publishableKey) {
+//         return completionHandler(RadarStatusErrorPublishableKey, nil, nil);
+//     }
+
+//     int finalLimit = MIN(limit, 100);
+
+//     NSMutableString *queryString = [NSMutableString new];
+//     [queryString appendFormat:@"query=%@", query];
+//     if (near) {
+//         [queryString appendFormat:@"&near=%.06f,%.06f", near.coordinate.latitude, near.coordinate.longitude];
+//     }
+//     if (layers && layers.count > 0) {
+//         [queryString appendFormat:@"&layers=%@", [layers componentsJoinedByString:@","]];
+//     }
+//     if (limit) {
+//         [queryString appendFormat:@"&limit=%d", finalLimit];
+//     }
+//     if (country) {
+//         [queryString appendFormat:@"&country=%@", country];
+//     }
+//     if (expandUnits) {
+//         [queryString appendFormat:@"&expandUnits=true"];
+//     }
+
+
+//     NSString *host = [RadarSettings host];
+//     NSString *url = [NSString stringWithFormat:@"%@/v1/search/autocomplete?%@", host, queryString];
+//     url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
+
+//     NSDictionary *headers = [RadarAPIClient headersWithPublishableKey:publishableKey];
+
+//     [self.apiHelper requestWithMethod:@"GET"
+//                                   url:url
+//                               headers:headers
+//                                params:nil
+//                                 sleep:NO
+//                            logPayload:YES
+//                       extendedTimeout:NO
+//                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
+//                         if (status != RadarStatusSuccess || !res) {
+//                             return completionHandler(status, nil, nil);
+//                         }
+
+//                         id addressesObj = res[@"addresses"];
+//                         NSArray<RadarAddress *> *addresses = [RadarAddress addressesFromObject:addressesObj];
+//                         if (addresses) {
+//                             return completionHandler(RadarStatusSuccess, res, addresses);
+//                         }
+
+//                         completionHandler(RadarStatusErrorServer, nil, nil);
+//                     }];
+// }
+
+// - (void)autocompleteQuery:(NSString *)query
+//                      near:(CLLocation *_Nullable)near
+//                    layers:(NSArray<NSString *> *_Nullable)layers
+//                     limit:(int)limit
+//                   country:(NSString *_Nullable)country
+//         completionHandler:(RadarGeocodeAPICompletionHandler)completionHandler {
+//     NSString *publishableKey = [RadarSettings publishableKey];
+//     if (!publishableKey) {
+//         return completionHandler(RadarStatusErrorPublishableKey, nil, nil);
+//     }
+
+//     int finalLimit = MIN(limit, 100);
+
+//     NSMutableString *queryString = [NSMutableString new];
+//     [queryString appendFormat:@"query=%@", query];
+//     if (near) {
+//         [queryString appendFormat:@"&near=%.06f,%.06f", near.coordinate.latitude, near.coordinate.longitude];
+//     }
+//     if (layers && layers.count > 0) {
+//         [queryString appendFormat:@"&layers=%@", [layers componentsJoinedByString:@","]];
+//     }
+//     if (limit) {
+//         [queryString appendFormat:@"&limit=%d", finalLimit];
+//     }
+//     if (country) {
+//         [queryString appendFormat:@"&country=%@", country];
+//     }
+
+//     NSString *host = [RadarSettings host];
+//     NSString *url = [NSString stringWithFormat:@"%@/v1/search/autocomplete?%@", host, queryString];
+//     url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
+
+//     NSDictionary *headers = [RadarAPIClient headersWithPublishableKey:publishableKey];
+
+//     [self.apiHelper requestWithMethod:@"GET"
+//                                   url:url
+//                               headers:headers
+//                                params:nil
+//                                 sleep:NO
+//                            logPayload:YES
+//                       extendedTimeout:NO
+//                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
+//                         if (status != RadarStatusSuccess || !res) {
+//                             return completionHandler(status, nil, nil);
+//                         }
+
+//                         id addressesObj = res[@"addresses"];
+//                         NSArray<RadarAddress *> *addresses = [RadarAddress addressesFromObject:addressesObj];
+//                         if (addresses) {
+//                             return completionHandler(RadarStatusSuccess, res, addresses);
+//                         }
+
+//                         completionHandler(RadarStatusErrorServer, nil, nil);
+//                     }];
+// }
+
+// - (void)autocompleteQuery:(NSString *)query near:(CLLocation *_Nullable)near limit:(int)limit completionHandler:(RadarGeocodeAPICompletionHandler)completionHandler {
+//     NSString *publishableKey = [RadarSettings publishableKey];
+//     if (!publishableKey) {
+//         return completionHandler(RadarStatusErrorPublishableKey, nil, nil);
+//     }
+
+//     int finalLimit = MIN(limit, 100);
+
+//     NSMutableString *queryString = [NSMutableString new];
+//     [queryString appendFormat:@"query=%@", query];
+//     if (near) {
+//         [queryString appendFormat:@"&near=%.06f,%.06f", near.coordinate.latitude, near.coordinate.longitude];
+//     }
+//     if (limit) {
+//         [queryString appendFormat:@"&limit=%d", finalLimit];
+//     }
+
+//     NSString *host = [RadarSettings host];
+//     NSString *url = [NSString stringWithFormat:@"%@/v1/search/autocomplete?%@", host, queryString];
+//     url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
+
+//     NSDictionary *headers = [RadarAPIClient headersWithPublishableKey:publishableKey];
+
+//     [self.apiHelper requestWithMethod:@"GET"
+//                                   url:url
+//                               headers:headers
+//                                params:nil
+//                                 sleep:NO
+//                            logPayload:YES
+//                       extendedTimeout:NO
+//                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
+//                         if (status != RadarStatusSuccess || !res) {
+//                             return completionHandler(status, nil, nil);
+//                         }
+
+//                         id addressesObj = res[@"addresses"];
+//                         NSArray<RadarAddress *> *addresses = [RadarAddress addressesFromObject:addressesObj];
+//                         if (addresses) {
+//                             return completionHandler(RadarStatusSuccess, res, addresses);
+//                         }
+
+//                         completionHandler(RadarStatusErrorServer, nil, nil);
+//                     }];
+// }
+
 - (void)autocompleteQuery:(NSString *)query
                      near:(CLLocation *_Nullable)near
                    layers:(NSArray<NSString *> *_Nullable)layers
                     limit:(int)limit
                   country:(NSString *_Nullable)country
+                  countryCode:(NSString *_Nullable)countryCode
               expandUnits:(BOOL)expandUnits
         completionHandler:(RadarGeocodeAPICompletionHandler)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
@@ -809,113 +972,15 @@
         [queryString appendFormat:@"&limit=%d", finalLimit];
     }
     if (country) {
-        [queryString appendFormat:@"&country=%@", country];
+        [queryString appendFormat:@"&countryCode=%@", country];
+    }
+    if (countryCode) {
+        [queryString appendFormat:@"&countryCode=%@", countryCode];
     }
     if (expandUnits) {
         [queryString appendFormat:@"&expandUnits=true"];
     }
 
-
-    NSString *host = [RadarSettings host];
-    NSString *url = [NSString stringWithFormat:@"%@/v1/search/autocomplete?%@", host, queryString];
-    url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
-
-    NSDictionary *headers = [RadarAPIClient headersWithPublishableKey:publishableKey];
-
-    [self.apiHelper requestWithMethod:@"GET"
-                                  url:url
-                              headers:headers
-                               params:nil
-                                sleep:NO
-                           logPayload:YES
-                      extendedTimeout:NO
-                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
-                        if (status != RadarStatusSuccess || !res) {
-                            return completionHandler(status, nil, nil);
-                        }
-
-                        id addressesObj = res[@"addresses"];
-                        NSArray<RadarAddress *> *addresses = [RadarAddress addressesFromObject:addressesObj];
-                        if (addresses) {
-                            return completionHandler(RadarStatusSuccess, res, addresses);
-                        }
-
-                        completionHandler(RadarStatusErrorServer, nil, nil);
-                    }];
-}
-
-- (void)autocompleteQuery:(NSString *)query
-                     near:(CLLocation *_Nullable)near
-                   layers:(NSArray<NSString *> *_Nullable)layers
-                    limit:(int)limit
-                  country:(NSString *_Nullable)country
-        completionHandler:(RadarGeocodeAPICompletionHandler)completionHandler {
-    NSString *publishableKey = [RadarSettings publishableKey];
-    if (!publishableKey) {
-        return completionHandler(RadarStatusErrorPublishableKey, nil, nil);
-    }
-
-    int finalLimit = MIN(limit, 100);
-
-    NSMutableString *queryString = [NSMutableString new];
-    [queryString appendFormat:@"query=%@", query];
-    if (near) {
-        [queryString appendFormat:@"&near=%.06f,%.06f", near.coordinate.latitude, near.coordinate.longitude];
-    }
-    if (layers && layers.count > 0) {
-        [queryString appendFormat:@"&layers=%@", [layers componentsJoinedByString:@","]];
-    }
-    if (limit) {
-        [queryString appendFormat:@"&limit=%d", finalLimit];
-    }
-    if (country) {
-        [queryString appendFormat:@"&country=%@", country];
-    }
-
-    NSString *host = [RadarSettings host];
-    NSString *url = [NSString stringWithFormat:@"%@/v1/search/autocomplete?%@", host, queryString];
-    url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
-
-    NSDictionary *headers = [RadarAPIClient headersWithPublishableKey:publishableKey];
-
-    [self.apiHelper requestWithMethod:@"GET"
-                                  url:url
-                              headers:headers
-                               params:nil
-                                sleep:NO
-                           logPayload:YES
-                      extendedTimeout:NO
-                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
-                        if (status != RadarStatusSuccess || !res) {
-                            return completionHandler(status, nil, nil);
-                        }
-
-                        id addressesObj = res[@"addresses"];
-                        NSArray<RadarAddress *> *addresses = [RadarAddress addressesFromObject:addressesObj];
-                        if (addresses) {
-                            return completionHandler(RadarStatusSuccess, res, addresses);
-                        }
-
-                        completionHandler(RadarStatusErrorServer, nil, nil);
-                    }];
-}
-
-- (void)autocompleteQuery:(NSString *)query near:(CLLocation *_Nullable)near limit:(int)limit completionHandler:(RadarGeocodeAPICompletionHandler)completionHandler {
-    NSString *publishableKey = [RadarSettings publishableKey];
-    if (!publishableKey) {
-        return completionHandler(RadarStatusErrorPublishableKey, nil, nil);
-    }
-
-    int finalLimit = MIN(limit, 100);
-
-    NSMutableString *queryString = [NSMutableString new];
-    [queryString appendFormat:@"query=%@", query];
-    if (near) {
-        [queryString appendFormat:@"&near=%.06f,%.06f", near.coordinate.latitude, near.coordinate.longitude];
-    }
-    if (limit) {
-        [queryString appendFormat:@"&limit=%d", finalLimit];
-    }
 
     NSString *host = [RadarSettings host];
     NSString *url = [NSString stringWithFormat:@"%@/v1/search/autocomplete?%@", host, queryString];

@@ -772,6 +772,7 @@
                                                 layers:layers
                                                  limit:limit
                                                country:country
+                                               countryCode: nil
                                            expandUnits:expandUnits
                                      completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarAddress *> *_Nullable addresses) {
                                          if (completionHandler) {
@@ -794,6 +795,8 @@
                                                 layers:layers
                                                  limit:limit
                                                country:country
+                                               countryCode: nil
+                                               expandUnits: false
                                      completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarAddress *> *_Nullable addresses) {
                                          if (completionHandler) {
                                              [RadarUtils runOnMainThread:^{
@@ -810,6 +813,8 @@
                                                 layers:nil
                                                  limit:limit
                                                country:nil
+                                               countryCode:nil
+                                               expandUnits:false
                                      completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarAddress *> *_Nullable addresses) {
                                          if (completionHandler) {
                                              [RadarUtils runOnMainThread:^{
@@ -818,6 +823,29 @@
                                          }
                                      }];
 }
+
++ (void)autocompleteQuery:(NSString *_Nonnull)query
+                     near:(CLLocation *_Nullable)near
+                   layers:(NSArray *_Nullable)layers
+                    limit:(int)limit
+                  countryCode:(NSString *_Nullable)countryCode
+              expandUnits:(BOOL)expandUnits
+        completionHandler:(RadarGeocodeCompletionHandler)completionHandler {
+    [[RadarAPIClient sharedInstance] autocompleteQuery:query
+                                                  near:near
+                                                layers:layers
+                                                 limit:limit
+                                                 country:nil
+                                               countryCode:countryCode
+                                           expandUnits:expandUnits
+                                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarAddress *> *_Nullable addresses) {
+                                         if (completionHandler) {
+                                             [RadarUtils runOnMainThread:^{
+                                                 completionHandler(status, addresses);
+                                             }];
+                                         }
+                                     }];
+}                                     
 
 #pragma mark - Geocoding
 
