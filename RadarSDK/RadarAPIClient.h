@@ -133,7 +133,7 @@ typedef void (^_Nonnull RadarSyncLogsAPICompletionHandler)(RadarStatus status);
                      near:(CLLocation *_Nullable)near
                    layers:(NSArray<NSString *> *_Nullable)layers
                     limit:(int)limit
-                    country:(NSString *_Nullable)country
+//                    country:(NSString *_Nullable)country
                   countryCode:(NSString *_Nullable)countryCode
               expandUnits:(BOOL)expandUnits
         completionHandler:(RadarGeocodeAPICompletionHandler _Nonnull)completionHandler;

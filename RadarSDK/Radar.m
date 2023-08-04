@@ -771,8 +771,7 @@
                                                   near:near
                                                 layers:layers
                                                  limit:limit
-                                               country:country
-                                               countryCode: nil
+                                               countryCode:country
                                            expandUnits:expandUnits
                                      completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarAddress *> *_Nullable addresses) {
                                          if (completionHandler) {
@@ -794,8 +793,7 @@
                                                   near:near
                                                 layers:layers
                                                  limit:limit
-                                               country:country
-                                               countryCode: nil
+                                           countryCode:country
                                                expandUnits: false
                                      completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarAddress *> *_Nullable addresses) {
                                          if (completionHandler) {
@@ -812,7 +810,6 @@
                                                   near:near
                                                 layers:nil
                                                  limit:limit
-                                               country:nil
                                                countryCode:nil
                                                expandUnits:false
                                      completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarAddress *> *_Nullable addresses) {
@@ -835,7 +832,6 @@
                                                   near:near
                                                 layers:layers
                                                  limit:limit
-                                                 country:nil
                                                countryCode:countryCode
                                            expandUnits:expandUnits
                                      completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarAddress *> *_Nullable addresses) {

@@ -949,7 +949,6 @@
                      near:(CLLocation *_Nullable)near
                    layers:(NSArray<NSString *> *_Nullable)layers
                     limit:(int)limit
-                  country:(NSString *_Nullable)country
                   countryCode:(NSString *_Nullable)countryCode
               expandUnits:(BOOL)expandUnits
         completionHandler:(RadarGeocodeAPICompletionHandler)completionHandler {
@@ -970,9 +969,6 @@
     }
     if (limit) {
         [queryString appendFormat:@"&limit=%d", finalLimit];
-    }
-    if (country) {
-        [queryString appendFormat:@"&countryCode=%@", country];
     }
     if (countryCode) {
         [queryString appendFormat:@"&countryCode=%@", countryCode];
