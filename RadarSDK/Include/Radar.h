@@ -878,7 +878,7 @@ logConversionWithNotification
                     limit:(int)limit
                   countryCode:(NSString *_Nullable)countryCode
               expandUnits:(BOOL)expandUnits
-        completionHandler:(RadarGeocodeCompletionHandler)completionHandler NS_SWIFT_NAME(autocomplete(query:near:layers:limit:country:expandUnits:completionHandler:));
+        completionHandler:(RadarGeocodeCompletionHandler)completionHandler NS_SWIFT_NAME(autocomplete(query:near:layers:limit:countryCode:expandUnits:completionHandler:));
 #pragma mark - Geocoding
 
 /**
