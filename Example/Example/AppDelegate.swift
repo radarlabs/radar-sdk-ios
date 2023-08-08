@@ -99,14 +99,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         
         //Note: this interface is deprecated, please refer to the autocomplete example abouve
         Radar.autocomplete(
-                   query: "brooklyn",
-                   near: origin,
-                   layers: ["locality"],
-                   limit: 10,
-                   country: "US"
-               ) { (status, addresses) in
-                   print("Autocomplete: status = \(Radar.stringForStatus(status)); formattedAddress = \(String(describing: addresses?.first?.formattedAddress))")
-               }
+            query: "brooklyn",
+            near: origin,
+            layers: ["locality"],
+            limit: 10,
+            country: "US"
+        ) { (status, addresses) in
+            print("Autocomplete: status = \(Radar.stringForStatus(status)); formattedAddress = \(String(describing: addresses?.first?.formattedAddress))")
+        }
 
         Radar.getDistance(
             origin: origin,
