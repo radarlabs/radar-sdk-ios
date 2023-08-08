@@ -22,7 +22,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         self.requestLocationPermissions()
 
         // Replace with a valid test publishable key
-        Radar.initialize(publishableKey: "prj_test_pk_0000000000000000000000000000000000000000")
+        Radar.initialize(publishableKey: "prj_test_pk_00000000000000000000000000000000")
         Radar.setDelegate(self)
 
         if UIApplication.shared.applicationState != .background {
@@ -79,14 +79,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         let origin = CLLocation(latitude: 40.78382, longitude: -73.97536)
         let destination = CLLocation(latitude: 40.70390, longitude: -73.98670)
-
-
+       
         Radar.autocomplete(
             query: "brooklyn",
             near: origin,
-            layers: ["locality"],
+            layers: ["address"],
             limit: 10,
-            country: "US",
+            countryCode: "US",
             expandUnits:true
         ) { (status, addresses) in
             print("Autocomplete: status = \(Radar.stringForStatus(status)); formattedAddress = \(String(describing: addresses?.first?.formattedAddress))")
@@ -96,16 +95,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                     print("Validate address: status = \(Radar.stringForStatus(status)); address = \(String(describing: address)); verificationStatus = \(Radar.stringForVerificationStatus(verificationStatus))")
                 }
             }
-        }
-
-        Radar.autocomplete(
-            query: "brooklyn",
-            near: origin,
-            layers: ["locality"],
-            limit: 10,
-            country: "US"
-        ) { (status, addresses) in
-            print("Autocomplete: status = \(Radar.stringForStatus(status)); formattedAddress = \(String(describing: addresses?.first?.formattedAddress))")
         }
 
         Radar.getDistance(
