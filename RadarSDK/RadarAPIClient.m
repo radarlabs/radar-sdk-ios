@@ -447,9 +447,100 @@
 
                             [[RadarDelegateHolder sharedInstance] didFailWithStatus:status];
 
-                            completionHandler(RadarStatusErrorServer, nil, nil, nil, nil, nil, nil);
-                        }];
-    }
+                            return completionHandler(status, nil, nil, nil, nil, nil);
+                        }
+
+                        [[RadarReplayBuffer sharedInstance] clearBuffer];
+                        [RadarState setLastFailedStoppedLocation:nil];
+                        [Radar flushLogs];
+                        [RadarSettings updateLastTrackedTime];
+
+                        RadarConfig *config = [RadarConfig fromDictionary:res];
+
+                        id eventsObj = res[@"events"];
+                        id pastEventsObj = res[@"pastEvents"];
+                        id userObj = res[@"user"];
+                        id nearbyGeofencesObj = res[@"nearbyGeofences"];
+                        NSArray<RadarEvent *> *events = [RadarEvent eventsFromObject:eventsObj];
+                        NSArray<RadarEvent *> *pastEvents = [RadarEvent eventsFromObject:pastEventsObj];
+                        RadarUser *user = [[RadarUser alloc] initWithObject:userObj];
+                        NSArray<RadarGeofence *> *nearbyGeofences = [RadarGeofence geofencesFromObject:nearbyGeofencesObj];
+
+                        if (user) {
+                            BOOL inGeofences = user.geofences && user.geofences.count;
+                            BOOL atPlace = user.place != nil;
+                            BOOL canExit = inGeofences || atPlace;
+                            [RadarState setCanExit:canExit];
+
+                            NSMutableArray *geofenceIds = [NSMutableArray new];
+                            if (user.geofences) {
+                                for (RadarGeofence *geofence in user.geofences) {
+                                    [geofenceIds addObject:geofence._id];
+                                }
+                            }
+                            [RadarState setGeofenceIds:geofenceIds];
+
+                            NSString *placeId = nil;
+                            if (user.place) {
+                                placeId = user.place._id;
+                            }
+                            [RadarState setPlaceId:placeId];
+
+                            NSMutableArray *regionIds = [NSMutableArray new];
+                            if (user.country) {
+                                [regionIds addObject:user.country._id];
+                            }
+                            if (user.state) {
+                                [regionIds addObject:user.state._id];
+                            }
+                            if (user.dma) {
+                                [regionIds addObject:user.dma._id];
+                            }
+                            if (user.postalCode) {
+                                [regionIds addObject:user.postalCode._id];
+                            }
+                            [RadarState setRegionIds:regionIds];
+
+                            NSMutableArray *beaconIds = [NSMutableArray new];
+                            if (user.beacons) {
+                                for (RadarBeacon *beacon in user.beacons) {
+                                    [beaconIds addObject:beacon._id];
+                                }
+                            }
+                            [RadarState setBeaconIds:beaconIds];
+                        }
+
+                        if (events && user) {
+                            [RadarSettings setId:user._id];
+
+                            // if user was on a trip that ended server side, restore previous tracking options
+                            if (!user.trip && [RadarSettings tripOptions]) {
+                                [[RadarLocationManager sharedInstance] restartPreviousTrackingOptions];
+                                [RadarSettings setTripOptions:nil];
+                            }
+
+                            [RadarSettings setUserDebug:user.debug];
+
+                            if (location) {
+                                [[RadarDelegateHolder sharedInstance] didUpdateLocation:location user:user];
+                            }
+
+                            if (events.count) {
+                                if (pastEvents.count) {
+                                    [pastEvents addObjectsFromArray:events];
+                                    [[RadarDelegateHolder sharedInstance] didReceiveEvents:events user:user];
+                                } else {
+                                    [[RadarDelegateHolder sharedInstance] didReceiveEvents:events user:user];
+                                }
+                            }
+
+                            return completionHandler(RadarStatusSuccess, res, events, user, nearbyGeofences, config);
+                        }
+
+                        [[RadarDelegateHolder sharedInstance] didFailWithStatus:status];
+
+                        completionHandler(RadarStatusErrorServer, nil, nil, nil, nil, nil);
+                    }];
 }
 
 - (void)verifyEventId:(NSString *)eventId verification:(RadarEventVerification)verification verifiedPlaceId:(NSString *)verifiedPlaceId {
