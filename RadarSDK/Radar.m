@@ -71,7 +71,7 @@
     return [RadarSettings publishableKey];
 }
 
-+ (void)setUserId:(NSString *)userId {
++ (void)setUserId:(NSString *_Nullable)userId {
     [RadarSettings setUserId:userId];
 }
 

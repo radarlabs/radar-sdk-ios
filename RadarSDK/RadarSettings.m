@@ -72,22 +72,27 @@ static NSString *const kUserDebug = @"radar-userDebug";
     return NO;
 }
 
-+ (NSString *)_id {
++ (NSString *_Nullable)_id {
     return [[NSUserDefaults standardUserDefaults] stringForKey:kId];
 }
 
-+ (void)setId:(NSString *)_id {
++ (void)setId:(NSString *_Nullable)_id {
     [[NSUserDefaults standardUserDefaults] setObject:_id forKey:kId];
 }
 
-+ (NSString *)userId {
++ (NSString *_Nullable)userId {
     return [[NSUserDefaults standardUserDefaults] stringForKey:kUserId];
 }
 
-+ (void)setUserId:(NSString *)userId {
++ (void)setUserId:(NSString *_Nullable)userId {
     NSString *oldUserId = [[NSUserDefaults standardUserDefaults] stringForKey:kUserId];
     if (oldUserId && ![oldUserId isEqualToString:userId]) {
         [RadarSettings setId:nil];
+    }
+    if (!userId || [userId isEqualToString:@""]) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Removing userId"];
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:kUserId];
+        return;
     }
     [[NSUserDefaults standardUserDefaults] setObject:userId forKey:kUserId];
 }
