@@ -97,19 +97,29 @@ static NSString *const kUserDebug = @"radar-userDebug";
     [[NSUserDefaults standardUserDefaults] setObject:userId forKey:kUserId];
 }
 
-+ (NSString *)__description {
++ (NSString *_Nullable)__description {
     return [[NSUserDefaults standardUserDefaults] stringForKey:kDescription];
 }
 
-+ (void)setDescription:(NSString *)description {
++ (void)setDescription:(NSString *_Nullable)description {
+    if (!description || [description isEqualToString:@""]) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Removing description"];
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:kDescription];
+        return;
+    }
     [[NSUserDefaults standardUserDefaults] setObject:description forKey:kDescription];
 }
 
-+ (NSDictionary *)metadata {
++ (NSDictionary *_Nullable)metadata {
     return [[NSUserDefaults standardUserDefaults] dictionaryForKey:kMetadata];
 }
 
-+ (void)setMetadata:(NSString *)metadata {
++ (void)setMetadata:(NSDictionary *_Nullable)metadata {
+    if (!metadata || [metadata isEqualToDictionary:@{}]) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Removing metadata"];
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:kMetadata];
+        return;
+    }
     [[NSUserDefaults standardUserDefaults] setObject:metadata forKey:kMetadata];
 }
 

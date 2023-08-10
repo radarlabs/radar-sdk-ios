@@ -79,7 +79,7 @@
     return [RadarSettings userId];
 }
 
-+ (void)setDescription:(NSString *)description {
++ (void)setDescription:(NSString *_Nullable)description {
     [RadarSettings setDescription:description];
 }
 
@@ -87,7 +87,7 @@
     return [RadarSettings __description];
 }
 
-+ (void)setMetadata:(NSDictionary *)metadata {
++ (void)setMetadata:(NSDictionary *_Nullable)metadata {
     [RadarSettings setMetadata:metadata];
 }
 
