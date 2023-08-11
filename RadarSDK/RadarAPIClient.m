@@ -527,8 +527,9 @@
 
                             if (events.count) {
                                 if (pastEvents.count) {
-                                    [pastEvents addObjectsFromArray:events];
-                                    [[RadarDelegateHolder sharedInstance] didReceiveEvents:events user:user];
+                                    NSMutableArray *combinedEvents = [NSMutableArray arrayWithArray:pastEvents];
+                                    [combinedEvents addObjectsFromArray:events];
+                                    [[RadarDelegateHolder sharedInstance] didReceiveEvents:combinedEvents user:user];
                                 } else {
                                     [[RadarDelegateHolder sharedInstance] didReceiveEvents:events user:user];
                                 }
