@@ -59,6 +59,9 @@
                                      completionHandler:^(RadarStatus status, RadarConfig *config) {
                                          [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
                                      }];
+    // we're going to pull any log buffer from NSUserDefaults and flush it
+    [[RadarLogBuffer sharedInstance] loadLogsFromBuffer];
+    [self flushLogs];
 }
 
 #pragma mark - Properties

@@ -10,7 +10,12 @@
 /**
  Represents a debug log.
  */
-@interface RadarLog : NSObject
+@interface RadarLog : NSObject <NSCoding> {
+    RadarLogLevel _level;
+    NSString *_Nullable _message;
+    RadarLogType _type;
+    NSDate *_Nonnull _createdAt;
+}
 
 /**
  The levels for debug logs.
@@ -33,6 +38,7 @@
 @property (nonnull, copy, nonatomic, readonly) NSDate *createdAt;
 
 - (instancetype _Nullable)initWithLevel:(RadarLogLevel)level type:(RadarLogType)type message:(NSString *_Nullable)message;
+
 
 - (NSDictionary *_Nonnull)dictionaryValue;
 

@@ -43,6 +43,10 @@ static NSString *const kPurgedLogLine = @"----- purged oldest logs -----";
     // add new log to buffer
     RadarLog *radarLog = [[RadarLog alloc] initWithLevel:level type:type message:message];
     [mutableLogBuffer addObject:radarLog];
+
+    // save the mutableLogBuffer to NSUserDefaults
+    NSData *logData = [NSKeyedArchiver archivedDataWithRootObject:mutableLogBuffer];
+    [[NSUserDefaults standardUserDefaults] setObject:data forKey:@"radar-log-buffer"];
 }
 
 - (NSArray<RadarLog *> *)flushableLogs {
@@ -55,14 +59,34 @@ static NSString *const kPurgedLogLine = @"----- purged oldest logs -----";
     [mutableLogBuffer removeObjectsInRange:NSMakeRange(0, PURGE_AMOUNT)];
     RadarLog *purgeLog = [[RadarLog alloc] initWithLevel:RadarLogLevelDebug type:RadarLogTypeNone message:kPurgedLogLine];
     [mutableLogBuffer insertObject:purgeLog atIndex:0];
+
+    // save the mutableLogBuffer to NSUserDefaults
+    NSData *logData = [NSKeyedArchiver archivedDataWithRootObject:mutableLogBuffer];
+    [[NSUserDefaults standardUserDefaults] setObject:data forKey:@"radar-log-buffer"];
+}
+
+// populate the mutableLogBuffer from NSUserDefaults
+// think through whether we should just flush this immediately
+- (void)loadLogsFromPersistentStore {
+    NSData *logData = [[NSUserDefaults standardUserDefaults] objectForKey:@"radar-log-buffer"];
+    if (logData) {
+        NSArray *logArray = [NSKeyedUnarchiver unarchiveObjectWithData:logData];
+        mutableLogBuffer = [NSMutableArray arrayWithArray:logArray];
+    }
 }
 
 - (void)removeLogsFromBuffer:(NSUInteger)numLogs {
     [mutableLogBuffer removeObjectsInRange:NSMakeRange(0, numLogs)];
+    // save the mutableLogBuffer to NSUserDefaults
+    NSData *logData = [NSKeyedArchiver archivedDataWithRootObject:mutableLogBuffer];
+    [[NSUserDefaults standardUserDefaults] setObject:data forKey:@"radar-log-buffer"];
 }
 
 - (void)addLogsToBuffer:(NSArray<RadarLog *> *)logs {
     [mutableLogBuffer addObjectsFromArray:logs];
+    // save the mutableLogBuffer to NSUserDefaults
+    NSData *logData = [NSKeyedArchiver archivedDataWithRootObject:mutableLogBuffer];
+    [[NSUserDefaults standardUserDefaults] setObject:data forKey:@"radar-log-buffer"];
 }
 
 @end

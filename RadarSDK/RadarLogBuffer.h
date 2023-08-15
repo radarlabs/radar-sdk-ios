@@ -21,6 +21,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)purgeOldestLogs;
 
+- (void)loadLogsFromPersistentStore;
+
 - (void)removeLogsFromBuffer:(NSUInteger)numLogs;
 
 - (void)addLogsToBuffer:(NSArray<RadarLog *> *)logs;

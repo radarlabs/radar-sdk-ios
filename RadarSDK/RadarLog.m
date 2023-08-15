@@ -7,6 +7,8 @@
 
 #import "RadarLog.h"
 #import "RadarUtils.h"
+// imports for NScoder
+// #import <Foundation/Foundation.h>
 
 @implementation RadarLog
 
@@ -19,6 +21,24 @@
         _createdAt = [NSDate new];
     }
     return self;
+}
+
+- (instancetype)initWithCoder:(NSCoder *)coder {
+    self = [super init];
+    if (self) {
+        _level = [coder decodeIntegerForKey:@"level"];
+        _type = [coder decodeIntegerForKey:@"type"];
+        _message = [coder decodeObjectForKey:@"message"];
+        _createdAt = [coder decodeObjectForKey:@"createdAt"];
+    }
+    return self;
+}
+
+- (void)encodeWithCoder:(NSCoder *)coder {
+    [coder encodeInteger:self.level forKey:@"level"];
+    [coder encodeInteger:self.type forKey:@"type"];
+    [coder encodeObject:self.message forKey:@"message"];
+    [coder encodeObject:self.createdAt forKey:@"createdAt"];
 }
 
 + (NSString *)stringForLogLevel:(RadarLogLevel)level {
