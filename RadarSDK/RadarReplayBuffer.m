@@ -42,6 +42,10 @@ static const int MAX_BUFFER_SIZE = 120; // one hour of updates
     // add new replay to buffer
     RadarReplay *radarReplay = [[RadarReplay alloc] initWithParams:replayParams];
     [mutableReplayBuffer addObject:radarReplay];
+
+    // persist buffer
+    NSData *replaysData = [NSKeyedArchiver archivedDataWithRootObject:mutableReplayBuffer];
+    [[NSUserDefaults standardUserDefaults] setObject:replaysData forKey:@"radar-replays"];
 }
 
 /**
@@ -57,6 +61,17 @@ static const int MAX_BUFFER_SIZE = 120; // one hour of updates
  */
 - (void)clearBuffer {
     [mutableReplayBuffer removeAllObjects];
+
+    // remove persisted replays
+    [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"radar-replays"];
+}
+
+- (void)loadReplaysFromPersistentStore {
+    NSData *replaysData = [[NSUserDefaults standardUserDefaults] objectForKey:@"radar-replays"];
+    if (replaysData) {
+        NSArray *replays = [NSKeyedUnarchiver unarchiveObjectWithData:replaysData];
+        mutableReplayBuffer = [NSMutableArray arrayWithArray:replays];
+    }
 }
 
 /**

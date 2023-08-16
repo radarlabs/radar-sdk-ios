@@ -53,6 +53,8 @@
         [RadarSettings updateSessionId];
     }
 
+     [[RadarReplayBuffer sharedInstance] loadReplaysFromPersistentStore];
+
     [[RadarLocationManager sharedInstance] updateTrackingFromInitialize];
     [[RadarAPIClient sharedInstance] getConfigForUsage:@"initialize"
                                               verified:NO
