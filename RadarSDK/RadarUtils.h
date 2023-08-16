@@ -29,6 +29,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (CLLocation *)locationForDictionary:(NSDictionary *_Nonnull)dict;
 + (NSDictionary *)dictionaryForLocation:(CLLocation *)location;
 + (NSString *)dictionaryToJson:(NSDictionary *)dict;
++ (BOOL)isJailbroken;
 + (void)runOnMainThread:(dispatch_block_t)block;
 
 @end

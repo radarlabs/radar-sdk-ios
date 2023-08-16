@@ -150,7 +150,7 @@
                                           replayed:NO
                                            beacons:beacons
                                  completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user,
-                                                     NSArray<RadarGeofence *> *_Nullable nearbyGeofences, RadarConfig *_Nullable config) {
+                                                     NSArray<RadarGeofence *> *_Nullable nearbyGeofences, RadarConfig *_Nullable config, NSString *_Nullable token) {
                                      if (status == RadarStatusSuccess) {
                                          [[RadarLocationManager sharedInstance] replaceSyncedGeofences:nearbyGeofences];
                                      }
@@ -219,7 +219,7 @@
                                               replayed:NO
                                                beacons:nil
                                      completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user,
-                                                         NSArray<RadarGeofence *> *_Nullable nearbyGeofences, RadarConfig *_Nullable config) {
+                                                         NSArray<RadarGeofence *> *_Nullable nearbyGeofences, RadarConfig *_Nullable config, NSString *_Nullable token) {
 
                                          if (completionHandler) {
                                              [RadarUtils runOnMainThread:^{
@@ -260,12 +260,59 @@
                                                        attestationString:attestationString
                                                                     keyId:keyId
                                                         attestationError:attestationError
+                                                               encrypted:YES
                                                        completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events,
                                                                            RadarUser *_Nullable user, NSArray<RadarGeofence *> *_Nullable nearbyGeofences,
-                                                                           RadarConfig *_Nullable config) {
+                                                                           RadarConfig *_Nullable config, NSString *_Nullable token) {
                                                            if (completionHandler) {
                                                                [RadarUtils runOnMainThread:^{
                                                                    completionHandler(status, location, events, user);
+                                                               }];
+                                                           }
+                                                       }];
+                                               }];
+                                 }];
+            }];
+}
+
++ (void)trackVerifiedEncryptedWithCompletionHandler:(RadarTrackEncryptedCompletionHandler)completionHandler {
+    [[RadarAPIClient sharedInstance]
+     getConfigForUsage:@"verify" verified:YES
+            completionHandler:^(RadarStatus status, RadarConfig *_Nullable config) {
+                [[RadarLocationManager sharedInstance]
+                    getLocationWithDesiredAccuracy:RadarTrackingOptionsDesiredAccuracyHigh
+                                 completionHandler:^(RadarStatus status, CLLocation *_Nullable location, BOOL stopped) {
+                                     if (status != RadarStatusSuccess) {
+                                         if (completionHandler) {
+                                             [RadarUtils runOnMainThread:^{
+                                                 completionHandler(status, nil);
+                                             }];
+                                         }
+
+                                         return;
+                                     }
+
+                                     [[RadarVerificationManager sharedInstance]
+                                         getAttestationWithNonce:config.nonce
+                                               completionHandler:^(NSString *_Nullable attestationString, NSString *_Nullable keyId, NSString *_Nullable attestationError) {
+                                                   [[RadarAPIClient sharedInstance]
+                                                       trackWithLocation:location
+                                                                 stopped:RadarState.stopped
+                                                              foreground:[RadarUtils foreground]
+                                                                  source:RadarLocationSourceForegroundLocation
+                                                                replayed:NO
+                                                                 beacons:nil
+                                                                verified:YES
+                                                       attestationString:attestationString
+                                                                    keyId:keyId
+                                                        attestationError:attestationError
+                                                               encrypted:YES
+                                                       completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events,
+                                                                           RadarUser *_Nullable user, NSArray<RadarGeofence *> *_Nullable nearbyGeofences,
+                                                                           RadarConfig *_Nullable config, NSString *_Nullable token) {
+                                                           if (completionHandler) {
+                                                               [RadarUtils runOnMainThread:^{
+                                                                   completionHandler(status, token);
                                                                }];
                                                            }
                                                        }];
@@ -345,7 +392,7 @@
                                  replayed:NO
                                   beacons:nil
                         completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user,
-                                            NSArray<RadarGeofence *> *_Nullable nearbyGeofences, RadarConfig *_Nullable config) {
+                                            NSArray<RadarGeofence *> *_Nullable nearbyGeofences, RadarConfig *_Nullable config, NSString *_Nullable token) {
                             if (completionHandler) {
                                 [RadarUtils runOnMainThread:^{
                                     completionHandler(status, location, events, user);
