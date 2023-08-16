@@ -53,7 +53,8 @@
         [RadarSettings updateSessionId];
     }
 
-     [[RadarReplayBuffer sharedInstance] loadReplaysFromPersistentStore];
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"about to load replays from store"];
+    [[RadarReplayBuffer sharedInstance] loadReplaysFromPersistentStore];
 
     [[RadarLocationManager sharedInstance] updateTrackingFromInitialize];
     [[RadarAPIClient sharedInstance] getConfigForUsage:@"initialize"
