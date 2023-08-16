@@ -59,6 +59,18 @@
                                      completionHandler:^(RadarStatus status, RadarConfig *config) {
                                          [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
                                      }];
+    
+    NSDate *appBackgroundedDate = [[NSUserDefaults standardUserDefaults] objectForKey:@"radar-app-backgrounded"];
+    if (appBackgroundedDate) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeAppLifecycleEvent message:[NSString stringWithFormat:@"App backgrounded at %@", appBackgroundedDate]];
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"radar-app-backgrounded"];
+    }
+    // if there is a radar-app-terminated in NSUserDefaults, we're going to log an app terminated timestamp event and remove it
+    NSDate *appTerminatedDate = [[NSUserDefaults standardUserDefaults] objectForKey:@"radar-app-terminated"];
+    if (appTerminatedDate) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeAppLifecycleEvent message:[NSString stringWithFormat:@"App terminated at %@", appTerminatedDate]];
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"radar-app-terminated"];
+    } 
 }
 
 #pragma mark - Properties
@@ -97,6 +109,18 @@
 
 + (void)setAnonymousTrackingEnabled:(BOOL)enabled {
     [RadarSettings setAnonymousTrackingEnabled:enabled];
+}
+
++ (void)logAppBackgrounded {
+    // write an app backgrounded timestamp to NSUserDefaults
+    [[NSUserDefaults standardUserDefaults] setObject:[NSDate date] forKey:@"radar-app-backgrounded"];
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeAppLifecycleEvent message:@"App backgrounded"];
+}
+
++ (void)logAppTerminated {
+    // write an app terminated timestamp to NSUserDefaults
+    [[NSUserDefaults standardUserDefaults] setObject:[NSDate date] forKey:@"radar-app-terminated"];
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeAppLifecycleEvent message:@"App terminated"];
 }
 
 #pragma mark - Location

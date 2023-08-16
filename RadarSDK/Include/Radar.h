@@ -367,6 +367,19 @@ typedef void (^_Nonnull RadarLogConversionCompletionHandler)(RadarStatus status,
  */
 + (void)setAnonymousTrackingEnabled:(BOOL)enabled;
 
+/**
+Logs the app termination event. Call this method in your `AppDelegate` class in `applicationWillTerminate(_:)`.
+
+ @see https://radar.com/documentation/sdk/ios#app-lifecycle
+ */
++ (void)logAppTerminated;
+
+/**
+Logs the app backgrounded event. Call this method in your `AppDelegate` class in `applicationDidEnterBackground(_:)`.
+
+ @see https://radar.com/documentation/sdk/ios#app-lifecycle
+ */
+
 #pragma mark - Location
 
 /**
