@@ -60,7 +60,10 @@
                                          [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
                                      }];
     
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeAppLifecycleEvent message:@"checking backgrounded app"];
     NSDate *appBackgroundedDate = [[NSUserDefaults standardUserDefaults] objectForKey:@"radar-app-backgrounded"];
+    // print appBackgroundedDate
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeAppLifecycleEvent message:[NSString stringWithFormat:@"App backgrounded at %@", appBackgroundedDate]];
     if (appBackgroundedDate) {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeAppLifecycleEvent message:[NSString stringWithFormat:@"App backgrounded at %@", appBackgroundedDate]];
         [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"radar-app-backgrounded"];
