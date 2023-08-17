@@ -54,13 +54,16 @@
         [RadarSettings updateSessionId];
     }
 
-    [[RadarReplayBuffer sharedInstance] loadReplaysFromPersistentStore];
-
     [[RadarLocationManager sharedInstance] updateTrackingFromInitialize];
     [[RadarAPIClient sharedInstance] getConfigForUsage:@"initialize"
                                               verified:NO
                                      completionHandler:^(RadarStatus status, RadarConfig *config) {
                                          [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
+                                        
+                                        RadarTrackingOptions *options = [self getTrackingOptions];
+                                        if (options.replay == RadarTrackingOptionsReplayAll) {
+                                            [[RadarReplayBuffer sharedInstance] loadReplaysFromPersistentStore];
+                                        }
                                      }];
 }
 
