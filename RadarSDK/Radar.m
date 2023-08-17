@@ -19,6 +19,7 @@
 #import "RadarState.h"
 #import "RadarUtils.h"
 #import "RadarVerificationManager.h"
+#import "RadarReplayBuffer.h"
 
 @interface Radar ()
 
@@ -53,7 +54,6 @@
         [RadarSettings updateSessionId];
     }
 
-    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"about to load replays from store"];
     [[RadarReplayBuffer sharedInstance] loadReplaysFromPersistentStore];
 
     [[RadarLocationManager sharedInstance] updateTrackingFromInitialize];

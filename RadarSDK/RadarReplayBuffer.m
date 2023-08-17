@@ -70,7 +70,6 @@ static const int MAX_BUFFER_SIZE = 120; // one hour of updates
 - (void)loadReplaysFromPersistentStore {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Loading replays from persistent store"];
     NSData *replaysData = [[NSUserDefaults standardUserDefaults] objectForKey:@"radar-replays"];
-    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Loaded replays from persistent store: %@", replaysData]];
     if (replaysData) {
         NSArray *replays = [NSKeyedUnarchiver unarchiveObjectWithData:replaysData];
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Loaded replays with length %lu", (unsigned long)[replays count]]];
