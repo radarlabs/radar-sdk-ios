@@ -8,8 +8,6 @@
 #import <CoreLocation/CoreLocation.h>
 #import <UIKit/UIKit.h>
 #import <sys/utsname.h>
-#include <dlfcn.h>
-#include <mach-o/dyld.h>
 
 #import "RadarUtils.h"
 
