@@ -158,57 +158,6 @@ static NSDateFormatter *_isoDateFormatter;
     } 
 }
 
-+ (BOOL)isJailbroken {
-    NSArray *jailbreakFilePaths = @[
-        @"/Applications/Cydia.app",
-        @"/Library/MobileSubstrate/MobileSubstrate.dylib",
-        @"/bin/bash",
-        @"/usr/sbin/sshd",
-        @"/etc/apt",
-        @"/private/var/lib/apt/"
-    ];
-
-    for (NSString *path in jailbreakFilePaths) {
-        if ([[NSFileManager defaultManager] fileExistsAtPath:path]) {
-            NSLog(@"failed check 1");
-            return YES;
-        }
-    }
-    
-    NSString *testPath = @"/private/JailbreakTest.txt";
-    NSData *data = [@"This is a test." dataUsingEncoding:NSUTF8StringEncoding];
-    
-    NSError *error;
-    [data writeToFile:testPath options:NSDataWritingAtomic error:&error];
-    
-    // If no error occurred, the device is likely jailbroken
-    if (!error) {
-        NSLog(@"failed check 2");
-        [[NSFileManager defaultManager] removeItemAtPath:testPath error:nil];
-        return YES;
-    }
-    
-    void *dyld = dlopen(NULL, RTLD_NOW);
-    if (dyld != NULL) {
-        int imageCount = _dyld_image_count();
-        for (int i = 0;  i< imageCount; i++) {
-            const char *dylibNameC = _dyld_get_image_name(i);
-            NSString *dylibName = [NSString stringWithUTF8String:dylibNameC];
-            if ([dylibName containsString:@"MobileSubstrate"]) {
-                NSLog(@"failed check 3");
-                return YES;
-            }
-        }
-    }
-    
-    if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"cydia://package/com.example.package"]]) {
-        NSLog(@"failed check 4");
-        return YES;
-    }
-
-    return NO;
-}
-
 #pragma mark - threading
 
 + (void)runOnMainThread:(dispatch_block_t)block {

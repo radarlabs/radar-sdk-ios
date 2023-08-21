@@ -259,7 +259,6 @@
         params[@"attestationString"] = attestationString;
         params[@"keyId"] = keyId;
         params[@"attestationError"] = attestationError;
-        params[@"jailbroken"] = @([RadarUtils isJailbroken]);
         params[@"encrypted"] = @(encrypted);
     }
     params[@"appId"] = [[NSBundle mainBundle] bundleIdentifier];
