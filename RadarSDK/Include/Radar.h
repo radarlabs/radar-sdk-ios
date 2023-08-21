@@ -500,7 +500,7 @@ typedef void (^_Nonnull RadarLogConversionCompletionHandler)(RadarStatus status,
  @return A boolean indicating whether the tracking option is being over-riden by the remote tracking options
 
  */
-+ (BOOL)isUsingRemoteOptions;
++ (BOOL)isUsingRemoteTrackingOptions;
 #pragma mark - Delegate
 
 /**

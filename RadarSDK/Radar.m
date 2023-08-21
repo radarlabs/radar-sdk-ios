@@ -377,7 +377,7 @@
     return [RadarSettings remoteTrackingOptions] ? [RadarSettings remoteTrackingOptions] : [RadarSettings trackingOptions];
 }
 
-+ (BOOL)isUsingRemoteOptions {
++ (BOOL)isUsingRemoteTrackingOptions {
     return [RadarSettings remoteTrackingOptions] != nil;
 }
 
