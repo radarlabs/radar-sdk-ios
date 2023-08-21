@@ -377,6 +377,10 @@
     return [RadarSettings remoteTrackingOptions] ? [RadarSettings remoteTrackingOptions] : [RadarSettings trackingOptions];
 }
 
++ (BOOL)isUsingRemoteTrackingOptions {
+    return [RadarSettings remoteTrackingOptions] != nil;
+}
+
 #pragma mark - Delegate
 
 + (void)setDelegate:(id<RadarDelegate>)delegate {

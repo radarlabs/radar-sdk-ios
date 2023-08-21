@@ -493,6 +493,14 @@ typedef void (^_Nonnull RadarLogConversionCompletionHandler)(RadarStatus status,
  */
 + (RadarTrackingOptions *)getTrackingOptions;
 
+
+/**
+ Returns a boolean indicating whether the local tracking options are over-ridden by remote tracking options
+
+ @return A boolean indicating whether the tracking option is being over-ridden by the remote tracking options
+
+ */
++ (BOOL)isUsingRemoteTrackingOptions;
 #pragma mark - Delegate
 
 /**
