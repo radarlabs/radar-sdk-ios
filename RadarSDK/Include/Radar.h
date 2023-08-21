@@ -190,7 +190,7 @@ typedef void (^_Nullable RadarTrackCompletionHandler)(RadarStatus status, CLLoca
 
  Receives the request status and, if successful, a JSON Web Token (JWT) containing an array of the events generated and the user. Verify the JWT server-side using your secret key.
 
- @see https://radar.com/documentation/sdk/ios
+ @see https://radar.com/documentation/sdk/fraud
  */
 typedef void (^_Nullable RadarTrackTokenCompletionHandler)(RadarStatus status, NSString *_Nullable token);
 
