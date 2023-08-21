@@ -275,7 +275,7 @@
             }];
 }
 
-+ (void)trackVerifiedEncryptedWithCompletionHandler:(RadarTrackEncryptedCompletionHandler)completionHandler {
++ (void)trackVerifiedTokenWithCompletionHandler:(RadarTrackTokenCompletionHandler)completionHandler {
     [[RadarAPIClient sharedInstance]
      getConfigForUsage:@"verify" verified:YES
             completionHandler:^(RadarStatus status, RadarConfig *_Nullable config) {
