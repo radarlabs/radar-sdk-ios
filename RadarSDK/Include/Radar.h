@@ -156,7 +156,7 @@ typedef NS_ENUM(NSInteger, RadarAddressVerificationStatus) {
 };
 
 
-#pragma mark - Callback typedefs
+#pragma mark - Callbacks
 
 /**
  Called when a location request succeeds, fails, or times out.
@@ -184,6 +184,15 @@ typedef void (^_Nullable RadarBeaconCompletionHandler)(RadarStatus status, NSArr
  @see https://radar.com/documentation/sdk/ios
  */
 typedef void (^_Nullable RadarTrackCompletionHandler)(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user);
+
+/**
+ Called when an track request with token callback succeeds, fails, or times out.
+
+ Receives the request status and, if successful, a JSON Web Token (JWT) containing an array of the events generated and the user. Verify the JWT server-side using your secret key.
+
+ @see https://radar.com/documentation/sdk/fraud
+ */
+typedef void (^_Nullable RadarTrackTokenCompletionHandler)(RadarStatus status, NSString *_Nullable token);
 
 /**
  Called when a trip update succeeds, fails, or times out.
@@ -440,6 +449,17 @@ typedef void (^_Nonnull RadarLogConversionCompletionHandler)(RadarStatus status,
  @see https://radar.com/documentation/fraud
  */
 + (void)trackVerifiedWithCompletionHandler:(RadarTrackCompletionHandler _Nullable)completionHandler NS_SWIFT_NAME(trackVerified(completionHandler:));
+
+/**
+ Tracks the user's location with device integrity information for location verification use cases. Returns a JSON Web Token (JWT). Verify the JWT server-side using your secret key.
+
+ @warning Note that you must configure SSL pinning before calling this method.
+
+ @param completionHandler An optional completion handler.
+
+ @see https://radar.com/documentation/fraud
+ */
++ (void)trackVerifiedTokenWithCompletionHandler:(RadarTrackTokenCompletionHandler _Nullable)completionHandler NS_SWIFT_NAME(trackVerifiedToken(completionHandler:));
 
 /**
  Starts tracking the user's location in the background with configurable tracking options.

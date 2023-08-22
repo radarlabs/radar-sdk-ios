@@ -130,6 +130,7 @@
           attestationString:nil
                       keyId:nil
            attestationError:nil
+                  encrypted:NO
           completionHandler:completionHandler];
 }
 
@@ -143,10 +144,11 @@
         attestationString:(NSString *_Nullable)attestationString
                     keyId:(NSString *_Nullable)keyId
          attestationError:(NSString *_Nullable)attestationError
+                encrypted:(BOOL)encrypted
         completionHandler:(RadarTrackAPICompletionHandler _Nonnull)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
-        return completionHandler(RadarStatusErrorPublishableKey, nil, nil, nil, nil, nil);
+        return completionHandler(RadarStatusErrorPublishableKey, nil, nil, nil, nil, nil, nil);
     }
     NSMutableDictionary *params = [NSMutableDictionary new];
     BOOL anonymous = [RadarSettings anonymousTrackingEnabled];
@@ -257,6 +259,7 @@
         params[@"attestationString"] = attestationString;
         params[@"keyId"] = keyId;
         params[@"attestationError"] = attestationError;
+        params[@"encrypted"] = @(encrypted);
     }
     params[@"appId"] = [[NSBundle mainBundle] bundleIdentifier];
 
@@ -314,7 +317,7 @@
 
                             [[RadarDelegateHolder sharedInstance] didFailWithStatus:status];
 
-                            return completionHandler(status, nil, nil, nil, nil, nil);
+                            return completionHandler(status, nil, nil, nil, nil, nil, nil);
                         }
 
                         [[RadarReplayBuffer sharedInstance] clearBuffer];
@@ -327,10 +330,21 @@
                         id eventsObj = res[@"events"];
                         id userObj = res[@"user"];
                         id nearbyGeofencesObj = res[@"nearbyGeofences"];
+                        id tokenObj = res[@"token"];
                         NSArray<RadarEvent *> *events = [RadarEvent eventsFromObject:eventsObj];
                         RadarUser *user = [[RadarUser alloc] initWithObject:userObj];
                         NSArray<RadarGeofence *> *nearbyGeofences = [RadarGeofence geofencesFromObject:nearbyGeofencesObj];
 
+                        if (encrypted) {
+                            if (!tokenObj) {
+                                return completionHandler(status, nil, nil, nil, nil, nil, nil);
+                            }
+
+                            NSString *token = (NSString *)tokenObj;
+
+                            return completionHandler(status, nil, nil, nil, nil, nil, token);
+                        }
+        
                         if (user) {
                             BOOL inGeofences = user.geofences && user.geofences.count;
                             BOOL atPlace = user.place != nil;
@@ -394,12 +408,12 @@
                                 [[RadarDelegateHolder sharedInstance] didReceiveEvents:events user:user];
                             }
 
-                            return completionHandler(RadarStatusSuccess, res, events, user, nearbyGeofences, config);
+                            return completionHandler(RadarStatusSuccess, res, events, user, nearbyGeofences, config, nil);
                         }
 
                         [[RadarDelegateHolder sharedInstance] didFailWithStatus:status];
 
-                        completionHandler(RadarStatusErrorServer, nil, nil, nil, nil, nil);
+                        completionHandler(RadarStatusErrorServer, nil, nil, nil, nil, nil, nil);
                     }];
 }
 
