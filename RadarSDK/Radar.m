@@ -49,6 +49,7 @@
                                                object:nil];
     
     [RadarSettings setPublishableKey:publishableKey];
+    [[RadarReplayBuffer sharedInstance] loadReplaysFromPersistentStore];
 
     if ([[UIApplication sharedApplication] applicationState] != UIApplicationStateBackground) {
         [RadarSettings updateSessionId];
@@ -59,11 +60,6 @@
                                               verified:NO
                                      completionHandler:^(RadarStatus status, RadarConfig *config) {
                                          [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
-                                        
-                                        RadarTrackingOptions *options = [self getTrackingOptions];
-                                        if (options.replay == RadarTrackingOptionsReplayAll) {
-                                            [[RadarReplayBuffer sharedInstance] loadReplaysFromPersistentStore];
-                                        }
                                      }];
 }
 
