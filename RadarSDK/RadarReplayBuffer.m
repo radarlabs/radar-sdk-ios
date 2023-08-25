@@ -44,8 +44,21 @@ static const int MAX_BUFFER_SIZE = 120; // one hour of updates
     RadarReplay *radarReplay = [[RadarReplay alloc] initWithParams:replayParams];
     [mutableReplayBuffer addObject:radarReplay];
 
-    // persist buffer
-    NSData *replaysData = [NSKeyedArchiver archivedDataWithRootObject:mutableReplayBuffer];
+    NSMutableArray<RadarReplay *> *prunedBuffer;
+
+    // If buffer length is above 50, remove every fifth replay from the persisted buffer 
+    if ([mutableReplayBuffer count] > 50) {
+        prunedBuffer = [NSMutableArray arrayWithCapacity:[mutableReplayBuffer count]];
+        for (NSUInteger i = 0; i < mutableReplayBuffer.count; i++) {
+            // i starts from 0, so for every fifth replay (index 4, 9, 14, ...), skip adding to prunedBuffer
+            if ((i + 1) % 5 != 0) {
+                [prunedBuffer addObject:mutableReplayBuffer[i]];
+            }
+        }
+    }
+
+    // persist the buffer
+    NSData *replaysData = [NSKeyedArchiver archivedDataWithRootObject:prunedBuffer];
     [[NSUserDefaults standardUserDefaults] setObject:replaysData forKey:@"radar-replays"];
 }
 
