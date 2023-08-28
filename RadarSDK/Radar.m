@@ -53,7 +53,6 @@
 
     RadarFeatureSettings *featureSettings = [RadarSettings featureSettings];
     if (featureSettings.usePersistence) {
-        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"usePersistence true, loading replays from persistent store"];
         [[RadarReplayBuffer sharedInstance] loadReplaysFromPersistentStore];
     }
 
