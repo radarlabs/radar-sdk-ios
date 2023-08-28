@@ -10,6 +10,7 @@
 #import "Radar+Internal.h"
 #import "RadarLogger.h"
 #import "RadarTripOptions.h"
+#import "RadarFeatureSettings.h"
 
 @implementation RadarSettings
 
@@ -25,6 +26,7 @@ static NSString *const kTracking = @"radar-tracking";
 static NSString *const kTrackingOptions = @"radar-trackingOptions";
 static NSString *const kPreviousTrackingOptions = @"radar-previousTrackingOptions";
 static NSString *const kRemoteTrackingOptions = @"radar-remoteTrackingOptions";
+static NSString *const kFeatureSettings = @"radar-featureSettings";
 static NSString *const kTripOptions = @"radar-tripOptions";
 static NSString *const kLogLevel = @"radar-logLevel";
 static NSString *const kBeaconUUIDs = @"radar-beaconUUIDs";
@@ -195,6 +197,22 @@ static NSString *const kUserDebug = @"radar-userDebug";
         [[NSUserDefaults standardUserDefaults] removeObjectForKey:kTripOptions];
     }
 }
+
++ (RadarFeatureSettings *)featureSettings {
+    NSDictionary *featureSettingsDict = [[NSUserDefaults standardUserDefaults] dictionaryForKey:kFeatureSettings];
+
+    return [RadarFeatureSettings featureSettingsFromDictionary:featureSettingsDict];
+}
+
++ (void)setFeatureSettings:(RadarFeatureSettings *)featureSettings {
+    if (featureSettings) {
+        NSDictionary *featureSettingsDict = [featureSettings dictionaryValue];
+        [[NSUserDefaults standardUserDefaults] setObject:featureSettingsDict forKey:kFeatureSettings];
+    } else {
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:kFeatureSettings];
+    }
+}
+
 
 + (RadarLogLevel)logLevel {
     RadarLogLevel logLevel;

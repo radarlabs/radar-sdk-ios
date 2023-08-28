@@ -43,6 +43,8 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)removeRemoteTrackingOptions;
 + (RadarTripOptions *_Nullable)tripOptions;
 + (void)setTripOptions:(RadarTripOptions *_Nullable)options;
++ (RadarFeatureSettings *_Nullable)featureSettings;
++ (void)setFeatureSettings:(RadarFeatureSettings *_Nullable)featureSettings;
 + (RadarLogLevel)logLevel;
 + (void)setLogLevel:(RadarLogLevel)level;
 + (NSArray<NSString *> *_Nullable)beaconUUIDs;

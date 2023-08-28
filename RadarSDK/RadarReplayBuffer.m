@@ -55,9 +55,11 @@ static const int MAX_BUFFER_SIZE = 120; // one hour of updates
                 [prunedBuffer addObject:mutableReplayBuffer[i]];
             }
         }
+    } else {
+        prunedBuffer = mutableReplayBuffer;
     }
 
-    // persist the buffer
+    //persist the buffer
     NSData *replaysData = [NSKeyedArchiver archivedDataWithRootObject:prunedBuffer];
     [[NSUserDefaults standardUserDefaults] setObject:replaysData forKey:@"radar-replays"];
 }
