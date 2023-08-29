@@ -19,7 +19,6 @@
 #import "RadarRoutes.h"
 #import "RadarTrackingOptions.h"
 #import "RadarUser.h"
-#import "RadarFeatureSettings.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
