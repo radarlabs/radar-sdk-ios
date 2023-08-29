@@ -19,6 +19,8 @@
 #import "RadarState.h"
 #import "RadarUtils.h"
 #import "RadarVerificationManager.h"
+#import "RadarReplayBuffer.h"
+#import "RadarFeatureSettings.h"
 
 @interface Radar ()
 
@@ -49,6 +51,11 @@
     
     [RadarSettings setPublishableKey:publishableKey];
 
+    RadarFeatureSettings *featureSettings = [RadarSettings featureSettings];
+    if (featureSettings.usePersistence) {
+        [[RadarReplayBuffer sharedInstance] loadReplaysFromPersistentStore];
+    }
+
     if ([[UIApplication sharedApplication] applicationState] != UIApplicationStateBackground) {
         [RadarSettings updateSessionId];
     }
@@ -58,6 +65,7 @@
                                               verified:NO
                                      completionHandler:^(RadarStatus status, RadarConfig *config) {
                                          [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
+                                         [RadarSettings setFeatureSettings:config.meta.featureSettings];
                                      }];
 }
 
@@ -1208,6 +1216,7 @@
                                                   verified:NO
                                          completionHandler:^(RadarStatus status, RadarConfig *_Nullable config) {
                                              [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
+                                             [RadarSettings setFeatureSettings:config.meta.featureSettings];
                                          }];
     }
     [Radar logOpenedAppConversion];

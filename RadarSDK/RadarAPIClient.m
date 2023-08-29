@@ -278,6 +278,7 @@
 
     NSArray<RadarReplay *> *replays = [[RadarReplayBuffer sharedInstance] flushableReplays];
     NSUInteger replayCount = replays.count;
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Replay count in api client: %lu", (unsigned long)replayCount]];
     NSMutableDictionary *requestParams = [params mutableCopy];
 
     BOOL replaying = options.replay == RadarTrackingOptionsReplayAll && replayCount > 0 && !verified;

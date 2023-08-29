@@ -17,6 +17,18 @@
     return self;
 }
 
+- (instancetype)initWithCoder:(NSCoder *)coder {
+    self = [super init];
+    if (self) {
+        _replayParams = [coder decodeObjectForKey:@"replayParams"];
+    }
+    return self;
+}
+
+- (void)encodeWithCoder:(NSCoder *)coder {
+    [coder encodeObject:self.replayParams forKey:@"replayParams"];
+}
+
 + (NSMutableArray<NSDictionary *> *)arrayForReplays:(NSArray<RadarReplay *> *)replays {
     if (!replays) {
         return nil;

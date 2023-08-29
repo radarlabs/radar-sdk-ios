@@ -398,8 +398,8 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
                                                message:[NSString stringWithFormat:@"Removed remote tracking options | trackingOptions = %@", Radar.getTrackingOptions]];
         }
-        [self updateTrackingFromInitialize];
     }
+    [self updateTrackingFromInitialize];
 }
 
 - (void)restartPreviousTrackingOptions {
@@ -849,6 +849,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                                          self.sending = NO;
 
                                          [self updateTrackingFromMeta:config.meta];
+                                         [RadarSettings setFeatureSettings:config.meta.featureSettings];
                                          [self replaceSyncedGeofences:nearbyGeofences];
                                      }];
 }

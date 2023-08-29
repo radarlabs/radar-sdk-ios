@@ -24,5 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)clearBuffer;
 
+- (void)loadReplaysFromPersistentStore;
+
 @end
 NS_ASSUME_NONNULL_END
