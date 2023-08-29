@@ -260,7 +260,7 @@
                                                        attestationString:attestationString
                                                                     keyId:keyId
                                                         attestationError:attestationError
-                                                               encrypted:YES
+                                                               encrypted:NO
                                                        completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events,
                                                                            RadarUser *_Nullable user, NSArray<RadarGeofence *> *_Nullable nearbyGeofences,
                                                                            RadarConfig *_Nullable config, NSString *_Nullable token) {
