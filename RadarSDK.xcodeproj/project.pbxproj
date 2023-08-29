@@ -349,7 +349,6 @@
 		96A5A0D827AD9F7F007B960B /* Include */ = {
 			isa = PBXGroup;
 			children = (
-				82EEA9292A9E684C0048DCEC /* RadarFeatureSettings.h */,
 				96A5A0F527AD9F7F007B960B /* Radar.h */,
 				96A5A0ED27AD9F7F007B960B /* RadarAddress.h */,
 				96A5A0F427AD9F7F007B960B /* RadarBeacon.h */,
@@ -430,6 +429,7 @@
 		DD236C772308797B00EB88F9 /* RadarSDK */ = {
 			isa = PBXGroup;
 			children = (
+				82EEA9292A9E684C0048DCEC /* RadarFeatureSettings.h */,
 				82EEA92B2A9E685B0048DCEC /* RadarFeatureSettings.m */,
 				82F7FAEC2A65FE030055AA4B /* RadarVerificationManager.h */,
 				82F7FAED2A65FE030055AA4B /* RadarVerificationManager.m */,
