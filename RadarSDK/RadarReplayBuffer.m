@@ -5,6 +5,7 @@
 //  Copyright © 2023 Radar Labs, Inc. All rights reserved.
 //
 
+#import "RadarAPIClient.h"
 #import "RadarReplayBuffer.h"
 #import "RadarReplay.h"
 #import "RadarLogger.h"
@@ -14,12 +15,14 @@ static const int MAX_BUFFER_SIZE = 120; // one hour of updates
 
 @implementation RadarReplayBuffer {
     NSMutableArray<RadarReplay *> *mutableReplayBuffer;
+    BOOL isFlushing;
 }
 
 - (instancetype)init {
     self = [super init];
     if (self) {
         mutableReplayBuffer = [NSMutableArray<RadarReplay *> new];
+        isFlushing = NO;
     }
     return self;
 }
@@ -75,6 +78,70 @@ static const int MAX_BUFFER_SIZE = 120; // one hour of updates
 }
 
 /**
+* Flushes the replay in the buffer
+*/
+// - (void)flushReplaysWithCompletionHandler:(NSDictionary *_Nullable)replayParams
+                        // completionHandler:(void (^_Nullable)(void))completionHandler;
+- (void)flushReplaysWithCompletionHandler:(NSDictionary *_Nullable)replayParams
+                        completionHandler:(RadarFlushReplaysCompletionHandler _Nullable)completionHandler {
+    if (isFlushing) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Already flushing replays"]]
+        return;
+    }
+
+    isFlushing = YES;
+
+    NSArray<RadarReplay *> *flushableReplays = [self flushableReplays];
+    if ([flushableReplays count] == 0) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"No replays to flush"];
+        isFlushing = NO;
+        return;
+    }
+
+    // get a copy of the replays so we can safely clear what was synced up
+    NSMutableArray<RadarReplay *> *replaysArray = [NSMutableArray arrayWithArray:flushableReplays];
+    
+    NSMutableArray *replaysRequestArray = [RadarReplay arrayForReplays:replaysArray];
+
+    // if we have a current track update, add it to the local replay list
+    RadarReplay *radarReplay; 
+    if (replayParams) {
+        [replaysRequestArray addObject:replayParams];
+    }
+
+    // log the replay count
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Flushing %lu replays", (unsigned long)[replays count]]];
+
+    // set aside the current time in case we need to write it to that last replay
+    long nowMs = (long)([NSDate date].timeIntervalSince1970 * 1000);
+
+    [[RadarAPIClient sharedInstance] replay:replaysRequestArray completionHandler:^(RadarStatus status) {
+        if (status == RadarStatusSuccess) {
+            // if the flush was successful, remove the replays from the buffer
+            [self removeReplaysFromBuffer:replaysArray];
+        } else {
+            if (replayParams) {
+                // if the flush failed, update the timestamp of the last replay to now
+                NSMutableDictionary *newReplayParams = [replayParams mutableCopy];
+                newReplayParams[@"replayed"] = @(YES);
+                newReplayParams[@"updatedAtMs"] = @(nowMs);
+                // remove the updatedAtMsDiff key because for replays we want to rely on the updatedAtMs key for the time instead
+                [newReplayParams removeObjectForKey:@"updatedAtMsDiff"];
+                // write the replay not yet persisted
+                [self writeNewReplayToBuffer:newReplayParams];
+
+            }
+        }
+
+        isFlushing = NO;
+        // call the completion handler
+        if (completionHandler) {
+            completionHandler(status);
+        }
+    }];
+}
+
+/**
  * Clears the buffer out
  */
 - (void)clearBuffer {
@@ -82,6 +149,14 @@ static const int MAX_BUFFER_SIZE = 120; // one hour of updates
 
     // remove persisted replays
     [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"radar-replays"];
+}
+
+- (void)removeReplaysFromBuffer:(NSArray<RadarReplay *> *)replays {
+    [mutableReplayBuffer removeObjectsInArray:replays];
+
+    // persist the updated buffer
+    NSData *replaysData = [NSKeyedArchiver archivedDataWithRootObject:mutableReplayBuffer];
+    [[NSUserDefaults standardUserDefaults] setObject:replaysData forKey:@"radar-replays"];
 }
 
 - (void)loadReplaysFromPersistentStore {

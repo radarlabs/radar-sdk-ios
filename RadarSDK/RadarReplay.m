@@ -41,4 +41,20 @@
     return arr;
 }
 
+- (BOOL)isEqual:(id)object {
+    if (self == object) {
+        return YES;
+    }
+
+    if (![object isKindOfClass:[RadarReplay class]]) {
+        return NO;
+    }
+
+    return [self.replayParams isEqual:((RadarReplay *)object).replayParams];
+}
+
+- (NSUInteger)hash {
+    return [self.replayParams hash];
+}
+
 @end

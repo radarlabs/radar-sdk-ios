@@ -113,6 +113,66 @@
                     }];
 }
 
+
+- (void)replay(replays, completionHandler:(RadarSyncLogsAPICompletionHandler _Nonnull)completionHandler {
+    NSString *publishableKey = [RadarSettings publishableKey];
+    if (!publishableKey) {
+        return;
+    }
+
+    NSString *host = [RadarSettings host];
+    NSString *url = [NSString stringWithFormat:@"%@/v1/track/replay", host];
+    url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
+
+    NSDictionary *headers = [RadarAPIClient headersWithPublishableKey:publishableKey];
+
+    NSMutableDictionary *requestParams = [NSMutableDictionary new];
+    requestParams[@"replays"] = replays;
+
+    [self.apiHelper requestWithMethod:@"POST"
+                                  url:url
+                              headers:headers
+                               params:replays
+                                sleep:NO
+                           logPayload:YES
+                      extendedTimeout:NO
+                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
+                        if (!res) {
+                            return;
+                        }
+
+                        [Radar flushLogs];
+
+                        completionHandler(status);
+                    }];
+}
+
+- (void)searchPlacesNear:(CLLocationCoordinate2D)near radius:(int)radius chains:(NSArray<NSString *> *_Nullable)chains categories:(NSArray<NSString *> *_Nullable)categories groups:(NSArray<NSString *> *_Nullable)groups limit:(int)limit completionHandler:(RadarSearchPlacesAPICompletionHandler _Nonnull)completionHandler {
+    NSString *publishableKey = [RadarSettings publishableKey];
+    if (!publishableKey) {
+        return completionHandler(RadarStatusErrorPublishableKey, nil, nil);
+    }
+
+    NSMutableDictionary *params = [NSMutableDictionary new];
+    params[@"near"] = [NSString stringWithFormat:@"%f,%f", near.latitude, near.longitude];
+    params[@"radius"] = [NSString stringWithFormat:@"%d", radius];
+    if (chains) {
+        params[@"chains"] = [chains componentsJoinedByString:@","];
+    }
+    if (categories) {
+        params[@"categories"] = [categories componentsJoinedByString:@","];
+    }
+    if (groups) {
+        params[@"groups"] = [groups componentsJoinedByString:@","];
+    }
+    params[@"limit"] = [NSString stringWithFormat:@"%d", limit];
+
+    NSString *host = [RadarSettings host];
+    NSString *url = [NSString stringWithFormat:@"%@/v1/search/places", host];
+    url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
+
+    NSDictionary *headers = [RadarAPIClient headersWithPublishableKey:publishableKey];
+
 - (void)trackWithLocation:(CLLocation *_Nonnull)location
                   stopped:(BOOL)stopped
                foreground:(BOOL)foreground
@@ -283,12 +343,15 @@
 
     BOOL replaying = options.replay == RadarTrackingOptionsReplayAll && replayCount > 0 && !verified;
     if (replaying) {
+        
         NSMutableArray *replaysArray = [RadarReplay arrayForReplays:replays];
         [replaysArray addObject:params];
 
         url = [NSString stringWithFormat:@"%@/v1/track/replay", host];
 
         requestParams[@"replays"] = replaysArray;
+        // LiamTodo: divert to replay buffer, remove the above, clean up the call
+        [[RadarReplayBuffer sharedInstance] flushReplaysWithCompletionHandler]; 
     }
 
     url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
