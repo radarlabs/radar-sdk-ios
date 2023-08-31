@@ -1220,14 +1220,6 @@
                                          }];
     }
 
-    RadarFeatureSettings *featureSettings = [RadarSettings featureSettings];
-    if (featureSettings.extendFlushReplays) {
-        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"flushReplays() from applicationWillEnterForeground"];
-        [[RadarReplayBuffer sharedInstance] flushReplaysWithCompletionHandler:nil completionHandler:nil];
-    }
-
-
-
     [Radar logOpenedAppConversion];
 }
 
