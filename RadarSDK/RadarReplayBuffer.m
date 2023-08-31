@@ -104,7 +104,6 @@ static const int MAX_BUFFER_SIZE = 120; // one hour of updates
     NSMutableArray *replaysRequestArray = [RadarReplay arrayForReplays:replaysArray];
 
     // if we have a current track update, add it to the local replay list
-    RadarReplay *radarReplay; 
     if (replayParams) {
         [replaysRequestArray addObject:replayParams];
     }

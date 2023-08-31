@@ -13,9 +13,6 @@
 
 - (instancetype _Nullable)initWithParams:(NSDictionary *_Nullable)replayParams;
 
-- (void)flushReplaysWithCompletionHandler:(NSDictionary *_Nullable)replayParams
-                        completionHandler:(void (^_Nullable)(void))completionHandler;
-
 + (NSMutableArray<NSDictionary *> *_Nullable)arrayForReplays:(NSArray<RadarReplay *> *_Nullable)replays;
 
 @end

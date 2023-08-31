@@ -133,7 +133,7 @@
     [self.apiHelper requestWithMethod:@"POST"
                                   url:url
                               headers:headers
-                               params:replays
+                               params:requestParams
                                 sleep:NO
                            logPayload:YES
                       extendedTimeout:NO
