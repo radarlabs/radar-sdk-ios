@@ -325,8 +325,6 @@
         url = [NSString stringWithFormat:@"%@/v1/track/replay", host];
 
         requestParams[@"replays"] = replaysArray;
-        // LiamTodo: divert to replay buffer, remove the above, clean up the call
-        // [[RadarReplayBuffer sharedInstance] flushReplaysWithCompletionHandler]; 
     }
 
     url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
