@@ -80,8 +80,6 @@ static const int MAX_BUFFER_SIZE = 120; // one hour of updates
 /**
 * Flushes the replay in the buffer
 */
-// - (void)flushReplaysWithCompletionHandler:(NSDictionary *_Nullable)replayParams
-                        // completionHandler:(void (^_Nullable)(void))completionHandler;
 - (void)flushReplaysWithCompletionHandler:(NSDictionary *_Nullable)replayParams
                         completionHandler:(RadarFlushReplaysCompletionHandler _Nullable)completionHandler {
     if (isFlushing) {
@@ -132,12 +130,17 @@ static const int MAX_BUFFER_SIZE = 120; // one hour of updates
             }
         }
 
-        isFlushing = NO;
-        // call the completion handler
+        [self setIsFlushing:NO];
+        // call the RadarFlushReplaysCompletionHandler completion handler which takes a status
         if (completionHandler) {
             completionHandler(status);
         }
     }];
+}
+
+// Set is Flushing from outside
+- (void)setIsFlushing:(BOOL)flushing {
+    isFlushing = flushing;
 }
 
 /**

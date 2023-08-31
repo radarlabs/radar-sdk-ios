@@ -23,6 +23,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)flushReplaysWithCompletionHandler:(NSDictionary *_Nullable)replayParams
                         completionHandler:(RadarFlushReplaysCompletionHandler _Nullable)completionHandler;
 
+- (void)setIsFlushing:(BOOL)flushing;
+
 - (void)dropOldestReplay;
 
 - (void)clearBuffer;
