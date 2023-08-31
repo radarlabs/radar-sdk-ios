@@ -1219,6 +1219,14 @@
                                              [RadarSettings setFeatureSettings:config.meta.featureSettings];
                                          }];
     }
+
+    RadarFeatureSettings *featureSettings = [RadarSettings featureSettings];
+    if (featureSettings.extendFlushReplays) {
+        [[RadarReplayBuffer sharedInstance] flushReplaysWithCompletionHandler]; 
+    }
+
+
+
     [Radar logOpenedAppConversion];
 }
 

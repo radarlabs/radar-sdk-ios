@@ -90,6 +90,8 @@ typedef void (^_Nonnull RadarSyncLogsAPICompletionHandler)(RadarStatus status);
                 encrypted:(BOOL)encrypted
         completionHandler:(RadarTrackAPICompletionHandler _Nonnull)completionHandler;
 
+- (void)replay(replays, completionHandler:(RadarSyncLogsAPICompletionHandler _Nonnull)completionHandler;
+
 - (void)verifyEventId:(NSString *_Nonnull)eventId verification:(RadarEventVerification)verification verifiedPlaceId:(NSString *_Nullable)verifiedPlaceId;
 
 - (void)createTripWithOptions:(RadarTripOptions *_Nullable)options completionHandler:(RadarTripAPICompletionHandler _Nonnull)completionHandler;

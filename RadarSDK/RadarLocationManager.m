@@ -400,6 +400,8 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         }
     }
     [self updateTrackingFromInitialize];
+
+    // LiamTodo: perhaps call flush replays here
 }
 
 - (void)restartPreviousTrackingOptions {
