@@ -84,6 +84,9 @@ static const int MAX_BUFFER_SIZE = 120; // one hour of updates
                         completionHandler:(RadarFlushReplaysCompletionHandler _Nullable)completionHandler {
     if (isFlushing) {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Already flushing replays"];
+        if (completionHandler) {
+            completionHandler(RadarStatusErrorServer, nil);
+        }
         return;
     }
 
@@ -93,6 +96,9 @@ static const int MAX_BUFFER_SIZE = 120; // one hour of updates
     if ([flushableReplays count] == 0 && !replayParams) {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"No replays to flush"];
         isFlushing = NO;
+        if (completionHandler) {
+            completionHandler(RadarStatusSuccess, nil);
+        }
         return;
     }
 
@@ -112,7 +118,7 @@ static const int MAX_BUFFER_SIZE = 120; // one hour of updates
     // set aside the current time in case we need to write it to that last replay
     long nowMs = (long)([NSDate date].timeIntervalSince1970 * 1000);
 
-    [[RadarAPIClient sharedInstance] flushReplays:replaysRequestArray completionHandler:^(RadarStatus status) {
+    [[RadarAPIClient sharedInstance] flushReplays:replaysRequestArray completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
         if (status == RadarStatusSuccess) {
             // if the flush was successful, remove the replays from the buffer
             [self removeReplaysFromBuffer:replaysArray];
@@ -126,14 +132,13 @@ static const int MAX_BUFFER_SIZE = 120; // one hour of updates
                 [newReplayParams removeObjectForKey:@"updatedAtMsDiff"];
                 // write the replay not yet persisted
                 [self writeNewReplayToBuffer:newReplayParams];
-
             }
         }
 
         [self setIsFlushing:NO];
         // call the RadarFlushReplaysCompletionHandler completion handler which takes a status
         if (completionHandler) {
-            completionHandler(status);
+            completionHandler(status, res);
         }
     }];
 }

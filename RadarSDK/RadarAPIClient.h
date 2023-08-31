@@ -30,6 +30,8 @@ typedef void (^_Nonnull RadarTrackAPICompletionHandler)(RadarStatus status,
                                                         RadarConfig *_Nullable config,
                                                         NSString *_Nullable token);
 
+typedef void (^_Nonnull RadarFlushReplaysAPICompletionHandler)(RadarStatus status, NSDictionary *_Nullable res);
+
 typedef void (^_Nonnull RadarTripAPICompletionHandler)(RadarStatus status, RadarTrip *_Nullable trip, NSArray<RadarEvent *> *_Nullable events);
 
 typedef void (^_Nonnull RadarContextAPICompletionHandler)(RadarStatus status, NSDictionary *_Nullable res, RadarContext *_Nullable context);
@@ -90,7 +92,7 @@ typedef void (^_Nonnull RadarSyncLogsAPICompletionHandler)(RadarStatus status);
                 encrypted:(BOOL)encrypted
         completionHandler:(RadarTrackAPICompletionHandler _Nonnull)completionHandler;
 
-- (void)flushReplays:(NSArray<NSDictionary *> *_Nonnull)replays completionHandler:(RadarFlushReplaysCompletionHandler _Nullable)completionHandler;
+- (void)flushReplays:(NSArray<NSDictionary *> *_Nonnull)replays completionHandler:(RadarFlushReplaysAPICompletionHandler _Nonnull)completionHandler;
 
 - (void)verifyEventId:(NSString *_Nonnull)eventId verification:(RadarEventVerification)verification verifiedPlaceId:(NSString *_Nullable)verifiedPlaceId;
 

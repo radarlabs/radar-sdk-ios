@@ -115,7 +115,7 @@
 
 
 - (void)flushReplays:(NSArray<NSDictionary *> *_Nonnull)replays
-   completionHandler:(RadarFlushReplaysCompletionHandler _Nullable)completionHandler {
+   completionHandler:(RadarFlushReplaysAPICompletionHandler _Nonnull)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
         return;
@@ -136,7 +136,7 @@
                                params:requestParams
                                 sleep:NO
                            logPayload:YES
-                      extendedTimeout:NO
+                      extendedTimeout:YES
                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
                         if (!res) {
                             return;
@@ -144,7 +144,7 @@
 
                         [Radar flushLogs];
 
-                        completionHandler(status);
+                        completionHandler(status, res);
                     }];
 }
 
@@ -318,14 +318,22 @@
 
     BOOL replaying = options.replay == RadarTrackingOptionsReplayAll && replayCount > 0 && !verified;
     if (replaying) {
-        
-        NSMutableArray *replaysArray = [RadarReplay arrayForReplays:replays];
-        [replaysArray addObject:params];
 
-        url = [NSString stringWithFormat:@"%@/v1/track/replay", host];
+        [[RadarReplayBuffer sharedInstance] flushReplaysWithCompletionHandler:params completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
+            if (status != RadarStatusSuccess) {
+                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Failed to flush replays"]];
+                [[RadarDelegateHolder sharedInstance] didFailWithStatus:status];
+            } else {
+                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Succeded in flushing replays"]];
+                [RadarState setLastFailedStoppedLocation:nil];
+                [RadarSettings updateLastTrackedTime];
+            }
 
-        requestParams[@"replays"] = replaysArray;
-    }
+            [[RadarDelegateHolder sharedInstance] didFailWithStatus:status];
+            completionHandler(RadarStatusErrorServer, nil, nil, nil, nil, nil, nil);
+        }];
+    } else {
+
 
     url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
 
@@ -452,6 +460,7 @@
 
                         completionHandler(RadarStatusErrorServer, nil, nil, nil, nil, nil, nil);
                     }];
+    }
 }
 
 - (void)verifyEventId:(NSString *)eventId verification:(RadarEventVerification)verification verifiedPlaceId:(NSString *)verifiedPlaceId {
