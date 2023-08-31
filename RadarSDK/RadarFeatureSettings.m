@@ -10,7 +10,7 @@
 @implementation RadarFeatureSettings
 
 - (instancetype)initWithUsePersistence:(BOOL)usePersistence
-             extendFlushReplays:(BOOL)extendFlushReplays{
+             extendFlushReplays:(BOOL)extendFlushReplays {
     if (self = [super init]) {
         _usePersistence = usePersistence;
         _extendFlushReplays = extendFlushReplays;
@@ -20,7 +20,7 @@
 
 + (RadarFeatureSettings *_Nullable)featureSettingsFromDictionary:(NSDictionary *)dict {
     if (!dict) {
-        return [[RadarFeatureSettings alloc] initWithUsePersistence:NO, extendFlushReplays:NO];
+        return [[RadarFeatureSettings alloc] initWithUsePersistence:NO extendFlushReplays:NO];
     }
 
     NSObject *usePersistenceObj = dict[@"usePersistence"]; 
@@ -34,13 +34,13 @@
     if (extendFlushReplaysObj && [extendFlushReplaysObj isKindOfClass:[NSNumber class]]) {
        extendFlushReplays = [(NSNumber *)extendFlushReplaysObj boolValue]; 
     }
-    return [[RadarFeatureSettings alloc] initWithUsePersistence:usePersistence, extendFlushReplays:extendFlushReplays];
+    return [[RadarFeatureSettings alloc] initWithUsePersistence:usePersistence extendFlushReplays:extendFlushReplays];
 }
 
 - (NSDictionary *)dictionaryValue {
     NSMutableDictionary *dict = [NSMutableDictionary new];
-    [dict setValue:self.usePersistence forKey:@"usePersistence"];
-    [dict setValue:self.extendFlushReplays forKey:@"extendFlushReplays"]
+    [dict setValue:@(self.usePersistence) forKey:@"usePersistence"];
+    [dict setValue:@(self.extendFlushReplays) forKey:@"extendFlushReplays"];
     
     return dict;
 }

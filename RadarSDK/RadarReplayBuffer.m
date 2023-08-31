@@ -85,14 +85,14 @@ static const int MAX_BUFFER_SIZE = 120; // one hour of updates
 - (void)flushReplaysWithCompletionHandler:(NSDictionary *_Nullable)replayParams
                         completionHandler:(RadarFlushReplaysCompletionHandler _Nullable)completionHandler {
     if (isFlushing) {
-        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Already flushing replays"]]
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Already flushing replays"];
         return;
     }
 
     isFlushing = YES;
 
     NSArray<RadarReplay *> *flushableReplays = [self flushableReplays];
-    if ([flushableReplays count] == 0) {
+    if ([flushableReplays count] == 0 && !replayParams) {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"No replays to flush"];
         isFlushing = NO;
         return;
@@ -110,12 +110,12 @@ static const int MAX_BUFFER_SIZE = 120; // one hour of updates
     }
 
     // log the replay count
-    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Flushing %lu replays", (unsigned long)[replays count]]];
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Flushing %lu replays", (unsigned long)[replaysRequestArray count]]];
 
     // set aside the current time in case we need to write it to that last replay
     long nowMs = (long)([NSDate date].timeIntervalSince1970 * 1000);
 
-    [[RadarAPIClient sharedInstance] replay:replaysRequestArray completionHandler:^(RadarStatus status) {
+    [[RadarAPIClient sharedInstance] flushReplays:replaysRequestArray completionHandler:^(RadarStatus status) {
         if (status == RadarStatusSuccess) {
             // if the flush was successful, remove the replays from the buffer
             [self removeReplaysFromBuffer:replaysArray];

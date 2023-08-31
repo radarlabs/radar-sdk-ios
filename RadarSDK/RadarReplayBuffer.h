@@ -20,6 +20,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)writeNewReplayToBuffer:(NSMutableDictionary *)replayParams;
 
+- (void)flushReplaysWithCompletionHandler:(NSDictionary *_Nullable)replayParams
+                        completionHandler:(RadarFlushReplaysCompletionHandler _Nullable)completionHandler;
+
 - (void)dropOldestReplay;
 
 - (void)clearBuffer;
