@@ -205,6 +205,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     [RadarSettings setTracking:NO];
     RadarFeatureSettings *featureSettings = [RadarSettings featureSettings];
     if (featureSettings.extendFlushReplays) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"flushReplays() from stopTracking"];
         [[RadarReplayBuffer sharedInstance] flushReplaysWithCompletionHandler:nil completionHandler:nil];
     }
 

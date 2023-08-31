@@ -1222,9 +1222,8 @@
 
     RadarFeatureSettings *featureSettings = [RadarSettings featureSettings];
     if (featureSettings.extendFlushReplays) {
-        [[RadarReplayBuffer sharedInstance] flushReplaysWithCompletionHandler:nil completionHandler:^(RadarStatus status){
-            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"flushReplays()"];
-        }];
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"flushReplays() from applicationWillEnterForeground"];
+        [[RadarReplayBuffer sharedInstance] flushReplaysWithCompletionHandler:nil completionHandler:nil];
     }
 
 
