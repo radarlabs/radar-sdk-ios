@@ -138,9 +138,6 @@
                            logPayload:YES
                       extendedTimeout:YES
                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
-                        if (!res) {
-                            return;
-                        }
 
                         [Radar flushLogs];
 
@@ -318,11 +315,9 @@
 
     BOOL replaying = options.replay == RadarTrackingOptionsReplayAll && replayCount > 0 && !verified;
     if (replaying) {
-
         [[RadarReplayBuffer sharedInstance] flushReplaysWithCompletionHandler:params completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
             if (status != RadarStatusSuccess) {
                 [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Failed to flush replays"]];
-                [[RadarDelegateHolder sharedInstance] didFailWithStatus:status];
             } else {
                 [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Succeded in flushing replays"]];
                 [RadarState setLastFailedStoppedLocation:nil];

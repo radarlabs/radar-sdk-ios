@@ -136,7 +136,6 @@ static const int MAX_BUFFER_SIZE = 120; // one hour of updates
         }
 
         [self setIsFlushing:NO];
-        // call the RadarFlushReplaysCompletionHandler completion handler which takes a status
         if (completionHandler) {
             completionHandler(status, res);
         }
