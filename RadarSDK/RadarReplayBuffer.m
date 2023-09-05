@@ -5,7 +5,7 @@
 //  Copyright © 2023 Radar Labs, Inc. All rights reserved.
 //
 
-#import "Radar.h"
+#import "Radar+Internal.h"
 #import "RadarAPIClient.h"
 #import "RadarReplayBuffer.h"
 #import "RadarReplay.h"
