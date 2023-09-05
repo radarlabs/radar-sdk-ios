@@ -316,14 +316,14 @@
         [[RadarReplayBuffer sharedInstance] flushReplaysWithCompletionHandler:params completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
             if (status != RadarStatusSuccess) {
                 [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Failed to flush replays"]];
+                [[RadarDelegateHolder sharedInstance] didFailWithStatus:status];
             } else {
                 [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Succeded in flushing replays"]];
                 [RadarState setLastFailedStoppedLocation:nil];
                 [RadarSettings updateLastTrackedTime];
             }
 
-            [[RadarDelegateHolder sharedInstance] didFailWithStatus:status];
-            completionHandler(RadarStatusErrorServer, nil, nil, nil, nil, nil, nil);
+            completionHandler(status, nil, nil, nil, nil, nil, nil);
         }];
     } else {
         [self.apiHelper requestWithMethod:@"POST"
