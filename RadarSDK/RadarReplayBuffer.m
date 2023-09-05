@@ -5,6 +5,7 @@
 //  Copyright © 2023 Radar Labs, Inc. All rights reserved.
 //
 
+#import "Radar.h"
 #import "RadarAPIClient.h"
 #import "RadarReplayBuffer.h"
 #import "RadarReplay.h"
@@ -121,7 +122,10 @@ static const int MAX_BUFFER_SIZE = 120; // one hour of updates
     [[RadarAPIClient sharedInstance] flushReplays:replaysRequestArray completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
         if (status == RadarStatusSuccess) {
             // if the flush was successful, remove the replays from the buffer
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Flushed replays successfully"];
             [self removeReplaysFromBuffer:replaysArray];
+            [Radar flushLogs];
+
         } else {
             if (replayParams) {
                 // if the flush failed, update the timestamp of the last replay to now

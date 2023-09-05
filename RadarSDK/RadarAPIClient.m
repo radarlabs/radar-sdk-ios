@@ -138,9 +138,6 @@
                            logPayload:NO
                       extendedTimeout:YES
                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
-
-                        [Radar flushLogs];
-
                         completionHandler(status, res);
                     }];
 }
