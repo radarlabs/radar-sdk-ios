@@ -185,6 +185,8 @@ typedef void (^_Nullable RadarBeaconCompletionHandler)(RadarStatus status, NSArr
  */
 typedef void (^_Nullable RadarTrackCompletionHandler)(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user);
 
+typedef void (^_Nullable RadarFlushReplaysCompletionHandler)(RadarStatus status, NSDictionary *_Nullable res);
+
 /**
  Called when an track request with token callback succeeds, fails, or times out.
 

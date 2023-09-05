@@ -11,6 +11,7 @@
 #import "RadarLogger.h"
 #import "RadarTripOptions.h"
 #import "RadarFeatureSettings.h"
+#import "RadarReplayBuffer.h"
 
 @implementation RadarSettings
 
@@ -62,6 +63,12 @@ static NSString *const kUserDebug = @"radar-userDebug";
 + (BOOL)updateSessionId {
     double timestampSeconds = [[NSDate date] timeIntervalSince1970];
     double sessionIdSeconds = [[NSUserDefaults standardUserDefaults] doubleForKey:kSessionId];
+
+    RadarFeatureSettings *featureSettings = [RadarSettings featureSettings];
+    if (featureSettings.extendFlushReplays) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"flushReplays() from updateSesssionId"];
+        [[RadarReplayBuffer sharedInstance] flushReplaysWithCompletionHandler:nil completionHandler:nil];
+    }
     if (timestampSeconds - sessionIdSeconds > 300) {
         [[NSUserDefaults standardUserDefaults] setDouble:timestampSeconds forKey:kSessionId];
 

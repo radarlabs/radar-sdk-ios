@@ -20,6 +20,7 @@
 #import "RadarSettings.h"
 #import "RadarState.h"
 #import "RadarUtils.h"
+#import "RadarReplayBuffer.h"
 
 @interface RadarLocationManager ()
 
@@ -202,6 +203,12 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 
 - (void)stopTracking {
     [RadarSettings setTracking:NO];
+    RadarFeatureSettings *featureSettings = [RadarSettings featureSettings];
+    if (featureSettings.extendFlushReplays) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"flushReplays() from stopTracking"];
+        [[RadarReplayBuffer sharedInstance] flushReplaysWithCompletionHandler:nil completionHandler:nil];
+    }
+
     [self updateTracking];
 }
 
@@ -400,6 +407,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         }
     }
     [self updateTrackingFromInitialize];
+
 }
 
 - (void)restartPreviousTrackingOptions {

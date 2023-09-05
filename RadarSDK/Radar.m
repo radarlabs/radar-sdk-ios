@@ -1219,6 +1219,7 @@
                                              [RadarSettings setFeatureSettings:config.meta.featureSettings];
                                          }];
     }
+
     [Radar logOpenedAppConversion];
 }
 

@@ -20,13 +20,15 @@ NS_ASSUME_NONNULL_BEGIN
  Flag indicating whether to use persistence.
  */
 @property (nonatomic, assign) BOOL usePersistence;
+@property (nonatomic, assign) BOOL extendFlushReplays;
 
 /**
  Initializes a new RadarFeatureSettings object with given value.
  
  @param usePersistence A flag indicating whether to use persistence.
  */
-- (instancetype)initWithUsePersistence:(BOOL)usePersistence;
+- (instancetype)initWithUsePersistence:(BOOL)usePersistence
+                    extendFlushReplays:(BOOL)extendFlushReplays;
 
 /**
  Creates a RadarFeatureSettings object from the provided dictionary.
