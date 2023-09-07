@@ -447,8 +447,9 @@
 
                             [[RadarDelegateHolder sharedInstance] didFailWithStatus:status];
 
-                            return completionHandler(RadarStatusErrorServer, nil, nil, nil, nil, nil);
+                            completionHandler(RadarStatusErrorServer, nil, nil, nil, nil, nil, nil);
                         }];
+    }
 }
 
 - (void)verifyEventId:(NSString *)eventId verification:(RadarEventVerification)verification verifiedPlaceId:(NSString *)verifiedPlaceId {
