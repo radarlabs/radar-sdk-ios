@@ -447,7 +447,7 @@
 
                             [[RadarDelegateHolder sharedInstance] didFailWithStatus:status];
 
-                            return completionHandler(status, nil, nil, nil, nil, nil);
+                            return completionHandler(RadarStatusErrorServer, nil, nil, nil, nil, nil);
                         }];
 }
 
