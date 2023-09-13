@@ -1003,6 +1003,11 @@ logConversionWithNotification
  */
 + (void)setLogLevel:(RadarLogLevel)level;
 
+/**
+ Gets the log level for debug logs.
+ */
++ (RadarLogLevel)getLogLevel;
+
 #pragma mark - Helpers
 
 /**

@@ -1024,6 +1024,10 @@
     [RadarSettings setLogLevel:level];
 }
 
++ (RadarLogLevel )getLogLevel{
+   return [RadarSettings logLevel]; 
+}
+
 #pragma mark - Helpers
 
 + (NSString *)stringForStatus:(RadarStatus)status {
