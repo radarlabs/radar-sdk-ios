@@ -144,9 +144,6 @@
                             NSArray<RadarEvent *> *events = [RadarEvent eventsFromObject:eventsObj];
                             RadarUser *user = [[RadarUser alloc] initWithObject:userObj];
                             if (events && events.count) {
-                                NSArray *eventsArr = (NSArray *)eventsObj;
-                                NSDictionary *lastEvent = [eventsArr lastObject];
-
                                 [[RadarDelegateHolder sharedInstance] didReceiveEvents:events user:user];
                             }
 
