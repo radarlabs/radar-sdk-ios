@@ -139,14 +139,14 @@
                       extendedTimeout:YES
                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
                             id eventsObj = res[@"events"];
+                            id userObj = res[@"user"];
 
                             NSArray<RadarEvent *> *events = [RadarEvent eventsFromObject:eventsObj];
-                            if (events.count) {
+                            RadarUser *user = [[RadarUser alloc] initWithObject:userObj];
+                            if (events && events.count) {
                                 NSArray *eventsArr = (NSArray *)eventsObj;
                                 NSDictionary *lastEvent = [eventsArr lastObject];
-                                NSDictionary *userObj = lastEvent[@"user"];
 
-                                RadarUser *user = [[RadarUser alloc] initWithObject:userObj];
                                 [[RadarDelegateHolder sharedInstance] didReceiveEvents:events user:user];
                             }
 
