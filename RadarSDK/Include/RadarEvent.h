@@ -181,6 +181,11 @@ typedef NS_ENUM(NSInteger, RadarEventVerification) {
 @property (nonnull, strong, nonatomic, readonly) CLLocation *location;
 
 /**
+ A boolean indicating whether the event came from a replayed location.
+ */
+@property (assign, nonatomic, readonly) BOOL replayed;
+
+/**
  The metadata of the event. Present on conversion events only.
  */
 @property (nonnull, copy, nonatomic, readonly) NSDictionary *metadata;

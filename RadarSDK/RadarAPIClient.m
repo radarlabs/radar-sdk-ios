@@ -138,6 +138,15 @@
                            logPayload:NO
                       extendedTimeout:YES
                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
+                            id eventsObj = res[@"events"];
+                            id userObj = res[@"user"];
+
+                            NSArray<RadarEvent *> *events = [RadarEvent eventsFromObject:eventsObj];
+                            RadarUser *user = [[RadarUser alloc] initWithObject:userObj];
+                            if (events && events.count) {
+                                [[RadarDelegateHolder sharedInstance] didReceiveEvents:events user:user];
+                            }
+
                         completionHandler(status, res);
                     }];
 }

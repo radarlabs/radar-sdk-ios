@@ -109,15 +109,19 @@ static const int MAX_BUFFER_SIZE = 120; // one hour of updates
     NSMutableArray *replaysRequestArray = [RadarReplay arrayForReplays:replaysArray];
 
     // if we have a current track update, add it to the local replay list
+    NSMutableDictionary *newReplayParams;
     if (replayParams) {
-        [replaysRequestArray addObject:replayParams];
+        newReplayParams = [replayParams mutableCopy];
+        newReplayParams[@"replayed"] = @(YES);
+        long nowMs = (long)([NSDate date].timeIntervalSince1970 * 1000);
+        newReplayParams[@"updatedAtMs"] = @(nowMs);
+        // remove the updatedAtMsDiff key because for replays we want to rely on the updatedAtMs key for the time instead
+        [newReplayParams removeObjectForKey:@"updatedAtMsDiff"];
+        [replaysRequestArray addObject:newReplayParams];
     }
 
     // log the replay count
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Flushing %lu replays", (unsigned long)[replaysRequestArray count]]];
-
-    // set aside the current time in case we need to write it to that last replay
-    long nowMs = (long)([NSDate date].timeIntervalSince1970 * 1000);
 
     [[RadarAPIClient sharedInstance] flushReplays:replaysRequestArray completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
         if (status == RadarStatusSuccess) {
@@ -128,13 +132,6 @@ static const int MAX_BUFFER_SIZE = 120; // one hour of updates
 
         } else {
             if (replayParams) {
-                // if the flush failed, update the timestamp of the last replay to now
-                NSMutableDictionary *newReplayParams = [replayParams mutableCopy];
-                newReplayParams[@"replayed"] = @(YES);
-                newReplayParams[@"updatedAtMs"] = @(nowMs);
-                // remove the updatedAtMsDiff key because for replays we want to rely on the updatedAtMs key for the time instead
-                [newReplayParams removeObjectForKey:@"updatedAtMsDiff"];
-                // write the replay not yet persisted
                 [self writeNewReplayToBuffer:newReplayParams];
             }
         }
