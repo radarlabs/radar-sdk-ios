@@ -35,7 +35,7 @@
 @property (assign, nonatomic) int startedInterval;
 
 /**
- `YES` if `RadarAPIClient.trackWithLocation() has been called, but the
+ `YES` if `RadarAPIClient.trackWithLocation() hasp been called, but the
  response hasn't been received yet.
  */
 @property (assign, nonatomic) BOOL sending;
@@ -982,7 +982,10 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                                                               [self handleLocation:location source:RadarLocationSourceBeaconEnter beacons:nearbyBeacons];
                                                           }];
         }
-    } else {
+    } else if (state == CLRegionStateUnknown) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Unknown beacon region | identifier = %@", region.identifier]];
+    }
+     else {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Outside beacon region | identifier = %@", region.identifier]];
 
         if ([region.identifier hasPrefix:kSyncBeaconUUIDIdentifierPrefix]) {

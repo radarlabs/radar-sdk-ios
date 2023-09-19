@@ -146,11 +146,21 @@
 
         return;
     }
-
-    self.beacons = beacons;
+    
     self.started = YES;
 
+    // Use a set for faster lookup
+    NSMutableSet *currentBeaconIDs = [NSMutableSet set];
+    for (RadarBeacon *currentBeacon in self.beacons) {
+        [currentBeaconIDs addObject:currentBeacon._id];
+    }
+
+
     for (RadarBeacon *beacon in beacons) {
+        if ([currentBeaconIDs containsObject:beacon._id]) {
+            // Already ranging this beacon, skip
+            continue;
+        }
         CLBeaconRegion *region = [self regionForBeacon:beacon];
 
         if (region) {
@@ -165,6 +175,7 @@
                                                                                   beacon.uuid, beacon.major, beacon.minor]];
         }
     }
+    self.beacons = [self.beacons arrayByAddingObjectsFromArray:beacons];
 }
 
 - (void)rangeBeaconUUIDs:(NSArray<NSString *> *_Nonnull)beaconUUIDs completionHandler:(RadarBeaconCompletionHandler)completionHandler {
@@ -207,10 +218,15 @@
         return;
     }
 
-    self.beaconUUIDs = beaconUUIDs;
     self.started = YES;
+    NSMutableSet *currentBeaconUUIDsSet = [NSMutableSet setWithArray:self.beaconUUIDs];
+
 
     for (NSString *beaconUUID in beaconUUIDs) {
+            if ([currentBeaconUUIDsSet containsObject:beaconUUID]) {
+            // Already ranging this UUID, skip
+            continue;
+        }
         CLBeaconRegion *region = [self regionForUUID:beaconUUID];
 
         if (region) {
@@ -221,6 +237,8 @@
             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Error starting ranging UUID | beaconUUID = %@", beaconUUID]];
         }
     }
+    
+    self.beaconUUIDs = [self.beaconUUIDs arrayByAddingObjectsFromArray:beaconUUIDs];
 }
 
 - (void)stopRanging {
