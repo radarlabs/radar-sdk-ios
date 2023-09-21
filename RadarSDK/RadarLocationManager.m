@@ -565,6 +565,126 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     }];
 }
 
+- (void)updateSyncedBeacons:(NSArray<RadarBeacon *> *)newBeacons {
+    BOOL tracking = [RadarSettings tracking];
+    RadarTrackingOptions *options = [Radar getTrackingOptions];
+    if (!tracking || !options.beacons || !newBeacons) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Skipping updating synced beacons"];
+        return;
+    }
+
+    // Convert new beacons to set for faster lookup
+    NSMutableSet *newBeaconIdentifiers = [NSMutableSet set];
+    for (RadarBeacon *beacon in newBeacons) {
+        NSString *identifier = [NSString stringWithFormat:@"%@%@", kSyncBeaconIdentifierPrefix, beacon._id];
+        [newBeaconIdentifiers addObject:identifier];
+    }
+
+    // Determine current beacons being monitored
+    NSMutableSet *currentBeaconIdentifiers = [NSMutableSet set];
+    for (CLRegion *region in self.locationManager.monitoredRegions) {
+        if ([region isKindOfClass:[CLBeaconRegion class]] && [region.identifier hasPrefix:kSyncBeaconIdentifierPrefix]) {
+            [currentBeaconIdentifiers addObject:region.identifier];
+        }
+    }
+
+    // Stop monitoring beacons that are not in the new list
+    for (NSString *identifier in currentBeaconIdentifiers) {
+        if (![newBeaconIdentifiers containsObject:identifier]) {
+            CLRegion *regionToRemove = nil;
+            for (CLRegion *region in self.locationManager.monitoredRegions) {
+                if ([region.identifier isEqualToString:identifier]) {
+                    regionToRemove = region;
+                    break;
+                }
+            }
+            if (regionToRemove) {
+                [self.locationManager stopMonitoringForRegion:regionToRemove];
+            }
+        }
+    }
+
+    // Start monitoring new beacons not currently being monitored
+    NSUInteger numBeacons = MIN(newBeacons.count, 9);
+    for (int i = 0; i < numBeacons; i++) {
+        RadarBeacon *beacon = [newBeacons objectAtIndex:i];
+        NSString *identifier = [NSString stringWithFormat:@"%@%@", kSyncBeaconIdentifierPrefix, beacon._id];
+        if (![currentBeaconIdentifiers containsObject:identifier]) {
+            CLBeaconRegion *region = [[CLBeaconRegion alloc] initWithProximityUUID:[[NSUUID alloc] initWithUUIDString:beacon.uuid]
+                                                                             major:[beacon.major intValue]
+                                                                             minor:[beacon.minor intValue]
+                                                                        identifier:identifier];
+
+            if (region) {
+                region.notifyEntryStateOnDisplay = YES;
+                [self.locationManager startMonitoringForRegion:region];
+                [self.locationManager requestStateForRegion:region];
+
+                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
+                                                   message:[NSString stringWithFormat:@"Synced beacon | identifier = %@; uuid = %@; major = %@; minor = %@", identifier, beacon.uuid,
+                                                                                                                  beacon.major, beacon.minor]];
+            } else {
+                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
+                                                   message:[NSString stringWithFormat:@"Error syncing beacon | identifier = %@; uuid = %@; major = %@; minor = %@", identifier,
+                                                                                                                  beacon.uuid, beacon.major, beacon.minor]];
+            }
+        }
+    }
+}
+
+- (void)updateSyncedBeaconUUIDs:(NSArray<NSString *> *)uuids {
+    NSMutableArray<NSString *> *existingUUIDs = [NSMutableArray array];
+    for (CLRegion *region in self.locationManager.monitoredRegions) {
+        if ([region.identifier hasPrefix:kSyncBeaconUUIDIdentifierPrefix]) {
+            NSString *existingUUID = [(CLBeaconRegion *)region proximityUUID].UUIDString;
+            [existingUUIDs addObject:existingUUID];
+        }
+    }
+
+    BOOL tracking = [RadarSettings tracking];
+    RadarTrackingOptions *options = [Radar getTrackingOptions];
+    if (!tracking || !options.beacons || !uuids) {
+        return;
+    }
+
+    NSUInteger numUUIDs = MIN(uuids.count, 9);
+
+    for (int i = 0; i < numUUIDs; i++) {
+        NSString *uuid = uuids[i];
+
+        // If UUID is already being monitored, skip
+        if ([existingUUIDs containsObject:uuid]) {
+            continue;
+        }
+
+        NSString *identifier = [NSString stringWithFormat:@"%@%@", kSyncBeaconUUIDIdentifierPrefix, uuid];
+        CLBeaconRegion *region = [[CLBeaconRegion alloc] initWithProximityUUID:[[NSUUID alloc] initWithUUIDString:uuid] identifier:identifier];
+
+        if (region) {
+            region.notifyEntryStateOnDisplay = YES;
+            [self.locationManager startMonitoringForRegion:region];
+            [self.locationManager requestStateForRegion:region];
+
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Synced UUID | identifier = %@; uuid = %@", identifier, uuid]];
+        } else {
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Error syncing UUID | identifier = %@; uuid = %@", identifier, uuid]];
+        }
+    }
+
+    // Remove any old UUIDs that aren't in the new list
+    for (NSString *existingUUID in existingUUIDs) {
+        if (![uuids containsObject:existingUUID]) {
+            NSString *identifierToRemove = [NSString stringWithFormat:@"%@%@", kSyncBeaconUUIDIdentifierPrefix, existingUUID];
+            for (CLRegion *region in self.locationManager.monitoredRegions) {
+                if ([region.identifier isEqualToString:identifierToRemove]) {
+                    [self.locationManager stopMonitoringForRegion:region];
+                }
+            }
+        }
+    }
+}
+
+
 - (void)replaceSyncedBeacons:(NSArray<RadarBeacon *> *)beacons {
     [self removeSyncedBeacons];
 
@@ -838,9 +958,9 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                             limit:10
                 completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarBeacon *> *_Nullable beacons, NSArray<NSString *> *_Nullable beaconUUIDs) {
                     if (beaconUUIDs && beaconUUIDs.count) {
-                        [self replaceSyncedBeaconUUIDs:beaconUUIDs];
+                        [self updateSyncedBeaconUUIDs:beaconUUIDs];
                     } else if (beacons && beacons.count) {
-                        [self replaceSyncedBeacons:beacons];
+                        [self updateSyncedBeacons:beacons];
                     }
                 }];
         }
