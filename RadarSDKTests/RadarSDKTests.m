@@ -289,7 +289,6 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     [RadarAPIClient sharedInstance].apiHelper = self.apiHelperMock;
     [RadarLocationManager sharedInstance].locationManager = self.locationManagerMock;
     self.locationManagerMock.delegate = [RadarLocationManager sharedInstance];
-    [RadarLocationManager sharedInstance].lowPowerLocationManager = self.locationManagerMock;
     [RadarLocationManager sharedInstance].permissionsHelper = self.permissionsHelperMock;
 }
 

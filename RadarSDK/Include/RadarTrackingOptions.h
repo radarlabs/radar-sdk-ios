@@ -75,6 +75,11 @@ typedef NS_ENUM(NSInteger, RadarTrackingOptionsSyncLocations) {
 @property (nonatomic, assign) RadarTrackingOptionsDesiredAccuracy desiredAccuracy;
 
 /**
+ Determines the accuracy threshold in meters for location updates. Location updates with worse accuracy than the threshold will be rejected.
+ */
+@property (nonatomic, assign) int accuracyThreshold;
+
+/**
  With `stopDistance`, determines the duration in seconds after which the device is considered stopped.
  */
 @property (nonatomic, assign) int stopDuration;
