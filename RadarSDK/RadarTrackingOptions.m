@@ -59,10 +59,10 @@ NSString *const kSyncNone = @"none";
     options.stoppedGeofenceRadius = 0;
     options.useMovingGeofence = NO;
     options.movingGeofenceRadius = 0;
-    options.syncGeofences = YES;
+    options.syncGeofences = NO;
     options.useVisits = NO;
     options.useSignificantLocationChanges = NO;
-    options.beacons = NO;
+    options.beacons = YES;
     return options;
 }
 
@@ -83,10 +83,10 @@ NSString *const kSyncNone = @"none";
     options.stoppedGeofenceRadius = 100;
     options.useMovingGeofence = YES;
     options.movingGeofenceRadius = 100;
-    options.syncGeofences = YES;
+    options.syncGeofences = NO;
     options.useVisits = YES;
     options.useSignificantLocationChanges = YES;
-    options.beacons = NO;
+    options.beacons = YES;
     return options;
 }
 

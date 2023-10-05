@@ -58,8 +58,8 @@
                      logWithLevel:RadarLogLevelDebug
                      message:[NSString stringWithFormat:@"Error adding local notification | identifier = %@; error = %@", request.identifier, error]];
                 } else {
-                    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
-                                                       message:[NSString stringWithFormat:@"Added local notification | identifier = %@", request.identifier]];
+                    // [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
+                                                    //    message:[NSString stringWithFormat:@"Added local notification | identifier = %@", request.identifier]];
                 }
             }];
         }

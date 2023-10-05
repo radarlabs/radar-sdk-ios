@@ -21,6 +21,8 @@
 @property (nonnull, strong, nonatomic) NSMutableSet<RadarBeacon *> *nearbyBeacons;
 @property (nonnull, strong, nonatomic) NSArray<RadarBeacon *> *beacons;
 @property (nonnull, strong, nonatomic) NSArray<NSString *> *beaconUUIDs;
+@property (strong, nonatomic) NSMutableDictionary<NSString *, NSTimer *> *exitDebounceTimers;
+
 
 @end
 
@@ -55,6 +57,8 @@
         _nearbyBeaconIdentifiers = [NSMutableSet new];
         _failedBeaconIdentifiers = [NSMutableSet new];
         _nearbyBeacons = [NSMutableSet new];
+
+        _exitDebounceTimers = [NSMutableDictionary new]; // Initialize the dictionary here
 
         _permissionsHelper = [RadarPermissionsHelper new];
     }
@@ -155,7 +159,8 @@
         [currentBeaconIDs addObject:currentBeacon._id];
     }
 
-
+    // create an empty array for hich beacons that aren't current beacons
+    NSMutableArray *newBeacons = [NSMutableArray new];
     for (RadarBeacon *beacon in beacons) {
         if ([currentBeaconIDs containsObject:beacon._id]) {
             // Already ranging this beacon, skip
@@ -169,13 +174,15 @@
                                                                                   beacon.major, beacon.minor]];
 
             [self.locationManager startRangingBeaconsInRegion:region];
+            [self.locationManager startMonitoringForRegion:region];
+            [newBeacons addObject:beacon];
         } else {
             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
                                                message:[NSString stringWithFormat:@"Error starting ranging beacon | _id = %@; uuid = %@; major = %@; minor = %@", beacon._id,
                                                                                   beacon.uuid, beacon.major, beacon.minor]];
         }
     }
-    self.beacons = [self.beacons arrayByAddingObjectsFromArray:beacons];
+    self.beacons = [self.beacons arrayByAddingObjectsFromArray:newBeacons];
 }
 
 - (void)rangeBeaconUUIDs:(NSArray<NSString *> *_Nonnull)beaconUUIDs completionHandler:(RadarBeaconCompletionHandler)completionHandler {
@@ -267,7 +274,7 @@
 
     [self.nearbyBeaconIdentifiers removeAllObjects];
     [self.failedBeaconIdentifiers removeAllObjects];
-    [self.nearbyBeacons removeAllObjects];
+    // [self.nearbyBeacons removeAllObjects];
 }
 
 - (CLBeaconRegion *)regionForBeacon:(RadarBeacon *)beacon {
@@ -322,6 +329,14 @@
 
 - (void)handleBeaconEntryForRegion:(CLBeaconRegion *)region completionHandler:(RadarBeaconCompletionHandler)completionHandler {
     NSString *identifier = region.identifier;
+    NSTimer *debounceTimer = self.exitDebounceTimers[identifier];
+    if (debounceTimer) {
+        // Log that we're cancelling the debounce timer
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Cancelling beacon exit timer | identifier = %@", identifier]];
+        [debounceTimer invalidate];
+        [self.exitDebounceTimers removeObjectForKey:identifier];
+    }
+
     BOOL alreadyInside = [self.nearbyBeaconIdentifiers containsObject:identifier];
     if (alreadyInside) {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Already inside beacon region | identifier = %@", identifier]];
@@ -336,6 +351,37 @@
 }
 
 - (void)handleBeaconExitForRegion:(CLBeaconRegion *)region completionHandler:(RadarBeaconCompletionHandler)completionHandler {
+    // Log that we got the beacon exit and start a timer to debounce it
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Got beacon exit, starting timer | identifier = %@", region.identifier]];
+    NSString *identifier = region.identifier;
+    NSTimer *debounceTimer = [NSTimer scheduledTimerWithTimeInterval:10.0
+                                                            target:self
+                                                          selector:@selector(processDebouncedBeaconExit:)
+                                                          userInfo:@{@"region": region, @"completionHandler": [completionHandler copy]}
+                                                           repeats:NO];
+    
+    self.exitDebounceTimers[identifier] = debounceTimer;
+
+    // range the beacons to see if we're still in range
+    // first remove the beacon from beacons
+    NSMutableArray *mutableBeacons = [NSMutableArray arrayWithArray:self.beacons];
+    for (RadarBeacon *beacon in self.beacons) {
+        if ([beacon._id isEqualToString:identifier]) {
+            [mutableBeacons removeObject:beacon];
+        }
+    }
+    self.beacons = [NSArray arrayWithArray:mutableBeacons];
+    // then range the beacons to try
+    [self rangeBeacons: mutableBeacons completionHandler:nil];
+
+}
+
+- (void)processDebouncedBeaconExit:(NSTimer *)timer {
+    CLBeaconRegion *region = timer.userInfo[@"region"];
+    RadarBeaconCompletionHandler completionHandler = timer.userInfo[@"completionHandler"];
+    // Log that we're processing the beacon exit
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Processing beacon exit | identifier = %@", region.identifier]];
+    
     NSString *identifier = region.identifier;
     BOOL alreadyOutside = ![self.nearbyBeaconIdentifiers containsObject:identifier];
     if (alreadyOutside) {
@@ -348,16 +394,46 @@
 
         completionHandler(RadarStatusSuccess, [self.nearbyBeacons allObjects]);
     }
+    
+    [self.exitDebounceTimers removeObjectForKey:identifier];
 }
 
 - (void)handleBeaconUUIDEntryForRegion:(CLBeaconRegion *)region completionHandler:(RadarBeaconCompletionHandler)completionHandler {
-    NSArray<NSString *> *beaconUUIDs = [RadarSettings beaconUUIDs];
-    [self rangeBeaconUUIDs:beaconUUIDs completionHandler:completionHandler];
+    // log handlingBeaconUUIDEntry
+    NSString *identifier = region.identifier;
+    BOOL alreadyInside = [self.nearbyBeaconIdentifiers containsObject:identifier];
+    if (alreadyInside) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Already inside beacon region | identifier = %@", identifier]];
+    } else {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Entered beacon region | identifier = %@", identifier]];
+
+        [self.nearbyBeaconIdentifiers addObject:identifier];
+        [self.nearbyBeacons addObject:[RadarBeacon fromCLBeaconRegion:region]];
+
+        completionHandler(RadarStatusSuccess, [self.nearbyBeacons allObjects]);
+    }
+
+    // old version here
+    // NSArray<NSString *> *beaconUUIDs = [RadarSettings beaconUUIDs];
+    // [self rangeBeaconUUIDs:beaconUUIDs completionHandler:completionHandler];
 }
 
 - (void)handleBeaconUUIDExitForRegion:(CLBeaconRegion *)region completionHandler:(RadarBeaconCompletionHandler)completionHandler {
-    NSArray<NSString *> *beaconUUIDs = [RadarSettings beaconUUIDs];
-    [self rangeBeaconUUIDs:beaconUUIDs completionHandler:completionHandler];
+    // log handlingBeaconUUIDExit
+    NSString *identifier = region.identifier;
+    BOOL alreadyOutside = ![self.nearbyBeaconIdentifiers containsObject:identifier];
+    if (alreadyOutside) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Already outside beacon region | identifier = %@", identifier]];
+    } else {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Exited beacon region | identifier = %@", identifier]];
+
+        [self.nearbyBeaconIdentifiers removeObject:identifier];
+        [self.nearbyBeacons removeObject:[RadarBeacon fromCLBeaconRegion:region]];
+
+        completionHandler(RadarStatusSuccess, [self.nearbyBeacons allObjects]);
+    }
+    // NSArray<NSString *> *beaconUUIDs = [RadarSettings beaconUUIDs];
+    // [self rangeBeaconUUIDs:beaconUUIDs completionHandler:completionHandler];
 }
 
 @end
