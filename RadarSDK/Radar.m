@@ -179,7 +179,7 @@
                                  completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarBeacon *> *_Nullable beacons,
                                                      NSArray<NSString *> *_Nullable beaconUUIDs) {
                                      if (beaconUUIDs && beaconUUIDs.count) {
-                                         [[RadarLocationManager sharedInstance] replaceSyncedBeaconUUIDs:beaconUUIDs];
+                                         [[RadarLocationManager sharedInstance] updateSyncedBeaconUUIDs:beaconUUIDs];
 
                                          [RadarUtils runOnMainThread:^{
                                              [[RadarBeaconManager sharedInstance] rangeBeaconUUIDs:beaconUUIDs
@@ -194,7 +194,7 @@
                                                                                  }];
                                          }];
                                      } else if (beacons && beacons.count) {
-                                         [[RadarLocationManager sharedInstance] replaceSyncedBeacons:beacons];
+                                         [[RadarLocationManager sharedInstance] updateSyncedBeacons:beacons];
 
                                          [RadarUtils runOnMainThread:^{
                                              [[RadarBeaconManager sharedInstance] rangeBeacons:beacons

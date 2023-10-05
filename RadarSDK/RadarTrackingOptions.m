@@ -53,16 +53,16 @@ NSString *const kSyncNone = @"none";
     options.startTrackingAfter = nil;
     options.stopTrackingAfter = nil;
     options.syncLocations = RadarTrackingOptionsSyncAll;
-    options.replay = RadarTrackingOptionsReplayNone;
+    options.replay = RadarTrackingOptionsReplayAll;
     options.showBlueBar = YES;
     options.useStoppedGeofence = NO;
     options.stoppedGeofenceRadius = 0;
     options.useMovingGeofence = NO;
     options.movingGeofenceRadius = 0;
-    options.syncGeofences = YES;
+    options.syncGeofences = NO;
     options.useVisits = NO;
     options.useSignificantLocationChanges = NO;
-    options.beacons = NO;
+    options.beacons = YES;
     return options;
 }
 
@@ -77,16 +77,16 @@ NSString *const kSyncNone = @"none";
     options.startTrackingAfter = nil;
     options.stopTrackingAfter = nil;
     options.syncLocations = RadarTrackingOptionsSyncAll;
-    options.replay = RadarTrackingOptionsReplayStops;
+    options.replay = RadarTrackingOptionsReplayAll;
     options.showBlueBar = NO;
     options.useStoppedGeofence = YES;
     options.stoppedGeofenceRadius = 100;
     options.useMovingGeofence = YES;
     options.movingGeofenceRadius = 100;
-    options.syncGeofences = YES;
+    options.syncGeofences = NO;
     options.useVisits = YES;
     options.useSignificantLocationChanges = YES;
-    options.beacons = NO;
+    options.beacons = YES;
     return options;
 }
 
@@ -101,7 +101,7 @@ NSString *const kSyncNone = @"none";
     options.startTrackingAfter = nil;
     options.stopTrackingAfter = nil;
     options.syncLocations = RadarTrackingOptionsSyncAll;
-    options.replay = RadarTrackingOptionsReplayStops;
+    options.replay = RadarTrackingOptionsReplayAll;
     options.showBlueBar = NO;
     options.useStoppedGeofence = NO;
     options.stoppedGeofenceRadius = 0;
