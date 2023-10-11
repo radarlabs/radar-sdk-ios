@@ -162,7 +162,7 @@
                                      if (status == RadarStatusSuccess) {
                                          [[RadarLocationManager sharedInstance] replaceSyncedGeofences:nearbyGeofences];
                                          if(config != nil){
-                                            [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
+                                             [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
                                          }
                                          
                                      }
