@@ -429,10 +429,6 @@
 		DD236C772308797B00EB88F9 /* RadarSDK */ = {
 			isa = PBXGroup;
 			children = (
-				82EEA9292A9E684C0048DCEC /* RadarFeatureSettings.h */,
-				82EEA92B2A9E685B0048DCEC /* RadarFeatureSettings.m */,
-				82F7FAEC2A65FE030055AA4B /* RadarVerificationManager.h */,
-				82F7FAED2A65FE030055AA4B /* RadarVerificationManager.m */,
 				96A5A0D827AD9F7F007B960B /* Include */,
 				DD236C792308797B00EB88F9 /* Info.plist */,
 				532FC303277A783900989279 /* Radar+Internal.h */,
@@ -449,6 +445,8 @@
 				01F99CFC2965C1C4004E8CF3 /* RadarConfig.m */,
 				96A5A11727ADA02E007B960B /* RadarDelegateHolder.h */,
 				DD4C104925D87E3E009C2E36 /* RadarDelegateHolder.m */,
+				82EEA9292A9E684C0048DCEC /* RadarFeatureSettings.h */,
+				82EEA92B2A9E685B0048DCEC /* RadarFeatureSettings.m */,
 				DD236CF723088F8400EB88F9 /* RadarLocationManager.h */,
 				DD236CF823088F8400EB88F9 /* RadarLocationManager.m */,
 				96A5A11527ADA02E007B960B /* RadarLog.h */,
@@ -475,6 +473,8 @@
 				DD8CCDF7246872360011690D /* RadarTripOptions.m */,
 				DD236D0323099B8400EB88F9 /* RadarUtils.h */,
 				DD236D0423099B8400EB88F9 /* RadarUtils.m */,
+				82F7FAEC2A65FE030055AA4B /* RadarVerificationManager.h */,
+				82F7FAED2A65FE030055AA4B /* RadarVerificationManager.m */,
 				DD27CB7D235D13F000299FEC /* Models */,
 				53CCD781275E576B00F79CC8 /* Util */,
 			);

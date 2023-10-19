@@ -464,6 +464,13 @@ typedef void (^_Nonnull RadarLogConversionCompletionHandler)(RadarStatus status,
 + (void)trackVerifiedTokenWithCompletionHandler:(RadarTrackTokenCompletionHandler _Nullable)completionHandler NS_SWIFT_NAME(trackVerifiedToken(completionHandler:));
 
 /**
+ Starts tracking the user's location with device integrity information for location verification use cases.
+ 
+ @warning Note that you must configure SSL pinning before calling this method.
+ */
++ (void)startTrackingVerified:(BOOL *)token NS_SWIFT_NAME(startTrackingVerified(token:));
+
+/**
  Starts tracking the user's location in the background with configurable tracking options.
 
  @param options Configurable tracking options.
