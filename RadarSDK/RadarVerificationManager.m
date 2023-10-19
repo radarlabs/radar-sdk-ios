@@ -144,7 +144,7 @@
 }
 
 - (void)startTrackingVerified:(BOOL)token {
-    if (@available(iOS 14.0, *)) {
+    if (@available(iOS 12.0, *)) {
         if (!_monitor) {
             _monitor = nw_path_monitor_create();
             
