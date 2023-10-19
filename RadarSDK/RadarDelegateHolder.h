@@ -18,6 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (instancetype)sharedInstance;
 - (void)didFailWithStatus:(RadarStatus)status;
+- (void)didUpdateToken:(NSString *)token;
 
 @end
 

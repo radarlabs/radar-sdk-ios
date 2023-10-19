@@ -17,11 +17,11 @@
     if (!events || !events.count) {
         return;
     }
-    
+
     for (RadarEvent *event in events) {
         NSString *notificationText;
         NSDictionary *metadata;
-        
+
         if (event.type == RadarEventTypeUserEnteredGeofence && event.geofence && event.geofence.metadata) {
             metadata = event.geofence.metadata;
             notificationText = [metadata objectForKey:@"radar:entryNotificationText"];
@@ -41,27 +41,29 @@
             metadata = event.trip.metadata;
             notificationText = [event.trip.metadata objectForKey:@"radar:arrivalNotificationText"];
         }
-        
+
         if (notificationText) {
             NSString *identifier = event._id;
             NSString *categoryIdentifier = [RadarEvent stringForType:event.type];
-            
+
             UNMutableNotificationContent *content = [UNMutableNotificationContent new];
             content.body = [NSString localizedUserNotificationStringForKey:notificationText arguments:nil];
             content.userInfo = metadata;
             content.categoryIdentifier = categoryIdentifier;
 
             UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:identifier content:content trigger:nil];
-            [UNUserNotificationCenter.currentNotificationCenter addNotificationRequest:request withCompletionHandler:^(NSError *_Nullable error) {
-                if (error) {
-                    [[RadarLogger sharedInstance]
-                     logWithLevel:RadarLogLevelDebug
-                     message:[NSString stringWithFormat:@"Error adding local notification | identifier = %@; error = %@", request.identifier, error]];
-                } else {
-                    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
-                                                       message:[NSString stringWithFormat:@"Added local notification | identifier = %@", request.identifier]];
-                }
-            }];
+            [UNUserNotificationCenter.currentNotificationCenter
+                addNotificationRequest:request
+                 withCompletionHandler:^(NSError *_Nullable error) {
+                     if (error) {
+                         [[RadarLogger sharedInstance]
+                             logWithLevel:RadarLogLevelDebug
+                                  message:[NSString stringWithFormat:@"Error adding local notification | identifier = %@; error = %@", request.identifier, error]];
+                     } else {
+                         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
+                                                            message:[NSString stringWithFormat:@"Added local notification | identifier = %@", request.identifier]];
+                     }
+                 }];
         }
     }
 }

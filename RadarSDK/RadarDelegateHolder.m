@@ -29,7 +29,7 @@
     if (self.delegate) {
         [self.delegate didReceiveEvents:events user:user];
     }
-    
+
     [RadarNotificationHelper showNotificationsForEvents:events];
 
     for (RadarEvent *event in events) {
@@ -69,13 +69,23 @@
         [self.delegate didFailWithStatus:status];
     }
 
-    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelError type:RadarLogTypeSDKError message:[NSString stringWithFormat:@"📍 Radar error received | status = %@", [Radar stringForStatus:status]]];
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelError
+                                          type:RadarLogTypeSDKError
+                                       message:[NSString stringWithFormat:@"📍 Radar error received | status = %@", [Radar stringForStatus:status]]];
 }
 
 - (void)didLogMessage:(NSString *)message {
     if (self.delegate) {
         [self.delegate didLogMessage:message];
     }
+}
+
+- (void)didUpdateToken:(NSString *)token {
+    if (self.delegate) {
+        // add to delegate
+    }
+
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"📍 Radar token updated | token = %@", token]];
 }
 
 @end

@@ -14,7 +14,6 @@
 
 + (NSArray<RadarAddress *> *_Nullable)addressesFromObject:(id _Nonnull)object;
 
-
 + (RadarAddressVerificationStatus)addressVerificationStatusForString:(NSString *_Nullable)string;
 
 - (instancetype _Nullable)initWithObject:(id _Nonnull)object;

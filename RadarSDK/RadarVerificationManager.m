@@ -12,6 +12,18 @@
 
 #import "RadarVerificationManager.h"
 
+#import "RadarAPIClient.h"
+#import "RadarLocationManager.h"
+#import "RadarLogger.h"
+#import "RadarState.h"
+#import "RadarUtils.h"
+
+@interface RadarVerificationManager ()
+
+@property (strong, nonatomic) NSTimer *timer;
+
+@end
+
 @implementation RadarVerificationManager
 
 + (instancetype)sharedInstance {
@@ -29,6 +41,120 @@
         });
     }
     return sharedInstance;
+}
+
+- (void)trackVerifiedWithCompletionHandler:(RadarTrackCompletionHandler)completionHandler {
+    [[RadarAPIClient sharedInstance]
+        getConfigForUsage:@"verify"
+                 verified:YES
+        completionHandler:^(RadarStatus status, RadarConfig *_Nullable config) {
+            [[RadarLocationManager sharedInstance]
+                getLocationWithDesiredAccuracy:RadarTrackingOptionsDesiredAccuracyHigh
+                             completionHandler:^(RadarStatus status, CLLocation *_Nullable location, BOOL stopped) {
+                                 if (status != RadarStatusSuccess) {
+                                     if (completionHandler) {
+                                         [RadarUtils runOnMainThread:^{
+                                             completionHandler(status, nil, nil, nil);
+                                         }];
+                                     }
+
+                                     return;
+                                 }
+
+                                 [self getAttestationWithNonce:config.nonce
+                                             completionHandler:^(NSString *_Nullable attestationString, NSString *_Nullable keyId, NSString *_Nullable attestationError) {
+                                                 [[RadarAPIClient sharedInstance]
+                                                     trackWithLocation:location
+                                                               stopped:RadarState.stopped
+                                                            foreground:[RadarUtils foreground]
+                                                                source:RadarLocationSourceForegroundLocation
+                                                              replayed:NO
+                                                               beacons:nil
+                                                              verified:YES
+                                                     attestationString:attestationString
+                                                                 keyId:keyId
+                                                      attestationError:attestationError
+                                                             encrypted:NO
+                                                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events,
+                                                                         RadarUser *_Nullable user, NSArray<RadarGeofence *> *_Nullable nearbyGeofences,
+                                                                         RadarConfig *_Nullable config, NSString *_Nullable token) {
+                                                         if (status == RadarStatusSuccess && config != nil) {
+                                                             [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
+                                                         }
+                                                         if (completionHandler) {
+                                                             [RadarUtils runOnMainThread:^{
+                                                                 completionHandler(status, location, events, user);
+                                                             }];
+                                                         }
+                                                     }];
+                                             }];
+                             }];
+        }];
+}
+
+- (void)trackVerifiedTokenWithCompletionHandler:(RadarTrackTokenCompletionHandler)completionHandler {
+    [[RadarAPIClient sharedInstance]
+        getConfigForUsage:@"verify"
+                 verified:YES
+        completionHandler:^(RadarStatus status, RadarConfig *_Nullable config) {
+            [[RadarLocationManager sharedInstance]
+                getLocationWithDesiredAccuracy:RadarTrackingOptionsDesiredAccuracyHigh
+                             completionHandler:^(RadarStatus status, CLLocation *_Nullable location, BOOL stopped) {
+                                 if (status != RadarStatusSuccess) {
+                                     if (completionHandler) {
+                                         [RadarUtils runOnMainThread:^{
+                                             completionHandler(status, nil);
+                                         }];
+                                     }
+
+                                     return;
+                                 }
+
+                                 [self getAttestationWithNonce:config.nonce
+                                             completionHandler:^(NSString *_Nullable attestationString, NSString *_Nullable keyId, NSString *_Nullable attestationError) {
+                                                 [[RadarAPIClient sharedInstance]
+                                                     trackWithLocation:location
+                                                               stopped:RadarState.stopped
+                                                            foreground:[RadarUtils foreground]
+                                                                source:RadarLocationSourceForegroundLocation
+                                                              replayed:NO
+                                                               beacons:nil
+                                                              verified:YES
+                                                     attestationString:attestationString
+                                                                 keyId:keyId
+                                                      attestationError:attestationError
+                                                             encrypted:YES
+                                                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events,
+                                                                         RadarUser *_Nullable user, NSArray<RadarGeofence *> *_Nullable nearbyGeofences,
+                                                                         RadarConfig *_Nullable config, NSString *_Nullable token) {
+                                                         if (status == RadarStatusSuccess && config != nil) {
+                                                             [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
+                                                         }
+                                                         if (completionHandler) {
+                                                             [RadarUtils runOnMainThread:^{
+                                                                 completionHandler(status, token);
+                                                             }];
+                                                         }
+                                                     }];
+                                             }];
+                             }];
+        }];
+}
+
+- (void)startTrackingVerified:(BOOL)token {
+    if (!self.timer) {
+        self.timer = [NSTimer scheduledTimerWithTimeInterval:30
+                                                     repeats:YES
+                                                       block:^(NSTimer *_Nonnull timer) {
+                                                           [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Timer fired"];
+
+                                                           if (token) {
+                                                               [self trackVerifiedTokenWithCompletionHandler:nil];
+                                                           } else {
+                                                               [self trackVerifiedWithCompletionHandler:nil];
+                                                           }
+                                                       }];
+    }
 }
 
 - (void)getAttestationWithNonce:(NSString *)nonce completionHandler:(RadarVerificationCompletionHandler)completionHandler {

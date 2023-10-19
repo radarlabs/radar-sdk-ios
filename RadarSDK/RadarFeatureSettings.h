@@ -11,7 +11,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  Represents server-side feature settings.
- 
+
  @see https://radar.com/documentation/sdk/ios
  */
 @interface RadarFeatureSettings : NSObject
@@ -24,15 +24,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  Initializes a new RadarFeatureSettings object with given value.
- 
+
  @param usePersistence A flag indicating whether to use persistence.
  */
-- (instancetype)initWithUsePersistence:(BOOL)usePersistence
-                    extendFlushReplays:(BOOL)extendFlushReplays;
+- (instancetype)initWithUsePersistence:(BOOL)usePersistence extendFlushReplays:(BOOL)extendFlushReplays;
 
 /**
  Creates a RadarFeatureSettings object from the provided dictionary.
- 
+
  @param dict A dictionary to extract the settings from.
  */
 + (RadarFeatureSettings *_Nullable)featureSettingsFromDictionary:(NSDictionary *)dict;

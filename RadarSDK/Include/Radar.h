@@ -133,9 +133,8 @@ typedef NS_ENUM(NSInteger, RadarLogType) {
 typedef NS_ENUM(NSInteger, RadarRouteUnits) {
     /// Imperial (feet)
     RadarRouteUnitsImperial NS_SWIFT_NAME(imperial),
-    /// Metric (meters)
-    RadarRouteUnitsMetric NS_SWIFT_NAME(metric)
-};
+                                          /// Metric (meters)
+                                          RadarRouteUnitsMetric NS_SWIFT_NAME(metric) };
 
 /**
 Verification status enum for RadarAddress with values 'V', 'P', 'A', 'R', and 'U'
@@ -145,16 +144,14 @@ Verification status enum for RadarAddress with values 'V', 'P', 'A', 'R', and 'U
 typedef NS_ENUM(NSInteger, RadarAddressVerificationStatus) {
     /// Unknown
     RadarAddressVerificationStatusNone NS_SWIFT_NAME(none) = 0,
-    /// Verified: complete match was made between the input data and a single record from the available reference data
-    RadarAddressVerificationStatusVerified NS_SWIFT_NAME(verified) = 1,
-    /// Partially verified: a partial match was made between the input data and a single record from the available reference data
-    RadarAddressVerificationStatusPartiallyVerified NS_SWIFT_NAME(partiallyVerified) = 2,
-    /// Ambiguous: more than one close reference data match
-    RadarAddressVerificationStatusAmbiguous NS_SWIFT_NAME(ambiguous) = 3,
-    /// Unverified: unable to verify. The output fields will contain the input data
-    RadarAddressVerificationStatusUnverified NS_SWIFT_NAME(unverified) = 4
-};
-
+        /// Verified: complete match was made between the input data and a single record from the available reference data
+        RadarAddressVerificationStatusVerified NS_SWIFT_NAME(verified) = 1,
+            /// Partially verified: a partial match was made between the input data and a single record from the available reference data
+            RadarAddressVerificationStatusPartiallyVerified NS_SWIFT_NAME(partiallyVerified) = 2,
+                /// Ambiguous: more than one close reference data match
+                RadarAddressVerificationStatusAmbiguous NS_SWIFT_NAME(ambiguous) = 3,
+                                                                      /// Unverified: unable to verify. The output fields will contain the input data
+                                                                      RadarAddressVerificationStatusUnverified NS_SWIFT_NAME(unverified) = 4 };
 
 #pragma mark - Callbacks
 
@@ -464,6 +461,13 @@ typedef void (^_Nonnull RadarLogConversionCompletionHandler)(RadarStatus status,
 + (void)trackVerifiedTokenWithCompletionHandler:(RadarTrackTokenCompletionHandler _Nullable)completionHandler NS_SWIFT_NAME(trackVerifiedToken(completionHandler:));
 
 /**
+ Starts tracking the user's location with device integrity information for location verification use cases.
+
+ @warning Note that you must configure SSL pinning before calling this method.
+ */
++ (void)startTrackingVerified:(BOOL *)token NS_SWIFT_NAME(startTrackingVerified(token:));
+
+/**
  Starts tracking the user's location in the background with configurable tracking options.
 
  @param options Configurable tracking options.
@@ -514,7 +518,6 @@ typedef void (^_Nonnull RadarLogConversionCompletionHandler)(RadarStatus status,
  @see https://radar.com/documentation/sdk/tracking
  */
 + (RadarTrackingOptions *)getTrackingOptions;
-
 
 /**
  Returns a boolean indicating whether local tracking options are being overridden by remote tracking options.
@@ -749,7 +752,8 @@ logConversionWithNotification
                     categories:(NSArray<NSString *> *_Nullable)categories
                         groups:(NSArray<NSString *> *_Nullable)groups
                          limit:(int)limit
-             completionHandler:(RadarSearchPlacesCompletionHandler)completionHandler NS_SWIFT_NAME(searchPlaces(radius:chains:chainMetadata:categories:groups:limit:completionHandler:));
+             completionHandler:(RadarSearchPlacesCompletionHandler)completionHandler
+    NS_SWIFT_NAME(searchPlaces(radius:chains:chainMetadata:categories:groups:limit:completionHandler:));
 
 /**
  Searches for places near a location, sorted by distance.
@@ -797,7 +801,8 @@ logConversionWithNotification
               categories:(NSArray<NSString *> *_Nullable)categories
                   groups:(NSArray<NSString *> *_Nullable)groups
                    limit:(int)limit
-       completionHandler:(RadarSearchPlacesCompletionHandler)completionHandler NS_SWIFT_NAME(searchPlaces(near:radius:chains:chainMetadata:categories:groups:limit:completionHandler:));
+       completionHandler:(RadarSearchPlacesCompletionHandler)completionHandler
+    NS_SWIFT_NAME(searchPlaces(near:radius:chains:chainMetadata:categories:groups:limit:completionHandler:));
 
 /**
  Gets the device's current location, then searches for geofences near that location, sorted by distance.
@@ -931,7 +936,6 @@ logConversionWithNotification
  */
 + (void)ipGeocodeWithCompletionHandler:(RadarIPGeocodeCompletionHandler)completionHandler NS_SWIFT_NAME(ipGeocode(completionHandler:));
 
-
 /**
  Validates an address, attaching a verification status, property type, and ZIP+4.
 
@@ -941,7 +945,8 @@ logConversionWithNotification
  @see https://radar.com/documentation/api#validate-an-address
  */
 
-+ (void)validateAddress:(RadarAddress *_Nonnull)address completionHandler:(RadarValidateAddressCompletionHandler)completionHandler NS_SWIFT_NAME(validateAddress(address:completionHandler:));
++ (void)validateAddress:(RadarAddress *_Nonnull)address
+      completionHandler:(RadarValidateAddressCompletionHandler)completionHandler NS_SWIFT_NAME(validateAddress(address:completionHandler:));
 
 #pragma mark - Distance
 
@@ -1022,7 +1027,6 @@ logConversionWithNotification
  @return A string for the address verification status value.
 */
 + (NSString *)stringForVerificationStatus:(RadarAddressVerificationStatus)verificationStatus NS_SWIFT_NAME(stringForVerificationStatus(_:));
-
 
 /**
  Returns a display string for a location source value.

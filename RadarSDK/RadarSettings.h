@@ -9,8 +9,8 @@
 #import <Foundation/Foundation.h>
 
 #import "Radar.h"
-#import "RadarTrackingOptions.h"
 #import "RadarFeatureSettings.h"
+#import "RadarTrackingOptions.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

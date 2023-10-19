@@ -6,8 +6,8 @@
 //  Copyright © 2021 Radar Labs, Inc. All rights reserved.
 //
 
-#import "RadarTrackingOptions.h"
 #import "RadarFeatureSettings.h"
+#import "RadarTrackingOptions.h"
 #import <Foundation/Foundation.h>
 
 NS_ASSUME_NONNULL_BEGIN

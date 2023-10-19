@@ -46,8 +46,8 @@
         NSMutableURLRequest *req = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:url]];
         req.HTTPMethod = method;
 
-        NSString * paramJsonStr = [RadarUtils dictionaryToJson:params];
-        NSString * headersJsonStr = [RadarUtils dictionaryToJson:headers];
+        NSString *paramJsonStr = [RadarUtils dictionaryToJson:params];
+        NSString *headersJsonStr = [RadarUtils dictionaryToJson:headers];
 
         if (logPayload) {
             [[RadarLogger sharedInstance]
@@ -90,7 +90,9 @@
 
                 if (error) {
                     dispatch_async(dispatch_get_main_queue(), ^{
-                        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelError type:RadarLogTypeSDKError message:[NSString stringWithFormat:@"Received network error | error = %@", error]];
+                        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelError
+                                                              type:RadarLogTypeSDKError
+                                                           message:[NSString stringWithFormat:@"Received network error | error = %@", error]];
                         completionHandler(RadarStatusErrorNetwork, nil);
                     });
 
@@ -141,7 +143,7 @@
                     }
 
                     res = (NSDictionary *)resObj;
-                    NSString * resJsonStr = [RadarUtils dictionaryToJson:res];
+                    NSString *resJsonStr = [RadarUtils dictionaryToJson:res];
 
                     if (params && [params objectForKey:@"replays"]) {
                         NSArray *replays = [params objectForKey:@"replays"];

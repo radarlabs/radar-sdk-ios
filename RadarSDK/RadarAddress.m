@@ -42,7 +42,6 @@
     return address;
 }
 
-
 - (instancetype _Nullable)initWithCoordinate:(CLLocationCoordinate2D)coordinate
                             formattedAddress:(NSString *_Nullable)formattedAddress
                                      country:(NSString *_Nullable)country
@@ -264,7 +263,6 @@
         }
     }
 
-
     return [[RadarAddress alloc] initWithCoordinate:coordinate
                                    formattedAddress:formattedAddress
                                             country:country
@@ -286,7 +284,7 @@
                                                unit:unit
                                               plus4:plus4
                                               layer:layer
-                                             metadata:metadata
+                                           metadata:metadata
                                          confidence:confidence];
 }
 

@@ -7,8 +7,8 @@
 //
 
 #import "RadarMeta.h"
-#import "RadarTrackingOptions.h"
 #import "RadarFeatureSettings.h"
+#import "RadarTrackingOptions.h"
 
 @implementation RadarMeta
 

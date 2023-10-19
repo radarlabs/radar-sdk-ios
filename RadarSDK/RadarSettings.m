@@ -8,10 +8,10 @@
 #import "RadarSettings.h"
 
 #import "Radar+Internal.h"
-#import "RadarLogger.h"
-#import "RadarTripOptions.h"
 #import "RadarFeatureSettings.h"
+#import "RadarLogger.h"
 #import "RadarReplayBuffer.h"
+#import "RadarTripOptions.h"
 
 @implementation RadarSettings
 
@@ -73,7 +73,7 @@ static NSString *const kUserDebug = @"radar-userDebug";
         [[NSUserDefaults standardUserDefaults] setDouble:timestampSeconds forKey:kSessionId];
 
         [Radar logOpenedAppConversion];
-        
+
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"New session | sessionId = %@", [RadarSettings sessionId]]];
 
         return YES;
@@ -219,7 +219,6 @@ static NSString *const kUserDebug = @"radar-userDebug";
         [[NSUserDefaults standardUserDefaults] removeObjectForKey:kFeatureSettings];
     }
 }
-
 
 + (RadarLogLevel)logLevel {
     RadarLogLevel logLevel;

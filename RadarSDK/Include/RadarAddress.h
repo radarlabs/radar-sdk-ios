@@ -14,14 +14,12 @@
 typedef NS_ENUM(NSInteger, RadarAddressConfidence) {
     /// Unknown
     RadarAddressConfidenceNone NS_SWIFT_NAME(none) = 0,
-    /// Exact
-    RadarAddressConfidenceExact NS_SWIFT_NAME(exact) = 1,
-    /// Interpolated
-    RadarAddressConfidenceInterpolated NS_SWIFT_NAME(interpolated) = 2,
-    /// Fallback
-    RadarAddressConfidenceFallback NS_SWIFT_NAME(fallback) = 3
-};
-
+        /// Exact
+        RadarAddressConfidenceExact NS_SWIFT_NAME(exact) = 1,
+                                                  /// Interpolated
+                                                  RadarAddressConfidenceInterpolated NS_SWIFT_NAME(interpolated) = 2,
+                                                                                                   /// Fallback
+                                                                                                   RadarAddressConfidenceFallback NS_SWIFT_NAME(fallback) = 3 };
 
 NS_ASSUME_NONNULL_BEGIN
 

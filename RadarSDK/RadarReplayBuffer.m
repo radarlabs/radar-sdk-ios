@@ -5,11 +5,11 @@
 //  Copyright © 2023 Radar Labs, Inc. All rights reserved.
 //
 
+#import "RadarReplayBuffer.h"
 #import "Radar+Internal.h"
 #import "RadarAPIClient.h"
-#import "RadarReplayBuffer.h"
-#import "RadarReplay.h"
 #import "RadarLogger.h"
+#import "RadarReplay.h"
 #import "RadarSettings.h"
 
 static const int MAX_BUFFER_SIZE = 120; // one hour of updates
@@ -53,7 +53,7 @@ static const int MAX_BUFFER_SIZE = 120; // one hour of updates
     if (featureSettings.usePersistence) {
         NSData *replaysData;
 
-        // If buffer length is above 50, remove every fifth replay from the persisted buffer 
+        // If buffer length is above 50, remove every fifth replay from the persisted buffer
         if ([mutableReplayBuffer count] > 50) {
             NSMutableArray<RadarReplay *> *prunedBuffer = [NSMutableArray arrayWithCapacity:[mutableReplayBuffer count]];
             for (NSUInteger i = 0; i < mutableReplayBuffer.count; i++) {
@@ -79,10 +79,9 @@ static const int MAX_BUFFER_SIZE = 120; // one hour of updates
 }
 
 /**
-* Flushes the replay in the buffer
-*/
-- (void)flushReplaysWithCompletionHandler:(NSDictionary *_Nullable)replayParams
-                        completionHandler:(RadarFlushReplaysCompletionHandler _Nullable)completionHandler {
+ * Flushes the replay in the buffer
+ */
+- (void)flushReplaysWithCompletionHandler:(NSDictionary *_Nullable)replayParams completionHandler:(RadarFlushReplaysCompletionHandler _Nullable)completionHandler {
     if (isFlushing) {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Already flushing replays"];
         if (completionHandler) {
@@ -105,7 +104,7 @@ static const int MAX_BUFFER_SIZE = 120; // one hour of updates
 
     // get a copy of the replays so we can safely clear what was synced up
     NSMutableArray<RadarReplay *> *replaysArray = [NSMutableArray arrayWithArray:flushableReplays];
-    
+
     NSMutableArray *replaysRequestArray = [RadarReplay arrayForReplays:replaysArray];
 
     // if we have a current track update, add it to the local replay list
@@ -123,24 +122,25 @@ static const int MAX_BUFFER_SIZE = 120; // one hour of updates
     // log the replay count
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Flushing %lu replays", (unsigned long)[replaysRequestArray count]]];
 
-    [[RadarAPIClient sharedInstance] flushReplays:replaysRequestArray completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
-        if (status == RadarStatusSuccess) {
-            // if the flush was successful, remove the replays from the buffer
-            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Flushed replays successfully"];
-            [self removeReplaysFromBuffer:replaysArray];
-            [Radar flushLogs];
+    [[RadarAPIClient sharedInstance] flushReplays:replaysRequestArray
+                                completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
+                                    if (status == RadarStatusSuccess) {
+                                        // if the flush was successful, remove the replays from the buffer
+                                        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Flushed replays successfully"];
+                                        [self removeReplaysFromBuffer:replaysArray];
+                                        [Radar flushLogs];
 
-        } else {
-            if (replayParams) {
-                [self writeNewReplayToBuffer:newReplayParams];
-            }
-        }
+                                    } else {
+                                        if (replayParams) {
+                                            [self writeNewReplayToBuffer:newReplayParams];
+                                        }
+                                    }
 
-        [self setIsFlushing:NO];
-        if (completionHandler) {
-            completionHandler(status, res);
-        }
-    }];
+                                    [self setIsFlushing:NO];
+                                    if (completionHandler) {
+                                        completionHandler(status, res);
+                                    }
+                                }];
 }
 
 // Set is Flushing from outside
