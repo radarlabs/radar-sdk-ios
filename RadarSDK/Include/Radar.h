@@ -23,6 +23,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @protocol RadarDelegate;
+@protocol RadarVerifiedDelegate;
 @class RadarTripOptions;
 
 #pragma mark - Enums
@@ -541,6 +542,15 @@ typedef void (^_Nonnull RadarLogConversionCompletionHandler)(RadarStatus status,
  @see https://radar.com/documentation/sdk/ios#listening-for-events-with-a-delegate
  */
 + (void)setDelegate:(nullable id<RadarDelegate>)delegate;
+
+/**
+ Sets a delegate for client-side delivery of verified location tokens.
+
+ @param verifiedDelegate A delegate for client-side delivery of verified location tokens. If `nil`, the previous delegate will be cleared.
+
+ @see https://radar.com/documentation/fraud
+ */
++ (void)setVerifiedDelegate:(nullable id<RadarVerifiedDelegate>)verifiedDelegate;
 
 #pragma mark - Events
 

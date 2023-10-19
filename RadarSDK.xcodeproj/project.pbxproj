@@ -163,6 +163,7 @@
 
 /* Begin PBXFileReference section */
 		0107A9E82621FFB9008AB52F /* RadarSDK.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = RadarSDK.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		0113020D2AE1447600EFC377 /* RadarVerifiedDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarVerifiedDelegate.h; sourceTree = "<group>"; };
 		0114F057284EFDB700ADA4E4 /* RadarRouteMode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarRouteMode.h; sourceTree = "<group>"; };
 		01DDC7C529FC387400C0D039 /* RadarNotificationHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RadarNotificationHelper.m; sourceTree = "<group>"; };
 		01DDC7C629FC387400C0D039 /* RadarNotificationHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RadarNotificationHelper.h; sourceTree = "<group>"; };
@@ -357,6 +358,7 @@
 				96A5A0EC27AD9F7F007B960B /* RadarContext.h */,
 				96A5A0E327AD9F7F007B960B /* RadarCoordinate.h */,
 				96A5A0E727AD9F7F007B960B /* RadarDelegate.h */,
+				0113020D2AE1447600EFC377 /* RadarVerifiedDelegate.h */,
 				96A5A0DA27AD9F7F007B960B /* RadarEvent.h */,
 				96A5A0E927AD9F7F007B960B /* RadarFraud.h */,
 				96A5A0E627AD9F7F007B960B /* RadarGeofence.h */,

@@ -368,6 +368,10 @@
     [RadarDelegateHolder sharedInstance].delegate = delegate;
 }
 
++ (void)setVerifiedDelegate:(id<RadarVerifiedDelegate>)verifiedDelegate {
+    [RadarDelegateHolder sharedInstance].verifiedDelegate = verifiedDelegate;
+}
+
 #pragma mark - Events
 
 + (void)acceptEventId:(NSString *)eventId verifiedPlaceId:(NSString *)verifiedPlaceId {
