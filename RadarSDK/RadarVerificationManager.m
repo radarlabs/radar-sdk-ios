@@ -9,6 +9,7 @@
 #import <CommonCrypto/CommonCrypto.h>
 #import <DeviceCheck/DeviceCheck.h>
 #import <Foundation/Foundation.h>
+@import Network;
 
 #import "RadarVerificationManager.h"
 
@@ -21,6 +22,7 @@
 @interface RadarVerificationManager ()
 
 @property (strong, nonatomic) NSTimer *timer;
+@property (nonatomic, retain) nw_path_monitor_t monitor;
 
 @end
 
@@ -142,6 +144,30 @@
 }
 
 - (void)startTrackingVerified:(BOOL)token {
+    if (@available(iOS 14.0, *)) {
+        if (!_monitor) {
+            _monitor = nw_path_monitor_create();
+            
+            nw_path_monitor_set_queue(_monitor, dispatch_get_main_queue());
+            
+            nw_path_monitor_set_update_handler(_monitor, ^(nw_path_t path) {
+                if (nw_path_get_status(path) == nw_path_status_satisfied) {
+                    NSLog(@"Network connected");
+                    
+                    if (token) {
+                        [self trackVerifiedTokenWithCompletionHandler:nil];
+                    } else {
+                        [self trackVerifiedWithCompletionHandler:nil];
+                    }
+                } else {
+                    NSLog(@"Network disconnected");
+                }
+            });
+            
+            nw_path_monitor_start(_monitor);
+        }
+    }
+    
     if (!self.timer) {
         self.timer = [NSTimer scheduledTimerWithTimeInterval:30
                                                      repeats:YES
