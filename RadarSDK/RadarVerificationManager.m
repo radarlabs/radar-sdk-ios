@@ -152,7 +152,7 @@
             
             nw_path_monitor_set_update_handler(_monitor, ^(nw_path_t path) {
                 if (nw_path_get_status(path) == nw_path_status_satisfied) {
-                    NSLog(@"Network connected");
+                    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Network connected"];
                     
                     if (token) {
                         [self trackVerifiedTokenWithCompletionHandler:nil];
