@@ -469,7 +469,7 @@ typedef void (^_Nonnull RadarLogConversionCompletionHandler)(RadarStatus status,
  
  @warning Note that you must configure SSL pinning before calling this method.
  */
-+ (void)startTrackingVerified:(BOOL *)token NS_SWIFT_NAME(startTrackingVerified(token:));
++ (void)startTrackingVerified:(BOOL)token NS_SWIFT_NAME(startTrackingVerified(token:));
 
 /**
  Starts tracking the user's location in the background with configurable tracking options.

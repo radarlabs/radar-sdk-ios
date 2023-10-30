@@ -160,7 +160,7 @@
                         [self trackVerifiedWithCompletionHandler:nil];
                     }
                 } else {
-                    NSLog(@"Network disconnected");
+                    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Network disconnected"];
                 }
             });
             
@@ -169,7 +169,7 @@
     }
     
     if (!self.timer) {
-        self.timer = [NSTimer scheduledTimerWithTimeInterval:30
+        self.timer = [NSTimer scheduledTimerWithTimeInterval:300
                                                      repeats:YES
                                                        block:^(NSTimer *_Nonnull timer) {
                                                            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Timer fired"];

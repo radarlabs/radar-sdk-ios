@@ -251,7 +251,7 @@
     [[RadarVerificationManager sharedInstance] trackVerifiedTokenWithCompletionHandler:completionHandler];
 }
 
-+ (void)startTrackingVerified:(BOOL *)token {
++ (void)startTrackingVerified:(BOOL)token {
     [[RadarVerificationManager sharedInstance] startTrackingVerified:token];
 }
 
