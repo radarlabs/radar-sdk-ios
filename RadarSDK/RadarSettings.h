@@ -33,6 +33,8 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)setAnonymousTrackingEnabled:(BOOL)enabled;
 + (BOOL)tracking;
 + (void)setTracking:(BOOL)tracking;
++ (BOOL)rampedUp;
++ (void)setRampedUp:(BOOL)rampedUp;
 + (RadarTrackingOptions *_Nullable)trackingOptions;
 + (void)setTrackingOptions:(RadarTrackingOptions *_Nonnull)options;
 + (void)removeTrackingOptions;

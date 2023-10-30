@@ -26,6 +26,7 @@ static NSString *const kMetadata = @"radar-metadata";
 static NSString *const kAnonymous = @"radar-anonymous";
 static NSString *const kTracking = @"radar-tracking";
 static NSString *const kTrackingOptions = @"radar-trackingOptions";
+static NSString *const kRampedUp = @"radar-rampedUp";
 static NSString *const kPreviousTrackingOptions = @"radar-previousTrackingOptions";
 static NSString *const kRemoteTrackingOptions = @"radar-remoteTrackingOptions";
 static NSString *const kFeatureSettings = @"radar-featureSettings";
@@ -132,6 +133,14 @@ static NSString *const kUserDebug = @"radar-userDebug";
 
 + (void)setTracking:(BOOL)tracking {
     [[NSUserDefaults standardUserDefaults] setBool:tracking forKey:kTracking];
+}
+
++ (BOOL)rampedUp {
+    return [[NSUserDefaults standardUserDefaults] boolForKey:kRampedUp];
+}
+
++ (void)setRampedUp:(BOOL)rampedUp {
+    [[NSUserDefaults standardUserDefaults] setBool:rampedUp forKey:kRampedUp];
 }
 
 + (RadarTrackingOptions *)trackingOptions {

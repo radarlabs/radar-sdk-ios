@@ -175,6 +175,8 @@ typedef NS_ENUM(NSInteger, RadarTrackingOptionsSyncLocations) {
  */
 @property (class, copy, readonly) RadarTrackingOptions *presetEfficient;
 
+@property (class, copy, readonly) RadarTrackingOptions *rampedUpOptions;
+
 + (NSString *)stringForDesiredAccuracy:(RadarTrackingOptionsDesiredAccuracy)desiredAccuracy;
 + (RadarTrackingOptionsDesiredAccuracy)desiredAccuracyForString:(NSString *)str;
 + (NSString *)stringForReplay:(RadarTrackingOptionsReplay)replay;
