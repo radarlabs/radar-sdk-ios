@@ -114,6 +114,30 @@ NSString *const kSyncNone = @"none";
     return options;
 }
 
++ (RadarTrackingOptions *)rampedUpOptions {
+    RadarTrackingOptions *options = [RadarTrackingOptions new];
+    options.desiredStoppedUpdateInterval = 10;
+    options.desiredMovingUpdateInterval = 10;
+    options.desiredSyncInterval = 10;
+    options.desiredAccuracy = RadarTrackingOptionsDesiredAccuracyHigh;
+    options.stopDuration = 140;
+    options.stopDistance = 70;
+    options.startTrackingAfter = nil;
+    options.stopTrackingAfter = nil;
+    options.syncLocations = RadarTrackingOptionsSyncAll;
+    options.replay = RadarTrackingOptionsReplayNone;
+    options.showBlueBar = YES;
+    options.useStoppedGeofence = NO;
+    options.stoppedGeofenceRadius = 0;
+    options.useMovingGeofence = NO;
+    options.movingGeofenceRadius = 0;
+    options.syncGeofences = YES;
+    options.useVisits = NO;
+    options.useSignificantLocationChanges = NO;
+    options.beacons = NO;
+    return options;
+}
+
 + (NSString *)stringForDesiredAccuracy:(RadarTrackingOptionsDesiredAccuracy)desiredAccuracy {
     NSString *str;
     switch (desiredAccuracy) {

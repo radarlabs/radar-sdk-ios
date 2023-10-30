@@ -21,6 +21,7 @@
 #import "RadarState.h"
 #import "RadarUtils.h"
 #import "RadarReplayBuffer.h"
+#import "RadarTrackingOptions.h"
 
 @interface RadarLocationManager ()
 
@@ -58,6 +59,7 @@
 static NSString *const kIdentifierPrefix = @"radar_";
 static NSString *const kBubbleGeofenceIdentifierPrefix = @"radar_bubble_";
 static NSString *const kSyncGeofenceIdentifierPrefix = @"radar_geofence_";
+static NSString *const kRampUpGeofenceIdentifierPrefix = @"radar_ramp_up_";
 static NSString *const kSyncBeaconIdentifierPrefix = @"radar_beacon_";
 static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 
@@ -274,18 +276,18 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 }
 
 - (void)updateTracking {
-    [self updateTracking:nil fromInitialize:NO];
+    [self updateTracking:nil fromInitialize:NO rampUp:NO];
 }
 
 - (void)updateTrackingFromInitialize {
-    [self updateTracking:nil fromInitialize:YES];
+    [self updateTracking:nil fromInitialize:YES rampUp:NO];
 }
 
 - (void)updateTracking:(CLLocation *)location {
-    [self updateTracking:location fromInitialize:NO];
+    [self updateTracking:location fromInitialize:NO rampUp:NO];
 }
 
-- (void)updateTracking:(CLLocation *)location fromInitialize:(BOOL)fromInitialize {
+- (void)updateTracking:(CLLocation *)location fromInitialize:(BOOL)fromInitialize rampUp:(BOOL)rampUp {
     dispatch_async(dispatch_get_main_queue(), ^{
         BOOL tracking = [RadarSettings tracking];
         RadarTrackingOptions *options = [Radar getTrackingOptions];
@@ -308,6 +310,17 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         }
 
         if (tracking) {
+            if (rampUp && ![RadarSettings rampedUp]) {
+                // if not on trip, set prev options to current tracking options
+                // and regardless, set current tracking options to ramp up options
+                if (![RadarSettings tripOptions]) {
+                    [RadarSettings setPreviousTrackingOptions:[Radar getTrackingOptions]];
+                }
+                options = RadarTrackingOptions.rampedUpOptions;
+                [RadarSettings setTrackingOptions:options];
+                [RadarSettings setRampedUp:YES];
+            } 
+
             self.locationManager.allowsBackgroundLocationUpdates =
                 [RadarUtils locationBackgroundMode] && [CLLocationManager authorizationStatus] == kCLAuthorizationStatusAuthorizedAlways;
             self.locationManager.pausesLocationUpdatesAutomatically = NO;
@@ -477,6 +490,30 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
             radius = geometry.radius;
         }
         if (center) {
+            NSDictionary *metadata = geofence.metadata;
+            if (metadata) {
+                // if metadata has notification has radar:rampUpRadius, set radius to rampUpRadius
+                NSString *rampUpRadiusString = [geofence.metadata objectForKey:@"radar:rampUpRadius"];
+                NSNumber *rampUpRadius = nil;
+                if (rampUpRadiusString) {
+                    rampUpRadius = [NSNumber numberWithDouble:[rampUpRadiusString doubleValue]];
+                }
+                if (rampUpRadius) {
+                    CLLocation *geofenceCenterLocation = [[CLLocation alloc] initWithLatitude:center.coordinate.latitude longitude:center.coordinate.longitude];
+                    CLLocationDistance distance = [geofenceCenterLocation distanceFromLocation:self.locationManager.location];
+                    if (distance <= [rampUpRadius doubleValue]) { 
+                        if (![RadarSettings rampedUp]) {
+                            [self updateTracking:self.locationManager.location fromInitialize:NO rampUp:YES];
+                        }
+                    } else {
+                        radius = [rampUpRadius doubleValue];
+                        // set identifier to rampUp identifier
+                        identifier = [NSString stringWithFormat:@"%@%@", kRampUpGeofenceIdentifierPrefix, geofenceId];
+                        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"radius is rampUpRadius: %f", radius]];
+                    }
+                }
+            }
+
             CLRegion *region = [[CLCircularRegion alloc] initWithCenter:center.coordinate radius:radius identifier:identifier];
             [self.locationManager startMonitoringForRegion:region];
 
@@ -484,8 +521,9 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                                             message:[NSString stringWithFormat:@"Synced geofence | latitude = %f; longitude = %f; radius = %f; identifier = %@",
                                                                                 center.coordinate.latitude, center.coordinate.longitude, radius, identifier]];
 
-            NSDictionary *metadata = geofence.metadata;
+          
             if (metadata) {
+                // if metadata has notification has radar:rampUp radius
                 NSString *notificationText = [geofence.metadata objectForKey:@"radar:notificationText"];
                 NSString *notificationTitle = [geofence.metadata objectForKey:@"radar:notificationTitle"];
                 NSString *notificationSubtitle = [geofence.metadata objectForKey:@"radar:notificationSubtitle"];
@@ -894,6 +932,11 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         return;
     }
 
+    if ([region.identifier hasPrefix:kRampUpGeofenceIdentifierPrefix]) {
+
+        return;
+    }
+
     BOOL tracking = [RadarSettings tracking];
     if (!tracking) {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Ignoring region entry: not tracking"];
@@ -918,6 +961,10 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                                                       completionHandler:^(RadarStatus status, NSArray<RadarBeacon *> *_Nullable nearbyBeacons) {
                                                           [self handleLocation:location source:RadarLocationSourceBeaconEnter beacons:nearbyBeacons];
                                                       }];
+    } else if ([region.identifier hasPrefix:kRampUpGeofenceIdentifierPrefix] && manager.location) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Entered ramp up geofence"];
+
+        [self handleLocation:manager.location source:RadarLocationSourceGeofenceEnter];
     } else if (manager.location) {
         [self handleLocation:manager.location source:RadarLocationSourceGeofenceEnter];
     }
