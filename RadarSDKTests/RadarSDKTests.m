@@ -759,6 +759,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 
     [RadarSettings removePreviousTrackingOptions];
     [RadarSettings removeTrackingOptions];
+    [RadarSettings setTracking:NO];
 
     RadarTripOptions *tripOptions = [[RadarTripOptions alloc] initWithExternalId:@"testTrip" destinationGeofenceTag:@"someTag" destinationGeofenceExternalId:@"someId"];
     RadarTrackingOptions *tripTrackingOptions = RadarTrackingOptions.presetContinuous;
