@@ -16,6 +16,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface RadarLocationManager : NSObject<CLLocationManagerDelegate>
 
+
+typedef NS_ENUM(NSInteger, RampingOption) {
+    RampingOptionNoChange,
+    RampingOptionRampUp,
+    RampingOptionRampDown
+};
+
+
 @property (nonnull, strong, nonatomic) CLLocationManager *locationManager;
 @property (nonnull, strong, nonatomic) UNUserNotificationCenter *notificationCenter;
 @property (nonnull, strong, nonatomic) CLLocationManager *lowPowerLocationManager;
