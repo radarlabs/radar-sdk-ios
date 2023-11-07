@@ -744,7 +744,10 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     [[RadarDelegateHolder sharedInstance] didUpdateClientLocation:location stopped:stopped source:source];
 
     if (source != RadarLocationSourceManualLocation) {
-        [self updateTracking:location];
+        // log that we're skipping updating tracking here too
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"Skipping updating trackin from handle location"];
+
+        // [self updateTracking:location];
     }
 
     [self callCompletionHandlersWithStatus:RadarStatusSuccess location:location];
