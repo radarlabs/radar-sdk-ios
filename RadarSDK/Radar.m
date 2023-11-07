@@ -279,7 +279,9 @@
                                                                            RadarUser *_Nullable user, NSArray<RadarGeofence *> *_Nullable nearbyGeofences,
                                                                            RadarConfig *_Nullable config, NSString *_Nullable token) {
                                                             if (status == RadarStatusSuccess && config != nil) { 
-                                                                [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
+                                                                // Log that we're gonna skip this instead
+                                                                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"Skipping updateTrackingFromMeta"];
+                                                                // [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
                                                             }
                                                            if (completionHandler) {
                                                                [RadarUtils runOnMainThread:^{

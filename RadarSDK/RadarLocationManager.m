@@ -856,7 +856,8 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                                                          NSArray<RadarGeofence *> *_Nullable nearbyGeofences, RadarConfig *_Nullable config, NSString *_Nullable token) {
                                          self.sending = NO;
 
-                                         [self updateTrackingFromMeta:config.meta];
+                                         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"Skipping updateTrackingFromMeta"];
+                                          // [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
                                          [RadarSettings setFeatureSettings:config.meta.featureSettings];
                                          [self replaceSyncedGeofences:nearbyGeofences];
                                      }];
