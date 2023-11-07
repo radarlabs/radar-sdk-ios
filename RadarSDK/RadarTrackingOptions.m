@@ -271,14 +271,11 @@ NSString *const kSyncNone = @"none";
     options.useSignificantLocationChanges = [dict[kUseSignificantLocationChanges] boolValue];
     options.beacons = [dict[kBeacons] boolValue];
 
+    // if there's a ramp up radius, use it else set it to 0
     options.rampUpRadius = 0;
     if (dict[kRampUpRadius] != nil) {
-        NSObject *rampUpRadiusObj = dict[kRampUpRadius];
-        if ([rampUpRadiusObj isKindOfClass:[NSNumber class]]) {
-            options.rampUpRadius = ((NSNumber *)rampUpRadiusObj).intValue;
-        }
+        options.rampUpRadius = [dict[kRampUpRadius] intValue];
     }
-
 
     return options;
 }
