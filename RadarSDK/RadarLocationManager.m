@@ -137,6 +137,8 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 }
 
 - (void)cancelTimeouts {
+    // log that we're cancelling timeouts here
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"Cancelling timeouts"];
     @synchronized(self) {
         for (RadarLocationCompletionHandler completionHandler in self.completionHandlers) {
             [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(timeoutWithCompletionHandler:) object:completionHandler];
@@ -145,6 +147,8 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 }
 
 - (void)timeoutWithCompletionHandler:(RadarLocationCompletionHandler)completionHandler {
+    // log that we're timing out here
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"Timing out"];
     @synchronized(self) {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Location timeout"];
 
@@ -213,6 +217,8 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 }
 
 - (void)startUpdates:(int)interval {
+    // log that start updates was called here
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"startUpdates called"];
     if (!self.started || interval != self.startedInterval) {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Starting timer | interval = %d", interval]];
 
@@ -229,7 +235,8 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 
                                                            [self requestLocation];
                                                        }];
-
+        // log that we're starting updates here
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"called startUpdatingLocation -- cancels pending requestLocations"];
         [self.lowPowerLocationManager startUpdatingLocation];
 
         self.started = YES;
@@ -869,6 +876,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 #pragma mark - CLLocationManagerDelegate
 
 - (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray<CLLocation *> *)locations {
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Location manager did update locations"];
     if (!locations || !locations.count) {
         return;
     }
@@ -1023,6 +1031,8 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 }
 
 - (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error {
+    // log that we're failing with error here
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Location manager did fail with error | error = %@", error]];
     [[RadarDelegateHolder sharedInstance] didFailWithStatus:RadarStatusErrorLocation];
 
     [self callCompletionHandlersWithStatus:RadarStatusErrorLocation location:nil];
