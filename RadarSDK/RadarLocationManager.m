@@ -141,7 +141,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                 completionHandler(status, location, [RadarState stopped]);
             }
         }
-        [self.completionHandlersDict removeAllObjects];
+        [self.completionHandlersDict removeAllObjects]; // This cancels all the timeouts
     }
 }
 
@@ -161,39 +161,8 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 
         [handlersAtDate addObject:completionHandler];
         [self performSelector:@selector(timeoutWithCompletionHandler:) withObject:completionHandler afterDelay:20];
-
-        // [self.completionHandlers addObject:completionHandler];
-
-        // self.timeoutValid = YES;
-        // add a new timestamp to the timeoutTimestamps array that's 20 seconds in the future
-        // [self.timeoutTimestamps addObject:[NSDate dateWithTimeIntervalSinceNow:20]];
-        // [self performSelector:@selector(timeoutWithCompletionHandler:) withObject:completionHandler afterDelay:20];
-        // set timeoutValid bool to true
     }
 }
-
-- (void)cancelTimeouts {
-    // Log that we're cancelling timeouts
-    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"Cancelling timeouts"];
-
-    @synchronized(self) {
-        // Iterate over each array of completion handlers in the dictionary
-        for (NSDate *key in self.completionHandlersDict) {
-            NSArray *handlers = self.completionHandlersDict[key];
-            for (RadarLocationCompletionHandler completionHandler in handlers) {
-                // Log each cancellation
-                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"Cancelling 1 timeout"];
-                // Cancel the pending perform request for each completion handler
-                [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(timeoutWithCompletionHandler:) object:completionHandler];
-            }
-        }
-
-        // Clear out the completionHandlersDict dictionary
-        [self.completionHandlersDict removeAllObjects];
-    }
-}
-
-
 
 - (void)timeoutWithCompletionHandler:(RadarLocationCompletionHandler)completionHandler {
     @synchronized(self) {
@@ -723,8 +692,6 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
                                        message:[NSString stringWithFormat:@"Handling location | source = %@; location = %@", [Radar stringForLocationSource:source], location]];
 
-    [self cancelTimeouts];
-
     if (!location.isValid) {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
                                            message:[NSString stringWithFormat:@"Invalid location | source = %@; location = %@", [Radar stringForLocationSource:source], location]];
@@ -946,9 +913,6 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 
         [self handleLocation:location source:RadarLocationSourceForegroundLocation];
     } else {
-        // it must be the case that there's no completion handlers but still there's some timeouts
-        // cancel the timeouts anyways
-        [self cancelTimeouts];
         BOOL tracking = [RadarSettings tracking];
         if (!tracking) {
             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Ignoring location: not tracking"];
