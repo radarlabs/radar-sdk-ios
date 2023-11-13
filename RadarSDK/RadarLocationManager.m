@@ -17,10 +17,10 @@
 #import "RadarLogger.h"
 #import "RadarMeta.h"
 #import "RadarPolygonGeometry.h"
+#import "RadarReplayBuffer.h"
 #import "RadarSettings.h"
 #import "RadarState.h"
 #import "RadarUtils.h"
-#import "RadarReplayBuffer.h"
 
 @interface RadarLocationManager ()
 
@@ -41,6 +41,17 @@
 @property (assign, nonatomic) BOOL sending;
 
 /**
+ `YES` if the timer is still valid, `NO` if it has been cancelled.
+ */
+@property (assign, nonatomic) BOOL timeoutValid;
+
+/**
+ An array of timestamps for the timeout. The first timestamp is the most recent
+ timeout, and the last timestamp is the least recent timeout.
+ */
+@property (nonnull, strong, nonatomic) NSMutableArray<NSDate *> *timeoutTimestamps;
+
+/**
  The timer for checking the location at regular intervals, such as in
  continuous tracking mode.
  */
@@ -50,6 +61,12 @@
  Callbacks for sending events.
  */
 @property (nonnull, strong, nonatomic) NSMutableArray<RadarLocationCompletionHandler> *completionHandlers;
+
+/**
+ Callbacks for sending events.
+ */
+@property (nonnull, strong, nonatomic) NSMutableDictionary<NSDate *, NSMutableArray<RadarLocationCompletionHandler> *> *completionHandlersDict;
+
 
 @end
 
@@ -81,7 +98,12 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 - (instancetype)init {
     self = [super init];
     if (self) {
-        _completionHandlers = [NSMutableArray new];
+        // _completionHandlers = [NSMutableArray new];
+        _completionHandlersDict = [NSMutableDictionary new];
+
+        // timeoutValid bool
+        // _timeoutValid = NO;
+        // _timeoutTimestamps = [NSMutableArray new];
 
         _locationManager = [CLLocationManager new];
         _locationManager.delegate = self;
@@ -105,24 +127,21 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 }
 
 - (void)callCompletionHandlersWithStatus:(RadarStatus)status location:(CLLocation *_Nullable)location {
+    // log that we're in this
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"callCompletionHandlersWithStatus called"];
     @synchronized(self) {
-        if (!self.completionHandlers.count) {
-            return;
+        for (NSDate *key in self.completionHandlersDict.allKeys) {
+            // log the key
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:[NSString stringWithFormat:@"key: %@", key]];
+            NSArray *handlers = self.completionHandlersDict[key];
+            for (RadarLocationCompletionHandler completionHandler in handlers) {
+                // log the handler
+                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:[NSString stringWithFormat:@"handler: %@", completionHandler]];
+                [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(timeoutWithCompletionHandler:) object:completionHandler];
+                completionHandler(status, location, [RadarState stopped]);
+            }
         }
-
-        [[RadarLogger sharedInstance]
-            logWithLevel:RadarLogLevelDebug
-                 message:[NSString stringWithFormat:@"Calling completion handlers | self.completionHandlers.count = %lu", (unsigned long)self.completionHandlers.count]];
-
-        for (RadarLocationCompletionHandler completionHandler in self.completionHandlers) {
-            // log that we're cancelling timeouts here
-            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"Cancelling 1 timeout"];
-            [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(timeoutWithCompletionHandler:) object:completionHandler];
-
-            completionHandler(status, location, [RadarState stopped]);
-        }
-
-        [self.completionHandlers removeAllObjects];
+        [self.completionHandlersDict removeAllObjects];
     }
 }
 
@@ -132,30 +151,63 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     }
 
     @synchronized(self) {
-        [self.completionHandlers addObject:completionHandler];
+        NSDate *timeoutDate = [NSDate dateWithTimeIntervalSinceNow:20];
+        NSMutableArray *handlersAtDate = self.completionHandlersDict[timeoutDate];
 
+        if (!handlersAtDate) {
+            handlersAtDate = [NSMutableArray new];
+            self.completionHandlersDict[timeoutDate] = handlersAtDate;
+        }
+
+        [handlersAtDate addObject:completionHandler];
         [self performSelector:@selector(timeoutWithCompletionHandler:) withObject:completionHandler afterDelay:20];
+
+        // [self.completionHandlers addObject:completionHandler];
+
+        // self.timeoutValid = YES;
+        // add a new timestamp to the timeoutTimestamps array that's 20 seconds in the future
+        // [self.timeoutTimestamps addObject:[NSDate dateWithTimeIntervalSinceNow:20]];
+        // [self performSelector:@selector(timeoutWithCompletionHandler:) withObject:completionHandler afterDelay:20];
+        // set timeoutValid bool to true
     }
 }
 
 - (void)cancelTimeouts {
-    // log that we're cancelling timeouts here
+    // Log that we're cancelling timeouts
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"Cancelling timeouts"];
+
     @synchronized(self) {
-        for (RadarLocationCompletionHandler completionHandler in self.completionHandlers) {
-            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"Cancelling 1 timeout"];
-            [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(timeoutWithCompletionHandler:) object:completionHandler];
+        // Iterate over each array of completion handlers in the dictionary
+        for (NSDate *key in self.completionHandlersDict) {
+            NSArray *handlers = self.completionHandlersDict[key];
+            for (RadarLocationCompletionHandler completionHandler in handlers) {
+                // Log each cancellation
+                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"Cancelling 1 timeout"];
+                // Cancel the pending perform request for each completion handler
+                [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(timeoutWithCompletionHandler:) object:completionHandler];
+            }
         }
+
+        // Clear out the completionHandlersDict dictionary
+        [self.completionHandlersDict removeAllObjects];
     }
 }
 
-- (void)timeoutWithCompletionHandler:(RadarLocationCompletionHandler)completionHandler {
-    // log that we're timing out here
-    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"Timing out"];
-    @synchronized(self) {
-        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Location timeout"];
 
-        [self callCompletionHandlersWithStatus:RadarStatusErrorLocation location:nil];
+
+- (void)timeoutWithCompletionHandler:(RadarLocationCompletionHandler)completionHandler {
+    @synchronized(self) {
+        NSDate *now = [NSDate date];
+        for (NSDate *key in self.completionHandlersDict.allKeys) {
+            if ([key timeIntervalSinceDate:now] < -20) {
+                NSArray *handlers = self.completionHandlersDict[key];
+                for (RadarLocationCompletionHandler handler in handlers) {
+                    [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(timeoutWithCompletionHandler:) object:handler];
+                    handler(RadarStatusErrorLocation, nil, [RadarState stopped]);
+                }
+                [self.completionHandlersDict removeObjectForKey:key];
+            }
+        }
     }
 }
 
@@ -417,7 +469,6 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         }
     }
     [self updateTrackingFromInitialize];
-
 }
 
 - (void)restartPreviousTrackingOptions {
@@ -468,7 +519,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     }
 
     NSUInteger numGeofences = MIN(geofences.count, 9);
-    NSMutableArray *requests = [NSMutableArray array]; 
+    NSMutableArray *requests = [NSMutableArray array];
 
     for (int i = 0; i < numGeofences; i++) {
         RadarGeofence *geofence = [geofences objectAtIndex:i];
@@ -490,8 +541,8 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
             [self.locationManager startMonitoringForRegion:region];
 
             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
-                                            message:[NSString stringWithFormat:@"Synced geofence | latitude = %f; longitude = %f; radius = %f; identifier = %@",
-                                                                                center.coordinate.latitude, center.coordinate.longitude, radius, identifier]];
+                                               message:[NSString stringWithFormat:@"Synced geofence | latitude = %f; longitude = %f; radius = %f; identifier = %@",
+                                                                                  center.coordinate.latitude, center.coordinate.longitude, radius, identifier]];
 
             NSDictionary *metadata = geofence.metadata;
             if (metadata) {
@@ -523,24 +574,27 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                     UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:identifier content:content trigger:trigger];
                     [requests addObject:request];
                 } else {
-                    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"No notification text for geofence | geofenceId = %@", geofenceId]];
+                    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
+                                                       message:[NSString stringWithFormat:@"No notification text for geofence | geofenceId = %@", geofenceId]];
                 }
             }
         }
     }
 
-    [self removePendingNotificationsWithCompletionHandler: ^{
+    [self removePendingNotificationsWithCompletionHandler:^{
         for (UNNotificationRequest *request in requests) {
-            [self.notificationCenter addNotificationRequest:request withCompletionHandler:^(NSError *_Nullable error) {
-                if (error) {
-                    [[RadarLogger sharedInstance]
-                        logWithLevel:RadarLogLevelDebug
-                            message:[NSString stringWithFormat:@"Error adding local notification | identifier = %@; error = %@", request.identifier, error]];
-                } else {
-                    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
-                                                        message:[NSString stringWithFormat:@"Added local notification | identifier = %@", request.identifier]];
-                }
-            }];
+            [self.notificationCenter
+                addNotificationRequest:request
+                 withCompletionHandler:^(NSError *_Nullable error) {
+                     if (error) {
+                         [[RadarLogger sharedInstance]
+                             logWithLevel:RadarLogLevelDebug
+                                  message:[NSString stringWithFormat:@"Error adding local notification | identifier = %@; error = %@", request.identifier, error]];
+                     } else {
+                         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
+                                                            message:[NSString stringWithFormat:@"Added local notification | identifier = %@", request.identifier]];
+                     }
+                 }];
         }
     }];
 }
@@ -561,7 +615,8 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         NSMutableArray *identifiers = [NSMutableArray new];
         for (UNNotificationRequest *request in requests) {
             if ([request.identifier hasPrefix:kSyncGeofenceIdentifierPrefix]) {
-                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Found pending notification | identifier = %@", request.identifier]];
+                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
+                                                   message:[NSString stringWithFormat:@"Found pending notification | identifier = %@", request.identifier]];
                 [identifiers addObject:request.identifier];
             }
         }
@@ -732,8 +787,9 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 
             [[RadarLogger sharedInstance]
                 logWithLevel:RadarLogLevelDebug
-                     message:[NSString stringWithFormat:@"Calculating stopped | stopped = %d; arrival = %d; distance = %f; duration = %f; location.timestamp = %@; lastMovedAt = %@", stopped,
-                              arrival, distance, duration, location.timestamp, lastMovedAt]];
+                     message:[NSString
+                                 stringWithFormat:@"Calculating stopped | stopped = %d; arrival = %d; distance = %f; duration = %f; location.timestamp = %@; lastMovedAt = %@",
+                                                  stopped, arrival, distance, duration, location.timestamp, lastMovedAt]];
 
             if (distance > options.stopDistance) {
                 [RadarState setLastMovedLocation:location];
@@ -777,8 +833,9 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     }
 
     NSDate *lastSentAt = [RadarState lastSentAt];
+
     BOOL ignoreSync =
-        !lastSentAt || self.completionHandlers.count || justStopped || replayed || source == RadarLocationSourceBeaconEnter || source == RadarLocationSourceBeaconExit;
+        !lastSentAt || [self anyCompletionHandlersPending] || justStopped || replayed || source == RadarLocationSourceBeaconEnter || source == RadarLocationSourceBeaconExit;
     NSDate *now = [NSDate new];
     NSTimeInterval lastSyncInterval = [now timeIntervalSinceDate:lastSentAt];
     if (!ignoreSync) {
@@ -870,7 +927,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                                          self.sending = NO;
 
                                          [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"Skipping updateTrackingFromMeta"];
-                                          // [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
+                                         // [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
                                          [RadarSettings setFeatureSettings:config.meta.featureSettings];
                                          [self replaceSyncedGeofences:nearbyGeofences];
                                      }];
@@ -885,7 +942,8 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     }
 
     CLLocation *location = [locations lastObject];
-    if (self.completionHandlers.count) {
+    if ([self anyCompletionHandlersPending]) {
+
         [self handleLocation:location source:RadarLocationSourceForegroundLocation];
     } else {
         // it must be the case that there's no completion handlers but still there's some timeouts
@@ -1042,6 +1100,17 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     [[RadarDelegateHolder sharedInstance] didFailWithStatus:RadarStatusErrorLocation];
 
     [self callCompletionHandlersWithStatus:RadarStatusErrorLocation location:nil];
+}
+
+- (BOOL)anyCompletionHandlersPending {
+    @synchronized(self) {
+        for (NSArray *handlers in self.completionHandlersDict.allValues) {
+            if (handlers.count > 0) {
+                return YES;
+            }
+        }
+        return NO;
+    }
 }
 
 @end
