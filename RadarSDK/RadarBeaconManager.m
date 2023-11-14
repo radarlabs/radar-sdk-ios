@@ -87,9 +87,10 @@
     }
 
     @synchronized(self) {
-        [self.completionHandlers addObject:completionHandler];
+        RadarBeaconCompletionHandler completionHandlerCopy = [completionHandler copy];
+        [self.completionHandlers addObject:completionHandlerCopy];
 
-        [self performSelector:@selector(timeoutWithCompletionHandler:) withObject:completionHandler afterDelay:5];
+        [self performSelector:@selector(timeoutWithCompletionHandler:) withObject:completionHandlerCopy afterDelay:5];
     }
 }
 
