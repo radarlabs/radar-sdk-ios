@@ -154,12 +154,17 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         NSDate *timeoutDate = [NSDate dateWithTimeIntervalSinceNow:20];
         NSMutableArray *handlersAtDate = self.completionHandlersDict[timeoutDate];
 
+        //log the timeoutdate and handlersatdate
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:[NSString stringWithFormat:@"timeoutDate: %@", timeoutDate]];
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:[NSString stringWithFormat:@"handlersAtDate: %@", handlersAtDate]];
+
         if (!handlersAtDate) {
             handlersAtDate = [NSMutableArray new];
             self.completionHandlersDict[timeoutDate] = handlersAtDate;
         }
 
         [handlersAtDate addObject:completionHandler];
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:[NSString stringWithFormat:@"handlersAtDate: %@", handlersAtDate]];
         [self performSelector:@selector(timeoutWithCompletionHandler:) withObject:completionHandler afterDelay:20];
     }
 }
@@ -780,7 +785,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         // log that we're skipping updating tracking here too
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"Skipping updating trackin from handle location"];
 
-        // [self updateTracking:location];
+        [self updateTracking:location];
     }
 
     [self callCompletionHandlersWithStatus:RadarStatusSuccess location:location];
