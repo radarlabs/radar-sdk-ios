@@ -13,6 +13,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface RadarLogger : NSObject
 
+@property  (assign) NSString *logFilePath;
+
 + (instancetype)sharedInstance;
 - (void)logWithLevel:(RadarLogLevel)level message:(NSString *)message;
 - (void)logWithLevel:(RadarLogLevel)level type:(RadarLogType)type message:(NSString *)message;
