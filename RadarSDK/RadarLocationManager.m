@@ -130,9 +130,10 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     }
 
     @synchronized(self) {
-        [self.completionHandlers addObject:completionHandler];
+        RadarLocationCompletionHandler completionHandlerCopy = [completionHandler copy];
+        [self.completionHandlers addObject:completionHandlerCopy];
 
-        [self performSelector:@selector(timeoutWithCompletionHandler:) withObject:completionHandler afterDelay:20];
+        [self performSelector:@selector(timeoutWithCompletionHandler:) withObject:completionHandlerCopy afterDelay:20];
     }
 }
 
