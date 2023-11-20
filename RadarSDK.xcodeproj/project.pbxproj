@@ -159,6 +159,8 @@
 		DD8E2F7A24018C37002D51AB /* CLLocationManagerMock.m in Sources */ = {isa = PBXBuildFile; fileRef = DD8E2F7924018C37002D51AB /* CLLocationManagerMock.m */; };
 		DD8E2F7D24018C54002D51AB /* CLVisitMock.m in Sources */ = {isa = PBXBuildFile; fileRef = DD8E2F7C24018C54002D51AB /* CLVisitMock.m */; };
 		DE1E7644239724FD006F34A1 /* search_geofences.json in Resources */ = {isa = PBXBuildFile; fileRef = DE1E7643239724FD006F34A1 /* search_geofences.json */; };
+		E619D29D2B0BF4CE00C88578 /* RadarFileSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = E619D29C2B0BF4CE00C88578 /* RadarFileSystem.h */; };
+		E619D29F2B0BF50D00C88578 /* RadarFileSystem.m in Sources */ = {isa = PBXBuildFile; fileRef = E619D29E2B0BF50D00C88578 /* RadarFileSystem.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -315,6 +317,8 @@
 		DDD7BD0325EC3015002473B3 /* RadarRouteMatrix.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RadarRouteMatrix.m; sourceTree = "<group>"; };
 		DDF1157C2524E18100D575C4 /* RadarTrip.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RadarTrip.m; sourceTree = "<group>"; };
 		DE1E7643239724FD006F34A1 /* search_geofences.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = search_geofences.json; sourceTree = "<group>"; };
+		E619D29C2B0BF4CE00C88578 /* RadarFileSystem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarFileSystem.h; sourceTree = "<group>"; };
+		E619D29E2B0BF50D00C88578 /* RadarFileSystem.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RadarFileSystem.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -447,6 +451,8 @@
 				58F950CF2407038300364B15 /* RadarCollectionAdditions.m */,
 				01F99CFA2965C182004E8CF3 /* RadarConfig.h */,
 				01F99CFC2965C1C4004E8CF3 /* RadarConfig.m */,
+				E619D29C2B0BF4CE00C88578 /* RadarFileSystem.h */,
+				E619D29E2B0BF50D00C88578 /* RadarFileSystem.m */,
 				96A5A11727ADA02E007B960B /* RadarDelegateHolder.h */,
 				DD4C104925D87E3E009C2E36 /* RadarDelegateHolder.m */,
 				DD236CF723088F8400EB88F9 /* RadarLocationManager.h */,
@@ -628,6 +634,7 @@
 				96A5A0C427AD9F41007B960B /* RadarCircleGeometry+Internal.h in Headers */,
 				0114F058284EFDB700ADA4E4 /* RadarRouteMode.h in Headers */,
 				96A5A0D527AD9F41007B960B /* RadarRouteDuration+Internal.h in Headers */,
+				E619D29D2B0BF4CE00C88578 /* RadarFileSystem.h in Headers */,
 				96A5A0CE27AD9F41007B960B /* RadarCoordinate+Internal.h in Headers */,
 				96A5A11927ADA02F007B960B /* RadarLog.h in Headers */,
 				96A5A10A27AD9F7F007B960B /* RadarAddress.h in Headers */,
@@ -785,6 +792,7 @@
 				0107AA9B26220153008AB52F /* RadarContext.m in Sources */,
 				015C53AE29B8E8BA004F53A6 /* (null) in Sources */,
 				0107AB23262201EC008AB52F /* RadarSettings.m in Sources */,
+				E619D29F2B0BF50D00C88578 /* RadarFileSystem.m in Sources */,
 				0107AAAA26220165008AB52F /* RadarGeofenceGeometry.m in Sources */,
 				0107AAEC262201A6008AB52F /* RadarTrip.m in Sources */,
 				9679F4A327CD8DE200800797 /* CLLocation+Radar.m in Sources */,
