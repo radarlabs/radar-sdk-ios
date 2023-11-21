@@ -36,7 +36,7 @@
 
 - (NSDictionary *_Nonnull)dictionaryValue;
 
-- (instancetype)initWithDictionary:(NSDictionary *_Nonnull)dictionary;
+- (instancetype _Nullable)initWithDictionary:(NSDictionary *_Nonnull)dictionary;
 
 + (NSArray<NSDictionary *> *_Nullable)arrayForLogs:(NSArray<RadarLog *> *_Nullable)logs;
 
