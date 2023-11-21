@@ -63,21 +63,41 @@
 - (void) logWithLevelLocal:(RadarLogLevel)level type:(RadarLogType)type message:(NSString *)message {
     RadarLog *radarLog = [[RadarLog alloc] initWithLevel:level type:type message:message];
 
-    NSData *logData = [NSJSONSerialization dataWithJSONObject:[radarLog dictionaryValue] options:0 error:nil];
-    
-    [self.fileHandler writeData:logData toFileAtPath:self.logFilePath];
+    NSData *fileData = [self.fileHandler readFileAtPath:self.logFilePath];
+    NSMutableArray<RadarLog *> *existingLogs = [NSMutableArray array];
+    if (fileData) {
+        NSArray *jsonArray = [NSJSONSerialization JSONObjectWithData:fileData options:0 error:nil];
+        for (NSDictionary *jsonDict in jsonArray) {
+            RadarLog *existingLog = [[RadarLog alloc] initWithDictionary:jsonDict];
+            [existingLogs addObject:existingLog];
+        }
+    }
+    [existingLogs addObject:radarLog];
+
+    NSMutableArray *updatedLogsArray = [NSMutableArray array];
+    for (RadarLog *log in existingLogs) {
+        [updatedLogsArray addObject:[log dictionaryValue]];
+    }
+
+    NSData *updatedLogData = [NSJSONSerialization dataWithJSONObject:updatedLogsArray options:0 error:nil];
+    [self.fileHandler writeData:updatedLogData toFileAtPath:self.logFilePath];
 }
 
 - (void)flushLocalLogs {
     NSData *fileData = [self.fileHandler readFileAtPath:self.logFilePath];
     if (fileData) {
-        NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:fileData options:0 error:nil];
-        RadarLog *retrievedLog = [[RadarLog alloc] initWithDictionary:jsonDict];
-        NSLog(@"retrieved log: %@", retrievedLog.message);
-        [self.fileHandler deleteFileAtPath:self.logFilePath];
-        if ([retrievedLog isKindOfClass:[RadarLog class]]) {
+        NSArray *jsonArray = [NSJSONSerialization JSONObjectWithData:fileData options:0 error:nil];
+        NSMutableArray<RadarLog *> *existingLogs = [NSMutableArray array];
+
+        for (NSDictionary *jsonDict in jsonArray) {
+            RadarLog *existingLog = [[RadarLog alloc] initWithDictionary:jsonDict];
+            [existingLogs addObject:existingLog];
+        }
+
+        for (RadarLog *retrievedLog in existingLogs) {
+            NSLog(@"retrieved log: %@", retrievedLog.message);
+
             dispatch_async(dispatch_get_main_queue(), ^{
-                
                 [Radar sendLog:retrievedLog.level type:retrievedLog.type message:retrievedLog.message];
 
                 RadarLogLevel logLevel = [RadarSettings logLevel];
@@ -89,9 +109,10 @@
                     [[RadarDelegateHolder sharedInstance] didLogMessage:log];
                 }
             });
-        } 
+        }
+
+        [self.fileHandler deleteFileAtPath:self.logFilePath];
     }
-   
 }
 
 
