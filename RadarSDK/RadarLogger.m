@@ -32,6 +32,7 @@
         NSString *documentsDirectory = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES).firstObject;
         NSString *logFileName = @"RadarLogs.txt";
         self.logFilePath = [documentsDirectory stringByAppendingPathComponent:logFileName];
+        self.fileHandler = [[RadarFileSystem alloc] init];
     }
     return self;
 }
@@ -61,22 +62,19 @@
 
 - (void) logWithLevelLocal:(RadarLogLevel)level type:(RadarLogType)type message:(NSString *)message {
     RadarLog *radarLog = [[RadarLog alloc] initWithLevel:level type:type message:message];
-    NSString *documentsDirectory = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES).firstObject;
-    NSString *logFileName = @"RadarLogs.txt";
-    NSString *logFilePath = [documentsDirectory stringByAppendingPathComponent:logFileName];
+
     NSData *logData = [NSJSONSerialization dataWithJSONObject:[radarLog dictionaryValue] options:0 error:nil];
-    RadarFileSystem *fileHandler = [[RadarFileSystem alloc] init];
-    [fileHandler writeData:logData toFileAtPath:logFilePath];
+    
+    [self.fileHandler writeData:logData toFileAtPath:self.logFilePath];
 }
 
 - (void)flushLocalLogs {
-    RadarFileSystem *fileHandler = [[RadarFileSystem alloc] init]; 
-    NSData *fileData = [fileHandler readFileAtPath:self.logFilePath];
+    NSData *fileData = [self.fileHandler readFileAtPath:self.logFilePath];
     if (fileData) {
         NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:fileData options:0 error:nil];
         RadarLog *retrievedLog = [[RadarLog alloc] initWithDictionary:jsonDict];
         NSLog(@"retrieved log: %@", retrievedLog.message);
-        [fileHandler deleteFileAtPath:self.logFilePath];
+        [self.fileHandler deleteFileAtPath:self.logFilePath];
         if ([retrievedLog isKindOfClass:[RadarLog class]]) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 

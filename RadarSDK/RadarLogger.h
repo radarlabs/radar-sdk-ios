@@ -8,12 +8,14 @@
 #import <Foundation/Foundation.h>
 
 #import "RadarDelegate.h"
+#import "RadarFileSystem.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface RadarLogger : NSObject
 
-@property  (assign) NSString *logFilePath;
+@property (strong, nonatomic) NSString *logFilePath;
+@property (strong, nonatomic) RadarFileSystem *fileHandler;
 
 + (instancetype)sharedInstance;
 - (void)logWithLevel:(RadarLogLevel)level message:(NSString *)message;
