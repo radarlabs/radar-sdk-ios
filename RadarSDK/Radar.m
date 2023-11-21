@@ -43,6 +43,8 @@
 
 + (void)initializeWithPublishableKey:(NSString *)publishableKey {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"initialize()"];
+    
+    [[RadarLogger sharedInstance] flushLocalLogs];
 
     [[NSNotificationCenter defaultCenter] addObserver:[self sharedInstance]
                                              selector:@selector(applicationWillEnterForeground)
@@ -1034,6 +1036,19 @@
 
 + (void)setLogLevel:(RadarLogLevel)level {
     [RadarSettings setLogLevel:level];
+}
+
++ (void)writeLocalLog:(NSString *)message {
+    [[RadarLogger sharedInstance] logWithLevelLocal:RadarLogLevelInfo type:RadarLogTypeAppLifecycleEvent message:message];
+
+}
+
++ (void) logUserTermination {
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    [dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
+    NSString *dateString =  [dateFormatter stringFromDate:[NSDate date]];
+    NSString *message = [NSString stringWithFormat:@"User terminated app at %@", dateString];
+    [[RadarLogger sharedInstance] logWithLevelLocal:RadarLogLevelInfo type:RadarLogTypeAppLifecycleEvent message:message];
 }
 
 #pragma mark - Helpers

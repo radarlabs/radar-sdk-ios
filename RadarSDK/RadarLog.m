@@ -68,6 +68,29 @@
     return str;
 }
 
++ (RadarLogLevel)logLevelForString:(NSString *)string {
+    NSDictionary<NSString *, NSNumber *> *logLevelMap = @{
+        @"none" : @(RadarLogLevelNone),
+        @"error" : @(RadarLogLevelError),
+        @"warning" : @(RadarLogLevelWarning),
+        @"info" : @(RadarLogLevelInfo),
+        @"debug" : @(RadarLogLevelDebug)
+    };
+    return logLevelMap[string].integerValue;
+}
+
++ (RadarLogType)logTypeForString:(NSString *)string {
+    NSDictionary<NSString *, NSNumber *> *logTypeMap = @{
+        @"NONE" : @(RadarLogTypeNone),
+        @"SDK_CALL" : @(RadarLogTypeSDKCall),
+        @"SDK_ERROR" : @(RadarLogTypeSDKError),
+        @"SDK_EXCEPTION" : @(RadarLogTypeSDKException),
+        @"APP_LIFECYCLE_EVENT" : @(RadarLogTypeAppLifecycleEvent),
+        @"PERMISSION_EVENT" : @(RadarLogTypePermissionEvent)
+    };
+    return logTypeMap[string].integerValue;
+}
+
 - (NSDictionary *)dictionaryValue {
     NSMutableDictionary *dict = [NSMutableDictionary new];
     dict[@"level"] = [RadarLog stringForLogLevel:self.level];
@@ -79,6 +102,17 @@
     dict[@"createdAt"] = createdAtString;
 
     return dict;
+}
+
+- (instancetype)initWithDictionary:(NSDictionary *)dictionary {
+    self = [super init];
+    if (self) {
+        _level = [RadarLog logLevelForString:dictionary[@"level"]];
+        _type = [RadarLog logTypeForString:dictionary[@"type"]];
+        _message = dictionary[@"message"];
+        _createdAt = dictionary[@"createdAt"];
+    }
+    return self;
 }
 
 + (NSArray<NSDictionary *> *)arrayForLogs:(NSArray<RadarLog *> *)logs {

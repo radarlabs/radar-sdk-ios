@@ -29,5 +29,13 @@
     }];
 }
 
+//method to delte file at path
+- (void)deleteFileAtPath:(NSString *)filePath {
+    NSFileCoordinator *fileCoordinator = [[NSFileCoordinator alloc] init];
+    [fileCoordinator coordinateWritingItemAtURL:[NSURL fileURLWithPath:filePath] options:NSFileCoordinatorWritingForDeleting error:nil byAccessor:^(NSURL *newURL) {
+        [[NSFileManager defaultManager] removeItemAtURL:newURL error:nil];
+    }];
+}
+
 @end
 

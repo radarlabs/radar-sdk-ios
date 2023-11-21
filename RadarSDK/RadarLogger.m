@@ -60,25 +60,26 @@
 }
 
 - (void) logWithLevelLocal:(RadarLogLevel)level type:(RadarLogType)type message:(NSString *)message {
-     RadarLog *radarLog = [[RadarLog alloc] initWithLevel:level type:type message:message];
-
+    RadarLog *radarLog = [[RadarLog alloc] initWithLevel:level type:type message:message];
     NSString *documentsDirectory = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES).firstObject;
     NSString *logFileName = @"RadarLogs.txt";
     NSString *logFilePath = [documentsDirectory stringByAppendingPathComponent:logFileName];
-    NSData *logData = [NSKeyedArchiver archivedDataWithRootObject:radarLog requiringSecureCoding:NO error:nil];
-    RadarFileSystem *fileHandler = [[RadarFileSystem alloc] init]; 
+    NSData *logData = [NSJSONSerialization dataWithJSONObject:[radarLog dictionaryValue] options:0 error:nil];
+    RadarFileSystem *fileHandler = [[RadarFileSystem alloc] init];
     [fileHandler writeData:logData toFileAtPath:logFilePath];
 }
 
 - (void)flushLocalLogs {
-    // read logs from file
     RadarFileSystem *fileHandler = [[RadarFileSystem alloc] init]; 
     NSData *fileData = [fileHandler readFileAtPath:self.logFilePath];
     if (fileData) {
-        // Unarchive the data to get the original object
-        RadarLog *retrievedLog = [NSKeyedUnarchiver unarchivedObjectOfClass:[RadarLog class] fromData:fileData error:nil];
+        NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:fileData options:0 error:nil];
+        RadarLog *retrievedLog = [[RadarLog alloc] initWithDictionary:jsonDict];
+        NSLog(@"retrieved log: %@", retrievedLog.message);
+        [fileHandler deleteFileAtPath:self.logFilePath];
         if ([retrievedLog isKindOfClass:[RadarLog class]]) {
             dispatch_async(dispatch_get_main_queue(), ^{
+                
                 [Radar sendLog:retrievedLog.level type:retrievedLog.type message:retrievedLog.message];
 
                 RadarLogLevel logLevel = [RadarSettings logLevel];
@@ -90,9 +91,11 @@
                     [[RadarDelegateHolder sharedInstance] didLogMessage:log];
                 }
             });
-        }
+        } 
     }
    
 }
+
+
 
 @end
