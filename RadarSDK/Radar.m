@@ -1046,7 +1046,7 @@
 + (void) logUserTermination {
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
     [dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
-    NSString *dateString =  [dateFormatter stringFromDate:[NSDate date]];
+    NSString *dateString = [dateFormatter stringFromDate:[NSDate date]];
     NSString *message = [NSString stringWithFormat:@"User terminated app at %@", dateString];
     [[RadarLogger sharedInstance] logWithLevelLocal:RadarLogLevelInfo type:RadarLogTypeAppLifecycleEvent message:message];
 }

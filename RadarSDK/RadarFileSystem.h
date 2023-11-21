@@ -11,7 +11,9 @@
 @interface RadarFileSystem : NSObject
 
 - (NSData *)readFileAtPath:(NSString *)filePath;
+
 - (void)writeData:(NSData *)data toFileAtPath:(NSString *)filePath;
+
 - (void)deleteFileAtPath:(NSString *)filePath;
 
 @end
