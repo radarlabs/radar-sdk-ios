@@ -316,8 +316,15 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                 if (![RadarSettings tripOptions]) {
                     [RadarSettings setPreviousTrackingOptions:[Radar getTrackingOptions]];
                 }
+                // save the ramp up radius to a local int
+                int rampUpRadius = options.rampUpRadius;
                 options = RadarTrackingOptions.rampedUpOptions;
+
+                options.rampUpRadius = rampUpRadius;
+
                 [RadarSettings setTrackingOptions:options];
+                // log the ramp up options
+                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Ramped up with options: %@", [options dictionaryValue]]];
                 [RadarSettings setRampedUp:YES];
             } else if (ramping == RampingOptionRampDown && [RadarSettings rampedUp]) {
                 // if not on trip, set prev options to current tracking options
@@ -597,12 +604,15 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 
 
     if (withinRampUpRadius && ![RadarSettings rampedUp]) {
-        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"rampin up from  up"]];
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Ramping up"]];
         [self updateTracking:self.locationManager.location fromInitialize:NO ramping:RampingOptionRampUp];  
+    } else if (withinRampUpRadius && [RadarSettings rampedUp]) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Already ramped up"]];
     } else if (!withinRampUpRadius && [RadarSettings rampedUp]) {
-        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"ramp up radius is larger than distance from geofence center to current location and ramped, ramp down"]];
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Ramping down"]];
         [self updateTracking:self.locationManager.location fromInitialize:NO ramping:RampingOptionRampDown];
-
+    } else if (!withinRampUpRadius && ![RadarSettings rampedUp]) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Already ramped down"]];
     }
 
     [self removePendingNotificationsWithCompletionHandler: ^{
