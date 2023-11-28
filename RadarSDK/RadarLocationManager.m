@@ -689,10 +689,9 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     NSTimeInterval totalRampedUpTimeOneHour = [[rampedUpTimes objectForKey:@"OneHour"] doubleValue];
     NSTimeInterval totalRampedUpTimeTwelveHours = [[rampedUpTimes objectForKey:@"TwelveHours"] doubleValue];
 
-    // define a bool for whether or not we've exceeded the ramp up time limit (20 minutes for 1 hour and 120 mintues for 12 hours)
+    // bool for whether or not we've exceeded the ramp up time limit (20 minutes for 1 hour or 120 mintues for 12 hours)
     BOOL exceededRampUpTimeLimit = NO;
-    // temporarily use limits of 4 minutes (240 seconds), not 1200 seconds for 1 hour and 6 minutes (360 seconds), not 7200 seconds for 12 hours
-    if (totalRampedUpTimeOneHour > 240 || totalRampedUpTimeTwelveHours > 360) {
+    if (totalRampedUpTimeOneHour > 1200 || totalRampedUpTimeTwelveHours > 7200) {
         exceededRampUpTimeLimit = YES;
     }
 
