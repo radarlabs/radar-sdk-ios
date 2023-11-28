@@ -13,17 +13,6 @@ import RadarSDK
 class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate, CLLocationManagerDelegate, RadarDelegate {
 
     let locationManager = CLLocationManager()
-    
-    func applicationWillResignActive(_ application: UIApplication) {
-        // This method is called when the app is about to move from active to inactive state.
-        // You can log the event here.
-        print("User is about to quit the application.")
-    }
-    
-    func applicationWillTerminate(_ application: UIApplication) {
-        Radar.writeLocalLog("another arb log entry.")
-        print("User is to quit the application.")
-    }
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { (_, _) in }
@@ -33,8 +22,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         self.requestLocationPermissions()
 
         // Replace with a valid test publishable key
-        Radar.writeLocalLog("another arb log entry2.")
-        Radar.initialize(publishableKey: "prj_test_pk_dda829b0b0bc3621b754e42da53271d07b32992f")
+        Radar.initialize(publishableKey: "prj_test_pk_0000000000000000000000000000000000000000")
         Radar.setDelegate(self)
 
         if UIApplication.shared.applicationState != .background {
@@ -46,131 +34,131 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 print("Track once: status = \(Radar.stringForStatus(status)); location = \(String(describing: location)); events = \(String(describing: events)); user = \(String(describing: user))")
             }
         }
-//
-        let options = RadarTrackingOptions.presetEfficient
+
+        let options = RadarTrackingOptions.presetContinuous
         Radar.startTracking(trackingOptions: options)
-//
-//        Radar.getContext { (status, location, context) in
-//            print("Context: status = \(Radar.stringForStatus(status)); location = \(String(describing: location)); context?.geofences = \(String(describing: context?.geofences)); context?.place = \(String(describing: context?.place)); context?.country = \(String(describing: context?.country))")
-//        }
-//
-//        // In the Radar dashboard settings
-//        // (https://radar.com/dashboard/settings), add this to the chain
-//        // metadata: {"mcdonalds":{"orderActive":"true"}}.
-//        Radar.searchPlaces(
-//            radius: 1000,
-//            chains: ["mcdonalds"],
-//            chainMetadata: ["orderActive": "true"],
-//            categories: nil,
-//            groups: nil,
-//            limit: 10
-//        ) { (status, location, places) in
-//            print("Search places: status = \(Radar.stringForStatus(status)); places = \(String(describing: places))")
-//        }
-//
-//        Radar.searchGeofences(
-//            radius: 1000,
-//            tags: ["store"],
-//            metadata: nil,
-//            limit: 10
-//        ) { (status, location, geofences) in
-//            print("Search geofences: status = \(Radar.stringForStatus(status)); geofences = \(String(describing: geofences))")
-//        }
-//
-//        Radar.geocode(address: "20 jay st brooklyn") { (status, addresses) in
-//            print("Geocode: status = \(Radar.stringForStatus(status)); coordinate = \(String(describing: addresses?.first?.coordinate))")
-//        }
-//
-//        Radar.reverseGeocode { (status, addresses) in
-//            print("Reverse geocode: status = \(Radar.stringForStatus(status)); formattedAddress = \(String(describing: addresses?.first?.formattedAddress))")
-//        }
-//
-//        Radar.ipGeocode { (status, address, proxy) in
-//            print("IP geocode: status = \(Radar.stringForStatus(status)); country = \(String(describing: address?.countryCode)); city = \(String(describing: address?.city)); proxy = \(proxy)")
-//        }
-//
-//        let origin = CLLocation(latitude: 40.78382, longitude: -73.97536)
-//        let destination = CLLocation(latitude: 40.70390, longitude: -73.98670)
-//
-//
-//        Radar.autocomplete(
-//            query: "brooklyn",
-//            near: origin,
-//            layers: ["locality"],
-//            limit: 10,
-//            country: "US",
-//            expandUnits:true
-//        ) { (status, addresses) in
-//            print("Autocomplete: status = \(Radar.stringForStatus(status)); formattedAddress = \(String(describing: addresses?.first?.formattedAddress))")
-//
-//            if let address = addresses?.first {
-//                Radar.validateAddress(address: address) { (status, address, verificationStatus) in
-//                    print("Validate address: status = \(Radar.stringForStatus(status)); address = \(String(describing: address)); verificationStatus = \(Radar.stringForVerificationStatus(verificationStatus))")
-//                }
-//            }
-//        }
-//
-//        Radar.autocomplete(
-//            query: "brooklyn",
-//            near: origin,
-//            layers: ["locality"],
-//            limit: 10,
-//            country: "US"
-//        ) { (status, addresses) in
-//            print("Autocomplete: status = \(Radar.stringForStatus(status)); formattedAddress = \(String(describing: addresses?.first?.formattedAddress))")
-//        }
-//
-//        Radar.getDistance(
-//            origin: origin,
-//            destination: destination,
-//            modes: [.foot, .car],
-//            units: .imperial
-//        ) { (status, routes) in
-//            print("Distance: status = \(Radar.stringForStatus(status)); routes.car.distance.value = \(String(describing: routes?.car?.distance.value)); routes.car.distance.text = \(String(describing: routes?.car?.distance.text)); routes.car.duration.value = \(String(describing: routes?.car?.duration.value)); routes.car.duration.text = \(String(describing: routes?.car?.duration.text))")
-//        }
-//
-//        let tripOptions = RadarTripOptions(externalId: "299", destinationGeofenceTag: "store", destinationGeofenceExternalId: "123")
-//        tripOptions.mode = .car
-//        tripOptions.approachingThreshold = 9
-//        Radar.startTrip(options: tripOptions)
-//
-//        var i = 0
-//        Radar.mockTracking(
-//            origin: origin,
-//            destination: destination,
-//            mode: .car,
-//            steps: 3,
-//            interval: 3
-//        ) { (status, location, events, user) in
-//            print("Mock track: status = \(Radar.stringForStatus(status)); location = \(String(describing: location)); events = \(String(describing: events)); user = \(String(describing: user))")
-//
-//            if (i == 2) {
-//                Radar.completeTrip()
-//            }
-//
-//            i += 1
-//        }
-//
-//        let origins = [
-//            CLLocation(latitude: 40.78382, longitude: -73.97536),
-//            CLLocation(latitude: 40.70390, longitude: -73.98670)
-//        ]
-//        let destinations = [
-//            CLLocation(latitude: 40.64189, longitude: -73.78779),
-//            CLLocation(latitude: 35.99801, longitude: -78.94294)
-//        ]
-//
-//        Radar.getMatrix(origins: origins, destinations: destinations, mode: .car, units: .imperial) { (status, matrix) in
-//            print("Matrix: status = \(Radar.stringForStatus(status)); matrix[0][0].duration.text = \(String(describing: matrix?.routeBetween(originIndex: 0, destinationIndex: 0)?.duration.text)); matrix[0][1].duration.text = \(String(describing: matrix?.routeBetween(originIndex: 0, destinationIndex: 1)?.duration.text)); matrix[1][0].duration.text = \(String(describing: matrix?.routeBetween(originIndex: 1, destinationIndex: 0)?.duration.text)); matrix[1][1].duration.text = \(String(describing: matrix?.routeBetween(originIndex: 1, destinationIndex: 1)?.duration.text))")
-//        }
-//
-//        Radar.logConversion(name: "conversion_event", metadata: ["data": "test"]) { (status, event) in
-//            if let conversionEvent = event, conversionEvent.type == .conversion {
-//                print("Conversion name: \(conversionEvent.conversionName!)")
-//            }
-//
-//            print("Log Conversion: status = \(Radar.stringForStatus(status)); event = \(String(describing: event))")
-//        }
+
+        Radar.getContext { (status, location, context) in
+            print("Context: status = \(Radar.stringForStatus(status)); location = \(String(describing: location)); context?.geofences = \(String(describing: context?.geofences)); context?.place = \(String(describing: context?.place)); context?.country = \(String(describing: context?.country))")
+        }
+        
+        // In the Radar dashboard settings
+        // (https://radar.com/dashboard/settings), add this to the chain
+        // metadata: {"mcdonalds":{"orderActive":"true"}}.
+        Radar.searchPlaces(
+            radius: 1000,
+            chains: ["mcdonalds"],
+            chainMetadata: ["orderActive": "true"],
+            categories: nil,
+            groups: nil,
+            limit: 10
+        ) { (status, location, places) in
+            print("Search places: status = \(Radar.stringForStatus(status)); places = \(String(describing: places))")
+        }
+
+        Radar.searchGeofences(
+            radius: 1000,
+            tags: ["store"],
+            metadata: nil,
+            limit: 10
+        ) { (status, location, geofences) in
+            print("Search geofences: status = \(Radar.stringForStatus(status)); geofences = \(String(describing: geofences))")
+        }
+
+        Radar.geocode(address: "20 jay st brooklyn") { (status, addresses) in
+            print("Geocode: status = \(Radar.stringForStatus(status)); coordinate = \(String(describing: addresses?.first?.coordinate))")
+        }
+
+        Radar.reverseGeocode { (status, addresses) in
+            print("Reverse geocode: status = \(Radar.stringForStatus(status)); formattedAddress = \(String(describing: addresses?.first?.formattedAddress))")
+        }
+
+        Radar.ipGeocode { (status, address, proxy) in
+            print("IP geocode: status = \(Radar.stringForStatus(status)); country = \(String(describing: address?.countryCode)); city = \(String(describing: address?.city)); proxy = \(proxy)")
+        }
+
+        let origin = CLLocation(latitude: 40.78382, longitude: -73.97536)
+        let destination = CLLocation(latitude: 40.70390, longitude: -73.98670)
+
+
+        Radar.autocomplete(
+            query: "brooklyn",
+            near: origin,
+            layers: ["locality"],
+            limit: 10,
+            country: "US",
+            expandUnits:true
+        ) { (status, addresses) in
+            print("Autocomplete: status = \(Radar.stringForStatus(status)); formattedAddress = \(String(describing: addresses?.first?.formattedAddress))")
+
+            if let address = addresses?.first {
+                Radar.validateAddress(address: address) { (status, address, verificationStatus) in
+                    print("Validate address: status = \(Radar.stringForStatus(status)); address = \(String(describing: address)); verificationStatus = \(Radar.stringForVerificationStatus(verificationStatus))")
+                }
+            }
+        }
+
+        Radar.autocomplete(
+            query: "brooklyn",
+            near: origin,
+            layers: ["locality"],
+            limit: 10,
+            country: "US"
+        ) { (status, addresses) in
+            print("Autocomplete: status = \(Radar.stringForStatus(status)); formattedAddress = \(String(describing: addresses?.first?.formattedAddress))")
+        }
+
+        Radar.getDistance(
+            origin: origin,
+            destination: destination,
+            modes: [.foot, .car],
+            units: .imperial
+        ) { (status, routes) in
+            print("Distance: status = \(Radar.stringForStatus(status)); routes.car.distance.value = \(String(describing: routes?.car?.distance.value)); routes.car.distance.text = \(String(describing: routes?.car?.distance.text)); routes.car.duration.value = \(String(describing: routes?.car?.duration.value)); routes.car.duration.text = \(String(describing: routes?.car?.duration.text))")
+        }
+
+        let tripOptions = RadarTripOptions(externalId: "299", destinationGeofenceTag: "store", destinationGeofenceExternalId: "123")
+        tripOptions.mode = .car
+        tripOptions.approachingThreshold = 9
+        Radar.startTrip(options: tripOptions)
+
+        var i = 0
+        Radar.mockTracking(
+            origin: origin,
+            destination: destination,
+            mode: .car,
+            steps: 3,
+            interval: 3
+        ) { (status, location, events, user) in
+            print("Mock track: status = \(Radar.stringForStatus(status)); location = \(String(describing: location)); events = \(String(describing: events)); user = \(String(describing: user))")
+
+            if (i == 2) {
+                Radar.completeTrip()
+            }
+
+            i += 1
+        }
+
+        let origins = [
+            CLLocation(latitude: 40.78382, longitude: -73.97536),
+            CLLocation(latitude: 40.70390, longitude: -73.98670)
+        ]
+        let destinations = [
+            CLLocation(latitude: 40.64189, longitude: -73.78779),
+            CLLocation(latitude: 35.99801, longitude: -78.94294)
+        ]
+
+        Radar.getMatrix(origins: origins, destinations: destinations, mode: .car, units: .imperial) { (status, matrix) in
+            print("Matrix: status = \(Radar.stringForStatus(status)); matrix[0][0].duration.text = \(String(describing: matrix?.routeBetween(originIndex: 0, destinationIndex: 0)?.duration.text)); matrix[0][1].duration.text = \(String(describing: matrix?.routeBetween(originIndex: 0, destinationIndex: 1)?.duration.text)); matrix[1][0].duration.text = \(String(describing: matrix?.routeBetween(originIndex: 1, destinationIndex: 0)?.duration.text)); matrix[1][1].duration.text = \(String(describing: matrix?.routeBetween(originIndex: 1, destinationIndex: 1)?.duration.text))")
+        }
+
+        Radar.logConversion(name: "conversion_event", metadata: ["data": "test"]) { (status, event) in
+            if let conversionEvent = event, conversionEvent.type == .conversion {
+                print("Conversion name: \(conversionEvent.conversionName!)")
+            }
+
+            print("Log Conversion: status = \(Radar.stringForStatus(status)); event = \(String(describing: event))")
+        }
 
         return true
     }
