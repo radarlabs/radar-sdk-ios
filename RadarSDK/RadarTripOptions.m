@@ -17,6 +17,7 @@ static NSString *const kDestinationGeofenceExternalId = @"destinationGeofenceExt
 static NSString *const kMode = @"mode";
 static NSString *const kScheduledArrivalAt = @"scheduledArrivalAt";
 static NSString *const kApproachingThreshold = @"approachingThreshold";
+static NSString *const kRampUpRadius = @"rampUpRadius";
 
 - (instancetype)initWithExternalId:(NSString *_Nonnull)externalId
             destinationGeofenceTag:(NSString *_Nullable)destinationGeofenceTag
@@ -79,6 +80,8 @@ static NSString *const kApproachingThreshold = @"approachingThreshold";
         options.mode = RadarRouteModeCar;
     }
     options.approachingThreshold = [dict[kApproachingThreshold] intValue];
+    options.rampUpRadius = [dict[kRampUpRadius] intValue];
+
     return options;
 }
 
@@ -92,6 +95,9 @@ static NSString *const kApproachingThreshold = @"approachingThreshold";
     dict[kScheduledArrivalAt] = self.scheduledArrivalAt;
     if (self.approachingThreshold && self.approachingThreshold > 0) {
         dict[kApproachingThreshold] = @(self.approachingThreshold);
+    }
+    if (self.rampUpRadius && self.rampUpRadius > 0) {
+        dict[kRampUpRadius] = @(self.rampUpRadius);
     }
     return dict;
 }
@@ -120,7 +126,8 @@ static NSString *const kApproachingThreshold = @"approachingThreshold";
              [self.destinationGeofenceExternalId isEqualToString:options.destinationGeofenceExternalId])) &&
            ((!self.scheduledArrivalAt && !options.scheduledArrivalAt) ||
             (self.scheduledArrivalAt != nil && options.scheduledArrivalAt != nil && [self.scheduledArrivalAt isEqualToDate:options.scheduledArrivalAt])) &&
-           self.mode == options.mode && ((!self.approachingThreshold && !options.approachingThreshold) || (self.approachingThreshold == options.approachingThreshold));
+           self.mode == options.mode && ((!self.approachingThreshold && !options.approachingThreshold) || (self.approachingThreshold == options.approachingThreshold)) &&
+           ((!self.rampUpRadius && !options.rampUpRadius) || (self.rampUpRadius == options.rampUpRadius));
 }
 
 @end

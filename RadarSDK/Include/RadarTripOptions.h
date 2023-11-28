@@ -53,6 +53,11 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nullable, nonatomic, copy) NSDate *scheduledArrivalAt;
 
 /**
+ Optional radius in meters at which to begin ramping up tracking. Takes precedence over both geofence specific and tracking option ramp-up radii.
+ */
+@property (nonatomic, assign) int rampUpRadius;
+
+/**
  For trips with a destination, the travel mode.
  */
 @property (nonatomic, assign) RadarRouteMode mode;
