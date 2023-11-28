@@ -618,10 +618,10 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
             }
 
             // the most specific way of specifying a ramp up radius is in the trip options
-            // RadarTripOptions *tripOptions = [RadarSettings tripOptions];
-            // if (tripOptions && tripOptions.destinationGeofenceTag == geofence.tag && tripOptions.destinationGeofenceExternalId == geofence.externalId && tripOptions.rampUpRadius) {
-            //     rampUpRadius = tripOptions.rampUpRadius;
-            // }
+            RadarTripOptions *tripOptions = [RadarSettings tripOptions];
+            if (tripOptions && tripOptions.destinationGeofenceTag == geofence.tag && tripOptions.destinationGeofenceExternalId == geofence.externalId && tripOptions.rampUpRadius) {
+                rampUpRadius = tripOptions.rampUpRadius;
+            }
 
 
             if (rampUpRadius) {
