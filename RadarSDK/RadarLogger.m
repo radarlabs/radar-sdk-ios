@@ -116,7 +116,6 @@
         }
 
         for (RadarLog *retrievedLog in existingLogs) {
-            NSLog(@"retrieved log: %@", retrievedLog.message);
 
             dispatch_async(dispatch_get_main_queue(), ^{
                 [Radar sendLog:retrievedLog.level type:retrievedLog.type message:retrievedLog.message];
