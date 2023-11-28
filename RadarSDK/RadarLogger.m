@@ -56,11 +56,11 @@
     });
 }
 
-- (void) logWithLevelLocal:(RadarLogLevel)level message:(NSString *)message {
+- (void) logWithLevelToFileSystem:(RadarLogLevel)level message:(NSString *)message {
     [self logWithLevelLocal:level type:RadarLogTypeNone message:message];
 }
 
-- (void) logWithLevelLocal:(RadarLogLevel)level type:(RadarLogType)type message:(NSString *)message {
+- (void) logWithLevelToFileSystem:(RadarLogLevel)level type:(RadarLogType)type message:(NSString *)message {
     RadarLog *radarLog = [[RadarLog alloc] initWithLevel:level type:type message:message];
 
     NSData *fileData = [self.fileHandler readFileAtPath:self.logFilePath];

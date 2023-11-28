@@ -1039,7 +1039,7 @@
 }
 
 + (void)writeLocalLog:(NSString *)message {
-    [[RadarLogger sharedInstance] logWithLevelLocal:RadarLogLevelInfo type:RadarLogTypeNone message:message];
+    [[RadarLogger sharedInstance] logWithLevelToFileSystem:RadarLogLevelInfo type:RadarLogTypeNone message:message];
 
 }
 
@@ -1047,8 +1047,8 @@
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
     [dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
     NSString *dateString = [dateFormatter stringFromDate:[NSDate date]];
-    NSString *message = [NSString stringWithFormat:@"User terminated app at %@", dateString];
-    [[RadarLogger sharedInstance] logWithLevelLocal:RadarLogLevelInfo type:RadarLogTypeNone message:message];
+    NSString *message = [NSString stringWithFormat:@"App terminated at %@", dateString];
+    [[RadarLogger sharedInstance] logWithLevelToFileSystem:RadarLogLevelInfo type:RadarLogTypeNone message:message];
 }
 
 #pragma mark - Helpers

@@ -1014,7 +1014,7 @@ logConversionWithNotification
  Log user terminating application.
 
  */
-+ (void)logUserTermination;
++ (void)logTermination;
 
 
 #pragma mark - Helpers
