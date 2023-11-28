@@ -33,6 +33,10 @@
         NSString *logFileName = @"RadarLogs.txt";
         self.logFilePath = [documentsDirectory stringByAppendingPathComponent:logFileName];
         self.fileHandler = [[RadarFileSystem alloc] init];
+        self.dateFormatter = [[NSDateFormatter alloc] init];
+        [self.dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
+        self.device = [UIDevice currentDevice];
+        self.device.batteryMonitoringEnabled = YES;
     }
     return self;
 }
@@ -57,10 +61,28 @@
 }
 
 - (void) logWithLevelToFileSystem:(RadarLogLevel)level message:(NSString *)message {
-    [self logWithLevelLocal:level type:RadarLogTypeNone message:message];
+   [self logWithLevelToFileSystem:level type:RadarLogTypeNone message:message includeDate:NO includeBattery:NO];
 }
 
-- (void) logWithLevelToFileSystem:(RadarLogLevel)level type:(RadarLogType)type message:(NSString *)message {
+- (void)logWithLevelToFileSystem:(RadarLogLevel)level message:(NSString *)message includeDate:(BOOL)includeDate includeBattery:(BOOL)includeBattery{
+    [self logWithLevelToFileSystem:level type:RadarLogTypeNone message:message includeDate:includeDate includeBattery:includeBattery];
+}
+
+- (void)logWithLevelToFileSystem:(RadarLogLevel)level type:(RadarLogType)type message:(NSString *)message{
+    [self logWithLevelToFileSystem:level type:type message:message includeDate:NO includeBattery:NO];
+}
+
+- (void) logWithLevelToFileSystem:(RadarLogLevel)level type:(RadarLogType)type message:(NSString *)message includeDate:(BOOL)includeDate includeBattery:(BOOL)includeBattery{
+    NSString *dateString = [self.dateFormatter stringFromDate:[NSDate date]];
+    float batteryLevel = [self.device batteryLevel];
+    //append date and battery level to message if requested
+    if (includeDate && includeBattery) {
+        message = [NSString stringWithFormat:@"%@ |  at %@ | with %2.f%% battery", message, dateString, batteryLevel*100];
+    } else if (includeDate) {
+        message = [NSString stringWithFormat:@"%@ | at %@", message, dateString];
+    } else if (includeBattery) {
+        message = [NSString stringWithFormat:@"%@ | with %2.f%% battery", message, batteryLevel*100];
+    }
     RadarLog *radarLog = [[RadarLog alloc] initWithLevel:level type:type message:message];
 
     NSData *fileData = [self.fileHandler readFileAtPath:self.logFilePath];

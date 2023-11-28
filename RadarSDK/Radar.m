@@ -1043,13 +1043,18 @@
 
 }
 
-+ (void) logUserTermination {
-    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-    [dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
-    NSString *dateString = [dateFormatter stringFromDate:[NSDate date]];
-    NSString *message = [NSString stringWithFormat:@"App terminated at %@", dateString];
-    [[RadarLogger sharedInstance] logWithLevelToFileSystem:RadarLogLevelInfo type:RadarLogTypeNone message:message];
++ (void) logTermination {
+    [[RadarLogger sharedInstance] logWithLevelToFileSystem:RadarLogLevelInfo type:RadarLogTypeNone message:@"App terminated" includeDate:YES includeBattery:YES];
 }
+
++ (void) logEnteringBackground {
+    [[RadarLogger sharedInstance] logWithLevelToFileSystem:RadarLogLevelInfo type:RadarLogTypeNone message:@"App entering background" includeDate:YES includeBattery:YES];
+}
+
++ (void) logResignActive {
+    [[RadarLogger sharedInstance] logWithLevelToFileSystem:RadarLogLevelInfo type:RadarLogTypeNone message:@"App resigning active" includeDate:YES includeBattery:YES];
+}
+
 
 #pragma mark - Helpers
 

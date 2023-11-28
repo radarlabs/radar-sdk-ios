@@ -16,12 +16,16 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (strong, nonatomic) NSString *logFilePath;
 @property (strong, nonatomic) RadarFileSystem *fileHandler;
+@property (strong, nonatomic) NSDateFormatter *dateFormatter;
+@property (strong, nonatomic) UIDevice *device;
 
 + (instancetype)sharedInstance;
 - (void)logWithLevel:(RadarLogLevel)level message:(NSString *)message;
 - (void)logWithLevel:(RadarLogLevel)level type:(RadarLogType)type message:(NSString *)message;
 - (void)logWithLevelToFileSystem:(RadarLogLevel)level message:(NSString *)message;
+- (void)logWithLevelToFileSystem:(RadarLogLevel)level message:(NSString *)message includeDate:(BOOL)includeDate includeBattery:(BOOL)includeBattery;
 - (void)logWithLevelToFileSystem:(RadarLogLevel)level type:(RadarLogType)type message:(NSString *)message;
+- (void)logWithLevelToFileSystem:(RadarLogLevel)level type:(RadarLogType)type message:(NSString *)message includeDate:(BOOL)includeDate includeBattery:(BOOL)includeBattery;
 - (void)flushLocalLogs;
 @end
 

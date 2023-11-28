@@ -1011,10 +1011,23 @@ logConversionWithNotification
 + (void)writeLocalLog:(NSString *_Nonnull)message;
 
 /**
- Log user terminating application.
+ Log application termination.
 
  */
 + (void)logTermination;
+
+/**
+ Log application entering background.
+
+ */
++ (void)logEnteringBackground;
+
+/**
+ Log application resigning active.
+
+ */
++ (void)logResignActive;
+
 
 
 #pragma mark - Helpers
