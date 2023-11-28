@@ -23,6 +23,16 @@
 #import "RadarReplayBuffer.h"
 #import "RadarTrackingOptions.h"
 
+
+@interface StateChange : NSObject
+@property (nonatomic, strong) NSDate *timestamp;
+@property (nonatomic, assign) BOOL rampedUp;
+@end
+
+@implementation StateChange
+@end
+
+
 @interface RadarLocationManager ()
 
 /**
@@ -52,7 +62,13 @@
  */
 @property (nonnull, strong, nonatomic) NSMutableArray<RadarLocationCompletionHandler> *completionHandlers;
 
+/**
+ State changes for ramping up and down.
+ */
+@property (nonnull, strong, nonatomic) NSMutableArray<StateChange *> *stateChanges;
+
 @end
+
 
 @implementation RadarLocationManager
 
@@ -326,6 +342,10 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                 // log the ramp up options
                 [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Ramped up with options: %@", [options dictionaryValue]]];
                 [RadarSettings setRampedUp:YES];
+
+                [self changeTrackingState:YES];
+
+                
             } else if (ramping == RampingOptionRampDown && [RadarSettings rampedUp]) {
                 // if not on trip, set prev options to current tracking options
                 // and regardless, set current tracking options to ramp up options
@@ -339,6 +359,8 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                 }
                 [RadarSettings setTrackingOptions:options];
                 [RadarSettings setRampedUp:NO];
+
+                [self changeTrackingState:NO];
             }
 
             self.locationManager.allowsBackgroundLocationUpdates =
@@ -443,6 +465,68 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     [self updateTrackingFromInitialize];
 
 }
+
+
+// Call this method when the tracking state changes
+- (void)changeTrackingState:(BOOL)rampedUp {
+    StateChange *change = [[StateChange alloc] init];
+    change.timestamp = [NSDate date]; // Current timestamp
+    change.rampedUp = rampedUp;
+    [self.stateChanges addObject:change];
+}
+
+- (NSDictionary *)calculateRampedUpTimesAndCleanup {
+    NSDate *now = [NSDate date];
+    NSDate *oneHourAgo = [now dateByAddingTimeInterval:-3600]; // 1 hour ago
+    NSDate *twelveHoursAgo = [now dateByAddingTimeInterval:-43200]; // 12 hours ago
+    
+    NSTimeInterval totalRampedUpTimeOneHour = 0;
+    NSTimeInterval totalRampedUpTimeTwelveHours = 0;
+    NSDate *lastRampedUpStartOneHour = nil;
+    NSDate *lastRampedUpStartTwelveHours = nil;
+    NSMutableArray *validChanges = [NSMutableArray array]; // Array to store valid entries
+
+    for (StateChange *change in self.stateChanges) {
+        if ([change.timestamp compare:twelveHoursAgo] == NSOrderedAscending) {
+            continue; // Skip and effectively remove changes older than twelve hours
+        }
+
+        // Adding valid entries to the new array
+        [validChanges addObject:change];
+
+        // Calculation for the past 12 hours
+        if (change.rampedUp) {
+            lastRampedUpStartTwelveHours = change.timestamp;
+        } else if (lastRampedUpStartTwelveHours) {
+            totalRampedUpTimeTwelveHours += [change.timestamp timeIntervalSinceDate:lastRampedUpStartTwelveHours];
+            lastRampedUpStartTwelveHours = nil;
+        }
+
+        // Additional check for the past hour
+        if ([change.timestamp compare:oneHourAgo] != NSOrderedAscending) {
+            if (change.rampedUp) {
+                lastRampedUpStartOneHour = change.timestamp;
+            } else if (lastRampedUpStartOneHour) {
+                totalRampedUpTimeOneHour += [change.timestamp timeIntervalSinceDate:lastRampedUpStartOneHour];
+                lastRampedUpStartOneHour = nil;
+            }
+        }
+    }
+
+    // Final adjustments if the last state was ramped up and hasn't changed since
+    if (lastRampedUpStartTwelveHours) {
+        totalRampedUpTimeTwelveHours += [now timeIntervalSinceDate:lastRampedUpStartTwelveHours];
+    }
+    if (lastRampedUpStartOneHour) {
+        totalRampedUpTimeOneHour += [now timeIntervalSinceDate:lastRampedUpStartOneHour];
+    }
+
+    // Update the stateChanges array with the valid changes
+    self.stateChanges = validChanges;
+
+    return @{@"OneHour": @(totalRampedUpTimeOneHour), @"TwelveHours": @(totalRampedUpTimeTwelveHours)};
+}
+
 
 - (void)restartPreviousTrackingOptions {
     RadarTrackingOptions *previousTrackingOptions = [RadarSettings previousTrackingOptions];
@@ -600,14 +684,28 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         }
     }
 
-    // if  withinRampUpRadius ando 
+    // call calculateRampedUpTimesAndCleanup to get the total ramped up time in the past hour and 12 hours
+    NSDictionary *rampedUpTimes = [self calculateRampedUpTimesAndCleanup];
+    NSTimeInterval totalRampedUpTimeOneHour = [[rampedUpTimes objectForKey:@"OneHour"] doubleValue];
+    NSTimeInterval totalRampedUpTimeTwelveHours = [[rampedUpTimes objectForKey:@"TwelveHours"] doubleValue];
 
+    // define a bool for whether or not we've exceeded the ramp up time limit (20 minutes for 1 hour and 120 mintues for 12 hours)
+    BOOL exceededRampUpTimeLimit = NO;
+    // temporarily use limits of 4 minutes (240 seconds), not 1200 seconds for 1 hour and 6 minutes (360 seconds), not 7200 seconds for 12 hours
+    if (totalRampedUpTimeOneHour > 240 || totalRampedUpTimeTwelveHours > 360) {
+        exceededRampUpTimeLimit = YES;
+    }
 
-    if (withinRampUpRadius && ![RadarSettings rampedUp]) {
+    if (withinRampUpRadius && ![RadarSettings rampedUp] && !exceededRampUpTimeLimit) {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Ramping up"]];
         [self updateTracking:self.locationManager.location fromInitialize:NO ramping:RampingOptionRampUp];  
-    } else if (withinRampUpRadius && [RadarSettings rampedUp]) {
+    } else if (withinRampUpRadius && ![RadarSettings rampedUp] && exceededRampUpTimeLimit) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Exceeded ramp up time limit, not ramping up"]];
+    } else if (withinRampUpRadius && [RadarSettings rampedUp] && !exceededRampUpTimeLimit) {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Already ramped up"]];
+    } else if (withinRampUpRadius && [RadarSettings rampedUp] && exceededRampUpTimeLimit) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Exceeded ramp up time limit, ramping down"]];
+        [self updateTracking:self.locationManager.location fromInitialize:NO ramping:RampingOptionRampDown];
     } else if (!withinRampUpRadius && [RadarSettings rampedUp]) {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Ramping down"]];
         [self updateTracking:self.locationManager.location fromInitialize:NO ramping:RampingOptionRampDown];
