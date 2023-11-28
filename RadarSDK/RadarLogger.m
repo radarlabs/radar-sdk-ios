@@ -75,7 +75,6 @@
 - (void) logWithLevelToFileSystem:(RadarLogLevel)level type:(RadarLogType)type message:(NSString *)message includeDate:(BOOL)includeDate includeBattery:(BOOL)includeBattery{
     NSString *dateString = [self.dateFormatter stringFromDate:[NSDate date]];
     float batteryLevel = [self.device batteryLevel];
-    //append date and battery level to message if requested
     if (includeDate && includeBattery) {
         message = [NSString stringWithFormat:@"%@ |  at %@ | with %2.f%% battery", message, dateString, batteryLevel*100];
     } else if (includeDate) {
