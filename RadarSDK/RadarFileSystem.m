@@ -11,6 +11,26 @@
 
 @implementation RadarFileSystem
 
+// //init temp file path
+// - (instancetype)init {
+//     self = [super init];
+//     if (self) {
+//         NSString *documentsDirectory = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES).firstObject;
+//         NSString *logFileName = @"RadarTempLogs.txt";
+//         self.tempFilePath = [documentsDirectory stringByAppendingPathComponent:logFileName];
+//     }
+//     return self;
+// }
+
+// + (instancetype)sharedInstance {
+//     static dispatch_once_t once;
+//     static id sharedInstance;
+//     dispatch_once(&once, ^{
+//         sharedInstance = [self new];
+//     });
+//     return sharedInstance;
+// }
+
 - (NSData *)readFileAtPath:(NSString *)filePath {
     __block NSData *fileData = nil;
 
@@ -23,11 +43,14 @@
 }
 
 - (void)writeData:(NSData *)data toFileAtPath:(NSString *)filePath {
-    NSFileCoordinator *fileCoordinator = [[NSFileCoordinator alloc] init];
+
+     NSFileCoordinator *fileCoordinator = [[NSFileCoordinator alloc] init];
     [fileCoordinator coordinateWritingItemAtURL:[NSURL fileURLWithPath:filePath] options:NSFileCoordinatorWritingForReplacing error:nil byAccessor:^(NSURL *newURL) {
-        [data writeToURL:newURL atomically:YES];
+        [data writeToURL:newURL options:NSDataWritingAtomic error:nil];
     }];
 }
+
+
 
 - (void)deleteFileAtPath:(NSString *)filePath {
     NSFileCoordinator *fileCoordinator = [[NSFileCoordinator alloc] init];

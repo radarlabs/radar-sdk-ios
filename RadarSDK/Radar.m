@@ -44,7 +44,10 @@
 + (void)initializeWithPublishableKey:(NSString *)publishableKey {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"initialize()"];
     
-    [[RadarLogger sharedInstance] flushLocalLogs];
+    [self flushLogs];
+    
+    [[RadarLogBuffer sharedInstance] clear];
+
 
     [[NSNotificationCenter defaultCenter] addObserver:[self sharedInstance]
                                              selector:@selector(applicationWillEnterForeground)
@@ -1044,10 +1047,12 @@
 }
 
 + (void) logTermination {
+    NSLog(@"logTermination");
     [[RadarLogger sharedInstance] logWithLevelToFileSystem:RadarLogLevelInfo type:RadarLogTypeNone message:@"App terminated" includeDate:YES includeBattery:YES];
 }
 
 + (void) logEnteringBackground {
+    NSLog(@"logEnteringBackground");
     [[RadarLogger sharedInstance] logWithLevelToFileSystem:RadarLogLevelInfo type:RadarLogTypeNone message:@"App entering background" includeDate:YES includeBattery:YES];
 }
 
@@ -1277,11 +1282,17 @@
     }
 
     NSArray<RadarLog *> *flushableLogs = [[RadarLogBuffer sharedInstance] flushableLogs];
+    
 
     NSUInteger pendingLogCount = [flushableLogs count];
     if (pendingLogCount == 0) {
         return;
     }
+    NSLog(@"Syncing %lu logs", (unsigned long)pendingLogCount);
+    //print logs to console
+    // for (RadarLog *log in flushableLogs) {
+    //     NSLog(@"log is %@", log.message);
+    // }
 
     // remove logs from buffer to handle multiple flushLogs calls
     [[RadarLogBuffer sharedInstance] removeLogsFromBuffer:pendingLogCount];
@@ -1289,10 +1300,13 @@
     RadarSyncLogsAPICompletionHandler onComplete = ^(RadarStatus status) {
         // if an error occurs in syncing, add the logs back to the buffer
         if (status != RadarStatusSuccess) {
+            NSLog(@"Error syncing logs: %@", [Radar stringForStatus:status]);
             [[RadarLogBuffer sharedInstance] addLogsToBuffer:flushableLogs];
+        }else{
+            NSLog(@"Successfully synced %lu logs", (unsigned long)pendingLogCount);
         }
     };
-
+    
     [[RadarAPIClient sharedInstance] syncLogs:flushableLogs
                             completionHandler:^(RadarStatus status) {
                                 if (onComplete) {

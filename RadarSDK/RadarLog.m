@@ -110,7 +110,7 @@
         _level = [RadarLog logLevelForString:dictionary[@"level"]];
         _type = [RadarLog logTypeForString:dictionary[@"type"]];
         _message = dictionary[@"message"];
-        _createdAt = dictionary[@"createdAt"];
+        _createdAt = [RadarUtils.isoDateFormatter dateFromString:dictionary[@"createdAt"]];
     }
     return self;
 }

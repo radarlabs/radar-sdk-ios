@@ -8,18 +8,21 @@
 #import <Foundation/Foundation.h>
 
 #import "RadarLog.h"
+#import "RadarFileSystem.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface RadarLogBuffer : NSObject
 
 @property (assign, nonatomic, readonly) NSArray<RadarLog *> *flushableLogs;
+@property (strong, nonatomic) NSString *logFilePath;
+@property (strong, nonatomic) RadarFileSystem *fileHandler;
 
 + (instancetype)sharedInstance;
 
 - (void)write:(RadarLogLevel)level type:(RadarLogType)type message:(NSString *)message;
 
-- (void)purgeOldestLogs;
+- (void)clear;
 
 - (void)removeLogsFromBuffer:(NSUInteger)numLogs;
 

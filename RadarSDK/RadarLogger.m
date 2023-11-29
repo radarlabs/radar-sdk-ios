@@ -82,26 +82,10 @@
     } else if (includeBattery) {
         message = [NSString stringWithFormat:@"%@ | with %2.f%% battery", message, batteryLevel*100];
     }
-    RadarLog *radarLog = [[RadarLog alloc] initWithLevel:level type:type message:message];
 
-    NSData *fileData = [self.fileHandler readFileAtPath:self.logFilePath];
-    NSMutableArray<RadarLog *> *existingLogs = [NSMutableArray array];
-    if (fileData) {
-        NSArray *jsonArray = [NSJSONSerialization JSONObjectWithData:fileData options:0 error:nil];
-        for (NSDictionary *jsonDict in jsonArray) {
-            RadarLog *existingLog = [[RadarLog alloc] initWithDictionary:jsonDict];
-            [existingLogs addObject:existingLog];
-        }
-    }
-    [existingLogs addObject:radarLog];
+    [self logWithLevel:level type:type message:message];
 
-    NSMutableArray *updatedLogsArray = [NSMutableArray array];
-    for (RadarLog *log in existingLogs) {
-        [updatedLogsArray addObject:[log dictionaryValue]];
-    }
-
-    NSData *updatedLogData = [NSJSONSerialization dataWithJSONObject:updatedLogsArray options:0 error:nil];
-    [self.fileHandler writeData:updatedLogData toFileAtPath:self.logFilePath];
+    
 }
 
 - (void)flushLocalLogs {
