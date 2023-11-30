@@ -17,10 +17,15 @@ NS_ASSUME_NONNULL_BEGIN
 @property (assign, nonatomic, readonly) NSArray<RadarLog *> *flushableLogs;
 @property (strong, nonatomic) NSString *logFilePath;
 @property (strong, nonatomic) RadarFileSystem *fileHandler;
+@property (nonatomic, strong) NSTimer *timer;
 
 + (instancetype)sharedInstance;
 
 - (void)write:(RadarLogLevel)level type:(RadarLogType)type message:(NSString *)message;
+
+- (void)append:(RadarLogLevel)level type:(RadarLogType)type message:(NSString *)message;
+
+- (void)flushToPersistentStorage;
 
 - (void)clear;
 

@@ -1047,13 +1047,17 @@
 }
 
 + (void) logTermination {
+    
+    //[[RadarLogger sharedInstance] logWithLevelToFileSystem:RadarLogLevelInfo type:RadarLogTypeNone message:@"App terminated" includeDate:YES includeBattery:YES];
+    [[RadarLogBuffer sharedInstance] append:RadarLogLevelInfo type:RadarLogTypeNone message:@"App terminated" ];
     NSLog(@"logTermination");
-    [[RadarLogger sharedInstance] logWithLevelToFileSystem:RadarLogLevelInfo type:RadarLogTypeNone message:@"App terminated" includeDate:YES includeBattery:YES];
 }
 
 + (void) logEnteringBackground {
     NSLog(@"logEnteringBackground");
-    [[RadarLogger sharedInstance] logWithLevelToFileSystem:RadarLogLevelInfo type:RadarLogTypeNone message:@"App entering background" includeDate:YES includeBattery:YES];
+    //[[RadarLogger sharedInstance] logWithLevelToFileSystem:RadarLogLevelInfo type:RadarLogTypeNone message:@"App entering background" includeDate:YES includeBattery:YES];
+    [[RadarLogBuffer sharedInstance] append:RadarLogLevelInfo type:RadarLogTypeNone message:@"App backgrounded" ]; 
+    [[RadarLogBuffer sharedInstance] flushToPersistentStorage ];
 }
 
 + (void) logResignActive {
@@ -1290,9 +1294,13 @@
     }
     NSLog(@"Syncing %lu logs", (unsigned long)pendingLogCount);
     //print logs to console
-    // for (RadarLog *log in flushableLogs) {
-    //     NSLog(@"log is %@", log.message);
-    // }
+    for (RadarLog *log in flushableLogs) {
+        //print log fields to console
+
+        NSLog(@"log is %@", log.message);
+    }
+
+
 
     // remove logs from buffer to handle multiple flushLogs calls
     [[RadarLogBuffer sharedInstance] removeLogsFromBuffer:pendingLogCount];
@@ -1307,6 +1315,10 @@
         }
     };
     
+    //WHY DO WE NEED TO DO THIS? THERE IS PROB A BUG
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"message != nil"];
+    flushableLogs = [flushableLogs filteredArrayUsingPredicate:predicate];
+
     [[RadarAPIClient sharedInstance] syncLogs:flushableLogs
                             completionHandler:^(RadarStatus status) {
                                 if (onComplete) {

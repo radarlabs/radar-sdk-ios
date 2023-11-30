@@ -1407,7 +1407,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     XCTAssertNotEqualObjects(options, @"foo");
 }
 
-- (void)testWriteAndRead {
+- (void)test_RadarFileSystem_WriteAndRead {
     NSData *originalData = [@"Test data" dataUsingEncoding:NSUTF8StringEncoding];
     [self.fileSystem writeData:originalData toFileAtPath:self.testFilePath];
     NSData *originalData2 = [@"Newer Test data" dataUsingEncoding:NSUTF8StringEncoding];
@@ -1416,7 +1416,18 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     XCTAssertEqualObjects(originalData2, readData, @"Data read from file should be equal to original data");
 }
 
-- (void)testDeleteFile {
+- (void)test_RadarFileSystem_Append {
+    NSData *originalData = [@"Test data" dataUsingEncoding:NSUTF8StringEncoding];
+    [self.fileSystem writeData:originalData toFileAtPath:self.testFilePath];
+    NSData *appendData = [@"Newer Test data" dataUsingEncoding:NSUTF8StringEncoding];
+    [self.fileSystem appendData:appendData toFileAtPath:self.testFilePath];
+    NSData *readData = [self.fileSystem readFileAtPath:self.testFilePath];
+    NSString *readString = [[NSString alloc] initWithData:readData encoding:NSUTF8StringEncoding];
+    NSString *expectedString = @"Test dataNewer Test data";
+    XCTAssertEqualObjects(readString, expectedString, @"Data read from file should be equal to original data");
+}
+
+- (void)test_RadarFileSystem_DeleteFile {
     NSData *originalData = [@"Test data" dataUsingEncoding:NSUTF8StringEncoding];
     [self.fileSystem writeData:originalData toFileAtPath:self.testFilePath];
     [self.fileSystem deleteFileAtPath:self.testFilePath];
@@ -1428,16 +1439,23 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     RadarLog *log = [[RadarLog alloc] initWithLevel:RadarLogLevelDebug type:RadarLogTypeNone message:@"Test message"];
     [self.logBuffer write:RadarLogLevelDebug type:RadarLogTypeNone message:@"Test message 1"];
     [self.logBuffer write:RadarLogLevelDebug type:RadarLogTypeNone message:@"Test message 2"]; 
+    [self.logBuffer flushToPersistentStorage];
     NSArray<RadarLog *> *logs = [self.logBuffer flushableLogs];
     XCTAssertEqual(logs.count, 2);
     XCTAssertEqualObjects(logs.firstObject.message, @"Test message 1");
     XCTAssertEqualObjects(logs.lastObject.message, @"Test message 2");
-}  
+    [self.logBuffer write:RadarLogLevelDebug type:RadarLogTypeNone message:@"Test message 3"];
+    NSArray<RadarLog *> *newLogs = [self.logBuffer flushableLogs];
+    XCTAssertEqual(newLogs.count, 3);
+    XCTAssertEqualObjects(newLogs.firstObject.message, @"Test message 1");
+    XCTAssertEqualObjects(newLogs.lastObject.message, @"Test message 3");
+}
 
 - (void)testRadarLogBufferRemoveLogsFromBuffer {
     RadarLog *log = [[RadarLog alloc] initWithLevel:RadarLogLevelDebug type:RadarLogTypeNone message:@"Test message"];
     [self.logBuffer write:RadarLogLevelDebug type:RadarLogTypeNone message:@"Test message 1"];
-    [self.logBuffer write:RadarLogLevelDebug type:RadarLogTypeNone message:@"Test message 2"]; 
+    [self.logBuffer write:RadarLogLevelDebug type:RadarLogTypeNone message:@"Test message 2"];
+    [self.logBuffer flushToPersistentStorage];
     [self.logBuffer removeLogsFromBuffer:2];
     NSArray<RadarLog *> *logs = [self.logBuffer flushableLogs];
     XCTAssertEqual(logs.count, 0);
@@ -1447,11 +1465,22 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     RadarLog *log1 = [[RadarLog alloc] initWithLevel:RadarLogLevelDebug type:RadarLogTypeNone message:@"Test message 1"];
     RadarLog *log2 = [[RadarLog alloc] initWithLevel:RadarLogLevelDebug type:RadarLogTypeNone message:@"Test message 2"];
     [self.logBuffer write:RadarLogLevelDebug type:RadarLogTypeNone message:@"Test message"];
-    [self.logBuffer write:RadarLogLevelDebug type:RadarLogTypeNone message:@"Test message"]; 
+    [self.logBuffer write:RadarLogLevelDebug type:RadarLogTypeNone message:@"Test message"];
+    [self.logBuffer flushToPersistentStorage];
     [self.logBuffer addLogsToBuffer:@[log1, log2]];
     NSArray<RadarLog *> *logs = [self.logBuffer flushableLogs];
     XCTAssertEqual(logs.count, 4);
     XCTAssertEqualObjects(logs.lastObject.message, @"Test message 2");
+}
+
+- (void)test_RadarLogBuffer_append {
+    [self.logBuffer append:RadarLogLevelDebug type:RadarLogTypeNone message:@"Test message 1"];
+    [self.logBuffer append:RadarLogLevelDebug type:RadarLogTypeNone message:@"Test message 2"];
+    NSArray<RadarLog *> *logs = [self.logBuffer flushableLogs];
+    XCTAssertEqual(logs.count, 2);
+    XCTAssertEqualObjects(logs.firstObject.message, @"Test message 1");
+    XCTAssertEqualObjects(logs.lastObject.message, @"Test message 2");
+
 }
 
 
