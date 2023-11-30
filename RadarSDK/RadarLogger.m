@@ -88,37 +88,6 @@
     
 }
 
-- (void)flushLocalLogs {
-    NSData *fileData = [self.fileHandler readFileAtPath:self.logFilePath];
-    if (fileData) {
-        NSArray *jsonArray = [NSJSONSerialization JSONObjectWithData:fileData options:0 error:nil];
-        NSMutableArray<RadarLog *> *existingLogs = [NSMutableArray array];
-
-        for (NSDictionary *jsonDict in jsonArray) {
-            RadarLog *existingLog = [[RadarLog alloc] initWithDictionary:jsonDict];
-            [existingLogs addObject:existingLog];
-        }
-
-        for (RadarLog *retrievedLog in existingLogs) {
-
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [Radar sendLog:retrievedLog.level type:retrievedLog.type message:retrievedLog.message];
-
-                RadarLogLevel logLevel = [RadarSettings logLevel];
-                if (logLevel >= retrievedLog.level) {
-                    NSString *log = [NSString stringWithFormat:@"%@ | backgroundTimeRemaining = %g", retrievedLog.message, [RadarUtils backgroundTimeRemaining]];
-
-                    os_log(OS_LOG_DEFAULT, "%@", log);
-
-                    [[RadarDelegateHolder sharedInstance] didLogMessage:log];
-                }
-            });
-        }
-
-        [self.fileHandler deleteFileAtPath:self.logFilePath];
-    }
-}
-
 
 
 @end

@@ -17,6 +17,7 @@ static NSString *const kdelimiter = @"\?";
 
 @implementation RadarLogBuffer {
     NSMutableArray<RadarLog *> *mutableLogBuffer;
+    
 }
 
 - (instancetype)init {
