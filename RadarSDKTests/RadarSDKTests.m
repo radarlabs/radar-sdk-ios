@@ -1435,7 +1435,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     XCTAssertNil(readData, @"Data read from file should be nil after file is deleted");
 }
 
-- (void)testRadarLogBufferWriteAndFlushableLogs {
+- (void)test_RadarLogBuffer_WriteAndFlushableLogs {
     RadarLog *log = [[RadarLog alloc] initWithLevel:RadarLogLevelDebug type:RadarLogTypeNone message:@"Test message"];
     [self.logBuffer write:RadarLogLevelDebug type:RadarLogTypeNone message:@"Test message 1"];
     [self.logBuffer write:RadarLogLevelDebug type:RadarLogTypeNone message:@"Test message 2"]; 
@@ -1451,7 +1451,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     XCTAssertEqualObjects(newLogs.lastObject.message, @"Test message 3");
 }
 
-- (void)testRadarLogBufferRemoveLogsFromBuffer {
+- (void)test_RadarLogBuffer_RemoveLogsFromBuffer {
     RadarLog *log = [[RadarLog alloc] initWithLevel:RadarLogLevelDebug type:RadarLogTypeNone message:@"Test message"];
     [self.logBuffer write:RadarLogLevelDebug type:RadarLogTypeNone message:@"Test message 1"];
     [self.logBuffer write:RadarLogLevelDebug type:RadarLogTypeNone message:@"Test message 2"];
@@ -1461,16 +1461,36 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     XCTAssertEqual(logs.count, 0);
 }
 
-- (void)testRadarLogBufferAddLogsToBuffrer {
+- (void)test_RadarLogBuffer_AddLogsToBuffrer {
     RadarLog *log1 = [[RadarLog alloc] initWithLevel:RadarLogLevelDebug type:RadarLogTypeNone message:@"Test message 1"];
     RadarLog *log2 = [[RadarLog alloc] initWithLevel:RadarLogLevelDebug type:RadarLogTypeNone message:@"Test message 2"];
+    RadarLog *log3 = [[RadarLog alloc] initWithLevel:RadarLogLevelDebug type:RadarLogTypeNone message:@"Test message 3"];
+    RadarLog *log4 = [[RadarLog alloc] initWithLevel:RadarLogLevelDebug type:RadarLogTypeNone message:@"Test message 4"];
+    [self.logBuffer addLogsToBuffer:@[log1, log2]];
     [self.logBuffer write:RadarLogLevelDebug type:RadarLogTypeNone message:@"Test message"];
     [self.logBuffer write:RadarLogLevelDebug type:RadarLogTypeNone message:@"Test message"];
     [self.logBuffer flushToPersistentStorage];
-    [self.logBuffer addLogsToBuffer:@[log1, log2]];
+    [self.logBuffer addLogsToBuffer:@[log3, log4]];
     NSArray<RadarLog *> *logs = [self.logBuffer flushableLogs];
-    XCTAssertEqual(logs.count, 4);
-    XCTAssertEqualObjects(logs.lastObject.message, @"Test message 2");
+    XCTAssertEqual(logs.count, 6);
+    XCTAssertEqualObjects(logs.lastObject.message, @"Test message 4");
+}
+
+- (void)test_RadarLogBuffer_addAndRemove{
+    RadarLog *log1 = [[RadarLog alloc] initWithLevel:RadarLogLevelDebug type:RadarLogTypeNone message:@"Test message 1"];
+    RadarLog *log2 = [[RadarLog alloc] initWithLevel:RadarLogLevelDebug type:RadarLogTypeNone message:@"Test message 2"];
+    RadarLog *log3 = [[RadarLog alloc] initWithLevel:RadarLogLevelDebug type:RadarLogTypeNone message:@"Test message 3"];
+    RadarLog *log4 = [[RadarLog alloc] initWithLevel:RadarLogLevelDebug type:RadarLogTypeNone message:@"Test message 4"];
+    [self.logBuffer addLogsToBuffer:@[log1, log2]];
+    [self.logBuffer write:RadarLogLevelDebug type:RadarLogTypeNone message:@"Test message"];
+    [self.logBuffer write:RadarLogLevelDebug type:RadarLogTypeNone message:@"Test message"];
+    [self.logBuffer flushToPersistentStorage];
+    [self.logBuffer addLogsToBuffer:@[log3, log4]];
+    NSArray<RadarLog *> *logs = [self.logBuffer flushableLogs];
+    [self.logBuffer removeLogsFromBuffer:6];
+    [self.logBuffer addLogsToBuffer:logs];
+    NSArray<RadarLog *> *logs1 = [self.logBuffer flushableLogs];
+    XCTAssertEqual(logs1.count, 6);
 }
 
 - (void)test_RadarLogBuffer_append {

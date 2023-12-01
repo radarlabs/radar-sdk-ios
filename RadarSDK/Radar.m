@@ -1042,26 +1042,26 @@
 }
 
 + (void)writeLocalLog:(NSString *)message {
-    [[RadarLogger sharedInstance] logWithLevelToFileSystem:RadarLogLevelInfo type:RadarLogTypeNone message:message];
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeNone message:message];
 
 }
 
 + (void) logTermination {
     
-    //[[RadarLogger sharedInstance] logWithLevelToFileSystem:RadarLogLevelInfo type:RadarLogTypeNone message:@"App terminated" includeDate:YES includeBattery:YES];
-    [[RadarLogBuffer sharedInstance] append:RadarLogLevelInfo type:RadarLogTypeNone message:@"App terminated" ];
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeNone message:@"App terminated" includeDate:YES includeBattery:YES append:YES];
+    //[[RadarLogBuffer sharedInstance] append:RadarLogLevelInfo type:RadarLogTypeNone message:@"App terminated" ];
     NSLog(@"logTermination");
 }
 
 + (void) logEnteringBackground {
     NSLog(@"logEnteringBackground");
-    //[[RadarLogger sharedInstance] logWithLevelToFileSystem:RadarLogLevelInfo type:RadarLogTypeNone message:@"App entering background" includeDate:YES includeBattery:YES];
-    [[RadarLogBuffer sharedInstance] append:RadarLogLevelInfo type:RadarLogTypeNone message:@"App backgrounded" ]; 
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeNone message:@"App entering background" includeDate:YES includeBattery:YES append:YES];
+    //[[RadarLogBuffer sharedInstance] append:RadarLogLevelInfo type:RadarLogTypeNone message:@"App backgrounded" ]; 
     [[RadarLogBuffer sharedInstance] flushToPersistentStorage ];
 }
 
 + (void) logResignActive {
-    [[RadarLogger sharedInstance] logWithLevelToFileSystem:RadarLogLevelInfo type:RadarLogTypeNone message:@"App resigning active" includeDate:YES includeBattery:YES];
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeNone message:@"App resigning active" includeDate:YES includeBattery:YES];
 }
 
 
@@ -1292,15 +1292,6 @@
     if (pendingLogCount == 0) {
         return;
     }
-    NSLog(@"Syncing %lu logs", (unsigned long)pendingLogCount);
-    //print logs to console
-    for (RadarLog *log in flushableLogs) {
-        //print log fields to console
-
-        NSLog(@"log is %@", log.message);
-    }
-
-
 
     // remove logs from buffer to handle multiple flushLogs calls
     [[RadarLogBuffer sharedInstance] removeLogsFromBuffer:pendingLogCount];
@@ -1308,16 +1299,10 @@
     RadarSyncLogsAPICompletionHandler onComplete = ^(RadarStatus status) {
         // if an error occurs in syncing, add the logs back to the buffer
         if (status != RadarStatusSuccess) {
-            NSLog(@"Error syncing logs: %@", [Radar stringForStatus:status]);
             [[RadarLogBuffer sharedInstance] addLogsToBuffer:flushableLogs];
-        }else{
-            NSLog(@"Successfully synced %lu logs", (unsigned long)pendingLogCount);
         }
     };
     
-    //WHY DO WE NEED TO DO THIS? THERE IS PROB A BUG
-    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"message != nil"];
-    flushableLogs = [flushableLogs filteredArrayUsingPredicate:predicate];
 
     [[RadarAPIClient sharedInstance] syncLogs:flushableLogs
                             completionHandler:^(RadarStatus status) {

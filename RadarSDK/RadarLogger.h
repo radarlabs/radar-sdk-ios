@@ -22,11 +22,9 @@ NS_ASSUME_NONNULL_BEGIN
 + (instancetype)sharedInstance;
 - (void)logWithLevel:(RadarLogLevel)level message:(NSString *)message;
 - (void)logWithLevel:(RadarLogLevel)level type:(RadarLogType)type message:(NSString *)message;
-- (void)logWithLevelToFileSystem:(RadarLogLevel)level message:(NSString *)message;
-- (void)logWithLevelToFileSystem:(RadarLogLevel)level message:(NSString *)message includeDate:(BOOL)includeDate includeBattery:(BOOL)includeBattery;
-- (void)logWithLevelToFileSystem:(RadarLogLevel)level type:(RadarLogType)type message:(NSString *)message;
-- (void)logWithLevelToFileSystem:(RadarLogLevel)level type:(RadarLogType)type message:(NSString *)message includeDate:(BOOL)includeDate includeBattery:(BOOL)includeBattery;
-- (void)flushLocalLogs;
+- (void)logWithLevel:(RadarLogLevel)level type:(RadarLogType)type message:(NSString *)message includeDate:(BOOL)includeDate includeBattery:(BOOL)includeBattery;
+- (void)logWithLevel:(RadarLogLevel)level type:(RadarLogType)type message:(NSString *)message includeDate:(BOOL)includeDate includeBattery:(BOOL)includeBattery append:(BOOL)append;
+
 @end
 
 NS_ASSUME_NONNULL_END
