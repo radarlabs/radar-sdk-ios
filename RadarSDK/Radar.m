@@ -1046,17 +1046,12 @@
 
 }
 
-+ (void) logTermination {
-    
++ (void) logTermination { 
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeNone message:@"App terminated" includeDate:YES includeBattery:YES append:YES];
-    //[[RadarLogBuffer sharedInstance] append:RadarLogLevelInfo type:RadarLogTypeNone message:@"App terminated" ];
-    NSLog(@"logTermination");
 }
 
 + (void) logEnteringBackground {
-    NSLog(@"logEnteringBackground");
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeNone message:@"App entering background" includeDate:YES includeBattery:YES append:YES];
-    //[[RadarLogBuffer sharedInstance] append:RadarLogLevelInfo type:RadarLogTypeNone message:@"App backgrounded" ]; 
     [[RadarLogBuffer sharedInstance] flushToPersistentStorage ];
 }
 

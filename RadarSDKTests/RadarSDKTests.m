@@ -1500,9 +1500,6 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     XCTAssertEqual(logs.count, 2);
     XCTAssertEqualObjects(logs.firstObject.message, @"Test message 1");
     XCTAssertEqualObjects(logs.lastObject.message, @"Test message 2");
-
 }
-
-
 
 @end

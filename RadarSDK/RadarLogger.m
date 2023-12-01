@@ -72,13 +72,13 @@
 
             RadarLogLevel logLevel = [RadarSettings logLevel];
             if (logLevel >= level) {
-            NSString *log = [NSString stringWithFormat:@"%@ | backgroundTimeRemaining = %g", message, [RadarUtils backgroundTimeRemaining]];
+                NSString *log = [NSString stringWithFormat:@"%@ | backgroundTimeRemaining = %g", message, [RadarUtils backgroundTimeRemaining]];
 
-            os_log(OS_LOG_DEFAULT, "%@", log);
+                os_log(OS_LOG_DEFAULT, "%@", log);
 
-            [[RadarDelegateHolder sharedInstance] didLogMessage:log];
-        }
-    });
+                [[RadarDelegateHolder sharedInstance] didLogMessage:log];
+            }
+        });
     }
 }
 

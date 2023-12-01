@@ -1017,7 +1017,7 @@ logConversionWithNotification
 + (void)logTermination;
 
 /**
- Log application entering background.
+ Log application entering background and flush logs in memory buffer into persistent buffer.
 
  */
 + (void)logEnteringBackground;

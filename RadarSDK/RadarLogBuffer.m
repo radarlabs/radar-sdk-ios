@@ -33,7 +33,6 @@ static NSString *const kDelimiter = @"\?";
     return self;
 }
 
-
 + (instancetype)sharedInstance {
     static dispatch_once_t once;
     static id sharedInstance;
@@ -52,7 +51,6 @@ static NSString *const kDelimiter = @"\?";
     }
 }
 
-
 - (void)flushToPersistentStorage {
     @synchronized (self) { 
         NSArray *flushableLogs = [mutableLogBuffer copy];
@@ -60,7 +58,6 @@ static NSString *const kDelimiter = @"\?";
         [mutableLogBuffer removeAllObjects]; 
     }
 }
-
 
 - (NSMutableArray<RadarLog *> *)readFromFileSystem {
     NSData *fileData = [self.fileHandler readFileAtPath:self.logFilePath];
