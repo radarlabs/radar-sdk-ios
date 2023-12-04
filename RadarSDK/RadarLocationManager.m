@@ -22,6 +22,7 @@
 #import "RadarUtils.h"
 #import "RadarReplayBuffer.h"
 #import "RadarTrackingOptions.h"
+#import "RadarTripOptions.h"
 
 
 @interface StateChange : NSObject
@@ -599,11 +600,11 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
             radius = geometry.radius;
         }
         if (center) {
-            NSNumber *rampUpRadius = nil;
+            double rampUpRadius = 0;
 
             // the most general way of specifying a ramp up radius is in the tracking options 
             if (trackingOptions.rampUpRadius && trackingOptions.rampUpRadius > 0) {
-                rampUpRadius = @(trackingOptions.rampUpRadius);
+                rampUpRadius = trackingOptions.rampUpRadius;
 
             }
 
@@ -612,29 +613,29 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
             if (metadata) {
                 // if metadata has notification has radar:rampUpRadius, set radius to rampUpRadius
                 NSString *rampUpRadiusString = [geofence.metadata objectForKey:@"radar:rampUpRadius"];
-                if (rampUpRadiusString) {
-                    rampUpRadius = [NSNumber numberWithDouble:[rampUpRadiusString doubleValue]];
+                if (rampUpRadiusString && [rampUpRadiusString doubleValue] > 0) {
+                    rampUpRadius = [rampUpRadiusString doubleValue];
                 }
             }
 
             // the most specific way of specifying a ramp up radius is in the trip options
             RadarTripOptions *tripOptions = [RadarSettings tripOptions];
-            if (tripOptions && tripOptions.destinationGeofenceTag == geofence.tag && tripOptions.destinationGeofenceExternalId == geofence.externalId && tripOptions.rampUpRadius) {
+            if (tripOptions && tripOptions.destinationGeofenceTag == geofence.tag && tripOptions.destinationGeofenceExternalId == geofence.externalId && tripOptions.rampUpRadius && tripOptions.rampUpRadius > 0) {
                 rampUpRadius = tripOptions.rampUpRadius;
             }
 
 
-            if (rampUpRadius) {
+            if (rampUpRadius > 0) {
                 CLLocation *geofenceCenterLocation = [[CLLocation alloc] initWithLatitude:center.coordinate.latitude longitude:center.coordinate.longitude];
                 CLLocationDistance distance = [geofenceCenterLocation distanceFromLocation:self.locationManager.location];
                 [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"distance from geofence center to current location: %f", distance]];
 
-                if (distance <= [rampUpRadius doubleValue]) { 
+                if (distance <= rampUpRadius) { 
                     // Log that we're setting withinRampUpRadius YES
                     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"distance from geofence center to current location is less than rampUpRadius, setting withinRampUpRadius to YES"]];
                     withinRampUpRadius = YES;
                 } else {
-                    radius = [rampUpRadius doubleValue];
+                    radius = rampUpRadius;
                     identifier = [NSString stringWithFormat:@"%@%@", kRampUpGeofenceIdentifierPrefix, geofenceId];
                     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"radius is rampUpRadius: %f", radius]];
                 }
