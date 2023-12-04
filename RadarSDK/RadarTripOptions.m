@@ -28,7 +28,7 @@ static NSString *const kRampUpRadius = @"rampUpRadius";
         _destinationGeofenceTag = destinationGeofenceTag;
         _destinationGeofenceExternalId = destinationGeofenceExternalId;
         _mode = RadarRouteModeCar;
-        _rampUpRadius = nil;
+        _rampUpRadius = 0;
     }
     return self;
 }
