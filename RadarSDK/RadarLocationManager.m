@@ -392,6 +392,8 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                 self.lowPowerLocationManager.showsBackgroundLocationIndicator = options.showBlueBar;
                 self.locationManager.showsBackgroundLocationIndicator = options.showBlueBar;
                 [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"showsBackgroundLocationIndicator is set to options.showBlueBar: %d", options.showBlueBar]];
+                // log the full tracking options
+                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Tracking with options: %@", [options dictionaryValue]]];
             } else {
                 [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"showsBackgroundLocationIndicator is false: %d", options.showBlueBar]];
             }
@@ -707,7 +709,8 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     } else if (withinRampUpRadius && ![RadarSettings rampedUp] && exceededRampUpTimeLimit) {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Exceeded ramp up time limit, not ramping up"]];
     } else if (withinRampUpRadius && [RadarSettings rampedUp] && !exceededRampUpTimeLimit) {
-        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Already ramped up"]];
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Already ramped up but calling ramp up anyways"]];
+        [self updateTracking:self.locationManager.location fromInitialize:NO ramping:RampingOptionRampUp];  
     } else if (withinRampUpRadius && [RadarSettings rampedUp] && exceededRampUpTimeLimit) {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Exceeded ramp up time limit, ramping down"]];
         [self updateTracking:self.locationManager.location fromInitialize:NO ramping:RampingOptionRampDown];
