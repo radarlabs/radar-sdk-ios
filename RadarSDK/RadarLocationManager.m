@@ -242,7 +242,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
             [self.timer invalidate];
         }
 
-        self.timer = [NSTimer scheduledTimerWithTimeInterval:interval
+        self.timer = [NSTimer scheduledTimerWithTimeInterval:(interval + 0.1)
                                                      repeats:YES
                                                        block:^(NSTimer *_Nonnull timer) {
                                                            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Timer fired"];
@@ -334,7 +334,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                     [RadarSettings setPreviousTrackingOptions:[Radar getTrackingOptions]];
                 }
                 // save the ramp up radius to a local int
-                int rampUpRadius = options.rampUpRadius;
+                double rampUpRadius = options.rampUpRadius;
                 options = RadarTrackingOptions.rampedUpOptions;
 
                 options.rampUpRadius = rampUpRadius;
@@ -369,6 +369,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
             self.locationManager.pausesLocationUpdatesAutomatically = NO;
 
             self.lowPowerLocationManager.allowsBackgroundLocationUpdates = [RadarUtils locationBackgroundMode];
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"allowsBackgroundLocationUpdates is set to [RadarUtils locationBackgroundMode]: %d", [RadarUtils locationBackgroundMode]]];
             self.lowPowerLocationManager.pausesLocationUpdatesAutomatically = NO;
 
             CLLocationAccuracy desiredAccuracy;
@@ -389,6 +390,10 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 
             if (@available(iOS 11.0, *)) {
                 self.lowPowerLocationManager.showsBackgroundLocationIndicator = options.showBlueBar;
+                self.locationManager.showsBackgroundLocationIndicator = options.showBlueBar;
+                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"showsBackgroundLocationIndicator is set to options.showBlueBar: %d", options.showBlueBar]];
+            } else {
+                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"showsBackgroundLocationIndicator is false: %d", options.showBlueBar]];
             }
 
             BOOL startUpdates = options.showBlueBar || [CLLocationManager authorizationStatus] == kCLAuthorizationStatusAuthorizedAlways;
@@ -620,11 +625,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 
             // the most specific way of specifying a ramp up radius is in the trip options
             RadarTripOptions *tripOptions = [RadarSettings tripOptions];
-            // log the trip options dictionary
-            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"trip options dictionary: %@", [tripOptions dictionaryValue]]];
-            if (tripOptions && tripOptions.destinationGeofenceTag == geofence.tag && tripOptions.destinationGeofenceExternalId == geofence.externalId && tripOptions.rampUpRadius && tripOptions.rampUpRadius > 0) {
-                // log that we're setting rampUpRadius to tripOptions.rampUpRadius
-                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"trip options rampUpRadius: %d", tripOptions.rampUpRadius]];
+            if (tripOptions && [tripOptions.destinationGeofenceTag isEqualToString: geofence.tag] && [tripOptions.destinationGeofenceExternalId isEqualToString: geofence.externalId] && tripOptions.rampUpRadius && tripOptions.rampUpRadius > 0) {
                 rampUpRadius = tripOptions.rampUpRadius;
             }
 
@@ -981,6 +982,10 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                                                                                   options.desiredSyncInterval, lastSyncInterval]];
 
             return;
+        } else {
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
+                                               message:[NSString stringWithFormat:@"desiredSyncInterval = %d; lastSyncInterval = %f",
+                                                                                  options.desiredSyncInterval, lastSyncInterval]];
         }
 
         if (!force && !justStopped && lastSyncInterval < 1) {

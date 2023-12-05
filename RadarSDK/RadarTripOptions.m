@@ -81,7 +81,7 @@ static NSString *const kRampUpRadius = @"rampUpRadius";
         options.mode = RadarRouteModeCar;
     }
     options.approachingThreshold = [dict[kApproachingThreshold] intValue];
-    options.rampUpRadius = [dict[kRampUpRadius] intValue];
+    options.rampUpRadius = [dict[kRampUpRadius] doubleValue];
 
     return options;
 }
