@@ -620,7 +620,11 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 
             // the most specific way of specifying a ramp up radius is in the trip options
             RadarTripOptions *tripOptions = [RadarSettings tripOptions];
+            // log the trip options dictionary
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"trip options dictionary: %@", [tripOptions dictionaryValue]]];
             if (tripOptions && tripOptions.destinationGeofenceTag == geofence.tag && tripOptions.destinationGeofenceExternalId == geofence.externalId && tripOptions.rampUpRadius && tripOptions.rampUpRadius > 0) {
+                // log that we're setting rampUpRadius to tripOptions.rampUpRadius
+                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"trip options rampUpRadius: %d", tripOptions.rampUpRadius]];
                 rampUpRadius = tripOptions.rampUpRadius;
             }
 
@@ -692,7 +696,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 
     // bool for whether or not we've exceeded the ramp up time limit (20 minutes for 1 hour or 120 mintues for 12 hours)
     BOOL exceededRampUpTimeLimit = NO;
-    if (totalRampedUpTimeOneHour > 1200 || totalRampedUpTimeTwelveHours > 7200) {
+    if (totalRampedUpTimeOneHour > 12000 || totalRampedUpTimeTwelveHours > 72000) {
         exceededRampUpTimeLimit = YES;
     }
 
