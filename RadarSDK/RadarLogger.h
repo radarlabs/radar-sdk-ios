@@ -8,14 +8,14 @@
 #import <Foundation/Foundation.h>
 
 #import "RadarDelegate.h"
-#import "RadarFileSystem.h"
+#import "RadarFileStorage.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface RadarLogger : NSObject
 
 @property (strong, nonatomic) NSString *logFilePath;
-@property (strong, nonatomic) RadarFileSystem *fileHandler;
+@property (strong, nonatomic) RadarFileStorage *fileHandler;
 @property (strong, nonatomic) NSDateFormatter *dateFormatter;
 @property (strong, nonatomic) UIDevice *device;
 
