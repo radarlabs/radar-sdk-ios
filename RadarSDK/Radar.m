@@ -1052,7 +1052,7 @@
 
 + (void) logEnteringBackground {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeNone message:@"App entering background" includeDate:YES includeBattery:YES append:YES];
-    [[RadarLogBuffer sharedInstance] flushToPersistentStorage ];
+    [[RadarLogBuffer sharedInstance] persist ];
 }
 
 + (void) logResignActive {

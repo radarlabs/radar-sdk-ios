@@ -28,7 +28,7 @@ static NSString *const kDelimiter = @"\?";
         NSString *logFileName = @"RadarLogs.txt";
         self.logFilePath = [documentsDirectory stringByAppendingPathComponent:logFileName];
         self.fileHandler = [[RadarFileSystem alloc] init];
-        _timer = [NSTimer scheduledTimerWithTimeInterval:20.0 target:self selector:@selector(flushToPersistentStorage) userInfo:nil repeats:YES];
+        _timer = [NSTimer scheduledTimerWithTimeInterval:20.0 target:self selector:@selector(persist) userInfo:nil repeats:YES];
     }
     return self;
 }
@@ -47,11 +47,11 @@ static NSString *const kDelimiter = @"\?";
     [mutableLogBuffer addObject:radarLog];
     NSUInteger logLength = [mutableLogBuffer count];
     if (logLength >= MAX_MEMORY_BUFFER_SIZE) {
-        [self flushToPersistentStorage]; 
+        [self persist]; 
     }
 }
 
-- (void)flushToPersistentStorage {
+- (void)persist {
     @synchronized (self) { 
         NSArray *flushableLogs = [mutableLogBuffer copy];
         [self addLogsToBuffer:flushableLogs];
@@ -121,7 +121,7 @@ static NSString *const kDelimiter = @"\?";
 
 - (NSArray<RadarLog *> *)flushableLogs {
     @synchronized (self) {
-        [self flushToPersistentStorage];
+        [self persist];
         NSArray *existingLogsArray = [self.readFromFileSystem copy];
         return existingLogsArray;
     }
