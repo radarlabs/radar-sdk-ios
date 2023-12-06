@@ -28,7 +28,7 @@ static NSString *const kDelimiter = @"\?";
         NSString *logFileName = @"RadarLogs.txt";
         self.logFilePath = [documentsDirectory stringByAppendingPathComponent:logFileName];
         self.fileHandler = [[RadarFileStorage alloc] init];
-        _timer = [NSTimer scheduledTimerWithTimeInterval:20.0 target:self selector:@selector(persist) userInfo:nil repeats:YES];
+        _timer = [NSTimer scheduledTimerWithTimeInterval:20.0 target:self selector:@selector(persistLogs) userInfo:nil repeats:YES];
     }
     return self;
 }
