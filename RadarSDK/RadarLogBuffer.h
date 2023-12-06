@@ -8,7 +8,7 @@
 #import <Foundation/Foundation.h>
 
 #import "RadarLog.h"
-#import "RadarFileSystem.h"
+#import "RadarFileStorage.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -16,7 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (assign, nonatomic, readonly) NSArray<RadarLog *> *flushableLogs;
 @property (strong, nonatomic) NSString *logFilePath;
-@property (strong, nonatomic) RadarFileSystem *fileHandler;
+@property (strong, nonatomic) RadarFileStorage *fileHandler;
 @property (nonatomic, strong) NSTimer *timer;
 
 + (instancetype)sharedInstance;

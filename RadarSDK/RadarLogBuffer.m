@@ -7,7 +7,7 @@
 
 #import "RadarLogBuffer.h"
 #import "RadarLog.h"
-#import "RadarFileSystem.h"
+#import "RadarFileStorage.h"
 
 static const int MAX_PERSISTED_BUFFER_SIZE = 500;
 static const int MAX_MEMORY_BUFFER_SIZE = 200;
@@ -27,7 +27,7 @@ static NSString *const kDelimiter = @"\?";
         NSString *documentsDirectory = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES).firstObject;
         NSString *logFileName = @"RadarLogs.txt";
         self.logFilePath = [documentsDirectory stringByAppendingPathComponent:logFileName];
-        self.fileHandler = [[RadarFileSystem alloc] init];
+        self.fileHandler = [[RadarFileStorage alloc] init];
         _timer = [NSTimer scheduledTimerWithTimeInterval:20.0 target:self selector:@selector(persist) userInfo:nil repeats:YES];
     }
     return self;
@@ -59,13 +59,13 @@ static NSString *const kDelimiter = @"\?";
     }
 }
 
-- (NSMutableArray<RadarLog *> *)readFromFileSystem {
+- (NSMutableArray<RadarLog *> *)readFromFileStorage {
     NSData *fileData = [self.fileHandler readFileAtPath:self.logFilePath];
     NSString *fileString = [[NSString alloc] initWithData:fileData encoding:NSUTF8StringEncoding];
     return [self jsonToLogs:fileString];
 }
 
-- (void) writeToFileSystem:(NSMutableArray<RadarLog *> * )logs {
+- (void) writeToFileStorage:(NSMutableArray<RadarLog *> * )logs {
     NSString *updatedLogString = [self logsToJSON:logs];
     NSData *updatedLogData = [updatedLogString dataUsingEncoding:NSUTF8StringEncoding];
     [self.fileHandler writeData:updatedLogData toFileAtPath:self.logFilePath];
@@ -122,7 +122,7 @@ static NSString *const kDelimiter = @"\?";
 - (NSArray<RadarLog *> *)flushableLogs {
     @synchronized (self) {
         [self persistLogs];
-        NSArray *existingLogsArray = [self.readFromFileSystem copy];
+        NSArray *existingLogsArray = [self.readFromFileStorage copy];
         return existingLogsArray;
     }
 }
@@ -130,15 +130,15 @@ static NSString *const kDelimiter = @"\?";
 
 - (void)removeLogsFromBuffer:(NSUInteger)numLogs {
     @synchronized (self) {
-        NSMutableArray *existingLogs = [self readFromFileSystem];
+        NSMutableArray *existingLogs = [self readFromFileStorage];
         [existingLogs removeObjectsInRange:NSMakeRange(0, numLogs)];
-        [self writeToFileSystem:existingLogs];
+        [self writeToFileStorage:existingLogs];
     }
 }
 
 - (void)addLogsToBuffer:(NSArray<RadarLog *> *)logs {
     @synchronized (self) {
-        NSMutableArray *existingLogs = [self readFromFileSystem];
+        NSMutableArray *existingLogs = [self readFromFileStorage];
         [existingLogs addObjectsFromArray:logs];
         NSUInteger logLength = [existingLogs count];
         if (logLength >= MAX_PERSISTED_BUFFER_SIZE) {
@@ -146,7 +146,7 @@ static NSString *const kDelimiter = @"\?";
             RadarLog *purgeLog = [[RadarLog alloc] initWithLevel:RadarLogLevelDebug type:RadarLogTypeNone message:kPurgedLogLine];
             [existingLogs insertObject:purgeLog atIndex:0]; 
         }
-        [self writeToFileSystem:existingLogs];
+        [self writeToFileStorage:existingLogs];
     }
 }
 
