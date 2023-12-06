@@ -47,11 +47,11 @@ static NSString *const kDelimiter = @"\?";
     [mutableLogBuffer addObject:radarLog];
     NSUInteger logLength = [mutableLogBuffer count];
     if (logLength >= MAX_MEMORY_BUFFER_SIZE) {
-        [self persist]; 
+        [self persistLogs]; 
     }
 }
 
-- (void)persist {
+- (void)persistLogs {
     @synchronized (self) { 
         NSArray *flushableLogs = [mutableLogBuffer copy];
         [self addLogsToBuffer:flushableLogs];
@@ -121,7 +121,7 @@ static NSString *const kDelimiter = @"\?";
 
 - (NSArray<RadarLog *> *)flushableLogs {
     @synchronized (self) {
-        [self persist];
+        [self persistLogs];
         NSArray *existingLogsArray = [self.readFromFileSystem copy];
         return existingLogsArray;
     }
