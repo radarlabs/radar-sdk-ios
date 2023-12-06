@@ -1439,7 +1439,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     RadarLog *log = [[RadarLog alloc] initWithLevel:RadarLogLevelDebug type:RadarLogTypeNone message:@"Test message"];
     [self.logBuffer write:RadarLogLevelDebug type:RadarLogTypeNone message:@"Test message 1"];
     [self.logBuffer write:RadarLogLevelDebug type:RadarLogTypeNone message:@"Test message 2"]; 
-    [self.logBuffer flushToPersistentStorage];
+    [self.logBuffer persist];
     NSArray<RadarLog *> *logs = [self.logBuffer flushableLogs];
     XCTAssertEqual(logs.count, 2);
     XCTAssertEqualObjects(logs.firstObject.message, @"Test message 1");
@@ -1455,7 +1455,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     RadarLog *log = [[RadarLog alloc] initWithLevel:RadarLogLevelDebug type:RadarLogTypeNone message:@"Test message"];
     [self.logBuffer write:RadarLogLevelDebug type:RadarLogTypeNone message:@"Test message 1"];
     [self.logBuffer write:RadarLogLevelDebug type:RadarLogTypeNone message:@"Test message 2"];
-    [self.logBuffer flushToPersistentStorage];
+    [self.logBuffer persist];
     [self.logBuffer removeLogsFromBuffer:2];
     NSArray<RadarLog *> *logs = [self.logBuffer flushableLogs];
     XCTAssertEqual(logs.count, 0);
@@ -1469,7 +1469,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     [self.logBuffer addLogsToBuffer:@[log1, log2]];
     [self.logBuffer write:RadarLogLevelDebug type:RadarLogTypeNone message:@"Test message"];
     [self.logBuffer write:RadarLogLevelDebug type:RadarLogTypeNone message:@"Test message"];
-    [self.logBuffer flushToPersistentStorage];
+    [self.logBuffer persist];
     [self.logBuffer addLogsToBuffer:@[log3, log4]];
     NSArray<RadarLog *> *logs = [self.logBuffer flushableLogs];
     XCTAssertEqual(logs.count, 6);
@@ -1484,7 +1484,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     [self.logBuffer addLogsToBuffer:@[log1, log2]];
     [self.logBuffer write:RadarLogLevelDebug type:RadarLogTypeNone message:@"Test message"];
     [self.logBuffer write:RadarLogLevelDebug type:RadarLogTypeNone message:@"Test message"];
-    [self.logBuffer flushToPersistentStorage];
+    [self.logBuffer persist];
     [self.logBuffer addLogsToBuffer:@[log3, log4]];
     NSArray<RadarLog *> *logs = [self.logBuffer flushableLogs];
     [self.logBuffer removeLogsFromBuffer:6];
