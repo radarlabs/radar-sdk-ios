@@ -18,7 +18,7 @@
 #import "RadarPermissionsHelperMock.h"
 #import "RadarTestUtils.h"
 #import "RadarTripOptions.h"
-#import "RadarFileSystem.h"
+#import "RadarFileStorage.h"
 #import "../RadarSDK/RadarLogBuffer.h"
 
 
@@ -27,7 +27,7 @@
 @property (nonnull, strong, nonatomic) RadarAPIHelperMock *apiHelperMock;
 @property (nonnull, strong, nonatomic) CLLocationManagerMock *locationManagerMock;
 @property (nonnull, strong, nonatomic) RadarPermissionsHelperMock *permissionsHelperMock;
-@property (nonatomic, strong) RadarFileSystem *fileSystem;
+@property (nonatomic, strong) RadarFileStorage *fileSystem;
 @property (nonatomic, strong) NSString *testFilePath;
 @property (nonatomic, strong) RadarLogBuffer *logBuffer;
 @end
@@ -296,7 +296,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     self.locationManagerMock.delegate = [RadarLocationManager sharedInstance];
     [RadarLocationManager sharedInstance].lowPowerLocationManager = self.locationManagerMock;
     [RadarLocationManager sharedInstance].permissionsHelper = self.permissionsHelperMock;
-    self.fileSystem = [[RadarFileSystem alloc] init];
+    self.fileSystem = [[RadarFileStorage alloc] init];
     self.testFilePath = [NSTemporaryDirectory() stringByAppendingPathComponent:@"testfile"];
     self.logBuffer = [RadarLogBuffer sharedInstance];
     [self.logBuffer clear];
@@ -1407,7 +1407,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     XCTAssertNotEqualObjects(options, @"foo");
 }
 
-- (void)test_RadarFileSystem_WriteAndRead {
+- (void)test_RadarFileStorage_WriteAndRead {
     NSData *originalData = [@"Test data" dataUsingEncoding:NSUTF8StringEncoding];
     [self.fileSystem writeData:originalData toFileAtPath:self.testFilePath];
     NSData *originalData2 = [@"Newer Test data" dataUsingEncoding:NSUTF8StringEncoding];
@@ -1416,7 +1416,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     XCTAssertEqualObjects(originalData2, readData, @"Data read from file should be equal to original data");
 }
 
-- (void)test_RadarFileSystem_Append {
+- (void)test_RadarFileStorage_Append {
     NSData *originalData = [@"Test data" dataUsingEncoding:NSUTF8StringEncoding];
     [self.fileSystem writeData:originalData toFileAtPath:self.testFilePath];
     NSData *appendData = [@"Newer Test data" dataUsingEncoding:NSUTF8StringEncoding];
@@ -1427,7 +1427,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     XCTAssertEqualObjects(readString, expectedString, @"Data read from file should be equal to original data");
 }
 
-- (void)test_RadarFileSystem_DeleteFile {
+- (void)test_RadarFileStorage_DeleteFile {
     NSData *originalData = [@"Test data" dataUsingEncoding:NSUTF8StringEncoding];
     [self.fileSystem writeData:originalData toFileAtPath:self.testFilePath];
     [self.fileSystem deleteFileAtPath:self.testFilePath];
