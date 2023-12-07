@@ -47,6 +47,7 @@
 @property (nonnull, strong, nonatomic, readonly) RadarCoordinate *location;
 
 /**
+ * @deprecated
  The group for the place, if any. For a full list of groups, see https://radar.com/documentation/places/groups.
 
  @see https://radar.com/documentation/places/groups
