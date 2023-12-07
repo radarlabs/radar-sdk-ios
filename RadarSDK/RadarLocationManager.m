@@ -390,7 +390,6 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 
             if (@available(iOS 11.0, *)) {
                 self.lowPowerLocationManager.showsBackgroundLocationIndicator = options.showBlueBar;
-                self.locationManager.showsBackgroundLocationIndicator = options.showBlueBar;
                 [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"showsBackgroundLocationIndicator is set to options.showBlueBar: %d", options.showBlueBar]];
                 // log the full tracking options
                 [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Tracking with options: %@", [options dictionaryValue]]];
