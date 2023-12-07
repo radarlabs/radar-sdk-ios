@@ -333,11 +333,14 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                 if (![RadarSettings tripOptions]) {
                     [RadarSettings setPreviousTrackingOptions:[Radar getTrackingOptions]];
                 }
-                // save the ramp up radius to a local int
-                double rampUpRadius = options.rampUpRadius;
+                
+                double originalRampUpRadius = options.rampUpRadius;
+                RadarTrackingOptionsReplay originalReplay = options.replay;
+
                 options = RadarTrackingOptions.rampedUpOptions;
 
-                options.rampUpRadius = rampUpRadius;
+                options.rampUpRadius = originalRampUpRadius;
+                options.replay = originalReplay;
 
                 [RadarSettings setTrackingOptions:options];
                 // log the ramp up options
