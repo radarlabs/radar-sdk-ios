@@ -299,12 +299,12 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     self.fileSystem = [[RadarFileStorage alloc] init];
     self.testFilePath = [NSTemporaryDirectory() stringByAppendingPathComponent:@"testfile"];
     self.logBuffer = [RadarLogBuffer sharedInstance];
-    [self.logBuffer clear];
+    [self.logBuffer clearBuffer];
 }
 
 - (void)tearDown {
     [[NSFileManager defaultManager] removeItemAtPath:self.testFilePath error:nil];
-    [self.logBuffer clear];
+    [self.logBuffer clearBuffer];
     [super tearDown];
 }
 
@@ -1442,7 +1442,6 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 }
 
 - (void)test_RadarLogBuffer_WriteAndFlushableLogs {
-    [self.logBuffer clear];
     RadarLog *log = [[RadarLog alloc] initWithLevel:RadarLogLevelDebug type:RadarLogTypeNone message:@"Test message"];
     [self.logBuffer write:RadarLogLevelDebug type:RadarLogTypeNone message:@"Test message 1"];
     [self.logBuffer write:RadarLogLevelDebug type:RadarLogTypeNone message:@"Test message 2"]; 
@@ -1515,8 +1514,9 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     }
     NSArray<RadarLog *> *logs = [self.logBuffer flushableLogs];
     XCTAssertEqual(logs.count, 351);
-    XCTAssertEqualObjects(logs.lastObject.message, @"----- purged oldest logs -----");
     XCTAssertEqualObjects(logs.firstObject.message, @"message_250");
+    
+    XCTAssertEqualObjects(logs.lastObject.message, @"message_599");
 }
 
 @end

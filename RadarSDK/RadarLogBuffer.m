@@ -134,7 +134,7 @@ static int counter = 0;
 }
 
 //for use in testing
--(void)clear {
+-(void)clearBuffer {
     @synchronized (self) {
         [mutableLogBuffer removeAllObjects]; 
         NSArray<NSString *> *files = [self.fileHandler allFilesInDirectory:self.logFileDir];

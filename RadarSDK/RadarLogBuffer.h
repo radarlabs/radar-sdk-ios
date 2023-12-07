@@ -27,7 +27,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)persistLogs;
 
-- (void)clear;
+- (void)clearBuffer;
 
 - (void)removeLogsFromBuffer:(NSUInteger)numLogs;
 
