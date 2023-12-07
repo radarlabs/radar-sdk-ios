@@ -11,10 +11,9 @@
 
 static const int MAX_PERSISTED_BUFFER_SIZE = 500;
 static const int MAX_MEMORY_BUFFER_SIZE = 200;
-static const int PURGE_AMOUNT = 200;
+static const int PURGE_AMOUNT = 250;
 
 static NSString *const kPurgedLogLine = @"----- purged oldest logs -----";
-static NSString *const kDelimiter = @"\?";
 
 static int counter = 0;
 
@@ -47,11 +46,13 @@ static int counter = 0;
 }
 
 - (void)write:(RadarLogLevel)level type:(RadarLogType)type message:(NSString *)message {
-    RadarLog *radarLog = [[RadarLog alloc] initWithLevel:level type:type message:message];
-    [mutableLogBuffer addObject:radarLog];
-    NSUInteger logLength = [mutableLogBuffer count];
-    if (logLength >= MAX_MEMORY_BUFFER_SIZE) {
-        [self persistLogs]; 
+    @synchronized (self) { 
+        RadarLog *radarLog = [[RadarLog alloc] initWithLevel:level type:type message:message];
+        [mutableLogBuffer addObject:radarLog];
+        NSUInteger logLength = [mutableLogBuffer count];
+        if (logLength >= MAX_MEMORY_BUFFER_SIZE) {
+            [self persistLogs];
+        }
     }
 }
 
@@ -65,7 +66,6 @@ static int counter = 0;
 
 - (NSMutableArray<RadarLog *> *)readFromFileStorage {
 
-    NSLog(@"read from file storage");
     NSArray<NSString *> *files = [self.fileHandler allFilesInDirectory:self.logFileDir];
     NSMutableArray<RadarLog *> *logs = [NSMutableArray array];
     if(!files){
@@ -77,7 +77,6 @@ static int counter = 0;
         RadarLog *log = [NSKeyedUnarchiver unarchiveObjectWithData:fileData];
         if(log && log.message){
             [logs addObject:log];
-            NSLog(@"log message: %@", log.message);
         }
     }
 
@@ -89,9 +88,8 @@ static int counter = 0;
      for(RadarLog *log in logs){
         NSData *logData = [NSKeyedArchiver archivedDataWithRootObject:log];
         NSTimeInterval unixTimestamp = [log.createdAt timeIntervalSince1970];
-        NSString *unixTimestampString = [NSString stringWithFormat:@"%lld_%d", (long long)unixTimestamp,counter++];
+        NSString *unixTimestampString = [NSString stringWithFormat:@"%lld%04d", (long long)unixTimestamp, counter++];
         NSString *filePath = [self.logFileDir stringByAppendingPathComponent:unixTimestampString];
-        NSLog(@"writing log message: %@", log.message);
         [self.fileHandler writeData:logData toFileAtPath:filePath];
      }
  }
@@ -135,8 +133,10 @@ static int counter = 0;
     }
 }
 
+//for use in testing
 -(void)clear {
     @synchronized (self) {
+        [mutableLogBuffer removeAllObjects]; 
         NSArray<NSString *> *files = [self.fileHandler allFilesInDirectory:self.logFileDir];
         if(files){
             for (NSString *file in files) {

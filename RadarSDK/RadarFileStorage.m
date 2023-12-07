@@ -49,7 +49,11 @@
         return nil;
     }
     
-    return [files sortedArrayUsingSelector:@selector(localizedCaseInsensitiveCompare:)];;
+    //return [files sortedArrayUsingSelector:@selector(localizedCaseInsensitiveCompare:)];;
+
+    return [files sortedArrayUsingComparator:^NSComparisonResult(NSString *str1, NSString *str2) {
+        return [@([str1 integerValue]) compare:@([str2 integerValue])];
+    }];
 }
 
 @end
