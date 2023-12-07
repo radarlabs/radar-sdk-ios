@@ -68,29 +68,6 @@
     return str;
 }
 
-+ (RadarLogLevel)logLevelForString:(NSString *)string {
-    NSDictionary<NSString *, NSNumber *> *logLevelMap = @{
-        @"none" : @(RadarLogLevelNone),
-        @"error" : @(RadarLogLevelError),
-        @"warning" : @(RadarLogLevelWarning),
-        @"info" : @(RadarLogLevelInfo),
-        @"debug" : @(RadarLogLevelDebug)
-    };
-    return logLevelMap[string].integerValue;
-}
-
-+ (RadarLogType)logTypeForString:(NSString *)string {
-    NSDictionary<NSString *, NSNumber *> *logTypeMap = @{
-        @"NONE" : @(RadarLogTypeNone),
-        @"SDK_CALL" : @(RadarLogTypeSDKCall),
-        @"SDK_ERROR" : @(RadarLogTypeSDKError),
-        @"SDK_EXCEPTION" : @(RadarLogTypeSDKException),
-        @"APP_LIFECYCLE_EVENT" : @(RadarLogTypeAppLifecycleEvent),
-        @"PERMISSION_EVENT" : @(RadarLogTypePermissionEvent)
-    };
-    return logTypeMap[string].integerValue;
-}
-
 - (NSDictionary *)dictionaryValue {
     NSMutableDictionary *dict = [NSMutableDictionary new];
     dict[@"level"] = [RadarLog stringForLogLevel:self.level];
@@ -104,17 +81,6 @@
     return dict;
 }
 
-- (instancetype)initWithDictionary:(NSDictionary *)dictionary {
-    self = [super init];
-    if (self) {
-        _level = [RadarLog logLevelForString:dictionary[@"level"]];
-        _type = [RadarLog logTypeForString:dictionary[@"type"]];
-        _message = dictionary[@"message"];
-        _createdAt = [RadarUtils.isoDateFormatter dateFromString:dictionary[@"createdAt"]];
-    }
-    return self;
-}
-
 + (NSArray<NSDictionary *> *)arrayForLogs:(NSArray<RadarLog *> *)logs {
     if (!logs) {
         return nil;
@@ -126,26 +92,6 @@
         [arr addObject:dict];
     }
     return arr;
-}
-
-#pragma mark - NSCoding
-
-- (instancetype)initWithCoder:(NSCoder *)coder {
-    self = [super init];
-    if (self) {
-        _level = [coder decodeIntegerForKey:@"level"];
-        _type = [coder decodeIntegerForKey:@"type"];
-        _message = [coder decodeObjectForKey:@"message"];
-        _createdAt = [coder decodeObjectForKey:@"createdAt"];
-    }
-    return self;
-}
-
-- (void)encodeWithCoder:(NSCoder *)coder {
-    [coder encodeInteger:_level forKey:@"level"];
-    [coder encodeInteger:_type forKey:@"type"];
-    [coder encodeObject:_message forKey:@"message"];
-    [coder encodeObject:_createdAt forKey:@"createdAt"];
 }
 
 
