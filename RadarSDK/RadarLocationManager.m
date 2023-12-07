@@ -391,8 +391,6 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
             if (@available(iOS 11.0, *)) {
                 self.lowPowerLocationManager.showsBackgroundLocationIndicator = options.showBlueBar;
                 [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"showsBackgroundLocationIndicator is set to options.showBlueBar: %d", options.showBlueBar]];
-                // log the full tracking options
-                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Tracking with options: %@", [options dictionaryValue]]];
             } else {
                 [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"showsBackgroundLocationIndicator is false: %d", options.showBlueBar]];
             }
@@ -596,6 +594,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         NSString *identifier = [NSString stringWithFormat:@"%@%@", kSyncGeofenceIdentifierPrefix, geofenceId];
         RadarCoordinate *center;
         double radius = 100;
+        bool rampUpGeofenceAndDifferentFromOriginalGeofence = NO;
         if ([geofence.geometry isKindOfClass:[RadarCircleGeometry class]]) {
             RadarCircleGeometry *geometry = (RadarCircleGeometry *)geofence.geometry;
             center = geometry.center;
@@ -642,6 +641,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                     withinRampUpRadius = YES;
                 } else {
                     radius = rampUpRadius;
+                    rampUpGeofenceAndDifferentFromOriginalGeofence = YES;
                     identifier = [NSString stringWithFormat:@"%@%@", kRampUpGeofenceIdentifierPrefix, geofenceId];
                     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"radius is rampUpRadius: %f", radius]];
                 }
@@ -655,7 +655,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                                                                                 center.coordinate.latitude, center.coordinate.longitude, radius, identifier]];
 
           
-            if (metadata) {
+            if (metadata && !rampUpGeofenceAndDifferentFromOriginalGeofence) {
                 // if metadata has notification has radar:rampUp radius
                 NSString *notificationText = [geofence.metadata objectForKey:@"radar:notificationText"];
                 NSString *notificationTitle = [geofence.metadata objectForKey:@"radar:notificationTitle"];
@@ -691,14 +691,12 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         }
     }
 
-    // call calculateRampedUpTimesAndCleanup to get the total ramped up time in the past hour and 12 hours
     NSDictionary *rampedUpTimes = [self calculateRampedUpTimesAndCleanup];
     NSTimeInterval totalRampedUpTimeOneHour = [[rampedUpTimes objectForKey:@"OneHour"] doubleValue];
     NSTimeInterval totalRampedUpTimeTwelveHours = [[rampedUpTimes objectForKey:@"TwelveHours"] doubleValue];
 
-    // bool for whether or not we've exceeded the ramp up time limit (20 minutes for 1 hour or 120 mintues for 12 hours)
     BOOL exceededRampUpTimeLimit = NO;
-    if (totalRampedUpTimeOneHour > 12000 || totalRampedUpTimeTwelveHours > 72000) {
+    if (totalRampedUpTimeOneHour > 1200 || totalRampedUpTimeTwelveHours > 7200) {
         exceededRampUpTimeLimit = YES;
     }
 
@@ -708,8 +706,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     } else if (withinRampUpRadius && ![RadarSettings rampedUp] && exceededRampUpTimeLimit) {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Exceeded ramp up time limit, not ramping up"]];
     } else if (withinRampUpRadius && [RadarSettings rampedUp] && !exceededRampUpTimeLimit) {
-        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Already ramped up but calling ramp up anyways"]];
-        [self updateTracking:self.locationManager.location fromInitialize:NO ramping:RampingOptionRampUp];  
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Already ramped up"]];
     } else if (withinRampUpRadius && [RadarSettings rampedUp] && exceededRampUpTimeLimit) {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Exceeded ramp up time limit, ramping down"]];
         [self updateTracking:self.locationManager.location fromInitialize:NO ramping:RampingOptionRampDown];
