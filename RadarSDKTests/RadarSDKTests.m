@@ -1510,7 +1510,6 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 }
 
 - (void)test_purge {
-    [self.logBuffer clear];
     for (NSUInteger i = 0; i < 600; i++) {
         [self.logBuffer write:RadarLogLevelDebug type:RadarLogTypeNone message:[NSString stringWithFormat:@"message_%d", i]];
     }
