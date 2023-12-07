@@ -1004,13 +1004,6 @@ logConversionWithNotification
 + (void)setLogLevel:(RadarLogLevel)level;
 
 /**
- Writes to local logs.
-
- @param message The message to be logged.
- */
-+ (void)writeLocalLog:(NSString *_Nonnull)message;
-
-/**
  Log application termination.
 
  */

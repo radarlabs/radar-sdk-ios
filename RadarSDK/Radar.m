@@ -1037,11 +1037,6 @@
     [RadarSettings setLogLevel:level];
 }
 
-+ (void)writeLocalLog:(NSString *)message {
-    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeNone message:message];
-
-}
-
 + (void) logTermination { 
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeNone message:@"App terminated" includeDate:YES includeBattery:YES append:YES];
 }
