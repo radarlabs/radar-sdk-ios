@@ -81,11 +81,10 @@ static int counter = 0;
     }
 
     return logs;
-
 }
 
  - (void)writeToFileStorage:(NSArray <RadarLog *> *)logs {
-     for(RadarLog *log in logs){
+     for (RadarLog *log in logs) {
         NSData *logData = [NSKeyedArchiver archivedDataWithRootObject:log];
         NSTimeInterval unixTimestamp = [log.createdAt timeIntervalSince1970];
         NSString *unixTimestampString = [NSString stringWithFormat:@"%lld%04d", (long long)unixTimestamp, counter++];
@@ -127,7 +126,7 @@ static int counter = 0;
         if (bufferSize+logLength >= MAX_PERSISTED_BUFFER_SIZE) {
             [self removeLogsFromBuffer:PURGE_AMOUNT];
             RadarLog *purgeLog = [[RadarLog alloc] initWithLevel:RadarLogLevelDebug type:RadarLogTypeNone message:kPurgedLogLine];
-           [self writeToFileStorage:@[purgeLog]];
+            [self writeToFileStorage:@[purgeLog]];
         }
         [self writeToFileStorage:logs];
     }
@@ -138,7 +137,7 @@ static int counter = 0;
     @synchronized (self) {
         [mutableLogBuffer removeAllObjects]; 
         NSArray<NSString *> *files = [self.fileHandler allFilesInDirectory:self.logFileDir];
-        if(files){
+        if (files) {
             for (NSString *file in files) {
                 NSString *filePath = [self.logFileDir stringByAppendingPathComponent:file];
                 [self.fileHandler deleteFileAtPath:filePath];
