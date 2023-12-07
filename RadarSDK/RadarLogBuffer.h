@@ -15,7 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface RadarLogBuffer : NSObject
 
 @property (assign, nonatomic, readonly) NSArray<RadarLog *> *flushableLogs;
-@property (strong, nonatomic) NSString *logFilePath;
+@property (strong, nonatomic) NSString *logFileDir;
 @property (strong, nonatomic) RadarFileStorage *fileHandler;
 @property (nonatomic, strong) NSTimer *timer;
 

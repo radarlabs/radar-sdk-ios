@@ -43,11 +43,6 @@
 
 + (void)initializeWithPublishableKey:(NSString *)publishableKey {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"initialize()"];
-    
-    [self flushLogs];
-    
-    [[RadarLogBuffer sharedInstance] clear];
-
 
     [[NSNotificationCenter defaultCenter] addObserver:[self sharedInstance]
                                              selector:@selector(applicationWillEnterForeground)
@@ -72,6 +67,7 @@
                                          [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
                                          [RadarSettings setFeatureSettings:config.meta.featureSettings];
                                      }];
+    [self flushLogs];
 }
 
 #pragma mark - Properties

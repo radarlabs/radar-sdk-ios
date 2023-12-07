@@ -16,6 +16,8 @@ static const int PURGE_AMOUNT = 200;
 static NSString *const kPurgedLogLine = @"----- purged oldest logs -----";
 static NSString *const kDelimiter = @"\?";
 
+static int counter = 0;
+
 @implementation RadarLogBuffer {
     NSMutableArray<RadarLog *> *mutableLogBuffer;
 }
@@ -25,8 +27,10 @@ static NSString *const kDelimiter = @"\?";
     if (self) {
         mutableLogBuffer = [NSMutableArray<RadarLog *> new];
         NSString *documentsDirectory = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES).firstObject;
-        NSString *logFileName = @"RadarLogs.txt";
-        self.logFilePath = [documentsDirectory stringByAppendingPathComponent:logFileName];
+        self.logFileDir = [documentsDirectory stringByAppendingPathComponent:@"radar_logs"];
+        if (![[NSFileManager defaultManager] fileExistsAtPath:self.logFileDir isDirectory:nil]) {
+                [[NSFileManager defaultManager] createDirectoryAtPath:self.logFileDir withIntermediateDirectories:YES attributes:nil error:nil];
+            }
         self.fileHandler = [[RadarFileStorage alloc] init];
         _timer = [NSTimer scheduledTimerWithTimeInterval:20.0 target:self selector:@selector(persistLogs) userInfo:nil repeats:YES];
     }
@@ -43,7 +47,7 @@ static NSString *const kDelimiter = @"\?";
 }
 
 - (void)write:(RadarLogLevel)level type:(RadarLogType)type message:(NSString *)message {
-    RadarLog *radarLog = [[RadarLog alloc] initWithLevel:level type:type message:[self strip:message]];
+    RadarLog *radarLog = [[RadarLog alloc] initWithLevel:level type:type message:message];
     [mutableLogBuffer addObject:radarLog];
     NSUInteger logLength = [mutableLogBuffer count];
     if (logLength >= MAX_MEMORY_BUFFER_SIZE) {
@@ -60,63 +64,42 @@ static NSString *const kDelimiter = @"\?";
 }
 
 - (NSMutableArray<RadarLog *> *)readFromFileStorage {
-    NSData *fileData = [self.fileHandler readFileAtPath:self.logFilePath];
-    NSString *fileString = [[NSString alloc] initWithData:fileData encoding:NSUTF8StringEncoding];
-    return [self jsonToLogs:fileString];
+
+    NSLog(@"read from file storage");
+    NSArray<NSString *> *files = [self.fileHandler allFilesInDirectory:self.logFileDir];
+    NSMutableArray<RadarLog *> *logs = [NSMutableArray array];
+    if(!files){
+        return logs;
+    }
+    for (NSString *file in files) {
+        NSString *filePath = [self.logFileDir stringByAppendingPathComponent:file];
+        NSData *fileData = [self.fileHandler readFileAtPath:filePath];
+        RadarLog *log = [NSKeyedUnarchiver unarchiveObjectWithData:fileData];
+        if(log && log.message){
+            [logs addObject:log];
+            NSLog(@"log message: %@", log.message);
+        }
+    }
+
+    return logs;
+
 }
 
-- (void) writeToFileStorage:(NSMutableArray<RadarLog *> * )logs {
-    NSString *updatedLogString = [self logsToJSON:logs];
-    NSData *updatedLogData = [updatedLogString dataUsingEncoding:NSUTF8StringEncoding];
-    [self.fileHandler writeData:updatedLogData toFileAtPath:self.logFilePath];
-}
+ - (void) writeToFileStorage:(NSArray <RadarLog *> *)logs {
+     for(RadarLog *log in logs){
+        NSData *logData = [NSKeyedArchiver archivedDataWithRootObject:log];
+        NSTimeInterval unixTimestamp = [log.createdAt timeIntervalSince1970];
+        NSString *unixTimestampString = [NSString stringWithFormat:@"%lld_%d", (long long)unixTimestamp,counter++];
+        NSString *filePath = [self.logFileDir stringByAppendingPathComponent:unixTimestampString];
+        NSLog(@"writing log message: %@", log.message);
+        [self.fileHandler writeData:logData toFileAtPath:filePath];
+     }
+ }
 
 - (void) append:(RadarLogLevel)level type:(RadarLogType)type message:(NSString *)message {
     @synchronized (self) {
-        RadarLog *log = [[RadarLog alloc] initWithLevel:level type:type message:[self strip:message]];
-        NSData *jsonData = [NSJSONSerialization dataWithJSONObject:[log dictionaryValue] options:0 error:nil];
-        NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-        NSString *logString = [NSString stringWithFormat:@"%@%@",kDelimiter ,jsonString];
-        NSData *logData = [logString dataUsingEncoding:NSUTF8StringEncoding];
-        [self.fileHandler appendData:logData toFileAtPath:self.logFilePath];
+        [self writeToFileStorage:@[[[RadarLog alloc] initWithLevel:level type:type message:message]]];
     }
-}
-
-//strip a message of a log of delimiter
-- (NSString *)strip:(NSString *)message {
-    return [message stringByReplacingOccurrencesOfString:kDelimiter withString:@""];
-}
-
-- (NSString *)logsToJSON:(NSMutableArray<RadarLog *> *)logs {
-    NSMutableArray<NSString *> *jsonStrings = [NSMutableArray array];
-    for (RadarLog *log in logs) {
-        NSData *jsonData = [NSJSONSerialization dataWithJSONObject:[log dictionaryValue] options:0 error:nil];
-        NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-        [jsonStrings addObject:jsonString];
-    }
-    return [jsonStrings componentsJoinedByString:kDelimiter];
-}
-
-- (NSMutableArray<RadarLog *> *)jsonToLogs:(NSString *)json {
-    
-    if([json length] == 0){
-        return [NSMutableArray array];
-    }
-    if([json hasPrefix:kDelimiter]){
-        json = [json substringFromIndex:1];
-    }
-    
-    NSMutableArray<RadarLog *> *logs = [NSMutableArray array];
-    NSArray<NSString *> *jsonStrings = [json componentsSeparatedByString:kDelimiter];
-    for (NSString *jsonString in jsonStrings) {
-        NSData *jsonData = [jsonString dataUsingEncoding:NSUTF8StringEncoding];
-        NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:jsonData options:0 error:nil];
-        RadarLog *log = [[RadarLog alloc] initWithDictionary:jsonDict];
-        if(log && log.message){
-            [logs addObject:log];
-        }
-    }
-    return logs;
 }
 
 - (NSArray<RadarLog *> *)flushableLogs {
@@ -127,32 +110,40 @@ static NSString *const kDelimiter = @"\?";
     }
 }
 
-
 - (void)removeLogsFromBuffer:(NSUInteger)numLogs {
-    @synchronized (self) {
-        NSMutableArray *existingLogs = [self readFromFileStorage];
-        [existingLogs removeObjectsInRange:NSMakeRange(0, numLogs)];
-        [self writeToFileStorage:existingLogs];
+    @synchronized (self) {       
+        NSArray<NSString *> *files = [self.fileHandler allFilesInDirectory:self.logFileDir];
+        for (NSUInteger i = 0; i < numLogs; i++) {
+                NSString *file = [files objectAtIndex:i];
+                NSString *filePath = [self.logFileDir stringByAppendingPathComponent:file];
+                [self.fileHandler deleteFileAtPath:filePath];
+        }
     }
 }
 
 - (void)addLogsToBuffer:(NSArray<RadarLog *> *)logs {
     @synchronized (self) {
-        NSMutableArray *existingLogs = [self readFromFileStorage];
-        [existingLogs addObjectsFromArray:logs];
-        NSUInteger logLength = [existingLogs count];
-        if (logLength >= MAX_PERSISTED_BUFFER_SIZE) {
-            [existingLogs removeObjectsInRange:NSMakeRange(0, PURGE_AMOUNT)];
+        NSArray<NSString *> *files = [self.fileHandler allFilesInDirectory:self.logFileDir];
+        NSUInteger bufferSize = [files count];
+        NSUInteger logLength = [logs count];
+        if (bufferSize+logLength >= MAX_PERSISTED_BUFFER_SIZE) {
+            [self removeLogsFromBuffer:PURGE_AMOUNT];
             RadarLog *purgeLog = [[RadarLog alloc] initWithLevel:RadarLogLevelDebug type:RadarLogTypeNone message:kPurgedLogLine];
-            [existingLogs insertObject:purgeLog atIndex:0]; 
+           [self writeToFileStorage:@[purgeLog]];
         }
-        [self writeToFileStorage:existingLogs];
+        [self writeToFileStorage:logs];
     }
 }
 
 -(void)clear {
     @synchronized (self) {
-        [self.fileHandler deleteFileAtPath:self.logFilePath];
+        NSArray<NSString *> *files = [self.fileHandler allFilesInDirectory:self.logFileDir];
+        if(files){
+            for (NSString *file in files) {
+                NSString *filePath = [self.logFileDir stringByAppendingPathComponent:file];
+                [self.fileHandler deleteFileAtPath:filePath];
+            }
+        }
     }
 }
 

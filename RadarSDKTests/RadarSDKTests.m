@@ -1416,15 +1416,21 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     XCTAssertEqualObjects(originalData2, readData, @"Data read from file should be equal to original data");
 }
 
-- (void)test_RadarFileStorage_Append {
+- (void)test_RadarFileStorage_AllFilesInDirectory {
+    NSString *testDir = [NSTemporaryDirectory() stringByAppendingPathComponent:@"newDir"];
+    if ([[NSFileManager defaultManager] fileExistsAtPath:testDir isDirectory:nil]) {
+        [[NSFileManager defaultManager] removeItemAtPath:testDir error:nil];
+    }
+    [[NSFileManager defaultManager] createDirectoryAtPath:testDir withIntermediateDirectories:YES attributes:nil error:nil];
+    
+    NSArray<NSString *> *files = [self.fileSystem allFilesInDirectory: testDir];
+    XCTAssertEqual(files.count, 0);
     NSData *originalData = [@"Test data" dataUsingEncoding:NSUTF8StringEncoding];
-    [self.fileSystem writeData:originalData toFileAtPath:self.testFilePath];
-    NSData *appendData = [@"Newer Test data" dataUsingEncoding:NSUTF8StringEncoding];
-    [self.fileSystem appendData:appendData toFileAtPath:self.testFilePath];
-    NSData *readData = [self.fileSystem readFileAtPath:self.testFilePath];
-    NSString *readString = [[NSString alloc] initWithData:readData encoding:NSUTF8StringEncoding];
-    NSString *expectedString = @"Test dataNewer Test data";
-    XCTAssertEqualObjects(readString, expectedString, @"Data read from file should be equal to original data");
+    [self.fileSystem writeData:originalData toFileAtPath: [testDir stringByAppendingPathComponent: @"file1"]];
+    [self.fileSystem writeData:originalData toFileAtPath: [testDir stringByAppendingPathComponent: @"file2"]];
+    NSArray<NSString *> *newFiles = [self.fileSystem allFilesInDirectory: testDir];
+    XCTAssertEqual(newFiles.count, 2);
+    
 }
 
 - (void)test_RadarFileStorage_DeleteFile {
@@ -1436,6 +1442,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 }
 
 - (void)test_RadarLogBuffer_WriteAndFlushableLogs {
+    [self.logBuffer clear];
     RadarLog *log = [[RadarLog alloc] initWithLevel:RadarLogLevelDebug type:RadarLogTypeNone message:@"Test message"];
     [self.logBuffer write:RadarLogLevelDebug type:RadarLogTypeNone message:@"Test message 1"];
     [self.logBuffer write:RadarLogLevelDebug type:RadarLogTypeNone message:@"Test message 2"]; 

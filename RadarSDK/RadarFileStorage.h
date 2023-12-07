@@ -17,6 +17,5 @@
 
 - (void)deleteFileAtPath:(NSString *)filePath;
 
-- (void)appendData:(NSData *)data toFileAtPath:(NSString *)filePath ;
-
+- (NSArray<NSString *> *)allFilesInDirectory:(NSString *)directoryPath;
 @end

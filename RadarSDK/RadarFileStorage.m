@@ -32,27 +32,24 @@
     }];
 }
 
-- (void)appendData:(NSData *)data toFileAtPath:(NSString *)filePath {
-    NSFileCoordinator *fileCoordinator = [[NSFileCoordinator alloc] init];
-    //TODO: not very sure if the option is correct, need to check
-    [fileCoordinator coordinateWritingItemAtURL:[NSURL fileURLWithPath:filePath] options:NSFileCoordinatorWritingForReplacing error:nil byAccessor:^(NSURL *newURL) {
-        NSFileHandle *fileHandle = [NSFileHandle fileHandleForWritingToURL:newURL error:nil];
-        if (!fileHandle) {
-            [[NSFileManager defaultManager] createFileAtPath:[newURL path] contents:nil attributes:nil];
-            fileHandle = [NSFileHandle fileHandleForWritingToURL:newURL error:nil];
-        }
-        [fileHandle seekToEndOfFile];
-        [fileHandle writeData:data];
-        [fileHandle closeFile];
-    }];
-}
-
-
 - (void)deleteFileAtPath:(NSString *)filePath {
     NSFileCoordinator *fileCoordinator = [[NSFileCoordinator alloc] init];
     [fileCoordinator coordinateWritingItemAtURL:[NSURL fileURLWithPath:filePath] options:NSFileCoordinatorWritingForDeleting error:nil byAccessor:^(NSURL *newURL) {
         [[NSFileManager defaultManager] removeItemAtURL:newURL error:nil];
     }];
+}
+
+- (NSArray<NSString *> *)allFilesInDirectory:(NSString *)directoryPath {
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    NSError *error = nil;
+    NSArray<NSString *> *files = [fileManager contentsOfDirectoryAtPath:directoryPath error:&error];
+    
+    if (error) {
+        NSLog(@"Failed to get files in directory: %@", [error localizedDescription]);
+        return nil;
+    }
+    
+    return [files sortedArrayUsingSelector:@selector(localizedCaseInsensitiveCompare:)];;
 }
 
 @end
