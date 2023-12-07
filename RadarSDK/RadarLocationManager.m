@@ -242,7 +242,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
             [self.timer invalidate];
         }
 
-        self.timer = [NSTimer scheduledTimerWithTimeInterval:(interval + 0.1)
+        self.timer = [NSTimer scheduledTimerWithTimeInterval:(interval)
                                                      repeats:YES
                                                        block:^(NSTimer *_Nonnull timer) {
                                                            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Timer fired"];
