@@ -1515,8 +1515,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     NSArray<RadarLog *> *logs = [self.logBuffer flushableLogs];
     XCTAssertEqual(logs.count, 351);
     XCTAssertEqualObjects(logs.firstObject.message, @"message_250");
-    
-    XCTAssertEqualObjects(logs.lastObject.message, @"message_599");
+    XCTAssertEqualObjects(logs.lastObject.message, @"----- purged oldest logs -----");
 }
 
 @end
