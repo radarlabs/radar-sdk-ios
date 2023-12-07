@@ -84,7 +84,7 @@ static int counter = 0;
 
 }
 
- - (void) writeToFileStorage:(NSArray <RadarLog *> *)logs {
+ - (void)writeToFileStorage:(NSArray <RadarLog *> *)logs {
      for(RadarLog *log in logs){
         NSData *logData = [NSKeyedArchiver archivedDataWithRootObject:log];
         NSTimeInterval unixTimestamp = [log.createdAt timeIntervalSince1970];
@@ -94,7 +94,7 @@ static int counter = 0;
      }
  }
 
-- (void) append:(RadarLogLevel)level type:(RadarLogType)type message:(NSString *)message {
+- (void)append:(RadarLogLevel)level type:(RadarLogType)type message:(NSString *)message {
     @synchronized (self) {
         [self writeToFileStorage:@[[[RadarLog alloc] initWithLevel:level type:type message:message]]];
     }
