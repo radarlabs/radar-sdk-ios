@@ -2350,9 +2350,9 @@ confidence level of future events.</p>
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/c:objc(cs)Radar(cm)searchPlacesWithRadius:chains:categories:groups:limit:completionHandler:"></a>
-                    <a name="//apple_ref/objc/Method/+searchPlacesWithRadius:chains:categories:groups:limit:completionHandler:" class="dashAnchor"></a>
-                    <a class="token" href="#/c:objc(cs)Radar(cm)searchPlacesWithRadius:chains:categories:groups:limit:completionHandler:">+searchPlacesWithRadius:<wbr>chains:<wbr>categories:<wbr>groups:<wbr>limit:<wbr>completionHandler:<wbr></a>
+                    <a name="/c:objc(cs)Radar(cm)searchPlacesWithRadius:chains:categories:limit:completionHandler:"></a>
+                    <a name="//apple_ref/objc/Method/+searchPlacesWithRadius:chains:categories:limit:completionHandler:" class="dashAnchor"></a>
+                    <a class="token" href="#/c:objc(cs)Radar(cm)searchPlacesWithRadius:chains:categories:limit:completionHandler:">+searchPlacesWithRadius:<wbr>chains:<wbr>categories:<wbr>limit:<wbr>completionHandler:<wbr></a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -2363,7 +2363,7 @@ confidence level of future events.</p>
                         <p>Gets the device&rsquo;s current location, then searches for places near that location, sorted by distance.</p>
 <div class="aside aside-warning">
     <p class="aside-title">Warning</p>
-    <p>You may specify only one of chains, categories, or groups.</p>
+    <p>You may specify only one of chains or categories.</p>
 
 </div><div class="aside aside-see">
     <p class="aside-title">See</p>
@@ -2379,7 +2379,6 @@ confidence level of future events.</p>
                           <pre class="highlight objective_c"><code><span class="k">+</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">searchPlacesWithRadius</span><span class="p">:(</span><span class="kt">int</span><span class="p">)</span><span class="nv">radius</span>
                         <span class="nf">chains</span><span class="p">:(</span><span class="n">NSArray</span><span class="o">&lt;</span><span class="n">NSString</span> <span class="o">*&gt;</span> <span class="o">*</span><span class="n">_Nullable</span><span class="p">)</span><span class="nv">chains</span>
                     <span class="nf">categories</span><span class="p">:(</span><span class="n">NSArray</span><span class="o">&lt;</span><span class="n">NSString</span> <span class="o">*&gt;</span> <span class="o">*</span><span class="n">_Nullable</span><span class="p">)</span><span class="nv">categories</span>
-                        <span class="nf">groups</span><span class="p">:(</span><span class="n">NSArray</span><span class="o">&lt;</span><span class="n">NSString</span> <span class="o">*&gt;</span> <span class="o">*</span><span class="n">_Nullable</span><span class="p">)</span><span class="nv">groups</span>
                          <span class="nf">limit</span><span class="p">:(</span><span class="kt">int</span><span class="p">)</span><span class="nv">limit</span>
              <span class="nf">completionHandler</span><span class="p">:</span>
                  <span class="p">(</span><span class="n"><a href="../Type%20Definitions.html#/c:Radar.h@T@RadarSearchPlacesCompletionHandler">RadarSearchPlacesCompletionHandler</a></span><span class="p">)</span><span class="nv">completionHandler</span><span class="p">;</span></code></pre>
@@ -2387,7 +2386,7 @@ confidence level of future events.</p>
                         </div>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">class</span> <span class="kd">func</span> <span class="nf">searchPlaces</span><span class="p">(</span><span class="nv">radius</span><span class="p">:</span> <span class="kt">Int32</span><span class="p">,</span> <span class="nv">chains</span><span class="p">:</span> <span class="p">[</span><span class="kt">String</span><span class="p">]?,</span> <span class="nv">categories</span><span class="p">:</span> <span class="p">[</span><span class="kt">String</span><span class="p">]?,</span> <span class="nv">groups</span><span class="p">:</span> <span class="p">[</span><span class="kt">String</span><span class="p">]?,</span> <span class="nv">limit</span><span class="p">:</span> <span class="kt">Int32</span><span class="p">)</span> <span class="k">async</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="kt"><a href="../Enums/RadarStatus.html">RadarStatus</a></span><span class="p">,</span> <span class="kt">CLLocation</span><span class="p">?,</span> <span class="p">[</span><span class="kt"><a href="../Classes/RadarPlace.html">RadarPlace</a></span><span class="p">]?)</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">class</span> <span class="kd">func</span> <span class="nf">searchPlaces</span><span class="p">(</span><span class="nv">radius</span><span class="p">:</span> <span class="kt">Int32</span><span class="p">,</span> <span class="nv">chains</span><span class="p">:</span> <span class="p">[</span><span class="kt">String</span><span class="p">]?,</span> <span class="nv">categories</span><span class="p">:</span> <span class="p">[</span><span class="kt">String</span><span class="p">]?,</span> <span class="nv">limit</span><span class="p">:</span> <span class="kt">Int32</span><span class="p">)</span> <span class="k">async</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="kt"><a href="../Enums/RadarStatus.html">RadarStatus</a></span><span class="p">,</span> <span class="kt">CLLocation</span><span class="p">?,</span> <span class="p">[</span><span class="kt"><a href="../Classes/RadarPlace.html">RadarPlace</a></span><span class="p">]?)</span></code></pre>
 
                         </div>
                       </div>
@@ -2434,18 +2433,6 @@ confidence level of future events.</p>
                             <tr>
                               <td>
                                 <code>
-                                <em>groups</em>
-                                </code>
-                              </td>
-                              <td>
-                                <div>
-                                  <p>An array of groups to filter. See <a href="https://radar.com/documentation/places/groups">https://radar.com/documentation/places/groups</a></p>
-                                </div>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td>
-                                <code>
                                 <em>limit</em>
                                 </code>
                               </td>
@@ -2476,9 +2463,9 @@ confidence level of future events.</p>
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/c:objc(cs)Radar(cm)searchPlacesWithRadius:chains:chainMetadata:categories:groups:limit:completionHandler:"></a>
-                    <a name="//apple_ref/objc/Method/+searchPlacesWithRadius:chains:chainMetadata:categories:groups:limit:completionHandler:" class="dashAnchor"></a>
-                    <a class="token" href="#/c:objc(cs)Radar(cm)searchPlacesWithRadius:chains:chainMetadata:categories:groups:limit:completionHandler:">+searchPlacesWithRadius:<wbr>chains:<wbr>chainMetadata:<wbr>categories:<wbr>groups:<wbr>limit:<wbr>completionHandler:<wbr></a>
+                    <a name="/c:objc(cs)Radar(cm)searchPlacesWithRadius:chains:chainMetadata:categories:limit:completionHandler:"></a>
+                    <a name="//apple_ref/objc/Method/+searchPlacesWithRadius:chains:chainMetadata:categories:limit:completionHandler:" class="dashAnchor"></a>
+                    <a class="token" href="#/c:objc(cs)Radar(cm)searchPlacesWithRadius:chains:chainMetadata:categories:limit:completionHandler:">+searchPlacesWithRadius:<wbr>chains:<wbr>chainMetadata:<wbr>categories:<wbr>limit:<wbr>completionHandler:<wbr></a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -2489,7 +2476,7 @@ confidence level of future events.</p>
                         <p>Gets the device&rsquo;s current location, then searches for places near that location, sorted by distance.</p>
 <div class="aside aside-warning">
     <p class="aside-title">Warning</p>
-    <p>You may specify only one of chains, categories, or groups; if chains are specified, <code>chainMetadata</code> can also be specified.</p>
+    <p>You may specify only one of chains or categories; if chains are specified, <code>chainMetadata</code> can also be specified.</p>
 
 </div><div class="aside aside-see">
     <p class="aside-title">See</p>
@@ -2507,7 +2494,6 @@ confidence level of future events.</p>
                  <span class="nf">chainMetadata</span><span class="p">:(</span><span class="n">NSDictionary</span><span class="o">&lt;</span><span class="n">NSString</span> <span class="o">*</span><span class="p">,</span> <span class="n">NSString</span> <span class="o">*&gt;</span> <span class="o">*</span><span class="n">_Nullable</span><span class="p">)</span>
                                    <span class="n">chainMetadata</span>
                     <span class="n">categories</span><span class="o">:</span><span class="p">(</span><span class="n">NSArray</span><span class="o">&lt;</span><span class="n">NSString</span> <span class="o">*&gt;</span> <span class="o">*</span><span class="n">_Nullable</span><span class="p">)</span><span class="n">categories</span>
-                        <span class="n">groups</span><span class="o">:</span><span class="p">(</span><span class="n">NSArray</span><span class="o">&lt;</span><span class="n">NSString</span> <span class="o">*&gt;</span> <span class="o">*</span><span class="n">_Nullable</span><span class="p">)</span><span class="n">groups</span>
                          <span class="n">limit</span><span class="o">:</span><span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="n">limit</span>
              <span class="n">completionHandler</span><span class="o">:</span>
                  <span class="p">(</span><span class="n"><a href="../Type%20Definitions.html#/c:Radar.h@T@RadarSearchPlacesCompletionHandler">RadarSearchPlacesCompletionHandler</a></span><span class="p">)</span><span class="n">completionHandler</span><span class="p">;</span></code></pre>
@@ -2515,7 +2501,7 @@ confidence level of future events.</p>
                         </div>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">class</span> <span class="kd">func</span> <span class="nf">searchPlaces</span><span class="p">(</span><span class="nv">radius</span><span class="p">:</span> <span class="kt">Int32</span><span class="p">,</span> <span class="nv">chains</span><span class="p">:</span> <span class="p">[</span><span class="kt">String</span><span class="p">]?,</span> <span class="nv">chainMetadata</span><span class="p">:</span> <span class="p">[</span><span class="kt">String</span> <span class="p">:</span> <span class="kt">String</span><span class="p">]?,</span> <span class="nv">categories</span><span class="p">:</span> <span class="p">[</span><span class="kt">String</span><span class="p">]?,</span> <span class="nv">groups</span><span class="p">:</span> <span class="p">[</span><span class="kt">String</span><span class="p">]?,</span> <span class="nv">limit</span><span class="p">:</span> <span class="kt">Int32</span><span class="p">)</span> <span class="k">async</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="kt"><a href="../Enums/RadarStatus.html">RadarStatus</a></span><span class="p">,</span> <span class="kt">CLLocation</span><span class="p">?,</span> <span class="p">[</span><span class="kt"><a href="../Classes/RadarPlace.html">RadarPlace</a></span><span class="p">]?)</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">class</span> <span class="kd">func</span> <span class="nf">searchPlaces</span><span class="p">(</span><span class="nv">radius</span><span class="p">:</span> <span class="kt">Int32</span><span class="p">,</span> <span class="nv">chains</span><span class="p">:</span> <span class="p">[</span><span class="kt">String</span><span class="p">]?,</span> <span class="nv">chainMetadata</span><span class="p">:</span> <span class="p">[</span><span class="kt">String</span> <span class="p">:</span> <span class="kt">String</span><span class="p">]?,</span> <span class="nv">categories</span><span class="p">:</span> <span class="p">[</span><span class="kt">String</span><span class="p">]?,</span> <span class="nv">limit</span><span class="p">:</span> <span class="kt">Int32</span><span class="p">)</span> <span class="k">async</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="kt"><a href="../Enums/RadarStatus.html">RadarStatus</a></span><span class="p">,</span> <span class="kt">CLLocation</span><span class="p">?,</span> <span class="p">[</span><span class="kt"><a href="../Classes/RadarPlace.html">RadarPlace</a></span><span class="p">]?)</span></code></pre>
 
                         </div>
                       </div>
@@ -2574,18 +2560,6 @@ confidence level of future events.</p>
                             <tr>
                               <td>
                                 <code>
-                                <em>groups</em>
-                                </code>
-                              </td>
-                              <td>
-                                <div>
-                                  <p>An array of groups to filter. See <a href="https://radar.com/documentation/places/groups">https://radar.com/documentation/places/groups</a></p>
-                                </div>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td>
-                                <code>
                                 <em>limit</em>
                                 </code>
                               </td>
@@ -2616,9 +2590,9 @@ confidence level of future events.</p>
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/c:objc(cs)Radar(cm)searchPlacesNear:radius:chains:categories:groups:limit:completionHandler:"></a>
-                    <a name="//apple_ref/objc/Method/+searchPlacesNear:radius:chains:categories:groups:limit:completionHandler:" class="dashAnchor"></a>
-                    <a class="token" href="#/c:objc(cs)Radar(cm)searchPlacesNear:radius:chains:categories:groups:limit:completionHandler:">+searchPlacesNear:<wbr>radius:<wbr>chains:<wbr>categories:<wbr>groups:<wbr>limit:<wbr>completionHandler:<wbr></a>
+                    <a name="/c:objc(cs)Radar(cm)searchPlacesNear:radius:chains:categories:limit:completionHandler:"></a>
+                    <a name="//apple_ref/objc/Method/+searchPlacesNear:radius:chains:categories:limit:completionHandler:" class="dashAnchor"></a>
+                    <a class="token" href="#/c:objc(cs)Radar(cm)searchPlacesNear:radius:chains:categories:limit:completionHandler:">+searchPlacesNear:<wbr>radius:<wbr>chains:<wbr>categories:<wbr>limit:<wbr>completionHandler:<wbr></a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -2629,7 +2603,7 @@ confidence level of future events.</p>
                         <p>Searches for places near a location, sorted by distance.</p>
 <div class="aside aside-warning">
     <p class="aside-title">Warning</p>
-    <p>You may specify only one of chains, categories, or groups.</p>
+    <p>You may specify only one of chains or categories.</p>
 
 </div><div class="aside aside-see">
     <p class="aside-title">See</p>
@@ -2646,14 +2620,13 @@ confidence level of future events.</p>
                   <span class="nf">radius</span><span class="p">:(</span><span class="kt">int</span><span class="p">)</span><span class="nv">radius</span>
                   <span class="nf">chains</span><span class="p">:(</span><span class="n">NSArray</span><span class="o">&lt;</span><span class="n">NSString</span> <span class="o">*&gt;</span> <span class="o">*</span><span class="n">_Nullable</span><span class="p">)</span><span class="nv">chains</span>
               <span class="nf">categories</span><span class="p">:(</span><span class="n">NSArray</span><span class="o">&lt;</span><span class="n">NSString</span> <span class="o">*&gt;</span> <span class="o">*</span><span class="n">_Nullable</span><span class="p">)</span><span class="nv">categories</span>
-                  <span class="nf">groups</span><span class="p">:(</span><span class="n">NSArray</span><span class="o">&lt;</span><span class="n">NSString</span> <span class="o">*&gt;</span> <span class="o">*</span><span class="n">_Nullable</span><span class="p">)</span><span class="nv">groups</span>
                    <span class="nf">limit</span><span class="p">:(</span><span class="kt">int</span><span class="p">)</span><span class="nv">limit</span>
        <span class="nf">completionHandler</span><span class="p">:(</span><span class="n"><a href="../Type%20Definitions.html#/c:Radar.h@T@RadarSearchPlacesCompletionHandler">RadarSearchPlacesCompletionHandler</a></span><span class="p">)</span><span class="nv">completionHandler</span><span class="p">;</span></code></pre>
 
                         </div>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">class</span> <span class="kd">func</span> <span class="nf">searchPlaces</span><span class="p">(</span><span class="nv">near</span><span class="p">:</span> <span class="kt">CLLocation</span><span class="p">,</span> <span class="nv">radius</span><span class="p">:</span> <span class="kt">Int32</span><span class="p">,</span> <span class="nv">chains</span><span class="p">:</span> <span class="p">[</span><span class="kt">String</span><span class="p">]?,</span> <span class="nv">categories</span><span class="p">:</span> <span class="p">[</span><span class="kt">String</span><span class="p">]?,</span> <span class="nv">groups</span><span class="p">:</span> <span class="p">[</span><span class="kt">String</span><span class="p">]?,</span> <span class="nv">limit</span><span class="p">:</span> <span class="kt">Int32</span><span class="p">)</span> <span class="k">async</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="kt"><a href="../Enums/RadarStatus.html">RadarStatus</a></span><span class="p">,</span> <span class="kt">CLLocation</span><span class="p">?,</span> <span class="p">[</span><span class="kt"><a href="../Classes/RadarPlace.html">RadarPlace</a></span><span class="p">]?)</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">class</span> <span class="kd">func</span> <span class="nf">searchPlaces</span><span class="p">(</span><span class="nv">near</span><span class="p">:</span> <span class="kt">CLLocation</span><span class="p">,</span> <span class="nv">radius</span><span class="p">:</span> <span class="kt">Int32</span><span class="p">,</span> <span class="nv">chains</span><span class="p">:</span> <span class="p">[</span><span class="kt">String</span><span class="p">]?,</span> <span class="nv">categories</span><span class="p">:</span> <span class="p">[</span><span class="kt">String</span><span class="p">]?,</span> <span class="nv">limit</span><span class="p">:</span> <span class="kt">Int32</span><span class="p">)</span> <span class="k">async</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="kt"><a href="../Enums/RadarStatus.html">RadarStatus</a></span><span class="p">,</span> <span class="kt">CLLocation</span><span class="p">?,</span> <span class="p">[</span><span class="kt"><a href="../Classes/RadarPlace.html">RadarPlace</a></span><span class="p">]?)</span></code></pre>
 
                         </div>
                       </div>
@@ -2712,18 +2685,6 @@ confidence level of future events.</p>
                             <tr>
                               <td>
                                 <code>
-                                <em>groups</em>
-                                </code>
-                              </td>
-                              <td>
-                                <div>
-                                  <p>An array of groups to filter. See <a href="https://radar.com/documentation/places/groups">https://radar.com/documentation/places/groups</a></p>
-                                </div>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td>
-                                <code>
                                 <em>limit</em>
                                 </code>
                               </td>
@@ -2754,9 +2715,9 @@ confidence level of future events.</p>
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/c:objc(cs)Radar(cm)searchPlacesNear:radius:chains:chainMetadata:categories:groups:limit:completionHandler:"></a>
-                    <a name="//apple_ref/objc/Method/+searchPlacesNear:radius:chains:chainMetadata:categories:groups:limit:completionHandler:" class="dashAnchor"></a>
-                    <a class="token" href="#/c:objc(cs)Radar(cm)searchPlacesNear:radius:chains:chainMetadata:categories:groups:limit:completionHandler:">+searchPlacesNear:<wbr>radius:<wbr>chains:<wbr>chainMetadata:<wbr>categories:<wbr>groups:<wbr>limit:<wbr>completionHandler:<wbr></a>
+                    <a name="/c:objc(cs)Radar(cm)searchPlacesNear:radius:chains:chainMetadata:categories::imit:completionHandler:"></a>
+                    <a name="//apple_ref/objc/Method/+searchPlacesNear:radius:chains:chainMetadata:categories:limit:completionHandler:" class="dashAnchor"></a>
+                    <a class="token" href="#/c:objc(cs)Radar(cm)searchPlacesNear:radius:chains:chainMetadata:categories:limit:completionHandler:">+searchPlacesNear:<wbr>radius:<wbr>chains:<wbr>chainMetadata:<wbr>categories:<wbr>limit:<wbr>completionHandler:<wbr></a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -2767,7 +2728,7 @@ confidence level of future events.</p>
                         <p>Searches for places near a location, sorted by distance.</p>
 <div class="aside aside-warning">
     <p class="aside-title">Warning</p>
-    <p>You may specify only one of chains, categories, or groups.</p>
+    <p>You may specify only one of chains or categories.</p>
 
 </div><div class="aside aside-see">
     <p class="aside-title">See</p>
@@ -2786,14 +2747,13 @@ confidence level of future events.</p>
            <span class="nf">chainMetadata</span><span class="p">:</span>
                <span class="p">(</span><span class="n">NSDictionary</span><span class="o">&lt;</span><span class="n">NSString</span> <span class="o">*</span><span class="p">,</span> <span class="n">NSString</span> <span class="o">*&gt;</span> <span class="o">*</span><span class="n">_Nullable</span><span class="p">)</span><span class="nv">chainMetadata</span>
               <span class="nf">categories</span><span class="p">:(</span><span class="n">NSArray</span><span class="o">&lt;</span><span class="n">NSString</span> <span class="o">*&gt;</span> <span class="o">*</span><span class="n">_Nullable</span><span class="p">)</span><span class="nv">categories</span>
-                  <span class="nf">groups</span><span class="p">:(</span><span class="n">NSArray</span><span class="o">&lt;</span><span class="n">NSString</span> <span class="o">*&gt;</span> <span class="o">*</span><span class="n">_Nullable</span><span class="p">)</span><span class="nv">groups</span>
                    <span class="nf">limit</span><span class="p">:(</span><span class="kt">int</span><span class="p">)</span><span class="nv">limit</span>
        <span class="nf">completionHandler</span><span class="p">:(</span><span class="n"><a href="../Type%20Definitions.html#/c:Radar.h@T@RadarSearchPlacesCompletionHandler">RadarSearchPlacesCompletionHandler</a></span><span class="p">)</span><span class="nv">completionHandler</span><span class="p">;</span></code></pre>
 
                         </div>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">class</span> <span class="kd">func</span> <span class="nf">searchPlaces</span><span class="p">(</span><span class="nv">near</span><span class="p">:</span> <span class="kt">CLLocation</span><span class="p">,</span> <span class="nv">radius</span><span class="p">:</span> <span class="kt">Int32</span><span class="p">,</span> <span class="nv">chains</span><span class="p">:</span> <span class="p">[</span><span class="kt">String</span><span class="p">]?,</span> <span class="nv">chainMetadata</span><span class="p">:</span> <span class="p">[</span><span class="kt">String</span> <span class="p">:</span> <span class="kt">String</span><span class="p">]?,</span> <span class="nv">categories</span><span class="p">:</span> <span class="p">[</span><span class="kt">String</span><span class="p">]?,</span> <span class="nv">groups</span><span class="p">:</span> <span class="p">[</span><span class="kt">String</span><span class="p">]?,</span> <span class="nv">limit</span><span class="p">:</span> <span class="kt">Int32</span><span class="p">)</span> <span class="k">async</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="kt"><a href="../Enums/RadarStatus.html">RadarStatus</a></span><span class="p">,</span> <span class="kt">CLLocation</span><span class="p">?,</span> <span class="p">[</span><span class="kt"><a href="../Classes/RadarPlace.html">RadarPlace</a></span><span class="p">]?)</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">class</span> <span class="kd">func</span> <span class="nf">searchPlaces</span><span class="p">(</span><span class="nv">near</span><span class="p">:</span> <span class="kt">CLLocation</span><span class="p">,</span> <span class="nv">radius</span><span class="p">:</span> <span class="kt">Int32</span><span class="p">,</span> <span class="nv">chains</span><span class="p">:</span> <span class="p">[</span><span class="kt">String</span><span class="p">]?,</span> <span class="nv">chainMetadata</span><span class="p">:</span> <span class="p">[</span><span class="kt">String</span> <span class="p">:</span> <span class="kt">String</span><span class="p">]?,</span> <span class="nv">categories</span><span class="p">:</span> <span class="p">[</span><span class="kt">String</span><span class="p">]?,</span> <span class="nv">limit</span><span class="p">:</span> <span class="kt">Int32</span><span class="p">)</span> <span class="k">async</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="kt"><a href="../Enums/RadarStatus.html">RadarStatus</a></span><span class="p">,</span> <span class="kt">CLLocation</span><span class="p">?,</span> <span class="p">[</span><span class="kt"><a href="../Classes/RadarPlace.html">RadarPlace</a></span><span class="p">]?)</span></code></pre>
 
                         </div>
                       </div>
@@ -2858,18 +2818,6 @@ confidence level of future events.</p>
                               <td>
                                 <div>
                                   <p>An array of categories to filter. See <a href="https://radar.com/documentation/places/categories">https://radar.com/documentation/places/categories</a></p>
-                                </div>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td>
-                                <code>
-                                <em>groups</em>
-                                </code>
-                              </td>
-                              <td>
-                                <div>
-                                  <p>An array of groups to filter. See <a href="https://radar.com/documentation/places/groups">https://radar.com/documentation/places/groups</a></p>
                                 </div>
                               </td>
                             </tr>

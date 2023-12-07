@@ -50,7 +50,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             chains: ["mcdonalds"],
             chainMetadata: ["orderActive": "true"],
             categories: nil,
-            groups: nil,
             limit: 10
         ) { (status, location, places) in
             print("Search places: status = \(Radar.stringForStatus(status)); places = \(String(describing: places))")

@@ -710,12 +710,12 @@ logConversionWithNotification
 /**
  Gets the device's current location, then searches for places near that location, sorted by distance.
 
- @warning You may specify only one of chains, categories, or groups.
+ @warning You may specify only one of chains or categories.
 
  @param radius The radius to search, in meters. A number between 100 and 10000.
  @param chains An array of chain slugs to filter. See https://radar.com/documentation/places/chains
  @param categories An array of categories to filter. See https://radar.com/documentation/places/categories
- @param groups An array of groups to filter. See https://radar.com/documentation/places/groups
+ @deprecated groups An array of groups to filter. See https://radar.com/documentation/places/groups
  @param limit The max number of places to return. A number between 1 and 100.
  @param completionHandler A completion handler.
 
@@ -724,20 +724,19 @@ logConversionWithNotification
 + (void)searchPlacesWithRadius:(int)radius
                         chains:(NSArray<NSString *> *_Nullable)chains
                     categories:(NSArray<NSString *> *_Nullable)categories
-                        groups:(NSArray<NSString *> *_Nullable)groups
                          limit:(int)limit
              completionHandler:(RadarSearchPlacesCompletionHandler)completionHandler NS_SWIFT_NAME(searchPlaces(radius:chains:categories:groups:limit:completionHandler:));
 
 /**
  Gets the device's current location, then searches for places near that location, sorted by distance.
 
- @warning You may specify only one of chains, categories, or groups; if chains are specified, `chainMetadata` can also be specified.
+ @warning You may specify only one of chains or categories; if chains are specified, `chainMetadata` can also be specified.
 
  @param radius The radius to search, in meters. A number between 100 and 10000.
  @param chains An array of chain slugs to filter. See https://radar.com/documentation/places/chains
  @param chainMetadata Optional chain metadata filters. Keys and values must be strings. See https://radar.com/documentation/places#metadata.
  @param categories An array of categories to filter. See https://radar.com/documentation/places/categories
- @param groups An array of groups to filter. See https://radar.com/documentation/places/groups
+ @deprecated groups An array of groups to filter. See https://radar.com/documentation/places/groups
  @param limit The max number of places to return. A number between 1 and 100.
  @param completionHandler A completion handler.
 
@@ -747,7 +746,6 @@ logConversionWithNotification
                         chains:(NSArray<NSString *> *_Nullable)chains
                  chainMetadata:(NSDictionary<NSString *, NSString *> *_Nullable)chainMetadata
                     categories:(NSArray<NSString *> *_Nullable)categories
-                        groups:(NSArray<NSString *> *_Nullable)groups
                          limit:(int)limit
              completionHandler:(RadarSearchPlacesCompletionHandler)completionHandler NS_SWIFT_NAME(searchPlaces(radius:chains:chainMetadata:categories:groups:limit:completionHandler:));
 
@@ -760,7 +758,7 @@ logConversionWithNotification
  @param radius The radius to search, in meters. A number between 100 and 10000.
  @param chains An array of chain slugs to filter. See https://radar.com/documentation/places/chains
  @param categories An array of categories to filter. See https://radar.com/documentation/places/categories
- @param groups An array of groups to filter. See https://radar.com/documentation/places/groups
+ @deprecated groups An array of groups to filter. See https://radar.com/documentation/places/groups
  @param limit The max number of places to return. A number between 1 and 100.
  @param completionHandler A completion handler.
 
@@ -770,21 +768,20 @@ logConversionWithNotification
                   radius:(int)radius
                   chains:(NSArray<NSString *> *_Nullable)chains
               categories:(NSArray<NSString *> *_Nullable)categories
-                  groups:(NSArray<NSString *> *_Nullable)groups
                    limit:(int)limit
-       completionHandler:(RadarSearchPlacesCompletionHandler)completionHandler NS_SWIFT_NAME(searchPlaces(near:radius:chains:categories:groups:limit:completionHandler:));
+       completionHandler:(RadarSearchPlacesCompletionHandler)completionHandler NS_SWIFT_NAME(searchPlaces(near:radius:chains:categories:limit:completionHandler:));
 
 /**
  Searches for places near a location, sorted by distance.
 
- @warning You may specify only one of chains, categories, or groups.
+ @warning You may specify only one of chains or categories.
 
  @param near The location to search.
  @param radius The radius to search, in meters. A number between 100 and 10000.
  @param chains An array of chain slugs to filter. See https://radar.com/documentation/places/chains
  @param chainMetadata Optional chain metadata filters. Keys and values must be strings. See https://radar.com/documentation/places#metadata.
  @param categories An array of categories to filter. See https://radar.com/documentation/places/categories
- @param groups An array of groups to filter. See https://radar.com/documentation/places/groups
+ @deprecated groups An array of groups to filter. See https://radar.com/documentation/places/groups
  @param limit The max number of places to return. A number between 1 and 100.
  @param completionHandler A completion handler.
 
@@ -795,9 +792,8 @@ logConversionWithNotification
                   chains:(NSArray<NSString *> *_Nullable)chains
            chainMetadata:(NSDictionary<NSString *, NSString *> *_Nullable)chainMetadata
               categories:(NSArray<NSString *> *_Nullable)categories
-                  groups:(NSArray<NSString *> *_Nullable)groups
                    limit:(int)limit
-       completionHandler:(RadarSearchPlacesCompletionHandler)completionHandler NS_SWIFT_NAME(searchPlaces(near:radius:chains:chainMetadata:categories:groups:limit:completionHandler:));
+       completionHandler:(RadarSearchPlacesCompletionHandler)completionHandler NS_SWIFT_NAME(searchPlaces(near:radius:chains:chainMetadata:categories:limit:completionHandler:));
 
 /**
  Gets the device's current location, then searches for geofences near that location, sorted by distance.
