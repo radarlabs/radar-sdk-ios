@@ -11,7 +11,6 @@
 #import "RadarSettings.h"
 #import "RadarUtils.h"
 #import <os/log.h>
-#import "RadarFileStorage.h"
 #import "RadarLog.h"
 #import "RadarLogBuffer.h"
 
@@ -29,11 +28,6 @@
 - (instancetype)init {
     self = [super init];
     if (self) {
-        // Set the default log file path
-        NSString *documentsDirectory = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES).firstObject;
-        NSString *logFileName = @"RadarLogs.txt";
-        self.logFilePath = [documentsDirectory stringByAppendingPathComponent:logFileName];
-        self.fileHandler = [[RadarFileStorage alloc] init];
         self.dateFormatter = [[NSDateFormatter alloc] init];
         [self.dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
         self.device = [UIDevice currentDevice];
