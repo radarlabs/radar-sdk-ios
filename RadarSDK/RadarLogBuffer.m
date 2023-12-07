@@ -84,13 +84,13 @@ static int counter = 0;
 }
 
  - (void)writeToFileStorage:(NSArray <RadarLog *> *)logs {
-     for (RadarLog *log in logs) {
+    for (RadarLog *log in logs) {
         NSData *logData = [NSKeyedArchiver archivedDataWithRootObject:log];
         NSTimeInterval unixTimestamp = [log.createdAt timeIntervalSince1970];
         NSString *unixTimestampString = [NSString stringWithFormat:@"%lld%04d", (long long)unixTimestamp, counter++];
         NSString *filePath = [self.logFileDir stringByAppendingPathComponent:unixTimestampString];
         [self.fileHandler writeData:logData toFileAtPath:filePath];
-     }
+    }
  }
 
 - (void)append:(RadarLogLevel)level type:(RadarLogType)type message:(NSString *)message {
