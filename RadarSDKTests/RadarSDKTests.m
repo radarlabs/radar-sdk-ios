@@ -1407,7 +1407,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     XCTAssertNotEqualObjects(options, @"foo");
 }
 
-- (void)test_RadarFileStorage_WriteAndRead {
+- (void)test_RadarFileStorage_writeAndRead {
     NSData *originalData = [@"Test data" dataUsingEncoding:NSUTF8StringEncoding];
     [self.fileSystem writeData:originalData toFileAtPath:self.testFilePath];
     NSData *originalData2 = [@"Newer Test data" dataUsingEncoding:NSUTF8StringEncoding];
@@ -1416,7 +1416,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     XCTAssertEqualObjects(originalData2, readData, @"Data read from file should be equal to original data");
 }
 
-- (void)test_RadarFileStorage_AllFilesInDirectory {
+- (void)test_RadarFileStorage_allFilesInDirectory {
     NSString *testDir = [NSTemporaryDirectory() stringByAppendingPathComponent:@"newDir"];
     if ([[NSFileManager defaultManager] fileExistsAtPath:testDir isDirectory:nil]) {
         [[NSFileManager defaultManager] removeItemAtPath:testDir error:nil];
@@ -1433,7 +1433,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     
 }
 
-- (void)test_RadarFileStorage_DeleteFile {
+- (void)test_RadarFileStorage_deleteFile {
     NSData *originalData = [@"Test data" dataUsingEncoding:NSUTF8StringEncoding];
     [self.fileSystem writeData:originalData toFileAtPath:self.testFilePath];
     [self.fileSystem deleteFileAtPath:self.testFilePath];
@@ -1441,7 +1441,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     XCTAssertNil(readData, @"Data read from file should be nil after file is deleted");
 }
 
-- (void)test_RadarLogBuffer_WriteAndFlushableLogs {
+- (void)test_RadarLogBuffer_writeAndFlushableLogs {
     RadarLog *log = [[RadarLog alloc] initWithLevel:RadarLogLevelDebug type:RadarLogTypeNone message:@"Test message"];
     [self.logBuffer write:RadarLogLevelDebug type:RadarLogTypeNone message:@"Test message 1"];
     [self.logBuffer write:RadarLogLevelDebug type:RadarLogTypeNone message:@"Test message 2"]; 
@@ -1457,7 +1457,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     XCTAssertEqualObjects(newLogs.lastObject.message, @"Test message 3");
 }
 
-- (void)test_RadarLogBuffer_RemoveLogsFromBuffer {
+- (void)test_RadarLogBuffer_removeLogsFromBuffer {
     RadarLog *log = [[RadarLog alloc] initWithLevel:RadarLogLevelDebug type:RadarLogTypeNone message:@"Test message"];
     [self.logBuffer write:RadarLogLevelDebug type:RadarLogTypeNone message:@"Test message 1"];
     [self.logBuffer write:RadarLogLevelDebug type:RadarLogTypeNone message:@"Test message 2"];
@@ -1467,7 +1467,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     XCTAssertEqual(logs.count, 0);
 }
 
-- (void)test_RadarLogBuffer_AddLogsToBuffrer {
+- (void)test_RadarLogBuffer_addLogsToBuffrer {
     RadarLog *log1 = [[RadarLog alloc] initWithLevel:RadarLogLevelDebug type:RadarLogTypeNone message:@"Test message 1"];
     RadarLog *log2 = [[RadarLog alloc] initWithLevel:RadarLogLevelDebug type:RadarLogTypeNone message:@"Test message 2"];
     RadarLog *log3 = [[RadarLog alloc] initWithLevel:RadarLogLevelDebug type:RadarLogTypeNone message:@"Test message 3"];
@@ -1508,7 +1508,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     XCTAssertEqualObjects(logs.lastObject.message, @"Test message 2");
 }
 
-- (void)test_purge {
+- (void)test_RadarLogBuffer_purge {
     for (NSUInteger i = 0; i < 600; i++) {
         [self.logBuffer write:RadarLogLevelDebug type:RadarLogTypeNone message:[NSString stringWithFormat:@"message_%d", i]];
     }

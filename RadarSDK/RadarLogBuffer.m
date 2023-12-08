@@ -110,7 +110,8 @@ static int counter = 0;
 - (void)removeLogsFromBuffer:(NSUInteger)numLogs {
     @synchronized (self) {       
         NSArray<NSString *> *files = [self.fileHandler allFilesInDirectory:self.logFileDir];
-        for (NSUInteger i = 0; i < numLogs; i++) {
+        numLogs = MIN(numLogs, [files count]);
+        for (NSUInteger i = 0; i < (numLogs); i++) {
                 NSString *file = [files objectAtIndex:i];
                 NSString *filePath = [self.logFileDir stringByAppendingPathComponent:file];
                 [self.fileHandler deleteFileAtPath:filePath];
@@ -123,8 +124,11 @@ static int counter = 0;
         NSArray<NSString *> *files = [self.fileHandler allFilesInDirectory:self.logFileDir];
         NSUInteger bufferSize = [files count];
         NSUInteger logLength = [logs count];
-        if (bufferSize+logLength >= MAX_PERSISTED_BUFFER_SIZE) {
+        while (bufferSize+logLength >= MAX_PERSISTED_BUFFER_SIZE) {
             [self removeLogsFromBuffer:PURGE_AMOUNT];
+            files = [self.fileHandler allFilesInDirectory:self.logFileDir];
+            bufferSize = [files count];
+            logLength = [logs count];
             RadarLog *purgeLog = [[RadarLog alloc] initWithLevel:RadarLogLevelDebug type:RadarLogTypeNone message:kPurgedLogLine];
             [self writeToFileStorage:@[purgeLog]];
         }
