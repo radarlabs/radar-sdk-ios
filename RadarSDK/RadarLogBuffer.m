@@ -113,9 +113,12 @@ static int counter = 0;
 
 - (void)append:(RadarLogLevel)level type:(RadarLogType)type message:(NSString *)message {
     @synchronized (self) {
-        [self write:level type:type message:message];
         if ([RadarSettings featureSettings].useLogPersistence) {
+            NSLog(@"writing to file storage");
             [self writeToFileStorage:@[[[RadarLog alloc] initWithLevel:level type:type message:message]]];
+        }
+        else{
+            [self write:level type:type message:message];
         }
     }
 }
