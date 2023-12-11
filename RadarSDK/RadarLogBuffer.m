@@ -38,7 +38,7 @@ static int counter = 0;
             }
             self.fileHandler = [[RadarFileStorage alloc] init];
             _timer = [NSTimer scheduledTimerWithTimeInterval:20.0 target:self selector:@selector(persistLogs) userInfo:nil repeats:YES];
-        }
+        } 
     }
     return self;
 }
@@ -185,7 +185,7 @@ static int counter = 0;
 //for use in testing
 -(void)clearBuffer {
     @synchronized (self) {
-        [mutableLogBuffer removeAllObjects]; 
+        [mutableLogBuffer removeAllObjects];
         NSArray<NSString *> *files = [self.fileHandler allFilesInDirectory:self.logFileDir];
         if (files) {
             for (NSString *file in files) {

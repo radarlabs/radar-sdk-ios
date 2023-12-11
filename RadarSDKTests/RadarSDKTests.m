@@ -283,7 +283,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 
 - (void)setUp {
     [super setUp];
-
+    [RadarSettings setFeatureSettings: [[RadarFeatureSettings alloc] initWithUsePersistence:YES extendFlushReplays:YES useLogPersistence:YES]];
     [Radar initializeWithPublishableKey:kPublishableKey];
     [Radar setLogLevel:RadarLogLevelDebug];
 
@@ -300,7 +300,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     self.testFilePath = [NSTemporaryDirectory() stringByAppendingPathComponent:@"testfile"];
     self.logBuffer = [RadarLogBuffer sharedInstance];
     [self.logBuffer clearBuffer];
-    [RadarSettings setFeatureSettings: [[RadarFeatureSettings alloc] initWithUsePersistence:YES extendFlushReplays:YES useLogPersistence:YES]];
+    
 }
 
 - (void)tearDown {
