@@ -300,6 +300,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     self.testFilePath = [NSTemporaryDirectory() stringByAppendingPathComponent:@"testfile"];
     self.logBuffer = [RadarLogBuffer sharedInstance];
     [self.logBuffer clearBuffer];
+    [RadarSettings setFeatureSettings: [[RadarFeatureSettings alloc] initWithUsePersistence:YES extendFlushReplays:YES useLogPersistence:YES]];
 }
 
 - (void)tearDown {
@@ -1442,7 +1443,6 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 }
 
 - (void)test_RadarLogBuffer_writeAndFlushableLogs {
-    RadarLog *log = [[RadarLog alloc] initWithLevel:RadarLogLevelDebug type:RadarLogTypeNone message:@"Test message"];
     [self.logBuffer write:RadarLogLevelDebug type:RadarLogTypeNone message:@"Test message 1"];
     [self.logBuffer write:RadarLogLevelDebug type:RadarLogTypeNone message:@"Test message 2"]; 
     [self.logBuffer persistLogs];
@@ -1458,7 +1458,6 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 }
 
 - (void)test_RadarLogBuffer_removeLogsFromBuffer {
-    RadarLog *log = [[RadarLog alloc] initWithLevel:RadarLogLevelDebug type:RadarLogTypeNone message:@"Test message"];
     [self.logBuffer write:RadarLogLevelDebug type:RadarLogTypeNone message:@"Test message 1"];
     [self.logBuffer write:RadarLogLevelDebug type:RadarLogTypeNone message:@"Test message 2"];
     [self.logBuffer persistLogs];
@@ -1509,6 +1508,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 }
 
 - (void)test_RadarLogBuffer_purge {
+    [self.logBuffer clearBuffer];
     for (NSUInteger i = 0; i < 600; i++) {
         [self.logBuffer write:RadarLogLevelDebug type:RadarLogTypeNone message:[NSString stringWithFormat:@"message_%d", i]];
     }
@@ -1516,6 +1516,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     XCTAssertEqual(logs.count, 351);
     XCTAssertEqualObjects(logs.firstObject.message, @"message_250");
     XCTAssertEqualObjects(logs.lastObject.message, @"----- purged oldest logs -----");
+    [self.logBuffer clearBuffer];
 }
 
 @end
