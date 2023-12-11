@@ -21,6 +21,7 @@ static int counter = 0;
 
 @implementation RadarLogBuffer {
     NSMutableArray<RadarLog *> *mutableLogBuffer;
+    NSMutableArray<RadarLog *> *inMemoryLogBuffer;
     BOOL useLogPersistence;
 }
 
@@ -30,6 +31,7 @@ static int counter = 0;
         RadarFeatureSettings *featureSettings = [RadarSettings featureSettings];
         useLogPersistence = featureSettings.useLogPersistence;
         mutableLogBuffer = [NSMutableArray<RadarLog *> new];
+        inMemoryLogBuffer = [NSMutableArray<RadarLog *> new];
         if (useLogPersistence) {
             NSString *documentsDirectory = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES).firstObject;
             self.logFileDir = [documentsDirectory stringByAppendingPathComponent:@"radar_logs"];
@@ -54,32 +56,31 @@ static int counter = 0;
 
 - (void)write:(RadarLogLevel)level type:(RadarLogType)type message:(NSString *)message {
     @synchronized (self) {
+        NSUInteger logLength = [mutableLogBuffer count];
+        if (logLength >= MAX_BUFFER_SIZE) {
+            [self purgeOldestLogs];
+        }
+        // add new log to buffer
+        RadarLog *radarLog = [[RadarLog alloc] initWithLevel:level type:type message:message];
+        [mutableLogBuffer addObject:radarLog];
+
         if (useLogPersistence) {
             RadarLog *radarLog = [[RadarLog alloc] initWithLevel:level type:type message:message];
-            [mutableLogBuffer addObject:radarLog];
-            NSUInteger logLength = [mutableLogBuffer count];
+            [inMemoryLogBuffer addObject:radarLog];
+            NSUInteger logLength = [inMemoryLogBuffer count];
             if (logLength >= MAX_MEMORY_BUFFER_SIZE) {
                 [self persistLogs];
             }
-        }
-        else {
-            NSUInteger logLength = [mutableLogBuffer count];
-            if (logLength >= MAX_BUFFER_SIZE) {
-                [self purgeOldestLogs];
-            }
-            // add new log to buffer
-            RadarLog *radarLog = [[RadarLog alloc] initWithLevel:level type:type message:message];
-            [mutableLogBuffer addObject:radarLog];
-        } 
+        }    
     }
 }
 
 - (void)persistLogs {
     @synchronized (self) {
         if (useLogPersistence) {
-            NSArray *flushableLogs = [mutableLogBuffer copy];
+            NSArray *flushableLogs = [inMemoryLogBuffer copy];
             [self addLogsToBuffer:flushableLogs];
-            [mutableLogBuffer removeAllObjects]; 
+            [inMemoryLogBuffer removeAllObjects]; 
         }
     }
 }
@@ -115,11 +116,9 @@ static int counter = 0;
 
 - (void)append:(RadarLogLevel)level type:(RadarLogType)type message:(NSString *)message {
     @synchronized (self) {
+        [self write:level type:type message:message];
         if (useLogPersistence){
             [self writeToFileStorage:@[[[RadarLog alloc] initWithLevel:level type:type message:message]]];
-        }
-        else {
-            [self write:level type:type message:message];
         }
     }
 }
@@ -147,6 +146,7 @@ static int counter = 0;
 
 - (void)removeLogsFromBuffer:(NSUInteger)numLogs {
     @synchronized (self) {
+        [mutableLogBuffer removeObjectsInRange:NSMakeRange(0, numLogs)];
         if (useLogPersistence) {
              NSArray<NSString *> *files = [self.fileHandler allFilesInDirectory:self.logFileDir];
             numLogs = MIN(numLogs, [files count]);
@@ -155,14 +155,13 @@ static int counter = 0;
                 NSString *filePath = [self.logFileDir stringByAppendingPathComponent:file];
                 [self.fileHandler deleteFileAtPath:filePath];
             }
-        } else {
-            [mutableLogBuffer removeObjectsInRange:NSMakeRange(0, numLogs)];
         }
     }
 }
 
 - (void)addLogsToBuffer:(NSArray<RadarLog *> *)logs {
     @synchronized (self) {
+        [mutableLogBuffer addObjectsFromArray:logs];
         if (useLogPersistence) {
             NSArray<NSString *> *files = [self.fileHandler allFilesInDirectory:self.logFileDir];
             NSUInteger bufferSize = [files count];
@@ -176,16 +175,14 @@ static int counter = 0;
                 [self writeToFileStorage:@[purgeLog]];
             }
             [self writeToFileStorage:logs];
-        } else {
-            [mutableLogBuffer addObjectsFromArray:logs];
-        }
+        } 
     }
 }
 
 //for use in testing
 -(void)clearBuffer {
     @synchronized (self) {
-        [mutableLogBuffer removeAllObjects];
+        [inMemoryLogBuffer removeAllObjects];
         NSArray<NSString *> *files = [self.fileHandler allFilesInDirectory:self.logFileDir];
         if (files) {
             for (NSString *file in files) {
