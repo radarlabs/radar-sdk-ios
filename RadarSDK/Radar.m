@@ -66,8 +66,9 @@
                                      completionHandler:^(RadarStatus status, RadarConfig *config) {
                                          [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
                                          [RadarSettings setFeatureSettings:config.meta.featureSettings];
+                                         [self flushLogs];
                                      }];
-    [self flushLogs];
+    
 }
 
 #pragma mark - Properties

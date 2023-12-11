@@ -68,7 +68,7 @@ static int counter = 0;
             if (logLength >= MAX_MEMORY_BUFFER_SIZE) {
                 [self persistLogs];
             }
-        }    
+        }   
     }
 }
 
@@ -114,7 +114,6 @@ static int counter = 0;
 - (void)append:(RadarLogLevel)level type:(RadarLogType)type message:(NSString *)message {
     @synchronized (self) {
         if ([RadarSettings featureSettings].useLogPersistence || [[NSProcessInfo processInfo] environment][@"XCTestConfigurationFilePath"]) {
-            NSLog(@"writing to file storage");
             [self writeToFileStorage:@[[[RadarLog alloc] initWithLevel:level type:type message:message]]];
         }
         else{
@@ -146,7 +145,8 @@ static int counter = 0;
 
 - (void)removeLogsFromBuffer:(NSUInteger)numLogs {
     @synchronized (self) {
-        [mutableLogBuffer removeObjectsInRange:NSMakeRange(0, numLogs)];
+        
+        [mutableLogBuffer removeObjectsInRange:NSMakeRange(0, MIN(numLogs, [mutableLogBuffer count]))];
         if ([RadarSettings featureSettings].useLogPersistence || [[NSProcessInfo processInfo] environment][@"XCTestConfigurationFilePath"]) {
              NSArray<NSString *> *files = [self.fileHandler allFilesInDirectory:self.logFileDir];
             numLogs = MIN(numLogs, [files count]);
