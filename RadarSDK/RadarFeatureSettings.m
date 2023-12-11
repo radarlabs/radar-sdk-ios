@@ -38,7 +38,7 @@
     }
 
     NSObject *useLogPersistenceObj = dict[@"useLogPersistence"]; 
-    BOOL useLogPersistence = NO;
+    BOOL useLogPersistence = YES;
     if (useLogPersistenceObj && [useLogPersistenceObj isKindOfClass:[NSNumber class]]) {
         useLogPersistence = [(NSNumber *)useLogPersistenceObj boolValue];
     }

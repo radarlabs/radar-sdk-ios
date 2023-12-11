@@ -22,25 +22,22 @@ static int counter = 0;
 @implementation RadarLogBuffer {
     NSMutableArray<RadarLog *> *mutableLogBuffer;
     NSMutableArray<RadarLog *> *inMemoryLogBuffer;
-    BOOL useLogPersistence;
 }
 
 - (instancetype)init {
     self = [super init];
     if (self) {
-        RadarFeatureSettings *featureSettings = [RadarSettings featureSettings];
-        useLogPersistence = featureSettings.useLogPersistence;
         mutableLogBuffer = [NSMutableArray<RadarLog *> new];
         inMemoryLogBuffer = [NSMutableArray<RadarLog *> new];
-        if (useLogPersistence) {
-            NSString *documentsDirectory = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES).firstObject;
-            self.logFileDir = [documentsDirectory stringByAppendingPathComponent:@"radar_logs"];
-            if (![[NSFileManager defaultManager] fileExistsAtPath:self.logFileDir isDirectory:nil]) {
-                [[NSFileManager defaultManager] createDirectoryAtPath:self.logFileDir withIntermediateDirectories:YES attributes:nil error:nil];
-            }
-            self.fileHandler = [[RadarFileStorage alloc] init];
-            _timer = [NSTimer scheduledTimerWithTimeInterval:20.0 target:self selector:@selector(persistLogs) userInfo:nil repeats:YES];
-        } 
+        
+        NSString *documentsDirectory = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES).firstObject;
+        self.logFileDir = [documentsDirectory stringByAppendingPathComponent:@"radar_logs"];
+        if (![[NSFileManager defaultManager] fileExistsAtPath:self.logFileDir isDirectory:nil]) {
+            [[NSFileManager defaultManager] createDirectoryAtPath:self.logFileDir withIntermediateDirectories:YES attributes:nil error:nil];
+        }
+        self.fileHandler = [[RadarFileStorage alloc] init];
+        _timer = [NSTimer scheduledTimerWithTimeInterval:20.0 target:self selector:@selector(persistLogs) userInfo:nil repeats:YES];
+        
     }
     return self;
 }
@@ -64,7 +61,7 @@ static int counter = 0;
         RadarLog *radarLog = [[RadarLog alloc] initWithLevel:level type:type message:message];
         [mutableLogBuffer addObject:radarLog];
 
-        if (useLogPersistence) {
+        if ([RadarSettings featureSettings].useLogPersistence) {
             RadarLog *radarLog = [[RadarLog alloc] initWithLevel:level type:type message:message];
             [inMemoryLogBuffer addObject:radarLog];
             NSUInteger logLength = [inMemoryLogBuffer count];
@@ -77,7 +74,7 @@ static int counter = 0;
 
 - (void)persistLogs {
     @synchronized (self) {
-        if (useLogPersistence) {
+        if ([RadarSettings featureSettings].useLogPersistence) {
             NSArray *flushableLogs = [inMemoryLogBuffer copy];
             [self addLogsToBuffer:flushableLogs];
             [inMemoryLogBuffer removeAllObjects]; 
@@ -117,7 +114,7 @@ static int counter = 0;
 - (void)append:(RadarLogLevel)level type:(RadarLogType)type message:(NSString *)message {
     @synchronized (self) {
         [self write:level type:type message:message];
-        if (useLogPersistence){
+        if ([RadarSettings featureSettings].useLogPersistence) {
             [self writeToFileStorage:@[[[RadarLog alloc] initWithLevel:level type:type message:message]]];
         }
     }
@@ -125,7 +122,7 @@ static int counter = 0;
 
 - (NSArray<RadarLog *> *)flushableLogs {
     @synchronized (self) {
-        if (useLogPersistence) {
+        if ([RadarSettings featureSettings].useLogPersistence) {
             [self persistLogs];
             NSArray *existingLogsArray = [self.readFromFileStorage copy];
             return existingLogsArray;
@@ -147,7 +144,7 @@ static int counter = 0;
 - (void)removeLogsFromBuffer:(NSUInteger)numLogs {
     @synchronized (self) {
         [mutableLogBuffer removeObjectsInRange:NSMakeRange(0, numLogs)];
-        if (useLogPersistence) {
+        if ([RadarSettings featureSettings].useLogPersistence) {
              NSArray<NSString *> *files = [self.fileHandler allFilesInDirectory:self.logFileDir];
             numLogs = MIN(numLogs, [files count]);
             for (NSUInteger i = 0; i < (numLogs); i++) {
@@ -162,7 +159,7 @@ static int counter = 0;
 - (void)addLogsToBuffer:(NSArray<RadarLog *> *)logs {
     @synchronized (self) {
         [mutableLogBuffer addObjectsFromArray:logs];
-        if (useLogPersistence) {
+        if ([RadarSettings featureSettings].useLogPersistence) {
             NSArray<NSString *> *files = [self.fileHandler allFilesInDirectory:self.logFileDir];
             NSUInteger bufferSize = [files count];
             NSUInteger logLength = [logs count];
