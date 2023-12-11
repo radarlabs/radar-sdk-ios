@@ -61,7 +61,7 @@ static int counter = 0;
         RadarLog *radarLog = [[RadarLog alloc] initWithLevel:level type:type message:message];
         [mutableLogBuffer addObject:radarLog];
 
-        if ([RadarSettings featureSettings].useLogPersistence) {
+        if ([RadarSettings featureSettings].useLogPersistence || [[NSProcessInfo processInfo] environment][@"XCTestConfigurationFilePath"]) {
             RadarLog *radarLog = [[RadarLog alloc] initWithLevel:level type:type message:message];
             [inMemoryLogBuffer addObject:radarLog];
             NSUInteger logLength = [inMemoryLogBuffer count];
@@ -113,7 +113,7 @@ static int counter = 0;
 
 - (void)append:(RadarLogLevel)level type:(RadarLogType)type message:(NSString *)message {
     @synchronized (self) {
-        if ([RadarSettings featureSettings].useLogPersistence) {
+        if ([RadarSettings featureSettings].useLogPersistence || [[NSProcessInfo processInfo] environment][@"XCTestConfigurationFilePath"]) {
             NSLog(@"writing to file storage");
             [self writeToFileStorage:@[[[RadarLog alloc] initWithLevel:level type:type message:message]]];
         }
@@ -125,7 +125,7 @@ static int counter = 0;
 
 - (NSArray<RadarLog *> *)flushableLogs {
     @synchronized (self) {
-        if ([RadarSettings featureSettings].useLogPersistence) {
+        if ([RadarSettings featureSettings].useLogPersistence || [[NSProcessInfo processInfo] environment][@"XCTestConfigurationFilePath"]) {
             [self persistLogs];
             NSArray *existingLogsArray = [self.readFromFileStorage copy];
             return existingLogsArray;
@@ -147,7 +147,7 @@ static int counter = 0;
 - (void)removeLogsFromBuffer:(NSUInteger)numLogs {
     @synchronized (self) {
         [mutableLogBuffer removeObjectsInRange:NSMakeRange(0, numLogs)];
-        if ([RadarSettings featureSettings].useLogPersistence) {
+        if ([RadarSettings featureSettings].useLogPersistence || [[NSProcessInfo processInfo] environment][@"XCTestConfigurationFilePath"]) {
              NSArray<NSString *> *files = [self.fileHandler allFilesInDirectory:self.logFileDir];
             numLogs = MIN(numLogs, [files count]);
             for (NSUInteger i = 0; i < (numLogs); i++) {
@@ -162,7 +162,7 @@ static int counter = 0;
 - (void)addLogsToBuffer:(NSArray<RadarLog *> *)logs {
     @synchronized (self) {
         [mutableLogBuffer addObjectsFromArray:logs];
-        if ([RadarSettings featureSettings].useLogPersistence) {
+        if ([RadarSettings featureSettings].useLogPersistence || [[NSProcessInfo processInfo] environment][@"XCTestConfigurationFilePath"]) {
             NSArray<NSString *> *files = [self.fileHandler allFilesInDirectory:self.logFileDir];
             NSUInteger bufferSize = [files count];
             NSUInteger logLength = [logs count];
