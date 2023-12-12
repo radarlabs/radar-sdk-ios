@@ -597,7 +597,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         NSString *identifier = [NSString stringWithFormat:@"%@%@", kSyncGeofenceIdentifierPrefix, geofenceId];
         RadarCoordinate *center;
         double radius = 100;
-        bool rampUpGeofenceAndDifferentFromOriginalGeofence = NO;
+        bool skipSyncingLocalNotifications = NO;
         if ([geofence.geometry isKindOfClass:[RadarCircleGeometry class]]) {
             RadarCircleGeometry *geometry = (RadarCircleGeometry *)geofence.geometry;
             center = geometry.center;
@@ -644,7 +644,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                     withinRampUpRadius = YES;
                 } else {
                     radius = rampUpRadius;
-                    rampUpGeofenceAndDifferentFromOriginalGeofence = YES;
+                    skipSyncingLocalNotifications = YES;
                     identifier = [NSString stringWithFormat:@"%@%@", kRampUpGeofenceIdentifierPrefix, geofenceId];
                     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"radius is rampUpRadius: %f", radius]];
                 }
@@ -658,7 +658,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                                                                                 center.coordinate.latitude, center.coordinate.longitude, radius, identifier]];
 
           
-            if (metadata && !rampUpGeofenceAndDifferentFromOriginalGeofence) {
+            if (metadata && !skipSyncingLocalNotifications) {
                 // if metadata has notification has radar:rampUp radius
                 NSString *notificationText = [geofence.metadata objectForKey:@"radar:notificationText"];
                 NSString *notificationTitle = [geofence.metadata objectForKey:@"radar:notificationTitle"];
