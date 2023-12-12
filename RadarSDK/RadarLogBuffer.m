@@ -91,14 +91,14 @@ static int counter = 0;
 
     NSArray<NSString *> *files = [self.fileHandler allFilesInDirectory:self.logFileDir];
     NSMutableArray<RadarLog *> *logs = [NSMutableArray array];
-    if(!files){
+    if (!files) {
         return logs;
     }
     for (NSString *file in files) {
         NSString *filePath = [self.logFileDir stringByAppendingPathComponent:file];
         NSData *fileData = [self.fileHandler readFileAtPath:filePath];
         RadarLog *log = [NSKeyedUnarchiver unarchiveObjectWithData:fileData];
-        if(log && log.message){
+        if (log && log.message) {
             [logs addObject:log];
         }
     }

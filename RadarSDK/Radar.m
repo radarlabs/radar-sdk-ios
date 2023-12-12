@@ -1044,7 +1044,7 @@
 
 + (void)logEnterBackground {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeNone message:@"App entering background" includeDate:YES includeBattery:YES append:YES];
-    [[RadarLogBuffer sharedInstance] persistLogs ];
+    [[RadarLogBuffer sharedInstance] persistLogs];
 }
 
 + (void)logResignActive {
@@ -1272,8 +1272,7 @@
         return;
     }
 
-    NSArray<RadarLog *> *flushableLogs = [[RadarLogBuffer sharedInstance] flushableLogs];
-    
+    NSArray<RadarLog *> *flushableLogs = [[RadarLogBuffer sharedInstance] flushableLogs]; 
     NSUInteger pendingLogCount = [flushableLogs count];
     if (pendingLogCount == 0) {
         return;
@@ -1288,7 +1287,6 @@
             [[RadarLogBuffer sharedInstance] addLogsToBuffer:flushableLogs];
         }
     };
-    
     [[RadarAPIClient sharedInstance] syncLogs:flushableLogs
                             completionHandler:^(RadarStatus status) {
                                 if (onComplete) {
