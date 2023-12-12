@@ -242,7 +242,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
             [self.timer invalidate];
         }
 
-        self.timer = [NSTimer scheduledTimerWithTimeInterval:(interval)
+        self.timer = [NSTimer scheduledTimerWithTimeInterval:interval
                                                      repeats:YES
                                                        block:^(NSTimer *_Nonnull timer) {
                                                            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Timer fired"];
@@ -542,6 +542,12 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 
     if (previousTrackingOptions) {
         [Radar startTrackingWithOptions:previousTrackingOptions];
+        if ([RadarSettings rampedUp]) {
+            [RadarSettings setRampedUp:NO];
+            [self changeTrackingState:NO];
+            // call trackOnce to refresh nearbyGeofences and trigger a ramp back up if necessary 
+            [Radar trackOnceWithDesiredAccuracy:RadarTrackingOptionsDesiredAccuracyHigh beacons:NO completionHandler:nil];
+        }
     } else {
         [Radar stopTracking];
     }
@@ -589,7 +595,6 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     // bool for whether or not we're within the ramp up radius of a geofence
     BOOL withinRampUpRadius = NO;
     RadarTrackingOptions *trackingOptions = [Radar getTrackingOptions];
-
 
     for (int i = 0; i < numGeofences; i++) {
         RadarGeofence *geofence = [geofences objectAtIndex:i];
