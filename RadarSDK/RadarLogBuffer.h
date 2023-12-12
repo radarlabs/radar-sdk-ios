@@ -18,6 +18,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (strong, nonatomic) NSString *logFileDir;
 @property (strong, nonatomic) RadarFileStorage *fileHandler;
 @property (nonatomic, strong) NSTimer *timer;
+//add a property that can be modified 
+@property (nonatomic, assign) BOOL featureFlag;
 
 + (instancetype)sharedInstance;
 
@@ -32,6 +34,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)removeLogsFromBuffer:(NSUInteger)numLogs;
 
 - (void)addLogsToBuffer:(NSArray<RadarLog *> *)logs;
+
+- (void)setFeatureFlag:(BOOL)featureFlag;
 
 @end
 

@@ -27,6 +27,7 @@ static int counter = 0;
 - (instancetype)init {
     self = [super init];
     if (self) {
+        _featureFlag = [RadarSettings featureSettings].useLogPersistence;
         mutableLogBuffer = [NSMutableArray<RadarLog *> new];
         inMemoryLogBuffer = [NSMutableArray<RadarLog *> new];
         
@@ -40,6 +41,10 @@ static int counter = 0;
         
     }
     return self;
+}
+
+- (void)setFeatureFlag:(BOOL)featureFlag {
+    _featureFlag = featureFlag;
 }
 
 + (instancetype)sharedInstance {
@@ -61,7 +66,7 @@ static int counter = 0;
         RadarLog *radarLog = [[RadarLog alloc] initWithLevel:level type:type message:message];
         [mutableLogBuffer addObject:radarLog];
 
-        if ([RadarSettings featureSettings].useLogPersistence || [[NSProcessInfo processInfo] environment][@"XCTestConfigurationFilePath"]) {
+        if (_featureFlag || [[NSProcessInfo processInfo] environment][@"XCTestConfigurationFilePath"]) {
             RadarLog *radarLog = [[RadarLog alloc] initWithLevel:level type:type message:message];
             [inMemoryLogBuffer addObject:radarLog];
             NSUInteger logLength = [inMemoryLogBuffer count];
@@ -74,7 +79,7 @@ static int counter = 0;
 
 - (void)persistLogs {
     @synchronized (self) {
-        if ([RadarSettings featureSettings].useLogPersistence) {
+        if (_featureFlag) {
             NSArray *flushableLogs = [inMemoryLogBuffer copy];
             [self addLogsToBuffer:flushableLogs];
             [inMemoryLogBuffer removeAllObjects]; 
@@ -113,7 +118,7 @@ static int counter = 0;
 
 - (void)append:(RadarLogLevel)level type:(RadarLogType)type message:(NSString *)message {
     @synchronized (self) {
-        if ([RadarSettings featureSettings].useLogPersistence || [[NSProcessInfo processInfo] environment][@"XCTestConfigurationFilePath"]) {
+        if (_featureFlag || [[NSProcessInfo processInfo] environment][@"XCTestConfigurationFilePath"]) {
             [self writeToFileStorage:@[[[RadarLog alloc] initWithLevel:level type:type message:message]]];
         }
         else{
@@ -124,7 +129,7 @@ static int counter = 0;
 
 - (NSArray<RadarLog *> *)flushableLogs {
     @synchronized (self) {
-        if ([RadarSettings featureSettings].useLogPersistence || [[NSProcessInfo processInfo] environment][@"XCTestConfigurationFilePath"]) {
+        if (_featureFlag || [[NSProcessInfo processInfo] environment][@"XCTestConfigurationFilePath"]) {
             [self persistLogs];
             NSArray *existingLogsArray = [self.readFromFileStorage copy];
             return existingLogsArray;
@@ -147,7 +152,7 @@ static int counter = 0;
     @synchronized (self) {
         
         [mutableLogBuffer removeObjectsInRange:NSMakeRange(0, MIN(numLogs, [mutableLogBuffer count]))];
-        if ([RadarSettings featureSettings].useLogPersistence || [[NSProcessInfo processInfo] environment][@"XCTestConfigurationFilePath"]) {
+        if (_featureFlag || [[NSProcessInfo processInfo] environment][@"XCTestConfigurationFilePath"]) {
              NSArray<NSString *> *files = [self.fileHandler allFilesInDirectory:self.logFileDir];
             numLogs = MIN(numLogs, [files count]);
             for (NSUInteger i = 0; i < (numLogs); i++) {
@@ -162,7 +167,7 @@ static int counter = 0;
 - (void)addLogsToBuffer:(NSArray<RadarLog *> *)logs {
     @synchronized (self) {
         [mutableLogBuffer addObjectsFromArray:logs];
-        if ([RadarSettings featureSettings].useLogPersistence || [[NSProcessInfo processInfo] environment][@"XCTestConfigurationFilePath"]) {
+        if (_featureFlag || [[NSProcessInfo processInfo] environment][@"XCTestConfigurationFilePath"]) {
             NSArray<NSString *> *files = [self.fileHandler allFilesInDirectory:self.logFileDir];
             NSUInteger bufferSize = [files count];
             NSUInteger logLength = [logs count];
