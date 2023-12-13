@@ -30,6 +30,7 @@
 #import "RadarTripOptions.h"
 #import "RadarUser+Internal.h"
 #import "RadarUtils.h"
+#import "RadarAPIRetryWrapper.h"
 #import <os/log.h>
 
 @implementation RadarAPIClient
@@ -47,6 +48,7 @@
     self = [super init];
     if (self) {
         _apiHelper = [RadarAPIHelper new];
+        _apiRetryWrapper = [[RadarAPIRetryWrapper alloc] initWithAPIHelper:_apiHelper]; 
     }
     return self;
 }
@@ -93,7 +95,7 @@
 
     NSDictionary *headers = [RadarAPIClient headersWithPublishableKey:publishableKey];
 
-    [self.apiHelper requestWithMethod:@"GET"
+    [self.apiRetryWrapper requestWithRetry:@"GET"
                                   url:url
                               headers:headers
                                params:nil

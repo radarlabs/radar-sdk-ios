@@ -19,6 +19,7 @@
 #import "RadarRouteMatrix.h"
 #import "RadarRoutes.h"
 #import "RadarUser.h"
+#import "RadarAPIRetryWrapper.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -64,6 +65,7 @@ typedef void (^_Nonnull RadarSyncLogsAPICompletionHandler)(RadarStatus status);
 @interface RadarAPIClient : NSObject
 
 @property (nonnull, strong, nonatomic) RadarAPIHelper *apiHelper;
+@property (nonnull, strong, nonatomic) RadarAPIRetryWrapper *apiRetryWrapper;
 
 + (instancetype)sharedInstance;
 
