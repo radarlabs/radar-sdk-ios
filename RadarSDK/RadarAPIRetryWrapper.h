@@ -14,6 +14,8 @@
 
 @property (nonnull, strong, nonatomic) RadarAPIHelper *apiHelper;
 
+- (instancetype)initWithAPIHelper:(RadarAPIHelper *)apiHelper;
+
 - (void)requestWithRetry:(NSString *)method
                       url:(NSString *)url
                   headers:(NSDictionary *_Nullable)headers
