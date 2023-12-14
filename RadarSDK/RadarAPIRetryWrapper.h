@@ -10,11 +10,13 @@
 #import "RadarAPIHelper.h"
 #import "Radar.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface RadarAPIRetryWrapper : NSObject
 
 @property (nonnull, strong, nonatomic) RadarAPIHelper *apiHelper;
 
-- (instancetype)initWithAPIHelper:(RadarAPIHelper *)apiHelper;
+- (instancetype _Nullable)initWithAPIHelper:(RadarAPIHelper *_Nullable)apiHelper;
 
 - (void)requestWithRetry:(NSString *)method
                       url:(NSString *)url
@@ -37,3 +39,4 @@
 
 @end
 
+NS_ASSUME_NONNULL_END

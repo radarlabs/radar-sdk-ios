@@ -26,7 +26,7 @@
     return sharedInstance;
 }
 
-- (instancetype)initWithAPIHelper:(RadarAPIHelper *)apiHelper {
+- (instancetype _Nullable)initWithAPIHelper:(RadarAPIHelper *)apiHelper {
     self = [super init];
     if (self) {
         _apiHelper = apiHelper;
