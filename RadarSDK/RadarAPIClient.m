@@ -48,7 +48,7 @@
     self = [super init];
     if (self) {
         _apiHelper = [RadarAPIHelper new];
-        _apiRetryWrapper = [[RadarAPIRetryWrapper alloc] initWithAPIHelper:_apiHelper]; 
+        _apiRetryWrapper = [[RadarAPIRetryWrapper sharedInstance] initWithAPIHelper:_apiHelper]; 
     }
     return self;
 }

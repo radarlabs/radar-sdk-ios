@@ -13,7 +13,9 @@
 
 @end
 
-@implementation RadarAPIHelperMock
+@implementation RadarAPIHelperMock {
+    int retryCounter;
+}
 
 - (instancetype)init {
     self = [super init];
@@ -33,6 +35,31 @@
                logPayload:(BOOL)logPayload
           extendedTimeout:(BOOL)extendedTimeout
         completionHandler:(RadarAPICompletionHandler)completionHandler {
+
+    
+
+    if (params != nil && [params objectForKey:@"retry"]) {
+        id retry = params[@"retry"];
+
+        if ([retry isKindOfClass:[NSNumber class]]) {
+
+            retryCounter++;
+            if (retryCounter < [retry intValue]) {
+                if (completionHandler) {
+                    completionHandler(RadarStatusErrorUnknown, nil);
+                }
+                return;
+            } else {
+                NSDictionary *successJson = @{@"successOn": [NSNumber numberWithInt:retryCounter]};
+                if (completionHandler) {
+                    completionHandler(RadarStatusSuccess, successJson);
+                }
+                retryCounter = 0;
+                return;
+            }
+        }
+    }
+
     NSDictionary *mockResponseForUrl = self.mockResponses[url];
 
     if (mockResponseForUrl) {

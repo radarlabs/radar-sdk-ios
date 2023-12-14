@@ -16,6 +16,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonnull, strong, nonatomic) RadarAPIHelper *apiHelper;
 
++ (instancetype)sharedInstance;
+
 - (instancetype _Nullable)initWithAPIHelper:(RadarAPIHelper *_Nullable)apiHelper;
 
 - (void)requestWithRetry:(NSString *)method
