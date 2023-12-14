@@ -299,7 +299,6 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     self.testFilePath = [NSTemporaryDirectory() stringByAppendingPathComponent:@"testfile"];
     self.logBuffer = [RadarLogBuffer sharedInstance];
     [self.logBuffer clearBuffer];
-    //[RadarSettings setFeatureSettings: [[RadarFeatureSettings alloc] initWithUsePersistence:YES extendFlushReplays:YES useLogPersistence:YES]];
     [self.logBuffer setFeatureFlag:YES];
     
 }
