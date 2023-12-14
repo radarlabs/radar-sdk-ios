@@ -1004,13 +1004,13 @@ logConversionWithNotification
 + (void)setLogLevel:(RadarLogLevel)level;
 
 /**
- Log application termination.
+ Log application terminating.
 
  */
 + (void)logTermination;
 
 /**
- Log application entering background and flush logs in memory buffer into persistent buffer.
+ Log application entering background and flush logs from memory buffer into persistent buffer.
 
  */
 + (void)logEnterBackground;
