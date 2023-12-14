@@ -1287,7 +1287,7 @@
             [[RadarLogBuffer sharedInstance] addLogsToBuffer:flushableLogs];
         }
     };
-
+    
     [[RadarAPIClient sharedInstance] syncLogs:flushableLogs
                             completionHandler:^(RadarStatus status) {
                                 if (onComplete) {
