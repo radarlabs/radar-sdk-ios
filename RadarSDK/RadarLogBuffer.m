@@ -79,7 +79,7 @@ static int counter = 0;
 
 - (void)persistLogs {
     @synchronized (self) {
-        if (_featureFlag) {
+        if (_featureFlag || [[NSProcessInfo processInfo] environment][@"XCTestConfigurationFilePath"]) {
             NSArray *flushableLogs = [inMemoryLogBuffer copy];
             [self addLogsToBuffer:flushableLogs];
             [inMemoryLogBuffer removeAllObjects]; 
@@ -110,6 +110,7 @@ static int counter = 0;
     for (RadarLog *log in logs) {
         NSData *logData = [NSKeyedArchiver archivedDataWithRootObject:log];
         NSTimeInterval unixTimestamp = [log.createdAt timeIntervalSince1970];
+        //logs may be created in the same millisecond, so we append a counter to the end of the timestamp to "tiebreak"
         NSString *unixTimestampString = [NSString stringWithFormat:@"%lld%04d", (long long)unixTimestamp, counter++];
         NSString *filePath = [self.logFileDir stringByAppendingPathComponent:unixTimestampString];
         [self.fileHandler writeData:logData toFileAtPath:filePath];
@@ -153,9 +154,8 @@ static int counter = 0;
         
         [mutableLogBuffer removeObjectsInRange:NSMakeRange(0, MIN(numLogs, [mutableLogBuffer count]))];
         if (_featureFlag || [[NSProcessInfo processInfo] environment][@"XCTestConfigurationFilePath"]) {
-             NSArray<NSString *> *files = [self.fileHandler allFilesInDirectory:self.logFileDir];
-            numLogs = MIN(numLogs, [files count]);
-            for (NSUInteger i = 0; i < (numLogs); i++) {
+            NSArray<NSString *> *files = [self.fileHandler allFilesInDirectory:self.logFileDir];
+            for (NSUInteger i = 0; i < MIN(numLogs, [files count]); i++) {
                 NSString *file = [files objectAtIndex:i];
                 NSString *filePath = [self.logFileDir stringByAppendingPathComponent:file];
                 [self.fileHandler deleteFileAtPath:filePath];
@@ -171,11 +171,9 @@ static int counter = 0;
             NSArray<NSString *> *files = [self.fileHandler allFilesInDirectory:self.logFileDir];
             NSUInteger bufferSize = [files count];
             NSUInteger logLength = [logs count];
-            while (bufferSize+logLength >= MAX_PERSISTED_BUFFER_SIZE) {
+            while (bufferSize + logLength >= MAX_PERSISTED_BUFFER_SIZE) {
                 [self removeLogsFromBuffer:PURGE_AMOUNT];
-                files = [self.fileHandler allFilesInDirectory:self.logFileDir];
-                bufferSize = [files count];
-                logLength = [logs count];
+                bufferSize = [[self.fileHandler allFilesInDirectory:self.logFileDir] count];
                 RadarLog *purgeLog = [[RadarLog alloc] initWithLevel:RadarLogLevelDebug type:RadarLogTypeNone message:kPurgedLogLine];
                 [self writeToFileStorage:@[purgeLog]];
             }
