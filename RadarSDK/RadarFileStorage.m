@@ -40,6 +40,12 @@
 }
 
 - (NSArray<NSString *> *)allFilesInDirectory:(NSString *)directoryPath {
+    return [self allFilesInDirectory:directoryPath withComparator:^NSComparisonResult(NSString *fileName1, NSString *fileName2) {
+        return [fileName1 compare:fileName2];
+    }];
+}
+
+- (NSArray<NSString *> *)allFilesInDirectory:(NSString *)directoryPath withComparator:(NSComparator)comparator {
     NSFileManager *fileManager = [NSFileManager defaultManager];
     NSError *error = nil;
     NSArray<NSString *> *files = [fileManager contentsOfDirectoryAtPath:directoryPath error:&error];
@@ -49,10 +55,7 @@
         return nil;
     }
     
-    return [files sortedArrayUsingComparator:^NSComparisonResult(NSString *str1, NSString *str2) {
-        return [@([str1 integerValue]) compare:@([str2 integerValue])];
-    }];
+    return [files sortedArrayUsingComparator: comparator];
 }
 
 @end
-
