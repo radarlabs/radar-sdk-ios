@@ -118,7 +118,7 @@ static int counter = 0;
     for (RadarLog *log in logs) {
         NSData *logData = [NSKeyedArchiver archivedDataWithRootObject:log];
         NSTimeInterval unixTimestamp = [log.createdAt timeIntervalSince1970];
-        //logs may be created in the same millisecond, so we append a counter to the end of the timestamp to "tiebreak"
+        // Logs may be created in the same millisecond, so we append a counter to the end of the timestamp to "tiebreak"
         NSString *unixTimestampString = [NSString stringWithFormat:@"%lld%04d", (long long)unixTimestamp, counter++];
         NSString *filePath = [self.logFileDir stringByAppendingPathComponent:unixTimestampString];
         [self.fileHandler writeData:logData toFileAtPath:filePath];
@@ -129,8 +129,7 @@ static int counter = 0;
     @synchronized (self) {
         if (_persistentLogFeatureFlag || [[NSProcessInfo processInfo] environment][@"XCTestConfigurationFilePath"]) {
             [self writeToFileStorage:@[[[RadarLog alloc] initWithLevel:level type:type message:message]]];
-        }
-        else{
+        } else {
             [self write:level type:type message:message];
         }
     }
