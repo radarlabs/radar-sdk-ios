@@ -447,6 +447,10 @@
     [dict setValue:locationDict forKey:@"location"];
     [dict setValue:@(self.replayed) forKey:@"replayed"];
     [dict setValue:self.metadata forKey:@"metadata"];
+    NSString *createdAtString = [RadarUtils.isoDateFormatter stringFromDate:self.createdAt];
+    [dict setValue:createdAtString forKey:@"createdAt"];
+    NSString *actualCreatedAtString = [RadarUtils.isoDateFormatter stringFromDate:self.actualCreatedAt];
+    [dict setValue:actualCreatedAtString forKey:@"actualCreatedAt"];
     return dict;
 }
 
