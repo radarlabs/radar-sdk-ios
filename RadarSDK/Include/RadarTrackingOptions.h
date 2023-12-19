@@ -154,9 +154,17 @@ typedef NS_ENUM(NSInteger, RadarTrackingOptionsSyncLocations) {
  */
 @property (nonatomic, assign) BOOL beacons;
 
+/**
+ Determines a radius around the center of each geofence under which tracking should ramp up.
+ */
+
 @property (nonatomic, assign) int rampUpRadius;
 
+/**
+ Determines the interval in seconds to which tracking should ramp up.
+ */
 
+@property (nonatomic, assign) int rampedInterval;
 
 /**
  Updates about every 30 seconds while moving or stopped. Moderate battery usage. Shows the flashing blue status bar during tracking.
@@ -178,8 +186,6 @@ typedef NS_ENUM(NSInteger, RadarTrackingOptionsSyncLocations) {
  @see https://developer.apple.com/documentation/corelocation/getting_the_user_s_location/using_the_visits_location_service
  */
 @property (class, copy, readonly) RadarTrackingOptions *presetEfficient;
-
-@property (class, copy, readonly) RadarTrackingOptions *rampedUpOptions;
 
 + (NSString *)stringForDesiredAccuracy:(RadarTrackingOptionsDesiredAccuracy)desiredAccuracy;
 + (RadarTrackingOptionsDesiredAccuracy)desiredAccuracyForString:(NSString *)str;
