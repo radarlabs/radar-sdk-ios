@@ -307,6 +307,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 - (void)updateTracking:(CLLocation *)location fromInitialize:(BOOL)fromInitialize ramping:(RampingOption)ramping {
     dispatch_async(dispatch_get_main_queue(), ^{
         BOOL tracking = [RadarSettings tracking];
+        BOOL rampedUp = [RadarSettings rampedUp];
         RadarTrackingOptions *options = [Radar getTrackingOptions];
 
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
@@ -327,45 +328,21 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         }
 
         if (tracking) {
-            if (ramping == RampingOptionRampUp && ![RadarSettings rampedUp]) {
-                // if not on trip, set prev options to current tracking options
-                // and regardless, set current tracking options to ramp up options
-                if (![RadarSettings tripOptions]) {
-                    [RadarSettings setPreviousTrackingOptions:[Radar getTrackingOptions]];
-                }
-                
-                double originalRampUpRadius = options.rampUpRadius;
-                RadarTrackingOptionsReplay originalReplay = options.replay;
-
-                options = RadarTrackingOptions.rampedUpOptions;
-
-                options.rampUpRadius = originalRampUpRadius;
-                options.replay = originalReplay;
-
-                [RadarSettings setTrackingOptions:options];
-                // log the ramp up options
-                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Ramped up with options: %@", [options dictionaryValue]]];
+            if (ramping == RampingOptionRampUp && !rampedUp) {
+                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Ramping up"]];
                 [RadarSettings setRampedUp:YES];
-
+                rampedUp = YES;
                 [self changeTrackingState:YES];
-
-                
-            } else if (ramping == RampingOptionRampDown && [RadarSettings rampedUp]) {
-                // if not on trip, set prev options to current tracking options
-                // and regardless, set current tracking options to ramp up options
-                if ([RadarSettings tripOptions]) {
-                    // set to the continuous preset
-                    options = RadarTrackingOptions.presetContinuous;
-                } else {
-                    options = [RadarSettings previousTrackingOptions];
-                    [RadarSettings removePreviousTrackingOptions];
-
-                }
+            } else if (ramping == RampingOptionRampDown && rampedUp) {
+                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Ramping down"]];
                 [RadarSettings setTrackingOptions:options];
                 [RadarSettings setRampedUp:NO];
-
+                rampedUp = NO;
                 [self changeTrackingState:NO];
             }
+
+            int desiredStoppedUpdateInterval = rampedUp ? options.rampedInterval : options.desiredStoppedUpdateInterval;
+            int desiredMovingUpdateInterval = rampedUp ? options.rampedInterval : options.desiredMovingUpdateInterval;
 
             self.locationManager.allowsBackgroundLocationUpdates =
                 [RadarUtils locationBackgroundMode] && [CLLocationManager authorizationStatus] == kCLAuthorizationStatusAuthorizedAlways;
@@ -392,8 +369,8 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
             self.locationManager.desiredAccuracy = desiredAccuracy;
 
             if (@available(iOS 11.0, *)) {
-                self.lowPowerLocationManager.showsBackgroundLocationIndicator = options.showBlueBar;
-                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"showsBackgroundLocationIndicator is set to options.showBlueBar: %d", options.showBlueBar]];
+                self.lowPowerLocationManager.showsBackgroundLocationIndicator = options.showBlueBar || rampedUp;
+                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"showsBackgroundLocationIndicator is set to options.showBlueBar || rampedUp: %d", options.showBlueBar || rampedUp]];
             } else {
                 [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"showsBackgroundLocationIndicator is false: %d", options.showBlueBar]];
             }
@@ -401,10 +378,10 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
             BOOL startUpdates = options.showBlueBar || [CLLocationManager authorizationStatus] == kCLAuthorizationStatusAuthorizedAlways;
             BOOL stopped = [RadarState stopped];
             if (stopped) {
-                if (options.desiredStoppedUpdateInterval == 0) {
+                if (desiredStoppedUpdateInterval == 0) {
                     [self stopUpdates];
                 } else if (startUpdates) {
-                    [self startUpdates:options.desiredStoppedUpdateInterval];
+                    [self startUpdates:desiredStoppedUpdateInterval];
                 }
                 if (options.useStoppedGeofence) {
                     if (location) {
@@ -414,10 +391,10 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                     [self removeBubbleGeofence];
                 }
             } else {
-                if (options.desiredMovingUpdateInterval == 0) {
+                if (desiredMovingUpdateInterval == 0) {
                     [self stopUpdates];
                 } else if (startUpdates) {
-                    [self startUpdates:options.desiredMovingUpdateInterval];
+                    [self startUpdates:desiredMovingUpdateInterval];
                 }
                 if (options.useMovingGeofence) {
                     if (location) {
@@ -879,6 +856,11 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     BOOL wasStopped = [RadarState stopped];
     BOOL stopped = NO;
 
+    BOOL rampedUp = [RadarSettings rampedUp];
+    int desiredStoppedUpdateInterval = rampedUp ? options.rampedInterval : options.desiredStoppedUpdateInterval;
+    int desiredMovingUpdateInterval = rampedUp ? options.rampedInterval : options.desiredMovingUpdateInterval;
+    int desiredSyncInterval = rampedUp ? options.rampedInterval : options.desiredSyncInterval;
+
     BOOL force = (source == RadarLocationSourceForegroundLocation || source == RadarLocationSourceManualLocation || source == RadarLocationSourceBeaconEnter ||
                   source == RadarLocationSourceBeaconExit || source == RadarLocationSourceVisitArrival);
     if (wasStopped && !force && location.horizontalAccuracy >= 1000 && options.desiredAccuracy != RadarTrackingOptionsDesiredAccuracyLow) {
@@ -976,23 +958,23 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     NSTimeInterval lastSyncInterval = [now timeIntervalSinceDate:lastSentAt];
     if (!ignoreSync) {
         if (!force && stopped && wasStopped && distance <= options.stopDistance &&
-            (options.desiredStoppedUpdateInterval == 0 || options.syncLocations != RadarTrackingOptionsSyncAll)) {
+            (desiredStoppedUpdateInterval == 0 || options.syncLocations != RadarTrackingOptionsSyncAll)) {
             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
                                                message:[NSString stringWithFormat:@"Skipping sync: already stopped | stopped = %d; wasStopped = %d", stopped, wasStopped]];
 
             return;
         }
 
-        if (lastSyncInterval < options.desiredSyncInterval) {
+        if (lastSyncInterval < desiredSyncInterval) {
             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
                                                message:[NSString stringWithFormat:@"Skipping sync: desired sync interval | desiredSyncInterval = %d; lastSyncInterval = %f",
-                                                                                  options.desiredSyncInterval, lastSyncInterval]];
+                                                                                  desiredSyncInterval, lastSyncInterval]];
 
             return;
         } else {
             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
                                                message:[NSString stringWithFormat:@"desiredSyncInterval = %d; lastSyncInterval = %f",
-                                                                                  options.desiredSyncInterval, lastSyncInterval]];
+                                                                                  desiredSyncInterval, lastSyncInterval]];
         }
 
         if (!force && !justStopped && lastSyncInterval < 1) {

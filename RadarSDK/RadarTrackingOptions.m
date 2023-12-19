@@ -30,6 +30,7 @@ NSString *const kUseVisits = @"useVisits";
 NSString *const kUseSignificantLocationChanges = @"useSignificantLocationChanges";
 NSString *const kBeacons = @"beacons";
 NSString *const kRampUpRadius = @"rampUpRadius";
+NSString *const kRampedInterval = @"rampedInterval";
 
 NSString *const kDesiredAccuracyHigh = @"high";
 NSString *const kDesiredAccuracyMedium = @"medium";
@@ -65,6 +66,7 @@ NSString *const kSyncNone = @"none";
     options.useSignificantLocationChanges = NO;
     options.beacons = NO;
     options.rampUpRadius = 0;
+    options.rampedInterval = 0;
     return options;
 }
 
@@ -90,6 +92,7 @@ NSString *const kSyncNone = @"none";
     options.useSignificantLocationChanges = YES;
     options.beacons = NO;
     options.rampUpRadius = 0;
+    options.rampedInterval = 0;
     return options;
 }
 
@@ -115,32 +118,7 @@ NSString *const kSyncNone = @"none";
     options.useSignificantLocationChanges = NO;
     options.beacons = NO;
     options.rampUpRadius = 200;
-
-    return options;
-}
-
-+ (RadarTrackingOptions *)rampedUpOptions {
-    RadarTrackingOptions *options = [RadarTrackingOptions new];
-    options.desiredStoppedUpdateInterval = 10;
-    options.desiredMovingUpdateInterval = 10;
-    options.desiredSyncInterval = 10;
-    options.desiredAccuracy = RadarTrackingOptionsDesiredAccuracyHigh;
-    options.stopDuration = 140;
-    options.stopDistance = 70;
-    options.startTrackingAfter = nil;
-    options.stopTrackingAfter = nil;
-    options.syncLocations = RadarTrackingOptionsSyncAll;
-    options.replay = RadarTrackingOptionsReplayNone;
-    options.showBlueBar = YES;
-    options.useStoppedGeofence = NO;
-    options.stoppedGeofenceRadius = 0;
-    options.useMovingGeofence = NO;
-    options.movingGeofenceRadius = 0;
-    options.syncGeofences = YES;
-    options.useVisits = NO;
-    options.useSignificantLocationChanges = NO;
-    options.beacons = NO;
-    options.rampUpRadius = 0;
+    options.rampedInterval = 10;
 
     return options;
 }
@@ -276,6 +254,10 @@ NSString *const kSyncNone = @"none";
     if (dict[kRampUpRadius] != nil) {
         options.rampUpRadius = [dict[kRampUpRadius] intValue];
     }
+    options.rampedInterval = 0;
+    if (dict[kRampedInterval] != nil) {
+        options.rampedInterval = [dict[kRampedInterval] intValue];
+    }
 
     return options;
 }
@@ -310,6 +292,7 @@ NSString *const kSyncNone = @"none";
     dict[kUseSignificantLocationChanges] = @(self.useSignificantLocationChanges);
     dict[kBeacons] = @(self.beacons);
     dict[kRampUpRadius] = @(self.rampUpRadius);
+    dict[kRampedInterval] = @(self.rampedInterval);
     return dict;
 }
 
@@ -338,7 +321,8 @@ NSString *const kSyncNone = @"none";
            self.syncLocations == options.syncLocations && self.replay == options.replay && self.showBlueBar == options.showBlueBar &&
            self.useStoppedGeofence == options.useStoppedGeofence && self.stoppedGeofenceRadius == options.stoppedGeofenceRadius &&
            self.useMovingGeofence == options.useMovingGeofence && self.movingGeofenceRadius == options.movingGeofenceRadius && self.syncGeofences == options.syncGeofences &&
-           self.useVisits == options.useVisits && self.useSignificantLocationChanges == options.useSignificantLocationChanges && self.beacons == options.beacons && self.rampUpRadius == options.rampUpRadius;
+           self.useVisits == options.useVisits && self.useSignificantLocationChanges == options.useSignificantLocationChanges && self.beacons == options.beacons &&
+           self.rampUpRadius == options.rampUpRadius && self.rampedInterval == options.rampedInterval;
 }
 
 @end
