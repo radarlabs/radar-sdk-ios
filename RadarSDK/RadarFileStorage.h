@@ -17,8 +17,8 @@
 
 - (void)deleteFileAtPath:(NSString *)filePath;
 
-- (NSArray<NSString *> *)allFilesInDirectory:(NSString *)directoryPath;
+- (NSArray<NSString *> *)sortedFilesInDirector:(NSString *)directoryPath;
 
-- (NSArray<NSString *> *)allFilesInDirectory:(NSString *)directoryPath withComparator:(NSComparator)comparator;
+- (NSArray<NSString *> *)sortedFilesInDirector:(NSString *)directoryPath usingComparator:(NSComparator)comparator;
 
 @end

@@ -1423,12 +1423,12 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     }
     [[NSFileManager defaultManager] createDirectoryAtPath:testDir withIntermediateDirectories:YES attributes:nil error:nil];
     
-    NSArray<NSString *> *files = [self.fileSystem allFilesInDirectory: testDir];
+    NSArray<NSString *> *files = [self.fileSystem sortedFilesInDirector: testDir];
     XCTAssertEqual(files.count, 0);
     NSData *originalData = [@"Test data" dataUsingEncoding:NSUTF8StringEncoding];
     [self.fileSystem writeData:originalData toFileAtPath: [testDir stringByAppendingPathComponent: @"file1"]];
     [self.fileSystem writeData:originalData toFileAtPath: [testDir stringByAppendingPathComponent: @"file2"]];
-    NSArray<NSString *> *newFiles = [self.fileSystem allFilesInDirectory: testDir];
+    NSArray<NSString *> *newFiles = [self.fileSystem sortedFilesInDirector: testDir];
     XCTAssertEqual(newFiles.count, 2);
     
 }
@@ -1456,45 +1456,17 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     XCTAssertEqualObjects(newLogs.lastObject.message, @"Test message 3");
 }
 
-- (void)test_RadarLogBuffer_removeLogsFromBuffer {
+- (void)test_RadarLogBuffer_flush {
     [[RadarLogBuffer sharedInstance]write:RadarLogLevelDebug type:RadarLogTypeNone message:@"Test message 1"];
     [[RadarLogBuffer sharedInstance]write:RadarLogLevelDebug type:RadarLogTypeNone message:@"Test message 2"];
     [[RadarLogBuffer sharedInstance]persistLogs];
-    [[RadarLogBuffer sharedInstance]removeLogsFromBuffer:2];
     NSArray<RadarLog *> *logs = [[RadarLogBuffer sharedInstance]flushableLogs];
+    [[RadarLogBuffer sharedInstance] onFlush:NO logs:logs];
+    logs = [[RadarLogBuffer sharedInstance]flushableLogs];
+    XCTAssertEqual(logs.count, 2);
+    [[RadarLogBuffer sharedInstance] onFlush:YES logs:logs];
+    logs = [[RadarLogBuffer sharedInstance]flushableLogs];
     XCTAssertEqual(logs.count, 0);
-}
-
-- (void)test_RadarLogBuffer_addLogsToBuffrer {
-    RadarLog *log1 = [[RadarLog alloc] initWithLevel:RadarLogLevelDebug type:RadarLogTypeNone message:@"Test message 1"];
-    RadarLog *log2 = [[RadarLog alloc] initWithLevel:RadarLogLevelDebug type:RadarLogTypeNone message:@"Test message 2"];
-    RadarLog *log3 = [[RadarLog alloc] initWithLevel:RadarLogLevelDebug type:RadarLogTypeNone message:@"Test message 3"];
-    RadarLog *log4 = [[RadarLog alloc] initWithLevel:RadarLogLevelDebug type:RadarLogTypeNone message:@"Test message 4"];
-    [[RadarLogBuffer sharedInstance]addLogsToBuffer:@[log1, log2]];
-    [[RadarLogBuffer sharedInstance]write:RadarLogLevelDebug type:RadarLogTypeNone message:@"Test message"];
-    [[RadarLogBuffer sharedInstance]write:RadarLogLevelDebug type:RadarLogTypeNone message:@"Test message"];
-    [[RadarLogBuffer sharedInstance]persistLogs];
-    [[RadarLogBuffer sharedInstance]addLogsToBuffer:@[log3, log4]];
-    NSArray<RadarLog *> *logs = [[RadarLogBuffer sharedInstance]flushableLogs];
-    XCTAssertEqual(logs.count, 6);
-    XCTAssertEqualObjects(logs.lastObject.message, @"Test message 4");
-}
-
-- (void)test_RadarLogBuffer_addAndRemove{
-    RadarLog *log1 = [[RadarLog alloc] initWithLevel:RadarLogLevelDebug type:RadarLogTypeNone message:@"Test message 1"];
-    RadarLog *log2 = [[RadarLog alloc] initWithLevel:RadarLogLevelDebug type:RadarLogTypeNone message:@"Test message 2"];
-    RadarLog *log3 = [[RadarLog alloc] initWithLevel:RadarLogLevelDebug type:RadarLogTypeNone message:@"Test message 3"];
-    RadarLog *log4 = [[RadarLog alloc] initWithLevel:RadarLogLevelDebug type:RadarLogTypeNone message:@"Test message 4"];
-    [[RadarLogBuffer sharedInstance]addLogsToBuffer:@[log1, log2]];
-    [[RadarLogBuffer sharedInstance]write:RadarLogLevelDebug type:RadarLogTypeNone message:@"Test message"];
-    [[RadarLogBuffer sharedInstance]write:RadarLogLevelDebug type:RadarLogTypeNone message:@"Test message"];
-    [[RadarLogBuffer sharedInstance]persistLogs];
-    [[RadarLogBuffer sharedInstance]addLogsToBuffer:@[log3, log4]];
-    NSArray<RadarLog *> *logs = [[RadarLogBuffer sharedInstance]flushableLogs];
-    [[RadarLogBuffer sharedInstance]removeLogsFromBuffer:6];
-    [[RadarLogBuffer sharedInstance]addLogsToBuffer:logs];
-    NSArray<RadarLog *> *logs1 = [[RadarLogBuffer sharedInstance]flushableLogs];
-    XCTAssertEqual(logs1.count, 6);
 }
 
 - (void)test_RadarLogBuffer_append {
@@ -1517,5 +1489,6 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     XCTAssertEqualObjects(logs.lastObject.message, @"----- purged oldest logs -----");
     [[RadarLogBuffer sharedInstance]clearBuffer];
 }
+
 
 @end

@@ -20,7 +20,6 @@ static NSString *const kPurgedLogLine = @"----- purged oldest logs -----";
 static int counter = 0;
 
 @implementation RadarLogBuffer {
-    NSMutableArray<RadarLog *> *mutableLogBuffer;
     NSMutableArray<RadarLog *> *inMemoryLogBuffer;
 }
 
@@ -28,7 +27,6 @@ static int counter = 0;
     self = [super init];
     if (self) {
         _persistentLogFeatureFlag = [RadarSettings featureSettings].useLogPersistence;
-        mutableLogBuffer = [NSMutableArray<RadarLog *> new];
         inMemoryLogBuffer = [NSMutableArray<RadarLog *> new];
         
         NSString *documentsDirectory = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES).firstObject;
@@ -58,22 +56,18 @@ static int counter = 0;
 
 - (void)write:(RadarLogLevel)level type:(RadarLogType)type message:(NSString *)message {
     @synchronized (self) {
-        NSUInteger logLength = [mutableLogBuffer count];
-        if (logLength >= MAX_BUFFER_SIZE) {
-            [self purgeOldestLogs];
-        }
-        // add new log to buffer
         RadarLog *radarLog = [[RadarLog alloc] initWithLevel:level type:type message:message];
-        [mutableLogBuffer addObject:radarLog];
-
-        if (_persistentLogFeatureFlag || [[NSProcessInfo processInfo] environment][@"XCTestConfigurationFilePath"]) {
-            RadarLog *radarLog = [[RadarLog alloc] initWithLevel:level type:type message:message];
-            [inMemoryLogBuffer addObject:radarLog];
-            NSUInteger logLength = [inMemoryLogBuffer count];
+        [inMemoryLogBuffer addObject:radarLog];
+        NSUInteger logLength = [inMemoryLogBuffer count];
+        if (_persistentLogFeatureFlag || [[NSProcessInfo processInfo] environment][@"XCTestConfigurationFilePath"]) { 
             if (logLength >= MAX_MEMORY_BUFFER_SIZE) {
                 [self persistLogs];
             }
-        }   
+        } else {
+            if (logLength >= MAX_BUFFER_SIZE) {
+                [self purgeOldestLogs];
+            }
+        }  
     }
 }
 
@@ -81,18 +75,21 @@ static int counter = 0;
     @synchronized (self) {
         if (_persistentLogFeatureFlag || [[NSProcessInfo processInfo] environment][@"XCTestConfigurationFilePath"]) {
             NSArray *flushableLogs = [inMemoryLogBuffer copy];
-            [self addLogsToBuffer:flushableLogs];
+            [self writeToFileStorage:flushableLogs];
+            [self purgeOldestLogs];
             [inMemoryLogBuffer removeAllObjects]; 
         }
     }
 }
 
 - (NSArray<NSString *> *)getLogFilesInTimeOrder {
+    NSString *characterToStrip = @"_";
     NSComparator compareTimeStamps = ^NSComparisonResult(NSString *str1, NSString *str2) {
-        return [@([str1 integerValue]) compare:@([str2 integerValue])];
+        return [@([[str1 stringByReplacingOccurrencesOfString:characterToStrip withString:@""] integerValue]) 
+                compare:@([[str2 stringByReplacingOccurrencesOfString:characterToStrip withString:@""] integerValue])];
     };
 
-    return [self.fileHandler allFilesInDirectory:self.logFileDir withComparator:compareTimeStamps];
+    return [self.fileHandler sortedFilesInDirector:self.logFileDir usingComparator:compareTimeStamps];
 }
 
 - (NSMutableArray<RadarLog *> *)readFromFileStorage {
@@ -119,7 +116,7 @@ static int counter = 0;
         NSData *logData = [NSKeyedArchiver archivedDataWithRootObject:log];
         NSTimeInterval unixTimestamp = [log.createdAt timeIntervalSince1970];
         // Logs may be created in the same millisecond, so we append a counter to the end of the timestamp to "tiebreak"
-        NSString *unixTimestampString = [NSString stringWithFormat:@"%lld%04d", (long long)unixTimestamp, counter++];
+        NSString *unixTimestampString = [NSString stringWithFormat:@"%lld_%04d", (long long)unixTimestamp, counter++];
         NSString *filePath = [self.logFileDir stringByAppendingPathComponent:unixTimestampString];
         [self.fileHandler writeData:logData toFileAtPath:filePath];
     }
@@ -142,24 +139,40 @@ static int counter = 0;
             NSArray *existingLogsArray = [self.readFromFileStorage copy];
             return existingLogsArray;
         } else {
-            NSArray *flushableLogs = [mutableLogBuffer copy];
+            NSArray *flushableLogs = [inMemoryLogBuffer copy];
+            [inMemoryLogBuffer removeAllObjects];
             return flushableLogs;
         }
     }
 }
 
 - (void)purgeOldestLogs {
-    // drop the oldest N logs from the buffer
-    [mutableLogBuffer removeObjectsInRange:NSMakeRange(0, PURGE_AMOUNT)];
-    RadarLog *purgeLog = [[RadarLog alloc] initWithLevel:RadarLogLevelDebug type:RadarLogTypeNone message:kPurgedLogLine];
-    [mutableLogBuffer insertObject:purgeLog atIndex:0];
+    if (_persistentLogFeatureFlag || [[NSProcessInfo processInfo] environment][@"XCTestConfigurationFilePath"]) {
+        NSArray<NSString *> *files = [self getLogFilesInTimeOrder];
+        NSUInteger dirSize = [files count];
+        BOOL printedPurgedLogs = NO;
+        while (dirSize >= MAX_PERSISTED_BUFFER_SIZE) {
+            [self removeLogs:PURGE_AMOUNT];
+            dirSize = [[self getLogFilesInTimeOrder] count];
+            if (!printedPurgedLogs) {
+                printedPurgedLogs = YES;
+                RadarLog *purgeLog = [[RadarLog alloc] initWithLevel:RadarLogLevelDebug type:RadarLogTypeNone message:kPurgedLogLine];
+                [self writeToFileStorage:@[purgeLog]];
+            }
+        } 
+    } else {
+        // drop the oldest N logs from the buffer
+        [inMemoryLogBuffer removeObjectsInRange:NSMakeRange(0, PURGE_AMOUNT)];
+        RadarLog *purgeLog = [[RadarLog alloc] initWithLevel:RadarLogLevelDebug type:RadarLogTypeNone message:kPurgedLogLine];
+        [inMemoryLogBuffer insertObject:purgeLog atIndex:0];
+    }
 }
+    
 
 
-- (void)removeLogsFromBuffer:(NSUInteger)numLogs {
+- (void)removeLogs:(NSUInteger)numLogs {
     @synchronized (self) {
         
-        [mutableLogBuffer removeObjectsInRange:NSMakeRange(0, MIN(numLogs, [mutableLogBuffer count]))];
         if (_persistentLogFeatureFlag || [[NSProcessInfo processInfo] environment][@"XCTestConfigurationFilePath"]) {
             NSArray<NSString *> *files = [self getLogFilesInTimeOrder];
             for (NSUInteger i = 0; i < MIN(numLogs, [files count]); i++) {
@@ -167,25 +180,31 @@ static int counter = 0;
                 NSString *filePath = [self.logFileDir stringByAppendingPathComponent:file];
                 [self.fileHandler deleteFileAtPath:filePath];
             }
+        } else {
+            [inMemoryLogBuffer removeObjectsInRange:NSMakeRange(0, MIN(numLogs, [inMemoryLogBuffer count]))];
         }
     }
 }
 
-- (void)addLogsToBuffer:(NSArray<RadarLog *> *)logs {
+
+- (void)onFlush:(BOOL)success logs:(NSArray<RadarLog *> *)logs{
     @synchronized (self) {
-        [mutableLogBuffer addObjectsFromArray:logs];
         if (_persistentLogFeatureFlag || [[NSProcessInfo processInfo] environment][@"XCTestConfigurationFilePath"]) {
-            NSArray<NSString *> *files = [self getLogFilesInTimeOrder];
-            NSUInteger bufferSize = [files count];
-            NSUInteger logLength = [logs count];
-            while (bufferSize + logLength >= MAX_PERSISTED_BUFFER_SIZE) {
-                [self removeLogsFromBuffer:PURGE_AMOUNT];
-                bufferSize = [[self getLogFilesInTimeOrder] count];
-                RadarLog *purgeLog = [[RadarLog alloc] initWithLevel:RadarLogLevelDebug type:RadarLogTypeNone message:kPurgedLogLine];
-                [self writeToFileStorage:@[purgeLog]];
+            if (success) {
+                // Remove all logs files from disk
+                [self removeLogs:[logs count]];
+            } else {
+                // Attempt purge to only remove the oldest logs to reduce payload size of next attempt. 
+                [self purgeOldestLogs];
             }
-            [self writeToFileStorage:logs];
-        } 
+        } else {
+            if (!success) {
+                [inMemoryLogBuffer addObjectsFromArray:logs];
+                if ([inMemoryLogBuffer count] >= MAX_BUFFER_SIZE) {
+                    [self purgeOldestLogs];
+                }
+            }
+        }
     }
 }
 
