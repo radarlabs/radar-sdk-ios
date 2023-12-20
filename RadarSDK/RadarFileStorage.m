@@ -39,13 +39,13 @@
     }];
 }
 
-- (NSArray<NSString *> *)sortedFilesInDirector:(NSString *)directoryPath {
-    return [self sortedFilesInDirector:directoryPath usingComparator:^NSComparisonResult(NSString *fileName1, NSString *fileName2) {
+- (NSArray<NSString *> *)sortedFilesInDirectory:(NSString *)directoryPath {
+    return [self sortedFilesInDirectory:directoryPath usingComparator:^NSComparisonResult(NSString *fileName1, NSString *fileName2) {
         return [fileName1 compare:fileName2];
     }];
 }
 
-- (NSArray<NSString *> *)sortedFilesInDirector:(NSString *)directoryPath usingComparator:(NSComparator)comparator {
+- (NSArray<NSString *> *)sortedFilesInDirectory:(NSString *)directoryPath usingComparator:(NSComparator)comparator {
     NSFileManager *fileManager = [NSFileManager defaultManager];
     NSError *error = nil;
     NSArray<NSString *> *files = [fileManager contentsOfDirectoryAtPath:directoryPath error:&error];

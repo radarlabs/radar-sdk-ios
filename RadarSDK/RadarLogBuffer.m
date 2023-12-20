@@ -89,7 +89,7 @@ static int counter = 0;
                 compare:@([[str2 stringByReplacingOccurrencesOfString:characterToStrip withString:@""] integerValue])];
     };
 
-    return [self.fileHandler sortedFilesInDirector:self.logFileDir usingComparator:compareTimeStamps];
+    return [self.fileHandler sortedFilesInDirectory:self.logFileDir usingComparator:compareTimeStamps];
 }
 
 - (NSMutableArray<RadarLog *> *)readFromFileStorage {

@@ -1423,12 +1423,12 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     }
     [[NSFileManager defaultManager] createDirectoryAtPath:testDir withIntermediateDirectories:YES attributes:nil error:nil];
     
-    NSArray<NSString *> *files = [self.fileSystem sortedFilesInDirector: testDir];
+    NSArray<NSString *> *files = [self.fileSystem sortedFilesInDirectory: testDir];
     XCTAssertEqual(files.count, 0);
     NSData *originalData = [@"Test data" dataUsingEncoding:NSUTF8StringEncoding];
     [self.fileSystem writeData:originalData toFileAtPath: [testDir stringByAppendingPathComponent: @"file1"]];
     [self.fileSystem writeData:originalData toFileAtPath: [testDir stringByAppendingPathComponent: @"file2"]];
-    NSArray<NSString *> *newFiles = [self.fileSystem sortedFilesInDirector: testDir];
+    NSArray<NSString *> *newFiles = [self.fileSystem sortedFilesInDirectory: testDir];
     XCTAssertEqual(newFiles.count, 2);
     
 }
