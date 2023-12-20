@@ -341,8 +341,8 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                 [self changeTrackingState:NO];
             }
 
-            int desiredStoppedUpdateInterval = rampedUp ? options.rampedInterval : options.desiredStoppedUpdateInterval;
-            int desiredMovingUpdateInterval = rampedUp ? options.rampedInterval : options.desiredMovingUpdateInterval;
+            int desiredStoppedUpdateInterval = rampedUp ? options.rampedUpInterval : options.desiredStoppedUpdateInterval;
+            int desiredMovingUpdateInterval = rampedUp ? options.rampedUpInterval : options.desiredMovingUpdateInterval;
 
             self.locationManager.allowsBackgroundLocationUpdates =
                 [RadarUtils locationBackgroundMode] && [CLLocationManager authorizationStatus] == kCLAuthorizationStatusAuthorizedAlways;
@@ -857,9 +857,9 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     BOOL stopped = NO;
 
     BOOL rampedUp = [RadarSettings rampedUp];
-    int desiredStoppedUpdateInterval = rampedUp ? options.rampedInterval : options.desiredStoppedUpdateInterval;
-    int desiredMovingUpdateInterval = rampedUp ? options.rampedInterval : options.desiredMovingUpdateInterval;
-    int desiredSyncInterval = rampedUp ? options.rampedInterval : options.desiredSyncInterval;
+    int desiredStoppedUpdateInterval = rampedUp ? options.rampedUpInterval : options.desiredStoppedUpdateInterval;
+    int desiredMovingUpdateInterval = rampedUp ? options.rampedUpInterval : options.desiredMovingUpdateInterval;
+    int desiredSyncInterval = rampedUp ? options.rampedUpInterval : options.desiredSyncInterval;
 
     BOOL force = (source == RadarLocationSourceForegroundLocation || source == RadarLocationSourceManualLocation || source == RadarLocationSourceBeaconEnter ||
                   source == RadarLocationSourceBeaconExit || source == RadarLocationSourceVisitArrival);

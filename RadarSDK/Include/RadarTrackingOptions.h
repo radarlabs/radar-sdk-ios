@@ -164,7 +164,7 @@ typedef NS_ENUM(NSInteger, RadarTrackingOptionsSyncLocations) {
  Determines the interval in seconds to which tracking should ramp up.
  */
 
-@property (nonatomic, assign) int rampedInterval;
+@property (nonatomic, assign) int rampedUpInterval;
 
 /**
  Updates about every 30 seconds while moving or stopped. Moderate battery usage. Shows the flashing blue status bar during tracking.

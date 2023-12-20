@@ -30,7 +30,7 @@ NSString *const kUseVisits = @"useVisits";
 NSString *const kUseSignificantLocationChanges = @"useSignificantLocationChanges";
 NSString *const kBeacons = @"beacons";
 NSString *const kRampUpRadius = @"rampUpRadius";
-NSString *const kRampedInterval = @"rampedInterval";
+NSString *const kRampedUpInterval = @"rampedUpInterval";
 
 NSString *const kDesiredAccuracyHigh = @"high";
 NSString *const kDesiredAccuracyMedium = @"medium";
@@ -66,7 +66,7 @@ NSString *const kSyncNone = @"none";
     options.useSignificantLocationChanges = NO;
     options.beacons = NO;
     options.rampUpRadius = 0;
-    options.rampedInterval = 0;
+    options.rampedUpInterval = 0;
     return options;
 }
 
@@ -92,7 +92,7 @@ NSString *const kSyncNone = @"none";
     options.useSignificantLocationChanges = YES;
     options.beacons = NO;
     options.rampUpRadius = 0;
-    options.rampedInterval = 0;
+    options.rampedUpInterval = 0;
     return options;
 }
 
@@ -118,7 +118,7 @@ NSString *const kSyncNone = @"none";
     options.useSignificantLocationChanges = NO;
     options.beacons = NO;
     options.rampUpRadius = 200;
-    options.rampedInterval = 10;
+    options.rampedUpInterval = 10;
 
     return options;
 }
@@ -254,9 +254,9 @@ NSString *const kSyncNone = @"none";
     if (dict[kRampUpRadius] != nil) {
         options.rampUpRadius = [dict[kRampUpRadius] intValue];
     }
-    options.rampedInterval = 0;
-    if (dict[kRampedInterval] != nil) {
-        options.rampedInterval = [dict[kRampedInterval] intValue];
+    options.rampedUpInterval = 0;
+    if (dict[kRampedUpInterval] != nil) {
+        options.rampedUpInterval = [dict[kRampedUpInterval] intValue];
     }
 
     return options;
@@ -292,7 +292,7 @@ NSString *const kSyncNone = @"none";
     dict[kUseSignificantLocationChanges] = @(self.useSignificantLocationChanges);
     dict[kBeacons] = @(self.beacons);
     dict[kRampUpRadius] = @(self.rampUpRadius);
-    dict[kRampedInterval] = @(self.rampedInterval);
+    dict[kRampedUpInterval] = @(self.rampedUpInterval);
     return dict;
 }
 
@@ -322,7 +322,7 @@ NSString *const kSyncNone = @"none";
            self.useStoppedGeofence == options.useStoppedGeofence && self.stoppedGeofenceRadius == options.stoppedGeofenceRadius &&
            self.useMovingGeofence == options.useMovingGeofence && self.movingGeofenceRadius == options.movingGeofenceRadius && self.syncGeofences == options.syncGeofences &&
            self.useVisits == options.useVisits && self.useSignificantLocationChanges == options.useSignificantLocationChanges && self.beacons == options.beacons &&
-           self.rampUpRadius == options.rampUpRadius && self.rampedInterval == options.rampedInterval;
+           self.rampUpRadius == options.rampUpRadius && self.rampedUpInterval == options.rampedUpInterval;
 }
 
 @end
