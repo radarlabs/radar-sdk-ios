@@ -55,15 +55,15 @@ static int counter = 0;
 }
 
 - (void)write:(RadarLogLevel)level type:(RadarLogType)type message:(NSString *)message {
-    [self write:level type:type message:message forceFlush:NO];
+    [self write:level type:type message:message forcePersist:NO];
 }
 
-- (void)write:(RadarLogLevel)level type:(RadarLogType)type message:(NSString *)message forceFlush:(BOOL)forceFlush{
+- (void)write:(RadarLogLevel)level type:(RadarLogType)type message:(NSString *)message forcePersist:(BOOL)forcePersist{
     @synchronized (self) {
         RadarLog *radarLog = [[RadarLog alloc] initWithLevel:level type:type message:message];
         [inMemoryLogBuffer addObject:radarLog];
         if (_persistentLogFeatureFlag || [[NSProcessInfo processInfo] environment][@"XCTestConfigurationFilePath"]) { 
-            if (forceFlush || [inMemoryLogBuffer count] >= MAX_MEMORY_BUFFER_SIZE) {
+            if (forcePersist || [inMemoryLogBuffer count] >= MAX_MEMORY_BUFFER_SIZE) {
                 [self persistLogs];
             }
         } else {
@@ -124,16 +124,6 @@ static int counter = 0;
         [self.fileHandler writeData:logData toFileAtPath:filePath];
     }
  }
-
-- (void)append:(RadarLogLevel)level type:(RadarLogType)type message:(NSString *)message {
-    @synchronized (self) {
-        if (_persistentLogFeatureFlag || [[NSProcessInfo processInfo] environment][@"XCTestConfigurationFilePath"]) {
-            [self writeToFileStorage:@[[[RadarLog alloc] initWithLevel:level type:type message:message]]];
-        } else {
-            [self write:level type:type message:message];
-        }
-    }
-}
 
 - (NSArray<RadarLog *> *)flushableLogs {
     @synchronized (self) {
