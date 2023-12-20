@@ -59,7 +59,7 @@
         message = [NSString stringWithFormat:@"%@ | with %2.f%% battery", message, batteryLevel*100];
     }
     if (append) {
-        [[RadarLogBuffer sharedInstance] append:level type:type message:message];
+        [[RadarLogBuffer sharedInstance] write:level type:type message:message forceFlush:YES];
     } else {
         dispatch_async(dispatch_get_main_queue(), ^{
             [Radar sendLog:level type:type message:message];

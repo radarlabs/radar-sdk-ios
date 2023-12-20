@@ -55,16 +55,19 @@ static int counter = 0;
 }
 
 - (void)write:(RadarLogLevel)level type:(RadarLogType)type message:(NSString *)message {
+    [self write:level type:type message:message forceFlush:NO];
+}
+
+- (void)write:(RadarLogLevel)level type:(RadarLogType)type message:(NSString *)message forceFlush:(BOOL)forceFlush{
     @synchronized (self) {
         RadarLog *radarLog = [[RadarLog alloc] initWithLevel:level type:type message:message];
         [inMemoryLogBuffer addObject:radarLog];
-        NSUInteger logLength = [inMemoryLogBuffer count];
         if (_persistentLogFeatureFlag || [[NSProcessInfo processInfo] environment][@"XCTestConfigurationFilePath"]) { 
-            if (logLength >= MAX_MEMORY_BUFFER_SIZE) {
+            if (forceFlush || [inMemoryLogBuffer count] >= MAX_MEMORY_BUFFER_SIZE) {
                 [self persistLogs];
             }
         } else {
-            if (logLength >= MAX_BUFFER_SIZE) {
+            if ([inMemoryLogBuffer count] >= MAX_BUFFER_SIZE) {
                 [self purgeOldestLogs];
             }
         }  

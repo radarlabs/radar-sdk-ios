@@ -1470,8 +1470,8 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 }
 
 - (void)test_RadarLogBuffer_append {
-    [[RadarLogBuffer sharedInstance]append:RadarLogLevelDebug type:RadarLogTypeNone message:@"Test message 1"];
-    [[RadarLogBuffer sharedInstance]append:RadarLogLevelDebug type:RadarLogTypeNone message:@"Test message 2"];
+    [[RadarLogBuffer sharedInstance]write:RadarLogLevelDebug type:RadarLogTypeNone message:@"Test message 1" forceFlush:YES];
+    [[RadarLogBuffer sharedInstance]write:RadarLogLevelDebug type:RadarLogTypeNone message:@"Test message 2" forceFlush:YES];
     NSArray<RadarLog *> *logs = [[RadarLogBuffer sharedInstance]flushableLogs];
     XCTAssertEqual(logs.count, 2);
     XCTAssertEqualObjects(logs.firstObject.message, @"Test message 1");

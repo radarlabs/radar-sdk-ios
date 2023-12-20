@@ -24,7 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)write:(RadarLogLevel)level type:(RadarLogType)type message:(NSString *)message;
 
-- (void)append:(RadarLogLevel)level type:(RadarLogType)type message:(NSString *)message;
+- (void)write:(RadarLogLevel)level type:(RadarLogType)type message:(NSString *)message forceFlush:(BOOL)forceFlush;
 
 - (void)persistLogs;
 
