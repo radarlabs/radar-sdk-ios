@@ -18,6 +18,7 @@
 #import "RadarPermissionsHelperMock.h"
 #import "RadarTestUtils.h"
 #import "RadarTripOptions.h"
+#import "../RadarSDK/RadarAPIRetryWrapper.h"
 
 @interface RadarSDKTests : XCTestCase
 
@@ -1393,6 +1394,78 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     XCTAssertNotEqualObjects(options, nil);
     XCTAssertEqualObjects(options, options);
     XCTAssertNotEqualObjects(options, @"foo");
+}
+
+-(void)test_RadarAPIRetryWrapper_first_success {
+    XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
+
+    RadarAPIRetryWrapper *singletonInstance = [[RadarAPIRetryWrapper sharedInstance] initWithAPIHelper:self.apiHelperMock];
+    NSDictionary *testDict = @{@"retry": @1};
+    [singletonInstance requestWithRetry:@"GET" url:@"https://testPath" headers:nil params:testDict sleep:NO logPayload:NO extendedTimeout:NO completionHandler:^(RadarStatus status, NSDictionary *res) {
+        XCTAssertEqual(status, RadarStatusSuccess);
+        XCTAssertEqualObjects(res[@"successOn"], @1);
+        [expectation fulfill];
+    }];
+    [self waitForExpectationsWithTimeout:30
+                                 handler:^(NSError *_Nullable error) {
+                                     if (error) {
+                                         XCTFail();
+                                     }
+                                 }];
+}
+
+-(void)test_RadarAPIRetryWrapper_third_success {
+    XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
+
+    RadarAPIRetryWrapper *singletonInstance = [[RadarAPIRetryWrapper sharedInstance] initWithAPIHelper:self.apiHelperMock];
+    NSDictionary *testDict = @{@"retry": @3};
+    [singletonInstance requestWithRetry:@"GET" url:@"https://testPath" headers:nil params:testDict sleep:NO logPayload:NO extendedTimeout:NO completionHandler:^(RadarStatus status, NSDictionary *res) {
+        XCTAssertEqual(status, RadarStatusSuccess);
+        XCTAssertEqualObjects(res[@"successOn"], @3);
+        [expectation fulfill];
+    }];
+    [self waitForExpectationsWithTimeout:30
+                                 handler:^(NSError *_Nullable error) {
+                                     if (error) {
+                                         XCTFail();
+                                     }
+                                 }];
+}
+
+-(void)test_RadarAPIRetryWrapper_last_success {
+    XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
+
+    RadarAPIRetryWrapper *singletonInstance = [[RadarAPIRetryWrapper sharedInstance] initWithAPIHelper:self.apiHelperMock];
+    NSDictionary *testDict = @{@"retry": @5};
+    [singletonInstance requestWithRetry:@"GET" url:@"https://testPath" headers:nil params:testDict sleep:NO logPayload:NO extendedTimeout:NO completionHandler:^(RadarStatus status, NSDictionary *res) {
+        XCTAssertEqual(status, RadarStatusSuccess);
+        XCTAssertEqualObjects(res[@"successOn"], @5);
+        [expectation fulfill];
+    }];
+    [self waitForExpectationsWithTimeout:30
+                                 handler:^(NSError *_Nullable error) {
+                                     if (error) {
+                                         XCTFail();
+                                     }
+                                 }];
+}
+
+-(void)test_RadarAPIRetryWrapper_fail {
+    XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
+
+    RadarAPIRetryWrapper *singletonInstance = [[RadarAPIRetryWrapper sharedInstance] initWithAPIHelper:self.apiHelperMock];
+    NSDictionary *testDict = @{@"retry": @6};
+    [singletonInstance requestWithRetry:@"GET" url:@"https://testPath" headers:nil params:testDict sleep:NO logPayload:NO extendedTimeout:NO completionHandler:^(RadarStatus status, NSDictionary *res) {
+        XCTAssertEqual(status, RadarStatusErrorUnknown);
+        XCTAssertNil(res);
+        [expectation fulfill];
+    }];
+    [self waitForExpectationsWithTimeout:30
+                                 handler:^(NSError *_Nullable error) {
+                                     if (error) {
+                                         XCTFail();
+                                     }
+                                 }];
 }
 
 @end
