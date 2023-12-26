@@ -71,6 +71,10 @@ static NSString *const kCompletedMigration = @"radar-completed-migration";
         return nil;
     }
     NSString *value = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+    //handle string was encoded as nsobject
+    if (!value) {
+        value = [NSKeyedUnarchiver unarchiveObjectWithData:data];
+    }
     return value;
 }
 
@@ -120,5 +124,22 @@ static NSString *const kCompletedMigration = @"radar-completed-migration";
     [self.fileHandler writeData:[NSKeyedArchiver archivedDataWithRootObject:value] toFileAtPath:[self getSettingFilePath:key]];
 }
 
+- (void)removeObjectForKey:(NSString *)key {
+    [self.fileHandler deleteFileAtPath:[self getSettingFilePath:key]];
+}
+
+- (NSInteger)integerForKey:(NSString *)key {
+    NSData *data = [self.fileHandler readFileAtPath: [self getSettingFilePath:key]];
+    if (!data) {
+        return 0;
+    }
+    NSInteger value;
+    [data getBytes:&value length:sizeof(value)];
+    return value;
+}
+
+- (void)setInteger:(NSInteger)value forKey:(NSString *)key {
+    [self.fileHandler writeData:[NSData dataWithBytes:&value length:sizeof(value)] toFileAtPath:[self getSettingFilePath:key]];
+}
 
 @end

@@ -55,4 +55,23 @@
     return dict;
 }
 
+- (BOOL)isEqual:(id)object {
+    if (![object isKindOfClass:[RadarFeatureSettings class]]) {
+        return NO;
+    }
+
+    RadarFeatureSettings *settings = (RadarFeatureSettings *)object;
+    return self.usePersistence == settings.usePersistence && self.extendFlushReplays == settings.extendFlushReplays && self.useLogPersistence == settings.useLogPersistence;
+}
+
+#pragma mark - NSCoding
+
+- (instancetype)initWithCoder:(NSCoder *)coder {
+    return [RadarFeatureSettings featureSettingsFromDictionary:[coder decodeObjectForKey:@"dictionaryValue"]];
+}
+
+- (void)encodeWithCoder:(NSCoder *)coder {
+    [coder encodeObject:[self dictionaryValue] forKey:@"dictionaryValue"];
+}
+
 @end

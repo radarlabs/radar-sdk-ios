@@ -8,6 +8,9 @@
 
 #import <XCTest/XCTest.h>
 #import "../RadarSDK/RadarUserDefaults.h"
+#import "../RadarSDK/Include/RadarTripOptions.h"
+#import "../RadarSDK/RadarFeatureSettings.h"
+#import "../RadarSDK/Include/RadarTrackingOptions.h"
 
 @interface RadarUserDefaultsTest : XCTestCase
 @property (nonatomic, strong) RadarUserDefaults *radarUserDefault;
@@ -62,6 +65,28 @@
     [self.radarUserDefault setObject:obj2 forKey:@"obj2"];
     XCTAssertEqualObjects(stringArrays, [self.radarUserDefault objectForKey:@"obj1"]);
     XCTAssertEqualObjects(intArrays, [self.radarUserDefault objectForKey:@"obj2"]);
+    //test for string
+    NSString *str = @"1234567890";
+    [self.radarUserDefault setObject:str forKey:@"uuid"];
+    XCTAssertEqualObjects(str, [self.radarUserDefault objectForKey:@"uuid"]);
+    XCTAssertEqualObjects(str, [self.radarUserDefault stringForKey:@"uuid"]);
+    //test for date
+    NSDate *date = [NSDate date];
+    [self.radarUserDefault setObject:date forKey:@"date"];
+    XCTAssertEqualObjects(date, [self.radarUserDefault objectForKey:@"date"]);
+    //test for radarTripOptions
+    RadarTripOptions *tripOptions = [[RadarTripOptions alloc] initWithExternalId:@"123" destinationGeofenceTag:@"456" destinationGeofenceExternalId:@"789" scheduledArrivalAt:[NSDate date]];
+    [self.radarUserDefault setObject:tripOptions forKey:@"tripOptions"];
+    XCTAssertEqualObjects(tripOptions, [self.radarUserDefault objectForKey:@"tripOptions"]);
+    //test for radarfeatureSettings
+    RadarFeatureSettings *featureSettings = [[RadarFeatureSettings alloc] initWithUsePersistence:NO extendFlushReplays:YES useLogPersistence:NO];
+    [self.radarUserDefault setObject:featureSettings forKey:@"featureSettings"];
+    XCTAssertEqualObjects(featureSettings, [self.radarUserDefault objectForKey:@"featureSettings"]);
+    //test for radartrackingOptions
+    RadarTrackingOptions *trackingOptions = RadarTrackingOptions.presetContinuous;
+    [self.radarUserDefault setObject:trackingOptions forKey:@"trackingOptions"];
+    XCTAssertEqualObjects(trackingOptions, [self.radarUserDefault objectForKey:@"trackingOptions"]);
+    
 
 }
 
@@ -84,6 +109,13 @@
     [self.radarUserDefault setDouble:2.0 forKey:@"double2"];
     XCTAssertEqual(1.0, [self.radarUserDefault doubleForKey:@"double1"]);
     XCTAssertEqual(2.0, [self.radarUserDefault doubleForKey:@"double2"]);
+}
+
+- (void)test_RadarUserDefault_setAndGetInterger {
+    [self.radarUserDefault setInteger:1 forKey:@"int1"];
+    [self.radarUserDefault setInteger:2 forKey:@"int2"];
+    XCTAssertEqual(1, [self.radarUserDefault integerForKey:@"int1"]);
+    XCTAssertEqual(2, [self.radarUserDefault integerForKey:@"int2"]);
 }
 
 - (void)test_RadarUserDefault_migration {

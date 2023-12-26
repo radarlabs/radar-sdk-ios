@@ -14,7 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
  
  @see https://radar.com/documentation/sdk/ios
  */
-@interface RadarFeatureSettings : NSObject
+@interface RadarFeatureSettings : NSObject <NSCoding>
 
 /**
  Flag indicating whether to use persistence.

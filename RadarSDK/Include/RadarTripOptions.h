@@ -16,7 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 
  @see https://radar.com/documentation/sdk/ios
  */
-@interface RadarTripOptions : NSObject
+@interface RadarTripOptions : NSObject <NSCoding>
 
 - (instancetype)initWithExternalId:(NSString *_Nonnull)externalId
             destinationGeofenceTag:(NSString *_Nullable)destinationGeofenceTag
