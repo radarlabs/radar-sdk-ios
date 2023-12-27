@@ -42,6 +42,7 @@
 }
 
 + (void)initializeWithPublishableKey:(NSString *)publishableKey {
+    [RadarSettings migrateIfNeeded];
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"initialize()"];
 
     [[NSNotificationCenter defaultCenter] addObserver:[self sharedInstance]
