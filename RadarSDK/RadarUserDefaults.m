@@ -36,7 +36,6 @@ static NSString *const kCompletedMigration = @"radar-completed-migration";
             self.migrationCompleteFlag = NO;
         } else {
             self.migrationCompleteFlag= [self boolForKey:kCompletedMigration];
-
         }
     }
     return self;
@@ -79,6 +78,10 @@ static NSString *const kCompletedMigration = @"radar-completed-migration";
 }
 
 - (void)setString:(NSString *)value forKey:(NSString *)key {
+    //check that value is non null
+    if (!value) {
+        return;
+    }
     [self.fileHandler writeData:[value dataUsingEncoding:NSUTF8StringEncoding] toFileAtPath:[self getSettingFilePath:key]];
 }
 
@@ -93,6 +96,9 @@ static NSString *const kCompletedMigration = @"radar-completed-migration";
 }
 
 - (void)setDictionary:(NSDictionary *)value forKey:(NSString *)key {
+    if (!value) {
+        return;
+    }
     [self.fileHandler writeData:[NSJSONSerialization dataWithJSONObject:value options:0 error:nil] toFileAtPath:[self getSettingFilePath:key]];
 }
 
@@ -121,6 +127,9 @@ static NSString *const kCompletedMigration = @"radar-completed-migration";
 }
 
 - (void)setObject:(NSObject *)value forKey:(NSString *)key {
+    if (!value) {
+        return;
+    }
     [self.fileHandler writeData:[NSKeyedArchiver archivedDataWithRootObject:value] toFileAtPath:[self getSettingFilePath:key]];
 }
 
@@ -131,7 +140,7 @@ static NSString *const kCompletedMigration = @"radar-completed-migration";
 - (NSInteger)integerForKey:(NSString *)key {
     NSData *data = [self.fileHandler readFileAtPath: [self getSettingFilePath:key]];
     if (!data) {
-        return 0;
+        return -1;
     }
     NSInteger value;
     [data getBytes:&value length:sizeof(value)];
@@ -140,6 +149,18 @@ static NSString *const kCompletedMigration = @"radar-completed-migration";
 
 - (void)setInteger:(NSInteger)value forKey:(NSString *)key {
     [self.fileHandler writeData:[NSData dataWithBytes:&value length:sizeof(value)] toFileAtPath:[self getSettingFilePath:key]];
+}
+
+- (void) removeAllObjects {
+    NSArray<NSString *> *allSettings = [self.fileHandler allFilesInDirectory:self.settingsFileDir];
+    for (NSString *setting in allSettings) {
+        [self.fileHandler deleteFileAtPath:[self getSettingFilePath:setting]];
+    }
+    [[NSFileManager defaultManager] createDirectoryAtPath:self.settingsFileDir withIntermediateDirectories:YES attributes:nil error:nil];
+}
+
+- (BOOL)keyExists:(NSString *)key {
+    return [[NSFileManager defaultManager] fileExistsAtPath:[self getSettingFilePath:key]];
 }
 
 @end

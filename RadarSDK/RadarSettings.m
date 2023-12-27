@@ -49,7 +49,7 @@ static NSString *const kUserDebug = @"radar-userDebug";
         [self setId:[[NSUserDefaults standardUserDefaults] stringForKey:kId]];
         [self setUserId:[[NSUserDefaults standardUserDefaults] stringForKey:kUserId]];
         [self setDescription:[[NSUserDefaults standardUserDefaults] stringForKey:kDescription]];
-        [self setMetadata:[[NSUserDefaults standardUserDefaults] stringForKey:kMetadata]];
+        [self setMetadata:[[NSUserDefaults standardUserDefaults] objectForKey:kMetadata]];
         [self setAnonymousTrackingEnabled:[[NSUserDefaults standardUserDefaults] boolForKey:kAnonymous]];
         [self setTracking:[[NSUserDefaults standardUserDefaults] boolForKey:kTracking]];
         [self setTrackingOptions:[RadarTrackingOptions trackingOptionsFromDictionary:[[NSUserDefaults standardUserDefaults] dictionaryForKey:kTrackingOptions]]];
@@ -57,14 +57,26 @@ static NSString *const kUserDebug = @"radar-userDebug";
         [self setRemoteTrackingOptions:[RadarTrackingOptions trackingOptionsFromDictionary:[[NSUserDefaults standardUserDefaults] dictionaryForKey:kRemoteTrackingOptions]]];
         [self setTripOptions:[RadarTripOptions tripOptionsFromDictionary:[[NSUserDefaults standardUserDefaults] dictionaryForKey:kTripOptions]]];
         [self setFeatureSettings:[RadarFeatureSettings featureSettingsFromDictionary:[[NSUserDefaults standardUserDefaults] dictionaryForKey:kFeatureSettings]]];
-        [self setLogLevel:[[NSUserDefaults standardUserDefaults] integerForKey:kLogLevel]];
-        [self setBeaconUUIDs:[[NSUserDefaults standardUserDefaults] arrayForKey:kBeaconUUIDs]];
-        [self setHost:[[NSUserDefaults standardUserDefaults] stringForKey:kHost]];
-        [self setVerifiedHost:[[NSUserDefaults standardUserDefaults] stringForKey:kVerifiedHost]];
+        
+        RadarLogLevel logLevel;
+        if ([RadarSettings userDebug]) {
+            logLevel = RadarLogLevelDebug;
+        } else if ([[NSUserDefaults standardUserDefaults] objectForKey:kLogLevel] == nil) {
+            logLevel = RadarLogLevelInfo;
+        } else {
+            logLevel = (RadarLogLevel)[[NSUserDefaults standardUserDefaults] integerForKey:kLogLevel];
+        }
+        [self setLogLevel:logLevel];
+        NSArray<NSString *> *beaconUUIDs = [[NSUserDefaults standardUserDefaults] valueForKey:kBeaconUUIDs];
+        
+        [self setBeaconUUIDs:beaconUUIDs];
+        
+        [[RadarUserDefaults sharedInstance] setObject:[[NSUserDefaults standardUserDefaults] objectForKey:kHost] forKey:kHost];
+        [[RadarUserDefaults sharedInstance] setObject:[[NSUserDefaults standardUserDefaults] objectForKey:kVerifiedHost] forKey:kVerifiedHost];
         [self setUserDebug:[[NSUserDefaults standardUserDefaults] boolForKey:kUserDebug]];
         [[RadarUserDefaults sharedInstance] setObject:[[NSUserDefaults standardUserDefaults] objectForKey:kLastTrackedTime] forKey:kLastTrackedTime]; 
         [[RadarUserDefaults sharedInstance] setObject:[[NSUserDefaults standardUserDefaults] objectForKey:kLastAppOpenTime] forKey:kLastAppOpenTime]; 
-        [RadarUserDefaults sharedInstance setMigrationCompleteFlag: YES];
+        [[RadarUserDefaults sharedInstance] setMigrationCompleteFlag: YES];
     }
 }
 
@@ -144,8 +156,8 @@ static NSString *const kUserDebug = @"radar-userDebug";
     return [[RadarUserDefaults sharedInstance] dictionaryForKey:kMetadata];
 }
 
-+ (void)setMetadata:(NSString *)metadata {
-    [[RadarUserDefaults sharedInstance] setObject:metadata forKey:kMetadata];
++ (void)setMetadata:(NSDictionary *)metadata {
+    [[RadarUserDefaults sharedInstance] setDictionary:metadata forKey:kMetadata];
 }
 
 + (BOOL)anonymousTrackingEnabled {
@@ -165,10 +177,10 @@ static NSString *const kUserDebug = @"radar-userDebug";
 }
 
 + (RadarTrackingOptions *)trackingOptions {
-    NSDictionary *optionsDict = [[RadarUserDefaults sharedInstance] dictionaryForKey:kTrackingOptions];
+    RadarTrackingOptions *options = [[RadarUserDefaults sharedInstance] objectForKey:kTrackingOptions];
 
-    if (optionsDict != nil) {
-        return [RadarTrackingOptions trackingOptionsFromDictionary:optionsDict];
+    if (options) {
+        return options;
     } else {
         // default to efficient preset
         return RadarTrackingOptions.presetEfficient;
@@ -176,8 +188,7 @@ static NSString *const kUserDebug = @"radar-userDebug";
 }
 
 + (void)setTrackingOptions:(RadarTrackingOptions *)options {
-    NSDictionary *optionsDict = [options dictionaryValue];
-    [[RadarUserDefaults sharedInstance] setObject:optionsDict forKey:kTrackingOptions];
+    [[RadarUserDefaults sharedInstance] setObject:options forKey:kTrackingOptions];
 }
 
 + (void)removeTrackingOptions {
@@ -185,18 +196,11 @@ static NSString *const kUserDebug = @"radar-userDebug";
 }
 
 + (RadarTrackingOptions *)previousTrackingOptions {
-    NSDictionary *optionsDict = [[RadarUserDefaults sharedInstance] dictionaryForKey:kPreviousTrackingOptions];
-
-    if (optionsDict != nil) {
-        return [RadarTrackingOptions trackingOptionsFromDictionary:optionsDict];
-    } else {
-        return nil;
-    }
+    return [[RadarUserDefaults sharedInstance] objectForKey:kPreviousTrackingOptions];
 }
 
 + (void)setPreviousTrackingOptions:(RadarTrackingOptions *)options {
-    NSDictionary *optionsDict = [options dictionaryValue];
-    [[RadarUserDefaults sharedInstance] setObject:optionsDict forKey:kPreviousTrackingOptions];
+    [[RadarUserDefaults sharedInstance] setObject:options forKey:kPreviousTrackingOptions];
 }
 
 + (void)removePreviousTrackingOptions {
@@ -204,14 +208,11 @@ static NSString *const kUserDebug = @"radar-userDebug";
 }
 
 + (RadarTrackingOptions *_Nullable)remoteTrackingOptions {
-    NSDictionary *optionsDict = [[RadarUserDefaults sharedInstance] dictionaryForKey:kRemoteTrackingOptions];
-
-    return optionsDict ? [RadarTrackingOptions trackingOptionsFromDictionary:optionsDict] : nil;
+    return [[RadarUserDefaults sharedInstance] objectForKey:kRemoteTrackingOptions];
 }
 
 + (void)setRemoteTrackingOptions:(RadarTrackingOptions *_Nonnull)options {
-    NSDictionary *optionsDict = [options dictionaryValue];
-    [[RadarUserDefaults sharedInstance] setObject:optionsDict forKey:kRemoteTrackingOptions];
+    [[RadarUserDefaults sharedInstance] setObject:options forKey:kRemoteTrackingOptions];
 }
 
 + (void)removeRemoteTrackingOptions {
@@ -219,36 +220,27 @@ static NSString *const kUserDebug = @"radar-userDebug";
 }
 
 + (RadarTripOptions *)tripOptions {
-    NSDictionary *optionsDict = [[RadarUserDefaults sharedInstance] dictionaryForKey:kTripOptions];
-
-    if (optionsDict != nil) {
-        return [RadarTripOptions tripOptionsFromDictionary:optionsDict];
-    } else {
-        return nil;
-    }
+    return [[RadarUserDefaults sharedInstance] objectForKey:kTripOptions];
 }
 
 + (void)setTripOptions:(RadarTripOptions *)options {
     if (options) {
-        NSDictionary *optionsDict = [options dictionaryValue];
-        [[RadarUserDefaults sharedInstance] setObject:optionsDict forKey:kTripOptions];
+        [[RadarUserDefaults sharedInstance] setObject:options forKey:kTripOptions];
     } else {
         [[RadarUserDefaults sharedInstance] removeObjectForKey:kTripOptions];
     }
 }
 
 + (RadarFeatureSettings *)featureSettings {
-    NSDictionary *featureSettingsDict = [[RadarUserDefaults sharedInstance] dictionaryForKey:kFeatureSettings];
-
-    return [RadarFeatureSettings featureSettingsFromDictionary:featureSettingsDict];
+    return [[RadarUserDefaults sharedInstance] objectForKey:kFeatureSettings];
 }
 
 + (void)setFeatureSettings:(RadarFeatureSettings *)featureSettings {
     if (featureSettings) {
         //This is added as reading from NSUserdefaults is too slow for this feature flag. To be removed when throttling is done. 
         [[RadarLogBuffer sharedInstance] setFeatureFlag:featureSettings.useLogPersistence];
-        NSDictionary *featureSettingsDict = [featureSettings dictionaryValue];
-        [[RadarUserDefaults sharedInstance] setObject:featureSettingsDict forKey:kFeatureSettings];
+       
+        [[RadarUserDefaults sharedInstance] setObject:featureSettings forKey:kFeatureSettings];
     } else {
         //This is added as reading from NSUserdefaults is too slow for this feature flag. To be removed when throttling is done. 
         [[RadarLogBuffer sharedInstance] setFeatureFlag:NO];
@@ -259,12 +251,13 @@ static NSString *const kUserDebug = @"radar-userDebug";
 
 + (RadarLogLevel)logLevel {
     RadarLogLevel logLevel;
+    NSInteger logLevelInteger = [[RadarUserDefaults sharedInstance] integerForKey:kLogLevel];
     if ([RadarSettings userDebug]) {
         logLevel = RadarLogLevelDebug;
-    } else if ([[RadarUserDefaults sharedInstance] objectForKey:kLogLevel] == nil) {
+    } else if (logLevelInteger == -1) {
         logLevel = RadarLogLevelInfo;
     } else {
-        logLevel = (RadarLogLevel)[[RadarUserDefaults sharedInstance] integerForKey:kLogLevel];
+        logLevel = (RadarLogLevel)logLevelInteger;
     }
     return logLevel;
 }
@@ -275,12 +268,11 @@ static NSString *const kUserDebug = @"radar-userDebug";
 }
 
 + (NSArray<NSString *> *_Nullable)beaconUUIDs {
-    NSArray<NSString *> *beaconUUIDs = [[RadarUserDefaults sharedInstance] valueForKey:kBeaconUUIDs];
-    return beaconUUIDs;
+    return [[RadarUserDefaults sharedInstance] objectForKey:kBeaconUUIDs];
 }
 
 + (void)setBeaconUUIDs:(NSArray<NSString *> *_Nullable)beaconUUIDs {
-    [[RadarUserDefaults sharedInstance] setValue:beaconUUIDs forKey:kBeaconUUIDs];
+    [[RadarUserDefaults sharedInstance] setObject:beaconUUIDs forKey:kBeaconUUIDs];
 }
 
 + (NSString *)host {
@@ -304,8 +296,11 @@ static NSString *const kUserDebug = @"radar-userDebug";
 }
 
 + (BOOL)userDebug {
-    NSNumber *userDebug = [[RadarUserDefaults sharedInstance] objectForKey:kUserDebug];
-    return userDebug ? [userDebug boolValue] : YES;
+    if([[RadarUserDefaults sharedInstance] keyExists:kUserDebug]) {
+        return [[RadarUserDefaults sharedInstance] boolForKey:kUserDebug];
+    } else {
+        return NO;
+    }
 }
 
 + (void)setUserDebug:(BOOL)userDebug {

@@ -11,6 +11,7 @@
 #import "../RadarSDK/Include/RadarTripOptions.h"
 #import "../RadarSDK/RadarFeatureSettings.h"
 #import "../RadarSDK/Include/RadarTrackingOptions.h"
+#import "../RadarSDK/RadarSettings.h"
 
 @interface RadarUserDefaultsTest : XCTestCase
 @property (nonatomic, strong) RadarUserDefaults *radarUserDefault;
@@ -27,6 +28,8 @@
 
 - (void)tearDown {
     // Put teardown code here. This method is called after the invocation of each test method in the class.
+    [self.radarUserDefault removeAllObjects];
+    [self.radarUserDefault setMigrationCompleteFlag:NO];
 }
 
 - (void)test_RadarUserDefault_setAndGetMigrationFlag {
@@ -87,6 +90,7 @@
     [self.radarUserDefault setObject:trackingOptions forKey:@"trackingOptions"];
     XCTAssertEqualObjects(trackingOptions, [self.radarUserDefault objectForKey:@"trackingOptions"]);
     
+    
 
 }
 
@@ -120,7 +124,111 @@
 
 - (void)test_RadarUserDefault_migration {
     // verify that the migrationFlag is off
+    XCTAssertTrue(!self.radarUserDefault.migrationCompleteFlag);
+
     // start with nsuserdefault filled with values
+
+    //keyvalues copied from radarsettings
+    NSString *const kPublishableKey = @"radar-publishableKey";
+    NSString *const kInstallId = @"radar-installId";
+    NSString *const kSessionId = @"radar-sessionId";
+    NSString *const kId = @"radar-_id";
+    static NSString *const kUserId = @"radar-userId";
+    NSString *const kDescription = @"radar-description";
+    NSString *const kMetadata = @"radar-metadata";
+    NSString *const kAnonymous = @"radar-anonymous";
+    NSString *const kTracking = @"radar-tracking";
+    NSString *const kTrackingOptions = @"radar-trackingOptions";
+    NSString *const kPreviousTrackingOptions = @"radar-previousTrackingOptions";
+    NSString *const kRemoteTrackingOptions = @"radar-remoteTrackingOptions";
+    NSString *const kFeatureSettings = @"radar-featureSettings";
+    NSString *const kTripOptions = @"radar-tripOptions";
+    NSString *const kLogLevel = @"radar-logLevel";
+    NSString *const kBeaconUUIDs = @"radar-beaconUUIDs";
+    NSString *const kHost = @"radar-host";
+    NSString *const kLastTrackedTime = @"radar-lastTrackedTime";
+    NSString *const kVerifiedHost = @"radar-verifiedHost";
+    NSString *const kLastAppOpenTime = @"radar-lastAppOpenTime";
+    NSString *const kUserDebug = @"radar-userDebug";
+
+    NSString *const dummyPublishableKey = @"dummyPublishableKey";
+    [[NSUserDefaults standardUserDefaults] setObject:dummyPublishableKey forKey:kPublishableKey];
+    NSString *const dummyInstallId = @"dummyInstallId";
+    [[NSUserDefaults standardUserDefaults] setObject:dummyInstallId forKey:kInstallId];
+    double timestampSeconds = [[NSDate date] timeIntervalSince1970];
+    [[NSUserDefaults standardUserDefaults] setDouble:timestampSeconds forKey:kSessionId];
+    NSString *const dummyId = @"dummyId";
+    [[NSUserDefaults standardUserDefaults] setObject:dummyId forKey:kId];
+    NSString *const dummyUserId = @"dummyUserId";
+    [[NSUserDefaults standardUserDefaults] setObject:dummyUserId forKey:kUserId];
+    NSString *const dummyDescription = @"dummyDescription";
+    [[NSUserDefaults standardUserDefaults] setObject:dummyDescription forKey:kDescription];
+    NSDictionary<NSString *, NSString *> *dummyMetadata = @{@"key1": @"value1", @"key2": @"value2"};
+    [[NSUserDefaults standardUserDefaults] setObject:dummyMetadata forKey:kMetadata];
+    BOOL dummyAnonymous = YES;
+    [[NSUserDefaults standardUserDefaults] setBool:dummyAnonymous forKey:kAnonymous];
+    BOOL dummyTracking = NO;
+    [[NSUserDefaults standardUserDefaults] setBool:dummyTracking forKey:kTracking];
+    RadarTrackingOptions *dummyTrackingOptions = RadarTrackingOptions.presetContinuous;
+    [[NSUserDefaults standardUserDefaults] setObject:[dummyTrackingOptions dictionaryValue] forKey:kTrackingOptions];
+    RadarFeatureSettings *dummyFeatureSettings = [[RadarFeatureSettings alloc] initWithUsePersistence:NO extendFlushReplays:YES useLogPersistence:NO];
+    [[NSUserDefaults standardUserDefaults] setObject:[dummyFeatureSettings dictionaryValue] forKey:kFeatureSettings];
+    RadarTrackingOptions *dummyPreviousTrackingOptions = RadarTrackingOptions.presetResponsive;
+    [[NSUserDefaults standardUserDefaults] setObject:[dummyPreviousTrackingOptions dictionaryValue] forKey:kPreviousTrackingOptions];
+    RadarTrackingOptions *dummyRemoteTrackingOptions = RadarTrackingOptions.presetContinuous;
+    [[NSUserDefaults standardUserDefaults] setObject:[dummyRemoteTrackingOptions dictionaryValue] forKey:kRemoteTrackingOptions];
+    RadarTripOptions *dummyTripOptions = [[RadarTripOptions alloc] initWithExternalId:@"123" destinationGeofenceTag:@"456" destinationGeofenceExternalId:@"789" scheduledArrivalAt:[NSDate date]];
+    [[NSUserDefaults standardUserDefaults] setObject:[dummyTripOptions dictionaryValue] forKey:kTripOptions];
+    RadarLogLevel dummyLogLevel = RadarLogLevelDebug;
+    [[NSUserDefaults standardUserDefaults] setInteger:dummyLogLevel forKey:kLogLevel];
+    NSArray<NSString *> *dummyBeaconUUIDs = @[@"123", @"456"];
+    [[NSUserDefaults standardUserDefaults] setObject:dummyBeaconUUIDs forKey:kBeaconUUIDs];
+    NSString *const dummyHost = @"dummyHost";
+    [[NSUserDefaults standardUserDefaults] setObject:dummyHost forKey:kHost];
+    NSString *const dummyVerifiedHost = @"dummyVerifiedHost";
+    [[NSUserDefaults standardUserDefaults] setObject:dummyVerifiedHost forKey:kVerifiedHost];
+    NSString *const dummyDefaultVerifiedHost = @"dummyDefaultVerifiedHost";
+    NSDate *dummyLastTrackedTime = [NSDate date];
+    [[NSUserDefaults standardUserDefaults] setObject:dummyLastTrackedTime forKey:kLastTrackedTime];
+    NSDate *dummyLastAppOpenTime = [NSDate date];
+    [[NSUserDefaults standardUserDefaults] setObject:dummyLastAppOpenTime forKey:kLastAppOpenTime];
+    BOOL dummyUserDebug = YES;
+    [[NSUserDefaults standardUserDefaults] setBool:dummyUserDebug forKey:kUserDebug];
+
+    [RadarSettings migrateIfNeeded];
+    // verify that the migrationFlag is on
+    XCTAssertTrue(self.radarUserDefault.migrationCompleteFlag);
+    // verify that the values are written to radarStrorageSystem and readable by the new radarSetting
+    XCTAssertEqualObjects(dummyPublishableKey, [RadarSettings publishableKey]);
+    XCTAssertEqualObjects(dummyInstallId, [RadarSettings installId]);
+    NSString *timeStampSecondString = [NSString stringWithFormat:@"%.f", timestampSeconds];
+    XCTAssertEqualObjects(timeStampSecondString, [RadarSettings sessionId]);
+    XCTAssertEqualObjects(dummyId, [RadarSettings _id]);
+    XCTAssertEqualObjects(dummyUserId, [RadarSettings userId]);
+    XCTAssertEqualObjects(dummyDescription, [RadarSettings __description]);
+    XCTAssertEqualObjects(dummyMetadata, [RadarSettings metadata]);
+    XCTAssertEqual(dummyAnonymous, [RadarSettings anonymousTrackingEnabled]);
+    XCTAssertEqual(dummyTracking, [RadarSettings tracking]);
+    XCTAssertEqualObjects(dummyTrackingOptions, [RadarSettings trackingOptions]);
+    XCTAssertEqualObjects(dummyFeatureSettings, [RadarSettings featureSettings]);
+    XCTAssertEqualObjects(dummyPreviousTrackingOptions, [RadarSettings previousTrackingOptions]);
+    XCTAssertEqualObjects(dummyRemoteTrackingOptions, [RadarSettings remoteTrackingOptions]);
+    XCTAssertEqualObjects(dummyTripOptions, [RadarSettings tripOptions]);
+    XCTAssertTrue(dummyLogLevel==[RadarSettings logLevel]);
+    XCTAssertEqualObjects(dummyBeaconUUIDs, [RadarSettings beaconUUIDs]);
+    XCTAssertEqualObjects(dummyHost, [RadarSettings host]);
+    XCTAssertEqualObjects(dummyVerifiedHost, [RadarSettings verifiedHost]);
+    XCTAssertEqualObjects(dummyLastTrackedTime, [RadarSettings lastTrackedTime]);
+    XCTAssertEqualObjects(dummyLastAppOpenTime, [RadarSettings lastAppOpenTime]);
+    XCTAssertEqual(dummyUserDebug, [RadarSettings userDebug]);
+
+
+
+
+
+    
+
+
     // with each type
     // call the migration code
     // ensure that the migrationFlag is turned on

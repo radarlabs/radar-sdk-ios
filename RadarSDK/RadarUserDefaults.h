@@ -48,6 +48,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSObject *)objectForKey:(NSString *)key;
 
+- (void)removeAllObjects;
+
+- (BOOL)keyExists:(NSString *)key;
+
 @end
 
 NS_ASSUME_NONNULL_END
