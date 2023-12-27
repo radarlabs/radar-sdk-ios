@@ -12,6 +12,7 @@
 #import "../RadarSDK/RadarFeatureSettings.h"
 #import "../RadarSDK/Include/RadarTrackingOptions.h"
 #import "../RadarSDK/RadarSettings.h"
+#import "../RadarSDK/RadarSettings.h"
 
 @interface RadarUserDefaultsTest : XCTestCase
 @property (nonatomic, strong) RadarUserDefaults *radarUserDefault;
@@ -123,6 +124,8 @@
 
 - (void)test_RadarUserDefault_migration {
     // verify that the migrationFlag is off
+    XCTAssertTrue(!self.radarUserDefault.migrationCompleteFlag);
+
     XCTAssertTrue(!self.radarUserDefault.migrationCompleteFlag);
 
     // start with nsuserdefault filled with values
