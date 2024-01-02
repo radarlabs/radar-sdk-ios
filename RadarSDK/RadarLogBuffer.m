@@ -199,7 +199,9 @@ static int counter = 0;
     }
 }
 
-//for use in testing
+/**
+* Clears the in-memory buffer and deletes all persisted logs. (For use in testing only.)
+*/
 -(void)clearBuffer {
     @synchronized (self) {
         [inMemoryLogBuffer removeAllObjects];
