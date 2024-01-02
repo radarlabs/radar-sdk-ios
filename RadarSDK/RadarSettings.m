@@ -177,10 +177,9 @@ static NSString *const kUserDebug = @"radar-userDebug";
 }
 
 + (RadarTrackingOptions *)trackingOptions {
-    RadarTrackingOptions *options = [[RadarUserDefaults sharedInstance] objectForKey:kTrackingOptions];
-
-    if (options) {
-        return options;
+    NSObject *options = [[RadarUserDefaults sharedInstance] objectForKey:kTrackingOptions];
+    if (options && [options isKindOfClass:[RadarTrackingOptions class]]) {
+        return (RadarTrackingOptions *)options;
     } else {
         // default to efficient preset
         return RadarTrackingOptions.presetEfficient;
@@ -196,7 +195,12 @@ static NSString *const kUserDebug = @"radar-userDebug";
 }
 
 + (RadarTrackingOptions *)previousTrackingOptions {
-    return [[RadarUserDefaults sharedInstance] objectForKey:kPreviousTrackingOptions];
+    NSObject *options = [[RadarUserDefaults sharedInstance] objectForKey:kPreviousTrackingOptions];
+    if (options && [options isKindOfClass:[RadarTrackingOptions class]]) {
+        return (RadarTrackingOptions *)options;
+    } else {
+        return nil;
+    }
 }
 
 + (void)setPreviousTrackingOptions:(RadarTrackingOptions *)options {
@@ -208,7 +212,12 @@ static NSString *const kUserDebug = @"radar-userDebug";
 }
 
 + (RadarTrackingOptions *_Nullable)remoteTrackingOptions {
-    return [[RadarUserDefaults sharedInstance] objectForKey:kRemoteTrackingOptions];
+    NSObject *options = [[RadarUserDefaults sharedInstance] objectForKey:kRemoteTrackingOptions];
+    if (options && [options isKindOfClass:[RadarTrackingOptions class]]) {
+        return (RadarTrackingOptions *)options;
+    } else {
+        return nil;
+    }
 }
 
 + (void)setRemoteTrackingOptions:(RadarTrackingOptions *_Nonnull)options {
@@ -220,7 +229,12 @@ static NSString *const kUserDebug = @"radar-userDebug";
 }
 
 + (RadarTripOptions *)tripOptions {
-    return [[RadarUserDefaults sharedInstance] objectForKey:kTripOptions];
+    NSObject *options = [[RadarUserDefaults sharedInstance] objectForKey:kTripOptions];
+    if (options && [options isKindOfClass:[RadarTripOptions class]]) {
+        return (RadarTripOptions *)options;
+    } else {
+        return nil;
+    }
 }
 
 + (void)setTripOptions:(RadarTripOptions *)options {
@@ -232,7 +246,12 @@ static NSString *const kUserDebug = @"radar-userDebug";
 }
 
 + (RadarFeatureSettings *)featureSettings {
-    return [[RadarUserDefaults sharedInstance] objectForKey:kFeatureSettings];
+    NSObject *featureSettings = [[RadarUserDefaults sharedInstance] objectForKey:kFeatureSettings];
+    if (featureSettings && [featureSettings isKindOfClass:[RadarFeatureSettings class]]) {
+        return (RadarFeatureSettings *)featureSettings;
+    } else {
+        return [[RadarFeatureSettings alloc] initWithUsePersistence:NO extendFlushReplays:NO useLogPersistence:NO];
+    }
 }
 
 + (void)setFeatureSettings:(RadarFeatureSettings *)featureSettings {
@@ -267,7 +286,12 @@ static NSString *const kUserDebug = @"radar-userDebug";
 }
 
 + (NSArray<NSString *> *_Nullable)beaconUUIDs {
-    return [[RadarUserDefaults sharedInstance] objectForKey:kBeaconUUIDs];
+    NSObject *beaconUUIDs = [[RadarUserDefaults sharedInstance] objectForKey:kBeaconUUIDs];
+    if (beaconUUIDs && [beaconUUIDs isKindOfClass:[NSArray class]]) {
+        return (NSArray<NSString *> *)beaconUUIDs;
+    } else {
+        return nil;
+    }
 }
 
 + (void)setBeaconUUIDs:(NSArray<NSString *> *_Nullable)beaconUUIDs {
@@ -285,8 +309,12 @@ static NSString *const kUserDebug = @"radar-userDebug";
 }
 
 + (NSDate *)lastTrackedTime {
-    NSDate *lastTrackedTime = [[RadarUserDefaults sharedInstance] objectForKey:kLastTrackedTime];
-    return lastTrackedTime ? lastTrackedTime : [NSDate dateWithTimeIntervalSince1970:0];
+    NSObject *lastTrackedTime = [[RadarUserDefaults sharedInstance] objectForKey:kLastTrackedTime];
+    if (lastTrackedTime && [lastTrackedTime isKindOfClass:[NSDate class]]) {
+        return (NSDate *)lastTrackedTime;
+    } else {
+        return [NSDate dateWithTimeIntervalSince1970:0];
+    }
 }
 
 + (NSString *)verifiedHost {
@@ -312,8 +340,12 @@ static NSString *const kUserDebug = @"radar-userDebug";
 }
 
 + (NSDate *)lastAppOpenTime {
-    NSDate *lastAppOpenTime = [[RadarUserDefaults sharedInstance] objectForKey:kLastAppOpenTime];
-    return lastAppOpenTime ? lastAppOpenTime : [NSDate dateWithTimeIntervalSince1970:0];
+    NSObject *lastAppOpenTime = [[RadarUserDefaults sharedInstance] objectForKey:kLastAppOpenTime];
+    if (lastAppOpenTime && [lastAppOpenTime isKindOfClass:[NSDate class]]) {
+        return (NSDate *)lastAppOpenTime;
+    } else {
+        return [NSDate dateWithTimeIntervalSince1970:0];
+    }
 }
 
 @end
