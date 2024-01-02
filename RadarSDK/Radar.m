@@ -1279,16 +1279,10 @@
         return;
     }
 
-    // remove logs from buffer to handle multiple flushLogs calls
-    [[RadarLogBuffer sharedInstance] removeLogsFromBuffer:pendingLogCount];
-
     RadarSyncLogsAPICompletionHandler onComplete = ^(RadarStatus status) {
-        // if an error occurs in syncing, add the logs back to the buffer
-        if (status != RadarStatusSuccess) {
-            [[RadarLogBuffer sharedInstance] addLogsToBuffer:flushableLogs];
-        }
+        [[RadarLogBuffer sharedInstance] onFlush:status == RadarStatusSuccess logs:flushableLogs];
     };
-    
+
     [[RadarAPIClient sharedInstance] syncLogs:flushableLogs
                             completionHandler:^(RadarStatus status) {
                                 if (onComplete) {

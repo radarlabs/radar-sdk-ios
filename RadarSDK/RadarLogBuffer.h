@@ -18,23 +18,21 @@ NS_ASSUME_NONNULL_BEGIN
 @property (strong, nonatomic) NSString *logFileDir;
 @property (strong, nonatomic) RadarFileStorage *fileHandler;
 @property (nonatomic, strong) NSTimer *timer;
-@property (nonatomic, assign) BOOL featureFlag;
+@property (nonatomic, assign) BOOL persistentLogFeatureFlag;
 
 + (instancetype)sharedInstance;
 
 - (void)write:(RadarLogLevel)level type:(RadarLogType)type message:(NSString *)message;
 
-- (void)append:(RadarLogLevel)level type:(RadarLogType)type message:(NSString *)message;
+- (void)write:(RadarLogLevel)level type:(RadarLogType)type message:(NSString *)message forcePersist:(BOOL)forcePersist;
 
 - (void)persistLogs;
 
 - (void)clearBuffer;
 
-- (void)removeLogsFromBuffer:(NSUInteger)numLogs;
+- (void)setPersistentLogFeatureFlag:(BOOL)persistentLogFeatureFlag;
 
-- (void)addLogsToBuffer:(NSArray<RadarLog *> *)logs;
-
-- (void)setFeatureFlag:(BOOL)featureFlag;
+- (void)onFlush:(BOOL)success logs:(NSArray<RadarLog *> *)logs;
 
 @end
 
