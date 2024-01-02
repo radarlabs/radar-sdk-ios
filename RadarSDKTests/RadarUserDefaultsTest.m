@@ -23,11 +23,10 @@
 - (void)setUp {
     [super setUp];
     self.radarUserDefault = [RadarUserDefaults sharedInstance];
-    // Put setup code here. This method is called before the invocation of each test method in the class.
+    [self.radarUserDefault removeAllObjects];
 }
 
 - (void)tearDown {
-    // Put teardown code here. This method is called after the invocation of each test method in the class.
     [self.radarUserDefault removeAllObjects];
     [self.radarUserDefault setMigrationCompleteFlag:NO];
 }
@@ -221,18 +220,6 @@
     XCTAssertEqualObjects(dummyLastTrackedTime, [RadarSettings lastTrackedTime]);
     XCTAssertEqualObjects(dummyLastAppOpenTime, [RadarSettings lastAppOpenTime]);
     XCTAssertEqual(dummyUserDebug, [RadarSettings userDebug]);
-
-
-
-
-
-    
-
-
-    // with each type
-    // call the migration code
-    // ensure that the migrationFlag is turned on
-    // assert that the value is written to radarStrorageSystem and readable by the new radarSetting
 }
 
 @end

@@ -80,6 +80,7 @@ static NSString *const kCompletedMigration = @"radar-completed-migration";
 - (void)setString:(NSString *)value forKey:(NSString *)key {
     //check that value is non null
     if (!value) {
+        [self.fileHandler deleteFileAtPath:[self getSettingFilePath:key]];
         return;
     }
     [self.fileHandler writeData:[value dataUsingEncoding:NSUTF8StringEncoding] toFileAtPath:[self getSettingFilePath:key]];
@@ -90,13 +91,13 @@ static NSString *const kCompletedMigration = @"radar-completed-migration";
     if (!data) {
         return nil;
     }
-    //This is sus, need to look into serization of objects
     NSDictionary *value = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
     return value;
 }
 
 - (void)setDictionary:(NSDictionary *)value forKey:(NSString *)key {
     if (!value) {
+        [self.fileHandler deleteFileAtPath:[self getSettingFilePath:key]];
         return;
     }
     [self.fileHandler writeData:[NSJSONSerialization dataWithJSONObject:value options:0 error:nil] toFileAtPath:[self getSettingFilePath:key]];
@@ -128,6 +129,7 @@ static NSString *const kCompletedMigration = @"radar-completed-migration";
 
 - (void)setObject:(NSObject *)value forKey:(NSString *)key {
     if (!value) {
+        [self.fileHandler deleteFileAtPath:[self getSettingFilePath:key]];
         return;
     }
     [self.fileHandler writeData:[NSKeyedArchiver archivedDataWithRootObject:value] toFileAtPath:[self getSettingFilePath:key]];
