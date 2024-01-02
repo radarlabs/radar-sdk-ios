@@ -242,7 +242,7 @@ static NSString *const kUserDebug = @"radar-userDebug";
         [[RadarUserDefaults sharedInstance] setObject:featureSettings forKey:kFeatureSettings];
     } else {
         //This is added as reading from NSUserdefaults is too slow for this feature flag. To be removed when throttling is done. 
-        [[RadarLogBuffer sharedInstance] setFeatureFlag:NO];
+        [[RadarLogBuffer sharedInstance] setPersistentLogFeatureFlag:NO];
         [[RadarUserDefaults sharedInstance] removeObjectForKey:kFeatureSettings];
     }
 }
