@@ -25,6 +25,7 @@
     [super setUp];
     self.radarUserDefault = [RadarUserDefaults sharedInstance];
     [self.radarUserDefault removeAllObjects];
+    [self.radarUserDefault setMigrationCompleteFlag:NO];
 }
 
 - (void)tearDown {
