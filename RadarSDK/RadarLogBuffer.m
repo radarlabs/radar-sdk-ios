@@ -130,6 +130,7 @@ static int counter = 0;
         if (_persistentLogFeatureFlag || [[NSProcessInfo processInfo] environment][@"XCTestConfigurationFilePath"]) {
             [self persistLogs];
             NSArray *existingLogsArray = [self.readFromFileStorage copy];
+            [self removeLogs:[existingLogsArray count]]; 
             return existingLogsArray;
         } else {
             NSArray *flushableLogs = [inMemoryLogBuffer copy];
@@ -165,7 +166,6 @@ static int counter = 0;
 
 - (void)removeLogs:(NSUInteger)numLogs {
     @synchronized (self) {
-        
         if (_persistentLogFeatureFlag || [[NSProcessInfo processInfo] environment][@"XCTestConfigurationFilePath"]) {
             NSArray<NSString *> *files = [self getLogFilesInTimeOrder];
             for (NSUInteger i = 0; i < MIN(numLogs, [files count]); i++) {
@@ -183,11 +183,9 @@ static int counter = 0;
 - (void)onFlush:(BOOL)success logs:(NSArray<RadarLog *> *)logs{
     @synchronized (self) {
         if (_persistentLogFeatureFlag || [[NSProcessInfo processInfo] environment][@"XCTestConfigurationFilePath"]) {
-            if (success) {
-                // Remove all logs files from disk
-                [self removeLogs:[logs count]];
-            } else {
-                // Attempt purge to only remove the oldest logs to reduce payload size of next attempt. 
+            if (!success) {
+                [self writeToFileStorage:logs];
+                // Attempt purge to only remove the oldest logs to reduce payload size of next attempt.
                 [self purgeOldestLogs];
             }
         } else {
