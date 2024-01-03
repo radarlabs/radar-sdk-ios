@@ -66,7 +66,7 @@ NSString *const kSyncNone = @"none";
     options.useSignificantLocationChanges = NO;
     options.beacons = NO;
     options.rampUpRadius = 0;
-    options.rampedUpInterval = 0;
+    options.rampedUpInterval = 5;
     return options;
 }
 
@@ -92,7 +92,7 @@ NSString *const kSyncNone = @"none";
     options.useSignificantLocationChanges = YES;
     options.beacons = NO;
     options.rampUpRadius = 0;
-    options.rampedUpInterval = 0;
+    options.rampedUpInterval = 5;
     return options;
 }
 
@@ -118,7 +118,7 @@ NSString *const kSyncNone = @"none";
     options.useSignificantLocationChanges = NO;
     options.beacons = NO;
     options.rampUpRadius = 200;
-    options.rampedUpInterval = 10;
+    options.rampedUpInterval = 5;
 
     return options;
 }
