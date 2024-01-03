@@ -330,15 +330,15 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         if (tracking) {
             if (ramping == RampingOptionRampUp && !rampedUp) {
                 [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Ramping up"]];
-                [RadarSettings setRampedUp:YES];
+
                 rampedUp = YES;
-                [self changeTrackingState:YES];
+                [self changeRampedState:YES];
             } else if (ramping == RampingOptionRampDown && rampedUp) {
                 [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Ramping down"]];
                 [RadarSettings setTrackingOptions:options];
-                [RadarSettings setRampedUp:NO];
+
                 rampedUp = NO;
-                [self changeTrackingState:NO];
+                [self changeRampedState:NO];
             }
 
             int desiredStoppedUpdateInterval = rampedUp ? options.rampedUpInterval : options.desiredStoppedUpdateInterval;
@@ -453,7 +453,9 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 
 
 // Call this method when the tracking state changes
-- (void)changeTrackingState:(BOOL)rampedUp {
+- (void)changeRampedState:(BOOL)rampedUp {
+    [RadarSettings setRampedUp:rampedUp];
+    
     StateChange *change = [[StateChange alloc] init];
     change.timestamp = [NSDate date]; // Current timestamp
     change.rampedUp = rampedUp;
@@ -521,7 +523,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         [Radar startTrackingWithOptions:previousTrackingOptions];
         if ([RadarSettings rampedUp]) {
             [RadarSettings setRampedUp:NO];
-            [self changeTrackingState:NO];
+            [self changeRampedState:NO];
             // call trackOnce to refresh nearbyGeofences and trigger a ramp back up if necessary 
             [Radar trackOnceWithDesiredAccuracy:RadarTrackingOptionsDesiredAccuracyHigh beacons:NO completionHandler:nil];
         }
@@ -858,7 +860,6 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 
     BOOL rampedUp = [RadarSettings rampedUp];
     int desiredStoppedUpdateInterval = rampedUp ? options.rampedUpInterval : options.desiredStoppedUpdateInterval;
-    int desiredMovingUpdateInterval = rampedUp ? options.rampedUpInterval : options.desiredMovingUpdateInterval;
     int desiredSyncInterval = rampedUp ? options.rampedUpInterval : options.desiredSyncInterval;
 
     BOOL force = (source == RadarLocationSourceForegroundLocation || source == RadarLocationSourceManualLocation || source == RadarLocationSourceBeaconEnter ||
@@ -1116,7 +1117,6 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                                                       }];
     } else if ([region.identifier hasPrefix:kRampUpGeofenceIdentifierPrefix] && manager.location) {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Entered ramp up geofence"];
-
         [self handleLocation:manager.location source:RadarLocationSourceGeofenceEnter];
     } else if (manager.location) {
         [self handleLocation:manager.location source:RadarLocationSourceGeofenceEnter];
