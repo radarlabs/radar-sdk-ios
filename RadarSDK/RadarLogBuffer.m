@@ -35,7 +35,7 @@ static int fileCounter = 0;
             [[NSFileManager defaultManager] createDirectoryAtPath:self.logFileDir withIntermediateDirectories:YES attributes:nil error:nil];
         }
         self.fileHandler = [[RadarFileStorage alloc] init];
-        _timer = [NSTimer scheduledTimerWithTimeInterval:20.0 target:self selector:@selector(persistLogs) userInfo:nil repeats:YES];
+        _timer = [NSTimer scheduledTimerWithTimeInterval:2.0 target:self selector:@selector(persistLogs) userInfo:nil repeats:YES];
         
     }
     return self;
@@ -79,7 +79,6 @@ static int fileCounter = 0;
         if (_persistentLogFeatureFlag || [[NSProcessInfo processInfo] environment][@"XCTestConfigurationFilePath"]) {
             if ([logBuffer count] > 0) {
                 [self writeToFileStorage:logBuffer];
-                [self purgeOldestLogs];
                 [logBuffer removeAllObjects];
             }
             
@@ -131,6 +130,7 @@ static int fileCounter = 0;
     @synchronized (self) {
         if (_persistentLogFeatureFlag || [[NSProcessInfo processInfo] environment][@"XCTestConfigurationFilePath"]) {
             [self persistLogs];
+            [self purgeOldestLogs];
             NSArray *existingLogsArray = [self.readFromFileStorage copy];
             [self removeLogs:[existingLogsArray count]]; 
             return existingLogsArray;
