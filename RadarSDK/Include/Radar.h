@@ -1012,13 +1012,13 @@ logConversionWithNotification
 /**
  Log application entering background. Include this in your application delegate's applicationDidEnterBackground: method.
  */
-+ (void)logEnterBackground;
++ (void)logBackgrounding;
 
 /**
  Log application resigning active. Include this in your application delegate's applicationWillResignActive: method.
 
  */
-+ (void)logResignActive;
++ (void)logResigningActive;
 
 
 #pragma mark - Helpers
