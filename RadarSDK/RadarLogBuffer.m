@@ -17,7 +17,7 @@ static const int MAX_BUFFER_SIZE = 500;
 
 static NSString *const kPurgedLogLine = @"----- purged oldest logs -----";
 
-static int counter = 0;
+static int fileCounter = 0;
 
 @implementation RadarLogBuffer {
     NSMutableArray<RadarLog *> *inMemoryLogBuffer;
@@ -58,7 +58,7 @@ static int counter = 0;
     [self write:level type:type message:message forcePersist:NO];
 }
 
-- (void)write:(RadarLogLevel)level type:(RadarLogType)type message:(NSString *)message forcePersist:(BOOL)forcePersist{
+- (void)write:(RadarLogLevel)level type:(RadarLogType)type message:(NSString *)message forcePersist:(BOOL)forcePersist {
     @synchronized (self) {
         RadarLog *radarLog = [[RadarLog alloc] initWithLevel:level type:type message:message];
         [inMemoryLogBuffer addObject:radarLog];
@@ -77,10 +77,12 @@ static int counter = 0;
 - (void)persistLogs {
     @synchronized (self) {
         if (_persistentLogFeatureFlag || [[NSProcessInfo processInfo] environment][@"XCTestConfigurationFilePath"]) {
-            NSArray *flushableLogs = [inMemoryLogBuffer copy];
-            [self writeToFileStorage:flushableLogs];
-            [self purgeOldestLogs];
-            [inMemoryLogBuffer removeAllObjects]; 
+            if([inMemoryLogBuffer count] > 0) {
+                [self writeToFileStorage:inMemoryLogBuffer];
+                [self purgeOldestLogs];
+                [inMemoryLogBuffer removeAllObjects];
+            }
+            
         }
     }
 }
@@ -119,7 +121,7 @@ static int counter = 0;
         NSData *logData = [NSKeyedArchiver archivedDataWithRootObject:log];
         NSTimeInterval unixTimestamp = [log.createdAt timeIntervalSince1970];
         // Logs may be created in the same millisecond, so we append a counter to the end of the timestamp to "tiebreak"
-        NSString *unixTimestampString = [NSString stringWithFormat:@"%lld_%04d", (long long)unixTimestamp, counter++];
+        NSString *unixTimestampString = [NSString stringWithFormat:@"%lld_%04d", (long long)unixTimestamp, fileCounter++];
         NSString *filePath = [self.logFileDir stringByAppendingPathComponent:unixTimestampString];
         [self.fileHandler writeData:logData toFileAtPath:filePath];
     }
