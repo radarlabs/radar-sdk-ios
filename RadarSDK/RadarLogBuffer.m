@@ -59,11 +59,16 @@ static int fileCounter = 0;
 }
 
 - (void)write:(RadarLogLevel)level type:(RadarLogType)type message:(NSString *)message forcePersist:(BOOL)forcePersist {
+    RadarLog *radarLog = [[RadarLog alloc] initWithLevel:level type:type message:message];
+    // bypass sync lock here to ensure that other writes or persisting logs don't block the current thread as the app is terminating
+    if (forcePersist && (_persistentLogFeatureFlag || [[NSProcessInfo processInfo] environment][@"XCTestConfigurationFilePath"])) {
+        [self writeToFileStorage:@[radarLog]];
+        return;
+    }
     @synchronized (self) {
-        RadarLog *radarLog = [[RadarLog alloc] initWithLevel:level type:type message:message];
         [logBuffer addObject:radarLog];
         if (_persistentLogFeatureFlag || [[NSProcessInfo processInfo] environment][@"XCTestConfigurationFilePath"]) { 
-            if (forcePersist || [logBuffer count] >= MAX_MEMORY_BUFFER_SIZE) {
+            if ([logBuffer count] >= MAX_MEMORY_BUFFER_SIZE) {
                 [self persistLogs];
             }
         } else {
