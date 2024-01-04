@@ -66,7 +66,9 @@
                                      completionHandler:^(RadarStatus status, RadarConfig *config) {
                                          [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
                                          [RadarSettings setFeatureSettings:config.meta.featureSettings];
+                                         [self flushLogs];
                                      }];
+    
 }
 
 #pragma mark - Properties
@@ -1036,6 +1038,20 @@
     [RadarSettings setLogLevel:level];
 }
 
++ (void)logTermination { 
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeNone message:@"App terminating" includeDate:YES includeBattery:YES append:YES];
+}
+
++ (void)logBackgrounding {
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeNone message:@"App entering background" includeDate:YES includeBattery:YES append:YES];
+    [[RadarLogBuffer sharedInstance] persistLogs];
+}
+
++ (void)logResigningActive {
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeNone message:@"App resigning active" includeDate:YES includeBattery:YES];
+}
+
+
 #pragma mark - Helpers
 
 + (NSString *)stringForStatus:(RadarStatus)status {
@@ -1256,21 +1272,14 @@
         return;
     }
 
-    NSArray<RadarLog *> *flushableLogs = [[RadarLogBuffer sharedInstance] flushableLogs];
-
+    NSArray<RadarLog *> *flushableLogs = [[RadarLogBuffer sharedInstance] flushableLogs]; 
     NSUInteger pendingLogCount = [flushableLogs count];
     if (pendingLogCount == 0) {
         return;
     }
 
-    // remove logs from buffer to handle multiple flushLogs calls
-    [[RadarLogBuffer sharedInstance] removeLogsFromBuffer:pendingLogCount];
-
     RadarSyncLogsAPICompletionHandler onComplete = ^(RadarStatus status) {
-        // if an error occurs in syncing, add the logs back to the buffer
-        if (status != RadarStatusSuccess) {
-            [[RadarLogBuffer sharedInstance] addLogsToBuffer:flushableLogs];
-        }
+        [[RadarLogBuffer sharedInstance] onFlush:status == RadarStatusSuccess logs:flushableLogs];
     };
 
     [[RadarAPIClient sharedInstance] syncLogs:flushableLogs

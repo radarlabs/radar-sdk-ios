@@ -94,4 +94,24 @@
     return arr;
 }
 
+#pragma mark - NSCoding
+
+- (instancetype)initWithCoder:(NSCoder *)coder {
+    self = [super init];
+    if (self) {
+        _level = [coder decodeIntegerForKey:@"level"];
+        _type = [coder decodeIntegerForKey:@"type"];
+        _message = [coder decodeObjectForKey:@"message"];
+        _createdAt = [coder decodeObjectForKey:@"createdAt"];
+    }
+    return self;
+}
+
+- (void)encodeWithCoder:(NSCoder *)coder {
+    [coder encodeInteger:_level forKey:@"level"];
+    [coder encodeInteger:_type forKey:@"type"];
+    [coder encodeObject:_message forKey:@"message"];
+    [coder encodeObject:_createdAt forKey:@"createdAt"];
+}
+
 @end
