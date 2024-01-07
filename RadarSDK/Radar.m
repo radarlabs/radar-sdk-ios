@@ -42,6 +42,14 @@
 }
 
 + (void)initializeWithPublishableKey:(NSString *)publishableKey {
+    
+    if (![[RadarUserDefaults sharedInstance] migrationCompleteFlag]) {
+        [RadarSettings migrateIfNeeded];
+        [RadarState migrateIfNeeded];
+        [RadarReplayBuffer migrateIfNeeded];
+        [[RadarUserDefaults sharedInstance] setMigrationCompleteFlag:YES];
+    }
+
     [RadarSettings migrateIfNeeded];
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"initialize()"];
 
@@ -1042,7 +1050,6 @@
 + (void)logTermination { 
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeNone message:@"App terminating" includeDate:YES includeBattery:YES append:YES];
 }
-
 
 + (void)logBackgrounding {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeNone message:@"App entering background" includeDate:YES includeBattery:YES append:YES];

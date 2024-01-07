@@ -48,6 +48,8 @@
     [self.radarUserDefault setBool:YES forKey:@"noValue"];
     XCTAssertTrue([self.radarUserDefault boolForKey:@"noValue"]);
     
+    // test for meaningful default values
+    XCTAssertFalse([self.radarUserDefault boolForKey:@"emptyKey"]);
     
 }
 
@@ -58,6 +60,9 @@
     XCTAssertEqualObjects(@"I like working here", [self.radarUserDefault stringForKey:@"string1"]);
     [self.radarUserDefault setString:@"hello world" forKey:@"string2"];
     XCTAssertEqualObjects(@"hello world", [self.radarUserDefault stringForKey:@"string2"]);
+    
+    // test for meaningful default values
+    XCTAssertNil([self.radarUserDefault stringForKey:@"emptyKey"]);
 }
 
 - (void)test_RadarUserDefault_setAndGetNSObj {
@@ -91,7 +96,8 @@
     [self.radarUserDefault setObject:trackingOptions forKey:@"trackingOptions"];
     XCTAssertEqualObjects(trackingOptions, [self.radarUserDefault objectForKey:@"trackingOptions"]);
     
-    
+    // test for meaningful default values
+    XCTAssertNil([self.radarUserDefault objectForKey:@"emptyKey"]);
 
 }
 
@@ -107,6 +113,9 @@
     XCTAssertEqualObjects(dic1[@"key2"], [self.radarUserDefault dictionaryForKey:@"dic1"][@"key2"]);
     XCTAssertEqualObjects(dic2[@"key1"], [self.radarUserDefault dictionaryForKey:@"dic2"][@"key1"]);
     XCTAssertEqualObjects(dic2[@"key2"], [self.radarUserDefault dictionaryForKey:@"dic2"][@"key2"]);
+    
+    // test for meaningful default values
+    XCTAssertNil([self.radarUserDefault dictionaryForKey:@"emptyKey"]);
 }
 
 - (void)test_RadarUserDefault_setAndGetDouble {
@@ -114,6 +123,9 @@
     [self.radarUserDefault setDouble:2.0 forKey:@"double2"];
     XCTAssertEqual(1.0, [self.radarUserDefault doubleForKey:@"double1"]);
     XCTAssertEqual(2.0, [self.radarUserDefault doubleForKey:@"double2"]);
+    
+    // test for meaningful default values
+    XCTAssertEqual(0, [self.radarUserDefault doubleForKey:@"emptyKey"]);
 }
 
 - (void)test_RadarUserDefault_setAndGetInterger {
@@ -121,6 +133,9 @@
     [self.radarUserDefault setInteger:2 forKey:@"int2"];
     XCTAssertEqual(1, [self.radarUserDefault integerForKey:@"int1"]);
     XCTAssertEqual(2, [self.radarUserDefault integerForKey:@"int2"]);
+    
+    // test for meaningful default values
+    XCTAssertEqual(0, [self.radarUserDefault integerForKey:@"emptyKey"]);
 }
 
 - (void)test_RadarUserDefault_migration {
@@ -199,8 +214,8 @@
     [[NSUserDefaults standardUserDefaults] setBool:dummyUserDebug forKey:kUserDebug];
 
     [RadarSettings migrateIfNeeded];
-    // verify that the migrationFlag is on
-    XCTAssertTrue(self.radarUserDefault.migrationCompleteFlag);
+    // verify that the migrationFlag is on, NOTE: no longer needed?
+    //XCTAssertTrue(self.radarUserDefault.migrationCompleteFlag);
     // verify that the values are written to radarStrorageSystem and readable by the new radarSetting
     XCTAssertEqualObjects(dummyPublishableKey, [RadarSettings publishableKey]);
     XCTAssertEqualObjects(dummyInstallId, [RadarSettings installId]);
@@ -225,5 +240,13 @@
     XCTAssertEqualObjects(dummyLastAppOpenTime, [RadarSettings lastAppOpenTime]);
     XCTAssertEqual(dummyUserDebug, [RadarSettings userDebug]);
 }
+
+//test that entering null removes data
+
+//test radar state migration
+
+//test radar replay buffer migration
+
+//test that these classes still work with "cold boot" on this version
 
 @end

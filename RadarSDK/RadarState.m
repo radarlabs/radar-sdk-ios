@@ -8,6 +8,7 @@
 #import "RadarState.h"
 #import "CLLocation+Radar.h"
 #import "RadarUtils.h"
+#import "RadarUserDefaults.h"
 
 @implementation RadarState
 
@@ -23,8 +24,38 @@ static NSString *const kPlaceId = @"radar-placeId";
 static NSString *const kRegionIds = @"radar-regionIds";
 static NSString *const kBeaconIds = @"radar-beaconIds";
 
++(void)migrateIfNeeded {
+    if (![[RadarUserDefaults sharedInstance] migrationCompleteFlag]) {
+        NSDictionary *lastLocationDict = [[NSUserDefaults standardUserDefaults] dictionaryForKey:kLastLocation];
+        CLLocation *lastLocation = [RadarUtils locationForDictionary:lastLocationDict];
+
+        if (lastLocation.isValid) {
+            [self setLastLocation: lastLocation];
+        }
+        NSDictionary *lastMovedLocationDict = [[NSUserDefaults standardUserDefaults] dictionaryForKey:kLastMovedLocation];
+        CLLocation *lastMovedLocation = [RadarUtils locationForDictionary:lastMovedLocationDict];
+        if (lastMovedLocation.isValid) {
+            [self setLastMovedLocation: lastMovedLocation];
+        }
+        [self setLastMovedAt:[[NSUserDefaults standardUserDefaults] objectForKey:kLastMovedAt]];
+        [self setStopped:[[NSUserDefaults standardUserDefaults] boolForKey:kStopped]];
+        [[RadarUserDefaults sharedInstance] setObject:[[NSUserDefaults standardUserDefaults] objectForKey:kLastSentAt] forKey:kLastSentAt];
+        [self setCanExit:[[NSUserDefaults standardUserDefaults] boolForKey:kCanExit]];
+        NSDictionary *lastFailedStoppedLocationDict = [[NSUserDefaults standardUserDefaults] dictionaryForKey:kLastFailedStoppedLocation];
+        CLLocation *lastFailedStoppedLocation = [RadarUtils locationForDictionary:lastFailedStoppedLocationDict];
+        if (lastFailedStoppedLocation.isValid) {
+            [self setLastFailedStoppedLocation: lastFailedStoppedLocation];
+        }
+        [self setGeofenceIds:[[NSUserDefaults standardUserDefaults] objectForKey:kGeofenceIds]];
+        [self setPlaceId:[[NSUserDefaults standardUserDefaults] stringForKey:kPlaceId]];
+        [self setRegionIds:[[NSUserDefaults standardUserDefaults] objectForKey:kRegionIds]];
+        [self setBeaconIds:[[NSUserDefaults standardUserDefaults] objectForKey:kBeaconIds]];
+        [[RadarUserDefaults sharedInstance] setMigrationCompleteFlag:YES];
+    }
+}
+
 + (CLLocation *)lastLocation {
-    NSDictionary *dict = [[NSUserDefaults standardUserDefaults] dictionaryForKey:kLastLocation];
+    NSDictionary *dict = [[RadarUserDefaults sharedInstance] dictionaryForKey:kLastLocation];
     CLLocation *lastLocation = [RadarUtils locationForDictionary:dict];
 
     if (!lastLocation.isValid) {
@@ -40,11 +71,11 @@ static NSString *const kBeaconIds = @"radar-beaconIds";
     }
 
     NSDictionary *dict = [RadarUtils dictionaryForLocation:lastLocation];
-    [[NSUserDefaults standardUserDefaults] setObject:dict forKey:kLastLocation];
+    [[RadarUserDefaults sharedInstance] setDictionary:dict forKey:kLastLocation];
 }
 
 + (CLLocation *)lastMovedLocation {
-    NSDictionary *dict = [[NSUserDefaults standardUserDefaults] dictionaryForKey:kLastMovedLocation];
+    NSDictionary *dict = [[RadarUserDefaults sharedInstance] dictionaryForKey:kLastMovedLocation];
     CLLocation *lastMovedLocation = [RadarUtils locationForDictionary:dict];
 
     if (!lastMovedLocation.isValid) {
@@ -60,44 +91,52 @@ static NSString *const kBeaconIds = @"radar-beaconIds";
     }
 
     NSDictionary *dict = [RadarUtils dictionaryForLocation:lastMovedLocation];
-    [[NSUserDefaults standardUserDefaults] setObject:dict forKey:kLastMovedLocation];
+    [[RadarUserDefaults sharedInstance] setDictionary:dict forKey:kLastMovedLocation];
 }
 
 + (NSDate *)lastMovedAt {
-    return [[NSUserDefaults standardUserDefaults] objectForKey:kLastMovedAt];
+    NSObject *lastMovedAt = [[RadarUserDefaults sharedInstance] objectForKey:kLastMovedAt];
+    if (!lastMovedAt || ![lastMovedAt isKindOfClass:[NSDate class]]) {
+        return nil;
+    }
+    return (NSDate *)lastMovedAt;
 }
 
 + (void)setLastMovedAt:(NSDate *)lastMovedAt {
-    [[NSUserDefaults standardUserDefaults] setObject:lastMovedAt forKey:kLastMovedAt];
+    [[RadarUserDefaults sharedInstance] setObject:lastMovedAt forKey:kLastMovedAt];
 }
 
 + (BOOL)stopped {
-    return [[NSUserDefaults standardUserDefaults] boolForKey:kStopped];
+    return [[RadarUserDefaults sharedInstance] boolForKey:kStopped];
 }
 
 + (void)setStopped:(BOOL)stopped {
-    [[NSUserDefaults standardUserDefaults] setBool:stopped forKey:kStopped];
+    [[RadarUserDefaults sharedInstance] setBool:stopped forKey:kStopped];
 }
 
 + (void)updateLastSentAt {
     NSDate *now = [NSDate new];
-    [[NSUserDefaults standardUserDefaults] setObject:now forKey:kLastSentAt];
+    [[RadarUserDefaults sharedInstance] setObject:now forKey:kLastSentAt];
 }
 
 + (NSDate *)lastSentAt {
-    return [[NSUserDefaults standardUserDefaults] objectForKey:kLastSentAt];
+    NSObject *lastSentAt = [[RadarUserDefaults sharedInstance] objectForKey:kLastSentAt];
+    if (!lastSentAt || ![lastSentAt isKindOfClass:[NSDate class]]) {
+        return nil;
+    }
+    return (NSDate *)lastSentAt;
 }
 
 + (BOOL)canExit {
-    return [[NSUserDefaults standardUserDefaults] boolForKey:kCanExit];
+    return [[RadarUserDefaults sharedInstance] boolForKey:kCanExit];
 }
 
 + (void)setCanExit:(BOOL)canExit {
-    [[NSUserDefaults standardUserDefaults] setBool:canExit forKey:kCanExit];
+    [[RadarUserDefaults sharedInstance] setBool:canExit forKey:kCanExit];
 }
 
 + (CLLocation *)lastFailedStoppedLocation {
-    NSDictionary *dict = [[NSUserDefaults standardUserDefaults] dictionaryForKey:kLastFailedStoppedLocation];
+    NSDictionary *dict = [[RadarUserDefaults sharedInstance] dictionaryForKey:kLastFailedStoppedLocation];
     CLLocation *lastFailedStoppedLocation = [RadarUtils locationForDictionary:dict];
 
     if (!lastFailedStoppedLocation.isValid) {
@@ -109,45 +148,61 @@ static NSString *const kBeaconIds = @"radar-beaconIds";
 
 + (void)setLastFailedStoppedLocation:(CLLocation *)lastFailedStoppedLocation {
     if (!lastFailedStoppedLocation.isValid) {
-        [[NSUserDefaults standardUserDefaults] setObject:nil forKey:kLastFailedStoppedLocation];
+        [[RadarUserDefaults sharedInstance] setDictionary:nil forKey:kLastFailedStoppedLocation];
 
         return;
     }
 
     NSDictionary *dict = [RadarUtils dictionaryForLocation:lastFailedStoppedLocation];
-    [[NSUserDefaults standardUserDefaults] setObject:dict forKey:kLastFailedStoppedLocation];
+    [[RadarUserDefaults sharedInstance] setDictionary:dict forKey:kLastFailedStoppedLocation];
 }
 
 + (NSArray<NSString *> *)geofenceIds {
-    return [[NSUserDefaults standardUserDefaults] objectForKey:kGeofenceIds];
+    NSObject *geofenceIds = [[RadarUserDefaults sharedInstance] objectForKey:kGeofenceIds];
+    if (!geofenceIds || ![geofenceIds isKindOfClass:[NSArray class]]) {
+        return nil;
+    }
+    return (NSArray<NSString *> *)geofenceIds;
 }
 
 + (void)setGeofenceIds:(NSArray<NSString *> *)geofenceIds {
-    [[NSUserDefaults standardUserDefaults] setObject:geofenceIds forKey:kGeofenceIds];
+    [[RadarUserDefaults sharedInstance] setObject:geofenceIds forKey:kGeofenceIds];
 }
 
 + (NSString *)placeId {
-    return [[NSUserDefaults standardUserDefaults] stringForKey:kPlaceId];
+    NSObject *placeId = [[RadarUserDefaults sharedInstance] objectForKey:kPlaceId];
+    if (!placeId || ![placeId isKindOfClass:[NSString class]]) {
+        return nil;
+    }
+    return (NSString *)placeId;
 }
 
 + (void)setPlaceId:(NSString *)placeId {
-    [[NSUserDefaults standardUserDefaults] setObject:placeId forKey:kPlaceId];
+    [[RadarUserDefaults sharedInstance] setObject:placeId forKey:kPlaceId];
 }
 
 + (NSArray<NSString *> *)regionIds {
-    return [[NSUserDefaults standardUserDefaults] objectForKey:kRegionIds];
+    NSObject *regionIds = [[RadarUserDefaults sharedInstance] objectForKey:kRegionIds];
+    if (!regionIds || ![regionIds isKindOfClass:[NSArray class]]) {
+        return nil;
+    }
+    return (NSArray<NSString *> *)regionIds;
 }
 
 + (void)setRegionIds:(NSArray<NSString *> *)regionIds {
-    [[NSUserDefaults standardUserDefaults] setObject:regionIds forKey:kRegionIds];
+    [[RadarUserDefaults sharedInstance] setObject:regionIds forKey:kRegionIds];
 }
 
 + (NSArray<NSString *> *)beaconIds {
-    return [[NSUserDefaults standardUserDefaults] objectForKey:kBeaconIds];
+    NSObject *beaconIds = [[RadarUserDefaults sharedInstance] objectForKey:kBeaconIds];
+    if (!beaconIds || ![beaconIds isKindOfClass:[NSArray class]]) {
+        return nil;
+    }
+    return (NSArray<NSString *> *)beaconIds;
 }
 
 + (void)setBeaconIds:(NSArray<NSString *> *)beaconIds {
-    [[NSUserDefaults standardUserDefaults] setObject:beaconIds forKey:kBeaconIds];
+    [[RadarUserDefaults sharedInstance] setObject:beaconIds forKey:kBeaconIds];
 }
 
 @end

@@ -1016,9 +1016,9 @@ logConversionWithNotification
 
 /**
  Log application resigning active. Include this in your application delegate's applicationWillResignActive: method.
+ 
  */
 + (void)logResigningActive;
-
 
 
 #pragma mark - Helpers

@@ -64,21 +64,20 @@ static NSString *const kCompletedMigration = @"radar-completed-migration";
     [self.fileHandler writeData:[NSData dataWithBytes:&value length:sizeof(value)] toFileAtPath:[self getSettingFilePath:key]];
 }
 
-- (NSString *)stringForKey:(NSString *)key {
+- (nullable NSString *)stringForKey:(NSString *)key {
     NSData *data = [self.fileHandler readFileAtPath: [self getSettingFilePath:key]];
     if (!data) {
         return nil;
     }
     NSString *value = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-    //handle string was encoded as nsobject
+    // handle case where string was encoded as NSObject
     if (!value) {
         value = [NSKeyedUnarchiver unarchiveObjectWithData:data];
     }
     return value;
 }
 
-- (void)setString:(NSString *)value forKey:(NSString *)key {
-    //check that value is non null
+- (void)setString:(nullable NSString *)value forKey:(NSString *)key {
     if (!value) {
         [self.fileHandler deleteFileAtPath:[self getSettingFilePath:key]];
         return;
@@ -86,21 +85,30 @@ static NSString *const kCompletedMigration = @"radar-completed-migration";
     [self.fileHandler writeData:[value dataUsingEncoding:NSUTF8StringEncoding] toFileAtPath:[self getSettingFilePath:key]];
 }
 
-- (NSDictionary *)dictionaryForKey:(NSString *)key {
+- (nullable NSDictionary *)dictionaryForKey:(NSString *)key {
     NSData *data = [self.fileHandler readFileAtPath: [self getSettingFilePath:key]];
     if (!data) {
         return nil;
     }
-    NSDictionary *value = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+    NSError *error;
+    NSDictionary *value = [NSJSONSerialization JSONObjectWithData:data options:0 error:&error];
+    if (error) {
+        return nil;
+    }
     return value;
 }
 
-- (void)setDictionary:(NSDictionary *)value forKey:(NSString *)key {
+- (void)setDictionary:(nullable NSDictionary *)value forKey:(NSString *)key {
     if (!value) {
         [self.fileHandler deleteFileAtPath:[self getSettingFilePath:key]];
         return;
     }
-    [self.fileHandler writeData:[NSJSONSerialization dataWithJSONObject:value options:0 error:nil] toFileAtPath:[self getSettingFilePath:key]];
+    NSError *error;
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:value options:0 error:&error];
+    if (error) {
+        return;
+    }
+    [self.fileHandler writeData:jsonData toFileAtPath:[self getSettingFilePath:key]];
 }
 
 - (double)doubleForKey:(NSString *)key {
@@ -117,17 +125,16 @@ static NSString *const kCompletedMigration = @"radar-completed-migration";
     [self.fileHandler writeData:[NSData dataWithBytes:&value length:sizeof(value)] toFileAtPath:[self getSettingFilePath:key]];
 }
 
-- (NSObject *)objectForKey:(NSString *)key {
+- (nullable NSObject *)objectForKey:(NSString *)key {
     NSData *data = [self.fileHandler readFileAtPath: [self getSettingFilePath:key]];
     if (!data) {
         return nil;
     }
-    //need to implement nsencoding for all that uses it?
     NSObject *value = [NSKeyedUnarchiver unarchiveObjectWithData:data];
     return value;
 }
 
-- (void)setObject:(NSObject *)value forKey:(NSString *)key {
+- (void)setObject:(nullable NSObject *)value forKey:(NSString *)key {
     if (!value) {
         [self.fileHandler deleteFileAtPath:[self getSettingFilePath:key]];
         return;
@@ -142,7 +149,7 @@ static NSString *const kCompletedMigration = @"radar-completed-migration";
 - (NSInteger)integerForKey:(NSString *)key {
     NSData *data = [self.fileHandler readFileAtPath: [self getSettingFilePath:key]];
     if (!data) {
-        return -1;
+        return 0;
     }
     NSInteger value;
     [data getBytes:&value length:sizeof(value)];

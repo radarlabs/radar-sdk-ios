@@ -26,13 +26,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)setBool:(BOOL)value forKey:(NSString *)key;
 
-- (NSString *)stringForKey:(NSString *)key;
+- (nullable NSString *)stringForKey:(NSString *)key;
 
-- (void)setString:(NSString *)value forKey:(NSString *)key;
+- (void)setString:(nullable NSString *)value forKey:(NSString *)key;
 
-- (NSDictionary *)dictionaryForKey:(NSString *)key;
+- (nullable NSDictionary *)dictionaryForKey:(NSString *)key;
 
-- (void)setDictionary:(NSDictionary *)value forKey:(NSString *)key;
+- (void)setDictionary:(nullable NSDictionary *)value forKey:(NSString *)key;
 
 - (double)doubleForKey:(NSString *)key;
 
@@ -42,11 +42,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSInteger)integerForKey:(NSString *)key;
 
-- (void)setObject:(NSObject *)value forKey:(NSString *)key;
+- (void)setObject:(nullable NSObject *)value forKey:(NSString *)key;
 
 - (void)removeObjectForKey:(NSString *)key;
 
-- (NSObject *)objectForKey:(NSString *)key;
+- (nullable NSObject *)objectForKey:(NSString *)key;
 
 - (void)removeAllObjects;
 

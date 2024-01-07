@@ -17,7 +17,6 @@ static const int MAX_BUFFER_SIZE = 500;
 
 static NSString *const kPurgedLogLine = @"----- purged oldest logs -----";
 
-
 static int fileCounter = 0;
 
 @implementation RadarLogBuffer {
@@ -78,7 +77,6 @@ static int fileCounter = 0;
             }
         }  
     }
-
 }
 
 - (void)persistLogs {

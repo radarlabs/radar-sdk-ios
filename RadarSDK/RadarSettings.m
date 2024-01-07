@@ -76,7 +76,6 @@ static NSString *const kUserDebug = @"radar-userDebug";
         [self setUserDebug:[[NSUserDefaults standardUserDefaults] boolForKey:kUserDebug]];
         [[RadarUserDefaults sharedInstance] setObject:[[NSUserDefaults standardUserDefaults] objectForKey:kLastTrackedTime] forKey:kLastTrackedTime]; 
         [[RadarUserDefaults sharedInstance] setObject:[[NSUserDefaults standardUserDefaults] objectForKey:kLastAppOpenTime] forKey:kLastAppOpenTime]; 
-        [[RadarUserDefaults sharedInstance] setMigrationCompleteFlag: YES];
     }
 }
 
@@ -271,10 +270,13 @@ static NSString *const kUserDebug = @"radar-userDebug";
     NSInteger logLevelInteger = [[RadarUserDefaults sharedInstance] integerForKey:kLogLevel];
     if ([RadarSettings userDebug]) {
         logLevel = RadarLogLevelDebug;
-    } else if (logLevelInteger == -1) {
-        logLevel = RadarLogLevelInfo;
     } else {
-        logLevel = (RadarLogLevel)logLevelInteger;
+        if ([[RadarUserDefaults sharedInstance] keyExists:kLogLevel]) {
+            logLevelInteger = [[RadarUserDefaults sharedInstance] integerForKey:kLogLevel];
+            logLevel = (RadarLogLevel)logLevelInteger;
+        } else {
+            logLevel = RadarLogLevelInfo;
+        }
     }
     return logLevel;
 }
