@@ -41,42 +41,41 @@ static NSString *const kDefaultVerifiedHost = @"https://api-verified.radar.io";
 static NSString *const kLastAppOpenTime = @"radar-lastAppOpenTime";
 static NSString *const kUserDebug = @"radar-userDebug";
 
-+ (void) migrateIfNeeded {
-    if (![RadarUserDefaults sharedInstance].migrationCompleteFlag) {
-        [self setPublishableKey:[[NSUserDefaults standardUserDefaults] stringForKey:kPublishableKey]];
-        [[RadarUserDefaults sharedInstance] setObject:[[NSUserDefaults standardUserDefaults] stringForKey:kInstallId] forKey:kInstallId];
-        [[RadarUserDefaults sharedInstance] setDouble:[[NSUserDefaults standardUserDefaults] doubleForKey:kSessionId] forKey:kSessionId];
-        [self setId:[[NSUserDefaults standardUserDefaults] stringForKey:kId]];
-        [self setUserId:[[NSUserDefaults standardUserDefaults] stringForKey:kUserId]];
-        [self setDescription:[[NSUserDefaults standardUserDefaults] stringForKey:kDescription]];
-        [self setMetadata:[[NSUserDefaults standardUserDefaults] objectForKey:kMetadata]];
-        [self setAnonymousTrackingEnabled:[[NSUserDefaults standardUserDefaults] boolForKey:kAnonymous]];
-        [self setTracking:[[NSUserDefaults standardUserDefaults] boolForKey:kTracking]];
-        [self setTrackingOptions:[RadarTrackingOptions trackingOptionsFromDictionary:[[NSUserDefaults standardUserDefaults] dictionaryForKey:kTrackingOptions]]];
-        [self setPreviousTrackingOptions:[RadarTrackingOptions trackingOptionsFromDictionary:[[NSUserDefaults standardUserDefaults] dictionaryForKey:kPreviousTrackingOptions]]];
-        [self setRemoteTrackingOptions:[RadarTrackingOptions trackingOptionsFromDictionary:[[NSUserDefaults standardUserDefaults] dictionaryForKey:kRemoteTrackingOptions]]];
-        [self setTripOptions:[RadarTripOptions tripOptionsFromDictionary:[[NSUserDefaults standardUserDefaults] dictionaryForKey:kTripOptions]]];
-        [self setFeatureSettings:[RadarFeatureSettings featureSettingsFromDictionary:[[NSUserDefaults standardUserDefaults] dictionaryForKey:kFeatureSettings]]];
-        
-        RadarLogLevel logLevel;
-        if ([RadarSettings userDebug]) {
-            logLevel = RadarLogLevelDebug;
-        } else if ([[NSUserDefaults standardUserDefaults] objectForKey:kLogLevel] == nil) {
-            logLevel = RadarLogLevelInfo;
-        } else {
-            logLevel = (RadarLogLevel)[[NSUserDefaults standardUserDefaults] integerForKey:kLogLevel];
-        }
-        [self setLogLevel:logLevel];
-        NSArray<NSString *> *beaconUUIDs = [[NSUserDefaults standardUserDefaults] valueForKey:kBeaconUUIDs];
-        
-        [self setBeaconUUIDs:beaconUUIDs];
-        
-        [[RadarUserDefaults sharedInstance] setObject:[[NSUserDefaults standardUserDefaults] objectForKey:kHost] forKey:kHost];
-        [[RadarUserDefaults sharedInstance] setObject:[[NSUserDefaults standardUserDefaults] objectForKey:kVerifiedHost] forKey:kVerifiedHost];
-        [self setUserDebug:[[NSUserDefaults standardUserDefaults] boolForKey:kUserDebug]];
-        [[RadarUserDefaults sharedInstance] setObject:[[NSUserDefaults standardUserDefaults] objectForKey:kLastTrackedTime] forKey:kLastTrackedTime]; 
-        [[RadarUserDefaults sharedInstance] setObject:[[NSUserDefaults standardUserDefaults] objectForKey:kLastAppOpenTime] forKey:kLastAppOpenTime]; 
++ (void) migrateToRadarUserDefaults {
+
+    [self setPublishableKey:[[NSUserDefaults standardUserDefaults] stringForKey:kPublishableKey]];
+    [[RadarUserDefaults sharedInstance] setObject:[[NSUserDefaults standardUserDefaults] stringForKey:kInstallId] forKey:kInstallId];
+    [[RadarUserDefaults sharedInstance] setDouble:[[NSUserDefaults standardUserDefaults] doubleForKey:kSessionId] forKey:kSessionId];
+    [self setId:[[NSUserDefaults standardUserDefaults] stringForKey:kId]];
+    [self setUserId:[[NSUserDefaults standardUserDefaults] stringForKey:kUserId]];
+    [self setDescription:[[NSUserDefaults standardUserDefaults] stringForKey:kDescription]];
+    [self setMetadata:[[NSUserDefaults standardUserDefaults] objectForKey:kMetadata]];
+    [self setAnonymousTrackingEnabled:[[NSUserDefaults standardUserDefaults] boolForKey:kAnonymous]];
+    [self setTracking:[[NSUserDefaults standardUserDefaults] boolForKey:kTracking]];
+    [self setTrackingOptions:[RadarTrackingOptions trackingOptionsFromDictionary:[[NSUserDefaults standardUserDefaults] dictionaryForKey:kTrackingOptions]]];
+    [self setPreviousTrackingOptions:[RadarTrackingOptions trackingOptionsFromDictionary:[[NSUserDefaults standardUserDefaults] dictionaryForKey:kPreviousTrackingOptions]]];
+    [self setRemoteTrackingOptions:[RadarTrackingOptions trackingOptionsFromDictionary:[[NSUserDefaults standardUserDefaults] dictionaryForKey:kRemoteTrackingOptions]]];
+    [self setTripOptions:[RadarTripOptions tripOptionsFromDictionary:[[NSUserDefaults standardUserDefaults] dictionaryForKey:kTripOptions]]];
+    [self setFeatureSettings:[RadarFeatureSettings featureSettingsFromDictionary:[[NSUserDefaults standardUserDefaults] dictionaryForKey:kFeatureSettings]]];
+    
+    RadarLogLevel logLevel;
+    if ([RadarSettings userDebug]) {
+        logLevel = RadarLogLevelDebug;
+    } else if ([[NSUserDefaults standardUserDefaults] objectForKey:kLogLevel] == nil) {
+        logLevel = RadarLogLevelInfo;
+    } else {
+        logLevel = (RadarLogLevel)[[NSUserDefaults standardUserDefaults] integerForKey:kLogLevel];
     }
+    [self setLogLevel:logLevel];
+    NSArray<NSString *> *beaconUUIDs = [[NSUserDefaults standardUserDefaults] valueForKey:kBeaconUUIDs];
+    
+    [self setBeaconUUIDs:beaconUUIDs];
+    
+    [[RadarUserDefaults sharedInstance] setObject:[[NSUserDefaults standardUserDefaults] objectForKey:kHost] forKey:kHost];
+    [[RadarUserDefaults sharedInstance] setObject:[[NSUserDefaults standardUserDefaults] objectForKey:kVerifiedHost] forKey:kVerifiedHost];
+    [self setUserDebug:[[NSUserDefaults standardUserDefaults] boolForKey:kUserDebug]];
+    [[RadarUserDefaults sharedInstance] setObject:[[NSUserDefaults standardUserDefaults] objectForKey:kLastTrackedTime] forKey:kLastTrackedTime];
+    [[RadarUserDefaults sharedInstance] setObject:[[NSUserDefaults standardUserDefaults] objectForKey:kLastAppOpenTime] forKey:kLastAppOpenTime];
 }
 
 

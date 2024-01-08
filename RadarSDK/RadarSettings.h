@@ -59,7 +59,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)setUserDebug:(BOOL)userDebug;
 + (void)updateLastAppOpenTime;
 + (NSDate *)lastAppOpenTime;
-+ (void)migrateIfNeeded;
++ (void)migrateToRadarUserDefaults;
 
 @end
 

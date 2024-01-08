@@ -235,7 +235,7 @@
     BOOL dummyUserDebug = YES;
     [[NSUserDefaults standardUserDefaults] setBool:dummyUserDebug forKey:kUserDebug];
 
-    [RadarSettings migrateIfNeeded];
+    [RadarSettings migrateToRadarUserDefaults];
     // verify that the migrationFlag is on, NOTE: no longer needed?
     //XCTAssertTrue(self.radarUserDefault.migrationCompleteFlag);
     // verify that the values are written to radarStrorageSystem and readable by the new radarSetting
@@ -311,7 +311,7 @@
     NSArray<NSString *> *dummyBeaconIds = @[@"123", @"456"];
     [[NSUserDefaults standardUserDefaults] setObject:dummyBeaconIds forKey:kBeaconIds];
 
-    [RadarState migrateIfNeeded];
+    [RadarState migrateToRadarUserDefaults];
     // verify that the values are written to radarStrorageSystem and readable by the new radarState
     XCTAssertTrue([self compareCLLocation:dummyLastLocation with:[RadarState lastLocation]]);
     XCTAssertTrue([self compareCLLocation:dummyLastMovedLocation with:[RadarState lastMovedLocation]]);

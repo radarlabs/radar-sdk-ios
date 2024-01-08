@@ -43,9 +43,9 @@
 
 + (void)migrateIfNeeded {
     if (![[RadarUserDefaults sharedInstance] migrationCompleteFlag]) {
-        [RadarSettings migrateIfNeeded];
-        [RadarState migrateIfNeeded];
-        [RadarReplayBuffer migrateIfNeeded];
+        [RadarSettings migrateToRadarUserDefaults];
+        [RadarState migrateToRadarUserDefaults];
+        [RadarReplayBuffer migrateToRadarUserDefaults];
         [[RadarUserDefaults sharedInstance] setMigrationCompleteFlag:YES];
     }
 }
@@ -54,7 +54,6 @@
 
     [self migrateIfNeeded];
 
-    [RadarSettings migrateIfNeeded];
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"initialize()"];
 
     [[NSNotificationCenter defaultCenter] addObserver:[self sharedInstance]

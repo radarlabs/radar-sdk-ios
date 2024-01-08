@@ -38,14 +38,12 @@ static const int MAX_BUFFER_SIZE = 120; // one hour of updates
     return sharedInstance;
 }
 
-+ (void)migrateIfNeeded {
-    if (![RadarUserDefaults sharedInstance].migrationCompleteFlag) {
-        NSData *replaysData = [[NSUserDefaults standardUserDefaults] objectForKey:@"radar-replays"];
-        if (replaysData) {
-            NSArray *replays = [NSKeyedUnarchiver unarchiveObjectWithData:replaysData];
-            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Migrating replays with length %lu", (unsigned long)[replays count]]];
-            [[RadarUserDefaults sharedInstance] setObject:replays forKey:@"radar-replays"];
-        }
++ (void)migrateToRadarUserDefaults {
+    NSData *replaysData = [[NSUserDefaults standardUserDefaults] objectForKey:@"radar-replays"];
+    if (replaysData) {
+        NSArray *replays = [NSKeyedUnarchiver unarchiveObjectWithData:replaysData];
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Migrating replays with length %lu", (unsigned long)[replays count]]];
+        [[RadarUserDefaults sharedInstance] setObject:replays forKey:@"radar-replays"];
     }
 }
 
@@ -73,14 +71,11 @@ static const int MAX_BUFFER_SIZE = 120; // one hour of updates
                     [prunedBuffer addObject:mutableReplayBuffer[i]];
                 }
             }
-            // replaysData = [NSKeyedArchiver archivedDataWithRootObject:prunedBuffer];
             [[RadarUserDefaults sharedInstance] setObject:prunedBuffer forKey:@"radar-replays"];
         } else {
-            // replaysData = [NSKeyedArchiver archivedDataWithRootObject:mutableReplayBuffer];
             [[RadarUserDefaults sharedInstance] setObject:mutableReplayBuffer forKey:@"radar-replays"];
         }
 
-        // [[RadarUserDefaults sharedInstance] setObject:replaysData forKey:@"radar-replays"];
     }
 }
 
@@ -176,7 +171,6 @@ static const int MAX_BUFFER_SIZE = 120; // one hour of updates
     [mutableReplayBuffer removeObjectsInArray:replays];
 
     // persist the updated buffer
-    // NSData *replaysData = [NSKeyedArchiver archivedDataWithRootObject:mutableReplayBuffer];
     [[RadarUserDefaults sharedInstance] setObject:mutableReplayBuffer forKey:@"radar-replays"];
 }
 
@@ -185,7 +179,6 @@ static const int MAX_BUFFER_SIZE = 120; // one hour of updates
     if (replayObject && [replayObject isKindOfClass:[NSArray class]]) {
         NSArray *replays = (NSArray *)replayObject;
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Loaded replays with length %lu", (unsigned long)[(NSArray *)replays count]]];
-        // NSArray *replays = [NSKeyedUnarchiver unarchiveObjectWithData:replaysData];
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Loaded replays with length %lu", (unsigned long)[replays count]]];
         mutableReplayBuffer = [NSMutableArray arrayWithArray:replays];
     }

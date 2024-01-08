@@ -25,36 +25,34 @@ static NSString *const kPlaceId = @"radar-placeId";
 static NSString *const kRegionIds = @"radar-regionIds";
 static NSString *const kBeaconIds = @"radar-beaconIds";
 
-+(void)migrateIfNeeded {
-    if (![[RadarUserDefaults sharedInstance] migrationCompleteFlag]) {
-        NSDictionary *lastLocationDict = [[NSUserDefaults standardUserDefaults] dictionaryForKey:kLastLocation];
-        CLLocation *lastLocation = [RadarUtils locationForDictionary:lastLocationDict];
++(void)migrateToRadarUserDefaults {
+    NSDictionary *lastLocationDict = [[NSUserDefaults standardUserDefaults] dictionaryForKey:kLastLocation];
+    CLLocation *lastLocation = [RadarUtils locationForDictionary:lastLocationDict];
 
-        if (lastLocation.isValid) {
-            //print last location
-            NSLog(@"last location: %@", lastLocation);
-            [self setLastLocation: lastLocation];
-        }
-        NSDictionary *lastMovedLocationDict = [[NSUserDefaults standardUserDefaults] dictionaryForKey:kLastMovedLocation];
-        CLLocation *lastMovedLocation = [RadarUtils locationForDictionary:lastMovedLocationDict];
-        if (lastMovedLocation.isValid) {
-            [self setLastMovedLocation: lastMovedLocation];
-        }
-        [self setLastMovedAt:[[NSUserDefaults standardUserDefaults] objectForKey:kLastMovedAt]];
-        [self setStopped:[[NSUserDefaults standardUserDefaults] boolForKey:kStopped]];
-        [[RadarUserDefaults sharedInstance] setObject:[[NSUserDefaults standardUserDefaults] objectForKey:kLastSentAt] forKey:kLastSentAt];
-        [self setCanExit:[[NSUserDefaults standardUserDefaults] boolForKey:kCanExit]];
-        NSDictionary *lastFailedStoppedLocationDict = [[NSUserDefaults standardUserDefaults] dictionaryForKey:kLastFailedStoppedLocation];
-        CLLocation *lastFailedStoppedLocation = [RadarUtils locationForDictionary:lastFailedStoppedLocationDict];
-        if (lastFailedStoppedLocation.isValid) {
-            [self setLastFailedStoppedLocation: lastFailedStoppedLocation];
-        }
-        [self setGeofenceIds:[[NSUserDefaults standardUserDefaults] objectForKey:kGeofenceIds]];
-        [self setPlaceId:[[NSUserDefaults standardUserDefaults] stringForKey:kPlaceId]];
-        [self setRegionIds:[[NSUserDefaults standardUserDefaults] objectForKey:kRegionIds]];
-        [self setBeaconIds:[[NSUserDefaults standardUserDefaults] objectForKey:kBeaconIds]];
-        [[RadarUserDefaults sharedInstance] setMigrationCompleteFlag:YES];
+    if (lastLocation.isValid) {
+        //print last location
+        NSLog(@"last location: %@", lastLocation);
+        [self setLastLocation: lastLocation];
     }
+    NSDictionary *lastMovedLocationDict = [[NSUserDefaults standardUserDefaults] dictionaryForKey:kLastMovedLocation];
+    CLLocation *lastMovedLocation = [RadarUtils locationForDictionary:lastMovedLocationDict];
+    if (lastMovedLocation.isValid) {
+        [self setLastMovedLocation: lastMovedLocation];
+    }
+    [self setLastMovedAt:[[NSUserDefaults standardUserDefaults] objectForKey:kLastMovedAt]];
+    [self setStopped:[[NSUserDefaults standardUserDefaults] boolForKey:kStopped]];
+    [[RadarUserDefaults sharedInstance] setObject:[[NSUserDefaults standardUserDefaults] objectForKey:kLastSentAt] forKey:kLastSentAt];
+    [self setCanExit:[[NSUserDefaults standardUserDefaults] boolForKey:kCanExit]];
+    NSDictionary *lastFailedStoppedLocationDict = [[NSUserDefaults standardUserDefaults] dictionaryForKey:kLastFailedStoppedLocation];
+    CLLocation *lastFailedStoppedLocation = [RadarUtils locationForDictionary:lastFailedStoppedLocationDict];
+    if (lastFailedStoppedLocation.isValid) {
+        [self setLastFailedStoppedLocation: lastFailedStoppedLocation];
+    }
+    [self setGeofenceIds:[[NSUserDefaults standardUserDefaults] objectForKey:kGeofenceIds]];
+    [self setPlaceId:[[NSUserDefaults standardUserDefaults] stringForKey:kPlaceId]];
+    [self setRegionIds:[[NSUserDefaults standardUserDefaults] objectForKey:kRegionIds]];
+    [self setBeaconIds:[[NSUserDefaults standardUserDefaults] objectForKey:kBeaconIds]];
+    [[RadarUserDefaults sharedInstance] setMigrationCompleteFlag:YES];
 }
 
 + (CLLocation *)lastLocation {
