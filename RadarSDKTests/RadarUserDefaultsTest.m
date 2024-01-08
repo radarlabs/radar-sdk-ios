@@ -63,6 +63,10 @@
     
     // test for meaningful default values
     XCTAssertNil([self.radarUserDefault stringForKey:@"emptyKey"]);
+
+    // test setting null removes data
+    [self.radarUserDefault setString:nil forKey:@"string1"];
+    XCTAssertNil([self.radarUserDefault stringForKey:@"string1"]);
 }
 
 - (void)test_RadarUserDefault_setAndGetNSObj {
@@ -74,30 +78,41 @@
     [self.radarUserDefault setObject:obj2 forKey:@"obj2"];
     XCTAssertEqualObjects(stringArrays, [self.radarUserDefault objectForKey:@"obj1"]);
     XCTAssertEqualObjects(intArrays, [self.radarUserDefault objectForKey:@"obj2"]);
-    //test for string
+    // test for string
     NSString *str = @"1234567890";
     [self.radarUserDefault setObject:str forKey:@"uuid"];
     XCTAssertEqualObjects(str, [self.radarUserDefault objectForKey:@"uuid"]);
     XCTAssertEqualObjects(str, [self.radarUserDefault stringForKey:@"uuid"]);
-    //test for date
+    // test for date
     NSDate *date = [NSDate date];
     [self.radarUserDefault setObject:date forKey:@"date"];
     XCTAssertEqualObjects(date, [self.radarUserDefault objectForKey:@"date"]);
-    //test for radarTripOptions
+    // test for radarTripOptions
     RadarTripOptions *tripOptions = [[RadarTripOptions alloc] initWithExternalId:@"123" destinationGeofenceTag:@"456" destinationGeofenceExternalId:@"789" scheduledArrivalAt:[NSDate date]];
     [self.radarUserDefault setObject:tripOptions forKey:@"tripOptions"];
     XCTAssertEqualObjects(tripOptions, [self.radarUserDefault objectForKey:@"tripOptions"]);
-    //test for radarfeatureSettings
+    // test for radarfeatureSettings
     RadarFeatureSettings *featureSettings = [[RadarFeatureSettings alloc] initWithUsePersistence:NO extendFlushReplays:YES useLogPersistence:NO];
     [self.radarUserDefault setObject:featureSettings forKey:@"featureSettings"];
     XCTAssertEqualObjects(featureSettings, [self.radarUserDefault objectForKey:@"featureSettings"]);
-    //test for radartrackingOptions
+    // test for radartrackingOptions
     RadarTrackingOptions *trackingOptions = RadarTrackingOptions.presetContinuous;
     [self.radarUserDefault setObject:trackingOptions forKey:@"trackingOptions"];
     XCTAssertEqualObjects(trackingOptions, [self.radarUserDefault objectForKey:@"trackingOptions"]);
+    // test for CLLocation
+    CLLocation *location = [[CLLocation alloc] initWithLatitude:1.0 longitude:2.0];
+    [self.radarUserDefault setObject:location forKey:@"location"];
+    CLLocation *location2= [self.radarUserDefault objectForKey:@"location"];
+    XCTAssertTrue(location.coordinate.latitude == location2.coordinate.latitude);
+    XCTAssertTrue(location.coordinate.longitude == location2.coordinate.longitude);
+    XCTAssertEqualObjects(location.timestamp, location2.timestamp);
     
     // test for meaningful default values
     XCTAssertNil([self.radarUserDefault objectForKey:@"emptyKey"]);
+
+    // test setting null removes data
+    [self.radarUserDefault setObject:nil forKey:@"obj1"];
+    XCTAssertNil([self.radarUserDefault objectForKey:@"obj1"]);
 
 }
 
@@ -116,6 +131,10 @@
     
     // test for meaningful default values
     XCTAssertNil([self.radarUserDefault dictionaryForKey:@"emptyKey"]);
+
+    // test setting null removes data
+    [self.radarUserDefault setDictionary:nil forKey:@"dic1"];
+    XCTAssertNil([self.radarUserDefault dictionaryForKey:@"dic1"]);
 }
 
 - (void)test_RadarUserDefault_setAndGetDouble {
