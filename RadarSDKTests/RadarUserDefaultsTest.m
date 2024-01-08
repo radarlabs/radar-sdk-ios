@@ -16,6 +16,8 @@
 #import "../RadarSDK/RadarState.h"
 #import "../RadarSDK/RadarUtils.h"
 #import <Foundation/Foundation.h>
+#import "../RadarSDK/RadarReplay.h"
+#import "../RadarSDK/RadarReplayBuffer.h"
 
 @interface RadarUserDefaultsTest : XCTestCase
 @property (nonatomic, strong) RadarUserDefaults *radarUserDefault;
@@ -236,8 +238,7 @@
     [[NSUserDefaults standardUserDefaults] setBool:dummyUserDebug forKey:kUserDebug];
 
     [RadarSettings migrateToRadarUserDefaults];
-    // verify that the migrationFlag is on, NOTE: no longer needed?
-    //XCTAssertTrue(self.radarUserDefault.migrationCompleteFlag);
+
     // verify that the values are written to radarStrorageSystem and readable by the new radarSetting
     XCTAssertEqualObjects(dummyPublishableKey, [RadarSettings publishableKey]);
     XCTAssertEqualObjects(dummyInstallId, [RadarSettings installId]);
@@ -264,7 +265,7 @@
 }
 
 // test radar state migration
--(void) test_RadarState_migration {
+-(void)test_RadarState_migration {
     static NSString *const kLastLocation = @"radar-lastLocation";
     static NSString *const kLastMovedLocation = @"radar-lastMovedLocation";
     static NSString *const kLastMovedAt = @"radar-lastMovedAt";
@@ -285,7 +286,6 @@
     CLLocation *dummyLastLocation = [[CLLocation alloc] initWithCoordinate:dummyCoordinate altitude:1.0 horizontalAccuracy:3.0 verticalAccuracy:4.0 timestamp:[NSDate date]];
     NSDictionary *dummyLastLocationDict = [RadarUtils dictionaryForLocation:dummyLastLocation];
     [[NSUserDefaults standardUserDefaults] setObject:dummyLastLocationDict forKey:kLastLocation];
-    // CLLocation *dummyLastMovedLocation = [[CLLocation alloc] initWithLatitude:3.0 longitude:4.0];
     CLLocationCoordinate2D dummyCoordinate2 = CLLocationCoordinate2DMake(3.0, 4.0);
     CLLocation *dummyLastMovedLocation = [[CLLocation alloc] initWithCoordinate:dummyCoordinate2 altitude:3.0 horizontalAccuracy:4.0 verticalAccuracy:5.0 timestamp:[NSDate date]];
     NSDictionary *dummyLastMovedLocationDict = [RadarUtils dictionaryForLocation:dummyLastMovedLocation];
@@ -329,10 +329,28 @@
 
 // test radar replay buffer migration
 
+-(void)test_ReplayBuffer_migration {
+    XCTAssertFalse(self.radarUserDefault.migrationCompleteFlag);
+    NSMutableArray<RadarReplay *> *replays = [NSMutableArray<RadarReplay *> new];
+    //add 5 replays to the buffer
+    for (int i = 0; i < 5; i++) {
+        NSMutableDictionary *replayParams = [NSMutableDictionary new];
+        replayParams[@"key"] = [NSString stringWithFormat:@"value%d", i];
+        RadarReplay *replay = [[RadarReplay alloc] initWithParams:replayParams];
+        [replays addObject:replay];
+    }
+    NSData *replaysData = [NSKeyedArchiver archivedDataWithRootObject:replays];
+    [[NSUserDefaults standardUserDefaults] setObject:replaysData forKey:@"radar-replays"];
+    [RadarReplayBuffer migrateToRadarUserDefaults];
+    NSMutableArray<RadarReplay *> *replays2 = [self.radarUserDefault objectForKey:@"radar-replays"];
+    for (int i = 0; i < 5; i++) {
+        XCTAssertEqualObjects(replays[i].replayParams[@"key"], replays2[i].replayParams[@"key"]);
+    }
+}
+
 // test that these classes still work with "cold boot" on this version
 
 
-//helper function to compare cllocation
 - (BOOL)compareCLLocation:(CLLocation *)location1 with:(CLLocation *)location2 {
     if (location1.coordinate.latitude != location2.coordinate.latitude) {
         return NO;

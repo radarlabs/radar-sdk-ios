@@ -160,7 +160,7 @@ static NSString *const kCompletedMigration = @"radar-completed-migration";
     [self.fileHandler writeData:[NSData dataWithBytes:&value length:sizeof(value)] toFileAtPath:[self getSettingFilePath:key]];
 }
 
-- (void) removeAllObjects {
+- (void)removeAllObjects {
     NSArray<NSString *> *allSettings = [self.fileHandler sortedFilesInDirectory:self.settingsFileDir];
     for (NSString *setting in allSettings) {
         [self.fileHandler deleteFileAtPath:[self getSettingFilePath:setting]];
