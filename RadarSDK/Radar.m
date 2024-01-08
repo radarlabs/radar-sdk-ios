@@ -41,14 +41,18 @@
     return sharedInstance;
 }
 
-+ (void)initializeWithPublishableKey:(NSString *)publishableKey {
-    
++ (void)migrateIfNeeded {
     if (![[RadarUserDefaults sharedInstance] migrationCompleteFlag]) {
         [RadarSettings migrateIfNeeded];
         [RadarState migrateIfNeeded];
         [RadarReplayBuffer migrateIfNeeded];
         [[RadarUserDefaults sharedInstance] setMigrationCompleteFlag:YES];
     }
+}
+
++ (void)initializeWithPublishableKey:(NSString *)publishableKey {
+
+    [self migrateIfNeeded];
 
     [RadarSettings migrateIfNeeded];
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"initialize()"];

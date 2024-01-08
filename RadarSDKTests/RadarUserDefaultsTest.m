@@ -13,6 +13,9 @@
 #import "../RadarSDK/Include/RadarTrackingOptions.h"
 #import "../RadarSDK/RadarSettings.h"
 #import "../RadarSDK/RadarSettings.h"
+#import "../RadarSDK/RadarState.h"
+#import "../RadarSDK/RadarUtils.h"
+#import <Foundation/Foundation.h>
 
 @interface RadarUserDefaultsTest : XCTestCase
 @property (nonatomic, strong) RadarUserDefaults *radarUserDefault;
@@ -157,7 +160,7 @@
     XCTAssertEqual(0, [self.radarUserDefault integerForKey:@"emptyKey"]);
 }
 
-- (void)test_RadarUserDefault_migration {
+- (void)test_RadarSetting_migration {
     // verify that the migrationFlag is off
     XCTAssertTrue(!self.radarUserDefault.migrationCompleteFlag);
 
@@ -260,12 +263,93 @@
     XCTAssertEqual(dummyUserDebug, [RadarSettings userDebug]);
 }
 
-//test that entering null removes data
+// test radar state migration
+-(void) test_RadarState_migration {
+    static NSString *const kLastLocation = @"radar-lastLocation";
+    static NSString *const kLastMovedLocation = @"radar-lastMovedLocation";
+    static NSString *const kLastMovedAt = @"radar-lastMovedAt";
+    static NSString *const kStopped = @"radar-stopped";
+    static NSString *const kLastSentAt = @"radar-lastSentAt";
+    static NSString *const kCanExit = @"radar-canExit";
+    static NSString *const kLastFailedStoppedLocation = @"radar-lastFailedStoppedLocation";
+    static NSString *const kGeofenceIds = @"radar-geofenceIds";
+    static NSString *const kPlaceId = @"radar-placeId";
+    static NSString *const kRegionIds = @"radar-regionIds";
+    static NSString *const kBeaconIds = @"radar-beaconIds";
 
-//test radar state migration
+    // verify that the migrationFlag is off
+    XCTAssertTrue(!self.radarUserDefault.migrationCompleteFlag);
 
-//test radar replay buffer migration
+    // start with nsuserdefault filled with values
+    CLLocationCoordinate2D dummyCoordinate = CLLocationCoordinate2DMake(1.0, 2.0);
+    CLLocation *dummyLastLocation = [[CLLocation alloc] initWithCoordinate:dummyCoordinate altitude:1.0 horizontalAccuracy:3.0 verticalAccuracy:4.0 timestamp:[NSDate date]];
+    NSDictionary *dummyLastLocationDict = [RadarUtils dictionaryForLocation:dummyLastLocation];
+    [[NSUserDefaults standardUserDefaults] setObject:dummyLastLocationDict forKey:kLastLocation];
+    // CLLocation *dummyLastMovedLocation = [[CLLocation alloc] initWithLatitude:3.0 longitude:4.0];
+    CLLocationCoordinate2D dummyCoordinate2 = CLLocationCoordinate2DMake(3.0, 4.0);
+    CLLocation *dummyLastMovedLocation = [[CLLocation alloc] initWithCoordinate:dummyCoordinate2 altitude:3.0 horizontalAccuracy:4.0 verticalAccuracy:5.0 timestamp:[NSDate date]];
+    NSDictionary *dummyLastMovedLocationDict = [RadarUtils dictionaryForLocation:dummyLastMovedLocation];
+    [[NSUserDefaults standardUserDefaults] setObject:dummyLastMovedLocationDict forKey:kLastMovedLocation];
+    NSDate *dummyLastMovedAt = [NSDate date];
+    [[NSUserDefaults standardUserDefaults] setObject:dummyLastMovedAt forKey:kLastMovedAt];
+    BOOL dummyStopped = YES;
+    [[NSUserDefaults standardUserDefaults] setBool:dummyStopped forKey:kStopped];
+    NSDate *dummyLastSentAt = [NSDate date];
+    [[NSUserDefaults standardUserDefaults] setObject:dummyLastSentAt forKey:kLastSentAt];
+    BOOL dummyCanExit = YES;
+    [[NSUserDefaults standardUserDefaults] setBool:dummyCanExit forKey:kCanExit];
+    CLLocationCoordinate2D dummyCoordinate3 = CLLocationCoordinate2DMake(5.0, 6.0);
+    CLLocation *dummyLastFailedStoppedLocation = [[CLLocation alloc] initWithCoordinate:dummyCoordinate3 altitude:5.0 horizontalAccuracy:6.0 verticalAccuracy:7.0 timestamp:[NSDate date]];
+    NSDictionary *dummyLastFailedStoppedLocationDict = [RadarUtils dictionaryForLocation:dummyLastFailedStoppedLocation];
+    [[NSUserDefaults standardUserDefaults] setObject:dummyLastFailedStoppedLocationDict forKey:kLastFailedStoppedLocation];
+    NSArray<NSString *> *dummyGeofenceIds = @[@"123", @"456"];
+    [[NSUserDefaults standardUserDefaults] setObject:dummyGeofenceIds forKey:kGeofenceIds];
+    NSString *const dummyPlaceId = @"dummyPlaceId";
+    [[NSUserDefaults standardUserDefaults] setObject:dummyPlaceId forKey:kPlaceId];
+    NSArray<NSString *> *dummyRegionIds = @[@"123", @"456"];
+    [[NSUserDefaults standardUserDefaults] setObject:dummyRegionIds forKey:kRegionIds];
+    NSArray<NSString *> *dummyBeaconIds = @[@"123", @"456"];
+    [[NSUserDefaults standardUserDefaults] setObject:dummyBeaconIds forKey:kBeaconIds];
 
-//test that these classes still work with "cold boot" on this version
+    [RadarState migrateIfNeeded];
+    // verify that the values are written to radarStrorageSystem and readable by the new radarState
+    XCTAssertTrue([self compareCLLocation:dummyLastLocation with:[RadarState lastLocation]]);
+    XCTAssertTrue([self compareCLLocation:dummyLastMovedLocation with:[RadarState lastMovedLocation]]);
+    XCTAssertEqualObjects(dummyLastMovedAt, [RadarState lastMovedAt]);
+    XCTAssertEqual(dummyStopped, [RadarState stopped]);
+    XCTAssertEqualObjects(dummyLastSentAt, [RadarState lastSentAt]);
+    XCTAssertEqual(dummyCanExit, [RadarState canExit]);
+    XCTAssertTrue([self compareCLLocation:dummyLastFailedStoppedLocation with:[RadarState lastFailedStoppedLocation]]);
+    XCTAssertEqualObjects(dummyGeofenceIds, [RadarState geofenceIds]);
+    XCTAssertEqualObjects(dummyPlaceId, [RadarState placeId]);
+    XCTAssertEqualObjects(dummyRegionIds, [RadarState regionIds]);
+    XCTAssertEqualObjects(dummyBeaconIds, [RadarState beaconIds]);
+}
+
+
+// test radar replay buffer migration
+
+// test that these classes still work with "cold boot" on this version
+
+
+//helper function to compare cllocation
+- (BOOL)compareCLLocation:(CLLocation *)location1 with:(CLLocation *)location2 {
+    if (location1.coordinate.latitude != location2.coordinate.latitude) {
+        return NO;
+    }
+    if (location1.coordinate.longitude != location2.coordinate.longitude) {
+        return NO;
+    }
+    if (location1.horizontalAccuracy != location2.horizontalAccuracy) {
+        return NO;
+    }
+    if (location1.verticalAccuracy != location2.verticalAccuracy) {
+        return NO;
+    }
+    if (location1.timestamp != location2.timestamp) {
+        return NO;
+    }
+    return YES;
+}
 
 @end

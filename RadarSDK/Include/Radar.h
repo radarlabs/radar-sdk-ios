@@ -1078,6 +1078,15 @@ logConversionWithNotification
  */
 + (NSDictionary *)dictionaryForLocation:(CLLocation *)location NS_SWIFT_NAME(dictionaryForLocation(_:));
 
+
+
+/**
+
+ For testing only for migration to NSUserDefaults
+*/
+
++  (void)migrateIfNeeded;
+
 @end
 
 NS_ASSUME_NONNULL_END

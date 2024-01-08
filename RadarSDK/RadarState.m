@@ -9,6 +9,7 @@
 #import "CLLocation+Radar.h"
 #import "RadarUtils.h"
 #import "RadarUserDefaults.h"
+#import <Foundation/Foundation.h>
 
 @implementation RadarState
 
@@ -30,6 +31,8 @@ static NSString *const kBeaconIds = @"radar-beaconIds";
         CLLocation *lastLocation = [RadarUtils locationForDictionary:lastLocationDict];
 
         if (lastLocation.isValid) {
+            //print last location
+            NSLog(@"last location: %@", lastLocation);
             [self setLastLocation: lastLocation];
         }
         NSDictionary *lastMovedLocationDict = [[NSUserDefaults standardUserDefaults] dictionaryForKey:kLastMovedLocation];
