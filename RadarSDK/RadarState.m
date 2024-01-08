@@ -28,12 +28,6 @@ static NSString *const kBeaconIds = @"radar-beaconIds";
 +(void)migrateToRadarUserDefaults {
     NSDictionary *lastLocationDict = [[NSUserDefaults standardUserDefaults] dictionaryForKey:kLastLocation];
     CLLocation *lastLocation = [RadarUtils locationForDictionary:lastLocationDict];
-
-    if (lastLocation.isValid) {
-        //print last location
-        NSLog(@"last location: %@", lastLocation);
-        [self setLastLocation: lastLocation];
-    }
     NSDictionary *lastMovedLocationDict = [[NSUserDefaults standardUserDefaults] dictionaryForKey:kLastMovedLocation];
     CLLocation *lastMovedLocation = [RadarUtils locationForDictionary:lastMovedLocationDict];
     if (lastMovedLocation.isValid) {
