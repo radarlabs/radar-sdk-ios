@@ -26,16 +26,65 @@
 
 @implementation RadarUserDefaultsTest
 
+static NSString *const kPublishableKey = @"radar-publishableKey";
+static NSString *const kInstallId = @"radar-installId";
+static NSString *const kSessionId = @"radar-sessionId";
+static NSString *const kId = @"radar-_id";
+static NSString *const kUserId = @"radar-userId";
+static NSString *const kDescription = @"radar-description";
+static NSString *const kMetadata = @"radar-metadata";
+static NSString *const kAnonymous = @"radar-anonymous";
+static NSString *const kTracking = @"radar-tracking";
+static NSString *const kTrackingOptions = @"radar-trackingOptions";
+static NSString *const kPreviousTrackingOptions = @"radar-previousTrackingOptions";
+static NSString *const kRemoteTrackingOptions = @"radar-remoteTrackingOptions";
+static NSString *const kFeatureSettings = @"radar-featureSettings";
+static NSString *const kTripOptions = @"radar-tripOptions";
+static NSString *const kLogLevel = @"radar-logLevel";
+static NSString *const kBeaconUUIDs = @"radar-beaconUUIDs";
+static NSString *const kHost = @"radar-host";
+static NSString *const kLastTrackedTime = @"radar-lastTrackedTime";
+static NSString *const kVerifiedHost = @"radar-verifiedHost";
+static NSString *const kLastAppOpenTime = @"radar-lastAppOpenTime";
+static NSString *const kUserDebug = @"radar-userDebug";
+
+static NSString *const kLastLocation = @"radar-lastLocation";
+static NSString *const kLastMovedLocation = @"radar-lastMovedLocation";
+static NSString *const kLastMovedAt = @"radar-lastMovedAt";
+static NSString *const kStopped = @"radar-stopped";
+static NSString *const kLastSentAt = @"radar-lastSentAt";
+static NSString *const kCanExit = @"radar-canExit";
+static NSString *const kLastFailedStoppedLocation = @"radar-lastFailedStoppedLocation";
+static NSString *const kGeofenceIds = @"radar-geofenceIds";
+static NSString *const kPlaceId = @"radar-placeId";
+static NSString *const kRegionIds = @"radar-regionIds";
+static NSString *const kBeaconIds = @"radar-beaconIds";
+
+static NSString *const kReplayBuffer = @"radar-replays";
+
 - (void)setUp {
     [super setUp];
     self.radarUserDefault = [RadarUserDefaults sharedInstance];
     [self.radarUserDefault removeAllObjects];
     [self.radarUserDefault setMigrationCompleteFlag:NO];
-}
+    NSString *appDomain = [[NSBundle mainBundle] bundleIdentifier];
+    [[NSUserDefaults standardUserDefaults] removePersistentDomainForName:appDomain];}
 
 - (void)tearDown {
     [self.radarUserDefault removeAllObjects];
     [self.radarUserDefault setMigrationCompleteFlag:NO];
+    
+}
+
+- (void)test_RadarUserDefault_removeAllObjects {
+    [self.radarUserDefault setString:@"123abc!@#" forKey:@"string1"];
+    [self.radarUserDefault setString:@"I like working here" forKey:@"string2"];
+    [self.radarUserDefault setString:@"hello world" forKey:@"string3"];
+    [self.radarUserDefault removeAllObjects];
+    XCTAssertNil([self.radarUserDefault stringForKey:@"string1"]);
+    XCTAssertNil([self.radarUserDefault stringForKey:@"string2"]);
+    XCTAssertNil([self.radarUserDefault stringForKey:@"string3"]);
+
 }
 
 - (void)test_RadarUserDefault_setAndGetMigrationFlag {
@@ -162,36 +211,13 @@
     XCTAssertEqual(0, [self.radarUserDefault integerForKey:@"emptyKey"]);
 }
 
-- (void)test_RadarSetting_migration {
+-  (void)test_RadarSetting_migration {
     // verify that the migrationFlag is off
     XCTAssertTrue(!self.radarUserDefault.migrationCompleteFlag);
 
     XCTAssertTrue(!self.radarUserDefault.migrationCompleteFlag);
 
     // start with nsuserdefault filled with values
-
-    //keyvalues copied from radarsettings
-    NSString *const kPublishableKey = @"radar-publishableKey";
-    NSString *const kInstallId = @"radar-installId";
-    NSString *const kSessionId = @"radar-sessionId";
-    NSString *const kId = @"radar-_id";
-    static NSString *const kUserId = @"radar-userId";
-    NSString *const kDescription = @"radar-description";
-    NSString *const kMetadata = @"radar-metadata";
-    NSString *const kAnonymous = @"radar-anonymous";
-    NSString *const kTracking = @"radar-tracking";
-    NSString *const kTrackingOptions = @"radar-trackingOptions";
-    NSString *const kPreviousTrackingOptions = @"radar-previousTrackingOptions";
-    NSString *const kRemoteTrackingOptions = @"radar-remoteTrackingOptions";
-    NSString *const kFeatureSettings = @"radar-featureSettings";
-    NSString *const kTripOptions = @"radar-tripOptions";
-    NSString *const kLogLevel = @"radar-logLevel";
-    NSString *const kBeaconUUIDs = @"radar-beaconUUIDs";
-    NSString *const kHost = @"radar-host";
-    NSString *const kLastTrackedTime = @"radar-lastTrackedTime";
-    NSString *const kVerifiedHost = @"radar-verifiedHost";
-    NSString *const kLastAppOpenTime = @"radar-lastAppOpenTime";
-    NSString *const kUserDebug = @"radar-userDebug";
 
     NSString *const dummyPublishableKey = @"dummyPublishableKey";
     [[NSUserDefaults standardUserDefaults] setObject:dummyPublishableKey forKey:kPublishableKey];
@@ -265,18 +291,7 @@
 }
 
 // test radar state migration
--(void)test_RadarState_migration {
-    static NSString *const kLastLocation = @"radar-lastLocation";
-    static NSString *const kLastMovedLocation = @"radar-lastMovedLocation";
-    static NSString *const kLastMovedAt = @"radar-lastMovedAt";
-    static NSString *const kStopped = @"radar-stopped";
-    static NSString *const kLastSentAt = @"radar-lastSentAt";
-    static NSString *const kCanExit = @"radar-canExit";
-    static NSString *const kLastFailedStoppedLocation = @"radar-lastFailedStoppedLocation";
-    static NSString *const kGeofenceIds = @"radar-geofenceIds";
-    static NSString *const kPlaceId = @"radar-placeId";
-    static NSString *const kRegionIds = @"radar-regionIds";
-    static NSString *const kBeaconIds = @"radar-beaconIds";
+- (void)test_RadarState_migration {
 
     // verify that the migrationFlag is off
     XCTAssertTrue(!self.radarUserDefault.migrationCompleteFlag);
@@ -348,7 +363,55 @@
     }
 }
 
-// test that these classes still work with "cold boot" on this version
+
+- (void)test_migration_safeToRunOnFreshInstall {
+    // call migration on empty values
+
+    [RadarState migrateToRadarUserDefaults];
+    [RadarSettings migrateToRadarUserDefaults];
+    [RadarReplayBuffer migrateToRadarUserDefaults];
+
+    // verify that correct defaults are being read
+
+    // RadarSettings
+    XCTAssertNil([RadarSettings publishableKey]);
+    XCTAssertNotNil([RadarSettings installId]);
+    XCTAssertEqualObjects([RadarSettings sessionId], @"0");
+    XCTAssertNil([RadarSettings _id]);
+    XCTAssertNil([RadarSettings userId]);
+    XCTAssertNil([RadarSettings __description]);
+    XCTAssertNil([RadarSettings metadata]);
+    XCTAssertFalse([RadarSettings anonymousTrackingEnabled]);
+    XCTAssertFalse([RadarSettings tracking]);
+    XCTAssertEqualObjects([RadarSettings trackingOptions], RadarTrackingOptions.presetEfficient);
+    XCTAssertEqualObjects([RadarSettings featureSettings], [[RadarFeatureSettings alloc] initWithUsePersistence:NO extendFlushReplays:NO useLogPersistence:NO]);
+    XCTAssertNil([RadarSettings previousTrackingOptions]);
+    XCTAssertNil([RadarSettings remoteTrackingOptions]);
+    XCTAssertNil([RadarSettings tripOptions]);
+    XCTAssertTrue(RadarLogLevelInfo==[RadarSettings logLevel]);
+    XCTAssertNil([RadarSettings beaconUUIDs]);
+    XCTAssertEqualObjects([RadarSettings host], @"https://api.radar.io");
+    XCTAssertEqualObjects([RadarSettings verifiedHost], @"https://api-verified.radar.io");
+    XCTAssertNotNil([RadarSettings lastTrackedTime]);
+    XCTAssertNotNil([RadarSettings lastAppOpenTime]);
+    XCTAssertFalse([RadarSettings userDebug]);
+
+    // RadarState
+    XCTAssertNil([RadarState lastLocation]);
+    XCTAssertNil([RadarState lastMovedLocation]);
+    XCTAssertNil([RadarState lastMovedAt]);
+    XCTAssertFalse([RadarState stopped]);
+    XCTAssertNil([RadarState lastSentAt]);
+    XCTAssertFalse([RadarState canExit]);
+    XCTAssertNil([RadarState lastFailedStoppedLocation]);
+    XCTAssertNil([RadarState geofenceIds]);
+    XCTAssertNil([RadarState placeId]);
+    XCTAssertNil([RadarState regionIds]);
+    XCTAssertNil([RadarState beaconIds]);
+
+    // RadarReplayBuffer
+    XCTAssertNil([self.radarUserDefault objectForKey:@"radar-replays"]);
+}
 
 
 - (BOOL)compareCLLocation:(CLLocation *)location1 with:(CLLocation *)location2 {

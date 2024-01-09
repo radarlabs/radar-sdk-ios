@@ -25,7 +25,7 @@ static NSString *const kPlaceId = @"radar-placeId";
 static NSString *const kRegionIds = @"radar-regionIds";
 static NSString *const kBeaconIds = @"radar-beaconIds";
 
-+(void)migrateToRadarUserDefaults {
++ (void)migrateToRadarUserDefaults {
     NSDictionary *lastLocationDict = [[NSUserDefaults standardUserDefaults] dictionaryForKey:kLastLocation];
     CLLocation *lastLocation = [RadarUtils locationForDictionary:lastLocationDict];
     if (lastLocation.isValid) {
@@ -81,7 +81,6 @@ static NSString *const kBeaconIds = @"radar-beaconIds";
         return nil;
     }
     return lastMovedLocation;
-
 }
 
 + (void)setLastMovedLocation:(CLLocation *)lastMovedLocation {

@@ -47,6 +47,7 @@
         [RadarState migrateToRadarUserDefaults];
         [RadarReplayBuffer migrateToRadarUserDefaults];
         [[RadarUserDefaults sharedInstance] setMigrationCompleteFlag:YES];
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Migration to RadarUserDefault complete"];
     }
 }
 
