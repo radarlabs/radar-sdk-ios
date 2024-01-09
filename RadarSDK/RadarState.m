@@ -9,7 +9,6 @@
 #import "CLLocation+Radar.h"
 #import "RadarUtils.h"
 #import "RadarUserDefaults.h"
-#import <Foundation/Foundation.h>
 
 @implementation RadarState
 

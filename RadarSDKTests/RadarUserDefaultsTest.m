@@ -15,7 +15,6 @@
 #import "../RadarSDK/RadarSettings.h"
 #import "../RadarSDK/RadarState.h"
 #import "../RadarSDK/RadarUtils.h"
-#import <Foundation/Foundation.h>
 #import "../RadarSDK/RadarReplay.h"
 #import "../RadarSDK/RadarReplayBuffer.h"
 
