@@ -1,5 +1,5 @@
 //
-//  RadarUserDefaults.m
+//  RadarKVStore.m
 //  RadarSDK
 //
 //  Created by Kenny Hu on 12/14/23.
@@ -7,13 +7,14 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "RadarUserDefaults.h"
+#import "RadarKVStore.h"
 #import "RadarFileStorage.h"
 
-@implementation RadarUserDefaults 
+@implementation RadarKVStore 
 
 
 static NSString *const kCompletedMigration = @"radar-completed-migration";
+static NSString *const kDirName = @"radar-KVStore";
 
 
 + (instancetype)sharedInstance {
@@ -29,7 +30,7 @@ static NSString *const kCompletedMigration = @"radar-completed-migration";
     self = [super init];
     if (self) {
         NSString *documentsDirectory = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES).firstObject;
-        self.settingsFileDir = [documentsDirectory stringByAppendingPathComponent:@"radar_settings"];
+        self.settingsFileDir = [documentsDirectory stringByAppendingPathComponent:kDirName];
         self.fileHandler = [[RadarFileStorage alloc] init];
         if (![[NSFileManager defaultManager] fileExistsAtPath:self.settingsFileDir isDirectory:nil]) {
             [[NSFileManager defaultManager] createDirectoryAtPath:self.settingsFileDir withIntermediateDirectories:YES attributes:nil error:nil];

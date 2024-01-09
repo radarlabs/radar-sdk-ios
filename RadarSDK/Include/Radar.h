@@ -1081,10 +1081,11 @@ logConversionWithNotification
 
 
 /**
- For testing only for migration to NSUserDefaults
+ @note this method is called automatically when initializing the Radar SDK and is only exposed for testing purpose.
+
+ Migrates key value pairs from NSUserDefaults to the Radar SDK. 
 
 */
-
 +  (void)migrateIfNeeded;
 
 @end

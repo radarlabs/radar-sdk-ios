@@ -1,5 +1,5 @@
 //
-//  RadarUserDefaultsTest.m
+//  RadarKVStoreTest.m
 //  RadarSDKTests
 //
 //  Created by Kenny Hu on 12/14/23.
@@ -7,7 +7,7 @@
 //
 
 #import <XCTest/XCTest.h>
-#import "../RadarSDK/RadarUserDefaults.h"
+#import "../RadarSDK/RadarKVStore.h"
 #import "../RadarSDK/Include/RadarTripOptions.h"
 #import "../RadarSDK/RadarFeatureSettings.h"
 #import "../RadarSDK/Include/RadarTrackingOptions.h"
@@ -18,12 +18,12 @@
 #import "../RadarSDK/RadarReplay.h"
 #import "../RadarSDK/RadarReplayBuffer.h"
 
-@interface RadarUserDefaultsTest : XCTestCase
-@property (nonatomic, strong) RadarUserDefaults *radarUserDefault;
+@interface RadarKVStoreTest : XCTestCase
+@property (nonatomic, strong) RadarKVStore *radarKVStore;
 
 @end
 
-@implementation RadarUserDefaultsTest
+@implementation RadarKVStoreTest
 
 static NSString *const kPublishableKey = @"radar-publishableKey";
 static NSString *const kInstallId = @"radar-installId";
@@ -63,63 +63,64 @@ static NSString *const kReplayBuffer = @"radar-replays";
 
 - (void)setUp {
     [super setUp];
-    self.radarUserDefault = [RadarUserDefaults sharedInstance];
-    [self.radarUserDefault removeAllObjects];
-    [self.radarUserDefault setMigrationCompleteFlag:NO];
+    self.radarKVStore = [RadarKVStore sharedInstance];
+    [self.radarKVStore removeAllObjects];
+    [self.radarKVStore setMigrationCompleteFlag:NO];
     NSString *appDomain = [[NSBundle mainBundle] bundleIdentifier];
     [[NSUserDefaults standardUserDefaults] removePersistentDomainForName:appDomain];}
 
 - (void)tearDown {
-    [self.radarUserDefault removeAllObjects];
-    [self.radarUserDefault setMigrationCompleteFlag:NO];
+    [self.radarKVStore removeAllObjects];
+    [self.radarKVStore setMigrationCompleteFlag:NO];
     
 }
 
 - (void)test_RadarUserDefault_removeAllObjects {
-    [self.radarUserDefault setString:@"123abc!@#" forKey:@"string1"];
-    [self.radarUserDefault setString:@"I like working here" forKey:@"string2"];
-    [self.radarUserDefault setString:@"hello world" forKey:@"string3"];
-    [self.radarUserDefault removeAllObjects];
-    XCTAssertNil([self.radarUserDefault stringForKey:@"string1"]);
-    XCTAssertNil([self.radarUserDefault stringForKey:@"string2"]);
-    XCTAssertNil([self.radarUserDefault stringForKey:@"string3"]);
+    [self.radarKVStore setString:@"123abc!@#" forKey:@"string1"];
+    [self.radarKVStore setString:@"I like working here" forKey:@"string2"];
+    [self.radarKVStore setString:@"hello world" forKey:@"string3"];
+    [self.radarKVStore removeAllObjects];
+    XCTAssertNil([self.radarKVStore stringForKey:@"string1"]);
+    XCTAssertNil([self.radarKVStore stringForKey:@"string2"]);
+    XCTAssertNil([self.radarKVStore stringForKey:@"string3"]);
 
 }
 
 - (void)test_RadarUserDefault_setAndGetMigrationFlag {
-    [self.radarUserDefault setMigrationCompleteFlag:YES];
-    XCTAssertTrue(self.radarUserDefault.migrationCompleteFlag);
-    [self.radarUserDefault setMigrationCompleteFlag:NO];
-    XCTAssertFalse(self.radarUserDefault.migrationCompleteFlag);
+    [self.radarKVStore setMigrationCompleteFlag:YES];
+    XCTAssertTrue(self.radarKVStore.migrationCompleteFlag);
+    [self.radarKVStore setMigrationCompleteFlag:NO];
+    XCTAssertFalse(self.radarKVStore.migrationCompleteFlag);
 }
 
 - (void)test_RadarUserDefault_setAndGetBOOL {
-    [self.radarUserDefault setBool:YES forKey:@"yesValue"];
-    [self.radarUserDefault setBool:NO forKey:@"noValue"];
-    XCTAssertTrue([self.radarUserDefault boolForKey:@"yesValue"]);
-    XCTAssertFalse([self.radarUserDefault boolForKey:@"noValue"]);
-    [self.radarUserDefault setBool:YES forKey:@"noValue"];
-    XCTAssertTrue([self.radarUserDefault boolForKey:@"noValue"]);
+    [self.radarKVStore setBool:YES forKey:@"yesValue"];
+    [self.radarKVStore setBool:NO forKey:@"noValue"];
+    XCTAssertTrue([self.radarKVStore boolForKey:@"yesValue"]);
+    XCTAssertFalse([self.radarKVStore boolForKey:@"noValue"]);
+    [self.radarKVStore setBool:YES forKey:@"noValue"];
+    XCTAssertTrue([self.radarKVStore boolForKey:@"noValue"]);
     
     // test for meaningful default values
-    XCTAssertFalse([self.radarUserDefault boolForKey:@"emptyKey"]);
+    XCTAssertFalse([self.radarKVStore boolForKey:@"emptyKey"]);
     
 }
 
 - (void)test_RadarUserDefault_setAndGetString {
-    [self.radarUserDefault setString:@"123abc!@#" forKey:@"string1"];
-    XCTAssertEqualObjects(@"123abc!@#", [self.radarUserDefault stringForKey:@"string1"]);
-    [self.radarUserDefault setString:@"I like working here" forKey:@"string1"];
-    XCTAssertEqualObjects(@"I like working here", [self.radarUserDefault stringForKey:@"string1"]);
-    [self.radarUserDefault setString:@"hello world" forKey:@"string2"];
-    XCTAssertEqualObjects(@"hello world", [self.radarUserDefault stringForKey:@"string2"]);
+    [self.radarKVStore setString:@"123abc!@#" forKey:@"string1"];
+    XCTAssertEqualObjects(@"123abc!@#", [self.radarKVStore stringForKey:@"string1"]);
+    [self.radarKVStore setString:@"I like working here" forKey:@"string1"];
+    XCTAssertEqualObjects(@"I like working here", [self.radarKVStore stringForKey:@"string1"]);
+    [self.radarKVStore setString:@"hello world" forKey:@"string2"];
+    XCTAssertEqualObjects(@"hello world", [self.radarKVStore stringForKey:@"string2"]);
     
     // test for meaningful default values
-    XCTAssertNil([self.radarUserDefault stringForKey:@"emptyKey"]);
+    XCTAssertNil([self.radarKVStore stringForKey:@"emptyKey"]);
 
     // test setting null removes data
-    [self.radarUserDefault setString:nil forKey:@"string1"];
-    XCTAssertNil([self.radarUserDefault stringForKey:@"string1"]);
+    [self.radarKVStore setString:nil forKey:@"string1"];
+    XCTAssertNil([self.radarKVStore stringForKey:@"string1"]);
+    [self.radarKVStore setString:nil forKey:@"string1"];
 }
 
 - (void)test_RadarUserDefault_setAndGetNSObj {
@@ -127,94 +128,96 @@ static NSString *const kReplayBuffer = @"radar-replays";
     NSObject *obj1 = stringArrays;
     NSArray<NSNumber *> *intArrays = @[@1, @2, @3];
     NSObject *obj2 = intArrays;
-    [self.radarUserDefault setObject:obj1 forKey:@"obj1"];
-    [self.radarUserDefault setObject:obj2 forKey:@"obj2"];
-    XCTAssertEqualObjects(stringArrays, [self.radarUserDefault objectForKey:@"obj1"]);
-    XCTAssertEqualObjects(intArrays, [self.radarUserDefault objectForKey:@"obj2"]);
+    [self.radarKVStore setObject:obj1 forKey:@"obj1"];
+    [self.radarKVStore setObject:obj2 forKey:@"obj2"];
+    XCTAssertEqualObjects(stringArrays, [self.radarKVStore objectForKey:@"obj1"]);
+    XCTAssertEqualObjects(intArrays, [self.radarKVStore objectForKey:@"obj2"]);
     // test for string
     NSString *str = @"1234567890";
-    [self.radarUserDefault setObject:str forKey:@"uuid"];
-    XCTAssertEqualObjects(str, [self.radarUserDefault objectForKey:@"uuid"]);
-    XCTAssertEqualObjects(str, [self.radarUserDefault stringForKey:@"uuid"]);
+    [self.radarKVStore setObject:str forKey:@"uuid"];
+    XCTAssertEqualObjects(str, [self.radarKVStore objectForKey:@"uuid"]);
+    XCTAssertEqualObjects(str, [self.radarKVStore stringForKey:@"uuid"]);
     // test for date
     NSDate *date = [NSDate date];
-    [self.radarUserDefault setObject:date forKey:@"date"];
-    XCTAssertEqualObjects(date, [self.radarUserDefault objectForKey:@"date"]);
+    [self.radarKVStore setObject:date forKey:@"date"];
+    XCTAssertEqualObjects(date, [self.radarKVStore objectForKey:@"date"]);
     // test for radarTripOptions
     RadarTripOptions *tripOptions = [[RadarTripOptions alloc] initWithExternalId:@"123" destinationGeofenceTag:@"456" destinationGeofenceExternalId:@"789" scheduledArrivalAt:[NSDate date]];
-    [self.radarUserDefault setObject:tripOptions forKey:@"tripOptions"];
-    XCTAssertEqualObjects(tripOptions, [self.radarUserDefault objectForKey:@"tripOptions"]);
+    [self.radarKVStore setObject:tripOptions forKey:@"tripOptions"];
+    XCTAssertEqualObjects(tripOptions, [self.radarKVStore objectForKey:@"tripOptions"]);
     // test for radarfeatureSettings
     RadarFeatureSettings *featureSettings = [[RadarFeatureSettings alloc] initWithUsePersistence:NO extendFlushReplays:YES useLogPersistence:NO];
-    [self.radarUserDefault setObject:featureSettings forKey:@"featureSettings"];
-    XCTAssertEqualObjects(featureSettings, [self.radarUserDefault objectForKey:@"featureSettings"]);
+    [self.radarKVStore setObject:featureSettings forKey:@"featureSettings"];
+    XCTAssertEqualObjects(featureSettings, [self.radarKVStore objectForKey:@"featureSettings"]);
     // test for radartrackingOptions
     RadarTrackingOptions *trackingOptions = RadarTrackingOptions.presetContinuous;
-    [self.radarUserDefault setObject:trackingOptions forKey:@"trackingOptions"];
-    XCTAssertEqualObjects(trackingOptions, [self.radarUserDefault objectForKey:@"trackingOptions"]);
+    [self.radarKVStore setObject:trackingOptions forKey:@"trackingOptions"];
+    XCTAssertEqualObjects(trackingOptions, [self.radarKVStore objectForKey:@"trackingOptions"]);
     // test for CLLocation
     CLLocation *location = [[CLLocation alloc] initWithLatitude:1.0 longitude:2.0];
-    [self.radarUserDefault setObject:location forKey:@"location"];
-    CLLocation *location2= [self.radarUserDefault objectForKey:@"location"];
+    [self.radarKVStore setObject:location forKey:@"location"];
+    CLLocation *location2= [self.radarKVStore objectForKey:@"location"];
     XCTAssertTrue(location.coordinate.latitude == location2.coordinate.latitude);
     XCTAssertTrue(location.coordinate.longitude == location2.coordinate.longitude);
     XCTAssertEqualObjects(location.timestamp, location2.timestamp);
     
     // test for meaningful default values
-    XCTAssertNil([self.radarUserDefault objectForKey:@"emptyKey"]);
+    XCTAssertNil([self.radarKVStore objectForKey:@"emptyKey"]);
 
     // test setting null removes data
-    [self.radarUserDefault setObject:nil forKey:@"obj1"];
-    XCTAssertNil([self.radarUserDefault objectForKey:@"obj1"]);
+    [self.radarKVStore setObject:nil forKey:@"obj1"];
+    XCTAssertNil([self.radarKVStore objectForKey:@"obj1"]);
+    [self.radarKVStore setObject:nil forKey:@"obj1"];
 
 }
 
 - (void)test_RadarUserDefault_setAndGetNSDictonary {
     NSDictionary<NSString *, NSString *> *dic1 = @{@"key1": @"value1", @"key2": @"value2"};
     NSDictionary<NSString *, NSNumber *> *dic2 = @{@"key1": @1, @"key2": @2};
-    [self.radarUserDefault setDictionary:dic1 forKey:@"dic1"];
-    [self.radarUserDefault setDictionary:dic2 forKey:@"dic2"];
-    XCTAssertEqualObjects(dic1, [self.radarUserDefault dictionaryForKey:@"dic1"]);
-    XCTAssertEqualObjects(dic2, [self.radarUserDefault dictionaryForKey:@"dic2"]);
+    [self.radarKVStore setDictionary:dic1 forKey:@"dic1"];
+    [self.radarKVStore setDictionary:dic2 forKey:@"dic2"];
+    XCTAssertEqualObjects(dic1, [self.radarKVStore dictionaryForKey:@"dic1"]);
+    XCTAssertEqualObjects(dic2, [self.radarKVStore dictionaryForKey:@"dic2"]);
     //test fields are equal
-    XCTAssertEqualObjects(dic1[@"key1"], [self.radarUserDefault dictionaryForKey:@"dic1"][@"key1"]);
-    XCTAssertEqualObjects(dic1[@"key2"], [self.radarUserDefault dictionaryForKey:@"dic1"][@"key2"]);
-    XCTAssertEqualObjects(dic2[@"key1"], [self.radarUserDefault dictionaryForKey:@"dic2"][@"key1"]);
-    XCTAssertEqualObjects(dic2[@"key2"], [self.radarUserDefault dictionaryForKey:@"dic2"][@"key2"]);
+    XCTAssertEqualObjects(dic1[@"key1"], [self.radarKVStore dictionaryForKey:@"dic1"][@"key1"]);
+    XCTAssertEqualObjects(dic1[@"key2"], [self.radarKVStore dictionaryForKey:@"dic1"][@"key2"]);
+    XCTAssertEqualObjects(dic2[@"key1"], [self.radarKVStore dictionaryForKey:@"dic2"][@"key1"]);
+    XCTAssertEqualObjects(dic2[@"key2"], [self.radarKVStore dictionaryForKey:@"dic2"][@"key2"]);
     
     // test for meaningful default values
-    XCTAssertNil([self.radarUserDefault dictionaryForKey:@"emptyKey"]);
+    XCTAssertNil([self.radarKVStore dictionaryForKey:@"emptyKey"]);
 
     // test setting null removes data
-    [self.radarUserDefault setDictionary:nil forKey:@"dic1"];
-    XCTAssertNil([self.radarUserDefault dictionaryForKey:@"dic1"]);
+    [self.radarKVStore setDictionary:nil forKey:@"dic1"];
+    XCTAssertNil([self.radarKVStore dictionaryForKey:@"dic1"]);
+    [self.radarKVStore setDictionary:nil forKey:@"dic1"];
 }
 
 - (void)test_RadarUserDefault_setAndGetDouble {
-    [self.radarUserDefault setDouble:1.0 forKey:@"double1"];
-    [self.radarUserDefault setDouble:2.0 forKey:@"double2"];
-    XCTAssertEqual(1.0, [self.radarUserDefault doubleForKey:@"double1"]);
-    XCTAssertEqual(2.0, [self.radarUserDefault doubleForKey:@"double2"]);
+    [self.radarKVStore setDouble:1.0 forKey:@"double1"];
+    [self.radarKVStore setDouble:2.0 forKey:@"double2"];
+    XCTAssertEqual(1.0, [self.radarKVStore doubleForKey:@"double1"]);
+    XCTAssertEqual(2.0, [self.radarKVStore doubleForKey:@"double2"]);
     
     // test for meaningful default values
-    XCTAssertEqual(0, [self.radarUserDefault doubleForKey:@"emptyKey"]);
+    XCTAssertEqual(0, [self.radarKVStore doubleForKey:@"emptyKey"]);
 }
 
 - (void)test_RadarUserDefault_setAndGetInterger {
-    [self.radarUserDefault setInteger:1 forKey:@"int1"];
-    [self.radarUserDefault setInteger:2 forKey:@"int2"];
-    XCTAssertEqual(1, [self.radarUserDefault integerForKey:@"int1"]);
-    XCTAssertEqual(2, [self.radarUserDefault integerForKey:@"int2"]);
+    [self.radarKVStore setInteger:1 forKey:@"int1"];
+    [self.radarKVStore setInteger:2 forKey:@"int2"];
+    XCTAssertEqual(1, [self.radarKVStore integerForKey:@"int1"]);
+    XCTAssertEqual(2, [self.radarKVStore integerForKey:@"int2"]);
     
     // test for meaningful default values
-    XCTAssertEqual(0, [self.radarUserDefault integerForKey:@"emptyKey"]);
+    XCTAssertEqual(0, [self.radarKVStore integerForKey:@"emptyKey"]);
 }
 
 -  (void)test_RadarSetting_migration {
     // verify that the migrationFlag is off
-    XCTAssertTrue(!self.radarUserDefault.migrationCompleteFlag);
+    XCTAssertTrue(!self.radarKVStore.migrationCompleteFlag);
 
-    XCTAssertTrue(!self.radarUserDefault.migrationCompleteFlag);
+    XCTAssertTrue(!self.radarKVStore.migrationCompleteFlag);
 
     // start with nsuserdefault filled with values
 
@@ -254,7 +257,6 @@ static NSString *const kReplayBuffer = @"radar-replays";
     [[NSUserDefaults standardUserDefaults] setObject:dummyHost forKey:kHost];
     NSString *const dummyVerifiedHost = @"dummyVerifiedHost";
     [[NSUserDefaults standardUserDefaults] setObject:dummyVerifiedHost forKey:kVerifiedHost];
-    NSString *const dummyDefaultVerifiedHost = @"dummyDefaultVerifiedHost";
     NSDate *dummyLastTrackedTime = [NSDate date];
     [[NSUserDefaults standardUserDefaults] setObject:dummyLastTrackedTime forKey:kLastTrackedTime];
     NSDate *dummyLastAppOpenTime = [NSDate date];
@@ -262,7 +264,7 @@ static NSString *const kReplayBuffer = @"radar-replays";
     BOOL dummyUserDebug = YES;
     [[NSUserDefaults standardUserDefaults] setBool:dummyUserDebug forKey:kUserDebug];
 
-    [RadarSettings migrateToRadarUserDefaults];
+    [RadarSettings migrateToRadarKVStore];
 
     // verify that the values are written to radarStrorageSystem and readable by the new radarSetting
     XCTAssertEqualObjects(dummyPublishableKey, [RadarSettings publishableKey]);
@@ -293,7 +295,7 @@ static NSString *const kReplayBuffer = @"radar-replays";
 - (void)test_RadarState_migration {
 
     // verify that the migrationFlag is off
-    XCTAssertTrue(!self.radarUserDefault.migrationCompleteFlag);
+    XCTAssertTrue(!self.radarKVStore.migrationCompleteFlag);
 
     // start with nsuserdefault filled with values
     CLLocationCoordinate2D dummyCoordinate = CLLocationCoordinate2DMake(1.0, 2.0);
@@ -325,7 +327,7 @@ static NSString *const kReplayBuffer = @"radar-replays";
     NSArray<NSString *> *dummyBeaconIds = @[@"123", @"456"];
     [[NSUserDefaults standardUserDefaults] setObject:dummyBeaconIds forKey:kBeaconIds];
 
-    [RadarState migrateToRadarUserDefaults];
+    [RadarState migrateToRadarKVStore];
     // verify that the values are written to radarStrorageSystem and readable by the new radarState
     XCTAssertTrue([self compareCLLocation:dummyLastLocation with:[RadarState lastLocation]]);
     XCTAssertTrue([self compareCLLocation:dummyLastMovedLocation with:[RadarState lastMovedLocation]]);
@@ -344,7 +346,7 @@ static NSString *const kReplayBuffer = @"radar-replays";
 // test radar replay buffer migration
 
 -(void)test_ReplayBuffer_migration {
-    XCTAssertFalse(self.radarUserDefault.migrationCompleteFlag);
+    XCTAssertFalse(self.radarKVStore.migrationCompleteFlag);
     NSMutableArray<RadarReplay *> *replays = [NSMutableArray<RadarReplay *> new];
     //add 5 replays to the buffer
     for (int i = 0; i < 5; i++) {
@@ -355,8 +357,8 @@ static NSString *const kReplayBuffer = @"radar-replays";
     }
     NSData *replaysData = [NSKeyedArchiver archivedDataWithRootObject:replays];
     [[NSUserDefaults standardUserDefaults] setObject:replaysData forKey:@"radar-replays"];
-    [RadarReplayBuffer migrateToRadarUserDefaults];
-    NSMutableArray<RadarReplay *> *replays2 = [self.radarUserDefault objectForKey:@"radar-replays"];
+    [RadarReplayBuffer migrateToRadarKVStore];
+    NSMutableArray<RadarReplay *> *replays2 = [self.radarKVStore objectForKey:@"radar-replays"];
     for (int i = 0; i < 5; i++) {
         XCTAssertEqualObjects(replays[i].replayParams[@"key"], replays2[i].replayParams[@"key"]);
     }
@@ -366,9 +368,9 @@ static NSString *const kReplayBuffer = @"radar-replays";
 - (void)test_migration_safeToRunOnFreshInstall {
     // call migration on empty values
 
-    [RadarState migrateToRadarUserDefaults];
-    [RadarSettings migrateToRadarUserDefaults];
-    [RadarReplayBuffer migrateToRadarUserDefaults];
+    [RadarState migrateToRadarKVStore];
+    [RadarSettings migrateToRadarKVStore];
+    [RadarReplayBuffer migrateToRadarKVStore];
 
     // verify that correct defaults are being read
 
@@ -409,7 +411,7 @@ static NSString *const kReplayBuffer = @"radar-replays";
     XCTAssertNil([RadarState beaconIds]);
 
     // RadarReplayBuffer
-    XCTAssertNil([self.radarUserDefault objectForKey:@"radar-replays"]);
+    XCTAssertNil([self.radarKVStore objectForKey:@"radar-replays"]);
 }
 
 

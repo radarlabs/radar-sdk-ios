@@ -11,7 +11,7 @@
 #import "Radar.h"
 #import "RadarTrackingOptions.h"
 #import "RadarFeatureSettings.h"
-#import "RadarUserDefaults.h"
+#import "RadarKVStore.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -59,7 +59,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)setUserDebug:(BOOL)userDebug;
 + (void)updateLastAppOpenTime;
 + (NSDate *)lastAppOpenTime;
-+ (void)migrateToRadarUserDefaults;
++ (void)migrateToRadarKVStore;
 
 @end
 

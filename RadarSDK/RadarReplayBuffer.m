@@ -11,7 +11,7 @@
 #import "RadarReplay.h"
 #import "RadarLogger.h"
 #import "RadarSettings.h"
-#import "RadarUserDefaults.h"
+#import "RadarKVStore.h"
 
 static const int MAX_BUFFER_SIZE = 120; // one hour of updates
 static NSString *const kReplayBuffer = @"radar-replays";
@@ -39,12 +39,12 @@ static NSString *const kReplayBuffer = @"radar-replays";
     return sharedInstance;
 }
 
-+ (void)migrateToRadarUserDefaults {
++ (void)migrateToRadarKVStore {
     NSData *replaysData = [[NSUserDefaults standardUserDefaults] objectForKey:kReplayBuffer];
     if (replaysData) {
         NSArray *replays = [NSKeyedUnarchiver unarchiveObjectWithData:replaysData];
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Migrating replays with length %lu", (unsigned long)[replays count]]];
-        [[RadarUserDefaults sharedInstance] setObject:replays forKey:kReplayBuffer];
+        [[RadarKVStore sharedInstance] setObject:replays forKey:kReplayBuffer];
     }
 }
 
@@ -71,9 +71,9 @@ static NSString *const kReplayBuffer = @"radar-replays";
                     [prunedBuffer addObject:mutableReplayBuffer[i]];
                 }
             }
-            [[RadarUserDefaults sharedInstance] setObject:prunedBuffer forKey:kReplayBuffer];
+            [[RadarKVStore sharedInstance] setObject:prunedBuffer forKey:kReplayBuffer];
         } else {
-            [[RadarUserDefaults sharedInstance] setObject:mutableReplayBuffer forKey:kReplayBuffer];
+            [[RadarKVStore sharedInstance] setObject:mutableReplayBuffer forKey:kReplayBuffer];
         }
 
     }
@@ -164,18 +164,18 @@ static NSString *const kReplayBuffer = @"radar-replays";
     [mutableReplayBuffer removeAllObjects];
 
     // remove persisted replays
-    [[RadarUserDefaults sharedInstance] removeObjectForKey:kReplayBuffer];
+    [[RadarKVStore sharedInstance] removeObjectForKey:kReplayBuffer];
 }
 
 - (void)removeReplaysFromBuffer:(NSArray<RadarReplay *> *)replays {
     [mutableReplayBuffer removeObjectsInArray:replays];
 
     // persist the updated buffer
-    [[RadarUserDefaults sharedInstance] setObject:mutableReplayBuffer forKey:kReplayBuffer];
+    [[RadarKVStore sharedInstance] setObject:mutableReplayBuffer forKey:kReplayBuffer];
 }
 
 - (void)loadReplaysFromPersistentStore {
-    NSObject *replayObject = [[RadarUserDefaults sharedInstance] objectForKey:kReplayBuffer];
+    NSObject *replayObject = [[RadarKVStore sharedInstance] objectForKey:kReplayBuffer];
     if (replayObject && [replayObject isKindOfClass:[NSArray class]]) {
         NSArray *replays = (NSArray *)replayObject;
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Loaded replays with length %lu", (unsigned long)[replays count]]];

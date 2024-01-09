@@ -34,7 +34,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)setRegionIds:(NSArray<NSString *> *_Nullable)regionIds;
 + (NSArray<NSString *> *)beaconIds;
 + (void)setBeaconIds:(NSArray<NSString *> *_Nullable)beaconIds;
-+ (void)migrateToRadarUserDefaults;
++ (void)migrateToRadarKVStore;
 @end
 
 NS_ASSUME_NONNULL_END

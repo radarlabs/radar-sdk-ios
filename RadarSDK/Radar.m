@@ -42,11 +42,12 @@
 }
 
 + (void)migrateIfNeeded {
-    if (![[RadarUserDefaults sharedInstance] migrationCompleteFlag]) {
-        [RadarSettings migrateToRadarUserDefaults];
-        [RadarState migrateToRadarUserDefaults];
-        [RadarReplayBuffer migrateToRadarUserDefaults];
-        [[RadarUserDefaults sharedInstance] setMigrationCompleteFlag:YES];
+    if (![[RadarKVStore sharedInstance] migrationCompleteFlag]) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Migration to RadarUserDefault start"];
+        [RadarSettings migrateToRadarKVStore];
+        [RadarState migrateToRadarKVStore];
+        [RadarReplayBuffer migrateToRadarKVStore];
+        [[RadarKVStore sharedInstance] setMigrationCompleteFlag:YES];
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Migration to RadarUserDefault complete"];
     }
 }

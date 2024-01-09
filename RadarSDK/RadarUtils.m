@@ -45,7 +45,7 @@ static NSDateFormatter *_isoDateFormatter;
 }
 
 + (NSString *)sdkVersion {
-    return @"3.8.13";
+    return @"3.8.15-beta.1";
 }
 
 + (NSString *)deviceId {
@@ -144,8 +144,23 @@ static NSDateFormatter *_isoDateFormatter;
         return @"{}";
     };
 
+        // Create a mutable copy of the dictionary
+    NSMutableDictionary *mutableDict = [dict mutableCopy];
+
+    // Convert NSDate values to strings
+    for (NSString *key in dict) {
+        id value = mutableDict[key];
+        if ([value isKindOfClass:[NSDate class]]) {
+            NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+            [dateFormatter setDateFormat:@"yyyy-MM-dd'T'HH:mm:ssZ"]; // ISO 8601 format
+            NSString *dateString = [dateFormatter stringFromDate:(NSDate *)value];
+            mutableDict[key] = dateString;
+        }
+    }
+
     NSError *error;
-    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:dict
+
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:mutableDict
                                                        options:0
                                                          error:&error];
     if (!jsonData) {

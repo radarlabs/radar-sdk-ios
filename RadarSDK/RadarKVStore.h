@@ -1,5 +1,5 @@
 //
-//  RadarUserDefaults.h
+//  RadarKVStore.h
 //  RadarSDK
 //
 //  Created by Kenny Hu on 12/14/23.
@@ -12,7 +12,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface RadarUserDefaults : NSObject
+@interface RadarKVStore : NSObject
 
 @property (strong, nonatomic) NSString *settingsFileDir;
 @property (strong, nonatomic) RadarFileStorage *fileHandler;

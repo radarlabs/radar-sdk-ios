@@ -31,7 +31,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)loadReplaysFromPersistentStore;
 
-+ (void)migrateToRadarUserDefaults;
++ (void)migrateToRadarKVStore;
 
 @end
 NS_ASSUME_NONNULL_END
