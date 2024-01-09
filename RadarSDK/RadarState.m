@@ -49,7 +49,7 @@ static NSString *const kBeaconIds = @"radar-beaconIds";
     [migrationResultArray addObject:[NSString stringWithFormat:@"stopped: %@", stopped ? @"YES" : @"NO"]];
 
     NSDate *lastSentAt = [[NSUserDefaults standardUserDefaults] objectForKey:kLastSentAt];
-    [self updateLastSentAt];
+    [[RadarKVStore sharedInstance] setObject:lastSentAt forKey:kLastSentAt];
     [migrationResultArray addObject:[NSString stringWithFormat:@"lastSentAt: %@", lastSentAt]];
 
     BOOL canExit = [[NSUserDefaults standardUserDefaults] boolForKey:kCanExit];
