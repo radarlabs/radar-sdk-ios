@@ -9,6 +9,7 @@
 #import "CLLocation+Radar.h"
 #import "RadarUtils.h"
 #import "RadarKVStore.h"
+#import "RadarLogger.h"
 
 @implementation RadarState
 
@@ -61,7 +62,7 @@ static NSString *const kBeaconIds = @"radar-beaconIds";
         [self setLastFailedStoppedLocation: lastFailedStoppedLocation];
         [migrationResultArray addObject:[NSString stringWithFormat:@"lastFailedStoppedLocation: %@", [RadarUtils dictionaryToJson:lastFailedStoppedLocationDict]]];
     }
-    
+
     NSArray<NSString *> *geofenceIds = [[NSUserDefaults standardUserDefaults] objectForKey:kGeofenceIds];
     [self setGeofenceIds: geofenceIds];
     [migrationResultArray addObject:[NSString stringWithFormat:@"geofenceIds: %@", geofenceIds]];
