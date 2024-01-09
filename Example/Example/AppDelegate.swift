@@ -87,7 +87,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             layers: ["locality"],
             limit: 10,
             country: "US",
-            expandUnits:true
+            mailable:true
         ) { (status, addresses) in
             print("Autocomplete: status = \(Radar.stringForStatus(status)); formattedAddress = \(String(describing: addresses?.first?.formattedAddress))")
 
