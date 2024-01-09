@@ -843,7 +843,7 @@ logConversionWithNotification
  @param layers Optional layer filters.
  @param limit The max number of addresses to return. A number between 1 and 100.
  @param country An optional country filter. A string, the unique 2-letter country code.
- @param expandUnits Whether to expand units. Default behavior in other function signatures is false.
+ @param mailable Whether to only include mailable addresses. Default behavior in other function signatures is false.
  @param completionHandler A completion handler.
 
  @see https://radar.com/documentation/api#autocomplete
@@ -853,8 +853,8 @@ logConversionWithNotification
                    layers:(NSArray<NSString *> *_Nullable)layers
                     limit:(int)limit
                   country:(NSString *_Nullable)country
-              expandUnits:(BOOL)expandUnits
-        completionHandler:(RadarGeocodeCompletionHandler)completionHandler NS_SWIFT_NAME(autocomplete(query:near:layers:limit:country:expandUnits:completionHandler:));
+                 mailable:(BOOL)mailable
+        completionHandler:(RadarGeocodeCompletionHandler)completionHandler NS_SWIFT_NAME(autocomplete(query:near:layers:limit:country:mailable:completionHandler:));
 
 /**
  Autocompletes partial addresses and place names, sorted by relevance.
