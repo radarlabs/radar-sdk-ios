@@ -141,7 +141,7 @@ static NSString *const kUserDebug = @"radar-userDebug";
     [[RadarKVStore sharedInstance] setObject:lastAppOpenTime forKey:kLastAppOpenTime];
     [migrationResultArray addObject:[NSString stringWithFormat:@"lastAppOpenTime: %@", lastAppOpenTime]];
 
-    NSString *migrationResultString = [migrationResultArray componentsJoinedByString:@"\n"];
+    NSString *migrationResultString = [migrationResultArray componentsJoinedByString:@", "];
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Migration of RadarSetting: %@", migrationResultString]];
 }
 

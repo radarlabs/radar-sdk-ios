@@ -79,7 +79,7 @@ static NSString *const kBeaconIds = @"radar-beaconIds";
     [self setBeaconIds: beaconIds];
     [migrationResultArray addObject:[NSString stringWithFormat:@"beaconIds: %@", beaconIds]];
 
-    NSString *migrationResultString = [migrationResultArray componentsJoinedByString:@"\n"];
+    NSString *migrationResultString = [migrationResultArray componentsJoinedByString:@", "];
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Migration of RadarState: %@", migrationResultString]];
 }
 
