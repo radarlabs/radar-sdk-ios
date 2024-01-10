@@ -345,7 +345,7 @@ static NSString *const kReplayBuffer = @"radar-replays";
 
 // test radar replay buffer migration
 
--(void)test_ReplayBuffer_migration {
+- (void)test_ReplayBuffer_migration {
     XCTAssertFalse(self.radarKVStore.migrationCompleteFlag);
     NSMutableArray<RadarReplay *> *replays = [NSMutableArray<RadarReplay *> new];
     //add 5 replays to the buffer

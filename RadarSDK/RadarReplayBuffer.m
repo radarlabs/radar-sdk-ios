@@ -45,6 +45,8 @@ static NSString *const kReplayBuffer = @"radar-replays";
         NSArray *replays = [NSKeyedUnarchiver unarchiveObjectWithData:replaysData];
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Migrating replays with length %lu", (unsigned long)[replays count]]];
         [[RadarKVStore sharedInstance] setObject:replays forKey:kReplayBuffer];
+    } else {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"No replays to migrate"];
     }
 }
 
