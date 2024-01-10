@@ -1,7 +1,7 @@
 # Migration guides
 
 ## 3.8.x to 3.9.0
-- The `Radar.autocompleteQuery(query:near:layers:limit:country:expandUnits:completionHandler:)` method is now `Radar.autocompleteQuery(query:near:layers:limit:country:mailable:completionHandler:)`.
+- The `Radar.autocomplete(query:near:layers:limit:country:expandUnits:completionHandler:)` method is now `Radar.autocomplete(query:near:layers:limit:country:mailable:completionHandler:)`.
 
 ## 3.6.x to 3.7.0
 - Custom events have been renamed to conversions.
