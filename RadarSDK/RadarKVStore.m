@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "RadarKVStore.h"
 #import "RadarFileStorage.h"
+#import "RadarLogger.h"
 
 @implementation RadarKVStore 
 
@@ -107,7 +108,7 @@ static NSString *const kDirName = @"radar-KVStore";
     NSError *error;
     NSData *jsonData = [NSJSONSerialization dataWithJSONObject:value options:0 error:&error];
     if (error) {
-        return;
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelError message:[NSString stringWithFormat:@"Failed to serialize dictionary: %@", error.localizedDescription]];
     }
     [self.fileHandler writeData:jsonData toFileAtPath:[self getSettingFilePath:key]];
 }

@@ -351,7 +351,8 @@ static NSString *const kReplayBuffer = @"radar-replays";
     //add 5 replays to the buffer
     for (int i = 0; i < 5; i++) {
         NSMutableDictionary *replayParams = [NSMutableDictionary new];
-        replayParams[@"key"] = [NSString stringWithFormat:@"value%d", i];
+        replayParams[@"key1"] = [NSString stringWithFormat:@"value1_%d", i];
+        replayParams[@"key2"] = [RadarUtils timeZoneOffset];
         RadarReplay *replay = [[RadarReplay alloc] initWithParams:replayParams];
         [replays addObject:replay];
     }
@@ -360,7 +361,8 @@ static NSString *const kReplayBuffer = @"radar-replays";
     [RadarReplayBuffer migrateToRadarKVStore];
     NSMutableArray<RadarReplay *> *replays2 = [self.radarKVStore objectForKey:@"radar-replays"];
     for (int i = 0; i < 5; i++) {
-        XCTAssertEqualObjects(replays[i].replayParams[@"key"], replays2[i].replayParams[@"key"]);
+        XCTAssertEqualObjects(replays[i].replayParams[@"key1"], replays2[i].replayParams[@"key1"]);
+        XCTAssertEqualObjects(replays[i].replayParams[@"key2"], replays2[i].replayParams[@"key2"]);
     }
 }
 
