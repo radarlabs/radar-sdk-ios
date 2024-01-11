@@ -1099,8 +1099,6 @@ logConversionWithNotification
  */
 + (NSDictionary *)dictionaryForLocation:(CLLocation *)location NS_SWIFT_NAME(dictionaryForLocation(_:));
 
-
-
 /**
  @note this method is called automatically when initializing the Radar SDK and is only exposed for testing purpose.
 
