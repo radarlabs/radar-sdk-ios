@@ -75,7 +75,7 @@ static NSString *const kReplayBuffer = @"radar-replays";
     
 }
 
-- (void)test_RadarUserDefault_removeAllObjects {
+- (void)test_RadarKVStore_removeAllObjects {
     [self.radarKVStore setString:@"123abc!@#" forKey:@"string1"];
     [self.radarKVStore setString:@"I like working here" forKey:@"string2"];
     [self.radarKVStore setString:@"hello world" forKey:@"string3"];
@@ -86,14 +86,14 @@ static NSString *const kReplayBuffer = @"radar-replays";
 
 }
 
-- (void)test_RadarUserDefault_setAndGetMigrationFlag {
+- (void)test_RadarKVStore_setAndGetMigrationFlag {
     [self.radarKVStore setMigrationCompleteFlag:YES];
     XCTAssertTrue(self.radarKVStore.migrationCompleteFlag);
     [self.radarKVStore setMigrationCompleteFlag:NO];
     XCTAssertFalse(self.radarKVStore.migrationCompleteFlag);
 }
 
-- (void)test_RadarUserDefault_setAndGetBOOL {
+- (void)test_RadarKVStore_setAndGetBOOL {
     [self.radarKVStore setBool:YES forKey:@"yesValue"];
     [self.radarKVStore setBool:NO forKey:@"noValue"];
     XCTAssertTrue([self.radarKVStore boolForKey:@"yesValue"]);
@@ -106,7 +106,7 @@ static NSString *const kReplayBuffer = @"radar-replays";
     
 }
 
-- (void)test_RadarUserDefault_setAndGetString {
+- (void)test_RadarKVStore_setAndGetString {
     [self.radarKVStore setString:@"123abc!@#" forKey:@"string1"];
     XCTAssertEqualObjects(@"123abc!@#", [self.radarKVStore stringForKey:@"string1"]);
     [self.radarKVStore setString:@"I like working here" forKey:@"string1"];
@@ -123,7 +123,7 @@ static NSString *const kReplayBuffer = @"radar-replays";
     [self.radarKVStore setString:nil forKey:@"string1"];
 }
 
-- (void)test_RadarUserDefault_setAndGetNSObj {
+- (void)test_RadarKVStore_setAndGetNSObj {
     NSArray<NSString *> *stringArrays = @[@"Hello", @"World"];
     NSObject *obj1 = stringArrays;
     NSArray<NSNumber *> *intArrays = @[@1, @2, @3];
@@ -171,7 +171,7 @@ static NSString *const kReplayBuffer = @"radar-replays";
 
 }
 
-- (void)test_RadarUserDefault_setAndGetNSDictonary {
+- (void)test_RadarKVStore_setAndGetNSDictonary {
     NSDictionary<NSString *, NSString *> *dic1 = @{@"key1": @"value1", @"key2": @"value2"};
     NSDictionary<NSString *, NSNumber *> *dic2 = @{@"key1": @1, @"key2": @2};
     [self.radarKVStore setDictionary:dic1 forKey:@"dic1"];
@@ -193,7 +193,7 @@ static NSString *const kReplayBuffer = @"radar-replays";
     [self.radarKVStore setDictionary:nil forKey:@"dic1"];
 }
 
-- (void)test_RadarUserDefault_setAndGetDouble {
+- (void)test_RadarKVStore_setAndGetDouble {
     [self.radarKVStore setDouble:1.0 forKey:@"double1"];
     [self.radarKVStore setDouble:2.0 forKey:@"double2"];
     XCTAssertEqual(1.0, [self.radarKVStore doubleForKey:@"double1"]);
@@ -203,7 +203,7 @@ static NSString *const kReplayBuffer = @"radar-replays";
     XCTAssertEqual(0, [self.radarKVStore doubleForKey:@"emptyKey"]);
 }
 
-- (void)test_RadarUserDefault_setAndGetInterger {
+- (void)test_RadarKVStore_setAndGetInterger {
     [self.radarKVStore setInteger:1 forKey:@"int1"];
     [self.radarKVStore setInteger:2 forKey:@"int2"];
     XCTAssertEqual(1, [self.radarKVStore integerForKey:@"int1"]);
