@@ -16,11 +16,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (strong, nonatomic) NSString *settingsFileDir;
 @property (strong, nonatomic) RadarFileStorage *fileHandler;
-@property (nonatomic, assign) BOOL migrationCompleteFlag;
+@property (nonatomic, assign) BOOL radarKVStoreMigrationComplete;
 
 + (instancetype)sharedInstance;
 
-- (void)setMigrationCompleteFlag:(BOOL)migrationCompleteFlag;
+- (void)setRadarKVStoreMigrationComplete:(BOOL)migrationCompleteFlag;
 
 - (BOOL)boolForKey:(NSString *)key;
 

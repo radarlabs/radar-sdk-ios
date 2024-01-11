@@ -65,13 +65,13 @@ static NSString *const kReplayBuffer = @"radar-replays";
     [super setUp];
     self.radarKVStore = [RadarKVStore sharedInstance];
     [self.radarKVStore removeAllObjects];
-    [self.radarKVStore setMigrationCompleteFlag:NO];
+    [self.radarKVStore setRadarKVStoreMigrationComplete:NO];
     NSString *appDomain = [[NSBundle mainBundle] bundleIdentifier];
     [[NSUserDefaults standardUserDefaults] removePersistentDomainForName:appDomain];}
 
 - (void)tearDown {
     [self.radarKVStore removeAllObjects];
-    [self.radarKVStore setMigrationCompleteFlag:NO];
+    [self.radarKVStore setRadarKVStoreMigrationComplete:NO];
     
 }
 
@@ -87,10 +87,10 @@ static NSString *const kReplayBuffer = @"radar-replays";
 }
 
 - (void)test_RadarKVStore_setAndGetMigrationFlag {
-    [self.radarKVStore setMigrationCompleteFlag:YES];
-    XCTAssertTrue(self.radarKVStore.migrationCompleteFlag);
-    [self.radarKVStore setMigrationCompleteFlag:NO];
-    XCTAssertFalse(self.radarKVStore.migrationCompleteFlag);
+    [self.radarKVStore setRadarKVStoreMigrationComplete:YES];
+    XCTAssertTrue(self.radarKVStore.radarKVStoreMigrationComplete);
+    [self.radarKVStore setRadarKVStoreMigrationComplete:NO];
+    XCTAssertFalse(self.radarKVStore.radarKVStoreMigrationComplete);
 }
 
 - (void)test_RadarKVStore_setAndGetBOOL {
@@ -215,9 +215,9 @@ static NSString *const kReplayBuffer = @"radar-replays";
 
 -  (void)test_RadarSetting_migration {
     // verify that the migrationFlag is off
-    XCTAssertTrue(!self.radarKVStore.migrationCompleteFlag);
+    XCTAssertTrue(!self.radarKVStore.radarKVStoreMigrationComplete);
 
-    XCTAssertTrue(!self.radarKVStore.migrationCompleteFlag);
+    XCTAssertTrue(!self.radarKVStore.radarKVStoreMigrationComplete);
 
     // start with nsuserdefault filled with values
 
@@ -295,7 +295,7 @@ static NSString *const kReplayBuffer = @"radar-replays";
 - (void)test_RadarState_migration {
 
     // verify that the migrationFlag is off
-    XCTAssertTrue(!self.radarKVStore.migrationCompleteFlag);
+    XCTAssertTrue(!self.radarKVStore.radarKVStoreMigrationComplete);
 
     // start with nsuserdefault filled with values
     CLLocationCoordinate2D dummyCoordinate = CLLocationCoordinate2DMake(1.0, 2.0);
@@ -346,7 +346,7 @@ static NSString *const kReplayBuffer = @"radar-replays";
 // test radar replay buffer migration
 
 - (void)test_ReplayBuffer_migration {
-    XCTAssertFalse(self.radarKVStore.migrationCompleteFlag);
+    XCTAssertFalse(self.radarKVStore.radarKVStoreMigrationComplete);
     NSMutableArray<RadarReplay *> *replays = [NSMutableArray<RadarReplay *> new];
     //add 5 replays to the buffer
     for (int i = 0; i < 5; i++) {

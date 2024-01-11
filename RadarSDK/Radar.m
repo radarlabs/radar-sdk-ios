@@ -42,12 +42,12 @@
 }
 
 + (void)migrateIfNeeded {
-    if (![[RadarKVStore sharedInstance] migrationCompleteFlag]) {
+    if (![[RadarKVStore sharedInstance] radarKVStoreMigrationComplete]) {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Migration to RadarKVStore start"];
         [RadarSettings migrateToRadarKVStore];
         [RadarState migrateToRadarKVStore];
         [RadarReplayBuffer migrateToRadarKVStore];
-        [[RadarKVStore sharedInstance] setMigrationCompleteFlag:YES];
+        [[RadarKVStore sharedInstance] setRadarKVStoreMigrationComplete:YES];
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Migration to RadarKVSTore complete"];
     }
 }

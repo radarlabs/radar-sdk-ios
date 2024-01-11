@@ -35,9 +35,9 @@ static NSString *const kDirName = @"radar-KVStore";
         self.fileHandler = [[RadarFileStorage alloc] init];
         if (![[NSFileManager defaultManager] fileExistsAtPath:self.settingsFileDir isDirectory:nil]) {
             [[NSFileManager defaultManager] createDirectoryAtPath:self.settingsFileDir withIntermediateDirectories:YES attributes:nil error:nil];
-            self.migrationCompleteFlag = NO;
+            self.radarKVStoreMigrationComplete = NO;
         } else {
-            self.migrationCompleteFlag= [self boolForKey:kCompletedMigration];
+            self.radarKVStoreMigrationComplete= [self boolForKey:kCompletedMigration];
         }
     }
     return self;
@@ -47,8 +47,8 @@ static NSString *const kDirName = @"radar-KVStore";
     return [self.settingsFileDir stringByAppendingPathComponent:key];
 }
 
-- (void)setMigrationCompleteFlag:(BOOL)migrationCompleteFlag {
-    _migrationCompleteFlag = migrationCompleteFlag;
+- (void)setRadarKVStoreMigrationComplete:(BOOL)migrationCompleteFlag {
+    _radarKVStoreMigrationComplete = migrationCompleteFlag;
     [self setBool:migrationCompleteFlag forKey:kCompletedMigration];
 }
 
