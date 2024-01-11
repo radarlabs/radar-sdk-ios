@@ -48,64 +48,79 @@ static NSString *const kUserDebug = @"radar-userDebug";
 
     NSString *publishableKey = [[NSUserDefaults standardUserDefaults] stringForKey:kPublishableKey];
     [self setPublishableKey:publishableKey];
-    [migrationResultArray addObject:[NSString stringWithFormat:@"publishableKey: %@", publishableKey]];
+    // Log for testing purposes only, to be removed before merging to master.
+    [migrationResultArray addObject:[NSString stringWithFormat:@"publishableKey: %@", [self publishableKey]]];
 
     NSString *installId = [[NSUserDefaults standardUserDefaults] stringForKey:kInstallId];
     [[RadarKVStore sharedInstance] setObject:installId forKey:kInstallId];
-    [migrationResultArray addObject:[NSString stringWithFormat:@"installId: %@", installId]];
+    // Log for testing purposes only, to be removed before merging to master.
+    [migrationResultArray addObject:[NSString stringWithFormat:@"installId: %@", [self installId]]];
 
     double sessionId = [[NSUserDefaults standardUserDefaults] doubleForKey:kSessionId];
     [[RadarKVStore sharedInstance] setDouble:sessionId forKey:kSessionId];
-    [migrationResultArray addObject:[NSString stringWithFormat:@"sessionId: %f", sessionId]];
+    // Log for testing purposes only, to be removed before merging to master.
+    [migrationResultArray addObject:[NSString stringWithFormat:@"sessionId: %@", [self sessionId]]];
 
     NSString *_id = [[NSUserDefaults standardUserDefaults] stringForKey:kId];
     [self setId:_id];
-    [migrationResultArray addObject:[NSString stringWithFormat:@"_id: %@", _id]];
+    // Log for testing purposes only, to be removed before merging to master.
+    [migrationResultArray addObject:[NSString stringWithFormat:@"_id: %@", [self _id]]];
 
     NSString *userId = [[NSUserDefaults standardUserDefaults] stringForKey:kUserId];
     [self setUserId:userId];
-    [migrationResultArray addObject:[NSString stringWithFormat:@"userId: %@", userId]];
+    // Log for testing purposes only, to be removed before merging to master.
+    [migrationResultArray addObject:[NSString stringWithFormat:@"userId: %@", [self userId]]];
 
     NSString *description = [[NSUserDefaults standardUserDefaults] stringForKey:kDescription];
     [self setDescription:description];
-    [migrationResultArray addObject:[NSString stringWithFormat:@"description: %@", description]];
+    // Log for testing purposes only, to be removed before merging to master.
+    [migrationResultArray addObject:[NSString stringWithFormat:@"description: %@", [self __description]]];
 
     NSObject *metadata = [[NSUserDefaults standardUserDefaults] objectForKey:kMetadata];
     [self setMetadata:(NSDictionary *)metadata];
-    [migrationResultArray addObject:[NSString stringWithFormat:@"metadata: %@", [RadarUtils dictionaryToJson:(NSDictionary *)metadata]]];
+    // Log for testing purposes only, to be removed before merging to master.
+    [migrationResultArray addObject:[NSString stringWithFormat:@"metadata: %@", [RadarUtils dictionaryToJson:[self metadata]]]];
     
     BOOL anonymous = [[NSUserDefaults standardUserDefaults] boolForKey:kAnonymous];
     [self setAnonymousTrackingEnabled:anonymous];
-    [migrationResultArray addObject:[NSString stringWithFormat:@"anonymous: %@", anonymous ? @"YES" : @"NO"]];
+    // Log for testing purposes only, to be removed before merging to master.
+    [migrationResultArray addObject:[NSString stringWithFormat:@"anonymous: %@", [self anonymousTrackingEnabled] ? @"YES" : @"NO"]];
 
     BOOL tracking = [[NSUserDefaults standardUserDefaults] boolForKey:kTracking];
     [self setTracking:tracking];
-    [migrationResultArray addObject:[NSString stringWithFormat:@"tracking: %@", tracking ? @"YES" : @"NO"]];
+    // Log for testing purposes only, to be removed before merging to master.
+    [migrationResultArray addObject:[NSString stringWithFormat:@"tracking: %@", [self tracking] ? @"YES" : @"NO"]];
 
     RadarTrackingOptions *trackingOptions = [RadarTrackingOptions trackingOptionsFromDictionary:[[NSUserDefaults standardUserDefaults] objectForKey:kTrackingOptions]];
     [self setTrackingOptions:trackingOptions];
-    [migrationResultArray addObject:[NSString stringWithFormat:@"trackingOptions: %@", [RadarUtils dictionaryToJson:[trackingOptions dictionaryValue]]]];
+    // Log for testing purposes only, to be removed before merging to master.
+    [migrationResultArray addObject:[NSString stringWithFormat:@"trackingOptions: %@", [RadarUtils dictionaryToJson:[[self trackingOptions] dictionaryValue]]]];
 
     RadarTrackingOptions *previousTrackingOptions = [RadarTrackingOptions trackingOptionsFromDictionary:[[NSUserDefaults standardUserDefaults] objectForKey:kPreviousTrackingOptions]];
     [self setPreviousTrackingOptions:previousTrackingOptions];
-    [migrationResultArray addObject:[NSString stringWithFormat:@"previousTrackingOptions: %@", [RadarUtils dictionaryToJson:[previousTrackingOptions dictionaryValue]]]];
+    // Log for testing purposes only, to be removed before merging to master.
+    [migrationResultArray addObject:[NSString stringWithFormat:@"previousTrackingOptions: %@", [RadarUtils dictionaryToJson:[[self previousTrackingOptions] dictionaryValue]]]];
 
     RadarTrackingOptions *remoteTrackingOptions = [RadarTrackingOptions trackingOptionsFromDictionary:[[NSUserDefaults standardUserDefaults] objectForKey:kRemoteTrackingOptions]];
     [self setRemoteTrackingOptions:remoteTrackingOptions];
-    [migrationResultArray addObject:[NSString stringWithFormat:@"remoteTrackingOptions: %@", [RadarUtils dictionaryToJson:[remoteTrackingOptions dictionaryValue]]]];
+    // Log for testing purposes only, to be removed before merging to master.
+    [migrationResultArray addObject:[NSString stringWithFormat:@"remoteTrackingOptions: %@", [RadarUtils dictionaryToJson:[[self remoteTrackingOptions] dictionaryValue]]]];
     
     RadarTripOptions *tripOptions = [RadarTripOptions tripOptionsFromDictionary:[[NSUserDefaults standardUserDefaults] objectForKey:kTripOptions]];
     [self setTripOptions:tripOptions];
-    [migrationResultArray addObject:[NSString stringWithFormat:@"tripOptions: %@", [RadarUtils dictionaryToJson:[tripOptions dictionaryValue]]]];
+    // Log for testing purposes only, to be removed before merging to master.
+    [migrationResultArray addObject:[NSString stringWithFormat:@"tripOptions: %@", [RadarUtils dictionaryToJson:[[self tripOptions] dictionaryValue]]]];
     
     RadarFeatureSettings *featureSettings = [RadarFeatureSettings featureSettingsFromDictionary:[[NSUserDefaults standardUserDefaults] objectForKey:kFeatureSettings]];
     [self setFeatureSettings:featureSettings];
-    [migrationResultArray addObject:[NSString stringWithFormat:@"featureSettings: %@", [RadarUtils dictionaryToJson:[featureSettings dictionaryValue]]]];
+    // Log for testing purposes only, to be removed before merging to master.
+    [migrationResultArray addObject:[NSString stringWithFormat:@"featureSettings: %@", [RadarUtils dictionaryToJson:[[self featureSettings] dictionaryValue]]]];
     
     NSNumber *userDebugNumber = [[NSUserDefaults standardUserDefaults] objectForKey:kUserDebug];
     BOOL userDebug = userDebugNumber ? [userDebugNumber boolValue] : NO;
     [self setUserDebug:userDebug];
-    [migrationResultArray addObject:[NSString stringWithFormat:@"userDebug: %@", userDebug ? @"YES" : @"NO"]];
+    // Log for testing purposes only, to be removed before merging to master.
+    [migrationResultArray addObject:[NSString stringWithFormat:@"userDebug: %@", [self userDebug] ? @"YES" : @"NO"]];
 
     RadarLogLevel logLevel;
     if (userDebug) {
@@ -116,28 +131,35 @@ static NSString *const kUserDebug = @"radar-userDebug";
         logLevel = (RadarLogLevel)[[NSUserDefaults standardUserDefaults] integerForKey:kLogLevel];
     }
     [self setLogLevel:logLevel];
-    [migrationResultArray addObject:[NSString stringWithFormat:@"logLevel: %ld", (long)logLevel]];
+    // Log for testing purposes only, to be removed before merging to master.
+    [migrationResultArray addObject:[NSString stringWithFormat:@"logLevel: %ld", (long)[self logLevel]]];
 
     NSArray<NSString *> *beaconUUIDs = [[NSUserDefaults standardUserDefaults] valueForKey:kBeaconUUIDs];
     [self setBeaconUUIDs:beaconUUIDs];
-    [migrationResultArray addObject:[NSString stringWithFormat:@"beaconUUIDs: %@", [beaconUUIDs componentsJoinedByString:@","]]];
+    // Log for testing purposes only, to be removed before merging to master.
+    [migrationResultArray addObject:[NSString stringWithFormat:@"beaconUUIDs: %@", [[self beaconUUIDs] componentsJoinedByString:@","]]];
     
     NSString *host = [[NSUserDefaults standardUserDefaults] valueForKey:kHost];
     [[RadarKVStore sharedInstance] setObject:host forKey:kHost];
-    [migrationResultArray addObject:[NSString stringWithFormat:@"host: %@", host]];
+    // Log for testing purposes only, to be removed before merging to master.
+    [migrationResultArray addObject:[NSString stringWithFormat:@"host: %@", [self host]]];
 
     NSString *verifiedHost = [[NSUserDefaults standardUserDefaults] valueForKey:kVerifiedHost];
     [[RadarKVStore sharedInstance] setObject:verifiedHost forKey:kVerifiedHost];
-    [migrationResultArray addObject:[NSString stringWithFormat:@"verifiedHost: %@", verifiedHost]];
+    // Log for testing purposes only, to be removed before merging to master.
+    [migrationResultArray addObject:[NSString stringWithFormat:@"verifiedHost: %@", [self verifiedHost]]];
     
     NSDate *lastTrackedTime = [[NSUserDefaults standardUserDefaults] objectForKey:kLastTrackedTime];
     [[RadarKVStore sharedInstance] setObject:lastTrackedTime forKey:kLastTrackedTime];
-    [migrationResultArray addObject:[NSString stringWithFormat:@"lastTrackedTime: %@", lastTrackedTime]];
+    // Log for testing purposes only, to be removed before merging to master.
+    [migrationResultArray addObject:[NSString stringWithFormat:@"lastTrackedTime: %@", [self lastTrackedTime]]];
 
     NSDate *lastAppOpenTime = [[NSUserDefaults standardUserDefaults] objectForKey:kLastAppOpenTime];
     [[RadarKVStore sharedInstance] setObject:lastAppOpenTime forKey:kLastAppOpenTime];
-    [migrationResultArray addObject:[NSString stringWithFormat:@"lastAppOpenTime: %@", lastAppOpenTime]];
+    // Log for testing purposes only, to be removed before merging to master.
+    [migrationResultArray addObject:[NSString stringWithFormat:@"lastAppOpenTime: %@", [self lastAppOpenTime]]];
 
+    // Log for testing purposes only, to be removed before merging to master.
     NSString *migrationResultString = [migrationResultArray componentsJoinedByString:@", "];
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Migration of RadarSettings: %@", migrationResultString]];
 }

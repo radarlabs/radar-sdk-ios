@@ -32,53 +32,65 @@ static NSString *const kBeaconIds = @"radar-beaconIds";
     CLLocation *lastLocation = [RadarUtils locationForDictionary:lastLocationDict];
     if (lastLocation.isValid) {
         [self setLastLocation: lastLocation];
-        [migrationResultArray addObject:[NSString stringWithFormat:@"lastLocation: %@", [RadarUtils dictionaryToJson:lastLocationDict]]];
+        // Log for testing purposes only, to be removed before merging to master.
+        [migrationResultArray addObject:[NSString stringWithFormat:@"lastLocation: %@", [RadarUtils dictionaryToJson:[RadarUtils dictionaryForLocation:[self lastLocation]]]]];
     }
     NSDictionary *lastMovedLocationDict = [[NSUserDefaults standardUserDefaults] dictionaryForKey:kLastMovedLocation];
     CLLocation *lastMovedLocation = [RadarUtils locationForDictionary:lastMovedLocationDict];
     if (lastMovedLocation.isValid) {
         [self setLastMovedLocation: lastMovedLocation];
-        [migrationResultArray addObject:[NSString stringWithFormat:@"lastMovedLocation: %@", [RadarUtils dictionaryToJson:lastMovedLocationDict]]];
+        // Log for testing purposes only, to be removed before merging to master.
+        [migrationResultArray addObject:[NSString stringWithFormat:@"lastMovedLocation: %@", [RadarUtils dictionaryToJson:[RadarUtils dictionaryForLocation:[self lastMovedLocation]]]]];
     }
     NSDate *lastMovedAt = [[NSUserDefaults standardUserDefaults] objectForKey:kLastMovedAt];
     [self setLastMovedAt: lastMovedAt];
-    [migrationResultArray addObject:[NSString stringWithFormat:@"lastMovedAt: %@", lastMovedAt]];
+    // Log for testing purposes only, to be removed before merging to master.
+    [migrationResultArray addObject:[NSString stringWithFormat:@"lastMovedAt: %@", [self lastMovedAt]]];
 
     BOOL stopped = [[NSUserDefaults standardUserDefaults] boolForKey:kStopped];
     [self setStopped: stopped];
-    [migrationResultArray addObject:[NSString stringWithFormat:@"stopped: %@", stopped ? @"YES" : @"NO"]];
+    // Log for testing purposes only, to be removed before merging to master.
+    [migrationResultArray addObject:[NSString stringWithFormat:@"stopped: %@", [self stopped] ? @"YES" : @"NO"]];
 
     NSDate *lastSentAt = [[NSUserDefaults standardUserDefaults] objectForKey:kLastSentAt];
     [[RadarKVStore sharedInstance] setObject:lastSentAt forKey:kLastSentAt];
-    [migrationResultArray addObject:[NSString stringWithFormat:@"lastSentAt: %@", lastSentAt]];
+    // Log for testing purposes only, to be removed before merging to master.
+    [migrationResultArray addObject:[NSString stringWithFormat:@"lastSentAt: %@", [self lastSentAt]]];
 
     BOOL canExit = [[NSUserDefaults standardUserDefaults] boolForKey:kCanExit];
     [self setCanExit: canExit];
-    [migrationResultArray addObject:[NSString stringWithFormat:@"canExit: %@", canExit ? @"YES" : @"NO"]];
+    //  Log for testing purposes only, to be removed before merging to master.
+    [migrationResultArray addObject:[NSString stringWithFormat:@"canExit: %@", [self canExit] ? @"YES" : @"NO"]];
 
     NSDictionary *lastFailedStoppedLocationDict = [[NSUserDefaults standardUserDefaults] dictionaryForKey:kLastFailedStoppedLocation];
     CLLocation *lastFailedStoppedLocation = [RadarUtils locationForDictionary:lastFailedStoppedLocationDict];
     if (lastFailedStoppedLocation.isValid) {
         [self setLastFailedStoppedLocation: lastFailedStoppedLocation];
-        [migrationResultArray addObject:[NSString stringWithFormat:@"lastFailedStoppedLocation: %@", [RadarUtils dictionaryToJson:lastFailedStoppedLocationDict]]];
+        // Log for testing purposes only, to be removed before merging to master.
+        [migrationResultArray addObject:[NSString stringWithFormat:@"lastFailedStoppedLocation: %@", [RadarUtils dictionaryToJson:[RadarUtils dictionaryForLocation:[self lastFailedStoppedLocation]]]]];
     }
-
+    
     NSArray<NSString *> *geofenceIds = [[NSUserDefaults standardUserDefaults] objectForKey:kGeofenceIds];
     [self setGeofenceIds: geofenceIds];
-    [migrationResultArray addObject:[NSString stringWithFormat:@"geofenceIds: %@", geofenceIds]];
+    // Log for testing purposes only, to be removed before merging to master.
+    [migrationResultArray addObject:[NSString stringWithFormat:@"geofenceIds: %@", [self geofenceIds]]];
 
     NSString *placeId = [[NSUserDefaults standardUserDefaults] stringForKey:kPlaceId];
     [self setPlaceId: placeId];
-    [migrationResultArray addObject:[NSString stringWithFormat:@"placeId: %@", placeId]];
+    // Log for testing purposes only, to be removed before merging to master.
+    [migrationResultArray addObject:[NSString stringWithFormat:@"placeId: %@", [self placeId]]];
 
     NSArray<NSString *> *regionIds = [[NSUserDefaults standardUserDefaults] objectForKey:kRegionIds];
     [self setRegionIds: regionIds];
-    [migrationResultArray addObject:[NSString stringWithFormat:@"regionIds: %@", regionIds]];
+    // Log for testing purposes only, to be removed before merging to master.
+    [migrationResultArray addObject:[NSString stringWithFormat:@"regionIds: %@", [self regionIds]]];
 
     NSArray<NSString *> *beaconIds = [[NSUserDefaults standardUserDefaults] objectForKey:kBeaconIds];
     [self setBeaconIds: beaconIds];
-    [migrationResultArray addObject:[NSString stringWithFormat:@"beaconIds: %@", beaconIds]];
+    // Log for testing purposes only, to be removed before merging to master.
+    [migrationResultArray addObject:[NSString stringWithFormat:@"beaconIds: %@", [self beaconIds]]];
 
+    // Log for testing purposes only, to be removed before merging to master.
     NSString *migrationResultString = [migrationResultArray componentsJoinedByString:@", "];
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Migration of RadarState: %@", migrationResultString]];
 }
