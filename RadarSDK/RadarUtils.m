@@ -144,10 +144,9 @@ static NSDateFormatter *_isoDateFormatter;
         return @"{}";
     };
 
-        // Create a mutable copy of the dictionary
     NSMutableDictionary *mutableDict = [dict mutableCopy];
 
-    // Convert NSDate values to strings
+    // Convert NSDate values to strings to avoid issues with serialization.
     for (NSString *key in dict) {
         id value = mutableDict[key];
         if ([value isKindOfClass:[NSDate class]]) {

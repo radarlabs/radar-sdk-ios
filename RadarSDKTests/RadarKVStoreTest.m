@@ -67,12 +67,12 @@ static NSString *const kReplayBuffer = @"radar-replays";
     [self.radarKVStore removeAllObjects];
     [self.radarKVStore setRadarKVStoreMigrationComplete:NO];
     NSString *appDomain = [[NSBundle mainBundle] bundleIdentifier];
-    [[NSUserDefaults standardUserDefaults] removePersistentDomainForName:appDomain];}
+    [[NSUserDefaults standardUserDefaults] removePersistentDomainForName:appDomain];
+}
 
 - (void)tearDown {
     [self.radarKVStore removeAllObjects];
     [self.radarKVStore setRadarKVStoreMigrationComplete:NO];
-    
 }
 
 - (void)test_RadarKVStore_removeAllObjects {
@@ -103,7 +103,6 @@ static NSString *const kReplayBuffer = @"radar-replays";
     
     // test for meaningful default values
     XCTAssertFalse([self.radarKVStore boolForKey:@"emptyKey"]);
-    
 }
 
 - (void)test_RadarKVStore_setAndGetString {
@@ -167,8 +166,6 @@ static NSString *const kReplayBuffer = @"radar-replays";
     // test setting null removes data
     [self.radarKVStore setObject:nil forKey:@"obj1"];
     XCTAssertNil([self.radarKVStore objectForKey:@"obj1"]);
-    [self.radarKVStore setObject:nil forKey:@"obj1"];
-
 }
 
 - (void)test_RadarKVStore_setAndGetNSDictonary {

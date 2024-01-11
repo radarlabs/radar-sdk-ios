@@ -14,7 +14,7 @@
 @implementation RadarKVStore 
 
 
-static NSString *const kCompletedMigration = @"radar-completed-migration";
+static NSString *const kCompletedMigration = @"radar-completed-KVStore-migration";
 static NSString *const kDirName = @"radar-KVStore";
 
 

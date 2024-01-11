@@ -94,18 +94,21 @@ static NSString *const kUserDebug = @"radar-userDebug";
     [self setRemoteTrackingOptions:remoteTrackingOptions];
     [migrationResultArray addObject:[NSString stringWithFormat:@"remoteTrackingOptions: %@", [RadarUtils dictionaryToJson:[remoteTrackingOptions dictionaryValue]]]];
     
-    
     RadarTripOptions *tripOptions = [RadarTripOptions tripOptionsFromDictionary:[[NSUserDefaults standardUserDefaults] objectForKey:kTripOptions]];
     [self setTripOptions:tripOptions];
     [migrationResultArray addObject:[NSString stringWithFormat:@"tripOptions: %@", [RadarUtils dictionaryToJson:[tripOptions dictionaryValue]]]];
-    
     
     RadarFeatureSettings *featureSettings = [RadarFeatureSettings featureSettingsFromDictionary:[[NSUserDefaults standardUserDefaults] objectForKey:kFeatureSettings]];
     [self setFeatureSettings:featureSettings];
     [migrationResultArray addObject:[NSString stringWithFormat:@"featureSettings: %@", [RadarUtils dictionaryToJson:[featureSettings dictionaryValue]]]];
     
+    NSNumber *userDebugNumber = [[NSUserDefaults standardUserDefaults] objectForKey:kUserDebug];
+    BOOL userDebug = userDebugNumber ? [userDebugNumber boolValue] : NO;
+    [self setUserDebug:userDebug];
+    [migrationResultArray addObject:[NSString stringWithFormat:@"userDebug: %@", userDebug ? @"YES" : @"NO"]];
+
     RadarLogLevel logLevel;
-    if ([RadarSettings userDebug]) {
+    if (userDebug) {
         logLevel = RadarLogLevelDebug;
     } else if ([[NSUserDefaults standardUserDefaults] objectForKey:kLogLevel] == nil) {
         logLevel = RadarLogLevelInfo;
@@ -115,11 +118,9 @@ static NSString *const kUserDebug = @"radar-userDebug";
     [self setLogLevel:logLevel];
     [migrationResultArray addObject:[NSString stringWithFormat:@"logLevel: %ld", (long)logLevel]];
 
-
     NSArray<NSString *> *beaconUUIDs = [[NSUserDefaults standardUserDefaults] valueForKey:kBeaconUUIDs];
     [self setBeaconUUIDs:beaconUUIDs];
-    NSString *beaconUUIDsString = [beaconUUIDs componentsJoinedByString:@","];
-    [migrationResultArray addObject:[NSString stringWithFormat:@"beaconUUIDs: %@", beaconUUIDsString]];
+    [migrationResultArray addObject:[NSString stringWithFormat:@"beaconUUIDs: %@", [beaconUUIDs componentsJoinedByString:@","]]];
     
     NSString *host = [[NSUserDefaults standardUserDefaults] valueForKey:kHost];
     [[RadarKVStore sharedInstance] setObject:host forKey:kHost];
@@ -128,10 +129,6 @@ static NSString *const kUserDebug = @"radar-userDebug";
     NSString *verifiedHost = [[NSUserDefaults standardUserDefaults] valueForKey:kVerifiedHost];
     [[RadarKVStore sharedInstance] setObject:verifiedHost forKey:kVerifiedHost];
     [migrationResultArray addObject:[NSString stringWithFormat:@"verifiedHost: %@", verifiedHost]];
-
-    BOOL userDebug = [[NSUserDefaults standardUserDefaults] boolForKey:kUserDebug];
-    [self setUserDebug:userDebug];
-    [migrationResultArray addObject:[NSString stringWithFormat:@"userDebug: %@", userDebug ? @"YES" : @"NO"]];
     
     NSDate *lastTrackedTime = [[NSUserDefaults standardUserDefaults] objectForKey:kLastTrackedTime];
     [[RadarKVStore sharedInstance] setObject:lastTrackedTime forKey:kLastTrackedTime];
@@ -142,7 +139,7 @@ static NSString *const kUserDebug = @"radar-userDebug";
     [migrationResultArray addObject:[NSString stringWithFormat:@"lastAppOpenTime: %@", lastAppOpenTime]];
 
     NSString *migrationResultString = [migrationResultArray componentsJoinedByString:@", "];
-    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Migration of RadarSetting: %@", migrationResultString]];
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Migration of RadarSettings: %@", migrationResultString]];
 }
 
 + (NSString *)publishableKey {
@@ -331,13 +328,11 @@ static NSString *const kUserDebug = @"radar-userDebug";
 
 + (RadarLogLevel)logLevel {
     RadarLogLevel logLevel;
-    NSInteger logLevelInteger = [[RadarKVStore sharedInstance] integerForKey:kLogLevel];
     if ([RadarSettings userDebug]) {
         logLevel = RadarLogLevelDebug;
     } else {
         if ([[RadarKVStore sharedInstance] keyExists:kLogLevel]) {
-            logLevelInteger = [[RadarKVStore sharedInstance] integerForKey:kLogLevel];
-            logLevel = (RadarLogLevel)logLevelInteger;
+            logLevel = (RadarLogLevel)[[RadarKVStore sharedInstance] integerForKey:kLogLevel];
         } else {
             logLevel = RadarLogLevelInfo;
         }
@@ -388,11 +383,7 @@ static NSString *const kUserDebug = @"radar-userDebug";
 }
 
 + (BOOL)userDebug {
-    if([[RadarKVStore sharedInstance] keyExists:kUserDebug]) {
-        return [[RadarKVStore sharedInstance] boolForKey:kUserDebug];
-    } else {
-        return NO;
-    }
+    return [[RadarKVStore sharedInstance] boolForKey:kUserDebug];
 }
 
 + (void)setUserDebug:(BOOL)userDebug {
