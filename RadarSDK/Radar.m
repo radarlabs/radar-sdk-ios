@@ -66,7 +66,9 @@
                                      completionHandler:^(RadarStatus status, RadarConfig *config) {
                                          [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
                                          [RadarSettings setFeatureSettings:config.meta.featureSettings];
+                                         [self flushLogs];
                                      }];
+    
 }
 
 #pragma mark - Properties
@@ -843,7 +845,29 @@
                                                 layers:layers
                                                  limit:limit
                                                country:country
-                                           expandUnits:expandUnits
+                                              mailable:NO
+                                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarAddress *> *_Nullable addresses) {
+                                         if (completionHandler) {
+                                             [RadarUtils runOnMainThread:^{
+                                                 completionHandler(status, addresses);
+                                             }];
+                                         }
+                                     }];
+}
+
++ (void)autocompleteQuery:(NSString *_Nonnull)query
+                     near:(CLLocation *_Nullable)near
+                   layers:(NSArray *_Nullable)layers
+                    limit:(int)limit
+                  country:(NSString *_Nullable)country
+                 mailable:(BOOL)mailable
+        completionHandler:(RadarGeocodeCompletionHandler)completionHandler {
+    [[RadarAPIClient sharedInstance] autocompleteQuery:query
+                                                  near:near
+                                                layers:layers
+                                                 limit:limit
+                                               country:country
+                                              mailable:mailable
                                      completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarAddress *> *_Nullable addresses) {
                                          if (completionHandler) {
                                              [RadarUtils runOnMainThread:^{
@@ -1035,6 +1059,20 @@
 + (void)setLogLevel:(RadarLogLevel)level {
     [RadarSettings setLogLevel:level];
 }
+
++ (void)logTermination { 
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeNone message:@"App terminating" includeDate:YES includeBattery:YES append:YES];
+}
+
++ (void)logBackgrounding {
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeNone message:@"App entering background" includeDate:YES includeBattery:YES append:YES];
+    [[RadarLogBuffer sharedInstance] persistLogs];
+}
+
++ (void)logResigningActive {
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeNone message:@"App resigning active" includeDate:YES includeBattery:YES];
+}
+
 
 #pragma mark - Helpers
 
@@ -1256,21 +1294,14 @@
         return;
     }
 
-    NSArray<RadarLog *> *flushableLogs = [[RadarLogBuffer sharedInstance] flushableLogs];
-
+    NSArray<RadarLog *> *flushableLogs = [[RadarLogBuffer sharedInstance] flushableLogs]; 
     NSUInteger pendingLogCount = [flushableLogs count];
     if (pendingLogCount == 0) {
         return;
     }
 
-    // remove logs from buffer to handle multiple flushLogs calls
-    [[RadarLogBuffer sharedInstance] removeLogsFromBuffer:pendingLogCount];
-
     RadarSyncLogsAPICompletionHandler onComplete = ^(RadarStatus status) {
-        // if an error occurs in syncing, add the logs back to the buffer
-        if (status != RadarStatusSuccess) {
-            [[RadarLogBuffer sharedInstance] addLogsToBuffer:flushableLogs];
-        }
+        [[RadarLogBuffer sharedInstance] onFlush:status == RadarStatusSuccess logs:flushableLogs];
     };
 
     [[RadarAPIClient sharedInstance] syncLogs:flushableLogs
