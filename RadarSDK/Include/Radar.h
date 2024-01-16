@@ -1028,8 +1028,9 @@ logConversionWithNotification
  Gets the log level for debug logs.
  */
 + (RadarLogLevel)getLogLevel;
- Log application terminating. Include this in your application delegate's applicationWillTerminate: method.
 
+/**
+ Log application terminating. Include this in your application delegate's applicationWillTerminate: method.
  */
 + (void)logTermination;
 
