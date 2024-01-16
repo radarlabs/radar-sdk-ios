@@ -40,9 +40,9 @@ jobs:
         run: zip -r RadarSDK.xcframework.zip RadarSDK.xcframework -x ".*" -x "__MACOSX" -D
 
       - name: Upload XCFramework to release
-      uses: svenstaro/upload-release-action@v2
-      with:
-        file: RadarSDK.xcframework.zip
-        
+          uses: svenstaro/upload-release-action@v2
+          with:
+            file: RadarSDK.xcframework.zip
+
 
 
