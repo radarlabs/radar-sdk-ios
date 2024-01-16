@@ -247,12 +247,20 @@
     [[RadarVerificationManager sharedInstance] trackVerifiedWithCompletionHandler:completionHandler];
 }
 
++ (void)trackVerifiedWithBeacons:(BOOL)beacons completionHandler:(RadarTrackCompletionHandler)completionHandler {
+    [[RadarVerificationManager sharedInstance] trackVerifiedWithBeacons:(BOOL)beacons completionHandler:completionHandler];
+}
+
 + (void)trackVerifiedTokenWithCompletionHandler:(RadarTrackTokenCompletionHandler)completionHandler {
     [[RadarVerificationManager sharedInstance] trackVerifiedTokenWithCompletionHandler:completionHandler];
 }
 
-+ (void)startTrackingVerified:(BOOL)token {
-    [[RadarVerificationManager sharedInstance] startTrackingVerified:token];
++ (void)trackVerifiedTokenWithBeacons:(BOOL)beacons completionHandler:(RadarTrackTokenCompletionHandler)completionHandler {
+    [[RadarVerificationManager sharedInstance] trackVerifiedTokenWithBeacons:(BOOL)beacons completionHandler:completionHandler];
+}
+
++ (void)startTrackingVerified:(BOOL)token interval:(NSTimeInterval)interval beacons:(BOOL)beacons {
+    [[RadarVerificationManager sharedInstance] startTrackingVerified:token interval:interval beacons:beacons];
 }
 
 + (void)startTrackingWithOptions:(RadarTrackingOptions *)options {
