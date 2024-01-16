@@ -37,7 +37,7 @@ static NSString *const kDirName = @"radar-KVStore";
             [[NSFileManager defaultManager] createDirectoryAtPath:self.settingsFileDir withIntermediateDirectories:YES attributes:nil error:nil];
             self.radarKVStoreMigrationComplete = NO;
         } else {
-            self.radarKVStoreMigrationComplete= [self boolForKey:kCompletedMigration];
+            self.radarKVStoreMigrationComplete = [self boolForKey:kCompletedMigration];
         }
     }
     return self;

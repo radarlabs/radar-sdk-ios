@@ -41,7 +41,7 @@
     return sharedInstance;
 }
 
-+ (void)migrateIfNeeded {
++ (void)migrateNSUserDefaultsIfNeeded {
     if (![[RadarKVStore sharedInstance] radarKVStoreMigrationComplete]) {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Migration to RadarKVStore start"];
         [RadarSettings migrateToRadarKVStore];
@@ -54,7 +54,7 @@
 
 + (void)initializeWithPublishableKey:(NSString *)publishableKey {
 
-    [self migrateIfNeeded];
+    [self migrateNSUserDefaultsIfNeeded];
 
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"initialize()"];
 
