@@ -8,22 +8,31 @@
 #import <Foundation/Foundation.h>
 
 #import "RadarLog.h"
+#import "RadarFileStorage.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface RadarLogBuffer : NSObject
 
 @property (assign, nonatomic, readonly) NSArray<RadarLog *> *flushableLogs;
+@property (strong, nonatomic) NSString *logFileDir;
+@property (strong, nonatomic) RadarFileStorage *fileHandler;
+@property (nonatomic, strong) NSTimer *timer;
+@property (nonatomic, assign) BOOL persistentLogFeatureFlag;
 
 + (instancetype)sharedInstance;
 
 - (void)write:(RadarLogLevel)level type:(RadarLogType)type message:(NSString *)message;
 
-- (void)purgeOldestLogs;
+- (void)write:(RadarLogLevel)level type:(RadarLogType)type message:(NSString *)message forcePersist:(BOOL)forcePersist;
 
-- (void)removeLogsFromBuffer:(NSUInteger)numLogs;
+- (void)persistLogs;
 
-- (void)addLogsToBuffer:(NSArray<RadarLog *> *)logs;
+- (void)clearBuffer;
+
+- (void)setPersistentLogFeatureFlag:(BOOL)persistentLogFeatureFlag;
+
+- (void)onFlush:(BOOL)success logs:(NSArray<RadarLog *> *)logs;
 
 @end
 

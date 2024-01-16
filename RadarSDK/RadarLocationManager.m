@@ -130,9 +130,10 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     }
 
     @synchronized(self) {
-        [self.completionHandlers addObject:completionHandler];
+        RadarLocationCompletionHandler completionHandlerCopy = [completionHandler copy];
+        [self.completionHandlers addObject:completionHandlerCopy];
 
-        [self performSelector:@selector(timeoutWithCompletionHandler:) withObject:completionHandler afterDelay:20];
+        [self performSelector:@selector(timeoutWithCompletionHandler:) withObject:completionHandlerCopy afterDelay:20];
     }
 }
 
@@ -777,10 +778,12 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
             return;
         }
 
-        if (lastSyncInterval < options.desiredSyncInterval) {
+        // We add the 0.1 second buffer to account for the fact that the timer may fire slightly before the desired interval
+        NSTimeInterval lastSyncIntervalWithBuffer = lastSyncInterval + 0.1;
+        if (lastSyncIntervalWithBuffer < options.desiredSyncInterval) {
             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
                                                message:[NSString stringWithFormat:@"Skipping sync: desired sync interval | desiredSyncInterval = %d; lastSyncInterval = %f",
-                                                                                  options.desiredSyncInterval, lastSyncInterval]];
+                                                                                  options.desiredSyncInterval, lastSyncIntervalWithBuffer]];
 
             return;
         }

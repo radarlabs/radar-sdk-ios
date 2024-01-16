@@ -55,6 +55,7 @@
                           confidence:(RadarEventConfidence)confidence
                             duration:(float)duration
                             location:(CLLocation *)location
+                            replayed:(BOOL)replayed
                             metadata:(NSDictionary *)metadata {
     self = [super init];
     if (self) {
@@ -75,6 +76,7 @@
         _confidence = confidence;
         _duration = duration;
         _location = location;
+        _replayed = replayed;
         _metadata = metadata;
     }
     return self;
@@ -105,6 +107,7 @@
     float duration = 0;
     CLLocation *location;
     NSDictionary *metadata;
+    BOOL replayed = NO;
 
     id idObj = dict[@"_id"];
     if (idObj && [idObj isKindOfClass:[NSString class]]) {
@@ -293,6 +296,13 @@
         }
     }
 
+    id replayedObj = dict[@"replayed"];
+    if (replayedObj && [replayedObj isKindOfClass:[NSNumber class]]) {
+        NSNumber *replayedNumber = (NSNumber *)replayedObj;
+
+        replayed = [replayedNumber boolValue];
+    }
+
     id metadataObj = dict[@"metadata"];
     if (metadataObj && [metadataObj isKindOfClass:[NSDictionary class]]) {
         metadata = (NSDictionary *)metadataObj;
@@ -316,6 +326,7 @@
                                    confidence:confidence
                                      duration:duration
                                      location:location
+                                     replayed:replayed
                                      metadata:metadata];
     }
 
@@ -434,7 +445,12 @@
     NSArray *coordinates = @[@(self.location.coordinate.longitude), @(self.location.coordinate.latitude)];
     locationDict[@"coordinates"] = coordinates;
     [dict setValue:locationDict forKey:@"location"];
+    [dict setValue:@(self.replayed) forKey:@"replayed"];
     [dict setValue:self.metadata forKey:@"metadata"];
+    NSString *createdAtString = [RadarUtils.isoDateFormatter stringFromDate:self.createdAt];
+    [dict setValue:createdAtString forKey:@"createdAt"];
+    NSString *actualCreatedAtString = [RadarUtils.isoDateFormatter stringFromDate:self.actualCreatedAt];
+    [dict setValue:actualCreatedAtString forKey:@"actualCreatedAt"];
     return dict;
 }
 

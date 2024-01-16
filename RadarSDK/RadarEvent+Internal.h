@@ -34,6 +34,7 @@
                           confidence:(RadarEventConfidence)confidence
                             duration:(float)duration
                             location:(CLLocation *_Nonnull)location
+                            replayed:(BOOL)replayed
                             metadata:(NSDictionary *_Nullable)metadata;
 - (instancetype _Nullable)initWithObject:(id _Nonnull)object;
 

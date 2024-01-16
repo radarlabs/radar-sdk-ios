@@ -12,6 +12,7 @@
 #import "RadarTripOptions.h"
 #import "RadarFeatureSettings.h"
 #import "RadarReplayBuffer.h"
+#import "RadarLogBuffer.h"
 
 @implementation RadarSettings
 
@@ -139,7 +140,8 @@ static NSString *const kUserDebug = @"radar-userDebug";
     if (optionsDict != nil) {
         return [RadarTrackingOptions trackingOptionsFromDictionary:optionsDict];
     } else {
-        return nil;
+        // default to efficient preset
+        return RadarTrackingOptions.presetEfficient;
     }
 }
 
@@ -213,9 +215,12 @@ static NSString *const kUserDebug = @"radar-userDebug";
 
 + (void)setFeatureSettings:(RadarFeatureSettings *)featureSettings {
     if (featureSettings) {
+        //This is added as reading from NSUserdefaults is too slow for this feature flag. To be removed when throttling is done. 
+        [[RadarLogBuffer sharedInstance] setPersistentLogFeatureFlag:featureSettings.useLogPersistence];
         NSDictionary *featureSettingsDict = [featureSettings dictionaryValue];
         [[NSUserDefaults standardUserDefaults] setObject:featureSettingsDict forKey:kFeatureSettings];
     } else {
+        [[RadarLogBuffer sharedInstance] setPersistentLogFeatureFlag:NO];
         [[NSUserDefaults standardUserDefaults] removeObjectForKey:kFeatureSettings];
     }
 }
