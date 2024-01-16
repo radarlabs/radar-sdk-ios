@@ -79,11 +79,14 @@ static NSString *const kReplayBuffer = @"radar-replays";
     [self.radarKVStore setString:@"123abc!@#" forKey:@"string1"];
     [self.radarKVStore setString:@"I like working here" forKey:@"string2"];
     [self.radarKVStore setString:@"hello world" forKey:@"string3"];
+    [self.radarKVStore setBool:YES forKey:@"yesValue"];
+    [self.radarKVStore setObject:@1 forKey:@"int1"];
     [self.radarKVStore removeAllObjects];
     XCTAssertNil([self.radarKVStore stringForKey:@"string1"]);
     XCTAssertNil([self.radarKVStore stringForKey:@"string2"]);
     XCTAssertNil([self.radarKVStore stringForKey:@"string3"]);
-
+    XCTAssertFalse([self.radarKVStore boolForKey:@"yesValue"]);
+    XCTAssertEqual(0, [self.radarKVStore integerForKey:@"int1"]);
 }
 
 - (void)test_RadarKVStore_setAndGetMigrationFlag {
@@ -141,17 +144,21 @@ static NSString *const kReplayBuffer = @"radar-replays";
     [self.radarKVStore setObject:date forKey:@"date"];
     XCTAssertEqualObjects(date, [self.radarKVStore objectForKey:@"date"]);
     // test for radarTripOptions
-    RadarTripOptions *tripOptions = [[RadarTripOptions alloc] initWithExternalId:@"123" destinationGeofenceTag:@"456" destinationGeofenceExternalId:@"789" scheduledArrivalAt:[NSDate date]];
+    NSDictionary *tripOptionDict = @{@"externalId": @"123", @"destinationGeofenceTag": @"456", @"destinationGeofenceExternalId": @"789", @"scheduledArrivalAt": [NSDate date], @"metadata": @{@"key1": @"value1", @"key2": @"value2"}, @"mode": @"car", @"approachingThreshold": @100};
+    RadarTripOptions *tripOptions = [RadarTripOptions tripOptionsFromDictionary:tripOptionDict];
     [self.radarKVStore setObject:tripOptions forKey:@"tripOptions"];
     XCTAssertEqualObjects(tripOptions, [self.radarKVStore objectForKey:@"tripOptions"]);
-    // test for radarfeatureSettings
+    // test for radarFeatureSettings
     RadarFeatureSettings *featureSettings = [[RadarFeatureSettings alloc] initWithUsePersistence:NO extendFlushReplays:YES useLogPersistence:NO];
     [self.radarKVStore setObject:featureSettings forKey:@"featureSettings"];
     XCTAssertEqualObjects(featureSettings, [self.radarKVStore objectForKey:@"featureSettings"]);
-    // test for radartrackingOptions
-    RadarTrackingOptions *trackingOptions = RadarTrackingOptions.presetContinuous;
-    [self.radarKVStore setObject:trackingOptions forKey:@"trackingOptions"];
-    XCTAssertEqualObjects(trackingOptions, [self.radarKVStore objectForKey:@"trackingOptions"]);
+    // test for radarTrackingOptions
+    [self.radarKVStore setObject:RadarTrackingOptions.presetContinuous forKey:@"trackingOptions"];
+    XCTAssertEqualObjects(RadarTrackingOptions.presetContinuous, [self.radarKVStore objectForKey:@"trackingOptions"]);
+    [self.radarKVStore setObject:RadarTrackingOptions.presetResponsive forKey:@"trackingOptions"];
+    XCTAssertEqualObjects(RadarTrackingOptions.presetResponsive, [self.radarKVStore objectForKey:@"trackingOptions"]);
+    [self.radarKVStore setObject:RadarTrackingOptions.presetEfficient forKey:@"trackingOptions"];
+    XCTAssertEqualObjects(RadarTrackingOptions.presetEfficient, [self.radarKVStore objectForKey:@"trackingOptions"]);
     // test for CLLocation
     CLLocation *location = [[CLLocation alloc] initWithLatitude:1.0 longitude:2.0];
     [self.radarKVStore setObject:location forKey:@"location"];
@@ -341,7 +348,6 @@ static NSString *const kReplayBuffer = @"radar-replays";
 
 
 // test radar replay buffer migration
-
 - (void)test_ReplayBuffer_migration {
     XCTAssertFalse(self.radarKVStore.radarKVStoreMigrationComplete);
     NSMutableArray<RadarReplay *> *replays = [NSMutableArray<RadarReplay *> new];
