@@ -27,3 +27,19 @@ jobs:
         env:
           COCOAPODS_TRUNK_TOKEN: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}
 
+      - name: Build archive for iPhone simulator
+        run: xcodebuild archive -scheme RadarSDK -archivePath "RadarSDK-iphonesimulator.xcarchive" -sdk iphonesimulator SKIP_INSTALL=NO CODE_SIGN_IDENTITY= CODE_SIGNING_REQUIRED=NO
+
+      - name: Build archive for iPhone device
+        run: xcodebuild archive -scheme RadarSDK -archivePath "RadarSDK-iphoneos.xcarchive" -sdk iphoneos SKIP_INSTALL=NO CODE_SIGN_IDENTITY= CODE_SIGNING_REQUIRED=NO
+
+      - name: Build XCFramework
+        run: xcodebuild -create-xcframework -framework RadarSDK-iphonesimulator.xcarchive/Products/Library/Frameworks/RadarSDK.framework -framework RadarSDK-iphoneos.xcarchive/Products/Library/Frameworks/RadarSDK.framework -output RadarSDK.xcframework
+
+      - name: Zip XCFramework
+        run: zip -r RadarSDK.xcframework.zip RadarSDK.xcframework -x ".*" -x "__MACOSX" -D
+
+      - name: Upload XCFramework to release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          file: RadarSDK.xcframework.zip
