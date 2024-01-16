@@ -34,7 +34,7 @@
 }
 
 - (void)testIsValidForLocationWithLatitudeWithinFloatEpsilonOfZeroReturnsFalse {
-    [self assertValidLocation:0.0000001 longitude:LON horizontalAccuracy:1.0 shouldBeValid:false];
+    [self assertValidLocation:0.000000009 longitude:LON horizontalAccuracy:1.0 shouldBeValid:false];
 }
 
 - (void)testIsValidForLocationWithInvalidLongitudeReturnsFalse {
