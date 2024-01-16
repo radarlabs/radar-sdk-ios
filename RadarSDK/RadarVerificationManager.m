@@ -77,7 +77,7 @@
                                                                 foreground:[RadarUtils foreground]
                                                                     source:RadarLocationSourceForegroundLocation
                                                                   replayed:NO
-                                                                   beacons:nil
+                                                                   beacons:beacons
                                                                   verified:YES
                                                          attestationString:attestationString
                                                                      keyId:keyId
@@ -175,7 +175,7 @@
                                                                 foreground:[RadarUtils foreground]
                                                                     source:RadarLocationSourceForegroundLocation
                                                                   replayed:NO
-                                                                   beacons:nil
+                                                                   beacons:beacons
                                                                   verified:YES
                                                          attestationString:attestationString
                                                                      keyId:keyId
