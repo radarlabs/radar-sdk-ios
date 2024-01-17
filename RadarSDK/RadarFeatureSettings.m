@@ -10,19 +10,21 @@
 @implementation RadarFeatureSettings
 
 - (instancetype)initWithUsePersistence:(BOOL)usePersistence
-             extendFlushReplays:(BOOL)extendFlushReplays
-             useLogPersistence:(BOOL)useLogPersistence {
+                    extendFlushReplays:(BOOL)extendFlushReplays
+                     useLogPersistence:(BOOL)useLogPersistence
+                       useRadarKVStore:(BOOL)useRadarKVStore {
     if (self = [super init]) {
         _usePersistence = usePersistence;
         _extendFlushReplays = extendFlushReplays;
         _useLogPersistence = useLogPersistence;
+        _useRadarKVStore = useRadarKVStore;
     }
     return self;
 }
 
 + (RadarFeatureSettings *_Nullable)featureSettingsFromDictionary:(NSDictionary *)dict {
     if (!dict) {
-        return [[RadarFeatureSettings alloc] initWithUsePersistence:NO extendFlushReplays:NO useLogPersistence:NO];
+        return [[RadarFeatureSettings alloc] initWithUsePersistence:NO extendFlushReplays:NO useLogPersistence:NO useRadarKVStore:NO];
     }
 
     NSObject *usePersistenceObj = dict[@"usePersistence"]; 
@@ -43,7 +45,13 @@
         useLogPersistence = [(NSNumber *)useLogPersistenceObj boolValue];
     }
 
-    return [[RadarFeatureSettings alloc] initWithUsePersistence:usePersistence extendFlushReplays:extendFlushReplays useLogPersistence:useLogPersistence];
+    NSObject *useRadarKVStoreObj = dict[@"useRadarKVStore"];
+    BOOL useRadarKVStore = NO;
+    if (useRadarKVStoreObj && [useRadarKVStoreObj isKindOfClass:[NSNumber class]]) {
+        useRadarKVStore = [(NSNumber *)useRadarKVStoreObj boolValue];
+    }
+
+    return [[RadarFeatureSettings alloc] initWithUsePersistence:usePersistence extendFlushReplays:extendFlushReplays useLogPersistence:useLogPersistence useRadarKVStore:useRadarKVStore];
 }
 
 - (NSDictionary *)dictionaryValue {
@@ -51,6 +59,7 @@
     [dict setValue:@(self.usePersistence) forKey:@"usePersistence"];
     [dict setValue:@(self.extendFlushReplays) forKey:@"extendFlushReplays"];
     [dict setValue:@(self.useLogPersistence) forKey:@"useLogPersistence"];
+    [dict setValue:@(self.useRadarKVStore) forKey:@"useRadarKVStore"];
     
     return dict;
 }
@@ -61,7 +70,7 @@
     }
 
     RadarFeatureSettings *settings = (RadarFeatureSettings *)object;
-    return self.usePersistence == settings.usePersistence && self.extendFlushReplays == settings.extendFlushReplays && self.useLogPersistence == settings.useLogPersistence;
+    return self.usePersistence == settings.usePersistence && self.extendFlushReplays == settings.extendFlushReplays && self.useLogPersistence == settings.useLogPersistence && self.useRadarKVStore == settings.useRadarKVStore;
 }
 
 #pragma mark - NSCoding
