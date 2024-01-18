@@ -521,12 +521,6 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 
     if (previousTrackingOptions) {
         [Radar startTrackingWithOptions:previousTrackingOptions];
-        if ([RadarSettings rampedUp]) {
-            [RadarSettings setRampedUp:NO];
-            [self changeRampedState:NO];
-            // call trackOnce to refresh nearbyGeofences and trigger a ramp back up if necessary 
-            [Radar trackOnceWithDesiredAccuracy:RadarTrackingOptionsDesiredAccuracyHigh beacons:NO completionHandler:nil];
-        }
     } else {
         [Radar stopTracking];
     }
@@ -597,7 +591,6 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
             // the most general way of specifying a ramp up radius is in the tracking options 
             if (trackingOptions.rampUpRadius && trackingOptions.rampUpRadius > 0) {
                 rampUpRadius = trackingOptions.rampUpRadius;
-
             }
 
             // the next way of specifying a ramp up radius is in the geofence metadata 
@@ -615,7 +608,6 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
             if (tripOptions && [tripOptions.destinationGeofenceTag isEqualToString: geofence.tag] && [tripOptions.destinationGeofenceExternalId isEqualToString: geofence.externalId] && tripOptions.rampUpRadius && tripOptions.rampUpRadius > 0) {
                 rampUpRadius = tripOptions.rampUpRadius;
             }
-
 
             if (rampUpRadius > 0) {
                 CLLocation *geofenceCenterLocation = [[CLLocation alloc] initWithLatitude:center.coordinate.latitude longitude:center.coordinate.longitude];
