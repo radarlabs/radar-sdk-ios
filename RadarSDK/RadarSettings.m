@@ -494,7 +494,7 @@ static NSString *const kUserDebug = @"radar-userDebug";
     NSDictionary *optionsDict = [[NSUserDefaults standardUserDefaults] dictionaryForKey:kPreviousTrackingOptions];
     RadarTrackingOptions *nsUserDefaultsRes = nil; 
     if (optionsDict != nil) {
-        RadarTrackingOptions *nsUserDefaultsRes = [RadarTrackingOptions trackingOptionsFromDictionary:optionsDict];
+        nsUserDefaultsRes = [RadarTrackingOptions trackingOptionsFromDictionary:optionsDict];
     }  
     if ((nsUserDefaultsRes && ![nsUserDefaultsRes isEqual:radarKVStoreRes]) || (radarKVStoreRes && ![radarKVStoreRes isEqual:nsUserDefaultsRes])) {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelWarning message:@"RadarSettings: previousTrackingOptions mismatch."];
@@ -733,15 +733,25 @@ static NSString *const kUserDebug = @"radar-userDebug";
 + (void)updateLastTrackedTime {
     NSDate *timeStamp = [NSDate date];
     [[RadarKVStore sharedInstance] setObject:timeStamp forKey:kLastTrackedTime];
+    if (![self useRadarKVStore]) {
+        [[NSUserDefaults standardUserDefaults] setObject:timeStamp forKey:kLastTrackedTime];
+    }
 }
 
 + (NSDate *)lastTrackedTime {
     NSObject *lastTrackedTime = [[RadarKVStore sharedInstance] objectForKey:kLastTrackedTime];
+    NSDate *lastTrackedTimeDate = nil;
     if (lastTrackedTime && [lastTrackedTime isKindOfClass:[NSDate class]]) {
-        return (NSDate *)lastTrackedTime;
-    } else {
-        return [NSDate dateWithTimeIntervalSince1970:0];
+        lastTrackedTimeDate = (NSDate *)lastTrackedTime;
     }
+    if (![self useRadarKVStore]) {
+        NSDate *nsUserDefaultsRes = [[NSUserDefaults standardUserDefaults] objectForKey:kLastTrackedTime];
+        if ((lastTrackedTimeDate && ![lastTrackedTimeDate isEqual:nsUserDefaultsRes]) || (nsUserDefaultsRes && ![nsUserDefaultsRes isEqual:lastTrackedTimeDate])) {
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelWarning message:@"RadarSettings: lastTrackedTime mismatch."];
+        }
+        lastTrackedTimeDate = nsUserDefaultsRes;
+    }   
+    return lastTrackedTimeDate ? lastTrackedTimeDate : [NSDate dateWithTimeIntervalSince1970:0];
 }
 
 + (NSString *)verifiedHost {
@@ -790,15 +800,26 @@ static NSString *const kUserDebug = @"radar-userDebug";
 + (void)updateLastAppOpenTime {
     NSDate *timeStamp = [NSDate date];
     [[RadarKVStore sharedInstance] setObject:timeStamp forKey:kLastAppOpenTime];
+    if (![self useRadarKVStore]) {
+        [[NSUserDefaults standardUserDefaults] setObject:timeStamp forKey:kLastAppOpenTime];
+    }
 }
 
 + (NSDate *)lastAppOpenTime {
     NSObject *lastAppOpenTime = [[RadarKVStore sharedInstance] objectForKey:kLastAppOpenTime];
+    NSDate *lastAppOpenTimeDate = nil;
     if (lastAppOpenTime && [lastAppOpenTime isKindOfClass:[NSDate class]]) {
-        return (NSDate *)lastAppOpenTime;
-    } else {
-        return [NSDate dateWithTimeIntervalSince1970:0];
+        lastAppOpenTimeDate = (NSDate *)lastAppOpenTime;
     }
+    if (![self useRadarKVStore]) {
+        NSDate *nsUserDefaultsRes = [[NSUserDefaults standardUserDefaults] objectForKey:kLastAppOpenTime];
+        if ((lastAppOpenTimeDate && ![lastAppOpenTimeDate isEqual:nsUserDefaultsRes]) || (nsUserDefaultsRes && ![nsUserDefaultsRes isEqual:lastAppOpenTimeDate])) {
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelWarning message:@"RadarSettings: lastAppOpenTime mismatch."];
+        }
+        lastAppOpenTimeDate = nsUserDefaultsRes;
+    }
+
+    return lastAppOpenTimeDate ? lastAppOpenTimeDate : [NSDate dateWithTimeIntervalSince1970:0];
 }
 
 @end

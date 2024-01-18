@@ -149,7 +149,7 @@ static NSString *const kReplayBuffer = @"radar-replays";
     [self.radarKVStore setObject:tripOptions forKey:@"tripOptions"];
     XCTAssertEqualObjects(tripOptions, [self.radarKVStore objectForKey:@"tripOptions"]);
     // test for radarFeatureSettings
-    RadarFeatureSettings *featureSettings = [[RadarFeatureSettings alloc] initWithUsePersistence:NO extendFlushReplays:YES useLogPersistence:NO];
+    RadarFeatureSettings *featureSettings = [[RadarFeatureSettings alloc] initWithUsePersistence:NO extendFlushReplays:YES useLogPersistence:NO useRadarKVStore:NO];
     [self.radarKVStore setObject:featureSettings forKey:@"featureSettings"];
     XCTAssertEqualObjects(featureSettings, [self.radarKVStore objectForKey:@"featureSettings"]);
     // test for radarTrackingOptions
@@ -245,7 +245,7 @@ static NSString *const kReplayBuffer = @"radar-replays";
     [[NSUserDefaults standardUserDefaults] setBool:dummyTracking forKey:kTracking];
     RadarTrackingOptions *dummyTrackingOptions = RadarTrackingOptions.presetContinuous;
     [[NSUserDefaults standardUserDefaults] setObject:[dummyTrackingOptions dictionaryValue] forKey:kTrackingOptions];
-    RadarFeatureSettings *dummyFeatureSettings = [[RadarFeatureSettings alloc] initWithUsePersistence:NO extendFlushReplays:YES useLogPersistence:NO];
+    RadarFeatureSettings *dummyFeatureSettings = [[RadarFeatureSettings alloc] initWithUsePersistence:NO extendFlushReplays:YES useLogPersistence:NO useRadarKVStore:NO];
     [[NSUserDefaults standardUserDefaults] setObject:[dummyFeatureSettings dictionaryValue] forKey:kFeatureSettings];
     RadarTrackingOptions *dummyPreviousTrackingOptions = RadarTrackingOptions.presetResponsive;
     [[NSUserDefaults standardUserDefaults] setObject:[dummyPreviousTrackingOptions dictionaryValue] forKey:kPreviousTrackingOptions];
@@ -390,7 +390,7 @@ static NSString *const kReplayBuffer = @"radar-replays";
     XCTAssertFalse([RadarSettings anonymousTrackingEnabled]);
     XCTAssertFalse([RadarSettings tracking]);
     XCTAssertEqualObjects([RadarSettings trackingOptions], RadarTrackingOptions.presetEfficient);
-    XCTAssertEqualObjects([RadarSettings featureSettings], [[RadarFeatureSettings alloc] initWithUsePersistence:NO extendFlushReplays:NO useLogPersistence:NO]);
+    XCTAssertEqualObjects([RadarSettings featureSettings], [[RadarFeatureSettings alloc] initWithUsePersistence:NO extendFlushReplays:NO useLogPersistence:NO useRadarKVStore:NO]);
     XCTAssertNil([RadarSettings previousTrackingOptions]);
     XCTAssertNil([RadarSettings remoteTrackingOptions]);
     XCTAssertNil([RadarSettings tripOptions]);
