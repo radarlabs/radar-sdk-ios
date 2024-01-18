@@ -215,7 +215,7 @@ static NSString *const kUserDebug = @"radar-userDebug";
 }
 
 + (NSString *)sessionId {
-    NSString *radarKVStoreRes = [self sessionIdUsingRadarKVStore];
+    NSString *radarKVStoreRes = [self sessionIdWithRadarKVStore];
     if ([self useRadarKVStore]) {
         return radarKVStoreRes;
     }
@@ -362,7 +362,7 @@ static NSString *const kUserDebug = @"radar-userDebug";
 }
 
 + (void)setMetadata:(NSDictionary *)metadata {
-    [self setMetadataWithRadarKVStore]
+    [self setMetadataWithRadarKVStore:metadata];
     if (![self useRadarKVStore]) {
         [[NSUserDefaults standardUserDefaults] setObject:metadata forKey:kMetadata];
     }
@@ -426,7 +426,7 @@ static NSString *const kUserDebug = @"radar-userDebug";
     [[RadarKVStore sharedInstance] setBool:tracking forKey:kTracking];
 }
 
-+ (RadarTrackingOption *)radarTrackingOptionDecoder:(NSString *)key {
++ (RadarTrackingOptions *)radarTrackingOptionDecoder:(NSString *)key {
     NSObject *trackingOptions = [[RadarKVStore sharedInstance] objectForKey:key];
     if (trackingOptions && [trackingOptions isKindOfClass:[RadarTrackingOptions class]]) {
         return (RadarTrackingOptions *)trackingOptions;
@@ -454,7 +454,7 @@ static NSString *const kUserDebug = @"radar-userDebug";
         return [RadarTrackingOptions trackingOptionsFromDictionary:optionsDict];
         
     } else {
-        if ((options && ![options isEqual:radarKVStoreRes]) || (radarKVStoreRes && ![radarKVStoreRes isEqual:options])) {
+        if (radarKVStoreRes) {
             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelWarning message:@"RadarSettings: trackingOptions mismatch."];
         }
         // default to efficient preset
@@ -572,7 +572,7 @@ static NSString *const kUserDebug = @"radar-userDebug";
     NSDictionary *optionsDict = [[NSUserDefaults standardUserDefaults] dictionaryForKey:kTripOptions];
     RadarTripOptions *nsUserDefaultsRes = nil;
     if (optionsDict != nil) {
-        nsuserdefault = [RadarTripOptions tripOptionsFromDictionary:optionsDict];
+        nsUserDefaultsRes = [RadarTripOptions tripOptionsFromDictionary:optionsDict];
     }
 
     if ((nsUserDefaultsRes && ![nsUserDefaultsRes isEqual:radarKVStoreRes]) || (radarKVStoreRes && ![radarKVStoreRes isEqual:nsUserDefaultsRes])) {
@@ -611,12 +611,16 @@ static NSString *const kUserDebug = @"radar-userDebug";
     }
 }
 
++ (BOOL) useRadarKVStore {
+    return [[self featureSettings] useRadarKVStore];
+}
+
 + (RadarFeatureSettings *)featureSettings {
     NSObject *featureSettings = [[RadarKVStore sharedInstance] objectForKey:kFeatureSettings];
     if (featureSettings && [featureSettings isKindOfClass:[RadarFeatureSettings class]]) {
         return (RadarFeatureSettings *)featureSettings;
     } else {
-        return [[RadarFeatureSettings alloc] initWithUsePersistence:NO extendFlushReplays:NO useLogPersistence:NO];
+        return [[RadarFeatureSettings alloc] initWithUsePersistence:NO extendFlushReplays:NO useLogPersistence:NO useRadarKVStore:NO];
     }
 }
 
@@ -752,7 +756,7 @@ static NSString *const kUserDebug = @"radar-userDebug";
     return verifiedHost ? verifiedHost : kDefaultVerifiedHost;
 }
 
-+ (NSString *)verifiedHost {
++ (NSString *)verifiedHostWithRadarKVStore {
     return [[RadarKVStore sharedInstance] stringForKey:kVerifiedHost];
 }
 
