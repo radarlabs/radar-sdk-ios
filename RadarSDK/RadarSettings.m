@@ -354,7 +354,7 @@ static NSString *const kUserDebug = @"radar-userDebug";
         return radarKVStoreRes;
     }
     NSDictionary *userDefaultsRes = [[NSUserDefaults standardUserDefaults] dictionaryForKey:kMetadata];
-    if ((radarKVStoreRes && ![radarKVStoreRes isEqualToDictionary:userDefaultsRes]) || (userDefaultsRes && ![userDefaultsRes isEqualToDictionary:radarKVStoreRes])) {
+    if ((radarKVStoreRes && ![radarKVStoreRes isEqual:userDefaultsRes]) || (userDefaultsRes && ![userDefaultsRes isEqual:radarKVStoreRes])) {
         [[RadarLogBuffer sharedInstance] write:RadarLogLevelError type:RadarLogTypeSDKError message:@"RadarSettings: metadata mismatch."];
     }
     return userDefaultsRes;
@@ -722,7 +722,7 @@ static NSString *const kUserDebug = @"radar-userDebug";
     if ([self useRadarKVStore]) {
         return radarKVStoreRes ? radarKVStoreRes : kDefaultHost;
     }
-    NSString *host = [[RadarKVStore sharedInstance] stringForKey:kHost];
+    NSString *host = [[NSUserDefaults standardUserDefaults] stringForKey:kHost];
     if ((radarKVStoreRes && ![radarKVStoreRes isEqualToString:host]) || (host && ![host isEqualToString:radarKVStoreRes])) {
         [[RadarLogBuffer sharedInstance] write:RadarLogLevelError type:RadarLogTypeSDKError message:@"RadarSettings: host mismatch."];
     }
@@ -762,7 +762,7 @@ static NSString *const kUserDebug = @"radar-userDebug";
     if ([self useRadarKVStore]) {
         return radarKVStoreRes ? radarKVStoreRes : kDefaultVerifiedHost;
     }
-    NSString *verifiedHost = [[RadarKVStore sharedInstance] stringForKey:kVerifiedHost];
+    NSString *verifiedHost = [[NSUserDefaults standardUserDefaults] stringForKey:kVerifiedHost];
     if ((radarKVStoreRes && ![radarKVStoreRes isEqualToString:verifiedHost]) || (verifiedHost && ![verifiedHost isEqualToString:radarKVStoreRes])) {
         [[RadarLogBuffer sharedInstance] write:RadarLogLevelError type:RadarLogTypeSDKError message:@"RadarSettings: verifiedHost mismatch."];
     }

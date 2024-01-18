@@ -323,52 +323,450 @@ static NSString *const kReplayBuffer = @"radar-replays";
    [RadarSettings setPublishableKey:@"123abc!@#"];
     XCTAssertEqualObjects(@"123abc!@#", [RadarSettings publishableKey]);
     // read and writes with RadarKVStore
-    [RadarSettings setFeatureSettings:[[RadarFeatureSettings alloc] initWithUsePersistence:NO extendFlushReplays:YES useLogPersistence:NO useRadarKVStore:YES]];
+    [RadarSettings setFeatureSettings:[[RadarFeatureSettings alloc] initWithUsePersistence:NO extendFlushReplays:NO useLogPersistence:NO useRadarKVStore:YES]];
     [RadarSettings setPublishableKey:@"678abc!@#"];
     XCTAssertEqualObjects(@"678abc!@#", [RadarSettings publishableKey]);
     // ensure that no logs are created by the discrepency
     XCTAssertEqual(0, [[RadarLogBuffer sharedInstance] flushableLogs].count);
     // check that discrepency will trigger logging
-    [RadarSettings setFeatureSettings:[[RadarFeatureSettings alloc] initWithUsePersistence:NO extendFlushReplays:YES useLogPersistence:NO useRadarKVStore:NO]];
+    [RadarSettings setFeatureSettings:[[RadarFeatureSettings alloc] initWithUsePersistence:NO extendFlushReplays:NO useLogPersistence:NO useRadarKVStore:NO]];
     [RadarSettings publishableKey];
     [[NSUserDefaults standardUserDefaults] setObject:@"321abc!@#" forKey:kPublishableKey];
     [RadarSettings publishableKey];
     XCTAssertEqual(2, [[RadarLogBuffer sharedInstance] flushableLogs].count);
 }
 
-- (void)test_radarSettings_installId {
+- (void)test_RadarSettings_installId {
     // read and writes with NSUserDefaults
     NSString *dummyInstallId = [RadarSettings installId];
     XCTAssertEqualObjects(dummyInstallId, [RadarSettings installId]);
     // read and writes with RadarKVStore
-    [RadarSettings setFeatureSettings:[[RadarFeatureSettings alloc] initWithUsePersistence:NO extendFlushReplays:YES useLogPersistence:NO useRadarKVStore:YES]];
+    [RadarSettings setFeatureSettings:[[RadarFeatureSettings alloc] initWithUsePersistence:NO extendFlushReplays:NO useLogPersistence:NO useRadarKVStore:YES]];
     dummyInstallId = [RadarSettings installId];
     XCTAssertEqualObjects(dummyInstallId, [RadarSettings installId]);
     // ensure that no logs are created by the discrepency
     XCTAssertEqual(0, [[RadarLogBuffer sharedInstance] flushableLogs].count);
     // check that discrepency will trigger logging
-    [RadarSettings setFeatureSettings:[[RadarFeatureSettings alloc] initWithUsePersistence:NO extendFlushReplays:YES useLogPersistence:NO useRadarKVStore:NO]];
+    [RadarSettings setFeatureSettings:[[RadarFeatureSettings alloc] initWithUsePersistence:NO extendFlushReplays:NO useLogPersistence:NO useRadarKVStore:NO]];
     [[NSUserDefaults standardUserDefaults] setObject:@"1234" forKey:kInstallId];
     [RadarSettings installId];
     XCTAssertEqual(1, [[RadarLogBuffer sharedInstance] flushableLogs].count);
 }
 
--(void)test_radarSettings_SessionId {
+- (void)test_RadarSettings_SessionId {
     // reads and writes with NSUserDefaults
     XCTAssertTrue([RadarSettings updateSessionId]);
     XCTAssertTrue(([RadarSettings sessionId].doubleValue - [[NSDate date] timeIntervalSince1970]) < 10);
     // read and writes with RadarKVStore
-    [RadarSettings setFeatureSettings:[[RadarFeatureSettings alloc] initWithUsePersistence:NO extendFlushReplays:YES useLogPersistence:NO useRadarKVStore:YES]];
+    [RadarSettings setFeatureSettings:[[RadarFeatureSettings alloc] initWithUsePersistence:NO extendFlushReplays:NO useLogPersistence:NO useRadarKVStore:YES]];
     XCTAssertFalse([RadarSettings updateSessionId]);
     XCTAssertTrue(([RadarSettings sessionId].doubleValue - [[NSDate date] timeIntervalSince1970]) < 10);
     // ensure that no logs are created by the discrepency
     XCTAssertEqual(0, [[RadarLogBuffer sharedInstance] flushableLogs].count);
     // check that discrepency will trigger logging
-    [RadarSettings setFeatureSettings:[[RadarFeatureSettings alloc] initWithUsePersistence:NO extendFlushReplays:YES useLogPersistence:NO useRadarKVStore:NO]];
+    [RadarSettings setFeatureSettings:[[RadarFeatureSettings alloc] initWithUsePersistence:NO extendFlushReplays:NO useLogPersistence:NO useRadarKVStore:NO]];
     [[NSUserDefaults standardUserDefaults] setDouble:1234 forKey:kSessionId];
     [RadarSettings sessionId];
     XCTAssertEqual(1, [[RadarLogBuffer sharedInstance] flushableLogs].count);
     }
+
+- (void)test_RadarSettings_Id {
+   // reads and writes with NSUserDefaults
+    NSString *dummyId = @"dummyId";
+    [RadarSettings setId:dummyId];
+    XCTAssertEqualObjects(dummyId, [RadarSettings _id]);
+    [RadarSettings setId:nil];
+    XCTAssertNil([RadarSettings _id]);
+    // read and writes with RadarKVStore
+    [RadarSettings setFeatureSettings:[[RadarFeatureSettings alloc] initWithUsePersistence:NO extendFlushReplays:NO useLogPersistence:NO useRadarKVStore:YES]];
+    dummyId = @"dummyId2";
+    [RadarSettings setId:dummyId];
+    XCTAssertEqualObjects(dummyId, [RadarSettings _id]);
+    [RadarSettings setId:nil];
+    XCTAssertNil([RadarSettings _id]);
+    // ensure that no logs are created by the discrepency
+    XCTAssertEqual(0, [[RadarLogBuffer sharedInstance] flushableLogs].count);
+    // check that discrepency will trigger logging
+    [RadarSettings setFeatureSettings:[[RadarFeatureSettings alloc] initWithUsePersistence:NO extendFlushReplays:NO useLogPersistence:NO useRadarKVStore:NO]];
+    [[NSUserDefaults standardUserDefaults] setObject:@"1234" forKey:kId]; 
+    [RadarSettings _id];
+    [RadarSettings setId:dummyId]; 
+    [[NSUserDefaults standardUserDefaults] setObject:@"1234" forKey:kId];
+    [RadarSettings _id];
+    [[NSUserDefaults standardUserDefaults] removeObjectForKey:kId];
+    [RadarSettings _id];
+    XCTAssertEqual(3, [[RadarLogBuffer sharedInstance] flushableLogs].count);
+}
+
+- (void)test_RadarSettings_UserId {
+    // reads and writes with NSUserDefaults
+    NSString *dummyUserId = @"dummyUserId";
+    [RadarSettings setUserId:dummyUserId];
+    XCTAssertEqualObjects(dummyUserId, [RadarSettings userId]);
+    [RadarSettings setUserId:nil];
+    XCTAssertNil([RadarSettings userId]);
+    // read and writes with RadarKVStore
+    [RadarSettings setFeatureSettings:[[RadarFeatureSettings alloc] initWithUsePersistence:NO extendFlushReplays:NO useLogPersistence:NO useRadarKVStore:YES]];
+    dummyUserId = @"dummyUserId2";
+    [RadarSettings setUserId:dummyUserId];
+    XCTAssertEqualObjects(dummyUserId, [RadarSettings userId]);
+    [RadarSettings setUserId:nil];
+    XCTAssertNil([RadarSettings userId]);
+    // ensure that no logs are created by the discrepency
+    XCTAssertEqual(0, [[RadarLogBuffer sharedInstance] flushableLogs].count);
+    // check that discrepency will trigger logging
+    [RadarSettings setFeatureSettings:[[RadarFeatureSettings alloc] initWithUsePersistence:NO extendFlushReplays:NO useLogPersistence:NO useRadarKVStore:NO]];
+    [[NSUserDefaults standardUserDefaults] setObject:@"1234" forKey:kUserId];
+    [RadarSettings userId];
+    [RadarSettings setUserId:dummyUserId];
+    [[NSUserDefaults standardUserDefaults] setObject:@"1234" forKey:kUserId];
+    [RadarSettings userId];
+    [[NSUserDefaults standardUserDefaults] removeObjectForKey:kUserId];
+    [RadarSettings userId];
+    XCTAssertEqual(3, [[RadarLogBuffer sharedInstance] flushableLogs].count);
+}
+
+- (void) test_RadarSettings_Description {
+    // reads and writes with NSUserDefaults
+    NSString *dummyDescription = @"dummyDescription";
+    [RadarSettings setDescription:dummyDescription];
+    XCTAssertEqualObjects(dummyDescription, [RadarSettings __description]);
+    [RadarSettings setDescription:nil];
+    XCTAssertNil([RadarSettings __description]);
+    // read and writes with RadarKVStore
+    [RadarSettings setFeatureSettings:[[RadarFeatureSettings alloc] initWithUsePersistence:NO extendFlushReplays:NO useLogPersistence:NO useRadarKVStore:YES]];
+    dummyDescription = @"dummyDescription2";
+    [RadarSettings setDescription:dummyDescription];
+    XCTAssertEqualObjects(dummyDescription, [RadarSettings __description]);
+    [RadarSettings setDescription:nil];
+    XCTAssertNil([RadarSettings __description]);
+    // ensure that no logs are created by the discrepency
+    XCTAssertEqual(0, [[RadarLogBuffer sharedInstance] flushableLogs].count);
+    // check that discrepency will trigger logging
+    [RadarSettings setFeatureSettings:[[RadarFeatureSettings alloc] initWithUsePersistence:NO extendFlushReplays:NO useLogPersistence:NO useRadarKVStore:NO]];
+    [[NSUserDefaults standardUserDefaults] setObject:@"1234" forKey:kDescription];
+    [RadarSettings __description];
+    [RadarSettings setDescription:dummyDescription];
+    [[NSUserDefaults standardUserDefaults] setObject:@"1234" forKey:kDescription];
+    [RadarSettings __description];
+    [[NSUserDefaults standardUserDefaults] removeObjectForKey:kDescription];
+    [RadarSettings __description];
+    XCTAssertEqual(3, [[RadarLogBuffer sharedInstance] flushableLogs].count);
+}
+
+// this takes long to run on device? why? Need to investigate :(
+- (void)test_RadarSettings_Metadata {
+    // reads and writes with NSUserDefaults
+    NSDictionary<NSString *, NSString *> *dummyMetadata = @{@"key1": @"value1", @"key2": @"value2"};
+    [RadarSettings setMetadata:dummyMetadata];
+    XCTAssertEqualObjects(dummyMetadata, [RadarSettings metadata]);
+    [RadarSettings setMetadata:nil];
+    XCTAssertNil([RadarSettings metadata]);
+    // read and writes with RadarKVStore
+    [RadarSettings setFeatureSettings:[[RadarFeatureSettings alloc] initWithUsePersistence:NO extendFlushReplays:NO useLogPersistence:NO useRadarKVStore:YES]];
+    NSDictionary<NSString *, NSString *> *dummyMetadata2 = @{@"key3": @"value3", @"key4": @"value4"};
+    [RadarSettings setMetadata:dummyMetadata2];
+    XCTAssertEqualObjects(dummyMetadata2, [RadarSettings metadata]);
+    [RadarSettings setMetadata:nil];
+    XCTAssertNil([RadarSettings metadata]);
+    // ensure that no logs are created by the discrepency
+    XCTAssertEqual(0, [[RadarLogBuffer sharedInstance] flushableLogs].count);
+    // check that discrepency will trigger logging
+    [RadarSettings setFeatureSettings:[[RadarFeatureSettings alloc] initWithUsePersistence:NO extendFlushReplays:NO useLogPersistence:NO useRadarKVStore:NO]];
+    [[NSUserDefaults standardUserDefaults] setObject:dummyMetadata forKey:kMetadata];
+    [RadarSettings metadata];
+    [RadarSettings setMetadata:dummyMetadata2];
+    [[NSUserDefaults standardUserDefaults] setObject:dummyMetadata forKey:kMetadata]; 
+    [RadarSettings metadata];
+    [[NSUserDefaults standardUserDefaults] removeObjectForKey:kMetadata];
+    [RadarSettings metadata];
+    XCTAssertEqual(3, [[RadarLogBuffer sharedInstance] flushableLogs].count);
+}
+
+- (void)test_RadarSettings_AnonymousTrackingEnabled {
+    // reads and writes with NSUserDefaults
+    BOOL dummyAnonymous = YES;
+    [RadarSettings setAnonymousTrackingEnabled:dummyAnonymous];
+    XCTAssertEqual(dummyAnonymous, [RadarSettings anonymousTrackingEnabled]);
+    // read and writes with RadarKVStore
+    [RadarSettings setFeatureSettings:[[RadarFeatureSettings alloc] initWithUsePersistence:NO extendFlushReplays:NO useLogPersistence:NO useRadarKVStore:YES]];
+    BOOL dummyAnonymous2 = NO;
+    [RadarSettings setAnonymousTrackingEnabled:dummyAnonymous2];
+    XCTAssertEqual(dummyAnonymous2, [RadarSettings anonymousTrackingEnabled]);
+    // ensure that no logs are created by the discrepency
+    XCTAssertEqual(0, [[RadarLogBuffer sharedInstance] flushableLogs].count);
+    // check that discrepency will trigger logging
+    [RadarSettings setFeatureSettings:[[RadarFeatureSettings alloc] initWithUsePersistence:NO extendFlushReplays:NO useLogPersistence:NO useRadarKVStore:NO]];
+    [RadarSettings anonymousTrackingEnabled];
+    [[NSUserDefaults standardUserDefaults] setBool:YES forKey:kAnonymous];
+    [RadarSettings anonymousTrackingEnabled];
+    XCTAssertEqual(2, [[RadarLogBuffer sharedInstance] flushableLogs].count);
+}
+
+- (void)test_RadarSettings_Tracking {
+    // reads and writes with NSUserDefaults
+    BOOL dummyTracking = YES;
+    [RadarSettings setTracking:dummyTracking];
+    XCTAssertEqual(dummyTracking, [RadarSettings tracking]);
+    // read and writes with RadarKVStore
+    [RadarSettings setFeatureSettings:[[RadarFeatureSettings alloc] initWithUsePersistence:NO extendFlushReplays:NO useLogPersistence:NO useRadarKVStore:YES]];
+    BOOL dummyTracking2 = NO;
+    [RadarSettings setTracking:dummyTracking2];
+    XCTAssertEqual(dummyTracking2, [RadarSettings tracking]);
+    // ensure that no logs are created by the discrepency
+    XCTAssertEqual(0, [[RadarLogBuffer sharedInstance] flushableLogs].count);
+    // check that discrepency will trigger logging
+    [RadarSettings setFeatureSettings:[[RadarFeatureSettings alloc] initWithUsePersistence:NO extendFlushReplays:NO useLogPersistence:NO useRadarKVStore:NO]];
+    [[NSUserDefaults standardUserDefaults] setBool:YES forKey:kTracking];
+    [RadarSettings tracking];
+    XCTAssertEqual(1, [[RadarLogBuffer sharedInstance] flushableLogs].count);
+}
+
+- (void)test_RadarSettings_TrackingOptions {
+    // reads, deletes and writes with NSUserDefaults
+    RadarTrackingOptions *dummyTrackingOptions = RadarTrackingOptions.presetContinuous;
+    [RadarSettings setTrackingOptions:dummyTrackingOptions];
+    XCTAssertEqualObjects(dummyTrackingOptions, [RadarSettings trackingOptions]);
+    [RadarSettings removeTrackingOptions];
+    XCTAssertEqualObjects(RadarTrackingOptions.presetEfficient, [RadarSettings trackingOptions]);
+    // read, deletes and writes with RadarKVStore
+    [RadarSettings setFeatureSettings:[[RadarFeatureSettings alloc] initWithUsePersistence:NO extendFlushReplays:NO useLogPersistence:NO useRadarKVStore:YES]];
+    RadarTrackingOptions *dummyTrackingOptions2 = RadarTrackingOptions.presetResponsive;
+    [RadarSettings setTrackingOptions:dummyTrackingOptions2];
+    XCTAssertEqualObjects(dummyTrackingOptions2, [RadarSettings trackingOptions]);
+    [RadarSettings removeTrackingOptions];
+    XCTAssertEqualObjects(RadarTrackingOptions.presetEfficient, [RadarSettings trackingOptions]);
+    // ensure that no logs are created by the discrepency
+    XCTAssertEqual(0, [[RadarLogBuffer sharedInstance] flushableLogs].count);
+    // check that discrepency will trigger logging
+    [RadarSettings setFeatureSettings:[[RadarFeatureSettings alloc] initWithUsePersistence:NO extendFlushReplays:NO useLogPersistence:NO useRadarKVStore:NO]];
+    [[NSUserDefaults standardUserDefaults] setObject:[dummyTrackingOptions dictionaryValue] forKey:kTrackingOptions];
+    [RadarSettings trackingOptions];
+    [RadarSettings setTrackingOptions:dummyTrackingOptions];
+    [[NSUserDefaults standardUserDefaults] removeObjectForKey:kTrackingOptions];
+    [RadarSettings trackingOptions];
+    [[NSUserDefaults standardUserDefaults] setObject:[dummyTrackingOptions2 dictionaryValue] forKey:kTrackingOptions];
+    [RadarSettings trackingOptions];
+    XCTAssertEqual(3, [[RadarLogBuffer sharedInstance] flushableLogs].count);
+}
+
+- (void)test_RadarSettings_previousTrackingOptions {
+    // reads, deletes and writes with NSUserDefaults
+    RadarTrackingOptions *dummyPreviousTrackingOptions = RadarTrackingOptions.presetContinuous;
+    [RadarSettings setPreviousTrackingOptions:dummyPreviousTrackingOptions];
+    XCTAssertEqualObjects(dummyPreviousTrackingOptions, [RadarSettings previousTrackingOptions]);
+    [RadarSettings removePreviousTrackingOptions];
+    XCTAssertNil([RadarSettings previousTrackingOptions]);
+    // read, deletes and writes with RadarKVStore
+    [RadarSettings setFeatureSettings:[[RadarFeatureSettings alloc] initWithUsePersistence:NO extendFlushReplays:NO useLogPersistence:NO useRadarKVStore:YES]];
+    RadarTrackingOptions *dummyPreviousTrackingOptions2 = RadarTrackingOptions.presetResponsive;
+    [RadarSettings setPreviousTrackingOptions:dummyPreviousTrackingOptions2];
+    XCTAssertEqualObjects(dummyPreviousTrackingOptions2, [RadarSettings previousTrackingOptions]);
+    [RadarSettings removePreviousTrackingOptions];
+    XCTAssertNil([RadarSettings previousTrackingOptions]);
+    // ensure that no logs are created by the discrepency
+    XCTAssertEqual(0, [[RadarLogBuffer sharedInstance] flushableLogs].count);
+    // check that discrepency will trigger logging
+    [RadarSettings setFeatureSettings:[[RadarFeatureSettings alloc] initWithUsePersistence:NO extendFlushReplays:NO useLogPersistence:NO useRadarKVStore:NO]];
+    [[NSUserDefaults standardUserDefaults] setObject:[dummyPreviousTrackingOptions dictionaryValue] forKey:kPreviousTrackingOptions];
+    [RadarSettings previousTrackingOptions];
+    [RadarSettings setPreviousTrackingOptions:dummyPreviousTrackingOptions];
+    [[NSUserDefaults standardUserDefaults] removeObjectForKey:kPreviousTrackingOptions];
+    [RadarSettings previousTrackingOptions];
+    [[NSUserDefaults standardUserDefaults] setObject:[dummyPreviousTrackingOptions2 dictionaryValue] forKey:kPreviousTrackingOptions];
+    [RadarSettings previousTrackingOptions];
+    XCTAssertEqual(3, [[RadarLogBuffer sharedInstance] flushableLogs].count);
+}
+
+- (void)test_RadarSettings_remoteTrackingOptions {
+    // reads, deletes and writes with NSUserDefaults
+    RadarTrackingOptions *dummyRemoteTrackingOptions = RadarTrackingOptions.presetContinuous;
+    [RadarSettings setRemoteTrackingOptions:dummyRemoteTrackingOptions];
+    XCTAssertEqualObjects(dummyRemoteTrackingOptions, [RadarSettings remoteTrackingOptions]);
+    [RadarSettings removeRemoteTrackingOptions];
+    XCTAssertNil([RadarSettings remoteTrackingOptions]);
+    // read, deletes and writes with RadarKVStore
+    [RadarSettings setFeatureSettings:[[RadarFeatureSettings alloc] initWithUsePersistence:NO extendFlushReplays:NO useLogPersistence:NO useRadarKVStore:YES]];
+    RadarTrackingOptions *dummyRemoteTrackingOptions2 = RadarTrackingOptions.presetResponsive;
+    [RadarSettings setRemoteTrackingOptions:dummyRemoteTrackingOptions2];
+    XCTAssertEqualObjects(dummyRemoteTrackingOptions2, [RadarSettings remoteTrackingOptions]);
+    [RadarSettings removeRemoteTrackingOptions];
+    XCTAssertNil([RadarSettings remoteTrackingOptions]);
+    // ensure that no logs are created by the discrepency
+    XCTAssertEqual(0, [[RadarLogBuffer sharedInstance] flushableLogs].count);
+    // check that discrepency will trigger logging
+    [RadarSettings setFeatureSettings:[[RadarFeatureSettings alloc] initWithUsePersistence:NO extendFlushReplays:NO useLogPersistence:NO useRadarKVStore:NO]];
+    [[NSUserDefaults standardUserDefaults] setObject:[dummyRemoteTrackingOptions dictionaryValue] forKey:kRemoteTrackingOptions];
+    [RadarSettings remoteTrackingOptions];
+    [RadarSettings setRemoteTrackingOptions:dummyRemoteTrackingOptions];
+    [[NSUserDefaults standardUserDefaults] removeObjectForKey:kRemoteTrackingOptions];
+    [RadarSettings remoteTrackingOptions];
+    [[NSUserDefaults standardUserDefaults] setObject:[dummyRemoteTrackingOptions2 dictionaryValue] forKey:kRemoteTrackingOptions];
+    [RadarSettings remoteTrackingOptions];
+    XCTAssertEqual(3, [[RadarLogBuffer sharedInstance] flushableLogs].count);
+}
+
+- (void)test_RadarSettings_tripOptions {
+    // reads, deletes and writes with NSUserDefaults
+    RadarTripOptions *dummyTripOptions = [[RadarTripOptions alloc] initWithExternalId:@"123" destinationGeofenceTag:@"456" destinationGeofenceExternalId:@"789" scheduledArrivalAt:[NSDate date]];
+    [RadarSettings setTripOptions:dummyTripOptions];
+    XCTAssertEqualObjects(dummyTripOptions, [RadarSettings tripOptions]);
+    [RadarSettings setTripOptions:nil];
+    XCTAssertNil([RadarSettings tripOptions]);
+    // read, deletes and writes with RadarKVStore
+    RadarTripOptions *dummyTripOptions2 = [[RadarTripOptions alloc] initWithExternalId:@"1234" destinationGeofenceTag:@"4567" destinationGeofenceExternalId:@"7890" scheduledArrivalAt:[NSDate date]];
+    [RadarSettings setTripOptions:dummyTripOptions2];
+    XCTAssertEqualObjects(dummyTripOptions2, [RadarSettings tripOptions]);
+    [RadarSettings setTripOptions:nil];
+    XCTAssertNil([RadarSettings tripOptions]);
+    // ensure that no logs are created by the discrepency
+    XCTAssertEqual(0, [[RadarLogBuffer sharedInstance] flushableLogs].count);
+    // check that discrepency will trigger logging
+    [[NSUserDefaults standardUserDefaults] setObject:[dummyTripOptions dictionaryValue] forKey:kTripOptions];
+    [RadarSettings tripOptions];
+    [RadarSettings setTripOptions:dummyTripOptions];
+    [[NSUserDefaults standardUserDefaults] removeObjectForKey:kTripOptions];
+    [RadarSettings tripOptions];
+    [[NSUserDefaults standardUserDefaults] setObject:[dummyTripOptions2 dictionaryValue] forKey:kTripOptions];
+    [RadarSettings tripOptions];
+    XCTAssertEqual(3, [[RadarLogBuffer sharedInstance] flushableLogs].count);
+}
+
+- (void)test_RadarSetting_logLevel {
+    // reads and writes with NSUserDefaults
+    RadarLogLevel dummyLogLevel = RadarLogLevelDebug;
+    [RadarSettings setLogLevel:dummyLogLevel];
+    XCTAssertEqual(dummyLogLevel, [RadarSettings logLevel]);
+    // read and writes with RadarKVStore
+    [RadarSettings setFeatureSettings:[[RadarFeatureSettings alloc] initWithUsePersistence:NO extendFlushReplays:NO useLogPersistence:NO useRadarKVStore:YES]];
+    [RadarSettings setLogLevel:RadarLogLevelNone];
+    XCTAssertEqual(RadarLogLevelNone, [RadarSettings logLevel]);
+    // ensure that no logs are created by the discrepency
+    XCTAssertEqual(0, [[RadarLogBuffer sharedInstance] flushableLogs].count);
+
+    // check that discrepency will trigger logging
+    [RadarSettings setFeatureSettings:[[RadarFeatureSettings alloc] initWithUsePersistence:NO extendFlushReplays:NO useLogPersistence:NO useRadarKVStore:NO]];
+    [[NSUserDefaults standardUserDefaults] setInteger:RadarLogLevelDebug forKey:kLogLevel];
+    [RadarSettings logLevel];
+    XCTAssertEqual(1, [[RadarLogBuffer sharedInstance] flushableLogs].count);
+}
+
+- (void)test_RadarSettings_beaconsUUIDs {
+    // reads and writes with NSUserDefaults
+    NSArray<NSString *> *dummyBeaconUUIDs = @[@"123", @"456"];
+    [RadarSettings setBeaconUUIDs:dummyBeaconUUIDs];
+    XCTAssertEqualObjects(dummyBeaconUUIDs, [RadarSettings beaconUUIDs]);
+    [RadarSettings setBeaconUUIDs:nil];
+    XCTAssertNil([RadarSettings beaconUUIDs]);
+    // read and writes with RadarKVStore
+    [RadarSettings setFeatureSettings :[[RadarFeatureSettings alloc] initWithUsePersistence:NO extendFlushReplays:NO useLogPersistence:NO useRadarKVStore:YES]];
+    NSArray<NSString *> *dummyBeaconUUIDs2 = @[@"1234", @"4567"];
+    [RadarSettings setBeaconUUIDs:dummyBeaconUUIDs2];
+    XCTAssertEqualObjects(dummyBeaconUUIDs2, [RadarSettings beaconUUIDs]);
+    [RadarSettings setBeaconUUIDs:nil];
+    XCTAssertNil([RadarSettings beaconUUIDs]);
+    // ensure that no logs are created by the discrepency
+    XCTAssertEqual(0, [[RadarLogBuffer sharedInstance] flushableLogs].count);
+    // check that discrepency will trigger logging
+    [RadarSettings setFeatureSettings :[[RadarFeatureSettings alloc] initWithUsePersistence:NO extendFlushReplays:NO useLogPersistence:NO useRadarKVStore:NO]];
+    [[NSUserDefaults standardUserDefaults] setObject:dummyBeaconUUIDs forKey:kBeaconUUIDs];
+    [RadarSettings beaconUUIDs];
+    [RadarSettings setBeaconUUIDs:dummyBeaconUUIDs];
+    [[NSUserDefaults standardUserDefaults] removeObjectForKey:kBeaconUUIDs];
+    [RadarSettings beaconUUIDs];
+    [[NSUserDefaults standardUserDefaults] setObject:dummyBeaconUUIDs2 forKey:kBeaconUUIDs];
+    [RadarSettings beaconUUIDs];
+    XCTAssertEqual(3, [[RadarLogBuffer sharedInstance] flushableLogs].count);
+}
+
+- (void)test_RadarSettings_host {
+    // reads with NSUserDefaults
+    NSString *const dummyHost = @"dummyHost";
+    [[NSUserDefaults standardUserDefaults] setObject:dummyHost forKey:kHost];
+    [[RadarKVStore sharedInstance] setObject:dummyHost forKey:kHost];
+    XCTAssertEqualObjects(dummyHost, [RadarSettings host]);
+    // read and writes with RadarKVStore
+    [RadarSettings setFeatureSettings :[[RadarFeatureSettings alloc] initWithUsePersistence:NO extendFlushReplays:NO useLogPersistence:NO useRadarKVStore:YES]];
+    XCTAssertEqualObjects(dummyHost, [RadarSettings host]);
+    // ensure that no logs are created by the discrepency
+    XCTAssertEqual(0, [[RadarLogBuffer sharedInstance] flushableLogs].count);
+    // check that discrepency will not trigger logging
+    [RadarSettings setFeatureSettings :[[RadarFeatureSettings alloc] initWithUsePersistence:NO extendFlushReplays:NO useLogPersistence:NO useRadarKVStore:NO]];
+    [[NSUserDefaults standardUserDefaults] setObject:@"1234" forKey:kHost];
+    [RadarSettings host];
+    XCTAssertEqual(1, [[RadarLogBuffer sharedInstance] flushableLogs].count);
+}
+
+- (void)test_RadarSettings_lastTrackedTime {
+    // reads and writes with NSUserDefaults
+    [RadarSettings updateLastTrackedTime];
+    XCTAssertTrue(([[RadarSettings lastTrackedTime] timeIntervalSince1970] - [[NSDate date] timeIntervalSince1970]) < 10);
+    // read and writes with RadarKVStore
+    [RadarSettings setFeatureSettings :[[RadarFeatureSettings alloc] initWithUsePersistence:NO extendFlushReplays:NO useLogPersistence:NO useRadarKVStore:YES]];
+    [RadarSettings updateLastTrackedTime];
+    XCTAssertTrue(([[RadarSettings lastTrackedTime] timeIntervalSince1970] - [[NSDate date] timeIntervalSince1970]) < 10);
+    // ensure that no logs are created by the discrepency
+    XCTAssertEqual(0, [[RadarLogBuffer sharedInstance] flushableLogs].count);
+    // check that discrepency will not trigger logging
+    [RadarSettings setFeatureSettings :[[RadarFeatureSettings alloc] initWithUsePersistence:NO extendFlushReplays:NO useLogPersistence:NO useRadarKVStore:NO]];
+    [[NSUserDefaults standardUserDefaults] setDouble:1234 forKey:kLastTrackedTime];
+    [RadarSettings lastTrackedTime];
+    XCTAssertEqual(1, [[RadarLogBuffer sharedInstance] flushableLogs].count);
+}
+
+- (void)test_RadarSettings_verifiedHost {
+   // read with NSUserDefaults
+   NSString *const dummyVerifiedHost = @"dummyVerifiedHost";
+   [[NSUserDefaults standardUserDefaults] setObject:dummyVerifiedHost forKey:kVerifiedHost];
+   [[RadarKVStore sharedInstance] setObject:dummyVerifiedHost forKey:kVerifiedHost];
+    XCTAssertEqualObjects(dummyVerifiedHost, [RadarSettings verifiedHost]);
+    // read and writes with RadarKVStore
+    [RadarSettings setFeatureSettings :[[RadarFeatureSettings alloc] initWithUsePersistence:NO extendFlushReplays:NO useLogPersistence:NO useRadarKVStore:YES]];
+    XCTAssertEqualObjects(dummyVerifiedHost, [RadarSettings verifiedHost]);
+    // ensure that no logs are created by the discrepency
+    XCTAssertEqual(0, [[RadarLogBuffer sharedInstance] flushableLogs].count);
+    // check that discrepency will not trigger logging
+    [RadarSettings setFeatureSettings :[[RadarFeatureSettings alloc] initWithUsePersistence:NO extendFlushReplays:NO useLogPersistence:NO useRadarKVStore:NO]];
+    [[NSUserDefaults standardUserDefaults] setObject:@"1234" forKey:kVerifiedHost];
+    [RadarSettings verifiedHost];
+    XCTAssertEqual(1, [[RadarLogBuffer sharedInstance] flushableLogs].count); 
+}
+
+- (void)test_RadarSettings_userDebug {
+    //reads and writes with NSUserDefaults
+    BOOL dummyUserDebug = YES;
+    [RadarSettings setUserDebug:dummyUserDebug];
+    XCTAssertEqual(dummyUserDebug, [RadarSettings userDebug]);
+    // read and writes with RadarKVStore
+    [RadarSettings setFeatureSettings :[[RadarFeatureSettings alloc] initWithUsePersistence:NO extendFlushReplays:NO useLogPersistence:NO useRadarKVStore:YES]];
+    BOOL dummyUserDebug2 = NO;
+    [RadarSettings setUserDebug:dummyUserDebug2];
+    XCTAssertEqual(dummyUserDebug2, [RadarSettings userDebug]);
+    // ensure that no logs are created by the discrepency
+    XCTAssertEqual(0, [[RadarLogBuffer sharedInstance] flushableLogs].count);
+    // check that discrepency will trigger logging
+    [RadarSettings setFeatureSettings :[[RadarFeatureSettings alloc] initWithUsePersistence:NO extendFlushReplays:NO useLogPersistence:NO useRadarKVStore:NO]];
+    [[NSUserDefaults standardUserDefaults] setBool:YES forKey:kUserDebug];
+    [RadarSettings userDebug];
+    XCTAssertEqual(1, [[RadarLogBuffer sharedInstance] flushableLogs].count);
+}
+
+- (void)test_RadarSettings_lastAppOpenTime {
+    // reads and writes with NSUserDefaults
+    [RadarSettings updateLastAppOpenTime];
+    XCTAssertTrue(([[RadarSettings lastAppOpenTime] timeIntervalSince1970] - [[NSDate date] timeIntervalSince1970]) < 10);
+    // read and writes with RadarKVStore
+    [RadarSettings setFeatureSettings :[[RadarFeatureSettings alloc] initWithUsePersistence:NO extendFlushReplays:NO useLogPersistence:NO useRadarKVStore:YES]];
+    [RadarSettings updateLastAppOpenTime];
+    XCTAssertTrue(([[RadarSettings lastAppOpenTime] timeIntervalSince1970] - [[NSDate date] timeIntervalSince1970]) < 10);
+    // ensure that no logs are created by the discrepency
+    XCTAssertEqual(0, [[RadarLogBuffer sharedInstance] flushableLogs].count);
+    // check that discrepency will not trigger logging
+    [RadarSettings setFeatureSettings :[[RadarFeatureSettings alloc] initWithUsePersistence:NO extendFlushReplays:NO useLogPersistence:NO useRadarKVStore:NO]];
+    [[NSUserDefaults standardUserDefaults] setDouble:1234 forKey:kLastAppOpenTime];
+    [RadarSettings lastAppOpenTime];
+    XCTAssertEqual(1, [[RadarLogBuffer sharedInstance] flushableLogs].count);
+}
 
 // test radar state migration
 - (void)test_RadarState_migration {
