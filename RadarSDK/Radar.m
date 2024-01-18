@@ -564,12 +564,11 @@
                                              if (status == RadarStatusSuccess) {
                                                  [RadarSettings setTripOptions:tripOptions];
 
-                                                 if (Radar.isTracking && ![RadarSettings rampedUp]) {
+                                                 if (Radar.isTracking) {
                                                      [RadarSettings setPreviousTrackingOptions:[RadarSettings trackingOptions]];
-                                                 } else if (!Radar.isTracking && ![RadarSettings rampedUp]) {
+                                                 } else {
                                                      [RadarSettings removePreviousTrackingOptions];
                                                  }
-                                                 
 
                                                  if (trackingOptions) {
                                                      [self startTrackingWithOptions:trackingOptions];
