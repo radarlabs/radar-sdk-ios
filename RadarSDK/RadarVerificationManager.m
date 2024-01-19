@@ -254,9 +254,9 @@
                     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Network connected"];
 
                     if (token) {
-                        [self trackVerifiedTokenWithCompletionHandler:nil];
+                        [self trackVerifiedTokenWithBeacons:beacons completionHandler:nil];
                     } else {
-                        [self trackVerifiedWithCompletionHandler:nil];
+                        [self trackVerifiedWithBeacons:beacons completionHandler:nil];
                     }
                 } else {
                     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Network disconnected"];
@@ -274,9 +274,9 @@
                                                            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Timer fired"];
 
                                                            if (token) {
-                                                               [self trackVerifiedTokenWithCompletionHandler:nil];
+                                                               [self trackVerifiedTokenWithBeacons:beacons completionHandler:nil];
                                                            } else {
-                                                               [self trackVerifiedWithCompletionHandler:nil];
+                                                               [self trackVerifiedWithBeacons:beacons completionHandler:nil];
                                                            }
                                                        }];
     }
