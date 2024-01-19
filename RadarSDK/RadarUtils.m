@@ -170,6 +170,28 @@ static NSDateFormatter *_isoDateFormatter;
     } 
 }
 
++ (BOOL)compareCLLocation:(CLLocation *)location1 with:(CLLocation *)location2 {
+    if ((location1 == nil && location2 != nil) || (location1 != nil && location2 == nil)) {
+        return NO;
+    }
+    if (location1.coordinate.latitude != location2.coordinate.latitude) {
+        return NO;
+    }
+    if (location1.coordinate.longitude != location2.coordinate.longitude) {
+        return NO;
+    }
+    if (location1.horizontalAccuracy != location2.horizontalAccuracy) {
+        return NO;
+    }
+    if (location1.verticalAccuracy != location2.verticalAccuracy) {
+        return NO;
+    }
+    if (location1.timestamp != location2.timestamp) {
+        return NO;
+    }
+    return YES;
+}
+
 #pragma mark - threading
 
 + (void)runOnMainThread:(dispatch_block_t)block {

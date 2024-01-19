@@ -10,6 +10,9 @@
 #import "RadarUtils.h"
 #import "RadarKVStore.h"
 #import "RadarLogger.h"
+#import "RadarSettings.h"
+#import "RadarLogBuffer.h"
+#import "RadarUtils.h"
 
 @implementation RadarState
 
@@ -95,16 +98,35 @@ static NSString *const kBeaconIds = @"radar-beaconIds";
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Migration of RadarState: %@", migrationResultString]];
 }
 
++ (CLLocation *)getCLLocation:(NSString *)key errorMessage:(NSString *)errorMessage {
+    NSObject *RadarKVStoreObj = [[RadarKVStore sharedInstance] objectForKey:key];
+    CLLocation *RadarKVStoreRes = nil;
+    if (RadarKVStoreObj && [RadarKVStoreObj isKindOfClass:[CLLocation class]]) {
+        RadarKVStoreRes = (CLLocation *)RadarKVStoreObj;
+        if (!RadarKVStoreRes.isValid) {
+            RadarKVStoreRes = nil;
+        }
+    }
+
+    if ([RadarSettings useRadarKVStore]) {
+        return RadarKVStoreRes;
+    }
+
+    NSDictionary *dict = [[NSUserDefaults standardUserDefaults] dictionaryForKey:key];
+    CLLocation *NSUserDefaultRes = [RadarUtils locationForDictionary:dict];
+    if (!NSUserDefaultRes.isValid) {
+        NSUserDefaultRes = nil;
+    }
+
+    if (![RadarUtils compareCLLocation:RadarKVStoreRes with:NSUserDefaultRes]) {
+        [[RadarLogBuffer sharedInstance] write:RadarLogLevelError type:RadarLogTypeSDKError message:errorMessage];
+    }
+
+    return NSUserDefaultRes; 
+}
+
 + (CLLocation *)lastLocation {
-    NSObject *lastLocationObject = [[RadarKVStore sharedInstance] objectForKey:kLastLocation];
-    if (!lastLocationObject || ![lastLocationObject isKindOfClass:[CLLocation class]]) {
-        return nil;
-    }
-    CLLocation *lastLocation = (CLLocation *)lastLocationObject;
-    if (!lastLocation.isValid) {
-        return nil;
-    }
-    return lastLocation;
+    return [self getCLLocation:kLastLocation errorMessage:@"RadarState: lastLocation mismatch."];
 }
 
 + (void)setLastLocation:(CLLocation *)lastLocation {
@@ -112,18 +134,14 @@ static NSString *const kBeaconIds = @"radar-beaconIds";
         return;
     }
     [[RadarKVStore sharedInstance] setObject:lastLocation forKey:kLastLocation];
+
+    if (![RadarSettings useRadarKVStore]) {
+        [[NSUserDefaults standardUserDefaults] setObject:[RadarUtils dictionaryForLocation:lastLocation] forKey:kLastLocation];
+    }
 }
 
 + (CLLocation *)lastMovedLocation {
-    NSObject *lastMovedLocationObject = [[RadarKVStore sharedInstance] objectForKey:kLastMovedLocation];
-    if (!lastMovedLocationObject || ![lastMovedLocationObject isKindOfClass:[CLLocation class]]) {
-        return nil;
-    }
-    CLLocation *lastMovedLocation = (CLLocation *)lastMovedLocationObject;
-    if (!lastMovedLocation.isValid) {
-        return nil;
-    }
-    return lastMovedLocation;
+    return [self getCLLocation:kLastMovedLocation errorMessage:@"RadarState: lastMovedLocation mismatch."];
 }
 
 + (void)setLastMovedLocation:(CLLocation *)lastMovedLocation {
@@ -132,116 +150,190 @@ static NSString *const kBeaconIds = @"radar-beaconIds";
     }
 
     [[RadarKVStore sharedInstance] setObject:lastMovedLocation forKey:kLastMovedLocation];
+    if (![RadarSettings useRadarKVStore]) {
+        [[NSUserDefaults standardUserDefaults] setObject:[RadarUtils dictionaryForLocation:lastMovedLocation] forKey:kLastMovedLocation];
+    }
 }
 
 + (NSDate *)lastMovedAt {
     NSObject *lastMovedAt = [[RadarKVStore sharedInstance] objectForKey:kLastMovedAt];
-    if (!lastMovedAt || ![lastMovedAt isKindOfClass:[NSDate class]]) {
-        return nil;
+    NSDate *lastMovedAtDate = nil;
+    if (lastMovedAt  && [lastMovedAt isKindOfClass:[NSDate class]]) {
+        lastMovedAtDate = (NSDate *)lastMovedAt;
     }
-    return (NSDate *)lastMovedAt;
+    if ([RadarSettings useRadarKVStore]) {
+        return lastMovedAtDate;
+    }
+    NSDate *NSUserDefaultRes = [[NSUserDefaults standardUserDefaults] objectForKey:kLastMovedAt];
+    if ((lastMovedAtDate && ![lastMovedAtDate isEqual:NSUserDefaultRes]) || (NSUserDefaultRes && ![NSUserDefaultRes isEqual:lastMovedAtDate])) {
+        [[RadarLogBuffer sharedInstance] write:RadarLogLevelError type:RadarLogTypeSDKError message:@"RadarState: lastMovedAt mismatch."];
+    }
+
+    return NSUserDefaultRes;
 }
 
 + (void)setLastMovedAt:(NSDate *)lastMovedAt {
     [[RadarKVStore sharedInstance] setObject:lastMovedAt forKey:kLastMovedAt];
+    if (![RadarSettings useRadarKVStore]) {
+        [[NSUserDefaults standardUserDefaults] setObject:lastMovedAt forKey:kLastMovedAt];
+    }
 }
 
 + (BOOL)stopped {
-    return [[RadarKVStore sharedInstance] boolForKey:kStopped];
+    BOOL stopped = [[RadarKVStore sharedInstance] boolForKey:kStopped];
+    if ([RadarSettings useRadarKVStore]) {
+        return stopped;
+    }
+    BOOL NSUserDefaultRes = [[NSUserDefaults standardUserDefaults] boolForKey:kStopped];
+    if (stopped != NSUserDefaultRes) {
+        [[RadarLogBuffer sharedInstance] write:RadarLogLevelError type:RadarLogTypeSDKError message:@"RadarState: stopped mismatch."];
+    }
+    return NSUserDefaultRes;
 }
 
 + (void)setStopped:(BOOL)stopped {
     [[RadarKVStore sharedInstance] setBool:stopped forKey:kStopped];
+    if (![RadarSettings useRadarKVStore]) {
+        [[NSUserDefaults standardUserDefaults] setBool:stopped forKey:kStopped];
+    }
 }
 
 + (void)updateLastSentAt {
     NSDate *now = [NSDate new];
     [[RadarKVStore sharedInstance] setObject:now forKey:kLastSentAt];
+    if (![RadarSettings useRadarKVStore]) {
+        [[NSUserDefaults standardUserDefaults] setObject:now forKey:kLastSentAt];
+    }
 }
 
 + (NSDate *)lastSentAt {
     NSObject *lastSentAt = [[RadarKVStore sharedInstance] objectForKey:kLastSentAt];
-    if (!lastSentAt || ![lastSentAt isKindOfClass:[NSDate class]]) {
-        return nil;
+    NSDate *lastSentAtDate = nil;
+    if (lastSentAt  && [lastSentAt isKindOfClass:[NSDate class]]) {
+        lastSentAtDate = (NSDate *)lastSentAt;
     }
-    return (NSDate *)lastSentAt;
+    if ([RadarSettings useRadarKVStore]) {
+        return lastSentAtDate;
+    }
+    NSDate *NSUserDefaultRes = [[NSUserDefaults standardUserDefaults] objectForKey:kLastSentAt];
+    if ((lastSentAtDate && ![lastSentAtDate isEqual:NSUserDefaultRes]) || (NSUserDefaultRes && ![NSUserDefaultRes isEqual:lastSentAtDate])) {
+        [[RadarLogBuffer sharedInstance] write:RadarLogLevelError type:RadarLogTypeSDKError message:@"RadarState: lastSentAt mismatch."];
+    }
+
+    return NSUserDefaultRes;
 }
 
 + (BOOL)canExit {
-    return [[RadarKVStore sharedInstance] boolForKey:kCanExit];
+    BOOL canExit = [[RadarKVStore sharedInstance] boolForKey:kCanExit];
+    if ([RadarSettings useRadarKVStore]) {
+        return canExit;
+    }
+    BOOL NSUserDefaultRes = [[NSUserDefaults standardUserDefaults] boolForKey:kCanExit];
+    if (canExit != NSUserDefaultRes) {
+        [[RadarLogBuffer sharedInstance] write:RadarLogLevelError type:RadarLogTypeSDKError message:@"RadarState: canExit mismatch."];
+    }
+    return NSUserDefaultRes;
 }
 
 + (void)setCanExit:(BOOL)canExit {
     [[RadarKVStore sharedInstance] setBool:canExit forKey:kCanExit];
+    if (![RadarSettings useRadarKVStore]) {
+        [[NSUserDefaults standardUserDefaults] setBool:canExit forKey:kCanExit];
+    }
 }
 
 + (CLLocation *)lastFailedStoppedLocation {
-    NSObject *lastFailedStoppedLocationObject = [[RadarKVStore sharedInstance] objectForKey:kLastFailedStoppedLocation];
-    if (!lastFailedStoppedLocationObject || ![lastFailedStoppedLocationObject isKindOfClass:[CLLocation class]]) {
-        return nil;
-    }
-    CLLocation *lastFailedStoppedLocation = (CLLocation *)lastFailedStoppedLocationObject;
-    if (!lastFailedStoppedLocation.isValid) {
-        return nil;
-    }
-    return lastFailedStoppedLocation;
+    return [self getCLLocation:kLastFailedStoppedLocation errorMessage:@"RadarState: lastFailedStoppedLocation mismatch."];
 }
 
 + (void)setLastFailedStoppedLocation:(CLLocation *)lastFailedStoppedLocation {
     if (!lastFailedStoppedLocation.isValid) {
         [[RadarKVStore sharedInstance] setObject:nil forKey:kLastFailedStoppedLocation];
-
+        if (![RadarSettings useRadarKVStore]) {
+            [[NSUserDefaults standardUserDefaults] setObject:nil forKey:kLastFailedStoppedLocation];
+        }
         return;
     }
     [[RadarKVStore sharedInstance] setObject:lastFailedStoppedLocation forKey:kLastFailedStoppedLocation];
+    if (![RadarSettings useRadarKVStore]) {
+        [[NSUserDefaults standardUserDefaults] setObject:[RadarUtils dictionaryForLocation:lastFailedStoppedLocation] forKey:kLastFailedStoppedLocation];
+    }
+}
+
++ (NSArray<NSString *> *)getStringarray:(NSString*)key errorMessage:(NSString*)errorMessage {
+    NSObject *RadarKVStoreObj = [[RadarKVStore sharedInstance] objectForKey:key];
+    NSArray<NSString *> *RadarKVStoreRes = nil;
+    if (RadarKVStoreObj && [RadarKVStoreObj isKindOfClass:[NSArray class]]) {
+        RadarKVStoreRes = (NSArray<NSString *> *)RadarKVStoreObj;
+    }
+
+    if ([RadarSettings useRadarKVStore]) {
+        return RadarKVStoreRes;
+    }
+
+    NSArray<NSString *> *NSUserDefaultRes = [[NSUserDefaults standardUserDefaults] objectForKey:key];
+
+    if ((NSUserDefaultRes && ![NSUserDefaultRes isEqual:RadarKVStoreRes]) || (RadarKVStoreRes && ![RadarKVStoreRes isEqual:NSUserDefaultRes])) {
+        [[RadarLogBuffer sharedInstance] write:RadarLogLevelError type:RadarLogTypeSDKError message:errorMessage];
+    }
+
+    return NSUserDefaultRes; 
 }
 
 + (NSArray<NSString *> *)geofenceIds {
-    NSObject *geofenceIds = [[RadarKVStore sharedInstance] objectForKey:kGeofenceIds];
-    if (!geofenceIds || ![geofenceIds isKindOfClass:[NSArray class]]) {
-        return nil;
-    }
-    return (NSArray<NSString *> *)geofenceIds;
+    return [self getStringarray:kGeofenceIds errorMessage:@"RadarState: geofenceIds mismatch."];
 }
 
 + (void)setGeofenceIds:(NSArray<NSString *> *)geofenceIds {
     [[RadarKVStore sharedInstance] setObject:geofenceIds forKey:kGeofenceIds];
+    if (![RadarSettings useRadarKVStore]) {
+        [[NSUserDefaults standardUserDefaults] setObject:geofenceIds forKey:kGeofenceIds];
+    }
 }
 
 + (NSString *)placeId {
     NSObject *placeId = [[RadarKVStore sharedInstance] objectForKey:kPlaceId];
-    if (!placeId || ![placeId isKindOfClass:[NSString class]]) {
-        return nil;
+    NSString *placeIdString = nil;
+    if (placeId && [placeId isKindOfClass:[NSString class]]) {
+        placeIdString = (NSString *)placeId;
     }
-    return (NSString *)placeId;
+    if ([RadarSettings useRadarKVStore]) {
+        return placeIdString;
+    }
+    NSString *NSUserDefaultRes = [[NSUserDefaults standardUserDefaults] stringForKey:kPlaceId];
+    if ((placeIdString && ![placeIdString isEqual:NSUserDefaultRes]) || (NSUserDefaultRes && ![NSUserDefaultRes isEqual:placeIdString])) {
+        [[RadarLogBuffer sharedInstance] write:RadarLogLevelError type:RadarLogTypeSDKError message:@"RadarState: placeId mismatch."];
+    }
+    return NSUserDefaultRes;
 }
 
 + (void)setPlaceId:(NSString *)placeId {
     [[RadarKVStore sharedInstance] setObject:placeId forKey:kPlaceId];
+    if (![RadarSettings useRadarKVStore]) {
+        [[NSUserDefaults standardUserDefaults] setObject:placeId forKey:kPlaceId];
+    }
 }
 
 + (NSArray<NSString *> *)regionIds {
-    NSObject *regionIds = [[RadarKVStore sharedInstance] objectForKey:kRegionIds];
-    if (!regionIds || ![regionIds isKindOfClass:[NSArray class]]) {
-        return nil;
-    }
-    return (NSArray<NSString *> *)regionIds;
+    return [self getStringarray:kRegionIds errorMessage:@"RadarState: regionIds mismatch."];
 }
 
 + (void)setRegionIds:(NSArray<NSString *> *)regionIds {
     [[RadarKVStore sharedInstance] setObject:regionIds forKey:kRegionIds];
+    if (![RadarSettings useRadarKVStore]) {
+        [[NSUserDefaults standardUserDefaults] setObject:regionIds forKey:kRegionIds];
+    }
 }
 
 + (NSArray<NSString *> *)beaconIds {
-    NSObject *beaconIds = [[RadarKVStore sharedInstance] objectForKey:kBeaconIds];
-    if (!beaconIds || ![beaconIds isKindOfClass:[NSArray class]]) {
-        return nil;
-    }
-    return (NSArray<NSString *> *)beaconIds;
+    return [self getStringarray:kBeaconIds errorMessage:@"RadarState: beaconIds mismatch."];
 }
 
 + (void)setBeaconIds:(NSArray<NSString *> *)beaconIds {
     [[RadarKVStore sharedInstance] setObject:beaconIds forKey:kBeaconIds];
+    if (![RadarSettings useRadarKVStore]) {
+        [[NSUserDefaults standardUserDefaults] setObject:beaconIds forKey:kBeaconIds];
+    }
 }
 
 @end

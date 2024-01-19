@@ -60,7 +60,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)updateLastAppOpenTime;
 + (NSDate *)lastAppOpenTime;
 + (void)migrateToRadarKVStore;
-
++ (BOOL)useRadarKVStore;
 @end
 
 NS_ASSUME_NONNULL_END
