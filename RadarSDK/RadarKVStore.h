@@ -82,11 +82,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (CLLocation *)doubleWriteCLLocationGetter:(NSString *)key;
 
-- (void)doubleWriteCLLocationSetter:(NSString *)key value:(CLLocation *)value;
+- (void)doubleWriteCLLocationSetter:(NSString *)key value:(CLLocation *_Nullable)value;
 
 - (RadarTrackingOptions *)doubleWriteRadarTrackingOptionGetter:(NSString *)key;
 
-- (void)doubleWriteRadarTrackingOptionSetter:(NSString *)key value:(RadarTrackingOptions *)value;
+- (void)doubleWriteRadarTrackingOptionSetter:(NSString *)key value:(RadarTrackingOptions *_Nullable)value;
 
 @end
 

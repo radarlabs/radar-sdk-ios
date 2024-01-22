@@ -341,7 +341,7 @@ static NSString *const kDirName = @"radar-KVStore";
     return NSUserDefaultRes; 
 }
 
-- (void)doubleWriteCLLocationSetter:(NSString *)key value:(CLLocation *)value {
+- (void)doubleWriteCLLocationSetter:(NSString *)key value:(CLLocation *_Nullable)value {
     [self setObject:value forKey:key];
     if (![RadarSettings useRadarKVStore]) {
         [[NSUserDefaults standardUserDefaults] setObject:[RadarUtils dictionaryForLocation:value] forKey:key];
@@ -373,7 +373,7 @@ static NSString *const kDirName = @"radar-KVStore";
     return userDefaultsRes;
 }
 
-- (void)doubleWriteRadarTrackingOptionSetter:(NSString *)key value:(RadarTrackingOptions *)value {
+- (void)doubleWriteRadarTrackingOptionSetter:(NSString *)key value:(RadarTrackingOptions *_Nullable)value {
     [self setObject:value forKey:key];
     if (![RadarSettings useRadarKVStore]) {
         if (!value) {
