@@ -683,12 +683,15 @@ static NSString *const kReplayBuffer = @"radar-replays";
 - (void)test_RadarSettings_host {
     // reads with NSUserDefaults
     NSString *const dummyHost = @"dummyHost";
+    XCTAssertEqualObjects(@"https://api.radar.io", [RadarSettings host]);
     [[NSUserDefaults standardUserDefaults] setObject:dummyHost forKey:kHost];
     [[RadarKVStore sharedInstance] setObject:dummyHost forKey:kHost];
     XCTAssertEqualObjects(dummyHost, [RadarSettings host]);
     // read and writes with RadarKVStore
     [RadarSettings setFeatureSettings :[[RadarFeatureSettings alloc] initWithUsePersistence:NO extendFlushReplays:NO useLogPersistence:NO useRadarKVStore:YES]];
     XCTAssertEqualObjects(dummyHost, [RadarSettings host]);
+    [[RadarKVStore sharedInstance] removeObjectForKey:kHost];
+    XCTAssertEqualObjects(@"https://api.radar.io", [RadarSettings host]);
     // ensure that no logs are created by the discrepency
     XCTAssertEqual(0, [[RadarLogBuffer sharedInstance] flushableLogs].count);
     // check that discrepency will not trigger logging
@@ -735,11 +738,14 @@ static NSString *const kReplayBuffer = @"radar-replays";
 
 - (void)test_RadarSettings_userDebug {
     //reads and writes with NSUserDefaults
+    XCTAssertTrue([RadarSettings userDebug]);
     BOOL dummyUserDebug = YES;
     [RadarSettings setUserDebug:dummyUserDebug];
     XCTAssertEqual(dummyUserDebug, [RadarSettings userDebug]);
     // read and writes with RadarKVStore
     [RadarSettings setFeatureSettings :[[RadarFeatureSettings alloc] initWithUsePersistence:NO extendFlushReplays:NO useLogPersistence:NO useRadarKVStore:YES]];
+    [[RadarKVStore sharedInstance] removeObjectForKey:kUserDebug];
+    XCTAssertTrue([RadarSettings userDebug]);
     BOOL dummyUserDebug2 = NO;
     [RadarSettings setUserDebug:dummyUserDebug2];
     XCTAssertEqual(dummyUserDebug2, [RadarSettings userDebug]);

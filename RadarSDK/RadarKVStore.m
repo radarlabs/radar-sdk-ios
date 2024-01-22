@@ -10,6 +10,12 @@
 #import "RadarKVStore.h"
 #import "RadarFileStorage.h"
 #import "RadarLogger.h"
+#import "RadarSettings.h"
+#import "RadarLogBuffer.h"
+#import "CLLocation+Radar.h"
+#import "RadarUtils.h"
+#import "RadarTrackingOptions.h"
+#import "Radar+Internal.h"
 
 @implementation RadarKVStore 
 
@@ -172,6 +178,211 @@ static NSString *const kDirName = @"radar-KVStore";
 
 - (BOOL)keyExists:(NSString *)key {
     return [[NSFileManager defaultManager] fileExistsAtPath:[self getSettingFilePath:key]];
+}
+
+- (NSString *)doubleWriteStringGetter:(NSString *)key {
+    NSString *radarKVStoreRes = [self stringForKey:key];
+    if ([RadarSettings useRadarKVStore]) {
+        return radarKVStoreRes;
+    }
+    NSString *userDefaultsRes = [[NSUserDefaults standardUserDefaults] stringForKey:key];
+    if ((radarKVStoreRes && ![radarKVStoreRes isEqualToString:userDefaultsRes]) || (userDefaultsRes && ![userDefaultsRes isEqualToString:radarKVStoreRes])) {
+        [[RadarLogBuffer sharedInstance] write:RadarLogLevelError type:RadarLogTypeSDKError message:[NSString stringWithFormat:@"Discrepencey with NSUserDefault %@ mismatch.", key]];
+    }
+    return userDefaultsRes;
+}
+
+- (void)doubleWriteStringSetter:(NSString *)key value:(NSString *)value {
+    [self setObject:value forKey:key];
+    if (![RadarSettings useRadarKVStore]) {
+        [[NSUserDefaults standardUserDefaults] setObject:value forKey:key];
+    }
+}
+
+- (double)doubleWriteDoubleGetter:(NSString *)key {
+    double radarKVStoreRes = [self doubleForKey:key];
+    if ([RadarSettings useRadarKVStore]) {
+        return radarKVStoreRes;
+    }
+    double userDefaultsRes = [[NSUserDefaults standardUserDefaults] doubleForKey:key];
+    if (radarKVStoreRes != userDefaultsRes) {
+        [[RadarLogBuffer sharedInstance] write:RadarLogLevelError type:RadarLogTypeSDKError message:[NSString stringWithFormat:@"Discrepencey with NSUserDefault %@ mismatch.", key]];
+    }
+    return userDefaultsRes;
+}
+
+- (void)doubleWriteDoubleSetter:(NSString *)key value:(double)value {
+    [self setDouble:value forKey:key];
+    if (![RadarSettings useRadarKVStore]) {
+        [[NSUserDefaults standardUserDefaults] setDouble:value forKey:key];
+    }
+}
+
+- (BOOL)doubleWriteBOOLGetter:(NSString *)key {
+    BOOL radarKVStoreRes = [self boolForKey:key];
+    if ([RadarSettings useRadarKVStore]) {
+        return radarKVStoreRes;
+    }
+    BOOL userDefaultsRes = [[NSUserDefaults standardUserDefaults] boolForKey:key];
+    if (radarKVStoreRes != userDefaultsRes) {
+        [[RadarLogBuffer sharedInstance] write:RadarLogLevelError type:RadarLogTypeSDKError message:[NSString stringWithFormat:@"Discrepencey with NSUserDefault %@ mismatch.", key]];
+    }
+    return userDefaultsRes;
+}
+
+- (void)doubleWriteBOOLSetter:(NSString *)key value:(BOOL)value {
+    [self setBool:value forKey:key];
+    if (![RadarSettings useRadarKVStore]) {
+        [[NSUserDefaults standardUserDefaults] setBool:value forKey:key];
+    }
+}
+
+- (NSDate *)doubleWriteDateGetter:(NSString *)key {
+    NSObject *radarKVStoreObj = [self objectForKey:key];
+    NSDate *radarKVStoreRes = nil;
+    if (radarKVStoreObj && [radarKVStoreObj isKindOfClass:[NSDate class]]) {
+        radarKVStoreRes = (NSDate *)radarKVStoreObj;
+    }
+    if ([RadarSettings useRadarKVStore]) {
+        return radarKVStoreRes;
+    }
+    NSDate *userDefaultsRes = [[NSUserDefaults standardUserDefaults] objectForKey:key];
+    if ((radarKVStoreRes && ![radarKVStoreRes isEqual:userDefaultsRes]) || (userDefaultsRes && ![userDefaultsRes isEqual:radarKVStoreRes])) {
+        [[RadarLogBuffer sharedInstance] write:RadarLogLevelError type:RadarLogTypeSDKError message:[NSString stringWithFormat:@"Discrepencey with NSUserDefault %@ mismatch.", key]];
+    }
+    return userDefaultsRes;
+}
+
+- (void)doubleWriteDateSetter:(NSString *)key value:(NSDate *)value {
+    [self setObject:value forKey:key];
+    if (![RadarSettings useRadarKVStore]) {
+        [[NSUserDefaults standardUserDefaults] setObject:value forKey:key];
+    }
+}
+
+- (NSArray<NSString *> *_Nullable)doubleWriteStringArrayGetter:(NSString *)key {
+    NSObject *radarKVStoreObj = [self objectForKey:key];
+    NSArray<NSString *> *radarKVStoreRes = nil;
+    if (radarKVStoreObj && [radarKVStoreObj isKindOfClass:[NSArray class]]) {
+        radarKVStoreRes = (NSArray<NSString *> *)radarKVStoreObj;
+    }
+    if ([RadarSettings useRadarKVStore]) {
+        return radarKVStoreRes;
+    }
+    NSArray<NSString *> *userDefaultsRes = [[NSUserDefaults standardUserDefaults] valueForKey:key];
+    if ((radarKVStoreRes && ![radarKVStoreRes isEqual:userDefaultsRes]) || (userDefaultsRes && ![userDefaultsRes isEqual:radarKVStoreRes])) {
+        [[RadarLogBuffer sharedInstance] write:RadarLogLevelError type:RadarLogTypeSDKError message:[NSString stringWithFormat:@"Discrepencey with NSUserDefault %@ mismatch.", key]];
+    }
+    return userDefaultsRes;
+}
+
+- (void)doubleWriteStringArraySetter:(NSString *)key value:(NSArray<NSString *> *)value {
+    [self setObject:value forKey:key];
+    if (![RadarSettings useRadarKVStore]) {
+        [[NSUserDefaults standardUserDefaults] setObject:value forKey:key];
+    }
+}
+
+- (NSInteger)doubleWriteIntegerGetter:(NSString *)key {
+    NSInteger radarKVStoreRes = [self integerForKey:key];
+    if ([RadarSettings useRadarKVStore]) {
+        return radarKVStoreRes;
+    }
+    NSInteger userDefaultsRes = [[NSUserDefaults standardUserDefaults] integerForKey:key];
+    if (radarKVStoreRes != userDefaultsRes) {
+        [[RadarLogBuffer sharedInstance] write:RadarLogLevelError type:RadarLogTypeSDKError message:[NSString stringWithFormat:@"Discrepencey with NSUserDefault %@ mismatch.", key]];
+    }
+    return userDefaultsRes;
+}
+
+- (void)doubleWriteIntegerSetter:(NSString *)key value:(NSInteger)value {
+    [self setInteger:value forKey:key];
+    if (![RadarSettings useRadarKVStore]) {
+        [[NSUserDefaults standardUserDefaults] setInteger:value forKey:key];
+    }
+}
+
+- (BOOL)doubleWriteKeyExists:(NSString *)key {
+    BOOL radarKVStoreRes = [self keyExists:key];
+    if ([RadarSettings useRadarKVStore]) {
+        return radarKVStoreRes;
+    }
+    BOOL userDefaultsRes = [[NSUserDefaults standardUserDefaults] objectForKey:key] != nil;
+    if (radarKVStoreRes != userDefaultsRes) {
+        [[RadarLogBuffer sharedInstance] write:RadarLogLevelError type:RadarLogTypeSDKError message:[NSString stringWithFormat:@"Discrepencey with NSUserDefault %@ mismatch.", key]];
+    }
+    return userDefaultsRes;
+}
+
+
+- (CLLocation *)doubleWriteCLLocationGetter:(NSString *)key {
+    NSObject *RadarKVStoreObj = [self objectForKey:key];
+    CLLocation *RadarKVStoreRes = nil;
+    if (RadarKVStoreObj && [RadarKVStoreObj isKindOfClass:[CLLocation class]]) {
+        RadarKVStoreRes = (CLLocation *)RadarKVStoreObj;
+        if (!RadarKVStoreRes.isValid) {
+            RadarKVStoreRes = nil;
+        }
+    }
+
+    if ([RadarSettings useRadarKVStore]) {
+        return RadarKVStoreRes;
+    }
+
+    NSDictionary *dict = [[NSUserDefaults standardUserDefaults] dictionaryForKey:key];
+    CLLocation *NSUserDefaultRes = [RadarUtils locationForDictionary:dict];
+    if (!NSUserDefaultRes.isValid) {
+        NSUserDefaultRes = nil;
+    }
+
+    if (![RadarUtils compareCLLocation:RadarKVStoreRes with:NSUserDefaultRes]) {
+        [[RadarLogBuffer sharedInstance] write:RadarLogLevelError type:RadarLogTypeSDKError message:[NSString stringWithFormat:@"Discrepencey with NSUserDefault %@ mismatch.", key]];
+    }
+    return NSUserDefaultRes; 
+}
+
+- (void)doubleWriteCLLocationSetter:(NSString *)key value:(CLLocation *)value {
+    [self setObject:value forKey:key];
+    if (![RadarSettings useRadarKVStore]) {
+        [[NSUserDefaults standardUserDefaults] setObject:[RadarUtils dictionaryForLocation:value] forKey:key];
+    }
+}
+
+- (RadarTrackingOptions *)radarTrackingOptionDecoder:(NSString *)key {
+    NSObject *trackingOptions = [self objectForKey:key];
+    if (trackingOptions && [trackingOptions isKindOfClass:[RadarTrackingOptions class]]) {
+        return (RadarTrackingOptions *)trackingOptions;
+    } else {
+        return nil;
+    }
+}
+
+- (RadarTrackingOptions *)doubleWriteRadarTrackingOptionGetter:(NSString *)key {
+    RadarTrackingOptions *radarKVStoreRes = [self radarTrackingOptionDecoder:key];
+    if ([RadarSettings useRadarKVStore]) {
+        return radarKVStoreRes;
+    }
+    NSDictionary *optionsDict = [[NSUserDefaults standardUserDefaults] dictionaryForKey:key];
+    RadarTrackingOptions *userDefaultsRes = nil;
+    if (optionsDict != nil) {
+        userDefaultsRes = [RadarTrackingOptions trackingOptionsFromDictionary:optionsDict];
+    }
+    if ((userDefaultsRes && ![userDefaultsRes isEqual:radarKVStoreRes]) || (radarKVStoreRes && ![radarKVStoreRes isEqual:userDefaultsRes])) {
+        [[RadarLogBuffer sharedInstance] write:RadarLogLevelError type:RadarLogTypeSDKError message:[NSString stringWithFormat:@"RadarSettings: %@ mismatch.", key]];
+    }
+    return userDefaultsRes;
+}
+
+- (void)doubleWriteRadarTrackingOptionSetter:(NSString *)key value:(RadarTrackingOptions *)value {
+    [self setObject:value forKey:key];
+    if (![RadarSettings useRadarKVStore]) {
+        if (!value) {
+            [[NSUserDefaults standardUserDefaults] removeObjectForKey:key];
+            return;
+        }
+        NSDictionary *optionsDict = [value dictionaryValue];
+        [[NSUserDefaults standardUserDefaults] setObject:optionsDict forKey:key];
+    }
 }
 
 @end

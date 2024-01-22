@@ -7,8 +7,10 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <CoreLocation/CoreLocation.h>
 #import "RadarLog.h"
 #import "RadarFileStorage.h"
+#import "RadarTrackingOptions.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -51,6 +53,40 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)removeAllObjects;
 
 - (BOOL)keyExists:(NSString *)key;
+
+- (NSString *)doubleWriteStringGetter:(NSString *)key;
+
+- (void)doubleWriteStringSetter:(NSString *)key value:(NSString *)value;
+
+- (double)doubleWriteDoubleGetter:(NSString *)key;
+
+- (void)doubleWriteDoubleSetter:(NSString *)key value:(double)value;
+
+- (BOOL)doubleWriteBOOLGetter:(NSString *)key;
+
+- (void)doubleWriteBOOLSetter:(NSString *)key value:(BOOL)value;
+
+- (NSDate *)doubleWriteDateGetter:(NSString *)key;
+
+- (void)doubleWriteDateSetter:(NSString *)key value:(NSDate *)value;
+
+- (NSArray<NSString *> *_Nullable)doubleWriteStringArrayGetter:(NSString *)key;
+
+- (void)doubleWriteStringArraySetter:(NSString *)key value:(NSArray<NSString *> *)value;
+
+- (NSInteger)doubleWriteIntegerGetter:(NSString *)key;
+
+- (void)doubleWriteIntegerSetter:(NSString *)key value:(NSInteger)value;
+
+- (BOOL)doubleWriteKeyExists:(NSString *)key;
+
+- (CLLocation *)doubleWriteCLLocationGetter:(NSString *)key;
+
+- (void)doubleWriteCLLocationSetter:(NSString *)key value:(CLLocation *)value;
+
+- (RadarTrackingOptions *)doubleWriteRadarTrackingOptionGetter:(NSString *)key;
+
+- (void)doubleWriteRadarTrackingOptionSetter:(NSString *)key value:(RadarTrackingOptions *)value;
 
 @end
 
