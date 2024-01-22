@@ -72,7 +72,7 @@ static NSString *const kDirName = @"radar-KVStore";
     [self.fileHandler writeData:[NSData dataWithBytes:&value length:sizeof(value)] toFileAtPath:[self getSettingFilePath:key]];
 }
 
-- (nullable NSString *)stringForKey:(NSString *)key {
+- (NSString *_Nullable)stringForKey:(NSString *)key {
     NSData *data = [self.fileHandler readFileAtPath: [self getSettingFilePath:key]];
     if (!data) {
         return nil;
@@ -85,7 +85,7 @@ static NSString *const kDirName = @"radar-KVStore";
     return value;
 }
 
-- (void)setString:(nullable NSString *)value forKey:(NSString *)key {
+- (void)setString:(NSString *_Nullable)value forKey:(NSString *)key {
     if (!value) {
         [self.fileHandler deleteFileAtPath:[self getSettingFilePath:key]];
         return;
@@ -93,7 +93,7 @@ static NSString *const kDirName = @"radar-KVStore";
     [self.fileHandler writeData:[value dataUsingEncoding:NSUTF8StringEncoding] toFileAtPath:[self getSettingFilePath:key]];
 }
 
-- (nullable NSDictionary *)dictionaryForKey:(NSString *)key {
+- (NSDictionary *_Nullable)dictionaryForKey:(NSString *)key {
     NSData *data = [self.fileHandler readFileAtPath: [self getSettingFilePath:key]];
     if (!data) {
         return nil;
@@ -106,7 +106,7 @@ static NSString *const kDirName = @"radar-KVStore";
     return value;
 }
 
-- (void)setDictionary:(nullable NSDictionary *)value forKey:(NSString *)key {
+- (void)setDictionary:(NSDictionary *_Nullable)value forKey:(NSString *)key {
     if (!value) {
         [self.fileHandler deleteFileAtPath:[self getSettingFilePath:key]];
         return;
@@ -133,7 +133,7 @@ static NSString *const kDirName = @"radar-KVStore";
     [self.fileHandler writeData:[NSData dataWithBytes:&value length:sizeof(value)] toFileAtPath:[self getSettingFilePath:key]];
 }
 
-- (nullable NSObject *)objectForKey:(NSString *)key {
+- (NSObject *_Nullable)objectForKey:(NSString *)key {
     NSData *data = [self.fileHandler readFileAtPath: [self getSettingFilePath:key]];
     if (!data) {
         return nil;
@@ -142,7 +142,7 @@ static NSString *const kDirName = @"radar-KVStore";
     return value;
 }
 
-- (void)setObject:(nullable NSObject *)value forKey:(NSString *)key {
+- (void)setObject:(NSObject *_Nullable)value forKey:(NSString *)key {
     if (!value) {
         [self.fileHandler deleteFileAtPath:[self getSettingFilePath:key]];
         return;
