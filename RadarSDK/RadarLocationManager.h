@@ -27,8 +27,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)startTrackingWithOptions:(RadarTrackingOptions *)trackingOptions;
 - (void)stopTracking;
 - (void)replaceSyncedGeofences:(NSArray<RadarGeofence *> *)geofences;
-- (void)replaceSyncedBeacons:(NSArray<RadarBeacon *> *)beacons;
-- (void)replaceSyncedBeaconUUIDs:(NSArray<NSString *> *)uuids;
 - (void)updateTracking;
 - (void)updateTrackingFromMeta:(RadarMeta *_Nullable)meta;
 - (void)updateTrackingFromInitialize;
