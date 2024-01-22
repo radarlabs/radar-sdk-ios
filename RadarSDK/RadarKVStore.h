@@ -11,6 +11,7 @@
 #import "RadarLog.h"
 #import "RadarFileStorage.h"
 #import "RadarTrackingOptions.h"
+#import "RadarTripOptions.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -88,6 +89,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)doubleWriteRadarTrackingOptionSetter:(NSString *)key value:(RadarTrackingOptions *_Nullable)value;
 
+- (RadarTripOptions *)doubleWriteRadarTripOptionsGetter:(NSString *)key;
+
+- (void)doubleWriteRadarTripOptionsSetter:(NSString *)key value:(RadarTripOptions *_Nullable)value;
 @end
 
 NS_ASSUME_NONNULL_END

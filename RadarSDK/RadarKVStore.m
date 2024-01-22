@@ -15,7 +15,7 @@
 #import "CLLocation+Radar.h"
 #import "RadarUtils.h"
 #import "RadarTrackingOptions.h"
-#import "Radar+Internal.h"
+#import "RadarTripOptions.h"
 
 @implementation RadarKVStore 
 
@@ -374,6 +374,40 @@ static NSString *const kDirName = @"radar-KVStore";
 }
 
 - (void)doubleWriteRadarTrackingOptionSetter:(NSString *)key value:(RadarTrackingOptions *_Nullable)value {
+    [self setObject:value forKey:key];
+    if (![RadarSettings useRadarKVStore]) {
+        if (!value) {
+            [[NSUserDefaults standardUserDefaults] removeObjectForKey:key];
+            return;
+        }
+        NSDictionary *optionsDict = [value dictionaryValue];
+        [[NSUserDefaults standardUserDefaults] setObject:optionsDict forKey:key];
+    }
+}
+
+- (RadarTripOptions *)doubleWriteRadarTripOptionsGetter:(NSString *)key {
+    NSObject *options = [[RadarKVStore sharedInstance] objectForKey:key];
+    RadarTripOptions *radarKVStoreRes = nil;
+    if (options && [options isKindOfClass:[RadarTripOptions class]]) {
+        radarKVStoreRes = (RadarTripOptions *)options;
+    } 
+    
+    if ([RadarSettings useRadarKVStore]) {
+        return radarKVStoreRes;
+    }
+    NSDictionary *optionsDict = [[NSUserDefaults standardUserDefaults] dictionaryForKey:key];
+    RadarTripOptions *nsUserDefaultsRes = nil;
+    if (optionsDict != nil) {
+        nsUserDefaultsRes = [RadarTripOptions tripOptionsFromDictionary:optionsDict];
+    }
+
+    if ((nsUserDefaultsRes && ![nsUserDefaultsRes isEqual:radarKVStoreRes]) || (radarKVStoreRes && ![radarKVStoreRes isEqual:nsUserDefaultsRes])) {
+        [[RadarLogBuffer sharedInstance] write:RadarLogLevelError type:RadarLogTypeSDKError message:@"RadarSettings: tripOptions mismatch."];
+    }
+    return nsUserDefaultsRes;   
+}
+
+- (void)doubleWriteRadarTripOptionsSetter:(NSString *)key value:(RadarTripOptions *_Nullable)value {
     [self setObject:value forKey:key];
     if (![RadarSettings useRadarKVStore]) {
         if (!value) {

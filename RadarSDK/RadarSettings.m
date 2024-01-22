@@ -311,42 +311,11 @@ static NSString *const kUserDebug = @"radar-userDebug";
 }
 
 + (RadarTripOptions *)tripOptions {
-    RadarTripOptions *radarKVStoreRes = [self tripOptionsWithRadarKVStore];
-    if ([self useRadarKVStore]) {
-        return radarKVStoreRes;
-    }
-    NSDictionary *optionsDict = [[NSUserDefaults standardUserDefaults] dictionaryForKey:kTripOptions];
-    RadarTripOptions *nsUserDefaultsRes = nil;
-    if (optionsDict != nil) {
-        nsUserDefaultsRes = [RadarTripOptions tripOptionsFromDictionary:optionsDict];
-    }
-
-    if ((nsUserDefaultsRes && ![nsUserDefaultsRes isEqual:radarKVStoreRes]) || (radarKVStoreRes && ![radarKVStoreRes isEqual:nsUserDefaultsRes])) {
-        [[RadarLogBuffer sharedInstance] write:RadarLogLevelError type:RadarLogTypeSDKError message:@"RadarSettings: tripOptions mismatch."];
-    }
-    return nsUserDefaultsRes;   
-}
-
-+ (RadarTripOptions *)tripOptionsWithRadarKVStore {
-    NSObject *options = [[RadarKVStore sharedInstance] objectForKey:kTripOptions];
-    if (options && [options isKindOfClass:[RadarTripOptions class]]) {
-        return (RadarTripOptions *)options;
-    } else {
-        return nil;
-    }
+   return [[RadarKVStore sharedInstance] doubleWriteRadarTripOptionsGetter:kTripOptions];
 }
 
 + (void)setTripOptions:(RadarTripOptions *)options {
-    [self setTripOptionsWithRadarKVStore:options];
-    if (![self useRadarKVStore]) {
-        if (options) {
-            NSDictionary *optionsDict = [options dictionaryValue];
-            [[NSUserDefaults standardUserDefaults] setObject:optionsDict forKey:kTripOptions];
-        } else {
-            [[NSUserDefaults standardUserDefaults] removeObjectForKey:kTripOptions];
-        }
-    }
-    
+    [[RadarKVStore sharedInstance] doubleWriteRadarTripOptionsSetter:kTripOptions value:options];
 }
 
 + (void)setTripOptionsWithRadarKVStore:(RadarTripOptions *)options {
