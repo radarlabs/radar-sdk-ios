@@ -419,11 +419,12 @@ static NSString *const kReplayBuffer = @"radar-replays";
     [[NSUserDefaults standardUserDefaults] setObject:@"1234" forKey:kUserId];
     [RadarSettings userId];
     [RadarSettings setUserId:dummyUserId];
+    XCTAssertEqual(2, [[RadarLogBuffer sharedInstance] flushableLogs].count);
     [[NSUserDefaults standardUserDefaults] setObject:@"1234" forKey:kUserId];
     [RadarSettings userId];
     [[NSUserDefaults standardUserDefaults] removeObjectForKey:kUserId];
     [RadarSettings userId];
-    XCTAssertEqual(3, [[RadarLogBuffer sharedInstance] flushableLogs].count);
+    XCTAssertEqual(2, [[RadarLogBuffer sharedInstance] flushableLogs].count);
 }
 
 - (void) test_RadarSettings_description {
@@ -632,6 +633,7 @@ static NSString *const kReplayBuffer = @"radar-replays";
 }
 
 - (void)test_RadarSetting_logLevel {
+    [RadarSettings setUserDebug:NO];
     // reads and writes with NSUserDefaults
     RadarLogLevel dummyLogLevel = RadarLogLevelDebug;
     [RadarSettings setLogLevel:dummyLogLevel];
