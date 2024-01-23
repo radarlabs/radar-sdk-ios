@@ -187,7 +187,7 @@ static NSString *const kDirName = @"radar-KVStore";
     }
     NSString *nsUserDefaultsRes = [[NSUserDefaults standardUserDefaults] stringForKey:key];
     if ((radarKVStoreRes && ![radarKVStoreRes isEqualToString:nsUserDefaultsRes]) || (nsUserDefaultsRes && ![nsUserDefaultsRes isEqualToString:radarKVStoreRes])) {
-        [[RadarLogBuffer sharedInstance] write:RadarLogLevelError type:RadarLogTypeSDKError message:[NSString stringWithFormat:@"Discrepencey with NSUserDefault %@ mismatch.", key]];
+        [[RadarLogBuffer sharedInstance] write:RadarLogLevelError type:RadarLogTypeSDKError message:[NSString stringWithFormat:@"Discrepencey with NSUserDefault %@ mismatch. NSUserDefault is %@ and radarKVS is %@", key, nsUserDefaultsRes, radarKVStoreRes]];,
     }
     return nsUserDefaultsRes;
 }
