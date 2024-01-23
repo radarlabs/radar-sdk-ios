@@ -13,6 +13,8 @@
 
 @implementation RadarNotificationHelper
 
+static NSString *const kEventNotificationIdentifierPrefix = @"radar_event_notification_";
+
 + (void)showNotificationsForEvents:(NSArray<RadarEvent *> *)events {
     if (!events || !events.count) {
         return;
@@ -43,7 +45,7 @@
         }
         
         if (notificationText) {
-            NSString *identifier = event._id;
+            NSString *identifier = [NSString stringWithFormat:@"%@%@", kEventNotificationIdentifierPrefix, event._id];
             NSString *categoryIdentifier = [RadarEvent stringForType:event.type];
             
             UNMutableNotificationContent *content = [UNMutableNotificationContent new];

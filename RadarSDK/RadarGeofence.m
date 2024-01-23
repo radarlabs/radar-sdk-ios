@@ -124,7 +124,7 @@
 
         if ([type isEqualToString:@"circle"]) {
             geometry = [[RadarCircleGeometry alloc] initWithCenter:center radius:radius];
-        } else if ([type isEqualToString:@"polygon"] || [type isEqualToString:@"isochrone"]) {
+        } else if ([type isEqualToString:@"polygon"] || [type isEqualToString:@"Polygon"] || [type isEqualToString:@"isochrone"]) {
             id geometryObj = dict[@"geometry"];
 
             if (![geometryObj isKindOfClass:[NSDictionary class]]) {
@@ -192,6 +192,14 @@
     return arr;
 }
 
++ (NSArray<NSArray *> *_Nullable)arrayForGeometryCoordinates:(NSArray<RadarCoordinate *> *)coordinates {
+    NSMutableArray *mutableArray = [NSMutableArray new];
+    for (RadarCoordinate *coordinate in coordinates) {
+        [mutableArray addObject:@[@(coordinate.coordinate.longitude), @(coordinate.coordinate.latitude)]];
+    }
+    return mutableArray;
+}
+
 - (NSDictionary *)dictionaryValue {
     NSMutableDictionary *dict = [NSMutableDictionary new];
     [dict setValue:self._id forKey:@"_id"];
@@ -203,10 +211,14 @@
         RadarCircleGeometry *circleGeometry = (RadarCircleGeometry *)self.geometry;
         [dict setValue:@(circleGeometry.radius) forKey:@"geometryRadius"];
         [dict setValue:[circleGeometry.center dictionaryValue] forKey:@"geometryCenter"];
+        [dict setValue:@"Circle" forKey:@"type"];
     } else if ([self.geometry isKindOfClass:[RadarPolygonGeometry class]]) {
         RadarPolygonGeometry *polygonGeometry = (RadarPolygonGeometry *)self.geometry;
         [dict setValue:@(polygonGeometry.radius) forKey:@"geometryRadius"];
         [dict setValue:[polygonGeometry.center dictionaryValue] forKey:@"geometryCenter"];
+        // Nest coordinate array; Per GeoJSON spec: for type "Polygon", the "coordinates" member must be an array of LinearRing coordinate arrays.
+        [dict setValue:@[[RadarGeofence arrayForGeometryCoordinates:polygonGeometry._coordinates]] forKey:@"coordinates"];
+        [dict setValue:@"Polygon" forKey:@"type"];
     }
 
     return dict;

@@ -958,10 +958,12 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
             return;
         }
 
-        if (lastSyncInterval < desiredSyncInterval) {
+        NSTimeInterval lastSyncIntervalWithBuffer = lastSyncInterval + 0.1;
+        if (lastSyncIntervalWithBuffer < options.desiredSyncInterval) {
             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
                                                message:[NSString stringWithFormat:@"Skipping sync: desired sync interval | desiredSyncInterval = %d; lastSyncInterval = %f",
-                                                                                  desiredSyncInterval, lastSyncInterval]];
+                                                                                  options.desiredSyncInterval, lastSyncIntervalWithBuffer]];
+
 
             return;
         } else {

@@ -846,7 +846,7 @@
                    layers:(NSArray<NSString *> *_Nullable)layers
                     limit:(int)limit
                   country:(NSString *_Nullable)country
-              expandUnits:(BOOL)expandUnits
+                 mailable:(BOOL)mailable
         completionHandler:(RadarGeocodeAPICompletionHandler)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
@@ -869,8 +869,8 @@
     if (country) {
         [queryString appendFormat:@"&country=%@", country];
     }
-    if (expandUnits) {
-        [queryString appendFormat:@"&expandUnits=true"];
+    if (mailable) {
+        [queryString appendFormat:@"&mailable=true"];
     }
 
 
