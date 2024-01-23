@@ -67,7 +67,8 @@ static NSString *const kUserDebug = @"radar-userDebug";
     [migrationResultArray addObject:[NSString stringWithFormat:@"_id: %@", [self _id]]];
 
     NSString *userId = [[NSUserDefaults standardUserDefaults] stringForKey:kUserId];
-    [self setUserId:userId];
+    // We use this instead of setUserId to avoid triggering a false positive migration discrepency log.
+    [[RadarKVStore sharedInstance] setString:userId forKey:kUserId]; 
     // Log for testing purposes only, to be removed before merging to master.
     [migrationResultArray addObject:[NSString stringWithFormat:@"userId: %@", [self userId]]];
 
