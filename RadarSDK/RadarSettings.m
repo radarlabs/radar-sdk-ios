@@ -236,11 +236,11 @@ static NSString *const kUserDebug = @"radar-userDebug";
     if ([self useRadarKVStore]) {
         return radarKVStoreRes;
     }
-    NSDictionary *userDefaultsRes = [[NSUserDefaults standardUserDefaults] dictionaryForKey:kMetadata];
-    if ((radarKVStoreRes && ![radarKVStoreRes isEqual:userDefaultsRes]) || (userDefaultsRes && ![userDefaultsRes isEqual:radarKVStoreRes])) {
+    NSDictionary *nsUserDefaultsRes = [[NSUserDefaults standardUserDefaults] dictionaryForKey:kMetadata];
+    if ((radarKVStoreRes && ![radarKVStoreRes isEqual:nsUserDefaultsRes]) || (nsUserDefaultsRes && ![nsUserDefaultsRes isEqual:radarKVStoreRes])) {
         [[RadarLogBuffer sharedInstance] write:RadarLogLevelError type:RadarLogTypeSDKError message:@"RadarSettings: metadata mismatch."];
     }
-    return userDefaultsRes;
+    return nsUserDefaultsRes;
 }
 
 + (void)setMetadata:(NSDictionary *)metadata {
