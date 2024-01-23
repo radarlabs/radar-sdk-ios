@@ -81,15 +81,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)doubleWriteKeyExists:(NSString *)key;
 
-- (CLLocation *)doubleWriteCLLocationGetter:(NSString *)key;
+- (CLLocation *_Nullable)doubleWriteCLLocationGetter:(NSString *)key;
 
 - (void)doubleWriteCLLocationSetter:(NSString *)key value:(CLLocation *_Nullable)value;
 
-- (RadarTrackingOptions *)doubleWriteRadarTrackingOptionGetter:(NSString *)key;
+- (RadarTrackingOptions *_Nullable)doubleWriteRadarTrackingOptionGetter:(NSString *)key;
 
 - (void)doubleWriteRadarTrackingOptionSetter:(NSString *)key value:(RadarTrackingOptions *_Nullable)value;
 
-- (RadarTripOptions *)doubleWriteRadarTripOptionsGetter:(NSString *)key;
+- (RadarTripOptions *_Nullable)doubleWriteRadarTripOptionsGetter:(NSString *)key;
 
 - (void)doubleWriteRadarTripOptionsSetter:(NSString *)key value:(RadarTripOptions *_Nullable)value;
 

@@ -315,7 +315,7 @@ static NSString *const kDirName = @"radar-KVStore";
 }
 
 
-- (CLLocation *)doubleWriteCLLocationGetter:(NSString *)key {
+- (CLLocation *_Nullable)doubleWriteCLLocationGetter:(NSString *)key {
     NSObject *radarKVStoreObj = [self objectForKey:key];
     CLLocation *radarKVStoreRes = nil;
     if (radarKVStoreObj && [radarKVStoreObj isKindOfClass:[CLLocation class]]) {
@@ -357,7 +357,7 @@ static NSString *const kDirName = @"radar-KVStore";
     }
 }
 
-- (RadarTrackingOptions *)doubleWriteRadarTrackingOptionGetter:(NSString *)key {
+- (RadarTrackingOptions *_Nullable)doubleWriteRadarTrackingOptionGetter:(NSString *)key {
     RadarTrackingOptions *radarKVStoreRes = [self radarTrackingOptionDecoder:key];
     if ([RadarSettings useRadarKVStore]) {
         return radarKVStoreRes;
@@ -385,7 +385,7 @@ static NSString *const kDirName = @"radar-KVStore";
     }
 }
 
-- (RadarTripOptions *)doubleWriteRadarTripOptionsGetter:(NSString *)key {
+- (RadarTripOptions *_Nullable)doubleWriteRadarTripOptionsGetter:(NSString *)key {
     NSObject *options = [[RadarKVStore sharedInstance] objectForKey:key];
     RadarTripOptions *radarKVStoreRes = nil;
     if (options && [options isKindOfClass:[RadarTripOptions class]]) {
