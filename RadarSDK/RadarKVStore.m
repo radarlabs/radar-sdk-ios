@@ -419,4 +419,23 @@ static NSString *const kDirName = @"radar-KVStore";
     }
 }
 
+- (NSDictionary *)doubleWriteDictionaryGetter:(NSString *)key {
+    NSDictionary *radarKVStoreRes = [self dictionaryForKey:key];
+    if ([RadarSettings useRadarKVStore]) {
+        return radarKVStoreRes;
+    }
+    NSDictionary *nsUserDefaultsRes = [[NSUserDefaults standardUserDefaults] dictionaryForKey:key];
+    if ((radarKVStoreRes && ![radarKVStoreRes isEqualToDictionary:nsUserDefaultsRes]) || (nsUserDefaultsRes && ![nsUserDefaultsRes isEqualToDictionary:radarKVStoreRes])) {
+        [[RadarLogBuffer sharedInstance] write:RadarLogLevelError type:RadarLogTypeSDKError message:[NSString stringWithFormat:@"Discrepencey with NSUserDefault %@ mismatch.", key]];
+    }
+    return nsUserDefaultsRes;
+}
+
+- (void)doubleWriteDictionarySetter:(NSString *)key value:(NSDictionary *_Nullable)value {
+    [self setDictionary:value forKey:key];
+    if (![RadarSettings useRadarKVStore]) {
+        [[NSUserDefaults standardUserDefaults] setObject:value forKey:key];
+    }
+}
+
 @end

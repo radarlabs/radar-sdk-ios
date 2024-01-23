@@ -80,7 +80,7 @@ static NSString *const kReplayBuffer = @"radar-replays";
             [[RadarKVStore sharedInstance] setObject:mutableReplayBuffer forKey:kReplayBuffer];
             replaysData = [NSKeyedArchiver archivedDataWithRootObject:mutableReplayBuffer];
         }
-        if ([RadarSettings useRadarKVStore]) {
+        if (![RadarSettings useRadarKVStore]) {
             [[NSUserDefaults standardUserDefaults] setObject:replaysData forKey:kReplayBuffer];
         }
 
@@ -173,7 +173,7 @@ static NSString *const kReplayBuffer = @"radar-replays";
 
     // remove persisted replays
     [[RadarKVStore sharedInstance] removeObjectForKey:kReplayBuffer];
-    if ([RadarSettings useRadarKVStore]) {
+    if (![RadarSettings useRadarKVStore]) {
         [[NSUserDefaults standardUserDefaults] removeObjectForKey:kReplayBuffer];
     }
 }
@@ -183,7 +183,7 @@ static NSString *const kReplayBuffer = @"radar-replays";
 
     // persist the updated buffer
     [[RadarKVStore sharedInstance] setObject:mutableReplayBuffer forKey:kReplayBuffer];
-    if ([RadarSettings useRadarKVStore]) {
+    if (![RadarSettings useRadarKVStore]) {
         [[NSUserDefaults standardUserDefaults] setObject:[NSKeyedArchiver archivedDataWithRootObject:mutableReplayBuffer] forKey:kReplayBuffer];
     }
 }

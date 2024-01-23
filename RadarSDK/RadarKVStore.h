@@ -92,6 +92,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (RadarTripOptions *)doubleWriteRadarTripOptionsGetter:(NSString *)key;
 
 - (void)doubleWriteRadarTripOptionsSetter:(NSString *)key value:(RadarTripOptions *_Nullable)value;
+
+- (NSDictionary *)doubleWriteDictionaryGetter:(NSString *)key;
+
+- (void)doubleWriteDictionarySetter:(NSString *)key value:(NSDictionary *_Nullable)value;
 @end
 
 NS_ASSUME_NONNULL_END

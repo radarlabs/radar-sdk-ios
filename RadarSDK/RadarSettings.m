@@ -232,22 +232,11 @@ static NSString *const kUserDebug = @"radar-userDebug";
 }
 
 + (NSDictionary *)metadata {
-    NSDictionary *radarKVStoreRes = [[RadarKVStore sharedInstance] dictionaryForKey:kMetadata];
-    if ([self useRadarKVStore]) {
-        return radarKVStoreRes;
-    }
-    NSDictionary *nsUserDefaultsRes = [[NSUserDefaults standardUserDefaults] dictionaryForKey:kMetadata];
-    if ((radarKVStoreRes && ![radarKVStoreRes isEqual:nsUserDefaultsRes]) || (nsUserDefaultsRes && ![nsUserDefaultsRes isEqual:radarKVStoreRes])) {
-        [[RadarLogBuffer sharedInstance] write:RadarLogLevelError type:RadarLogTypeSDKError message:@"RadarSettings: metadata mismatch."];
-    }
-    return nsUserDefaultsRes;
+    return [[RadarKVStore sharedInstance] doubleWriteDictionaryGetter:kMetadata];
 }
 
 + (void)setMetadata:(NSDictionary *)metadata {
-    [[RadarKVStore sharedInstance] setDictionary:metadata forKey:kMetadata];
-    if (![self useRadarKVStore]) {
-        [[NSUserDefaults standardUserDefaults] setObject:metadata forKey:kMetadata];
-    }
+    [[RadarKVStore sharedInstance] doubleWriteDictionarySetter:kMetadata value:metadata];
 }
 
 + (BOOL)anonymousTrackingEnabled {
