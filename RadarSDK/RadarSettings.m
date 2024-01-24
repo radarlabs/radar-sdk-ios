@@ -333,6 +333,9 @@ static NSString *const kUserDebug = @"radar-userDebug";
     if (featureSettings) {
         //This is added as reading from NSUserdefaults is too slow for this feature flag. To be removed when throttling is done. 
         [[RadarLogBuffer sharedInstance] setPersistentLogFeatureFlag:featureSettings.useLogPersistence];
+        if (featureSettings.useRadarKVStore) {
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Using RadarKVStore for feature settings."];
+        } 
         [[RadarKVStore sharedInstance] setObject:featureSettings forKey:kFeatureSettings];
     } else {
         [[RadarLogBuffer sharedInstance] setPersistentLogFeatureFlag:NO];
