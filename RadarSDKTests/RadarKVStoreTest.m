@@ -19,8 +19,6 @@
 #import "../RadarSDK/RadarReplay.h"
 #import "../RadarSDK/RadarReplayBuffer.h"
 #import "../RadarSDK/RadarLogBuffer.h"
-//remove, this is just for a sanity check
-#import "../RadarSDK/RadarLogger.h"
 
 
 @interface RadarKVStoreTest : XCTestCase
@@ -303,26 +301,13 @@ static NSString *const kReplayBuffer = @"radar-replays";
    
 }
 
-// for each settings
-//      write with settings off
-//      read with settings off
-//      remove with setting off
-//      write with setting on
-//      read with setting on
-//      remove with setting on
-//      assert that no logs are created (indicates discrepency)
-//      check that discrepency will trigger logging
 
-// reads and writes with NSUserDefaults
-// read and writes with RadarKVStore
-// ensure that no logs are created by the discrepency
-// check that discrepency will trigger logging
 
 - (void)test_RadarSettings_publishableKey {
     // reads and writes with NSUserDefaults
    [RadarSettings setPublishableKey:@"123abc!@#"];
     XCTAssertEqualObjects(@"123abc!@#", [RadarSettings publishableKey]);
-    // read and writes with RadarKVStore
+    // reads and writes with RadarKVStore
     [RadarSettings setFeatureSettings:[[RadarFeatureSettings alloc] initWithUsePersistence:NO extendFlushReplays:NO useLogPersistence:NO useRadarKVStore:YES]];
     [RadarSettings setPublishableKey:@"678abc!@#"];
     XCTAssertEqualObjects(@"678abc!@#", [RadarSettings publishableKey]);
@@ -337,10 +322,10 @@ static NSString *const kReplayBuffer = @"radar-replays";
 }
 
 - (void)test_RadarSettings_installId {
-    // read and writes with NSUserDefaults
+    // reads and writes with NSUserDefaults
     NSString *dummyInstallId = [RadarSettings installId];
     XCTAssertEqualObjects(dummyInstallId, [RadarSettings installId]);
-    // read and writes with RadarKVStore
+    // reads and writes with RadarKVStore
     [RadarSettings setFeatureSettings:[[RadarFeatureSettings alloc] initWithUsePersistence:NO extendFlushReplays:NO useLogPersistence:NO useRadarKVStore:YES]];
     dummyInstallId = [RadarSettings installId];
     XCTAssertEqualObjects(dummyInstallId, [RadarSettings installId]);
@@ -357,7 +342,7 @@ static NSString *const kReplayBuffer = @"radar-replays";
     // reads and writes with NSUserDefaults
     XCTAssertTrue([RadarSettings updateSessionId]);
     XCTAssertTrue(([RadarSettings sessionId].doubleValue - [[NSDate date] timeIntervalSince1970]) < 10);
-    // read and writes with RadarKVStore
+    // reads and writes with RadarKVStore
     [RadarSettings setFeatureSettings:[[RadarFeatureSettings alloc] initWithUsePersistence:NO extendFlushReplays:NO useLogPersistence:NO useRadarKVStore:YES]];
     XCTAssertFalse([RadarSettings updateSessionId]);
     XCTAssertTrue(([RadarSettings sessionId].doubleValue - [[NSDate date] timeIntervalSince1970]) < 10);
@@ -377,7 +362,7 @@ static NSString *const kReplayBuffer = @"radar-replays";
     XCTAssertEqualObjects(dummyId, [RadarSettings _id]);
     [RadarSettings setId:nil];
     XCTAssertNil([RadarSettings _id]);
-    // read and writes with RadarKVStore
+    // reads and writes with RadarKVStore
     [RadarSettings setFeatureSettings:[[RadarFeatureSettings alloc] initWithUsePersistence:NO extendFlushReplays:NO useLogPersistence:NO useRadarKVStore:YES]];
     dummyId = @"dummyId2";
     [RadarSettings setId:dummyId];
@@ -405,7 +390,7 @@ static NSString *const kReplayBuffer = @"radar-replays";
     XCTAssertEqualObjects(dummyUserId, [RadarSettings userId]);
     [RadarSettings setUserId:nil];
     XCTAssertNil([RadarSettings userId]);
-    // read and writes with RadarKVStore
+    // reads and writes with RadarKVStore
     [RadarSettings setFeatureSettings:[[RadarFeatureSettings alloc] initWithUsePersistence:NO extendFlushReplays:NO useLogPersistence:NO useRadarKVStore:YES]];
     dummyUserId = @"dummyUserId2";
     [RadarSettings setUserId:dummyUserId];
@@ -434,7 +419,7 @@ static NSString *const kReplayBuffer = @"radar-replays";
     XCTAssertEqualObjects(dummyDescription, [RadarSettings __description]);
     [RadarSettings setDescription:nil];
     XCTAssertNil([RadarSettings __description]);
-    // read and writes with RadarKVStore
+    // reads and writes with RadarKVStore
     [RadarSettings setFeatureSettings:[[RadarFeatureSettings alloc] initWithUsePersistence:NO extendFlushReplays:NO useLogPersistence:NO useRadarKVStore:YES]];
     dummyDescription = @"dummyDescription2";
     [RadarSettings setDescription:dummyDescription];
@@ -462,7 +447,7 @@ static NSString *const kReplayBuffer = @"radar-replays";
     XCTAssertEqualObjects(dummyMetadata, [RadarSettings metadata]);
     [RadarSettings setMetadata:nil];
     XCTAssertNil([RadarSettings metadata]);
-    // read and writes with RadarKVStore
+    // reads and writes with RadarKVStore
     [RadarSettings setFeatureSettings:[[RadarFeatureSettings alloc] initWithUsePersistence:NO extendFlushReplays:NO useLogPersistence:NO useRadarKVStore:YES]];
     NSDictionary<NSString *, NSString *> *dummyMetadata2 = @{@"key3": @"value3", @"key4": @"value4"};
     [RadarSettings setMetadata:dummyMetadata2];
@@ -488,7 +473,7 @@ static NSString *const kReplayBuffer = @"radar-replays";
     BOOL dummyAnonymous = YES;
     [RadarSettings setAnonymousTrackingEnabled:dummyAnonymous];
     XCTAssertEqual(dummyAnonymous, [RadarSettings anonymousTrackingEnabled]);
-    // read and writes with RadarKVStore
+    // reads and writes with RadarKVStore
     [RadarSettings setFeatureSettings:[[RadarFeatureSettings alloc] initWithUsePersistence:NO extendFlushReplays:NO useLogPersistence:NO useRadarKVStore:YES]];
     BOOL dummyAnonymous2 = NO;
     [RadarSettings setAnonymousTrackingEnabled:dummyAnonymous2];
@@ -508,7 +493,7 @@ static NSString *const kReplayBuffer = @"radar-replays";
     BOOL dummyTracking = YES;
     [RadarSettings setTracking:dummyTracking];
     XCTAssertEqual(dummyTracking, [RadarSettings tracking]);
-    // read and writes with RadarKVStore
+    // reads and writes with RadarKVStore
     [RadarSettings setFeatureSettings:[[RadarFeatureSettings alloc] initWithUsePersistence:NO extendFlushReplays:NO useLogPersistence:NO useRadarKVStore:YES]];
     BOOL dummyTracking2 = NO;
     [RadarSettings setTracking:dummyTracking2];
@@ -638,7 +623,7 @@ static NSString *const kReplayBuffer = @"radar-replays";
     RadarLogLevel dummyLogLevel = RadarLogLevelDebug;
     [RadarSettings setLogLevel:dummyLogLevel];
     XCTAssertEqual(dummyLogLevel, [RadarSettings logLevel]);
-    // read and writes with RadarKVStore
+    // reads and writes with RadarKVStore
     [RadarSettings setFeatureSettings:[[RadarFeatureSettings alloc] initWithUsePersistence:NO extendFlushReplays:NO useLogPersistence:NO useRadarKVStore:YES]];
     [RadarSettings setLogLevel:RadarLogLevelNone];
     XCTAssertEqual(RadarLogLevelNone, [RadarSettings logLevel]);
@@ -659,7 +644,7 @@ static NSString *const kReplayBuffer = @"radar-replays";
     XCTAssertEqualObjects(dummyBeaconUUIDs, [RadarSettings beaconUUIDs]);
     [RadarSettings setBeaconUUIDs:nil];
     XCTAssertNil([RadarSettings beaconUUIDs]);
-    // read and writes with RadarKVStore
+    // reads and writes with RadarKVStore
     [RadarSettings setFeatureSettings :[[RadarFeatureSettings alloc] initWithUsePersistence:NO extendFlushReplays:NO useLogPersistence:NO useRadarKVStore:YES]];
     NSArray<NSString *> *dummyBeaconUUIDs2 = @[@"1234", @"4567"];
     [RadarSettings setBeaconUUIDs:dummyBeaconUUIDs2];
@@ -687,7 +672,7 @@ static NSString *const kReplayBuffer = @"radar-replays";
     [[NSUserDefaults standardUserDefaults] setObject:dummyHost forKey:kHost];
     [[RadarKVStore sharedInstance] setObject:dummyHost forKey:kHost];
     XCTAssertEqualObjects(dummyHost, [RadarSettings host]);
-    // read and writes with RadarKVStore
+    // reads and writes with RadarKVStore
     [RadarSettings setFeatureSettings :[[RadarFeatureSettings alloc] initWithUsePersistence:NO extendFlushReplays:NO useLogPersistence:NO useRadarKVStore:YES]];
     XCTAssertEqualObjects(dummyHost, [RadarSettings host]);
     [[RadarKVStore sharedInstance] removeObjectForKey:kHost];
@@ -705,7 +690,7 @@ static NSString *const kReplayBuffer = @"radar-replays";
     // reads and writes with NSUserDefaults
     [RadarSettings updateLastTrackedTime];
     XCTAssertTrue(([[RadarSettings lastTrackedTime] timeIntervalSince1970] - [[NSDate date] timeIntervalSince1970]) < 10);
-    // read and writes with RadarKVStore
+    // reads and writes with RadarKVStore
     [RadarSettings setFeatureSettings :[[RadarFeatureSettings alloc] initWithUsePersistence:NO extendFlushReplays:NO useLogPersistence:NO useRadarKVStore:YES]];
     [RadarSettings updateLastTrackedTime];
     XCTAssertTrue(([[RadarSettings lastTrackedTime] timeIntervalSince1970] - [[NSDate date] timeIntervalSince1970]) < 10);
@@ -724,7 +709,7 @@ static NSString *const kReplayBuffer = @"radar-replays";
    [[NSUserDefaults standardUserDefaults] setObject:dummyVerifiedHost forKey:kVerifiedHost];
    [[RadarKVStore sharedInstance] setObject:dummyVerifiedHost forKey:kVerifiedHost];
     XCTAssertEqualObjects(dummyVerifiedHost, [RadarSettings verifiedHost]);
-    // read and writes with RadarKVStore
+    // reads and writes with RadarKVStore
     [RadarSettings setFeatureSettings :[[RadarFeatureSettings alloc] initWithUsePersistence:NO extendFlushReplays:NO useLogPersistence:NO useRadarKVStore:YES]];
     XCTAssertEqualObjects(dummyVerifiedHost, [RadarSettings verifiedHost]);
     // ensure that no logs are created by the discrepency
@@ -742,7 +727,7 @@ static NSString *const kReplayBuffer = @"radar-replays";
     BOOL dummyUserDebug = YES;
     [RadarSettings setUserDebug:dummyUserDebug];
     XCTAssertEqual(dummyUserDebug, [RadarSettings userDebug]);
-    // read and writes with RadarKVStore
+    // reads and writes with RadarKVStore
     [RadarSettings setFeatureSettings :[[RadarFeatureSettings alloc] initWithUsePersistence:NO extendFlushReplays:NO useLogPersistence:NO useRadarKVStore:YES]];
     [[RadarKVStore sharedInstance] removeObjectForKey:kUserDebug];
     XCTAssertTrue([RadarSettings userDebug]);
@@ -762,7 +747,7 @@ static NSString *const kReplayBuffer = @"radar-replays";
     // reads and writes with NSUserDefaults
     [RadarSettings updateLastAppOpenTime];
     XCTAssertTrue(([[RadarSettings lastAppOpenTime] timeIntervalSince1970] - [[NSDate date] timeIntervalSince1970]) < 10);
-    // read and writes with RadarKVStore
+    // reads and writes with RadarKVStore
     [RadarSettings setFeatureSettings :[[RadarFeatureSettings alloc] initWithUsePersistence:NO extendFlushReplays:NO useLogPersistence:NO useRadarKVStore:YES]];
     [RadarSettings updateLastAppOpenTime];
     XCTAssertTrue(([[RadarSettings lastAppOpenTime] timeIntervalSince1970] - [[NSDate date] timeIntervalSince1970]) < 10);
@@ -832,7 +817,7 @@ static NSString *const kReplayBuffer = @"radar-replays";
     CLLocation *dummyLastLocation = [[CLLocation alloc] initWithCoordinate:dummyCoordinate altitude:1.0 horizontalAccuracy:3.0 verticalAccuracy:4.0 timestamp:[NSDate date]];
     [RadarState setLastLocation:dummyLastLocation];
     XCTAssertTrue([self compareCLLocation:dummyLastLocation with:[RadarState lastLocation]]);
-    // read and writes with RadarKVStore
+    // reads and writes with RadarKVStore
     [RadarSettings setFeatureSettings :[[RadarFeatureSettings alloc] initWithUsePersistence:NO extendFlushReplays:NO useLogPersistence:NO useRadarKVStore:YES]];
     CLLocationCoordinate2D dummyCoordinate2 = CLLocationCoordinate2DMake(3.0, 4.0);
     CLLocation *dummyLastLocation2 = [[CLLocation alloc] initWithCoordinate:dummyCoordinate2 altitude:3.0 horizontalAccuracy:4.0 verticalAccuracy:5.0 timestamp:[NSDate date]];
@@ -856,7 +841,7 @@ static NSString *const kReplayBuffer = @"radar-replays";
     CLLocation *dummyLastMovedLocation = [[CLLocation alloc] initWithCoordinate:dummyCoordinate altitude:1.0 horizontalAccuracy:3.0 verticalAccuracy:4.0 timestamp:[NSDate date]];
     [RadarState setLastMovedLocation:dummyLastMovedLocation];
     XCTAssertTrue([self compareCLLocation:dummyLastMovedLocation with:[RadarState lastMovedLocation]]);
-    // read and writes with RadarKVStore
+    // reads and writes with RadarKVStore
     [RadarSettings setFeatureSettings :[[RadarFeatureSettings alloc] initWithUsePersistence:NO extendFlushReplays:NO useLogPersistence:NO useRadarKVStore:YES]]; 
     CLLocationCoordinate2D dummyCoordinate2 = CLLocationCoordinate2DMake(3.0, 4.0);
     CLLocation *dummyLastMovedLocation2 = [[CLLocation alloc] initWithCoordinate:dummyCoordinate2 altitude:3.0 horizontalAccuracy:4.0 verticalAccuracy:5.0 timestamp:[NSDate date]];
@@ -879,7 +864,7 @@ static NSString *const kReplayBuffer = @"radar-replays";
     NSDate *dummyLastMovedAt = [NSDate date];
     [RadarState setLastMovedAt:dummyLastMovedAt];
     XCTAssertEqualObjects(dummyLastMovedAt, [RadarState lastMovedAt]);
-    // read and writes with RadarKVStore
+    // reads and writes with RadarKVStore
     [RadarSettings setFeatureSettings :[[RadarFeatureSettings alloc] initWithUsePersistence:NO extendFlushReplays:NO useLogPersistence:NO useRadarKVStore:YES]];
     NSDate *dummyLastMovedAt2 = [NSDate date];
     [RadarState setLastMovedAt:dummyLastMovedAt2];
@@ -902,7 +887,7 @@ static NSString *const kReplayBuffer = @"radar-replays";
     BOOL dummyStopped = YES;
     [RadarState setStopped:dummyStopped];
     XCTAssertEqual(dummyStopped, [RadarState stopped]);
-    // read and writes with RadarKVStore
+    // reads and writes with RadarKVStore
     [RadarSettings setFeatureSettings :[[RadarFeatureSettings alloc] initWithUsePersistence:NO extendFlushReplays:NO useLogPersistence:NO useRadarKVStore:YES]]; 
     BOOL dummyStopped2 = NO;
     [RadarState setStopped:dummyStopped2];
@@ -924,7 +909,7 @@ static NSString *const kReplayBuffer = @"radar-replays";
     // reads and writes with NSUserDefaults
     [RadarState updateLastSentAt];
     XCTAssertTrue(([[RadarState lastSentAt] timeIntervalSince1970] - [[NSDate date] timeIntervalSince1970]) < 1);
-    // read and writes with RadarKVStore
+    // reads and writes with RadarKVStore
     [RadarSettings setFeatureSettings :[[RadarFeatureSettings alloc] initWithUsePersistence:NO extendFlushReplays:NO useLogPersistence:NO  useRadarKVStore:YES]]; 
     [RadarState updateLastSentAt];
     XCTAssertTrue(([[RadarState lastSentAt] timeIntervalSince1970] - [[NSDate date] timeIntervalSince1970]) < 1);
@@ -946,7 +931,7 @@ static NSString *const kReplayBuffer = @"radar-replays";
     BOOL dummyCanExit = YES;
     [RadarState setCanExit:dummyCanExit];
     XCTAssertEqual(dummyCanExit, [RadarState canExit]);
-    // read and writes with RadarKVStore
+    // reads and writes with RadarKVStore
     [RadarSettings setFeatureSettings :[[RadarFeatureSettings alloc] initWithUsePersistence:NO extendFlushReplays:NO useLogPersistence:NO  useRadarKVStore:YES]]; 
     BOOL dummyCanExit2 = NO;
     [RadarState setCanExit:dummyCanExit2];
@@ -972,7 +957,7 @@ static NSString *const kReplayBuffer = @"radar-replays";
     XCTAssertTrue([self compareCLLocation:dummyLastFailedStoppedLocation with:[RadarState lastFailedStoppedLocation]]);
     [RadarState setLastFailedStoppedLocation:nil];
     XCTAssertNil([RadarState lastFailedStoppedLocation]);
-    // read and writes with RadarKVStore
+    // reads and writes with RadarKVStore
     [RadarSettings setFeatureSettings :[[RadarFeatureSettings alloc] initWithUsePersistence:NO extendFlushReplays:NO useLogPersistence:NO  useRadarKVStore:YES]]; 
     CLLocationCoordinate2D dummyCoordinate2 = CLLocationCoordinate2DMake(3.0, 4.0);
     CLLocation *dummyLastFailedStoppedLocation2 = [[CLLocation alloc] initWithCoordinate:dummyCoordinate2 altitude:3.0 horizontalAccuracy:4.0 verticalAccuracy:5.0 timestamp:[NSDate date]];
@@ -1001,7 +986,7 @@ static NSString *const kReplayBuffer = @"radar-replays";
     XCTAssertEqualObjects(dummyGeofenceIds, [RadarState geofenceIds]);
     [RadarState setGeofenceIds:nil];
     XCTAssertNil([RadarState geofenceIds]);
-    // read and writes with RadarKVStore
+    // reads and writes with RadarKVStore
     [RadarSettings setFeatureSettings :[[RadarFeatureSettings alloc] initWithUsePersistence:NO extendFlushReplays:NO useLogPersistence:NO  useRadarKVStore:YES]]; 
     NSArray<NSString *> *dummyGeofenceIds2 = @[@"1234", @"4567"];
     [RadarState setGeofenceIds:dummyGeofenceIds2];
@@ -1029,7 +1014,7 @@ static NSString *const kReplayBuffer = @"radar-replays";
     XCTAssertEqualObjects(dummyPlaceId, [RadarState placeId]);
     [RadarState setPlaceId:nil];
     XCTAssertNil([RadarState placeId]);
-    // read and writes with RadarKVStore
+    // reads and writes with RadarKVStore
     [RadarSettings setFeatureSettings :[[RadarFeatureSettings alloc] initWithUsePersistence:NO extendFlushReplays:NO useLogPersistence:NO  useRadarKVStore:YES]]; 
     NSString *const dummyPlaceId2 = @"dummyPlaceId2";
     [RadarState setPlaceId:dummyPlaceId2];
@@ -1057,7 +1042,7 @@ static NSString *const kReplayBuffer = @"radar-replays";
     XCTAssertEqualObjects(dummyRegionIds, [RadarState regionIds]);
     [RadarState setRegionIds:nil];
     XCTAssertNil([RadarState regionIds]);
-    // read and writes with RadarKVStore
+    // reads and writes with RadarKVStore
     [RadarSettings setFeatureSettings:[[RadarFeatureSettings alloc] initWithUsePersistence:NO extendFlushReplays:NO  useLogPersistence:NO useRadarKVStore:YES]]; 
     NSArray<NSString *> *dummyRegionIds2 = @[@"1234", @"4567"];
     [RadarState setRegionIds:dummyRegionIds2];
@@ -1085,7 +1070,7 @@ static NSString *const kReplayBuffer = @"radar-replays";
     XCTAssertEqualObjects(dummyBeaconIds, [RadarState beaconIds]);
     [RadarState setBeaconIds:nil];
     XCTAssertNil([RadarState beaconIds]);
-    // read and writes with RadarKVStore
+    // reads and writes with RadarKVStore
     [RadarSettings setFeatureSettings:[[RadarFeatureSettings alloc] initWithUsePersistence:NO extendFlushReplays:NO  useLogPersistence:NO useRadarKVStore:YES]]; 
     NSArray<NSString *> *dummyBeaconIds2 = @[@"1234", @"4567"];
     [RadarState setBeaconIds:dummyBeaconIds2];
@@ -1110,7 +1095,7 @@ static NSString *const kReplayBuffer = @"radar-replays";
 - (void)test_ReplayBuffer_migration {
     XCTAssertFalse(self.radarKVStore.radarKVStoreMigrationComplete);
     NSMutableArray<RadarReplay *> *replays = [NSMutableArray<RadarReplay *> new];
-    //add 5 replays to the buffer
+    // add 5 replays to the buffer
     for (int i = 0; i < 5; i++) {
         NSMutableDictionary *replayParams = [NSMutableDictionary new];
         replayParams[@"key1"] = [NSString stringWithFormat:@"value1_%d", i];
