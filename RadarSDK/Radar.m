@@ -139,89 +139,85 @@
 + (void)trackOnceWithDesiredAccuracy:(RadarTrackingOptionsDesiredAccuracy)desiredAccuracy beacons:(BOOL)beacons completionHandler:(RadarTrackCompletionHandler)completionHandler {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"trackOnce()"];
     [[RadarLocationManager sharedInstance]
-        getLocationWithDesiredAccuracy:desiredAccuracy
-                     completionHandler:^(RadarStatus status, CLLocation *_Nullable location, BOOL stopped) {
-                         if (status != RadarStatusSuccess) {
-                             if (completionHandler) {
-                                 [RadarUtils runOnMainThread:^{
-                                     completionHandler(status, nil, nil, nil);
-                                 }];
-                             }
+     getLocationWithDesiredAccuracy:desiredAccuracy
+     completionHandler:^(RadarStatus status, CLLocation *_Nullable location, BOOL stopped) {
+        if (status != RadarStatusSuccess) {
+            if (completionHandler) {
+                [RadarUtils runOnMainThread:^{
+                    completionHandler(status, nil, nil, nil);
+                }];
+            }
+            
+            return;
+        }
 
-                             return;
-                         }
+        void (^callTrackAPI)(NSArray<RadarBeacon *> *_Nullable) = ^(NSArray<RadarBeacon *> *_Nullable beacons) {
+            [[RadarAPIClient sharedInstance]
+             trackWithLocation:location
+             stopped:stopped
+             foreground:YES
+             source:RadarLocationSourceForegroundLocation
+             replayed:NO
+             beacons:beacons
+             completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user,
+                                 NSArray<RadarGeofence *> *_Nullable nearbyGeofences, RadarConfig *_Nullable config, NSString *_Nullable token) {
+                if (status == RadarStatusSuccess) {
+                    [[RadarLocationManager sharedInstance] replaceSyncedGeofences:nearbyGeofences];
+                    if(config != nil){
+                        [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
+                    }
+                    
+                }
+                
+                if (completionHandler) {
+                    [RadarUtils runOnMainThread:^{
+                        completionHandler(status, location, events, user);
+                    }];
+                }
+            }];
+        };
 
-                         void (^callTrackAPI)(NSArray<RadarBeacon *> *_Nullable) = ^(NSArray<RadarBeacon *> *_Nullable beacons) {
-                             [[RadarAPIClient sharedInstance]
-                                 trackWithLocation:location
-                                           stopped:stopped
-                                        foreground:YES
-                                            source:RadarLocationSourceForegroundLocation
-                                          replayed:NO
-                                           beacons:beacons
-                                 completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user,
-                                                     NSArray<RadarGeofence *> *_Nullable nearbyGeofences, RadarConfig *_Nullable config, NSString *_Nullable token) {
-                                     if (status == RadarStatusSuccess) {
-                                         [[RadarLocationManager sharedInstance] replaceSyncedGeofences:nearbyGeofences];
-                                         if(config != nil){
-                                             [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
-                                         }
-                                         
-                                     }
-
-                                     if (completionHandler) {
-                                         [RadarUtils runOnMainThread:^{
-                                             completionHandler(status, location, events, user);
-                                         }];
-                                     }
-                                 }];
-                         };
-
-                         if (beacons) {
-                             [[RadarAPIClient sharedInstance]
-                                 searchBeaconsNear:location
-                                            radius:1000
-                                             limit:10
-                                 completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarBeacon *> *_Nullable beacons,
-                                                     NSArray<NSString *> *_Nullable beaconUUIDs) {
-                                     if (beaconUUIDs && beaconUUIDs.count) {
-                                         [[RadarLocationManager sharedInstance] replaceSyncedBeaconUUIDs:beaconUUIDs];
-
-                                         [RadarUtils runOnMainThread:^{
-                                             [[RadarBeaconManager sharedInstance] rangeBeaconUUIDs:beaconUUIDs
-                                                                                 completionHandler:^(RadarStatus status, NSArray<RadarBeacon *> *_Nullable beacons) {
-                                                                                     if (status != RadarStatusSuccess || !beacons) {
-                                                                                         callTrackAPI(nil);
-
-                                                                                         return;
-                                                                                     }
-
-                                                                                     callTrackAPI(beacons);
-                                                                                 }];
-                                         }];
-                                     } else if (beacons && beacons.count) {
-                                         [[RadarLocationManager sharedInstance] replaceSyncedBeacons:beacons];
-
-                                         [RadarUtils runOnMainThread:^{
-                                             [[RadarBeaconManager sharedInstance] rangeBeacons:beacons
-                                                                             completionHandler:^(RadarStatus status, NSArray<RadarBeacon *> *_Nullable beacons) {
-                                                                                 if (status != RadarStatusSuccess || !beacons) {
-                                                                                     callTrackAPI(nil);
-
-                                                                                     return;
-                                                                                 }
-
-                                                                                 callTrackAPI(beacons);
-                                                                             }];
-                                         }];
-                                     } else {
-                                         callTrackAPI(nil);
-                                     }
-                                 }];
-                         } else {
-                             callTrackAPI(nil);
-                         }
-                     }];
+        if (beacons) {
+            [[RadarAPIClient sharedInstance]
+             searchBeaconsNear:location
+             radius:1000
+             limit:10
+             completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarBeacon *> *_Nullable beacons,
+                                 NSArray<NSString *> *_Nullable beaconUUIDs) {
+                if (beaconUUIDs && beaconUUIDs.count) {
+                    [RadarUtils runOnMainThread:^{
+                        [[RadarBeaconManager sharedInstance] rangeBeaconUUIDs:beaconUUIDs
+                                                            completionHandler:^(RadarStatus status, NSArray<RadarBeacon *> *_Nullable beacons) {
+                            if (status != RadarStatusSuccess || !beacons) {
+                                callTrackAPI(nil);
+                                
+                                return;
+                            }
+                            
+                            callTrackAPI(beacons);
+                        }];
+                    }];
+                } else if (beacons && beacons.count) {
+                    [RadarUtils runOnMainThread:^{
+                        [[RadarBeaconManager sharedInstance] rangeBeacons:beacons
+                                                        completionHandler:^(RadarStatus status, NSArray<RadarBeacon *> *_Nullable beacons) {
+                            if (status != RadarStatusSuccess || !beacons) {
+                                callTrackAPI(nil);
+                                
+                                return;
+                            }
+                            
+                            callTrackAPI(beacons);
+                        }];
+                    }];
+                } else {
+                    callTrackAPI(nil);
+                }
+            }];
+        } else {
+            callTrackAPI(nil);
+        }
+    }];
 }
 
 + (void)trackOnceWithLocation:(CLLocation *)location completionHandler:(RadarTrackCompletionHandler)completionHandler {
