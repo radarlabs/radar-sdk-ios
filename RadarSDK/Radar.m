@@ -185,33 +185,19 @@
                                  completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarBeacon *> *_Nullable beacons,
                                                      NSArray<NSString *> *_Nullable beaconUUIDs) {
                                      if (beaconUUIDs && beaconUUIDs.count) {
-//                                         [[RadarLocationManager sharedInstance] replaceSyncedBeaconUUIDs:beaconUUIDs];
-//
-//                                         [RadarUtils runOnMainThread:^{
-//                                             [[RadarBeaconManager sharedInstance] rangeBeaconUUIDs:beaconUUIDs
-//                                                                                 completionHandler:^(RadarStatus status, NSArray<RadarBeacon *> *_Nullable beacons) {
-//                                                                                     if (status != RadarStatusSuccess || !beacons) {
-//                                                                                         callTrackAPI(nil);
-//
-//                                                                                         return;
-//                                                                                     }
-//
-//                                                                                     callTrackAPI(beacons);
-//                                                                                 }];
-//                                         }];
-                                         [[RadarLocationManager sharedInstance] replaceSyncedBeacons:beacons];
+                                         [[RadarLocationManager sharedInstance] replaceSyncedBeaconUUIDs:beaconUUIDs];
 
                                          [RadarUtils runOnMainThread:^{
-                                             [[RadarBeaconManager sharedInstance] rangeBeacons:beacons
-                                                                             completionHandler:^(RadarStatus status, NSArray<RadarBeacon *> *_Nullable beacons) {
-                                                                                 if (status != RadarStatusSuccess || !beacons) {
-                                                                                     callTrackAPI(nil);
+                                             [[RadarBeaconManager sharedInstance] rangeBeaconUUIDs:beaconUUIDs
+                                                                                 completionHandler:^(RadarStatus status, NSArray<RadarBeacon *> *_Nullable beacons) {
+                                                                                     if (status != RadarStatusSuccess || !beacons) {
+                                                                                         callTrackAPI(nil);
 
-                                                                                     return;
-                                                                                 }
+                                                                                         return;
+                                                                                     }
 
-                                                                                 callTrackAPI(beacons);
-                                                                             }];
+                                                                                     callTrackAPI(beacons);
+                                                                                 }];
                                          }];
                                      } else if (beacons && beacons.count) {
                                          [[RadarLocationManager sharedInstance] replaceSyncedBeacons:beacons];
