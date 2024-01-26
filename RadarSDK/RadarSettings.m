@@ -291,4 +291,8 @@ static NSString *const kUserDebug = @"radar-userDebug";
     return lastAppOpenTime ? lastAppOpenTime : [NSDate dateWithTimeIntervalSince1970:0];
 }
 
++ (BOOL)useRadarBeaconRangingOnly {
+    return [[self featureSettings] useRadarBeaconRangingOnly];
+}
+
 @end

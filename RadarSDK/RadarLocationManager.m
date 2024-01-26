@@ -567,6 +567,10 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 }
 
 - (void)replaceSyncedBeacons:(NSArray<RadarBeacon *> *)beacons {
+    if ([RadarSettings useRadarBeaconRangingOnly]) {
+        return;
+    }
+    
     [self removeSyncedBeacons];
 
     BOOL tracking = [RadarSettings tracking];
@@ -604,6 +608,10 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 }
 
 - (void)replaceSyncedBeaconUUIDs:(NSArray<NSString *> *)uuids {
+    if ([RadarSettings useRadarBeaconRangingOnly]) {
+        return;
+    }
+    
     [self removeSyncedBeacons];
 
     BOOL tracking = [RadarSettings tracking];
@@ -632,6 +640,10 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 }
 
 - (void)removeSyncedBeacons {
+    if ([RadarSettings useRadarBeaconRangingOnly]) {
+        return;
+    }
+    
     for (CLRegion *region in self.locationManager.monitoredRegions) {
         if ([region.identifier hasPrefix:kSyncBeaconUUIDIdentifierPrefix]) {
             [self.locationManager stopMonitoringForRegion:region];
