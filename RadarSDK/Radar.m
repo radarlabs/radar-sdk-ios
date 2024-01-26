@@ -215,7 +215,7 @@
                                                                              }];
                                          }];
                                      } else {
-                                         callTrackAPI(nil);
+                                         callTrackAPI(@[]);
                                      }
                                  }];
                          } else {
