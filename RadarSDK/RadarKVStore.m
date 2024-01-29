@@ -180,7 +180,7 @@ static NSString *const kDirName = @"radar-KVStore";
     return [[NSFileManager defaultManager] fileExistsAtPath:[self getSettingFilePath:key]];
 }
 
-- (NSString *)wrappedStringGetter:(NSString *)key {
+- (NSString *)wrappedGetString:(NSString *)key {
     NSString *radarKVStoreRes = [self stringForKey:key];
     if ([RadarSettings useRadarKVStore]) {
         return radarKVStoreRes;
@@ -192,14 +192,14 @@ static NSString *const kDirName = @"radar-KVStore";
     return nsUserDefaultsRes;
 }
 
-- (void)wrappedStringSetter:(NSString *)key value:(NSString *)value {
+- (void)wrappedSetString:(NSString *)key value:(NSString *)value {
     [self setString:value forKey:key];
     if (![RadarSettings useRadarKVStore]) {
         [[NSUserDefaults standardUserDefaults] setObject:value forKey:key];
     }
 }
 
-- (double)wrappedDoubleGetter:(NSString *)key {
+- (double)wrappedGetDouble:(NSString *)key {
     double radarKVStoreRes = [self doubleForKey:key];
     if ([RadarSettings useRadarKVStore]) {
         return radarKVStoreRes;
@@ -211,14 +211,14 @@ static NSString *const kDirName = @"radar-KVStore";
     return nsUserDefaultsRes;
 }
 
-- (void)wrappedDoubleSetter:(NSString *)key value:(double)value {
+- (void)wrappedSetDouble:(NSString *)key value:(double)value {
     [self setDouble:value forKey:key];
     if (![RadarSettings useRadarKVStore]) {
         [[NSUserDefaults standardUserDefaults] setDouble:value forKey:key];
     }
 }
 
-- (BOOL)wrappedBOOLGetter:(NSString *)key {
+- (BOOL)wrappedGetBOOL:(NSString *)key {
     BOOL radarKVStoreRes = [self boolForKey:key];
     if ([RadarSettings useRadarKVStore]) {
         return radarKVStoreRes;
@@ -230,14 +230,14 @@ static NSString *const kDirName = @"radar-KVStore";
     return nsUserDefaultsRes;
 }
 
-- (void)wrappedBOOLSetter:(NSString *)key value:(BOOL)value {
+- (void)wrappedSetBOOL:(NSString *)key value:(BOOL)value {
     [self setBool:value forKey:key];
     if (![RadarSettings useRadarKVStore]) {
         [[NSUserDefaults standardUserDefaults] setBool:value forKey:key];
     }
 }
 
-- (NSDate *)wrappedDateGetter:(NSString *)key {
+- (NSDate *)wrappedGetDate:(NSString *)key {
     NSObject *radarKVStoreObj = [self objectForKey:key];
     NSDate *radarKVStoreRes = nil;
     if (radarKVStoreObj && [radarKVStoreObj isKindOfClass:[NSDate class]]) {
@@ -253,14 +253,14 @@ static NSString *const kDirName = @"radar-KVStore";
     return nsUserDefaultsRes;
 }
 
-- (void)wrappedDateSetter:(NSString *)key value:(NSDate *)value {
+- (void)wrappedSetDate:(NSString *)key value:(NSDate *)value {
     [self setObject:value forKey:key];
     if (![RadarSettings useRadarKVStore]) {
         [[NSUserDefaults standardUserDefaults] setObject:value forKey:key];
     }
 }
 
-- (NSArray<NSString *> *_Nullable)wrappedStringArrayGetter:(NSString *)key {
+- (NSArray<NSString *> *_Nullable)wrappedGetStringArray:(NSString *)key {
     NSObject *radarKVStoreObj = [self objectForKey:key];
     NSArray<NSString *> *radarKVStoreRes = nil;
     if (radarKVStoreObj && [radarKVStoreObj isKindOfClass:[NSArray class]]) {
@@ -276,14 +276,14 @@ static NSString *const kDirName = @"radar-KVStore";
     return nsUserDefaultsRes;
 }
 
-- (void)wrappedStringArraySetter:(NSString *)key value:(NSArray<NSString *> *)value {
+- (void)wrappedSetStringArray:(NSString *)key value:(NSArray<NSString *> *)value {
     [self setObject:value forKey:key];
     if (![RadarSettings useRadarKVStore]) {
         [[NSUserDefaults standardUserDefaults] setObject:value forKey:key];
     }
 }
 
-- (NSInteger)wrappedIntegerGetter:(NSString *)key {
+- (NSInteger)wrappedGetInteger:(NSString *)key {
     NSInteger radarKVStoreRes = [self integerForKey:key];
     if ([RadarSettings useRadarKVStore]) {
         return radarKVStoreRes;
@@ -295,7 +295,7 @@ static NSString *const kDirName = @"radar-KVStore";
     return nsUserDefaultsRes;
 }
 
-- (void)wrappedIntegerSetter:(NSString *)key value:(NSInteger)value {
+- (void)wrappedSetInteger:(NSString *)key value:(NSInteger)value {
     [self setInteger:value forKey:key];
     if (![RadarSettings useRadarKVStore]) {
         [[NSUserDefaults standardUserDefaults] setInteger:value forKey:key];
@@ -315,7 +315,7 @@ static NSString *const kDirName = @"radar-KVStore";
 }
 
 
-- (CLLocation *_Nullable)wrappedCLLocationGetter:(NSString *)key {
+- (CLLocation *_Nullable)wrappedGetCLLocation:(NSString *)key {
     NSObject *radarKVStoreObj = [self objectForKey:key];
     CLLocation *radarKVStoreRes = nil;
     if (radarKVStoreObj && [radarKVStoreObj isKindOfClass:[CLLocation class]]) {
@@ -341,7 +341,7 @@ static NSString *const kDirName = @"radar-KVStore";
     return nsUserDefaultsRes; 
 }
 
-- (void)wrappedCLLocationSetter:(NSString *)key value:(CLLocation *_Nullable)value {
+- (void)wrappedSetCLLocation:(NSString *)key value:(CLLocation *_Nullable)value {
     [self setObject:value forKey:key];
     if (![RadarSettings useRadarKVStore]) {
         [[NSUserDefaults standardUserDefaults] setObject:[RadarUtils dictionaryForLocation:value] forKey:key];
@@ -357,7 +357,7 @@ static NSString *const kDirName = @"radar-KVStore";
     }
 }
 
-- (RadarTrackingOptions *_Nullable)wrappedRadarTrackingOptionGetter:(NSString *)key {
+- (RadarTrackingOptions *_Nullable)wrappedGetRadarTrackingOptions:(NSString *)key {
     RadarTrackingOptions *radarKVStoreRes = [self radarTrackingOptionDecoder:key];
     if ([RadarSettings useRadarKVStore]) {
         return radarKVStoreRes;
@@ -373,7 +373,7 @@ static NSString *const kDirName = @"radar-KVStore";
     return nsUserDefaultsRes;
 }
 
-- (void)wrappedRadarTrackingOptionSetter:(NSString *)key value:(RadarTrackingOptions *_Nullable)value {
+- (void)wrappedSetRadarTrackingOptions:(NSString *)key value:(RadarTrackingOptions *_Nullable)value {
     [self setObject:value forKey:key];
     if (![RadarSettings useRadarKVStore]) {
         if (!value) {
@@ -385,7 +385,7 @@ static NSString *const kDirName = @"radar-KVStore";
     }
 }
 
-- (RadarTripOptions *_Nullable)wrappedRadarTripOptionsGetter:(NSString *)key {
+- (RadarTripOptions *_Nullable)wrappedGetRadarTripOptions:(NSString *)key {
     NSObject *options = [[RadarKVStore sharedInstance] objectForKey:key];
     RadarTripOptions *radarKVStoreRes = nil;
     if (options && [options isKindOfClass:[RadarTripOptions class]]) {
@@ -407,7 +407,7 @@ static NSString *const kDirName = @"radar-KVStore";
     return nsUserDefaultsRes;   
 }
 
-- (void)wrappedRadarTripOptionsSetter:(NSString *)key value:(RadarTripOptions *_Nullable)value {
+- (void)wrappedSetRadarTripOptions:(NSString *)key value:(RadarTripOptions *_Nullable)value {
     [self setObject:value forKey:key];
     if (![RadarSettings useRadarKVStore]) {
         if (!value) {
@@ -419,7 +419,7 @@ static NSString *const kDirName = @"radar-KVStore";
     }
 }
 
-- (NSDictionary *)wrappedDictionaryGetter:(NSString *)key {
+- (NSDictionary *)wrappedGetDictionary:(NSString *)key {
     NSDictionary *radarKVStoreRes = [self dictionaryForKey:key];
     if ([RadarSettings useRadarKVStore]) {
         return radarKVStoreRes;
@@ -431,7 +431,7 @@ static NSString *const kDirName = @"radar-KVStore";
     return nsUserDefaultsRes;
 }
 
-- (void)wrappedDictionarySetter:(NSString *)key value:(NSDictionary *_Nullable)value {
+- (void)wrappedSetDictionary:(NSString *)key value:(NSDictionary *_Nullable)value {
     [self setDictionary:value forKey:key];
     if (![RadarSettings useRadarKVStore]) {
         [[NSUserDefaults standardUserDefaults] setObject:value forKey:key];

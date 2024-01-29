@@ -55,47 +55,47 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)keyExists:(NSString *)key;
 
-- (NSString *)wrappedStringGetter:(NSString *)key;
+- (NSString *)wrappedGetString:(NSString *)key;
 
-- (void)wrappedStringSetter:(NSString *)key value:(NSString *)value;
+- (void)wrappedSetString:(NSString *)key value:(NSString *)value;
 
-- (double)wrappedDoubleGetter:(NSString *)key;
+- (double)wrappedGetDouble:(NSString *)key;
 
-- (void)wrappedDoubleSetter:(NSString *)key value:(double)value;
+- (void)wrappedSetDouble:(NSString *)key value:(double)value;
 
-- (BOOL)wrappedBOOLGetter:(NSString *)key;
+- (BOOL)wrappedGetBOOL:(NSString *)key;
 
-- (void)wrappedBOOLSetter:(NSString *)key value:(BOOL)value;
+- (void)wrappedSetBOOL:(NSString *)key value:(BOOL)value;
 
-- (NSDate *)wrappedDateGetter:(NSString *)key;
+- (NSDate *)wrappedGetDate:(NSString *)key;
 
-- (void)wrappedDateSetter:(NSString *)key value:(NSDate *)value;
+- (void)wrappedSetDate:(NSString *)key value:(NSDate *)value;
 
-- (NSArray<NSString *> *_Nullable)wrappedStringArrayGetter:(NSString *)key;
+- (NSArray<NSString *> *_Nullable)wrappedGetStringArray:(NSString *)key;
 
-- (void)wrappedStringArraySetter:(NSString *)key value:(NSArray<NSString *> *)value;
+- (void)wrappedSetStringArray:(NSString *)key value:(NSArray<NSString *> *)value;
 
-- (NSInteger)wrappedIntegerGetter:(NSString *)key;
+- (NSInteger)wrappedGetInteger:(NSString *)key;
 
-- (void)wrappedIntegerSetter:(NSString *)key value:(NSInteger)value;
+- (void)wrappedSetInteger:(NSString *)key value:(NSInteger)value;
 
 - (BOOL)wrappedKeyExists:(NSString *)key;
 
-- (CLLocation *_Nullable)wrappedCLLocationGetter:(NSString *)key;
+- (CLLocation *_Nullable)wrappedGetCLLocation:(NSString *)key;
 
-- (void)wrappedCLLocationSetter:(NSString *)key value:(CLLocation *_Nullable)value;
+- (void)wrappedSetCLLocation:(NSString *)key value:(CLLocation *_Nullable)value;
 
-- (RadarTrackingOptions *_Nullable)wrappedRadarTrackingOptionGetter:(NSString *)key;
+- (RadarTrackingOptions *_Nullable)wrappedGetRadarTrackingOptions:(NSString *)key;
 
-- (void)wrappedRadarTrackingOptionSetter:(NSString *)key value:(RadarTrackingOptions *_Nullable)value;
+- (void)wrappedSetRadarTrackingOptions:(NSString *)key value:(RadarTrackingOptions *_Nullable)value;
 
-- (RadarTripOptions *_Nullable)wrappedRadarTripOptionsGetter:(NSString *)key;
+- (RadarTripOptions *_Nullable)wrappedGetRadarTripOptions:(NSString *)key;
 
-- (void)wrappedRadarTripOptionsSetter:(NSString *)key value:(RadarTripOptions *_Nullable)value;
+- (void)wrappedSetRadarTripOptions:(NSString *)key value:(RadarTripOptions *_Nullable)value;
 
-- (NSDictionary *)wrappedDictionaryGetter:(NSString *)key;
+- (NSDictionary *)wrappedGetDictionary:(NSString *)key;
 
-- (void)wrappedDictionarySetter:(NSString *)key value:(NSDictionary *_Nullable)value;
+- (void)wrappedSetDictionary:(NSString *)key value:(NSDictionary *_Nullable)value;
 @end
 
 NS_ASSUME_NONNULL_END
