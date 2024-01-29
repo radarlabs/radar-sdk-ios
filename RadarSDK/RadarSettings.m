@@ -257,6 +257,10 @@ static NSString *const kUserDebug = @"radar-userDebug";
     return host ? host : kDefaultHost;
 }
 
++ (void)setHost:(NSString *)host {
+    [[NSUserDefaults standardUserDefaults] setObject:host forKey:kHost];
+}
+
 + (void)updateLastTrackedTime {
     NSDate *timeStamp = [NSDate date];
     [[NSUserDefaults standardUserDefaults] setObject:timeStamp forKey:kLastTrackedTime];

@@ -71,6 +71,12 @@
     
 }
 
++ (void)initializeWithPublishableKey:(NSString *)publishableKey
+                            hostname:(NSString *)hostname {
+    [RadarSettings setHost:hostname];
+    [Radar initializeWithPublishableKey:publishableKey];
+}
+
 #pragma mark - Properties
 
 + (NSString *)sdkVersion {
