@@ -53,7 +53,6 @@
 }
 
 + (void)initializeWithPublishableKey:(NSString *)publishableKey {
-
     [self migrateNSUserDefaultsIfNeeded];
 
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"initialize()"];

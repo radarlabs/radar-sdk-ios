@@ -100,7 +100,7 @@ static NSString *const kBeaconIds = @"radar-beaconIds";
 
 
 + (CLLocation *)lastLocation {
-    return [[RadarKVStore sharedInstance] doubleWriteCLLocationGetter:kLastLocation];
+    return [[RadarKVStore sharedInstance] wrappedCLLocationGetter:kLastLocation];
 }
 
 + (void)setLastLocation:(CLLocation *)lastLocation {
@@ -108,95 +108,95 @@ static NSString *const kBeaconIds = @"radar-beaconIds";
         return;
     }
 
-    [[RadarKVStore sharedInstance] doubleWriteCLLocationSetter:kLastLocation value:lastLocation];
+    [[RadarKVStore sharedInstance] wrappedCLLocationSetter:kLastLocation value:lastLocation];
 }
 
 + (CLLocation *)lastMovedLocation {
-    return [[RadarKVStore sharedInstance] doubleWriteCLLocationGetter:kLastMovedLocation];
+    return [[RadarKVStore sharedInstance] wrappedCLLocationGetter:kLastMovedLocation];
 }
 
 + (void)setLastMovedLocation:(CLLocation *)lastMovedLocation {
     if (!lastMovedLocation.isValid) {
         return;
     }
-    [[RadarKVStore sharedInstance] doubleWriteCLLocationSetter:kLastMovedLocation value:lastMovedLocation];
+    [[RadarKVStore sharedInstance] wrappedCLLocationSetter:kLastMovedLocation value:lastMovedLocation];
 }
 
 + (NSDate *)lastMovedAt {
-    return [[RadarKVStore sharedInstance] doubleWriteDateGetter:kLastMovedAt];
+    return [[RadarKVStore sharedInstance] wrappedDateGetter:kLastMovedAt];
 }
 
 + (void)setLastMovedAt:(NSDate *)lastMovedAt {
-    [[RadarKVStore sharedInstance] doubleWriteDateSetter:kLastMovedAt value:lastMovedAt];
+    [[RadarKVStore sharedInstance] wrappedDateSetter:kLastMovedAt value:lastMovedAt];
 }
 
 + (BOOL)stopped {
-    return [[RadarKVStore sharedInstance] doubleWriteBOOLGetter:kStopped];
+    return [[RadarKVStore sharedInstance] wrappedBOOLGetter:kStopped];
 }
 
 + (void)setStopped:(BOOL)stopped {
-    [[RadarKVStore sharedInstance] doubleWriteBOOLSetter:kStopped value:stopped];
+    [[RadarKVStore sharedInstance] wrappedBOOLSetter:kStopped value:stopped];
 }
 
 + (void)updateLastSentAt {
     NSDate *now = [NSDate new];
-    [[RadarKVStore sharedInstance] doubleWriteDateSetter:kLastSentAt value:now];
+    [[RadarKVStore sharedInstance] wrappedDateSetter:kLastSentAt value:now];
 }
 
 + (NSDate *)lastSentAt {
-    return [[RadarKVStore sharedInstance] doubleWriteDateGetter:kLastSentAt];
+    return [[RadarKVStore sharedInstance] wrappedDateGetter:kLastSentAt];
 }
 
 + (BOOL)canExit {
-    return [[RadarKVStore sharedInstance] doubleWriteBOOLGetter:kCanExit];
+    return [[RadarKVStore sharedInstance] wrappedBOOLGetter:kCanExit];
 }
 
 + (void)setCanExit:(BOOL)canExit {
-    [[RadarKVStore sharedInstance] doubleWriteBOOLSetter:kCanExit value:canExit];
+    [[RadarKVStore sharedInstance] wrappedBOOLSetter:kCanExit value:canExit];
 }
 
 + (CLLocation *)lastFailedStoppedLocation {
-    return [[RadarKVStore sharedInstance] doubleWriteCLLocationGetter:kLastFailedStoppedLocation];
+    return [[RadarKVStore sharedInstance] wrappedCLLocationGetter:kLastFailedStoppedLocation];
 }
 
 + (void)setLastFailedStoppedLocation:(CLLocation *)lastFailedStoppedLocation {
     if (!lastFailedStoppedLocation.isValid) {
-        [[RadarKVStore sharedInstance] doubleWriteCLLocationSetter:kLastFailedStoppedLocation value:nil];
+        [[RadarKVStore sharedInstance] wrappedCLLocationSetter:kLastFailedStoppedLocation value:nil];
         return;
     }
-    [[RadarKVStore sharedInstance] doubleWriteCLLocationSetter:kLastFailedStoppedLocation value:lastFailedStoppedLocation];
+    [[RadarKVStore sharedInstance] wrappedCLLocationSetter:kLastFailedStoppedLocation value:lastFailedStoppedLocation];
 }
 
 + (NSArray<NSString *> *)geofenceIds {
-    return [[RadarKVStore sharedInstance] doubleWriteStringArrayGetter:kGeofenceIds];
+    return [[RadarKVStore sharedInstance] wrappedStringArrayGetter:kGeofenceIds];
 }
 
 + (void)setGeofenceIds:(NSArray<NSString *> *)geofenceIds {
-    [[RadarKVStore sharedInstance] doubleWriteStringArraySetter:kGeofenceIds value:geofenceIds];
+    [[RadarKVStore sharedInstance] wrappedStringArraySetter:kGeofenceIds value:geofenceIds];
 }
 
 + (NSString *)placeId {
-   return [[RadarKVStore sharedInstance] doubleWriteStringGetter:kPlaceId];
+   return [[RadarKVStore sharedInstance] wrappedStringGetter:kPlaceId];
 }
 
 + (void)setPlaceId:(NSString *)placeId {
-    [[RadarKVStore sharedInstance] doubleWriteStringSetter:kPlaceId value:placeId];
+    [[RadarKVStore sharedInstance] wrappedStringSetter:kPlaceId value:placeId];
 }
 
 + (NSArray<NSString *> *)regionIds {
-    return [[RadarKVStore sharedInstance] doubleWriteStringArrayGetter:kRegionIds];
+    return [[RadarKVStore sharedInstance] wrappedStringArrayGetter:kRegionIds];
 }
 
 + (void)setRegionIds:(NSArray<NSString *> *)regionIds {
-    [[RadarKVStore sharedInstance] doubleWriteStringArraySetter:kRegionIds value:regionIds];
+    [[RadarKVStore sharedInstance] wrappedStringArraySetter:kRegionIds value:regionIds];
 }
 
 + (NSArray<NSString *> *)beaconIds {
-    return [[RadarKVStore sharedInstance] doubleWriteStringArrayGetter:kBeaconIds];
+    return [[RadarKVStore sharedInstance] wrappedStringArrayGetter:kBeaconIds];
 }
 
 + (void)setBeaconIds:(NSArray<NSString *> *)beaconIds {
-    [[RadarKVStore sharedInstance] doubleWriteStringArraySetter:kBeaconIds value:beaconIds];
+    [[RadarKVStore sharedInstance] wrappedStringArraySetter:kBeaconIds value:beaconIds];
 }
 
 @end

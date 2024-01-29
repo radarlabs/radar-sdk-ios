@@ -166,29 +166,29 @@ static NSString *const kUserDebug = @"radar-userDebug";
 }
 
 + (NSString *)publishableKey {
-    return [[RadarKVStore sharedInstance] doubleWriteStringGetter:kPublishableKey];
+    return [[RadarKVStore sharedInstance] wrappedStringGetter:kPublishableKey];
 }
 
 + (void)setPublishableKey:(NSString *)publishableKey {
-    [[RadarKVStore sharedInstance] doubleWriteStringSetter:kPublishableKey value:publishableKey];
+    [[RadarKVStore sharedInstance] wrappedStringSetter:kPublishableKey value:publishableKey];
 }
 
 + (NSString *)installId {
-    NSString *installId = [[RadarKVStore sharedInstance] doubleWriteStringGetter:kInstallId];
+    NSString *installId = [[RadarKVStore sharedInstance] wrappedStringGetter:kInstallId];
     if (!installId) {
         installId = [[NSUUID UUID] UUIDString];
-        [[RadarKVStore sharedInstance] doubleWriteStringSetter:kInstallId value:installId];
+        [[RadarKVStore sharedInstance] wrappedStringSetter:kInstallId value:installId];
     }
     return installId;
 }
 
 + (NSString *)sessionId {
-   return [NSString stringWithFormat:@"%.f", [[RadarKVStore sharedInstance] doubleWriteDoubleGetter:kSessionId]];
+   return [NSString stringWithFormat:@"%.f", [[RadarKVStore sharedInstance] wrappedDoubleGetter:kSessionId]];
 }
 
 + (BOOL)updateSessionId {
     double timestampSeconds = [[NSDate date] timeIntervalSince1970];
-    double sessionIdSeconds = [[RadarKVStore sharedInstance] doubleWriteDoubleGetter:kSessionId];
+    double sessionIdSeconds = [[RadarKVStore sharedInstance] wrappedDoubleGetter:kSessionId];
 
     RadarFeatureSettings *featureSettings = [RadarSettings featureSettings];
     if (featureSettings.extendFlushReplays) {
@@ -196,7 +196,7 @@ static NSString *const kUserDebug = @"radar-userDebug";
         [[RadarReplayBuffer sharedInstance] flushReplaysWithCompletionHandler:nil completionHandler:nil];
     }
     if (timestampSeconds - sessionIdSeconds > 300) {
-        [[RadarKVStore sharedInstance] doubleWriteDoubleSetter:kSessionId value:timestampSeconds];
+        [[RadarKVStore sharedInstance] wrappedDoubleSetter:kSessionId value:timestampSeconds];
         [Radar logOpenedAppConversion];
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"New session | sessionId = %@", [RadarSettings sessionId]]];
         return YES;
@@ -205,15 +205,15 @@ static NSString *const kUserDebug = @"radar-userDebug";
 }
 
 + (NSString *)_id {
-    return [[RadarKVStore sharedInstance] doubleWriteStringGetter:kId];
+    return [[RadarKVStore sharedInstance] wrappedStringGetter:kId];
 }
 
 + (void)setId:(NSString *)_id {
-    [[RadarKVStore sharedInstance] doubleWriteStringSetter:kId value:_id];
+    [[RadarKVStore sharedInstance] wrappedStringSetter:kId value:_id];
 }
 
 + (NSString *)userId {
-    return [[RadarKVStore sharedInstance] doubleWriteStringGetter:kUserId];
+    return [[RadarKVStore sharedInstance] wrappedStringGetter:kUserId];
 }
 
 + (void)setUserId:(NSString *)userId {
@@ -221,44 +221,44 @@ static NSString *const kUserDebug = @"radar-userDebug";
     if (oldUserId && ![oldUserId isEqualToString:userId]) {
         [RadarSettings setId:nil];
     }
-    [[RadarKVStore sharedInstance] doubleWriteStringSetter:kUserId value:userId];
+    [[RadarKVStore sharedInstance] wrappedStringSetter:kUserId value:userId];
 }
 
 + (NSString *)__description {
-    return [[RadarKVStore sharedInstance] doubleWriteStringGetter:kDescription];
+    return [[RadarKVStore sharedInstance] wrappedStringGetter:kDescription];
 }
 
 + (void)setDescription:(NSString *)description {
-    [[RadarKVStore sharedInstance] doubleWriteStringSetter:kDescription value:description];
+    [[RadarKVStore sharedInstance] wrappedStringSetter:kDescription value:description];
 }
 
 + (NSDictionary *)metadata {
-    return [[RadarKVStore sharedInstance] doubleWriteDictionaryGetter:kMetadata];
+    return [[RadarKVStore sharedInstance] wrappedDictionaryGetter:kMetadata];
 }
 
 + (void)setMetadata:(NSDictionary *)metadata {
-    [[RadarKVStore sharedInstance] doubleWriteDictionarySetter:kMetadata value:metadata];
+    [[RadarKVStore sharedInstance] wrappedDictionarySetter:kMetadata value:metadata];
 }
 
 + (BOOL)anonymousTrackingEnabled {
-    return [[RadarKVStore sharedInstance] doubleWriteBOOLGetter:kAnonymous];
+    return [[RadarKVStore sharedInstance] wrappedBOOLGetter:kAnonymous];
 }
 
 + (void)setAnonymousTrackingEnabled:(BOOL)enabled {
-    [[RadarKVStore sharedInstance] doubleWriteBOOLSetter:kAnonymous value:enabled];
+    [[RadarKVStore sharedInstance] wrappedBOOLSetter:kAnonymous value:enabled];
 }
 
 
 + (BOOL)tracking {
-    return [[RadarKVStore sharedInstance] doubleWriteBOOLGetter:kTracking];
+    return [[RadarKVStore sharedInstance] wrappedBOOLGetter:kTracking];
 }
 
 + (void)setTracking:(BOOL)tracking {
-    [[RadarKVStore sharedInstance] doubleWriteBOOLSetter:kTracking value:tracking];
+    [[RadarKVStore sharedInstance] wrappedBOOLSetter:kTracking value:tracking];
 }
 
 + (RadarTrackingOptions *)trackingOptions {
-    RadarTrackingOptions *options = [[RadarKVStore sharedInstance] doubleWriteRadarTrackingOptionGetter:kTrackingOptions];
+    RadarTrackingOptions *options = [[RadarKVStore sharedInstance] wrappedRadarTrackingOptionGetter:kTrackingOptions];
 
     if (options != nil) {
         return options;
@@ -269,43 +269,43 @@ static NSString *const kUserDebug = @"radar-userDebug";
 }
 
 + (void)setTrackingOptions:(RadarTrackingOptions *)options {
-  [[RadarKVStore sharedInstance] doubleWriteRadarTrackingOptionSetter:kTrackingOptions value:options];
+  [[RadarKVStore sharedInstance] wrappedRadarTrackingOptionSetter:kTrackingOptions value:options];
 }
 
 + (void)removeTrackingOptions {
-    [[RadarKVStore sharedInstance] doubleWriteRadarTrackingOptionSetter:kTrackingOptions value:nil];
+    [[RadarKVStore sharedInstance] wrappedRadarTrackingOptionSetter:kTrackingOptions value:nil];
 }
 
 + (RadarTrackingOptions *)previousTrackingOptions {
-   return [[RadarKVStore sharedInstance] doubleWriteRadarTrackingOptionGetter:kPreviousTrackingOptions];
+   return [[RadarKVStore sharedInstance] wrappedRadarTrackingOptionGetter:kPreviousTrackingOptions];
 }
 
 + (void)setPreviousTrackingOptions:(RadarTrackingOptions *)options {
-    [[RadarKVStore sharedInstance] doubleWriteRadarTrackingOptionSetter:kPreviousTrackingOptions value:options];
+    [[RadarKVStore sharedInstance] wrappedRadarTrackingOptionSetter:kPreviousTrackingOptions value:options];
 }
 
 + (void)removePreviousTrackingOptions {
-    [[RadarKVStore sharedInstance] doubleWriteRadarTrackingOptionSetter:kPreviousTrackingOptions value:nil];
+    [[RadarKVStore sharedInstance] wrappedRadarTrackingOptionSetter:kPreviousTrackingOptions value:nil];
 }
 
 + (RadarTrackingOptions *_Nullable)remoteTrackingOptions {
-    return [[RadarKVStore sharedInstance] doubleWriteRadarTrackingOptionGetter:kRemoteTrackingOptions];
+    return [[RadarKVStore sharedInstance] wrappedRadarTrackingOptionGetter:kRemoteTrackingOptions];
 }
 
 + (void)setRemoteTrackingOptions:(RadarTrackingOptions *_Nonnull)options {
-    [[RadarKVStore sharedInstance] doubleWriteRadarTrackingOptionSetter:kRemoteTrackingOptions value:options];
+    [[RadarKVStore sharedInstance] wrappedRadarTrackingOptionSetter:kRemoteTrackingOptions value:options];
 }
 
 + (void)removeRemoteTrackingOptions {
-    [[RadarKVStore sharedInstance] doubleWriteRadarTrackingOptionSetter:kRemoteTrackingOptions value:nil];
+    [[RadarKVStore sharedInstance] wrappedRadarTrackingOptionSetter:kRemoteTrackingOptions value:nil];
 }
 
 + (RadarTripOptions *)tripOptions {
-   return [[RadarKVStore sharedInstance] doubleWriteRadarTripOptionsGetter:kTripOptions];
+   return [[RadarKVStore sharedInstance] wrappedRadarTripOptionsGetter:kTripOptions];
 }
 
 + (void)setTripOptions:(RadarTripOptions *)options {
-    [[RadarKVStore sharedInstance] doubleWriteRadarTripOptionsSetter:kTripOptions value:options];
+    [[RadarKVStore sharedInstance] wrappedRadarTripOptionsSetter:kTripOptions value:options];
 }
 
 + (void)setTripOptionsWithRadarKVStore:(RadarTripOptions *)options {
@@ -348,10 +348,10 @@ static NSString *const kUserDebug = @"radar-userDebug";
     RadarLogLevel logLevel;
     if ([RadarSettings userDebug]) {
         logLevel = RadarLogLevelDebug;
-    } else if (![[RadarKVStore sharedInstance] doubleWriteKeyExists:kLogLevel]) {
+    } else if (![[RadarKVStore sharedInstance] wrappedKeyExists:kLogLevel]) {
         logLevel = RadarLogLevelInfo;
     } else {
-        logLevel = (RadarLogLevel)[[RadarKVStore sharedInstance] doubleWriteIntegerGetter:kLogLevel];
+        logLevel = (RadarLogLevel)[[RadarKVStore sharedInstance] wrappedIntegerGetter:kLogLevel];
     }
     return logLevel;
 }
@@ -359,19 +359,19 @@ static NSString *const kUserDebug = @"radar-userDebug";
 
 + (void)setLogLevel:(RadarLogLevel)level {
     NSInteger logLevelInteger = (int)level;
-    [[RadarKVStore sharedInstance] doubleWriteIntegerSetter:kLogLevel value:logLevelInteger];
+    [[RadarKVStore sharedInstance] wrappedIntegerSetter:kLogLevel value:logLevelInteger];
 }
 
 + (NSArray<NSString *> *_Nullable)beaconUUIDs {
-   return [[RadarKVStore sharedInstance] doubleWriteStringArrayGetter:kBeaconUUIDs];
+   return [[RadarKVStore sharedInstance] wrappedStringArrayGetter:kBeaconUUIDs];
 }
 
 + (void)setBeaconUUIDs:(NSArray<NSString *> *_Nullable)beaconUUIDs {
-    [[RadarKVStore sharedInstance] doubleWriteStringArraySetter:kBeaconUUIDs value:beaconUUIDs];
+    [[RadarKVStore sharedInstance] wrappedStringArraySetter:kBeaconUUIDs value:beaconUUIDs];
 }
 
 + (NSString *)host {
-    NSString *host = [[RadarKVStore sharedInstance] doubleWriteStringGetter:kHost];
+    NSString *host = [[RadarKVStore sharedInstance] wrappedStringGetter:kHost];
     return host ? host : kDefaultHost;
 }
 
@@ -381,37 +381,37 @@ static NSString *const kUserDebug = @"radar-userDebug";
 
 + (void)updateLastTrackedTime {
     NSDate *timeStamp = [NSDate date];
-    [[RadarKVStore sharedInstance] doubleWriteDateSetter:kLastTrackedTime value:timeStamp];
+    [[RadarKVStore sharedInstance] wrappedDateSetter:kLastTrackedTime value:timeStamp];
 }
 
 + (NSDate *)lastTrackedTime {
-    NSDate *lastTrackedTime = [[RadarKVStore sharedInstance] doubleWriteDateGetter:kLastTrackedTime];
+    NSDate *lastTrackedTime = [[RadarKVStore sharedInstance] wrappedDateGetter:kLastTrackedTime];
     return lastTrackedTime ? lastTrackedTime : [NSDate dateWithTimeIntervalSince1970:0];
 }
 
 + (NSString *)verifiedHost {
-    NSString *verifiedHost = [[RadarKVStore sharedInstance] doubleWriteStringGetter:kVerifiedHost];
+    NSString *verifiedHost = [[RadarKVStore sharedInstance] wrappedStringGetter:kVerifiedHost];
     return verifiedHost ? verifiedHost : kDefaultVerifiedHost;
 }
 
 + (BOOL)userDebug {
-   if (![[RadarKVStore sharedInstance] doubleWriteKeyExists:kUserDebug]) {
+   if (![[RadarKVStore sharedInstance] wrappedKeyExists:kUserDebug]) {
         return YES;
     }
-    return [[RadarKVStore sharedInstance] doubleWriteBOOLGetter:kUserDebug];
+    return [[RadarKVStore sharedInstance] wrappedBOOLGetter:kUserDebug];
 }
 
 + (void)setUserDebug:(BOOL)userDebug {
-    [[RadarKVStore sharedInstance] doubleWriteBOOLSetter:kUserDebug value:userDebug];
+    [[RadarKVStore sharedInstance] wrappedBOOLSetter:kUserDebug value:userDebug];
 }
 
 + (void)updateLastAppOpenTime {
     NSDate *timeStamp = [NSDate date];
-    [[RadarKVStore sharedInstance] doubleWriteDateSetter:kLastAppOpenTime value:timeStamp];
+    [[RadarKVStore sharedInstance] wrappedDateSetter:kLastAppOpenTime value:timeStamp];
 }
 
 + (NSDate *)lastAppOpenTime {
-    NSDate *lastAppOpenTime = [[RadarKVStore sharedInstance] doubleWriteDateGetter:kLastAppOpenTime];
+    NSDate *lastAppOpenTime = [[RadarKVStore sharedInstance] wrappedDateGetter:kLastAppOpenTime];
     return lastAppOpenTime ? lastAppOpenTime : [NSDate dateWithTimeIntervalSince1970:0];
 }
 
