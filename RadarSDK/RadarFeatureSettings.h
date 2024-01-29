@@ -22,7 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) BOOL usePersistence;
 @property (nonatomic, assign) BOOL extendFlushReplays;
 @property (nonatomic, assign) BOOL useLogPersistence;
-@property (nonatomic, assign) BOOL useRadarBeaconRangingOnly;
+@property (nonatomic, assign) BOOL useRadarModifiedBeacon;
 
 /**
  Initializes a new RadarFeatureSettings object with given value.
@@ -32,7 +32,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithUsePersistence:(BOOL)usePersistence
                     extendFlushReplays:(BOOL)extendFlushReplays
                      useLogPersistence:(BOOL)useLogPersistence
-             useRadarBeaconRangingOnly:(BOOL)useRadarBeaconRangingOnly;
+                useRadarModifiedBeacon:(BOOL)useRadarModifiedBeacon;
 
 /**
  Creates a RadarFeatureSettings object from the provided dictionary.

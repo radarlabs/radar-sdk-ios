@@ -12,12 +12,12 @@
 - (instancetype)initWithUsePersistence:(BOOL)usePersistence
              extendFlushReplays:(BOOL)extendFlushReplays
              useLogPersistence:(BOOL)useLogPersistence
-             useRadarBeaconRangingOnly:(BOOL)useRadarBeaconRangingOnly{
+             useRadarModifiedBeacon:(BOOL)useRadarModifiedBeacon{
     if (self = [super init]) {
         _usePersistence = usePersistence;
         _extendFlushReplays = extendFlushReplays;
         _useLogPersistence = useLogPersistence;
-        _useRadarBeaconRangingOnly = useRadarBeaconRangingOnly;
+        _useRadarModifiedBeacon = useRadarModifiedBeacon;
     }
     return self;
 }
@@ -27,7 +27,7 @@
         return [[RadarFeatureSettings alloc] initWithUsePersistence:NO
                                                  extendFlushReplays:NO
                                                   useLogPersistence:NO
-                                          useRadarBeaconRangingOnly:NO];
+                                             useRadarModifiedBeacon:NO];
     }
 
     NSObject *usePersistenceObj = dict[@"usePersistence"]; 
@@ -48,16 +48,16 @@
         useLogPersistence = [(NSNumber *)useLogPersistenceObj boolValue];
     }
     
-    NSObject *useRadarBeaconRangingOnlyObj = dict[@"useRadarBeaconRangingOnly"];
-    BOOL useRadarBeaconRangingOnly = NO;
-    if (useRadarBeaconRangingOnlyObj && [useRadarBeaconRangingOnlyObj isKindOfClass:[NSNumber class]]) {
-        useRadarBeaconRangingOnly = [(NSNumber *)useRadarBeaconRangingOnlyObj boolValue];
+    NSObject *useRadarModifiedBeaconObj = dict[@"useRadarModifiedBeacon"];
+    BOOL useRadarModifiedBeacon = NO;
+    if (useRadarModifiedBeaconObj && [useRadarModifiedBeaconObj isKindOfClass:[NSNumber class]]) {
+        useRadarModifiedBeacon = [(NSNumber *)useRadarModifiedBeaconObj boolValue];
     }
 
     return [[RadarFeatureSettings alloc] initWithUsePersistence:usePersistence 
                                              extendFlushReplays:extendFlushReplays
                                               useLogPersistence:useLogPersistence
-                                      useRadarBeaconRangingOnly:useRadarBeaconRangingOnly];
+                                         useRadarModifiedBeacon:useRadarModifiedBeacon];
 }
 
 - (NSDictionary *)dictionaryValue {
@@ -65,7 +65,7 @@
     [dict setValue:@(self.usePersistence) forKey:@"usePersistence"];
     [dict setValue:@(self.extendFlushReplays) forKey:@"extendFlushReplays"];
     [dict setValue:@(self.useLogPersistence) forKey:@"useLogPersistence"];
-    [dict setValue:@(self.useRadarBeaconRangingOnly) forKey:@"useRadarBeaconRangingOnly"];
+    [dict setValue:@(self.useRadarModifiedBeacon) forKey:@"useRadarModifiedBeacon"];
     
     return dict;
 }

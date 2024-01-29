@@ -265,7 +265,7 @@
 }
 
 - (void)handleBeacons {
-    if ((self.beaconUUIDs.count == 0 || [RadarSettings useRadarBeaconRangingOnly]) && 
+    if ((self.beaconUUIDs.count == 0 || [RadarSettings useRadarModifiedBeacon]) && 
         self.nearbyBeaconIdentifiers.count + self.failedBeaconIdentifiers.count == self.beacons.count) {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Finished ranging"]];
 
@@ -274,7 +274,7 @@
 }
 
 - (void)locationManager:(CLLocationManager *)manager monitoringDidFailForRegion:(CLRegion *)region withError:(NSError *)error {
-    if ([RadarSettings useRadarBeaconRangingOnly]) {
+    if ([RadarSettings useRadarModifiedBeacon]) {
         return;
     }
     
@@ -309,7 +309,7 @@
 }
 
 - (void)handleBeaconEntryForRegion:(CLBeaconRegion *)region completionHandler:(RadarBeaconCompletionHandler)completionHandler {
-    if ([RadarSettings useRadarBeaconRangingOnly]) {
+    if ([RadarSettings useRadarModifiedBeacon]) {
         return;
     }
     
@@ -328,7 +328,7 @@
 }
 
 - (void)handleBeaconExitForRegion:(CLBeaconRegion *)region completionHandler:(RadarBeaconCompletionHandler)completionHandler {
-    if ([RadarSettings useRadarBeaconRangingOnly]) {
+    if ([RadarSettings useRadarModifiedBeacon]) {
         return;
     }
     
@@ -347,7 +347,7 @@
 }
 
 - (void)handleBeaconUUIDEntryForRegion:(CLBeaconRegion *)region completionHandler:(RadarBeaconCompletionHandler)completionHandler {
-    if ([RadarSettings useRadarBeaconRangingOnly]) {
+    if ([RadarSettings useRadarModifiedBeacon]) {
         return;
     }
     
@@ -356,7 +356,7 @@
 }
 
 - (void)handleBeaconUUIDExitForRegion:(CLBeaconRegion *)region completionHandler:(RadarBeaconCompletionHandler)completionHandler {
-    if ([RadarSettings useRadarBeaconRangingOnly]) {
+    if ([RadarSettings useRadarModifiedBeacon]) {
         return;
     }
     

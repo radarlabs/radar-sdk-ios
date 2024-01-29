@@ -567,7 +567,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 }
 
 - (void)replaceSyncedBeacons:(NSArray<RadarBeacon *> *)beacons {
-    if ([RadarSettings useRadarBeaconRangingOnly]) {
+    if ([RadarSettings useRadarModifiedBeacon]) {
         return;
     }
     
@@ -608,7 +608,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 }
 
 - (void)replaceSyncedBeaconUUIDs:(NSArray<NSString *> *)uuids {
-    if ([RadarSettings useRadarBeaconRangingOnly]) {
+    if ([RadarSettings useRadarModifiedBeacon]) {
         return;
     }
     
@@ -640,7 +640,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 }
 
 - (void)removeSyncedBeacons {
-    if ([RadarSettings useRadarBeaconRangingOnly]) {
+    if ([RadarSettings useRadarModifiedBeacon]) {
         return;
     }
     
