@@ -284,6 +284,12 @@
                                                            }
                                                        }];
     }
+    
+    if (token) {
+        [self trackVerifiedTokenWithBeacons:beacons completionHandler:nil];
+    } else {
+        [self trackVerifiedWithBeacons:beacons completionHandler:nil];
+    }
 }
 
 - (void)getAttestationWithNonce:(NSString *)nonce completionHandler:(RadarVerificationCompletionHandler)completionHandler {
