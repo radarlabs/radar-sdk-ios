@@ -385,7 +385,7 @@
 
                                 NSString *token = (NSString *)tokenObj;
                                 
-                                if (location) {
+                                if (token) {
                                     [[RadarDelegateHolder sharedInstance] didUpdateToken:token];
                                 }
 
