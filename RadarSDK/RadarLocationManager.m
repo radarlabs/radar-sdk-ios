@@ -905,7 +905,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
             }
         }];
     } else {
-        callTrackAPI(nil);
+        callTrackAPI(beacons);
     }
 }
 
