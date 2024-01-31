@@ -133,7 +133,7 @@
                                 }];
                             }];
                         } else {
-                            callTrackAPI(nil);
+                            callTrackAPI(@[]);
                         }
                     }];
                 } else {
@@ -231,7 +231,7 @@
                                 }];
                             }];
                         } else {
-                            callTrackAPI(nil);
+                            callTrackAPI(@[]);
                         }
                     }];
                 } else {
