@@ -255,7 +255,7 @@
 		96D3F20527C6B291007578B9 /* clang_format.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = clang_format.sh; sourceTree = "<group>"; };
 		96D3F20627C6B291007578B9 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		96D3F20727C6B291007578B9 /* Makefile */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
-		96D3F20827C6B291007578B9 /* RadarSDK.podspec */ = {isa = PBXFileReference; lastKnownFileType = text; path = RadarSDK.podspec; sourceTree = "<group>"; };
+		96D3F20827C6B291007578B9 /* RadarSDK.podspec */ = {isa = PBXFileReference; lastKnownFileType = text; path = RadarSDK.podspec; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		96D3F20927C6B291007578B9 /* MIGRATION.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = MIGRATION.md; sourceTree = "<group>"; };
 		96FC90F6277379C1000757DF /* RadarFraud.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RadarFraud.m; sourceTree = "<group>"; };
 		DD103210237E0C47003DD408 /* RadarSDKTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RadarSDKTests.m; sourceTree = "<group>"; };
@@ -987,7 +987,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				MARKETING_VERSION = 3.9.5;
+				MARKETING_VERSION = 3.9.6;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -1045,7 +1045,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				MARKETING_VERSION = 3.9.5;
+				MARKETING_VERSION = 3.9.6;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				OTHER_CFLAGS = "-fembed-bitcode";
