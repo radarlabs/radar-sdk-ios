@@ -843,7 +843,91 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 
     RadarTrackingOptions *options = [Radar getTrackingOptions];
     
-    void (^callTrackAPI)(NSArray<RadarBeacon *> *_Nullable) = ^(NSArray<RadarBeacon *> *_Nullable beacons) {
+    if ([RadarSettings useRadarModifiedBeacon]) {
+        void (^callTrackAPI)(NSArray<RadarBeacon *> *_Nullable) = ^(NSArray<RadarBeacon *> *_Nullable beacons) {
+            [[RadarAPIClient sharedInstance] trackWithLocation:location
+                                                       stopped:stopped
+                                                    foreground:[RadarUtils foreground]
+                                                        source:source
+                                                      replayed:replayed
+                                                       beacons:beacons
+                                             completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user,
+                                                                 NSArray<RadarGeofence *> *_Nullable nearbyGeofences, RadarConfig *_Nullable config, NSString *_Nullable token) {
+                self.sending = NO;
+                
+                [self updateTrackingFromMeta:config.meta];
+                [RadarSettings setFeatureSettings:config.meta.featureSettings];
+                [self replaceSyncedGeofences:nearbyGeofences];
+            }];
+        };
+        
+        if (options.beacons &&
+            source != RadarLocationSourceBeaconEnter &&
+            source != RadarLocationSourceBeaconExit &&
+            source != RadarLocationSourceMockLocation &&
+            source != RadarLocationSourceManualLocation) {
+            
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Searching for nearby beacons"];
+            
+            [[RadarAPIClient sharedInstance]
+             searchBeaconsNear:location
+             radius:1000
+             limit:10
+             completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarBeacon *> *_Nullable beacons, NSArray<NSString *> *_Nullable beaconUUIDs) {
+                if (beaconUUIDs && beaconUUIDs.count) {
+                    [self replaceSyncedBeaconUUIDs:beaconUUIDs];
+                    [RadarUtils runOnMainThread:^{
+                        [[RadarBeaconManager sharedInstance] rangeBeaconUUIDs:beaconUUIDs
+                                                            completionHandler:^(RadarStatus status, NSArray<RadarBeacon *> *_Nullable beacons) {
+                            if (status != RadarStatusSuccess || !beacons) {
+                                callTrackAPI(nil);
+                                return;
+                            }
+                            
+                            callTrackAPI(beacons);
+                        }];
+                    }];
+                } else if (beacons && beacons.count) {
+                    [self replaceSyncedBeacons:beacons];
+                    [RadarUtils runOnMainThread:^{
+                        [[RadarBeaconManager sharedInstance] rangeBeacons:beacons
+                                                        completionHandler:^(RadarStatus status, NSArray<RadarBeacon *> *_Nullable beacons) {
+                            if (status != RadarStatusSuccess || !beacons) {
+                                callTrackAPI(nil);
+                                
+                                return;
+                            }
+                            
+                            callTrackAPI(beacons);
+                        }];
+                    }];
+                } else {
+                    callTrackAPI(@[]);
+                }
+            }];
+        } else {
+            callTrackAPI(nil);
+        }
+    } else {
+        if (options.beacons) {
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Searching for nearby beacons"];
+
+            if (source != RadarLocationSourceBeaconEnter && source != RadarLocationSourceBeaconExit && source != RadarLocationSourceMockLocation &&
+                source != RadarLocationSourceManualLocation) {
+                [[RadarAPIClient sharedInstance]
+                    searchBeaconsNear:location
+                               radius:1000
+                                limit:10
+                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarBeacon *> *_Nullable beacons, NSArray<NSString *> *_Nullable beaconUUIDs) {
+                        if (beaconUUIDs && beaconUUIDs.count) {
+                            [self replaceSyncedBeaconUUIDs:beaconUUIDs];
+                        } else if (beacons && beacons.count) {
+                            [self replaceSyncedBeacons:beacons];
+                        }
+                    }];
+            }
+        }
+
         [[RadarAPIClient sharedInstance] trackWithLocation:location
                                                    stopped:stopped
                                                 foreground:[RadarUtils foreground]
@@ -852,60 +936,12 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                                                    beacons:beacons
                                          completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user,
                                                              NSArray<RadarGeofence *> *_Nullable nearbyGeofences, RadarConfig *_Nullable config, NSString *_Nullable token) {
-            self.sending = NO;
+                                             self.sending = NO;
 
-            [self updateTrackingFromMeta:config.meta];
-            [RadarSettings setFeatureSettings:config.meta.featureSettings];
-            [self replaceSyncedGeofences:nearbyGeofences];
-        }];
-    };
-    
-    if (options.beacons &&
-        source != RadarLocationSourceBeaconEnter &&
-        source != RadarLocationSourceBeaconExit &&
-        source != RadarLocationSourceMockLocation &&
-        source != RadarLocationSourceManualLocation) {
-        
-        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Searching for nearby beacons"];
-        
-        [[RadarAPIClient sharedInstance]
-         searchBeaconsNear:location
-         radius:1000
-         limit:10
-         completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarBeacon *> *_Nullable beacons, NSArray<NSString *> *_Nullable beaconUUIDs) {
-            if (beaconUUIDs && beaconUUIDs.count) {
-                [self replaceSyncedBeaconUUIDs:beaconUUIDs];
-                [RadarUtils runOnMainThread:^{
-                    [[RadarBeaconManager sharedInstance] rangeBeaconUUIDs:beaconUUIDs
-                                                        completionHandler:^(RadarStatus status, NSArray<RadarBeacon *> *_Nullable beacons) {
-                        if (status != RadarStatusSuccess || !beacons) {
-                            callTrackAPI(nil);
-                            return;
-                        }
-                        
-                        callTrackAPI(beacons);
-                    }];
-                }];
-            } else if (beacons && beacons.count) {
-                [self replaceSyncedBeacons:beacons];
-                [RadarUtils runOnMainThread:^{
-                    [[RadarBeaconManager sharedInstance] rangeBeacons:beacons
-                                                    completionHandler:^(RadarStatus status, NSArray<RadarBeacon *> *_Nullable beacons) {
-                        if (status != RadarStatusSuccess || !beacons) {
-                            callTrackAPI(nil);
-
-                            return;
-                        }
-
-                        callTrackAPI(beacons);
-                    }];
-                }];
-            } else {
-                callTrackAPI(@[]);
-            }
-        }];
-    } else {
-        callTrackAPI(nil);
+                                             [self updateTrackingFromMeta:config.meta];
+                                             [RadarSettings setFeatureSettings:config.meta.featureSettings];
+                                             [self replaceSyncedGeofences:nearbyGeofences];
+                                         }];
     }
 }
 
