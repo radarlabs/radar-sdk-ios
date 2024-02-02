@@ -87,12 +87,13 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         _locationManager.delegate = self;
         _locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters;
         _locationManager.distanceFilter = kCLDistanceFilterNone;
-        _locationManager.allowsBackgroundLocationUpdates = [RadarUtils locationBackgroundMode] && [CLLocationManager authorizationStatus] == kCLAuthorizationStatusAuthorizedAlways;
-
-        _lowPowerLocationManager = [CLLocationManager new];
-        _lowPowerLocationManager.desiredAccuracy = kCLLocationAccuracyThreeKilometers;
-        _lowPowerLocationManager.distanceFilter = 3000;
-        _lowPowerLocationManager.allowsBackgroundLocationUpdates = [RadarUtils locationBackgroundMode];
+        _locationManager.allowsBackgroundLocationUpdates = YES;
+        _locationManager.pausesLocationUpdatesAutomatically = NO;
+//        if (@available(iOS 11.0, *)) {
+//            _locationManager.showsBackgroundLocationIndicator = YES;
+//        } else {
+//            // Fallback on earlier versions
+//        }
 
         _permissionsHelper = [RadarPermissionsHelper new];
 
@@ -231,7 +232,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                                                            [self requestLocation];
                                                        }];
 
-        [self.lowPowerLocationManager startUpdatingLocation];
+        [self.locationManager startUpdatingLocation];
 
         self.started = YES;
         self.startedInterval = interval;
@@ -264,7 +265,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 - (void)shutDown {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Shutting down"];
 
-    [self.lowPowerLocationManager stopUpdatingLocation];
+//    [self.locationManager stopUpdatingLocation];
 }
 
 - (void)requestLocation {
@@ -308,31 +309,27 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         }
 
         if (tracking) {
-            self.locationManager.allowsBackgroundLocationUpdates =
-                [RadarUtils locationBackgroundMode] && [CLLocationManager authorizationStatus] == kCLAuthorizationStatusAuthorizedAlways;
+            self.locationManager.allowsBackgroundLocationUpdates = YES;
             self.locationManager.pausesLocationUpdatesAutomatically = NO;
 
-            self.lowPowerLocationManager.allowsBackgroundLocationUpdates = [RadarUtils locationBackgroundMode];
-            self.lowPowerLocationManager.pausesLocationUpdatesAutomatically = NO;
-
-            CLLocationAccuracy desiredAccuracy;
-            switch (options.desiredAccuracy) {
-            case RadarTrackingOptionsDesiredAccuracyHigh:
-                desiredAccuracy = kCLLocationAccuracyBest;
-                break;
-            case RadarTrackingOptionsDesiredAccuracyMedium:
-                desiredAccuracy = kCLLocationAccuracyHundredMeters;
-                break;
-            case RadarTrackingOptionsDesiredAccuracyLow:
-                desiredAccuracy = kCLLocationAccuracyKilometer;
-                break;
-            default:
-                desiredAccuracy = kCLLocationAccuracyHundredMeters;
-            }
-            self.locationManager.desiredAccuracy = desiredAccuracy;
+//            CLLocationAccuracy desiredAccuracy;
+//            switch (options.desiredAccuracy) {
+//            case RadarTrackingOptionsDesiredAccuracyHigh:
+//                desiredAccuracy = kCLLocationAccuracyBest;
+//                break;
+//            case RadarTrackingOptionsDesiredAccuracyMedium:
+//                desiredAccuracy = kCLLocationAccuracyHundredMeters;
+//                break;
+//            case RadarTrackingOptionsDesiredAccuracyLow:
+//                desiredAccuracy = kCLLocationAccuracyKilometer;
+//                break;
+//            default:
+//                desiredAccuracy = kCLLocationAccuracyHundredMeters;
+//            }
+//            self.locationManager.desiredAccuracy = desiredAccuracy;
 
             if (@available(iOS 11.0, *)) {
-                self.lowPowerLocationManager.showsBackgroundLocationIndicator = options.showBlueBar;
+                self.locationManager.showsBackgroundLocationIndicator = options.showBlueBar;
             }
 
             BOOL startUpdates = options.showBlueBar || [CLLocationManager authorizationStatus] == kCLAuthorizationStatusAuthorizedAlways;
