@@ -45,7 +45,7 @@ static NSDateFormatter *_isoDateFormatter;
 }
 
 + (NSString *)sdkVersion {
-    return @"3.9.4-beta.1";
+    return @"3.9.6-beta.1";
 }
 
 + (NSString *)deviceId {
