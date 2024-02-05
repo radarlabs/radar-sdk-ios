@@ -384,6 +384,10 @@
                                 }
 
                                 NSString *token = (NSString *)tokenObj;
+                                
+                                if (token) {
+                                    [[RadarDelegateHolder sharedInstance] didUpdateToken:token];
+                                }
 
                                 return completionHandler(status, nil, nil, nil, nil, nil, token);
                             }
