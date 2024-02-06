@@ -13,7 +13,6 @@
 #import "RadarAddress.h"
 #import "RadarContext.h"
 #import "RadarEvent.h"
-#import "RadarHostRegion.h"
 #import "RadarRegion.h"
 #import "RadarRouteMatrix.h"
 #import "RadarRouteMode.h"
@@ -155,6 +154,18 @@ typedef NS_ENUM(NSInteger, RadarAddressVerificationStatus) {
     RadarAddressVerificationStatusAmbiguous NS_SWIFT_NAME(ambiguous) = 3,
     /// Unverified: unable to verify. The output fields will contain the input data
     RadarAddressVerificationStatusUnverified NS_SWIFT_NAME(unverified) = 4
+};
+
+/**
+ The Radar API hosts.
+ */
+typedef NS_ENUM(NSInteger, RadarHostRegion) {
+    /// Uses https://api.na.radar.com
+    RadarHostRegionNorthAmerica NS_SWIFT_NAME(northAmerica),
+    /// Uses https://api.eu.radar.com
+    RadarHostRegionEurope NS_SWIFT_NAME(europe),
+    /// Uses https://api.radar.io
+    RadarHostRegionGlobal NS_SWIFT_NAME(global)
 };
 
 
