@@ -33,7 +33,9 @@ static NSString *const kTripOptions = @"radar-tripOptions";
 static NSString *const kLogLevel = @"radar-logLevel";
 static NSString *const kBeaconUUIDs = @"radar-beaconUUIDs";
 static NSString *const kHost = @"radar-host";
-static NSString *const kDefaultHost = @"https://api.radar.io";
+static NSString *const kGlobalHost = @"https://api.radar.io";
+static NSString *const kNorthAmericaHost = @"https://api.na.radar.com";
+static NSString *const kEuropeHost = @"https://api.eu.radar.com";
 static NSString *const kLastTrackedTime = @"radar-lastTrackedTime";
 static NSString *const kVerifiedHost = @"radar-verifiedHost";
 static NSString *const kDefaultVerifiedHost = @"https://api-verified.radar.io";
@@ -254,11 +256,27 @@ static NSString *const kUserDebug = @"radar-userDebug";
 
 + (NSString *)host {
     NSString *host = [[NSUserDefaults standardUserDefaults] stringForKey:kHost];
-    return host ? host : kDefaultHost;
+    return host ? host : kGlobalHost;
 }
 
 + (void)setHost:(NSString *)host {
     [[NSUserDefaults standardUserDefaults] setObject:host forKey:kHost];
+}
+
++ (void)setHostRegion:(RadarHostRegion)region {
+    NSString *hostString;
+    switch(region) {
+        case RadarHostRegionNorthAmerica:
+            hostString = kNorthAmericaHost;
+            break;
+        case RadarHostRegionEurope:
+            hostString = kEuropeHost;
+            break;
+        case RadarHostRegionGlobal:
+            hostString = kGlobalHost;
+            break;
+    }
+    [RadarSettings setHost:hostString];
 }
 
 + (void)updateLastTrackedTime {

@@ -13,6 +13,7 @@
 #import "RadarAddress.h"
 #import "RadarContext.h"
 #import "RadarEvent.h"
+#import "RadarHostRegion.h"
 #import "RadarRegion.h"
 #import "RadarRouteMatrix.h"
 #import "RadarRouteMode.h"
@@ -313,12 +314,12 @@ typedef void (^_Nonnull RadarLogConversionCompletionHandler)(RadarStatus status,
  @warning Call this method from the main thread in your `AppDelegate` class before calling any other Radar methods.
 
  @param publishableKey Your publishable API key.
- @param hostname Your Radar API hostname.
+ @param region Your Radar API host region.
 
  @see https://radar.com/documentation/sdk/ios#initialize-sdk
  */
 + (void)initializeWithPublishableKey:(NSString *_Nonnull)publishableKey
-                            hostname:(NSString *_Nonnull)hostname NS_SWIFT_NAME(initialize(publishableKey:hostname:));
+                              region:(RadarHostRegion)region NS_SWIFT_NAME(initialize(publishableKey:region:));
 
 #pragma mark - Properties
 

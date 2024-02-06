@@ -72,8 +72,8 @@
 }
 
 + (void)initializeWithPublishableKey:(NSString *)publishableKey
-                            hostname:(NSString *)hostname {
-    [RadarSettings setHost:hostname];
+                              region:(RadarHostRegion)region {
+    [RadarSettings setHostRegion:region];
     [Radar initializeWithPublishableKey:publishableKey];
 }
 
