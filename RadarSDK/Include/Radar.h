@@ -157,7 +157,7 @@ typedef NS_ENUM(NSInteger, RadarAddressVerificationStatus) {
 };
 
 /**
- The Radar API hosts.
+ The Radar API host regions.
  */
 typedef NS_ENUM(NSInteger, RadarHostRegion) {
     /// Uses https://api.na.radar.com
