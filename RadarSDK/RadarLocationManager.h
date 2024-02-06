@@ -18,6 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonnull, strong, nonatomic) CLLocationManager *locationManager;
 @property (nonnull, strong, nonatomic) UNUserNotificationCenter *notificationCenter;
+@property (nonnull, strong, nonatomic) CLLocationManager *lowPowerLocationManager;
 @property (nonnull, strong, nonatomic) RadarPermissionsHelper *permissionsHelper;
 
 + (instancetype)sharedInstance;
