@@ -339,7 +339,16 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
             BOOL stopped = [RadarState stopped];
             if (stopped) {
                 if (options.desiredStoppedUpdateInterval == 0) {
-                    [self stopUpdates];
+                    if (!justStopped) {
+                        [self stopUpdates];
+                    } else {
+                        // log that we're doing this
+                        [RadarLogger logWithLevel:RadarLogLevelDebug message:@"Setting desiredAccuracy to kCLLocationAccuracyBest and getting 1 more location in 30s"];
+                        self.locationManager.desiredAccuracy = kCLLocationAccuracyBest;
+                        [RadarState setJustStopped:NO];
+                        [self startUpdates:30];
+                    }
+
                 } else if (startUpdates) {
                     [self startUpdates:options.desiredStoppedUpdateInterval];
                 }
@@ -736,8 +745,10 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     } else {
         stopped = (force || source == RadarLocationSourceVisitArrival);
     }
-    BOOL justStopped = stopped && !wasStopped;
+
     [RadarState setStopped:stopped];
+    BOOL justStopped = stopped && !wasStopped;
+    [RadarState setJustStopped:justStopped];
 
     [RadarState setLastLocation:location];
 
