@@ -337,6 +337,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 
             BOOL startUpdates = options.showBlueBar || [CLLocationManager authorizationStatus] == kCLAuthorizationStatusAuthorizedAlways;
             BOOL stopped = [RadarState stopped];
+            BOOL justStopped = [RadarState justStopped];
             if (stopped) {
                 if (options.desiredStoppedUpdateInterval == 0) {
                     if (!justStopped) {
