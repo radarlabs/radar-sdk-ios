@@ -15,6 +15,7 @@ static NSString *const kLastLocation = @"radar-lastLocation";
 static NSString *const kLastMovedLocation = @"radar-lastMovedLocation";
 static NSString *const kLastMovedAt = @"radar-lastMovedAt";
 static NSString *const kStopped = @"radar-stopped";
+static NSString *const kJustStopped = @"radar-justStopped";
 static NSString *const kLastSentAt = @"radar-lastSentAt";
 static NSString *const kCanExit = @"radar-canExit";
 static NSString *const kLastFailedStoppedLocation = @"radar-lastFailedStoppedLocation";
@@ -77,6 +78,14 @@ static NSString *const kBeaconIds = @"radar-beaconIds";
 
 + (void)setStopped:(BOOL)stopped {
     [[NSUserDefaults standardUserDefaults] setBool:stopped forKey:kStopped];
+}
+
++ (BOOL)justStopped {
+    return [[NSUserDefaults standardUserDefaults] boolForKey:kJustStopped];
+}
+
++ (void)setJustStopped:(BOOL)justStopped {
+    [[NSUserDefaults standardUserDefaults] setBool:justStopped forKey:kJustStopped];
 }
 
 + (void)updateLastSentAt {
