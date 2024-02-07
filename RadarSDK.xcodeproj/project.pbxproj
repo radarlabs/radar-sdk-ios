@@ -160,6 +160,9 @@
 		DD8E2F7A24018C37002D51AB /* CLLocationManagerMock.m in Sources */ = {isa = PBXBuildFile; fileRef = DD8E2F7924018C37002D51AB /* CLLocationManagerMock.m */; };
 		DD8E2F7D24018C54002D51AB /* CLVisitMock.m in Sources */ = {isa = PBXBuildFile; fileRef = DD8E2F7C24018C54002D51AB /* CLVisitMock.m */; };
 		DE1E7644239724FD006F34A1 /* search_geofences.json in Resources */ = {isa = PBXBuildFile; fileRef = DE1E7643239724FD006F34A1 /* search_geofences.json */; };
+		E66125342B2B9AB9005839C6 /* RadarKVStore.h in Headers */ = {isa = PBXBuildFile; fileRef = E66125332B2B9AB9005839C6 /* RadarKVStore.h */; };
+		E66125372B2B9AFF005839C6 /* RadarKVStore.m in Sources */ = {isa = PBXBuildFile; fileRef = E66125362B2B9AFF005839C6 /* RadarKVStore.m */; };
+		E66125392B2BAE90005839C6 /* RadarKVStoreTest.m in Sources */ = {isa = PBXBuildFile; fileRef = E66125382B2BAE90005839C6 /* RadarKVStoreTest.m */; };
 		E6EEC56E2B20F41A00DD096B /* RadarFileStorage.h in Headers */ = {isa = PBXBuildFile; fileRef = E6EEC56D2B20F41A00DD096B /* RadarFileStorage.h */; };
 		E6EEC5702B20F45D00DD096B /* RadarFileStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = E6EEC56F2B20F45D00DD096B /* RadarFileStorage.m */; };
 /* End PBXBuildFile section */
@@ -320,6 +323,9 @@
 		DDD7BD0325EC3015002473B3 /* RadarRouteMatrix.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RadarRouteMatrix.m; sourceTree = "<group>"; };
 		DDF1157C2524E18100D575C4 /* RadarTrip.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RadarTrip.m; sourceTree = "<group>"; };
 		DE1E7643239724FD006F34A1 /* search_geofences.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = search_geofences.json; sourceTree = "<group>"; };
+		E66125332B2B9AB9005839C6 /* RadarKVStore.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarKVStore.h; sourceTree = "<group>"; };
+		E66125362B2B9AFF005839C6 /* RadarKVStore.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RadarKVStore.m; sourceTree = "<group>"; };
+		E66125382B2BAE90005839C6 /* RadarKVStoreTest.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RadarKVStoreTest.m; sourceTree = "<group>"; };
 		E6EEC56D2B20F41A00DD096B /* RadarFileStorage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarFileStorage.h; sourceTree = "<group>"; };
 		E6EEC56F2B20F45D00DD096B /* RadarFileStorage.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RadarFileStorage.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -465,6 +471,8 @@
 				DD236D66230A0D6700EB88F9 /* RadarLogger.h */,
 				DD236D67230A0D6700EB88F9 /* RadarLogger.m */,
 				9683FD6127B36C26009EBB6B /* RadarMeta.h */,
+				E66125332B2B9AB9005839C6 /* RadarKVStore.h */,
+				E66125362B2B9AFF005839C6 /* RadarKVStore.m */,
 				9683FD6227B36C26009EBB6B /* RadarMeta.m */,
 				01DDC7C629FC387400C0D039 /* RadarNotificationHelper.h */,
 				01DDC7C529FC387400C0D039 /* RadarNotificationHelper.m */,
@@ -505,6 +513,7 @@
 				DD8E2F7224018C17002D51AB /* RadarPermissionsHelperMock.h */,
 				DD8E2F7324018C17002D51AB /* RadarPermissionsHelperMock.m */,
 				DD103210237E0C47003DD408 /* RadarSDKTests.m */,
+				E66125382B2BAE90005839C6 /* RadarKVStoreTest.m */,
 				DD8E2F6F24018BF8002D51AB /* RadarTestUtils.h */,
 				DD8E2F7024018BF8002D51AB /* RadarTestUtils.m */,
 				DD103213237F1778003DD408 /* Resources */,
@@ -621,6 +630,7 @@
 				0107AA1C26220055008AB52F /* RadarPermissionsHelper.h in Headers */,
 				96A5A11227AD9F7F007B960B /* Radar.h in Headers */,
 				96A5A10827AD9F7F007B960B /* RadarSegment.h in Headers */,
+				E66125342B2B9AB9005839C6 /* RadarKVStore.h in Headers */,
 				0107AA0F26220047008AB52F /* RadarBeaconManager.h in Headers */,
 				96A5A0D027AD9F41007B960B /* RadarRouteGeometry+Internal.h in Headers */,
 				0107AA1626220050008AB52F /* RadarLogger.h in Headers */,
@@ -798,6 +808,7 @@
 				0107AA9B26220153008AB52F /* RadarContext.m in Sources */,
 				015C53AE29B8E8BA004F53A6 /* (null) in Sources */,
 				0107AB23262201EC008AB52F /* RadarSettings.m in Sources */,
+				E66125372B2B9AFF005839C6 /* RadarKVStore.m in Sources */,
 				0107AAAA26220165008AB52F /* RadarGeofenceGeometry.m in Sources */,
 				0107AAEC262201A6008AB52F /* RadarTrip.m in Sources */,
 				9679F4A327CD8DE200800797 /* CLLocation+Radar.m in Sources */,
@@ -845,6 +856,7 @@
 				DD8E2F7424018C17002D51AB /* RadarPermissionsHelperMock.m in Sources */,
 				DD8E2F7724018C25002D51AB /* RadarAPIHelperMock.m in Sources */,
 				96B465BC27D6732500D7119B /* CLLocation+RadarTests.m in Sources */,
+				E66125392B2BAE90005839C6 /* RadarKVStoreTest.m in Sources */,
 				DD103211237E0C47003DD408 /* RadarSDKTests.m in Sources */,
 				DD8E2F7124018BF9002D51AB /* RadarTestUtils.m in Sources */,
 				DD8E2F7D24018C54002D51AB /* CLVisitMock.m in Sources */,
@@ -874,7 +886,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = 3.9.4;
+				MARKETING_VERSION = 3.9.6-beta.1;
 				PRODUCT_BUNDLE_IDENTIFIER = io.radar.sdk;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -904,7 +916,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = 3.9.4;
+				MARKETING_VERSION = 3.9.6-beta.1;
 				PRODUCT_BUNDLE_IDENTIFIER = io.radar.sdk;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -987,7 +999,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				MARKETING_VERSION = 3.9.5;
+				MARKETING_VERSION = 3.9.6-beta.1;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -1045,7 +1057,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				MARKETING_VERSION = 3.9.5;
+				MARKETING_VERSION = 3.9.6-beta.1;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				OTHER_CFLAGS = "-fembed-bitcode";

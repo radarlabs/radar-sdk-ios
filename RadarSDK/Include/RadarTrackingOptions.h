@@ -50,7 +50,7 @@ typedef NS_ENUM(NSInteger, RadarTrackingOptionsSyncLocations) {
  An options class used to configure background tracking.
  @see https://radar.com/documentation/sdk/ios
  */
-@interface RadarTrackingOptions : NSObject
+@interface RadarTrackingOptions : NSObject <NSCoding>
 
 /**
  Determines the desired location update interval in seconds when stopped. Use 0 to shut down when stopped.

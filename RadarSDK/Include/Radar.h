@@ -1144,6 +1144,14 @@ logConversionWithNotification
  */
 + (NSDictionary *)dictionaryForLocation:(CLLocation *)location NS_SWIFT_NAME(dictionaryForLocation(_:));
 
+/**
+ @note This method is called automatically when initializing the Radar SDK and is only exposed for testing purpose.
+
+ Migrates key value pairs from NSUserDefaults to the Radar SDK. 
+
+*/
++  (void)migrateNSUserDefaultsIfNeeded;
+
 @end
 
 NS_ASSUME_NONNULL_END

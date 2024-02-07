@@ -302,4 +302,14 @@ NSString *const kSyncNone = @"none";
            self.useVisits == options.useVisits && self.useSignificantLocationChanges == options.useSignificantLocationChanges && self.beacons == options.beacons;
 }
 
+#pragma mark - NSCoding
+
+- (instancetype)initWithCoder:(NSCoder *)coder {
+    return [RadarTrackingOptions trackingOptionsFromDictionary:[coder decodeObjectForKey:@"dictionaryValue"]];
+}
+
+- (void)encodeWithCoder:(NSCoder *)coder {
+    [coder encodeObject:[self dictionaryValue] forKey:@"dictionaryValue"];
+}
+
 @end

@@ -45,7 +45,7 @@ static NSDateFormatter *_isoDateFormatter;
 }
 
 + (NSString *)sdkVersion {
-    return @"3.9.5";
+    return @"3.9.6-beta.1";
 }
 
 + (NSString *)deviceId {
@@ -144,8 +144,22 @@ static NSDateFormatter *_isoDateFormatter;
         return @"{}";
     };
 
+    NSMutableDictionary *mutableDict = [dict mutableCopy];
+
+    // Convert NSDate values to strings to avoid issues with serialization.
+    for (NSString *key in dict) {
+        id value = mutableDict[key];
+        if ([value isKindOfClass:[NSDate class]]) {
+            NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+            [dateFormatter setDateFormat:@"yyyy-MM-dd'T'HH:mm:ssZ"]; // ISO 8601 format
+            NSString *dateString = [dateFormatter stringFromDate:(NSDate *)value];
+            mutableDict[key] = dateString;
+        }
+    }
+
     NSError *error;
-    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:dict
+
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:mutableDict
                                                        options:0
                                                          error:&error];
     if (!jsonData) {
@@ -154,6 +168,28 @@ static NSDateFormatter *_isoDateFormatter;
     } else {
         return [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
     } 
+}
+
++ (BOOL)compareCLLocation:(CLLocation *)location1 with:(CLLocation *)location2 {
+    if ((location1 == nil && location2 != nil) || (location1 != nil && location2 == nil)) {
+        return NO;
+    }
+    if (location1.coordinate.latitude != location2.coordinate.latitude) {
+        return NO;
+    }
+    if (location1.coordinate.longitude != location2.coordinate.longitude) {
+        return NO;
+    }
+    if (location1.horizontalAccuracy != location2.horizontalAccuracy) {
+        return NO;
+    }
+    if (location1.verticalAccuracy != location2.verticalAccuracy) {
+        return NO;
+    }
+    if (location1.timestamp != location2.timestamp) {
+        return NO;
+    }
+    return YES;
 }
 
 #pragma mark - threading

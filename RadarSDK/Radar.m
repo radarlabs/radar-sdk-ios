@@ -41,7 +41,23 @@
     return sharedInstance;
 }
 
++ (void)migrateNSUserDefaultsIfNeeded {
+    static dispatch_once_t once;
+    dispatch_once(&once, ^{
+        if (![[RadarKVStore sharedInstance] radarKVStoreMigrationComplete]) {
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Migration to RadarKVStore start"];
+            [RadarSettings migrateToRadarKVStore];
+            [RadarState migrateToRadarKVStore];
+            [RadarReplayBuffer migrateToRadarKVStore];
+            [[RadarKVStore sharedInstance] setRadarKVStoreMigrationComplete:YES];
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Migration to RadarKVSTore complete"];
+        }
+    });  
+}
+
 + (void)initializeWithPublishableKey:(NSString *)publishableKey {
+    [self migrateNSUserDefaultsIfNeeded];
+
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"initialize()"];
 
     [[NSNotificationCenter defaultCenter] addObserver:[self sharedInstance]

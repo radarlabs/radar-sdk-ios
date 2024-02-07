@@ -123,4 +123,14 @@ static NSString *const kApproachingThreshold = @"approachingThreshold";
            self.mode == options.mode && ((!self.approachingThreshold && !options.approachingThreshold) || (self.approachingThreshold == options.approachingThreshold));
 }
 
+#pragma mark - NSCoding
+
+- (instancetype)initWithCoder:(NSCoder *)coder {
+    return [RadarTripOptions tripOptionsFromDictionary:[coder decodeObjectForKey:@"dictionaryValue"]];
+}
+
+- (void)encodeWithCoder:(NSCoder *)coder {
+    [coder encodeObject:[self dictionaryValue] forKey:@"dictionaryValue"];
+}
+
 @end
