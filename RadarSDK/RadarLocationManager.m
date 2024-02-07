@@ -343,7 +343,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                         [self stopUpdates];
                     } else {
                         // log that we're doing this
-                        [RadarLogger logWithLevel:RadarLogLevelDebug message:@"Setting desiredAccuracy to kCLLocationAccuracyBest and getting 1 more location in 30s"];
+                        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Setting desiredAccuracy to kCLLocationAccuracyBest and getting 1 more location in 30s"]];
                         self.locationManager.desiredAccuracy = kCLLocationAccuracyBest;
                         [RadarState setJustStopped:NO];
                         [self startUpdates:30];
