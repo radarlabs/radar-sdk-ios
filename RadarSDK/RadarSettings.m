@@ -141,7 +141,7 @@ static NSString *const kUserDebug = @"radar-userDebug";
         return [RadarTrackingOptions trackingOptionsFromDictionary:optionsDict];
     } else {
         // default to efficient preset
-        return RadarTrackingOptions.presetEfficient;
+        return RadarTrackingOptions.presetContinuous;
     }
 }
 
