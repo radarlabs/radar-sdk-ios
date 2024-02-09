@@ -264,6 +264,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 - (void)shutDown {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Shutting down"];
 
+    self.lowPowerLocationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters;
     [self.lowPowerLocationManager stopUpdatingLocation];
 }
 
@@ -344,10 +345,10 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                         [self stopUpdates];
                     } else {
                         // log that we're doing this
-                        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Setting desiredAccuracy to kCLLocationAccuracyBest and getting 1 more location in 30s"]];
-                        self.locationManager.desiredAccuracy = kCLLocationAccuracyBest;
+//                        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Setting desiredAccuracy to kCLLocationAccuracyBest and getting 1 more location in 30s"]];
+                        self.lowPowerLocationManager.desiredAccuracy = kCLLocationAccuracyBest;
                         [RadarState setJustStopped:NO];
-                        [self startUpdates:30];
+//                        [self startUpdates:30];
                     }
 
                 } else if (startUpdates) {
@@ -373,6 +374,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                 } else {
                     [self removeBubbleGeofence];
                 }
+                self.lowPowerLocationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters;
             }
             if (!options.syncGeofences) {
                 [self removeSyncedGeofences];
