@@ -341,6 +341,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
             if (stopped) {
                 if (options.desiredStoppedUpdateInterval == 0) {
                     if (!justStopped) {
+                        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Not just stopped, stopping updates"]];
                         [self stopUpdates];
                     } else {
                         // log that we're doing this
@@ -362,6 +363,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                 }
             } else {
                 if (options.desiredMovingUpdateInterval == 0) {
+                    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Moving update interval is 0, stopping updates"];
                     [self stopUpdates];
                 } else if (startUpdates) {
                     [self startUpdates:options.desiredMovingUpdateInterval];
@@ -387,6 +389,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                 [self removeSyncedBeacons];
             }
         } else {
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Not tracking, stopping updates"];
             [self stopUpdates];
             [self removeAllRegions];
 
