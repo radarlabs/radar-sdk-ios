@@ -412,18 +412,25 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 
 - (void)updateTrackingFromMeta:(RadarMeta *_Nullable)meta {
     if (meta) {
-        if ([meta trackingOptions]) {
+        // change if tracking options are different
+        if ([meta trackingOptions] && ![[meta trackingOptions] isEqual:[RadarSettings remoteTrackingOptions]]) {
             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
                                                message:[NSString stringWithFormat:@"Setting remote tracking options | trackingOptions = %@", meta.trackingOptions]];
             [RadarSettings setRemoteTrackingOptions:[meta trackingOptions]];
-        } else {
+            [self updateTrackingFromInitialize];
+        } else if ([meta trackingOptions] && [[meta trackingOptions] isEqual:[RadarSettings remoteTrackingOptions]]) {
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
+                                               message:[NSString stringWithFormat:@"Remote tracking options are the same | trackingOptions = %@", meta.trackingOptions]];
+        } else if (![meta trackingOptions] && [RadarSettings remoteTrackingOptions]) {
             [RadarSettings removeRemoteTrackingOptions];
             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
-                                               message:[NSString stringWithFormat:@"Removed remote tracking options | trackingOptions = %@", Radar.getTrackingOptions]];
+                                               message:[NSString stringWithFormat:@"Removed remote tracking options | trackingOptions = %@", meta.trackingOptions]];
+            [self updateTrackingFromInitialize];
+        } else {
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
+                                               message:[NSString stringWithFormat:@"No remote tracking options | trackingOptions = %@", Radar.getTrackingOptions]];
         }
     }
-    [self updateTrackingFromInitialize];
-
 }
 
 - (void)restartPreviousTrackingOptions {
