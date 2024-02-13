@@ -124,7 +124,7 @@ typedef void (^_Nonnull RadarSyncLogsAPICompletionHandler)(RadarStatus status);
                    layers:(NSArray<NSString *> *_Nullable)layers
                     limit:(int)limit
                   country:(NSString *_Nullable)country
-              expandUnits:(BOOL)expandUnits
+                 mailable:(BOOL)mailable
         completionHandler:(RadarGeocodeAPICompletionHandler _Nonnull)completionHandler;
 
 - (void)autocompleteQuery:(NSString *_Nonnull)query

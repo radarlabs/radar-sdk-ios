@@ -23,6 +23,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @protocol RadarDelegate;
+@protocol RadarVerifiedDelegate;
 @class RadarTripOptions;
 
 #pragma mark - Enums
@@ -453,6 +454,18 @@ typedef void (^_Nonnull RadarLogConversionCompletionHandler)(RadarStatus status,
 + (void)trackVerifiedWithCompletionHandler:(RadarTrackCompletionHandler _Nullable)completionHandler NS_SWIFT_NAME(trackVerified(completionHandler:));
 
 /**
+ Tracks the user's location with device integrity information for location verification use cases.
+
+ @warning Note that you must configure SSL pinning before calling this method.
+
+ @param beacons A boolean indicating whether to range beacons.
+ @param completionHandler An optional completion handler.
+
+ @see https://radar.com/documentation/fraud
+ */
++ (void)trackVerifiedWithBeacons:(BOOL)beacons completionHandler:(RadarTrackCompletionHandler _Nullable)completionHandler NS_SWIFT_NAME(trackVerified(beacons:completionHandler:));
+
+/**
  Tracks the user's location with device integrity information for location verification use cases. Returns a JSON Web Token (JWT). Verify the JWT server-side using your secret key.
 
  @warning Note that you must configure SSL pinning before calling this method.
@@ -462,6 +475,29 @@ typedef void (^_Nonnull RadarLogConversionCompletionHandler)(RadarStatus status,
  @see https://radar.com/documentation/fraud
  */
 + (void)trackVerifiedTokenWithCompletionHandler:(RadarTrackTokenCompletionHandler _Nullable)completionHandler NS_SWIFT_NAME(trackVerifiedToken(completionHandler:));
+
+/**
+ Tracks the user's location with device integrity information for location verification use cases. Returns a JSON Web Token (JWT). Verify the JWT server-side using your secret key.
+
+ @warning Note that you must configure SSL pinning before calling this method.
+
+ @param beacons A boolean indicating whether to range beacons.
+ @param completionHandler An optional completion handler.
+
+ @see https://radar.com/documentation/fraud
+ */
++ (void)trackVerifiedTokenWithBeacons:(BOOL)beacons completionHandler:(RadarTrackTokenCompletionHandler _Nullable)completionHandler NS_SWIFT_NAME(trackVerifiedToken(beacons:completionHandler:));
+
+/**
+ Starts tracking the user's location with device integrity information for location verification use cases.
+ 
+ @param token A boolean indicating whether to return a JSON Web Token (JWT). If `true`, tokens are delivered to your `RadarVerifiedDelegate`. If `false`, location updates are delivered to your `RadarDelegate`.
+ @param beacons A boolean indicating whether to range beacons.
+ @param interval The interval in seconds between each location update. A number between 1 and 60.
+ 
+ @warning Note that you must configure SSL pinning before calling this method.
+ */
++ (void)startTrackingVerified:(BOOL)token interval:(NSTimeInterval)interval beacons:(BOOL)beacons NS_SWIFT_NAME(startTrackingVerified(token:interval:beacons:));
 
 /**
  Starts tracking the user's location in the background with configurable tracking options.
@@ -534,6 +570,15 @@ typedef void (^_Nonnull RadarLogConversionCompletionHandler)(RadarStatus status,
  @see https://radar.com/documentation/sdk/ios#listening-for-events-with-a-delegate
  */
 + (void)setDelegate:(nullable id<RadarDelegate>)delegate;
+
+/**
+ Sets a delegate for client-side delivery of verified location tokens.
+
+ @param verifiedDelegate A delegate for client-side delivery of verified location tokens. If `nil`, the previous delegate will be cleared.
+
+ @see https://radar.com/documentation/fraud
+ */
++ (void)setVerifiedDelegate:(nullable id<RadarVerifiedDelegate>)verifiedDelegate;
 
 #pragma mark - Events
 
@@ -832,7 +877,7 @@ logConversionWithNotification
           completionHandler:(RadarSearchGeofencesCompletionHandler)completionHandler NS_SWIFT_NAME(searchGeofences(near:radius:tags:metadata:limit:completionHandler:));
 
 /**
- Autocompletes partial addresses and place names, sorted by relevance.
+ @deprecated Autocompletes partial addresses and place names, sorted by relevance.
 
  @param query The partial address or place name to autocomplete.
  @param near A location for the search.
@@ -850,7 +895,28 @@ logConversionWithNotification
                     limit:(int)limit
                   country:(NSString *_Nullable)country
               expandUnits:(BOOL)expandUnits
-        completionHandler:(RadarGeocodeCompletionHandler)completionHandler NS_SWIFT_NAME(autocomplete(query:near:layers:limit:country:expandUnits:completionHandler:));
+        completionHandler:(RadarGeocodeCompletionHandler)completionHandler NS_SWIFT_NAME(autocomplete(query:near:layers:limit:country:expandUnits:completionHandler:)) __deprecated;
+
+/**
+ Autocompletes partial addresses and place names, sorted by relevance.
+
+ @param query The partial address or place name to autocomplete.
+ @param near A location for the search.
+ @param layers Optional layer filters.
+ @param limit The max number of addresses to return. A number between 1 and 100.
+ @param country An optional country filter. A string, the unique 2-letter country code.
+ @param mailable Whether to only include mailable addresses. Default behavior in other function signatures is false.
+ @param completionHandler A completion handler.
+
+ @see https://radar.com/documentation/api#autocomplete
+ */
++ (void)autocompleteQuery:(NSString *_Nonnull)query
+                     near:(CLLocation *_Nullable)near
+                   layers:(NSArray<NSString *> *_Nullable)layers
+                    limit:(int)limit
+                  country:(NSString *_Nullable)country
+                 mailable:(BOOL)mailable
+        completionHandler:(RadarGeocodeCompletionHandler)completionHandler NS_SWIFT_NAME(autocomplete(query:near:layers:limit:country:mailable:completionHandler:));
 
 /**
  Autocompletes partial addresses and place names, sorted by relevance.
@@ -998,6 +1064,24 @@ logConversionWithNotification
  @param level The log level.
  */
 + (void)setLogLevel:(RadarLogLevel)level;
+
+/**
+ Log application terminating. Include this in your application delegate's applicationWillTerminate: method.
+
+ */
++ (void)logTermination;
+
+/**
+ Log application entering background. Include this in your application delegate's applicationDidEnterBackground: method.
+ */
++ (void)logBackgrounding;
+
+/**
+ Log application resigning active. Include this in your application delegate's applicationWillResignActive: method.
+
+ */
++ (void)logResigningActive;
+
 
 #pragma mark - Helpers
 
