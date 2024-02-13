@@ -52,7 +52,7 @@
 }
 
 + (NSDictionary *)headersWithPublishableKey:(NSString *)publishableKey {
-    return @{
+    NSMutableDictionary *headers = [@{
         @"Authorization": publishableKey,
         @"Content-Type": @"application/json",
         @"X-Radar-Config": @"true",
@@ -60,8 +60,15 @@
         @"X-Radar-Device-Model": [RadarUtils deviceModel],
         @"X-Radar-Device-OS": [RadarUtils deviceOS],
         @"X-Radar-Device-Type": [RadarUtils deviceType],
-        @"X-Radar-SDK-Version": [RadarUtils sdkVersion]
-    };
+        @"X-Radar-SDK-Version": [RadarUtils sdkVersion],
+    } mutableCopy];
+    if ([RadarSettings crossPlatform]) {
+        [headers addEntriesFromDictionary:@{
+            @"X-Radar-X-Platform-SDK-Type": [RadarSettings crossPlatformSDKType],
+            @"X-Radar-X-Platform-SDK-Version": [RadarSettings crossPlatformSDKVersion]
+        }];
+    }
+    return headers;
 }
 
 - (void)getConfigForUsage:(NSString *_Nullable)usage verified:(BOOL)verified completionHandler:(RadarConfigAPICompletionHandler _Nonnull)completionHandler {
@@ -243,6 +250,10 @@
     params[@"country"] = [RadarUtils country];
     params[@"timeZoneOffset"] = [RadarUtils timeZoneOffset];
     params[@"source"] = [Radar stringForLocationSource:source];
+    if ([RadarSettings crossPlatform]) {
+        params[@"xPlatformType"] = [RadarSettings crossPlatformSDKType];
+        params[@"xPlatformSdkVersion"] = [RadarSettings crossPlatformSDKVersion];
+    }
     if (@available(iOS 15.0, *)) {
         CLLocationSourceInformation *sourceInformation = location.sourceInformation;
         if (sourceInformation) {
