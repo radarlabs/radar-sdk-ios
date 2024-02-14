@@ -58,9 +58,9 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)setUserDebug:(BOOL)userDebug;
 + (void)updateLastAppOpenTime;
 + (NSDate *)lastAppOpenTime;
-+ (BOOL)crossPlatform;
-+ (NSString *)crossPlatformSDKType;
-+ (NSString *)crossPlatformSDKVersion;
++ (BOOL)xPlatform;
++ (NSString *)xPlatformSDKType;
++ (NSString *)xPlatformSDKVersion;
 
 @end
 

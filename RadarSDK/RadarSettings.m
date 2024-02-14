@@ -293,14 +293,14 @@ static NSString *const kCrossPlatformSDKVersion = @"radar-crossPlatformSDKVersio
     return lastAppOpenTime ? lastAppOpenTime : [NSDate dateWithTimeIntervalSince1970:0];
 }
 
-+ (BOOL)crossPlatform {
++ (BOOL)xPlatform {
     return [[NSUserDefaults standardUserDefaults] stringForKey:kCrossPlatformSDKType] != nil &&
     [[NSUserDefaults standardUserDefaults] stringForKey:kCrossPlatformSDKVersion];
 }
-+ (NSString *)crossPlatformSDKType {
++ (NSString *)xPlatformSDKType {
     return [[NSUserDefaults standardUserDefaults] stringForKey:kCrossPlatformSDKType];
 }
-+ (NSString *)crossPlatformSDKVersion {
++ (NSString *)xPlatformSDKVersion {
     return [[NSUserDefaults standardUserDefaults] stringForKey:kCrossPlatformSDKVersion];
 }
 
