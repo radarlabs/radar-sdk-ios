@@ -695,7 +695,6 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     RadarTrackingOptions *options = [Radar getTrackingOptions];
     BOOL wasStopped = [RadarState stopped];
     BOOL stopped = NO;
-    BOOL justStopped = stopped && !wasStopped;
 
     BOOL force = (source == RadarLocationSourceForegroundLocation || source == RadarLocationSourceManualLocation || source == RadarLocationSourceBeaconEnter ||
                   source == RadarLocationSourceBeaconExit || source == RadarLocationSourceVisitArrival);
@@ -761,6 +760,8 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     }
 
     [RadarState setStopped:stopped];
+    
+    BOOL justStopped = stopped && !wasStopped;
     [RadarState setJustStopped:justStopped];
 
     [RadarState setLastLocation:location];
@@ -1037,6 +1038,8 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 }
 
 - (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error {
+    // log this specific error
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Location manager failed with error: %@", error]];
     [[RadarDelegateHolder sharedInstance] didFailWithStatus:RadarStatusErrorLocation];
 
     [self callCompletionHandlersWithStatus:RadarStatusErrorLocation location:nil];
