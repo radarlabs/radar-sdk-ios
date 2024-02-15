@@ -896,7 +896,6 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     [Radar searchPlacesWithRadius:1000
                            chains:@[@"walmart"]
                        categories:nil
-                           groups:nil
                             limit:100
                 completionHandler:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarPlace *> *_Nullable places) {
                     XCTAssertEqual(status, RadarStatusErrorPermissions);
@@ -921,7 +920,6 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     [Radar searchPlacesWithRadius:1000
                            chains:@[@"walmart"]
                        categories:nil
-                           groups:nil
                             limit:100
                 completionHandler:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarPlace *> *_Nullable places) {
                     XCTAssertEqual(status, RadarStatusErrorLocation);
@@ -952,7 +950,6 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     [Radar searchPlacesWithRadius:1000
                            chains:@[@"walmart"]
                        categories:nil
-                           groups:nil
                             limit:100
                 completionHandler:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarPlace *> *_Nullable places) {
                     XCTAssertEqual(status, RadarStatusSuccess);
@@ -986,7 +983,6 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
                            chains:@[@"walmart"]
                     chainMetadata:@{@"orderActive": @"true"}
                        categories:nil
-                           groups:nil
                             limit:100
                 completionHandler:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarPlace *> *_Nullable places) {
                     XCTAssertEqual(status, RadarStatusSuccess);
@@ -1023,7 +1019,6 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
                      radius:1000
                      chains:nil
                  categories:@[@"restaurant"]
-                     groups:nil
                       limit:100
           completionHandler:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarPlace *> *_Nullable places) {
               XCTAssertEqual(status, RadarStatusSuccess);
