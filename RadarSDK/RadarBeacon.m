@@ -204,6 +204,9 @@
         [dict setValue:self.metadata forKey:@"metadata"];
     }
     [dict setValue:@"ibeacon" forKey:@"type"];
+    if (self.geometry) {
+        [dict setValue:[self.geometry dictionaryValue] forKey:@"geometry"];
+    }
     return dict;
 }
 

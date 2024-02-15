@@ -10,7 +10,7 @@ import UserNotifications
 import RadarSDK
 
 @UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate, CLLocationManagerDelegate, RadarDelegate {
+class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate, CLLocationManagerDelegate, RadarDelegate, RadarVerifiedDelegate {
 
     let locationManager = CLLocationManager()
 
@@ -24,6 +24,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         // Replace with a valid test publishable key
         Radar.initialize(publishableKey: "prj_test_pk_0000000000000000000000000000000000000000")
         Radar.setDelegate(self)
+        Radar.setVerifiedDelegate(self)
 
         if UIApplication.shared.applicationState != .background {
             Radar.getLocation { (status, location, stopped) in
@@ -248,4 +249,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         self.notify(message)
     }
 
+    func didUpdateToken(_ token: String) {
+        
+    }
+    
 }
