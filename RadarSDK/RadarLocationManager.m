@@ -353,19 +353,24 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
             self.lowPowerLocationManager.pausesLocationUpdatesAutomatically = NO;
 
             CLLocationAccuracy desiredAccuracy;
-            switch (options.desiredAccuracy) {
-            case RadarTrackingOptionsDesiredAccuracyHigh:
+            if (rampedUp) {
                 desiredAccuracy = kCLLocationAccuracyBest;
-                break;
-            case RadarTrackingOptionsDesiredAccuracyMedium:
-                desiredAccuracy = kCLLocationAccuracyHundredMeters;
-                break;
-            case RadarTrackingOptionsDesiredAccuracyLow:
-                desiredAccuracy = kCLLocationAccuracyKilometer;
-                break;
-            default:
-                desiredAccuracy = kCLLocationAccuracyHundredMeters;
+            } else {
+                switch (options.desiredAccuracy) {
+                    case RadarTrackingOptionsDesiredAccuracyHigh:
+                        desiredAccuracy = kCLLocationAccuracyBest;
+                        break;
+                    case RadarTrackingOptionsDesiredAccuracyMedium:
+                        desiredAccuracy = kCLLocationAccuracyHundredMeters;
+                        break;
+                    case RadarTrackingOptionsDesiredAccuracyLow:
+                        desiredAccuracy = kCLLocationAccuracyKilometer;
+                    break;
+                default:
+                    desiredAccuracy = kCLLocationAccuracyHundredMeters;
+                }    
             }
+
             self.locationManager.desiredAccuracy = desiredAccuracy;
 
             if (@available(iOS 11.0, *)) {
@@ -375,10 +380,10 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                 [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"showsBackgroundLocationIndicator is false: %d", options.showBlueBar]];
             }
 
-            BOOL startUpdates = options.showBlueBar || [CLLocationManager authorizationStatus] == kCLAuthorizationStatusAuthorizedAlways;
+            BOOL startUpdates = options.showBlueBar || [CLLocationManager authorizationStatus] == kCLAuthorizationStatusAuthorizedAlways || rampedUp;
             BOOL stopped = [RadarState stopped];
             if (stopped) {
-                if (desiredStoppedUpdateInterval == 0) {
+                if (desiredStoppedUpdateInterval == 0 && !rampedUp) {
                     [self stopUpdates];
                 } else if (startUpdates) {
                     [self startUpdates:desiredStoppedUpdateInterval];
@@ -391,7 +396,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                     [self removeBubbleGeofence];
                 }
             } else {
-                if (desiredMovingUpdateInterval == 0) {
+                if (desiredMovingUpdateInterval == 0 && !rampedUp) {
                     [self stopUpdates];
                 } else if (startUpdates) {
                     [self startUpdates:desiredMovingUpdateInterval];
