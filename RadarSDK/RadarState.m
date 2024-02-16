@@ -16,6 +16,7 @@ static NSString *const kLastMovedLocation = @"radar-lastMovedLocation";
 static NSString *const kLastMovedAt = @"radar-lastMovedAt";
 static NSString *const kStopped = @"radar-stopped";
 static NSString *const kLastSentAt = @"radar-lastSentAt";
+static NSString *const kRampedTimeoutFrom = @"radar-rampedTimeoutFrom";
 static NSString *const kCanExit = @"radar-canExit";
 static NSString *const kLastFailedStoppedLocation = @"radar-lastFailedStoppedLocation";
 static NSString *const kGeofenceIds = @"radar-geofenceIds";
@@ -86,6 +87,14 @@ static NSString *const kBeaconIds = @"radar-beaconIds";
 
 + (NSDate *)lastSentAt {
     return [[NSUserDefaults standardUserDefaults] objectForKey:kLastSentAt];
+}
+
++ (void)updateRampedTimeoutFrom:(NSDate *)rampedTimeoutFrom {
+    [[NSUserDefaults standardUserDefaults] setObject:rampedTimeoutFrom forKey:kRampedTimeoutFrom];
+}
+
++ (NSDate *)rampedTimeoutFrom {
+    return [[NSUserDefaults standardUserDefaults] objectForKey:kRampedTimeoutFrom];
 }
 
 + (BOOL)canExit {

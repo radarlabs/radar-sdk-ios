@@ -25,13 +25,13 @@
 #import "RadarTripOptions.h"
 
 
-@interface StateChange : NSObject
-@property (nonatomic, strong) NSDate *timestamp;
-@property (nonatomic, assign) BOOL rampedUp;
-@end
+// @interface StateChange : NSObject
+// @property (nonatomic, strong) NSDate *timestamp;
+// @property (nonatomic, assign) BOOL rampedUp;
+// @end
 
-@implementation StateChange
-@end
+// @implementation StateChange
+// @end
 
 
 @interface RadarLocationManager ()
@@ -63,10 +63,10 @@
  */
 @property (nonnull, strong, nonatomic) NSMutableArray<RadarLocationCompletionHandler> *completionHandlers;
 
-/**
- State changes for ramping up and down.
- */
-@property (nonnull, strong, nonatomic) NSMutableArray<StateChange *> *stateChanges;
+// /**
+//  State changes for ramping up and down.
+//  */
+// @property (nonnull, strong, nonatomic) NSMutableArray<StateChange *> *stateChanges;
 
 @end
 
@@ -330,16 +330,13 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         if (tracking) {
             if (ramping == RampingOptionRampUp && !rampedUp) {
                 [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Ramping up"]];
-
                 rampedUp = YES;
-                [self changeRampedState:YES];
             } else if (ramping == RampingOptionRampDown && rampedUp) {
                 [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Ramping down"]];
                 [RadarSettings setTrackingOptions:options];
-
                 rampedUp = NO;
-                [self changeRampedState:NO];
             }
+            [RadarSettings setRampedUp:rampedUp];
 
             int desiredStoppedUpdateInterval = rampedUp ? options.rampedUpInterval : options.desiredStoppedUpdateInterval;
             int desiredMovingUpdateInterval = rampedUp ? options.rampedUpInterval : options.desiredMovingUpdateInterval;
@@ -457,67 +454,94 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 }
 
 
-// Call this method when the tracking state changes
-- (void)changeRampedState:(BOOL)rampedUp {
-    [RadarSettings setRampedUp:rampedUp];
+// // Call this method when the tracking state changes
+// - (void)changeRampedState:(BOOL)rampedUp {
+//     [RadarSettings setRampedUp:rampedUp];
     
-    StateChange *change = [[StateChange alloc] init];
-    change.timestamp = [NSDate date]; // Current timestamp
-    change.rampedUp = rampedUp;
-    [self.stateChanges addObject:change];
+//     StateChange *change = [[StateChange alloc] init];
+//     change.timestamp = [NSDate date]; // Current timestamp
+//     change.rampedUp = rampedUp;
+//     [self.stateChanges addObject:change];
+// }
+
+- (NSTimeInterval)calculateRampedUpTime {
+    NSDate *rampedTimeoutFrom = [RadarState rampedTimeoutFrom];
+    if (!rampedTimeoutFrom) {
+        rampedTimeoutFrom = [NSDate date];
+    }
+    NSDate *lastSentAt = [RadarState lastSentAt];
+    if (!lastSentAt) {
+        lastSentAt = [NSDate date];
+    }
+    NSTimeInterval timeSinceLastSent = [[NSDate date] timeIntervalSinceDate:lastSentAt];
+    NSTimeInterval timeBetweenLastSentAndRampedTimeoutFrom = [rampedTimeoutFrom timeIntervalSinceDate:lastSentAt];
+
+    NSTimeInterval rampedUpTime = 0;
+    BOOL rampedUp = [RadarSettings rampedUp];
+    if (rampedUp) {
+        rampedUpTime = timeSinceLastSent + timeBetweenLastSentAndRampedTimeoutFrom;
+    } else {
+        rampedUpTime = timeBetweenLastSentAndRampedTimeoutFrom;
+    }
+
+    // update rampedTimeoutFrom to be now minus rampedUpTime
+    NSDate *newRampedTimeoutFrom = [[NSDate date] dateByAddingTimeInterval:-rampedUpTime];
+    [RadarState updateRampedTimeoutFrom:newRampedTimeoutFrom];
+
+    return rampedUpTime; 
 }
 
-- (NSDictionary *)calculateRampedUpTimesAndCleanup {
-    NSDate *now = [NSDate date];
-    NSDate *oneHourAgo = [now dateByAddingTimeInterval:-3600]; // 1 hour ago
-    NSDate *twelveHoursAgo = [now dateByAddingTimeInterval:-43200]; // 12 hours ago
+// - (NSDictionary *)calculateRampedUpTimesAndCleanup {
+//     NSDate *now = [NSDate date];
+//     NSDate *oneHourAgo = [now dateByAddingTimeInterval:-3600]; // 1 hour ago
+//     NSDate *twelveHoursAgo = [now dateByAddingTimeInterval:-43200]; // 12 hours ago
     
-    NSTimeInterval totalRampedUpTimeOneHour = 0;
-    NSTimeInterval totalRampedUpTimeTwelveHours = 0;
-    NSDate *lastRampedUpStartOneHour = nil;
-    NSDate *lastRampedUpStartTwelveHours = nil;
-    NSMutableArray *validChanges = [NSMutableArray array]; // Array to store valid entries
+//     NSTimeInterval totalRampedUpTimeOneHour = 0;
+//     NSTimeInterval totalRampedUpTimeTwelveHours = 0;
+//     NSDate *lastRampedUpStartOneHour = nil;
+//     NSDate *lastRampedUpStartTwelveHours = nil;
+//     NSMutableArray *validChanges = [NSMutableArray array]; // Array to store valid entries
 
-    for (StateChange *change in self.stateChanges) {
-        if ([change.timestamp compare:twelveHoursAgo] == NSOrderedAscending) {
-            continue; // Skip and effectively remove changes older than twelve hours
-        }
+//     for (StateChange *change in self.stateChanges) {
+//         if ([change.timestamp compare:twelveHoursAgo] == NSOrderedAscending) {
+//             continue; // Skip and effectively remove changes older than twelve hours
+//         }
 
-        // Adding valid entries to the new array
-        [validChanges addObject:change];
+//         // Adding valid entries to the new array
+//         [validChanges addObject:change];
 
-        // Calculation for the past 12 hours
-        if (change.rampedUp) {
-            lastRampedUpStartTwelveHours = change.timestamp;
-        } else if (lastRampedUpStartTwelveHours) {
-            totalRampedUpTimeTwelveHours += [change.timestamp timeIntervalSinceDate:lastRampedUpStartTwelveHours];
-            lastRampedUpStartTwelveHours = nil;
-        }
+//         // Calculation for the past 12 hours
+//         if (change.rampedUp) {
+//             lastRampedUpStartTwelveHours = change.timestamp;
+//         } else if (lastRampedUpStartTwelveHours) {
+//             totalRampedUpTimeTwelveHours += [change.timestamp timeIntervalSinceDate:lastRampedUpStartTwelveHours];
+//             lastRampedUpStartTwelveHours = nil;
+//         }
 
-        // Additional check for the past hour
-        if ([change.timestamp compare:oneHourAgo] != NSOrderedAscending) {
-            if (change.rampedUp) {
-                lastRampedUpStartOneHour = change.timestamp;
-            } else if (lastRampedUpStartOneHour) {
-                totalRampedUpTimeOneHour += [change.timestamp timeIntervalSinceDate:lastRampedUpStartOneHour];
-                lastRampedUpStartOneHour = nil;
-            }
-        }
-    }
+//         // Additional check for the past hour
+//         if ([change.timestamp compare:oneHourAgo] != NSOrderedAscending) {
+//             if (change.rampedUp) {
+//                 lastRampedUpStartOneHour = change.timestamp;
+//             } else if (lastRampedUpStartOneHour) {
+//                 totalRampedUpTimeOneHour += [change.timestamp timeIntervalSinceDate:lastRampedUpStartOneHour];
+//                 lastRampedUpStartOneHour = nil;
+//             }
+//         }
+//     }
 
-    // Final adjustments if the last state was ramped up and hasn't changed since
-    if (lastRampedUpStartTwelveHours) {
-        totalRampedUpTimeTwelveHours += [now timeIntervalSinceDate:lastRampedUpStartTwelveHours];
-    }
-    if (lastRampedUpStartOneHour) {
-        totalRampedUpTimeOneHour += [now timeIntervalSinceDate:lastRampedUpStartOneHour];
-    }
+//     // Final adjustments if the last state was ramped up and hasn't changed since
+//     if (lastRampedUpStartTwelveHours) {
+//         totalRampedUpTimeTwelveHours += [now timeIntervalSinceDate:lastRampedUpStartTwelveHours];
+//     }
+//     if (lastRampedUpStartOneHour) {
+//         totalRampedUpTimeOneHour += [now timeIntervalSinceDate:lastRampedUpStartOneHour];
+//     }
 
-    // Update the stateChanges array with the valid changes
-    self.stateChanges = validChanges;
+//     // Update the stateChanges array with the valid changes
+//     self.stateChanges = validChanges;
 
-    return @{@"OneHour": @(totalRampedUpTimeOneHour), @"TwelveHours": @(totalRampedUpTimeTwelveHours)};
-}
+//     return @{@"OneHour": @(totalRampedUpTimeOneHour), @"TwelveHours": @(totalRampedUpTimeTwelveHours)};
+// }
 
 
 - (void)restartPreviousTrackingOptions {
@@ -675,12 +699,11 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         }
     }
 
-    NSDictionary *rampedUpTimes = [self calculateRampedUpTimesAndCleanup];
-    NSTimeInterval totalRampedUpTimeOneHour = [[rampedUpTimes objectForKey:@"OneHour"] doubleValue];
-    NSTimeInterval totalRampedUpTimeTwelveHours = [[rampedUpTimes objectForKey:@"TwelveHours"] doubleValue];
+    NSTimeInterval rampedUpTime = [self calculateRampedUpTime];
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"rampedUpTime: %f", rampedUpTime]];
 
     BOOL exceededRampUpTimeLimit = NO;
-    if (totalRampedUpTimeOneHour > 1200 || totalRampedUpTimeTwelveHours > 7200) {
+    if (rampedUpTime > 7200) {
         exceededRampUpTimeLimit = YES;
     }
 
