@@ -255,7 +255,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         self.started = YES;
         self.startedInterval = interval;
     } else {
-        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Already started timer"];
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Already started timer | interval = %d", interval]];
     }
 }
 
