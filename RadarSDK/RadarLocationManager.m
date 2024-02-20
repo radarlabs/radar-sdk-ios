@@ -474,7 +474,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         lastSentAt = [NSDate date];
     }
     NSTimeInterval timeSinceLastSent = [[NSDate date] timeIntervalSinceDate:lastSentAt];
-    NSTimeInterval timeBetweenLastSentAndRampedTimeoutFrom = [rampedTimeoutFrom timeIntervalSinceDate:lastSentAt];
+    NSTimeInterval timeBetweenLastSentAndRampedTimeoutFrom = [lastSentAt timeIntervalSinceDate:rampedTimeoutFrom];
 
     NSTimeInterval rampedUpTime = 0;
     BOOL rampedUp = [RadarSettings rampedUp];
