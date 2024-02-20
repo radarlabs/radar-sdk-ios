@@ -703,7 +703,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"rampedUpTime: %f", rampedUpTime]];
 
     BOOL exceededRampUpTimeLimit = NO;
-    if (rampedUpTime > 7200) {
+    if (rampedUpTime > 7200 && NO) {
         exceededRampUpTimeLimit = YES;
     }
 
