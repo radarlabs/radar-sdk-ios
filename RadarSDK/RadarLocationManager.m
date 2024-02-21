@@ -1028,6 +1028,8 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     [RadarState updateLastSentAt];
 
     if (source == RadarLocationSourceForegroundLocation) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
+                                               message:[NSString stringWithFormat:@"Skipping sync: foreground location | source = %@", [Radar stringForLocationSource:source]]];
         return;
     }
 
