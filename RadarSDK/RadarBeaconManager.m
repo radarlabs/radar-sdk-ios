@@ -299,8 +299,9 @@
         [self.nearbyBeacons addObject:[RadarBeacon fromCLBeacon:beacon]];
 
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
-                                           message:[NSString stringWithFormat:@"Ranged beacon | nearbyBeacons.count = %lu; region.identifier = %@; beacon.uuid = %@; beacon.major "
+                                           message:[NSString stringWithFormat:@"Ranged beacon with RSSI %ld | nearbyBeacons.count = %lu; region.identifier = %@; beacon.uuid = %@; beacon.major "
                                                                               @"= %@; beacon.minor = %@; beacon.rssi = %ld; beacon.proximity = %ld",
+                                                                              (unsigned long)beacon.rssi,
                                                                               (unsigned long)self.nearbyBeacons.count, region.identifier, [beacon.proximityUUID UUIDString],
                                                                               beacon.major, beacon.minor, (unsigned long)beacon.rssi, (unsigned long)beacon.proximity]];
     }
