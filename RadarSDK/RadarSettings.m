@@ -293,6 +293,10 @@ static NSString *const kXPlatformSDKVersion = @"radar-xPlatformSDKVersion";
     return lastAppOpenTime ? lastAppOpenTime : [NSDate dateWithTimeIntervalSince1970:0];
 }
 
++ (BOOL)useRadarModifiedBeacon {
+    return [[self featureSettings] useRadarModifiedBeacon];
+}
+
 + (BOOL)xPlatform {
     return [[NSUserDefaults standardUserDefaults] stringForKey:kXPlatformSDKType] != nil &&
     [[NSUserDefaults standardUserDefaults] stringForKey:kXPlatformSDKVersion];
