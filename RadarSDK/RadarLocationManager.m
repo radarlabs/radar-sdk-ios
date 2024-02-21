@@ -248,6 +248,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                                                            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Timer fired"];
 
                                                            [self requestLocation];
+                                                          [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"End timer block"]; 
                                                        }];
 
         [self.lowPowerLocationManager startUpdatingLocation];
@@ -287,9 +288,10 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 }
 
 - (void)requestLocation {
-    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Requesting location"];
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Requesting location start"];
 
     [self.locationManager requestLocation];
+   [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Requesting location end"]; 
 }
 
 - (void)updateTracking {
