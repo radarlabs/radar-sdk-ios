@@ -1089,7 +1089,16 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         return;
     }
 
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"didUpdateLocations: %lu", (unsigned long)locations.count]];
+
+
     CLLocation *location = [locations lastObject];
+    CLLocation *firstLocation = [locations firstObject];
+
+    // log the timestamps of the first and last locations
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"first location timestamp: %@", firstLocation.timestamp]];
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"last location timestamp: %@", location.timestamp]];
+
     if (self.completionHandlers.count) {
         [self handleLocation:location source:RadarLocationSourceForegroundLocation];
     } else {
