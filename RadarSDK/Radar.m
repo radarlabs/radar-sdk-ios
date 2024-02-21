@@ -21,6 +21,7 @@
 #import "RadarVerificationManager.h"
 #import "RadarReplayBuffer.h"
 #import "RadarFeatureSettings.h"
+#import "RadarNotificationHelper.h"
 
 @interface Radar ()
 
@@ -385,6 +386,7 @@
 
 + (void)handleSilentPushWithPayload:(NSDictionary *)payload completionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug type:RadarLogTypeNone message:@"App received silent push notification" includeDate:YES includeBattery:YES];
+    [RadarNotificationHelper showDidReceiveSilentPushNotification];
     
     [Radar trackOnceWithCompletionHandler:^(RadarStatus status, CLLocation * _Nullable location, NSArray<RadarEvent *> * _Nullable events, RadarUser * _Nullable user) {
         if (status == RadarStatusSuccess) {

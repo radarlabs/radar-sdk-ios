@@ -13,6 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface RadarNotificationHelper : NSObject
 
 + (void)showNotificationsForEvents:(NSArray<RadarEvent *> *)events;
++ (void)showDidReceiveSilentPushNotification;
 
 @end
 
