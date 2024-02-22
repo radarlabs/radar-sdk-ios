@@ -16,6 +16,8 @@ NS_ASSUME_NONNULL_BEGIN
 typedef NS_ENUM(NSInteger, RadarTrackingOptionsDesiredAccuracy) {
     /// Uses `kCLLocationAccuracyBest`
     RadarTrackingOptionsDesiredAccuracyHigh,
+    // Uses `kCLLocationAccuracyNearestTenMeters`
+    RadarTrackingOptionsDesiredAccuracyMediumHigh,
     /// Uses `kCLLocationAccuracyHundredMeters`, the default
     RadarTrackingOptionsDesiredAccuracyMedium,
     /// Uses `kCLLocationAccuracyKilometer`
