@@ -248,7 +248,6 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                                                            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Timer fired"];
 
                                                            [self requestLocation];
-                                                          [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"End timer block"]; 
                                                        }];
 
         [self.lowPowerLocationManager startUpdatingLocation];
@@ -353,7 +352,11 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 
             CLLocationAccuracy desiredAccuracy;
             if (rampedUp) {
-                desiredAccuracy = kCLLocationAccuracyBest;
+                if (options.rampedUpInterval > 14) {
+                    desiredAccuracy = kCLLocationAccuracyBest;
+                } else {
+                    desiredAccuracy = kCLLocationAccuracyNearestTenMeters;
+                }
             } else {
                 switch (options.desiredAccuracy) {
                     case RadarTrackingOptionsDesiredAccuracyHigh:
