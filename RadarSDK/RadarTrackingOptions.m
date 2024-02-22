@@ -33,6 +33,7 @@ NSString *const kRampUpRadius = @"rampUpRadius";
 NSString *const kRampedUpInterval = @"rampedUpInterval";
 
 NSString *const kDesiredAccuracyHigh = @"high";
+NSString *const kDesiredAccuracyMediumHigh = @"mediumHigh";
 NSString *const kDesiredAccuracyMedium = @"medium";
 NSString *const kDesiredAccuracyLow = @"low";
 
@@ -129,6 +130,8 @@ NSString *const kSyncNone = @"none";
     case RadarTrackingOptionsDesiredAccuracyHigh:
         str = kDesiredAccuracyHigh;
         break;
+    case RadarTrackingOptionsDesiredAccuracyMediumHigh:
+        str = kDesiredAccuracyMediumHigh;
     case RadarTrackingOptionsDesiredAccuracyMedium:
         str = kDesiredAccuracyMedium;
         break;
@@ -145,6 +148,8 @@ NSString *const kSyncNone = @"none";
     RadarTrackingOptionsDesiredAccuracy desiredAccuracy = RadarTrackingOptionsDesiredAccuracyMedium;
     if ([str isEqualToString:kDesiredAccuracyHigh]) {
         desiredAccuracy = RadarTrackingOptionsDesiredAccuracyHigh;
+    } else if ([str isEqualToString:kDesiredAccuracyMediumHigh]) {
+        desiredAccuracy = RadarTrackingOptionsDesiredAccuracyMediumHigh;
     } else if ([str isEqualToString:kDesiredAccuracyLow]) {
         desiredAccuracy = RadarTrackingOptionsDesiredAccuracyLow;
     }
