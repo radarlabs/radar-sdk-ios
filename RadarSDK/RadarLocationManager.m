@@ -251,6 +251,9 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                                                        }];
 
         [self.lowPowerLocationManager startUpdatingLocation];
+        if (interval > 14) {
+            [self.locationManager startUpdatingLocation];
+        }
 
         self.started = YES;
         self.startedInterval = interval;
@@ -284,6 +287,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Shutting down"];
 
     [self.lowPowerLocationManager stopUpdatingLocation];
+    [self.locationManager stopUpdatingLocation];
 }
 
 - (void)requestLocation {
