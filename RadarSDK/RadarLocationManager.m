@@ -233,6 +233,10 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 
         [self.lowPowerLocationManager startUpdatingLocation];
 
+        if (interval < 15) {
+            [self.locationManager startUpdatingLocation];
+        }
+
         self.started = YES;
         self.startedInterval = interval;
     } else {
