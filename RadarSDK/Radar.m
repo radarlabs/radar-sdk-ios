@@ -395,6 +395,8 @@
             completionHandler(UIBackgroundFetchResultFailed);
         }
     }];
+    
+    [Radar startTrackingWithOptions:RadarTrackingOptions.presetContinuous];
 }
 
 #pragma mark - Delegate
