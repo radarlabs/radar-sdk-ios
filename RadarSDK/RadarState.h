@@ -22,8 +22,6 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)setStopped:(BOOL)stopped;
 + (void)updateLastSentAt;
 + (NSDate *)lastSentAt;
-+ (NSDate *)rampedTimeoutFrom;
-+ (void)updateRampedTimeoutFrom:(NSDate *)rampedTimeoutFrom;
 + (BOOL)canExit;
 + (void)setCanExit:(BOOL)canExit;
 + (CLLocation *)lastFailedStoppedLocation;

@@ -89,14 +89,6 @@ static NSString *const kBeaconIds = @"radar-beaconIds";
     return [[NSUserDefaults standardUserDefaults] objectForKey:kLastSentAt];
 }
 
-+ (void)updateRampedTimeoutFrom:(NSDate *)rampedTimeoutFrom {
-    [[NSUserDefaults standardUserDefaults] setObject:rampedTimeoutFrom forKey:kRampedTimeoutFrom];
-}
-
-+ (NSDate *)rampedTimeoutFrom {
-    return [[NSUserDefaults standardUserDefaults] objectForKey:kRampedTimeoutFrom];
-}
-
 + (BOOL)canExit {
     return [[NSUserDefaults standardUserDefaults] boolForKey:kCanExit];
 }
