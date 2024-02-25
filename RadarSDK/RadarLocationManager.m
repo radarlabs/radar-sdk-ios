@@ -25,15 +25,6 @@
 #import "RadarTripOptions.h"
 
 
-// @interface StateChange : NSObject
-// @property (nonatomic, strong) NSDate *timestamp;
-// @property (nonatomic, assign) BOOL rampedUp;
-// @end
-
-// @implementation StateChange
-// @end
-
-
 @interface RadarLocationManager ()
 
 /**
