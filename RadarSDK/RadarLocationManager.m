@@ -237,6 +237,11 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                                                        }];
 
         [self.lowPowerLocationManager startUpdatingLocation];
+        if ([RadarSettings rampedUp]) {
+            [self.locationManager startUpdatingLocation];
+        } else {
+            [self.locationManager stopUpdatingLocation];
+        }
 
         self.started = YES;
         self.startedInterval = interval;
@@ -270,6 +275,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Shutting down"];
 
     [self.lowPowerLocationManager stopUpdatingLocation];
+    [self.locationManager stopUpdatingLocation];
 }
 
 - (void)requestLocation {
@@ -341,7 +347,9 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                 if (options.rampedUpInterval > 14) {
                     desiredAccuracy = kCLLocationAccuracyBest;
                 } else {
-                    desiredAccuracy = kCLLocationAccuracyHundredMeters;
+                    // temp trying best while bb for this as well
+                    desiredAccuracy = kCLLocationAccuracyBest;
+                    // desiredAccuracy = kCLLocationAccuracyHundredMeters;
                 }
             } else {
                 switch (options.desiredAccuracy) {
