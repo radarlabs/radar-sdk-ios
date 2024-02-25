@@ -344,13 +344,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 
             CLLocationAccuracy desiredAccuracy;
             if (rampedUp) {
-                if (options.rampedUpInterval > 14) {
-                    desiredAccuracy = kCLLocationAccuracyBest;
-                } else {
-                    // temp trying best while bb for this as well
-                    desiredAccuracy = kCLLocationAccuracyBest;
-                    // desiredAccuracy = kCLLocationAccuracyHundredMeters;
-                }
+                desiredAccuracy = kCLLocationAccuracyBest;
             } else {
                 switch (options.desiredAccuracy) {
                     case RadarTrackingOptionsDesiredAccuracyHigh:
