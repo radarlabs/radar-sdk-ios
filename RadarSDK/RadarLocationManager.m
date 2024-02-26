@@ -254,6 +254,8 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 
     [self.timer invalidate];
 
+    [self.locationManager stopUpdatingLocation];
+    
     self.started = NO;
     self.startedInterval = 0;
 
