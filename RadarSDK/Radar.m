@@ -999,6 +999,10 @@
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeNone message:@"App resigning active" includeDate:YES includeBattery:YES];
 }
 
++ (void) logSomething {
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeNone message:@"Triggering logging for testing" includeDate:YES includeBattery:YES];
+}
+
 
 #pragma mark - Helpers
 

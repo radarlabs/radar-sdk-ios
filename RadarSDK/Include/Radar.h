@@ -1086,6 +1086,8 @@ logConversionWithNotification
  */
 + (void)logResigningActive;
 
++ (void)logSomething;
+
 
 #pragma mark - Helpers
 
