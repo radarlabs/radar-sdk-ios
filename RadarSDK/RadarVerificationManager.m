@@ -341,6 +341,8 @@
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wundeclared-selector"
 - (BOOL)isJailbroken {
+    BOOL jailbroken = NO;
+    
     NSError *error = nil;
     NSFileManager *fileManager = [NSFileManager defaultManager];
     
@@ -444,12 +446,12 @@
     for (NSString *file in suspiciousFiles) {
         if ([fileManager fileExistsAtPath:file]) {
             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Jailbreak check failed: File check"];
-            return YES;
+            jailbroken = YES;
         }
         struct stat statStruct;
         if (stat([file UTF8String], &statStruct) == 0) {
             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Jailbreak check failed: File check"];
-            return YES;
+            jailbroken = YES;
         }
     }
     
@@ -467,7 +469,7 @@
             }
             dlclose(handle);
             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Jailbreak check failed: Fork check"];
-            return YES;
+            jailbroken = YES;
         }
         dlclose(handle);
     }
@@ -485,7 +487,7 @@
         if (!error) {
             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Jailbreak check failed: Directory check"];
             [fileManager removeItemAtPath:path error:nil];
-            return YES;
+            jailbroken = YES;
         }
     }
     
@@ -504,7 +506,7 @@
         NSString *result = [fileManager destinationOfSymbolicLinkAtPath:symlink error:&error];
         if (result != nil && ![result isEqualToString:@""]) {
             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Jailbreak check failed: Symlink check"];
-            return YES;
+            jailbroken = YES;
         }
     }
     
@@ -544,7 +546,7 @@
             NSRange range = [imageName rangeOfString:dylib options:NSCaseInsensitiveSearch];
             if (range.location != NSNotFound) {
                 [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Jailbreak check failed: Dylib check"];
-                return YES;
+                jailbroken = YES;
             }
         }
     }
@@ -555,12 +557,13 @@
         SEL selector = @selector(internalDictionary);
         if (class_getInstanceMethod(shadowRulesetClass, selector) != NULL) {
             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Jailbreak check failed: Class check"];
+            jailbroken = YES;
         }
     }
     
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Jailbreak check passed"];
     
-    return NO;
+    return jailbroken;
 }
 
 @end
