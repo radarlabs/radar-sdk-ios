@@ -473,18 +473,18 @@
     }
     
     // directory check
-    NSArray *suspiciousDirectories = @[
+    NSArray *suspiciousDirs = @[
         @"/",
         @"/root/",
         @"/private/",
         @"/jb/"
     ];
-    for (NSString *path in suspiciousDirectories) {
-        NSString *pathWithSomeRandom = [path stringByAppendingPathComponent:[[NSUUID UUID] UUIDString]];
-        [@"RadarSDK" writeToFile:pathWithSomeRandom atomically:YES encoding:NSUTF8StringEncoding error:&error];
+    for (NSString *dir in suspiciousDirs) {
+        NSString *path = [dir stringByAppendingPathComponent:[[NSUUID UUID] UUIDString]];
+        [@"RadarSDK" writeToFile:path atomically:YES encoding:NSUTF8StringEncoding error:&error];
         if (!error) {
             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Jailbreak detected: Directory check"];
-            [fileManager removeItemAtPath:pathWithSomeRandom error:nil];
+            [fileManager removeItemAtPath:path error:nil];
             return YES;
         }
     }
@@ -500,8 +500,8 @@
         @"/usr/libexec",
         @"/usr/share"
     ];
-    for (NSString *path in suspiciousSymlinks) {
-        NSString *result = [fileManager destinationOfSymbolicLinkAtPath:path error:&error];
+    for (NSString *symlink in suspiciousSymlinks) {
+        NSString *result = [fileManager destinationOfSymbolicLinkAtPath:symlink error:&error];
         if (result != nil && ![result isEqualToString:@""]) {
             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Jailbreak detected: Symlink check"];
             return YES;
