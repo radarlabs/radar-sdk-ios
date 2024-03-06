@@ -93,6 +93,13 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         _lowPowerLocationManager.desiredAccuracy = kCLLocationAccuracyThreeKilometers;
         _lowPowerLocationManager.distanceFilter = 3000;
         _lowPowerLocationManager.allowsBackgroundLocationUpdates = [RadarUtils locationBackgroundMode];
+        
+        _motionActivityManager = [CMMotionActivityManager new];
+        [_motionActivityManager startActivityUpdatesToQueue:[NSOperationQueue mainQueue] withHandler:^(CMMotionActivity * _Nullable activity) {
+            if (activity) {
+                [RadarState setIsDriving:activity.automotive];
+            }
+        }];
 
         _permissionsHelper = [RadarPermissionsHelper new];
 

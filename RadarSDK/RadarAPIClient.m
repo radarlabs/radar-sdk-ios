@@ -317,6 +317,7 @@
         params[@"encrypted"] = @(encrypted);
     }
     params[@"appId"] = [[NSBundle mainBundle] bundleIdentifier];
+    params[@"isDriving"] = @([RadarState isDriving]);
 
     if (anonymous) {
         [[RadarAPIClient sharedInstance] getConfigForUsage:@"track"
