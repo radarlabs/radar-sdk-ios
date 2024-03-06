@@ -9,6 +9,7 @@
 #import <CommonCrypto/CommonCrypto.h>
 #import <DeviceCheck/DeviceCheck.h>
 #import <Foundation/Foundation.h>
+#import <objc/runtime.h>
 @import Network;
 
 #import "RadarVerificationManager.h"
@@ -19,6 +20,14 @@
 #import "RadarLogger.h"
 #import "RadarState.h"
 #import "RadarUtils.h"
+
+#include <dlfcn.h>
+#include <unistd.h>
+#include <signal.h>
+#include <sys/types.h>
+#include <mach-o/dyld.h>
+#include <sys/stat.h>
+#include <stdio.h>
 
 @interface RadarVerificationManager ()
 
@@ -326,6 +335,230 @@
     } else {
         completionHandler(nil, nil, @"OS unsupported");
     }
+}
+
+// inspired by https://github.com/securing/IOSSecuritySuite
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wundeclared-selector"
+- (BOOL)isJailbroken {
+    NSError *error = nil;
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    
+    // URL scheme check
+    NSArray *suspiciousURLSchemes = @[
+        @"undecimus://",
+        @"sileo://",
+        @"zbra://",
+        @"filza://"
+    ];
+    for (NSString *urlScheme in suspiciousURLSchemes) {
+        NSURL *url = [NSURL URLWithString:urlScheme];
+        if ([[UIApplication sharedApplication] canOpenURL:url]) {
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Jailbreak detected: URL scheme check"];
+            return YES;
+        }
+    }
+    
+    // file check
+    NSMutableArray *suspiciousFiles = [NSMutableArray arrayWithArray:@[
+        @"/var/mobile/Library/Preferences/ABPattern",
+        @"/usr/lib/ABDYLD.dylib",
+        @"/usr/lib/ABSubLoader.dylib",
+        @"/usr/sbin/frida-server",
+        @"/etc/apt/sources.list.d/electra.list",
+        @"/etc/apt/sources.list.d/sileo.sources",
+        @"/.bootstrapped_electra",
+        @"/usr/lib/libjailbreak.dylib",
+        @"/jb/lzma",
+        @"/.cydia_no_stash",
+        @"/.installed_unc0ver",
+        @"/jb/offsets.plist",
+        @"/usr/share/jailbreak/injectme.plist",
+        @"/etc/apt/undecimus/undecimus.list",
+        @"/var/lib/dpkg/info/mobilesubstrate.md5sums",
+        @"/Library/MobileSubstrate/MobileSubstrate.dylib",
+        @"/jb/jailbreakd.plist",
+        @"/jb/amfid_payload.dylib",
+        @"/jb/libjailbreak.dylib",
+        @"/usr/libexec/cydia/firmware.sh",
+        @"/var/lib/cydia",
+        @"/etc/apt",
+        @"/private/var/lib/apt",
+        @"/private/var/Users/",
+        @"/var/log/apt",
+        @"/Applications/Cydia.app",
+        @"/private/var/stash",
+        @"/private/var/lib/apt/",
+        @"/private/var/lib/cydia",
+        @"/private/var/cache/apt/",
+        @"/private/var/log/syslog",
+        @"/private/var/tmp/cydia.log",
+        @"/Applications/Icy.app",
+        @"/Applications/MxTube.app",
+        @"/Applications/RockApp.app",
+        @"/Applications/blackra1n.app",
+        @"/Applications/SBSettings.app",
+        @"/Applications/FakeCarrier.app",
+        @"/Applications/WinterBoard.app",
+        @"/Applications/IntelliScreen.app",
+        @"/private/var/mobile/Library/SBSettings/Themes",
+        @"/Library/MobileSubstrate/CydiaSubstrate.dylib",
+        @"/System/Library/LaunchDaemons/com.ikey.bbot.plist",
+        @"/Library/MobileSubstrate/DynamicLibraries/Veency.plist",
+        @"/Library/MobileSubstrate/DynamicLibraries/LiveClock.plist",
+        @"/System/Library/LaunchDaemons/com.saurik.Cydia.Startup.plist",
+        @"/Applications/Sileo.app",
+        @"/var/binpack",
+        @"/Library/PreferenceBundles/LibertyPref.bundle",
+        @"/Library/PreferenceBundles/ShadowPreferences.bundle",
+        @"/Library/PreferenceBundles/ABypassPrefs.bundle",
+        @"/Library/PreferenceBundles/FlyJBPrefs.bundle",
+        @"/Library/PreferenceBundles/Cephei.bundle",
+        @"/Library/PreferenceBundles/SubstitutePrefs.bundle",
+        @"/Library/PreferenceBundles/libhbangprefs.bundle",
+        @"/usr/lib/libhooker.dylib",
+        @"/usr/lib/libsubstitute.dylib",
+        @"/usr/lib/substrate",
+        @"/usr/lib/TweakInject",
+        @"/var/binpack/Applications/loader.app",
+        @"/Applications/FlyJB.app",
+        @"/Applications/Zebra.app",
+        @"/Library/BawAppie/ABypass",
+        @"/Library/MobileSubstrate/DynamicLibraries/SSLKillSwitch2.plist",
+        @"/Library/MobileSubstrate/DynamicLibraries/PreferenceLoader.plist",
+        @"/Library/MobileSubstrate/DynamicLibraries/PreferenceLoader.dylib",
+        @"/Library/MobileSubstrate/DynamicLibraries",
+        @"/var/mobile/Library/Preferences/me.jjolano.shadow.plist"
+    ]];
+    if (![RadarUtils isSimulator]) {
+        [suspiciousFiles addObjectsFromArray:@[
+            @"/bin/bash",
+            @"/usr/sbin/sshd",
+            @"/usr/libexec/ssh-keysign",
+            @"/bin/sh",
+            @"/etc/ssh/sshd_config",
+            @"/usr/libexec/sftp-server",
+            @"/usr/bin/ssh"
+        ]];
+    }
+    for (NSString *file in suspiciousFiles) {
+        if ([fileManager fileExistsAtPath:file]) {
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Jailbreak detected: File check"];
+            return YES;
+        }
+        struct stat statStruct;
+        if (stat([file UTF8String], &statStruct) == 0) {
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Jailbreak detected: File check"];
+            return YES;
+        }
+    }
+    
+    // fork check
+    if (![RadarUtils isSimulator]) {
+        void *handle = dlopen(NULL, RTLD_LAZY);
+        pid_t (*forkFunction)(void) = dlsym(handle, "fork");
+        if (forkFunction == NULL) {
+            dlclose(handle);
+        }
+        pid_t forkResult = forkFunction();
+        if (forkResult >= 0) {
+            if (forkResult > 0) {
+                kill(forkResult, SIGTERM);
+            }
+            dlclose(handle);
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Jailbreak detected: Fork check"];
+            return YES;
+        }
+        dlclose(handle);
+    }
+    
+    // directory check
+    NSArray *suspiciousDirectories = @[
+        @"/",
+        @"/root/",
+        @"/private/",
+        @"/jb/"
+    ];
+    for (NSString *path in suspiciousDirectories) {
+        NSString *pathWithSomeRandom = [path stringByAppendingPathComponent:[[NSUUID UUID] UUIDString]];
+        [@"RadarSDK" writeToFile:pathWithSomeRandom atomically:YES encoding:NSUTF8StringEncoding error:&error];
+        if (!error) {
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Jailbreak detected: Directory check"];
+            [fileManager removeItemAtPath:pathWithSomeRandom error:nil];
+            return YES;
+        }
+    }
+    
+    // symlink check
+    NSArray *suspiciousSymlinks = @[
+        @"/var/lib/undecimus/apt",
+        @"/Applications",
+        @"/Library/Ringtones",
+        @"/Library/Wallpaper",
+        @"/usr/arm-apple-darwin9",
+        @"/usr/include",
+        @"/usr/libexec",
+        @"/usr/share"
+    ];
+    for (NSString *path in suspiciousSymlinks) {
+        NSString *result = [fileManager destinationOfSymbolicLinkAtPath:path error:&error];
+        if (result != nil && ![result isEqualToString:@""]) {
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Jailbreak detected: Symlink check"];
+            return YES;
+        }
+    }
+    
+    // dylib check
+    NSArray *suspiciousDylibs = @[
+      @"SubstrateLoader.dylib",
+      @"SSLKillSwitch2.dylib",
+      @"SSLKillSwitch.dylib",
+      @"MobileSubstrate.dylib",
+      @"TweakInject.dylib",
+      @"CydiaSubstrate",
+      @"cynject",
+      @"CustomWidgetIcons",
+      @"PreferenceLoader",
+      @"RocketBootstrap",
+      @"WeeLoader",
+      @"/.file",
+      @"libhooker",
+      @"SubstrateInserter",
+      @"SubstrateBootstrap",
+      @"ABypass",
+      @"FlyJB",
+      @"Substitute",
+      @"Cephei",
+      @"Electra",
+      @"AppSyncUnified-FrontBoard.dylib",
+      @"Shadow",
+      @"FridaGadget",
+      @"frida",
+      @"libcycript"
+    ];
+    NSUInteger imageCount = _dyld_image_count();
+    for (uint32_t i = 0; i < imageCount; i++) {
+        const char *imageNameCStr = _dyld_get_image_name(i);
+        NSString *imageName = [NSString stringWithUTF8String:imageNameCStr];
+        for (NSString *dylib in suspiciousDylibs) {
+            NSRange range = [imageName rangeOfString:dylib options:NSCaseInsensitiveSearch];
+            if (range.location != NSNotFound) {
+                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Jailbreak detected: Dylib check"];
+                return YES;
+            }
+        }
+    }
+    
+    // class check
+    Class shadowRulesetClass = objc_getClass("ShadowRuleset");
+    if (shadowRulesetClass != nil) {
+        SEL selector = @selector(internalDictionary);
+        if (class_getInstanceMethod(shadowRulesetClass, selector) != NULL) {
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Jailbreak detected: Class check"];
+        }
+    }
+    
+    return NO;
 }
 
 @end
