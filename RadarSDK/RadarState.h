@@ -34,6 +34,8 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)setRegionIds:(NSArray<NSString *> *_Nullable)regionIds;
 + (NSArray<NSString *> *)beaconIds;
 + (void)setBeaconIds:(NSArray<NSString *> *_Nullable)beaconIds;
++ (BOOL)isDriving;
++ (void)setIsDriving:(BOOL)isDriving;
 
 @end
 
