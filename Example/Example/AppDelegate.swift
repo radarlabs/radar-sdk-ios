@@ -22,10 +22,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         self.requestLocationPermissions()
 
         // Replace with a valid test publishable key
-        Radar.initialize(publishableKey: "prj_test_pk_0000000000000000000000000000000000000000")
+        Radar.initialize(publishableKey: "org_test_pk_5857c63d9c1565175db8b00750808a66a002acb8")
         Radar.setDelegate(self)
         Radar.setVerifiedDelegate(self)
+        
+        Radar.trackVerified { status, location, events, user in
+            
+        }
 
+        /*
         if UIApplication.shared.applicationState != .background {
             Radar.getLocation { (status, location, stopped) in
                 print("Location: status = \(Radar.stringForStatus(status)); location = \(String(describing: location))")
@@ -176,6 +181,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
             print("Log Conversion: status = \(Radar.stringForStatus(status)); event = \(String(describing: event))")
         }
+         */
 
         return true
     }

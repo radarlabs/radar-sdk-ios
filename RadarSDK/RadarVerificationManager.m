@@ -354,7 +354,7 @@
     for (NSString *urlScheme in suspiciousURLSchemes) {
         NSURL *url = [NSURL URLWithString:urlScheme];
         if ([[UIApplication sharedApplication] canOpenURL:url]) {
-            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Jailbreak detected: URL scheme check"];
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Jailbreak check failed: URL scheme check"];
             return YES;
         }
     }
@@ -443,12 +443,12 @@
     }
     for (NSString *file in suspiciousFiles) {
         if ([fileManager fileExistsAtPath:file]) {
-            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Jailbreak detected: File check"];
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Jailbreak check failed: File check"];
             return YES;
         }
         struct stat statStruct;
         if (stat([file UTF8String], &statStruct) == 0) {
-            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Jailbreak detected: File check"];
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Jailbreak check failed: File check"];
             return YES;
         }
     }
@@ -466,7 +466,7 @@
                 kill(forkResult, SIGTERM);
             }
             dlclose(handle);
-            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Jailbreak detected: Fork check"];
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Jailbreak check failed: Fork check"];
             return YES;
         }
         dlclose(handle);
@@ -483,7 +483,7 @@
         NSString *path = [dir stringByAppendingPathComponent:[[NSUUID UUID] UUIDString]];
         [@"RadarSDK" writeToFile:path atomically:YES encoding:NSUTF8StringEncoding error:&error];
         if (!error) {
-            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Jailbreak detected: Directory check"];
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Jailbreak check failed: Directory check"];
             [fileManager removeItemAtPath:path error:nil];
             return YES;
         }
@@ -503,7 +503,7 @@
     for (NSString *symlink in suspiciousSymlinks) {
         NSString *result = [fileManager destinationOfSymbolicLinkAtPath:symlink error:&error];
         if (result != nil && ![result isEqualToString:@""]) {
-            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Jailbreak detected: Symlink check"];
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Jailbreak check failed: Symlink check"];
             return YES;
         }
     }
@@ -543,7 +543,7 @@
         for (NSString *dylib in suspiciousDylibs) {
             NSRange range = [imageName rangeOfString:dylib options:NSCaseInsensitiveSearch];
             if (range.location != NSNotFound) {
-                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Jailbreak detected: Dylib check"];
+                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Jailbreak check failed: Dylib check"];
                 return YES;
             }
         }
@@ -554,9 +554,11 @@
     if (shadowRulesetClass != nil) {
         SEL selector = @selector(internalDictionary);
         if (class_getInstanceMethod(shadowRulesetClass, selector) != NULL) {
-            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Jailbreak detected: Class check"];
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Jailbreak check failed: Class check"];
         }
     }
+    
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Jailbreak check passed"];
     
     return NO;
 }
