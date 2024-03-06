@@ -30,6 +30,7 @@
 #import "RadarTripOptions.h"
 #import "RadarUser+Internal.h"
 #import "RadarUtils.h"
+#import "RadarVerificationManager.h"
 #import <os/log.h>
 
 @implementation RadarAPIClient
@@ -315,6 +316,7 @@
         params[@"keyId"] = keyId;
         params[@"attestationError"] = attestationError;
         params[@"encrypted"] = @(encrypted);
+        params[@"compromised"] = @([[RadarVerificationManager sharedInstance] isJailbroken]);
     }
     params[@"appId"] = [[NSBundle mainBundle] bundleIdentifier];
 
