@@ -70,7 +70,7 @@ static NSString *const kEventNotificationIdentifierPrefix = @"radar_event_notifi
 
 + (void)showDidReceiveSilentPushNotification {
     UNMutableNotificationContent *content = [UNMutableNotificationContent new];
-    content.body = @"Received silent push; calling trackOnce()";
+    content.body = @"Received silent push; calling startTracking() continuous";
     UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:[[NSUUID UUID] UUIDString] content:content trigger:nil];
     [UNUserNotificationCenter.currentNotificationCenter addNotificationRequest:request withCompletionHandler:^(NSError *_Nullable error) {
     }];

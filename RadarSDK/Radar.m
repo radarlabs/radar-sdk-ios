@@ -388,13 +388,13 @@
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug type:RadarLogTypeNone message:@"App received silent push notification" includeDate:YES includeBattery:YES];
     [RadarNotificationHelper showDidReceiveSilentPushNotification];
     
-    [Radar trackOnceWithCompletionHandler:^(RadarStatus status, CLLocation * _Nullable location, NSArray<RadarEvent *> * _Nullable events, RadarUser * _Nullable user) {
-        if (status == RadarStatusSuccess) {
-            completionHandler(UIBackgroundFetchResultNewData);
-        } else {
-            completionHandler(UIBackgroundFetchResultFailed);
-        }
-    }];
+//    [Radar trackOnceWithCompletionHandler:^(RadarStatus status, CLLocation * _Nullable location, NSArray<RadarEvent *> * _Nullable events, RadarUser * _Nullable user) {
+//        if (status == RadarStatusSuccess) {
+//            completionHandler(UIBackgroundFetchResultNewData);
+//        } else {
+//            completionHandler(UIBackgroundFetchResultFailed);
+//        }
+//    }];
     
     [Radar startTrackingWithOptions:RadarTrackingOptions.presetContinuous];
 }
