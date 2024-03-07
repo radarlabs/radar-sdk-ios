@@ -34,8 +34,16 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)setRegionIds:(NSArray<NSString *> *_Nullable)regionIds;
 + (NSArray<NSString *> *)beaconIds;
 + (void)setBeaconIds:(NSArray<NSString *> *_Nullable)beaconIds;
-+ (BOOL)isDriving;
-+ (void)setIsDriving:(BOOL)isDriving;
++ (NSDictionary *)lastHeadingData;
++ (void)setLastHeadingData:(NSDictionary *_Nullable)lastHeadingData;
++ (NSDictionary *)lastMotionActivityData;
++ (void)setLastMotionActivityData:(NSDictionary *_Nullable)lastMotionActivityData;
++ (NSDictionary *)lastAccelerometerData;
++ (void)setLastAccelerometerData:(NSDictionary *_Nullable)lastAccelerometerData;
++ (NSDictionary *)lastGyroData;
++ (void)setLastGyroData:(NSDictionary *_Nullable)lastGyroData;
++ (NSDictionary *)lastMagnetometerData;
++ (void)setLastMagnetometerData:(NSDictionary *_Nullable)lastMagnetometerData;
 
 @end
 
