@@ -88,6 +88,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         _locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters;
         _locationManager.distanceFilter = kCLDistanceFilterNone;
         _locationManager.allowsBackgroundLocationUpdates = [RadarUtils locationBackgroundMode] && [CLLocationManager authorizationStatus] == kCLAuthorizationStatusAuthorizedAlways;
+        [_locationManager startUpdatingHeading];
 
         _lowPowerLocationManager = [CLLocationManager new];
         _lowPowerLocationManager.desiredAccuracy = kCLLocationAccuracyThreeKilometers;
@@ -97,7 +98,47 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         _motionActivityManager = [CMMotionActivityManager new];
         [_motionActivityManager startActivityUpdatesToQueue:[NSOperationQueue mainQueue] withHandler:^(CMMotionActivity * _Nullable activity) {
             if (activity) {
-                [RadarState setIsDriving:activity.automotive];
+                [RadarState setLastMotionActivityData:@{
+                    @"stationary" : @(activity.stationary),
+                    @"walking" : @(activity.walking),
+                    @"running" : @(activity.running),
+                    @"driving" : @(activity.automotive),
+                    @"cycling" : @(activity.cycling),
+                    @"unknown" : @(activity.unknown),
+                    @"timestamp" : @([activity.startDate timeIntervalSince1970]),
+                    @"confidence" : @(activity.confidence)
+                }];
+            }
+        }];
+        
+        _motionManager = [CMMotionManager new];
+        [_motionManager startAccelerometerUpdatesToQueue:[NSOperationQueue mainQueue] withHandler:^(CMAccelerometerData * _Nullable accelerometerData, NSError * _Nullable error) {
+            if (accelerometerData) {
+                [RadarState setLastAccelerometerData:@{
+                    @"xAcceleration" : @(accelerometerData.acceleration.x),
+                    @"yAcceleration" : @(accelerometerData.acceleration.y),
+                    @"zAcceleration" : @(accelerometerData.acceleration.z)
+                }];
+            }
+        }];
+        
+        [_motionManager startGyroUpdatesToQueue:[NSOperationQueue mainQueue] withHandler:^(CMGyroData * _Nullable gyroData, NSError * _Nullable error) {
+            if (gyroData) {
+                [RadarState setLastGyroData:@{
+                    @"xRotationRate" : @(gyroData.rotationRate.x),
+                    @"yRotationRate" : @(gyroData.rotationRate.y),
+                    @"zRotationRate" : @(gyroData.rotationRate.z),
+                }];
+            }
+        }];
+         
+        [_motionManager startMagnetometerUpdatesToQueue:[NSOperationQueue mainQueue] withHandler:^(CMMagnetometerData * _Nullable magnetometerData, NSError * _Nullable error) {
+            if (magnetometerData) {
+                [RadarState setLastMagnetometerData:@{
+                    @"xMagneticField" : @(magnetometerData.magneticField.x),
+                    @"yMagneticField" : @(magnetometerData.magneticField.y),
+                    @"zMagneticField" : @(magnetometerData.magneticField.z),
+                }];
             }
         }];
 
@@ -1048,6 +1089,18 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     [[RadarDelegateHolder sharedInstance] didFailWithStatus:RadarStatusErrorLocation];
 
     [self callCompletionHandlersWithStatus:RadarStatusErrorLocation location:nil];
+}
+
+- (void)locationManager:(CLLocationManager *)manager didUpdateHeading:(CLHeading *)newHeading {
+    [RadarState setLastHeadingData:@{
+        @"magneticHeading" : @(newHeading.magneticHeading),
+        @"trueHeading" : @(newHeading.trueHeading),
+        @"headingAccuracy" : @(newHeading.headingAccuracy),
+        @"x" : @(newHeading.x),
+        @"y" : @(newHeading.y),
+        @"z" : @(newHeading.z),
+        @"timestamp" : @([newHeading.timestamp timeIntervalSince1970]),
+    }];
 }
 
 @end

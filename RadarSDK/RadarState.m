@@ -22,7 +22,11 @@ static NSString *const kGeofenceIds = @"radar-geofenceIds";
 static NSString *const kPlaceId = @"radar-placeId";
 static NSString *const kRegionIds = @"radar-regionIds";
 static NSString *const kBeaconIds = @"radar-beaconIds";
-static NSString *const kIsDriving = @"radar-isDriving";
+static NSString *const kLastHeadingData = @"radar-lastHeadingData";
+static NSString *const kLastMotionActivityData = @"radar-lastMotionActivityData";
+static NSString *const kLastAccelerometerData = @"radar-lastAccelerometerData";
+static NSString *const kLastGyroData = @"radar-lastGyroData";
+static NSString *const kLastMagnetometerData = @"radar-lastMagnetometerData";
 
 + (CLLocation *)lastLocation {
     NSDictionary *dict = [[NSUserDefaults standardUserDefaults] dictionaryForKey:kLastLocation];
@@ -151,12 +155,44 @@ static NSString *const kIsDriving = @"radar-isDriving";
     [[NSUserDefaults standardUserDefaults] setObject:beaconIds forKey:kBeaconIds];
 }
 
-+ (BOOL)isDriving {
-    return [[NSUserDefaults standardUserDefaults] boolForKey:kIsDriving];
-}
-+ (void)setIsDriving:(BOOL)isDriving {
-    [[NSUserDefaults standardUserDefaults] setBool:isDriving forKey:kIsDriving];
++ (NSDictionary *)lastHeadingData {
+    return [[NSUserDefaults standardUserDefaults] dictionaryForKey:kLastHeadingData];
 }
 
++ (void)setLastHeadingData:(NSDictionary *_Nullable)lastHeadingData {
+    [[NSUserDefaults standardUserDefaults] setObject:lastHeadingData forKey:kLastHeadingData];
+}
+
++ (NSDictionary *)lastMotionActivityData {
+    return [[NSUserDefaults standardUserDefaults] dictionaryForKey:kLastMotionActivityData];
+}
+
++ (void)setLastMotionActivityData:(NSDictionary *)lastMotionActivityData {
+    [[NSUserDefaults standardUserDefaults] setObject:lastMotionActivityData forKey:kLastMotionActivityData];
+}
+
++ (NSDictionary *)lastAccelerometerData {
+    return [[NSUserDefaults standardUserDefaults] dictionaryForKey:kLastAccelerometerData];
+}
+
++ (void)setLastAccelerometerData:(NSDictionary *)lastAccelerometerData {
+    [[NSUserDefaults standardUserDefaults] setObject:lastAccelerometerData forKey:kLastAccelerometerData];
+}
+
++ (NSDictionary *)lastGyroData {
+    return [[NSUserDefaults standardUserDefaults] dictionaryForKey:kLastGyroData];
+}
+
++ (void)setLastGyroData:(NSDictionary *_Nullable)lastGyroData {
+    [[NSUserDefaults standardUserDefaults] setObject:lastGyroData forKey:kLastGyroData];
+}
+
++ (NSDictionary *)lastMagnetometerData {
+    return [[NSUserDefaults standardUserDefaults] dictionaryForKey:kLastMagnetometerData];
+}
+
++ (void)setLastMagnetometerData:(NSDictionary *_Nullable)lastMagnetometerData {
+    [[NSUserDefaults standardUserDefaults] setObject:lastMagnetometerData forKey:kLastMagnetometerData];
+}
 
 @end
