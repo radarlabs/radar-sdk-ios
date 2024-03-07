@@ -71,6 +71,12 @@
     
 }
 
++ (void)initializeWithPublishableKey:(NSString *)publishableKey
+                              region:(RadarHostRegion)region {
+    [RadarSettings setHostRegion:region];
+    [Radar initializeWithPublishableKey:publishableKey];
+}
+
 #pragma mark - Properties
 
 + (NSString *)sdkVersion {

@@ -156,6 +156,18 @@ typedef NS_ENUM(NSInteger, RadarAddressVerificationStatus) {
     RadarAddressVerificationStatusUnverified NS_SWIFT_NAME(unverified) = 4
 };
 
+/**
+ The Radar API host regions.
+ */
+typedef NS_ENUM(NSInteger, RadarHostRegion) {
+    /// Uses https://api.na.radar.com
+    RadarHostRegionNorthAmerica NS_SWIFT_NAME(northAmerica),
+    /// Uses https://api.eu.radar.com
+    RadarHostRegionEurope NS_SWIFT_NAME(europe),
+    /// Uses https://api.radar.io
+    RadarHostRegionGlobal NS_SWIFT_NAME(global)
+};
+
 
 #pragma mark - Callbacks
 
@@ -306,6 +318,19 @@ typedef void (^_Nonnull RadarLogConversionCompletionHandler)(RadarStatus status,
  @see https://radar.com/documentation/sdk/ios#initialize-sdk
  */
 + (void)initializeWithPublishableKey:(NSString *_Nonnull)publishableKey NS_SWIFT_NAME(initialize(publishableKey:));
+
+/**
+ Initializes the Radar SDK.
+
+ @warning Call this method from the main thread in your `AppDelegate` class before calling any other Radar methods.
+
+ @param publishableKey Your publishable API key.
+ @param region Your Radar API host region.
+
+ @see https://radar.com/documentation/sdk/ios#initialize-sdk
+ */
++ (void)initializeWithPublishableKey:(NSString *_Nonnull)publishableKey
+                              region:(RadarHostRegion)region NS_SWIFT_NAME(initialize(publishableKey:region:));
 
 #pragma mark - Properties
 
