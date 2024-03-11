@@ -174,8 +174,8 @@
             type = RadarEventTypeUserApproachingTripDestination;
         } else if ([typeStr isEqualToString:@"user.arrived_at_trip_destination"]) {
             type = RadarEventTypeUserArrivedAtTripDestination;
-        } else if ([typeStr isEqualToString:@"user.entered_wrong_destination"]){
-            type = RadarEventTypeUserEnteredWrongDestination;
+        } else if ([typeStr isEqualToString:@"user.arrived_at_wrong_trip_destination"]){
+            type = RadarEventTypeUserArrivedAtWrongTripDestination;
         } else {
             type = RadarEventTypeConversion;
             conversionName = typeStr;
@@ -381,8 +381,8 @@
         return @"user.approaching_trip_destination";
     case RadarEventTypeUserArrivedAtTripDestination:
         return @"user.arrived_at_trip_destination";
-    case RadarEventTypeUserEnteredWrongDestination:
-        return @"user.entered_wrong_destination";
+    case RadarEventTypeUserArrivedAtWrongTripDestination:
+        return @"user.arrived_at_wrong_trip_destination";
     case RadarEventTypeConversion:
         return @"custom";
     default:
