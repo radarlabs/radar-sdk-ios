@@ -62,7 +62,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (assign, nonatomic, readonly) BOOL inBufferZone;
 
 /**
- The distance in meters to the border of the jurisdiction. May be `false` if Fraud is not enabled.
+ The distance in meters to the border of the jurisdiction. May be 0 if Fraud is not enabled.
  */
 @property (assign, nonatomic, readonly) double distanceToBorder;
 
