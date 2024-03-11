@@ -66,7 +66,9 @@ typedef NS_ENUM(NSInteger, RadarEventType) {
     /// `user.exited_region_postal_code`
     RadarEventTypeUserExitedRegionPostalCode NS_SWIFT_NAME(userExitedRegionPostalCode),
     /// `user.dwelled_in_geofence`
-    RadarEventTypeUserDwelledInGeofence NS_SWIFT_NAME(userDwelledInGeofence)
+    RadarEventTypeUserDwelledInGeofence NS_SWIFT_NAME(userDwelledInGeofence),
+    /// `user.failed_fraud`
+    RadarEventTypeUserFailedFraud NS_SWIFT_NAME(userFailedFraud)
 };
 
 /**

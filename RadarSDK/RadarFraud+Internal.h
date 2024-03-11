@@ -17,7 +17,8 @@ NS_ASSUME_NONNULL_BEGIN
                                   proxy:(BOOL)proxy
                                  mocked:(BOOL)mocked
                             compromised:(BOOL)compromised
-                                 jumped:(BOOL)jumped;
+                                 jumped:(BOOL)jumped
+                             inaccurate:(BOOL)inaccurate;
 - (instancetype _Nullable)initWithObject:(id _Nonnull)object;
 
 @end
