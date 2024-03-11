@@ -176,7 +176,6 @@
             type = RadarEventTypeUserArrivedAtTripDestination;
         } else if ([typeStr isEqualToString:@"user.entered_wrong_destination"]){
             type = RadarEventTypeUserEnteredWrongDestination;
-        }
         } else {
             type = RadarEventTypeConversion;
             conversionName = typeStr;
