@@ -65,7 +65,7 @@
      verified:YES
      completionHandler:^(RadarStatus status, RadarConfig *_Nullable config) {
         [[RadarLocationManager sharedInstance]
-         getLocationWithDesiredAccuracy:RadarTrackingOptionsDesiredAccuracyHigh
+         getLocationWithDesiredAccuracy:RadarTrackingOptionsDesiredAccuracyMedium
          completionHandler:^(RadarStatus status, CLLocation *_Nullable location, BOOL stopped) {
             if (status != RadarStatusSuccess) {
                 if (completionHandler) {
