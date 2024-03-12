@@ -42,9 +42,33 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nullable, copy, nonatomic, readonly) NSString *flag;
 
 /**
- A boolean indicating whether the region is allowed. May be `false` if Fraud is not enabled.
+ A boolean indicating whether the jurisdiction is allowed. May be `false` if Fraud is not enabled.
  */
 @property (assign, nonatomic, readonly) BOOL allowed;
+
+/**
+ A boolean indicating whether all jurisdiction checks for the region have passed. May be `false` if Fraud is not enabled.
+ */
+@property (assign, nonatomic, readonly) BOOL passed;
+
+/**
+ A boolean indicating whether the user is in an exclusion zone for the jurisdiction. May be `false` if Fraud is not enabled.
+ */
+@property (assign, nonatomic, readonly) BOOL inExclusionZone;
+
+/**
+ A boolean indicating whether the user is too close to the border for the jurisdiction. May be `false` if Fraud is not enabled.
+ */
+@property (assign, nonatomic, readonly) BOOL inBufferZone;
+
+/**
+ The distance in meters to the border of the jurisdiction. May be 0 if Fraud is not enabled.
+ */
+@property (assign, nonatomic, readonly) double distanceToBorder;
+
+/**
+ 
+ */
 
 - (NSDictionary *_Nonnull)dictionaryValue;
 

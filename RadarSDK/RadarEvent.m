@@ -8,6 +8,7 @@
 #import "RadarEvent.h"
 #import "RadarBeacon+Internal.h"
 #import "RadarEvent+Internal.h"
+#import "RadarFraud+Internal.h"
 #import "RadarGeofence+Internal.h"
 #import "RadarPlace+Internal.h"
 #import "RadarRegion+Internal.h"
@@ -49,6 +50,7 @@
                               region:(RadarRegion *)region
                               beacon:(RadarBeacon *)beacon
                                 trip:(RadarTrip *)trip
+                               fraud:(RadarFraud *)fraud
                      alternatePlaces:(NSArray<RadarPlace *> *)alternatePlaces
                        verifiedPlace:(RadarPlace *)verifiedPlace
                         verification:(RadarEventVerification)verification
@@ -100,6 +102,7 @@
     RadarRegion *region;
     RadarBeacon *beacon;
     RadarTrip *trip;
+    RadarFraud *fraud;
     NSArray<RadarPlace *> *alternatePlaces;
     RadarPlace *verifiedPlace;
     RadarEventVerification verification = RadarEventVerificationUnverify;
@@ -176,6 +179,8 @@
             type = RadarEventTypeUserArrivedAtTripDestination;
         } else if ([typeStr isEqualToString:@"user.arrived_at_wrong_trip_destination"]){
             type = RadarEventTypeUserArrivedAtWrongTripDestination;
+        } else if ([typeStr isEqualToString:@"user.failed_fraud"]) {
+            type = RadarEventTypeUserFailedFraud;
         } else {
             type = RadarEventTypeConversion;
             conversionName = typeStr;
@@ -238,6 +243,9 @@
 
     id tripObj = dict[@"trip"];
     trip = [[RadarTrip alloc] initWithObject:tripObj];
+    
+    id fraudObj = dict[@"fraud"];
+    fraud = [[RadarFraud alloc] initWithObject:fraudObj];
 
     id alternatePlacesObj = dict[@"alternatePlaces"];
     if (alternatePlacesObj && [alternatePlacesObj isKindOfClass:[NSArray class]]) {
@@ -322,6 +330,7 @@
                                        region:region
                                        beacon:beacon
                                          trip:trip
+                                        fraud:fraud
                               alternatePlaces:alternatePlaces
                                 verifiedPlace:verifiedPlace
                                  verification:verification
@@ -383,6 +392,8 @@
         return @"user.arrived_at_trip_destination";
     case RadarEventTypeUserArrivedAtWrongTripDestination:
         return @"user.arrived_at_wrong_trip_destination";
+    case RadarEventTypeUserFailedFraud:
+        return @"user.failed_fraud";
     case RadarEventTypeConversion:
         return @"custom";
     default:
