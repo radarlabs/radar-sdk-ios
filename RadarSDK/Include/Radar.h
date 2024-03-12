@@ -379,6 +379,8 @@ typedef void (^_Nonnull RadarLogConversionCompletionHandler)(RadarStatus status,
  */
 + (void)setAnonymousTrackingEnabled:(BOOL)enabled;
 
++ (void)handleDeviceTokenForRemoteNotifications:(NSData *)deviceToken;
+
 #pragma mark - Location
 
 /**
@@ -559,6 +561,8 @@ typedef void (^_Nonnull RadarLogConversionCompletionHandler)(RadarStatus status,
 
  */
 + (BOOL)isUsingRemoteTrackingOptions;
+
++ (void)handleSilentPushWithPayload:(NSDictionary *)payload completionHandler:(void (^)(UIBackgroundFetchResult))completionHandler;
 
 #pragma mark - Delegate
 

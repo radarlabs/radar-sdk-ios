@@ -21,6 +21,7 @@
 #import "RadarVerificationManager.h"
 #import "RadarReplayBuffer.h"
 #import "RadarFeatureSettings.h"
+#import "RadarNotificationHelper.h"
 
 @interface Radar ()
 
@@ -107,6 +108,17 @@
 
 + (void)setAnonymousTrackingEnabled:(BOOL)enabled {
     [RadarSettings setAnonymousTrackingEnabled:enabled];
+}
+
++ (void)handleDeviceTokenForRemoteNotifications:(NSData *)deviceToken {
+    const char *data = (char *)[deviceToken bytes];
+    NSMutableString *token = [NSMutableString string];
+    for (NSUInteger i = 0; i < [deviceToken length]; i++) {
+        [token appendFormat:@"%02.2hhX", data[i]];
+    }
+    // Just log it for now
+    NSString *message = [NSString stringWithFormat:@"Device token = %@", token];
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:message];
 }
 
 #pragma mark - Location
@@ -370,6 +382,21 @@
 
 + (BOOL)isUsingRemoteTrackingOptions {
     return [RadarSettings remoteTrackingOptions] != nil;
+}
+
++ (void)handleSilentPushWithPayload:(NSDictionary *)payload completionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug type:RadarLogTypeNone message:@"App received silent push notification" includeDate:YES includeBattery:YES];
+    [RadarNotificationHelper showDidReceiveSilentPushNotification];
+    
+//    [Radar trackOnceWithCompletionHandler:^(RadarStatus status, CLLocation * _Nullable location, NSArray<RadarEvent *> * _Nullable events, RadarUser * _Nullable user) {
+//        if (status == RadarStatusSuccess) {
+//            completionHandler(UIBackgroundFetchResultNewData);
+//        } else {
+//            completionHandler(UIBackgroundFetchResultFailed);
+//        }
+//    }];
+    
+    [Radar startTrackingWithOptions:RadarTrackingOptions.presetContinuous];
 }
 
 #pragma mark - Delegate
