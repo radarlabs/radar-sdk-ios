@@ -200,7 +200,6 @@ typedef NS_ENUM(NSInteger, RadarEventVerification) {
  */
 @property (nonnull, copy, nonatomic, readonly) NSDictionary *metadata;
 
-
 + (NSString *_Nullable)stringForType:(RadarEventType)type;
 + (NSArray<NSDictionary *> *_Nullable)arrayForEvents:(NSArray<RadarEvent *> *_Nullable)events;
 - (NSDictionary *_Nonnull)dictionaryValue;
