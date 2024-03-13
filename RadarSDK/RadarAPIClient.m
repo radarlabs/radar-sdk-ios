@@ -319,21 +319,21 @@
         params[@"compromised"] = @([[RadarVerificationManager sharedInstance] isJailbroken]);
     }
     params[@"appId"] = [[NSBundle mainBundle] bundleIdentifier];
-    NSMutableDictionary *locationMetadata = [NSMutableDictionary new];
-    locationMetadata[@"motionActivityData"] = [RadarState lastMotionActivityData];
-    locationMetadata[@"accelerometerData"] = [RadarState lastAccelerometerData];
-    locationMetadata[@"gyroData"] = [RadarState lastGyroData];
-    locationMetadata[@"magnetometerData"] = [RadarState lastMagnetometerData];
-    locationMetadata[@"heading"] = [RadarState lastHeadingData];
-    locationMetadata[@"speed"] = @(location.speed);
-    locationMetadata[@"speedAccuracy"] = @(location.speedAccuracy);
-    locationMetadata[@"course"] = @(location.course);
+    NSMutableDictionary *motionMetadata = [NSMutableDictionary new];
+    motionMetadata[@"motionActivityData"] = [RadarState lastMotionActivityData];
+    motionMetadata[@"accelerometerData"] = [RadarState lastAccelerometerData];
+    motionMetadata[@"gyroData"] = [RadarState lastGyroData];
+    motionMetadata[@"magnetometerData"] = [RadarState lastMagnetometerData];
+    motionMetadata[@"heading"] = [RadarState lastHeadingData];
+    motionMetadata[@"speed"] = @(location.speed);
+    motionMetadata[@"speedAccuracy"] = @(location.speedAccuracy);
+    motionMetadata[@"course"] = @(location.course);
     if (@available(iOS 13.4, *)) {
-        locationMetadata[@"courseAccuracy"] = @(location.courseAccuracy);
+        motionMetadata[@"courseAccuracy"] = @(location.courseAccuracy);
     }
-    locationMetadata[@"battery"] = @([[UIDevice currentDevice] batteryLevel]);
+    motionMetadata[@"battery"] = @([[UIDevice currentDevice] batteryLevel]);
     
-    params[@"locationMetadata"] = locationMetadata;
+    params[@"motionMetadata"] = motionMetadata;
 
     if (anonymous) {
         [[RadarAPIClient sharedInstance] getConfigForUsage:@"track"
