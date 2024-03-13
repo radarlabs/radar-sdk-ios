@@ -156,7 +156,7 @@ typedef NS_ENUM(NSInteger, RadarEventVerification) {
 @property (nullable, strong, nonatomic, readonly) RadarTrip *trip;
 
 /**
- The fraud checks for which the event was generated. May be `nil` for non-fraud events..
+ The fraud checks for which the event was generated. May be `nil` for non-fraud events.
  */
 @property (nullable, strong, nonatomic, readonly) RadarFraud *fraud;
 
