@@ -72,6 +72,7 @@
         _region = region;
         _beacon = beacon;
         _trip = trip;
+        _fraud = fraud;
         _alternatePlaces = alternatePlaces;
         _verifiedPlace = verifiedPlace;
         _verification = verification;
@@ -80,7 +81,7 @@
         _location = location;
         _replayed = replayed;
         _metadata = metadata;
-        _fraud = fraud;
+        
     }
     return self;
 }
@@ -452,6 +453,10 @@
         NSDictionary *tripDict = [self.trip dictionaryValue];
         [dict setValue:tripDict forKey:@"trip"];
     }
+    if (self.fraud) {
+        NSDictionary *fraudDict = [self.fraud dictionaryValue];
+        [dict setValue:fraudDict forKey:@"fraud"];
+    }
     NSArray *alternatePlaces = [RadarPlace arrayForPlaces:self.alternatePlaces];
     if (alternatePlaces) {
         [dict setValue:alternatePlaces forKey:@"alternatePlaces"];
@@ -467,10 +472,6 @@
     [dict setValue:createdAtString forKey:@"createdAt"];
     NSString *actualCreatedAtString = [RadarUtils.isoDateFormatter stringFromDate:self.actualCreatedAt];
     [dict setValue:actualCreatedAtString forKey:@"actualCreatedAt"];
-    if (self.fraud) {
-        NSDictionary *fraudDict = [self.fraud dictionaryValue];
-        [dict setValue:fraudDict forKey:@"fraud"];
-    }
     return dict;
 }
 

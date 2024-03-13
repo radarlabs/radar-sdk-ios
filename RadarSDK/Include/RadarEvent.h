@@ -156,6 +156,11 @@ typedef NS_ENUM(NSInteger, RadarEventVerification) {
 @property (nullable, strong, nonatomic, readonly) RadarTrip *trip;
 
 /**
+ The fraud checks for which the event was generated. May be `nil` for non-fraud events..
+ */
+@property (nullable, strong, nonatomic, readonly) RadarFraud *fraud;
+
+/**
  For place entry events, alternate place candidates. May be `nil` for non-place events.
  */
 @property (nullable, strong, nonatomic, readonly) NSArray<RadarPlace *> *alternatePlaces;
@@ -195,10 +200,6 @@ typedef NS_ENUM(NSInteger, RadarEventVerification) {
  */
 @property (nonnull, copy, nonatomic, readonly) NSDictionary *metadata;
 
-/**
- The fraud checks for which the event was generated. May be `nill` for non-fraud events..
- */
-@property (nullable, strong, nonatomic, readonly) RadarFraud *fraud;
 
 + (NSString *_Nullable)stringForType:(RadarEventType)type;
 + (NSArray<NSDictionary *> *_Nullable)arrayForEvents:(NSArray<RadarEvent *> *_Nullable)events;
