@@ -81,7 +81,6 @@
         _location = location;
         _replayed = replayed;
         _metadata = metadata;
-        
     }
     return self;
 }
