@@ -319,21 +319,28 @@
         params[@"compromised"] = @([[RadarVerificationManager sharedInstance] isJailbroken]);
     }
     params[@"appId"] = [[NSBundle mainBundle] bundleIdentifier];
-    NSMutableDictionary *motionMetadata = [NSMutableDictionary new];
-    motionMetadata[@"motionActivityData"] = [RadarState lastMotionActivityData];
-    motionMetadata[@"accelerometerData"] = [RadarState lastAccelerometerData];
-    motionMetadata[@"gyroData"] = [RadarState lastGyroData];
-    motionMetadata[@"magnetometerData"] = [RadarState lastMagnetometerData];
-    motionMetadata[@"heading"] = [RadarState lastHeadingData];
-    motionMetadata[@"speed"] = @(location.speed);
-    motionMetadata[@"speedAccuracy"] = @(location.speedAccuracy);
-    motionMetadata[@"course"] = @(location.course);
+    NSMutableDictionary *motionData = [NSMutableDictionary new];
+    motionData[@"motionActivityData"] = [RadarState lastMotionActivityData];
+    motionData[@"accelerometerData"] = [RadarState lastAccelerometerData];
+    motionData[@"gyroData"] = [RadarState lastGyroData];
+    motionData[@"magnetometerData"] = [RadarState lastMagnetometerData];
+    motionData[@"heading"] = [RadarState lastHeadingData];
+    motionData[@"speed"] = @(location.speed);
+    motionData[@"speedAccuracy"] = @(location.speedAccuracy);
+    motionData[@"course"] = @(location.course);
     if (@available(iOS 13.4, *)) {
-        motionMetadata[@"courseAccuracy"] = @(location.courseAccuracy);
+        motionData[@"courseAccuracy"] = @(location.courseAccuracy);
     }
-    motionMetadata[@"battery"] = @([[UIDevice currentDevice] batteryLevel]);
+    motionData[@"battery"] = @([[UIDevice currentDevice] batteryLevel]);
+    motionData[@"altitude"] = @(location.altitude);
+    if (@available(iOS 15, *)) {
+        motionData[@"ellipsoidalAltitude"] = @(location.ellipsoidalAltitude);
+        motionData[@"isProducedByAccessory"] = @([location.sourceInformation isProducedByAccessory]);
+        motionData[@"isSimulatedBySoftware"] = @([location.sourceInformation isSimulatedBySoftware]);
+    }
+    motionData[@"floor"] = @([location.floor level]);
     
-    params[@"motionMetadata"] = motionMetadata;
+    params[@"motionData"] = motionData;
 
     if (anonymous) {
         [[RadarAPIClient sharedInstance] getConfigForUsage:@"track"
