@@ -196,7 +196,7 @@ typedef NS_ENUM(NSInteger, RadarEventVerification) {
 @property (nonnull, copy, nonatomic, readonly) NSDictionary *metadata;
 
 /**
- For accepted place entry events, the verified place. May be `nil` if Fraud is not enabled.
+ The fraud checks for which the event was generated. May be `nill` for non-fraud events..
  */
 @property (nullable, strong, nonatomic, readonly) RadarFraud *fraud;
 
