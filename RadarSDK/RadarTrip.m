@@ -206,8 +206,8 @@
     NSDictionary *etaDict = @{@"distance": @(self.etaDistance), @"duration": @(self.etaDuration)};
     dict[@"eta"] = etaDict;
     dict[@"status"] = [Radar stringForTripStatus:self.status];
-    dict[@"delayed"] = @(self.delayed);
-    dict[@"scheduledArrivalTimeDelay"] = @(self.scheduledArrivalTimeDelay);
+    NSDictionary *delayDict = @{@"delayed": @(self.delayed), @"scheduledArrivalTimeDelay": @(self.scheduledArrivalTimeDelay)};
+    dict[@"delay"] = delayDict;
     return dict;
 }
 

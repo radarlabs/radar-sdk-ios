@@ -84,12 +84,12 @@ typedef NS_ENUM(NSInteger, RadarTripStatus) {
 /**
 * The flag indicating if a trip is delayed.
 */
-@property (nullable, assign, nonatomic, readonly) BOOL delayed;
+@property (assign, nonatomic, readonly) BOOL delayed;
 
 /**
 * The delay in minutes for the scheduled arrival time for the trip.
 */
-@property (nullable, assign, nonatomic, readonly) int scheduledArrivalTimeDelay;
+@property (assign, nonatomic, readonly) int scheduledArrivalTimeDelay;
 
 /**
  The status of the trip.
