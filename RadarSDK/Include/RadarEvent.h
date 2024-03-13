@@ -9,6 +9,7 @@
 #import "RadarPlace.h"
 #import "RadarRegion.h"
 #import "RadarUser.h"
+#import "RadarFraud.h"
 #import <CoreLocation/CoreLocation.h>
 #import <Foundation/Foundation.h>
 
@@ -193,6 +194,11 @@ typedef NS_ENUM(NSInteger, RadarEventVerification) {
  The metadata of the event. Present on conversion events only.
  */
 @property (nonnull, copy, nonatomic, readonly) NSDictionary *metadata;
+
+/**
+ For accepted place entry events, the verified place. May be `nil` if Fraud is not enabled.
+ */
+@property (nullable, strong, nonatomic, readonly) RadarFraud *fraud;
 
 + (NSString *_Nullable)stringForType:(RadarEventType)type;
 + (NSArray<NSDictionary *> *_Nullable)arrayForEvents:(NSArray<RadarEvent *> *_Nullable)events;

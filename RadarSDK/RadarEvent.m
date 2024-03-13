@@ -80,6 +80,7 @@
         _location = location;
         _replayed = replayed;
         _metadata = metadata;
+        _fraud = fraud;
     }
     return self;
 }
@@ -466,6 +467,10 @@
     [dict setValue:createdAtString forKey:@"createdAt"];
     NSString *actualCreatedAtString = [RadarUtils.isoDateFormatter stringFromDate:self.actualCreatedAt];
     [dict setValue:actualCreatedAtString forKey:@"actualCreatedAt"];
+    if (self.fraud) {
+        NSDictionary *fraudDict = [self.fraud dictionaryValue];
+        [dict setValue:fraudDict forKey:@"fraud"];
+    }
     return dict;
 }
 
