@@ -20,6 +20,8 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)setLastMovedAt:(NSDate *)lastMovedAt;
 + (BOOL)stopped;
 + (void)setStopped:(BOOL)stopped;
++ (BOOL)justStopped;
++ (void)setJustStopped:(BOOL)justStopped;
 + (void)updateLastSentAt;
 + (NSDate *)lastSentAt;
 + (BOOL)canExit;
