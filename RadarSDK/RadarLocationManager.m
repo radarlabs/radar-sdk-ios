@@ -1035,4 +1035,10 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     [self callCompletionHandlersWithStatus:RadarStatusErrorLocation location:nil];
 }
 
+- (void)locationManagerDidChangeAuthorization:(CLLocationManager *)manager {
+    [Radar trackOnceWithCompletionHandler:^(RadarStatus status, CLLocation * _Nullable location, NSArray<RadarEvent *> * _Nullable events, RadarUser * _Nullable user) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Called trackOnce() from locationManagerDidChangeAuthorization"];
+    }];
+}
+
 @end

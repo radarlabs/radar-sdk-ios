@@ -64,11 +64,13 @@
     [[RadarAPIClient sharedInstance] getConfigForUsage:@"initialize"
                                               verified:NO
                                      completionHandler:^(RadarStatus status, RadarConfig *config) {
-                                         [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
-                                         [RadarSettings setFeatureSettings:config.meta.featureSettings];
-                                         [self flushLogs];
-                                     }];
-    
+        [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
+        [RadarSettings setFeatureSettings:config.meta.featureSettings];
+        [self flushLogs];
+        [Radar trackOnceWithCompletionHandler:^(RadarStatus status, CLLocation * _Nullable location, NSArray<RadarEvent *> * _Nullable events, RadarUser * _Nullable user) {
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Called trackOnce() from initialize"];
+        }];
+    }];
 }
 
 #pragma mark - Properties
@@ -1197,6 +1199,9 @@
     }
 
     [Radar logOpenedAppConversion];
+    [Radar trackOnceWithCompletionHandler:^(RadarStatus status, CLLocation * _Nullable location, NSArray<RadarEvent *> * _Nullable events, RadarUser * _Nullable user) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Called trackOnce() from app resume."];
+    }];
 }
 
 - (void)dealloc {
