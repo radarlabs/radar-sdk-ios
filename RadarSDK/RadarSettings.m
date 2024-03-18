@@ -304,4 +304,8 @@ static NSString *const kXPlatformSDKVersion = @"radar-xPlatformSDKVersion";
     return [[NSUserDefaults standardUserDefaults] stringForKey:kXPlatformSDKVersion];
 }
 
++ (BOOL)useRadarModifiedBackgroundLocation {
+    return [[self featureSettings] useRadarModifiedBackgroundLocation];
+}
+
 @end

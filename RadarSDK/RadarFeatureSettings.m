@@ -10,19 +10,24 @@
 @implementation RadarFeatureSettings
 
 - (instancetype)initWithUsePersistence:(BOOL)usePersistence
-             extendFlushReplays:(BOOL)extendFlushReplays
-             useLogPersistence:(BOOL)useLogPersistence {
+                    extendFlushReplays:(BOOL)extendFlushReplays
+                     useLogPersistence:(BOOL)useLogPersistence
+    useRadarModifiedBackgroundLocation:(BOOL)useRadarModifiedBackgroundLocation {
     if (self = [super init]) {
         _usePersistence = usePersistence;
         _extendFlushReplays = extendFlushReplays;
         _useLogPersistence = useLogPersistence;
+        _useRadarModifiedBackgroundLocation = useRadarModifiedBackgroundLocation;
     }
     return self;
 }
 
 + (RadarFeatureSettings *_Nullable)featureSettingsFromDictionary:(NSDictionary *)dict {
     if (!dict) {
-        return [[RadarFeatureSettings alloc] initWithUsePersistence:NO extendFlushReplays:NO useLogPersistence:NO];
+        return [[RadarFeatureSettings alloc] initWithUsePersistence:NO 
+                                                 extendFlushReplays:NO
+                                                  useLogPersistence:NO
+                                 useRadarModifiedBackgroundLocation:NO];
     }
 
     NSObject *usePersistenceObj = dict[@"usePersistence"]; 
@@ -42,8 +47,17 @@
     if (useLogPersistenceObj && [useLogPersistenceObj isKindOfClass:[NSNumber class]]) {
         useLogPersistence = [(NSNumber *)useLogPersistenceObj boolValue];
     }
+    
+    NSObject *useRadarModifiedBackgroundLocationObj = dict[@"useRadarModifiedBackgroundLocation"];
+    BOOL useRadarModifiedBackgroundLocation = NO;
+    if (useRadarModifiedBackgroundLocationObj && [useRadarModifiedBackgroundLocationObj isKindOfClass:[NSNumber class]]) {
+        useRadarModifiedBackgroundLocation = [(NSNumber *)useRadarModifiedBackgroundLocationObj boolValue];
+    }
 
-    return [[RadarFeatureSettings alloc] initWithUsePersistence:usePersistence extendFlushReplays:extendFlushReplays useLogPersistence:useLogPersistence];
+    return [[RadarFeatureSettings alloc] initWithUsePersistence:usePersistence 
+                                             extendFlushReplays:extendFlushReplays
+                                              useLogPersistence:useLogPersistence
+                             useRadarModifiedBackgroundLocation:useRadarModifiedBackgroundLocation];
 }
 
 - (NSDictionary *)dictionaryValue {
@@ -51,6 +65,7 @@
     [dict setValue:@(self.usePersistence) forKey:@"usePersistence"];
     [dict setValue:@(self.extendFlushReplays) forKey:@"extendFlushReplays"];
     [dict setValue:@(self.useLogPersistence) forKey:@"useLogPersistence"];
+    [dict setValue:@(self.useRadarModifiedBackgroundLocation) forKey:@"useRadarModifiedBackgroundLocation"];
     
     return dict;
 }
