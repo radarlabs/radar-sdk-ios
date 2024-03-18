@@ -21,6 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSString *)deviceId;
 + (NSString *)deviceType;
 + (NSString *)deviceMake;
++ (BOOL)isSimulator;
 + (BOOL)locationBackgroundMode;
 + (NSString *)locationAuthorization;
 + (NSString *)locationAccuracyAuthorization;

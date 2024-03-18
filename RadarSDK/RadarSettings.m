@@ -39,6 +39,8 @@ static NSString *const kVerifiedHost = @"radar-verifiedHost";
 static NSString *const kDefaultVerifiedHost = @"https://api-verified.radar.io";
 static NSString *const kLastAppOpenTime = @"radar-lastAppOpenTime";
 static NSString *const kUserDebug = @"radar-userDebug";
+static NSString *const kXPlatformSDKType = @"radar-xPlatformSDKType";
+static NSString *const kXPlatformSDKVersion = @"radar-xPlatformSDKVersion";
 
 + (NSString *)publishableKey {
     return [[NSUserDefaults standardUserDefaults] stringForKey:kPublishableKey];
@@ -289,6 +291,17 @@ static NSString *const kUserDebug = @"radar-userDebug";
 + (NSDate *)lastAppOpenTime {
     NSDate *lastAppOpenTime = [[NSUserDefaults standardUserDefaults] objectForKey:kLastAppOpenTime];
     return lastAppOpenTime ? lastAppOpenTime : [NSDate dateWithTimeIntervalSince1970:0];
+}
+
++ (BOOL)xPlatform {
+    return [[NSUserDefaults standardUserDefaults] stringForKey:kXPlatformSDKType] != nil &&
+    [[NSUserDefaults standardUserDefaults] stringForKey:kXPlatformSDKVersion];
+}
++ (NSString *)xPlatformSDKType {
+    return [[NSUserDefaults standardUserDefaults] stringForKey:kXPlatformSDKType];
+}
++ (NSString *)xPlatformSDKVersion {
+    return [[NSUserDefaults standardUserDefaults] stringForKey:kXPlatformSDKVersion];
 }
 
 @end

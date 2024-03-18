@@ -14,7 +14,11 @@
                               code:(nonnull NSString *)code
                               type:(nonnull NSString *)type
                               flag:(nullable NSString *)flag
-                           allowed:(BOOL)allowed;
+                           allowed:(BOOL)allowed
+                            passed:(BOOL)passed
+                   inExclusionZone:(BOOL)inExclusionZone
+                      inBufferZone:(BOOL)inBufferZone
+                  distanceToBorder:(double)distanceToBorder;
 - (nullable instancetype)initWithObject:(nullable id)object;
 
 @end

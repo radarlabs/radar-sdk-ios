@@ -45,7 +45,7 @@ static NSDateFormatter *_isoDateFormatter;
 }
 
 + (NSString *)sdkVersion {
-    return @"3.9.5";
+    return @"3.9.12";
 }
 
 + (NSString *)deviceId {
@@ -62,6 +62,14 @@ static NSDateFormatter *_isoDateFormatter;
 
 + (NSString *)deviceMake {
     return @"Apple";
+}
+
++ (BOOL)isSimulator {
+#if TARGET_OS_SIMULATOR
+    return YES;
+#else
+    return NO;
+#endif
 }
 
 + (BOOL)locationBackgroundMode {

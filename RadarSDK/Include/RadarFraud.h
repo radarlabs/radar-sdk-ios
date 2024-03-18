@@ -52,6 +52,11 @@
  */
 @property (assign, nonatomic, readonly) bool jumped;
 
+/**
+ A boolean indicating whether the user's location is not accurate enough. May be `false` if Fraud is not enabled.
+ */
+@property (assign, nonatomic, readonly) bool inaccurate;
+
 - (NSDictionary *_Nonnull)dictionaryValue;
 
 @end

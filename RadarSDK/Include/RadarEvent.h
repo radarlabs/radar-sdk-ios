@@ -9,6 +9,7 @@
 #import "RadarPlace.h"
 #import "RadarRegion.h"
 #import "RadarUser.h"
+#import "RadarFraud.h"
 #import <CoreLocation/CoreLocation.h>
 #import <Foundation/Foundation.h>
 
@@ -66,7 +67,11 @@ typedef NS_ENUM(NSInteger, RadarEventType) {
     /// `user.exited_region_postal_code`
     RadarEventTypeUserExitedRegionPostalCode NS_SWIFT_NAME(userExitedRegionPostalCode),
     /// `user.dwelled_in_geofence`
-    RadarEventTypeUserDwelledInGeofence NS_SWIFT_NAME(userDwelledInGeofence)
+    RadarEventTypeUserDwelledInGeofence NS_SWIFT_NAME(userDwelledInGeofence),
+    /// 'user.arrived_at_wrong_trip_destination`
+    RadarEventTypeUserArrivedAtWrongTripDestination NS_SWIFT_NAME(userArrivedAtWrongTripDestination),
+    /// `user.failed_fraud`
+    RadarEventTypeUserFailedFraud NS_SWIFT_NAME(userFailedFraud)
 };
 
 /**
@@ -149,6 +154,11 @@ typedef NS_ENUM(NSInteger, RadarEventVerification) {
  The trip for which the event was generated. May be `nil` for non-trip events.
  */
 @property (nullable, strong, nonatomic, readonly) RadarTrip *trip;
+
+/**
+ The fraud checks for which the event was generated. May be `nil` for non-fraud events.
+ */
+@property (nullable, strong, nonatomic, readonly) RadarFraud *fraud;
 
 /**
  For place entry events, alternate place candidates. May be `nil` for non-place events.

@@ -30,6 +30,7 @@
 #import "RadarTripOptions.h"
 #import "RadarUser+Internal.h"
 #import "RadarUtils.h"
+#import "RadarVerificationManager.h"
 #import <os/log.h>
 
 @implementation RadarAPIClient
@@ -52,7 +53,7 @@
 }
 
 + (NSDictionary *)headersWithPublishableKey:(NSString *)publishableKey {
-    return @{
+    NSMutableDictionary *headers = [@{
         @"Authorization": publishableKey,
         @"Content-Type": @"application/json",
         @"X-Radar-Config": @"true",
@@ -60,8 +61,19 @@
         @"X-Radar-Device-Model": [RadarUtils deviceModel],
         @"X-Radar-Device-OS": [RadarUtils deviceOS],
         @"X-Radar-Device-Type": [RadarUtils deviceType],
-        @"X-Radar-SDK-Version": [RadarUtils sdkVersion]
-    };
+        @"X-Radar-SDK-Version": [RadarUtils sdkVersion],
+    } mutableCopy];
+    if ([RadarSettings xPlatform]) {
+        [headers addEntriesFromDictionary:@{
+            @"X-Radar-X-Platform-SDK-Type": [RadarSettings xPlatformSDKType],
+            @"X-Radar-X-Platform-SDK-Version": [RadarSettings xPlatformSDKVersion]
+        }];
+    } else {
+        [headers addEntriesFromDictionary:@{
+            @"X-Radar-X-Platform-SDK-Type": @"Native"
+        }];
+    }
+    return headers;
 }
 
 - (void)getConfigForUsage:(NSString *_Nullable)usage verified:(BOOL)verified completionHandler:(RadarConfigAPICompletionHandler _Nonnull)completionHandler {
@@ -243,6 +255,12 @@
     params[@"country"] = [RadarUtils country];
     params[@"timeZoneOffset"] = [RadarUtils timeZoneOffset];
     params[@"source"] = [Radar stringForLocationSource:source];
+    if ([RadarSettings xPlatform]) {
+        params[@"xPlatformType"] = [RadarSettings xPlatformSDKType];
+        params[@"xPlatformSDKVersion"] = [RadarSettings xPlatformSDKVersion];
+    } else {
+        params[@"xPlatformType"] = @"Native";
+    }
     if (@available(iOS 15.0, *)) {
         CLLocationSourceInformation *sourceInformation = location.sourceInformation;
         if (sourceInformation) {
@@ -298,6 +316,7 @@
         params[@"keyId"] = keyId;
         params[@"attestationError"] = attestationError;
         params[@"encrypted"] = @(encrypted);
+        params[@"compromised"] = @([[RadarVerificationManager sharedInstance] isJailbroken]);
     }
     params[@"appId"] = [[NSBundle mainBundle] bundleIdentifier];
 

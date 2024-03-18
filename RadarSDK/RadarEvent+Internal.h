@@ -28,6 +28,7 @@
                               region:(RadarRegion *_Nullable)region
                               beacon:(RadarBeacon *_Nullable)beacon
                                 trip:(RadarTrip *_Nullable)trip
+                               fraud:(RadarFraud *_Nullable)fraud
                      alternatePlaces:(NSArray<RadarPlace *> *_Nullable)alternatePlaces
                        verifiedPlace:(RadarPlace *_Nullable)verifiedPlace
                         verification:(RadarEventVerification)verification
