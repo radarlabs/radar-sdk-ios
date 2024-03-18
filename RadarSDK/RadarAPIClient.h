@@ -92,6 +92,20 @@ typedef void (^_Nonnull RadarSyncLogsAPICompletionHandler)(RadarStatus status);
                 encrypted:(BOOL)encrypted
         completionHandler:(RadarTrackAPICompletionHandler _Nonnull)completionHandler;
 
+- (void)trackWithLocation:(CLLocation *_Nonnull)location
+                  stopped:(BOOL)stopped
+               foreground:(BOOL)foreground
+                   source:(RadarLocationSource)source
+                 replayed:(BOOL)replayed
+                  beacons:(NSArray<RadarBeacon *> *_Nullable)beacons
+                 verified:(BOOL)verified
+        attestationString:(NSString *_Nullable)attestationString
+                    keyId:(NSString *_Nullable)keyId
+         attestationError:(NSString *_Nullable)attestationError
+                encrypted:(BOOL)encrypted
+                 coalesce:(BOOL)coalesce
+        completionHandler:(RadarTrackAPICompletionHandler _Nonnull)completionHandler;
+
 - (void)flushReplays:(NSArray<NSDictionary *> *_Nonnull)replays completionHandler:(RadarFlushReplaysAPICompletionHandler _Nonnull)completionHandler;
 
 - (void)verifyEventId:(NSString *_Nonnull)eventId verification:(RadarEventVerification)verification verifiedPlaceId:(NSString *_Nullable)verifiedPlaceId;

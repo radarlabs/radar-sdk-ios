@@ -16,6 +16,8 @@
 @property (strong, nonatomic) dispatch_queue_t queue;
 @property (strong, nonatomic) dispatch_semaphore_t semaphore;
 @property (assign, nonatomic) BOOL wait;
+@property (strong, nonatomic) NSLock *lock;
+@property (strong, nonatomic) NSMutableDictionary *completions;
 
 @end
 
@@ -26,6 +28,8 @@
     if (self) {
         _queue = dispatch_queue_create("io.radar.api", DISPATCH_QUEUE_SERIAL);
         _semaphore = dispatch_semaphore_create(1);
+        _lock = [NSLock new];
+        _completions = [NSMutableDictionary new];
     }
     return self;
 }
@@ -35,6 +39,18 @@
                   headers:(NSDictionary *)headers
                    params:(NSDictionary *)params
                     sleep:(BOOL)sleep
+               logPayload:(BOOL)logPayload
+          extendedTimeout:(BOOL)extendedTimeout
+        completionHandler:(RadarAPICompletionHandler)completionHandler {
+    [self requestWithMethod:method url:url headers:headers params:params sleep:sleep coalesce:NO logPayload:logPayload extendedTimeout:extendedTimeout completionHandler:completionHandler];
+}
+
+- (void)requestWithMethod:(NSString *)method
+                      url:(NSString *)url
+                  headers:(NSDictionary *)headers
+                   params:(NSDictionary *)params
+                    sleep:(BOOL)sleep
+                 coalesce:(BOOL)coalesce
                logPayload:(BOOL)logPayload
           extendedTimeout:(BOOL)extendedTimeout
         completionHandler:(RadarAPICompletionHandler)completionHandler {

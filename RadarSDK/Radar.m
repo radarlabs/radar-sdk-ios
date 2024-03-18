@@ -135,10 +135,18 @@
 #pragma mark - Tracking
 
 + (void)trackOnceWithCompletionHandler:(RadarTrackCompletionHandler)completionHandler {
-    [self trackOnceWithDesiredAccuracy:RadarTrackingOptionsDesiredAccuracyMedium beacons:NO completionHandler:completionHandler];
+    [self trackOnceWithDesiredAccuracy:RadarTrackingOptionsDesiredAccuracyMedium beacons:NO coalesce:NO completionHandler:completionHandler];
+}
+
++ (void)trackOnceWithCoalesce:(BOOL)coalesce completionHandler:(RadarTrackCompletionHandler)completionHandler {
+    [self trackOnceWithDesiredAccuracy:RadarTrackingOptionsDesiredAccuracyMedium beacons:NO coalesce:coalesce completionHandler:completionHandler];
 }
 
 + (void)trackOnceWithDesiredAccuracy:(RadarTrackingOptionsDesiredAccuracy)desiredAccuracy beacons:(BOOL)beacons completionHandler:(RadarTrackCompletionHandler)completionHandler {
+    [self trackOnceWithDesiredAccuracy:desiredAccuracy beacons:beacons coalesce:NO completionHandler:completionHandler];
+}
+
++ (void)trackOnceWithDesiredAccuracy:(RadarTrackingOptionsDesiredAccuracy)desiredAccuracy beacons:(BOOL)beacons coalesce:(BOOL)coalesce completionHandler:(RadarTrackCompletionHandler)completionHandler {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"trackOnce()"];
     [[RadarLocationManager sharedInstance]
         getLocationWithDesiredAccuracy:desiredAccuracy

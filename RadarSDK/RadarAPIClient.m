@@ -190,11 +190,62 @@
                    source:(RadarLocationSource)source
                  replayed:(BOOL)replayed
                   beacons:(NSArray<RadarBeacon *> *_Nullable)beacons
+                 coalesce:(BOOL)coalesce
+        completionHandler:(RadarTrackAPICompletionHandler _Nonnull)completionHandler {
+    [self trackWithLocation:location
+                    stopped:stopped
+                 foreground:foreground
+                     source:source
+                   replayed:replayed
+                    beacons:beacons
+                   verified:NO
+          attestationString:nil
+                      keyId:nil
+           attestationError:nil
+                  encrypted:NO
+                   coalesce:coalesce
+          completionHandler:completionHandler];
+}
+
+- (void)trackWithLocation:(CLLocation *_Nonnull)location
+                  stopped:(BOOL)stopped
+               foreground:(BOOL)foreground
+                   source:(RadarLocationSource)source
+                 replayed:(BOOL)replayed
+                  beacons:(NSArray<RadarBeacon *> *_Nullable)beacons
                  verified:(BOOL)verified
         attestationString:(NSString *_Nullable)attestationString
                     keyId:(NSString *_Nullable)keyId
          attestationError:(NSString *_Nullable)attestationError
                 encrypted:(BOOL)encrypted
+        completionHandler:(RadarTrackAPICompletionHandler _Nonnull)completionHandler {
+    [self trackWithLocation:location
+                    stopped:stopped
+                 foreground:foreground
+                     source:source
+                   replayed:replayed
+                    beacons:beacons
+                   verified:verified
+          attestationString:attestationString
+                      keyId:keyId
+           attestationError:attestationError
+                  encrypted:encrypted
+                   coalesce:NO
+          completionHandler:completionHandler];
+}
+
+- (void)trackWithLocation:(CLLocation *_Nonnull)location
+                  stopped:(BOOL)stopped
+               foreground:(BOOL)foreground
+                   source:(RadarLocationSource)source
+                 replayed:(BOOL)replayed
+                  beacons:(NSArray<RadarBeacon *> *_Nullable)beacons
+                 verified:(BOOL)verified
+        attestationString:(NSString *_Nullable)attestationString
+                    keyId:(NSString *_Nullable)keyId
+         attestationError:(NSString *_Nullable)attestationError
+                encrypted:(BOOL)encrypted
+                 coalesce:(BOOL)coalesce
         completionHandler:(RadarTrackAPICompletionHandler _Nonnull)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
@@ -355,12 +406,13 @@
         }];
     } else {
         [self.apiHelper requestWithMethod:@"POST"
-                                    url:url
-                                headers:headers
-                                params:requestParams
-                                    sleep:YES
-                            logPayload:YES
-                        extendedTimeout:NO
+                                      url:url
+                                  headers:headers
+                                   params:requestParams
+                                    sleep:NO
+                                 coalesce:coalesce
+                               logPayload:YES
+                          extendedTimeout:NO
                         completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
                             if (status != RadarStatusSuccess || !res) {
                                 if (options.replay == RadarTrackingOptionsReplayAll) {

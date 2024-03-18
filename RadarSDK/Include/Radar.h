@@ -414,6 +414,9 @@ typedef void (^_Nonnull RadarLogConversionCompletionHandler)(RadarStatus status,
  */
 + (void)trackOnceWithCompletionHandler:(RadarTrackCompletionHandler _Nullable)completionHandler NS_SWIFT_NAME(trackOnce(completionHandler:));
 
++ (void)trackOnceWithCoalesce:(BOOL)coalesce completionHandler:(RadarTrackCompletionHandler _Nullable)completionHandler
+NS_SWIFT_NAME(trackOnce(coalesce:completionHandler:));
+
 /**
  Tracks the user's location once with the desired accuracy and optionally ranges beacons in the foreground.
 
