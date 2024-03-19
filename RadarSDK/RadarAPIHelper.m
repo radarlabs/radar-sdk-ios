@@ -26,7 +26,7 @@
 - (instancetype)init {
     self = [super init];
     if (self) {
-        _queue = dispatch_queue_create("io.radar.api", DISPATCH_QUEUE_SERIAL);
+        _queue = dispatch_queue_create("io.radar.api", DISPATCH_QUEUE_CONCURRENT);
         _semaphore = dispatch_semaphore_create(1);
         _lock = [NSLock new];
         _completions = [NSMutableDictionary new];
@@ -71,12 +71,12 @@
                 self.completions[url] = [[NSMutableArray alloc] initWithArray:@[completionHandler]];
                 [self.lock unlock];
                 // Sleep for 1 second with released lock to allow for coalescing of requests
-                [NSThread sleepForTimeInterval:1];
-                [self.lock lock];
-                if (![self.completions objectForKey:url]) {
-                    [self.lock unlock];
-                    return;
-                }
+                [NSThread sleepForTimeInterval:5];
+//                [self.lock lock];
+//                if (![self.completions objectForKey:url]) {
+//                    [self.lock unlock];
+//                    return;
+//                }
             }
         } else {
             [self.lock lock];
@@ -86,8 +86,6 @@
             }
             [self.lock unlock];
         }
-        
-//        NSArray<RadarAPICompletionHandler> *completionHandlers;
 
         NSMutableURLRequest *req = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:url]];
         req.HTTPMethod = method;
@@ -140,7 +138,7 @@
                         completionHandler(RadarStatusErrorNetwork, nil);
                     });
 
-                    if (sleep) {
+                    if (sleep && !coalesce) {
                         [NSThread sleepForTimeInterval:1];
                         dispatch_semaphore_signal(self.semaphore);
                     }
@@ -155,7 +153,7 @@
                         completionHandler(RadarStatusErrorServer, nil);
                     });
 
-                    if (sleep) {
+                    if (sleep && !coalesce) {
                         [NSThread sleepForTimeInterval:1];
                         dispatch_semaphore_signal(self.semaphore);
                     }
@@ -204,36 +202,49 @@
                 }
 
                 dispatch_async(dispatch_get_main_queue(), ^{
-                    [self.lock lock];
-                    if (coalesce && [self.completions objectForKey:url]) {
+                    if ([url isEqualToString:@"https://api.radar.io/v1/track"]) {
                         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
-                                                           message:[NSString stringWithFormat:@"Coalescing %ld requests to %@", (long)[self.completions[url] count], url]];
+                                                           message:[NSString stringWithFormat:@"reached track completion; coalesced call: %@", coalesce ? @"YES" : @"NO"]];
+                    }
+                    if (coalesce && [self.completions objectForKey:url]) {
+                        [self.lock lock];
+
+                        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
+                                                           message:[NSString stringWithFormat:@"Coalescing %ld requests to %@ from coalesced call", (long)[self.completions[url] count], url]];
                         for (RadarAPICompletionHandler completion in self.completions[url]) {
                             completion(status, res);
                         }
                         [self.completions removeObjectForKey:url];
+                        [self.lock unlock];
                     } else {
                         if (completionHandlers) {
-//                            [self.lock lock];
+                            [self.lock lock];
                             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
-                                                               message:[NSString stringWithFormat:@"Coalescing %ld requests to %@", (long)[completionHandlers count] + 1, url]];
+                                                               message:[NSString stringWithFormat:@"Coalescing %ld requests to %@ from non-coalesced call", (long)[completionHandlers count] + 1, url]];
                             for (RadarAPICompletionHandler completion in completionHandlers) {
                                 completion(status, res);
                             }
-//                            [self.completions removeObjectForKey:url];
-//                            [self.lock unlock];
+                            [self.completions removeObjectForKey:url];
+                            [self.lock unlock];
                         }
                         completionHandler(status, res);
                     }
-                    [self.lock unlock];
                 });
 
-                if (sleep) {
+                if (sleep && !coalesce) {
                     [NSThread sleepForTimeInterval:1];
                     dispatch_semaphore_signal(self.semaphore);
                 }
             };
 
+            if (coalesce) {
+                [self.lock lock];
+                if (![self.completions objectForKey:url]) {
+                    [self.lock unlock];
+                    return;
+                }
+                [self.lock unlock];
+            }
             NSURLSessionDataTask *task = [[NSURLSession sessionWithConfiguration:configuration] dataTaskWithRequest:req completionHandler:dataTaskCompletionHandler];
 
             [task resume];
@@ -241,7 +252,7 @@
             return completionHandler(RadarStatusErrorBadRequest, nil);
         }
 //        if (coalesce) {
-            [self.lock unlock];
+//            [self.lock unlock];
 //        }
     });
 }
