@@ -71,7 +71,7 @@
                 self.completions[url] = [[NSMutableArray alloc] initWithArray:@[completionHandler]];
                 [self.lock unlock];
                 // Sleep for 1 second with released lock to allow for coalescing of requests
-                [NSThread sleepForTimeInterval:2];
+                [NSThread sleepForTimeInterval:1];
 //                [self.lock lock];
 //                if (![self.completions objectForKey:url]) {
 //                    [self.lock unlock];
