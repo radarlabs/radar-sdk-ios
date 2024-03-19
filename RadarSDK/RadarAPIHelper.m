@@ -17,7 +17,7 @@
 @property (strong, nonatomic) dispatch_semaphore_t semaphore;
 @property (assign, nonatomic) BOOL wait;
 @property (strong, nonatomic) NSLock *lock;
-@property (strong, nonatomic) NSMutableDictionary *completions;
+@property (strong, nonatomic) NSMutableDictionary<NSString *, NSMutableArray<RadarAPICompletionHandler> *> *completions;
 
 @end
 
@@ -57,6 +57,21 @@
     dispatch_async(self.queue, ^{
         if (sleep) {
             dispatch_semaphore_wait(self.semaphore, DISPATCH_TIME_FOREVER);
+        }
+        
+        if (coalesce) {
+            [self.lock lock];
+            if ([self.completions valueForKey:url]) {
+                [self.completions[url] addObject:completionHandler];
+                [self.lock unlock];
+                return;
+            } else {
+                self.completions[url] = [[NSMutableArray alloc] initWithArray:@[completionHandler]];
+                [self.lock unlock];
+                // Sleep for 1 second with released lock to allow for coalescing of requests
+                [NSThread sleepForTimeInterval:1];
+                [self.lock lock];
+            }
         }
 
         NSMutableURLRequest *req = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:url]];
@@ -174,7 +189,16 @@
                 }
 
                 dispatch_async(dispatch_get_main_queue(), ^{
-                    completionHandler(status, res);
+                    if (coalesce) {
+                        [self.lock lock];
+                        for (RadarAPICompletionHandler completion in self.completions[url]) {
+                            completion(status, res);
+                        }
+                        [self.completions removeObjectForKey:url];
+                        [self.lock unlock];
+                    } else {
+                        completionHandler(status, res);
+                    }
                 });
 
                 if (sleep) {
@@ -188,6 +212,9 @@
             [task resume];
         } @catch (NSException *exception) {
             return completionHandler(RadarStatusErrorBadRequest, nil);
+        }
+        if (coalesce) {
+            [self.lock unlock];
         }
     });
 }
