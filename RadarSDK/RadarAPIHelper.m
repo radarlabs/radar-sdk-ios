@@ -78,7 +78,7 @@
                 [self.lock unlock];
                 [NSThread sleepForTimeInterval:1];
                 
-                // Check if request was fulfilled while sleeping
+                // Check if request was fulfilled by a non-coalescing, duplicate request while sleeping
                 [self.lock lock];
                 if (![self.coalescedRequests objectForKey:url]) {
                     [self.lock unlock];
@@ -87,7 +87,7 @@
             }
         } else {
             /*
-             Non-coalescing requests will complete duplicate coalescing requests that have not fired yet.
+             Non-coalescing requests will fire immediately and fulfill duplicate coalescing requests that have not fired yet.
              */
             if ([self.coalescedRequests objectForKey:url]) {
                 coalescedRequestsCompletionHandlers = [self.coalescedRequests objectForKey:url];
@@ -242,7 +242,7 @@
                     dispatch_semaphore_signal(self.semaphore);
                 }
             };
-            
+
             NSURLSessionDataTask *task = [[NSURLSession sessionWithConfiguration:configuration] dataTaskWithRequest:req completionHandler:dataTaskCompletionHandler];
 
             [task resume];
