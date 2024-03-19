@@ -230,7 +230,6 @@
                             for (RadarAPICompletionHandler completion in coalescedRequestsCompletionHandlers) {
                                 completion(status, res);
                             }
-                            [self.coalescedRequests removeObjectForKey:url];
                         }
                         completionHandler(status, res);
                     }
