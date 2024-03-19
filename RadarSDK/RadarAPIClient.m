@@ -409,7 +409,7 @@
                                       url:url
                                   headers:headers
                                    params:requestParams
-                                    sleep:NO
+                                    sleep:YES
                                  coalesce:coalesce
                                logPayload:YES
                           extendedTimeout:NO

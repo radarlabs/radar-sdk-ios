@@ -67,7 +67,7 @@
         [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
         [RadarSettings setFeatureSettings:config.meta.featureSettings];
         [self flushLogs];
-        [Radar trackOnceWithCompletionHandler:^(RadarStatus status, CLLocation * _Nullable location, NSArray<RadarEvent *> * _Nullable events, RadarUser * _Nullable user) {
+        [Radar trackOnceWithCoalesce:YES completionHandler:^(RadarStatus status, CLLocation * _Nullable location, NSArray<RadarEvent *> * _Nullable events, RadarUser * _Nullable user) {
             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Called trackOnce() from initialize"];
         }];
     }];
@@ -169,6 +169,7 @@
                                             source:RadarLocationSourceForegroundLocation
                                           replayed:NO
                                            beacons:beacons
+                                          coalesce:coalesce
                                  completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user,
                                                      NSArray<RadarGeofence *> *_Nullable nearbyGeofences, RadarConfig *_Nullable config, NSString *_Nullable token) {
                                      if (status == RadarStatusSuccess) {
@@ -1207,7 +1208,7 @@
     }
 
     [Radar logOpenedAppConversion];
-    [Radar trackOnceWithCompletionHandler:^(RadarStatus status, CLLocation * _Nullable location, NSArray<RadarEvent *> * _Nullable events, RadarUser * _Nullable user) {
+    [Radar trackOnceWithCoalesce:YES completionHandler:^(RadarStatus status, CLLocation * _Nullable location, NSArray<RadarEvent *> * _Nullable events, RadarUser * _Nullable user) {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Called trackOnce() from app resume."];
     }];
 }
