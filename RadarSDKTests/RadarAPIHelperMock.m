@@ -47,7 +47,7 @@
                   headers:(NSDictionary *)headers
                    params:(NSDictionary *)params
                     sleep:(BOOL)sleep
-                 coalesce:(BOOL)coalesce
+               coalescing:(BOOL)coalescing
                logPayload:(BOOL)logPayload
           extendedTimeout:(BOOL)extendedTimeout
         completionHandler:(RadarAPICompletionHandler)completionHandler {

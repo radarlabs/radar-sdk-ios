@@ -414,8 +414,18 @@ typedef void (^_Nonnull RadarLogConversionCompletionHandler)(RadarStatus status,
  */
 + (void)trackOnceWithCompletionHandler:(RadarTrackCompletionHandler _Nullable)completionHandler NS_SWIFT_NAME(trackOnce(completionHandler:));
 
-+ (void)trackOnceWithCoalesce:(BOOL)coalesce completionHandler:(RadarTrackCompletionHandler _Nullable)completionHandler
-NS_SWIFT_NAME(trackOnce(coalesce:completionHandler:));
+/**
+ Tracks the user's location once in the foreground.
+
+ @warning Note that these calls are subject to rate limits.
+
+ @param coalescing A boolean indicating whether to coalesce with other track requests called within a 1-second interval.
+ @param completionHandler An optional completion handler.
+
+ @see https://radar.com/documentation/sdk/ios#foreground-tracking
+ */
++ (void)trackOnceWithCoalescing:(BOOL)coalescing 
+              completionHandler:(RadarTrackCompletionHandler _Nullable)completionHandler NS_SWIFT_NAME(trackOnce(coalescing:completionHandler:));
 
 /**
  Tracks the user's location once with the desired accuracy and optionally ranges beacons in the foreground.

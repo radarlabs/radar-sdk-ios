@@ -1036,9 +1036,12 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 }
 
 - (void)locationManagerDidChangeAuthorization:(CLLocationManager *)manager {
-    [Radar trackOnceWithCoalesce:YES completionHandler:^(RadarStatus status, CLLocation * _Nullable location, NSArray<RadarEvent *> * _Nullable events, RadarUser * _Nullable user) {
-        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Called trackOnce() from locationManagerDidChangeAuthorization"];
-    }];
+    if ([CLLocationManager authorizationStatus] == kCLAuthorizationStatusAuthorizedAlways ||
+        ([CLLocationManager authorizationStatus] == kCLAuthorizationStatusAuthorizedWhenInUse && [RadarUtils foreground])) {
+        [Radar trackOnceWithCoalescing:YES completionHandler:^(RadarStatus status, CLLocation * _Nullable location, NSArray<RadarEvent *> * _Nullable events, RadarUser * _Nullable user) {
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Called trackOnce() from locationManagerDidChangeAuthorization"];
+        }];
+    }
 }
 
 @end
