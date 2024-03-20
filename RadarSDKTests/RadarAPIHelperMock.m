@@ -42,6 +42,24 @@
     }
 }
 
+- (void)requestWithMethod:(NSString *)method
+                      url:(NSString *)url
+                  headers:(NSDictionary *)headers
+                   params:(NSDictionary *)params
+                    sleep:(BOOL)sleep
+               coalescing:(BOOL)coalescing
+               logPayload:(BOOL)logPayload
+          extendedTimeout:(BOOL)extendedTimeout
+        completionHandler:(RadarAPICompletionHandler)completionHandler {
+    NSDictionary *mockResponseForUrl = self.mockResponses[url];
+
+    if (mockResponseForUrl) {
+        completionHandler(self.mockStatus, mockResponseForUrl);
+    } else {
+        completionHandler(self.mockStatus, self.mockResponse);
+    }
+}
+
 - (void)setMockResponse:(NSDictionary *)response forMethod:(NSString *)urlString {
     self.mockResponses[urlString] = response;
 }
