@@ -90,8 +90,13 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         _locationManager.allowsBackgroundLocationUpdates = [RadarUtils locationBackgroundMode] && [CLLocationManager authorizationStatus] == kCLAuthorizationStatusAuthorizedAlways;
 
         _lowPowerLocationManager = [CLLocationManager new];
-        _lowPowerLocationManager.desiredAccuracy = kCLLocationAccuracyThreeKilometers;
-        _lowPowerLocationManager.distanceFilter = 3000;
+        if ([RadarSettings useRadarModifiedLowPowerManager]) {
+            _lowPowerLocationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters;
+            _lowPowerLocationManager.distanceFilter = kCLDistanceFilterNone;
+        } else {
+            _lowPowerLocationManager.desiredAccuracy = kCLLocationAccuracyThreeKilometers;
+            _lowPowerLocationManager.distanceFilter = 3000;
+        }
         _lowPowerLocationManager.allowsBackgroundLocationUpdates = [RadarUtils locationBackgroundMode];
 
         _permissionsHelper = [RadarPermissionsHelper new];
@@ -727,7 +732,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                 duration = -[location.timestamp timeIntervalSinceNow];
             }
             BOOL arrival = source == RadarLocationSourceVisitArrival;
-            stopped = (distance <= options.stopDistance && duration >= options.stopDuration) || arrival;
+            stopped = (distance <= options.stopDistance && duration >= options.stopDuration) || (![RadarSettings useRadarModifiedLowPowerManager] && arrival);
 
             [[RadarLogger sharedInstance]
                 logWithLevel:RadarLogLevelDebug

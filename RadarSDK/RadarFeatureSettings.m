@@ -10,19 +10,24 @@
 @implementation RadarFeatureSettings
 
 - (instancetype)initWithUsePersistence:(BOOL)usePersistence
-             extendFlushReplays:(BOOL)extendFlushReplays
-             useLogPersistence:(BOOL)useLogPersistence {
+                    extendFlushReplays:(BOOL)extendFlushReplays
+                     useLogPersistence:(BOOL)useLogPersistence
+    useRadarModifiedLowPowerManager:(BOOL)useRadarModifiedLowPowerManager {
     if (self = [super init]) {
         _usePersistence = usePersistence;
         _extendFlushReplays = extendFlushReplays;
         _useLogPersistence = useLogPersistence;
+        _useRadarModifiedLowPowerManager = useRadarModifiedLowPowerManager;
     }
     return self;
 }
 
 + (RadarFeatureSettings *_Nullable)featureSettingsFromDictionary:(NSDictionary *)dict {
     if (!dict) {
-        return [[RadarFeatureSettings alloc] initWithUsePersistence:NO extendFlushReplays:NO useLogPersistence:NO];
+        return [[RadarFeatureSettings alloc] initWithUsePersistence:NO 
+                                                 extendFlushReplays:NO
+                                                  useLogPersistence:NO
+                                    useRadarModifiedLowPowerManager:NO];
     }
 
     NSObject *usePersistenceObj = dict[@"usePersistence"]; 
@@ -42,8 +47,17 @@
     if (useLogPersistenceObj && [useLogPersistenceObj isKindOfClass:[NSNumber class]]) {
         useLogPersistence = [(NSNumber *)useLogPersistenceObj boolValue];
     }
+    
+    NSObject *useRadarModifiedLowPowerManagerObj = dict[@"useRadarModifiedLowPowerManager"];
+    BOOL useRadarModifiedLowPowerManager = NO;
+    if (useRadarModifiedLowPowerManagerObj && [useRadarModifiedLowPowerManagerObj isKindOfClass:[NSNumber class]]) {
+        useRadarModifiedLowPowerManager = [(NSNumber *)useRadarModifiedLowPowerManagerObj boolValue];
+    }
 
-    return [[RadarFeatureSettings alloc] initWithUsePersistence:usePersistence extendFlushReplays:extendFlushReplays useLogPersistence:useLogPersistence];
+    return [[RadarFeatureSettings alloc] initWithUsePersistence:usePersistence 
+                                             extendFlushReplays:extendFlushReplays
+                                              useLogPersistence:useLogPersistence
+                                useRadarModifiedLowPowerManager:useRadarModifiedLowPowerManager];
 }
 
 - (NSDictionary *)dictionaryValue {
@@ -51,6 +65,7 @@
     [dict setValue:@(self.usePersistence) forKey:@"usePersistence"];
     [dict setValue:@(self.extendFlushReplays) forKey:@"extendFlushReplays"];
     [dict setValue:@(self.useLogPersistence) forKey:@"useLogPersistence"];
+    [dict setValue:@(self.useRadarModifiedLowPowerManager) forKey:@"useRadarModifiedLowPowerManager"];
     
     return dict;
 }
