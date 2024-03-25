@@ -317,28 +317,28 @@
         params[@"encrypted"] = @(encrypted);
     }
     params[@"appId"] = [[NSBundle mainBundle] bundleIdentifier];
-    NSMutableDictionary *motionData = [NSMutableDictionary new];
-    motionData[@"motionActivityData"] = [RadarState lastMotionActivityData];
-    motionData[@"accelerometerData"] = [RadarState lastAccelerometerData];
-    motionData[@"gyroData"] = [RadarState lastGyroData];
-    motionData[@"magnetometerData"] = [RadarState lastMagnetometerData];
-    motionData[@"heading"] = [RadarState lastHeadingData];
-    motionData[@"speed"] = @(location.speed);
-    motionData[@"speedAccuracy"] = @(location.speedAccuracy);
-    motionData[@"course"] = @(location.course);
+    NSMutableDictionary *locationMetadata = [NSMutableDictionary new];
+    locationMetadata[@"motionActivityData"] = [RadarState lastMotionActivityData];
+    locationMetadata[@"accelerometerData"] = [RadarState lastAccelerometerData];
+    locationMetadata[@"gyroData"] = [RadarState lastGyroData];
+    locationMetadata[@"magnetometerData"] = [RadarState lastMagnetometerData];
+    locationMetadata[@"heading"] = [RadarState lastHeadingData];
+    locationMetadata[@"speed"] = @(location.speed);
+    locationMetadata[@"speedAccuracy"] = @(location.speedAccuracy);
+    locationMetadata[@"course"] = @(location.course);
     if (@available(iOS 13.4, *)) {
-        motionData[@"courseAccuracy"] = @(location.courseAccuracy);
+        locationMetadata[@"courseAccuracy"] = @(location.courseAccuracy);
     }
-    motionData[@"battery"] = @([[UIDevice currentDevice] batteryLevel]);
-    motionData[@"altitude"] = @(location.altitude);
+    locationMetadata[@"battery"] = @([[UIDevice currentDevice] batteryLevel]);
+    locationMetadata[@"altitude"] = @(location.altitude);
     if (@available(iOS 15, *)) {
-        motionData[@"ellipsoidalAltitude"] = @(location.ellipsoidalAltitude);
-        motionData[@"isProducedByAccessory"] = @([location.sourceInformation isProducedByAccessory]);
-        motionData[@"isSimulatedBySoftware"] = @([location.sourceInformation isSimulatedBySoftware]);
+        locationMetadata[@"ellipsoidalAltitude"] = @(location.ellipsoidalAltitude);
+        locationMetadata[@"isProducedByAccessory"] = @([location.sourceInformation isProducedByAccessory]);
+        locationMetadata[@"isSimulatedBySoftware"] = @([location.sourceInformation isSimulatedBySoftware]);
     }
-    motionData[@"floor"] = @([location.floor level]);
+    locationMetadata[@"floor"] = @([location.floor level]);
     
-    params[@"motionData"] = motionData;
+    params[@"locationMetadata"] = locationMetadata;
 
     if (anonymous) {
         [[RadarAPIClient sharedInstance] getConfigForUsage:@"track"
