@@ -462,6 +462,20 @@
                                 if (!user.trip && [RadarSettings tripOptions]) {
                                     [[RadarLocationManager sharedInstance] restartPreviousTrackingOptions];
                                     [RadarSettings setTripOptions:nil];
+                                } else if (user.trip) {
+                                    RadarTripOptions *currentOptions = [RadarSettings tripOptions];
+                                    if (currentOptions && currentOptions.externalId != user.trip.externalId) {
+                                        // if the user's trip was changed server side, update trip options without overwriting existing properties
+                                        currentOptions.externalId = user.trip.externalId;
+                                        currentOptions.destinationGeofenceTag = user.trip.destinationGeofenceTag;
+                                        currentOptions.destinationGeofenceExternalId = user.trip.destinationGeofenceExternalId;
+                                        [RadarSettings setTripOptions:currentOptions];
+                                    } else if (!currentOptions) {
+                                        // if the user's trip was started server side, set trip options
+                                        [RadarSettings setTripOptions:[[RadarTripOptions alloc] initWithExternalId:user.trip.externalId
+                                                                                            destinationGeofenceTag:user.trip.destinationGeofenceTag
+                                                                                     destinationGeofenceExternalId:user.trip.destinationGeofenceExternalId]];
+                                    }
                                 }
 
                                 [RadarSettings setUserDebug:user.debug];
