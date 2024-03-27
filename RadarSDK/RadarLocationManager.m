@@ -316,12 +316,13 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         }
 
         if (tracking) {
+            CLAuthorizationStatus authorizationStatus = [self.permissionsHelper locationAuthorizationStatus];
             self.locationManager.allowsBackgroundLocationUpdates =
-                [RadarUtils locationBackgroundMode] && [CLLocationManager authorizationStatus] == kCLAuthorizationStatusAuthorizedAlways;
+                [RadarUtils locationBackgroundMode] && authorizationStatus == kCLAuthorizationStatusAuthorizedAlways;
             self.locationManager.pausesLocationUpdatesAutomatically = NO;
 
-            BOOL allowBackground = options.showBlueBar || [CLLocationManager authorizationStatus] == kCLAuthorizationStatusAuthorizedAlways;
-            BOOL startUpdates = [CLLocationManager authorizationStatus] == kCLAuthorizationStatusAuthorizedAlways || [CLLocationManager authorizationStatus] == kCLAuthorizationStatusAuthorizedWhenInUse;
+            BOOL allowBackground = options.showBlueBar || authorizationStatus == kCLAuthorizationStatusAuthorizedAlways;
+            BOOL startUpdates = authorizationStatus == kCLAuthorizationStatusAuthorizedAlways || authorizationStatus == kCLAuthorizationStatusAuthorizedWhenInUse;
 
             self.lowPowerLocationManager.allowsBackgroundLocationUpdates = [RadarUtils locationBackgroundMode] && allowBackground;
             self.lowPowerLocationManager.pausesLocationUpdatesAutomatically = NO;
