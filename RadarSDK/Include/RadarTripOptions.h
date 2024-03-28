@@ -27,6 +27,8 @@ NS_ASSUME_NONNULL_BEGIN
      destinationGeofenceExternalId:(NSString *_Nullable)destinationGeofenceExternalId
                 scheduledArrivalAt:(NSDate *_Nullable)scheduledArrivalAt;
 
+- (void)updateWithTrip:(RadarTrip *_Nonnull)trip;
+
 /**
  A stable unique ID for the trip.
  */

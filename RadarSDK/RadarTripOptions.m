@@ -44,6 +44,14 @@ static NSString *const kApproachingThreshold = @"approachingThreshold";
     return self;
 }
 
+- (void)updateWithTrip:(RadarTrip *_Nonnull)trip {
+    self.externalId = trip.externalId;
+    self.destinationGeofenceTag = trip.destinationGeofenceTag;
+    self.destinationGeofenceExternalId = trip.destinationGeofenceExternalId;
+    self.metadata = trip.metadata;
+    self.mode = trip.mode;
+}
+
 + (RadarTripOptions *)tripOptionsFromDictionary:(NSDictionary *)dict {
     if (!dict) {
         return nil;

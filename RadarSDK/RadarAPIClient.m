@@ -463,17 +463,13 @@
                                     [[RadarLocationManager sharedInstance] restartPreviousTrackingOptions];
                                     [RadarSettings setTripOptions:nil];
                                 } else if (user.trip) {
-                                    RadarTripOptions *currentOptions = [RadarSettings tripOptions];
-                                    if (currentOptions && currentOptions.externalId != user.trip.externalId) {
-                                        // if the user's trip was changed server side, update trip options without overwriting existing properties
-                                        currentOptions.externalId = user.trip.externalId;
-                                        currentOptions.destinationGeofenceTag = user.trip.destinationGeofenceTag;
-                                        currentOptions.destinationGeofenceExternalId = user.trip.destinationGeofenceExternalId;
-                                        currentOptions.metadata = user.trip.metadata;
-                                        currentOptions.mode = user.trip.mode;
-                                        [RadarSettings setTripOptions:currentOptions];
-                                    } else if (!currentOptions) {
-                                        // if the user's trip was started server side, set trip options
+                                    RadarTripOptions *currentTripOptions = [RadarSettings tripOptions];
+                                    if (currentTripOptions && currentTripOptions.externalId != user.trip.externalId) {
+                                        // if the user's trip was changed server side
+                                        [currentTripOptions updateWithTrip:user.trip];
+                                        [RadarSettings setTripOptions:currentTripOptions];
+                                    } else if (!currentTripOptions) {
+                                        // if the user's trip was started server side
                                         [RadarSettings setTripOptions:[[RadarTripOptions alloc] initWithExternalId:user.trip.externalId
                                                                                             destinationGeofenceTag:user.trip.destinationGeofenceTag
                                                                                      destinationGeofenceExternalId:user.trip.destinationGeofenceExternalId]];
