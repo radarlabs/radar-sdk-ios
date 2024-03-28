@@ -469,6 +469,8 @@
                                         currentOptions.externalId = user.trip.externalId;
                                         currentOptions.destinationGeofenceTag = user.trip.destinationGeofenceTag;
                                         currentOptions.destinationGeofenceExternalId = user.trip.destinationGeofenceExternalId;
+                                        currentOptions.metadata = user.trip.metadata;
+                                        currentOptions.mode = user.trip.mode;
                                         [RadarSettings setTripOptions:currentOptions];
                                     } else if (!currentOptions) {
                                         // if the user's trip was started server side, set trip options
