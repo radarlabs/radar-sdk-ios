@@ -996,7 +996,7 @@
 }
 
 + (void)logResigningActive {
-    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeNone message:@"App resigning active" includeDate:YES includeBattery:YES];
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeNone message:@"App resigning active" includeDate:YES includeBattery:YES append:YES];
 }
 
 
@@ -1232,11 +1232,7 @@
 
     [[RadarAPIClient sharedInstance] syncLogs:flushableLogs
                             completionHandler:^(RadarStatus status) {
-                                if (onComplete) {
-                                    [RadarUtils runOnMainThread:^{
-                                        onComplete(status);
-                                    }];
-                                }
+                               onComplete(status); 
                             }];
 }
 
