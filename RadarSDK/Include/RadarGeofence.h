@@ -43,7 +43,7 @@
 /**
  The geometry of the geofence, which can be cast to either `RadarCircleGeometry` or `RadarPolygonGeometry`.
  */
-@property (nonnull, strong, nonatomic, readonly) RadarGeofenceGeometry *geometry;
+@property (nullable, strong, nonatomic, readonly) RadarGeofenceGeometry *geometry;
 
 + (NSArray<NSDictionary *> *_Nullable)arrayForGeofences:(NSArray<RadarGeofence *> *_Nullable)geofences;
 - (NSDictionary *_Nonnull)dictionaryValue;
