@@ -16,7 +16,7 @@
                                  tag:(NSString *_Nullable)tag
                           externalId:(NSString *_Nullable)externalId
                             metadata:(NSDictionary *_Nullable)metadata
-                            geometry:(RadarGeofenceGeometry *_Nullable)geometry;
+                            geometry:(RadarGeofenceGeometry *_Nonnull)geometry;
 - (instancetype _Nullable)initWithObject:(id _Nonnull)object;
 
 @end
