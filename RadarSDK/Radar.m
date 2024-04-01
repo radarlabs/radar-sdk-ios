@@ -711,23 +711,60 @@
                          metadata:(NSDictionary *_Nullable)metadata
                             limit:(int)limit
                 completionHandler:(RadarSearchGeofencesCompletionHandler)completionHandler {
-    [Radar searchGeofencesNear:[NSNumber numberWithInt:radius] tags:tags metadata:metadata limit:limit includeGeometry:nil completionHandler:completionHandler];
+    [[RadarLocationManager sharedInstance] getLocationWithCompletionHandler:^(RadarStatus status, CLLocation *_Nullable location, BOOL stopped) {
+           if (status != RadarStatusSuccess) {
+               if (completionHandler) {
+                   [RadarUtils runOnMainThread:^{
+                       completionHandler(status, nil, nil);
+                   }];
+               }
+
+               return;
+           }
+
+           [Radar searchGeofencesNearActual:location radius:[NSNumber numberWithInt:radius] tags:tags metadata:metadata limit:limit includeGeometry:nil completionHandler:completionHandler];
+       }];
 }
 
 
-+ (void)searchGeofences:tags:(NSArray<NSString *> *_Nullable)tags
+
++ (void)searchGeofences:(NSArray<NSString *> *_Nullable)tags
                metadata:(NSDictionary *_Nullable)metadata
                   limit:(int)limit
         includeGeometry:(BOOL)includeGeometry
       completionHandler:(RadarSearchGeofencesCompletionHandler)completionHandler {
-        [Radar searchGeofenceWithRadius:nil tags:tags metadata:metadata limit:limit includeGeometry:[NSNumber numberWithBool:includeGeometry] completionHandler:completionHandler];
+    [[RadarLocationManager sharedInstance] getLocationWithCompletionHandler:^(RadarStatus status, CLLocation *_Nullable location, BOOL stopped) {
+           if (status != RadarStatusSuccess) {
+               if (completionHandler) {
+                   [RadarUtils runOnMainThread:^{
+                       completionHandler(status, nil, nil);
+                   }];
+               }
+
+               return;
+           }
+
+           [Radar searchGeofencesNearActual:location radius:nil tags:tags metadata:metadata limit:limit includeGeometry:[NSNumber numberWithBool:includeGeometry] completionHandler:completionHandler];
+       }];
 }
 
-+ (void)searchGeofences:tags:(NSArray<NSString *> *_Nullable)tags
++ (void)searchGeofences:(NSArray<NSString *> *_Nullable)tags
                metadata:(NSDictionary *_Nullable)metadata
                   limit:(int)limit
       completionHandler:(RadarSearchGeofencesCompletionHandler)completionHandler {
-        [Radar searchGeofenceWithRadius:nil tags:tags metadata:metadata limit:limit includeGeometry:nil completionHandler:completionHandler];
+    [[RadarLocationManager sharedInstance] getLocationWithCompletionHandler:^(RadarStatus status, CLLocation *_Nullable location, BOOL stopped) {
+           if (status != RadarStatusSuccess) {
+               if (completionHandler) {
+                   [RadarUtils runOnMainThread:^{
+                       completionHandler(status, nil, nil);
+                   }];
+               }
+
+               return;
+           }
+
+           [Radar searchGeofencesNearActual:location radius:nil tags:tags metadata:metadata limit:limit includeGeometry:nil completionHandler:completionHandler];
+       }];
 }
 
 + (void)searchGeofencesNear:(CLLocation *)near
@@ -736,7 +773,7 @@
                    metadata:(NSDictionary *_Nullable)metadata
                       limit:(int)limit
           completionHandler:(RadarSearchGeofencesCompletionHandler)completionHandler {
-    [Radar searchGeofencesNear:near radius:[NSNumber numberWithInt:radius] tags:tags metadata:metadata limit:limit includeGeometry:nil completionHandler:completionHandler];
+    [Radar searchGeofencesNearActual:near radius:[NSNumber numberWithInt:radius] tags:tags metadata:metadata limit:limit includeGeometry:nil completionHandler:completionHandler];
 }
 
 + (void)searchGeofencesNear:(CLLocation *)near
@@ -745,7 +782,7 @@
                       limit:(int)limit
             includeGeometry:(BOOL)includeGeometry  
           completionHandler:(RadarSearchGeofencesCompletionHandler)completionHandler {
-    [Radar searchGeofencesNear:near radius:nil tags:tags metadata:metadata limit:limit includeGeometry:[NSNumber numberWithBool:includeGeometry] completionHandler:completionHandler];
+    [Radar searchGeofencesNearActual:near radius:nil tags:tags metadata:metadata limit:limit includeGeometry:[NSNumber numberWithBool:includeGeometry] completionHandler:completionHandler];
 }
 
 
@@ -754,7 +791,7 @@
                    metadata:(NSDictionary *_Nullable)metadata
                       limit:(int)limit
           completionHandler:(RadarSearchGeofencesCompletionHandler)completionHandler {
-    [Radar searchGeofencesNear:near radius:nil tags:tags metadata:metadata limit:limit includeGeometry:nil completionHandler:completionHandler];
+    [Radar searchGeofencesNearActual:near radius:nil tags:tags metadata:metadata limit:limit includeGeometry:nil completionHandler:completionHandler];
 
 }
 
@@ -765,7 +802,7 @@
                      limit:(int)limit
            includeGeometry:(BOOL)includeGeometry
          completionHandler:(RadarSearchGeofencesCompletionHandler)completionHandler {
-    [Radar searchGeofencesNear:near radius:[NSNumber numberWithInt:radius] tags:tags metadata:metadata limit:limit includeGeometry:[NSNumber numberWithBool:includeGeometry] completionHandler:completionHandler];
+    [Radar searchGeofencesNearActual:near radius:[NSNumber numberWithInt:radius] tags:tags metadata:metadata limit:limit includeGeometry:[NSNumber numberWithBool:includeGeometry] completionHandler:completionHandler];
 
 }
 
@@ -786,11 +823,11 @@
                 return;
             }
 
-            [Radar searchGeofencesNear:location radius:[NSNumber numberWithInt:radius] tags:tags metadata:metadata limit:limit includeGeometry:[NSNumber numberWithBool:includeGeometry] completionHandler:completionHandler];
+            [Radar searchGeofencesNearActual:location radius:[NSNumber numberWithInt:radius] tags:tags metadata:metadata limit:limit includeGeometry:[NSNumber numberWithBool:includeGeometry] completionHandler:completionHandler];
         }];
 }
 
-+ (void)searchGeofencesNear:(CLLocation *)near
++ (void)searchGeofencesNearActual:(CLLocation *)near
                      radius:(NSNumber *_Nullable)radius
                        tags:(NSArray<NSString *> *_Nullable)tags
                    metadata:(NSDictionary *_Nullable)metadata
