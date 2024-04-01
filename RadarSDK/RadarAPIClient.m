@@ -753,10 +753,11 @@
 }
 
 - (void)searchGeofencesNear:(CLLocation *_Nonnull)near
-                     radius:(int)radius
+                     radius:(NSNumber *_Nullable)radius
                        tags:(NSArray *_Nullable)tags
                    metadata:(NSDictionary *_Nullable)metadata
                       limit:(int)limit
+            includeGeometry:(NSNumber *_Nullable)includeGeometry
           completionHandler:(RadarSearchGeofencesAPICompletionHandler)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
@@ -767,7 +768,9 @@
 
     NSMutableString *queryString = [NSMutableString new];
     [queryString appendFormat:@"near=%.06f,%.06f", near.coordinate.latitude, near.coordinate.longitude];
-    [queryString appendFormat:@"&radius=%d", radius];
+    if (radius){
+        [queryString appendFormat:@"&radius=%d", radius.intValue];
+    }
     [queryString appendFormat:@"&limit=%d", finalLimit];
     if (tags && [tags count] > 0) {
         [queryString appendFormat:@"&tags=%@", [tags componentsJoinedByString:@","]];
@@ -776,6 +779,9 @@
         for (NSString *key in metadata) {
             [queryString appendFormat:@"&metadata[%@]=%@", key, metadata[key]];
         }
+    }
+    if (includeGeometry != nil) {
+        [queryString appendFormat:@"&includeGeometry=%@", [includeGeometry boolValue] ? @"true" : @"false"];
     }
 
     NSString *host = [RadarSettings host];

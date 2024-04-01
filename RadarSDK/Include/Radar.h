@@ -861,6 +861,24 @@ logConversionWithNotification
                             limit:(int)limit
                 completionHandler:(RadarSearchGeofencesCompletionHandler)completionHandler NS_SWIFT_NAME(searchGeofences(radius:tags:metadata:limit:completionHandler:));
 
++ (void)searchGeofencesWithRadius:(int)radius
+                             tags:(NSArray<NSString *> *_Nullable)tags
+                         metadata:(NSDictionary *_Nullable)metadata
+                            limit:(int)limit
+                  includeGeometry:(BOOL)includeGeometry
+                completionHandler:(RadarSearchGeofencesCompletionHandler)completionHandler NS_SWIFT_NAME(searchGeofences(radius:tags:metadata:limit:completionHandler:));
+
++ (void)searchGeofences:tags:(NSArray<NSString *> *_Nullable)tags
+               metadata:(NSDictionary *_Nullable)metadata
+                  limit:(int)limit
+        includeGeometry:(BOOL)includeGeometry
+      completionHandler:(RadarSearchGeofencesCompletionHandler)completionHandler NS_SWIFT_NAME(searchGeofences(radius:tags:metadata:limit:completionHandler:));
+
++ (void)searchGeofences:tags:(NSArray<NSString *> *_Nullable)tags
+               metadata:(NSDictionary *_Nullable)metadata
+                  limit:(int)limit
+      completionHandler:(RadarSearchGeofencesCompletionHandler)completionHandler NS_SWIFT_NAME(searchGeofences(radius:tags:metadata:limit:completionHandler:));
+
 /**
  Searches for geofences near a location, sorted by distance.
 
@@ -878,8 +896,29 @@ logConversionWithNotification
                        tags:(NSArray<NSString *> *_Nullable)tags
                    metadata:(NSDictionary *_Nullable)metadata
                       limit:(int)limit
+            includeGeometry:(BOOL)includeGeometry
           completionHandler:(RadarSearchGeofencesCompletionHandler)completionHandler NS_SWIFT_NAME(searchGeofences(near:radius:tags:metadata:limit:completionHandler:));
 
++ (void)searchGeofencesNear:(CLLocation *)near
+                     radius:(int)radius
+                       tags:(NSArray<NSString *> *_Nullable)tags
+                   metadata:(NSDictionary *_Nullable)metadata
+                      limit:(int)limit
+          completionHandler:(RadarSearchGeofencesCompletionHandler)completionHandler NS_SWIFT_NAME(searchGeofences(near:radius:tags:metadata:limit:completionHandler:));
+
++ (void)searchGeofencesNear:(CLLocation *)near
+                       tags:(NSArray<NSString *> *_Nullable)tags
+                   metadata:(NSDictionary *_Nullable)metadata
+                      limit:(int)limit
+            includeGeometry:(BOOL)includeGeometry  
+          completionHandler:(RadarSearchGeofencesCompletionHandler)completionHandler NS_SWIFT_NAME(searchGeofences(near:radius:tags:metadata:limit:completionHandler:));
+
+
++ (void)searchGeofencesNear:(CLLocation *)near
+                       tags:(NSArray<NSString *> *_Nullable)tags
+                   metadata:(NSDictionary *_Nullable)metadata
+                      limit:(int)limit
+          completionHandler:(RadarSearchGeofencesCompletionHandler)completionHandler NS_SWIFT_NAME(searchGeofences(near:radius:tags:metadata:limit:completionHandler:));
 /**
  @deprecated Autocompletes partial addresses and place names, sorted by relevance.
 

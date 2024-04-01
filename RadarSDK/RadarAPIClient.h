@@ -112,10 +112,11 @@ typedef void (^_Nonnull RadarSyncLogsAPICompletionHandler)(RadarStatus status);
        completionHandler:(RadarSearchPlacesAPICompletionHandler _Nonnull)completionHandler;
 
 - (void)searchGeofencesNear:(CLLocation *_Nonnull)near
-                     radius:(int)radius
+                     radius:(NSNumber *_Nullable)radius
                        tags:(NSArray *_Nullable)tags
                    metadata:(NSDictionary *_Nullable)metadata
                       limit:(int)limit
+            includeGeometry:(NSNumber *_Nullable)includeGeometry
           completionHandler:(RadarSearchGeofencesAPICompletionHandler _Nonnull)completionHandler;
 
 - (void)searchBeaconsNear:(CLLocation *_Nonnull)near radius:(int)radius limit:(int)limit completionHandler:(RadarSearchBeaconsAPICompletionHandler _Nonnull)completionHandler;
