@@ -18,7 +18,7 @@ let package = Package(
             name: "RadarSDK",
             path: "RadarSDK",
             exclude: ["Info.plist"],
-            resources: ["PrivacyInfo.xcprivacy"],
+            resources: [.process("PrivacyInfo.xcprivacy")],
             publicHeadersPath: "Include",
             cSettings: [
                 .headerSearchPath(".")
