@@ -49,7 +49,7 @@
     }
     
     NSObject *useRadarModifiedLowPowerManagerObj = dict[@"useRadarModifiedLowPowerManager"];
-    BOOL useRadarModifiedLowPowerManager = NO;
+    BOOL useRadarModifiedLowPowerManager = YES;
     if (useRadarModifiedLowPowerManagerObj && [useRadarModifiedLowPowerManagerObj isKindOfClass:[NSNumber class]]) {
         useRadarModifiedLowPowerManager = [(NSNumber *)useRadarModifiedLowPowerManagerObj boolValue];
     }
