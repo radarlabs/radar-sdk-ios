@@ -221,9 +221,9 @@
         RadarPolygonGeometry *polygonGeometry = (RadarPolygonGeometry *)self.geometry;
         [dict setValue:@(polygonGeometry.radius) forKey:@"geometryRadius"];
         [dict setValue:[polygonGeometry.center dictionaryValue] forKey:@"geometryCenter"];
-        if (polygonGeometry.__coordinates) {
+        if (polygonGeometry._coordinates) {
             // Nest coordinate array; Per GeoJSON spec: for type "Polygon", the "coordinates" member must be an array of LinearRing coordinate arrays.
-            [dict setValue:[RadarGeofence arrayForGeometryCoordinates:polygonGeometry.__coordinates] forKey:@"geometry"];
+            [dict setValue:[RadarGeofence arrayForGeometryCoordinates:polygonGeometry._coordinates] forKey:@"geometry"];
         }
         [dict setValue:@"Polygon" forKey:@"type"];
     }
