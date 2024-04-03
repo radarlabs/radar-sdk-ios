@@ -711,60 +711,7 @@
                          metadata:(NSDictionary *_Nullable)metadata
                             limit:(int)limit
                 completionHandler:(RadarSearchGeofencesCompletionHandler)completionHandler {
-    [[RadarLocationManager sharedInstance] getLocationWithCompletionHandler:^(RadarStatus status, CLLocation *_Nullable location, BOOL stopped) {
-           if (status != RadarStatusSuccess) {
-               if (completionHandler) {
-                   [RadarUtils runOnMainThread:^{
-                       completionHandler(status, nil, nil);
-                   }];
-               }
-
-               return;
-           }
-
-           [Radar searchGeofencesNearActual:location radius:[NSNumber numberWithInt:radius] tags:tags metadata:metadata limit:limit includeGeometry:nil completionHandler:completionHandler];
-       }];
-}
-
-
-
-+ (void)searchGeofences:(NSArray<NSString *> *_Nullable)tags
-               metadata:(NSDictionary *_Nullable)metadata
-                  limit:(int)limit
-        includeGeometry:(BOOL)includeGeometry
-      completionHandler:(RadarSearchGeofencesCompletionHandler)completionHandler {
-    [[RadarLocationManager sharedInstance] getLocationWithCompletionHandler:^(RadarStatus status, CLLocation *_Nullable location, BOOL stopped) {
-           if (status != RadarStatusSuccess) {
-               if (completionHandler) {
-                   [RadarUtils runOnMainThread:^{
-                       completionHandler(status, nil, nil);
-                   }];
-               }
-
-               return;
-           }
-
-           [Radar searchGeofencesNearActual:location radius:nil tags:tags metadata:metadata limit:limit includeGeometry:[NSNumber numberWithBool:includeGeometry] completionHandler:completionHandler];
-       }];
-}
-
-+ (void)searchGeofences:(NSArray<NSString *> *_Nullable)tags
-               metadata:(NSDictionary *_Nullable)metadata
-                  limit:(int)limit
-      completionHandler:(RadarSearchGeofencesCompletionHandler)completionHandler {
-    [[RadarLocationManager sharedInstance] getLocationWithCompletionHandler:^(RadarStatus status, CLLocation *_Nullable location, BOOL stopped) {
-           if (status != RadarStatusSuccess) {
-               if (completionHandler) {
-                   [RadarUtils runOnMainThread:^{
-                       completionHandler(status, nil, nil);
-                   }];
-               }
-
-               return;
-           }
-
-           [Radar searchGeofencesNearActual:location radius:nil tags:tags metadata:metadata limit:limit includeGeometry:nil completionHandler:completionHandler];
-       }];
+    [Radar searchGeofencesWithRadius:radius tags:tags metadata:metadata limit:limit includeGeometry:false completionHandler:completionHandler];
 }
 
 + (void)searchGeofencesNear:(CLLocation *)near
@@ -773,37 +720,7 @@
                    metadata:(NSDictionary *_Nullable)metadata
                       limit:(int)limit
           completionHandler:(RadarSearchGeofencesCompletionHandler)completionHandler {
-    [Radar searchGeofencesNearActual:near radius:[NSNumber numberWithInt:radius] tags:tags metadata:metadata limit:limit includeGeometry:nil completionHandler:completionHandler];
-}
-
-+ (void)searchGeofencesNear:(CLLocation *)near
-                       tags:(NSArray<NSString *> *_Nullable)tags
-                   metadata:(NSDictionary *_Nullable)metadata
-                      limit:(int)limit
-            includeGeometry:(BOOL)includeGeometry  
-          completionHandler:(RadarSearchGeofencesCompletionHandler)completionHandler {
-    [Radar searchGeofencesNearActual:near radius:nil tags:tags metadata:metadata limit:limit includeGeometry:[NSNumber numberWithBool:includeGeometry] completionHandler:completionHandler];
-}
-
-
-+ (void)searchGeofencesNear:(CLLocation *)near
-                       tags:(NSArray<NSString *> *_Nullable)tags
-                   metadata:(NSDictionary *_Nullable)metadata
-                      limit:(int)limit
-          completionHandler:(RadarSearchGeofencesCompletionHandler)completionHandler {
-    [Radar searchGeofencesNearActual:near radius:nil tags:tags metadata:metadata limit:limit includeGeometry:nil completionHandler:completionHandler];
-
-}
-
-+(void)searchGeofencesNear:(CLLocation *)near
-                    radius:(int)radius
-                      tags:(NSArray<NSString *> *_Nullable)tags
-                  metadata:(NSDictionary *_Nullable)metadata
-                     limit:(int)limit
-           includeGeometry:(BOOL)includeGeometry
-         completionHandler:(RadarSearchGeofencesCompletionHandler)completionHandler {
-    [Radar searchGeofencesNearActual:near radius:[NSNumber numberWithInt:radius] tags:tags metadata:metadata limit:limit includeGeometry:[NSNumber numberWithBool:includeGeometry] completionHandler:completionHandler];
-
+    [Radar searchGeofencesNear:near radius:radius tags:tags metadata:metadata limit:limit includeGeometry:false completionHandler:completionHandler];
 }
 
 + (void)searchGeofencesWithRadius:(int)radius
@@ -823,16 +740,16 @@
                 return;
             }
 
-            [Radar searchGeofencesNearActual:location radius:[NSNumber numberWithInt:radius] tags:tags metadata:metadata limit:limit includeGeometry:[NSNumber numberWithBool:includeGeometry] completionHandler:completionHandler];
+            [Radar searchGeofencesNear:location radius:radius tags:tags metadata:metadata limit:limit includeGeometry:includeGeometry completionHandler:completionHandler];
         }];
 }
 
-+ (void)searchGeofencesNearActual:(CLLocation *)near
-                     radius:(NSNumber *_Nullable)radius
++ (void)searchGeofencesNear:(CLLocation *)near
+                     radius:(int)radius
                        tags:(NSArray<NSString *> *_Nullable)tags
                    metadata:(NSDictionary *_Nullable)metadata
                       limit:(int)limit
-            includeGeometry:(NSNumber *_Nullable)includeGeometry
+            includeGeometry:(BOOL)includeGeometry
           completionHandler:(RadarSearchGeofencesCompletionHandler)completionHandler {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"searchGeofences()"];
     [[RadarAPIClient sharedInstance] searchGeofencesNear:near

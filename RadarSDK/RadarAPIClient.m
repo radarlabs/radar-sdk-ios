@@ -753,11 +753,11 @@
 }
 
 - (void)searchGeofencesNear:(CLLocation *_Nonnull)near
-                     radius:(NSNumber *_Nullable)radius
+                     radius:(int)radius
                        tags:(NSArray *_Nullable)tags
                    metadata:(NSDictionary *_Nullable)metadata
                       limit:(int)limit
-            includeGeometry:(NSNumber *_Nullable)includeGeometry
+            includeGeometry:(BOOL)includeGeometry
           completionHandler:(RadarSearchGeofencesAPICompletionHandler)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
@@ -768,8 +768,8 @@
 
     NSMutableString *queryString = [NSMutableString new];
     [queryString appendFormat:@"near=%.06f,%.06f", near.coordinate.latitude, near.coordinate.longitude];
-    if (radius){
-        [queryString appendFormat:@"&radius=%d", radius.intValue];
+    if(radius > 0){
+        [queryString appendFormat:@"&radius=%d", radius];
     }
     [queryString appendFormat:@"&limit=%d", finalLimit];
     if (tags && [tags count] > 0) {
@@ -780,9 +780,9 @@
             [queryString appendFormat:@"&metadata[%@]=%@", key, metadata[key]];
         }
     }
-    if (includeGeometry != nil) {
-        [queryString appendFormat:@"&includeGeometry=%@", [includeGeometry boolValue] ? @"true" : @"false"];
-    }
+    
+    [queryString appendFormat:@"&includeGeometry=%@", [includeGeometry boolValue] ? @"true" : @"false"];
+    
 
     NSString *host = [RadarSettings host];
     NSString *url = [NSString stringWithFormat:@"%@/v1/search/geofences?%@", host, queryString];
