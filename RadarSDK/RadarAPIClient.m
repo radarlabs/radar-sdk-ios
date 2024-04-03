@@ -781,7 +781,7 @@
         }
     }
     
-    [queryString appendFormat:@"&includeGeometry=%@", [includeGeometry boolValue] ? @"true" : @"false"];
+    [queryString appendFormat:@"&includeGeometry=%@", includeGeometry? @"true" : @"false"];
     
 
     NSString *host = [RadarSettings host];
