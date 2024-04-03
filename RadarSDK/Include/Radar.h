@@ -880,7 +880,7 @@ Gets the device's current location, then searches for geofences near that locati
                              tags:(NSArray<NSString *> *_Nullable)tags
                          metadata:(NSDictionary *_Nullable)metadata
                             limit:(int)limit
-                completionHandler:(RadarSearchGeofencesCompletionHandler)completionHandler NS_SWIFT_NAME(searchGeofences(radius:tags:metadata:limit:completionHandler:));
+                completionHandler:(RadarSearchGeofencesCompletionHandler)completionHandler NS_SWIFT_NAME(searchGeofences(radius:tags:metadata:limit:completionHandler:)) __deprecated;
 
 /**
  Searches for geofences near a location, sorted by distance.
@@ -920,7 +920,7 @@ Gets the device's current location, then searches for geofences near that locati
                        tags:(NSArray<NSString *> *_Nullable)tags
                    metadata:(NSDictionary *_Nullable)metadata
                       limit:(int)limit
-          completionHandler:(RadarSearchGeofencesCompletionHandler)completionHandler NS_SWIFT_NAME(searchGeofences(near:radius:tags:metadata:limit:completionHandler:));
+          completionHandler:(RadarSearchGeofencesCompletionHandler)completionHandler NS_SWIFT_NAME(searchGeofences(near:radius:tags:metadata:limit:completionHandler:)) __deprecated;
 
 /**
  @deprecated Autocompletes partial addresses and place names, sorted by relevance.
