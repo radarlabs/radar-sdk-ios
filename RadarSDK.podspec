@@ -12,4 +12,5 @@ Pod::Spec.new do |s|
   s.frameworks            = 'CoreLocation'
   s.requires_arc          = true
   s.license               = { :type => 'Apache-2.0' }
+  s.resource_bundles      = {'RadarSDK' => ['RadarSDK/PrivacyInfo.xcprivacy']}
 end
