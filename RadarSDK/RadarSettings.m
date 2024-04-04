@@ -312,4 +312,8 @@ static NSString *const kXPlatformSDKVersion = @"radar-xPlatformSDKVersion";
     return [[self featureSettings] radarLowPowerManagerDistanceFilter];
 }
 
++ (BOOL)radarUseArrivalAsStopped {
+    return [[self featureSettings] radarLowPowerManagerDesiredAccuracy] == 3000 && [[self featureSettings] radarLowPowerManagerDistanceFilter] == 3000;
+}
+
 @end

@@ -63,6 +63,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSString *)xPlatformSDKVersion;
 + (double)radarLowPowerManagerDesiredAccuracy;
 + (double)radarLowPowerManagerDistanceFilter;
++ (BOOL)radarUseArrivalAsStopped;
 
 @end
 
