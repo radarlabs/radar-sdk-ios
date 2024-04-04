@@ -304,8 +304,12 @@ static NSString *const kXPlatformSDKVersion = @"radar-xPlatformSDKVersion";
     return [[NSUserDefaults standardUserDefaults] stringForKey:kXPlatformSDKVersion];
 }
 
-+ (BOOL)useRadarModifiedLowPowerManager {
-    return [[self featureSettings] useRadarModifiedLowPowerManager];
++ (double)radarLowPowerManagerDesiredAccuracy {
+    return [[self featureSettings] radarLowPowerManagerDesiredAccuracy];
+}
+
++ (double)radarLowPowerManagerDistanceFilter {
+    return [[self featureSettings] radarLowPowerManagerDistanceFilter];
 }
 
 @end
