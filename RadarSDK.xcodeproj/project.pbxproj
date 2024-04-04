@@ -413,7 +413,6 @@
 		DD236C6B2308797B00EB88F9 = {
 			isa = PBXGroup;
 			children = (
-				825732502B72BE1900DF8B88 /* PrivacyInfo.xcprivacy */,
 				96D3F20427C6B291007578B9 /* bootstrap.sh */,
 				96D3F20527C6B291007578B9 /* clang_format.sh */,
 				96D3F20327C6B290007578B9 /* Gemfile */,
@@ -441,6 +440,7 @@
 		DD236C772308797B00EB88F9 /* RadarSDK */ = {
 			isa = PBXGroup;
 			children = (
+				825732502B72BE1900DF8B88 /* PrivacyInfo.xcprivacy */,
 				96A5A0D827AD9F7F007B960B /* Include */,
 				DD236C792308797B00EB88F9 /* Info.plist */,
 				532FC303277A783900989279 /* Radar+Internal.h */,
