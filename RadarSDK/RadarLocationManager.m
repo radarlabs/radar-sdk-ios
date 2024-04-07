@@ -377,9 +377,13 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
             }
             if (options.useVisits) {
                 [self.locationManager startMonitoringVisits];
+            } else {
+                [self.locationManager stopMonitoringVisits];
             }
             if (options.useSignificantLocationChanges) {
                 [self.locationManager startMonitoringSignificantLocationChanges];
+            } else {
+                [self.locationManager stopMonitoringSignificantLocationChanges];
             }
             if (!options.beacons) {
                 [self removeSyncedBeacons];
