@@ -768,7 +768,7 @@
 
     NSMutableString *queryString = [NSMutableString new];
     [queryString appendFormat:@"near=%.06f,%.06f", near.coordinate.latitude, near.coordinate.longitude];
-    if(radius > 0){
+    if (radius > 0) {
         [queryString appendFormat:@"&radius=%d", radius];
     }
     [queryString appendFormat:@"&limit=%d", finalLimit];
@@ -781,7 +781,7 @@
         }
     }
     
-    [queryString appendFormat:@"&includeGeometry=%@", includeGeometry? @"true" : @"false"];
+    [queryString appendFormat:@"&includeGeometry=%@", includeGeometry ? @"true" : @"false"];
     
 
     NSString *host = [RadarSettings host];

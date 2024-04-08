@@ -706,22 +706,12 @@
                                     }];
 }
 
-+ (void)searchGeofencesWithRadius:(int)radius
-                             tags:(NSArray<NSString *> *_Nullable)tags
-                         metadata:(NSDictionary *_Nullable)metadata
-                            limit:(int)limit
-                completionHandler:(RadarSearchGeofencesCompletionHandler)completionHandler {
-    [Radar searchGeofencesWithRadius:radius tags:tags metadata:metadata limit:limit includeGeometry:false completionHandler:completionHandler];
++ (void)searchGeofences:(NSArray<NSString *> *_Nullable)tags
+               metadata:(NSDictionary *_Nullable)metadata
+      completionHandler:(RadarSearchGeofencesCompletionHandler)completionHandler {
+    [Radar searchGeofencesWithRadius:-1 tags:tags metadata:metadata limit:100 includeGeometry:false completionHandler:completionHandler];
 }
 
-+ (void)searchGeofencesNear:(CLLocation *)near
-                     radius:(int)radius
-                       tags:(NSArray<NSString *> *_Nullable)tags
-                   metadata:(NSDictionary *_Nullable)metadata
-                      limit:(int)limit
-          completionHandler:(RadarSearchGeofencesCompletionHandler)completionHandler {
-    [Radar searchGeofencesNear:near radius:radius tags:tags metadata:metadata limit:limit includeGeometry:false completionHandler:completionHandler];
-}
 
 + (void)searchGeofencesWithRadius:(int)radius
                              tags:(NSArray<NSString *> *_Nullable)tags
