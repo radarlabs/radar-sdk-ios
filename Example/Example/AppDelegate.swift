@@ -61,7 +61,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             radius: 1000,
             tags: ["store"],
             metadata: nil,
-            limit: 10
+            limit: 10,
+            includeGeometry: false
         ) { (status, location, geofences) in
             print("Search geofences: status = \(Radar.stringForStatus(status)); geofences = \(String(describing: geofences))")
         }
