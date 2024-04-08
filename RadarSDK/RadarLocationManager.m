@@ -377,9 +377,13 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
             }
             if (options.useVisits) {
                 [self.locationManager startMonitoringVisits];
+            } else {
+                [self.locationManager stopMonitoringVisits];
             }
             if (options.useSignificantLocationChanges) {
                 [self.locationManager startMonitoringSignificantLocationChanges];
+            } else {
+                [self.locationManager stopMonitoringSignificantLocationChanges];
             }
             if (!options.beacons) {
                 [self removeSyncedBeacons];
@@ -466,7 +470,8 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         return;
     }
 
-    NSUInteger numGeofences = MIN(geofences.count, 9);
+    RadarTrackingOptions *options = [Radar getTrackingOptions];
+    NSUInteger numGeofences = MIN(geofences.count, options.beacons ? 9 : 19);
     NSMutableArray *requests = [NSMutableArray array]; 
 
     for (int i = 0; i < numGeofences; i++) {
