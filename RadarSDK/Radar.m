@@ -64,11 +64,14 @@
     [[RadarAPIClient sharedInstance] getConfigForUsage:@"initialize"
                                               verified:NO
                                      completionHandler:^(RadarStatus status, RadarConfig *config) {
-                                         [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
-                                         [RadarSettings setFeatureSettings:config.meta.featureSettings];
-                                         [self flushLogs];
-                                     }];
-    
+        [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
+        [RadarSettings setFeatureSettings:config.meta.featureSettings];
+        [self flushLogs];
+        [Radar trackOnceWithCoalescing:YES
+                     completionHandler:^(RadarStatus status, CLLocation * _Nullable location, NSArray<RadarEvent *> * _Nullable events, RadarUser * _Nullable user) {
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Called trackOnce() from initialize"];
+        }];
+    }];
 }
 
 #pragma mark - Properties
@@ -133,10 +136,24 @@
 #pragma mark - Tracking
 
 + (void)trackOnceWithCompletionHandler:(RadarTrackCompletionHandler)completionHandler {
-    [self trackOnceWithDesiredAccuracy:RadarTrackingOptionsDesiredAccuracyMedium beacons:NO completionHandler:completionHandler];
+    [self trackOnceWithDesiredAccuracy:RadarTrackingOptionsDesiredAccuracyMedium beacons:NO coalescing:NO completionHandler:completionHandler];
+}
+
++ (void)trackOnceWithCoalescing:(BOOL)coalescing completionHandler:(RadarTrackCompletionHandler)completionHandler {
+    [self trackOnceWithDesiredAccuracy:RadarTrackingOptionsDesiredAccuracyMedium 
+                               beacons:NO 
+                            coalescing:coalescing
+                     completionHandler:completionHandler];
 }
 
 + (void)trackOnceWithDesiredAccuracy:(RadarTrackingOptionsDesiredAccuracy)desiredAccuracy beacons:(BOOL)beacons completionHandler:(RadarTrackCompletionHandler)completionHandler {
+    [self trackOnceWithDesiredAccuracy:desiredAccuracy beacons:beacons coalescing:NO completionHandler:completionHandler];
+}
+
++ (void)trackOnceWithDesiredAccuracy:(RadarTrackingOptionsDesiredAccuracy)desiredAccuracy 
+                             beacons:(BOOL)beacons
+                          coalescing:(BOOL)coalescing
+                   completionHandler:(RadarTrackCompletionHandler)completionHandler {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"trackOnce()"];
     [[RadarLocationManager sharedInstance]
         getLocationWithDesiredAccuracy:desiredAccuracy
@@ -159,6 +176,7 @@
                                             source:RadarLocationSourceForegroundLocation
                                           replayed:NO
                                            beacons:beacons
+                                        coalescing:coalescing
                                  completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user,
                                                      NSArray<RadarGeofence *> *_Nullable nearbyGeofences, RadarConfig *_Nullable config, NSString *_Nullable token) {
                                      if (status == RadarStatusSuccess) {
@@ -1197,6 +1215,10 @@
     }
 
     [Radar logOpenedAppConversion];
+    [Radar trackOnceWithCoalescing:YES
+                 completionHandler:^(RadarStatus status, CLLocation * _Nullable location, NSArray<RadarEvent *> * _Nullable events, RadarUser * _Nullable user) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Called trackOnce() from app resume."];
+    }];
 }
 
 - (void)dealloc {

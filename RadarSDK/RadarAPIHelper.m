@@ -16,6 +16,8 @@
 @property (strong, nonatomic) dispatch_queue_t queue;
 @property (strong, nonatomic) dispatch_semaphore_t semaphore;
 @property (assign, nonatomic) BOOL wait;
+@property (strong, nonatomic) NSLock *lock;
+@property (strong, nonatomic) NSMutableDictionary<NSString *, NSMutableArray<RadarAPICompletionHandler> *> *coalescedRequests;
 
 @end
 
@@ -24,8 +26,10 @@
 - (instancetype)init {
     self = [super init];
     if (self) {
-        _queue = dispatch_queue_create("io.radar.api", DISPATCH_QUEUE_SERIAL);
+        _queue = dispatch_queue_create("io.radar.api", DISPATCH_QUEUE_CONCURRENT);
         _semaphore = dispatch_semaphore_create(1);
+        _lock = [NSLock new];
+        _coalescedRequests = [NSMutableDictionary new];
     }
     return self;
 }
@@ -38,10 +42,59 @@
                logPayload:(BOOL)logPayload
           extendedTimeout:(BOOL)extendedTimeout
         completionHandler:(RadarAPICompletionHandler)completionHandler {
+    [self requestWithMethod:method url:url headers:headers params:params sleep:sleep coalescing:NO logPayload:logPayload extendedTimeout:extendedTimeout completionHandler:completionHandler];
+}
+
+- (void)requestWithMethod:(NSString *)method
+                      url:(NSString *)url
+                  headers:(NSDictionary *)headers
+                   params:(NSDictionary *)params
+                    sleep:(BOOL)sleep
+               coalescing:(BOOL)coalescing
+               logPayload:(BOOL)logPayload
+          extendedTimeout:(BOOL)extendedTimeout
+        completionHandler:(RadarAPICompletionHandler)completionHandler {
     dispatch_async(self.queue, ^{
-        if (sleep) {
+        if (sleep && !coalescing) {
             dispatch_semaphore_wait(self.semaphore, DISPATCH_TIME_FOREVER);
         }
+        
+        NSArray<RadarAPICompletionHandler> *coalescedRequestsCompletionHandlers;
+        
+        [self.lock lock];
+        if (coalescing) {
+            /*
+             This is a coalescing request; either:
+             - Add its completion to an existing, duplicate coalescing request and return immediately.
+             - No duplicate coalescing requests exist, wait 1 second to collect incoming duplicate
+               coalescing requests or to coalesce with a non-coalescing duplicate request.
+             */
+            if ([self.coalescedRequests objectForKey:url]) {
+                [self.coalescedRequests[url] addObject:completionHandler];
+                [self.lock unlock];
+                return;
+            } else {
+                self.coalescedRequests[url] = [[NSMutableArray alloc] initWithArray:@[completionHandler]];
+                [self.lock unlock];
+                [NSThread sleepForTimeInterval:1];
+                
+                // Check if request was fulfilled by a non-coalescing, duplicate request while sleeping
+                [self.lock lock];
+                if (![self.coalescedRequests objectForKey:url]) {
+                    [self.lock unlock];
+                    return;
+                }
+            }
+        } else {
+            /*
+             Non-coalescing requests will fire immediately and fulfill duplicate coalescing requests that have not fired yet.
+             */
+            if ([self.coalescedRequests objectForKey:url]) {
+                coalescedRequestsCompletionHandlers = [self.coalescedRequests objectForKey:url];
+                [self.coalescedRequests removeObjectForKey:url];
+            }
+        }
+        [self.lock unlock];
 
         NSMutableURLRequest *req = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:url]];
         req.HTTPMethod = method;
@@ -94,7 +147,7 @@
                         completionHandler(RadarStatusErrorNetwork, nil);
                     });
 
-                    if (sleep) {
+                    if (sleep && !coalescing) {
                         [NSThread sleepForTimeInterval:1];
                         dispatch_semaphore_signal(self.semaphore);
                     }
@@ -109,7 +162,7 @@
                         completionHandler(RadarStatusErrorServer, nil);
                     });
 
-                    if (sleep) {
+                    if (sleep && !coalescing) {
                         [NSThread sleepForTimeInterval:1];
                         dispatch_semaphore_signal(self.semaphore);
                     }
@@ -158,10 +211,32 @@
                 }
 
                 dispatch_async(dispatch_get_main_queue(), ^{
-                    completionHandler(status, res);
+                    if ([url isEqualToString:@"https://api.radar.io/v1/track"]) {
+                        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
+                                                           message:[NSString stringWithFormat:@"reached track completion; coalesced call: %@", coalescing ? @"YES" : @"NO"]];
+                    }
+                    [self.lock lock];
+                    if (coalescing && [self.coalescedRequests objectForKey:url]) {
+                        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
+                                                           message:[NSString stringWithFormat:@"Coalescing %ld requests to %@ from coalesced call", (long)[self.coalescedRequests[url] count], url]];
+                        for (RadarAPICompletionHandler completion in self.coalescedRequests[url]) {
+                            completion(status, res);
+                        }
+                        [self.coalescedRequests removeObjectForKey:url];
+                    } else {
+                        if (coalescedRequestsCompletionHandlers) {
+                            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
+                                                               message:[NSString stringWithFormat:@"Coalescing %ld requests to %@ from non-coalesced call", (long)[coalescedRequestsCompletionHandlers count] + 1, url]];
+                            for (RadarAPICompletionHandler completion in coalescedRequestsCompletionHandlers) {
+                                completion(status, res);
+                            }
+                        }
+                        completionHandler(status, res);
+                    }
+                    [self.lock unlock];
                 });
 
-                if (sleep) {
+                if (sleep && !coalescing) {
                     [NSThread sleepForTimeInterval:1];
                     dispatch_semaphore_signal(self.semaphore);
                 }
