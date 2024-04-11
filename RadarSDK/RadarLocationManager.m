@@ -340,6 +340,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
             self.locationManager.desiredAccuracy = desiredAccuracy;
 
             if (@available(iOS 11.0, *)) {
+                self.locationManager.showsBackgroundLocationIndicator = options.showBlueBar;
                 self.lowPowerLocationManager.showsBackgroundLocationIndicator = options.showBlueBar;
             }
 
