@@ -64,9 +64,11 @@
     [[RadarAPIClient sharedInstance] getConfigForUsage:@"initialize"
                                               verified:NO
                                      completionHandler:^(RadarStatus status, RadarConfig *config) {
-                                         [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
-                                         [RadarSettings setFeatureSettings:config.meta.featureSettings];
-                                         [self flushLogs];
+                                        if (status == RadarStatusSuccess) {
+                                            [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
+                                            [RadarSettings setFeatureSettings:config.meta.featureSettings];
+                                            [self flushLogs];
+                                        }
                                      }];
     
 }
@@ -1191,6 +1193,9 @@
         [[RadarAPIClient sharedInstance] getConfigForUsage:@"resume"
                                                   verified:NO
                                          completionHandler:^(RadarStatus status, RadarConfig *_Nullable config) {
+                                            if (status != RadarStatusSuccess || !config || !config.meta) {
+                                                return;
+                                            }
                                              [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
                                              [RadarSettings setFeatureSettings:config.meta.featureSettings];
                                          }];
