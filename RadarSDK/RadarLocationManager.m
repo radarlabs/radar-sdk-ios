@@ -64,17 +64,19 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 + (instancetype)sharedInstance {
     static dispatch_once_t once;
     static id sharedInstance;
-    if ([NSThread isMainThread]) {
+    
+    if (![NSThread isMainThread]) {
         dispatch_once(&once, ^{
             sharedInstance = [self new];
         });
     } else {
-        dispatch_sync(dispatch_get_main_queue(), ^{
+        dispatch_sync(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
             dispatch_once(&once, ^{
                 sharedInstance = [self new];
             });
         });
     }
+    
     return sharedInstance;
 }
 
@@ -295,7 +297,8 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 }
 
 - (void)updateTracking:(CLLocation *)location fromInitialize:(BOOL)fromInitialize {
-    dispatch_async(dispatch_get_main_queue(), ^{
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+
         BOOL tracking = [RadarSettings tracking];
         RadarTrackingOptions *options = [Radar getTrackingOptions];
 
