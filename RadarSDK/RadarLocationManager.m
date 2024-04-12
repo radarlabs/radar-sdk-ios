@@ -64,13 +64,12 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 + (instancetype)sharedInstance {
     static dispatch_once_t once;
     static id sharedInstance;
-    
-    if (![NSThread isMainThread]) {
+    if ([NSThread isMainThread]) {	
         dispatch_once(&once, ^{
             sharedInstance = [self new];
         });
     } else {
-        dispatch_sync(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+        dispatch_sync(dispatch_get_main_queue(), ^{	
             dispatch_once(&once, ^{
                 sharedInstance = [self new];
             });
