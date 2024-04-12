@@ -61,7 +61,7 @@
     if (append) {
         [[RadarLogBuffer sharedInstance] write:level type:type message:message forcePersist:YES];
     } else {
-        dispatch_async(dispatch_get_main_queue(), ^{
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             [Radar sendLog:level type:type message:message];
 
             RadarLogLevel logLevel = [RadarSettings logLevel];
