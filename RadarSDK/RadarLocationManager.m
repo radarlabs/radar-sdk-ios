@@ -415,7 +415,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     if (meta) {
         if ([meta trackingOptions]) {
             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
-                                               message:[NSString stringWithFormat:@"Setting remote tracking options | trackingOptions = %@", meta.trackingOptions]];
+                                               message:[NSString stringWithFormat:@"Setting remote tracking options | trackingOptions = %@", [RadarTrackingOptions trackingOptionsFromDictionary:meta.trackingOptions]]];
             [RadarSettings setRemoteTrackingOptions:[meta trackingOptions]];
         } else {
             [RadarSettings removeRemoteTrackingOptions];
@@ -964,6 +964,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 }
 
 - (void)locationManager:(CLLocationManager *)manager didEnterRegion:(CLRegion *)region {
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Entered region: %@", region.identifier]];
     if (![region.identifier hasPrefix:kIdentifierPrefix]) {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Ignoring region entry: wrong prefix"];
 
@@ -995,11 +996,13 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                                                           [self handleLocation:location source:RadarLocationSourceBeaconEnter beacons:nearbyBeacons];
                                                       }];
     } else if (manager.location) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Handling geofence enter"]
         [self handleLocation:manager.location source:RadarLocationSourceGeofenceEnter];
     }
 }
 
 - (void)locationManager:(CLLocationManager *)manager didExitRegion:(CLRegion *)region {
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Exited region: %@", region.identifier]];
     if (![region.identifier hasPrefix:kIdentifierPrefix]) {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Ignoring region exit: wrong prefix"];
 
@@ -1031,6 +1034,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                                                          [self handleLocation:location source:RadarLocationSourceBeaconExit beacons:nearbyBeacons];
                                                      }];
     } else if (manager.location) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Handling geofence exit"]
         [self handleLocation:manager.location source:RadarLocationSourceGeofenceExit];
     }
 }
@@ -1060,6 +1064,8 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                                                           completionHandler:^(RadarStatus status, NSArray<RadarBeacon *> *_Nullable nearbyBeacons) {
                                                               [self handleLocation:location source:RadarLocationSourceBeaconEnter beacons:nearbyBeacons];
                                                           }];
+        } else {
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Ignoring region didDetermineState | identifier = %@", region.identifier]
         }
     } else {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Outside beacon region | identifier = %@", region.identifier]];
@@ -1074,6 +1080,8 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                                                          completionHandler:^(RadarStatus status, NSArray<RadarBeacon *> *_Nullable nearbyBeacons) {
                                                              [self handleLocation:location source:RadarLocationSourceBeaconExit beacons:nearbyBeacons];
                                                          }];
+        } else {
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Ignoring region didDetermineState | identifier = %@", region.identifier]
         }
     }
 }
