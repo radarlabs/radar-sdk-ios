@@ -996,7 +996,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                                                           [self handleLocation:location source:RadarLocationSourceBeaconEnter beacons:nearbyBeacons];
                                                       }];
     } else if (manager.location) {
-        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Handling geofence enter"]
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Handling geofence enter"];
         [self handleLocation:manager.location source:RadarLocationSourceGeofenceEnter];
     }
 }
@@ -1034,7 +1034,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                                                          [self handleLocation:location source:RadarLocationSourceBeaconExit beacons:nearbyBeacons];
                                                      }];
     } else if (manager.location) {
-        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Handling geofence exit"]
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Handling geofence exit"];
         [self handleLocation:manager.location source:RadarLocationSourceGeofenceExit];
     }
 }
@@ -1065,7 +1065,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                                                               [self handleLocation:location source:RadarLocationSourceBeaconEnter beacons:nearbyBeacons];
                                                           }];
         } else {
-            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Ignoring region didDetermineState | identifier = %@", region.identifier]
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Ignoring region didDetermineState | identifier = %@", region.identifier]];
         }
     } else {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Outside beacon region | identifier = %@", region.identifier]];
@@ -1081,7 +1081,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                                                              [self handleLocation:location source:RadarLocationSourceBeaconExit beacons:nearbyBeacons];
                                                          }];
         } else {
-            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Ignoring region didDetermineState | identifier = %@", region.identifier]
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Ignoring region didDetermineState | identifier = %@", region.identifier]];
         }
     }
 }
