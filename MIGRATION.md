@@ -1,5 +1,9 @@
 # Migration guides
 
+## 3.9.14 to 3.9.15
+
+- The event listener `didLogMessage` is no longer called on the main thread. If that function previously needed to be ran on the main thread, dispatch the task to the main thread with: `dispatch_async(dispatch_get_main_queue(), ^{...}`.  
+
 ## 3.8.x to 3.9.0
 - The `Radar.autocomplete(query:near:layers:limit:country:expandUnits:completionHandler:)` method is now `Radar.autocomplete(query:near:layers:limit:country:mailable:completionHandler:)`.
       - `expandUnits` has been deprecated and will always be true regardless of value passed in.
