@@ -94,8 +94,18 @@ static int fileCounter = 0;
 - (NSArray<NSString *> *)getLogFilesInTimeOrder {
     NSString *characterToStrip = @"_";
     NSComparator compareTimeStamps = ^NSComparisonResult(NSString *str1, NSString *str2) {
-        return [@([[str1 stringByReplacingOccurrencesOfString:characterToStrip withString:@""] integerValue]) 
-                compare:@([[str2 stringByReplacingOccurrencesOfString:characterToStrip withString:@""] integerValue])];
+        NSArray<NSString *> *parts1 = [str1 componentsSeparatedByString:characterToStrip];
+        NSArray<NSString *> *parts2 = [str2 componentsSeparatedByString:characterToStrip];
+    
+        // Compare timestamps
+        NSComparisonResult result = [@([parts1[0] longLongValue]) compare:@([parts2[0] longLongValue])];
+    
+        // If timestamps are equal, compare file counters
+        if (result == NSOrderedSame) {
+            result = [@([parts1[1] intValue]) compare:@([parts2[1] intValue])];
+        }
+    
+        return result;
     };
 
     return [self.fileHandler sortedFilesInDirectory:self.logFileDir usingComparator:compareTimeStamps];
