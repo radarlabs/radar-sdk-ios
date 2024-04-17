@@ -88,12 +88,14 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         _locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters;
         _locationManager.distanceFilter = kCLDistanceFilterNone;
         _locationManager.allowsBackgroundLocationUpdates = [RadarUtils locationBackgroundMode] && [CLLocationManager authorizationStatus] == kCLAuthorizationStatusAuthorizedAlways;
+        _locationManager.activityType = .otherNavigation;
         [_locationManager startUpdatingHeading];
 
         _lowPowerLocationManager = [CLLocationManager new];
         _lowPowerLocationManager.desiredAccuracy = kCLLocationAccuracyThreeKilometers;
         _lowPowerLocationManager.distanceFilter = 3000;
         _lowPowerLocationManager.allowsBackgroundLocationUpdates = [RadarUtils locationBackgroundMode];
+        _lowPowerLocationManagerLocationManager.activityType = .otherNavigation;
         
         _motionActivityManager = [CMMotionActivityManager new];
         [_motionActivityManager startActivityUpdatesToQueue:[NSOperationQueue mainQueue] withHandler:^(CMMotionActivity * _Nullable activity) {
