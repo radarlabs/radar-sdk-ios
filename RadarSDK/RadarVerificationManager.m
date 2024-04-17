@@ -154,6 +154,24 @@
 }
 
 - (void)startTrackingVerifiedWithInterval:(NSTimeInterval)interval beacons:(BOOL)beacons {
+    __block void (^trackVerified)(void);
+    __block __weak void (^weakTrackVerified)(void);
+    trackVerified = ^{
+        weakTrackVerified = trackVerified;
+        
+        [self trackVerifiedWithBeacons:beacons completionHandler:^(RadarStatus status, RadarVerifiedLocationToken *_Nullable token) {
+            if (token) {
+                NSTimeInterval expiresIn = [token.expiresAt timeIntervalSinceNow];
+                
+                if (expiresIn < interval) {
+                    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(expiresIn * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                        weakTrackVerified();
+                    });
+                }
+            }
+        }];
+    };
+    
     if (@available(iOS 12.0, *)) {
         if (!_monitor) {
             _monitor = nw_path_monitor_create();
@@ -164,7 +182,7 @@
                 if (nw_path_get_status(path) == nw_path_status_satisfied) {
                     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Network connected"];
 
-                    [self trackVerifiedWithBeacons:beacons completionHandler:nil];
+                    trackVerified();
                 } else {
                     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Network disconnected"];
                 }
@@ -176,15 +194,15 @@
 
     if (!self.timer) {
         self.timer = [NSTimer scheduledTimerWithTimeInterval:interval
-                                                     repeats:YES
+                                                 repeats:YES
                                                        block:^(NSTimer *_Nonnull timer) {
-                                                           [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Timer fired"];
-
-            [self trackVerifiedWithBeacons:beacons completionHandler:nil];
-                                                       }];
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Timer fired"];
+            
+            trackVerified();
+        }];
     }
-    
-    [self trackVerifiedWithBeacons:beacons completionHandler:nil];
+
+    trackVerified();
 }
 
 - (void)getAttestationWithNonce:(NSString *)nonce completionHandler:(RadarVerificationCompletionHandler)completionHandler {
