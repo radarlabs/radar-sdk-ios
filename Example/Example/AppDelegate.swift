@@ -80,7 +80,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         let origin = CLLocation(latitude: 40.78382, longitude: -73.97536)
         let destination = CLLocation(latitude: 40.70390, longitude: -73.98670)
-
+        
         Radar.autocomplete(
             query: "brooklyn",
             near: origin,
@@ -249,7 +249,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         self.notify(message)
     }
 
-    func didUpdateToken(_ token: String) {
+    func didUpdateToken(_ token: RadarVerifiedLocationToken) {
         
     }
     

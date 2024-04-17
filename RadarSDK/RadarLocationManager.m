@@ -204,9 +204,10 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 
 - (void)stopTracking {
     [RadarSettings setTracking:NO];
+    
     RadarFeatureSettings *featureSettings = [RadarSettings featureSettings];
     if (featureSettings.extendFlushReplays) {
-        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"flushReplays() from stopTracking"];
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"Flushing replays from stopTracking()"];
         [[RadarReplayBuffer sharedInstance] flushReplaysWithCompletionHandler:nil completionHandler:nil];
     }
 
@@ -514,7 +515,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                     NSString *notificationRepeats = [geofence.metadata objectForKey:@"radar:notificationRepeats"];
                     if (notificationRepeats) {
                         repeats = [notificationRepeats boolValue];
-                        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"repeats is bool vaue: %d", repeats]];
+                        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Notification repeats | repeats = %d", repeats]];
                     }
 
                     UNLocationNotificationTrigger *trigger = [UNLocationNotificationTrigger triggerWithRegion:region repeats:repeats];
@@ -864,7 +865,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                                               replayed:replayed
                                                beacons:beacons
                                      completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user,
-                                                         NSArray<RadarGeofence *> *_Nullable nearbyGeofences, RadarConfig *_Nullable config, NSString *_Nullable token) {
+                                                         NSArray<RadarGeofence *> *_Nullable nearbyGeofences, RadarConfig *_Nullable config, RadarVerifiedLocationToken *_Nullable token) {
                                          self.sending = NO;
 
                                          [self updateTrackingFromMeta:config.meta];

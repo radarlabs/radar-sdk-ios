@@ -345,8 +345,6 @@
 }
 
 + (NSString *)stringForType:(RadarEventType)type {
-    // These strings should match the values (and order) of the server's event
-    // constants.
     switch (type) {
     case RadarEventTypeUserEnteredGeofence:
         return @"user.entered_geofence";

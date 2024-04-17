@@ -137,7 +137,7 @@ static NSDateFormatter *_isoDateFormatter;
     if (@available(iOS 15.0, *)) {
         CLLocationSourceInformation *sourceInformation = location.sourceInformation;
         if (sourceInformation) {
-            if (sourceInformation.isSimulatedBySoftware) {
+            if (sourceInformation.isSimulatedBySoftware || sourceInformation.isProducedByAccessory) {
                 dict[@"mocked"] = @(YES);
             } else {
                 dict[@"mocked"] = @(NO);

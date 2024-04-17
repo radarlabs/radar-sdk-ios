@@ -18,6 +18,7 @@
 #import "RadarRouteMode.h"
 #import "RadarRoutes.h"
 #import "RadarTrackingOptions.h"
+#import "RadarVerifiedLocationToken.h"
 #import "RadarUser.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -189,13 +190,13 @@ typedef void (^_Nullable RadarTrackCompletionHandler)(RadarStatus status, CLLoca
 typedef void (^_Nullable RadarFlushReplaysCompletionHandler)(RadarStatus status, NSDictionary *_Nullable res);
 
 /**
- Called when an track request with token callback succeeds, fails, or times out.
+ Called when an track verified request succeeds, fails, or times out.
 
- Receives the request status and, if successful, a JSON Web Token (JWT) containing an array of the events generated and the user. Verify the JWT server-side using your secret key.
+ Receives the request status and, if successful, the user's verified location. Verify the token server-side using your secret key.
 
  @see https://radar.com/documentation/sdk/fraud
  */
-typedef void (^_Nullable RadarTrackTokenCompletionHandler)(RadarStatus status, NSString *_Nullable token);
+typedef void (^_Nullable RadarTrackVerifiedCompletionHandler)(RadarStatus status, RadarVerifiedLocationToken *_Nullable token);
 
 /**
  Called when a trip update succeeds, fails, or times out.
@@ -451,7 +452,7 @@ typedef void (^_Nonnull RadarLogConversionCompletionHandler)(RadarStatus status,
 
  @see https://radar.com/documentation/fraud
  */
-+ (void)trackVerifiedWithCompletionHandler:(RadarTrackCompletionHandler _Nullable)completionHandler NS_SWIFT_NAME(trackVerified(completionHandler:));
++ (void)trackVerifiedWithCompletionHandler:(RadarTrackVerifiedCompletionHandler _Nullable)completionHandler NS_SWIFT_NAME(trackVerified(completionHandler:));
 
 /**
  Tracks the user's location with device integrity information for location verification use cases.
@@ -463,41 +464,17 @@ typedef void (^_Nonnull RadarLogConversionCompletionHandler)(RadarStatus status,
 
  @see https://radar.com/documentation/fraud
  */
-+ (void)trackVerifiedWithBeacons:(BOOL)beacons completionHandler:(RadarTrackCompletionHandler _Nullable)completionHandler NS_SWIFT_NAME(trackVerified(beacons:completionHandler:));
-
-/**
- Tracks the user's location with device integrity information for location verification use cases. Returns a JSON Web Token (JWT). Verify the JWT server-side using your secret key.
-
- @warning Note that you must configure SSL pinning before calling this method.
-
- @param completionHandler An optional completion handler.
-
- @see https://radar.com/documentation/fraud
- */
-+ (void)trackVerifiedTokenWithCompletionHandler:(RadarTrackTokenCompletionHandler _Nullable)completionHandler NS_SWIFT_NAME(trackVerifiedToken(completionHandler:));
-
-/**
- Tracks the user's location with device integrity information for location verification use cases. Returns a JSON Web Token (JWT). Verify the JWT server-side using your secret key.
-
- @warning Note that you must configure SSL pinning before calling this method.
-
- @param beacons A boolean indicating whether to range beacons.
- @param completionHandler An optional completion handler.
-
- @see https://radar.com/documentation/fraud
- */
-+ (void)trackVerifiedTokenWithBeacons:(BOOL)beacons completionHandler:(RadarTrackTokenCompletionHandler _Nullable)completionHandler NS_SWIFT_NAME(trackVerifiedToken(beacons:completionHandler:));
++ (void)trackVerifiedWithBeacons:(BOOL)beacons completionHandler:(RadarTrackVerifiedCompletionHandler _Nullable)completionHandler NS_SWIFT_NAME(trackVerified(beacons:completionHandler:));
 
 /**
  Starts tracking the user's location with device integrity information for location verification use cases.
  
- @param token A boolean indicating whether to return a JSON Web Token (JWT). If `true`, tokens are delivered to your `RadarVerifiedDelegate`. If `false`, location updates are delivered to your `RadarDelegate`.
+ @param interval The default interval in seconds between each location update.
  @param beacons A boolean indicating whether to range beacons.
- @param interval The interval in seconds between each location update. A number between 1 and 60.
- 
+
  @warning Note that you must configure SSL pinning before calling this method.
  */
-+ (void)startTrackingVerified:(BOOL)token interval:(NSTimeInterval)interval beacons:(BOOL)beacons NS_SWIFT_NAME(startTrackingVerified(token:interval:beacons:));
++ (void)startTrackingVerifiedWithInterval:(NSTimeInterval)interval beacons:(BOOL)beacons NS_SWIFT_NAME(startTrackingVerified(interval:beacons:));
 
 /**
  Starts tracking the user's location in the background with configurable tracking options.

@@ -78,12 +78,12 @@
     }
 }
 
-- (void)didUpdateToken:(NSString *)token {
+- (void)didUpdateToken:(RadarVerifiedLocationToken *)token {
     if (self.verifiedDelegate) {
         [self.verifiedDelegate didUpdateToken:token];
     }
 
-    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"📍 Radar token updated | token = %@", token]];
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"📍 Radar token updated | token = %@; expiresAt = %@", token.token, token.expiresAt]];
 }
 
 @end

@@ -31,6 +31,7 @@
 #import "RadarUser+Internal.h"
 #import "RadarUtils.h"
 #import "RadarVerificationManager.h"
+#import "RadarVerifiedLocationToken+Internal.h"
 #import <os/log.h>
 
 @implementation RadarAPIClient
@@ -264,7 +265,7 @@
     if (@available(iOS 15.0, *)) {
         CLLocationSourceInformation *sourceInformation = location.sourceInformation;
         if (sourceInformation) {
-            if (sourceInformation.isSimulatedBySoftware) {
+            if (sourceInformation.isSimulatedBySoftware || sourceInformation.isProducedByAccessory) {
                 params[@"mocked"] = @(YES);
             } else {
                 params[@"mocked"] = @(NO);
@@ -336,7 +337,7 @@
 
     NSArray<RadarReplay *> *replays = [[RadarReplayBuffer sharedInstance] flushableReplays];
     NSUInteger replayCount = replays.count;
-    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Replay count in api client: %lu", (unsigned long)replayCount]];
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Checking replays in API client | replayCount = %lu", (unsigned long)replayCount]];
     NSMutableDictionary *requestParams = [params mutableCopy];
 
     BOOL replaying = options.replay == RadarTrackingOptionsReplayAll && replayCount > 0 && !verified;
@@ -346,7 +347,7 @@
                 [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Failed to flush replays"]];
                 [[RadarDelegateHolder sharedInstance] didFailWithStatus:status];
             } else {
-                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Succeded in flushing replays"]];
+                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Successfully flushed replays"]];
                 [RadarState setLastFailedStoppedLocation:nil];
                 [RadarSettings updateLastTrackedTime];
             }
@@ -392,25 +393,11 @@
                             id eventsObj = res[@"events"];
                             id userObj = res[@"user"];
                             id nearbyGeofencesObj = res[@"nearbyGeofences"];
-                            id tokenObj = res[@"token"];
                             NSArray<RadarEvent *> *events = [RadarEvent eventsFromObject:eventsObj];
                             RadarUser *user = [[RadarUser alloc] initWithObject:userObj];
                             NSArray<RadarGeofence *> *nearbyGeofences = [RadarGeofence geofencesFromObject:nearbyGeofencesObj];
+                            RadarVerifiedLocationToken *token = [[RadarVerifiedLocationToken alloc] initWithObject:res];
 
-                            if (encrypted) {
-                                if (!tokenObj) {
-                                    return completionHandler(status, nil, nil, nil, nil, nil, nil);
-                                }
-
-                                NSString *token = (NSString *)tokenObj;
-                                
-                                if (token) {
-                                    [[RadarDelegateHolder sharedInstance] didUpdateToken:token];
-                                }
-
-                                return completionHandler(status, nil, nil, nil, nil, nil, token);
-                            }
-            
                             if (user) {
                                 BOOL inGeofences = user.geofences && user.geofences.count;
                                 BOOL atPlace = user.place != nil;
@@ -458,7 +445,7 @@
                             if (events && user) {
                                 [RadarSettings setId:user._id];
 
-                                // if user was on a trip that ended server side, restore previous tracking options
+                                // if user was on a trip that ended server-side, restore previous tracking options
                                 if (!user.trip && [RadarSettings tripOptions]) {
                                     [[RadarLocationManager sharedInstance] restartPreviousTrackingOptions];
                                     [RadarSettings setTripOptions:nil];
@@ -474,7 +461,7 @@
                                     [[RadarDelegateHolder sharedInstance] didReceiveEvents:events user:user];
                                 }
 
-                                return completionHandler(RadarStatusSuccess, res, events, user, nearbyGeofences, config, nil);
+                                return completionHandler(RadarStatusSuccess, res, events, user, nearbyGeofences, config, token);
                             }
 
                             [[RadarDelegateHolder sharedInstance] didFailWithStatus:status];
@@ -1395,8 +1382,6 @@ completionHandler:(RadarSendEventAPICompletionHandler _Nonnull)completionHandler
                         RadarEvent *customEvent = [[RadarEvent alloc] initWithObject:eventObj];
 
                         if (!customEvent) {
-                            // If the server didn't send back an event, then there was a
-                            // problem.
                             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelError message:@"POST /events did not return a new event"];
 
                             return completionHandler(RadarStatusErrorServer, nil, nil);

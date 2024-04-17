@@ -160,7 +160,7 @@
                                           replayed:NO
                                            beacons:beacons
                                  completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user,
-                                                     NSArray<RadarGeofence *> *_Nullable nearbyGeofences, RadarConfig *_Nullable config, NSString *_Nullable token) {
+                                                     NSArray<RadarGeofence *> *_Nullable nearbyGeofences, RadarConfig *_Nullable config, RadarVerifiedLocationToken *_Nullable token) {
                                      if (status == RadarStatusSuccess) {
                                          [[RadarLocationManager sharedInstance] replaceSyncedGeofences:nearbyGeofences];
                                          if(config != nil){
@@ -233,7 +233,7 @@
                                               replayed:NO
                                                beacons:nil
                                      completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user,
-                                                         NSArray<RadarGeofence *> *_Nullable nearbyGeofences, RadarConfig *_Nullable config, NSString *_Nullable token) {
+                                                         NSArray<RadarGeofence *> *_Nullable nearbyGeofences, RadarConfig *_Nullable config, RadarVerifiedLocationToken *_Nullable token) {
                                         if (status == RadarStatusSuccess && config != nil) {                                    
                                             [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];                                            
                                         }
@@ -245,24 +245,18 @@
                                      }];
 }
 
-+ (void)trackVerifiedWithCompletionHandler:(RadarTrackCompletionHandler)completionHandler {
-    [[RadarVerificationManager sharedInstance] trackVerifiedWithCompletionHandler:completionHandler];
++ (void)trackVerifiedWithCompletionHandler:(RadarTrackVerifiedCompletionHandler)completionHandler {
+    [self trackVerifiedWithBeacons:NO completionHandler:completionHandler];
 }
 
-+ (void)trackVerifiedWithBeacons:(BOOL)beacons completionHandler:(RadarTrackCompletionHandler)completionHandler {
++ (void)trackVerifiedWithBeacons:(BOOL)beacons completionHandler:(RadarTrackVerifiedCompletionHandler)completionHandler {
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"trackVerified()"];
     [[RadarVerificationManager sharedInstance] trackVerifiedWithBeacons:(BOOL)beacons completionHandler:completionHandler];
 }
 
-+ (void)trackVerifiedTokenWithCompletionHandler:(RadarTrackTokenCompletionHandler)completionHandler {
-    [[RadarVerificationManager sharedInstance] trackVerifiedTokenWithCompletionHandler:completionHandler];
-}
-
-+ (void)trackVerifiedTokenWithBeacons:(BOOL)beacons completionHandler:(RadarTrackTokenCompletionHandler)completionHandler {
-    [[RadarVerificationManager sharedInstance] trackVerifiedTokenWithBeacons:(BOOL)beacons completionHandler:completionHandler];
-}
-
-+ (void)startTrackingVerified:(BOOL)token interval:(NSTimeInterval)interval beacons:(BOOL)beacons {
-    [[RadarVerificationManager sharedInstance] startTrackingVerified:token interval:interval beacons:beacons];
++ (void)startTrackingVerifiedWithInterval:(NSTimeInterval)interval beacons:(BOOL)beacons {
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"startTrackingVerified()"];
+    [[RadarVerificationManager sharedInstance] startTrackingVerifiedWithInterval:interval beacons:beacons];
 }
 
 + (void)startTrackingWithOptions:(RadarTrackingOptions *)options {
@@ -336,7 +330,7 @@
                                  replayed:NO
                                   beacons:nil
                         completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user,
-                                            NSArray<RadarGeofence *> *_Nullable nearbyGeofences, RadarConfig *_Nullable config, NSString *_Nullable token) {
+                                            NSArray<RadarGeofence *> *_Nullable nearbyGeofences, RadarConfig *_Nullable config, RadarVerifiedLocationToken *_Nullable token) {
                             if (completionHandler) {
                                 [RadarUtils runOnMainThread:^{
                                     completionHandler(status, location, events, user);
@@ -1175,7 +1169,7 @@
     if (@available(iOS 15.0, *)) {
         CLLocationSourceInformation *sourceInformation = location.sourceInformation;
         if (sourceInformation) {
-            if (sourceInformation.isSimulatedBySoftware) {
+            if (sourceInformation.isSimulatedBySoftware || sourceInformation.isProducedByAccessory) {
                 dict[@"mocked"] = @(YES);
             } else {
                 dict[@"mocked"] = @(NO);

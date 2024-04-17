@@ -69,7 +69,7 @@ static NSString *const kXPlatformSDKVersion = @"radar-xPlatformSDKVersion";
 
     RadarFeatureSettings *featureSettings = [RadarSettings featureSettings];
     if (featureSettings.extendFlushReplays) {
-        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"flushReplays() from updateSesssionId"];
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"Flushing replays from updateSessionId()"];
         [[RadarReplayBuffer sharedInstance] flushReplaysWithCompletionHandler:nil completionHandler:nil];
     }
     if (timestampSeconds - sessionIdSeconds > 300) {
