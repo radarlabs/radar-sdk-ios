@@ -96,7 +96,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 
         _permissionsHelper = [RadarPermissionsHelper new];
 
-        // If not testing, set _notificationCenter to the currentNotificationCenter
+        // if not testing, set _notificationCenter to the currentNotificationCenter
         if (![[NSProcessInfo processInfo] environment][@"XCTestConfigurationFilePath"]) {
             _notificationCenter = [UNUserNotificationCenter currentNotificationCenter];
         }
@@ -787,7 +787,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
             return;
         }
 
-        // We add the 0.1 second buffer to account for the fact that the timer may fire slightly before the desired interval
+        // add a 0.1 second buffer to account for the fact that the timer may fire slightly before the desired interval
         NSTimeInterval lastSyncIntervalWithBuffer = lastSyncInterval + 0.1;
         if (lastSyncIntervalWithBuffer < options.desiredSyncInterval) {
             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug

@@ -302,12 +302,8 @@
         params[@"locationAccuracyAuthorization"] = locationAccuracyAuthorization;
     }
 
-    // NOTE: this is sent up for debugging purposes and can be seen
-    // in the locations debug page for a user
     params[@"trackingOptions"] = [options dictionaryValue];
 
-    // NOTE: this is sent up for measuring number of clients set on
-    // remote tracking options
     BOOL usingRemoteTrackingOptions = RadarSettings.tracking && RadarSettings.remoteTrackingOptions;
     params[@"usingRemoteTrackingOptions"] = @(usingRemoteTrackingOptions);
 
@@ -583,7 +579,7 @@
 
     NSMutableDictionary *params = [NSMutableDictionary new];
     params[@"userId"] = [RadarSettings userId];
-    // don't pass the externalId like createTrip() does.
+    // don't pass the externalId like createTrip() does
 
     if (status != RadarTripStatusUnknown) {
         params[@"status"] = [Radar stringForTripStatus:status];
