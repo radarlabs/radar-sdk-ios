@@ -190,7 +190,7 @@ typedef void (^_Nullable RadarTrackCompletionHandler)(RadarStatus status, CLLoca
 typedef void (^_Nullable RadarFlushReplaysCompletionHandler)(RadarStatus status, NSDictionary *_Nullable res);
 
 /**
- Called when an track verified request succeeds, fails, or times out.
+ Called when a track verified request succeeds, fails, or times out.
 
  Receives the request status and, if successful, the user's verified location. Verify the token server-side using your secret key.
 

@@ -160,15 +160,15 @@
         weakTrackVerified = trackVerified;
         
         [self trackVerifiedWithBeacons:beacons completionHandler:^(RadarStatus status, RadarVerifiedLocationToken *_Nullable token) {
+            NSTimeInterval minInterval = interval;
             if (token) {
                 NSTimeInterval expiresIn = [token.expiresAt timeIntervalSinceNow];
-                
-                if (expiresIn < interval) {
-                    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(expiresIn * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                        weakTrackVerified();
-                    });
-                }
+                minInterval = MIN(expiresIn, minInterval);
             }
+            
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(minInterval * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                weakTrackVerified();
+            });
         }];
     };
     
@@ -190,16 +190,6 @@
 
             nw_path_monitor_start(_monitor);
         }
-    }
-
-    if (!self.timer) {
-        self.timer = [NSTimer scheduledTimerWithTimeInterval:interval
-                                                 repeats:YES
-                                                       block:^(NSTimer *_Nonnull timer) {
-            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Timer fired"];
-            
-            trackVerified();
-        }];
     }
 
     trackVerified();
