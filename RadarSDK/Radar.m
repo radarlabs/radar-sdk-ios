@@ -527,13 +527,15 @@
                                                     status:status
                                          completionHandler:^(RadarStatus status, RadarTrip *trip, NSArray<RadarEvent *> *events) {
                                              if (status == RadarStatusSuccess) {
-                                                RadarTripOptions *newTripOptions = [[RadarTripOptions alloc] initWithExternalId:trip.externalId
-                                                                                            destinationGeofenceTag:trip.destinationGeofenceTag
-                                                                                    destinationGeofenceExternalId:trip.destinationGeofenceExternalId
-                                                                                                scheduledArrivalAt:trip.scheduledArrivalAt
-                                                                                                            metadata:trip.metadata
-                                                                                                                mode:trip.mode];
-                                                 [RadarSettings setTripOptions:newTripOptions];
+                                                if (trip != nil) {
+                                                    RadarTripOptions *newTripOptions = [[RadarTripOptions alloc] initWithExternalId:trip.externalId
+                                                                                                destinationGeofenceTag:trip.destinationGeofenceTag
+                                                                                        destinationGeofenceExternalId:trip.destinationGeofenceExternalId
+                                                                                                    scheduledArrivalAt:trip.scheduledArrivalAt
+                                                                                                                metadata:trip.metadata
+                                                                                                                    mode:trip.mode];
+                                                    [RadarSettings setTripOptions:newTripOptions];
+                                                }
 
                                                  // flush location update to generate events
                                                  [[RadarLocationManager sharedInstance] getLocationWithCompletionHandler:nil];
