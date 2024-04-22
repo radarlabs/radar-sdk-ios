@@ -1,0 +1,98 @@
+{
+    "meta": {
+        "code": 200
+    },
+    "trip": {
+        "_id": "6626a57c55032bd20beb67c2",
+        "createdAt": "2024-04-22T17:59:24.068Z",
+        "updatedAt": "2024-04-22T17:59:24.068Z",
+        "live": false,
+        "externalId": "1713808763770-user-1",
+        "userId": "user-1",
+        "mode": "car",
+        "status": "started",
+        "startedAt": "2024-04-22T17:59:24.068Z",
+        "destinationGeofenceTag": "stores",
+        "destinationGeofenceExternalId": "841-broadway",
+        "destinationLocation": {
+            "type": "Point",
+            "coordinates": [
+                -73.98012650276246,
+                40.739020572238076
+            ]
+        },
+        "metadata": {
+            "radar:approachingNotificationText": "You're approaching your destination",
+            "radar:arrivalNotificationText": "You've arrived at your destination"
+        },
+        "user": {
+            "_id": "6626a559f029d3f2ac5f60bd",
+            "userId": "user-1",
+            "deviceId": "4911AE87-828C-4DF4-AB19-E8890265D41E",
+            "metadata": {
+                "waypointVersion": "1.1.4.1"
+            }
+        },
+        "locations": []
+    },
+    "user": {
+        "_id": "6626a559f029d3f2ac5f60bd",
+        "userId": "user-1",
+        "deviceId": "4911AE87-828C-4DF4-AB19-E8890265D41E",
+        "metadata": {
+            "waypointVersion": "1.1.4.1"
+        }
+    },
+    "events": [
+        {
+            "createdAt": "2024-04-22T17:59:24.068Z",
+            "live": false,
+            "type": "user.started_trip",
+            "confidence": 3,
+            "actualCreatedAt": "2024-04-22T17:59:24.550Z",
+            "user": {
+                "_id": "6626a559f029d3f2ac5f60bd",
+                "userId": "user-1",
+                "deviceId": "4911AE87-828C-4DF4-AB19-E8890265D41E",
+                "metadata": {
+                    "waypointVersion": "1.1.4.1"
+                }
+            },
+            "location": {
+                "type": "Point",
+                "coordinates": [
+                    -73.99095526998401,
+                    40.734282251604114
+                ]
+            },
+            "locationAccuracy": 35,
+            "trip": {
+                "_id": "6626a57c55032bd20beb67c2",
+                "createdAt": "2024-04-22T17:59:24.068Z",
+                "updatedAt": "2024-04-22T17:59:24.068Z",
+                "live": false,
+                "externalId": "1713808763770-user-1",
+                "userId": "user-1",
+                "mode": "car",
+                "status": "started",
+                "startedAt": "2024-04-22T17:59:24.068Z",
+                "destinationGeofenceTag": "tag",
+                "destinationGeofenceExternalId": "841-broadway-triple (2)",
+                "destinationLocation": {
+                    "type": "Point",
+                    "coordinates": [
+                        -73.98012650276246,
+                        40.739020572238076
+                    ]
+                },
+                "metadata": {
+                    "radar:approachingNotificationText": "You're approaching your destination",
+                    "radar:arrivalNotificationText": "You've arrived at your destination"
+                },
+                "locations": []
+            },
+            "_id": "6626a57c55032bd20beb67d4"
+        }
+    ]
+}
+
