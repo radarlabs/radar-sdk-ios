@@ -7,13 +7,13 @@
         "createdAt": "2024-04-22T17:59:24.068Z",
         "updatedAt": "2024-04-22T17:59:24.068Z",
         "live": false,
-        "externalId": "1713808763770-user-1",
+        "externalId": "tripExternalId",
         "userId": "user-1",
-        "mode": "car",
+        "mode": "foot",
         "status": "started",
         "startedAt": "2024-04-22T17:59:24.068Z",
-        "destinationGeofenceTag": "stores",
-        "destinationGeofenceExternalId": "841-broadway",
+        "destinationGeofenceTag": "tripDestinationGeofenceTag",
+        "destinationGeofenceExternalId": "tripDestinationExternalId",
         "destinationLocation": {
             "type": "Point",
             "coordinates": [
@@ -22,16 +22,15 @@
             ]
         },
         "metadata": {
-            "radar:approachingNotificationText": "You're approaching your destination",
-            "radar:arrivalNotificationText": "You've arrived at your destination"
+            "foo": "bar",
+            "baz": true,
+            "qux": 1
         },
         "user": {
             "_id": "6626a559f029d3f2ac5f60bd",
             "userId": "user-1",
             "deviceId": "4911AE87-828C-4DF4-AB19-E8890265D41E",
-            "metadata": {
-                "waypointVersion": "1.1.4.1"
-            }
+            "metadata": {}
         },
         "locations": []
     },
@@ -39,9 +38,7 @@
         "_id": "6626a559f029d3f2ac5f60bd",
         "userId": "user-1",
         "deviceId": "4911AE87-828C-4DF4-AB19-E8890265D41E",
-        "metadata": {
-            "waypointVersion": "1.1.4.1"
-        }
+        "metadata": {}
     },
     "events": [
         {
@@ -54,9 +51,7 @@
                 "_id": "6626a559f029d3f2ac5f60bd",
                 "userId": "user-1",
                 "deviceId": "4911AE87-828C-4DF4-AB19-E8890265D41E",
-                "metadata": {
-                    "waypointVersion": "1.1.4.1"
-                }
+                "metadata": {}
             },
             "location": {
                 "type": "Point",
@@ -76,8 +71,8 @@
                 "mode": "car",
                 "status": "started",
                 "startedAt": "2024-04-22T17:59:24.068Z",
-                "destinationGeofenceTag": "tag",
-                "destinationGeofenceExternalId": "841-broadway-triple (2)",
+                "destinationGeofenceTag": "tripDestinationGeofenceTag",
+                "destinationGeofenceExternalId": "tripDestinationExternalId",
                 "destinationLocation": {
                     "type": "Point",
                     "coordinates": [

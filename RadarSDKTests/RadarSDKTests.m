@@ -716,17 +716,17 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 }
 
 - (void)test_Radar_startTrip {
-    // here need to mock
     self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusAuthorizedWhenInUse;
     self.apiHelperMock.mockStatus = RadarStatusSuccess;
     [self.apiHelperMock setMockResponse:[RadarTestUtils jsonDictionaryFromResource:@"create_trip"] forMethod:@"https://api.radar.io/v1/trips"];
     RadarTripOptions *options = [[RadarTripOptions alloc] initWithExternalId:@"tripExternalId"
                                                       destinationGeofenceTag:@"tripDestinationGeofenceTag"
-                                               destinationGeofenceExternalId:@"tripDestinationExternalId"];
-    options.metadata = @{@"foo": @"bar", @"baz": @YES, @"qux": @1};
-    options.mode = RadarRouteModeFoot;
+                                               destinationGeofenceExternalId:@"tripDestinationExternalId"
+                                               scheduledArrivalAt:nil
+                                                  metadata:@{@"foo": @"bar", @"baz": @YES, @"qux": @1}
+                                                        mode:RadarRouteModeFoot];
     [Radar startTripWithOptions:options];
-    XCTAssertEqualObjects(options, [Radar getTripOptions]);
+    XCTAssertTrue([[Radar getTripOptions] isEqual:options]);
 }
 
 - (void)test_Radar_completeTrip {
@@ -740,11 +740,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 }
 
 - (void)test_Radar_startTripWithTrackingOptionsWhenTrackingIsInProgress {
-    // here need to mock
     self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusAuthorizedAlways;
-
-    XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
-
     [RadarSettings removePreviousTrackingOptions];
     RadarTrackingOptions *originalTrackingOptions = RadarTrackingOptions.presetEfficient;
     [Radar startTrackingWithOptions:originalTrackingOptions];
@@ -753,6 +749,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 
     RadarTripOptions *tripOptions = [[RadarTripOptions alloc] initWithExternalId:@"testTrip" destinationGeofenceTag:@"someTag" destinationGeofenceExternalId:@"someId"];
     RadarTrackingOptions *tripTrackingOptions = RadarTrackingOptions.presetContinuous;
+    XCTestExpectation *expectation = [self expectationWithDescription:@"create_trip"];
     [Radar startTripWithOptions:tripOptions
                 trackingOptions:tripTrackingOptions
               completionHandler:^(RadarStatus status, RadarTrip *_Nullable trip, NSArray<RadarEvent *> *_Nullable events) {
@@ -772,7 +769,6 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 }
 
 - (void)test_Radar_startTripWithTrackingOptionsWhenTrackingIsNotInProgress {
-    // here need to mock
     self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusAuthorizedAlways;
     self.apiHelperMock.mockStatus = RadarStatusSuccess;
     [self.apiHelperMock setMockResponse:[RadarTestUtils jsonDictionaryFromResource:@"create_trip"] forMethod:@"https://api.radar.io/v1/trips"];
