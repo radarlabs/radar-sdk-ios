@@ -489,11 +489,13 @@
     [[RadarAPIClient sharedInstance] createTripWithOptions:tripOptions
                                          completionHandler:^(RadarStatus status, RadarTrip *trip, NSArray<RadarEvent *> *events) {
                                              if (status == RadarStatusSuccess) {
-                                                 RadarTripOptions *newTripOptions = [[RadarTripOptions alloc] initWithExternalId:trip.externalId
+                                                 if (trip != nil) {
+                                                    RadarTripOptions *newTripOptions = [[RadarTripOptions alloc] initWithExternalId:trip.externalId
                                                                                                 destinationGeofenceTag:trip.destinationGeofenceTag
                                                                                         destinationGeofenceExternalId:trip.destinationGeofenceExternalId
                                                                                                     scheduledArrivalAt:trip.scheduledArrivalAt];
-                                                 [RadarSettings setTripOptions:newTripOptions];
+                                                    [RadarSettings setTripOptions:newTripOptions];
+                                                 }
 
                                                  if (Radar.isTracking) {
                                                      [RadarSettings setPreviousTrackingOptions:[RadarSettings trackingOptions]];
