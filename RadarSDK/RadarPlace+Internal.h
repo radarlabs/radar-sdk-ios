@@ -18,6 +18,7 @@
                             location:(RadarCoordinate *_Nonnull)location
                                group:(NSString *_Nonnull)group
                             metadata:(NSDictionary *_Nullable)metadata;
+                             address:(RadarAddress *_Nullable)address;
 - (instancetype _Nullable)initWithObject:(id _Nonnull)object;
 
 @end
