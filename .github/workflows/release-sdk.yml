@@ -19,9 +19,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      # Do not merge, skipping test while testing CI
-      # - name: Build, test, and analyze
-      #  run: xcodebuild clean build analyze test -workspace Example/Example.xcodeproj/project.xcworkspace -scheme RadarSDK -destination "platform=iOS Simulator,name=iPhone 15 Pro" | xcpretty
+      - name: Build, test, and analyze
+        run: xcodebuild clean build analyze test -workspace Example/Example.xcodeproj/project.xcworkspace -scheme RadarSDK -destination "platform=iOS Simulator,name=iPhone 15 Pro" | xcpretty
       
       - name: Build archive for iPhone simulator
         run: xcodebuild archive -scheme RadarSDK -archivePath "RadarSDK-iphonesimulator.xcarchive" -sdk iphonesimulator SKIP_INSTALL=NO CODE_SIGN_IDENTITY= CODE_SIGNING_REQUIRED=NO
@@ -46,7 +45,7 @@ jobs:
         run: echo "::set-output name=checksum::$(shasum -a 256 RadarSDK.xcframework.zip | cut -d ' ' -f 1)"
 
       - name: Repository Dispatch
-        # if: ${{ !github.event.release.prerelease }}
+        if: ${{ !github.event.release.prerelease }}
         uses: peter-evans/repository-dispatch@v3
         with:
           token: ${{ secrets.SPM_REPO_KEY }}
