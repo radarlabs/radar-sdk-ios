@@ -850,7 +850,7 @@ Gets the device's current location, then searches for geofences near that locati
 
  @see https://radar.com/documentation/api#search-geofences
  */
-+ (void)searchGeofences:(RadarSearchGeofencesCompletionHandler)completionHandler NS_SWIFT_NAME(searchGeofences(tags:metadata:completionHandler:));
++ (void)searchGeofences:(RadarSearchGeofencesCompletionHandler)completionHandler NS_SWIFT_NAME(searchGeofences(completionHandler:));
 
 /**
  Searches for geofences near a location, sorted by distance.
