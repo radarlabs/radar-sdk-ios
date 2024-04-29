@@ -13,7 +13,8 @@
 - (instancetype _Nullable)initWithUser:(RadarUser *_Nonnull)user
                                 events:(NSArray<RadarEvent *> *_Nonnull)events
                                  token:(NSString *_Nonnull)token
-                             expiresAt:(NSDate *_Nonnull)expiresAt;
+                             expiresAt:(NSDate *_Nonnull)expiresAt
+                             expiresIn:(NSTimeInterval)expiresIn;
 - (instancetype _Nullable)initWithObject:(id _Nonnull)object;
 
 @end

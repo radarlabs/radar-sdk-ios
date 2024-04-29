@@ -31,8 +31,12 @@
 
 @interface RadarVerificationManager ()
 
-@property (strong, nonatomic) NSTimer *timer;
+@property (assign, nonatomic) BOOL started;
+@property (strong, nonatomic) NSTimer *intervalTimer;
 @property (nonatomic, retain) nw_path_monitor_t monitor;
+@property (strong, nonatomic) RadarVerifiedLocationToken *lastToken;
+@property (assign, nonatomic) NSTimeInterval lastTokenSystemUptime;
+@property (assign, nonatomic) BOOL lastTokenBeacons;
 
 @end
 
@@ -98,6 +102,11 @@
                         if (status == RadarStatusSuccess && config != nil) {
                             [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
                         }
+                        if (token) {
+                            self.lastToken = token;
+                            self.lastTokenSystemUptime = [NSProcessInfo processInfo].systemUptime;
+                            self.lastTokenBeacons = beacons;
+                        }
                         if (completionHandler) {
                             [RadarUtils runOnMainThread:^{
                                 completionHandler(status, token);
@@ -154,6 +163,8 @@
 }
 
 - (void)startTrackingVerifiedWithInterval:(NSTimeInterval)interval beacons:(BOOL)beacons {
+    self.started = YES;
+    
     __block void (^trackVerified)(void);
     __block __weak void (^weakTrackVerified)(void);
     trackVerified = ^{
@@ -162,12 +173,13 @@
         [self trackVerifiedWithBeacons:beacons completionHandler:^(RadarStatus status, RadarVerifiedLocationToken *_Nullable token) {
             NSTimeInterval minInterval = interval;
             if (token) {
-                NSTimeInterval expiresIn = [token.expiresAt timeIntervalSinceNow];
-                minInterval = MIN(expiresIn, minInterval);
+                minInterval = MIN(token.expiresIn, minInterval);
             }
             
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(minInterval * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                weakTrackVerified();
+                if (self.started) {
+                    weakTrackVerified();
+                }
             });
         }];
     };
@@ -193,6 +205,30 @@
     }
 
     trackVerified();
+}
+
+- (void)stopTrackingVerified {
+    self.started = NO;
+    
+    if (@available(iOS 12.0, *)) {
+        if (_monitor) {
+            nw_path_monitor_cancel(_monitor);
+        }
+    }
+}
+
+- (void)getVerifiedLocationTokenWithCompletionHandler:(RadarTrackVerifiedCompletionHandler)completionHandler {
+    NSTimeInterval lastTokenElapsed = [NSProcessInfo processInfo].systemUptime - self.lastTokenSystemUptime;
+    
+    if (lastTokenElapsed < self.lastToken.expiresIn) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Last token valid | lastToken.expiresIn = %f; lastTokenElapsed = %f", self.lastToken.expiresIn, lastTokenElapsed]];
+        
+        return completionHandler(RadarStatusSuccess, self.lastToken);
+    }
+    
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Last token invalid | lastToken.expiresIn = %f; lastTokenElapsed = %f", self.lastToken.expiresIn, lastTokenElapsed]];
+    
+    [self trackVerifiedWithBeacons:self.lastTokenBeacons completionHandler:completionHandler];
 }
 
 - (void)getAttestationWithNonce:(NSString *)nonce completionHandler:(RadarVerificationCompletionHandler)completionHandler {

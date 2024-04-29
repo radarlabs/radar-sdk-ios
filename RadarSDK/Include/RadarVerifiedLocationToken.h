@@ -37,6 +37,11 @@
 @property (nullable, copy, nonatomic, readonly) NSDate *expiresAt;
 
 /**
+ The number of seconds until the token expires.
+ */
+@property (assign, nonatomic, readonly) NSTimeInterval expiresIn;
+
+/**
  A boolean indicating whether the user passed all jurisdiction and fraud detection checks.
  */
 @property (assign, nonatomic, readonly) bool passed;

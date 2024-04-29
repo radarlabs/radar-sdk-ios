@@ -38,9 +38,19 @@
     NSArray<RadarEvent *> *events;
     NSString *token;
     NSDate *expiresAt;
+    NSTimeInterval expiresIn = 0;
     
     id userObj = dict[@"user"];
-    user = [[RadarUser alloc] initWithObject:userObj];
+    if (userObj && [userObj isKindOfClass:[NSDictionary class]]) {
+        user = [[RadarUser alloc] initWithObject:userObj];
+        NSDictionary *userDict = (NSDictionary *)userObj;
+        id actualUpdatedAtObj = userDict[@"actualUpdatedAt"];
+        if (actualUpdatedAtObj && [actualUpdatedAtObj isKindOfClass:[NSString class]]) {
+            NSString *actualUpdatedAtStr = (NSString *)actualUpdatedAtObj;
+            NSDate *actualUpdatedAt = [RadarUtils.isoDateFormatter dateFromString:actualUpdatedAtStr];
+            expiresIn = [expiresAt timeIntervalSinceDate:actualUpdatedAt];
+        }
+    }
     
     id eventsObj = dict[@"events"];
     if (eventsObj && [eventsObj isKindOfClass:[NSArray class]]) {

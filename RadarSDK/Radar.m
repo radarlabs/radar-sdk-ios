@@ -259,6 +259,20 @@
     [[RadarVerificationManager sharedInstance] startTrackingVerifiedWithInterval:interval beacons:beacons];
 }
 
++ (void)stopTrackingVerified {
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"stopTrackingVerified()"];
+    [[RadarVerificationManager sharedInstance] stopTrackingVerified];
+}
+
++ (void)getLastVerifiedLocationToken:(RadarTrackVerifiedCompletionHandler)completionHandler {
+    RadarVerifiedLocationToken *token = [RadarState getLastVerifiedLocationToken];
+    BOOL beacons = [RadarState getLastVerifiedLocationBeacons];
+    if (token) {
+        return completionHandler(RadarStatusSuccess, token);
+    }
+    [self trackVerifiedWithBeacons:beacons completionHandler:completionHandler];
+}
+
 + (void)startTrackingWithOptions:(RadarTrackingOptions *)options {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"startTracking()"];
     [[RadarLocationManager sharedInstance] startTrackingWithOptions:options];

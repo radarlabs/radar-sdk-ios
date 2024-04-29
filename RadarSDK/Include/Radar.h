@@ -477,6 +477,22 @@ typedef void (^_Nonnull RadarLogConversionCompletionHandler)(RadarStatus status,
 + (void)startTrackingVerifiedWithInterval:(NSTimeInterval)interval beacons:(BOOL)beacons NS_SWIFT_NAME(startTrackingVerified(interval:beacons:));
 
 /**
+ Stops tracking the user's location with device integrity information for location verification use cases.
+ */
++ (void)stopTrackingVerified NS_SWIFT_NAME(stopTrackingVerified());
+
+/**
+ Returns the user's last verified location token if still valid, or requests a fresh token if not.
+
+ @warning Note that you must configure SSL pinning before calling this method.
+
+ @param completionHandler An optional completion handler.
+
+ @see https://radar.com/documentation/fraud
+ */
++ (void)getLastVerifiedLocationToken:(RadarTrackVerifiedCompletionHandler _Nullable)completionHandler NS_SWIFT_NAME(getLastVerifiedLocationToken(completionHandler:));
+
+/**
  Starts tracking the user's location in the background with configurable tracking options.
 
  @param options Configurable tracking options.
