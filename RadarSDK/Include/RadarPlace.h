@@ -7,6 +7,7 @@
 
 #import "RadarChain.h"
 #import "RadarCoordinate.h"
+#import "RadarAddress.h"
 #import <CoreLocation/CoreLocation.h>
 #import <Foundation/Foundation.h>
 
@@ -60,6 +61,10 @@
  */
 @property (nullable, strong, nonatomic, readonly) NSDictionary *metadata;
 
+/**
+The address of the place.
+*/
+@property (nullable, strong, nonatomic, readonly) RadarAddress *address;
 /**
  Returns a boolean indicating whether the place is part of the specified chain.
 

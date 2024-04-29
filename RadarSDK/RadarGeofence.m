@@ -125,58 +125,63 @@
         if ([type isEqualToString:@"circle"]) {
             geometry = [[RadarCircleGeometry alloc] initWithCenter:center radius:radius];
         } else if ([type isEqualToString:@"polygon"] || [type isEqualToString:@"Polygon"] || [type isEqualToString:@"isochrone"]) {
-            id geometryObj = dict[@"geometry"];
-
-            if (![geometryObj isKindOfClass:[NSDictionary class]]) {
-                return nil;
-            }
-
-            id coordinatesObj = ((NSDictionary *)geometryObj)[@"coordinates"];
-            if (![coordinatesObj isKindOfClass:[NSArray class]]) {
-                return nil;
-            }
-
-            NSArray *coordinatesArr = (NSArray *)coordinatesObj;
-            if (coordinatesArr.count != 1) {
-                return nil;
-            }
-
-            id polygonObj = coordinatesArr[0];
-            if (![polygonObj isKindOfClass:[NSArray class]]) {
-                return nil;
-            }
-
-            NSArray *polygonArr = (NSArray *)polygonObj;
-            NSMutableArray<RadarCoordinate *> *mutablePolygonCoordinates = [NSMutableArray arrayWithCapacity:polygonArr.count];
-            for (uint i = 0; i < polygonArr.count; i++) {
-                id polygonCoordinatesObj = polygonArr[i];
-                if (![polygonCoordinatesObj isKindOfClass:[NSArray class]]) {
-                    return nil;
-                }
-
-                NSArray *polygonCoordinatesArr = (NSArray *)polygonCoordinatesObj;
-                if (polygonCoordinatesArr.count != 2) {
-                    return nil;
-                }
-
-                id polygonCoordinateLongitudeObj = polygonCoordinatesArr[0];
-                id polygonCoordinateLatitudeObj = polygonCoordinatesArr[1];
-                if (![polygonCoordinateLongitudeObj isKindOfClass:[NSNumber class]] || ![polygonCoordinateLatitudeObj isKindOfClass:[NSNumber class]]) {
-                    return nil;
-                }
-
-                float polygonCoordinateLongitude = [((NSNumber *)polygonCoordinateLongitudeObj) floatValue];
-                float polygonCoordinateLatitude = [((NSNumber *)polygonCoordinateLatitudeObj) floatValue];
-
-                CLLocationCoordinate2D polygonCoordinate = CLLocationCoordinate2DMake(polygonCoordinateLatitude, polygonCoordinateLongitude);
-                mutablePolygonCoordinates[i] = [[RadarCoordinate alloc] initWithCoordinate:polygonCoordinate];
-            }
-
-            geometry = [[RadarPolygonGeometry alloc] initWithCoordinates:mutablePolygonCoordinates center:center radius:radius];
+            NSMutableArray<RadarCoordinate *> *mutablePolygonCoordinates = [self getPolygonCoordinates:dict]; 
+            geometry = [[RadarPolygonGeometry alloc] initWithCoordinates:mutablePolygonCoordinates center:center radius:radius];   
         }
     }
 
     return [[RadarGeofence alloc] initWithId:_id description:description tag:tag externalId:externalId metadata:metadata geometry:geometry];
+}
+
+- (NSMutableArray<RadarCoordinate *> *)getPolygonCoordinates:(NSDictionary *)dict {
+    id geometryObj = dict[@"geometry"];
+
+    if (![geometryObj isKindOfClass:[NSDictionary class]]) {
+        return nil;
+    }
+
+    id coordinatesObj = ((NSDictionary *)geometryObj)[@"coordinates"];
+    if (![coordinatesObj isKindOfClass:[NSArray class]]) {
+        return nil;
+    }
+
+    NSArray *coordinatesArr = (NSArray *)coordinatesObj;
+    if (coordinatesArr.count != 1) {
+        return nil;
+    }
+
+    id polygonObj = coordinatesArr[0];
+    if (![polygonObj isKindOfClass:[NSArray class]]) {
+        return nil;
+    }
+
+    NSArray *polygonArr = (NSArray *)polygonObj;
+    NSMutableArray<RadarCoordinate *> *mutablePolygonCoordinates = [NSMutableArray arrayWithCapacity:polygonArr.count];
+    for (uint i = 0; i < polygonArr.count; i++) {
+        id polygonCoordinatesObj = polygonArr[i];
+        if (![polygonCoordinatesObj isKindOfClass:[NSArray class]]) {
+            return nil;
+        }
+
+        NSArray *polygonCoordinatesArr = (NSArray *)polygonCoordinatesObj;
+        if (polygonCoordinatesArr.count != 2) {
+            return nil;
+        }
+
+        id polygonCoordinateLongitudeObj = polygonCoordinatesArr[0];
+        id polygonCoordinateLatitudeObj = polygonCoordinatesArr[1];
+        if (![polygonCoordinateLongitudeObj isKindOfClass:[NSNumber class]] || ![polygonCoordinateLatitudeObj isKindOfClass:[NSNumber class]]) {
+            return nil;
+        }
+
+        float polygonCoordinateLongitude = [((NSNumber *)polygonCoordinateLongitudeObj) floatValue];
+        float polygonCoordinateLatitude = [((NSNumber *)polygonCoordinateLatitudeObj) floatValue];
+
+        CLLocationCoordinate2D polygonCoordinate = CLLocationCoordinate2DMake(polygonCoordinateLatitude, polygonCoordinateLongitude);
+        mutablePolygonCoordinates[i] = [[RadarCoordinate alloc] initWithCoordinate:polygonCoordinate];
+    }
+
+    return mutablePolygonCoordinates;
 }
 
 + (NSArray<NSDictionary *> *)arrayForGeofences:(NSArray<RadarGeofence *> *)geofences {
@@ -216,7 +221,9 @@
         RadarPolygonGeometry *polygonGeometry = (RadarPolygonGeometry *)self.geometry;
         [dict setValue:@(polygonGeometry.radius) forKey:@"geometryRadius"];
         [dict setValue:[polygonGeometry.center dictionaryValue] forKey:@"geometryCenter"];
-        [dict setValue:@[[RadarGeofence arrayForGeometryCoordinates:polygonGeometry._coordinates]] forKey:@"coordinates"];
+        if (polygonGeometry._coordinates) {
+            [dict setValue:[RadarGeofence arrayForGeometryCoordinates:polygonGeometry._coordinates] forKey:@"coordinates"];
+        }
         [dict setValue:@"Polygon" forKey:@"type"];
     }
 

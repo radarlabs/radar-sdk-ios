@@ -744,17 +744,20 @@
                        tags:(NSArray *_Nullable)tags
                    metadata:(NSDictionary *_Nullable)metadata
                       limit:(int)limit
+            includeGeometry:(BOOL)includeGeometry
           completionHandler:(RadarSearchGeofencesAPICompletionHandler)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
         return completionHandler(RadarStatusErrorPublishableKey, nil, nil);
     }
 
-    int finalLimit = MIN(limit, 100);
+    int finalLimit = MIN(limit, 1000);
 
     NSMutableString *queryString = [NSMutableString new];
     [queryString appendFormat:@"near=%.06f,%.06f", near.coordinate.latitude, near.coordinate.longitude];
-    [queryString appendFormat:@"&radius=%d", radius];
+    if (radius > 0) {
+        [queryString appendFormat:@"&radius=%d", radius];
+    }
     [queryString appendFormat:@"&limit=%d", finalLimit];
     if (tags && [tags count] > 0) {
         [queryString appendFormat:@"&tags=%@", [tags componentsJoinedByString:@","]];
@@ -764,6 +767,9 @@
             [queryString appendFormat:@"&metadata[%@]=%@", key, metadata[key]];
         }
     }
+    
+    [queryString appendFormat:@"&includeGeometry=%@", includeGeometry ? @"true" : @"false"];
+    
 
     NSString *host = [RadarSettings host];
     NSString *url = [NSString stringWithFormat:@"%@/v1/search/geofences?%@", host, queryString];

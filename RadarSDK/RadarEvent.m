@@ -72,6 +72,7 @@
         _region = region;
         _beacon = beacon;
         _trip = trip;
+        _fraud = fraud;
         _alternatePlaces = alternatePlaces;
         _verifiedPlace = verifiedPlace;
         _verification = verification;
@@ -448,6 +449,10 @@
     if (self.trip) {
         NSDictionary *tripDict = [self.trip dictionaryValue];
         [dict setValue:tripDict forKey:@"trip"];
+    }
+    if (self.fraud) {
+        NSDictionary *fraudDict = [self.fraud dictionaryValue];
+        [dict setValue:fraudDict forKey:@"fraud"];
     }
     NSArray *alternatePlaces = [RadarPlace arrayForPlaces:self.alternatePlaces];
     if (alternatePlaces) {

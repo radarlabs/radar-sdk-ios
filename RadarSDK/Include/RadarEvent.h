@@ -9,6 +9,7 @@
 #import "RadarPlace.h"
 #import "RadarRegion.h"
 #import "RadarUser.h"
+#import "RadarFraud.h"
 #import <CoreLocation/CoreLocation.h>
 #import <Foundation/Foundation.h>
 
@@ -153,6 +154,11 @@ typedef NS_ENUM(NSInteger, RadarEventVerification) {
  The trip for which the event was generated. May be `nil` for non-trip events.
  */
 @property (nullable, strong, nonatomic, readonly) RadarTrip *trip;
+
+/**
+ The fraud checks for which the event was generated. May be `nil` for non-fraud events.
+ */
+@property (nullable, strong, nonatomic, readonly) RadarFraud *fraud;
 
 /**
  For place entry events, alternate place candidates. May be `nil` for non-place events.
