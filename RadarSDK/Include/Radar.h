@@ -859,8 +859,8 @@ Gets the device's current location, then searches for geofences near that locati
  @param radius The radius to search, in meters. A number between 100 and 10000. If -1 is entered, the server defaults to using unlimited radius.
  @param tags An array of tags to filter. See https://radar.com/documentation/geofences
  @param metadata A dictionary of metadata to filter. See https://radar.com/documentation/geofences
- @param limit The max number of geofences to return. A number between 1 and 1000. Recommend to be set to 100.
- @param includeGeometry A boolean indicating whether to include geometry in the response. Recommend to be set to false.
+ @param limit The max number of geofences to return. A number between 1 and 1000. Defaults to 100.
+ @param includeGeometry Include geofence geometries in the response.. Recommend to be set to false. To retrieve more than 100 results, `includeGeometries` must be set to `false`.
  @param completionHandler A completion handler.
 
  @see https://radar.com/documentation/api#search-geofences
