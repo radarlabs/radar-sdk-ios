@@ -8,6 +8,7 @@
 #import "RadarChain+Internal.h"
 #import "RadarCoordinate+Internal.h"
 #import "RadarPlace+Internal.h"
+#import "RadarAddress+Internal.h"
 
 @implementation RadarPlace
 
@@ -36,7 +37,8 @@
                                chain:(RadarChain *_Nullable)chain
                             location:(RadarCoordinate *_Nonnull)location
                                group:(NSString *_Nonnull)group
-                            metadata:(NSDictionary *)metadata {
+                            metadata:(NSDictionary *)metadata
+                             address:(RadarAddress *_Nullable)address {
     self = [super init];
     if (self) {
         __id = _id;
@@ -46,6 +48,7 @@
         _location = location;
         _group = group;
         _metadata = metadata;
+        _address = address;
     }
     return self;
 }
@@ -124,8 +127,11 @@
         metadata = (NSDictionary *)metadataObj;
     }
 
+    id addressObj = dict[@"address"];
+    RadarAddress *address = [[RadarAddress alloc] initWithObject:addressObj];
+
     if (_id && name) {
-        return [[RadarPlace alloc] initWithId:_id name:name categories:categories chain:chain location:location group:group metadata:metadata];
+        return [[RadarPlace alloc] initWithId:_id name:name categories:categories chain:chain location:location group:group metadata:metadata address:address];
     }
 
     return nil;
@@ -178,6 +184,10 @@
     [dict setValue:[self.location dictionaryValue] forKey:@"location"];
     [dict setValue:self.group forKey:@"group"];
     [dict setValue:self.metadata forKey:@"metadata"];
+    if (self.address) {
+        NSDictionary *addressDict = [self.address dictionaryValue];
+        [dict setValue:addressDict forKey:@"address"];
+    }
     return dict;
 }
 
