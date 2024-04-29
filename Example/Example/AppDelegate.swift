@@ -20,23 +20,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         locationManager.delegate = self
         self.requestLocationPermissions()
-        
-        UserDefaults.standard.setValue("https://api.radar-staging.com", forKey: "radar-host")
-        UserDefaults.standard.setValue("https://api-verified.radar-staging.com", forKey: "radar-verifiedHost")
 
         // Replace with a valid test publishable key
-        Radar.initialize(publishableKey: "org_test_pk_e6d0bb91ac41b187b84f21ba18ca4e5794401997")
+        Radar.initialize(publishableKey: "prj_test_pk_0000000000000000000000000000000000000000")
         Radar.setDelegate(self)
         Radar.setVerifiedDelegate(self)
-        
-        Radar.setLogLevel(.debug)
-        Radar.trackVerified { status, token in
-            print(token?.user?.dictionaryValue() ?? "nil user")
-            print(token?.token ?? "nil token")
-            print(token?.expiresAt ?? "nil expiresAt")
-        }
 
-        /*
         if UIApplication.shared.applicationState != .background {
             Radar.getLocation { (status, location, stopped) in
                 print("Location: status = \(Radar.stringForStatus(status)); location = \(String(describing: location))")
@@ -86,7 +75,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         let origin = CLLocation(latitude: 40.78382, longitude: -73.97536)
         let destination = CLLocation(latitude: 40.70390, longitude: -73.98670)
-        
+
         Radar.autocomplete(
             query: "brooklyn",
             near: origin,
@@ -182,7 +171,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
             print("Log Conversion: status = \(Radar.stringForStatus(status)); event = \(String(describing: event))")
         }
-         */
 
         return true
     }
@@ -256,7 +244,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         self.notify(message)
     }
 
-    func didUpdateToken(_ token: RadarVerifiedLocationToken) {
+    func didUpdateToken(_ token: String) {
         
     }
     
