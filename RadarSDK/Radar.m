@@ -729,12 +729,12 @@
                 return;
             }           
             [[RadarAPIClient sharedInstance] searchGeofencesNear:location
-                                                         radius:radius
-                                                           tags:tags
-                                                       metadata:metadata
-                                                          limit:limit
-                                                includeGeometry:includeGeometry
-                                              completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarGeofence *> *_Nullable geofences) {
+                                                          radius:radius
+                                                            tags:tags
+                                                        metadata:metadata
+                                                           limit:limit
+                                                 includeGeometry:includeGeometry
+                                               completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarGeofence *> *_Nullable geofences) {
                                                 if (completionHandler) {
                                                     [RadarUtils runOnMainThread:^{
                                                         completionHandler(status, location, geofences);
