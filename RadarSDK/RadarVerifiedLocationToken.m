@@ -16,13 +16,17 @@
 - (instancetype _Nullable)initWithUser:(RadarUser *_Nonnull)user
                                 events:(NSArray<RadarEvent *> *_Nonnull)events
                                  token:(NSString *_Nonnull)token
-                             expiresAt:(NSDate *_Nonnull)expiresAt {
+                             expiresAt:(NSDate *_Nonnull)expiresAt
+                             expiresIn:(NSTimeInterval)expiresIn
+                                passed:(BOOL)passed {
     self = [super init];
     if (self) {
         _user = user;
         _events = events;
         _token = token;
         _expiresAt = expiresAt;
+        _expiresIn = expiresIn;
+        _passed = passed;
     }
     return self;
 }
@@ -39,10 +43,12 @@
     NSString *token;
     NSDate *expiresAt;
     NSTimeInterval expiresIn = 0;
+    BOOL passed = NO;
     
     id userObj = dict[@"user"];
     if (userObj && [userObj isKindOfClass:[NSDictionary class]]) {
         user = [[RadarUser alloc] initWithObject:userObj];
+        
         NSDictionary *userDict = (NSDictionary *)userObj;
         id actualUpdatedAtObj = userDict[@"actualUpdatedAt"];
         if (actualUpdatedAtObj && [actualUpdatedAtObj isKindOfClass:[NSString class]]) {
@@ -50,6 +56,8 @@
             NSDate *actualUpdatedAt = [RadarUtils.isoDateFormatter dateFromString:actualUpdatedAtStr];
             expiresIn = [expiresAt timeIntervalSinceDate:actualUpdatedAt];
         }
+        
+        passed = user && user.fraud && user.fraud.passed && user.country && user.country.passed && user.state && user.state.passed;
     }
     
     id eventsObj = dict[@"events"];
@@ -69,7 +77,7 @@
     }
     
     if (user && events && token && expiresAt) {
-        return [[RadarVerifiedLocationToken alloc] initWithUser:user events:events token:token expiresAt:expiresAt];
+        return [[RadarVerifiedLocationToken alloc] initWithUser:user events:events token:token expiresAt:expiresAt expiresIn:expiresIn passed:passed];
     }
     
     return nil;

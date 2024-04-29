@@ -14,7 +14,8 @@
                                 events:(NSArray<RadarEvent *> *_Nonnull)events
                                  token:(NSString *_Nonnull)token
                              expiresAt:(NSDate *_Nonnull)expiresAt
-                             expiresIn:(NSTimeInterval)expiresIn;
+                             expiresIn:(NSTimeInterval)expiresIn
+                                passed:(BOOL)passed;
 - (instancetype _Nullable)initWithObject:(id _Nonnull)object;
 
 @end
