@@ -866,12 +866,12 @@ Gets the device's current location, then searches for geofences near that locati
  @see https://radar.com/documentation/api#search-geofences
  */
  + (void)searchGeofencesNear:(CLLocation *_Nullable)near
-                     radius:(int)radius
-                       tags:(NSArray<NSString *> *_Nullable)tags
-                   metadata:(NSDictionary *_Nullable)metadata
-                      limit:(int)limit
-            includeGeometry:(BOOL)includeGeometry
-          completionHandler:(RadarSearchGeofencesCompletionHandler)completionHandler NS_SWIFT_NAME(searchGeofences(near:radius:tags:metadata:limit:includeGeometry:completionHandler:));
+                      radius:(int)radius
+                        tags:(NSArray<NSString *> *_Nullable)tags
+                    metadata:(NSDictionary *_Nullable)metadata
+                       limit:(int)limit
+             includeGeometry:(BOOL)includeGeometry
+           completionHandler:(RadarSearchGeofencesCompletionHandler)completionHandler NS_SWIFT_NAME(searchGeofences(near:radius:tags:metadata:limit:includeGeometry:completionHandler:));
 
 
 /**
