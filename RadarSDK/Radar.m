@@ -718,7 +718,7 @@
             includeGeometry:(BOOL)includeGeometry
           completionHandler:(RadarSearchGeofencesCompletionHandler)completionHandler {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"searchGeofences()"];
-    if (near == nil){
+    if (near == nil) {
         [[RadarLocationManager sharedInstance] getLocationWithCompletionHandler:^(RadarStatus status, CLLocation *_Nullable location, BOOL stopped) {
             if (status != RadarStatusSuccess) {
                 if (completionHandler) {
