@@ -265,12 +265,9 @@
 }
 
 + (void)getLastVerifiedLocationToken:(RadarTrackVerifiedCompletionHandler)completionHandler {
-    RadarVerifiedLocationToken *token = [RadarState getLastVerifiedLocationToken];
-    BOOL beacons = [RadarState getLastVerifiedLocationBeacons];
-    if (token) {
-        return completionHandler(RadarStatusSuccess, token);
-    }
-    [self trackVerifiedWithBeacons:beacons completionHandler:completionHandler];
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"getLastVerifiedLocationToken()"];
+    [[RadarVerificationManager sharedInstance]
+     getVerifiedLocationTokenWithCompletionHandler:completionHandler];
 }
 
 + (void)startTrackingWithOptions:(RadarTrackingOptions *)options {
