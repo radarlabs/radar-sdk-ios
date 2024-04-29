@@ -456,6 +456,10 @@
                                 if (events.count) {
                                     [[RadarDelegateHolder sharedInstance] didReceiveEvents:events user:user];
                                 }
+                                
+                                if (token) {
+                                    [[RadarDelegateHolder sharedInstance] didUpdateToken:token];
+                                }
 
                                 return completionHandler(RadarStatusSuccess, res, events, user, nearbyGeofences, config, token);
                             }

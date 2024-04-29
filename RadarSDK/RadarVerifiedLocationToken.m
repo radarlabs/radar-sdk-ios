@@ -45,8 +45,6 @@
     id eventsObj = dict[@"events"];
     if (eventsObj && [eventsObj isKindOfClass:[NSArray class]]) {
         events = [RadarEvent eventsFromObject:eventsObj];
-    } else {
-        events = @[];
     }
     
     id tokenObj = dict[@"token"];
