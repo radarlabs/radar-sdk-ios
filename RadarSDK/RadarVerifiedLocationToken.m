@@ -45,11 +45,13 @@
     id eventsObj = dict[@"events"];
     if (eventsObj && [eventsObj isKindOfClass:[NSArray class]]) {
         events = [RadarEvent eventsFromObject:eventsObj];
+    } else {
+        events = @[];
     }
     
     id tokenObj = dict[@"token"];
     if (tokenObj && [tokenObj isKindOfClass:[NSString class]]) {
-        token = (NSString *)token;
+        token = (NSString *)tokenObj;
     }
     
     id expiresAtObj = dict[@"expiresAt"];

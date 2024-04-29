@@ -36,6 +36,11 @@
  */
 @property (nullable, copy, nonatomic, readonly) NSDate *expiresAt;
 
+/**
+ A boolean indicating whether the user passed all jurisdiction and fraud detection checks.
+ */
+@property (assign, nonatomic, readonly) bool passed;
+
 - (NSDictionary *_Nonnull)dictionaryValue;
 
 @end
