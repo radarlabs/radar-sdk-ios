@@ -846,16 +846,11 @@ logConversionWithNotification
 
 /**
 Gets the device's current location, then searches for geofences near that location, sorted by distance.
-
- @param tags An array of tags to filter. See https://radar.com/documentation/geofences
- @param metadata A dictionary of metadata to filter. See https://radar.com/documentation/geofences
  @param completionHandler A completion handler.
 
  @see https://radar.com/documentation/api#search-geofences
  */
-+ (void)searchGeofences:(NSArray<NSString *> *_Nullable)tags
-               metadata:(NSDictionary *_Nullable)metadata
-      completionHandler:(RadarSearchGeofencesCompletionHandler)completionHandler NS_SWIFT_NAME(searchGeofences(tags:metadata:completionHandler:));
++ (void)searchGeofences:(RadarSearchGeofencesCompletionHandler)completionHandler NS_SWIFT_NAME(searchGeofences(tags:metadata:completionHandler:));
 
 /**
  Searches for geofences near a location, sorted by distance.

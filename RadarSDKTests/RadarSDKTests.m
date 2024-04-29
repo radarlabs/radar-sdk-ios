@@ -1105,9 +1105,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 
     XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
 
-    [Radar searchGeofences:@[@"store"]
-                  metadata:@{@"foo": @"bar"}
-         completionHandler:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarGeofence *> *_Nullable geofences) {
+    [Radar searchGeofences:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarGeofence *> *_Nullable geofences) {
                        XCTAssertEqual(status, RadarStatusSuccess);
                        XCTAssertNotNil(location);
                        AssertGeofencesOk(geofences);

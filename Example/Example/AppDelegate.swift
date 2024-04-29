@@ -57,10 +57,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             print("Search places: status = \(Radar.stringForStatus(status)); places = \(String(describing: places))")
         }
 
-        Radar.searchGeofences(
-            tags: ["store"],
-            metadata: nil
-        ) { (status, location, geofences) in
+        Radar.searchGeofences() { (status, location, geofences) in
             print("Search geofences: status = \(Radar.stringForStatus(status)); geofences = \(String(describing: geofences))")
         }
 

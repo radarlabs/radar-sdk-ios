@@ -706,10 +706,8 @@
                                     }];
 }
 
-+ (void)searchGeofences:(NSArray<NSString *> *_Nullable)tags
-               metadata:(NSDictionary *_Nullable)metadata
-      completionHandler:(RadarSearchGeofencesCompletionHandler)completionHandler {
-    [Radar searchGeofencesNear: nil radius:-1 tags:tags metadata:metadata limit:100 includeGeometry:false completionHandler:completionHandler];
++ (void)searchGeofences:(RadarSearchGeofencesCompletionHandler)completionHandler {
+    [Radar searchGeofencesNear: nil radius:-1 tags:nil metadata:nil limit:100 includeGeometry:false completionHandler:completionHandler];
 }
 
 + (void)searchGeofencesNear:(CLLocation *_Nullable)near
