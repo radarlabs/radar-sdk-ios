@@ -757,10 +757,6 @@
                                             }
                                        }];
     }
-    
-
-    
-
 }
 
 + (void)autocompleteQuery:(NSString *_Nonnull)query
