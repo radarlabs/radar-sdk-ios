@@ -764,7 +764,7 @@
         return completionHandler(RadarStatusErrorPublishableKey, nil, nil);
     }
 
-    int finalLimit = MIN(limit, 100);
+    int finalLimit = MIN(limit, 1000);
 
     NSMutableString *queryString = [NSMutableString new];
     [queryString appendFormat:@"near=%.06f,%.06f", near.coordinate.latitude, near.coordinate.longitude];
