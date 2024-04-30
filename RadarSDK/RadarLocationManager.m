@@ -871,7 +871,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                                      completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user,
                                                          NSArray<RadarGeofence *> *_Nullable nearbyGeofences, RadarConfig *_Nullable config, NSString *_Nullable token) {
                                          self.sending = NO;
-                                         if (status != RadarStatusSuccess) {
+                                         if (status != RadarStatusSuccess || !config) {
                                             return;
                                          }
 
