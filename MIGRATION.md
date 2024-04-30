@@ -1,7 +1,7 @@
 # Migration guides
 
 ## 3.9.x to 3.10.x
-- The `searchGeofence` methods have been changed to `Radar.searchGeofences:(completionHandler)` and `Radar.searchGeofences(near:radius:tags:metadata:limit:includeGeometry:completionHandler)`. Use `includeGeometry` to include full geometry of the geofence. Set `radius` to `-1` to search for geofences without radius limit. 
+- The `searchGeofence` methods have been changed to `Radar.searchGeofences:(completionHandler)` and `Radar.searchGeofences(near:radius:tags:metadata:limit:includeGeometry:completionHandler)`. Use `includeGeometry` to include full geometry of the geofence. Set `radius` to `-1` to search for geofences without a radius limit. 
 
 ## 3.8.x to 3.9.0
 - The `Radar.autocomplete(query:near:layers:limit:country:expandUnits:completionHandler:)` method is now `Radar.autocomplete(query:near:layers:limit:country:mailable:completionHandler:)`.
