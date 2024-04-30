@@ -52,6 +52,8 @@ jobs:
           BODY_JSON=$(printf '%s' "$BODY" | jq -R -s -c .)
           PAYLOAD=$(jq -n --arg body "$BODY_JSON" --arg release "${{ github.event.release.tag_name }}" --arg checksum "${{ steps.checksum.outputs.checksum }}" --arg url "${{ github.event.release.html_url }}" '{release: $release, checksum: $checksum, url: $url, body: $body}')
           echo "::set-output name=payload::$PAYLOAD"
+      - name: Print JSON payload
+        run: echo "${{ steps.prepare_payload.outputs.payload }}"
 
       - name: Repository Dispatch
         # if: ${{ !github.event.release.prerelease }}
@@ -60,7 +62,7 @@ jobs:
           token: ${{ secrets.SPM_REPO_KEY }}
           repository: radarlabs/radar-sdk-ios-spm
           event-type: update-xcframework
-          client-payload: ${{ steps.prepare_payload.outputs.payload }}
+          client-payload: "${{ steps.prepare_payload.outputs.payload }}"
 
       # Lint and deploy the spec to the CocoaPods trunk
       - uses: michaelhenry/deploy-to-cocoapods-github-action@1.0.10
