@@ -845,40 +845,34 @@ logConversionWithNotification
        completionHandler:(RadarSearchPlacesCompletionHandler)completionHandler NS_SWIFT_NAME(searchPlaces(near:radius:chains:chainMetadata:categories:groups:limit:completionHandler:));
 
 /**
- Gets the device's current location, then searches for geofences near that location, sorted by distance.
-
- @param radius The radius to search, in meters. A number between 100 and 10000.
- @param tags An array of tags to filter. See https://radar.com/documentation/geofences
- @param metadata A dictionary of metadata to filter. See https://radar.com/documentation/geofences
- @param limit The max number of geofences to return. A number between 1 and 100.
+Gets the device's current location, then searches for geofences near that location, sorted by distance.
  @param completionHandler A completion handler.
 
  @see https://radar.com/documentation/api#search-geofences
  */
-+ (void)searchGeofencesWithRadius:(int)radius
-                             tags:(NSArray<NSString *> *_Nullable)tags
-                         metadata:(NSDictionary *_Nullable)metadata
-                            limit:(int)limit
-                completionHandler:(RadarSearchGeofencesCompletionHandler)completionHandler NS_SWIFT_NAME(searchGeofences(radius:tags:metadata:limit:completionHandler:));
++ (void)searchGeofences:(RadarSearchGeofencesCompletionHandler)completionHandler NS_SWIFT_NAME(searchGeofences(completionHandler:));
 
 /**
  Searches for geofences near a location, sorted by distance.
 
- @param near The location to search.
- @param radius The radius to search, in meters. A number between 100 and 10000.
+ @param near The location to search. Use null to search near the device's current location.
+ @param radius The radius to search, in meters. A number between 100 and 10000. If -1 is entered, the server defaults to using unlimited radius.
  @param tags An array of tags to filter. See https://radar.com/documentation/geofences
  @param metadata A dictionary of metadata to filter. See https://radar.com/documentation/geofences
- @param limit The max number of geofences to return. A number between 1 and 100.
+ @param limit The max number of geofences to return. A number between 1 and 1000. Defaults to 100.
+ @param includeGeometry Include geofence geometries in the response. Recommended to be set to false in less you specifically need the geometries. To retrieve more than 100 results, `includeGeometries` must be set to `false`.
  @param completionHandler A completion handler.
 
  @see https://radar.com/documentation/api#search-geofences
  */
-+ (void)searchGeofencesNear:(CLLocation *)near
-                     radius:(int)radius
-                       tags:(NSArray<NSString *> *_Nullable)tags
-                   metadata:(NSDictionary *_Nullable)metadata
-                      limit:(int)limit
-          completionHandler:(RadarSearchGeofencesCompletionHandler)completionHandler NS_SWIFT_NAME(searchGeofences(near:radius:tags:metadata:limit:completionHandler:));
+ + (void)searchGeofencesNear:(CLLocation *_Nullable)near
+                      radius:(int)radius
+                        tags:(NSArray<NSString *> *_Nullable)tags
+                    metadata:(NSDictionary *_Nullable)metadata
+                       limit:(int)limit
+             includeGeometry:(BOOL)includeGeometry
+           completionHandler:(RadarSearchGeofencesCompletionHandler)completionHandler NS_SWIFT_NAME(searchGeofences(near:radius:tags:metadata:limit:includeGeometry:completionHandler:));
+
 
 /**
  @deprecated Autocompletes partial addresses and place names, sorted by relevance.
