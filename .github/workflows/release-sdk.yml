@@ -47,7 +47,7 @@ jobs:
       - name: Prepare JSON payload
         id: prepare_payload
         run: |
-          BODY=$(jq -n --arg body "${{ github.event.release.body }}" --arg release "${{ github.event.release.tag_name }}" --arg checksum "${{ steps.checksum.outputs.checksum }}" --arg url "${{ github.event.release.html_url }}" '{release: $release, checksum: $checksum, url: $url, body: $body}')
+          BODY=$(jq -n --arg body "${{ github.event.release.body | @json }}" --arg release "${{ github.event.release.tag_name }}" --arg checksum "${{ steps.checksum.outputs.checksum }}" --arg url "${{ github.event.release.html_url }}" '{release: $release, checksum: $checksum, url: $url, body: $body}')
           echo "::set-output name=payload::$BODY"
 
       - name: Repository Dispatch
