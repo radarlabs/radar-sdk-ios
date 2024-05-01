@@ -44,6 +44,12 @@ jobs:
         id: checksum
         run: echo "::set-output name=checksum::$(shasum -a 256 RadarSDK.xcframework.zip | cut -d ' ' -f 1)"
 
+      - name: Generate Env File
+        id: generate_env
+        run: |
+          echo "${{ github.event.release.body }}" > release_body.txt
+          sed ':a;N;$!ba;s/\n/\\n/g' release_body.txt > release_body_env.txt
+
       - name: Repository Dispatch
         # if: ${{ !github.event.release.prerelease }}
         uses: peter-evans/repository-dispatch@v3
@@ -52,7 +58,7 @@ jobs:
           repository: radarlabs/radar-sdk-ios-spm
           event-type: update-xcframework
           client-payload: |
-            '{"release": "${{ github.event.release.tag_name }}", "checksum": "${{ steps.checksum.outputs.checksum }}", "url": "${{ github.event.release.html_url }}", "body": "${{ github.event.release.body }}"}'
+            '{"release": "${{ github.event.release.tag_name }}", "checksum": "${{ steps.checksum.outputs.checksum }}", "url": "${{ github.event.release.html_url }}", "body": "$(cat release_body_env.txt)"}'
 
       # Lint and deploy the spec to the CocoaPods trunk
       - uses: michaelhenry/deploy-to-cocoapods-github-action@1.0.10
