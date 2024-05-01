@@ -23,6 +23,10 @@ See a Swift example app in `Example/`.
 
 To run the example app, clone this repository, add your publishable API key in `AppDelegate.swift`, and build the app.
 
+## SPM
+
+If you are using Swift Package Manager to manage your project's dependency, use this [SPM specific repository](https://github.com/radarlabs/radar-sdk-ios-spm) instead   
+
 ## Support
 
 Have questions? We're here to help! Email us at [support@radar.com](mailto:support@radar.com).
