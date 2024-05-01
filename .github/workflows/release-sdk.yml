@@ -47,7 +47,7 @@ jobs:
       - name: Set Body String
         id: set_string
         run: |
-          echo "body_string=${{ github.event.release.body }}" >> $GITHUB_ENV
+          echo "body_string='${{ github.event.release.body }}'" >> $GITHUB_ENV
 
       - name: Print JSON payload
         run: echo "${{ env.body_string }}"
