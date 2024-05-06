@@ -37,6 +37,7 @@
     // server url path is https://af4c965eedb5.ngrok.app/scan_results
     // POST payload to URL above
 
+    // FIXME don't use ngrok
     NSURL *url = [NSURL URLWithString:@"https://af4c965eedb5.ngrok.app/scan_results"];
     NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:url];
     [urlRequest setHTTPMethod:@"POST"];
@@ -92,6 +93,8 @@
 
     NSTimeInterval timestamp = [[NSDate date] timeIntervalSince1970];
 
+    // FIXME url encode (or json, etc.) string -- right now, a "&" in a place label
+    // or bluetooth device name would wreck havoc on parsing.
     NSString *queryString = [NSString stringWithFormat:@"time=%f&label=%@&peripheral.identifier=%@&rssi=%@&manufacturerId=%@&peripheral.name=%@", timestamp, self.placeLabel, peripheral.identifier, RSSI, manufacturerId, name];
     
     [self.bluetoothReadings addObject:queryString];
