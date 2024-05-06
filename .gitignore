@@ -12,3 +12,4 @@ docs/undocumented.json
 *.xcarchive
 IntegrationExamples
 
+**/.build/
