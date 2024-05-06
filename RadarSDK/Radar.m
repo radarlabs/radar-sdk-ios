@@ -12,6 +12,7 @@
 #import "RadarConfig.h"
 #import "RadarCoordinate+Internal.h"
 #import "RadarDelegateHolder.h"
+#import "RadarIndoorSurvey.h"
 #import "RadarLocationManager.h"
 #import "RadarLogBuffer.h"
 #import "RadarLogger.h"
@@ -978,6 +979,14 @@
                                                 }];
                                             }
                                         }];
+}
+
+#pragma mark - Indoors
+
++ (void)doIndoorSurvey:(NSString *)placeLabel
+      completionHandler:(RadarIndoorsSurveyCompletionHandler)completionHandler {
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"doIndoorsSurvey()"];
+    [[RadarIndoorSurvey sharedInstance] start:placeLabel withCompletionHandler:completionHandler];
 }
 
 #pragma mark - Logging

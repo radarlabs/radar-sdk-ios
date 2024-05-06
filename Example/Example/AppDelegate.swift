@@ -26,6 +26,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         Radar.setDelegate(self)
         Radar.setVerifiedDelegate(self)
 
+        Radar.doIndoorSurvey("indoor survey label from swift") {
+            print("indoor survey done!")
+        }
+
         if UIApplication.shared.applicationState != .background {
             Radar.getLocation { (status, location, stopped) in
                 print("Location: status = \(Radar.stringForStatus(status)); location = \(String(describing: location))")
