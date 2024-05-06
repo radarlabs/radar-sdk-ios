@@ -64,6 +64,9 @@
     [[RadarAPIClient sharedInstance] getConfigForUsage:@"initialize"
                                               verified:NO
                                      completionHandler:^(RadarStatus status, RadarConfig *config) {
+                                         if (status != RadarStatusSuccess || !config) {
+                                            return;
+                                         }
                                          [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
                                          [RadarSettings setFeatureSettings:config.meta.featureSettings];
                                          [self flushLogs];
@@ -163,7 +166,7 @@
                                                      NSArray<RadarGeofence *> *_Nullable nearbyGeofences, RadarConfig *_Nullable config, RadarVerifiedLocationToken *_Nullable token) {
                                      if (status == RadarStatusSuccess) {
                                          [[RadarLocationManager sharedInstance] replaceSyncedGeofences:nearbyGeofences];
-                                         if(config != nil){
+                                         if (config != nil) {
                                              [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
                                          }
                                          
@@ -1174,6 +1177,9 @@
         [[RadarAPIClient sharedInstance] getConfigForUsage:@"resume"
                                                   verified:NO
                                          completionHandler:^(RadarStatus status, RadarConfig *_Nullable config) {
+                                             if (status != RadarStatusSuccess || !config) {
+                                                return;
+                                             }
                                              [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
                                              [RadarSettings setFeatureSettings:config.meta.featureSettings];
                                          }];
