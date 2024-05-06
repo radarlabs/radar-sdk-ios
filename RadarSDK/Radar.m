@@ -267,7 +267,7 @@
     [[RadarVerificationManager sharedInstance] stopTrackingVerified];
 }
 
-+ (void)getLastVerifiedLocationToken:(RadarTrackVerifiedCompletionHandler)completionHandler {
++ (void)getVerifiedLocationToken:(RadarTrackVerifiedCompletionHandler)completionHandler {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"getLastVerifiedLocationToken()"];
     [[RadarVerificationManager sharedInstance]
      getVerifiedLocationTokenWithCompletionHandler:completionHandler];
