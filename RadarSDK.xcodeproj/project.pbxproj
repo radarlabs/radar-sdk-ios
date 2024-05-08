@@ -166,7 +166,7 @@
 		E624465F2BEBEB8A00ECCCAD /* RadarLocationPermissionsManager.h in Headers */ = {isa = PBXBuildFile; fileRef = E624465E2BEBEB8A00ECCCAD /* RadarLocationPermissionsManager.h */; };
 		E62446622BEBF3F900ECCCAD /* RadarLocationPremissionsStatus.m in Sources */ = {isa = PBXBuildFile; fileRef = E62446612BEBF3F900ECCCAD /* RadarLocationPremissionsStatus.m */; };
 		E62446642BEBF4BB00ECCCAD /* RadarLocationPermissionsStatus+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = E62446632BEBF4BB00ECCCAD /* RadarLocationPermissionsStatus+Internal.h */; };
-		E62446A22BEBFCFE00ECCCAD /* RadarLocationPermissionsStatus.h in Headers */ = {isa = PBXBuildFile; fileRef = E62446A12BEBFCFE00ECCCAD /* RadarLocationPermissionsStatus.h */; };
+		E62446A72BEC0AC700ECCCAD /* RadarLocationPermissionsStatus.h in Headers */ = {isa = PBXBuildFile; fileRef = E62446A52BEC0A4900ECCCAD /* RadarLocationPermissionsStatus.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		E6EEC56E2B20F41A00DD096B /* RadarFileStorage.h in Headers */ = {isa = PBXBuildFile; fileRef = E6EEC56D2B20F41A00DD096B /* RadarFileStorage.h */; };
 		E6EEC5702B20F45D00DD096B /* RadarFileStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = E6EEC56F2B20F45D00DD096B /* RadarFileStorage.m */; };
 /* End PBXBuildFile section */
@@ -332,7 +332,7 @@
 		E624465E2BEBEB8A00ECCCAD /* RadarLocationPermissionsManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RadarLocationPermissionsManager.h; sourceTree = "<group>"; };
 		E62446612BEBF3F900ECCCAD /* RadarLocationPremissionsStatus.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RadarLocationPremissionsStatus.m; sourceTree = "<group>"; };
 		E62446632BEBF4BB00ECCCAD /* RadarLocationPermissionsStatus+Internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "RadarLocationPermissionsStatus+Internal.h"; sourceTree = "<group>"; };
-		E62446A12BEBFCFE00ECCCAD /* RadarLocationPermissionsStatus.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RadarLocationPermissionsStatus.h; sourceTree = "<group>"; };
+		E62446A52BEC0A4900ECCCAD /* RadarLocationPermissionsStatus.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RadarLocationPermissionsStatus.h; sourceTree = "<group>"; };
 		E6EEC56D2B20F41A00DD096B /* RadarFileStorage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarFileStorage.h; sourceTree = "<group>"; };
 		E6EEC56F2B20F45D00DD096B /* RadarFileStorage.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RadarFileStorage.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -377,11 +377,11 @@
 				96A5A0EC27AD9F7F007B960B /* RadarContext.h */,
 				96A5A0E327AD9F7F007B960B /* RadarCoordinate.h */,
 				96A5A0E727AD9F7F007B960B /* RadarDelegate.h */,
+				E62446A52BEC0A4900ECCCAD /* RadarLocationPermissionsStatus.h */,
 				96A5A0DA27AD9F7F007B960B /* RadarEvent.h */,
 				96A5A0E927AD9F7F007B960B /* RadarFraud.h */,
 				96A5A0E627AD9F7F007B960B /* RadarGeofence.h */,
 				96A5A0E227AD9F7F007B960B /* RadarGeofenceGeometry.h */,
-				E62446A12BEBFCFE00ECCCAD /* RadarLocationPermissionsStatus.h */,
 				96A5A0F327AD9F7F007B960B /* RadarPlace.h */,
 				96A5A0F027AD9F7F007B960B /* RadarPolygonGeometry.h */,
 				96A5A0DB27AD9F7F007B960B /* RadarRegion.h */,
@@ -634,7 +634,7 @@
 				96A5A0FF27AD9F7F007B960B /* RadarGeofenceGeometry.h in Headers */,
 				96A5A0CB27AD9F41007B960B /* RadarRoute+Internal.h in Headers */,
 				96A5A10527AD9F7F007B960B /* RadarTrackingOptions.h in Headers */,
-				E62446A22BEBFCFE00ECCCAD /* RadarLocationPermissionsStatus.h in Headers */,
+				E62446A72BEC0AC700ECCCAD /* RadarLocationPermissionsStatus.h in Headers */,
 				96A5A10927AD9F7F007B960B /* RadarContext.h in Headers */,
 				0107AA1226220049008AB52F /* RadarCollectionAdditions.h in Headers */,
 				E6EEC56E2B20F41A00DD096B /* RadarFileStorage.h in Headers */,
