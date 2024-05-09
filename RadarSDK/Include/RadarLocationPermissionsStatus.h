@@ -12,11 +12,13 @@
 @interface RadarLocationPermissionsStatus : NSObject
 
 @property (nonatomic, assign) CLAuthorizationStatus locationManagerStatus;
-@property (nonatomic, assign) BOOL requestedBackgroundPermissions;
-@property (nonatomic, assign) BOOL requestedForegroundPermissions;
+@property (nonatomic, assign) BOOL backgroundPopupAvailable;
+@property (nonatomic, assign) BOOL foregroundPopupAvailable;
 @property (nonatomic, assign) BOOL userRejectedBackgroundPermissions;
 
 - (NSDictionary *_Nonnull)dictionaryValue;
 
 
 @end
+
+

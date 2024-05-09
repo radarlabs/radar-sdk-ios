@@ -16,8 +16,8 @@
 + (RadarLocationPermissionsStatus *_Nullable) retrieve;
 
 - (instancetype _Nullable)initWithStatus:(CLAuthorizationStatus)locationManagerStatus
-          requestedBackgroundPermissions:(BOOL)requestedBackgroundPermissions
-          requestedForegroundPermissions:(BOOL)requestedForegroundPermissions
+          backgroundPopupAvailable:(BOOL)backgroundPopupAvailable
+          foregroundPopupAvailable:(BOOL)foregroundPopupAvailable
           userRejectedBackgroundPermissions:(BOOL)userRejectedBackgroundPermissions;
 
 @end

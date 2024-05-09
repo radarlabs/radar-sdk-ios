@@ -27,14 +27,14 @@
 }
 
 - (instancetype _Nullable)initWithStatus:(CLAuthorizationStatus)locationManagerStatus
-          requestedBackgroundPermissions:(BOOL)requestedBackgroundPermissions
-          requestedForegroundPermissions:(BOOL)requestedForegroundPermissions
+          backgroundPopupAvailable:(BOOL)backgroundPopupAvailable
+          foregroundPopupAvailable:(BOOL)foregroundPopupAvailable
           userRejectedBackgroundPermissions:(BOOL)userRejectedBackgroundPermissions {
     self = [super init];
     if (self) {
         _locationManagerStatus = locationManagerStatus;
-        _requestedBackgroundPermissions = requestedBackgroundPermissions;
-        _requestedForegroundPermissions = requestedForegroundPermissions;
+        _backgroundPopupAvailable = backgroundPopupAvailable;
+        _foregroundPopupAvailable = foregroundPopupAvailable;
         _userRejectedBackgroundPermissions = userRejectedBackgroundPermissions;
     }
     return self;
@@ -64,8 +64,8 @@
     }
     return @{
         @"locationManagerStatus": statusString,
-        @"requestedBackgroundPermissions": @(self.requestedBackgroundPermissions),
-        @"requestedForegroundPermissions": @(self.requestedForegroundPermissions),
+        @"backgroundPopupAvailable": @(self.backgroundPopupAvailable),
+        @"foregroundPopupAvailable": @(self.foregroundPopupAvailable),
         @"userRejectedBackgroundPermissions": @(self.userRejectedBackgroundPermissions)
     };
 }
@@ -86,10 +86,10 @@
     } else {
         locationManagerStatus = kCLAuthorizationStatusNotDetermined;
     }
-    BOOL requestedBackgroundPermissions = [dictionary[@"requestedBackgroundPermissions"] boolValue];
-    BOOL requestedForegroundPermissions = [dictionary[@"requestedForegroundPermissions"] boolValue];
+    BOOL backgroundPopupAvailable = [dictionary[@"backgroundPopupAvailable"] boolValue];
+    BOOL foregroundPopupAvailable = [dictionary[@"foregroundPopupAvailable"] boolValue];
     BOOL userRejectedBackgroundPermissions = [dictionary[@"userRejectedBackgroundPermissions"] boolValue];
-    return [self initWithStatus:locationManagerStatus requestedBackgroundPermissions:requestedBackgroundPermissions requestedForegroundPermissions:requestedForegroundPermissions userRejectedBackgroundPermissions:userRejectedBackgroundPermissions];
+    return [self initWithStatus:locationManagerStatus backgroundPopupAvailable:backgroundPopupAvailable foregroundPopupAvailable:foregroundPopupAvailable userRejectedBackgroundPermissions:userRejectedBackgroundPermissions];
 }
 
 @end
