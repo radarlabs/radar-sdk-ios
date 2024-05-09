@@ -11,8 +11,13 @@
 
 @interface RadarLocationPermissionsStatus()
 
++ (void) store:(RadarLocationPermissionsStatus *_Nonnull)status;
+
++ (RadarLocationPermissionsStatus *_Nullable) retrieve;
+
 - (instancetype _Nullable)initWithStatus:(CLAuthorizationStatus)locationManagerStatus
           requestedBackgroundPermissions:(BOOL)requestedBackgroundPermissions
-          requestedForegroundPermissions:(BOOL)requestedForegroundPermissions;
+          requestedForegroundPermissions:(BOOL)requestedForegroundPermissions
+          userRejectedBackgroundPermissions:(BOOL)userRejectedBackgroundPermissions;
 
 @end

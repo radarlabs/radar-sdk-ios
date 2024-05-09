@@ -19,6 +19,7 @@
 #import "RadarRoutes.h"
 #import "RadarTrackingOptions.h"
 #import "RadarUser.h"
+#import "RadarLocationPermissionsStatus.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -1137,6 +1138,10 @@ Gets the device's current location, then searches for geofences near that locati
  @return A dictionary for the location.
  */
 + (NSDictionary *)dictionaryForLocation:(CLLocation *)location NS_SWIFT_NAME(dictionaryForLocation(_:));
+
++ (void)requestLocationPermissions:(BOOL)requestBackgroundPermissions;
+
++ (RadarLocationPermissionsStatus *)getLocationPermissionsStatus;
 
 @end
 

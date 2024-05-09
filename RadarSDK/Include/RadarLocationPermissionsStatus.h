@@ -14,6 +14,7 @@
 @property (nonatomic, assign) CLAuthorizationStatus locationManagerStatus;
 @property (nonatomic, assign) BOOL requestedBackgroundPermissions;
 @property (nonatomic, assign) BOOL requestedForegroundPermissions;
+@property (nonatomic, assign) BOOL userRejectedBackgroundPermissions;
 
 - (NSDictionary *_Nonnull)dictionaryValue;
 

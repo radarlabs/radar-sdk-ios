@@ -13,14 +13,29 @@
 
 @implementation RadarLocationPermissionsStatus
 
++ (void)store:(RadarLocationPermissionsStatus *)status {
+    NSDictionary *dict = [status dictionaryValue];
+    [[NSUserDefaults standardUserDefaults] setObject:dict forKey:@"radarLocationPermissionsStatus"];
+}
+
++ (RadarLocationPermissionsStatus *)retrieve {
+    NSDictionary *dict = [[NSUserDefaults standardUserDefaults] objectForKey:@"radarLocationPermissionsStatus"];
+    if (dict) {
+        return [[RadarLocationPermissionsStatus alloc] initWithDictionary:dict];
+    }
+    return nil;
+}
+
 - (instancetype _Nullable)initWithStatus:(CLAuthorizationStatus)locationManagerStatus
           requestedBackgroundPermissions:(BOOL)requestedBackgroundPermissions
-          requestedForegroundPermissions:(BOOL)requestedForegroundPermissions {
+          requestedForegroundPermissions:(BOOL)requestedForegroundPermissions
+          userRejectedBackgroundPermissions:(BOOL)userRejectedBackgroundPermissions {
     self = [super init];
     if (self) {
         _locationManagerStatus = locationManagerStatus;
         _requestedBackgroundPermissions = requestedBackgroundPermissions;
         _requestedForegroundPermissions = requestedForegroundPermissions;
+        _userRejectedBackgroundPermissions = userRejectedBackgroundPermissions;
     }
     return self;
 }
@@ -50,8 +65,31 @@
     return @{
         @"locationManagerStatus": statusString,
         @"requestedBackgroundPermissions": @(self.requestedBackgroundPermissions),
-        @"requestedForegroundPermissions": @(self.requestedForegroundPermissions)
+        @"requestedForegroundPermissions": @(self.requestedForegroundPermissions),
+        @"userRejectedBackgroundPermissions": @(self.userRejectedBackgroundPermissions)
     };
+}
+
+- (instancetype _Nullable)initWithDictionary:(NSDictionary *)dictionary {
+    NSString *statusString = dictionary[@"locationManagerStatus"];
+    CLAuthorizationStatus locationManagerStatus;
+    if ([statusString isEqualToString:@"NotDetermined"]) {
+        locationManagerStatus = kCLAuthorizationStatusNotDetermined;
+    } else if ([statusString isEqualToString:@"Restricted"]) {
+        locationManagerStatus = kCLAuthorizationStatusRestricted;
+    } else if ([statusString isEqualToString:@"Denied"]) {
+        locationManagerStatus = kCLAuthorizationStatusDenied;
+    } else if ([statusString isEqualToString:@"AuthorizedAlways"]) {
+        locationManagerStatus = kCLAuthorizationStatusAuthorizedAlways;
+    } else if ([statusString isEqualToString:@"AuthorizedWhenInUse"]) {
+        locationManagerStatus = kCLAuthorizationStatusAuthorizedWhenInUse;
+    } else {
+        locationManagerStatus = kCLAuthorizationStatusNotDetermined;
+    }
+    BOOL requestedBackgroundPermissions = [dictionary[@"requestedBackgroundPermissions"] boolValue];
+    BOOL requestedForegroundPermissions = [dictionary[@"requestedForegroundPermissions"] boolValue];
+    BOOL userRejectedBackgroundPermissions = [dictionary[@"userRejectedBackgroundPermissions"] boolValue];
+    return [self initWithStatus:locationManagerStatus requestedBackgroundPermissions:requestedBackgroundPermissions requestedForegroundPermissions:requestedForegroundPermissions userRejectedBackgroundPermissions:userRejectedBackgroundPermissions];
 }
 
 @end

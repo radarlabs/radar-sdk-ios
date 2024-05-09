@@ -67,7 +67,7 @@ Tells the delegate that the user's location permissions state was updated.
 
 @param status The location permissions status.
 */
-- (void)didUpdateClientLocationPermissionsStatus:(RadarLocationPermissionsStatus *_Nonnull)status NS_SWIFT_NAME(didUpdateClientLocationPermissionsStatus(status:));
+- (void)didUpdateLocationPermissionsStatus:(RadarLocationPermissionsStatus *_Nonnull)status NS_SWIFT_NAME(didUpdateClientLocationPermissionsStatus(status:));
 
 @end
 

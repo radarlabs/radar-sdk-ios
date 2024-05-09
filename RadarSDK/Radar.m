@@ -21,6 +21,8 @@
 #import "RadarVerificationManager.h"
 #import "RadarReplayBuffer.h"
 #import "RadarFeatureSettings.h"
+#import "RadarLocationPermissionsManager.h"
+#import "RadarLocationPermissionsStatus.h"
 
 @interface Radar ()
 
@@ -59,6 +61,9 @@
     if ([[UIApplication sharedApplication] applicationState] != UIApplicationStateBackground) {
         [RadarSettings updateSessionId];
     }
+
+    //init location permissions manager
+    //[RadarLocationPermissionsManager sharedInstance];
 
     [[RadarLocationManager sharedInstance] updateTrackingFromInitialize];
     [[RadarAPIClient sharedInstance] getConfigForUsage:@"initialize"
@@ -1244,6 +1249,14 @@
                                     }];
                                 }
                             }];
+}
+
++ (void)requestLocationPermissions:(BOOL)background {
+    [[RadarLocationPermissionsManager sharedInstance] requestLocationPermissions:background];
+}
+
++ (RadarLocationPermissionsStatus *)getLocationPermissionsStatus {
+    return [[RadarLocationPermissionsManager sharedInstance] getLocationPermissionsStatus];
 }
 
 @end
