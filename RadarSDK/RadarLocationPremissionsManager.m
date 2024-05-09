@@ -169,7 +169,7 @@
     RadarLocationPermissionsStatus *newStatus = [[RadarLocationPermissionsStatus alloc] initWithStatus:status
                                                                  backgroundPopupAvailable:self.status.backgroundPopupAvailable
                                                                  foregroundPopupAvailable:self.status.foregroundPopupAvailable
-                                                                 userRejectedBackgroundPermissions: self.status.userRejectedBackgroundPermissions && !(status == kCLAuthorizationStatusDenied)];
+                                                                 userRejectedBackgroundPermissions: self.status.userRejectedBackgroundPermissions  || (status == kCLAuthorizationStatusDenied)];
     [self updateStatus:newStatus];
 }
 
