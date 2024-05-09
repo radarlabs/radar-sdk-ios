@@ -30,7 +30,6 @@
     if (self) {
         self.locationManager = [CLLocationManager new];
         self.locationManager.delegate = self;
-        // we need to get this from storage
         RadarLocationPermissionsStatus *status = [RadarLocationPermissionsStatus retrieve];
         if (status) {
             self.status = status;
@@ -41,13 +40,14 @@
                                                       foregroundPopupAvailable:YES
                                                       userRejectedBackgroundPermissions:NO];
             } else {
-                // Fallback on earlier versions
+                // just a dummy value, this component will not communicate with the rest of the SDK if the version is below 14.0
+                self.status = [[RadarLocationPermissionsStatus alloc] initWithStatus: kCLAuthorizationStatusAuthorizedAlways
+                                                      backgroundPopupAvailable:NO
+                                                      foregroundPopupAvailable:NO
+                                                      userRejectedBackgroundPermissions:NO];
             }
         }
        
-        // while we do not know if the request prompt has been sent before, we know that if a pop-up appears the app will resign active.
-        // a simple implementation to "update" such a status will be to listen to the UIApplicationWillResignActiveNotification. 
-        //For example, an update can be sent unless its been interupted by the resign active.
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(applicationWillResignActive)
                                                      name:UIApplicationWillResignActiveNotification
@@ -68,7 +68,9 @@
 }
 
 - (void)sendDelegateUpdate {
-   [[RadarDelegateHolder sharedInstance] didUpdateLocationPermissionsStatus:self.status];
+    if (@available(iOS 14.0, *)) {
+        [[RadarDelegateHolder sharedInstance] didUpdateLocationPermissionsStatus:self.status];
+    }
 }
 
 
@@ -84,11 +86,11 @@
                                                                              foregroundPopupAvailable:self.status.foregroundPopupAvailable
                                                                           userRejectedBackgroundPermissions: self.status.userRejectedBackgroundPermissions];
             [self updateStatus:status];
-        } else {
-            // Fallback on earlier versions
         }
 
-        // Start a timer
+        // We set a flag that request has been made and start a timer. If we resign active we unset the timer.
+        // When the timer fires and the flag has not been unset, we assume that app never resigned active.
+        // Usually this means that the user has previously rejected the background permissions.
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             if (self->danglingBackgroundPermissionsRequest) {
                 NSLog(@"pop-up did not show");
@@ -98,27 +100,10 @@
                                                                                      foregroundPopupAvailable:self.status.foregroundPopupAvailable
                                                                                   userRejectedBackgroundPermissions:YES];
                     [self updateStatus:status];
-                } else {
-                    // Fallback on earlier versions
                 }
             }
             self->danglingBackgroundPermissionsRequest = NO;
         });
-
-
-        // Right here under normal circumstances we will expect to see the app resign active. 
-        // If it does not happen then the user has previously rejected background permissions.
-        // If the app does not resign active in 2 seconds, we should mark a flag.
-
-
-        // We set a flag that request has been made and start a timer. If we resign active we unset the timer.
-        // when the timer fires and the flag has not been unset, we assume that app never resigned active.
-
-        // we set another flag to determine the results of the popup.
-        // when the requested flag has been set and the app resigns active, we know that the resgin active is due to the popup.
-        // We can then set the in-location-pop-up flag to true.
-        // When the app comes to the foreground, we can check the in-location-pop-up flag and determine if the user has rejected the popup.
-
     }
     if (!background) {
         [self.locationManager requestWhenInUseAuthorization];
@@ -128,23 +113,19 @@
                                                                              foregroundPopupAvailable:NO
                                                                           userRejectedBackgroundPermissions: self.status.userRejectedBackgroundPermissions];
             [self updateStatus:status];
-        } else {
-            // Fallback on earlier versions
         }
     }
 }
 
 - (void)applicationDidBecomeActive {
     if (inBackgroundLocationPopUp) {
-        NSLog(@"User has rejected background location permissions");
+        // we assume that the app is becoming active due to the popup closing.
         if (@available(iOS 14.0, *)) {
             RadarLocationPermissionsStatus *status = [[RadarLocationPermissionsStatus alloc] initWithStatus:self.locationManager.authorizationStatus
                                                                              backgroundPopupAvailable:self.status.backgroundPopupAvailable
                                                                              foregroundPopupAvailable:self.status.foregroundPopupAvailable
                                                                           userRejectedBackgroundPermissions:YES];
             [self updateStatus:status];
-        } else {
-            // Fallback on earlier versions
         }
     }
     inBackgroundLocationPopUp = NO;
@@ -153,6 +134,7 @@
 
 - (void)applicationWillResignActive {
     if (danglingBackgroundPermissionsRequest) {
+        // we set a flag to determine if the app resigns active due to the popup.
         inBackgroundLocationPopUp = YES;
     }
     danglingBackgroundPermissionsRequest = NO;
@@ -162,10 +144,6 @@
 
 
 - (void)locationManager:(CLLocationManager *)manager didChangeAuthorizationStatus:(CLAuthorizationStatus)status {
-
-    // something we might need to handle, if we ever encounter a situation where the user previously denied the location permissions
-    // we should not bother trying to show the pop-up, its almost akin to the user previously rejected the permissions.
-
     RadarLocationPermissionsStatus *newStatus = [[RadarLocationPermissionsStatus alloc] initWithStatus:status
                                                                  backgroundPopupAvailable:self.status.backgroundPopupAvailable
                                                                  foregroundPopupAvailable:self.status.foregroundPopupAvailable
@@ -174,7 +152,10 @@
 }
 
 - (RadarLocationPermissionsStatus *)getLocationPermissionsStatus {
-    return self.status;
+    if (@available(iOS 14.0, *)) {
+        return self.status;
+    }
+    return nil;
 }
 
 

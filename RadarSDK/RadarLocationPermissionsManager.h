@@ -18,6 +18,6 @@
 
 - (void)requestLocationPermissions:(BOOL)requestBackgroundPermissions;
 
-- (RadarLocationPermissionsStatus *)getLocationPermissionsStatus;
+- (RadarLocationPermissionsStatus *_Nullable)getLocationPermissionsStatus;
 
 @end

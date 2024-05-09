@@ -36,6 +36,7 @@
         _backgroundPopupAvailable = backgroundPopupAvailable;
         _foregroundPopupAvailable = foregroundPopupAvailable;
         _userRejectedBackgroundPermissions = userRejectedBackgroundPermissions;
+        _locationPermissionState = [RadarLocationPermissionsStatus locationPermissionStateForLocationManagerStatus:locationManagerStatus backgroundPopupAvailable:backgroundPopupAvailable foregroundPopupAvailable:foregroundPopupAvailable userRejectedBackgroundPermissions:userRejectedBackgroundPermissions];
     }
     return self;
 }
@@ -66,7 +67,8 @@
         @"locationManagerStatus": statusString,
         @"backgroundPopupAvailable": @(self.backgroundPopupAvailable),
         @"foregroundPopupAvailable": @(self.foregroundPopupAvailable),
-        @"userRejectedBackgroundPermissions": @(self.userRejectedBackgroundPermissions)
+        @"userRejectedBackgroundPermissions": @(self.userRejectedBackgroundPermissions),
+        @"locationPermissionState": [RadarLocationPermissionsStatus stringForLocationPermissionState:self.locationPermissionState]
     };
 }
 
@@ -90,6 +92,60 @@
     BOOL foregroundPopupAvailable = [dictionary[@"foregroundPopupAvailable"] boolValue];
     BOOL userRejectedBackgroundPermissions = [dictionary[@"userRejectedBackgroundPermissions"] boolValue];
     return [self initWithStatus:locationManagerStatus backgroundPopupAvailable:backgroundPopupAvailable foregroundPopupAvailable:foregroundPopupAvailable userRejectedBackgroundPermissions:userRejectedBackgroundPermissions];
+}
+
++ (NSString *)stringForLocationPermissionState:(RadarLocationPermissionState)state {
+    switch (state) {
+        case NoPermissionsGranted:
+            return @"NoPermissionsGranted";
+        case ForegroundPermissionsGranted:
+            return @"ForegroundPermissionsGranted";
+        case ForegroundPermissionsRejected:
+            return @"ForegroundPermissionsRejected";
+        case ForegroundPermissionsPending:
+            return @"ForegroundPermissionsPending";
+        case BackgroundPermissionsGranted:
+            return @"BackgroundPermissionsGranted";
+        case BackgroundPermissionsRejected:
+            return @"BackgroundPermissionsRejected";
+        case BackgroundPermissionsPending:
+            return @"BackgroundPermissionsPending";
+        case PermissionsRestricted:
+            return @"PermissionsRestricted";
+        default:
+            return @"Unknown";
+    }
+}
+
++ (RadarLocationPermissionState)locationPermissionStateForLocationManagerStatus:(CLAuthorizationStatus)locationManagerStatus
+        backgroundPopupAvailable:(BOOL)backgroundPopupAvailable
+        foregroundPopupAvailable:(BOOL)foregroundPopupAvailable
+        userRejectedBackgroundPermissions:(BOOL)userRejectedBackgroundPermissions {
+
+    if (locationManagerStatus == kCLAuthorizationStatusNotDetermined) {
+        return foregroundPopupAvailable ? NoPermissionsGranted : ForegroundPermissionsPending;
+    }
+
+    if (locationManagerStatus == kCLAuthorizationStatusDenied) {
+        return ForegroundPermissionsRejected;
+    }
+
+    if (locationManagerStatus == kCLAuthorizationStatusAuthorizedAlways) {
+        return BackgroundPermissionsGranted;
+    }
+
+    if (locationManagerStatus == kCLAuthorizationStatusAuthorizedWhenInUse) {
+        if (userRejectedBackgroundPermissions) {
+            return BackgroundPermissionsRejected;
+        }
+        return backgroundPopupAvailable ? ForegroundPermissionsGranted : BackgroundPermissionsPending;
+    }
+
+    if (locationManagerStatus == kCLAuthorizationStatusRestricted) {
+        return PermissionsRestricted;
+    }
+    
+    return Unknown;
 }
 
 @end

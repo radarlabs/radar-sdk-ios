@@ -9,16 +9,27 @@
 #import <CoreLocation/CoreLocation.h>
 #import <Foundation/Foundation.h>
 
+typedef NS_ENUM(NSInteger, RadarLocationPermissionState) {
+    NoPermissionsGranted,
+    ForegroundPermissionsGranted,
+    ForegroundPermissionsRejected,
+    ForegroundPermissionsPending,
+    BackgroundPermissionsGranted,
+    BackgroundPermissionsRejected,
+    BackgroundPermissionsPending,
+    PermissionsRestricted,
+    Unknown
+};
+
 @interface RadarLocationPermissionsStatus : NSObject
 
 @property (nonatomic, assign) CLAuthorizationStatus locationManagerStatus;
 @property (nonatomic, assign) BOOL backgroundPopupAvailable;
 @property (nonatomic, assign) BOOL foregroundPopupAvailable;
 @property (nonatomic, assign) BOOL userRejectedBackgroundPermissions;
+@property (nonatomic, assign) RadarLocationPermissionState locationPermissionState;
 
 - (NSDictionary *_Nonnull)dictionaryValue;
 
 
 @end
-
-
