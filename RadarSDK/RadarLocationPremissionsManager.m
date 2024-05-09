@@ -164,12 +164,12 @@
 - (void)locationManager:(CLLocationManager *)manager didChangeAuthorizationStatus:(CLAuthorizationStatus)status {
 
     // something we might need to handle, if we ever encounter a situation where the user previously denied the location permissions
-    // we should not bother trying to show the pop-up, its almost akin to the user previously requuested the permissions.
+    // we should not bother trying to show the pop-up, its almost akin to the user previously rejected the permissions.
 
     RadarLocationPermissionsStatus *newStatus = [[RadarLocationPermissionsStatus alloc] initWithStatus:status
-                                                                 backgroundPopupAvailable:self.status.backgroundPopupAvailable && !(status == kCLAuthorizationStatusDenied)
+                                                                 backgroundPopupAvailable:self.status.backgroundPopupAvailable
                                                                  foregroundPopupAvailable:self.status.foregroundPopupAvailable
-                                                                 userRejectedBackgroundPermissions: self.status.userRejectedBackgroundPermissions];
+                                                                 userRejectedBackgroundPermissions: self.status.userRejectedBackgroundPermissions && !(status == kCLAuthorizationStatusDenied)];
     [self updateStatus:newStatus];
 }
 
