@@ -1251,8 +1251,12 @@
                             }];
 }
 
-+ (void)requestLocationPermissions:(BOOL)background {
-    [[RadarLocationPermissionsManager sharedInstance] requestLocationPermissions:background];
++ (void)requestForegroundLocationPermissions {
+    [[RadarLocationPermissionsManager sharedInstance] requestLocationPermissions:false];
+}
+
++ (void)requestBackgroundLocationPermissions {
+    [[RadarLocationPermissionsManager sharedInstance] requestLocationPermissions:true];
 }
 
 + (RadarLocationPermissionsStatus *)getLocationPermissionsStatus {
