@@ -116,7 +116,7 @@
 
         // POST payload
         // TODO move to prod server..?
-        NSURL *url = [NSURL URLWithString:@"https://ml.radarindoors.com/scan_results"];
+        NSURL *url = [NSURL URLWithString:@"https://ml-hetzner.radarindoors.com/scan_results"];
         NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:url];
         [urlRequest setHTTPMethod:@"POST"];
         [urlRequest setHTTPBody:[payload dataUsingEncoding:NSUTF8StringEncoding]];
