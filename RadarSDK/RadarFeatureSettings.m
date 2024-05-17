@@ -24,7 +24,7 @@
 
 + (RadarFeatureSettings *_Nullable)featureSettingsFromDictionary:(NSDictionary *)dict {
     if (!dict) {
-        return [[RadarFeatureSettings alloc] initWithUsePersistence:NO extendFlushReplays:NO useLocationMetadata:NO useLocationMetadata:NO useLogPersistence:NO];
+        return [[RadarFeatureSettings alloc] initWithUsePersistence:NO extendFlushReplays:NO useLocationMetadata:NO useLogPersistence:NO];
     }
 
     NSObject *usePersistenceObj = dict[@"usePersistence"]; 

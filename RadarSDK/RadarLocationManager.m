@@ -40,11 +40,17 @@
  */
 @property (assign, nonatomic) BOOL sending;
 
+
 /**
  The timer for checking the location at regular intervals, such as in
  continuous tracking mode.
  */
 @property (strong, nonatomic) NSTimer *timer;
+
+/**
+ 'YES' if a new activity update has been received.
+*/
+@property (assign, nonatomic) BOOL newActivityUpdate;
 
 /**
  Callbacks for sending events.
@@ -82,6 +88,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     self = [super init];
     if (self) {
         _completionHandlers = [NSMutableArray new];
+        _newActivityUpdate = NO;
 
         _locationManager = [CLLocationManager new];
         _locationManager.delegate = self;
@@ -101,16 +108,29 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
             _motionActivityManager = [CMMotionActivityManager new];
             [_motionActivityManager startActivityUpdatesToQueue:[NSOperationQueue mainQueue] withHandler:^(CMMotionActivity * _Nullable activity) {
                 if (activity) {
+                    NSString *motionActivityType = @"unknown";
+                    if (activity.stationary) {
+                        motionActivityType = @"stationary";
+                    } else if (activity.walking) {
+                        motionActivityType = @"walking";
+                    } else if (activity.running) {
+                        motionActivityType = @"running";
+                    } else if (activity.automotive) {
+                        motionActivityType = @"driving";
+                    } else if (activity.cycling) {
+                        motionActivityType = @"cycling";
+                    }
+
                     [RadarState setLastMotionActivityData:@{
-                        @"stationary" : @(activity.stationary),
-                        @"walking" : @(activity.walking),
-                        @"running" : @(activity.running),
-                        @"driving" : @(activity.automotive),
-                        @"cycling" : @(activity.cycling),
-                        @"unknown" : @(activity.unknown),
+                        @"type" : motionActivityType,
                         @"timestamp" : @([activity.startDate timeIntervalSince1970]),
                         @"confidence" : @(activity.confidence)
                     }];
+                    
+                    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Activity detected, initiating trackOnce"];
+                    self.newActivityUpdate = YES;
+                    [self requestLocation];
+                    
                 }
             }];
         
@@ -879,6 +899,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         }
     }
     [RadarState updateLastSentAt];
+    self.newActivityUpdate = NO;
 
     if (source == RadarLocationSourceForegroundLocation) {
         return;
@@ -941,7 +962,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     }
 
     CLLocation *location = [locations lastObject];
-    if (self.completionHandlers.count) {
+    if (self.completionHandlers.count || self.newActivityUpdate) {
         [self handleLocation:location source:RadarLocationSourceForegroundLocation];
     } else {
         BOOL tracking = [RadarSettings tracking];
