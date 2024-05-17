@@ -288,7 +288,7 @@ typedef void (^_Nonnull RadarRouteMatrixCompletionHandler)(RadarStatus status, R
 typedef void (^_Nonnull RadarLogConversionCompletionHandler)(RadarStatus status, RadarEvent *_Nullable event);
 
 // define RadarIndoorsSurveyCompletionHandler -- which is called with no arguments
-typedef void (^_Nonnull RadarIndoorsSurveyCompletionHandler)(void);
+typedef void (^_Nonnull RadarIndoorsSurveyCompletionHandler)(NSString *_Nullable result);
 
 /**
  The main class used to interact with the Radar SDK.
@@ -1066,7 +1066,8 @@ logConversionWithNotification
 #pragma mark - Indoors
 
 + (void)doIndoorSurvey:(NSString *)placeLabel
-      completionHandler:(RadarIndoorsSurveyCompletionHandler)completionHandler;
+             forLength:(int)surveyLengthSeconds
+     completionHandler:(RadarIndoorsSurveyCompletionHandler)completionHandler;
 
 #pragma mark - Logging
 

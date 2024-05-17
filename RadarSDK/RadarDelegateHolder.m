@@ -26,6 +26,8 @@
         return;
     }
 
+    NSLog(@"didReceiveEvents events %@", events);
+
     if (self.delegate) {
         [self.delegate didReceiveEvents:events user:user];
     }

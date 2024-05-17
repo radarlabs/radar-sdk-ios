@@ -169,6 +169,7 @@
                    source:(RadarLocationSource)source
                  replayed:(BOOL)replayed
                   beacons:(NSArray<RadarBeacon *> *_Nullable)beacons
+      indoorsWhereAmIScan:(NSString *)indoorsWhereAmIScan
         completionHandler:(RadarTrackAPICompletionHandler _Nonnull)completionHandler {
     [self trackWithLocation:location
                     stopped:stopped
@@ -176,6 +177,7 @@
                      source:source
                    replayed:replayed
                     beacons:beacons
+        indoorsWhereAmIScan:indoorsWhereAmIScan
                    verified:NO
           attestationString:nil
                       keyId:nil
@@ -190,6 +192,7 @@
                    source:(RadarLocationSource)source
                  replayed:(BOOL)replayed
                   beacons:(NSArray<RadarBeacon *> *_Nullable)beacons
+      indoorsWhereAmIScan:(NSString *)indoorsWhereAmIScan
                  verified:(BOOL)verified
         attestationString:(NSString *_Nullable)attestationString
                     keyId:(NSString *_Nullable)keyId
@@ -291,6 +294,9 @@
     }
     if (beacons) {
         params[@"beacons"] = [RadarBeacon arrayForBeacons:beacons];
+    }
+    if (indoorsWhereAmIScan) {
+        params[@"indoorsWhereAmIScan"] = indoorsWhereAmIScan;
     }
     NSString *locationAuthorization = [RadarUtils locationAuthorization];
     if (locationAuthorization) {

@@ -11,6 +11,8 @@ import RadarSDK
 class Utils {
     
     static func stringForRadarEvent(_ event: RadarEvent) -> String {
+        print("event", event)
+
         let confidenceStr = Utils.stringForRadarEventConfidence(event.confidence)
         
         switch event.type {
@@ -38,6 +40,8 @@ class Utils {
             return "Exited country \(event.region!.name) (\(event.region!.code)) with \(confidenceStr)"
         case .conversion:
             return "Received conversion event with name \(event.conversionName!)"
+        case .indoorLocation:
+            return "Received indoor location event with .... TODO TODO TODO"
         default:
             return "Unknown"
         }

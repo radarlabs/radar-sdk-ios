@@ -182,6 +182,8 @@
             type = RadarEventTypeUserArrivedAtWrongTripDestination;
         } else if ([typeStr isEqualToString:@"user.failed_fraud"]) {
             type = RadarEventTypeUserFailedFraud;
+        } else if ([typeStr isEqualToString:@"indoors.location"]) {
+            type = RadarEventTypeIndoorLocation;
         } else {
             type = RadarEventTypeConversion;
             conversionName = typeStr;
@@ -397,6 +399,8 @@
         return @"user.failed_fraud";
     case RadarEventTypeConversion:
         return @"custom";
+    case RadarEventTypeIndoorLocation:
+        return @"indoors.location";
     default:
         return @"unknown";
     }

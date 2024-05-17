@@ -152,7 +152,7 @@
                              return;
                          }
 
-                         void (^callTrackAPI)(NSArray<RadarBeacon *> *_Nullable) = ^(NSArray<RadarBeacon *> *_Nullable beacons) {
+                         void (^callTrackAPI)(NSArray<RadarBeacon *> * _Nullable beacons, NSString *indoorsPayload) = ^(NSArray<RadarBeacon *> * _Nullable beacons, NSString *indoorsPayload) {
                              [[RadarAPIClient sharedInstance]
                                  trackWithLocation:location
                                            stopped:stopped
@@ -160,6 +160,7 @@
                                             source:RadarLocationSourceForegroundLocation
                                           replayed:NO
                                            beacons:beacons
+                               indoorsWhereAmIScan:indoorsPayload
                                  completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user,
                                                      NSArray<RadarGeofence *> *_Nullable nearbyGeofences, RadarConfig *_Nullable config, NSString *_Nullable token) {
                                      if (status == RadarStatusSuccess) {
@@ -178,6 +179,19 @@
                                  }];
                          };
 
+                         NSLog(@"calling RadarIndoorSurvey");                         
+                         NSLog(@"location: %@", location);
+                         [[RadarIndoorSurvey sharedInstance] start:@"WHEREAMI"
+                                                         forLength:5
+                                                 withKnownLocation:location
+                                                    isWhereAmIScan:YES
+                                             withCompletionHandler:^(NSString *_Nullable result) {
+                                                NSLog(@"received indoor start result: %@", result);
+                                                callTrackAPI(nil, result);
+                                            }
+                         ];
+
+                         /*
                          if (beacons) {
                              [[RadarAPIClient sharedInstance]
                                  searchBeaconsNear:location
@@ -222,6 +236,7 @@
                          } else {
                              callTrackAPI(nil);
                          }
+                         */
                      }];
 }
 
@@ -233,6 +248,7 @@
                                                 source:RadarLocationSourceManualLocation
                                               replayed:NO
                                                beacons:nil
+                                   indoorsWhereAmIScan:@""
                                      completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user,
                                                          NSArray<RadarGeofence *> *_Nullable nearbyGeofences, RadarConfig *_Nullable config, NSString *_Nullable token) {
                                         if (status == RadarStatusSuccess && config != nil) {                                    
@@ -336,6 +352,7 @@
                                    source:RadarLocationSourceMockLocation
                                  replayed:NO
                                   beacons:nil
+                      indoorsWhereAmIScan:@""
                         completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user,
                                             NSArray<RadarGeofence *> *_Nullable nearbyGeofences, RadarConfig *_Nullable config, NSString *_Nullable token) {
                             if (completionHandler) {
@@ -984,9 +1001,15 @@
 #pragma mark - Indoors
 
 + (void)doIndoorSurvey:(NSString *)placeLabel
-      completionHandler:(RadarIndoorsSurveyCompletionHandler)completionHandler {
+             forLength:(int)surveyLengthSeconds
+     completionHandler:(RadarIndoorsSurveyCompletionHandler)completionHandler {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"doIndoorsSurvey()"];
-    [[RadarIndoorSurvey sharedInstance] start:placeLabel withCompletionHandler:completionHandler];
+    [[RadarIndoorSurvey sharedInstance] start:placeLabel
+                                    forLength:surveyLengthSeconds
+                            withKnownLocation:nil
+                               isWhereAmIScan:NO
+                        withCompletionHandler:completionHandler
+    ];
 }
 
 #pragma mark - Logging
