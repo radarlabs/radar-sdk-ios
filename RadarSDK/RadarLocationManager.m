@@ -858,29 +858,31 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         }
     }
 
+    [[RadarAPIClient sharedInstance] trackWithLocation:location
+                                               stopped:stopped
+                                            foreground:[RadarUtils foreground]
+                                                source:source
+                                              replayed:replayed
+                                               beacons:beacons
+                                   indoorsWhereAmIScan:@""
+                                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user,
+                                                         NSArray<RadarGeofence *> *_Nullable nearbyGeofences, RadarConfig *_Nullable config, NSString *_Nullable token) {
+                                         self.sending = NO;
+
+                                         [self updateTrackingFromMeta:config.meta];
+                                         [RadarSettings setFeatureSettings:config.meta.featureSettings];
+                                         [self replaceSyncedGeofences:nearbyGeofences];
+                                     }];                            
+
+    /*
     [[RadarIndoorSurvey sharedInstance] start:@"WHEREAMI"
-                                    forLength:20
+                                    forLength:WHERE_AM_I_DURATION_SECONDS
                             withKnownLocation:location
                                isWhereAmIScan:YES
                         withCompletionHandler:^(NSString *_Nullable indoorWhereAmIScanResult) {
-                            [[RadarAPIClient sharedInstance] trackWithLocation:location
-                                                                       stopped:stopped
-                                                                    foreground:[RadarUtils foreground]
-                                                                        source:source
-                                                                      replayed:replayed
-                                                                       beacons:beacons
-                                                           indoorsWhereAmIScan:indoorWhereAmIScanResult
-                                                             completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user,
-                                                                                 NSArray<RadarGeofence *> *_Nullable nearbyGeofences, RadarConfig *_Nullable config, NSString *_Nullable token) {
-                                                                 self.sending = NO;
-
-                                                                 [self updateTrackingFromMeta:config.meta];
-                                                                 [RadarSettings setFeatureSettings:config.meta.featureSettings];
-                                                                 [self replaceSyncedGeofences:nearbyGeofences];
-                                                             }];                            
                         }
     ];
-
+    */
 }
 
 #pragma mark - CLLocationManagerDelegate

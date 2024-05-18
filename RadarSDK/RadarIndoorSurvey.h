@@ -23,11 +23,14 @@
 // store whether this is a whereAmI scan
 @property (nonatomic) BOOL isWhereAmIScan;
 
+#define WHERE_AM_I_DURATION_SECONDS 20
+
 + (instancetype)sharedInstance;
 
 - (void)start:(NSString *)placeLabel forLength:(int)surveyLengthSeconds withKnownLocation:(CLLocation *)knownLocation isWhereAmIScan:(BOOL)isWhereAmIScan withCompletionHandler:(RadarIndoorsSurveyCompletionHandler)completionHandler;
 - (void)startScanning;
 - (void)stopScanning;
 - (void)kickOffMotionAndBluetooth:(int)surveyLengthSeconds;
+- (BOOL)isScanning;
 
 @end

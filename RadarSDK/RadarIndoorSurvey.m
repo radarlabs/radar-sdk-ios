@@ -6,6 +6,7 @@
 - (instancetype)init {
     self = [super init];
     if (self) {
+        NSLog(@"setting self.isScanningMutex to NO");
         self.isScanningMutex = NO;
     }
     return self;
@@ -15,8 +16,9 @@
     NSLog(@"start called with placeLabel: %@, surveyLengthSeconds: %d, isWhereAmIScan: %d", placeLabel, surveyLengthSeconds, isWhereAmIScan);
 
     // if isScanningMutex is true, throw error
+    NSLog(@"self.isScanningMutex: %d", self.isScanningMutex);
     if (self.isScanningMutex) {
-        NSLog(@"Error: start called while scanning");
+        completionHandler(@"error: scan was already in progress");
         return;
     }
 
@@ -58,6 +60,12 @@
     }
 }
 
+// expose the isScanningMutex in a getter
+- (BOOL)isScanning {
+    return self.isScanningMutex;
+}
+
+
 - (void)kickOffMotionAndBluetooth:(int)surveyLengthSeconds {
     NSLog(@"kicking off CMMotionManager");
     self.motionManager = [[CMMotionManager alloc] init];
@@ -80,10 +88,13 @@
 }
 
 + (instancetype)sharedInstance {
+    NSLog(@"sharedInstance");
     static dispatch_once_t once;
     static id sharedInstance;
     dispatch_once(&once, ^{
         sharedInstance = [self new];
+        // print mutex
+        NSLog(@"sharedInstance mutex: %d", [sharedInstance isScanning]);
     });
     return sharedInstance;
 }
@@ -105,6 +116,8 @@
     // join all self.bluetoothReadings with newlines and POST to server
     NSString *payload = [self.bluetoothReadings componentsJoinedByString:@"\n"];
 
+    NSLog(@"self.isWhereAmIScan %d", self.isWhereAmIScan);
+
     // if self.isWhereAmIScan, call callback with the payload string
     if (self.isWhereAmIScan) {
         if (self.completionHandler) {
@@ -117,6 +130,8 @@
         // POST payload
         // TODO move to prod server..?
         NSURL *url = [NSURL URLWithString:@"https://ml-hetzner.radarindoors.com/scan_results"];
+        NSLog(@"url: %@", url);
+
         NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:url];
         [urlRequest setHTTPMethod:@"POST"];
         [urlRequest setHTTPBody:[payload dataUsingEncoding:NSUTF8StringEncoding]];
@@ -125,11 +140,14 @@
             if (data && self.completionHandler) {
                 // decode data to string
                 NSString *responseString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+                NSLog(@"responseString: %@", responseString);
                 self.completionHandler(responseString);
             }
         }];
         [task resume];
     }
+
+    NSLog(@"callign removeAllObjects, clearing scanId, etc.");
 
     // removeAllObjects from bluetooth readings i.e. clear array
     [self.bluetoothReadings removeAllObjects];
@@ -142,6 +160,8 @@
 
     // set mutex to off
     self.isScanningMutex = NO;
+
+    NSLog(@"stopScanning end");
 }
 
 - (void)centralManagerDidUpdateState:(CBCentralManager *)central {

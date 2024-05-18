@@ -179,17 +179,21 @@
                                  }];
                          };
 
+                         callTrackAPI(nil, @"");
+
+                         /*
                          NSLog(@"calling RadarIndoorSurvey");                         
                          NSLog(@"location: %@", location);
                          [[RadarIndoorSurvey sharedInstance] start:@"WHEREAMI"
-                                                         forLength:5
+                                                         forLength:WHERE_AM_I_DURATION_SECONDS
                                                  withKnownLocation:location
                                                     isWhereAmIScan:YES
                                              withCompletionHandler:^(NSString *_Nullable result) {
                                                 NSLog(@"received indoor start result: %@", result);
-                                                callTrackAPI(nil, result);
+                                                
                                             }
                          ];
+                         */
 
                          /*
                          if (beacons) {
@@ -1004,6 +1008,7 @@
              forLength:(int)surveyLengthSeconds
      completionHandler:(RadarIndoorsSurveyCompletionHandler)completionHandler {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"doIndoorsSurvey()"];
+
     [[RadarIndoorSurvey sharedInstance] start:placeLabel
                                     forLength:surveyLengthSeconds
                             withKnownLocation:nil
