@@ -18,6 +18,7 @@
 #import "RadarBeaconManager.h"
 #import "RadarLocationManager.h"
 #import "RadarLogger.h"
+#import "RadarSettings.h"
 #import "RadarState.h"
 #import "RadarUtils.h"
 
@@ -97,6 +98,7 @@
                                          RadarConfig *_Nullable config, NSString *_Nullable token) {
                         if (status == RadarStatusSuccess && config != nil) {
                             [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
+                            [RadarSettings setSdkConfiguration:config.meta.sdkConfiguration];
                         }
                         if (completionHandler) {
                             [RadarUtils runOnMainThread:^{
@@ -195,6 +197,7 @@
                                          RadarConfig *_Nullable config, NSString *_Nullable token) {
                         if (status == RadarStatusSuccess && config != nil) {
                             [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
+                            [RadarSettings setSdkConfiguration:config.meta.sdkConfiguration];
                         }
                         if (completionHandler) {
                             [RadarUtils runOnMainThread:^{

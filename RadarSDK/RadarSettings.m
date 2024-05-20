@@ -227,6 +227,15 @@ static NSString *const kXPlatformSDKVersion = @"radar-xPlatformSDKVersion";
     }
 }
 
++ (RadarSdkConfiguration *)sdkConfiguration {
+    RadarSdkConfiguration * sdkConfiguration = [[RadarSdkConfiguration alloc] init];
+    sdkConfiguration.logLevel = [RadarSettings logLevel];
+    return [[RadarSdkConfiguration alloc] initWithLogLevel:[RadarSettings logLevel]];
+}
+
++ (void)setSdkConfiguration:(RadarSdkConfiguration *)sdkConfiguration {
+    [[NSUserDefaults standardUserDefaults] setInteger:sdkConfiguration.logLevel forKey:kLogLevel];
+}
 
 + (RadarLogLevel)logLevel {
     RadarLogLevel logLevel;
