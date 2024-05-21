@@ -22,7 +22,26 @@
             "geometryRadius": 50,
             "tag": "venue",
             "externalId": "2"
-         }
+         },
+         {
+            "_id": "65b1868a5ae2b363725c6726",
+            "description": "poly point",
+            "metadata": {
+                "user_id": "61d7745286d190002f411070",
+                "type": "primary"
+            },
+            "tag": "ABC",
+            "externalId": "651ddadf8561651e099f145",
+            "type": "polygon",
+            "geometryCenter": {
+                "type": "Point",
+                "coordinates": [
+                    -115.762918,
+                    53.798472
+                ]
+            },
+            "geometryRadius": 489179
+        }
       ],
       "place": {
          "location": {

@@ -213,7 +213,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     [self updateTracking];
 }
 
-- (void)startUpdates:(int)interval {
+- (void)startUpdates:(int)interval blueBar:(BOOL)blueBar {
     if (!self.started || interval != self.startedInterval) {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Starting timer | interval = %d", interval]];
 
@@ -232,6 +232,11 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                                                        }];
 
         [self.lowPowerLocationManager startUpdatingLocation];
+        if (blueBar && interval <= 5) {
+            [self.locationManager startUpdatingLocation];
+        } else {
+            [self.locationManager stopUpdatingLocation];
+        }
 
         self.started = YES;
         self.startedInterval = interval;
@@ -249,6 +254,8 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 
     [self.timer invalidate];
 
+    [self.locationManager stopUpdatingLocation];
+    
     self.started = NO;
     self.startedInterval = 0;
 
@@ -264,6 +271,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 - (void)shutDown {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Shutting down"];
 
+    [self.locationManager stopUpdatingLocation];
     [self.lowPowerLocationManager stopUpdatingLocation];
 }
 
@@ -341,7 +349,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                 if (options.desiredStoppedUpdateInterval == 0) {
                     [self stopUpdates];
                 } else if (startUpdates) {
-                    [self startUpdates:options.desiredStoppedUpdateInterval];
+                    [self startUpdates:options.desiredStoppedUpdateInterval blueBar:options.showBlueBar];
                 }
                 if (options.useStoppedGeofence) {
                     if (location) {
@@ -354,7 +362,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                 if (options.desiredMovingUpdateInterval == 0) {
                     [self stopUpdates];
                 } else if (startUpdates) {
-                    [self startUpdates:options.desiredMovingUpdateInterval];
+                    [self startUpdates:options.desiredMovingUpdateInterval blueBar:options.showBlueBar];
                 }
                 if (options.useMovingGeofence) {
                     if (location) {
@@ -369,9 +377,13 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
             }
             if (options.useVisits) {
                 [self.locationManager startMonitoringVisits];
+            } else {
+                [self.locationManager stopMonitoringVisits];
             }
             if (options.useSignificantLocationChanges) {
                 [self.locationManager startMonitoringSignificantLocationChanges];
+            } else {
+                [self.locationManager stopMonitoringSignificantLocationChanges];
             }
             if (!options.beacons) {
                 [self removeSyncedBeacons];
@@ -458,7 +470,8 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         return;
     }
 
-    NSUInteger numGeofences = MIN(geofences.count, 9);
+    RadarTrackingOptions *options = [Radar getTrackingOptions];
+    NSUInteger numGeofences = MIN(geofences.count, options.beacons ? 9 : 19);
     NSMutableArray *requests = [NSMutableArray array]; 
 
     for (int i = 0; i < numGeofences; i++) {
@@ -937,6 +950,9 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                                          completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user,
                                                              NSArray<RadarGeofence *> *_Nullable nearbyGeofences, RadarConfig *_Nullable config, NSString *_Nullable token) {
                                              self.sending = NO;
+                                             if (status != RadarStatusSuccess || !config) {
+                                                 return;
+                                             }
 
                                              [self updateTrackingFromMeta:config.meta];
                                              [RadarSettings setFeatureSettings:config.meta.featureSettings];

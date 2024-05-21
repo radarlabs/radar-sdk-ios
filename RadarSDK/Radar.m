@@ -64,6 +64,9 @@
     [[RadarAPIClient sharedInstance] getConfigForUsage:@"initialize"
                                               verified:NO
                                      completionHandler:^(RadarStatus status, RadarConfig *config) {
+                                         if (status != RadarStatusSuccess || !config) {
+                                            return;
+                                         }
                                          [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
                                          [RadarSettings setFeatureSettings:config.meta.featureSettings];
                                          [self flushLogs];
@@ -163,7 +166,7 @@
                                                      NSArray<RadarGeofence *> *_Nullable nearbyGeofences, RadarConfig *_Nullable config, NSString *_Nullable token) {
                                      if (status == RadarStatusSuccess) {
                                          [[RadarLocationManager sharedInstance] replaceSyncedGeofences:nearbyGeofences];
-                                         if(config != nil){
+                                         if (config != nil) {
                                              [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
                                          }
                                          
@@ -706,57 +709,57 @@
                                     }];
 }
 
-+ (void)searchGeofencesWithRadius:(int)radius
-                             tags:(NSArray *_Nullable)tags
-                         metadata:(NSDictionary *_Nullable)metadata
-                            limit:(int)limit
-                completionHandler:(RadarSearchGeofencesCompletionHandler)completionHandler {
-    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"searchGeofences()"];
-    [[RadarLocationManager sharedInstance] getLocationWithCompletionHandler:^(RadarStatus status, CLLocation *_Nullable location, BOOL stopped) {
-        if (status != RadarStatusSuccess) {
-            if (completionHandler) {
-                [RadarUtils runOnMainThread:^{
-                    completionHandler(status, nil, nil);
-                }];
-            }
-
-            return;
-        }
-
-        [[RadarAPIClient sharedInstance] searchGeofencesNear:location
-                                                      radius:radius
-                                                        tags:tags
-                                                    metadata:metadata
-                                                       limit:limit
-                                           completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarGeofence *> *_Nullable geofences) {
-                                               if (completionHandler) {
-                                                   [RadarUtils runOnMainThread:^{
-                                                       completionHandler(status, location, geofences);
-                                                   }];
-                                               }
-                                           }];
-    }];
++ (void)searchGeofences:(RadarSearchGeofencesCompletionHandler)completionHandler {
+    [Radar searchGeofencesNear: nil radius:-1 tags:nil metadata:nil limit:100 includeGeometry:false completionHandler:completionHandler];
 }
 
-+ (void)searchGeofencesNear:(CLLocation *_Nonnull)near
++ (void)searchGeofencesNear:(CLLocation *_Nullable)near
                      radius:(int)radius
-                       tags:(NSArray *_Nullable)tags
+                       tags:(NSArray<NSString *> *_Nullable)tags
                    metadata:(NSDictionary *_Nullable)metadata
                       limit:(int)limit
+            includeGeometry:(BOOL)includeGeometry
           completionHandler:(RadarSearchGeofencesCompletionHandler)completionHandler {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"searchGeofences()"];
-    [[RadarAPIClient sharedInstance] searchGeofencesNear:near
-                                                  radius:radius
-                                                    tags:tags
-                                                metadata:metadata
-                                                   limit:limit
-                                       completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarGeofence *> *_Nullable geofences) {
-                                           if (completionHandler) {
-                                               [RadarUtils runOnMainThread:^{
-                                                   completionHandler(status, near, geofences);
-                                               }];
-                                           }
+    if (near == nil) {
+        [[RadarLocationManager sharedInstance] getLocationWithCompletionHandler:^(RadarStatus status, CLLocation *_Nullable location, BOOL stopped) {
+            if (status != RadarStatusSuccess) {
+                if (completionHandler) {
+                    [RadarUtils runOnMainThread:^{
+                        completionHandler(status, nil, nil);
+                    }];
+                }
+                return;
+            }           
+            [[RadarAPIClient sharedInstance] searchGeofencesNear:location
+                                                          radius:radius
+                                                            tags:tags
+                                                        metadata:metadata
+                                                           limit:limit
+                                                 includeGeometry:includeGeometry
+                                               completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarGeofence *> *_Nullable geofences) {
+                                                if (completionHandler) {
+                                                    [RadarUtils runOnMainThread:^{
+                                                        completionHandler(status, location, geofences);
+                                                    }];
+                                                }
+                                              }];
+        }];    
+    } else {
+        [[RadarAPIClient sharedInstance] searchGeofencesNear:near
+                                                     radius:radius
+                                                       tags:tags
+                                                   metadata:metadata
+                                                      limit:limit
+                                            includeGeometry:includeGeometry
+                                          completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarGeofence *> *_Nullable geofences) {
+                                            if (completionHandler) {
+                                                [RadarUtils runOnMainThread:^{
+                                                    completionHandler(status, near, geofences);
+                                                }];
+                                            }
                                        }];
+    }
 }
 
 + (void)autocompleteQuery:(NSString *_Nonnull)query
@@ -1191,6 +1194,9 @@
         [[RadarAPIClient sharedInstance] getConfigForUsage:@"resume"
                                                   verified:NO
                                          completionHandler:^(RadarStatus status, RadarConfig *_Nullable config) {
+                                             if (status != RadarStatusSuccess || !config) {
+                                                return;
+                                             }
                                              [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
                                              [RadarSettings setFeatureSettings:config.meta.featureSettings];
                                          }];
