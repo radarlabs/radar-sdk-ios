@@ -120,16 +120,18 @@
 
 - (void)applicationDidBecomeActive {
     // we need to handle the case of double updates, we onyl want to update the status if and only if we are coming back from a popup and the status has changed.
-    if (inBackgroundLocationPopUp && (@available(iOS 14.0, *))) {
+    if (inBackgroundLocationPopUp) {
 
-        CLAuthorizationStatus status = self.locationManager.authorizationStatus;
-        if (status == self.status.locationManagerStatus) {
-            // if the status did not changed, we update the status here, otherwise we will update it in the delegate method
-            RadarLocationPermissionsStatus *newStatus = [[RadarLocationPermissionsStatus alloc] initWithStatus:status
-                                                                                      backgroundPopupAvailable:self.status.backgroundPopupAvailable
-                                                                                             inForegroundPopup:self.status.inForegroundPopup
-                                                                             userRejectedBackgroundPermissions: YES];
-            [self updateStatus:newStatus];
+        if (@available(iOS 14.0, *)) {
+            CLAuthorizationStatus status = self.locationManager.authorizationStatus;
+            if (status == self.status.locationManagerStatus) {
+                // if the status did not changed, we update the status here, otherwise we will update it in the delegate method
+                RadarLocationPermissionsStatus *newStatus = [[RadarLocationPermissionsStatus alloc] initWithStatus:status
+                                                                                          backgroundPopupAvailable:self.status.backgroundPopupAvailable
+                                                                                                 inForegroundPopup:self.status.inForegroundPopup
+                                                                                 userRejectedBackgroundPermissions: YES];
+                [self updateStatus:newStatus];
+            }
         }
     }
 

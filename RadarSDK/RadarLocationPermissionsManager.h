@@ -11,10 +11,10 @@
 
 @interface RadarLocationPermissionsManager : NSObject <CLLocationManagerDelegate>
 
-@property (nonatomic, strong) RadarLocationPermissionsStatus *status;
-@property (nonatomic, strong) CLLocationManager *locationManager;
+@property (nonatomic, strong) RadarLocationPermissionsStatus * _Nonnull status;
+@property (nonatomic, strong) CLLocationManager * _Nonnull locationManager;
 
-+ (instancetype)sharedInstance;
++ (instancetype _Nonnull )sharedInstance;
 
 - (void)requestLocationPermissions:(BOOL)requestBackgroundPermissions;
 
