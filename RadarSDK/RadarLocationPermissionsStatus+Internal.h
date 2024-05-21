@@ -17,7 +17,7 @@
 
 - (instancetype _Nullable)initWithStatus:(CLAuthorizationStatus)locationManagerStatus
           backgroundPopupAvailable:(BOOL)backgroundPopupAvailable
-          foregroundPopupAvailable:(BOOL)foregroundPopupAvailable
+          inForegroundPopup:(BOOL)inForegroundPopup
           userRejectedBackgroundPermissions:(BOOL)userRejectedBackgroundPermissions;
 
 @end

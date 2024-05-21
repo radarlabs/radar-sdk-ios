@@ -28,15 +28,15 @@
 
 - (instancetype _Nullable)initWithStatus:(CLAuthorizationStatus)locationManagerStatus
           backgroundPopupAvailable:(BOOL)backgroundPopupAvailable
-          foregroundPopupAvailable:(BOOL)foregroundPopupAvailable
+          inForegroundPopup:(BOOL)inForegroundPopup
           userRejectedBackgroundPermissions:(BOOL)userRejectedBackgroundPermissions {
     self = [super init];
     if (self) {
         _locationManagerStatus = locationManagerStatus;
         _backgroundPopupAvailable = backgroundPopupAvailable;
-        _foregroundPopupAvailable = foregroundPopupAvailable;
+        _inForegroundPopup = inForegroundPopup;
         _userRejectedBackgroundPermissions = userRejectedBackgroundPermissions;
-        _locationPermissionState = [RadarLocationPermissionsStatus locationPermissionStateForLocationManagerStatus:locationManagerStatus backgroundPopupAvailable:backgroundPopupAvailable foregroundPopupAvailable:foregroundPopupAvailable userRejectedBackgroundPermissions:userRejectedBackgroundPermissions];
+        _locationPermissionState = [RadarLocationPermissionsStatus locationPermissionStateForLocationManagerStatus:locationManagerStatus backgroundPopupAvailable:backgroundPopupAvailable inForegroundPopup:inForegroundPopup userRejectedBackgroundPermissions:userRejectedBackgroundPermissions];
     }
     return self;
 }
@@ -66,7 +66,7 @@
     return @{
         @"locationManagerStatus": statusString,
         @"backgroundPopupAvailable": @(self.backgroundPopupAvailable),
-        @"foregroundPopupAvailable": @(self.foregroundPopupAvailable),
+        @"inForegroundPopup": @(self.inForegroundPopup),
         @"userRejectedBackgroundPermissions": @(self.userRejectedBackgroundPermissions),
         @"locationPermissionState": [RadarLocationPermissionsStatus stringForLocationPermissionState:self.locationPermissionState]
     };
@@ -89,9 +89,9 @@
         locationManagerStatus = kCLAuthorizationStatusNotDetermined;
     }
     BOOL backgroundPopupAvailable = [dictionary[@"backgroundPopupAvailable"] boolValue];
-    BOOL foregroundPopupAvailable = [dictionary[@"foregroundPopupAvailable"] boolValue];
+    BOOL inForegroundPopup = [dictionary[@"inForegroundPopup"] boolValue];
     BOOL userRejectedBackgroundPermissions = [dictionary[@"userRejectedBackgroundPermissions"] boolValue];
-    return [self initWithStatus:locationManagerStatus backgroundPopupAvailable:backgroundPopupAvailable foregroundPopupAvailable:foregroundPopupAvailable userRejectedBackgroundPermissions:userRejectedBackgroundPermissions];
+    return [self initWithStatus:locationManagerStatus backgroundPopupAvailable:backgroundPopupAvailable inForegroundPopup:inForegroundPopup userRejectedBackgroundPermissions:userRejectedBackgroundPermissions];
 }
 
 + (NSString *)stringForLocationPermissionState:(RadarLocationPermissionState)state {
@@ -119,11 +119,14 @@
 
 + (RadarLocationPermissionState)locationPermissionStateForLocationManagerStatus:(CLAuthorizationStatus)locationManagerStatus
         backgroundPopupAvailable:(BOOL)backgroundPopupAvailable
-        foregroundPopupAvailable:(BOOL)foregroundPopupAvailable
+        inForegroundPopup:(BOOL)inForegroundPopup
         userRejectedBackgroundPermissions:(BOOL)userRejectedBackgroundPermissions {
 
     if (locationManagerStatus == kCLAuthorizationStatusNotDetermined) {
-        return foregroundPopupAvailable ? NoPermissionsGranted : ForegroundPermissionsPending;
+        // this is wrong, we might alo get here is we got allow once and it was then revoked
+        // we shoould use the dangling flag to set the in foreground prompt too. change it to in foreground popup as
+        // the availibility can change. Note if we granted once we can get prompt again.
+        return inForegroundPopup ? NoPermissionsGranted : ForegroundPermissionsPending;
     }
 
     if (locationManagerStatus == kCLAuthorizationStatusDenied) {

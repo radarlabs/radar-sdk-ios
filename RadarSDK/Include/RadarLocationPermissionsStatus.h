@@ -25,11 +25,10 @@ typedef NS_ENUM(NSInteger, RadarLocationPermissionState) {
 
 @property (nonatomic, assign) CLAuthorizationStatus locationManagerStatus;
 @property (nonatomic, assign) BOOL backgroundPopupAvailable;
-@property (nonatomic, assign) BOOL foregroundPopupAvailable;
+@property (nonatomic, assign) BOOL inForegroundPopup;
 @property (nonatomic, assign) BOOL userRejectedBackgroundPermissions;
 @property (nonatomic, assign) RadarLocationPermissionState locationPermissionState;
 
 - (NSDictionary *_Nonnull)dictionaryValue;
-
 
 @end
