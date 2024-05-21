@@ -38,15 +38,15 @@
         } else{
             if (@available(iOS 14.0, *)) {
                 self.status = [[RadarLocationPermissionsStatus alloc] initWithStatus:self.locationManager.authorizationStatus
-                                                      backgroundPopupAvailable:YES
-                                                      inForegroundPopup:NO
-                                                      userRejectedBackgroundPermissions:NO];
+                                                            backgroundPopupAvailable:YES
+                                                                   inForegroundPopup:NO
+                                                   userRejectedBackgroundPermissions:NO];
             } else {
                 // just a dummy value, this component will not communicate with the rest of the SDK if the version is below 14.0
                 self.status = [[RadarLocationPermissionsStatus alloc] initWithStatus: kCLAuthorizationStatusAuthorizedAlways
-                                                      backgroundPopupAvailable:NO
-                                                      inForegroundPopup:NO
-                                                      userRejectedBackgroundPermissions:NO];
+                                                            backgroundPopupAvailable:NO
+                                                                   inForegroundPopup:NO
+                                                   userRejectedBackgroundPermissions:NO];
             }
         }
        
@@ -84,8 +84,8 @@
         [self.locationManager requestAlwaysAuthorization];
         if (@available(iOS 14.0, *)) {
             RadarLocationPermissionsStatus *status = [[RadarLocationPermissionsStatus alloc] initWithStatus:self.locationManager.authorizationStatus
-                                                                             backgroundPopupAvailable:NO
-                                                                             inForegroundPopup:self.status.inForegroundPopup
+                                                                                   backgroundPopupAvailable:NO
+                                                                                          inForegroundPopup:self.status.inForegroundPopup
                                                                           userRejectedBackgroundPermissions: self.status.userRejectedBackgroundPermissions];
             [self updateStatus:status];
         }
@@ -97,8 +97,8 @@
             if (self->danglingBackgroundPermissionsRequest) {
                 if (@available(iOS 14.0, *)) {
                     RadarLocationPermissionsStatus *status = [[RadarLocationPermissionsStatus alloc] initWithStatus:self.locationManager.authorizationStatus
-                                                                                     backgroundPopupAvailable:self.status.backgroundPopupAvailable
-                                                                                     inForegroundPopup:self.status.inForegroundPopup
+                                                                                           backgroundPopupAvailable:self.status.backgroundPopupAvailable
+                                                                                                  inForegroundPopup:self.status.inForegroundPopup
                                                                                   userRejectedBackgroundPermissions:YES];
                     [self updateStatus:status];
                 }
@@ -110,8 +110,8 @@
         [self.locationManager requestWhenInUseAuthorization];
         if (@available(iOS 14.0, *)) {
             RadarLocationPermissionsStatus *status = [[RadarLocationPermissionsStatus alloc] initWithStatus:self.locationManager.authorizationStatus
-                                                                             backgroundPopupAvailable:self.status.backgroundPopupAvailable
-                                                                             inForegroundPopup:YES
+                                                                                   backgroundPopupAvailable:self.status.backgroundPopupAvailable
+                                                                                          inForegroundPopup:YES
                                                                           userRejectedBackgroundPermissions: self.status.userRejectedBackgroundPermissions];
             [self updateStatus:status];
         }
@@ -126,9 +126,9 @@
         if (status == self.status.locationManagerStatus) {
             // if the status did not changed, we update the status here, otherwise we will update it in the delegate method
             RadarLocationPermissionsStatus *newStatus = [[RadarLocationPermissionsStatus alloc] initWithStatus:status
-                                                             backgroundPopupAvailable:self.status.backgroundPopupAvailable
-                                                             inForegroundPopup:self.status.inForegroundPopup
-                                                             userRejectedBackgroundPermissions: YES];
+                                                                                      backgroundPopupAvailable:self.status.backgroundPopupAvailable
+                                                                                             inForegroundPopup:self.status.inForegroundPopup
+                                                                             userRejectedBackgroundPermissions: YES];
             [self updateStatus:newStatus];
         }
     }
@@ -146,10 +146,11 @@
 
 - (void)locationManager:(CLLocationManager *)manager didChangeAuthorizationStatus:(CLAuthorizationStatus)status {
     RadarLocationPermissionsStatus *newStatus = [[RadarLocationPermissionsStatus alloc] initWithStatus:status
-                                                                 backgroundPopupAvailable:self.status.backgroundPopupAvailable
-                                                                 // any change in status will always result in the in foreground popup closing
-                                                                 inForegroundPopup:NO
-                                                                 userRejectedBackgroundPermissions: self.status.userRejectedBackgroundPermissions  || (status == kCLAuthorizationStatusDenied)];
+                                                                              backgroundPopupAvailable:self.status.backgroundPopupAvailable
+                                                                                     // any change in status will always result in the in foreground popup closing
+                                                                                     inForegroundPopup:NO
+                                                                     userRejectedBackgroundPermissions: 
+                                                                     self.status.userRejectedBackgroundPermissions || (status == kCLAuthorizationStatusDenied)];
     [self updateStatus:newStatus];
 }
 

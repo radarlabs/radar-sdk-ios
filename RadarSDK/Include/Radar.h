@@ -1139,16 +1139,20 @@ Gets the device's current location, then searches for geofences near that locati
  */
 + (NSDictionary *)dictionaryForLocation:(CLLocation *)location NS_SWIFT_NAME(dictionaryForLocation(_:));
 
-/*
-Request foreground location permissions.
+/**
+ Requests foreground location permissions.
 */
 + (void)requestForegroundLocationPermissions;
 
-/*
-Request background location permissions.
+/**
+ Requests background location permissions.
 */
 + (void)requestBackgroundLocationPermissions;
 
+/**
+ @return A RadarPermissionsStatus object with the current location permissions status.
+
+*/
 + (RadarLocationPermissionsStatus *)getLocationPermissionsStatus;
 
 @end

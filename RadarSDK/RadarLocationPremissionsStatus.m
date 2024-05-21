@@ -27,9 +27,9 @@
 }
 
 - (instancetype _Nullable)initWithStatus:(CLAuthorizationStatus)locationManagerStatus
-          backgroundPopupAvailable:(BOOL)backgroundPopupAvailable
-          inForegroundPopup:(BOOL)inForegroundPopup
-          userRejectedBackgroundPermissions:(BOOL)userRejectedBackgroundPermissions {
+                backgroundPopupAvailable:(BOOL)backgroundPopupAvailable
+                       inForegroundPopup:(BOOL)inForegroundPopup
+       userRejectedBackgroundPermissions:(BOOL)userRejectedBackgroundPermissions {
     self = [super init];
     if (self) {
         _locationManagerStatus = locationManagerStatus;
@@ -91,7 +91,10 @@
     BOOL backgroundPopupAvailable = [dictionary[@"backgroundPopupAvailable"] boolValue];
     BOOL inForegroundPopup = [dictionary[@"inForegroundPopup"] boolValue];
     BOOL userRejectedBackgroundPermissions = [dictionary[@"userRejectedBackgroundPermissions"] boolValue];
-    return [self initWithStatus:locationManagerStatus backgroundPopupAvailable:backgroundPopupAvailable inForegroundPopup:inForegroundPopup userRejectedBackgroundPermissions:userRejectedBackgroundPermissions];
+    return [self initWithStatus:locationManagerStatus 
+       backgroundPopupAvailable:backgroundPopupAvailable 
+              inForegroundPopup:inForegroundPopup 
+userRejectedBackgroundPermissions:userRejectedBackgroundPermissions];
 }
 
 + (NSString *)stringForLocationPermissionState:(RadarLocationPermissionState)state {
@@ -118,12 +121,11 @@
 }
 
 + (RadarLocationPermissionState)locationPermissionStateForLocationManagerStatus:(CLAuthorizationStatus)locationManagerStatus
-        backgroundPopupAvailable:(BOOL)backgroundPopupAvailable
-        inForegroundPopup:(BOOL)inForegroundPopup
-        userRejectedBackgroundPermissions:(BOOL)userRejectedBackgroundPermissions {
+                                                       backgroundPopupAvailable:(BOOL)backgroundPopupAvailable
+                                                              inForegroundPopup:(BOOL)inForegroundPopup
+                                              userRejectedBackgroundPermissions:(BOOL)userRejectedBackgroundPermissions {
 
     if (locationManagerStatus == kCLAuthorizationStatusNotDetermined) {
-
         return inForegroundPopup ? ForegroundPermissionsPending : NoPermissionsGranted;
     }
 

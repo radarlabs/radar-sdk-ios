@@ -9,6 +9,14 @@
 #import <CoreLocation/CoreLocation.h>
 #import <Foundation/Foundation.h>
 
+/**
+ A class representing the status of location permissions.
+*/
+@interface RadarLocationPermissionsStatus : NSObject
+
+/**
+ The type of location permissions state.
+*/
 typedef NS_ENUM(NSInteger, RadarLocationPermissionState) {
     NoPermissionsGranted,
     ForegroundPermissionsGranted,
@@ -21,12 +29,25 @@ typedef NS_ENUM(NSInteger, RadarLocationPermissionState) {
     Unknown
 };
 
-@interface RadarLocationPermissionsStatus : NSObject
-
+/**
+ The authorization status of the iOS location manager.
+*/
 @property (nonatomic, assign) CLAuthorizationStatus locationManagerStatus;
+/**
+ The flag indicating if the user has been prompted for background location permissions.
+*/
 @property (nonatomic, assign) BOOL backgroundPopupAvailable;
+/**
+ The flag indicating if the user has been prompted for foreground location permissions.
+*/
 @property (nonatomic, assign) BOOL inForegroundPopup;
+/**
+ The flag indicating if the user has rejected background location permissions.
+*/
 @property (nonatomic, assign) BOOL userRejectedBackgroundPermissions;
+/**
+ The state of the location permissions represented by the RadarLocationPermissionState enum.
+*/
 @property (nonatomic, assign) RadarLocationPermissionState locationPermissionState;
 
 - (NSDictionary *_Nonnull)dictionaryValue;

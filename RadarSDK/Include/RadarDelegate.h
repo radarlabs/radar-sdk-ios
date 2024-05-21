@@ -62,10 +62,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)didLogMessage:(NSString *_Nonnull)message NS_SWIFT_NAME(didLog(message:));
 
 /**
+ Tells the delegate that the user's location permissions status was updated.
 
-Tells the delegate that the user's location permissions state was updated.
-
-@param status The location permissions status.
+ @param status The location permissions status.
 */
 - (void)didUpdateLocationPermissionsStatus:(RadarLocationPermissionsStatus *_Nonnull)status NS_SWIFT_NAME(didUpdateClientLocationPermissionsStatus(status:));
 

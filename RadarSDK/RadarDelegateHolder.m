@@ -90,7 +90,7 @@
     if (self.delegate) {
         [self.delegate didUpdateLocationPermissionsStatus:status];
     }
-    // make error for now so it shows, for testing only
+    
     NSDictionary *statusDict = [status dictionaryValue];
     NSError *error;
     NSData *jsonData = [NSJSONSerialization dataWithJSONObject:statusDict
@@ -101,7 +101,7 @@
         NSLog(@"Got an error: %@", error);
     } else {
         NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelError message:[NSString stringWithFormat:@"📍 Radar location permissions updated | status = %@", jsonString]];
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"📍 Radar location permissions updated | status = %@", jsonString]];
     }
 }
 

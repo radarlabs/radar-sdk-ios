@@ -62,7 +62,6 @@
         [RadarSettings updateSessionId];
     }
 
-    //init location permissions manager
     [RadarLocationPermissionsManager sharedInstance];
 
     [[RadarLocationManager sharedInstance] updateTrackingFromInitialize];
