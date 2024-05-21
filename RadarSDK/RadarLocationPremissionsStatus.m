@@ -126,7 +126,7 @@
         // this is wrong, we might alo get here is we got allow once and it was then revoked
         // we shoould use the dangling flag to set the in foreground prompt too. change it to in foreground popup as
         // the availibility can change. Note if we granted once we can get prompt again.
-        return inForegroundPopup ? NoPermissionsGranted : ForegroundPermissionsPending;
+        return inForegroundPopup ? ForegroundPermissionsPending : NoPermissionsGranted;
     }
 
     if (locationManagerStatus == kCLAuthorizationStatusDenied) {
