@@ -63,7 +63,7 @@
     }
 
     //init location permissions manager
-    //[RadarLocationPermissionsManager sharedInstance];
+    [RadarLocationPermissionsManager sharedInstance];
 
     [[RadarLocationManager sharedInstance] updateTrackingFromInitialize];
     [[RadarAPIClient sharedInstance] getConfigForUsage:@"initialize"
