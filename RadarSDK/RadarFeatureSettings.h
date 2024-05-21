@@ -21,6 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property (nonatomic, assign) BOOL usePersistence;
 @property (nonatomic, assign) BOOL extendFlushReplays;
+@property (nonatomic, assign) BOOL useLocationMetadata;
 @property (nonatomic, assign) BOOL useLogPersistence;
 
 /**
@@ -30,6 +31,7 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (instancetype)initWithUsePersistence:(BOOL)usePersistence
                     extendFlushReplays:(BOOL)extendFlushReplays
+                   useLocationMetadata:(BOOL)useLocationMetadata
                     useLogPersistence:(BOOL)useLogPersistence;
 
 /**

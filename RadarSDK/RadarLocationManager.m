@@ -40,11 +40,17 @@
  */
 @property (assign, nonatomic) BOOL sending;
 
+
 /**
  The timer for checking the location at regular intervals, such as in
  continuous tracking mode.
  */
 @property (strong, nonatomic) NSTimer *timer;
+
+/**
+ 'YES' if a new activity update has been received.
+*/
+@property (assign, nonatomic) BOOL newActivityUpdate;
 
 /**
  Callbacks for sending events.
@@ -82,6 +88,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     self = [super init];
     if (self) {
         _completionHandlers = [NSMutableArray new];
+        _newActivityUpdate = NO;
 
         _locationManager = [CLLocationManager new];
         _locationManager.delegate = self;
@@ -93,6 +100,71 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         _lowPowerLocationManager.desiredAccuracy = kCLLocationAccuracyThreeKilometers;
         _lowPowerLocationManager.distanceFilter = 3000;
         _lowPowerLocationManager.allowsBackgroundLocationUpdates = [RadarUtils locationBackgroundMode];
+
+        RadarFeatureSettings *featureSettings = [RadarSettings featureSettings];
+        if (featureSettings.useLocationMetadata) { 
+            [_locationManager startUpdatingHeading];
+
+            _motionActivityManager = [CMMotionActivityManager new];
+            [_motionActivityManager startActivityUpdatesToQueue:[NSOperationQueue mainQueue] withHandler:^(CMMotionActivity * _Nullable activity) {
+                if (activity) {
+                    NSString *motionActivityType = @"unknown";
+                    if (activity.stationary) {
+                        motionActivityType = @"stationary";
+                    } else if (activity.walking) {
+                        motionActivityType = @"walking";
+                    } else if (activity.running) {
+                        motionActivityType = @"running";
+                    } else if (activity.automotive) {
+                        motionActivityType = @"driving";
+                    } else if (activity.cycling) {
+                        motionActivityType = @"cycling";
+                    }
+
+                    [RadarState setLastMotionActivityData:@{
+                        @"type" : motionActivityType,
+                        @"timestamp" : @([activity.startDate timeIntervalSince1970]),
+                        @"confidence" : @(activity.confidence)
+                    }];
+                    
+                    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Activity detected, initiating trackOnce"];
+                    self.newActivityUpdate = YES;
+                    [self requestLocation];
+                    
+                }
+            }];
+        
+            _motionManager = [CMMotionManager new];
+            [_motionManager startAccelerometerUpdatesToQueue:[NSOperationQueue mainQueue] withHandler:^(CMAccelerometerData * _Nullable accelerometerData, NSError * _Nullable error) {
+                if (accelerometerData) {
+                    [RadarState setLastAccelerometerData:@{
+                        @"xAcceleration" : @(accelerometerData.acceleration.x),
+                        @"yAcceleration" : @(accelerometerData.acceleration.y),
+                        @"zAcceleration" : @(accelerometerData.acceleration.z)
+                    }];
+                }
+            }];
+            
+            [_motionManager startGyroUpdatesToQueue:[NSOperationQueue mainQueue] withHandler:^(CMGyroData * _Nullable gyroData, NSError * _Nullable error) {
+                if (gyroData) {
+                    [RadarState setLastGyroData:@{
+                        @"xRotationRate" : @(gyroData.rotationRate.x),
+                        @"yRotationRate" : @(gyroData.rotationRate.y),
+                        @"zRotationRate" : @(gyroData.rotationRate.z),
+                    }];
+                }
+            }];
+            
+            [_motionManager startMagnetometerUpdatesToQueue:[NSOperationQueue mainQueue] withHandler:^(CMMagnetometerData * _Nullable magnetometerData, NSError * _Nullable error) {
+                if (magnetometerData) {
+                    [RadarState setLastMagnetometerData:@{
+                        @"xMagneticField" : @(magnetometerData.magneticField.x),
+                        @"yMagneticField" : @(magnetometerData.magneticField.y),
+                        @"zMagneticField" : @(magnetometerData.magneticField.z),
+                    }];
+                }
+            }];
+        }
 
         _permissionsHelper = [RadarPermissionsHelper new];
 
@@ -827,6 +899,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         }
     }
     [RadarState updateLastSentAt];
+    self.newActivityUpdate = NO;
 
     if (source == RadarLocationSourceForegroundLocation) {
         return;
@@ -889,7 +962,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     }
 
     CLLocation *location = [locations lastObject];
-    if (self.completionHandlers.count) {
+    if (self.completionHandlers.count || self.newActivityUpdate) {
         [self handleLocation:location source:RadarLocationSourceForegroundLocation];
     } else {
         BOOL tracking = [RadarSettings tracking];
@@ -1041,6 +1114,18 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     [[RadarDelegateHolder sharedInstance] didFailWithStatus:RadarStatusErrorLocation];
 
     [self callCompletionHandlersWithStatus:RadarStatusErrorLocation location:nil];
+}
+
+- (void)locationManager:(CLLocationManager *)manager didUpdateHeading:(CLHeading *)newHeading {
+    [RadarState setLastHeadingData:@{
+        @"magneticHeading" : @(newHeading.magneticHeading),
+        @"trueHeading" : @(newHeading.trueHeading),
+        @"headingAccuracy" : @(newHeading.headingAccuracy),
+        @"x" : @(newHeading.x),
+        @"y" : @(newHeading.y),
+        @"z" : @(newHeading.z),
+        @"timestamp" : @([newHeading.timestamp timeIntervalSince1970]),
+    }];
 }
 
 @end

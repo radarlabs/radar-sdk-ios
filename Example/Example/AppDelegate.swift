@@ -226,7 +226,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
     }
 
-    func didUpdateLocation(_ location: CLLocation, user: RadarUser) {
+    func didUpdateLocation(_ location: CLLocation, user: RadarUser, locationMetadata: [AnyHashable : Any]?) {
         let body = "\(user.stopped ? "Stopped at" : "Moved to") location (\(location.coordinate.latitude), \(location.coordinate.longitude)) with accuracy \(location.horizontalAccuracy) meters"
         self.notify(body)
     }

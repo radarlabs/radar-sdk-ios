@@ -34,7 +34,7 @@ NS_ASSUME_NONNULL_BEGIN
  @param location The location.
  @param user The current user.
  */
-- (void)didUpdateLocation:(CLLocation *_Nonnull)location user:(RadarUser *_Nonnull)user NS_SWIFT_NAME(didUpdateLocation(_:user:));
+- (void)didUpdateLocation:(CLLocation *_Nonnull)location user:(RadarUser *_Nonnull)user locationMetadata:(NSDictionary *_Nullable)locationMetadata NS_SWIFT_NAME(didUpdateLocation(_:user:locationMetadata:));
 
 /**
  Tells the delegate that the client's location was updated but not necessarily synced to the server. To receive only server-synced location updates and user
