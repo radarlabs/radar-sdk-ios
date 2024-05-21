@@ -123,8 +123,8 @@
     if (inBackgroundLocationPopUp && (@available(iOS 14.0, *))) {
 
         CLAuthorizationStatus status = self.locationManager.authorizationStatus;
-        if (status != self.status.locationManagerStatus) {
-            // if the status has changed, we update the status
+        if (status == self.status.locationManagerStatus) {
+            // if the status did not changed, we update the status here, otherwise we will update it in the delegate method
             RadarLocationPermissionsStatus *newStatus = [[RadarLocationPermissionsStatus alloc] initWithStatus:status
                                                              backgroundPopupAvailable:self.status.backgroundPopupAvailable
                                                              inForegroundPopup:self.status.inForegroundPopup
