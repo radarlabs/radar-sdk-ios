@@ -45,26 +45,6 @@
     NSTimeInterval expiresIn = 0;
     BOOL passed = NO;
     
-    id userObj = dict[@"user"];
-    if (userObj && [userObj isKindOfClass:[NSDictionary class]]) {
-        user = [[RadarUser alloc] initWithObject:userObj];
-        
-        NSDictionary *userDict = (NSDictionary *)userObj;
-        id actualUpdatedAtObj = userDict[@"actualUpdatedAt"];
-        if (actualUpdatedAtObj && [actualUpdatedAtObj isKindOfClass:[NSString class]]) {
-            NSString *actualUpdatedAtStr = (NSString *)actualUpdatedAtObj;
-            NSDate *actualUpdatedAt = [RadarUtils.isoDateFormatter dateFromString:actualUpdatedAtStr];
-            expiresIn = [expiresAt timeIntervalSinceDate:actualUpdatedAt];
-        }
-        
-        passed = user && user.fraud && user.fraud.passed && user.country && user.country.passed && user.state && user.state.passed;
-    }
-    
-    id eventsObj = dict[@"events"];
-    if (eventsObj && [eventsObj isKindOfClass:[NSArray class]]) {
-        events = [RadarEvent eventsFromObject:eventsObj];
-    }
-    
     id tokenObj = dict[@"token"];
     if (tokenObj && [tokenObj isKindOfClass:[NSString class]]) {
         token = (NSString *)tokenObj;
@@ -74,6 +54,26 @@
     if (expiresAtObj && [expiresAtObj isKindOfClass:[NSString class]]) {
         NSString *expiresAtStr = (NSString *)expiresAtObj;
         expiresAt = [RadarUtils.isoDateFormatter dateFromString:expiresAtStr];
+    }
+    
+    id userObj = dict[@"user"];
+    if (userObj && [userObj isKindOfClass:[NSDictionary class]]) {
+        user = [[RadarUser alloc] initWithObject:userObj];
+        
+        NSDictionary *userDict = (NSDictionary *)userObj;
+        id actualUpdatedAtObj = userDict[@"actualUpdatedAt"];
+        if (actualUpdatedAtObj && [actualUpdatedAtObj isKindOfClass:[NSString class]]) {
+            NSString *actualUpdatedAtStr = (NSString *)actualUpdatedAtObj;
+            NSDate *actualUpdatedAt = [RadarUtils.isoDateFormatter dateFromString:actualUpdatedAtStr];
+            expiresIn = 10; // [expiresAt timeIntervalSinceDate:actualUpdatedAt];
+        }
+        
+        passed = user && user.fraud && user.fraud.passed && user.country && user.country.passed && user.state && user.state.passed;
+    }
+    
+    id eventsObj = dict[@"events"];
+    if (eventsObj && [eventsObj isKindOfClass:[NSArray class]]) {
+        events = [RadarEvent eventsFromObject:eventsObj];
     }
     
     if (user && events && token && expiresAt) {

@@ -173,8 +173,16 @@
         [self trackVerifiedWithBeacons:beacons completionHandler:^(RadarStatus status, RadarVerifiedLocationToken *_Nullable token) {
             NSTimeInterval minInterval = interval;
             if (token) {
-                minInterval = MIN(token.expiresIn, minInterval);
+                // if token.expiresIn is shorter than interval, override interval
+                minInterval = MIN(token.expiresIn, interval);
+                
+                // re-request early to maximize the likelihood that a cached token is available
+                if (minInterval > 20) {
+                    minInterval = minInterval - 10;
+                }
             }
+            
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Requesting token again in %f seconds | minInterval = %f; token.expiresIn = %f; interval = %f", minInterval, minInterval, token.expiresIn, interval]];
             
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(minInterval * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
                 if (self.started) {
