@@ -30,7 +30,7 @@
     if (self) {
         self.locationManager = [CLLocationManager new];
         self.locationManager.delegate = self;
-        RadarLocationPermissionsStatus *status = [RadarLocationPermissionsStatus retrieve];
+        RadarLocationPermissionsStatus *status = [RadarLocationPermissionsStatus getRadarLocationPermissionsStatus];
         if (status) {
             self.status = status;
             // we should not start in the popup state
@@ -65,7 +65,7 @@
 
 - (void)updateStatus:(RadarLocationPermissionsStatus *)status {
     self.status = status;
-    [RadarLocationPermissionsStatus store:status];
+    [RadarLocationPermissionsStatus radarLocationPermissionsStatus:status];
     if (@available(iOS 14.0, *)) {
         [[RadarDelegateHolder sharedInstance] didUpdateLocationPermissionsStatus:self.status];
     }

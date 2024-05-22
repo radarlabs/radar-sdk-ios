@@ -13,12 +13,12 @@
 
 @implementation RadarLocationPermissionsStatus
 
-+ (void)store:(RadarLocationPermissionsStatus *)status {
++ (void)radarLocationPermissionsStatus:(RadarLocationPermissionsStatus *)status {
     NSDictionary *dict = [status dictionaryValue];
     [[NSUserDefaults standardUserDefaults] setObject:dict forKey:@"radarLocationPermissionsStatus"];
 }
 
-+ (RadarLocationPermissionsStatus *)retrieve {
++ (RadarLocationPermissionsStatus *)getRadarLocationPermissionsStatus {
     NSDictionary *dict = [[NSUserDefaults standardUserDefaults] objectForKey:@"radarLocationPermissionsStatus"];
     if (dict) {
         return [[RadarLocationPermissionsStatus alloc] initWithDictionary:dict];

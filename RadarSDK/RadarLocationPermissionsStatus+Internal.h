@@ -11,9 +11,9 @@
 
 @interface RadarLocationPermissionsStatus()
 
-+ (void) store:(RadarLocationPermissionsStatus *_Nonnull)status;
++ (void) radarLocationPermissionsStatus:(RadarLocationPermissionsStatus *_Nonnull)status;
 
-+ (RadarLocationPermissionsStatus *_Nullable) retrieve;
++ (RadarLocationPermissionsStatus *_Nullable) getRadarLocationPermissionsStatus;
 
 - (instancetype _Nullable)initWithStatus:(CLAuthorizationStatus)locationManagerStatus
                 backgroundPopupAvailable:(BOOL)backgroundPopupAvailable
