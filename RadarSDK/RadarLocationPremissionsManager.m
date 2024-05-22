@@ -33,7 +33,7 @@
         RadarLocationPermissionsStatus *status = [RadarLocationPermissionsStatus retrieve];
         if (status) {
             self.status = status;
-            // we need to set the in permissions flag to no as we should not start in the popup state
+            // we should not start in the popup state
             self.status.inForegroundPopup = NO;
         } else{
             if (@available(iOS 14.0, *)) {
