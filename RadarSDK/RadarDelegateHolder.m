@@ -83,7 +83,7 @@
         [self.verifiedDelegate didUpdateToken:token];
     }
 
-    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"📍 Radar token updated | token = %@; expiresAt = %@", token.token, token.expiresAt]];
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"📍 Radar token updated | token = %@; expiresAt = %@; expiresIn = %f; passed = %d", token.token, token.expiresAt, token.expiresIn, token.passed]];
 }
 
 @end
