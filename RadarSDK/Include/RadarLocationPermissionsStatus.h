@@ -30,7 +30,7 @@ typedef NS_ENUM(NSInteger, RadarLocationPermissionState) {
 };
 
 /**
- The authorization status of the iOS location manager.
+ The CLAuthorizationStatus of the iOS location manager.
 */
 @property (nonatomic, assign) CLAuthorizationStatus locationManagerStatus;
 /**
@@ -38,7 +38,7 @@ typedef NS_ENUM(NSInteger, RadarLocationPermissionState) {
 */
 @property (nonatomic, assign) BOOL backgroundPopupAvailable;
 /**
- The flag indicating if the user has been prompted for foreground location permissions.
+ The flag indicating if the user is in the pop-up for foreground location permissions.
 */
 @property (nonatomic, assign) BOOL inForegroundPopup;
 /**
