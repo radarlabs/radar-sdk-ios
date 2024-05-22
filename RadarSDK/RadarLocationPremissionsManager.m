@@ -66,10 +66,6 @@
 - (void)updateStatus:(RadarLocationPermissionsStatus *)status {
     self.status = status;
     [RadarLocationPermissionsStatus store:status];
-    [self sendDelegateUpdate];
-}
-
-- (void)sendDelegateUpdate {
     if (@available(iOS 14.0, *)) {
         [[RadarDelegateHolder sharedInstance] didUpdateLocationPermissionsStatus:self.status];
     }
@@ -119,7 +115,7 @@
 }
 
 - (void)applicationDidBecomeActive {
-    // we need to handle the case of double updates, we onyl want to update the status if and only if we are coming back from a popup and the status has changed.
+    // we need to handle the case of double updates, we only want to update the status if and only if we are coming back from a popup and the status has changed.
     if (inBackgroundLocationPopUp) {
 
         if (@available(iOS 14.0, *)) {

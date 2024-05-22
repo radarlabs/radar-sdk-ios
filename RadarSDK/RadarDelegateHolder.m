@@ -9,6 +9,7 @@
 
 #import "RadarLogger.h"
 #import "RadarNotificationHelper.h"
+#import "RadarUtils.h"
 
 @implementation RadarDelegateHolder
 
@@ -92,17 +93,9 @@
     }
     
     NSDictionary *statusDict = [status dictionaryValue];
-    NSError *error;
-    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:statusDict
-                                                       options:NSJSONWritingPrettyPrinted
-                                                         error:&error];
-
-    if (!jsonData) {
-        NSLog(@"Got an error: %@", error);
-    } else {
-        NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"📍 Radar location permissions updated | status = %@", jsonString]];
-    }
+    
+    NSString *jsonString = [RadarUtils dictionaryToJson:statusDict];
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"📍 Radar location permissions updated | status = %@", jsonString]];
 }
 
 @end
