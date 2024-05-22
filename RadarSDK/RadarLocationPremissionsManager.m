@@ -11,10 +11,14 @@
 #import "RadarLocationPermissionsStatus+Internal.h"
 #import "RadarDelegateHolder.h"
 
-@implementation RadarLocationPermissionsManager{
-    BOOL danglingBackgroundPermissionsRequest;
-    BOOL inBackgroundLocationPopUp;
-}
+@interface RadarLocationPermissionsManager ()
+
+@property (assign, nonatomic) BOOL danglingBackgroundPermissionsRequest;
+@property (assign, nonatomic) BOOL inBackgroundLocationPopUp;
+
+@end
+
+@implementation RadarLocationPermissionsManager
 
 + (instancetype)sharedInstance {
     static dispatch_once_t once;
@@ -75,7 +79,7 @@
 - (void)requestLocationPermissions:(BOOL)background {
     if (background && self.status.locationManagerStatus == kCLAuthorizationStatusAuthorizedWhenInUse) {
 
-        danglingBackgroundPermissionsRequest = YES;
+        self.danglingBackgroundPermissionsRequest = YES;
 
         [self.locationManager requestAlwaysAuthorization];
         if (@available(iOS 14.0, *)) {
@@ -90,7 +94,7 @@
         // When the timer fires and the flag has not been unset, we assume that app never resigned active.
         // Usually this means that the user has previously rejected the background permissions.
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            if (self->danglingBackgroundPermissionsRequest) {
+            if (self.danglingBackgroundPermissionsRequest) {
                 if (@available(iOS 14.0, *)) {
                     RadarLocationPermissionsStatus *status = [[RadarLocationPermissionsStatus alloc] initWithStatus:self.locationManager.authorizationStatus
                                                                                            backgroundPopupAvailable:self.status.backgroundPopupAvailable
@@ -99,7 +103,7 @@
                     [self updateStatus:status];
                 }
             }
-            self->danglingBackgroundPermissionsRequest = NO;
+            self.danglingBackgroundPermissionsRequest = NO;
         });
     }
     if (!background && self.status.locationManagerStatus == kCLAuthorizationStatusNotDetermined) {
@@ -116,7 +120,7 @@
 
 - (void)applicationDidBecomeActive {
     // we need to handle the case of double updates, we only want to update the status if and only if we are coming back from a popup and the status has changed.
-    if (inBackgroundLocationPopUp) {
+    if (self.inBackgroundLocationPopUp) {
 
         if (@available(iOS 14.0, *)) {
             CLAuthorizationStatus status = self.locationManager.authorizationStatus;
@@ -131,15 +135,15 @@
         }
     }
 
-    inBackgroundLocationPopUp = NO;
+    self.inBackgroundLocationPopUp = NO;
 }
 
 
 - (void)applicationWillResignActive {
-    if (danglingBackgroundPermissionsRequest) {
-        inBackgroundLocationPopUp = YES;
+    if (self.danglingBackgroundPermissionsRequest) {
+        self.inBackgroundLocationPopUp = YES;
     }
-    danglingBackgroundPermissionsRequest = NO;
+    self.danglingBackgroundPermissionsRequest = NO;
 }
 
 - (void)locationManager:(CLLocationManager *)manager didChangeAuthorizationStatus:(CLAuthorizationStatus)status {
