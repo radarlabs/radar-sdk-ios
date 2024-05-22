@@ -490,7 +490,7 @@ typedef void (^_Nonnull RadarLogConversionCompletionHandler)(RadarStatus status,
 
  @see https://radar.com/documentation/fraud
  */
-+ (void)getVerifiedLocationToken:(RadarTrackVerifiedCompletionHandler _Nullable)completionHandler NS_SWIFT_NAME(getLastVerifiedLocationToken(completionHandler:));
++ (void)getVerifiedLocationToken:(RadarTrackVerifiedCompletionHandler _Nullable)completionHandler NS_SWIFT_NAME(getVerifiedLocationToken(completionHandler:));
 
 /**
  Starts tracking the user's location in the background with configurable tracking options.

@@ -268,7 +268,7 @@
 }
 
 + (void)getVerifiedLocationToken:(RadarTrackVerifiedCompletionHandler)completionHandler {
-    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"getLastVerifiedLocationToken()"];
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"getVerifiedLocationToken()"];
     [[RadarVerificationManager sharedInstance]
      getVerifiedLocationTokenWithCompletionHandler:completionHandler];
 }
