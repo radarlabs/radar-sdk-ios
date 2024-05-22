@@ -243,9 +243,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func didLog(message: String) {
         self.notify(message)
     }
-
-    func didUpdateToken(_ token: String) {
-        
+    
+    func didUpdateToken(_ token: RadarVerifiedLocationToken) {
+        print("Updated token with \(token.passed ? "passed" : "failed") checks and expiration in \(token.expiresIn) seconds")
     }
     
 }
