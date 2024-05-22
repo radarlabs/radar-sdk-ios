@@ -520,7 +520,12 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                     NSString *notificationRepeats = [geofence.metadata objectForKey:@"radar:notificationRepeats"];
                     if (notificationRepeats) {
                         repeats = [notificationRepeats boolValue];
-                        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Notification repeats | repeats = %d", repeats]];
+                    }
+                    
+                    if (repeats) {
+                        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Notification repeats"];
+                    } else {
+                        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Notification does not repeat"];
                     }
 
                     UNLocationNotificationTrigger *trigger = [UNLocationNotificationTrigger triggerWithRegion:region repeats:repeats];
