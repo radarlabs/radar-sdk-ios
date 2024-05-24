@@ -26,7 +26,7 @@
     NSObject *logLevelObj = dict[@"logLevel"];
     RadarLogLevel logLevel = 0;
     if (logLevelObj && [logLevelObj isKindOfClass:[NSString class]]) {
-        logLevel = [RadarLog levelFromString:logLevelObj];
+        logLevel = [RadarLog levelFromString:(NSString *)logLevelObj];
     }
 
     return [[RadarSDKConfiguration alloc] initWithLogLevel:logLevel];
