@@ -16,7 +16,11 @@
 
 + (instancetype _Nonnull )sharedInstance;
 
-- (void)requestLocationPermissions:(BOOL)requestBackgroundPermissions;
+- (void)requestForegroundLocationPermissions;
+
+- (void)requestBackgroundLocationPermissions;
+
+- (void)openAppSettings;
 
 - (RadarLocationPermissionsStatus *_Nullable)getLocationPermissionsStatus;
 

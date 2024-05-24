@@ -1150,6 +1150,11 @@ Gets the device's current location, then searches for geofences near that locati
 + (void)requestBackgroundLocationPermissions;
 
 /**
+ Directs the user to the app settings to enable location permissions.
+*/
++ (void)openAppSettings;
+
+/**
  @return A RadarPermissionsStatus object with the current location permissions status.
 
 */

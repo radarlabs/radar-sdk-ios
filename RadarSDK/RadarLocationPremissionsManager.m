@@ -64,6 +64,7 @@
                                                    object:nil];        
         
     }
+    // TODO: sync the user's state with the new permissions status here
     return self;
 }
 
@@ -72,12 +73,28 @@
     [RadarLocationPermissionsStatus radarLocationPermissionsStatus:status];
     if (@available(iOS 14.0, *)) {
         [[RadarDelegateHolder sharedInstance] didUpdateLocationPermissionsStatus:self.status];
+        // TODO: sync the user's state with the new permissions status here
     }
 }
 
+// do we want to auto open the settings, is that too heavy handed? prob not as its kinda jaring from a UX prespective, we should prompt the users first
+- (void)openAppSettings {
+    NSURL *appSettingsURL = [NSURL URLWithString:UIApplicationOpenSettingsURLString];
+    if ([[UIApplication sharedApplication] canOpenURL:appSettingsURL]) {
+        [[UIApplication sharedApplication] openURL:appSettingsURL options:@{} completionHandler:^(BOOL success) {
+            if (success) {
+                NSLog(@"Successfully opened settings");
+                // TODO: sync the user's location permissions action with the their permissions status here
+            } else {
+                NSLog(@"Failed to open settings");
+                // TODO: sync the user's location permissions action with the their permissions status here
+            }
+        }];
+    }
+}
 
-- (void)requestLocationPermissions:(BOOL)background {
-    if (background && self.status.locationManagerStatus == kCLAuthorizationStatusAuthorizedWhenInUse) {
+- (void)requestBackgroundLocationPermissions {
+    if (self.status.locationManagerStatus == kCLAuthorizationStatusAuthorizedWhenInUse) {
 
         self.danglingBackgroundPermissionsRequest = YES;
 
@@ -88,6 +105,7 @@
                                                                                           inForegroundPopup:self.status.inForegroundPopup
                                                                           userRejectedBackgroundPermissions: self.status.userRejectedBackgroundPermissions];
             [self updateStatus:status];
+            // TODO: sync the user's location permissions action with the their permissions status here
         }
 
         // We set a flag that request has been made and start a timer. If we resign active we unset the timer.
@@ -97,16 +115,20 @@
             if (self.danglingBackgroundPermissionsRequest) {
                 if (@available(iOS 14.0, *)) {
                     RadarLocationPermissionsStatus *status = [[RadarLocationPermissionsStatus alloc] initWithStatus:self.locationManager.authorizationStatus
-                                                                                           backgroundPopupAvailable:self.status.backgroundPopupAvailable
-                                                                                                  inForegroundPopup:self.status.inForegroundPopup
-                                                                                  userRejectedBackgroundPermissions:YES];
+                                                                                            backgroundPopupAvailable:self.status.backgroundPopupAvailable
+                                                                                                    inForegroundPopup:self.status.inForegroundPopup
+                                                                                    userRejectedBackgroundPermissions:YES];
                     [self updateStatus:status];
                 }
             }
             self.danglingBackgroundPermissionsRequest = NO;
         });
     }
-    if (!background && self.status.locationManagerStatus == kCLAuthorizationStatusNotDetermined) {
+}
+
+
+- (void)requestForegroundLocationPermissions {
+    if (self.status.locationManagerStatus == kCLAuthorizationStatusNotDetermined) {
         [self.locationManager requestWhenInUseAuthorization];
         if (@available(iOS 14.0, *)) {
             RadarLocationPermissionsStatus *status = [[RadarLocationPermissionsStatus alloc] initWithStatus:self.locationManager.authorizationStatus
@@ -115,7 +137,8 @@
                                                                           userRejectedBackgroundPermissions: self.status.userRejectedBackgroundPermissions];
             [self updateStatus:status];
         }
-    }
+        // TODO: sync the user's location permissions action with the their permissions status here
+    }    
 }
 
 - (void)applicationDidBecomeActive {

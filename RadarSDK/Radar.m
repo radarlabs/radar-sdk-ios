@@ -1251,11 +1251,15 @@
 }
 
 + (void)requestForegroundLocationPermissions {
-    [[RadarLocationPermissionsManager sharedInstance] requestLocationPermissions:false];
+    [[RadarLocationPermissionsManager sharedInstance] requestForegroundLocationPermissions];
 }
 
 + (void)requestBackgroundLocationPermissions {
-    [[RadarLocationPermissionsManager sharedInstance] requestLocationPermissions:true];
+    [[RadarLocationPermissionsManager sharedInstance] requestBackgroundLocationPermissions];
+}
+
++ (void)openAppSettings {
+    [[RadarLocationPermissionsManager sharedInstance] openAppSettings];
 }
 
 + (RadarLocationPermissionsStatus *)getLocationPermissionsStatus {
