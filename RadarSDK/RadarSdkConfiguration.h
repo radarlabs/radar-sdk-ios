@@ -1,5 +1,5 @@
 //
-//  RadarSdkConfiguration.h
+//  RadarSDKConfiguration.h
 //  RadarSDK
 //
 //  Copyright © 2023 Radar Labs, Inc. All rights reserved.
@@ -15,7 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
  
  @see https://radar.com/documentation/sdk/ios
  */
-@interface RadarSdkConfiguration : NSObject
+@interface RadarSDKConfiguration : NSObject
 
 /**
  
@@ -23,16 +23,16 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) RadarLogLevel logLevel;
 
 /**
- Initializes a new RadarSdkConfiguration object with given value.
+ Initializes a new RadarSDKConfiguration object with given value.
  */
 - (instancetype)initWithLogLevel:(RadarLogLevel)logLevel;
 
 /**
- Creates a RadarSdkConfiguration object from the provided dictionary.
+ Creates a RadarSDKConfiguration object from the provided dictionary.
  
  @param dict A dictionary to extract the settings from.
  */
-+ (RadarSdkConfiguration *_Nullable)sdkConfigurationFromDictionary:(NSDictionary *)dict;
++ (RadarSDKConfiguration *_Nullable)sdkConfigurationFromDictionary:(NSDictionary *)dict;
 
 /**
  Returns a dictionary representation of the object.

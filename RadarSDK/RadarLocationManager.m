@@ -877,7 +877,6 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 
                                          [self updateTrackingFromMeta:config.meta];
                                          [RadarSettings setFeatureSettings:config.meta.featureSettings];
-                                         [RadarSettings setSdkConfiguration:config.meta.sdkConfiguration];
                                          [self replaceSyncedGeofences:nearbyGeofences];
                                      }];
 }
