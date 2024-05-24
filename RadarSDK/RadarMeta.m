@@ -25,8 +25,10 @@
             meta.featureSettings = [RadarFeatureSettings featureSettingsFromDictionary:featureSettingsObj];
         }
         id sdkConfigurationObj = dict[@"sdkConfiguration"];
-        if (sdkConfigurationObj && [sdkConfigurationObj isKindOfClass: [NSDictionary class]]) {
-            meta.sdkConfiguration = [RadarSdkConfiguration sdkConfigurationFromDictionary:sdkConfigurationObj];
+        if (sdkConfigurationObj && [sdkConfigurationObj isKindOfClass:[NSDictionary class]]) {
+            meta.sdkConfiguration = [RadarSDKConfiguration sdkConfigurationFromDictionary:sdkConfigurationObj];
+        } else {
+
         }
     }
 

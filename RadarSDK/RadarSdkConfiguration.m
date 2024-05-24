@@ -1,13 +1,15 @@
 //
-//  RadarSdkConfiguration.m
+//  RadarSDKConfiguration.m
 //  RadarSDK
 //
 //  Copyright © 2023 Radar Labs, Inc. All rights reserved.
 //
 
-#import "RadarSdkConfiguration.h"
+#import "RadarSDKConfiguration.h"
 
-@implementation RadarSdkConfiguration
+#import "RadarLog.h"
+
+@implementation RadarSDKConfiguration
 
 - (instancetype)initWithLogLevel:(RadarLogLevel)logLevel {
     if (self = [super init]) {
@@ -16,23 +18,24 @@
     return self;
 }
 
-+ (RadarSdkConfiguration *_Nullable)sdkConfigurationFromDictionary:(NSDictionary *)dict {
++ (RadarSDKConfiguration *_Nullable)sdkConfigurationFromDictionary:(NSDictionary *)dict {
     if (!dict) {
-        return [[RadarSdkConfiguration alloc] initWithLogLevel:0];
+        return NULL;
     }
 
-    NSObject *logLevelObj = dict[@"logLevel"]; 
+    NSObject *logLevelObj = dict[@"logLevel"];
     RadarLogLevel logLevel = 0;
-    if (logLevelObj && [logLevelObj isKindOfClass:[NSNumber class]]) {
-        logLevel = [(NSNumber *)logLevelObj intValue];
+    if (logLevelObj && [logLevelObj isKindOfClass:[NSString class]]) {
+        logLevel = [RadarLog levelFromString:logLevelObj];
     }
 
-    return [[RadarSdkConfiguration alloc] initWithLogLevel:logLevel];
+    return [[RadarSDKConfiguration alloc] initWithLogLevel:logLevel];
 }
 
 - (NSDictionary *)dictionaryValue {
     NSMutableDictionary *dict = [NSMutableDictionary new];
-    [dict setValue:@(self.logLevel) forKey:@"logLevel"];
+    NSString *logLevelString = [RadarLog stringForLogLevel:_logLevel];
+    [dict setValue:logLevelString forKey:@"logLevel"];
     
     return dict;
 }

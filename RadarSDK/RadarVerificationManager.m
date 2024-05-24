@@ -109,7 +109,6 @@
                                          RadarConfig *_Nullable config, RadarVerifiedLocationToken *_Nullable token) {
                         if (status == RadarStatusSuccess && config != nil) {
                             [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
-                            [RadarSettings setSdkConfiguration:config.meta.sdkConfiguration];
                         }
                         if (token) {
                             self.lastToken = token;

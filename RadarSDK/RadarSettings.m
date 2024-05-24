@@ -7,6 +7,7 @@
 
 #import "RadarSettings.h"
 
+#import "Radar.h"
 #import "Radar+Internal.h"
 #import "RadarLogger.h"
 #import "RadarTripOptions.h"
@@ -226,14 +227,18 @@ static NSString *const kXPlatformSDKVersion = @"radar-xPlatformSDKVersion";
     }
 }
 
-+ (RadarSdkConfiguration *)sdkConfiguration {
-    RadarSdkConfiguration * sdkConfiguration = [[RadarSdkConfiguration alloc] init];
++ (RadarSDKConfiguration *)sdkConfiguration {
+    RadarSDKConfiguration * sdkConfiguration = [[RadarSDKConfiguration alloc] init];
     sdkConfiguration.logLevel = [RadarSettings logLevel];
-    return [[RadarSdkConfiguration alloc] initWithLogLevel:[RadarSettings logLevel]];
+    return sdkConfiguration;
 }
 
-+ (void)setSdkConfiguration:(RadarSdkConfiguration *)sdkConfiguration {
-    [[NSUserDefaults standardUserDefaults] setInteger:sdkConfiguration.logLevel forKey:kLogLevel];
++ (void)setSDKConfiguration:(RadarSDKConfiguration *)sdkConfiguration {
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug 
+        message:[NSString stringWithFormat:@"Setting SDK Configuration | sdkConfiguration = %@", sdkConfiguration]];
+    if (sdkConfiguration) {
+        [RadarSettings setLogLevel:sdkConfiguration.logLevel];
+    }
 }
 
 + (RadarLogLevel)logLevel {

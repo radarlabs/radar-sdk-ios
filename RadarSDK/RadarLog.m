@@ -43,6 +43,22 @@
     return str;
 }
 
++ (RadarLogLevel) levelFromString:(NSString *_Nonnull) string {
+    if ([string isEqualToString:@"none"]) {
+        return RadarLogLevelNone;
+    } else if ([string isEqualToString:@"error"]) {
+        return RadarLogLevelError;
+    } else if ([string isEqualToString:@"warning"]) {
+        return RadarLogLevelWarning;
+    } else if ([string isEqualToString:@"info"]) {
+        return RadarLogLevelInfo;
+    } else if ([string isEqualToString:@"debug"]) {
+        return RadarLogLevelDebug;
+    } else { // default to info
+        return RadarLogLevelInfo;
+    }
+}
+
 + (NSString *)stringForLogType:(RadarLogType)type {
     NSString *str;
     switch (type) {

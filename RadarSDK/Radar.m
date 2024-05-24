@@ -73,7 +73,7 @@
                                          }
                                          [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
                                          [RadarSettings setFeatureSettings:config.meta.featureSettings];
-                                         [RadarSettings setSdkConfiguration:config.meta.sdkConfiguration];
+                                         [RadarSettings setSDKConfiguration:config.meta.sdkConfiguration];
                                          [self flushLogs];
                                      }];
     
@@ -173,7 +173,6 @@
                                          [[RadarLocationManager sharedInstance] replaceSyncedGeofences:nearbyGeofences];
                                          if (config != nil) {
                                              [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
-                                             [RadarSettings setSdkConfiguration:config.meta.sdkConfiguration];
                                          }
                                          
                                      }
@@ -1223,7 +1222,7 @@
                                              }
                                              [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
                                              [RadarSettings setFeatureSettings:config.meta.featureSettings];
-                                             [RadarSettings setSdkConfiguration:config.meta.sdkConfiguration];
+                                             [RadarSettings setSDKConfiguration:config.meta.sdkConfiguration];
                                          }];
     }
 
