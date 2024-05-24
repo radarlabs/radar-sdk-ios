@@ -50,29 +50,31 @@
 
 - (void)logWithLevel:(RadarLogLevel)level type:(RadarLogType)type message:(NSString *)message includeDate:(BOOL)includeDate includeBattery:(BOOL)includeBattery append:(BOOL)append{
     RadarLogLevel logLevel = [RadarSettings logLevel];
-    if (logLevel >= level) {
-        NSString *dateString = [self.dateFormatter stringFromDate:[NSDate date]];
-        float batteryLevel = [self.device batteryLevel];
-        if (includeDate && includeBattery) {
-            message = [NSString stringWithFormat:@"%@ |  at %@ | with %2.f%% battery", message, dateString, batteryLevel*100];
-        } else if (includeDate) {
-            message = [NSString stringWithFormat:@"%@ | at %@", message, dateString];
-        } else if (includeBattery) {
-            message = [NSString stringWithFormat:@"%@ | with %2.f%% battery", message, batteryLevel*100];
-        }
-        if (append) {
-            [[RadarLogBuffer sharedInstance] write:level type:type message:message forcePersist:YES];
-        } else {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [Radar sendLog:level type:type message:message];
+    if (level > logLevel) {
+        return;
+    }
 
-                NSString *log = [NSString stringWithFormat:@"%@ | backgroundTimeRemaining = %g", message, [RadarUtils backgroundTimeRemaining]];
+    NSString *dateString = [self.dateFormatter stringFromDate:[NSDate date]];
+    float batteryLevel = [self.device batteryLevel];
+    if (includeDate && includeBattery) {
+        message = [NSString stringWithFormat:@"%@ |  at %@ | with %2.f%% battery", message, dateString, batteryLevel*100];
+    } else if (includeDate) {
+        message = [NSString stringWithFormat:@"%@ | at %@", message, dateString];
+    } else if (includeBattery) {
+        message = [NSString stringWithFormat:@"%@ | with %2.f%% battery", message, batteryLevel*100];
+    }
+    if (append) {
+        [[RadarLogBuffer sharedInstance] write:level type:type message:message forcePersist:YES];
+    } else {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [Radar sendLog:level type:type message:message];
 
-                os_log(OS_LOG_DEFAULT, "%@", log);
+            NSString *log = [NSString stringWithFormat:@"%@ | backgroundTimeRemaining = %g", message, [RadarUtils backgroundTimeRemaining]];
 
-                [[RadarDelegateHolder sharedInstance] didLogMessage:log];
-            });
-        }
+            os_log(OS_LOG_DEFAULT, "%@", log);
+
+            [[RadarDelegateHolder sharedInstance] didLogMessage:log];
+        });
     }
 }
 
