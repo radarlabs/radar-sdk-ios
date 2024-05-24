@@ -27,8 +27,6 @@
         id sdkConfigurationObj = dict[@"sdkConfiguration"];
         if (sdkConfigurationObj && [sdkConfigurationObj isKindOfClass:[NSDictionary class]]) {
             meta.sdkConfiguration = [RadarSDKConfiguration sdkConfigurationFromDictionary:sdkConfigurationObj];
-        } else {
-
         }
     }
 

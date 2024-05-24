@@ -105,9 +105,7 @@ typedef NS_ENUM(NSInteger, RadarLogLevel) {
     /// Info
     RadarLogLevelInfo = 3,
     /// Debug
-    RadarLogLevelDebug = 4,
-    /// Unknown
-    RadarLogLevelUnknown = 9
+    RadarLogLevelDebug = 4
 };
 
 /**

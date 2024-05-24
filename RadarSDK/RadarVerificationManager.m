@@ -18,7 +18,6 @@
 #import "RadarBeaconManager.h"
 #import "RadarLocationManager.h"
 #import "RadarLogger.h"
-#import "RadarSettings.h"
 #import "RadarState.h"
 #import "RadarUtils.h"
 
