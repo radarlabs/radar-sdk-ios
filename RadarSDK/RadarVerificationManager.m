@@ -32,6 +32,7 @@
 @interface RadarVerificationManager ()
 
 @property (assign, nonatomic) BOOL started;
+@property (assign, nonatomic) BOOL scheduled;
 @property (strong, nonatomic) NSTimer *intervalTimer;
 @property (nonatomic, retain) nw_path_monitor_t monitor;
 @property (strong, nonatomic) RadarVerifiedLocationToken *lastToken;
@@ -164,6 +165,7 @@
 
 - (void)startTrackingVerifiedWithInterval:(NSTimeInterval)interval beacons:(BOOL)beacons {
     self.started = YES;
+    self.scheduled = NO;
     
     __block void (^trackVerified)(void);
     __block __weak void (^weakTrackVerified)(void);
@@ -182,11 +184,23 @@
                 }
             }
             
+            if (self.scheduled) {
+                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Token request already scheduled"];
+                
+                return;
+            }
+            
             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Requesting token again in %f seconds | minInterval = %f; token.expiresIn = %f; interval = %f", minInterval, minInterval, token.expiresIn, interval]];
+            
+            self.scheduled = YES;
             
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(minInterval * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
                 if (self.started) {
+                    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Token request interval fired | started = %d", self.started]];
+                    
                     weakTrackVerified();
+                    
+                    self.scheduled = NO;
                 }
             });
         }];
