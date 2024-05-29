@@ -52,6 +52,10 @@
  */
 @property (nonnull, strong, nonatomic) NSMutableArray<RadarLocationCompletionHandler> *completionHandlers;
 
+@property (assign, nonatomic) BOOL isIndoorsScanning;
+
+@property (assign, nonatomic) CLLocation *locationCachedWhileIndoorsScanning;
+
 @end
 
 @implementation RadarLocationManager
@@ -101,6 +105,8 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         if (![[NSProcessInfo processInfo] environment][@"XCTestConfigurationFilePath"]) {
             _notificationCenter = [UNUserNotificationCenter currentNotificationCenter];
         }
+
+        self.isIndoorsScanning = NO;
     }
     return self;
 }
@@ -679,6 +685,18 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         return;
     }
 
+    if(self.isIndoorsScanning) {
+        // cache location
+        self.locationCachedWhileIndoorsScanning = location;
+
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
+                                           message:[NSString stringWithFormat:@"Cannot initiate scan while scanning | source = %@; location = %@", [Radar stringForLocationSource:source], location]];
+
+        [self callCompletionHandlersWithStatus:RadarStatusErrorLocation location:nil];
+
+        return;
+    }
+
     RadarTrackingOptions *options = [Radar getTrackingOptions];
     BOOL wasStopped = [RadarState stopped];
     BOOL stopped = NO;
@@ -827,6 +845,9 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     if (source == RadarLocationSourceForegroundLocation) {
         return;
     }
+
+    // log that we're calling send location
+    NSLog(@"calling sendLocation");
 
     [self sendLocation:sendLocation stopped:stopped source:source replayed:replayed beacons:beacons];
 }

@@ -1,4 +1,5 @@
 #import "RadarIndoorSurvey.h"
+#import "NSData+GZIP.h"
 
 @implementation RadarIndoorSurvey
 
@@ -116,6 +117,22 @@
     // join all self.bluetoothReadings with newlines and POST to server
     NSString *payload = [self.bluetoothReadings componentsJoinedByString:@"\n"];
 
+    // print length of payload
+    NSLog(@"payload length: %lu", (unsigned long)[payload length]);
+
+    // compress payload and base64 encode it
+
+    // compress payload
+    NSData *compressedData = [payload dataUsingEncoding:NSUTF8StringEncoding];
+    NSData *compressedDataGzipped = [compressedData gzippedData];
+    // print length of compressed payload
+    NSLog(@"compressedDataGzipped length: %lu", (unsigned long)[compressedDataGzipped length]);
+    // base64 encode
+    NSString *compressedDataGzippedBase64 = [compressedDataGzipped base64EncodedStringWithOptions:0];
+     
+    // print length of base64 encoded payload
+    NSLog(@"compressedDataGzippedBase64 length: %lu", (unsigned long)[compressedDataGzippedBase64 length]);
+
     NSLog(@"self.isWhereAmIScan %d", self.isWhereAmIScan);
 
     // if self.isWhereAmIScan, call callback with the payload string
@@ -134,7 +151,7 @@
 
         NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:url];
         [urlRequest setHTTPMethod:@"POST"];
-        [urlRequest setHTTPBody:[payload dataUsingEncoding:NSUTF8StringEncoding]];
+        [urlRequest setHTTPBody:[compressedDataGzippedBase64 dataUsingEncoding:NSUTF8StringEncoding]];
         [urlRequest setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
         NSURLSessionDataTask *task = [[NSURLSession sharedSession] dataTaskWithRequest:urlRequest completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
             if (data && self.completionHandler) {

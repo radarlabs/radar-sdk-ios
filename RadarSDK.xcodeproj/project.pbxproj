@@ -74,6 +74,8 @@
 		01F810702AF0119800BD7088 /* RadarVerifiedDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 01F8106F2AF0119800BD7088 /* RadarVerifiedDelegate.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		01F99CFB2965C182004E8CF3 /* RadarConfig.h in Headers */ = {isa = PBXBuildFile; fileRef = 01F99CFA2965C182004E8CF3 /* RadarConfig.h */; };
 		01F99CFD2965C1C4004E8CF3 /* RadarConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = 01F99CFC2965C1C4004E8CF3 /* RadarConfig.m */; };
+		5085F1BB2C0787AA0088C51B /* NSData+GZIP.h in Headers */ = {isa = PBXBuildFile; fileRef = 5085F1B92C0787AA0088C51B /* NSData+GZIP.h */; };
+		5085F1BC2C0787AA0088C51B /* NSData+GZIP.m in Sources */ = {isa = PBXBuildFile; fileRef = 5085F1BA2C0787AA0088C51B /* NSData+GZIP.m */; };
 		50C5CD482BE9577A00E72E24 /* RadarIndoorSurvey.h in Headers */ = {isa = PBXBuildFile; fileRef = 50C5CD462BE9577A00E72E24 /* RadarIndoorSurvey.h */; };
 		50C5CD4A2BE9592500E72E24 /* RadarIndoorSurvey.m in Sources */ = {isa = PBXBuildFile; fileRef = 50C5CD492BE9592500E72E24 /* RadarIndoorSurvey.m */; };
 		532FC304277A790600989279 /* Radar+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 532FC303277A783900989279 /* Radar+Internal.h */; };
@@ -177,6 +179,8 @@
 		01F8106F2AF0119800BD7088 /* RadarVerifiedDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RadarVerifiedDelegate.h; sourceTree = "<group>"; };
 		01F99CFA2965C182004E8CF3 /* RadarConfig.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarConfig.h; sourceTree = "<group>"; };
 		01F99CFC2965C1C4004E8CF3 /* RadarConfig.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RadarConfig.m; sourceTree = "<group>"; };
+		5085F1B92C0787AA0088C51B /* NSData+GZIP.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSData+GZIP.h"; sourceTree = "<group>"; };
+		5085F1BA2C0787AA0088C51B /* NSData+GZIP.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSData+GZIP.m"; sourceTree = "<group>"; };
 		50C5CD462BE9577A00E72E24 /* RadarIndoorSurvey.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RadarIndoorSurvey.h; sourceTree = "<group>"; };
 		50C5CD492BE9592500E72E24 /* RadarIndoorSurvey.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RadarIndoorSurvey.m; sourceTree = "<group>"; };
 		532FC303277A783900989279 /* Radar+Internal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Radar+Internal.h"; sourceTree = "<group>"; };
@@ -447,6 +451,8 @@
 			children = (
 				96A5A0D827AD9F7F007B960B /* Include */,
 				DD236C792308797B00EB88F9 /* Info.plist */,
+				5085F1B92C0787AA0088C51B /* NSData+GZIP.h */,
+				5085F1BA2C0787AA0088C51B /* NSData+GZIP.m */,
 				532FC303277A783900989279 /* Radar+Internal.h */,
 				DD236C9023087A3500EB88F9 /* Radar.m */,
 				DD236C9823087F9200EB88F9 /* RadarAPIClient.h */,
@@ -624,6 +630,7 @@
 				96A5A0FF27AD9F7F007B960B /* RadarGeofenceGeometry.h in Headers */,
 				96A5A0CB27AD9F41007B960B /* RadarRoute+Internal.h in Headers */,
 				96A5A10527AD9F7F007B960B /* RadarTrackingOptions.h in Headers */,
+				5085F1BB2C0787AA0088C51B /* NSData+GZIP.h in Headers */,
 				96A5A10927AD9F7F007B960B /* RadarContext.h in Headers */,
 				0107AA1226220049008AB52F /* RadarCollectionAdditions.h in Headers */,
 				E6EEC56E2B20F41A00DD096B /* RadarFileStorage.h in Headers */,
@@ -802,6 +809,7 @@
 			files = (
 				0107AAA726220160008AB52F /* RadarGeofence.m in Sources */,
 				0107AAC826220184008AB52F /* RadarRouteDistance.m in Sources */,
+				5085F1BC2C0787AA0088C51B /* NSData+GZIP.m in Sources */,
 				0107AA952622014C008AB52F /* RadarCoordinate.m in Sources */,
 				0107AA8F26220146008AB52F /* RadarCircleGeometry.m in Sources */,
 				0107AAD426220190008AB52F /* RadarRouteGeometry.m in Sources */,

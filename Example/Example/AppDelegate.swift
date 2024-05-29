@@ -27,12 +27,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         Radar.setVerifiedDelegate(self)
        
         /*
-        Radar.doIndoorSurvey("IGNORE example app survey label from swift", forLength: 1) {result in
+        Radar.doIndoorSurvey("IGNORE example app survey label from swift", forLength: 5) {result in
             print("indoor survey done!", result);
         }
-         */
+        */
 
-        let options = RadarTrackingOptions.presetIndoors
+        let options = RadarTrackingOptions.presetContinuous
         Radar.startTracking(trackingOptions: options)
 
         return true
