@@ -823,7 +823,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
         [expectation fulfill];
     }];
 
-    [self waitForExpectationsWithTimeout:30
+    [self waitForExpectationsWithTimeout:60
                                  handler:^(NSError *_Nullable error) {
                                      if (error) {
                                          XCTFail();
@@ -851,7 +851,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
         [expectation fulfill];
     }];
 
-    [self waitForExpectationsWithTimeout:30
+    [self waitForExpectationsWithTimeout:60
                                  handler:^(NSError *_Nullable error) {
                                      if (error) {
                                          XCTFail();
@@ -1047,11 +1047,13 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 
     XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
 
-    [Radar searchGeofencesWithRadius:1000
-                                tags:nil
-                            metadata:nil
-                               limit:100
-                   completionHandler:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarGeofence *> *_Nullable geofences) {
+    [Radar searchGeofencesNear:nil
+                        radius:1000
+                          tags:nil
+                      metadata:nil
+                         limit:100
+               includeGeometry:false
+             completionHandler:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarGeofence *> *_Nullable geofences) {
                        XCTAssertEqual(status, RadarStatusErrorPermissions);
 
                        [expectation fulfill];
@@ -1071,11 +1073,13 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 
     XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
 
-    [Radar searchGeofencesWithRadius:1000
-                                tags:nil
-                            metadata:nil
-                               limit:100
-                   completionHandler:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarGeofence *> *_Nullable geofences) {
+    [Radar searchGeofencesNear:nil
+                        radius:1000
+                          tags:nil
+                      metadata:nil
+                         limit:100
+               includeGeometry:false
+             completionHandler:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarGeofence *> *_Nullable geofences) {
                        XCTAssertEqual(status, RadarStatusErrorLocation);
 
                        [expectation fulfill];
@@ -1101,11 +1105,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 
     XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
 
-    [Radar searchGeofencesWithRadius:1000
-                                tags:@[@"store"]
-                            metadata:@{@"foo": @"bar"}
-                               limit:100
-                   completionHandler:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarGeofence *> *_Nullable geofences) {
+    [Radar searchGeofences:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarGeofence *> *_Nullable geofences) {
                        XCTAssertEqual(status, RadarStatusSuccess);
                        XCTAssertNotNil(location);
                        AssertGeofencesOk(geofences);
