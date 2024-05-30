@@ -8,20 +8,20 @@
 
 #import <Foundation/Foundation.h>
 #import <CoreLocation/CoreLocation.h>
-#import "RadarLocationPermissionsStatus.h"
-#import "RadarLocationPermissionsStatus+Internal.h"
+#import "RadarLocationPermissionStatus.h"
+#import "RadarLocationPermissionStatus+Internal.h"
 
-@implementation RadarLocationPermissionsStatus
+@implementation RadarLocationPermissionStatus
 
-+ (void)radarLocationPermissionsStatus:(RadarLocationPermissionsStatus *)status {
++ (void)radarLocationPermissionStatus:(RadarLocationPermissionStatus *)status {
     NSDictionary *dict = [status dictionaryValue];
-    [[NSUserDefaults standardUserDefaults] setObject:dict forKey:@"radarLocationPermissionsStatus"];
+    [[NSUserDefaults standardUserDefaults] setObject:dict forKey:@"radarLocationPermissionStatus"];
 }
 
-+ (RadarLocationPermissionsStatus *)getRadarLocationPermissionsStatus {
-    NSDictionary *dict = [[NSUserDefaults standardUserDefaults] objectForKey:@"radarLocationPermissionsStatus"];
++ (RadarLocationPermissionStatus *)getRadarLocationPermissionStatus {
+    NSDictionary *dict = [[NSUserDefaults standardUserDefaults] objectForKey:@"radarLocationPermissionStatus"];
     if (dict) {
-        return [[RadarLocationPermissionsStatus alloc] initWithDictionary:dict];
+        return [[RadarLocationPermissionStatus alloc] initWithDictionary:dict];
     }
     return nil;
 }
@@ -36,7 +36,7 @@
         _backgroundPopupAvailable = backgroundPopupAvailable;
         _inForegroundPopup = inForegroundPopup;
         _userRejectedBackgroundPermissions = userRejectedBackgroundPermissions;
-        _locationPermissionState = [RadarLocationPermissionsStatus locationPermissionStateForLocationManagerStatus:locationManagerStatus backgroundPopupAvailable:backgroundPopupAvailable inForegroundPopup:inForegroundPopup userRejectedBackgroundPermissions:userRejectedBackgroundPermissions];
+        _locationPermissionState = [RadarLocationPermissionStatus locationPermissionStateForLocationManagerStatus:locationManagerStatus backgroundPopupAvailable:backgroundPopupAvailable inForegroundPopup:inForegroundPopup userRejectedBackgroundPermissions:userRejectedBackgroundPermissions];
     }
     return self;
 }
@@ -68,7 +68,7 @@
         @"backgroundPopupAvailable": @(self.backgroundPopupAvailable),
         @"inForegroundPopup": @(self.inForegroundPopup),
         @"userRejectedBackgroundPermissions": @(self.userRejectedBackgroundPermissions),
-        @"locationPermissionState": [RadarLocationPermissionsStatus stringForLocationPermissionState:self.locationPermissionState]
+        @"locationPermissionState": [RadarLocationPermissionStatus stringForLocationPermissionState:self.locationPermissionState]
     };
 }
 

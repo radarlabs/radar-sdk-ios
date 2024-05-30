@@ -10,7 +10,7 @@
 #import "Radar.h"
 #import "RadarEvent.h"
 #import "RadarUser.h"
-#import "RadarLocationPermissionsStatus.h"
+#import "RadarLocationPermissionStatus.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -66,7 +66,7 @@ NS_ASSUME_NONNULL_BEGIN
 
  @param status The location permissions status.
 */
-- (void)didUpdateLocationPermissionsStatus:(RadarLocationPermissionsStatus *_Nonnull)status NS_SWIFT_NAME(didUpdateClientLocationPermissionsStatus(status:));
+- (void)didUpdateLocationPermissionStatus:(RadarLocationPermissionStatus *_Nonnull)status NS_SWIFT_NAME(didUpdateClientLocationPermissionStatus(status:));
 
 @end
 

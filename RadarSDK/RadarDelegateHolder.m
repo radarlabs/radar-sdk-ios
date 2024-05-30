@@ -87,9 +87,9 @@
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"📍 Radar token updated | token = %@", token]];
 }
 
-- (void)didUpdateLocationPermissionsStatus:(RadarLocationPermissionsStatus*)status {
+- (void)didUpdateLocationPermissionStatus:(RadarLocationPermissionStatus*)status {
     if (self.delegate) {
-        [self.delegate didUpdateLocationPermissionsStatus:status];
+        [self.delegate didUpdateLocationPermissionStatus:status];
     }
     
     NSDictionary *statusDict = [status dictionaryValue];

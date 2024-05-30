@@ -248,7 +248,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         
     }
     
-    func didUpdateClientLocationPermissionsStatus(status: RadarLocationPermissionsStatus){
+    func didUpdateClientLocationPermissionStatus(status: RadarLocationPermissionStatus){
         
     }
     

@@ -19,7 +19,7 @@
 #import "RadarRoutes.h"
 #import "RadarTrackingOptions.h"
 #import "RadarUser.h"
-#import "RadarLocationPermissionsStatus.h"
+#import "RadarLocationPermissionStatus.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -1142,12 +1142,12 @@ Gets the device's current location, then searches for geofences near that locati
 /**
  Requests foreground location permissions.
 */
-+ (void)requestForegroundLocationPermissions;
++ (void)requestForegroundLocationPermission;
 
 /**
  Requests background location permissions.
 */
-+ (void)requestBackgroundLocationPermissions;
++ (void)requestBackgroundLocationPermission;
 
 /**
  Directs the user to the app settings to enable location permissions.
@@ -1158,7 +1158,7 @@ Gets the device's current location, then searches for geofences near that locati
  @return A RadarPermissionsStatus object with the current location permissions status.
 
 */
-+ (RadarLocationPermissionsStatus *)getLocationPermissionsStatus;
++ (RadarLocationPermissionStatus *)getLocationPermissionStatus;
 
 @end
 

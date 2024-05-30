@@ -1,5 +1,5 @@
 //
-//  RadarLocationPermissionsStatus.h
+//  RadarLocationPermissionStatus.h
 //  RadarSDK
 //
 //  Created by Kenny Hu on 5/8/24.
@@ -12,7 +12,7 @@
 /**
  A class representing the status of location permissions.
 */
-@interface RadarLocationPermissionsStatus : NSObject
+@interface RadarLocationPermissionStatus : NSObject
 
 /**
  The type of location permissions state.
