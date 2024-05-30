@@ -45,12 +45,6 @@
                                                             backgroundPopupAvailable:YES
                                                                    inForegroundPopup:NO
                                                    userRejectedBackgroundPermissions:NO];
-            } else {
-                // just a dummy value, this component will not communicate with the rest of the SDK if the version is below 14.0
-                self.status = [[RadarLocationPermissionStatus alloc] initWithStatus: kCLAuthorizationStatusAuthorizedAlways
-                                                            backgroundPopupAvailable:NO
-                                                                   inForegroundPopup:NO
-                                                   userRejectedBackgroundPermissions:NO];
             }
         }
        
@@ -77,7 +71,6 @@
     }
 }
 
-// do we want to auto open the settings, is that too heavy handed? prob not as its kinda jaring from a UX prespective, we should prompt the users first
 - (void)openAppSettings {
     NSURL *appSettingsURL = [NSURL URLWithString:UIApplicationOpenSettingsURLString];
     if ([[UIApplication sharedApplication] canOpenURL:appSettingsURL]) {
@@ -185,6 +178,5 @@
     }
     return nil;
 }
-
 
 @end

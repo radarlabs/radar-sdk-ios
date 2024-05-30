@@ -11,7 +11,7 @@
 
 @interface RadarLocationPermissionManager : NSObject <CLLocationManagerDelegate>
 
-@property (nonatomic, strong) RadarLocationPermissionStatus * _Nonnull status;
+@property (nonatomic, strong) RadarLocationPermissionStatus * _Nullable status;
 @property (nonatomic, strong) CLLocationManager * _Nonnull locationManager;
 
 + (instancetype _Nonnull )sharedInstance;
