@@ -19,13 +19,13 @@
 */
 typedef NS_ENUM(NSInteger, RadarLocationPermissionState) {
     NoPermissionsGranted,
-    ForegroundPermissionsGranted,
-    ForegroundPermissionsRejected,
-    ForegroundPermissionsPending,
-    BackgroundPermissionsGranted,
-    BackgroundPermissionsRejected,
-    BackgroundPermissionsPending,
-    PermissionsRestricted,
+    ForegroundPermissionGranted,
+    ForegroundPermissionRejected,
+    ForegroundPermissionPending,
+    BackgroundPermissionGranted,
+    BackgroundPermissionRejected,
+    BackgroundPermissionPending,
+    PermissionRestricted,
     Unknown
 };
 

@@ -101,19 +101,19 @@ userRejectedBackgroundPermissions:userRejectedBackgroundPermissions];
     switch (state) {
         case NoPermissionsGranted:
             return @"NoPermissionsGranted";
-        case ForegroundPermissionsGranted:
+        case ForegroundPermissionGranted:
             return @"ForegroundPermissionsGranted";
-        case ForegroundPermissionsRejected:
+        case ForegroundPermissionRejected:
             return @"ForegroundPermissionsRejected";
-        case ForegroundPermissionsPending:
+        case ForegroundPermissionPending:
             return @"ForegroundPermissionsPending";
-        case BackgroundPermissionsGranted:
+        case BackgroundPermissionGranted:
             return @"BackgroundPermissionsGranted";
-        case BackgroundPermissionsRejected:
+        case BackgroundPermissionRejected:
             return @"BackgroundPermissionsRejected";
-        case BackgroundPermissionsPending:
+        case BackgroundPermissionPending:
             return @"BackgroundPermissionsPending";
-        case PermissionsRestricted:
+        case PermissionRestricted:
             return @"PermissionsRestricted";
         default:
             return @"Unknown";
@@ -126,26 +126,26 @@ userRejectedBackgroundPermissions:userRejectedBackgroundPermissions];
                                               userRejectedBackgroundPermissions:(BOOL)userRejectedBackgroundPermissions {
 
     if (locationManagerStatus == kCLAuthorizationStatusNotDetermined) {
-        return inForegroundPopup ? ForegroundPermissionsPending : NoPermissionsGranted;
+        return inForegroundPopup ? ForegroundPermissionPending : NoPermissionsGranted;
     }
 
     if (locationManagerStatus == kCLAuthorizationStatusDenied) {
-        return ForegroundPermissionsRejected;
+        return ForegroundPermissionRejected;
     }
 
     if (locationManagerStatus == kCLAuthorizationStatusAuthorizedAlways) {
-        return BackgroundPermissionsGranted;
+        return BackgroundPermissionGranted;
     }
 
     if (locationManagerStatus == kCLAuthorizationStatusAuthorizedWhenInUse) {
         if (userRejectedBackgroundPermissions) {
-            return BackgroundPermissionsRejected;
+            return BackgroundPermissionRejected;
         }
-        return backgroundPopupAvailable ? ForegroundPermissionsGranted : BackgroundPermissionsPending;
+        return backgroundPopupAvailable ? ForegroundPermissionGranted : BackgroundPermissionPending;
     }
 
     if (locationManagerStatus == kCLAuthorizationStatusRestricted) {
-        return PermissionsRestricted;
+        return PermissionRestricted;
     }
     
     return Unknown;
