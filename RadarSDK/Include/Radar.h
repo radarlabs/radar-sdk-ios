@@ -305,7 +305,8 @@ typedef void (^_Nonnull RadarLogConversionCompletionHandler)(RadarStatus status,
 
  @see https://radar.com/documentation/sdk/ios#initialize-sdk
  */
-+ (void)initializeWithPublishableKey:(NSString *_Nonnull)publishableKey NS_SWIFT_NAME(initialize(publishableKey:));
++ (void)initializeWithPublishableKey:(NSString *_Nonnull)publishableKey
+                              userId:(NSString *)userId NS_SWIFT_NAME(initialize(publishableKey:,  userId:));
 
 #pragma mark - Properties
 

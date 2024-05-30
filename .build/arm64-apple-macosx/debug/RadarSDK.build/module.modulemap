@@ -1,0 +1,4 @@
+module RadarSDK {
+    umbrella "/Users/shicheng.lu/Documents/radar/radar-sdk-ios/RadarSDK/Include"
+    export *
+}

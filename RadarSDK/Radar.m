@@ -41,7 +41,8 @@
     return sharedInstance;
 }
 
-+ (void)initializeWithPublishableKey:(NSString *)publishableKey {
++ (void)initializeWithPublishableKey:(NSString *)publishableKey
+                              userId:(NSString *)userId {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"initialize()"];
 
     [[NSNotificationCenter defaultCenter] addObserver:[self sharedInstance]
@@ -72,7 +73,7 @@
                                          [RadarSettings setSDKConfiguration:config.meta.sdkConfiguration];
                                          [self flushLogs];
                                      }];
-    
+    [RadarSettings setUserId:userId];
 }
 
 #pragma mark - Properties
