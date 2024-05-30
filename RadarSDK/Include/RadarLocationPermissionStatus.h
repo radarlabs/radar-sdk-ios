@@ -18,7 +18,7 @@
  The type of location permissions state.
 */
 typedef NS_ENUM(NSInteger, RadarLocationPermissionState) {
-    NoPermissionsGranted,
+    NoPermissionGranted,
     ForegroundPermissionGranted,
     ForegroundPermissionRejected,
     ForegroundPermissionPending,

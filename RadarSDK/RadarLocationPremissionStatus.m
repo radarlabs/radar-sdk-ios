@@ -99,7 +99,7 @@ userRejectedBackgroundPermissions:userRejectedBackgroundPermissions];
 
 + (NSString *)stringForLocationPermissionState:(RadarLocationPermissionState)state {
     switch (state) {
-        case NoPermissionsGranted:
+        case NoPermissionGranted:
             return @"NoPermissionsGranted";
         case ForegroundPermissionGranted:
             return @"ForegroundPermissionsGranted";
@@ -126,7 +126,7 @@ userRejectedBackgroundPermissions:userRejectedBackgroundPermissions];
                                               userRejectedBackgroundPermissions:(BOOL)userRejectedBackgroundPermissions {
 
     if (locationManagerStatus == kCLAuthorizationStatusNotDetermined) {
-        return inForegroundPopup ? ForegroundPermissionPending : NoPermissionsGranted;
+        return inForegroundPopup ? ForegroundPermissionPending : NoPermissionGranted;
     }
 
     if (locationManagerStatus == kCLAuthorizationStatusDenied) {
