@@ -138,9 +138,14 @@ typedef void (^_Nonnull RadarSyncLogsAPICompletionHandler)(RadarStatus status);
 
 - (void)validateAddress:(RadarAddress *_Nonnull)address completionHandler:(RadarValidateAddressAPICompletionHandler _Nonnull)completionHandler;
 
-- (void)geocodeAddress:(NSString *_Nonnull)query completionHandler:(RadarGeocodeAPICompletionHandler _Nonnull)completionHandler;
+- (void)geocodeAddress:(NSString *_Nonnull)query
+                layers:(NSString *_Nullable)layers
+               country:(NSString *_Nullable)country
+     completionHandler:(RadarGeocodeAPICompletionHandler _Nonnull)completionHandler;
 
-- (void)reverseGeocodeLocation:(CLLocation *_Nonnull)location completionHandler:(RadarGeocodeAPICompletionHandler _Nonnull)completionHandler;
+- (void)reverseGeocodeLocation:(CLLocation *_Nonnull)location
+                        layers:(NSString *_Nullable)layers
+             completionHandler:(RadarGeocodeAPICompletionHandler _Nonnull)completionHandler;
 
 - (void)ipGeocodeWithCompletionHandler:(RadarIPGeocodeAPICompletionHandler _Nonnull)completionHandler;
 
