@@ -1,10 +1,10 @@
 # Migration guides
 
-## 3.12.x to 3.13.x
+## 3.11.x to 3.12.x
 -  The `Radar.trackVerified()` method now returns `token: RadarVerifiedLocationToken`, which includes `user`, `events`, `token,`, `expiresAt`, `expiresIn`, and `passed`. The `Radar.trackVerifiedToken()` method has been removed, since `Radar.trackVerified()` now returns a signed JWT.
 
 ```swift
-// 3.13.x
+// 3.12.x
 Radar.trackVerifiedToken { (status, token) in
   if token?.passed == true {
     // allow access to feature, send token to server for validation
@@ -13,7 +13,7 @@ Radar.trackVerifiedToken { (status, token) in
   }
 }
 
-// 3.12.x 
+// 3.11.x 
 Radar.trackVerified { (status, location, events, user) in
   if user?.fraud?.passed == true &&
     user?.country?.allowed == true &&
