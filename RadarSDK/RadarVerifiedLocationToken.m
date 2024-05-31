@@ -65,7 +65,7 @@
         if (actualUpdatedAtObj && [actualUpdatedAtObj isKindOfClass:[NSString class]]) {
             NSString *actualUpdatedAtStr = (NSString *)actualUpdatedAtObj;
             NSDate *actualUpdatedAt = [RadarUtils.isoDateFormatter dateFromString:actualUpdatedAtStr];
-            expiresIn = 30; // [expiresAt timeIntervalSinceDate:actualUpdatedAt];
+            [expiresAt timeIntervalSinceDate:actualUpdatedAt];
         }
         
         passed = user && user.fraud && user.fraud.passed && user.country && user.country.passed && user.state && user.state.passed;
