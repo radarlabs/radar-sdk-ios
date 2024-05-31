@@ -29,6 +29,8 @@
 #include <mach-o/dyld.h>
 #include <sys/stat.h>
 #include <stdio.h>
+#include <ifaddrs.h>
+#include <arpa/inet.h>
 
 @interface RadarVerificationManager ()
 
@@ -39,6 +41,7 @@
 @property (strong, nonatomic) RadarVerifiedLocationToken *lastToken;
 @property (assign, nonatomic) NSTimeInterval lastTokenSystemUptime;
 @property (assign, nonatomic) BOOL lastTokenBeacons;
+@property (strong, nonatomic) NSString *lastIPs;
 
 @end
 
@@ -215,9 +218,28 @@
 
             nw_path_monitor_set_update_handler(_monitor, ^(nw_path_t path) {
                 if (nw_path_get_status(path) == nw_path_status_satisfied) {
-                    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Network connected"];
-
-                    trackVerified();
+                    NSString *ips = [self getIPs];
+                    BOOL changed = NO;
+                    
+                    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Network connected | ips = %@", ips]];
+                    
+                    if (!self.lastIPs) {
+                        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"First time getting IPs | ips = %@", ips]];
+                        changed = NO;
+                    } else if (!ips || [ips isEqualToString:@"error"]) {
+                        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Error getting IPs | ips = %@", ips]];
+                        changed = YES;
+                    } else if (![ips isEqualToString:self.lastIPs]) {
+                        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"IPs changed | ips = %@; lastIPs = %@", ips, self.lastIPs]];
+                        changed = YES;
+                    } else {
+                        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"IPs unchanged"];
+                    }
+                    self.lastIPs = ips;
+                    
+                    if (changed) {
+                        trackVerified();
+                    }
                 } else {
                     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Network disconnected"];
                 }
@@ -243,7 +265,7 @@
 - (void)getVerifiedLocationTokenWithCompletionHandler:(RadarTrackVerifiedCompletionHandler)completionHandler {
     NSTimeInterval lastTokenElapsed = [NSProcessInfo processInfo].systemUptime - self.lastTokenSystemUptime;
     
-    if (lastTokenElapsed < self.lastToken.expiresIn) {
+    if (self.lastToken && lastTokenElapsed < self.lastToken.expiresIn) {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Last token valid | lastToken.expiresIn = %f; lastTokenElapsed = %f", self.lastToken.expiresIn, lastTokenElapsed]];
         
         [Radar flushLogs];
@@ -523,6 +545,27 @@
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Jailbreak check passed"];
     
     return jailbroken;
+}
+
+- (NSString *)getIPs {
+    NSMutableArray<NSString *> *ips = [NSMutableArray new];
+    struct ifaddrs *interfaces = NULL;
+    struct ifaddrs *temp_addr = NULL;
+    int success = 0;
+    success = getifaddrs(&interfaces);
+    if (success == 0) {
+        temp_addr = interfaces;
+        while(temp_addr != NULL) {
+            if(temp_addr->ifa_addr->sa_family == AF_INET) {
+                NSString *ip = [NSString stringWithUTF8String:inet_ntoa(((struct sockaddr_in *)temp_addr->ifa_addr)->sin_addr)];
+                [ips addObject:ip];
+            }
+            temp_addr = temp_addr->ifa_next;
+        }
+    }
+    freeifaddrs(interfaces);
+    return (ips.count > 0) ? [ips componentsJoinedByString:@","] : @"error";
+
 }
 
 @end
