@@ -199,6 +199,8 @@
          attestationError:(NSString *_Nullable)attestationError
                 encrypted:(BOOL)encrypted
         completionHandler:(RadarTrackAPICompletionHandler _Nonnull)completionHandler {
+    NSLog(@"trackWithLocation");
+
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
         return completionHandler(RadarStatusErrorPublishableKey, nil, nil, nil, nil, nil, nil);
@@ -295,6 +297,8 @@
     if (beacons) {
         params[@"beacons"] = [RadarBeacon arrayForBeacons:beacons];
     }
+    // log indoorsWhereAmIScan
+    NSLog(@"indoorsWhereAmIScan: %@", indoorsWhereAmIScan);
     if (indoorsWhereAmIScan) {
         params[@"indoorsWhereAmIScan"] = indoorsWhereAmIScan;
     }

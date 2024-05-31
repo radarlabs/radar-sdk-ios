@@ -6,8 +6,6 @@
 
 @interface RadarIndoorSurvey : NSObject <CBCentralManagerDelegate>
 
-// mutex -- am i already scanning?
-@property (nonatomic) BOOL isScanningMutex;
 @property (nonatomic, strong) CBCentralManager *centralManager;
 // also store a CMMotionManager property
 @property (nonatomic, strong) CMMotionManager *motionManager;
@@ -23,7 +21,7 @@
 // store whether this is a whereAmI scan
 @property (nonatomic) BOOL isWhereAmIScan;
 
-#define WHERE_AM_I_DURATION_SECONDS 20
+#define WHERE_AM_I_DURATION_SECONDS 10
 
 + (instancetype)sharedInstance;
 

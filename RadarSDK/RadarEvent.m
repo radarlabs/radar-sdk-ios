@@ -14,6 +14,7 @@
 #import "RadarRegion+Internal.h"
 #import "RadarTrip+Internal.h"
 #import "RadarUtils.h"
+#import "RadarLogger.h"
 
 @implementation RadarEvent
 
@@ -25,6 +26,8 @@
     NSArray *eventsArr = (NSArray *)object;
 
     NSMutableArray<RadarEvent *> *mutableEvents = [NSMutableArray<RadarEvent *> new];
+
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Parsing events..."];
 
     for (id eventObj in eventsArr) {
         RadarEvent *event = [[RadarEvent alloc] initWithObject:eventObj];
@@ -90,6 +93,8 @@
         return nil;
     }
 
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Parsing event..."];
+
     NSDictionary *dict = (NSDictionary *)object;
 
     NSString *_id;
@@ -133,6 +138,7 @@
     id typeObj = dict[@"type"];
     if (typeObj && [typeObj isKindOfClass:[NSString class]]) {
         NSString *typeStr = (NSString *)typeObj;
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Event type: %@", typeStr]];
 
         // These strings should match the values (and order) of the server's event
         // constants.
@@ -294,18 +300,33 @@
         NSNumber *locationCoordinatesLongitudeNumber = (NSNumber *)locationCoordinatesLongitudeObj;
         NSNumber *locationCoordinatesLatitudeNumber = (NSNumber *)locationCoordinatesLatitudeObj;
 
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Event location: %f, %f", [locationCoordinatesLatitudeNumber floatValue], [locationCoordinatesLongitudeNumber floatValue]]];
+
         float locationCoordinatesLongitudeFloat = [locationCoordinatesLongitudeNumber floatValue];
         float locationCoordinatesLatitudeFloat = [locationCoordinatesLatitudeNumber floatValue];
 
         id locationAccuracyObj = dict[@"locationAccuracy"];
-        if (locationAccuracyObj && [locationAccuracyObj isKindOfClass:[NSNumber class]]) {
-            NSNumber *locationAccuracyNumber = (NSNumber *)locationAccuracyObj;
+
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Event location accuracy: %@", locationAccuracyObj]];
+
+        // FIXME
+        // FIXME
+        // FIXME
+        // FIXME
+        // if (locationAccuracyObj && [locationAccuracyObj isKindOfClass:[NSNumber class]]) {
+        if (YES) {
+            // FIXMED
+            // FIXMED
+            // NSNumber *locationAccuracyNumber = (NSNumber *)locationAccuracyObj;
+            NSNumber *locationAccuracyNumber = [NSNumber numberWithFloat:123.0];
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Event location accuracy: %f", [locationAccuracyNumber floatValue]]];
 
             location = [[CLLocation alloc] initWithCoordinate:CLLocationCoordinate2DMake(locationCoordinatesLatitudeFloat, locationCoordinatesLongitudeFloat)
                                                      altitude:-1
                                            horizontalAccuracy:[locationAccuracyNumber floatValue]
                                              verticalAccuracy:-1
                                                     timestamp:(createdAt ? createdAt : [NSDate date])];
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Event location w accuracy: %@", location]];
         }
     }
 
@@ -320,6 +341,9 @@
     if (metadataObj && [metadataObj isKindOfClass:[NSDictionary class]]) {
         metadata = (NSDictionary *)metadataObj;
     }
+
+    // log location
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Event location before event obj is created: %@", location]];
 
     if (_id && createdAt) {
         return [[RadarEvent alloc] initWithId:_id
