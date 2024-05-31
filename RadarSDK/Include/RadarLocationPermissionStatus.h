@@ -44,7 +44,7 @@ typedef NS_ENUM(NSInteger, RadarLocationPermissionState) {
 /**
  The flag indicating if the user has rejected background location permissions.
 */
-@property (nonatomic, assign) BOOL userRejectedBackgroundPermissions;
+@property (nonatomic, assign) BOOL userRejectedBackgroundPermission;
 /**
  The state of the location permissions represented by the RadarLocationPermissionState enum.
 */

@@ -13,7 +13,7 @@
 
 @interface RadarLocationPermissionManager ()
 
-@property (assign, nonatomic) BOOL danglingBackgroundPermissionsRequest;
+@property (assign, nonatomic) BOOL danglingBackgroundPermissionRequest;
 @property (assign, nonatomic) BOOL inBackgroundLocationPopUp;
 
 @end
@@ -44,7 +44,7 @@
                 self.status = [[RadarLocationPermissionStatus alloc] initWithStatus:self.locationManager.authorizationStatus
                                                             backgroundPopupAvailable:YES
                                                                    inForegroundPopup:NO
-                                                   userRejectedBackgroundPermissions:NO];
+                                                   userRejectedBackgroundPermission:NO];
             }
         }
        
@@ -58,7 +58,7 @@
                                                    object:nil];        
         
     }
-    // TODO: sync the user's state with the new permissions status here
+    // TODO: sync the user's state with the new permission status here
     return self;
 }
 
@@ -67,7 +67,7 @@
     [RadarLocationPermissionStatus radarLocationPermissionStatus:status];
     if (@available(iOS 14.0, *)) {
         [[RadarDelegateHolder sharedInstance] didUpdateLocationPermissionStatus:self.status];
-        // TODO: sync the user's state with the new permissions status here
+        // TODO: sync the user's state with the new permission status here
     }
 }
 
@@ -77,10 +77,10 @@
         [[UIApplication sharedApplication] openURL:appSettingsURL options:@{} completionHandler:^(BOOL success) {
             if (success) {
                 NSLog(@"Successfully opened settings");
-                // TODO: sync the user's location permissions action with the their permissions status here
+                // TODO: sync the user's location permission action with the their permission status here
             } else {
                 NSLog(@"Failed to open settings");
-                // TODO: sync the user's location permissions action with the their permissions status here
+                // TODO: sync the user's location permission action with the their permission status here
             }
         }];
     }
@@ -89,32 +89,32 @@
 - (void)requestBackgroundLocationPermission {
     if (self.status.locationManagerStatus == kCLAuthorizationStatusAuthorizedWhenInUse) {
 
-        self.danglingBackgroundPermissionsRequest = YES;
+        self.danglingBackgroundPermissionRequest = YES;
 
         [self.locationManager requestAlwaysAuthorization];
         if (@available(iOS 14.0, *)) {
             RadarLocationPermissionStatus *status = [[RadarLocationPermissionStatus alloc] initWithStatus:self.locationManager.authorizationStatus
                                                                                    backgroundPopupAvailable:NO
                                                                                           inForegroundPopup:self.status.inForegroundPopup
-                                                                          userRejectedBackgroundPermissions: self.status.userRejectedBackgroundPermissions];
+                                                                          userRejectedBackgroundPermission: self.status.userRejectedBackgroundPermission];
             [self updateStatus:status];
-            // TODO: sync the user's location permissions action with the their permissions status here
+            // TODO: sync the user's location permission action with the their permission status here
         }
 
         // We set a flag that request has been made and start a timer. If we resign active we unset the timer.
         // When the timer fires and the flag has not been unset, we assume that app never resigned active.
-        // Usually this means that the user has previously rejected the background permissions.
+        // Usually this means that the user has previously rejected the background permission.
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            if (self.danglingBackgroundPermissionsRequest) {
+            if (self.danglingBackgroundPermissionRequest) {
                 if (@available(iOS 14.0, *)) {
                     RadarLocationPermissionStatus *status = [[RadarLocationPermissionStatus alloc] initWithStatus:self.locationManager.authorizationStatus
                                                                                             backgroundPopupAvailable:self.status.backgroundPopupAvailable
                                                                                                     inForegroundPopup:self.status.inForegroundPopup
-                                                                                    userRejectedBackgroundPermissions:YES];
+                                                                                    userRejectedBackgroundPermission:YES];
                     [self updateStatus:status];
                 }
             }
-            self.danglingBackgroundPermissionsRequest = NO;
+            self.danglingBackgroundPermissionRequest = NO;
         });
     }
 }
@@ -127,10 +127,10 @@
             RadarLocationPermissionStatus *status = [[RadarLocationPermissionStatus alloc] initWithStatus:self.locationManager.authorizationStatus
                                                                                    backgroundPopupAvailable:self.status.backgroundPopupAvailable
                                                                                           inForegroundPopup:YES
-                                                                          userRejectedBackgroundPermissions: self.status.userRejectedBackgroundPermissions];
+                                                                          userRejectedBackgroundPermission: self.status.userRejectedBackgroundPermission];
             [self updateStatus:status];
         }
-        // TODO: sync the user's location permissions action with the their permissions status here
+        // TODO: sync the user's location permission action with the their permission status here
     }    
 }
 
@@ -145,7 +145,7 @@
                 RadarLocationPermissionStatus *newStatus = [[RadarLocationPermissionStatus alloc] initWithStatus:status
                                                                                           backgroundPopupAvailable:self.status.backgroundPopupAvailable
                                                                                                  inForegroundPopup:self.status.inForegroundPopup
-                                                                                 userRejectedBackgroundPermissions: YES];
+                                                                                 userRejectedBackgroundPermission: YES];
                 [self updateStatus:newStatus];
             }
         }
@@ -156,10 +156,10 @@
 
 
 - (void)applicationWillResignActive {
-    if (self.danglingBackgroundPermissionsRequest) {
+    if (self.danglingBackgroundPermissionRequest) {
         self.inBackgroundLocationPopUp = YES;
     }
-    self.danglingBackgroundPermissionsRequest = NO;
+    self.danglingBackgroundPermissionRequest = NO;
 }
 
 - (void)locationManager:(CLLocationManager *)manager didChangeAuthorizationStatus:(CLAuthorizationStatus)status {
@@ -167,8 +167,8 @@
                                                                               backgroundPopupAvailable:self.status.backgroundPopupAvailable
                                                                                      // any change in status will always result in the in foreground popup closing
                                                                                      inForegroundPopup:NO
-                                                                     userRejectedBackgroundPermissions: 
-                                                                     self.status.userRejectedBackgroundPermissions || (status == kCLAuthorizationStatusDenied)];
+                                                                     userRejectedBackgroundPermission: 
+                                                                     self.status.userRejectedBackgroundPermission || (status == kCLAuthorizationStatusDenied)];
     [self updateStatus:newStatus];
 }
 
