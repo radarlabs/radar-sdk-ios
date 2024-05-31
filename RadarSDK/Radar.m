@@ -846,8 +846,8 @@
 #pragma mark - Geocoding
 
 + (void)geocodeAddress:(NSString *)query 
-                layers:(NSString *)layers
-               country:(NSString *)country
+                layers:(NSArray<NSString *> *)layers
+               country:(NSArray<NSString *> *)country
      completionHandler:(RadarGeocodeCompletionHandler)completionHandler {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"geocode()"];
     [[RadarAPIClient sharedInstance] geocodeAddress:query
@@ -861,7 +861,7 @@
 }
 
 + (void)geocodeAddress:(NSString *)query completionHandler:(RadarGeocodeCompletionHandler)completionHandler {
-    [Radar geocodeAddress:query layers:NULL country:NULL completionHandler:completionHandler];
+    [Radar geocodeAddress:query layers:nil country:nil completionHandler:completionHandler];
 }
 
 + (void)reverseGeocodeWithCompletionHandler:(RadarGeocodeCompletionHandler)completionHandler {
@@ -875,16 +875,16 @@
 
             return;
         }
-        [Radar reverseGeocodeLocation:location layers:NULL completionHandler:completionHandler];
+        [Radar reverseGeocodeLocation:location layers:nil completionHandler:completionHandler];
     }];
 }
 
 + (void)reverseGeocodeLocation:(CLLocation *)location completionHandler:(RadarGeocodeCompletionHandler)completionHandler {
-    [Radar reverseGeocodeLocation:location layers:NULL completionHandler:completionHandler];
+    [Radar reverseGeocodeLocation:location layers:nil completionHandler:completionHandler];
 }
 
 + (void)reverseGeocodeLocation:(CLLocation *)location
-                        layers:(NSString *)layers
+                        layers:(NSArray<NSString *> *)layers
              completionHandler:(RadarGeocodeCompletionHandler)completionHandler {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"reverseGeocode()"];
     [[RadarAPIClient sharedInstance] reverseGeocodeLocation:location

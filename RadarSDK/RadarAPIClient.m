@@ -1102,8 +1102,8 @@
 }
 
 - (void)geocodeAddress:(NSString *)query 
-                layers:(NSString *)layers
-               country:(NSString *)country
+                layers:(NSArray<NSString *> *)layers
+               country:(NSArray<NSString *> *)country
      completionHandler:(RadarGeocodeAPICompletionHandler)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
@@ -1112,11 +1112,11 @@
 
     NSMutableString *queryString = [NSMutableString new];
     [queryString appendFormat:@"query=%@", query];
-    if (layers != NULL) {
-        [queryString appendFormat:@"layers=%@", layers];
+    if (layers && layers.count > 0) {
+        [queryString appendFormat:@"layers=%@", [layers componentsJoinedByString:@","]];
     }
-    if (country != NULL) {
-        [queryString appendFormat:@"country=%@", country];
+    if (country && country.count > 0) {
+        [queryString appendFormat:@"country=%@", [country componentsJoinedByString:@","]];
     }
 
     NSString *host = [RadarSettings host];
@@ -1148,7 +1148,7 @@
 }
 
 - (void)reverseGeocodeLocation:(CLLocation *)location 
-                        layers:(NSString *)layers
+                        layers:(NSArray<NSString *> *)layers
              completionHandler:(RadarGeocodeAPICompletionHandler)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
@@ -1157,8 +1157,8 @@
 
     NSMutableString *queryString = [NSMutableString new];
     [queryString appendFormat:@"coordinates=%.06f,%.06f", location.coordinate.latitude, location.coordinate.longitude];
-    if (layers != NULL) {
-        [queryString appendFormat:@"layers=%@", layers];
+    if (layers && layers.count > 0) {
+        [queryString appendFormat:@"layers=%@", [layers componentsJoinedByString:@","]];
     }
 
     NSString *host = [RadarSettings host];
