@@ -562,7 +562,7 @@ typedef void (^_Nonnull RadarLogConversionCompletionHandler)(RadarStatus status,
  */
 + (BOOL)isUsingRemoteTrackingOptions;
 
-+ (void)handleSilentPushWithPayload:(NSDictionary *)payload completionHandler:(void (^)(UIBackgroundFetchResult))completionHandler;
++ (void)handleSilentPushWithPayload:(NSDictionary *)payload;
 
 #pragma mark - Delegate
 

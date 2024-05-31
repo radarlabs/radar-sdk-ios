@@ -111,14 +111,13 @@
 }
 
 + (void)handleDeviceTokenForRemoteNotifications:(NSData *)deviceToken {
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Received device token for remote notifications."];
+
     const char *data = (char *)[deviceToken bytes];
     NSMutableString *token = [NSMutableString string];
     for (NSUInteger i = 0; i < [deviceToken length]; i++) {
         [token appendFormat:@"%02.2hhX", data[i]];
     }
-    // Just log it for now
-    NSString *message = [NSString stringWithFormat:@"Device token = %@", token];
-    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:message];
     
     // Save to settings
     [RadarSettings setDevicePushToken:token];
@@ -387,25 +386,26 @@
     return [RadarSettings remoteTrackingOptions] != nil;
 }
 
-+ (void)handleSilentPushWithPayload:(NSDictionary *)payload completionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
-    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug type:RadarLogTypeNone message:@"App received silent push notification" includeDate:YES includeBattery:YES];
++ (void)handleSilentPushWithPayload:(NSDictionary *)payload {
+    NSString *message = [NSString stringWithFormat:@"App received silent push notification | payload=%@", payload];
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug type:RadarLogTypeNone message:message includeDate:YES includeBattery:YES];
     [RadarNotificationHelper showDidReceiveSilentPushNotification];
     
-//    [Radar trackOnceWithCompletionHandler:^(RadarStatus status, CLLocation * _Nullable location, NSArray<RadarEvent *> * _Nullable events, RadarUser * _Nullable user) {
-//        if (status == RadarStatusSuccess) {
-//            completionHandler(UIBackgroundFetchResultNewData);
-//        } else {
-//            completionHandler(UIBackgroundFetchResultFailed);
-//        }
-//    }];
+    // payload contains array of actions, only using a single action for now
+    // action is a dictionary with type and optional data
+    if (payload[@"actions"]) {
+        NSDictionary *action = payload[@"actions"][0];
 
-    // if ACTION === trackOnce
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug type:RadarLogTypeNone message:message includeDate:YES includeBattery:YES];
 
-    // if ACTION === startTracking
-
-    // ...
-
-    [Radar startTrackingWithOptions:RadarTrackingOptions.presetContinuous];
+        // TRACK_ONCE
+        if ([action[@"type"] isEqualToString:@"TRACK_ONCE"]) {
+            [Radar trackOnceWithCompletionHandler:^(RadarStatus status, CLLocation * _Nullable location, NSArray<RadarEvent *> * _Nullable events, RadarUser * _Nullable user) {
+            }];
+        }
+        // START_TRACKING
+        // ...
+    }
 }
 
 #pragma mark - Delegate
