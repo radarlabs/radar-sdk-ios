@@ -1,8 +1,7 @@
 # Migration guides
 
 ## 3.11.x to 3.12.x
--  The `Radar.trackVerifiedToken()` method has been removed, and the `Radar.trackVerified()` callback now returns `token: RadarVerifiedLocationToken`, which includes `user`, `events`, `expiresAt`, `expiresIn`, and `passed`.
-- Instead of calling `Radar.trackVerified()`, which always fetches a fresh location token, you can now call `Radar.getVerifiedLocationToken()`, which returns a cached location token if the last location token is still valid. You can also call `Radar.startTrackingVerified()` to fetch and cache location tokens in the background automatically.
+-  The `Radar.trackVerified()` method now returns `token: RadarVerifiedLocationToken`, which includes `user`, `events`, `token,`, `expiresAt`, `expiresIn`, and `passed`. The `Radar.trackVerifiedToken()` method has been removed, since `Radar.trackVerified()` now returns a signed JWT.
 
 ```swift
 // 3.12.x
