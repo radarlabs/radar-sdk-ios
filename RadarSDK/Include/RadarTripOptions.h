@@ -25,7 +25,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithExternalId:(NSString *_Nonnull)externalId
             destinationGeofenceTag:(NSString *_Nullable)destinationGeofenceTag
      destinationGeofenceExternalId:(NSString *_Nullable)destinationGeofenceExternalId
-                scheduledArrivalAt:(NSDate *_Nullable)scheduledArrivalAt;
+                scheduledArrivalAt:(NSDate *_Nullable)scheduledArrivalAt
+                          metadata:(NSDictionary *_Nullable)metadata
+                              mode:(RadarRouteMode)mode;
 
 /**
  A stable unique ID for the trip.

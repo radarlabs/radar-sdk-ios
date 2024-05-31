@@ -82,6 +82,11 @@ typedef NS_ENUM(NSInteger, RadarTripStatus) {
 @property (assign, nonatomic, readonly) float etaDuration;
 
 /**
+ The optional scheduled arrival time for the trip.
+ */
+@property (nullable, copy, nonatomic, readonly) NSDate *scheduledArrivalAt;
+
+/**
  The status of the trip.
  */
 @property (assign, nonatomic, readonly) RadarTripStatus status;

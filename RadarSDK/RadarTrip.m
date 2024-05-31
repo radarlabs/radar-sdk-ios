@@ -9,6 +9,7 @@
 #import "Radar.h"
 #import "RadarCoordinate+Internal.h"
 #import "RadarTrip+Internal.h"
+#import "RadarUtils.h"
 
 @implementation RadarTrip
 
@@ -21,6 +22,7 @@
                                 mode:(RadarRouteMode)mode
                          etaDistance:(float)etaDistance
                          etaDuration:(float)etaDuration
+                  scheduledArrivalAt:(NSDate *_Nullable)scheduledArrivalAt
                               status:(RadarTripStatus)status {
     self = [super init];
     if (self) {
@@ -33,6 +35,7 @@
         _mode = mode;
         _etaDistance = etaDistance;
         _etaDuration = etaDuration;
+        _scheduledArrivalAt = scheduledArrivalAt;
         _status = status;
     }
     return self;
@@ -54,6 +57,7 @@
     RadarRouteMode mode = RadarRouteModeCar;
     float etaDistance = 0;
     float etaDuration = 0;
+    NSDate *scheduledArrivalAt;
     RadarTripStatus status = RadarTripStatusUnknown;
 
     id idObj = dict[@"_id"];
@@ -141,6 +145,12 @@
         }
     }
 
+    id scheduledArrivalAtObj = dict[@"scheduledArrivalAt"];
+    if (scheduledArrivalAtObj && [scheduledArrivalAtObj isKindOfClass:[NSString class]]) {
+        NSString *scheduledArrivalAtStr = (NSString *)scheduledArrivalAtObj;
+        scheduledArrivalAt = [RadarUtils.isoDateFormatter dateFromString:scheduledArrivalAtStr];
+    }
+
     id statusObj = dict[@"status"];
     if (statusObj && [statusObj isKindOfClass:[NSString class]]) {
         NSString *statusStr = (NSString *)statusObj;
@@ -169,6 +179,7 @@
                                         mode:mode
                                  etaDistance:etaDistance
                                  etaDuration:etaDuration
+                          scheduledArrivalAt:scheduledArrivalAt
                                       status:status];
     }
 
@@ -190,6 +201,9 @@
     dict[@"mode"] = [Radar stringForMode:self.mode];
     NSDictionary *etaDict = @{@"distance": @(self.etaDistance), @"duration": @(self.etaDuration)};
     dict[@"eta"] = etaDict;
+    if (self.scheduledArrivalAt) {
+        dict[@"scheduledArrivalAt"] = [RadarUtils.isoDateFormatter stringFromDate:self.scheduledArrivalAt];
+    }
     dict[@"status"] = [Radar stringForTripStatus:self.status];
     return dict;
 }
