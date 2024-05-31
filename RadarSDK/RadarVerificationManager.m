@@ -14,6 +14,7 @@
 
 #import "RadarVerificationManager.h"
 
+#import "Radar+Internal.h"
 #import "RadarAPIClient.h"
 #import "RadarBeaconManager.h"
 #import "RadarLocationManager.h"
@@ -244,6 +245,8 @@
     
     if (lastTokenElapsed < self.lastToken.expiresIn) {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Last token valid | lastToken.expiresIn = %f; lastTokenElapsed = %f", self.lastToken.expiresIn, lastTokenElapsed]];
+        
+        [Radar flushLogs];
         
         return completionHandler(RadarStatusSuccess, self.lastToken);
     }
