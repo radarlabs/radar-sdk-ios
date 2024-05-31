@@ -865,6 +865,11 @@
 }
 
 + (void)reverseGeocodeWithCompletionHandler:(RadarGeocodeCompletionHandler)completionHandler {
+    [Radar reverseGeocodeWithLayers:nil completionHandler:completionHandler];
+}
+
++ (void)reverseGeocodeWithLayers:(NSArray<NSString *> *_Nullable)layers
+               completionHandler:(RadarGeocodeCompletionHandler)completionHandler {
     [[RadarLocationManager sharedInstance] getLocationWithCompletionHandler:^(RadarStatus status, CLLocation *_Nullable location, BOOL stopped) {
         if (status != RadarStatusSuccess) {
             if (completionHandler) {
@@ -875,7 +880,7 @@
 
             return;
         }
-        [Radar reverseGeocodeLocation:location layers:nil completionHandler:completionHandler];
+        [Radar reverseGeocodeLocation:location layers:layers completionHandler:completionHandler];
     }];
 }
 
