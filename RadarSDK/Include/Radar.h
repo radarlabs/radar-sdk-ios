@@ -987,6 +987,17 @@ Gets the device's current location, then searches for geofences near that locati
 + (void)reverseGeocodeWithCompletionHandler:(RadarGeocodeCompletionHandler)completionHandler NS_SWIFT_NAME(reverseGeocode(completionHandler:));
 
 /**
+ Gets the device's current location, then reverse geocodes that location, converting coordinates to address.
+
+ @param completionHandler A completion handler.
+ @param layers Optional layer filters.
+
+ @see https://radar.com/documentation/api#reverse-geocode
+ */
++ (void)reverseGeocodeWithLayers:(NSArray<NSString *> *_Nullable)layers
+               completionHandler:(RadarGeocodeCompletionHandler)completionHandler NS_SWIFT_NAME(reverseGeocode(layers:completionHandler:));
+
+/**
  Reverse geocodes a location, converting coordinates to address.
 
  @param location The location to reverse geocode.
