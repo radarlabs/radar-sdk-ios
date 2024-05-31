@@ -847,12 +847,12 @@
 
 + (void)geocodeAddress:(NSString *)query 
                 layers:(NSArray<NSString *> *_Nullable)layers
-               country:(NSArray<NSString *> *_Nullable)country
+             countries:(NSArray<NSString *> *_Nullable)countries
      completionHandler:(RadarGeocodeCompletionHandler)completionHandler {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"geocode()"];
     [[RadarAPIClient sharedInstance] geocodeAddress:query
                                              layers:layers
-                                            country:country
+                                          countries:countries
                                   completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarAddress *> *_Nullable addresses) {
                                       [RadarUtils runOnMainThread:^{
                                           completionHandler(status, addresses);
@@ -861,7 +861,7 @@
 }
 
 + (void)geocodeAddress:(NSString *)query completionHandler:(RadarGeocodeCompletionHandler)completionHandler {
-    [Radar geocodeAddress:query layers:nil country:nil completionHandler:completionHandler];
+    [Radar geocodeAddress:query layers:nil countries:nil completionHandler:completionHandler];
 }
 
 + (void)reverseGeocodeWithCompletionHandler:(RadarGeocodeCompletionHandler)completionHandler {

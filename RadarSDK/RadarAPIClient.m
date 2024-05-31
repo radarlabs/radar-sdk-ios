@@ -1103,7 +1103,7 @@
 
 - (void)geocodeAddress:(NSString *)query 
                 layers:(NSArray<NSString *> *_Nullable)layers
-               country:(NSArray<NSString *> *_Nullable)country
+             countries:(NSArray<NSString *> *_Nullable)countries
      completionHandler:(RadarGeocodeAPICompletionHandler)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
@@ -1115,8 +1115,8 @@
     if (layers && layers.count > 0) {
         [queryString appendFormat:@"layers=%@", [layers componentsJoinedByString:@","]];
     }
-    if (country && country.count > 0) {
-        [queryString appendFormat:@"country=%@", [country componentsJoinedByString:@","]];
+    if (countries && countries.count > 0) {
+        [queryString appendFormat:@"country=%@", [countries componentsJoinedByString:@","]];
     }
 
     NSString *host = [RadarSettings host];

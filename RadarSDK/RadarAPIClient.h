@@ -140,7 +140,7 @@ typedef void (^_Nonnull RadarSyncLogsAPICompletionHandler)(RadarStatus status);
 
 - (void)geocodeAddress:(NSString *_Nonnull)query
                 layers:(NSArray<NSString *> *_Nullable)layers
-               country:(NSArray<NSString *> *_Nullable)country
+             countries:(NSArray<NSString *> *_Nullable)countries
      completionHandler:(RadarGeocodeAPICompletionHandler _Nonnull)completionHandler;
 
 - (void)reverseGeocodeLocation:(CLLocation *_Nonnull)location
