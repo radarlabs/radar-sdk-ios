@@ -119,6 +119,9 @@
     // Just log it for now
     NSString *message = [NSString stringWithFormat:@"Device token = %@", token];
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:message];
+    
+    // Save to settings
+    [RadarSettings setDevicePushToken:token];
 }
 
 #pragma mark - Location
@@ -395,7 +398,13 @@
 //            completionHandler(UIBackgroundFetchResultFailed);
 //        }
 //    }];
-    
+
+    // if ACTION === trackOnce
+
+    // if ACTION === startTracking
+
+    // ...
+
     [Radar startTrackingWithOptions:RadarTrackingOptions.presetContinuous];
 }
 

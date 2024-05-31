@@ -214,6 +214,7 @@
         params[@"userId"] = [RadarSettings userId];
         params[@"deviceId"] = [RadarUtils deviceId];
         params[@"description"] = [RadarSettings __description];
+        params[@"devicePushToken"] = [RadarSettings devicePushToken];
         params[@"metadata"] = [RadarSettings metadata];
         NSString *sessionId = [RadarSettings sessionId];
         if (sessionId) {
