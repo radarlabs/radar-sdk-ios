@@ -1101,7 +1101,10 @@
                     }];
 }
 
-- (void)geocodeAddress:(NSString *)query completionHandler:(RadarGeocodeAPICompletionHandler)completionHandler {
+- (void)geocodeAddress:(NSString *)query 
+                layers:(NSArray<NSString *> *_Nullable)layers
+             countries:(NSArray<NSString *> *_Nullable)countries
+     completionHandler:(RadarGeocodeAPICompletionHandler)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
         return completionHandler(RadarStatusErrorPublishableKey, nil, nil);
@@ -1109,6 +1112,12 @@
 
     NSMutableString *queryString = [NSMutableString new];
     [queryString appendFormat:@"query=%@", query];
+    if (layers && layers.count > 0) {
+        [queryString appendFormat:@"&layers=%@", [layers componentsJoinedByString:@","]];
+    }
+    if (countries && countries.count > 0) {
+        [queryString appendFormat:@"&country=%@", [countries componentsJoinedByString:@","]];
+    }
 
     NSString *host = [RadarSettings host];
     NSString *url = [NSString stringWithFormat:@"%@/v1/geocode/forward?%@", host, queryString];
@@ -1138,7 +1147,9 @@
                     }];
 }
 
-- (void)reverseGeocodeLocation:(CLLocation *)location completionHandler:(RadarGeocodeAPICompletionHandler)completionHandler {
+- (void)reverseGeocodeLocation:(CLLocation *)location 
+                        layers:(NSArray<NSString *> *_Nullable)layers
+             completionHandler:(RadarGeocodeAPICompletionHandler)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
         return completionHandler(RadarStatusErrorPublishableKey, nil, nil);
@@ -1146,6 +1157,9 @@
 
     NSMutableString *queryString = [NSMutableString new];
     [queryString appendFormat:@"coordinates=%.06f,%.06f", location.coordinate.latitude, location.coordinate.longitude];
+    if (layers && layers.count > 0) {
+        [queryString appendFormat:@"&layers=%@", [layers componentsJoinedByString:@","]];
+    }
 
     NSString *host = [RadarSettings host];
     NSString *url = [NSString stringWithFormat:@"%@/v1/geocode/reverse?%@", host, queryString];
