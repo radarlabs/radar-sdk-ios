@@ -1113,10 +1113,10 @@
     NSMutableString *queryString = [NSMutableString new];
     [queryString appendFormat:@"query=%@", query];
     if (layers && layers.count > 0) {
-        [queryString appendFormat:@"layers=%@", [layers componentsJoinedByString:@","]];
+        [queryString appendFormat:@"&layers=%@", [layers componentsJoinedByString:@","]];
     }
     if (countries && countries.count > 0) {
-        [queryString appendFormat:@"country=%@", [countries componentsJoinedByString:@","]];
+        [queryString appendFormat:@"&country=%@", [countries componentsJoinedByString:@","]];
     }
 
     NSString *host = [RadarSettings host];
@@ -1158,7 +1158,7 @@
     NSMutableString *queryString = [NSMutableString new];
     [queryString appendFormat:@"coordinates=%.06f,%.06f", location.coordinate.latitude, location.coordinate.longitude];
     if (layers && layers.count > 0) {
-        [queryString appendFormat:@"layers=%@", [layers componentsJoinedByString:@","]];
+        [queryString appendFormat:@"&layers=%@", [layers componentsJoinedByString:@","]];
     }
 
     NSString *host = [RadarSettings host];
