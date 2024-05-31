@@ -265,7 +265,8 @@
 }
 
 - (void)handleBeacons {
-    if (self.beaconUUIDs.count == 0 && self.nearbyBeaconIdentifiers.count + self.failedBeaconIdentifiers.count == self.beacons.count) {
+    if ((self.beaconUUIDs.count == 0 || [RadarSettings useRadarModifiedBeacon]) && 
+        self.nearbyBeaconIdentifiers.count + self.failedBeaconIdentifiers.count == self.beacons.count) {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Finished ranging"]];
 
         [self stopRanging];
@@ -273,6 +274,10 @@
 }
 
 - (void)locationManager:(CLLocationManager *)manager monitoringDidFailForRegion:(CLRegion *)region withError:(NSError *)error {
+    if ([RadarSettings useRadarModifiedBeacon]) {
+        return;
+    }
+    
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Failed to monitor beacon | region.identifier = %@", region.identifier]];
 
     [self.failedBeaconIdentifiers addObject:region.identifier];
@@ -294,8 +299,9 @@
         [self.nearbyBeacons addObject:[RadarBeacon fromCLBeacon:beacon]];
 
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
-                                           message:[NSString stringWithFormat:@"Ranged beacon | nearbyBeacons.count = %lu; region.identifier = %@; beacon.uuid = %@; beacon.major "
+                                           message:[NSString stringWithFormat:@"Ranged beacon with RSSI %ld | nearbyBeacons.count = %lu; region.identifier = %@; beacon.uuid = %@; beacon.major "
                                                                               @"= %@; beacon.minor = %@; beacon.rssi = %ld; beacon.proximity = %ld",
+                                                                              (unsigned long)beacon.rssi,
                                                                               (unsigned long)self.nearbyBeacons.count, region.identifier, [beacon.proximityUUID UUIDString],
                                                                               beacon.major, beacon.minor, (unsigned long)beacon.rssi, (unsigned long)beacon.proximity]];
     }
@@ -304,6 +310,10 @@
 }
 
 - (void)handleBeaconEntryForRegion:(CLBeaconRegion *)region completionHandler:(RadarBeaconCompletionHandler)completionHandler {
+    if ([RadarSettings useRadarModifiedBeacon]) {
+        return;
+    }
+    
     NSString *identifier = region.identifier;
     BOOL alreadyInside = [self.nearbyBeaconIdentifiers containsObject:identifier];
     if (alreadyInside) {
@@ -319,6 +329,10 @@
 }
 
 - (void)handleBeaconExitForRegion:(CLBeaconRegion *)region completionHandler:(RadarBeaconCompletionHandler)completionHandler {
+    if ([RadarSettings useRadarModifiedBeacon]) {
+        return;
+    }
+    
     NSString *identifier = region.identifier;
     BOOL alreadyOutside = ![self.nearbyBeaconIdentifiers containsObject:identifier];
     if (alreadyOutside) {
@@ -334,11 +348,19 @@
 }
 
 - (void)handleBeaconUUIDEntryForRegion:(CLBeaconRegion *)region completionHandler:(RadarBeaconCompletionHandler)completionHandler {
+    if ([RadarSettings useRadarModifiedBeacon]) {
+        return;
+    }
+    
     NSArray<NSString *> *beaconUUIDs = [RadarSettings beaconUUIDs];
     [self rangeBeaconUUIDs:beaconUUIDs completionHandler:completionHandler];
 }
 
 - (void)handleBeaconUUIDExitForRegion:(CLBeaconRegion *)region completionHandler:(RadarBeaconCompletionHandler)completionHandler {
+    if ([RadarSettings useRadarModifiedBeacon]) {
+        return;
+    }
+    
     NSArray<NSString *> *beaconUUIDs = [RadarSettings beaconUUIDs];
     [self rangeBeaconUUIDs:beaconUUIDs completionHandler:completionHandler];
 }
