@@ -966,7 +966,7 @@ Gets the device's current location, then searches for geofences near that locati
  Geocodes an address, converting address to coordinates.
 
  @param query The address to geocode.
- @param layer layer filters string.
+ @param layers layer filters string.
  @param country comma-separated country code filters string.
  @param completionHandler A completion handler.
 
