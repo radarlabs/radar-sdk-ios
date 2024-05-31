@@ -966,8 +966,8 @@ Gets the device's current location, then searches for geofences near that locati
  Geocodes an address, converting address to coordinates.
 
  @param query The address to geocode.
- @param layers layer filters string.
- @param country comma-separated country code filters string.
+ @param layers Optional layer filters string.
+ @param country Optional country filter. A string array of unique 2-letter country codes.
  @param completionHandler A completion handler.
 
  @see https://radar.com/documentation/api#forward-geocode
@@ -1001,13 +1001,13 @@ Gets the device's current location, then searches for geofences near that locati
  Reverse geocodes a location, converting coordinates to address.
 
  @param location The location to reverse geocode.
- @param layers layer filters string.
+ @param layers Optional layer filter string.
  @param completionHandler A completion handler.
 
  @see https://radar.com/documentation/api#reverse-geocode
 */
 + (void)reverseGeocodeLocation:(CLLocation *)location
-                        layers:(NSArray<NSString *> *_Nullable)layers
+                        layers:(NSString *_Nullable)layers
              completionHandler:(RadarGeocodeCompletionHandler)completionHandler NS_SWIFT_NAME(reverseGeocode(location:layers:completionHandler:));
 
 /**

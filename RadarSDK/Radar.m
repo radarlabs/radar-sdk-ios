@@ -846,8 +846,8 @@
 #pragma mark - Geocoding
 
 + (void)geocodeAddress:(NSString *)query 
-                layers:(NSArray<NSString *> *)layers
-               country:(NSArray<NSString *> *)country
+                layers:(NSArray<NSString *> *_Nullable)layers
+               country:(NSArray<NSString *> *_Nullable)country
      completionHandler:(RadarGeocodeCompletionHandler)completionHandler {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"geocode()"];
     [[RadarAPIClient sharedInstance] geocodeAddress:query
@@ -884,7 +884,7 @@
 }
 
 + (void)reverseGeocodeLocation:(CLLocation *)location
-                        layers:(NSArray<NSString *> *)layers
+                        layers:(NSArray<NSString *> *_Nullable)layers
              completionHandler:(RadarGeocodeCompletionHandler)completionHandler {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"reverseGeocode()"];
     [[RadarAPIClient sharedInstance] reverseGeocodeLocation:location

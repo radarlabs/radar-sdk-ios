@@ -1102,8 +1102,8 @@
 }
 
 - (void)geocodeAddress:(NSString *)query 
-                layers:(NSArray<NSString *> *)layers
-               country:(NSArray<NSString *> *)country
+                layers:(NSArray<NSString *> *_Nullable)layers
+               country:(NSArray<NSString *> *_Nullable)country
      completionHandler:(RadarGeocodeAPICompletionHandler)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
@@ -1148,7 +1148,7 @@
 }
 
 - (void)reverseGeocodeLocation:(CLLocation *)location 
-                        layers:(NSArray<NSString *> *)layers
+                        layers:(NSArray<NSString *> *_Nullable)layers
              completionHandler:(RadarGeocodeAPICompletionHandler)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
