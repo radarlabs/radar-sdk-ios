@@ -966,7 +966,7 @@ Gets the device's current location, then searches for geofences near that locati
  Geocodes an address, converting address to coordinates.
 
  @param query The address to geocode.
- @param layers Optional layer filters string.
+ @param layers Optional layer filters.
  @param countries Optional country filters. A string array of unique 2-letter country codes.
  @param completionHandler A completion handler.
 
@@ -1001,7 +1001,7 @@ Gets the device's current location, then searches for geofences near that locati
  Reverse geocodes a location, converting coordinates to address.
 
  @param location The location to reverse geocode.
- @param layers Optional layer filters string.
+ @param layers Optional layer filters.
  @param completionHandler A completion handler.
 
  @see https://radar.com/documentation/api#reverse-geocode
