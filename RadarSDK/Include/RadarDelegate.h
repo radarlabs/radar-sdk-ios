@@ -66,7 +66,7 @@ NS_ASSUME_NONNULL_BEGIN
 
  @param status The location permissions status.
 */
-- (void)didUpdateLocationPermissionStatus:(RadarLocationPermissionStatus *_Nonnull)status NS_SWIFT_NAME(didUpdateClientLocationPermissionStatus(status:));
+- (void)didUpdateLocationPermissionStatus:(RadarLocationPermissionStatus *_Nonnull)status NS_SWIFT_NAME(didUpdateLocationPermissionStatus(status:));
 
 @end
 
