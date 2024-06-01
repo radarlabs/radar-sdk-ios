@@ -30,7 +30,7 @@ Radar.trackVerifiedToken { (status, token) in
 ```
 
 ## 3.11.x to 3.12.x
-- The `RadarDelegate` interface has been changed to include `didUpdateLocationPermissionStatus` method.
+- The `RadarDelegate` interface has been changed to add a `didUpdateLocationPermissionStatus()` method.
 
 ## 3.9.x to 3.10.x
 - The `Radar.searchGeofences()` methods have been changed to `Radar.searchGeofences(completionHandler:)` and `Radar.searchGeofences(near:radius:tags:metadata:limit:includeGeometry:completionHandler:)`. Use `includeGeometry` to include full geometry of the geofence. Set `radius` to `-1` to search for geofences without a radius limit. 
