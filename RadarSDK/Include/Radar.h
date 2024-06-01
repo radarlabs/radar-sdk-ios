@@ -839,7 +839,8 @@ logConversionWithNotification
        completionHandler:(RadarSearchPlacesCompletionHandler)completionHandler NS_SWIFT_NAME(searchPlaces(near:radius:chains:chainMetadata:categories:groups:limit:completionHandler:));
 
 /**
-Gets the device's current location, then searches for geofences near that location, sorted by distance.
+ Gets the device's current location, then searches for geofences near that location, sorted by distance.
+ 
  @param completionHandler A completion handler.
 
  @see https://radar.com/documentation/api#search-geofences
