@@ -13,14 +13,6 @@ import RadarSDK
 class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate, CLLocationManagerDelegate, RadarDelegate, RadarVerifiedDelegate {
 
     let locationManager = CLLocationManager()
-    var timer: Timer?
-    
-    @objc func timerFired() {
-        print("timer fired")
-        Radar.getVerifiedLocationToken { status, token in
-            print("got token")
-        }
-    }
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { (_, _) in }
@@ -28,17 +20,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         locationManager.delegate = self
         self.requestLocationPermissions()
-        
-        timer = Timer.scheduledTimer(timeInterval: 15.0, target: self, selector: #selector(timerFired), userInfo: nil, repeats: true)
 
         // Replace with a valid test publishable key
-        Radar.initialize(publishableKey: "org_test_pk_5857c63d9c1565175db8b00750808a66a002acb8")
+        Radar.initialize(publishableKey: "prj_test_pk_0000000000000000000000000000000000000000")
         Radar.setDelegate(self)
         Radar.setVerifiedDelegate(self)
-        
-        Radar.startTrackingVerified(interval: 60, beacons: false)
 
-        /*
         if UIApplication.shared.applicationState != .background {
             Radar.getLocation { (status, location, stopped) in
                 print("Location: status = \(Radar.stringForStatus(status)); location = \(String(describing: location))")
@@ -200,7 +187,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
             print("Log Conversion: status = \(Radar.stringForStatus(status)); event = \(String(describing: event))")
         }
-         */
 
         return true
     }
@@ -273,9 +259,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func didLog(message: String) {
         self.notify(message)
     }
+
+    func didUpdateToken(_ token: String) {
+        
+    }
     
-    func didUpdateToken(_ token: RadarVerifiedLocationToken) {
-        print("Updated token with \(token.passed ? "passed" : "failed") checks and expiration in \(token.expiresIn) seconds")
+    func didUpdateLocationPermissionStatus(status: RadarLocationPermissionStatus){
+        
     }
     
 }
