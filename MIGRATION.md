@@ -5,7 +5,7 @@
 
 ```swift
 // 3.13.x
-Radar.trackVerifiedToken { (status, token) in
+Radar.trackVerified { (status, token) in
   if token?.passed == true {
     // allow access to feature, send token to server for validation
   } else {
