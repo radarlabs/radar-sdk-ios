@@ -69,6 +69,8 @@
 }
 
 - (void)trackVerifiedWithBeacons:(BOOL)beacons completionHandler:(RadarTrackVerifiedCompletionHandler)completionHandler {
+    BOOL lastTokenBeacons = beacons;
+    
     [[RadarAPIClient sharedInstance]
      getConfigForUsage:@"verify"
      verified:YES
@@ -110,7 +112,7 @@
                         if (token) {
                             self.lastToken = token;
                             self.lastTokenSystemUptime = [NSProcessInfo processInfo].systemUptime;
-                            self.lastTokenBeacons = beacons;
+                            self.lastTokenBeacons = lastTokenBeacons;
                         }
                         if (completionHandler) {
                             [RadarUtils runOnMainThread:^{
