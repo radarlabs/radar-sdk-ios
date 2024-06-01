@@ -1434,14 +1434,12 @@ completionHandler:(RadarSendEventAPICompletionHandler _Nonnull)completionHandler
     NSArray *logsArray = [RadarLog arrayForLogs:logs];
     [params setValue:logsArray forKey:@"logs"];
 
-    // "logPayload = false" enforces "don't log the logging call".
-    // Otherwise, all log entries would continue to coalesce and would never fully clear from the buffer.
     [self.apiHelper requestWithMethod:@"POST"
                                   url:url
                               headers:headers
                                params:params
                                 sleep:NO
-                           logPayload:NO
+                           logPayload:NO // avoid logging the logging call
                       extendedTimeout:NO
                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
                         return completionHandler(status);
