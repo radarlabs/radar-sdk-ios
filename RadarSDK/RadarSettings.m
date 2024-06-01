@@ -217,7 +217,6 @@ static NSString *const kXPlatformSDKVersion = @"radar-xPlatformSDKVersion";
 
 + (void)setFeatureSettings:(RadarFeatureSettings *)featureSettings {
     if (featureSettings) {
-        //This is added as reading from NSUserdefaults is too slow for this feature flag. To be removed when throttling is done. 
         [[RadarLogBuffer sharedInstance] setPersistentLogFeatureFlag:featureSettings.useLogPersistence];
         NSDictionary *featureSettingsDict = [featureSettings dictionaryValue];
         [[NSUserDefaults standardUserDefaults] setObject:featureSettingsDict forKey:kFeatureSettings];
