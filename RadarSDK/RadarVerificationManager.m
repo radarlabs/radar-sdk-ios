@@ -177,10 +177,14 @@
         weakTrackVerified = trackVerified;
         
         [self trackVerifiedWithBeacons:beacons completionHandler:^(RadarStatus status, RadarVerifiedLocationToken *_Nullable token) {
+            NSTimeInterval expiresIn = 0;
             NSTimeInterval minInterval = interval;
+            
             if (token) {
-                // if token.expiresIn is shorter than interval, override interval
-                minInterval = MIN(token.expiresIn, interval);
+                expiresIn = token.expiresIn;
+                
+                // if expiresIn is shorter than interval, override interval
+                minInterval = MIN(expiresIn, interval);
                 
                 // re-request early to maximize the likelihood that a cached token is available
                 if (minInterval > 20) {
@@ -194,13 +198,13 @@
                 return;
             }
             
-            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Requesting token again in %f seconds | minInterval = %f; token.expiresIn = %f; interval = %f", minInterval, minInterval, token.expiresIn, interval]];
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Requesting token again in %f seconds | minInterval = %f; expiresIn = %f; interval = %f", minInterval, minInterval, expiresIn, interval]];
             
             self.scheduled = YES;
             
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(minInterval * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
                 if (self.started) {
-                    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Token request interval fired | started = %d", self.started]];
+                    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Token request interval fired"];
                     
                     weakTrackVerified();
                     
@@ -265,15 +269,19 @@
 - (void)getVerifiedLocationTokenWithCompletionHandler:(RadarTrackVerifiedCompletionHandler)completionHandler {
     NSTimeInterval lastTokenElapsed = [NSProcessInfo processInfo].systemUptime - self.lastTokenSystemUptime;
     
-    if (self.lastToken && lastTokenElapsed < self.lastToken.expiresIn) {
-        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Last token valid | lastToken.expiresIn = %f; lastTokenElapsed = %f", self.lastToken.expiresIn, lastTokenElapsed]];
+    if (self.lastToken) {
+        if (lastTokenElapsed < self.lastToken.expiresIn) {
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Last token valid | lastToken.expiresIn = %f; lastTokenElapsed = %f", self.lastToken.expiresIn, lastTokenElapsed]];
+            
+            [Radar flushLogs];
+            
+            return completionHandler(RadarStatusSuccess, self.lastToken);
+        }
         
-        [Radar flushLogs];
-        
-        return completionHandler(RadarStatusSuccess, self.lastToken);
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Last token invalid | lastToken.expiresIn = %f; lastTokenElapsed = %f", self.lastToken.expiresIn, lastTokenElapsed]];
+    } else {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"No last token"];
     }
-    
-    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Last token invalid | lastToken.expiresIn = %f; lastTokenElapsed = %f", self.lastToken.expiresIn, lastTokenElapsed]];
     
     [self trackVerifiedWithBeacons:self.lastTokenBeacons completionHandler:completionHandler];
 }
