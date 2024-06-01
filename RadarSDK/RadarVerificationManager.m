@@ -224,30 +224,30 @@
 
             nw_path_monitor_set_update_handler(_monitor, ^(nw_path_t path) {
                 if (nw_path_get_status(path) == nw_path_status_satisfied) {
-                    NSString *ips = [self getIPs];
-                    BOOL changed = NO;
-                    
-                    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Network connected | ips = %@", ips]];
-                    
-                    if (!self.lastIPs) {
-                        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"First time getting IPs | ips = %@", ips]];
-                        changed = NO;
-                    } else if (!ips || [ips isEqualToString:@"error"]) {
-                        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Error getting IPs | ips = %@", ips]];
-                        changed = YES;
-                    } else if (![ips isEqualToString:self.lastIPs]) {
-                        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"IPs changed | ips = %@; lastIPs = %@", ips, self.lastIPs]];
-                        changed = YES;
-                    } else {
-                        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"IPs unchanged"];
-                    }
-                    self.lastIPs = ips;
-                    
-                    if (changed) {
-                        trackVerified();
-                    }
+                    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Network connected"];
                 } else {
                     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Network disconnected"];
+                }
+                
+                NSString *ips = [self getIPs];
+                BOOL changed = NO;
+                
+                if (!self.lastIPs) {
+                    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"First time getting IPs | ips = %@", ips]];
+                    changed = NO;
+                } else if (!ips || [ips isEqualToString:@"error"]) {
+                    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Error getting IPs | ips = %@", ips]];
+                    changed = YES;
+                } else if (![ips isEqualToString:self.lastIPs]) {
+                    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"IPs changed | ips = %@; lastIPs = %@", ips, self.lastIPs]];
+                    changed = YES;
+                } else {
+                    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"IPs unchanged"];
+                }
+                self.lastIPs = ips;
+                
+                if (changed) {
+                    trackVerified();
                 }
             });
 
