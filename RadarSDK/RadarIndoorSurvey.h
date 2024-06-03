@@ -20,6 +20,8 @@
 @property (nonatomic, strong) CMMagnetometerData *lastMagnetometerData;
 // store whether this is a whereAmI scan
 @property (nonatomic) BOOL isWhereAmIScan;
+// store whether we are scannig
+@property (nonatomic) BOOL isScanning;
 
 #define WHERE_AM_I_DURATION_SECONDS 10
 
@@ -29,6 +31,5 @@
 - (void)startScanning;
 - (void)stopScanning;
 - (void)kickOffMotionAndBluetooth:(int)surveyLengthSeconds;
-- (BOOL)isScanning;
 
 @end

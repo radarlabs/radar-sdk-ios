@@ -2,11 +2,15 @@
 #import "NSData+GZIP.h"
 #import "RadarUtils.h"
 #import "RadarLogger.h"
+#import "RadarLocationManager.h"
 
 @implementation RadarIndoorSurvey
 
 - (instancetype)init {
     self = [super init];
+    if (self) {
+        self.isScanning = NO;
+    }
     return self;
 }
 
@@ -14,6 +18,23 @@
     // convert to [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:message]; call
     // NSLog(@"start called with placeLabel: %@, surveyLengthSeconds: %d, isWhereAmIScan: %d", placeLabel, surveyLengthSeconds, isWhereAmIScan);
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"start called with placeLabel: %@, surveyLengthSeconds: %d, isWhereAmIScan: %d", placeLabel, surveyLengthSeconds, isWhereAmIScan]];
+
+    // log self.isScanning
+    // NSLog(@"self.isScanning: %d", self.isScanning);
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"self.isScanning: %d", self.isScanning]];
+
+    if(self.isScanning) {
+        // NSLog(@"Error: start called while already scanning");
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelError message:@"Error: start called while already scanning"];
+
+        // call callback, pass bad data
+        completionHandler(@"Error: start called while already scanning");
+
+        return;
+    }
+
+    // set self.isScanning to YES
+    self.isScanning = YES;
 
     self.placeLabel = placeLabel;
     self.completionHandler = completionHandler;
@@ -30,6 +51,8 @@
         // convert to [[RadarLogger sharedInstance]
         // NSLog(@"Error: start called with isWhereAmIScan but no knownLocation");
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelError message:@"Error: start called with isWhereAmIScan but no knownLocation"];
+        completionHandler(@"Error: start called with isWhereAmIScan but no knownLocation");
+        self.isScanning = NO;
         return;
     } else if(isWhereAmIScan && knownLocation) {
         // if isWhereAmIScan and knownLocation,
@@ -39,17 +62,25 @@
         [self kickOffMotionAndBluetooth:surveyLengthSeconds];
     } else if(!isWhereAmIScan) {        
         // get location at time of survey start
-        [Radar trackOnceWithCompletionHandler:^(RadarStatus status, CLLocation *location, NSArray<RadarEvent *> *events, RadarUser *user) {
-            // NSLog(@"location: %f, %f", location.coordinate.latitude, location.coordinate.longitude);
-            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"location: %f, %f", location.coordinate.latitude, location.coordinate.longitude]];
-            // print location object as is
-            // NSLog(@"%@", location);
-            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"%@", location]];
 
-            // set self.locationAtTimeOfSurveyStart to location
-            self.locationAtTimeOfSurveyStart = location;
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"calling RadarLocationManager getLocationWithDesiredAccuracy"];
+        [[RadarLocationManager sharedInstance]
+            getLocationWithDesiredAccuracy:RadarTrackingOptionsDesiredAccuracyMedium
+                         completionHandler:^(RadarStatus status, CLLocation *_Nullable location, BOOL stopped) {
+                             if (status != RadarStatusSuccess) {
+                                 return;
+                             }
 
-            [self kickOffMotionAndBluetooth:surveyLengthSeconds];
+                             // NSLog(@"location: %f, %f", location.coordinate.latitude, location.coordinate.longitude);
+                             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"location: %f, %f", location.coordinate.latitude, location.coordinate.longitude]];
+                             // print location object as is
+                             // NSLog(@"%@", location);
+                             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"%@", location]];
+
+                             // set self.locationAtTimeOfSurveyStart to location
+                             self.locationAtTimeOfSurveyStart = location;
+
+                             [self kickOffMotionAndBluetooth:surveyLengthSeconds];
         }];
     }
 }
@@ -183,6 +214,9 @@
 
     // NSLog(@"stopScanning end");
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:@"stopScanning end"];
+
+    // set self.isScanning to NO
+    self.isScanning = NO;
 }
 
 - (void)centralManagerDidUpdateState:(CBCentralManager *)central {
