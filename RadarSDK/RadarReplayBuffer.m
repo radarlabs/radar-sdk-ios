@@ -37,14 +37,12 @@ static const int MAX_BUFFER_SIZE = 120; // one hour of updates
     return sharedInstance;
 }
 
-/**
- * Takes a dictionary of replay params and adds it as a replay to the buffer
- */
 - (void)writeNewReplayToBuffer:(NSMutableDictionary *)replayParams {
     NSUInteger replayBufferLength = [mutableReplayBuffer count];
     if (replayBufferLength >= MAX_BUFFER_SIZE) {
         [self dropOldestReplay];
     }
+    
     // add new replay to buffer
     RadarReplay *radarReplay = [[RadarReplay alloc] initWithParams:replayParams];
     [mutableReplayBuffer addObject:radarReplay];
@@ -53,7 +51,7 @@ static const int MAX_BUFFER_SIZE = 120; // one hour of updates
     if (featureSettings.usePersistence) {
         NSData *replaysData;
 
-        // If buffer length is above 50, remove every fifth replay from the persisted buffer 
+        // if buffer length is above 50, remove every fifth replay from the persisted buffer
         if ([mutableReplayBuffer count] > 50) {
             NSMutableArray<RadarReplay *> *prunedBuffer = [NSMutableArray arrayWithCapacity:[mutableReplayBuffer count]];
             for (NSUInteger i = 0; i < mutableReplayBuffer.count; i++) {
@@ -70,17 +68,11 @@ static const int MAX_BUFFER_SIZE = 120; // one hour of updates
     }
 }
 
-/**
- * Return copy of replays in buffer
- */
 - (NSArray<RadarReplay *> *)flushableReplays {
     NSArray *flushableReplays = [mutableReplayBuffer copy];
     return flushableReplays;
 }
 
-/**
-* Flushes the replay in the buffer
-*/
 - (void)flushReplaysWithCompletionHandler:(NSDictionary *_Nullable)replayParams
                         completionHandler:(RadarFlushReplaysCompletionHandler _Nullable)completionHandler {
     if (isFlushing) {
@@ -143,14 +135,10 @@ static const int MAX_BUFFER_SIZE = 120; // one hour of updates
     }];
 }
 
-// Set is Flushing from outside
 - (void)setIsFlushing:(BOOL)flushing {
     isFlushing = flushing;
 }
 
-/**
- * Clears the buffer out
- */
 - (void)clearBuffer {
     [mutableReplayBuffer removeAllObjects];
 
@@ -170,14 +158,11 @@ static const int MAX_BUFFER_SIZE = 120; // one hour of updates
     NSData *replaysData = [[NSUserDefaults standardUserDefaults] objectForKey:@"radar-replays"];
     if (replaysData) {
         NSArray *replays = [NSKeyedUnarchiver unarchiveObjectWithData:replaysData];
-        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Loaded replays with length %lu", (unsigned long)[replays count]]];
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Loaded replays | length = %lu", (unsigned long)[replays count]]];
         mutableReplayBuffer = [NSMutableArray arrayWithArray:replays];
     }
 }
 
-/**
- * Drops the oldest replay from the buffer
- */
 - (void)dropOldestReplay {
     [mutableReplayBuffer removeObjectsInRange:NSMakeRange(0, 1)];
 }

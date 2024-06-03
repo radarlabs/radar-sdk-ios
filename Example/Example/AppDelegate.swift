@@ -260,11 +260,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         self.notify(message)
     }
 
-    func didUpdateToken(_ token: String) {
+    func didUpdateToken(_ token: RadarVerifiedLocationToken) {
         
     }
     
-    func didUpdateLocationPermissionStatus(status: RadarLocationPermissionStatus){
+    func didUpdateLocationPermissionStatus(status: RadarLocationPermissionStatus) {
         
     }
     
