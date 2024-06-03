@@ -273,7 +273,7 @@
                                                    beacons:nil
                                        indoorsWhereAmIScan:indoorsWhereAmIScan
                                          completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user,
-                                                             NSArray<RadarGeofence *> *_Nullable nearbyGeofences, RadarConfig *_Nullable config, NSString *_Nullable token) {
+                                                             NSArray<RadarGeofence *> *_Nullable nearbyGeofences, RadarConfig *_Nullable config, RadarVerifiedLocationToken *_Nullable token) {
                                             if (status == RadarStatusSuccess && config != nil) {                                    
                                                 [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];                                            
                                             }
