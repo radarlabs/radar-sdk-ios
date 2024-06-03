@@ -71,12 +71,12 @@
 		0114F058284EFDB700ADA4E4 /* RadarRouteMode.h in Headers */ = {isa = PBXBuildFile; fileRef = 0114F057284EFDB700ADA4E4 /* RadarRouteMode.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		015C53AD29B8E8BA004F53A6 /* (null) in Headers */ = {isa = PBXBuildFile; };
 		015C53AE29B8E8BA004F53A6 /* (null) in Sources */ = {isa = PBXBuildFile; };
-		019514362BD078D90031ABA2 /* RadarVerifiedLocationToken.h in Headers */ = {isa = PBXBuildFile; fileRef = 019514352BD077D10031ABA2 /* RadarVerifiedLocationToken.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		019514392BD081630031ABA2 /* RadarVerifiedLocationToken.m in Sources */ = {isa = PBXBuildFile; fileRef = 019514372BD081630031ABA2 /* RadarVerifiedLocationToken.m */; };
 		0195143A2BD081630031ABA2 /* RadarVerifiedLocationToken+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 019514382BD081630031ABA2 /* RadarVerifiedLocationToken+Internal.h */; };
 		01F810702AF0119800BD7088 /* RadarVerifiedDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 01F8106F2AF0119800BD7088 /* RadarVerifiedDelegate.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		01F99CFB2965C182004E8CF3 /* RadarConfig.h in Headers */ = {isa = PBXBuildFile; fileRef = 01F99CFA2965C182004E8CF3 /* RadarConfig.h */; };
 		01F99CFD2965C1C4004E8CF3 /* RadarConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = 01F99CFC2965C1C4004E8CF3 /* RadarConfig.m */; };
+		504CD9A72C0E698E0039F8BC /* RadarVerifiedLocationToken.h in Headers */ = {isa = PBXBuildFile; fileRef = 504CD9A62C0E698E0039F8BC /* RadarVerifiedLocationToken.h */; };
 		5085F1BB2C0787AA0088C51B /* NSData+GZIP.h in Headers */ = {isa = PBXBuildFile; fileRef = 5085F1B92C0787AA0088C51B /* NSData+GZIP.h */; };
 		5085F1BC2C0787AA0088C51B /* NSData+GZIP.m in Sources */ = {isa = PBXBuildFile; fileRef = 5085F1BA2C0787AA0088C51B /* NSData+GZIP.m */; };
 		50C5CD482BE9577A00E72E24 /* RadarIndoorSurvey.h in Headers */ = {isa = PBXBuildFile; fileRef = 50C5CD462BE9577A00E72E24 /* RadarIndoorSurvey.h */; };
@@ -182,7 +182,6 @@
 		0107A9E82621FFB9008AB52F /* RadarSDK.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = RadarSDK.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		0113020E2AE1467800EFC377 /* Network.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Network.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX13.3.sdk/System/Library/PrivateFrameworks/Network.framework; sourceTree = DEVELOPER_DIR; };
 		0114F057284EFDB700ADA4E4 /* RadarRouteMode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarRouteMode.h; sourceTree = "<group>"; };
-		019514352BD077D10031ABA2 /* RadarVerifiedLocationToken.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarVerifiedLocationToken.h; sourceTree = "<group>"; };
 		019514372BD081630031ABA2 /* RadarVerifiedLocationToken.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RadarVerifiedLocationToken.m; sourceTree = "<group>"; };
 		019514382BD081630031ABA2 /* RadarVerifiedLocationToken+Internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "RadarVerifiedLocationToken+Internal.h"; sourceTree = "<group>"; };
 		01DDC7C529FC387400C0D039 /* RadarNotificationHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RadarNotificationHelper.m; sourceTree = "<group>"; };
@@ -190,6 +189,7 @@
 		01F8106F2AF0119800BD7088 /* RadarVerifiedDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RadarVerifiedDelegate.h; sourceTree = "<group>"; };
 		01F99CFA2965C182004E8CF3 /* RadarConfig.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarConfig.h; sourceTree = "<group>"; };
 		01F99CFC2965C1C4004E8CF3 /* RadarConfig.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RadarConfig.m; sourceTree = "<group>"; };
+		504CD9A62C0E698E0039F8BC /* RadarVerifiedLocationToken.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RadarVerifiedLocationToken.h; sourceTree = "<group>"; };
 		5085F1B92C0787AA0088C51B /* NSData+GZIP.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSData+GZIP.h"; sourceTree = "<group>"; };
 		5085F1BA2C0787AA0088C51B /* NSData+GZIP.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSData+GZIP.m"; sourceTree = "<group>"; };
 		50C5CD462BE9577A00E72E24 /* RadarIndoorSurvey.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RadarIndoorSurvey.h; sourceTree = "<group>"; };
@@ -412,7 +412,7 @@
 				96A5A0EE27AD9F7F007B960B /* RadarTripOptions.h */,
 				96A5A0E027AD9F7F007B960B /* RadarUser.h */,
 				01F8106F2AF0119800BD7088 /* RadarVerifiedDelegate.h */,
-				019514352BD077D10031ABA2 /* RadarVerifiedLocationToken.h */,
+				504CD9A62C0E698E0039F8BC /* RadarVerifiedLocationToken.h */,
 			);
 			path = Include;
 			sourceTree = "<group>";
@@ -645,7 +645,6 @@
 				01F99CFB2965C182004E8CF3 /* RadarConfig.h in Headers */,
 				96A5A0CF27AD9F41007B960B /* RadarAddress+Internal.h in Headers */,
 				96A5A11127AD9F7F007B960B /* RadarBeacon.h in Headers */,
-				019514362BD078D90031ABA2 /* RadarVerifiedLocationToken.h in Headers */,
 				96A5A10B27AD9F7F007B960B /* RadarTripOptions.h in Headers */,
 				82F7FAEE2A65FE030055AA4B /* RadarVerificationManager.h in Headers */,
 				96A5A0C727AD9F41007B960B /* RadarChain+Internal.h in Headers */,
@@ -686,6 +685,7 @@
 				96A5A0C427AD9F41007B960B /* RadarCircleGeometry+Internal.h in Headers */,
 				0114F058284EFDB700ADA4E4 /* RadarRouteMode.h in Headers */,
 				96A5A0D527AD9F41007B960B /* RadarRouteDuration+Internal.h in Headers */,
+				504CD9A72C0E698E0039F8BC /* RadarVerifiedLocationToken.h in Headers */,
 				96A5A0CE27AD9F41007B960B /* RadarCoordinate+Internal.h in Headers */,
 				E624465F2BEBEB8A00ECCCAD /* RadarLocationPermissionManager.h in Headers */,
 				96A5A11927ADA02F007B960B /* RadarLog.h in Headers */,
