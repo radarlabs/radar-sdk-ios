@@ -19,6 +19,7 @@
 #import "RadarRouteMatrix.h"
 #import "RadarRoutes.h"
 #import "RadarUser.h"
+#import "RadarVerifiedLocationToken.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -28,7 +29,7 @@ typedef void (^_Nonnull RadarTrackAPICompletionHandler)(RadarStatus status,
                                                         RadarUser *_Nullable user,
                                                         NSArray<RadarGeofence *> *_Nullable nearbyGeofences,
                                                         RadarConfig *_Nullable config,
-                                                        NSString *_Nullable token);
+                                                        RadarVerifiedLocationToken *_Nullable token);
 
 typedef void (^_Nonnull RadarFlushReplaysAPICompletionHandler)(RadarStatus status, NSDictionary *_Nullable res);
 
@@ -140,9 +141,14 @@ typedef void (^_Nonnull RadarSyncLogsAPICompletionHandler)(RadarStatus status);
 
 - (void)validateAddress:(RadarAddress *_Nonnull)address completionHandler:(RadarValidateAddressAPICompletionHandler _Nonnull)completionHandler;
 
-- (void)geocodeAddress:(NSString *_Nonnull)query completionHandler:(RadarGeocodeAPICompletionHandler _Nonnull)completionHandler;
+- (void)geocodeAddress:(NSString *_Nonnull)query
+                layers:(NSArray<NSString *> *_Nullable)layers
+             countries:(NSArray<NSString *> *_Nullable)countries
+     completionHandler:(RadarGeocodeAPICompletionHandler _Nonnull)completionHandler;
 
-- (void)reverseGeocodeLocation:(CLLocation *_Nonnull)location completionHandler:(RadarGeocodeAPICompletionHandler _Nonnull)completionHandler;
+- (void)reverseGeocodeLocation:(CLLocation *_Nonnull)location
+                        layers:(NSArray<NSString *> *_Nullable)layers
+             completionHandler:(RadarGeocodeAPICompletionHandler _Nonnull)completionHandler;
 
 - (void)ipGeocodeWithCompletionHandler:(RadarIPGeocodeAPICompletionHandler _Nonnull)completionHandler;
 

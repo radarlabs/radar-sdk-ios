@@ -69,7 +69,7 @@ static NSString *const kXPlatformSDKVersion = @"radar-xPlatformSDKVersion";
 
     RadarFeatureSettings *featureSettings = [RadarSettings featureSettings];
     if (featureSettings.extendFlushReplays) {
-        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"flushReplays() from updateSesssionId"];
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"Flushing replays from updateSessionId()"];
         [[RadarReplayBuffer sharedInstance] flushReplaysWithCompletionHandler:nil completionHandler:nil];
     }
     if (timestampSeconds - sessionIdSeconds > 300) {
@@ -217,7 +217,6 @@ static NSString *const kXPlatformSDKVersion = @"radar-xPlatformSDKVersion";
 
 + (void)setFeatureSettings:(RadarFeatureSettings *)featureSettings {
     if (featureSettings) {
-        //This is added as reading from NSUserdefaults is too slow for this feature flag. To be removed when throttling is done. 
         [[RadarLogBuffer sharedInstance] setPersistentLogFeatureFlag:featureSettings.useLogPersistence];
         NSDictionary *featureSettingsDict = [featureSettings dictionaryValue];
         [[NSUserDefaults standardUserDefaults] setObject:featureSettingsDict forKey:kFeatureSettings];

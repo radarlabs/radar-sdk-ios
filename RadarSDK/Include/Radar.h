@@ -18,7 +18,9 @@
 #import "RadarRouteMode.h"
 #import "RadarRoutes.h"
 #import "RadarTrackingOptions.h"
+#import "RadarVerifiedLocationToken.h"
 #import "RadarUser.h"
+#import "RadarLocationPermissionStatus.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -189,13 +191,13 @@ typedef void (^_Nullable RadarTrackCompletionHandler)(RadarStatus status, CLLoca
 typedef void (^_Nullable RadarFlushReplaysCompletionHandler)(RadarStatus status, NSDictionary *_Nullable res);
 
 /**
- Called when an track request with token callback succeeds, fails, or times out.
+ Called when a track verified request succeeds, fails, or times out.
 
- Receives the request status and, if successful, a JSON Web Token (JWT) containing an array of the events generated and the user. Verify the JWT server-side using your secret key.
+ Receives the request status and, if successful, the user's verified location. Verify the token server-side using your secret key.
 
  @see https://radar.com/documentation/sdk/fraud
  */
-typedef void (^_Nullable RadarTrackTokenCompletionHandler)(RadarStatus status, NSString *_Nullable token);
+typedef void (^_Nullable RadarTrackVerifiedCompletionHandler)(RadarStatus status, RadarVerifiedLocationToken *_Nullable token);
 
 /**
  Called when a trip update succeeds, fails, or times out.
@@ -454,7 +456,7 @@ typedef void (^_Nonnull RadarIndoorsSurveyCompletionHandler)(NSString *_Nullable
 
  @see https://radar.com/documentation/fraud
  */
-+ (void)trackVerifiedWithCompletionHandler:(RadarTrackCompletionHandler _Nullable)completionHandler NS_SWIFT_NAME(trackVerified(completionHandler:));
++ (void)trackVerifiedWithCompletionHandler:(RadarTrackVerifiedCompletionHandler _Nullable)completionHandler NS_SWIFT_NAME(trackVerified(completionHandler:));
 
 /**
  Tracks the user's location with device integrity information for location verification use cases.
@@ -466,41 +468,33 @@ typedef void (^_Nonnull RadarIndoorsSurveyCompletionHandler)(NSString *_Nullable
 
  @see https://radar.com/documentation/fraud
  */
-+ (void)trackVerifiedWithBeacons:(BOOL)beacons completionHandler:(RadarTrackCompletionHandler _Nullable)completionHandler NS_SWIFT_NAME(trackVerified(beacons:completionHandler:));
-
-/**
- Tracks the user's location with device integrity information for location verification use cases. Returns a JSON Web Token (JWT). Verify the JWT server-side using your secret key.
-
- @warning Note that you must configure SSL pinning before calling this method.
-
- @param completionHandler An optional completion handler.
-
- @see https://radar.com/documentation/fraud
- */
-+ (void)trackVerifiedTokenWithCompletionHandler:(RadarTrackTokenCompletionHandler _Nullable)completionHandler NS_SWIFT_NAME(trackVerifiedToken(completionHandler:));
-
-/**
- Tracks the user's location with device integrity information for location verification use cases. Returns a JSON Web Token (JWT). Verify the JWT server-side using your secret key.
-
- @warning Note that you must configure SSL pinning before calling this method.
-
- @param beacons A boolean indicating whether to range beacons.
- @param completionHandler An optional completion handler.
-
- @see https://radar.com/documentation/fraud
- */
-+ (void)trackVerifiedTokenWithBeacons:(BOOL)beacons completionHandler:(RadarTrackTokenCompletionHandler _Nullable)completionHandler NS_SWIFT_NAME(trackVerifiedToken(beacons:completionHandler:));
++ (void)trackVerifiedWithBeacons:(BOOL)beacons completionHandler:(RadarTrackVerifiedCompletionHandler _Nullable)completionHandler NS_SWIFT_NAME(trackVerified(beacons:completionHandler:));
 
 /**
  Starts tracking the user's location with device integrity information for location verification use cases.
  
- @param token A boolean indicating whether to return a JSON Web Token (JWT). If `true`, tokens are delivered to your `RadarVerifiedDelegate`. If `false`, location updates are delivered to your `RadarDelegate`.
+ @param interval The default interval in seconds between each location update.
  @param beacons A boolean indicating whether to range beacons.
- @param interval The interval in seconds between each location update. A number between 1 and 60.
- 
+
  @warning Note that you must configure SSL pinning before calling this method.
  */
-+ (void)startTrackingVerified:(BOOL)token interval:(NSTimeInterval)interval beacons:(BOOL)beacons NS_SWIFT_NAME(startTrackingVerified(token:interval:beacons:));
++ (void)startTrackingVerifiedWithInterval:(NSTimeInterval)interval beacons:(BOOL)beacons NS_SWIFT_NAME(startTrackingVerified(interval:beacons:));
+
+/**
+ Stops tracking the user's location with device integrity information for location verification use cases.
+ */
++ (void)stopTrackingVerified NS_SWIFT_NAME(stopTrackingVerified());
+
+/**
+ Returns the user's last verified location token if still valid, or requests a fresh token if not.
+
+ @warning Note that you must configure SSL pinning before calling this method.
+
+ @param completionHandler An optional completion handler.
+
+ @see https://radar.com/documentation/fraud
+ */
++ (void)getVerifiedLocationToken:(RadarTrackVerifiedCompletionHandler _Nullable)completionHandler NS_SWIFT_NAME(getVerifiedLocationToken(completionHandler:));
 
 /**
  Starts tracking the user's location in the background with configurable tracking options.
@@ -848,7 +842,8 @@ logConversionWithNotification
        completionHandler:(RadarSearchPlacesCompletionHandler)completionHandler NS_SWIFT_NAME(searchPlaces(near:radius:chains:chainMetadata:categories:groups:limit:completionHandler:));
 
 /**
-Gets the device's current location, then searches for geofences near that location, sorted by distance.
+ Gets the device's current location, then searches for geofences near that location, sorted by distance.
+ 
  @param completionHandler A completion handler.
 
  @see https://radar.com/documentation/api#search-geofences
@@ -875,7 +870,6 @@ Gets the device's current location, then searches for geofences near that locati
                        limit:(int)limit
              includeGeometry:(BOOL)includeGeometry
            completionHandler:(RadarSearchGeofencesCompletionHandler)completionHandler NS_SWIFT_NAME(searchGeofences(near:radius:tags:metadata:limit:includeGeometry:completionHandler:));
-
 
 /**
  @deprecated Autocompletes partial addresses and place names, sorted by relevance.
@@ -966,6 +960,21 @@ Gets the device's current location, then searches for geofences near that locati
 + (void)geocodeAddress:(NSString *_Nonnull)query completionHandler:(RadarGeocodeCompletionHandler)completionHandler NS_SWIFT_NAME(geocode(address:completionHandler:));
 
 /**
+ Geocodes an address, converting address to coordinates.
+
+ @param query The address to geocode.
+ @param layers Optional layer filters.
+ @param countries Optional country filters. A string array of unique 2-letter country codes.
+ @param completionHandler A completion handler.
+
+ @see https://radar.com/documentation/api#forward-geocode
+ */
++ (void)geocodeAddress:(NSString *)query 
+                layers:(NSArray<NSString *> *_Nullable)layers
+             countries:(NSArray<NSString *> *_Nullable)countries
+     completionHandler:(RadarGeocodeCompletionHandler)completionHandler NS_SWIFT_NAME(geocode(address:layers:countries:completionHandler:));
+
+/**
  Gets the device's current location, then reverse geocodes that location, converting coordinates to address.
 
  @param completionHandler A completion handler.
@@ -973,6 +982,17 @@ Gets the device's current location, then searches for geofences near that locati
  @see https://radar.com/documentation/api#reverse-geocode
  */
 + (void)reverseGeocodeWithCompletionHandler:(RadarGeocodeCompletionHandler)completionHandler NS_SWIFT_NAME(reverseGeocode(completionHandler:));
+
+/**
+ Gets the device's current location, then reverse geocodes that location, converting coordinates to address.
+
+ @param completionHandler A completion handler.
+ @param layers Optional layer filters.
+
+ @see https://radar.com/documentation/api#reverse-geocode
+ */
++ (void)reverseGeocodeWithLayers:(NSArray<NSString *> *_Nullable)layers
+               completionHandler:(RadarGeocodeCompletionHandler)completionHandler NS_SWIFT_NAME(reverseGeocode(layers:completionHandler:));
 
 /**
  Reverse geocodes a location, converting coordinates to address.
@@ -984,6 +1004,19 @@ Gets the device's current location, then searches for geofences near that locati
  */
 + (void)reverseGeocodeLocation:(CLLocation *_Nonnull)location
              completionHandler:(RadarGeocodeCompletionHandler)completionHandler NS_SWIFT_NAME(reverseGeocode(location:completionHandler:));
+
+/**
+ Reverse geocodes a location, converting coordinates to address.
+
+ @param location The location to reverse geocode.
+ @param layers Optional layer filters.
+ @param completionHandler A completion handler.
+
+ @see https://radar.com/documentation/api#reverse-geocode
+*/
++ (void)reverseGeocodeLocation:(CLLocation *)location
+                        layers:(NSArray<NSString *> *_Nullable)layers
+             completionHandler:(RadarGeocodeCompletionHandler)completionHandler NS_SWIFT_NAME(reverseGeocode(location:layers:completionHandler:));
 
 /**
  Geocodes the device's current IP address, converting IP address to partial address.
@@ -1146,6 +1179,27 @@ Gets the device's current location, then searches for geofences near that locati
  @return A dictionary for the location.
  */
 + (NSDictionary *)dictionaryForLocation:(CLLocation *)location NS_SWIFT_NAME(dictionaryForLocation(_:));
+
+/**
+ Requests foreground location permissions.
+*/
++ (void)requestForegroundLocationPermission;
+
+/**
+ Requests background location permissions.
+*/
++ (void)requestBackgroundLocationPermission;
+
+/**
+ Directs the user to the app settings to enable location permissions.
+*/
++ (void)openAppSettings;
+
+/**
+ @return A RadarPermissionsStatus object with the current location permissions status.
+
+*/
++ (RadarLocationPermissionStatus *)getLocationPermissionStatus;
 
 @end
 
