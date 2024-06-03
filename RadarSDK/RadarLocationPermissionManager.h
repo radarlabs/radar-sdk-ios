@@ -7,7 +7,7 @@
 //
 
 #import <CoreLocation/CoreLocation.h>
-#import "RadarLocationPermissionStatus.h"
+#import "include/RadarLocationPermissionStatus.h"
 
 @interface RadarLocationPermissionManager : NSObject <CLLocationManagerDelegate>
 

@@ -23,7 +23,7 @@
 #import "RadarReplayBuffer.h"
 #import "RadarFeatureSettings.h"
 #import "RadarLocationPermissionManager.h"
-#import "RadarLocationPermissionStatus.h"
+#import "include/RadarLocationPermissionStatus.h"
 
 @interface Radar ()
 
