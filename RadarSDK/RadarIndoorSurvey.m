@@ -174,7 +174,7 @@
     // if self.isWhereAmIScan, call callback with the payload string
     if (self.isWhereAmIScan) {
         if (self.completionHandler) {
-            self.completionHandler(payload);
+            self.completionHandler(compressedDataGzippedBase64);
         }
     } else {
         // this is a survey scan i.e. we are sending data back to the
