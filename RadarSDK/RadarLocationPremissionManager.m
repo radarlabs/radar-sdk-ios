@@ -64,11 +64,13 @@
 
 - (void)updateStatus:(RadarLocationPermissionStatus *)status {
     self.status = status;
+    /*
     [RadarLocationPermissionStatus radarLocationPermissionStatus:status];
     if (@available(iOS 14.0, *)) {
         [[RadarDelegateHolder sharedInstance] didUpdateLocationPermissionStatus:self.status];
         // TODO: sync the user's state with the new permission status here
     }
+    */
 }
 
 - (void)openAppSettings {

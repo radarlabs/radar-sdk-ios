@@ -22,9 +22,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         self.requestLocationPermissions()
 
         // Replace with a valid test publishable key
-        Radar.initialize(publishableKey: "prj_test_pk_0000000000000000000000000000000000000000")
+        Radar.initialize(publishableKey: "prj_test_pk_2236cce4dabfd26f891738e119b66270be6d3d01")
         Radar.setDelegate(self)
         Radar.setVerifiedDelegate(self)
+
+        /*
+        Radar.doIndoorSurvey("IGNORE example app survey label from swift", forLength: 5) {result in
+            print("indoor survey done!", result);
+        }
+        */
+
+        let options = RadarTrackingOptions.presetContinuous
+        Radar.startTracking(trackingOptions: options)
+
+        return true
 
         if UIApplication.shared.applicationState != .background {
             Radar.getLocation { (status, location, stopped) in
@@ -35,9 +46,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 print("Track once: status = \(Radar.stringForStatus(status)); location = \(String(describing: location)); events = \(String(describing: events)); user = \(String(describing: user))")
             }
         }
-
-        let options = RadarTrackingOptions.presetContinuous
-        Radar.startTracking(trackingOptions: options)
 
         Radar.getContext { (status, location, context) in
             print("Context: status = \(Radar.stringForStatus(status)); location = \(String(describing: location)); context?.geofences = \(String(describing: context?.geofences)); context?.place = \(String(describing: context?.place)); context?.country = \(String(describing: context?.country))")
@@ -238,6 +246,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     func didReceiveEvents(_ events: [RadarEvent], user: RadarUser?) {
         for event in events {
+            print("didReceiveEvent!", event)
             notify(Utils.stringForRadarEvent(event))
         }
     }
