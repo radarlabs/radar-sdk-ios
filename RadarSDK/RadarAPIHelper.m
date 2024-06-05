@@ -6,7 +6,6 @@
 //
 
 #import "RadarAPIHelper.h"
-#include "Radar.h"
 
 #import "RadarLogger.h"
 #import "RadarSettings.h"
@@ -147,12 +146,12 @@
                     if (params && [params objectForKey:@"replays"]) {
                         NSArray *replays = [params objectForKey:@"replays"];
                         [[RadarLogger sharedInstance]
-                            logWithLevel:RadarLogLevelError
+                            logWithLevel:RadarLogLevelDebug
                                  message:[NSString stringWithFormat:@"📍 Radar API response | method = %@; url = %@; statusCode = %ld; latency = %f; replays = %lu; res = %@",
                                                                     method, url, (long)statusCode, latency, (unsigned long)replays.count, resJsonStr]];
                     } else {
                         [[RadarLogger sharedInstance]
-                            logWithLevel:RadarLogLevelError
+                            logWithLevel:RadarLogLevelDebug
                                  message:[NSString stringWithFormat:@"📍 Radar API response | method = %@; url = %@; statusCode = %ld; latency = %f; res = %@", method, url,
                                                                     (long)statusCode, latency, resJsonStr]];
                     }

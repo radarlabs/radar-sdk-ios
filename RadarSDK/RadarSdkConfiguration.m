@@ -13,8 +13,6 @@
 #import "RadarAPIClient.h"
 #import "RadarSettings.h"
 
-#import "RadarLogger.h"
-
 @implementation RadarSdkConfiguration
 
 - (instancetype)initWithLogLevel:(RadarLogLevel)logLevel {
@@ -47,11 +45,6 @@
 }
 
 + (void)updateSdkConfigurationFromServer:(NSDictionary *_Nonnull)sdkConfiguration {
-    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelNone
-        message:[NSString stringWithFormat:@"config = %@",
-                            [RadarUtils dictionaryToJson:[RadarSettings clientSdkConfiguration]]]];
-    
-    
     [[RadarAPIClient sharedInstance] getConfigForUsage:@"sdkConfigUpdate" 
                                               verified:false
                                      completionHandler:^(RadarStatus status, RadarConfig *config) {

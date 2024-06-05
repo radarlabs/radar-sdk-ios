@@ -6,7 +6,6 @@
 //
 
 #import "RadarAPIClient.h"
-#include <Foundation/NSCharacterSet.h>
 
 #import "Radar+Internal.h"
 #import "Radar.h"

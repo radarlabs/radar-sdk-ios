@@ -1090,7 +1090,7 @@ logConversionWithNotification
 #pragma mark - Logging
 
 /**
- Attempt to set the log level for debug logs.
+ Set the local prefered log level for debug logs. The log level could be overridden by server configurations.
 
  @param level The log level.
  */

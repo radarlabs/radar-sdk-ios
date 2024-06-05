@@ -6,19 +6,13 @@
 //
 
 #import "RadarSettings.h"
-#include <Foundation/Foundation.h>
-#include <Foundation/NSDictionary.h>
-#include "RadarSdkConfiguration.h"
 
-#import "Radar.h"
 #import "Radar+Internal.h"
 #import "RadarLogger.h"
 #import "RadarTripOptions.h"
 #import "RadarFeatureSettings.h"
 #import "RadarReplayBuffer.h"
 #import "RadarLogBuffer.h"
-#import "RadarAPIClient.h"
-#import "RadarLocationManager.h"
 #import "RadarUtils.h"
 
 @implementation RadarSettings
@@ -243,7 +237,7 @@ static NSString *const kXPlatformSDKVersion = @"radar-xPlatformSDKVersion";
 }
 
 + (void)setSdkConfiguration:(RadarSdkConfiguration *)sdkConfiguration {
-    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelNone
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
         message:[NSString stringWithFormat:@"Setting SDK Configuration | sdkConfiguration = %@",
                             [RadarUtils dictionaryToJson:[sdkConfiguration dictionaryValue]]]];
     if (sdkConfiguration) {
