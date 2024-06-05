@@ -230,7 +230,7 @@ static NSString *const kXPlatformSDKVersion = @"radar-xPlatformSDKVersion";
     }
 }
 
-- (void)updateSdkConfigurationFromServer {
++ (void)updateSdkConfigurationFromServer {
     [[RadarAPIClient sharedInstance] getConfigForUsage:@"sdkConfigUpdate"
                                               verified:NO
                                      completionHandler:^(RadarStatus status, RadarConfig *config) {
@@ -253,7 +253,7 @@ static NSString *const kXPlatformSDKVersion = @"radar-xPlatformSDKVersion";
                             [RadarUtils dictionaryToJson:[sdkConfiguration dictionaryValue]]]];
 
     if (sdkConfiguration) {
-        [RadarSettings setLogLevel:sdkConfiguration.logLevel];
+        [[NSUserDefaults standardUserDefaults] setInteger:(int)sdkConfiguration.logLevel forKey:kLogLevel];
     }
 }
 
@@ -272,6 +272,7 @@ static NSString *const kXPlatformSDKVersion = @"radar-xPlatformSDKVersion";
 + (void)setLogLevel:(RadarLogLevel)level {
     NSInteger logLevelInteger = (int)level;
     [[NSUserDefaults standardUserDefaults] setInteger:logLevelInteger forKey:kLogLevel];
+    [RadarSettings updateSdkConfigurationFromServer];
 }
 
 + (NSArray<NSString *> *_Nullable)beaconUUIDs {
