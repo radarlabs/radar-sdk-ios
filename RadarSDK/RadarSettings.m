@@ -14,6 +14,10 @@
 #import "RadarFeatureSettings.h"
 #import "RadarReplayBuffer.h"
 #import "RadarLogBuffer.h"
+#import "RadarAPIClient.h"
+#import "RadarLocationManager.h"
+#import "RadarUtils.h"
+#import <os/log.h>
 
 @implementation RadarSettings
 
@@ -227,16 +231,31 @@ static NSString *const kXPlatformSDKVersion = @"radar-xPlatformSDKVersion";
     }
 }
 
-+ (RadarSDKConfiguration *)sdkConfiguration {
-    RadarSDKConfiguration * sdkConfiguration = [[RadarSDKConfiguration alloc] init];
-    sdkConfiguration.logLevel = [RadarSettings logLevel];
+- (void)updateSdkConfigurationFromServer {
+    [[RadarAPIClient sharedInstance] getConfigForUsage:@"initialize"
+                                              verified:NO
+                                     completionHandler:^(RadarStatus status, RadarConfig *config) {
+                                         if (status != RadarStatusSuccess || !config) {
+                                            return;
+                                         }
+                                         [RadarSettings setSdkConfiguration:config.meta.sdkConfiguration];
+                                     }];
+}
+
++ (RadarSdkConfiguration *)sdkConfiguration {
+    RadarSdkConfiguration * sdkConfiguration = [[RadarSdkConfiguration alloc] initWithLogLevel:[RadarSettings logLevel]];
+    os_log(OS_LOG_DEFAULT, "get sdk %s", [[RadarUtils dictionaryToJson:[sdkConfiguration dictionaryValue]] UTF8String]);
     return sdkConfiguration;
 }
 
-+ (void)setSDKConfiguration:(RadarSDKConfiguration *)sdkConfiguration {
-    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug 
-        message:[NSString stringWithFormat:@"Setting SDK Configuration | sdkConfiguration = %@", sdkConfiguration]];
++ (void)setSdkConfiguration:(RadarSdkConfiguration *)sdkConfiguration {
+
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelNone
+        message:[NSString stringWithFormat:@"Setting SDK Configuration | sdkConfiguration = %@", 
+                            [RadarUtils dictionaryToJson:[sdkConfiguration dictionaryValue]]]];
+    
     if (sdkConfiguration) {
+        os_log(OS_LOG_DEFAULT, "set log level %ld", sdkConfiguration.logLevel);
         [RadarSettings setLogLevel:sdkConfiguration.logLevel];
     }
 }

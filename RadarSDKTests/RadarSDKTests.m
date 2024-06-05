@@ -1489,5 +1489,15 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     [[RadarLogBuffer sharedInstance]clearBuffer];
 }
 
+- (void)test_RadarSdkConfiguration {
+    RadarSdkConfiguration sdkConfiguration = [[RadarSdkConfiguration alloc] initWithLogLevel:RadarLogLevelWarning];
+    [RadarSettings setSdkConfiguration:sdkConfiguration];
+
+    XCTAssertEqual([RadarSettings logLevel], RadarLogLevelWarning);
+
+    sdkConfiguration = [RadarSettings sdkConfiguration];
+
+    XCTAssertEqual(sdkConfiguration.logLevel, RadarLogLevelWarning);
+}
 
 @end

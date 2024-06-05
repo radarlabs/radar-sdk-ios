@@ -8,7 +8,7 @@
 
 #import "RadarTrackingOptions.h"
 #import "RadarFeatureSettings.h"
-#import "RadarSDKConfiguration.h"
+#import "RadarSdkConfiguration.h"
 #import <Foundation/Foundation.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -17,7 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nullable, strong, nonatomic, readwrite) RadarTrackingOptions *trackingOptions;
 @property (nullable, strong, nonatomic, readwrite) RadarFeatureSettings *featureSettings;
-@property (nullable, strong, nonatomic, readwrite) RadarSDKConfiguration *sdkConfiguration;
+@property (nullable, strong, nonatomic, readwrite) RadarSdkConfiguration *sdkConfiguration;
 
 + (RadarMeta *_Nullable)fromDictionary:(NSDictionary *_Nullable)dict;
 

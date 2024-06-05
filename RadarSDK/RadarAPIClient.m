@@ -6,6 +6,7 @@
 //
 
 #import "RadarAPIClient.h"
+#include <Foundation/NSCharacterSet.h>
 
 #import "Radar+Internal.h"
 #import "Radar.h"
@@ -24,7 +25,7 @@
 #import "RadarReplayBuffer.h"
 #import "RadarRouteMatrix+Internal.h"
 #import "RadarRoutes+Internal.h"
-#import "RadarSDKConfiguration.h"
+#import "RadarSdkConfiguration.h"
 #import "RadarSettings.h"
 #import "RadarState.h"
 #import "RadarTrip+Internal.h"
@@ -101,8 +102,8 @@
     }
     [queryString appendFormat:@"&verified=%@", verified ? @"true" : @"false"];
 
-    NSDictionary *clientSDKConfiguration = [[RadarSettings sdkConfiguration] dictionaryValue];
-    [queryString appendFormat:@"&clientSDKConfiguration=%@", [RadarUtils dictionaryToJson:clientSDKConfiguration]];
+    NSDictionary *clientSdkConfiguration = [[RadarSettings sdkConfiguration] dictionaryValue];
+    [queryString appendFormat:@"&clientSdkConfiguration=%@", [RadarUtils dictionaryToJson:clientSdkConfiguration]];
 
     NSString *host = verified ? [RadarSettings verifiedHost] : [RadarSettings host];
     NSString *url = [NSString stringWithFormat:@"%@/v1/config?%@", host, queryString];

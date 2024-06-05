@@ -54,7 +54,7 @@
         return RadarLogLevelInfo;
     } else if ([string isEqualToString:@"debug"]) {
         return RadarLogLevelDebug;
-    } else { // default to info
+    } else {
         return RadarLogLevelInfo;
     }
 }

@@ -1,15 +1,17 @@
 //
-//  RadarSDKConfiguration.m
+//  RadarSdkConfiguration.m
 //  RadarSDK
 //
 //  Copyright © 2023 Radar Labs, Inc. All rights reserved.
 //
 
-#import "RadarSDKConfiguration.h"
+#import "RadarSdkConfiguration.h"
 
 #import "RadarLog.h"
+#import <os/log.h>
+#import "RadarUtils.h"
 
-@implementation RadarSDKConfiguration
+@implementation RadarSdkConfiguration
 
 - (instancetype)initWithLogLevel:(RadarLogLevel)logLevel {
     if (self = [super init]) {
@@ -18,18 +20,19 @@
     return self;
 }
 
-+ (RadarSDKConfiguration *_Nullable)sdkConfigurationFromDictionary:(NSDictionary *)dict {
++ (RadarSdkConfiguration *_Nullable)sdkConfigurationFromDictionary:(NSDictionary *)dict {
     if (!dict) {
-        return NULL;
+        return nil;
     }
 
+    os_log(OS_LOG_DEFAULT, "parse sdk %@", [RadarUtils dictionaryToJson:dict]);
     NSObject *logLevelObj = dict[@"logLevel"];
-    RadarLogLevel logLevel = 0;
+    RadarLogLevel logLevel = 1;
     if (logLevelObj && [logLevelObj isKindOfClass:[NSString class]]) {
         logLevel = [RadarLog levelFromString:(NSString *)logLevelObj];
     }
 
-    return [[RadarSDKConfiguration alloc] initWithLogLevel:logLevel];
+    return [[RadarSdkConfiguration alloc] initWithLogLevel:logLevel];
 }
 
 - (NSDictionary *)dictionaryValue {
