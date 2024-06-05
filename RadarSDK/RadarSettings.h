@@ -47,7 +47,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)setTripOptions:(RadarTripOptions *_Nullable)options;
 + (RadarFeatureSettings *_Nullable)featureSettings;
 + (void)setFeatureSettings:(RadarFeatureSettings *_Nullable)featureSettings;
-+ (RadarSdkConfiguration *_Nullable)sdkConfiguration;
++ (NSDictionary *)clientSdkConfiguration;
 + (void)setSdkConfiguration:(RadarSdkConfiguration *_Nullable)sdkConfiguration;
 + (RadarLogLevel)logLevel;
 + (void)setLogLevel:(RadarLogLevel)level;

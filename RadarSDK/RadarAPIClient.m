@@ -101,9 +101,7 @@
         [queryString appendFormat:@"&usage=%@", usage];
     }
     [queryString appendFormat:@"&verified=%@", verified ? @"true" : @"false"];
-
-    NSDictionary *clientSdkConfiguration = [[RadarSettings sdkConfiguration] dictionaryValue];
-    [queryString appendFormat:@"&clientSdkConfiguration=%@", [RadarUtils dictionaryToJson:clientSdkConfiguration]];
+    [queryString appendFormat:@"&clientSdkConfiguration=%@", [RadarUtils dictionaryToJson:[RadarSettings clientSdkConfiguration]]];
 
     NSString *host = verified ? [RadarSettings verifiedHost] : [RadarSettings host];
     NSString *url = [NSString stringWithFormat:@"%@/v1/config?%@", host, queryString];
@@ -131,7 +129,7 @@
                     }];
 }
 
-- (void)updateSdkConfiguration:(RadarSdkConfiguration *_Nonnull)sdkConfiguration  completionHandler:(RadarConfigAPICompletionHandler _Nonnull)completionHandler {
+- (void)updateSdkConfiguration:(NSDictionary *_Nonnull)sdkConfiguration  completionHandler:(RadarConfigAPICompletionHandler _Nonnull)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
         return;
@@ -151,9 +149,7 @@
     }
     [queryString appendFormat:@"&usage=sdkConfigUpdate"];
     [queryString appendFormat:@"&verified=false"];
-
-    NSDictionary *clientSdkConfiguration = [sdkConfiguration dictionaryValue];
-    [queryString appendFormat:@"&clientSdkConfiguration=%@", [RadarUtils dictionaryToJson:clientSdkConfiguration]];
+    [queryString appendFormat:@"&clientSdkConfiguration=%@", [RadarUtils dictionaryToJson:sdkConfiguration]];
 
     NSString *host = [RadarSettings host];
     NSString *url = [NSString stringWithFormat:@"%@/v1/config?%@", host, queryString];

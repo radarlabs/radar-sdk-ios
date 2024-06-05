@@ -1009,7 +1009,7 @@
 #pragma mark - Logging
 
 + (void)setLogLevel:(RadarLogLevel)level {
-    [RadarSdkConfiguration setLogLevel:level];
+    [RadarSettings setLogLevel:level];
 }
 
 + (void)logTermination { 

@@ -6,6 +6,8 @@
 //
 
 #import "RadarSettings.h"
+#include <Foundation/Foundation.h>
+#include <Foundation/NSDictionary.h>
 #include "RadarSdkConfiguration.h"
 
 #import "Radar.h"
@@ -34,7 +36,7 @@ static NSString *const kTrackingOptions = @"radar-trackingOptions";
 static NSString *const kPreviousTrackingOptions = @"radar-previousTrackingOptions";
 static NSString *const kRemoteTrackingOptions = @"radar-remoteTrackingOptions";
 static NSString *const kFeatureSettings = @"radar-featureSettings";
-static NSString *const kSdkConfiguration = @"radar-sdkConfiguration";
+static NSString *const kClientSdkConfiguration = @"radar-clientSdkConfiguration";
 static NSString *const kTripOptions = @"radar-tripOptions";
 static NSString *const kLogLevel = @"radar-logLevel";
 static NSString *const kBeaconUUIDs = @"radar-beaconUUIDs";
@@ -232,10 +234,12 @@ static NSString *const kXPlatformSDKVersion = @"radar-xPlatformSDKVersion";
     }
 }
 
-+ (RadarSdkConfiguration *)sdkConfiguration {
-    NSDictionary *sdkConfigurationDict = [[NSUserDefaults standardUserDefaults] dictionaryForKey:kSdkConfiguration];
-
-    return [RadarSdkConfiguration sdkConfigurationFromDictionary:sdkConfigurationDict];
++ (NSDictionary *)clientSdkConfiguration {
+    NSDictionary *sdkConfigurationDict = [[NSUserDefaults standardUserDefaults] dictionaryForKey:kClientSdkConfiguration];
+    if (sdkConfigurationDict == nil) {
+        sdkConfigurationDict = [[NSDictionary alloc] init];
+    } 
+    return sdkConfigurationDict;
 }
 
 + (void)setSdkConfiguration:(RadarSdkConfiguration *)sdkConfiguration {
@@ -243,23 +247,28 @@ static NSString *const kXPlatformSDKVersion = @"radar-xPlatformSDKVersion";
         message:[NSString stringWithFormat:@"Setting SDK Configuration | sdkConfiguration = %@",
                             [RadarUtils dictionaryToJson:[sdkConfiguration dictionaryValue]]]];
     if (sdkConfiguration) {
-        NSDictionary *sdkConfigurationDict = [sdkConfiguration dictionaryValue];
-        [[NSUserDefaults standardUserDefaults] setObject:sdkConfigurationDict forKey:kSdkConfiguration];
-    } else {
-        [[NSUserDefaults standardUserDefaults] removeObjectForKey:kFeatureSettings];
+        [[NSUserDefaults standardUserDefaults] setInteger:(int)sdkConfiguration.logLevel forKey:kLogLevel];
     }
 }
 
 + (RadarLogLevel)logLevel {
+    RadarLogLevel logLevel;
     if ([RadarSettings userDebug]) {
-        return RadarLogLevelDebug;
-    }
-    RadarSdkConfiguration *sdkConfiguration = [RadarSettings sdkConfiguration];
-    if (sdkConfiguration == nil) {
-        return RadarLogLevelInfo;
+        logLevel = RadarLogLevelDebug;
+    } else if ([[NSUserDefaults standardUserDefaults] objectForKey:kLogLevel] == nil) {
+        logLevel = RadarLogLevelInfo;
     } else {
-        return sdkConfiguration.logLevel;
+        logLevel = (RadarLogLevel)[[NSUserDefaults standardUserDefaults] integerForKey:kLogLevel];
     }
+    return logLevel;
+}
+
++ (void)setLogLevel:(RadarLogLevel)level {
+    NSMutableDictionary *sdkConfiguration = [[RadarSettings clientSdkConfiguration] mutableCopy];
+    [sdkConfiguration setValue:[RadarLog stringForLogLevel:level] forKey:@"logLevel"];
+    [[NSUserDefaults standardUserDefaults] setObject:sdkConfiguration forKey:kClientSdkConfiguration];
+    
+    [RadarSdkConfiguration updateSdkConfigurationFromServer:sdkConfiguration];
 }
 
 + (NSArray<NSString *> *_Nullable)beaconUUIDs {

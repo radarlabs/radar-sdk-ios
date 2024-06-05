@@ -1491,18 +1491,16 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 
 - (void)test_RadarSdkConfiguration {
     RadarSdkConfiguration *sdkConfiguration = [[RadarSdkConfiguration alloc] initWithLogLevel:RadarLogLevelWarning];
-    [RadarSettings setSdkConfiguration:sdkConfiguration];
-    sdkConfiguration = [RadarSettings sdkConfiguration];
 
+    [RadarSettings setSdkConfiguration:sdkConfiguration];
     XCTAssertEqual([RadarSettings logLevel], RadarLogLevelWarning);
-    XCTAssertEqual(sdkConfiguration.logLevel, RadarLogLevelWarning);
 
     self.apiHelperMock.mockStatus = RadarStatusSuccess;
     self.apiHelperMock.mockResponse = [RadarTestUtils jsonDictionaryFromResource:@"get_config_response"];
 
     XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
 
-    [[RadarAPIClient sharedInstance] updateSdkConfiguration:[RadarSettings sdkConfiguration]
+    [[RadarAPIClient sharedInstance] updateSdkConfiguration:[RadarSettings clientSdkConfiguration]
                                           completionHandler:^(RadarStatus status, RadarConfig *config) {
         if (status != RadarStatusSuccess || !config) {
         return;
@@ -1510,7 +1508,6 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
         [RadarSettings setSdkConfiguration:config.meta.sdkConfiguration];
 
         XCTAssertEqual(config.meta.sdkConfiguration.logLevel, RadarLogLevelInfo);
-        
         XCTAssertEqual([RadarSettings logLevel], RadarLogLevelInfo);
 
         [expectation fulfill];
@@ -1522,6 +1519,10 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
                                          XCTFail();
                                      }
                                  }];
+    
+    [RadarSettings setLogLevel:RadarLogLevelDebug];
+    NSDictionary *sdkConfigurationDict = [RadarSettings clientSdkConfiguration];
+    XCTAssertEqual([RadarLog levelFromString:(NSString *)sdkConfigurationDict[@"logLevel"]], RadarLogLevelDebug);
 }
 
 @end

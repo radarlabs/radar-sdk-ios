@@ -188,7 +188,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             print("Log Conversion: status = \(Radar.stringForStatus(status)); event = \(String(describing: event))")
         }
 
-        Radar.setLogLevel(RadarLogLevel.debug)
+        Radar.setLogLevel(RadarLogLevel.warning)
 
         return true
     }

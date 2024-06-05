@@ -12,6 +12,8 @@
 #import "RadarAPIClient.h"
 #import "RadarSettings.h"
 
+#import "RadarLogger.h"
+
 @implementation RadarSdkConfiguration
 
 - (instancetype)initWithLogLevel:(RadarLogLevel)logLevel {
@@ -27,7 +29,7 @@
     }
 
     NSObject *logLevelObj = dict[@"logLevel"];
-    RadarLogLevel logLevel = 0;
+    RadarLogLevel logLevel = 3;
     if (logLevelObj && [logLevelObj isKindOfClass:[NSString class]]) {
         logLevel = [RadarLog levelFromString:(NSString *)logLevelObj];
     }
@@ -43,7 +45,12 @@
     return dict;
 }
 
-+ (void)updateSdkConfigurationFromServer:sdkConfiguration {
++ (void)updateSdkConfigurationFromServer:(NSDictionary *_Nonnull)sdkConfiguration {
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelNone
+        message:[NSString stringWithFormat:@"config = %@",
+                            [RadarUtils dictionaryToJson:[RadarSettings clientSdkConfiguration]]]];
+    
+    
     [[RadarAPIClient sharedInstance] updateSdkConfiguration:sdkConfiguration
                                           completionHandler:^(RadarStatus status, RadarConfig *config) {
                                          if (status != RadarStatusSuccess || !config) {
@@ -51,12 +58,6 @@
                                          }
                                          [RadarSettings setSdkConfiguration:config.meta.sdkConfiguration];
                                      }];
-}
-
-+ (void)setLogLevel:(RadarLogLevel)level {
-    RadarSdkConfiguration *sdkConfiguration = [RadarSettings sdkConfiguration];
-    sdkConfiguration.logLevel = level;
-    [RadarSdkConfiguration updateSdkConfigurationFromServer:sdkConfiguration];
 }
 
 @end

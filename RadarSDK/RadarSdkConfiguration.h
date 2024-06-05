@@ -36,7 +36,7 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (NSDictionary *)dictionaryValue;
 
-+ (void)setLogLevel:(RadarLogLevel)level;
++ (void)updateSdkConfigurationFromServer:(NSDictionary *_Nonnull)sdkConfiguration;
 
 @end
 

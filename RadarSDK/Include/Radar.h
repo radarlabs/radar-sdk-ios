@@ -1090,7 +1090,7 @@ logConversionWithNotification
 #pragma mark - Logging
 
 /**
- Sets the log level for debug logs.
+ Attempt to set the log level for debug logs.
 
  @param level The log level.
  */
