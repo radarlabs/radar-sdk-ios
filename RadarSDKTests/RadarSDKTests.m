@@ -1500,8 +1500,9 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 
     XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
 
-    [[RadarAPIClient sharedInstance] updateSdkConfiguration:[RadarSettings clientSdkConfiguration]
-                                          completionHandler:^(RadarStatus status, RadarConfig *config) {
+    [[RadarAPIClient sharedInstance] getConfigForUsage:@"sdkConfigUpdate" 
+                                              verified:false
+                                     completionHandler:^(RadarStatus status, RadarConfig *config) {
         if (status != RadarStatusSuccess || !config) {
         return;
         }

@@ -52,8 +52,9 @@
                             [RadarUtils dictionaryToJson:[RadarSettings clientSdkConfiguration]]]];
     
     
-    [[RadarAPIClient sharedInstance] updateSdkConfiguration:sdkConfiguration
-                                          completionHandler:^(RadarStatus status, RadarConfig *config) {
+    [[RadarAPIClient sharedInstance] getConfigForUsage:@"sdkConfigUpdate" 
+                                              verified:false
+                                     completionHandler:^(RadarStatus status, RadarConfig *config) {
                                          if (status != RadarStatusSuccess || !config) {
                                             return;
                                          }
