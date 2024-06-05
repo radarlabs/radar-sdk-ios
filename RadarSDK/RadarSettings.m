@@ -230,8 +230,8 @@ static NSString *const kXPlatformSDKVersion = @"radar-xPlatformSDKVersion";
     }
 }
 
-+ (void)updateSdkConfigurationFromServer {
-    [[RadarAPIClient sharedInstance] getConfigForUsage:@"initialize"
+- (void)updateSdkConfigurationFromServer {
+    [[RadarAPIClient sharedInstance] getConfigForUsage:@"sdkConfigUpdate"
                                               verified:NO
                                      completionHandler:^(RadarStatus status, RadarConfig *config) {
                                          if (status != RadarStatusSuccess || !config) {

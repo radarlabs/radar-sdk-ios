@@ -1504,7 +1504,20 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     [self.apiHelperMock setMockResponse:[RadarTestUtils jsonDictionaryFromResource:@"get_config_response"]
                               forMethod:@"https://api.radar.io/v1/config"];
 
-    [RadarSettings updateSdkConfigurationFromServer];
+    XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
+
+    [[RadarAPIClient sharedInstance] getConfigForUsage:@"sdkConfigUpdate"
+                                              verified:NO
+                                     completionHandler:^(RadarStatus status, RadarConfig *config) {
+                                         if (status != RadarStatusSuccess || !config) {
+                                            return;
+                                         }
+                                         [RadarSettings setSdkConfiguration:config.meta.sdkConfiguration];
+                                         
+                                         XCTAssertEqual([RadarSettings logLevel], Radar.RadarLogLevelInfo);
+                                         [expectation fulfill];
+                                     }];
+
     XCTAssertEqual([RadarSettings logLevel], RadarLogLevelInfo);
 }
 
