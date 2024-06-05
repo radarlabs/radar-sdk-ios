@@ -1514,7 +1514,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
                                          }
                                          [RadarSettings setSdkConfiguration:config.meta.sdkConfiguration];
                                          
-                                         XCTAssertEqual([RadarSettings logLevel], Radar.RadarLogLevelInfo);
+                                         XCTAssertEqual([RadarSettings logLevel], RadarLogLevelInfo);
                                          [expectation fulfill];
                                      }];
 
