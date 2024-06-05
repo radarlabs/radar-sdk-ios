@@ -6,6 +6,7 @@
 //
 
 #import "RadarSdkConfiguration.h"
+#include "Radar.h"
 
 #import "RadarLog.h"
 #import "RadarUtils.h"
@@ -29,7 +30,7 @@
     }
 
     NSObject *logLevelObj = dict[@"logLevel"];
-    RadarLogLevel logLevel = 3;
+    RadarLogLevel logLevel = RadarLogLevelInfo;
     if (logLevelObj && [logLevelObj isKindOfClass:[NSString class]]) {
         logLevel = [RadarLog levelFromString:(NSString *)logLevelObj];
     }
