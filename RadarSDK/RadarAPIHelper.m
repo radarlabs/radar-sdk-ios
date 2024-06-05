@@ -51,10 +51,10 @@
 
         if (logPayload) {
             [[RadarLogger sharedInstance]
-                logWithLevel:RadarLogLevelError
+                logWithLevel:RadarLogLevelDebug
                      message:[NSString stringWithFormat:@"📍 Radar API request | method = %@; url = %@; headers = %@; params = %@", method, url, headersJsonStr, paramJsonStr]];
         } else {
-            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelError
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
                                                message:[NSString stringWithFormat:@"📍 Radar API request | method = %@; url = %@; headers = %@", method, url, headersJsonStr]];
         }
 
@@ -146,12 +146,12 @@
                     if (params && [params objectForKey:@"replays"]) {
                         NSArray *replays = [params objectForKey:@"replays"];
                         [[RadarLogger sharedInstance]
-                            logWithLevel:RadarLogLevelError
+                            logWithLevel:RadarLogLevelDebug
                                  message:[NSString stringWithFormat:@"📍 Radar API response | method = %@; url = %@; statusCode = %ld; latency = %f; replays = %lu; res = %@",
                                                                     method, url, (long)statusCode, latency, (unsigned long)replays.count, resJsonStr]];
                     } else {
                         [[RadarLogger sharedInstance]
-                            logWithLevel:RadarLogLevelError
+                            logWithLevel:RadarLogLevelDebug
                                  message:[NSString stringWithFormat:@"📍 Radar API response | method = %@; url = %@; statusCode = %ld; latency = %f; res = %@", method, url,
                                                                     (long)statusCode, latency, resJsonStr]];
                     }

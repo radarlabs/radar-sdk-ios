@@ -17,7 +17,6 @@
 #import "RadarAPIClient.h"
 #import "RadarLocationManager.h"
 #import "RadarUtils.h"
-#import <os/log.h>
 
 @implementation RadarSettings
 
@@ -231,7 +230,7 @@ static NSString *const kXPlatformSDKVersion = @"radar-xPlatformSDKVersion";
     }
 }
 
-- (void)updateSdkConfigurationFromServer {
++ (void)updateSdkConfigurationFromServer {
     [[RadarAPIClient sharedInstance] getConfigForUsage:@"initialize"
                                               verified:NO
                                      completionHandler:^(RadarStatus status, RadarConfig *config) {
@@ -244,18 +243,16 @@ static NSString *const kXPlatformSDKVersion = @"radar-xPlatformSDKVersion";
 
 + (RadarSdkConfiguration *)sdkConfiguration {
     RadarSdkConfiguration * sdkConfiguration = [[RadarSdkConfiguration alloc] initWithLogLevel:[RadarSettings logLevel]];
-    os_log(OS_LOG_DEFAULT, "get sdk %s", [[RadarUtils dictionaryToJson:[sdkConfiguration dictionaryValue]] UTF8String]);
     return sdkConfiguration;
 }
 
 + (void)setSdkConfiguration:(RadarSdkConfiguration *)sdkConfiguration {
 
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelNone
-        message:[NSString stringWithFormat:@"Setting SDK Configuration | sdkConfiguration = %@", 
+        message:[NSString stringWithFormat:@"Setting SDK Configuration | sdkConfiguration = %@",
                             [RadarUtils dictionaryToJson:[sdkConfiguration dictionaryValue]]]];
-    
+
     if (sdkConfiguration) {
-        os_log(OS_LOG_DEFAULT, "set log level %ld", sdkConfiguration.logLevel);
         [RadarSettings setLogLevel:sdkConfiguration.logLevel];
     }
 }

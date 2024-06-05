@@ -8,7 +8,6 @@
 #import "RadarSdkConfiguration.h"
 
 #import "RadarLog.h"
-#import <os/log.h>
 #import "RadarUtils.h"
 
 @implementation RadarSdkConfiguration
@@ -25,7 +24,6 @@
         return nil;
     }
 
-    os_log(OS_LOG_DEFAULT, "parse sdk %@", [RadarUtils dictionaryToJson:dict]);
     NSObject *logLevelObj = dict[@"logLevel"];
     RadarLogLevel logLevel = 1;
     if (logLevelObj && [logLevelObj isKindOfClass:[NSString class]]) {
