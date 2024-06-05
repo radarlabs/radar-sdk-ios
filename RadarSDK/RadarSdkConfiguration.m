@@ -44,7 +44,7 @@
     return dict;
 }
 
-+ (void)updateSdkConfigurationFromServer:(NSDictionary *_Nonnull)sdkConfiguration {
++ (void)updateSdkConfigurationFromServer {
     [[RadarAPIClient sharedInstance] getConfigForUsage:@"sdkConfigUpdate" 
                                               verified:false
                                      completionHandler:^(RadarStatus status, RadarConfig *config) {

@@ -36,7 +36,7 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (NSDictionary *)dictionaryValue;
 
-+ (void)updateSdkConfigurationFromServer:(NSDictionary *_Nonnull)sdkConfiguration;
++ (void)updateSdkConfigurationFromServer;
 
 @end
 

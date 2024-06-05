@@ -262,7 +262,7 @@ static NSString *const kXPlatformSDKVersion = @"radar-xPlatformSDKVersion";
     [sdkConfiguration setValue:[RadarLog stringForLogLevel:level] forKey:@"logLevel"];
     [[NSUserDefaults standardUserDefaults] setObject:sdkConfiguration forKey:kClientSdkConfiguration];
     
-    [RadarSdkConfiguration updateSdkConfigurationFromServer:sdkConfiguration];
+    [RadarSdkConfiguration updateSdkConfigurationFromServer];
 }
 
 + (NSArray<NSString *> *_Nullable)beaconUUIDs {
