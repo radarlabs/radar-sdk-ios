@@ -172,6 +172,7 @@
 		E62446A72BEC0AC700ECCCAD /* RadarLocationPermissionStatus.h in Headers */ = {isa = PBXBuildFile; fileRef = E62446A52BEC0A4900ECCCAD /* RadarLocationPermissionStatus.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		E6EEC56E2B20F41A00DD096B /* RadarFileStorage.h in Headers */ = {isa = PBXBuildFile; fileRef = E6EEC56D2B20F41A00DD096B /* RadarFileStorage.h */; };
 		E6EEC5702B20F45D00DD096B /* RadarFileStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = E6EEC56F2B20F45D00DD096B /* RadarFileStorage.m */; };
+		F65AF72C2C10B242002BA009 /* get_config_response.json in Resources */ = {isa = PBXBuildFile; fileRef = F65AF72B2C10B242002BA009 /* get_config_response.json */; };
 		F667F8272BFBF3C8001F2F67 /* RadarSdkConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = F667F8262BFBF3C8001F2F67 /* RadarSdkConfiguration.m */; };
 		F667F8292BFBF3D1001F2F67 /* RadarSdkConfiguration.h in Headers */ = {isa = PBXBuildFile; fileRef = F667F8282BFBF3D1001F2F67 /* RadarSdkConfiguration.h */; };
 /* End PBXBuildFile section */
@@ -343,6 +344,7 @@
 		E62446A52BEC0A4900ECCCAD /* RadarLocationPermissionStatus.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RadarLocationPermissionStatus.h; sourceTree = "<group>"; };
 		E6EEC56D2B20F41A00DD096B /* RadarFileStorage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarFileStorage.h; sourceTree = "<group>"; };
 		E6EEC56F2B20F45D00DD096B /* RadarFileStorage.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RadarFileStorage.m; sourceTree = "<group>"; };
+		F65AF72B2C10B242002BA009 /* get_config_response.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = get_config_response.json; sourceTree = "<group>"; };
 		F667F8262BFBF3C8001F2F67 /* RadarSdkConfiguration.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RadarSdkConfiguration.m; sourceTree = "<group>"; };
 		F667F8282BFBF3D1001F2F67 /* RadarSdkConfiguration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RadarSdkConfiguration.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -417,6 +419,7 @@
 			isa = PBXGroup;
 			children = (
 				53B3B26A23EE41B400080818 /* context.json */,
+				F65AF72B2C10B242002BA009 /* get_config_response.json */,
 				966D885F288F7404008C0D00 /* conversion_event.json */,
 				968C839828A6D8350030103E /* conversion_event_nil_event.json */,
 				DD5E35E0238205FF002D93FF /* events_verification.json */,
@@ -787,6 +790,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				966D8860288F7404008C0D00 /* conversion_event.json in Resources */,
+				F65AF72C2C10B242002BA009 /* get_config_response.json in Resources */,
 				DD4D4D2523E648D000D36C1D /* search_autocomplete.json in Resources */,
 				DD5E35E1238205FF002D93FF /* events_verification.json in Resources */,
 				825732512B72BE1900DF8B88 /* PrivacyInfo.xcprivacy in Resources */,
