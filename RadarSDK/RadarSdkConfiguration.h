@@ -36,6 +36,8 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (NSDictionary *)dictionaryValue;
 
++ (void)setLogLevel:(RadarLogLevel)level;
+
 @end
 
 NS_ASSUME_NONNULL_END

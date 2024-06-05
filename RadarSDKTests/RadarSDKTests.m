@@ -1492,34 +1492,29 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 - (void)test_RadarSdkConfiguration {
     RadarSdkConfiguration *sdkConfiguration = [[RadarSdkConfiguration alloc] initWithLogLevel:RadarLogLevelWarning];
     [RadarSettings setSdkConfiguration:sdkConfiguration];
-
-    XCTAssertEqual([RadarSettings logLevel], RadarLogLevelWarning);
-
     sdkConfiguration = [RadarSettings sdkConfiguration];
 
+    XCTAssertEqual([RadarSettings logLevel], RadarLogLevelWarning);
     XCTAssertEqual(sdkConfiguration.logLevel, RadarLogLevelWarning);
-}
 
-- (void)test_Radar_getConfig {
     self.apiHelperMock.mockStatus = RadarStatusSuccess;
     self.apiHelperMock.mockResponse = [RadarTestUtils jsonDictionaryFromResource:@"get_config_response"];
 
     XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
 
-    [[RadarAPIClient sharedInstance] getConfigForUsage:@"sdkConfigUpdate"
-                                              verified:NO
-                                     completionHandler:^(RadarStatus status, RadarConfig *config) {
-                                         if (status != RadarStatusSuccess || !config) {
-                                            return;
-                                         }
-                                         [RadarSettings setSdkConfiguration:config.meta.sdkConfiguration];
-                        
-                                         XCTAssertEqual(config.meta.sdkConfiguration.logLevel, RadarLogLevelInfo);
-                                         
-                                         XCTAssertEqual([RadarSettings logLevel], RadarLogLevelInfo);
+    [[RadarAPIClient sharedInstance] updateSdkConfiguration:[RadarSettings sdkConfiguration]
+                                          completionHandler:^(RadarStatus status, RadarConfig *config) {
+        if (status != RadarStatusSuccess || !config) {
+        return;
+        }
+        [RadarSettings setSdkConfiguration:config.meta.sdkConfiguration];
 
-                                         [expectation fulfill];
-                                     }];
+        XCTAssertEqual(config.meta.sdkConfiguration.logLevel, RadarLogLevelInfo);
+        
+        XCTAssertEqual([RadarSettings logLevel], RadarLogLevelInfo);
+
+        [expectation fulfill];
+    }];
 
     [self waitForExpectationsWithTimeout:30
                                  handler:^(NSError *_Nullable error) {

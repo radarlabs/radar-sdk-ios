@@ -131,6 +131,55 @@
                     }];
 }
 
+- (void)updateSdkConfiguration:(RadarSdkConfiguration *_Nonnull)sdkConfiguration  completionHandler:(RadarConfigAPICompletionHandler _Nonnull)completionHandler {
+    NSString *publishableKey = [RadarSettings publishableKey];
+    if (!publishableKey) {
+        return;
+    }
+
+    NSMutableString *queryString = [NSMutableString new];
+    [queryString appendFormat:@"installId=%@", [RadarSettings installId]];
+    [queryString appendFormat:@"&sessionId=%@", [RadarSettings sessionId]];
+    [queryString appendFormat:@"&id=%@", [RadarSettings _id]];
+    NSString *locationAuthorization = [RadarUtils locationAuthorization];
+    if (locationAuthorization) {
+        [queryString appendFormat:@"&locationAuthorization=%@", locationAuthorization];
+    }
+    NSString *locationAccuracyAuthorization = [RadarUtils locationAccuracyAuthorization];
+    if (locationAccuracyAuthorization) {
+        [queryString appendFormat:@"&locationAccuracyAuthorization=%@", locationAccuracyAuthorization];
+    }
+    [queryString appendFormat:@"&usage=sdkConfigUpdate"];
+    [queryString appendFormat:@"&verified=false"];
+
+    NSDictionary *clientSdkConfiguration = [sdkConfiguration dictionaryValue];
+    [queryString appendFormat:@"&clientSdkConfiguration=%@", [RadarUtils dictionaryToJson:clientSdkConfiguration]];
+
+    NSString *host = [RadarSettings host];
+    NSString *url = [NSString stringWithFormat:@"%@/v1/config?%@", host, queryString];
+    url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
+
+    NSDictionary *headers = [RadarAPIClient headersWithPublishableKey:publishableKey];
+
+    [self.apiHelper requestWithMethod:@"GET"
+                                  url:url
+                              headers:headers
+                               params:nil
+                                sleep:NO
+                           logPayload:YES
+                      extendedTimeout:NO
+                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
+                        if (!res) {
+                            return;
+                        }
+
+                        [Radar flushLogs];
+
+                        RadarConfig *config = [RadarConfig fromDictionary:res];
+
+                        completionHandler(status, config);
+                    }];
+}
 
 - (void)flushReplays:(NSArray<NSDictionary *> *_Nonnull)replays
    completionHandler:(RadarFlushReplaysAPICompletionHandler _Nonnull)completionHandler {
