@@ -1493,6 +1493,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     RadarSdkConfiguration *sdkConfiguration = [[RadarSdkConfiguration alloc] initWithLogLevel:RadarLogLevelWarning];
     [RadarSettings setSdkConfiguration:sdkConfiguration];
 
+    [RadarSettings setUserDebug:NO];
     XCTAssertEqual([RadarSettings logLevel], RadarLogLevelWarning);
 
     sdkConfiguration = [RadarSettings sdkConfiguration];
@@ -1501,8 +1502,8 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 }
 
 - (void)test_Radar_getConfig {
-    [self.apiHelperMock setMockResponse:[RadarTestUtils jsonDictionaryFromResource:@"get_config_response"]
-                              forMethod:@"https://api.radar.io/v1/config"];
+    self.apiHelperMock.mockStatus = RadarStatusSuccess;
+    self.apiHelperMock.mockResponse = [RadarTestUtils jsonDictionaryFromResource:@"get_config_response"];
 
     XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
 
