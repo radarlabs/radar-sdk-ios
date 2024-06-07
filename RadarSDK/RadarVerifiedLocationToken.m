@@ -87,6 +87,8 @@
     dict[@"events"] = [RadarEvent arrayForEvents:self.events];
     dict[@"token"] = self.token;
     dict[@"expiresAt"] = [RadarUtils.isoDateFormatter stringFromDate:self.expiresAt];
+    dict[@"expiresIn"] = @(self.expiresIn);
+    dict[@"passed"] = @(self.passed);
     return dict;
 }
 
