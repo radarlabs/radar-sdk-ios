@@ -267,6 +267,9 @@ static NSString *const kXPlatformSDKVersion = @"radar-xPlatformSDKVersion";
     [sdkConfiguration setValue:[RadarLog stringForLogLevel:level] forKey:@"logLevel"];
     [[NSUserDefaults standardUserDefaults] setObject:sdkConfiguration forKey:kClientSdkConfiguration];
     
+    if ([RadarSettings logLevel] == level) {
+        return;
+    }
     [RadarSdkConfiguration updateSdkConfigurationFromServer];
 }
 
