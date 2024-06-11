@@ -1090,7 +1090,7 @@ logConversionWithNotification
 #pragma mark - Logging
 
 /**
- Set the local prefered log level for debug logs. The log level could be overridden by server configurations.
+ Sets the preferred log level for debug logs. This can be overridden by the remote SDK configuration set in the dashboard.
 
  @param level The log level.
  */
