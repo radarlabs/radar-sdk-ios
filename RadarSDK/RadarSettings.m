@@ -6,6 +6,7 @@
 //
 
 #import "RadarSettings.h"
+#include <objc/NSObject.h>
 
 #import "Radar+Internal.h"
 #import "RadarLogger.h"
@@ -259,6 +260,10 @@ static NSString *const kXPlatformSDKVersion = @"radar-xPlatformSDKVersion";
 
 + (void)setLogLevel:(RadarLogLevel)level {
     NSMutableDictionary *sdkConfiguration = [[RadarSettings clientSdkConfiguration] mutableCopy];
+    NSObject *logLevelObj = sdkConfiguration[@"logLevel"];
+    if ([logLevelObj isKindOfClass:[NSString class]] && [[RadarLog stringForLogLevel:level] isEqualToString:(NSString *)logLevelObj]) {
+        return;
+    }
     [sdkConfiguration setValue:[RadarLog stringForLogLevel:level] forKey:@"logLevel"];
     [[NSUserDefaults standardUserDefaults] setObject:sdkConfiguration forKey:kClientSdkConfiguration];
     
