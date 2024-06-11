@@ -63,6 +63,7 @@
                                   placeLabel:(NSString *_Nullable)placeLabel
                                         unit:(NSString *_Nullable)unit
                                        plus4:(NSString *_Nullable)plus4
+                                    distance:(NSNumber *_Nullable)distance
                                        layer:(NSString *_Nullable)layer
                                     metadata:(NSDictionary *_Nullable)metadata
                                   confidence:(RadarAddressConfidence)confidence {
@@ -88,6 +89,7 @@
         _placeLabel = placeLabel;
         _unit = unit;
         _plus4 = plus4;
+        _distance = distance;
         _layer = layer;
         _metadata = metadata;
         _confidence = confidence;
@@ -125,6 +127,7 @@
     NSString *placeLabel;
     NSString *unit;
     NSString *plus4;
+    NSNumber *distance;
     NSString *layer;
     NSMutableDictionary *metadata;
 
@@ -241,6 +244,11 @@
         plus4 = (NSString *)plus4Obj;
     }
 
+    id distanceObj = dict[@"distance"];
+    if (distanceObj && [distanceObj isKindOfClass:[NSNumber class]]) {
+        distance = (NSNumber *)distanceObj;
+    }
+
     id layerObj = dict[@"layer"];
     if (layerObj && [layerObj isKindOfClass:[NSString class]]) {
         layer = (NSString *)layerObj;
@@ -285,6 +293,7 @@
                                          placeLabel:placeLabel
                                                unit:unit
                                               plus4:plus4
+                                           distance:distance
                                               layer:layer
                                              metadata:metadata
                                          confidence:confidence];
@@ -353,6 +362,7 @@
     [dict setValue:self.placeLabel forKey:@"placeLabel"];
     [dict setValue:self.unit forKey:@"unit"];
     [dict setValue:self.plus4 forKey:@"plus4"];
+    [dict setValue:self.distance forKey:@"distance"];
     [dict setValue:self.layer forKey:@"layer"];
     [dict setValue:self.metadata forKey:@"metadata"];
     [dict setValue:[RadarAddress stringForConfidence:self.confidence] forKey:@"confidence"];
