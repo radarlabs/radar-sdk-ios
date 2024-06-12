@@ -264,6 +264,9 @@
     // join service uuids into string or store "(no services)" if array is empty/nil
     NSString *serviceUUIDsString = serviceUUIDs ? [serviceUUIDs componentsJoinedByString:@","] : @"(no services)";
 
+    // extract kCBAdvDataIsConnectable from advertisement data if it's available
+    NSNumber *isConnectable = advertisementData[@"kCBAdvDataIsConnectable"];
+
     NSURLComponents *components = [NSURLComponents componentsWithString: @""];
     NSArray<NSURLQueryItem *> *queryItems = @[
         [NSURLQueryItem queryItemWithName:@"time" value:[NSString stringWithFormat:@"%f", timestamp]],
@@ -298,6 +301,8 @@
         [NSURLQueryItem queryItemWithName:@"magnetometer.timestamp" value:[NSString stringWithFormat:@"%f", self.lastMagnetometerData.timestamp]],
         [NSURLQueryItem queryItemWithName:@"magnetometer.field.magnitude" value:[NSString stringWithFormat:@"%f", sqrt(pow(self.lastMagnetometerData.magneticField.x, 2) + pow(self.lastMagnetometerData.magneticField.y, 2) + pow(self.lastMagnetometerData.magneticField.z, 2))]],
 
+        // inject isConnectable
+        [NSURLQueryItem queryItemWithName:@"isConnectable" value:[isConnectable stringValue]]
     ];
     components.queryItems = queryItems;
     NSURL *dataUrl = components.URL;
