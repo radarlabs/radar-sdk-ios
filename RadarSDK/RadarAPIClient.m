@@ -64,6 +64,8 @@
         @"X-Radar-Device-OS": [RadarUtils deviceOS],
         @"X-Radar-Device-Type": [RadarUtils deviceType],
         @"X-Radar-SDK-Version": [RadarUtils sdkVersion],
+        @"X-Radar-Mobile-Origin": [[NSBundle mainBundle] bundleIdentifier],
+
     } mutableCopy];
     if ([RadarSettings xPlatform]) {
         [headers addEntriesFromDictionary:@{
