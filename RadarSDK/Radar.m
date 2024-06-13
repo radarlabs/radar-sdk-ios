@@ -21,6 +21,7 @@
 #import "RadarVerificationManager.h"
 #import "RadarReplayBuffer.h"
 #import "RadarFeatureSettings.h"
+#import "RadarInitializeOptions.h"
 
 @interface Radar ()
 
@@ -41,8 +42,7 @@
     return sharedInstance;
 }
 
-+ (void)initializeWithPublishableKey:(NSString *)publishableKey
-                              userId:(NSString *)userId {
++ (void)initializeWithPublishableKey:(NSString *)publishableKey {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"initialize()"];
 
     [[NSNotificationCenter defaultCenter] addObserver:[self sharedInstance]
@@ -73,8 +73,50 @@
                                          [RadarSettings setSDKConfiguration:config.meta.sdkConfiguration];
                                          [self flushLogs];
                                      }];
-    [RadarSettings setUserId:userId];
 }
+
+
++ (void)initializeWithPublishableKey:(NSString *)publishableKey
+                             options:(RadarInitializeOptions *)options {
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"initialize()"];
+
+    [[NSNotificationCenter defaultCenter] addObserver:[self sharedInstance]
+                                             selector:@selector(applicationWillEnterForeground)
+                                                 name:UIApplicationWillEnterForegroundNotification
+                                               object:nil];
+    
+    [RadarSettings setPublishableKey:publishableKey];
+
+    RadarFeatureSettings *featureSettings = [RadarSettings featureSettings];
+    if (featureSettings.usePersistence) {
+        [[RadarReplayBuffer sharedInstance] loadReplaysFromPersistentStore];
+    }
+
+    if ([[UIApplication sharedApplication] applicationState] != UIApplicationStateBackground) {
+        [RadarSettings updateSessionId];
+    }
+
+    [[RadarLocationManager sharedInstance] updateTrackingFromInitialize];
+    [[RadarAPIClient sharedInstance] getConfigForUsage:@"initialize"
+                                              verified:NO
+                                     completionHandler:^(RadarStatus status, RadarConfig *config) {
+                                         if (status != RadarStatusSuccess || !config) {
+                                            return;
+                                         }
+                                         [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
+                                         [RadarSettings setFeatureSettings:config.meta.featureSettings];
+                                         [RadarSettings setSDKConfiguration:config.meta.sdkConfiguration];
+                                         [self flushLogs];
+                                     }];
+    if (options.userId != nil) {
+        [RadarSettings setUserId:options.userId];
+    }
+    if (options.metadata != nil) {
+        [RadarSettings setMetadata:options.metadata];
+    }
+}
+
+
 
 #pragma mark - Properties
 
