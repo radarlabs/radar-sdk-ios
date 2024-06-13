@@ -45,38 +45,8 @@
 }
 
 + (void)initializeWithPublishableKey:(NSString *)publishableKey {
-    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"initialize()"];
-
-    [[NSNotificationCenter defaultCenter] addObserver:[self sharedInstance]
-                                             selector:@selector(applicationWillEnterForeground)
-                                                 name:UIApplicationWillEnterForegroundNotification
-                                               object:nil];
-    
-    [RadarSettings setPublishableKey:publishableKey];
-
-    RadarFeatureSettings *featureSettings = [RadarSettings featureSettings];
-    if (featureSettings.usePersistence) {
-        [[RadarReplayBuffer sharedInstance] loadReplaysFromPersistentStore];
-    }
-
-    if ([[UIApplication sharedApplication] applicationState] != UIApplicationStateBackground) {
-        [RadarSettings updateSessionId];
-    }
-
-    [RadarLocationPermissionManager sharedInstance];
-
-    [[RadarLocationManager sharedInstance] updateTrackingFromInitialize];
-    [[RadarAPIClient sharedInstance] getConfigForUsage:@"initialize"
-                                              verified:NO
-                                     completionHandler:^(RadarStatus status, RadarConfig *config) {
-                                         if (status != RadarStatusSuccess || !config) {
-                                            return;
-                                         }
-                                         [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
-                                         [RadarSettings setFeatureSettings:config.meta.featureSettings];
-                                         [RadarSettings setSDKConfiguration:config.meta.sdkConfiguration];
-                                         [self flushLogs];
-                                     }];
+    RadarInitializeOptions *options = [[RadarInitializeOptions alloc] init];
+    [Radar initializeWithPublishableKey:publishableKey options:options];
 }
 
 
@@ -284,15 +254,9 @@
                                               replayed:NO
                                                beacons:nil
                                      completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user,
-<<<<<<< HEAD
-                                                         NSArray<RadarGeofence *> *_Nullable nearbyGeofences, RadarConfig *_Nullable config, NSString *_Nullable token) {
-                                        if (status == RadarStatusSuccess && config != nil) {
-                                            [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
-=======
                                                          NSArray<RadarGeofence *> *_Nullable nearbyGeofences, RadarConfig *_Nullable config, RadarVerifiedLocationToken *_Nullable token) {
                                         if (status == RadarStatusSuccess && config != nil) {                                    
                                             [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];                                            
->>>>>>> master
                                         }
                                          if (completionHandler) {
                                              [RadarUtils runOnMainThread:^{
