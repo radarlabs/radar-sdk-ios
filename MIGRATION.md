@@ -1,13 +1,45 @@
 # Migration guides
 
-## 3.9.x to 3.10.x
-- The `searchGeofence` methods have been changed to `Radar.searchGeofences:(completionHandler)` and `Radar.searchGeofences(near:radius:tags:metadata:limit:includeGeometry:completionHandler)`. Use `includeGeometry` to include full geometry of the geofence. Set `radius` to `-1` to search for geofences without a radius limit. 
+## 3.12.x to 3.13.x
+-  The `Radar.trackVerified()` method now returns `token: RadarVerifiedLocationToken`, which includes `user`, `events`, `token,`, `expiresAt`, `expiresIn`, and `passed`. The `Radar.trackVerifiedToken()` method has been removed, since `Radar.trackVerified()` now returns a signed JWT.
 
-## 3.8.x to 3.9.0
+```swift
+// 3.13.x
+Radar.trackVerified { (status, token) in
+  if token?.passed == true {
+    // allow access to feature, send token to server for validation
+  } else {
+    // deny access to feature, show error message
+  }
+}
+
+// 3.12.x 
+Radar.trackVerified { (status, location, events, user) in
+  if user?.fraud?.passed == true &&
+    user?.country?.allowed == true &&
+    user?.state?.allowed == true {
+    // allow access to feature
+  } else {
+    // deny access to feature, show error message
+  }
+}
+
+Radar.trackVerifiedToken { (status, token) in
+  // send token to server for validation
+}
+```
+
+## 3.11.x to 3.12.x
+- The `RadarDelegate` interface has been changed to add a `didUpdateLocationPermissionStatus()` method.
+
+## 3.9.x to 3.10.x
+- The `Radar.searchGeofences()` methods have been changed to `Radar.searchGeofences(completionHandler:)` and `Radar.searchGeofences(near:radius:tags:metadata:limit:includeGeometry:completionHandler:)`. Use `includeGeometry` to include full geometry of the geofence. Set `radius` to `-1` to search for geofences without a radius limit. 
+
+## 3.8.x to 3.9.x
 - The `Radar.autocomplete(query:near:layers:limit:country:expandUnits:completionHandler:)` method is now `Radar.autocomplete(query:near:layers:limit:country:mailable:completionHandler:)`.
       - `expandUnits` has been deprecated and will always be true regardless of value passed in.
 
-## 3.6.x to 3.7.0
+## 3.6.x to 3.7.x
 - Custom events have been renamed to conversions.
       - `Radar.sendEvent(customType:metadata:completionHandler:)` is now `Radar.logConversion(name:metadata:completionHandler)`.
       - `Radar.logConversion(name:revenue:metadata:callback:)` has been added.
@@ -17,7 +49,7 @@
       - On `RadarEvent`, `customType` is now `conversionName`, and `RadarEventType.custom` is now `RadarEventType.conversion`.
 
 ```swift
-// 3.7.0
+// 3.7.x
 let metadata = ["foo": "bar"]
 
 Radar.logConversion(name: "conversion_event", metadata: metadata) { (status, event) in
