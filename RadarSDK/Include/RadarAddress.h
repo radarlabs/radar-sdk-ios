@@ -6,6 +6,7 @@
 //
 
 #import "RadarCoordinate.h"
+#import "RadarTimezone.h"
 #import <Foundation/Foundation.h>
 
 /**
