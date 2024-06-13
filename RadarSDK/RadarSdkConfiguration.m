@@ -16,7 +16,7 @@
 @implementation RadarSdkConfiguration
 
 - (instancetype)initWithLogLevel:(RadarLogLevel)logLevel
-      startTrackingOnInitialize:(bool)startTrackingOnInitialize {
+       startTrackingOnInitialize:(BOOL)startTrackingOnInitialize {
     if (self = [super init]) {
         _logLevel = logLevel;
         _startTrackingOnInitialize = startTrackingOnInitialize;

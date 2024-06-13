@@ -25,7 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
  Initializes a new RadarSdkConfiguration object with given value.
  */
 - (instancetype)initWithLogLevel:(RadarLogLevel)logLevel
-       startTrackingOnInitialize:(bool)startTrackingOnInitialize;
+       startTrackingOnInitialize:(BOOL)startTrackingOnInitialize;
 
 /**
  Creates a RadarSdkConfiguration object from the provided dictionary.
