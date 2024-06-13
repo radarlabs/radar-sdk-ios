@@ -6,6 +6,7 @@
 //
 
 #import "Radar.h"
+#include "RadarSdkConfiguration.h"
 
 #import "RadarAPIClient.h"
 #import "RadarBeaconManager.h"
@@ -73,9 +74,9 @@
                                          }
                                          [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
                                          [RadarSettings setFeatureSettings:config.meta.featureSettings];
+                                         [RadarSettings setSdkConfiguration:config.meta.sdkConfiguration];
                                          [self flushLogs];
                                      }];
-    
 }
 
 #pragma mark - Properties
@@ -1221,6 +1222,7 @@
                                              }
                                              [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
                                              [RadarSettings setFeatureSettings:config.meta.featureSettings];
+                                             [RadarSettings setSdkConfiguration:config.meta.sdkConfiguration];
                                          }];
     }
 
