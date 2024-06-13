@@ -15,9 +15,11 @@
 
 @implementation RadarSdkConfiguration
 
-- (instancetype)initWithLogLevel:(RadarLogLevel)logLevel {
+- (instancetype)initWithLogLevel:(RadarLogLevel)logLevel
+      startTrackingOnInitialize:(bool)startTrackingOnInitialize {
     if (self = [super init]) {
         _logLevel = logLevel;
+        _startTrackingOnInitialize = startTrackingOnInitialize;
     }
     return self;
 }
@@ -33,13 +35,22 @@
         logLevel = [RadarLog levelFromString:(NSString *)logLevelObj];
     }
 
-    return [[RadarSdkConfiguration alloc] initWithLogLevel:logLevel];
+    NSObject *startTrackingOnInitializeObj = dict[@"startTrackingOnInitialize"]; 
+    BOOL startTrackingOnInitialize = NO;
+    if (startTrackingOnInitializeObj && [startTrackingOnInitializeObj isKindOfClass:[NSNumber class]]) {
+        startTrackingOnInitialize = [(NSNumber *)startTrackingOnInitializeObj boolValue];
+    }
+
+    return [[RadarSdkConfiguration alloc] initWithLogLevel:logLevel 
+                                 startTrackingOnInitialize:startTrackingOnInitialize];
 }
 
 - (NSDictionary *)dictionaryValue {
     NSMutableDictionary *dict = [NSMutableDictionary new];
     NSString *logLevelString = [RadarLog stringForLogLevel:_logLevel];
     [dict setValue:logLevelString forKey:@"logLevel"];
+
+    [dict setValue:@(_startTrackingOnInitialize) forKey:@"startTrackingOnInitialize"];
     
     return dict;
 }

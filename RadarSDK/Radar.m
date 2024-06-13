@@ -75,6 +75,11 @@
                                          [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
                                          [RadarSettings setFeatureSettings:config.meta.featureSettings];
                                          [RadarSettings setSdkConfiguration:config.meta.sdkConfiguration];
+                                         
+                                         if (config.meta.sdkconfiguration.startTrackingOnInitialize && ![RadarSettings tracking]) {
+                                            [Radar startTrackingWithOptions:[RadarSettings getTrackingOptions]];
+                                         }
+
                                          [self flushLogs];
                                      }];
 }
