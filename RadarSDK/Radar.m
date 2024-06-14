@@ -76,8 +76,8 @@
                                          [RadarSettings setFeatureSettings:config.meta.featureSettings];
                                          [RadarSettings setSdkConfiguration:config.meta.sdkConfiguration];
                                          
-                                         if (config.meta.sdkconfiguration.startTrackingOnInitialize && ![RadarSettings tracking]) {
-                                            [Radar startTrackingWithOptions:[RadarSettings getTrackingOptions]];
+                                         if (config.meta.sdkConfiguration.startTrackingOnInitialize && ![RadarSettings tracking]) {
+                                            [Radar startTrackingWithOptions:[RadarSettings trackingOptions]];
                                          }
 
                                          [self flushLogs];

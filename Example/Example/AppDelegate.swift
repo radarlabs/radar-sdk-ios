@@ -21,10 +21,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         locationManager.delegate = self
         self.requestLocationPermissions()
 
+        UserDefaults.standard.set("https://api-shicheng.radar-staging.com", forKey:"radar-host")
+        
         // Replace with a valid test publishable key
-        Radar.initialize(publishableKey: "prj_test_pk_0000000000000000000000000000000000000000")
+        Radar.initialize(publishableKey: "prj_test_pk_d9020be31f7cd2357d59a728008f469b1395ee4e")
         Radar.setDelegate(self)
         Radar.setVerifiedDelegate(self)
+        
+        return true
 
         if UIApplication.shared.applicationState != .background {
             Radar.getLocation { (status, location, stopped) in
