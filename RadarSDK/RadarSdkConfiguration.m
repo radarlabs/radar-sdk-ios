@@ -28,7 +28,7 @@
     return self;
 }
 
-+ (RadarSdkConfiguration *_Nullable)sdkConfigurationFromDictionary:(NSDictionary *)dict {
++ (RadarSdkConfiguration *_Nullable)sdkConfigurationFromDictionary:(NSDictionary *_Nullable)dict {
     if (!dict) {
         return nil;
     }

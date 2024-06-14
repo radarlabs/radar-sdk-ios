@@ -29,16 +29,20 @@ NS_ASSUME_NONNULL_BEGIN
  Initializes a new RadarSdkConfiguration object with given value.
  */
 - (instancetype)initWithLogLevel:(RadarLogLevel)logLevel
+<<<<<<< HEAD
        startTrackingOnInitialize:(BOOL)startTrackingOnInitialize
            trackOnceOnInitialize:(BOOL)trackOnceOnInitialize
                trackOnceOnResume:(BOOL)trackOnceOnResume;
+=======
+       startTrackingOnInitialize:(BOOL)startTrackingOnInitialize;
+>>>>>>> shicheng/fence-1995-start-tracking-on-initialize
 
 /**
  Creates a RadarSdkConfiguration object from the provided dictionary.
  
  @param dict A dictionary to extract the settings from.
  */
-+ (RadarSdkConfiguration *_Nullable)sdkConfigurationFromDictionary:(NSDictionary *)dict;
++ (RadarSdkConfiguration *_Nullable)sdkConfigurationFromDictionary:(NSDictionary *_Nullable)dict;
 
 /**
  Returns a dictionary representation of the object.

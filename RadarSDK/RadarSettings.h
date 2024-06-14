@@ -49,6 +49,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)setFeatureSettings:(RadarFeatureSettings *_Nullable)featureSettings;
 + (NSDictionary *)clientSdkConfiguration;
 + (void)setSdkConfiguration:(RadarSdkConfiguration *_Nullable)sdkConfiguration;
++ (RadarSdkConfiguration *_Nullable)sdkConfiguration;
 + (RadarLogLevel)logLevel;
 + (void)setLogLevel:(RadarLogLevel)level;
 + (NSArray<NSString *> *_Nullable)beaconUUIDs;
