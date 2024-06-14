@@ -396,6 +396,12 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
             if (!options.beacons) {
                 [self removeSyncedBeacons];
             }
+
+            if(options.doIndoorsSurvey) {
+                // log new options.doIndoorsSurvey options
+                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Starting indoors survey........>!!!!!!!!11 ᛒluetooth ᛒᛒ📶"];
+            }
+
         } else {
             [self stopUpdates];
             [self removeAllRegions];
