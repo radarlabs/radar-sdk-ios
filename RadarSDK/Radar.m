@@ -1233,8 +1233,14 @@
                                              [RadarSettings setSdkConfiguration:config.meta.sdkConfiguration];
                                          }];
     }
+    
 
     [Radar logOpenedAppConversion];
+
+    RadarSdkConfiguration *sdkConfiguration = [RadarSettings sdkConfiguration];
+    if (sdkConfiguration.trackOnceOnResume) {
+        [Radar trackOnceWithCompletionHandler:nil];
+    }
 }
 
 - (void)dealloc {

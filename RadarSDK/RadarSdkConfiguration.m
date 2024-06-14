@@ -45,13 +45,13 @@
         startTrackingOnInitialize = [(NSNumber *)startTrackingOnInitializeObj boolValue];
     }
 
-    NSObject *trackOnceOnInitializeObj = dict[@"startTrackingOnInitialize"]; 
+    NSObject *trackOnceOnInitializeObj = dict[@"trackOnceOnInitialize"];
     BOOL trackOnceOnInitialize = NO;
     if (trackOnceOnInitializeObj && [trackOnceOnInitializeObj isKindOfClass:[NSNumber class]]) {
         trackOnceOnInitialize = [(NSNumber *)trackOnceOnInitializeObj boolValue];
     }
 
-    NSObject *trackOnceOnResumeObj = dict[@"startTrackingOnInitialize"]; 
+    NSObject *trackOnceOnResumeObj = dict[@"trackOnceOnResume"];
     BOOL trackOnceOnResume = NO;
     if (trackOnceOnResumeObj && [trackOnceOnResumeObj isKindOfClass:[NSNumber class]]) {
         trackOnceOnResume = [(NSNumber *)trackOnceOnResumeObj boolValue];
