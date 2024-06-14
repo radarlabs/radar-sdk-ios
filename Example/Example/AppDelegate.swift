@@ -23,6 +23,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         UserDefaults.standard.set("https://api-shicheng.radar-staging.com", forKey:"radar-host")
         
+        Radar.stopTracking()
+        
         // Replace with a valid test publishable key
         Radar.initialize(publishableKey: "prj_test_pk_d9020be31f7cd2357d59a728008f469b1395ee4e")
         Radar.setDelegate(self)

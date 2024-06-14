@@ -32,7 +32,7 @@ NS_ASSUME_NONNULL_BEGIN
  
  @param dict A dictionary to extract the settings from.
  */
-+ (RadarSdkConfiguration *_Nullable)sdkConfigurationFromDictionary:(NSDictionary *)dict;
++ (RadarSdkConfiguration *_Nullable)sdkConfigurationFromDictionary:(NSDictionary *_Nullable)dict;
 
 /**
  Returns a dictionary representation of the object.
