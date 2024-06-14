@@ -79,6 +79,9 @@
                                          if (sdkConfiguration.startTrackingOnInitialize && ![RadarSettings tracking]) {
                                             [Radar startTrackingWithOptions:[RadarSettings trackingOptions]];
                                          }
+                                         if (sdkConfiguration.trackOnceOnInitialize) {
+                                            [Radar trackOnceWithCompletionHandler:nil];
+                                         }
 
                                          [self flushLogs];
                                      }];
