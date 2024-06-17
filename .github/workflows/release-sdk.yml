@@ -45,7 +45,7 @@ jobs:
         run: echo "::set-output name=checksum::$(shasum -a 256 RadarSDK.xcframework.zip | cut -d ' ' -f 1)"
 
       - name: Repository Dispatch
-        if: ${{ !github.event.release.prerelease }}
+        # if: ${{ !github.event.release.prerelease }}
         uses: peter-evans/repository-dispatch@v3
         with:
           token: ${{ secrets.SPM_REPO_KEY }}
