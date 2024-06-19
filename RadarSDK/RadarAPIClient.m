@@ -324,7 +324,9 @@
         params[@"encrypted"] = @(encrypted);
         BOOL jailbroken = [[RadarVerificationManager sharedInstance] isJailbroken];
         params[@"compromised"] = @(jailbroken);
-        [failureReasons addObject:@"FRAUD_COMPROMISED_SDK_JAILBROKEN"];
+        if (jailbroken) {
+            [failureReasons addObject:@"FRAUD_COMPROMISED_SDK_JAILBROKEN"];
+        }
     }
     params[@"appId"] = [[NSBundle mainBundle] bundleIdentifier];
     
