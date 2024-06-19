@@ -204,7 +204,7 @@
         return completionHandler(RadarStatusErrorPublishableKey, nil, nil, nil, nil, nil, nil);
     }
     NSMutableDictionary *params = [NSMutableDictionary new];
-    NSMutableArray<NSString *> *fraudReasons = [NSMutableArray new];
+    NSMutableArray<NSString *> *failureReasons = [NSMutableArray new];
     BOOL anonymous = [RadarSettings anonymousTrackingEnabled];
     params[@"anonymous"] = @(anonymous);
     if (anonymous) {
@@ -271,10 +271,10 @@
             if (sourceInformation.isSimulatedBySoftware || sourceInformation.isProducedByAccessory) {
                 params[@"mocked"] = @(YES);
                 if (sourceInformation.isSimulatedBySoftware) {
-                    [fraudReasons addObject:@"FRAUD_MOCKED_SDK_SIMULATED_BY_SOFTWARE"];
+                    [failureReasons addObject:@"FRAUD_MOCKED_SDK_SIMULATED_BY_SOFTWARE"];
                 }
                 if (sourceInformation.isProducedByAccessory) {
-                    [fraudReasons addObject:@"FRAUD_MOCKED_SDK_PRODUCED_BY_ACCESSORY"];
+                    [failureReasons addObject:@"FRAUD_MOCKED_SDK_PRODUCED_BY_ACCESSORY"];
                 }
             } else {
                 params[@"mocked"] = @(NO);
@@ -324,11 +324,11 @@
         params[@"encrypted"] = @(encrypted);
         BOOL jailbroken = [[RadarVerificationManager sharedInstance] isJailbroken];
         params[@"compromised"] = @(jailbroken);
-        [fraudReasons addObject:@"FRAUD_COMPROMISED_SDK_JAILBROKEN"];
+        [failureReasons addObject:@"FRAUD_COMPROMISED_SDK_JAILBROKEN"];
     }
     params[@"appId"] = [[NSBundle mainBundle] bundleIdentifier];
     
-    params[@"fraudReasons"] = fraudReasons;
+    params[@"failureReasons"] = failureReasons;
 
     if (anonymous) {
         [[RadarAPIClient sharedInstance] getConfigForUsage:@"track"
