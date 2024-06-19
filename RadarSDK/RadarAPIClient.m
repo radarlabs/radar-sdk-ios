@@ -204,6 +204,7 @@
         return completionHandler(RadarStatusErrorPublishableKey, nil, nil, nil, nil, nil, nil);
     }
     NSMutableDictionary *params = [NSMutableDictionary new];
+    NSMutableArray<NSString *> *fraudReasons = [NSMutableArray new];
     BOOL anonymous = [RadarSettings anonymousTrackingEnabled];
     params[@"anonymous"] = @(anonymous);
     if (anonymous) {
@@ -269,11 +270,18 @@
         if (sourceInformation) {
             if (sourceInformation.isSimulatedBySoftware || sourceInformation.isProducedByAccessory) {
                 params[@"mocked"] = @(YES);
+                if (sourceInformation.isSimulatedBySoftware) {
+                    [fraudReasons addObject:@"FRAUD_MOCKED_SDK_SIMULATED_BY_SOFTWARE"];
+                }
+                if (sourceInformation.isProducedByAccessory) {
+                    [fraudReasons addObject:@"FRAUD_MOCKED_SDK_PRODUCED_BY_ACCESSORY"];
+                }
             } else {
                 params[@"mocked"] = @(NO);
             }
         }
     }
+    params[@"fraudReasons"] = fraudReasons;
     
     RadarTripOptions *tripOptions = Radar.getTripOptions;
 
