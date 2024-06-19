@@ -204,7 +204,6 @@
         return completionHandler(RadarStatusErrorPublishableKey, nil, nil, nil, nil, nil, nil);
     }
     NSMutableDictionary *params = [NSMutableDictionary new];
-    NSMutableArray<NSString *> *failureReasons = [NSMutableArray new];
     BOOL anonymous = [RadarSettings anonymousTrackingEnabled];
     params[@"anonymous"] = @(anonymous);
     if (anonymous) {
@@ -265,16 +264,17 @@
     } else {
         params[@"xPlatformType"] = @"Native";
     }
+    NSMutableArray<NSString *> *fraudFailureReasons = [NSMutableArray new];
     if (@available(iOS 15.0, *)) {
         CLLocationSourceInformation *sourceInformation = location.sourceInformation;
         if (sourceInformation) {
             if (sourceInformation.isSimulatedBySoftware || sourceInformation.isProducedByAccessory) {
                 params[@"mocked"] = @(YES);
                 if (sourceInformation.isSimulatedBySoftware) {
-                    [failureReasons addObject:@"FRAUD_MOCKED_SDK_SIMULATED_BY_SOFTWARE"];
+                    [fraudFailureReasons addObject:@"fraud_mocked_ios_simulated_by_software"];
                 }
                 if (sourceInformation.isProducedByAccessory) {
-                    [failureReasons addObject:@"FRAUD_MOCKED_SDK_PRODUCED_BY_ACCESSORY"];
+                    [fraudFailureReasons addObject:@"fraud_mocked_ios_produced_by_accessory"];
                 }
             } else {
                 params[@"mocked"] = @(NO);
@@ -325,12 +325,12 @@
         BOOL jailbroken = [[RadarVerificationManager sharedInstance] isJailbroken];
         params[@"compromised"] = @(jailbroken);
         if (jailbroken) {
-            [failureReasons addObject:@"FRAUD_COMPROMISED_SDK_JAILBROKEN"];
+            [fraudFailureReasons addObject:@"fraud_compromised_jailbroken"];
         }
     }
     params[@"appId"] = [[NSBundle mainBundle] bundleIdentifier];
     
-    params[@"failureReasons"] = failureReasons;
+    params[@"fraudFailureReasons"] = fraudFailureReasons;
 
     if (anonymous) {
         [[RadarAPIClient sharedInstance] getConfigForUsage:@"track"
