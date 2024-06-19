@@ -271,10 +271,10 @@
             if (sourceInformation.isSimulatedBySoftware || sourceInformation.isProducedByAccessory) {
                 params[@"mocked"] = @(YES);
                 if (sourceInformation.isSimulatedBySoftware) {
-                    [fraudFailureReasons addObject:@"fraud_mocked_ios_simulated_by_software"];
+                    [fraudFailureReasons addObject:@"fraud_mocked_from_mock_provider"];
                 }
                 if (sourceInformation.isProducedByAccessory) {
-                    [fraudFailureReasons addObject:@"fraud_mocked_ios_produced_by_accessory"];
+                    [fraudFailureReasons addObject:@"fraud_mocked_produced_by_accessory"];
                 }
             } else {
                 params[@"mocked"] = @(NO);
