@@ -281,7 +281,6 @@
             }
         }
     }
-    params[@"fraudReasons"] = fraudReasons;
     
     RadarTripOptions *tripOptions = Radar.getTripOptions;
 
@@ -323,9 +322,13 @@
         params[@"keyId"] = keyId;
         params[@"attestationError"] = attestationError;
         params[@"encrypted"] = @(encrypted);
-        params[@"compromised"] = @([[RadarVerificationManager sharedInstance] isJailbroken]);
+        BOOL jailbroken = [[RadarVerificationManager sharedInstance] isJailbroken];
+        params[@"compromised"] = @(jailbroken);
+        [fraudReasons addObject:@"FRAUD_COMPROMISED_SDK_JAILBROKEN"];
     }
     params[@"appId"] = [[NSBundle mainBundle] bundleIdentifier];
+    
+    params[@"fraudReasons"] = fraudReasons;
 
     if (anonymous) {
         [[RadarAPIClient sharedInstance] getConfigForUsage:@"track"
