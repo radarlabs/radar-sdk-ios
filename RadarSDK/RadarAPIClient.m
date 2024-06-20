@@ -268,16 +268,12 @@
     if (@available(iOS 15.0, *)) {
         CLLocationSourceInformation *sourceInformation = location.sourceInformation;
         if (sourceInformation) {
-            if (sourceInformation.isSimulatedBySoftware || sourceInformation.isProducedByAccessory) {
+            if (sourceInformation.isSimulatedBySoftware) {
                 params[@"mocked"] = @(YES);
-                if (sourceInformation.isSimulatedBySoftware) {
-                    [fraudFailureReasons addObject:@"fraud_mocked_from_mock_provider"];
-                }
-                if (sourceInformation.isProducedByAccessory) {
-                    [fraudFailureReasons addObject:@"fraud_mocked_produced_by_accessory"];
-                }
-            } else {
-                params[@"mocked"] = @(NO);
+                [fraudFailureReasons addObject:@"fraud_mocked_from_mock_provider"];
+            }
+            if (sourceInformation.isProducedByAccessory) {
+                [fraudFailureReasons addObject:@"fraud_mocked_produced_by_accessory"];
             }
         }
     }
