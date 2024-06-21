@@ -22,7 +22,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         self.requestLocationPermissions()
 
         // Replace with a valid test publishable key
-        Radar.initialize(publishableKey: "prj_test_pk_0000000000000000000000000000000000000000")
+        Radar.initialize(publishableKey: "prj_test_pk_333df0ef19f87a254f12cb1818de8443181054a7")
         Radar.setDelegate(self)
         Radar.setVerifiedDelegate(self)
 
@@ -186,6 +186,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             }
 
             print("Log Conversion: status = \(Radar.stringForStatus(status)); event = \(String(describing: event))")
+        }
+        
+        Radar.trackVerified() { (status, token) in
+            print("Status: \(status) token: \(token?.dictionaryValue())")
+            
         }
 
         return true
