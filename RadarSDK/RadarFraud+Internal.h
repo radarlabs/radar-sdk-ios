@@ -20,7 +20,13 @@ NS_ASSUME_NONNULL_BEGIN
                                  jumped:(BOOL)jumped
                              inaccurate:(BOOL)inaccurate
                                 sharing:(BOOL)sharing
-                                blocked:(BOOL)blocked;
+                                blocked:(BOOL)blocked
+                           lastMockedAt:(NSDate *)lastMockedAt
+                           lastJumpedAt:(NSDate *)lastJumpedAt
+                      lastCompromisedAt:(NSDate *)lastCompromisedAt
+                       lastInaccurateAt:(NSDate *)lastInaccurateAt
+                            lastProxyAt:(NSDate *)lastProxyAt
+                          lastSharingAt:(NSDate *)lastSharingAt;
 
 - (instancetype _Nullable)initWithObject:(id _Nonnull)object;
 

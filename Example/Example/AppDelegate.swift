@@ -189,7 +189,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
         
         Radar.trackVerified() { (status, token) in
-            print("Status: \(status) token: \(token?.dictionaryValue())")
+            print("TrackVerified: status: \(status); token: \(token?.dictionaryValue())")
             
         }
 

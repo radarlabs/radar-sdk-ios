@@ -67,6 +67,35 @@
  */
 @property (assign, nonatomic, readonly) bool blocked;
 
+/**
+ A timestamp indicating the last time that the user failed the mocked fraud check.
+ */
+@property (nullable, assign, nonatomic, readonly) NSDate *lastMockedAt;
+
+/**
+ A timestamp indicating the last time that the user failed the jumped fraud check.
+ */
+@property (nullable, assign, nonatomic, readonly) NSDate *lastJumpedAt;
+
+/**
+ A timestamp indicating the last time that the user failed the compromised fraud check.
+ */
+@property (nullable, assign, nonatomic, readonly) NSDate *lastCompromisedAt;
+
+/**
+ A timestamp indicating the last time that the user failed the inaccurate fraud check.
+ */
+@property (nullable, assign, nonatomic, readonly) NSDate *lastInaccurateAt;
+
+/**
+ A timestamp indicating the last time that the user failed the proxy fraud check.
+ */
+@property (nullable, assign, nonatomic, readonly) NSDate *lastProxyAt;
+
+/**
+ A timestamp indicating the last time that the user failed the sharing fraud check.
+ */
+@property (nullable, assign, nonatomic, readonly) NSDate *lastSharingAt;
 
 - (NSDictionary *_Nonnull)dictionaryValue;
 
