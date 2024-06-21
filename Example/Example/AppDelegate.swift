@@ -22,7 +22,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         self.requestLocationPermissions()
 
         // Replace with a valid test publishable key
-        Radar.initialize(publishableKey: "prj_test_pk_333df0ef19f87a254f12cb1818de8443181054a7")
+        Radar.initialize(publishableKey: "prj_test_pk_0000000000000000000000000000000000000000")
         Radar.setDelegate(self)
         Radar.setVerifiedDelegate(self)
 
