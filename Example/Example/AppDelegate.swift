@@ -42,6 +42,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         Radar.getContext { (status, location, context) in
             print("Context: status = \(Radar.stringForStatus(status)); location = \(String(describing: location)); context?.geofences = \(String(describing: context?.geofences)); context?.place = \(String(describing: context?.place)); context?.country = \(String(describing: context?.country))")
         }
+
+        Radar.trackVerified() { (status, token) in
+            print("TrackVerified: status = \(status); token = \(token?.dictionaryValue())")
+        }
         
         // In the Radar dashboard settings
         // (https://radar.com/dashboard/settings), add this to the chain
@@ -186,11 +190,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             }
 
             print("Log Conversion: status = \(Radar.stringForStatus(status)); event = \(String(describing: event))")
-        }
-        
-        Radar.trackVerified() { (status, token) in
-            print("Status: \(status) token: \(token?.dictionaryValue())")
-            
         }
 
         return true
