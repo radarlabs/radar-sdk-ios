@@ -57,6 +57,17 @@
  */
 @property (assign, nonatomic, readonly) bool inaccurate;
 
+/**
+ A boolean indicating whether the user's location is not accurate enough. May be `false` if Fraud is not enabled.
+ */
+@property (assign, nonatomic, readonly) bool sharing;
+
+/**
+ A boolean indicating whether the user has been manually blocked. May be `false` if Fraud is not enabled.
+ */
+@property (assign, nonatomic, readonly) bool blocked;
+
+
 - (NSDictionary *_Nonnull)dictionaryValue;
 
 @end
