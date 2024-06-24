@@ -694,7 +694,6 @@
                   chains:(NSArray *_Nullable)chains
            chainMetadata:(NSDictionary<NSString *, NSString *> *_Nullable)chainMetadata
               categories:(NSArray *_Nullable)categories
-                  groups:(NSArray *_Nullable)groups
                    limit:(int)limit
        completionHandler:(RadarSearchPlacesAPICompletionHandler)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
@@ -713,9 +712,6 @@
     }
     if (categories && [categories count] > 0) {
         [queryString appendFormat:@"&categories=%@", [categories componentsJoinedByString:@","]];
-    }
-    if (groups && [groups count] > 0) {
-        [queryString appendFormat:@"&groups=%@", [groups componentsJoinedByString:@","]];
     }
 
     [chainMetadata enumerateKeysAndObjectsUsingBlock:^(NSString *_Nonnull key, NSString *_Nonnull value, BOOL *_Nonnull stop) {
