@@ -20,9 +20,11 @@
 typedef NS_ENUM(NSInteger, RadarLocationPermissionState) {
     NoPermissionGranted,
     ForegroundPermissionGranted,
+    ApproximateForegroundPermissionGranted,
     ForegroundPermissionRejected,
     ForegroundPermissionPending,
     BackgroundPermissionGranted,
+    ApproximateBackgroundPermissionGranted,
     BackgroundPermissionRejected,
     BackgroundPermissionPending,
     PermissionRestricted,
@@ -33,6 +35,10 @@ typedef NS_ENUM(NSInteger, RadarLocationPermissionState) {
  The CLAuthorizationStatus of the iOS location manager.
 */
 @property (nonatomic, assign) CLAuthorizationStatus locationManagerStatus;
+/**
+ The flag indicating if the user authorized full location accuracy instead of reduced location accuracy.
+*/
+@property (nonatomic, assign) BOOL accuracyAuthorization;
 /**
  The flag indicating if the user has been prompted for background location permissions.
 */

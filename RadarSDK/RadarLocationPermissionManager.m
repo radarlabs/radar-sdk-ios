@@ -42,6 +42,7 @@
         } else{
             if (@available(iOS 14.0, *)) {
                 self.status = [[RadarLocationPermissionStatus alloc] initWithStatus:self.locationManager.authorizationStatus
+                                                              accuracyAuthorization:self.locationManager.accuracyAuthorization == CLAccuracyAuthorizationFullAccuracy
                                                             backgroundPromptAvailable:YES
                                                                    inForegroundPrompt:NO
                                                    userRejectedBackgroundPermission:NO];
@@ -94,7 +95,8 @@
         [self.locationManager requestAlwaysAuthorization];
         if (@available(iOS 14.0, *)) {
             RadarLocationPermissionStatus *status = [[RadarLocationPermissionStatus alloc] initWithStatus:self.locationManager.authorizationStatus
-                                                                                   backgroundPromptAvailable:NO
+                                                                                    accuracyAuthorization:self.locationManager.accuracyAuthorization == CLAccuracyAuthorizationFullAccuracy
+                                                                                backgroundPromptAvailable:NO
                                                                                           inForegroundPrompt:self.status.inForegroundPrompt
                                                                           userRejectedBackgroundPermission: self.status.userRejectedBackgroundPermission];
             [self updateStatus:status];
@@ -108,7 +110,8 @@
             if (self.danglingBackgroundPermissionRequest) {
                 if (@available(iOS 14.0, *)) {
                     RadarLocationPermissionStatus *status = [[RadarLocationPermissionStatus alloc] initWithStatus:self.locationManager.authorizationStatus
-                                                                                            backgroundPromptAvailable:self.status.backgroundPromptAvailable
+                                                                                            accuracyAuthorization:self.locationManager.accuracyAuthorization == CLAccuracyAuthorizationFullAccuracy
+                                                                                        backgroundPromptAvailable:self.status.backgroundPromptAvailable
                                                                                                     inForegroundPrompt:self.status.inForegroundPrompt
                                                                                     userRejectedBackgroundPermission:YES];
                     [self updateStatus:status];
@@ -125,7 +128,8 @@
         [self.locationManager requestWhenInUseAuthorization];
         if (@available(iOS 14.0, *)) {
             RadarLocationPermissionStatus *status = [[RadarLocationPermissionStatus alloc] initWithStatus:self.locationManager.authorizationStatus
-                                                                                   backgroundPromptAvailable:self.status.backgroundPromptAvailable
+                                                                                    accuracyAuthorization:self.locationManager.accuracyAuthorization == CLAccuracyAuthorizationFullAccuracy
+                                                                                backgroundPromptAvailable:self.status.backgroundPromptAvailable
                                                                                           inForegroundPrompt:YES
                                                                           userRejectedBackgroundPermission: self.status.userRejectedBackgroundPermission];
             [self updateStatus:status];
@@ -143,7 +147,8 @@
             if (status == self.status.locationManagerStatus) {
                 // if the status did not changed, we update the status here, otherwise we will update it in the delegate method
                 RadarLocationPermissionStatus *newStatus = [[RadarLocationPermissionStatus alloc] initWithStatus:status
-                                                                                          backgroundPromptAvailable:self.status.backgroundPromptAvailable
+                                                                                           accuracyAuthorization:self.locationManager.accuracyAuthorization == CLAccuracyAuthorizationFullAccuracy
+                                                                                       backgroundPromptAvailable:self.status.backgroundPromptAvailable
                                                                                                  inForegroundPrompt:self.status.inForegroundPrompt
                                                                                  userRejectedBackgroundPermission: YES];
                 [self updateStatus:newStatus];
@@ -163,13 +168,16 @@
 }
 
 - (void)locationManager:(CLLocationManager *)manager didChangeAuthorizationStatus:(CLAuthorizationStatus)status {
-    RadarLocationPermissionStatus *newStatus = [[RadarLocationPermissionStatus alloc] initWithStatus:status
-                                                                              backgroundPromptAvailable:self.status.backgroundPromptAvailable
-                                                                                     // any change in status will always result in the in foreground prompt closing
-                                                                                     inForegroundPrompt:NO
-                                                                     userRejectedBackgroundPermission: 
-                                                                     self.status.userRejectedBackgroundPermission || (status == kCLAuthorizationStatusDenied)];
-    [self updateStatus:newStatus];
+    if (@available(iOS 14.0, *)) {
+        RadarLocationPermissionStatus *newStatus = [[RadarLocationPermissionStatus alloc] initWithStatus:status
+                                                                                   accuracyAuthorization:self.locationManager.accuracyAuthorization == CLAccuracyAuthorizationFullAccuracy
+                                                                               backgroundPromptAvailable:self.status.backgroundPromptAvailable
+                                                    // any change in status will always result in the in foreground prompt closing
+                                                                                      inForegroundPrompt:NO
+                                                                        userRejectedBackgroundPermission: 
+                                                    self.status.userRejectedBackgroundPermission || (status == kCLAuthorizationStatusDenied)];
+        [self updateStatus:newStatus];
+    }
 }
 
 - (RadarLocationPermissionStatus *)getLocationPermissionStatus {

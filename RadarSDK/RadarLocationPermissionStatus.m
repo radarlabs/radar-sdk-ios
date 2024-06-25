@@ -27,16 +27,22 @@
 }
 
 - (instancetype _Nullable)initWithStatus:(CLAuthorizationStatus)locationManagerStatus
-                backgroundPromptAvailable:(BOOL)backgroundPromptAvailable
-                       inForegroundPrompt:(BOOL)inForegroundPrompt
-       userRejectedBackgroundPermission:(BOOL)userRejectedBackgroundPermission {
+                   accuracyAuthorization:(BOOL)accuracyAuthorization
+               backgroundPromptAvailable:(BOOL)backgroundPromptAvailable
+                      inForegroundPrompt:(BOOL)inForegroundPrompt
+        userRejectedBackgroundPermission:(BOOL)userRejectedBackgroundPermission {
     self = [super init];
     if (self) {
         _locationManagerStatus = locationManagerStatus;
+        _accuracyAuthorization = accuracyAuthorization;
         _backgroundPromptAvailable = backgroundPromptAvailable;
         _inForegroundPrompt = inForegroundPrompt;
         _userRejectedBackgroundPermission = userRejectedBackgroundPermission;
-        _locationPermissionState = [RadarLocationPermissionStatus locationPermissionStateForLocationManagerStatus:locationManagerStatus backgroundPromptAvailable:backgroundPromptAvailable inForegroundPrompt:inForegroundPrompt userRejectedBackgroundPermission:userRejectedBackgroundPermission];
+        _locationPermissionState = [RadarLocationPermissionStatus locationPermissionStateForLocationManagerStatus:locationManagerStatus 
+                                                                                            accuracyAuthorization:accuracyAuthorization
+                                                                                        backgroundPromptAvailable:backgroundPromptAvailable
+                                                                                               inForegroundPrompt:inForegroundPrompt
+                                                                                 userRejectedBackgroundPermission:userRejectedBackgroundPermission];
     }
     return self;
 }
@@ -65,6 +71,7 @@
     }
     return @{
         @"locationManagerStatus": statusString,
+        @"accuracyAuthorization": @(self.accuracyAuthorization),
         @"backgroundPromptAvailable": @(self.backgroundPromptAvailable),
         @"inForegroundPrompt": @(self.inForegroundPrompt),
         @"userRejectedBackgroundPermission": @(self.userRejectedBackgroundPermission),
@@ -88,12 +95,14 @@
     } else {
         locationManagerStatus = kCLAuthorizationStatusNotDetermined;
     }
+    BOOL accuracyAuthorization = [dictionary[@"accuracyAuthorization"] boolValue];
     BOOL backgroundPromptAvailable = [dictionary[@"backgroundPromptAvailable"] boolValue];
     BOOL inForegroundPrompt = [dictionary[@"inForegroundPrompt"] boolValue];
     BOOL userRejectedBackgroundPermission = [dictionary[@"userRejectedBackgroundPermission"] boolValue];
-    return [self initWithStatus:locationManagerStatus 
-       backgroundPromptAvailable:backgroundPromptAvailable 
-              inForegroundPrompt:inForegroundPrompt
+    return [self initWithStatus:locationManagerStatus
+          accuracyAuthorization:accuracyAuthorization
+      backgroundPromptAvailable:backgroundPromptAvailable
+             inForegroundPrompt:inForegroundPrompt
 userRejectedBackgroundPermission:userRejectedBackgroundPermission];
 }
 
@@ -103,12 +112,16 @@ userRejectedBackgroundPermission:userRejectedBackgroundPermission];
             return @"NoPermissionGranted";
         case ForegroundPermissionGranted:
             return @"ForegroundPermissionGranted";
+        case ApproximateForegroundPermissionGranted:
+            return @"ApproximateForegroundPermissionGranted";
         case ForegroundPermissionRejected:
             return @"ForegroundPermissionRejected";
         case ForegroundPermissionPending:
             return @"ForegroundPermissionPending";
         case BackgroundPermissionGranted:
             return @"BackgroundPermissionGranted";
+        case ApproximateBackgroundPermissionGranted:
+            return @"ApproximateBackgroundPermissionGranted";
         case BackgroundPermissionRejected:
             return @"BackgroundPermissionRejected";
         case BackgroundPermissionPending:
@@ -121,9 +134,10 @@ userRejectedBackgroundPermission:userRejectedBackgroundPermission];
 }
 
 + (RadarLocationPermissionState)locationPermissionStateForLocationManagerStatus:(CLAuthorizationStatus)locationManagerStatus
-                                                       backgroundPromptAvailable:(BOOL)backgroundPromptAvailable
-                                                              inForegroundPrompt:(BOOL)inForegroundPrompt
-                                              userRejectedBackgroundPermission:(BOOL)userRejectedBackgroundPermission {
+                                                          accuracyAuthorization:(BOOL)accuracyAuthorization
+                                                      backgroundPromptAvailable:(BOOL)backgroundPromptAvailable
+                                                             inForegroundPrompt:(BOOL)inForegroundPrompt
+                                               userRejectedBackgroundPermission:(BOOL)userRejectedBackgroundPermission {
 
     if (locationManagerStatus == kCLAuthorizationStatusNotDetermined) {
         return inForegroundPrompt ? ForegroundPermissionPending : NoPermissionGranted;
@@ -134,14 +148,19 @@ userRejectedBackgroundPermission:userRejectedBackgroundPermission];
     }
 
     if (locationManagerStatus == kCLAuthorizationStatusAuthorizedAlways) {
-        return BackgroundPermissionGranted;
+        if (accuracyAuthorization) {
+            return BackgroundPermissionGranted;
+        } else {
+            return ApproximateBackgroundPermissionGranted;
+        }
+        
     }
 
     if (locationManagerStatus == kCLAuthorizationStatusAuthorizedWhenInUse) {
         if (userRejectedBackgroundPermission) {
             return BackgroundPermissionRejected;
         }
-        return backgroundPromptAvailable ? ForegroundPermissionGranted : BackgroundPermissionPending;
+        return backgroundPromptAvailable ? (accuracyAuthorization ? ForegroundPermissionGranted : ApproximateForegroundPermissionGranted) : BackgroundPermissionPending;
     }
 
     if (locationManagerStatus == kCLAuthorizationStatusRestricted) {
