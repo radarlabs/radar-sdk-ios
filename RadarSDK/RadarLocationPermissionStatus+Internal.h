@@ -16,8 +16,8 @@
 + (RadarLocationPermissionStatus *_Nullable) getRadarLocationPermissionStatus;
 
 - (instancetype _Nullable)initWithStatus:(CLAuthorizationStatus)locationManagerStatus
-                backgroundPopupAvailable:(BOOL)backgroundPopupAvailable
-                       inForegroundPopup:(BOOL)inForegroundPopup
+                backgroundPromptAvailable:(BOOL)backgroundPromptAvailable
+                       inForegroundPrompt:(BOOL)inForegroundPrompt
        userRejectedBackgroundPermission:(BOOL)userRejectedBackgroundPermission;
 
 @end

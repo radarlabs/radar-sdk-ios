@@ -27,16 +27,16 @@
 }
 
 - (instancetype _Nullable)initWithStatus:(CLAuthorizationStatus)locationManagerStatus
-                backgroundPopupAvailable:(BOOL)backgroundPopupAvailable
-                       inForegroundPopup:(BOOL)inForegroundPopup
+                backgroundPromptAvailable:(BOOL)backgroundPromptAvailable
+                       inForegroundPrompt:(BOOL)inForegroundPrompt
        userRejectedBackgroundPermission:(BOOL)userRejectedBackgroundPermission {
     self = [super init];
     if (self) {
         _locationManagerStatus = locationManagerStatus;
-        _backgroundPopupAvailable = backgroundPopupAvailable;
-        _inForegroundPopup = inForegroundPopup;
+        _backgroundPromptAvailable = backgroundPromptAvailable;
+        _inForegroundPrompt = inForegroundPrompt;
         _userRejectedBackgroundPermission = userRejectedBackgroundPermission;
-        _locationPermissionState = [RadarLocationPermissionStatus locationPermissionStateForLocationManagerStatus:locationManagerStatus backgroundPopupAvailable:backgroundPopupAvailable inForegroundPopup:inForegroundPopup userRejectedBackgroundPermission:userRejectedBackgroundPermission];
+        _locationPermissionState = [RadarLocationPermissionStatus locationPermissionStateForLocationManagerStatus:locationManagerStatus backgroundPromptAvailable:backgroundPromptAvailable inForegroundPrompt:inForegroundPrompt userRejectedBackgroundPermission:userRejectedBackgroundPermission];
     }
     return self;
 }
@@ -65,8 +65,8 @@
     }
     return @{
         @"locationManagerStatus": statusString,
-        @"backgroundPopupAvailable": @(self.backgroundPopupAvailable),
-        @"inForegroundPopup": @(self.inForegroundPopup),
+        @"backgroundPromptAvailable": @(self.backgroundPromptAvailable),
+        @"inForegroundPrompt": @(self.inForegroundPrompt),
         @"userRejectedBackgroundPermission": @(self.userRejectedBackgroundPermission),
         @"locationPermissionState": [RadarLocationPermissionStatus stringForLocationPermissionState:self.locationPermissionState]
     };
@@ -88,12 +88,12 @@
     } else {
         locationManagerStatus = kCLAuthorizationStatusNotDetermined;
     }
-    BOOL backgroundPopupAvailable = [dictionary[@"backgroundPopupAvailable"] boolValue];
-    BOOL inForegroundPopup = [dictionary[@"inForegroundPopup"] boolValue];
+    BOOL backgroundPromptAvailable = [dictionary[@"backgroundPromptAvailable"] boolValue];
+    BOOL inForegroundPrompt = [dictionary[@"inForegroundPrompt"] boolValue];
     BOOL userRejectedBackgroundPermission = [dictionary[@"userRejectedBackgroundPermission"] boolValue];
     return [self initWithStatus:locationManagerStatus 
-       backgroundPopupAvailable:backgroundPopupAvailable 
-              inForegroundPopup:inForegroundPopup 
+       backgroundPromptAvailable:backgroundPromptAvailable 
+              inForegroundPrompt:inForegroundPrompt 
 userRejectedBackgroundPermission:userRejectedBackgroundPermission];
 }
 
@@ -121,12 +121,12 @@ userRejectedBackgroundPermission:userRejectedBackgroundPermission];
 }
 
 + (RadarLocationPermissionState)locationPermissionStateForLocationManagerStatus:(CLAuthorizationStatus)locationManagerStatus
-                                                       backgroundPopupAvailable:(BOOL)backgroundPopupAvailable
-                                                              inForegroundPopup:(BOOL)inForegroundPopup
+                                                       backgroundPromptAvailable:(BOOL)backgroundPromptAvailable
+                                                              inForegroundPrompt:(BOOL)inForegroundPrompt
                                               userRejectedBackgroundPermission:(BOOL)userRejectedBackgroundPermission {
 
     if (locationManagerStatus == kCLAuthorizationStatusNotDetermined) {
-        return inForegroundPopup ? ForegroundPermissionPending : NoPermissionGranted;
+        return inForegroundPrompt ? ForegroundPermissionPending : NoPermissionGranted;
     }
 
     if (locationManagerStatus == kCLAuthorizationStatusDenied) {
@@ -141,7 +141,7 @@ userRejectedBackgroundPermission:userRejectedBackgroundPermission];
         if (userRejectedBackgroundPermission) {
             return BackgroundPermissionRejected;
         }
-        return backgroundPopupAvailable ? ForegroundPermissionGranted : BackgroundPermissionPending;
+        return backgroundPromptAvailable ? ForegroundPermissionGranted : BackgroundPermissionPending;
     }
 
     if (locationManagerStatus == kCLAuthorizationStatusRestricted) {
