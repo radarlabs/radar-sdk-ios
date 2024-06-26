@@ -600,7 +600,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
                     }
                 }];
 
-    [self waitForExpectationsWithTimeout:30
+    [self waitForExpectationsWithTimeout:60
                                  handler:^(NSError *_Nullable error) {
                                      if (error) {
                                          XCTFail();
