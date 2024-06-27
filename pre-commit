@@ -1,4 +1,4 @@
-#!bash
+#!/bin/sh
 
 key_matches=$(grep -Eo "prj_...._pk_.{40}" Example/Example/AppDelegate.swift)
 zerokey="prj_...._pk_0{40}"
@@ -6,7 +6,7 @@ zerokey="prj_...._pk_0{40}"
 for key in $key_matches;
 do
     if [[ ! $key =~ $zerokey ]]; then
-        echo "Detected Radar API key: $key"
+        echo "Aborted\nDetected Radar API key: $key"
         exit 1
     fi
 done
