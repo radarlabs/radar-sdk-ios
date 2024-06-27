@@ -1,5 +1,5 @@
 //
-//  RadarLocationPremissionsStatus.m
+//  RadarLocationPermissionsStatus.m
 //  RadarSDK
 //
 //  Created by Kenny Hu on 5/8/24.
@@ -27,16 +27,22 @@
 }
 
 - (instancetype _Nullable)initWithStatus:(CLAuthorizationStatus)locationManagerStatus
-                backgroundPopupAvailable:(BOOL)backgroundPopupAvailable
-                       inForegroundPopup:(BOOL)inForegroundPopup
-       userRejectedBackgroundPermission:(BOOL)userRejectedBackgroundPermission {
+                   accuracyAuthorization:(BOOL)accuracyAuthorization
+               backgroundPromptAvailable:(BOOL)backgroundPromptAvailable
+                      inForegroundPrompt:(BOOL)inForegroundPrompt
+        userRejectedBackgroundPermission:(BOOL)userRejectedBackgroundPermission {
     self = [super init];
     if (self) {
         _locationManagerStatus = locationManagerStatus;
-        _backgroundPopupAvailable = backgroundPopupAvailable;
-        _inForegroundPopup = inForegroundPopup;
+        _accuracyAuthorization = accuracyAuthorization;
+        _backgroundPromptAvailable = backgroundPromptAvailable;
+        _inForegroundPrompt = inForegroundPrompt;
         _userRejectedBackgroundPermission = userRejectedBackgroundPermission;
-        _locationPermissionState = [RadarLocationPermissionStatus locationPermissionStateForLocationManagerStatus:locationManagerStatus backgroundPopupAvailable:backgroundPopupAvailable inForegroundPopup:inForegroundPopup userRejectedBackgroundPermission:userRejectedBackgroundPermission];
+        _locationPermissionState = [RadarLocationPermissionStatus locationPermissionStateForLocationManagerStatus:locationManagerStatus 
+                                                                                            accuracyAuthorization:accuracyAuthorization
+                                                                                        backgroundPromptAvailable:backgroundPromptAvailable
+                                                                                               inForegroundPrompt:inForegroundPrompt
+                                                                                 userRejectedBackgroundPermission:userRejectedBackgroundPermission];
     }
     return self;
 }
@@ -65,8 +71,9 @@
     }
     return @{
         @"locationManagerStatus": statusString,
-        @"backgroundPopupAvailable": @(self.backgroundPopupAvailable),
-        @"inForegroundPopup": @(self.inForegroundPopup),
+        @"accuracyAuthorization": @(self.accuracyAuthorization),
+        @"backgroundPromptAvailable": @(self.backgroundPromptAvailable),
+        @"inForegroundPrompt": @(self.inForegroundPrompt),
         @"userRejectedBackgroundPermission": @(self.userRejectedBackgroundPermission),
         @"locationPermissionState": [RadarLocationPermissionStatus stringForLocationPermissionState:self.locationPermissionState]
     };
@@ -88,45 +95,52 @@
     } else {
         locationManagerStatus = kCLAuthorizationStatusNotDetermined;
     }
-    BOOL backgroundPopupAvailable = [dictionary[@"backgroundPopupAvailable"] boolValue];
-    BOOL inForegroundPopup = [dictionary[@"inForegroundPopup"] boolValue];
+    BOOL accuracyAuthorization = [dictionary[@"accuracyAuthorization"] boolValue];
+    BOOL backgroundPromptAvailable = [dictionary[@"backgroundPromptAvailable"] boolValue];
+    BOOL inForegroundPrompt = [dictionary[@"inForegroundPrompt"] boolValue];
     BOOL userRejectedBackgroundPermission = [dictionary[@"userRejectedBackgroundPermission"] boolValue];
-    return [self initWithStatus:locationManagerStatus 
-       backgroundPopupAvailable:backgroundPopupAvailable 
-              inForegroundPopup:inForegroundPopup 
+    return [self initWithStatus:locationManagerStatus
+          accuracyAuthorization:accuracyAuthorization
+      backgroundPromptAvailable:backgroundPromptAvailable
+             inForegroundPrompt:inForegroundPrompt
 userRejectedBackgroundPermission:userRejectedBackgroundPermission];
 }
 
 + (NSString *)stringForLocationPermissionState:(RadarLocationPermissionState)state {
     switch (state) {
         case NoPermissionGranted:
-            return @"NoPermissionGranted";
+            return @"NO_PERMISSION_GRANTED";
         case ForegroundPermissionGranted:
-            return @"ForegroundPermissionGranted";
+            return @"FOREGROUND_PERMISSION_GRANTED";
+        case ApproximateForegroundPermissionGranted:
+            return @"APPROXIMATE_FOREGROUND_PERMISSION_GRANTED";
         case ForegroundPermissionRejected:
-            return @"ForegroundPermissionRejected";
+            return @"FOREGROUND_PERMISSION_REJECTED";
         case ForegroundPermissionPending:
-            return @"ForegroundPermissionPending";
+            return @"FOREGROUND_PERMISSION_PENDING";
         case BackgroundPermissionGranted:
-            return @"BackgroundPermissionGranted";
+            return @"BACKGROUND_PERMISSION_GRANTED";
+        case ApproximateBackgroundPermissionGranted:
+            return @"APPROXIMATE_BACKGROUND_PERMISSION_GRANTED";
         case BackgroundPermissionRejected:
-            return @"BackgroundPermissionRejected";
+            return @"BACKGROUND_PERMISSION_REJECTED";
         case BackgroundPermissionPending:
-            return @"BackgroundPermissionPending";
+            return @"BACKGROUND_PERMISSION_PENDING";
         case PermissionRestricted:
-            return @"PermissionRestricted";
+            return @"PERMISSION_RESTRICTED";
         default:
-            return @"Unknown";
+            return @"UNKNOWN";
     }
 }
 
 + (RadarLocationPermissionState)locationPermissionStateForLocationManagerStatus:(CLAuthorizationStatus)locationManagerStatus
-                                                       backgroundPopupAvailable:(BOOL)backgroundPopupAvailable
-                                                              inForegroundPopup:(BOOL)inForegroundPopup
-                                              userRejectedBackgroundPermission:(BOOL)userRejectedBackgroundPermission {
+                                                          accuracyAuthorization:(BOOL)accuracyAuthorization
+                                                      backgroundPromptAvailable:(BOOL)backgroundPromptAvailable
+                                                             inForegroundPrompt:(BOOL)inForegroundPrompt
+                                               userRejectedBackgroundPermission:(BOOL)userRejectedBackgroundPermission {
 
     if (locationManagerStatus == kCLAuthorizationStatusNotDetermined) {
-        return inForegroundPopup ? ForegroundPermissionPending : NoPermissionGranted;
+        return inForegroundPrompt ? ForegroundPermissionPending : NoPermissionGranted;
     }
 
     if (locationManagerStatus == kCLAuthorizationStatusDenied) {
@@ -134,14 +148,19 @@ userRejectedBackgroundPermission:userRejectedBackgroundPermission];
     }
 
     if (locationManagerStatus == kCLAuthorizationStatusAuthorizedAlways) {
-        return BackgroundPermissionGranted;
+        if (accuracyAuthorization) {
+            return BackgroundPermissionGranted;
+        } else {
+            return ApproximateBackgroundPermissionGranted;
+        }
+        
     }
 
     if (locationManagerStatus == kCLAuthorizationStatusAuthorizedWhenInUse) {
         if (userRejectedBackgroundPermission) {
             return BackgroundPermissionRejected;
         }
-        return backgroundPopupAvailable ? ForegroundPermissionGranted : BackgroundPermissionPending;
+        return backgroundPromptAvailable ? (accuracyAuthorization ? ForegroundPermissionGranted : ApproximateForegroundPermissionGranted) : BackgroundPermissionPending;
     }
 
     if (locationManagerStatus == kCLAuthorizationStatusRestricted) {
