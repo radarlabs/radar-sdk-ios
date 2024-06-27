@@ -109,27 +109,27 @@ userRejectedBackgroundPermission:userRejectedBackgroundPermission];
 + (NSString *)stringForLocationPermissionState:(RadarLocationPermissionState)state {
     switch (state) {
         case NoPermissionGranted:
-            return @"NoPermissionGranted";
+            return @"NO_PERMISSION_GRANTED";
         case ForegroundPermissionGranted:
-            return @"ForegroundPermissionGranted";
+            return @"FOREGROUND_PERMISSION_GRANTED";
         case ApproximateForegroundPermissionGranted:
-            return @"ApproximateForegroundPermissionGranted";
+            return @"APPROXIMATE_FOREGROUND_PERMISSION_GRANTED";
         case ForegroundPermissionRejected:
-            return @"ForegroundPermissionRejected";
+            return @"FOREGROUND_PERMISSION_REJECTED";
         case ForegroundPermissionPending:
-            return @"ForegroundPermissionPending";
+            return @"FOREGROUND_PERMISSION_PENDING";
         case BackgroundPermissionGranted:
-            return @"BackgroundPermissionGranted";
+            return @"BACKGROUND_PERMISSION_GRANTED";
         case ApproximateBackgroundPermissionGranted:
-            return @"ApproximateBackgroundPermissionGranted";
+            return @"APPROXIMATE_BACKGROUND_PERMISSION_GRANTED";
         case BackgroundPermissionRejected:
-            return @"BackgroundPermissionRejected";
+            return @"BACKGROUND_PERMISSION_REJECTED";
         case BackgroundPermissionPending:
-            return @"BackgroundPermissionPending";
+            return @"BACKGROUND_PERMISSION_PENDING";
         case PermissionRestricted:
-            return @"PermissionRestricted";
+            return @"PERMISSION_RESTRICTED";
         default:
-            return @"Unknown";
+            return @"UNKNOWN";
     }
 }
 
