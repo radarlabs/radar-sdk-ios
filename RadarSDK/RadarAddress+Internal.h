@@ -42,6 +42,7 @@
                                     distance:(NSNumber *_Nullable)distance
                                        layer:(NSString *_Nullable)layer
                                     metadata:(NSDictionary *_Nullable)metadata
-                                  confidence:(RadarAddressConfidence)confidence;
+                                  confidence:(RadarAddressConfidence)confidence
+                                    timezone:(RadarTimezone *_Nullable)timezone;
 
 @end

@@ -1,4 +1,11 @@
-import <Foundation/Foundation.h>
+//
+//  RadarTimezone.h
+//  RadarSDK
+//
+//  Copyright © 2024 Radar Labs, Inc. All rights reserved.
+//
+
+#import <Foundation/Foundation.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -12,7 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  The ID of the timezone.
  */
-@property (nonnull, copy, nonatomic, readonly) NSString *id;
+@property (nonnull, copy, nonatomic, readonly) NSString *_id;
 
 /**
  The name of of the timezone.
@@ -32,12 +39,14 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  The UTC offset for the timezone.
  */
-@property (nonnull, copy, nonatomic, readonly) NSNumber *utcOffset;
+@property (assign, nonatomic, readonly) int utcOffset;
 
 /**
  The DST offset for the timezone.
  */
-@property (nonnull, copy, nonatomic, readonly) NSNumber *dstOffset;
+@property (assign, nonatomic, readonly) int dstOffset;
+
+- (NSDictionary *_Nonnull)dictionaryValue;
 
 @end
 
