@@ -64,6 +64,8 @@
         @"X-Radar-Device-OS": [RadarUtils deviceOS],
         @"X-Radar-Device-Type": [RadarUtils deviceType],
         @"X-Radar-SDK-Version": [RadarUtils sdkVersion],
+        @"X-Radar-Mobile-Origin": [[NSBundle mainBundle] bundleIdentifier],
+
     } mutableCopy];
     if ([RadarSettings xPlatform]) {
         [headers addEntriesFromDictionary:@{
@@ -266,13 +268,16 @@
     } else {
         params[@"xPlatformType"] = @"Native";
     }
+    NSMutableArray<NSString *> *fraudFailureReasons = [NSMutableArray new];
     if (@available(iOS 15.0, *)) {
         CLLocationSourceInformation *sourceInformation = location.sourceInformation;
         if (sourceInformation) {
-            if (sourceInformation.isSimulatedBySoftware || sourceInformation.isProducedByAccessory) {
+            if (sourceInformation.isSimulatedBySoftware) {
                 params[@"mocked"] = @(YES);
-            } else {
-                params[@"mocked"] = @(NO);
+                [fraudFailureReasons addObject:@"fraud_mocked_from_mock_provider"];
+            }
+            if (sourceInformation.isProducedByAccessory) {
+                [fraudFailureReasons addObject:@"fraud_mocked_produced_by_accessory"];
             }
         }
     }
@@ -317,9 +322,15 @@
         params[@"keyId"] = keyId;
         params[@"attestationError"] = attestationError;
         params[@"encrypted"] = @(encrypted);
-        params[@"compromised"] = @([[RadarVerificationManager sharedInstance] isJailbroken]);
+        BOOL jailbroken = [[RadarVerificationManager sharedInstance] isJailbroken];
+        params[@"compromised"] = @(jailbroken);
+        if (jailbroken) {
+            [fraudFailureReasons addObject:@"fraud_compromised_jailbroken"];
+        }
     }
     params[@"appId"] = [[NSBundle mainBundle] bundleIdentifier];
+    
+    params[@"fraudFailureReasons"] = fraudFailureReasons;
 
     if (anonymous) {
         [[RadarAPIClient sharedInstance] getConfigForUsage:@"track"
