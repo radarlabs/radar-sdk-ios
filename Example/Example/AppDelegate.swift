@@ -252,6 +252,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         self.notify(body)
     }
 
+
     func didFail(status: RadarStatus) {
         self.notify(Radar.stringForStatus(status))
     }
@@ -266,6 +267,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     
     func didUpdateLocationPermissionStatus(status: RadarLocationPermissionStatus) {
         
+    }
+    
+    
+    func applicationWillTerminate(_ application: UIApplication) {
+        Radar.logTermination();
     }
     
 }

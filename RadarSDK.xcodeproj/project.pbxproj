@@ -172,7 +172,7 @@
 		E62446A72BEC0AC700ECCCAD /* RadarLocationPermissionStatus.h in Headers */ = {isa = PBXBuildFile; fileRef = E62446A52BEC0A4900ECCCAD /* RadarLocationPermissionStatus.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		E6EEC56E2B20F41A00DD096B /* RadarFileStorage.h in Headers */ = {isa = PBXBuildFile; fileRef = E6EEC56D2B20F41A00DD096B /* RadarFileStorage.h */; };
 		E6EEC5702B20F45D00DD096B /* RadarFileStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = E6EEC56F2B20F45D00DD096B /* RadarFileStorage.m */; };
-		F625D6172C2DF4320024D1E7 /* RadarTimezone.h in Headers */ = {isa = PBXBuildFile; fileRef = F625D6162C2DF4320024D1E7 /* RadarTimezone.h */; };
+		F625D6172C2DF4320024D1E7 /* RadarTimezone.h in Headers */ = {isa = PBXBuildFile; fileRef = F625D6162C2DF4320024D1E7 /* RadarTimezone.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F625D6192C2DF45B0024D1E7 /* RadarTimezone.m in Sources */ = {isa = PBXBuildFile; fileRef = F625D6182C2DF45B0024D1E7 /* RadarTimezone.m */; };
 		F625D61B2C2E02210024D1E7 /* RadarTimezone+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = F625D61A2C2E02210024D1E7 /* RadarTimezone+Internal.h */; };
 		F65AF72C2C10B242002BA009 /* get_config_response.json in Resources */ = {isa = PBXBuildFile; fileRef = F65AF72B2C10B242002BA009 /* get_config_response.json */; };
