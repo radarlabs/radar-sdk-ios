@@ -172,6 +172,7 @@
 		E62446A72BEC0AC700ECCCAD /* RadarLocationPermissionStatus.h in Headers */ = {isa = PBXBuildFile; fileRef = E62446A52BEC0A4900ECCCAD /* RadarLocationPermissionStatus.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		E6EEC56E2B20F41A00DD096B /* RadarFileStorage.h in Headers */ = {isa = PBXBuildFile; fileRef = E6EEC56D2B20F41A00DD096B /* RadarFileStorage.h */; };
 		E6EEC5702B20F45D00DD096B /* RadarFileStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = E6EEC56F2B20F45D00DD096B /* RadarFileStorage.m */; };
+		F625D61C2C2F13F10024D1E7 /* RadarInitializeOptions.h in Headers */ = {isa = PBXBuildFile; fileRef = F663031F2C1B305F002E1A32 /* RadarInitializeOptions.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F66303212C1B3187002E1A32 /* RadarInitializeOptions.m in Sources */ = {isa = PBXBuildFile; fileRef = F66303202C1B3187002E1A32 /* RadarInitializeOptions.m */; };
 		F667F8272BFBF3C8001F2F67 /* RadarSdkConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = F667F8262BFBF3C8001F2F67 /* RadarSdkConfiguration.m */; };
 		F667F8292BFBF3D1001F2F67 /* RadarSdkConfiguration.h in Headers */ = {isa = PBXBuildFile; fileRef = F667F8282BFBF3D1001F2F67 /* RadarSdkConfiguration.h */; };
@@ -654,6 +655,7 @@
 				01F810702AF0119800BD7088 /* RadarVerifiedDelegate.h in Headers */,
 				96A5A0CA27AD9F41007B960B /* RadarTrip+Internal.h in Headers */,
 				96A5A0FF27AD9F7F007B960B /* RadarGeofenceGeometry.h in Headers */,
+				F625D61C2C2F13F10024D1E7 /* RadarInitializeOptions.h in Headers */,
 				96A5A0CB27AD9F41007B960B /* RadarRoute+Internal.h in Headers */,
 				96A5A10527AD9F7F007B960B /* RadarTrackingOptions.h in Headers */,
 				E62446A72BEC0AC700ECCCAD /* RadarLocationPermissionStatus.h in Headers */,
