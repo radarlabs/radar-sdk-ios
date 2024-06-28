@@ -76,11 +76,13 @@
                                          }
                                          
                                          RadarSdkConfiguration *sdkConfiguration = [RadarSettings sdkConfiguration];
-                                         if (sdkConfiguration.startTrackingOnInitialize && ![RadarSettings tracking]) {
-                                            [Radar startTrackingWithOptions:[RadarSettings trackingOptions]];
-                                         }
-                                         if (sdkConfiguration.trackOnceOnInitialize) {
-                                            [Radar trackOnceWithCompletionHandler:nil];
+                                         if (sdkConfiguration != nil) {
+                                             if (sdkConfiguration.startTrackingOnInitialize && ![RadarSettings tracking]) {
+                                                 [Radar startTrackingWithOptions:[RadarSettings trackingOptions]];
+                                             }
+                                             if (sdkConfiguration.trackOnceOnInitialize) {
+                                                 [Radar trackOnceWithCompletionHandler:nil];
+                                             }
                                          }
 
                                          [self flushLogs];
@@ -1238,8 +1240,10 @@
     [Radar logOpenedAppConversion];
 
     RadarSdkConfiguration *sdkConfiguration = [RadarSettings sdkConfiguration];
-    if (sdkConfiguration.trackOnceOnResume) {
-        [Radar trackOnceWithCompletionHandler:nil];
+    if (sdkConfiguration != nil) {
+        if (sdkConfiguration.trackOnceOnResume) {
+            [Radar trackOnceWithCompletionHandler:nil];
+        }
     }
 }
 
