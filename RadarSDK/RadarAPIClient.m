@@ -24,7 +24,7 @@
 #import "RadarReplayBuffer.h"
 #import "RadarRouteMatrix+Internal.h"
 #import "RadarRoutes+Internal.h"
-#import "RadarSDKConfiguration.h"
+#import "RadarSdkConfiguration.h"
 #import "RadarSettings.h"
 #import "RadarState.h"
 #import "RadarTrip+Internal.h"
@@ -102,6 +102,7 @@
         [queryString appendFormat:@"&usage=%@", usage];
     }
     [queryString appendFormat:@"&verified=%@", verified ? @"true" : @"false"];
+    [queryString appendFormat:@"&clientSdkConfiguration=%@", [RadarUtils dictionaryToJson:[RadarSettings clientSdkConfiguration]]];
 
     NSDictionary *clientSDKConfiguration = [[RadarSettings sdkConfiguration] dictionaryValue];
     [queryString appendFormat:@"&clientSDKConfiguration=%@", [RadarUtils dictionaryToJson:clientSDKConfiguration]];
@@ -131,7 +132,6 @@
                         completionHandler(status, config);
                     }];
 }
-
 
 - (void)flushReplays:(NSArray<NSDictionary *> *_Nonnull)replays
    completionHandler:(RadarFlushReplaysAPICompletionHandler _Nonnull)completionHandler {

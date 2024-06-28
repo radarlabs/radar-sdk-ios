@@ -6,6 +6,7 @@
 //
 
 #import "Radar.h"
+#include "RadarSdkConfiguration.h"
 
 #import "RadarAPIClient.h"
 #import "RadarBeaconManager.h"

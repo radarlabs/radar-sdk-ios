@@ -1,15 +1,19 @@
 //
-//  RadarSDKConfiguration.m
+//  RadarSdkConfiguration.m
 //  RadarSDK
 //
 //  Copyright © 2023 Radar Labs, Inc. All rights reserved.
 //
 
-#import "RadarSDKConfiguration.h"
+#import "RadarSdkConfiguration.h"
+#include "Radar.h"
 
 #import "RadarLog.h"
+#import "RadarUtils.h"
+#import "RadarAPIClient.h"
+#import "RadarSettings.h"
 
-@implementation RadarSDKConfiguration
+@implementation RadarSdkConfiguration
 
 - (instancetype)initWithLogLevel:(RadarLogLevel)logLevel {
     if (self = [super init]) {
@@ -18,18 +22,18 @@
     return self;
 }
 
-+ (RadarSDKConfiguration *_Nullable)sdkConfigurationFromDictionary:(NSDictionary *)dict {
++ (RadarSdkConfiguration *_Nullable)sdkConfigurationFromDictionary:(NSDictionary *)dict {
     if (!dict) {
-        return NULL;
+        return nil;
     }
 
     NSObject *logLevelObj = dict[@"logLevel"];
-    RadarLogLevel logLevel = 0;
+    RadarLogLevel logLevel = RadarLogLevelInfo;
     if (logLevelObj && [logLevelObj isKindOfClass:[NSString class]]) {
         logLevel = [RadarLog levelFromString:(NSString *)logLevelObj];
     }
 
-    return [[RadarSDKConfiguration alloc] initWithLogLevel:logLevel];
+    return [[RadarSdkConfiguration alloc] initWithLogLevel:logLevel];
 }
 
 - (NSDictionary *)dictionaryValue {
@@ -38,6 +42,17 @@
     [dict setValue:logLevelString forKey:@"logLevel"];
     
     return dict;
+}
+
++ (void)updateSdkConfigurationFromServer {
+    [[RadarAPIClient sharedInstance] getConfigForUsage:@"sdkConfigUpdate" 
+                                              verified:false
+                                     completionHandler:^(RadarStatus status, RadarConfig *config) {
+                                         if (status != RadarStatusSuccess || !config) {
+                                            return;
+                                         }
+                                         [RadarSettings setSdkConfiguration:config.meta.sdkConfiguration];
+                                     }];
 }
 
 @end
