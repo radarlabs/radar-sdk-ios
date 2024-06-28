@@ -71,7 +71,10 @@
         [RadarSettings updateSessionId];
     }
 
+    [RadarLocationPermissionManager sharedInstance];
+
     [[RadarLocationManager sharedInstance] updateTrackingFromInitialize];
+    
     [[RadarAPIClient sharedInstance] getConfigForUsage:@"initialize"
                                               verified:NO
                                      completionHandler:^(RadarStatus status, RadarConfig *config) {

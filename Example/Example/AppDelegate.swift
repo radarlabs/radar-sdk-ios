@@ -20,8 +20,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         locationManager.delegate = self
         self.requestLocationPermissions()
-
-        UserDefaults.standard.set("https://api-shicheng.radar-staging.com", forKey:"radar-host")
         
         Radar.stopTracking()
         
