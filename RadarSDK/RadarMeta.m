@@ -24,11 +24,7 @@
         }
         id sdkConfigurationObj = dict[@"sdkConfiguration"];
         if (sdkConfigurationObj && [sdkConfigurationObj isKindOfClass:[NSDictionary class]]) {
-<<<<<<< HEAD
-            meta.sdkConfiguration = [RadarSDKConfiguration sdkConfigurationFromDictionary:sdkConfigurationObj];
-=======
             meta.sdkConfiguration = [RadarSdkConfiguration sdkConfigurationFromDictionary:sdkConfigurationObj];
->>>>>>> shicheng/fence-1948-set-log-level-in-sdk-in-initialize
         }
     }
 
