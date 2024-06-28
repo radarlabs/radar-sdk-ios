@@ -21,6 +21,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         locationManager.delegate = self
         self.requestLocationPermissions()
 
+        UserDefaults.standard.set("https://api-shicheng.radar-staging.com", forKey:"radar-host")
+        
+        Radar.stopTracking()
+        
         // Replace with a valid test publishable key
         Radar.initialize(publishableKey: "prj_test_pk_0000000000000000000000000000000000000000")
         Radar.setDelegate(self)

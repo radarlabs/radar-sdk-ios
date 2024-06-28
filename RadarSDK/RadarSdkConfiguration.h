@@ -19,17 +19,20 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, assign) RadarLogLevel logLevel;
 
+@property (nonatomic, assign) BOOL startTrackingOnInitialize;
+
 /**
  Initializes a new RadarSdkConfiguration object with given value.
  */
-- (instancetype)initWithLogLevel:(RadarLogLevel)logLevel;
+- (instancetype)initWithLogLevel:(RadarLogLevel)logLevel
+       startTrackingOnInitialize:(BOOL)startTrackingOnInitialize;
 
 /**
  Creates a RadarSdkConfiguration object from the provided dictionary.
  
  @param dict A dictionary to extract the settings from.
  */
-+ (RadarSdkConfiguration *_Nullable)sdkConfigurationFromDictionary:(NSDictionary *)dict;
++ (RadarSdkConfiguration *_Nullable)sdkConfigurationFromDictionary:(NSDictionary *_Nullable)dict;
 
 /**
  Returns a dictionary representation of the object.
