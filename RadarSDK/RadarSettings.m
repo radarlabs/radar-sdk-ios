@@ -6,6 +6,9 @@
 //
 
 #import "RadarSettings.h"
+#include <Foundation/NSDictionary.h>
+#include <Foundation/NSUserDefaults.h>
+#include "RadarSdkConfiguration.h"
 #include <objc/NSObject.h>
 
 #import "Radar+Internal.h"
@@ -32,6 +35,7 @@ static NSString *const kPreviousTrackingOptions = @"radar-previousTrackingOption
 static NSString *const kRemoteTrackingOptions = @"radar-remoteTrackingOptions";
 static NSString *const kFeatureSettings = @"radar-featureSettings";
 static NSString *const kClientSdkConfiguration = @"radar-clientSdkConfiguration";
+static NSString *const kSdkConfiguration = @"radar-sdkConfiguration";
 static NSString *const kTripOptions = @"radar-tripOptions";
 static NSString *const kLogLevel = @"radar-logLevel";
 static NSString *const kBeaconUUIDs = @"radar-beaconUUIDs";
@@ -243,7 +247,13 @@ static NSString *const kXPlatformSDKVersion = @"radar-xPlatformSDKVersion";
                             [RadarUtils dictionaryToJson:[sdkConfiguration dictionaryValue]]]];
     if (sdkConfiguration) {
         [[NSUserDefaults standardUserDefaults] setInteger:(int)sdkConfiguration.logLevel forKey:kLogLevel];
+        [[NSUserDefaults standardUserDefaults] setObject:[sdkConfiguration dictionaryValue] forKey:kSdkConfiguration];
     }
+}
+
++ (RadarSdkConfiguration *_Nullable)sdkConfiguration {
+    NSDictionary *sdkConfigurationDict = [[NSUserDefaults standardUserDefaults] dictionaryForKey:kSdkConfiguration];
+    return [RadarSdkConfiguration sdkConfigurationFromDictionary:sdkConfigurationDict];
 }
 
 + (RadarLogLevel)logLevel {

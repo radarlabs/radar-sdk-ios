@@ -69,12 +69,19 @@
     [[RadarAPIClient sharedInstance] getConfigForUsage:@"initialize"
                                               verified:NO
                                      completionHandler:^(RadarStatus status, RadarConfig *config) {
-                                         if (status != RadarStatusSuccess || !config) {
-                                            return;
+                                         if (status == RadarStatusSuccess && config) {
+                                             [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
+                                             [RadarSettings setFeatureSettings:config.meta.featureSettings];
+                                             [RadarSettings setSdkConfiguration:config.meta.sdkConfiguration];
                                          }
-                                         [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
-                                         [RadarSettings setFeatureSettings:config.meta.featureSettings];
-                                         [RadarSettings setSdkConfiguration:config.meta.sdkConfiguration];
+                                         
+                                         RadarSdkConfiguration *sdkConfiguration = [RadarSettings sdkConfiguration];
+                                         if (sdkConfiguration != nil) {
+                                             if (sdkConfiguration.startTrackingOnInitialize && ![RadarSettings tracking]) {
+                                                [Radar startTrackingWithOptions:[RadarSettings trackingOptions]];
+                                             }
+                                         }
+
                                          [self flushLogs];
                                      }];
 }
