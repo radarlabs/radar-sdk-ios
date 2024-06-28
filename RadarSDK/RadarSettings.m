@@ -7,6 +7,7 @@
 
 #import "RadarSettings.h"
 
+#import "RadarAPIClient.h"
 #import "Radar+Internal.h"
 #import "RadarLogger.h"
 #import "RadarTripOptions.h"
@@ -29,6 +30,7 @@ static NSString *const kTrackingOptions = @"radar-trackingOptions";
 static NSString *const kPreviousTrackingOptions = @"radar-previousTrackingOptions";
 static NSString *const kRemoteTrackingOptions = @"radar-remoteTrackingOptions";
 static NSString *const kFeatureSettings = @"radar-featureSettings";
+static NSString *const kClientSDKConfiguration = @"radar-client-sdk-configuration";
 static NSString *const kTripOptions = @"radar-tripOptions";
 static NSString *const kLogLevel = @"radar-logLevel";
 static NSString *const kBeaconUUIDs = @"radar-beaconUUIDs";
@@ -226,6 +228,19 @@ static NSString *const kXPlatformSDKVersion = @"radar-xPlatformSDKVersion";
     }
 }
 
++ (RadarSDKConfiguration *)sdkConfiguration {
+    NSDictionary *clientSDKConfigurationDict = [[NSUserDefaults standardUserDefaults] dictionaryForKey:kClientSDKConfiguration];
+
+    return [RadarSDKConfiguration sdkConfigurationFromDictionary:clientSDKConfigurationDict];
+}
+
++ (void)setSDKConfiguration:(RadarSDKConfiguration *)sdkConfiguration {
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug 
+        message:[NSString stringWithFormat:@"Setting SDK Configuration | sdkConfiguration = %@", sdkConfiguration]];
+    if (sdkConfiguration) {
+        [[NSUserDefaults standardUserDefaults] setInteger:(int)sdkConfiguration.logLevel forKey:kLogLevel];
+    }
+}
 
 + (RadarLogLevel)logLevel {
     RadarLogLevel logLevel;
@@ -240,6 +255,19 @@ static NSString *const kXPlatformSDKVersion = @"radar-xPlatformSDKVersion";
 }
 
 + (void)setLogLevel:(RadarLogLevel)level {
+    RadarSDKConfiguration *clientSDKConfiguration = [RadarSettings sdkConfiguration];
+    clientSDKConfiguration.logLevel = level;
+    NSDictionary *clientSDKConfigurationDict = [clientSDKConfiguration dictionaryValue];
+    [[NSUserDefaults standardUserDefaults] setObject:clientSDKConfigurationDict forKey:kClientSDKConfiguration];
+
+    [[RadarAPIClient sharedInstance] getConfigForUsage:@"initialize"
+                                              verified:NO
+                                     completionHandler:^(RadarStatus status, RadarConfig *config) {
+                                         if (status != RadarStatusSuccess || !config) {
+                                            return;
+                                         }
+                                         [RadarSettings setSDKConfiguration:config.meta.sdkConfiguration];
+                                     }];
     NSInteger logLevelInteger = (int)level;
     [[NSUserDefaults standardUserDefaults] setInteger:logLevelInteger forKey:kLogLevel];
 }

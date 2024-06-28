@@ -21,6 +21,7 @@
 #import "RadarVerificationManager.h"
 #import "RadarReplayBuffer.h"
 #import "RadarFeatureSettings.h"
+#import "RadarInitializeOptions.h"
 #import "RadarLocationPermissionManager.h"
 #import "RadarLocationPermissionStatus.h"
 
@@ -44,6 +45,13 @@
 }
 
 + (void)initializeWithPublishableKey:(NSString *)publishableKey {
+    RadarInitializeOptions *options = [[RadarInitializeOptions alloc] init];
+    [Radar initializeWithPublishableKey:publishableKey options:options];
+}
+
+
++ (void)initializeWithPublishableKey:(NSString *)publishableKey
+                             options:(RadarInitializeOptions *)options {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"initialize()"];
 
     [[NSNotificationCenter defaultCenter] addObserver:[self sharedInstance]
@@ -62,8 +70,6 @@
         [RadarSettings updateSessionId];
     }
 
-    [RadarLocationPermissionManager sharedInstance];
-
     [[RadarLocationManager sharedInstance] updateTrackingFromInitialize];
     [[RadarAPIClient sharedInstance] getConfigForUsage:@"initialize"
                                               verified:NO
@@ -73,10 +79,18 @@
                                          }
                                          [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
                                          [RadarSettings setFeatureSettings:config.meta.featureSettings];
+                                         [RadarSettings setSDKConfiguration:config.meta.sdkConfiguration];
                                          [self flushLogs];
                                      }];
-    
+    if (options.userId != nil) {
+        [RadarSettings setUserId:options.userId];
+    }
+    if (options.metadata != nil) {
+        [RadarSettings setMetadata:options.metadata];
+    }
 }
+
+
 
 #pragma mark - Properties
 
@@ -1221,6 +1235,7 @@
                                              }
                                              [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
                                              [RadarSettings setFeatureSettings:config.meta.featureSettings];
+                                             [RadarSettings setSDKConfiguration:config.meta.sdkConfiguration];
                                          }];
     }
 

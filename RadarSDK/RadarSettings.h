@@ -11,6 +11,7 @@
 #import "Radar.h"
 #import "RadarTrackingOptions.h"
 #import "RadarFeatureSettings.h"
+#import "RadarSDKConfiguration.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -46,6 +47,8 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)setTripOptions:(RadarTripOptions *_Nullable)options;
 + (RadarFeatureSettings *_Nullable)featureSettings;
 + (void)setFeatureSettings:(RadarFeatureSettings *_Nullable)featureSettings;
++ (RadarSDKConfiguration *_Nullable)sdkConfiguration;
++ (void)setSDKConfiguration:(RadarSDKConfiguration *_Nullable)sdkConfiguration;
 + (RadarLogLevel)logLevel;
 + (void)setLogLevel:(RadarLogLevel)level;
 + (NSArray<NSString *> *_Nullable)beaconUUIDs;
