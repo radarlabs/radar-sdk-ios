@@ -7,8 +7,6 @@
 //
 
 #import "RadarMeta.h"
-#import "RadarTrackingOptions.h"
-#import "RadarFeatureSettings.h"
 
 @implementation RadarMeta
 
@@ -23,6 +21,10 @@
         id featureSettingsObj = dict[@"featureSettings"];
         if (featureSettingsObj && [featureSettingsObj isKindOfClass:[NSDictionary class]]) {
             meta.featureSettings = [RadarFeatureSettings featureSettingsFromDictionary:featureSettingsObj];
+        }
+        id sdkConfigurationObj = dict[@"sdkConfiguration"];
+        if (sdkConfigurationObj && [sdkConfigurationObj isKindOfClass:[NSDictionary class]]) {
+            meta.sdkConfiguration = [RadarSdkConfiguration sdkConfigurationFromDictionary:sdkConfigurationObj];
         }
     }
 

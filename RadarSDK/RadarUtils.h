@@ -5,6 +5,7 @@
 //  Copyright © 2019 Radar Labs, Inc. All rights reserved.
 //
 
+#import <CoreLocation/CoreLocation.h>
 #import <Foundation/Foundation.h>
 
 NS_ASSUME_NONNULL_BEGIN

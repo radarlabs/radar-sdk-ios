@@ -1489,5 +1489,41 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     [[RadarLogBuffer sharedInstance]clearBuffer];
 }
 
+- (void)test_RadarSdkConfiguration {
+    RadarSdkConfiguration *sdkConfiguration = [[RadarSdkConfiguration alloc] initWithLogLevel:RadarLogLevelWarning];
+
+    [RadarSettings setSdkConfiguration:sdkConfiguration];
+    XCTAssertEqual([RadarSettings logLevel], RadarLogLevelWarning);
+
+    self.apiHelperMock.mockStatus = RadarStatusSuccess;
+    self.apiHelperMock.mockResponse = [RadarTestUtils jsonDictionaryFromResource:@"get_config_response"];
+
+    XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
+
+    [[RadarAPIClient sharedInstance] getConfigForUsage:@"sdkConfigUpdate" 
+                                              verified:false
+                                     completionHandler:^(RadarStatus status, RadarConfig *config) {
+        if (status != RadarStatusSuccess || !config) {
+        return;
+        }
+        [RadarSettings setSdkConfiguration:config.meta.sdkConfiguration];
+
+        XCTAssertEqual(config.meta.sdkConfiguration.logLevel, RadarLogLevelInfo);
+        XCTAssertEqual([RadarSettings logLevel], RadarLogLevelInfo);
+
+        [expectation fulfill];
+    }];
+
+    [self waitForExpectationsWithTimeout:30
+                                 handler:^(NSError *_Nullable error) {
+                                     if (error) {
+                                         XCTFail();
+                                     }
+                                 }];
+    
+    [RadarSettings setLogLevel:RadarLogLevelDebug];
+    NSDictionary *sdkConfigurationDict = [RadarSettings clientSdkConfiguration];
+    XCTAssertEqual([RadarLog levelFromString:(NSString *)sdkConfigurationDict[@"logLevel"]], RadarLogLevelDebug);
+}
 
 @end

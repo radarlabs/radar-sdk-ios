@@ -7,6 +7,7 @@
 
 #import "RadarAddress+Internal.h"
 #import "RadarCoordinate+Internal.h"
+#import "RadarTimezone+Internal.h"
 
 @implementation RadarAddress
 
@@ -66,7 +67,8 @@
                                     distance:(NSNumber *_Nullable)distance
                                        layer:(NSString *_Nullable)layer
                                     metadata:(NSDictionary *_Nullable)metadata
-                                  confidence:(RadarAddressConfidence)confidence {
+                                  confidence:(RadarAddressConfidence)confidence
+                                    timezone:(RadarTimezone *_Nullable)timezone {
     self = [super init];
     if (self) {
         _coordinate = coordinate;
@@ -93,6 +95,7 @@
         _layer = layer;
         _metadata = metadata;
         _confidence = confidence;
+        _timezone = timezone;
     }
     return self;
 }
@@ -130,6 +133,7 @@
     NSNumber *distance;
     NSString *layer;
     NSMutableDictionary *metadata;
+    RadarTimezone *timezone;
 
     RadarAddressConfidence confidence = RadarAddressConfidenceNone;
 
@@ -271,7 +275,11 @@
             confidence = RadarAddressConfidenceFallback;
         }
     }
-
+    
+    id timezoneObj = dict[@"timezone"];
+    if (timezoneObj && [timezoneObj isKindOfClass:[NSDictionary class]]) {
+        timezone = [[RadarTimezone alloc] initWithObject:timezoneObj];
+    }
 
     return [[RadarAddress alloc] initWithCoordinate:coordinate
                                    formattedAddress:formattedAddress
@@ -295,8 +303,9 @@
                                               plus4:plus4
                                            distance:distance
                                               layer:layer
-                                             metadata:metadata
-                                         confidence:confidence];
+                                           metadata:metadata
+                                         confidence:confidence
+                                           timezone:timezone];
 }
 
 + (NSArray<NSDictionary *> *)arrayForAddresses:(NSArray<RadarAddress *> *)addresses {
