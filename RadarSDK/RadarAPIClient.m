@@ -104,9 +104,6 @@
     [queryString appendFormat:@"&verified=%@", verified ? @"true" : @"false"];
     [queryString appendFormat:@"&clientSdkConfiguration=%@", [RadarUtils dictionaryToJson:[RadarSettings clientSdkConfiguration]]];
 
-    NSDictionary *clientSDKConfiguration = [[RadarSettings sdkConfiguration] dictionaryValue];
-    [queryString appendFormat:@"&clientSDKConfiguration=%@", [RadarUtils dictionaryToJson:clientSDKConfiguration]];
-
     NSString *host = verified ? [RadarSettings verifiedHost] : [RadarSettings host];
     NSString *url = [NSString stringWithFormat:@"%@/v1/config?%@", host, queryString];
     url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];

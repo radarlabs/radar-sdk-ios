@@ -1247,7 +1247,7 @@
                                              }
                                              [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
                                              [RadarSettings setFeatureSettings:config.meta.featureSettings];
-                                             [RadarSettings setSDKConfiguration:config.meta.sdkConfiguration];
+                                             [RadarSettings setSdkConfiguration:config.meta.sdkConfiguration];
                                          }];
     }
     
