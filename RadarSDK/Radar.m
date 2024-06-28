@@ -6,6 +6,7 @@
 //
 
 #import "Radar.h"
+#include "RadarSdkConfiguration.h"
 
 #import "RadarAPIClient.h"
 #import "RadarBeaconManager.h"
@@ -21,6 +22,7 @@
 #import "RadarVerificationManager.h"
 #import "RadarReplayBuffer.h"
 #import "RadarFeatureSettings.h"
+#import "RadarInitializeOptions.h"
 #import "RadarLocationPermissionManager.h"
 #import "RadarLocationPermissionStatus.h"
 
@@ -44,6 +46,13 @@
 }
 
 + (void)initializeWithPublishableKey:(NSString *)publishableKey {
+    RadarInitializeOptions *options = [[RadarInitializeOptions alloc] init];
+    [Radar initializeWithPublishableKey:publishableKey options:options];
+}
+
+
++ (void)initializeWithPublishableKey:(NSString *)publishableKey
+                             options:(RadarInitializeOptions *)options {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"initialize()"];
 
     [[NSNotificationCenter defaultCenter] addObserver:[self sharedInstance]
@@ -65,18 +74,35 @@
     [RadarLocationPermissionManager sharedInstance];
 
     [[RadarLocationManager sharedInstance] updateTrackingFromInitialize];
+    
     [[RadarAPIClient sharedInstance] getConfigForUsage:@"initialize"
                                               verified:NO
                                      completionHandler:^(RadarStatus status, RadarConfig *config) {
-                                         if (status != RadarStatusSuccess || !config) {
-                                            return;
+                                         if (status == RadarStatusSuccess && config) {
+                                             [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
+                                             [RadarSettings setFeatureSettings:config.meta.featureSettings];
+                                             [RadarSettings setSdkConfiguration:config.meta.sdkConfiguration];
                                          }
-                                         [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
-                                         [RadarSettings setFeatureSettings:config.meta.featureSettings];
+                                         
+                                         RadarSdkConfiguration *sdkConfiguration = [RadarSettings sdkConfiguration];
+                                         if (sdkConfiguration.startTrackingOnInitialize && ![RadarSettings tracking]) {
+                                            [Radar startTrackingWithOptions:[RadarSettings trackingOptions]];
+                                         }
+                                         if (sdkConfiguration.trackOnceOnInitialize) {
+                                            [Radar trackOnceWithCompletionHandler:nil];
+                                         }
+
                                          [self flushLogs];
                                      }];
-    
+    if (options.userId != nil) {
+        [RadarSettings setUserId:options.userId];
+    }
+    if (options.metadata != nil) {
+        [RadarSettings setMetadata:options.metadata];
+    }
 }
+
+
 
 #pragma mark - Properties
 
@@ -1221,10 +1247,17 @@
                                              }
                                              [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
                                              [RadarSettings setFeatureSettings:config.meta.featureSettings];
+                                             [RadarSettings setSdkConfiguration:config.meta.sdkConfiguration];
                                          }];
     }
+    
 
     [Radar logOpenedAppConversion];
+
+    RadarSdkConfiguration *sdkConfiguration = [RadarSettings sdkConfiguration];
+    if (sdkConfiguration.trackOnceOnResume) {
+        [Radar trackOnceWithCompletionHandler:nil];
+    }
 }
 
 - (void)dealloc {
