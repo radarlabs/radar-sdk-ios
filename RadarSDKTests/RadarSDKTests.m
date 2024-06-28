@@ -1491,7 +1491,9 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 
 - (void)test_RadarSdkConfiguration {
     RadarSdkConfiguration *sdkConfiguration = [[RadarSdkConfiguration alloc] initWithLogLevel:RadarLogLevelWarning
-                                                                    startTrackingOnInitialize:YES];
+                                                                    startTrackingOnInitialize:YES
+                                                                        trackOnceOnInitialize:YES
+                                                                            trackOnceOnResume:YES];
 
     [RadarSettings setSdkConfiguration:sdkConfiguration];
     XCTAssertEqual([RadarSettings logLevel], RadarLogLevelWarning);
