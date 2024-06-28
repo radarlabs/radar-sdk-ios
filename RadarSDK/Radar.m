@@ -79,6 +79,9 @@
                                          if (sdkConfiguration.startTrackingOnInitialize && ![RadarSettings tracking]) {
                                             [Radar startTrackingWithOptions:[RadarSettings trackingOptions]];
                                          }
+                                         if (sdkConfiguration.trackOnceOnInitialize) {
+                                            [Radar trackOnceWithCompletionHandler:nil];
+                                         }
 
                                          [self flushLogs];
                                      }];
@@ -1230,8 +1233,14 @@
                                              [RadarSettings setSdkConfiguration:config.meta.sdkConfiguration];
                                          }];
     }
+    
 
     [Radar logOpenedAppConversion];
+
+    RadarSdkConfiguration *sdkConfiguration = [RadarSettings sdkConfiguration];
+    if (sdkConfiguration.trackOnceOnResume) {
+        [Radar trackOnceWithCompletionHandler:nil];
+    }
 }
 
 - (void)dealloc {
