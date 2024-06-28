@@ -76,8 +76,10 @@
                                          }
                                          
                                          RadarSdkConfiguration *sdkConfiguration = [RadarSettings sdkConfiguration];
-                                         if (sdkConfiguration.startTrackingOnInitialize && ![RadarSettings tracking]) {
-                                            [Radar startTrackingWithOptions:[RadarSettings trackingOptions]];
+                                         if (sdkConfiguration != nil) {
+                                             if (sdkConfiguration.startTrackingOnInitialize && ![RadarSettings tracking]) {
+                                                [Radar startTrackingWithOptions:[RadarSettings trackingOptions]];
+                                             }
                                          }
 
                                          [self flushLogs];
