@@ -13,6 +13,7 @@
 		DD236D30230A006900EB88F9 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DD236D2F230A006900EB88F9 /* Assets.xcassets */; };
 		DD291169230D0AF900049D3A /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD291168230D0AF900049D3A /* Utils.swift */; };
 		DDB861D32385FC3E00770661 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DDB861D22385FC3E00770661 /* Default-568h@2x.png */; };
+		F625D7F92C3337650024D1E7 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F625D7F82C3337650024D1E7 /* Launch Screen.storyboard */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -55,6 +56,7 @@
 		DD86FCF9239185F4003225F6 /* RadarSDK.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RadarSDK.xcodeproj; path = ../RadarSDK.xcodeproj; sourceTree = SOURCE_ROOT; };
 		DD86FD0B23918B3C003225F6 /* Example-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Example-Bridging-Header.h"; sourceTree = "<group>"; };
 		DDB861D22385FC3E00770661 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
+		F625D7F82C3337650024D1E7 /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -96,6 +98,7 @@
 				DD291168230D0AF900049D3A /* Utils.swift */,
 				DD236D2F230A006900EB88F9 /* Assets.xcassets */,
 				DD86FCF9239185F4003225F6 /* RadarSDK.xcodeproj */,
+				F625D7F82C3337650024D1E7 /* Launch Screen.storyboard */,
 			);
 			path = Example;
 			sourceTree = "<group>";
@@ -152,7 +155,7 @@
 					};
 				};
 			};
-			buildConfigurationList = DD236D1E230A006700EB88F9 /* Build configuration list for PBXProject "Example" */;
+			buildConfigurationList = DD236D1E230A006700EB88F9 /* Build configuration list for PBXProject "example" */;
 			compatibilityVersion = "Xcode 9.3";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -198,6 +201,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F625D7F92C3337650024D1E7 /* Launch Screen.storyboard in Resources */,
 				DD236D30230A006900EB88F9 /* Assets.xcassets in Resources */,
 				DDB861D32385FC3E00770661 /* Default-568h@2x.png in Resources */,
 			);
@@ -348,7 +352,7 @@
 				);
 				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/RadarSDK";
 				INFOPLIST_FILE = Example/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -376,7 +380,7 @@
 				);
 				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/RadarSDK";
 				INFOPLIST_FILE = Example/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -393,7 +397,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		DD236D1E230A006700EB88F9 /* Build configuration list for PBXProject "Example" */ = {
+		DD236D1E230A006700EB88F9 /* Build configuration list for PBXProject "example" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				DD236D35230A006900EB88F9 /* Debug */,
