@@ -155,7 +155,7 @@
 					};
 				};
 			};
-			buildConfigurationList = DD236D1E230A006700EB88F9 /* Build configuration list for PBXProject "example" */;
+			buildConfigurationList = DD236D1E230A006700EB88F9 /* Build configuration list for PBXProject "Example" */;
 			compatibilityVersion = "Xcode 9.3";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -352,6 +352,7 @@
 				);
 				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/RadarSDK";
 				INFOPLIST_FILE = Example/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Example;
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -380,6 +381,7 @@
 				);
 				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/RadarSDK";
 				INFOPLIST_FILE = Example/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Example;
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -397,7 +399,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		DD236D1E230A006700EB88F9 /* Build configuration list for PBXProject "example" */ = {
+		DD236D1E230A006700EB88F9 /* Build configuration list for PBXProject "Example" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				DD236D35230A006900EB88F9 /* Debug */,
