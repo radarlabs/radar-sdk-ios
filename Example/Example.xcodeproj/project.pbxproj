@@ -3,43 +3,46 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 56;
 	objects = {
 
 /* Begin PBXBuildFile section */
-		013D7AF226D327C400574AD5 /* RadarSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0107AA77262200DA008AB52F /* RadarSDK.framework */; };
-		013D7AF326D327C400574AD5 /* RadarSDK.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 0107AA77262200DA008AB52F /* RadarSDK.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		DD236D27230A006700EB88F9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD236D26230A006700EB88F9 /* AppDelegate.swift */; };
-		DD236D30230A006900EB88F9 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DD236D2F230A006900EB88F9 /* Assets.xcassets */; };
-		DD291169230D0AF900049D3A /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD291168230D0AF900049D3A /* Utils.swift */; };
-		DDB861D32385FC3E00770661 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DDB861D22385FC3E00770661 /* Default-568h@2x.png */; };
+		F625D79D2C3315DF0024D1E7 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F625D79C2C3315DF0024D1E7 /* AppDelegate.swift */; };
+		F625D79F2C3315DF0024D1E7 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F625D79E2C3315DF0024D1E7 /* SceneDelegate.swift */; };
+		F625D7A12C3315DF0024D1E7 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F625D7A02C3315DF0024D1E7 /* ViewController.swift */; };
+		F625D7A42C3315DF0024D1E7 /* Base in Resources */ = {isa = PBXBuildFile; fileRef = F625D7A32C3315DF0024D1E7 /* Base */; };
+		F625D7A62C3315E00024D1E7 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F625D7A52C3315E00024D1E7 /* Assets.xcassets */; };
+		F625D7A92C3315E00024D1E7 /* Base in Resources */ = {isa = PBXBuildFile; fileRef = F625D7A82C3315E00024D1E7 /* Base */; };
+		F625D7E52C3319ED0024D1E7 /* RadarSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F625D7E02C3319A90024D1E7 /* RadarSDK.framework */; };
+		F625D7E62C3319ED0024D1E7 /* RadarSDK.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F625D7E02C3319A90024D1E7 /* RadarSDK.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		F625D7EA2C331A200024D1E7 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = F625D7E92C331A200024D1E7 /* Utils.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		0107AA76262200DA008AB52F /* PBXContainerItemProxy */ = {
+		F625D7DD2C3319A90024D1E7 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = DD86FCF9239185F4003225F6 /* RadarSDK.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 0107A9E82621FFB9008AB52F;
-			remoteInfo = RadarSDK;
-		};
-		DD55C3BB2395D25600C34B40 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = DD86FCF9239185F4003225F6 /* RadarSDK.xcodeproj */;
+			containerPortal = F625D7D72C3319A90024D1E7 /* RadarSDK.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = DD236C7E2308797B00EB88F9;
 			remoteInfo = RadarSDKTests;
 		};
+		F625D7DF2C3319A90024D1E7 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F625D7D72C3319A90024D1E7 /* RadarSDK.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0107A9E82621FFB9008AB52F;
+			remoteInfo = RadarSDK;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		013D7AF426D327C400574AD5 /* Embed Frameworks */ = {
+		F625D7E72C3319ED0024D1E7 /* Embed Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				013D7AF326D327C400574AD5 /* RadarSDK.framework in Embed Frameworks */,
+				F625D7E62C3319ED0024D1E7 /* RadarSDK.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -47,185 +50,215 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		DD236D23230A006700EB88F9 /* Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		DD236D26230A006700EB88F9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		DD236D2F230A006900EB88F9 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		DD236D34230A006900EB88F9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		DD291168230D0AF900049D3A /* Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
-		DD86FCF9239185F4003225F6 /* RadarSDK.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RadarSDK.xcodeproj; path = ../RadarSDK.xcodeproj; sourceTree = SOURCE_ROOT; };
-		DD86FD0B23918B3C003225F6 /* Example-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Example-Bridging-Header.h"; sourceTree = "<group>"; };
-		DDB861D22385FC3E00770661 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
+		F625D7992C3315DF0024D1E7 /* example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = example.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		F625D79C2C3315DF0024D1E7 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		F625D79E2C3315DF0024D1E7 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
+		F625D7A02C3315DF0024D1E7 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		F625D7A32C3315DF0024D1E7 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		F625D7A52C3315E00024D1E7 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		F625D7A82C3315E00024D1E7 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		F625D7AA2C3315E00024D1E7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		F625D7CD2C3316320024D1E7 /* Example-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Example-Bridging-Header.h"; sourceTree = "<group>"; };
+		F625D7D72C3319A90024D1E7 /* RadarSDK.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RadarSDK.xcodeproj; path = ../RadarSDK.xcodeproj; sourceTree = "<group>"; };
+		F625D7E92C331A200024D1E7 /* Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		DD236D20230A006700EB88F9 /* Frameworks */ = {
+		F625D7962C3315DF0024D1E7 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				013D7AF226D327C400574AD5 /* RadarSDK.framework in Frameworks */,
+				F625D7E52C3319ED0024D1E7 /* RadarSDK.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		DD236D1A230A006700EB88F9 = {
+		F625D7902C3315DF0024D1E7 = {
 			isa = PBXGroup;
 			children = (
-				DD236D25230A006700EB88F9 /* Example */,
-				DD236D24230A006700EB88F9 /* Products */,
-				DD86FD03239185FB003225F6 /* Frameworks */,
+				F625D79B2C3315DF0024D1E7 /* example */,
+				F625D79A2C3315DF0024D1E7 /* Products */,
+				F625D7D02C3317D00024D1E7 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
-		DD236D24230A006700EB88F9 /* Products */ = {
+		F625D79A2C3315DF0024D1E7 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				DD236D23230A006700EB88F9 /* Example.app */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		DD236D25230A006700EB88F9 /* Example */ = {
-			isa = PBXGroup;
-			children = (
-				DD86FD0B23918B3C003225F6 /* Example-Bridging-Header.h */,
-				DD236D34230A006900EB88F9 /* Info.plist */,
-				DDB861D22385FC3E00770661 /* Default-568h@2x.png */,
-				DD236D26230A006700EB88F9 /* AppDelegate.swift */,
-				DD291168230D0AF900049D3A /* Utils.swift */,
-				DD236D2F230A006900EB88F9 /* Assets.xcassets */,
-				DD86FCF9239185F4003225F6 /* RadarSDK.xcodeproj */,
-			);
-			path = Example;
-			sourceTree = "<group>";
-		};
-		DD55C3B62395D25600C34B40 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				DD55C3BC2395D25600C34B40 /* RadarSDKTests.xctest */,
-				0107AA77262200DA008AB52F /* RadarSDK.framework */,
+				F625D7992C3315DF0024D1E7 /* example.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		DD86FD03239185FB003225F6 /* Frameworks */ = {
+		F625D79B2C3315DF0024D1E7 /* example */ = {
 			isa = PBXGroup;
 			children = (
+				F625D7CD2C3316320024D1E7 /* Example-Bridging-Header.h */,
+				F625D79C2C3315DF0024D1E7 /* AppDelegate.swift */,
+				F625D79E2C3315DF0024D1E7 /* SceneDelegate.swift */,
+				F625D7A02C3315DF0024D1E7 /* ViewController.swift */,
+				F625D7E92C331A200024D1E7 /* Utils.swift */,
+				F625D7A22C3315DF0024D1E7 /* Main.storyboard */,
+				F625D7A52C3315E00024D1E7 /* Assets.xcassets */,
+				F625D7A72C3315E00024D1E7 /* LaunchScreen.storyboard */,
+				F625D7AA2C3315E00024D1E7 /* Info.plist */,
+			);
+			path = example;
+			sourceTree = "<group>";
+		};
+		F625D7D02C3317D00024D1E7 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				F625D7D72C3319A90024D1E7 /* RadarSDK.xcodeproj */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		F625D7D82C3319A90024D1E7 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				F625D7DE2C3319A90024D1E7 /* RadarSDKTests.xctest */,
+				F625D7E02C3319A90024D1E7 /* RadarSDK.framework */,
+			);
+			name = Products;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		DD236D22230A006700EB88F9 /* Example */ = {
+		F625D7982C3315DF0024D1E7 /* example */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = DD236D37230A006900EB88F9 /* Build configuration list for PBXNativeTarget "Example" */;
+			buildConfigurationList = F625D7C32C3315E00024D1E7 /* Build configuration list for PBXNativeTarget "example" */;
 			buildPhases = (
-				DD236D1F230A006700EB88F9 /* Sources */,
-				DD236D20230A006700EB88F9 /* Frameworks */,
-				DD236D21230A006700EB88F9 /* Resources */,
-				013D7AF426D327C400574AD5 /* Embed Frameworks */,
+				F625D7952C3315DF0024D1E7 /* Sources */,
+				F625D7962C3315DF0024D1E7 /* Frameworks */,
+				F625D7972C3315DF0024D1E7 /* Resources */,
+				F625D7E72C3319ED0024D1E7 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
-			name = Example;
-			productName = Example;
-			productReference = DD236D23230A006700EB88F9 /* Example.app */;
+			name = example;
+			packageProductDependencies = (
+			);
+			productName = example;
+			productReference = F625D7992C3315DF0024D1E7 /* example.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		DD236D1B230A006700EB88F9 /* Project object */ = {
+		F625D7912C3315DF0024D1E7 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastSwiftUpdateCheck = 1100;
-				LastUpgradeCheck = 1320;
-				ORGANIZATIONNAME = "Radar Labs, Inc.";
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1540;
+				LastUpgradeCheck = 1540;
 				TargetAttributes = {
-					DD236D22230A006700EB88F9 = {
-						CreatedOnToolsVersion = 11.0;
+					F625D7982C3315DF0024D1E7 = {
+						CreatedOnToolsVersion = 15.4;
 					};
 				};
 			};
-			buildConfigurationList = DD236D1E230A006700EB88F9 /* Build configuration list for PBXProject "Example" */;
-			compatibilityVersion = "Xcode 9.3";
+			buildConfigurationList = F625D7942C3315DF0024D1E7 /* Build configuration list for PBXProject "example" */;
+			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
 				Base,
 			);
-			mainGroup = DD236D1A230A006700EB88F9;
-			productRefGroup = DD236D24230A006700EB88F9 /* Products */;
+			mainGroup = F625D7902C3315DF0024D1E7;
+			productRefGroup = F625D79A2C3315DF0024D1E7 /* Products */;
 			projectDirPath = "";
 			projectReferences = (
 				{
-					ProductGroup = DD55C3B62395D25600C34B40 /* Products */;
-					ProjectRef = DD86FCF9239185F4003225F6 /* RadarSDK.xcodeproj */;
+					ProductGroup = F625D7D82C3319A90024D1E7 /* Products */;
+					ProjectRef = F625D7D72C3319A90024D1E7 /* RadarSDK.xcodeproj */;
 				},
 			);
 			projectRoot = "";
 			targets = (
-				DD236D22230A006700EB88F9 /* Example */,
+				F625D7982C3315DF0024D1E7 /* example */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
-		0107AA77262200DA008AB52F /* RadarSDK.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = RadarSDK.framework;
-			remoteRef = 0107AA76262200DA008AB52F /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		DD55C3BC2395D25600C34B40 /* RadarSDKTests.xctest */ = {
+		F625D7DE2C3319A90024D1E7 /* RadarSDKTests.xctest */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.cfbundle;
 			path = RadarSDKTests.xctest;
-			remoteRef = DD55C3BB2395D25600C34B40 /* PBXContainerItemProxy */;
+			remoteRef = F625D7DD2C3319A90024D1E7 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F625D7E02C3319A90024D1E7 /* RadarSDK.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = RadarSDK.framework;
+			remoteRef = F625D7DF2C3319A90024D1E7 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
-		DD236D21230A006700EB88F9 /* Resources */ = {
+		F625D7972C3315DF0024D1E7 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DD236D30230A006900EB88F9 /* Assets.xcassets in Resources */,
-				DDB861D32385FC3E00770661 /* Default-568h@2x.png in Resources */,
+				F625D7A62C3315E00024D1E7 /* Assets.xcassets in Resources */,
+				F625D7A92C3315E00024D1E7 /* Base in Resources */,
+				F625D7A42C3315DF0024D1E7 /* Base in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		DD236D1F230A006700EB88F9 /* Sources */ = {
+		F625D7952C3315DF0024D1E7 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DD236D27230A006700EB88F9 /* AppDelegate.swift in Sources */,
-				DD291169230D0AF900049D3A /* Utils.swift in Sources */,
+				F625D7A12C3315DF0024D1E7 /* ViewController.swift in Sources */,
+				F625D79D2C3315DF0024D1E7 /* AppDelegate.swift in Sources */,
+				F625D79F2C3315DF0024D1E7 /* SceneDelegate.swift in Sources */,
+				F625D7EA2C331A200024D1E7 /* Utils.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXVariantGroup section */
+		F625D7A22C3315DF0024D1E7 /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				F625D7A32C3315DF0024D1E7 /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		F625D7A72C3315E00024D1E7 /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				F625D7A82C3315E00024D1E7 /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
 /* Begin XCBuildConfiguration section */
-		DD236D35230A006900EB88F9 /* Debug */ = {
+		F625D7C12C3315E00024D1E7 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
-				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_ENABLE_OBJC_WEAK = YES;
@@ -255,7 +288,8 @@
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
-				GCC_C_LANGUAGE_STANDARD = gnu11;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -269,24 +303,25 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.5;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
 		};
-		DD236D36230A006900EB88F9 /* Release */ = {
+		F625D7C22C3315E00024D1E7 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
-				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_ENABLE_OBJC_WEAK = YES;
@@ -316,7 +351,8 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				GCC_C_LANGUAGE_STANDARD = gnu11;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
@@ -324,67 +360,67 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.5;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;
-				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
 		};
-		DD236D38230A006900EB88F9 /* Debug */ = {
+		F625D7C42C3315E00024D1E7 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 96GHH65B9D;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)",
-					"$(SRCROOT)",
-				);
-				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/RadarSDK";
-				INFOPLIST_FILE = Example/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.4;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = example/Info.plist;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
+				INFOPLIST_KEY_UIMainStoryboardFile = Main;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 3.5.0;
+				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = io.radar.example;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "";
+				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
-		DD236D39230A006900EB88F9 /* Release */ = {
+		F625D7C52C3315E00024D1E7 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 96GHH65B9D;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)",
-					"$(SRCROOT)",
-				);
-				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/RadarSDK";
-				INFOPLIST_FILE = Example/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.4;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = example/Info.plist;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
+				INFOPLIST_KEY_UIMainStoryboardFile = Main;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 3.5.0;
+				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = io.radar.example;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "";
+				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -393,25 +429,25 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		DD236D1E230A006700EB88F9 /* Build configuration list for PBXProject "Example" */ = {
+		F625D7942C3315DF0024D1E7 /* Build configuration list for PBXProject "example" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				DD236D35230A006900EB88F9 /* Debug */,
-				DD236D36230A006900EB88F9 /* Release */,
+				F625D7C12C3315E00024D1E7 /* Debug */,
+				F625D7C22C3315E00024D1E7 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		DD236D37230A006900EB88F9 /* Build configuration list for PBXNativeTarget "Example" */ = {
+		F625D7C32C3315E00024D1E7 /* Build configuration list for PBXNativeTarget "example" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				DD236D38230A006900EB88F9 /* Debug */,
-				DD236D39230A006900EB88F9 /* Release */,
+				F625D7C42C3315E00024D1E7 /* Debug */,
+				F625D7C52C3315E00024D1E7 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
-	rootObject = DD236D1B230A006700EB88F9 /* Project object */;
+	rootObject = F625D7912C3315DF0024D1E7 /* Project object */;
 }
