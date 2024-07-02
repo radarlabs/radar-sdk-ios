@@ -24,10 +24,29 @@
 	<string>Your background location usage description goes here.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Your foreground location usage description goes here.</string>
+	<key>UIApplicationSceneManifest</key>
+	<dict>
+		<key>UIApplicationSupportsMultipleScenes</key>
+		<false/>
+		<key>UISceneConfigurations</key>
+		<dict>
+			<key>UIWindowSceneSessionRoleApplication</key>
+			<array>
+				<dict>
+					<key>UISceneConfigurationName</key>
+					<string>Default Configuration</string>
+					<key>UISceneDelegateClassName</key>
+					<string>$(PRODUCT_MODULE_NAME).AppDelegate</string>
+				</dict>
+			</array>
+		</dict>
+	</dict>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>location</string>
 	</array>
+	<key>UILaunchStoryboardName</key>
+	<string>Launch Screen.storyboard</string>
 	<key>UIRequiredDeviceCapabilities</key>
 	<array>
 		<string>armv7</string>
@@ -47,29 +66,29 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
-    <key>NSAppTransportSecurity</key>
-    <dict>
-        <key>NSAllowsArbitraryLoads</key>
-        <false/>
-        <key>NSPinnedDomains</key>
-        <dict>
-            <key>api-verified.radar.io</key>
-            <dict>
-                <key>NSIncludesSubdomains</key>
-                <true/>
-                <key>NSPinnedLeafIdentities</key>
-                <array>
-                    <dict>
-                        <key>SPKI-SHA256-BASE64</key>
-                        <string>15ktYXSSU2llpy7YyCgeqUKDBkjcimK/weUcec960sI=</string>
-                    </dict>
-                    <dict>
-                        <key>SPKI-SHA256-BASE64</key>
-                        <string>15ktYXSSU2llpy7YyCgeqUKDBkjcimK/weUcec960sI=</string>
-                    </dict>
-                </array>
-            </dict>
-        </dict>
-    </dict>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<false/>
+		<key>NSPinnedDomains</key>
+		<dict>
+			<key>api-verified.radar.io</key>
+			<dict>
+				<key>NSIncludesSubdomains</key>
+				<true/>
+				<key>NSPinnedLeafIdentities</key>
+				<array>
+					<dict>
+						<key>SPKI-SHA256-BASE64</key>
+						<string>15ktYXSSU2llpy7YyCgeqUKDBkjcimK/weUcec960sI=</string>
+					</dict>
+					<dict>
+						<key>SPKI-SHA256-BASE64</key>
+						<string>15ktYXSSU2llpy7YyCgeqUKDBkjcimK/weUcec960sI=</string>
+					</dict>
+				</array>
+			</dict>
+		</dict>
+	</dict>
 </dict>
 </plist>
