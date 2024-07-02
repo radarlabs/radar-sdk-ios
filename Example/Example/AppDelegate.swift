@@ -33,14 +33,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         return true
     }
     
-    func createButton(text: String, function: @escaping () -> Void) {
+    func demoButton(text: String, function: @escaping () -> Void) {
         guard let scrollView = self.scrollView else { return }
         
         let buttonHeight = 30
         scrollView.contentSize.height += CGFloat(buttonHeight)
         
-        let button = UIButton(frame: CGRect(x: 0, y: demoFunctions.count * buttonHeight, width: Int(scrollView.frame.width), height: buttonHeight),
-                              primaryAction:UIAction(handler:{ _ in
+        let buttonFrame = CGRect(x: 0, y: demoFunctions.count * buttonHeight, width: Int(scrollView.frame.width), height: buttonHeight)
+        let button = UIButton(frame: buttonFrame, primaryAction:UIAction(handler:{ _ in
             function()
         }))
         button.setTitleColor(.black, for: .normal)
@@ -82,24 +82,24 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
             }
         }
 
-        createButton(text: "startTracking") {
+        demoButton(text: "startTracking") {
             let options = RadarTrackingOptions.presetContinuous
             Radar.startTracking(trackingOptions: options)
         }
 
-        createButton(text: "getContext") {
+        demoButton(text: "getContext") {
             Radar.getContext { (status, location, context) in
                 print("Context: status = \(Radar.stringForStatus(status)); location = \(String(describing: location)); context?.geofences = \(String(describing: context?.geofences)); context?.place = \(String(describing: context?.place)); context?.country = \(String(describing: context?.country))")
             }
         }
 
-        createButton(text: "trackVerified") {
+        demoButton(text: "trackVerified") {
             Radar.trackVerified() { (status, token) in
                 print("TrackVerified: status = \(status); token = \(token?.dictionaryValue())")
             }
         }
         
-        createButton(text: "searchPlaces") {
+        demoButton(text: "searchPlaces") {
             // In the Radar dashboard settings
             // (https://radar.com/dashboard/settings), add this to the chain
             // metadata: {"mcdonalds":{"orderActive":"true"}}.
@@ -116,13 +116,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         }
 
         
-        createButton(text: "searchGeofences") {
+        demoButton(text: "searchGeofences") {
             Radar.searchGeofences() { (status, location, geofences) in
                 print("Search geofences: status = \(Radar.stringForStatus(status)); geofences = \(String(describing: geofences))")
             }
         }
 
-        createButton(text: "geocode") {
+        demoButton(text: "geocode") {
             Radar.geocode(address: "20 jay st brooklyn") { (status, addresses) in
                 print("Geocode: status = \(Radar.stringForStatus(status)); coordinate = \(String(describing: addresses?.first?.coordinate))")
             }
@@ -132,7 +132,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
             }
         }
 
-        createButton(text: "reverseGeocode") {
+        demoButton(text: "reverseGeocode") {
             Radar.reverseGeocode { (status, addresses) in
                 print("Reverse geocode: status = \(Radar.stringForStatus(status)); formattedAddress = \(String(describing: addresses?.first?.formattedAddress))")
             }
@@ -150,13 +150,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
             }
         }
         
-        createButton(text: "ipGeocode") {
+        demoButton(text: "ipGeocode") {
             Radar.ipGeocode { (status, address, proxy) in
                 print("IP geocode: status = \(Radar.stringForStatus(status)); country = \(String(describing: address?.countryCode)); city = \(String(describing: address?.city)); proxy = \(proxy)")
             }
         }
         
-        createButton(text: "autocomplete") {
+        demoButton(text: "autocomplete") {
             let origin = CLLocation(latitude: 40.78382, longitude: -73.97536)
             
             Radar.autocomplete(
@@ -203,7 +203,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
             }
         }
 
-        createButton(text: "getDistance") {
+        demoButton(text: "getDistance") {
             let origin = CLLocation(latitude: 40.78382, longitude: -73.97536)
             let destination = CLLocation(latitude: 40.70390, longitude: -73.98670)
             Radar.getDistance(
@@ -216,14 +216,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
             }
         }
 
-        createButton(text: "startTrip") {
+        demoButton(text: "startTrip") {
             let tripOptions = RadarTripOptions(externalId: "299", destinationGeofenceTag: "store", destinationGeofenceExternalId: "123")
             tripOptions.mode = .car
             tripOptions.approachingThreshold = 9
             Radar.startTrip(options: tripOptions)
         }
 
-        createButton(text: "mockTracking") {
+        demoButton(text: "mockTracking") {
             let origin = CLLocation(latitude: 40.78382, longitude: -73.97536)
             let destination = CLLocation(latitude: 40.70390, longitude: -73.98670)
             var i = 0
@@ -244,7 +244,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
             }
         }
 
-        createButton(text: "getMatrix") {
+        demoButton(text: "getMatrix") {
             let origins = [
                 CLLocation(latitude: 40.78382, longitude: -73.97536),
                 CLLocation(latitude: 40.70390, longitude: -73.98670)
@@ -259,7 +259,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
             }
         }
 
-        createButton(text: "logConversion") {
+        demoButton(text: "logConversion") {
             Radar.logConversion(name: "conversion_event", metadata: ["data": "test"]) { (status, event) in
                 if let conversionEvent = event, conversionEvent.type == .conversion {
                     print("Conversion name: \(conversionEvent.conversionName!)")
@@ -269,7 +269,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
             }
         }
         
-        createButton(text: "Run all") {
+        demoButton(text: "Run all") {
             for function in self.demoFunctions.dropLast() {
                 function()
             }
