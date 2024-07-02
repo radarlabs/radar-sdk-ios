@@ -25,6 +25,9 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property (nullable, copy, nonatomic) NSDictionary *metadata;
 
++ (RadarInitializeOptions *_Nonnull)fromDictionary:(NSDictionary *_Nullable)dictionary;
+- (NSDictionary *)dictionaryValue;
+
 @end
 
 NS_ASSUME_NONNULL_END
