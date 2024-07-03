@@ -1523,9 +1523,9 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
         XCTAssertEqual(config.meta.sdkConfiguration.logLevel, RadarLogLevelInfo);
         XCTAssertEqual([RadarSettings logLevel], RadarLogLevelInfo);
         
-        XCTAssertEqual(config.meta.sdkConfiguration.trackOnceOnResume, true);
-        XCTAssertEqual(config.meta.sdkConfiguration.trackOnceOnInitialize, true);
-        XCTAssertEqual(config.meta.sdkConfiguration.startTrackingOnInitialize, true);
+        XCTAssertEqual(config.meta.sdkConfiguration.trackOnceOnResume, YES);
+        XCTAssertEqual(config.meta.sdkConfiguration.trackOnceOnInitialize, YES);
+        XCTAssertEqual(config.meta.sdkConfiguration.startTrackingOnInitialize, YES);
 
         [expectation fulfill];
     }];
