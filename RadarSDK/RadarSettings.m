@@ -242,6 +242,14 @@ static NSString *const kXPlatformSDKVersion = @"radar-xPlatformSDKVersion";
     return sdkConfigurationDict;
 }
 
++ (void) setClientSdkConfiguration:(NSDictionary *)sdkConfiguration {
+    if (sdkConfiguration) {
+        [[NSUserDefaults standardUserDefaults] setObject:sdkConfiguration forKey:kClientSdkConfiguration];
+    } else {
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:kClientSdkConfiguration];
+    }
+}
+
 + (void)setSdkConfiguration:(RadarSdkConfiguration *)sdkConfiguration {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
         message:[NSString stringWithFormat:@"Setting SDK configuration | sdkConfiguration = %@",
@@ -249,6 +257,8 @@ static NSString *const kXPlatformSDKVersion = @"radar-xPlatformSDKVersion";
     if (sdkConfiguration) {
         [[NSUserDefaults standardUserDefaults] setInteger:(int)sdkConfiguration.logLevel forKey:kLogLevel];
         [[NSUserDefaults standardUserDefaults] setObject:[sdkConfiguration dictionaryValue] forKey:kSdkConfiguration];
+    } else {
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:kSdkConfiguration];
     }
 }
 
@@ -270,18 +280,7 @@ static NSString *const kXPlatformSDKVersion = @"radar-xPlatformSDKVersion";
 }
 
 + (void)setLogLevel:(RadarLogLevel)level {
-    NSMutableDictionary *sdkConfiguration = [[RadarSettings clientSdkConfiguration] mutableCopy];
-    NSObject *logLevelObj = sdkConfiguration[@"logLevel"];
-    if ([logLevelObj isKindOfClass:[NSString class]] && [[RadarLog stringForLogLevel:level] isEqualToString:(NSString *)logLevelObj]) {
-        return;
-    }
-    [sdkConfiguration setValue:[RadarLog stringForLogLevel:level] forKey:@"logLevel"];
-    [[NSUserDefaults standardUserDefaults] setObject:sdkConfiguration forKey:kClientSdkConfiguration];
     
-    if ([RadarSettings logLevel] == level) {
-        return;
-    }
-    [RadarSdkConfiguration updateSdkConfigurationFromServer];
 }
 
 + (NSArray<NSString *> *_Nullable)beaconUUIDs {

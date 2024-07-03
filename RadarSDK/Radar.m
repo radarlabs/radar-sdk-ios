@@ -61,6 +61,13 @@
                                                object:nil];
     
     [RadarSettings setPublishableKey:publishableKey];
+    
+    if (options.userId != nil) {
+        [RadarSettings setUserId:options.userId];
+    }
+    if (options.metadata != nil) {
+        [RadarSettings setMetadata:options.metadata];
+    }
 
     RadarFeatureSettings *featureSettings = [RadarSettings featureSettings];
     if (featureSettings.usePersistence) {
@@ -94,12 +101,6 @@
 
                                          [self flushLogs];
                                      }];
-    if (options.userId != nil) {
-        [RadarSettings setUserId:options.userId];
-    }
-    if (options.metadata != nil) {
-        [RadarSettings setMetadata:options.metadata];
-    }
 }
 
 
@@ -1034,7 +1035,18 @@
 #pragma mark - Logging
 
 + (void)setLogLevel:(RadarLogLevel)level {
-    [RadarSettings setLogLevel:level];
+    NSMutableDictionary *sdkConfiguration = [[RadarSettings clientSdkConfiguration] mutableCopy];
+    NSObject *logLevelObj = sdkConfiguration[@"logLevel"];
+    if ([logLevelObj isKindOfClass:[NSString class]] && [[RadarLog stringForLogLevel:level] isEqualToString:(NSString *)logLevelObj]) {
+        return;
+    }
+    [sdkConfiguration setValue:[RadarLog stringForLogLevel:level] forKey:@"logLevel"];
+    [RadarSettings setClientSdkConfiguration:sdkConfiguration];
+    
+    if ([RadarSettings logLevel] == level) {
+        return;
+    }
+    [RadarSdkConfiguration updateSdkConfigurationFromServer];
 }
 
 + (void)logTermination { 
