@@ -54,6 +54,19 @@
                                              selector:@selector(applicationWillEnterForeground)
                                                  name:UIApplicationWillEnterForegroundNotification
                                                object:nil];
+
+    [[NSNotificationCenter defaultCenter] addObserver:[self sharedInstance]
+                                             selector:@selector(logTermination)
+                                                 name:UIApplicationWillTerminateNotification
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:[self sharedInstance]
+                                             selector:@selector(logBackgrounding)
+                                                 name:UIApplicationDidEnterBackgroundNotification
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:[self sharedInstance]
+                                             selector:@selector(logResigningActive)
+                                                 name:UIApplicationWillResignActiveNotification
+                                               object:nil];
     
     [RadarSettings setPublishableKey:publishableKey];
 
@@ -1044,16 +1057,16 @@
     [RadarSdkConfiguration updateSdkConfigurationFromServer];
 }
 
-+ (void)logTermination { 
+- (void)logTermination { 
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeNone message:@"App terminating" includeDate:YES includeBattery:YES append:YES];
 }
 
-+ (void)logBackgrounding {
+- (void)logBackgrounding {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeNone message:@"App entering background" includeDate:YES includeBattery:YES append:YES];
     [[RadarLogBuffer sharedInstance] persistLogs];
 }
 
-+ (void)logResigningActive {
+- (void)logResigningActive {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeNone message:@"App resigning active" includeDate:YES includeBattery:YES];
 }
 
