@@ -289,7 +289,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
             @"initMetaKey": @"initMetaValue"
         }
     }]];
-    [Radar setLogLevel:RadarLogLevelDebug];
+    [RadarSettings setLogLevel:RadarLogLevelDebug];
 
     self.apiHelperMock = [RadarAPIHelperMock new];
     self.locationManagerMock = [CLLocationManagerMock new];
@@ -1522,6 +1522,10 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 
         XCTAssertEqual(config.meta.sdkConfiguration.logLevel, RadarLogLevelInfo);
         XCTAssertEqual([RadarSettings logLevel], RadarLogLevelInfo);
+        
+        XCTAssertEqual(config.meta.sdkConfiguration.trackOnceOnResume, true);
+        XCTAssertEqual(config.meta.sdkConfiguration.trackOnceOnInitialize, true);
+        XCTAssertEqual(config.meta.sdkConfiguration.startTrackingOnInitialize, true);
 
         [expectation fulfill];
     }];
@@ -1533,11 +1537,13 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
                                      }
                                  }];
     
-    [RadarSettings setLogLevel:RadarLogLevelDebug];
+    [Radar setLogLevel:RadarLogLevelDebug];
     NSDictionary *clientSdkConfigurationDict = [RadarSettings clientSdkConfiguration];
     XCTAssertEqual([RadarLog levelFromString:(NSString *)clientSdkConfigurationDict[@"logLevel"]], RadarLogLevelDebug);
     
     RadarSdkConfiguration *savedSdkConfiguration = [RadarSettings sdkConfiguration];
+    XCTAssertEqual(savedSdkConfiguration.trackOnceOnResume, YES);
+    XCTAssertEqual(savedSdkConfiguration.trackOnceOnInitialize, YES);
     XCTAssertEqual(savedSdkConfiguration.startTrackingOnInitialize, YES);
 }
 
