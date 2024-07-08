@@ -38,14 +38,14 @@
         if (status) {
             self.status = status;
             // we should not start in the prompt state
-            self.status.inForegroundPrompt = NO;
+            self.status.inForegroundRequest = NO;
         } else{
             if (@available(iOS 14.0, *)) {
                 self.status = [[RadarLocationPermissionStatus alloc] initWithStatus:self.locationManager.authorizationStatus
                                                               accuracyAuthorization:self.locationManager.accuracyAuthorization == CLAccuracyAuthorizationFullAccuracy
-                                                            backgroundPromptAvailable:YES
-                                                                   inForegroundPrompt:NO
-                                                   userRejectedBackgroundPermission:NO];
+                                                            backgroundRequestAvailable:YES
+                                                                   inForegroundRequest:NO
+                                                   userDeniedBackgroundAuthorization:NO];
             }
         }
        
@@ -96,9 +96,9 @@
         if (@available(iOS 14.0, *)) {
             RadarLocationPermissionStatus *status = [[RadarLocationPermissionStatus alloc] initWithStatus:self.locationManager.authorizationStatus
                                                                                     accuracyAuthorization:self.locationManager.accuracyAuthorization == CLAccuracyAuthorizationFullAccuracy
-                                                                                backgroundPromptAvailable:NO
-                                                                                          inForegroundPrompt:self.status.inForegroundPrompt
-                                                                          userRejectedBackgroundPermission: self.status.userRejectedBackgroundPermission];
+                                                                                backgroundRequestAvailable:NO
+                                                                                          inForegroundRequest:self.status.inForegroundRequest
+                                                                          userDeniedBackgroundAuthorization: self.status.userDeniedBackgroundAuthorization];
             [self updateStatus:status];
             // TODO: sync the user's location permission action with the their permission status here
         }
@@ -111,9 +111,9 @@
                 if (@available(iOS 14.0, *)) {
                     RadarLocationPermissionStatus *status = [[RadarLocationPermissionStatus alloc] initWithStatus:self.locationManager.authorizationStatus
                                                                                             accuracyAuthorization:self.locationManager.accuracyAuthorization == CLAccuracyAuthorizationFullAccuracy
-                                                                                        backgroundPromptAvailable:self.status.backgroundPromptAvailable
-                                                                                                    inForegroundPrompt:self.status.inForegroundPrompt
-                                                                                    userRejectedBackgroundPermission:YES];
+                                                                                        backgroundRequestAvailable:self.status.backgroundRequestAvailable
+                                                                                                    inForegroundRequest:self.status.inForegroundRequest
+                                                                                    userDeniedBackgroundAuthorization:YES];
                     [self updateStatus:status];
                 }
             }
@@ -129,9 +129,9 @@
         if (@available(iOS 14.0, *)) {
             RadarLocationPermissionStatus *status = [[RadarLocationPermissionStatus alloc] initWithStatus:self.locationManager.authorizationStatus
                                                                                     accuracyAuthorization:self.locationManager.accuracyAuthorization == CLAccuracyAuthorizationFullAccuracy
-                                                                                backgroundPromptAvailable:self.status.backgroundPromptAvailable
-                                                                                          inForegroundPrompt:YES
-                                                                          userRejectedBackgroundPermission: self.status.userRejectedBackgroundPermission];
+                                                                                backgroundRequestAvailable:self.status.backgroundRequestAvailable
+                                                                                          inForegroundRequest:YES
+                                                                          userDeniedBackgroundAuthorization: self.status.userDeniedBackgroundAuthorization];
             [self updateStatus:status];
         }
         // TODO: sync the user's location permission action with the their permission status here
@@ -148,9 +148,9 @@
                 // if the status did not changed, we update the status here, otherwise we will update it in the delegate method
                 RadarLocationPermissionStatus *newStatus = [[RadarLocationPermissionStatus alloc] initWithStatus:status
                                                                                            accuracyAuthorization:self.locationManager.accuracyAuthorization == CLAccuracyAuthorizationFullAccuracy
-                                                                                       backgroundPromptAvailable:self.status.backgroundPromptAvailable
-                                                                                                 inForegroundPrompt:self.status.inForegroundPrompt
-                                                                                 userRejectedBackgroundPermission: YES];
+                                                                                       backgroundRequestAvailable:self.status.backgroundRequestAvailable
+                                                                                                 inForegroundRequest:self.status.inForegroundRequest
+                                                                                 userDeniedBackgroundAuthorization: YES];
                 [self updateStatus:newStatus];
             }
         }
@@ -171,11 +171,11 @@
     if (@available(iOS 14.0, *)) {
         RadarLocationPermissionStatus *newStatus = [[RadarLocationPermissionStatus alloc] initWithStatus:status
                                                                                    accuracyAuthorization:self.locationManager.accuracyAuthorization == CLAccuracyAuthorizationFullAccuracy
-                                                                               backgroundPromptAvailable:self.status.backgroundPromptAvailable
+                                                                               backgroundRequestAvailable:self.status.backgroundRequestAvailable
                                                     // any change in status will always result in the in foreground prompt closing
-                                                                                      inForegroundPrompt:NO
-                                                                        userRejectedBackgroundPermission: 
-                                                    self.status.userRejectedBackgroundPermission || (status == kCLAuthorizationStatusDenied)];
+                                                                                      inForegroundRequest:NO
+                                                                        userDeniedBackgroundAuthorization: 
+                                                    self.status.userDeniedBackgroundAuthorization || (status == kCLAuthorizationStatusDenied)];
         [self updateStatus:newStatus];
     }
 }

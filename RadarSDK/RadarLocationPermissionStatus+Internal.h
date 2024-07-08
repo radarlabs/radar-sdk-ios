@@ -17,8 +17,8 @@
 
 - (instancetype _Nullable)initWithStatus:(CLAuthorizationStatus)locationManagerStatus
                    accuracyAuthorization:(BOOL)accuracyAuthorization
-               backgroundPromptAvailable:(BOOL)backgroundPromptAvailable
-                      inForegroundPrompt:(BOOL)inForegroundPrompt
-        userRejectedBackgroundPermission:(BOOL)userRejectedBackgroundPermission;
+               backgroundRequestAvailable:(BOOL)backgroundPromptAvailable
+                      inForegroundRequest:(BOOL)inForegroundPrompt
+        userDeniedBackgroundAuthorization:(BOOL)userRejectedBackgroundPermission;
 
 @end
