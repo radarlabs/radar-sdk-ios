@@ -38,7 +38,7 @@ typedef NS_ENUM(NSInteger, RadarLocationPermissionState) {
 /**
  The flag indicating if the user authorized full location accuracy instead of reduced location accuracy.
 */
-@property (nonatomic, assign) BOOL accuracyAuthorization;
+@property (nonatomic, assign) BOOL fullAccuracyAuthorization;
 /**
  The flag indicating if the user has been prompted for background location permissions.
 */

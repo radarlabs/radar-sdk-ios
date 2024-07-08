@@ -42,7 +42,7 @@
         } else{
             if (@available(iOS 14.0, *)) {
                 self.status = [[RadarLocationPermissionStatus alloc] initWithStatus:self.locationManager.authorizationStatus
-                                                              accuracyAuthorization:self.locationManager.accuracyAuthorization == CLAccuracyAuthorizationFullAccuracy
+                                                              fullAccuracyAuthorization:self.locationManager.accuracyAuthorization == CLAccuracyAuthorizationFullAccuracy
                                                             backgroundRequestAvailable:YES
                                                                    inForegroundRequest:NO
                                                    userDeniedBackgroundAuthorization:NO];
@@ -95,7 +95,7 @@
         [self.locationManager requestAlwaysAuthorization];
         if (@available(iOS 14.0, *)) {
             RadarLocationPermissionStatus *status = [[RadarLocationPermissionStatus alloc] initWithStatus:self.locationManager.authorizationStatus
-                                                                                    accuracyAuthorization:self.locationManager.accuracyAuthorization == CLAccuracyAuthorizationFullAccuracy
+                                                                                    fullAccuracyAuthorization:self.locationManager.accuracyAuthorization == CLAccuracyAuthorizationFullAccuracy
                                                                                 backgroundRequestAvailable:NO
                                                                                           inForegroundRequest:self.status.inForegroundRequest
                                                                           userDeniedBackgroundAuthorization: self.status.userDeniedBackgroundAuthorization];
@@ -110,7 +110,7 @@
             if (self.danglingBackgroundPermissionRequest) {
                 if (@available(iOS 14.0, *)) {
                     RadarLocationPermissionStatus *status = [[RadarLocationPermissionStatus alloc] initWithStatus:self.locationManager.authorizationStatus
-                                                                                            accuracyAuthorization:self.locationManager.accuracyAuthorization == CLAccuracyAuthorizationFullAccuracy
+                                                                                            fullAccuracyAuthorization:self.locationManager.accuracyAuthorization == CLAccuracyAuthorizationFullAccuracy
                                                                                         backgroundRequestAvailable:self.status.backgroundRequestAvailable
                                                                                                     inForegroundRequest:self.status.inForegroundRequest
                                                                                     userDeniedBackgroundAuthorization:YES];
@@ -128,7 +128,7 @@
         [self.locationManager requestWhenInUseAuthorization];
         if (@available(iOS 14.0, *)) {
             RadarLocationPermissionStatus *status = [[RadarLocationPermissionStatus alloc] initWithStatus:self.locationManager.authorizationStatus
-                                                                                    accuracyAuthorization:self.locationManager.accuracyAuthorization == CLAccuracyAuthorizationFullAccuracy
+                                                                                    fullAccuracyAuthorization:self.locationManager.accuracyAuthorization == CLAccuracyAuthorizationFullAccuracy
                                                                                 backgroundRequestAvailable:self.status.backgroundRequestAvailable
                                                                                           inForegroundRequest:YES
                                                                           userDeniedBackgroundAuthorization: self.status.userDeniedBackgroundAuthorization];
@@ -147,7 +147,7 @@
             if (status == self.status.locationManagerStatus) {
                 // if the status did not changed, we update the status here, otherwise we will update it in the delegate method
                 RadarLocationPermissionStatus *newStatus = [[RadarLocationPermissionStatus alloc] initWithStatus:status
-                                                                                           accuracyAuthorization:self.locationManager.accuracyAuthorization == CLAccuracyAuthorizationFullAccuracy
+                                                                                           fullAccuracyAuthorization:self.locationManager.accuracyAuthorization == CLAccuracyAuthorizationFullAccuracy
                                                                                        backgroundRequestAvailable:self.status.backgroundRequestAvailable
                                                                                                  inForegroundRequest:self.status.inForegroundRequest
                                                                                  userDeniedBackgroundAuthorization: YES];
@@ -170,7 +170,7 @@
 - (void)locationManager:(CLLocationManager *)manager didChangeAuthorizationStatus:(CLAuthorizationStatus)status {
     if (@available(iOS 14.0, *)) {
         RadarLocationPermissionStatus *newStatus = [[RadarLocationPermissionStatus alloc] initWithStatus:status
-                                                                                   accuracyAuthorization:self.locationManager.accuracyAuthorization == CLAccuracyAuthorizationFullAccuracy
+                                                                                   fullAccuracyAuthorization:self.locationManager.accuracyAuthorization == CLAccuracyAuthorizationFullAccuracy
                                                                                backgroundRequestAvailable:self.status.backgroundRequestAvailable
                                                     // any change in status will always result in the in foreground prompt closing
                                                                                       inForegroundRequest:NO
