@@ -12,7 +12,7 @@
             "logLevel": "info",
             "startTrackingOnInitialize": true,
             "trackOnceOnInitialize": true,
-            "trackOnceOnResume": false,
+            "trackOnceOnResume": true,
         }
     }
 }
