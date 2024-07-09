@@ -91,7 +91,15 @@
 
         self.danglingBackgroundPermissionRequest = YES;
 
-        [self.locationManager requestAlwaysAuthorization];
+        // [self.locationManager requestAlwaysAuthorization];
+        Class locationManagerClass = [CLLocationManager class];
+        SEL alwaysAuthorizationSelector = NSSelectorFromString(@"requestAlwaysAuthorization");
+        #pragma clang diagnostic push
+        #pragma clang diagnostic ignored "-Warc-performSelector-leaks"
+        [self.locationManager performSelector:alwaysAuthorizationSelector];
+        #pragma clang diagnostic pop
+
+
         if (@available(iOS 14.0, *)) {
             RadarLocationPermissionStatus *status = [[RadarLocationPermissionStatus alloc] initWithStatus:self.locationManager.authorizationStatus
                                                                                    backgroundPopupAvailable:NO
