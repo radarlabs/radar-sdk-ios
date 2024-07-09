@@ -376,6 +376,7 @@
     [dict setValue:self.layer forKey:@"layer"];
     [dict setValue:self.metadata forKey:@"metadata"];
     [dict setValue:[RadarAddress stringForConfidence:self.confidence] forKey:@"confidence"];
+    [dict setValue:[self.timeZone dictionaryValue] forKey:@"timeZone"];
     return dict;
 }
 

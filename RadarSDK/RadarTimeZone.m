@@ -38,12 +38,12 @@
         _currentTime = [RadarUtils.isoDateFormatter dateFromString:(NSString *)currentTimeObj];
     }
 
-    id utcOffsetObj = dict[@"utcOffsetObj"];
+    id utcOffsetObj = dict[@"utcOffset"];
     if (utcOffsetObj && [utcOffsetObj isKindOfClass:[NSNumber class]]) {
         _utcOffset = ((NSNumber *)utcOffsetObj).intValue;
     }
 
-    id dstOffsetObj = dict[@"dstOffsetObj"];
+    id dstOffsetObj = dict[@"dstOffset"];
     if (dstOffsetObj && [dstOffsetObj isKindOfClass:[NSNumber class]]) {
         _dstOffset = ((NSNumber *)dstOffsetObj).intValue;
     }
