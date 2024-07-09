@@ -172,6 +172,9 @@
 		E62446A72BEC0AC700ECCCAD /* RadarLocationPermissionStatus.h in Headers */ = {isa = PBXBuildFile; fileRef = E62446A52BEC0A4900ECCCAD /* RadarLocationPermissionStatus.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		E6EEC56E2B20F41A00DD096B /* RadarFileStorage.h in Headers */ = {isa = PBXBuildFile; fileRef = E6EEC56D2B20F41A00DD096B /* RadarFileStorage.h */; };
 		E6EEC5702B20F45D00DD096B /* RadarFileStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = E6EEC56F2B20F45D00DD096B /* RadarFileStorage.m */; };
+		F6F959802C3D7D9900BC30FE /* RadarTimeZone.h in Headers */ = {isa = PBXBuildFile; fileRef = F6F9597F2C3D7D9900BC30FE /* RadarTimeZone.h */; };
+		F6F959822C3D7EA200BC30FE /* RadarTimeZone+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = F6F959812C3D7EA200BC30FE /* RadarTimeZone+Internal.h */; };
+		F6F959842C3D7EDE00BC30FE /* RadarTimeZone.m in Sources */ = {isa = PBXBuildFile; fileRef = F6F959832C3D7EDE00BC30FE /* RadarTimeZone.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -341,6 +344,9 @@
 		E62446A52BEC0A4900ECCCAD /* RadarLocationPermissionStatus.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RadarLocationPermissionStatus.h; sourceTree = "<group>"; };
 		E6EEC56D2B20F41A00DD096B /* RadarFileStorage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarFileStorage.h; sourceTree = "<group>"; };
 		E6EEC56F2B20F45D00DD096B /* RadarFileStorage.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RadarFileStorage.m; sourceTree = "<group>"; };
+		F6F9597F2C3D7D9900BC30FE /* RadarTimeZone.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarTimeZone.h; sourceTree = "<group>"; };
+		F6F959812C3D7EA200BC30FE /* RadarTimeZone+Internal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "RadarTimeZone+Internal.h"; sourceTree = "<group>"; };
+		F6F959832C3D7EDE00BC30FE /* RadarTimeZone.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RadarTimeZone.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -405,6 +411,7 @@
 				96A5A0E027AD9F7F007B960B /* RadarUser.h */,
 				01F8106F2AF0119800BD7088 /* RadarVerifiedDelegate.h */,
 				019514352BD077D10031ABA2 /* RadarVerifiedLocationToken.h */,
+				F6F9597F2C3D7D9900BC30FE /* RadarTimeZone.h */,
 			);
 			path = Include;
 			sourceTree = "<group>";
@@ -581,6 +588,8 @@
 				96A5A0AA27AD9F40007B960B /* RadarSegment+Internal.h */,
 				DD14FD4B23CE783500E80AC8 /* RadarSegment.m */,
 				96A5A0B227AD9F40007B960B /* RadarTrip+Internal.h */,
+				F6F959812C3D7EA200BC30FE /* RadarTimeZone+Internal.h */,
+				F6F959832C3D7EDE00BC30FE /* RadarTimeZone.m */,
 				DDF1157C2524E18100D575C4 /* RadarTrip.m */,
 				96A5A0B427AD9F40007B960B /* RadarUser+Internal.h */,
 				DD236CBB2308812700EB88F9 /* RadarUser.m */,
@@ -632,6 +641,7 @@
 				96A5A10627AD9F7F007B960B /* RadarFraud.h in Headers */,
 				01F99CFB2965C182004E8CF3 /* RadarConfig.h in Headers */,
 				96A5A0CF27AD9F41007B960B /* RadarAddress+Internal.h in Headers */,
+				F6F959822C3D7EA200BC30FE /* RadarTimeZone+Internal.h in Headers */,
 				96A5A11127AD9F7F007B960B /* RadarBeacon.h in Headers */,
 				019514362BD078D90031ABA2 /* RadarVerifiedLocationToken.h in Headers */,
 				96A5A10B27AD9F7F007B960B /* RadarTripOptions.h in Headers */,
@@ -671,6 +681,7 @@
 				96A5A11027AD9F7F007B960B /* RadarPlace.h in Headers */,
 				96A5A0D427AD9F41007B960B /* RadarGeofence+Internal.h in Headers */,
 				96A5A0C427AD9F41007B960B /* RadarCircleGeometry+Internal.h in Headers */,
+				F6F959802C3D7D9900BC30FE /* RadarTimeZone.h in Headers */,
 				0114F058284EFDB700ADA4E4 /* RadarRouteMode.h in Headers */,
 				96A5A0D527AD9F41007B960B /* RadarRouteDuration+Internal.h in Headers */,
 				96A5A0CE27AD9F41007B960B /* RadarCoordinate+Internal.h in Headers */,
@@ -845,6 +856,7 @@
 				E624465D2BEBEB5D00ECCCAD /* RadarLocationPremissionManager.m in Sources */,
 				0107AB11262201D9008AB52F /* RadarCollectionAdditions.m in Sources */,
 				96FC90F7277379C1000757DF /* RadarFraud.m in Sources */,
+				F6F959842C3D7EDE00BC30FE /* RadarTimeZone.m in Sources */,
 				0107AB1D262201E5008AB52F /* RadarLocationManager.m in Sources */,
 				0107AAB02622016B008AB52F /* RadarPlace.m in Sources */,
 				0107AAE6262201A1008AB52F /* RadarSegment.m in Sources */,
