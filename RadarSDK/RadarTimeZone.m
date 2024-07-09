@@ -6,10 +6,10 @@
 //  Copyright © 2019 Radar Labs, Inc. All rights reserved.
 //
 
-#import "RadarTimezone.h"
+#import "RadarTimeZone.h"
 #import "RadarUtils.h"
 
-@implementation RadarTimezone
+@implementation RadarTimeZone
 
 - (instancetype _Nullable)initWithObject:(id)object {
     if (!object || ![object isKindOfClass:[NSDictionary class]]) {

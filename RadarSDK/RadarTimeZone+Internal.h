@@ -7,7 +7,7 @@
 
 #import "RadarTimezone.h"
 
-@interface RadarTimezone ()
+@interface RadarTimeZone ()
 
 - (RadarTimezone *_Nullable)initWithObject:(id _Nonnull)object;
 

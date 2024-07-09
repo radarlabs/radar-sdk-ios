@@ -7,7 +7,7 @@
 
 #import "RadarAddress+Internal.h"
 #import "RadarCoordinate+Internal.h"
-#import "RadarTimezone+Internal.h"
+#import "RadarTimeZone+Internal.h"
 
 @implementation RadarAddress
 
@@ -68,7 +68,7 @@
                                        layer:(NSString *_Nullable)layer
                                     metadata:(NSDictionary *_Nullable)metadata
                                   confidence:(RadarAddressConfidence)confidence
-                                    timezone:(RadarTimezone *_Nullable)timezone {
+                                    timeZone:(RadarTimeZone *_Nullable)timeZone {
     self = [super init];
     if (self) {
         _coordinate = coordinate;
@@ -95,7 +95,7 @@
         _layer = layer;
         _metadata = metadata;
         _confidence = confidence;
-        _timezone = timezone;
+        _timeZone = timeZone;
     }
     return self;
 }
@@ -133,7 +133,7 @@
     NSNumber *distance;
     NSString *layer;
     NSMutableDictionary *metadata;
-    RadarTimezone *timezone;
+    RadarTimeZone *timeZone;
 
     RadarAddressConfidence confidence = RadarAddressConfidenceNone;
 
@@ -276,9 +276,9 @@
         }
     }
     
-    id timezoneObj = dict[@"timezone"];
-    if (timezoneObj && [timezoneObj isKindOfClass:[NSDictionary class]]) {
-        timezone = [[RadarTimezone alloc] initWithObject:timezoneObj];
+    id timeZoneObj = dict[@"timeZone"];
+    if (timeZoneObj && [timeZoneObj isKindOfClass:[NSDictionary class]]) {
+        timeZone = [[RadarTimeZone alloc] initWithObject:timeZoneObj];
     }
 
     return [[RadarAddress alloc] initWithCoordinate:coordinate
@@ -305,7 +305,7 @@
                                               layer:layer
                                            metadata:metadata
                                          confidence:confidence
-                                           timezone:timezone];
+                                           timeZone:timeZone];
 }
 
 + (NSArray<NSDictionary *> *)arrayForAddresses:(NSArray<RadarAddress *> *)addresses {

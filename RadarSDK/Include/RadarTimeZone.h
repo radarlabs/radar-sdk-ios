@@ -10,39 +10,39 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- Represents a timezone.
+ Represents a time zone.
 
  @see https://radar.com/documentation/api#geocoding
  */
-@interface RadarTimezone : NSObject
+@interface RadarTimeZone : NSObject
 
 /**
- The ID of the timezone.
+ The ID of the time zone.
  */
 @property (nonnull, copy, nonatomic, readonly) NSString *_id;
 
 /**
- The name of of the timezone.
+ The name of of the time zone.
  */
 @property (nonnull, copy, nonatomic, readonly) NSString *name;
 
 /**
- The timezone abbreviation.
+ The time zone abbreviation.
  */
 @property (nonnull, copy, nonatomic, readonly) NSString *code;
 
 /**
- The current time for the timezone.
+ The current time for the time zone.
  */
 @property (nonnull, copy, nonatomic, readonly) NSDate *currentTime;
 
 /**
- The UTC offset for the timezone.
+ The UTC offset for the time zone.
  */
 @property (assign, nonatomic, readonly) int utcOffset;
 
 /**
- The DST offset for the timezone.
+ The DST offset for the time zone.
  */
 @property (assign, nonatomic, readonly) int dstOffset;
 

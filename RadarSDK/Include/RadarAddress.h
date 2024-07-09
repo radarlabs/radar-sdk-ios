@@ -6,7 +6,7 @@
 //
 
 #import "RadarCoordinate.h"
-#import "RadarTimezone.h"
+#import "RadarTimeZone.h"
 #import <Foundation/Foundation.h>
 
 /**
@@ -154,9 +154,9 @@ The metadata of the address.
 @property (nonatomic, assign) enum RadarAddressConfidence confidence;
 
 /**
-The timezone information of the address.
+The time zone information of the address.
  */
-@property (nullable, copy, nonatomic, readonly) RadarTimezone *timezone;
+@property (nullable, copy, nonatomic, readonly) RadarTimeZone *timeZone;
 
 + (RadarAddress *_Nullable)addressFromObject:(id _Nonnull)object;
 + (NSArray<NSDictionary *> *_Nullable)arrayForAddresses:(NSArray<RadarAddress *> *_Nullable)addresses;
