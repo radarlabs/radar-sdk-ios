@@ -9,6 +9,6 @@
 
 @interface RadarTimeZone ()
 
-- (RadarTimezone *_Nullable)initWithObject:(id _Nonnull)object;
+- (instancetype _Nullable)initWithObject:(id _Nonnull)object;
 
 @end
