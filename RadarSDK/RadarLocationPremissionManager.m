@@ -88,6 +88,12 @@
 
 - (void)requestBackgroundLocationPermission {
     if (self.status.locationManagerStatus == kCLAuthorizationStatusAuthorizedWhenInUse) {
+        NSDictionary *infoDictionary = [NSBundle mainBundle].infoDictionary;
+        BOOL hasAlwaysDescription = [infoDictionary objectForKey:@"NSLocationAlwaysAndWhenInUseUsageDescription"] != nil;
+        if (!hasAlwaysDescription) {
+            NSLog(@"Radar requires the NSLocationAlwaysAndWhenInUseUsageDescription key in Info.plist to request background location permission");
+            return;
+        }
 
         self.danglingBackgroundPermissionRequest = YES;
 
