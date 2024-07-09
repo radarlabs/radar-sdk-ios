@@ -7,7 +7,7 @@
 
 #import "RadarAddress+Internal.h"
 #import "RadarCoordinate+Internal.h"
-#import "RadarTimeZone+Internal.h""
+#import "RadarTimeZone+Internal.h"
 
 @implementation RadarAddress
 
