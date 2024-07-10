@@ -6,6 +6,7 @@
 //
 
 #import "RadarCoordinate.h"
+#import "RadarTimeZone.h"
 #import <Foundation/Foundation.h>
 
 /**
@@ -151,6 +152,12 @@ The metadata of the address.
   The confidence level of the geocoding result.
  */
 @property (nonatomic, assign) enum RadarAddressConfidence confidence;
+
+/**
+The time zone information of the address.
+ */
+@property (nullable, copy, nonatomic, readonly) RadarTimeZone *timeZone;
+
 + (RadarAddress *_Nullable)addressFromObject:(id _Nonnull)object;
 + (NSArray<NSDictionary *> *_Nullable)arrayForAddresses:(NSArray<RadarAddress *> *_Nullable)addresses;
 - (NSDictionary *_Nonnull)dictionaryValue;
