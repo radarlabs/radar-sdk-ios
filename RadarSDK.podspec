@@ -17,12 +17,12 @@ Pod::Spec.new do |s|
     :name => 'Check NSLocationAlwaysAndWhenInUseUsageDescription in Info.plist',
     :script => %q{
       info_plist="$SRCROOT/Waypoint/$INFOPLIST_FILE"
-      if ! /usr/libexec/PlistBuddy -c "Print :NSLocationAlwaysAndWhenInUseUsageDescription" "$info_plist" &>/dev/null; then
-        echo "NSLocationAlwaysAndWhenInUseUsageDescription not found in Info.plist, setting a dummy value."
-        /usr/libexec/PlistBuddy -c "Add :NSLocationAlwaysAndWhenInUseUsageDescription string PlaceholderString" "$info_plist"
-      else
-        echo "NSLocationAlwaysAndWhenInUseUsageDescription exists in Info.plist."
-      fi
+      # if ! /usr/libexec/PlistBuddy -c "Print :NSLocationAlwaysAndWhenInUseUsageDescription" "$info_plist" &>/dev/null; then
+      #  echo "NSLocationAlwaysAndWhenInUseUsageDescription not found in Info.plist, setting a dummy value."
+      /usr/libexec/PlistBuddy -c "Add :NSLocationAlwaysAndWhenInUseUsageDescription string PlaceholderString" "$info_plist"
+      #else
+        # echo "NSLocationAlwaysAndWhenInUseUsageDescription exists in Info.plist."
+      #fi
     },
     :execution_position => :before_compile
   }
