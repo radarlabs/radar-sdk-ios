@@ -17,13 +17,11 @@
 
 - (instancetype)initWithLogLevel:(RadarLogLevel)logLevel
        startTrackingOnInitialize:(bool)startTrackingOnInitialize
-           trackOnceOnInitialize:(BOOL)trackOnceOnInitialize
-               trackOnceOnResume:(BOOL)trackOnceOnResume {
+              trackOnceOnAppOpen:(BOOL)trackOnceOnAppOpen {
     if (self = [super init]) {
         _logLevel = logLevel;
         _startTrackingOnInitialize = startTrackingOnInitialize;
-        _trackOnceOnInitialize = trackOnceOnInitialize;
-        _trackOnceOnResume = trackOnceOnResume;
+        _trackOnceOnAppOpen = trackOnceOnAppOpen;
     }
     return self;
 }
@@ -45,22 +43,15 @@
         startTrackingOnInitialize = [(NSNumber *)startTrackingOnInitializeObj boolValue];
     }
 
-    NSObject *trackOnceOnInitializeObj = dict[@"trackOnceOnInitialize"];
-    BOOL trackOnceOnInitialize = NO;
-    if (trackOnceOnInitializeObj && [trackOnceOnInitializeObj isKindOfClass:[NSNumber class]]) {
-        trackOnceOnInitialize = [(NSNumber *)trackOnceOnInitializeObj boolValue];
-    }
-
-    NSObject *trackOnceOnResumeObj = dict[@"trackOnceOnResume"];
-    BOOL trackOnceOnResume = NO;
-    if (trackOnceOnResumeObj && [trackOnceOnResumeObj isKindOfClass:[NSNumber class]]) {
-        trackOnceOnResume = [(NSNumber *)trackOnceOnResumeObj boolValue];
+    NSObject *trackOnceOnAppOpenObj = dict[@"trackOnceOnAppOpen"];
+    BOOL trackOnceOnAppOpen = NO;
+    if (trackOnceOnAppOpenObj && [trackOnceOnAppOpenObj isKindOfClass:[NSNumber class]]) {
+        trackOnceOnAppOpen = [(NSNumber *)trackOnceOnAppOpenObj boolValue];
     }
 
     return [[RadarSdkConfiguration alloc] initWithLogLevel:logLevel 
                                  startTrackingOnInitialize:startTrackingOnInitialize
-                                     trackOnceOnInitialize:trackOnceOnInitialize
-                                         trackOnceOnResume:trackOnceOnResume];
+                                        trackOnceOnAppOpen:trackOnceOnAppOpen];
 }
 
 - (NSDictionary *)dictionaryValue {
@@ -68,8 +59,7 @@
     NSString *logLevelString = [RadarLog stringForLogLevel:_logLevel];
     [dict setValue:logLevelString forKey:@"logLevel"];
     [dict setValue:@(_startTrackingOnInitialize) forKey:@"startTrackingOnInitialize"];
-    [dict setValue:@(_trackOnceOnInitialize) forKey:@"trackOnceOnInitialize"];
-    [dict setValue:@(_trackOnceOnResume) forKey:@"trackOnceOnResume"];
+    [dict setValue:@(_trackOnceOnAppOpen) forKey:@"trackOnceOnAppOpen"];
     
     return dict;
 }
