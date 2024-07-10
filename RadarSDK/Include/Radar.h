@@ -323,6 +323,18 @@ typedef void (^_Nonnull RadarLogConversionCompletionHandler)(RadarStatus status,
 + (void)initializeWithPublishableKey:(NSString *_Nonnull)publishableKey 
                              options:(RadarInitializeOptions *_Nonnull)options NS_SWIFT_NAME(initialize(publishableKey:options:));
 
+/**
+ Initializes the Radar SDK.
+
+ @warning Call this method from the main thread in your `AppDelegate` class before calling any other Radar methods.
+
+ @param publishableKey Your publishable API key.
+ @param configOptions Configuration function for additional initialization options.
+
+ @see https://radar.com/documentation/sdk/ios#initialize-sdk
+ */
++ (void)initializeWithPublishableKey:(NSString *_Nonnull)publishableKey
+                       configOptions:(void (^)(RadarInitializeOptions *options))configOptions NS_SWIFT_NAME(initialize(publishableKey:configOptions:));
 
 #pragma mark - Properties
 

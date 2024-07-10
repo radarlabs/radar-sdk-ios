@@ -50,6 +50,12 @@
     [Radar initializeWithPublishableKey:publishableKey options:options];
 }
 
++ (void)initializeWithPublishableKey:(NSString *_Nonnull)publishableKey
+                       configOptions:(void (^)(RadarInitializeOptions *options))configOptions {
+    RadarInitializeOptions *options = [[RadarInitializeOptions alloc] init];
+    configOptions(options);
+    [Radar initializeWithPublishableKey:publishableKey options:options];
+}
 
 + (void)initializeWithPublishableKey:(NSString *)publishableKey
                              options:(RadarInitializeOptions *)options {

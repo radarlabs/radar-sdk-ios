@@ -24,10 +24,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         Radar.stopTracking()
         
         // Replace with a valid test publishable key
-        Radar.initialize(publishableKey: "prj_test_pk_0000000000000000000000000000000000000000", options: RadarInitializeOptions.fromDictionary([
-            "userId": "testUserId",
-            "metadata": [ "foo": "bar" ]
-        ]))
+        Radar.initialize(publishableKey: "prj_test_pk_0000000000000000000000000000000000000000", configOptions: { options in
+            options.userId = "testUserId"
+            options.metadata = [ "foo": "bar" ]
+        })
         Radar.setDelegate(self)
         Radar.setVerifiedDelegate(self)
 
