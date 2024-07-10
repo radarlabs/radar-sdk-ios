@@ -13,4 +13,17 @@ Pod::Spec.new do |s|
   s.requires_arc          = true
   s.license               = { :type => 'Apache-2.0' }
   s.resource_bundles      = {'RadarSDK' => ['RadarSDK/PrivacyInfo.xcprivacy']}
+  s.script_phase = {
+    :name => 'Check NSLocationAlwaysAndWhenInUseUsageDescription in Info.plist',
+    :script => <<-SCRIPT
+      info_plist="${TARGET_BUILD_DIR}/${INFOPLIST_PATH}"
+      if ! /usr/libexec/PlistBuddy -c "Print :NSLocationAlwaysAndWhenInUseUsageDescription" "$info_plist" &>/dev/null; then
+        echo "NSLocationAlwaysAndWhenInUseUsageDescription not found in Info.plist, setting a dummy value."
+        /usr/libexec/PlistBuddy -c "Add :NSLocationAlwaysAndWhenInUseUsageDescription string PlaceholderString" "$info_plist"
+      else
+        echo "NSLocationAlwaysAndWhenInUseUsageDescription exists in Info.plist."
+      fi
+    SCRIPT
+    :execution_position => :before_compile
+  }
 end
