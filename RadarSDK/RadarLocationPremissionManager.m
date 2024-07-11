@@ -63,7 +63,7 @@
 }
 
 - (void)setRequestBackgroundLocationPermissionCompletionHandler:(void (^_Nonnull)(void))completionHandler {
-    self.requestBackgroundLocationPermissionCompletionHandler = completionHandler;
+    _requestBackgroundLocationPermissionCompletionHandler = completionHandler;
 }
 
 - (void)updateStatus:(RadarLocationPermissionStatus *)status {
