@@ -62,6 +62,10 @@
     return self;
 }
 
+- (void)setRequestBackgroundLocationPermissionCompletionHandler:(void (^_Nonnull)(void))completionHandler {
+    self.requestBackgroundLocationPermissionCompletionHandler = completionHandler;
+}
+
 - (void)updateStatus:(RadarLocationPermissionStatus *)status {
     self.status = status;
     [RadarLocationPermissionStatus radarLocationPermissionStatus:status];
@@ -87,11 +91,13 @@
 }
 
 - (void)requestBackgroundLocationPermission {
-    if (self.status.locationManagerStatus == kCLAuthorizationStatusAuthorizedWhenInUse) {
+    if (self.status.locationManagerStatus == kCLAuthorizationStatusAuthorizedWhenInUse && self.requestBackgroundLocationPermissionCompletionHandler) {
 
         self.danglingBackgroundPermissionRequest = YES;
 
-        [self.locationManager requestAlwaysAuthorization];
+        //[self.locationManager requestAlwaysAuthorization];
+        self.requestBackgroundLocationPermissionCompletionHandler();
+
         if (@available(iOS 14.0, *)) {
             RadarLocationPermissionStatus *status = [[RadarLocationPermissionStatus alloc] initWithStatus:self.locationManager.authorizationStatus
                                                                                    backgroundPopupAvailable:NO

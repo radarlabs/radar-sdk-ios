@@ -78,7 +78,7 @@
         [RadarSettings updateSessionId];
     }
 
-    [RadarLocationPermissionManager sharedInstance];
+    [[RadarLocationPermissionManager sharedInstance] setRequestBackgroundLocationPermissionCompletionHandler: options.requestBackgroundLocationPermissionCompletionHandler];
 
     [[RadarLocationManager sharedInstance] updateTrackingFromInitialize];
     

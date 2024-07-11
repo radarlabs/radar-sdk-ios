@@ -25,6 +25,10 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property (nullable, copy, nonatomic) NSDictionary *metadata;
 
+// Add a property for the completion handler. This handler is optional and can be used to execute code after initialization.
+// The completion handler takes no parameters and returns void.
+@property (nullable, copy, nonatomic) void (^requestBackgroundLocationPermissionCompletionHandler)(void);
+
 + (RadarInitializeOptions *_Nonnull)fromDictionary:(NSDictionary *_Nullable)dictionary;
 - (NSDictionary *)dictionaryValue;
 

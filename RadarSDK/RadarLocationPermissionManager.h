@@ -13,6 +13,7 @@
 
 @property (nonatomic, strong) RadarLocationPermissionStatus * _Nullable status;
 @property (nonatomic, strong) CLLocationManager * _Nonnull locationManager;
+@property (nullable, copy, nonatomic) void (^requestBackgroundLocationPermissionCompletionHandler)(void);
 
 + (instancetype _Nonnull )sharedInstance;
 
@@ -23,5 +24,7 @@
 - (void)openAppSettings;
 
 - (RadarLocationPermissionStatus *_Nullable)getLocationPermissionStatus;
+
+- (void)setRequestBackgroundLocationPermissionCompletionHandler:(void (^_Nonnull)(void))completionHandler;
 
 @end
