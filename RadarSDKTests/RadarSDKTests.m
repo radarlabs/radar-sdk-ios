@@ -283,12 +283,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 
 - (void)setUp {
     [super setUp];
-    [Radar initializeWithPublishableKey:kPublishableKey options:[RadarInitializeOptions fromDictionary:@{
-        @"userId": @"initUserId",
-        @"metadata": @{
-            @"initMetaKey": @"initMetaValue"
-        }
-    }]];
+    [Radar initializeWithPublishableKey:kPublishableKey];
     [RadarSettings setLogLevel:RadarLogLevelDebug];
 
     self.apiHelperMock = [RadarAPIHelperMock new];
@@ -315,10 +310,6 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 
 - (void)test_Radar_initialize {
     XCTAssertEqualObjects(kPublishableKey, [RadarSettings publishableKey]);
-    XCTAssertEqualObjects(@"initUserId", [Radar getUserId]);
-    XCTAssertEqualObjects(@{
-        @"initMetaKey": @"initMetaValue"
-    }, [Radar getMetadata]);
 }
 
 - (void)test_Radar_setUserId {

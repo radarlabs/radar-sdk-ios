@@ -20,7 +20,6 @@
 #import "RadarTrackingOptions.h"
 #import "RadarVerifiedLocationToken.h"
 #import "RadarUser.h"
-#import "RadarInitializeOptions.h"
 #import "RadarLocationPermissionStatus.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -309,20 +308,6 @@ typedef void (^_Nonnull RadarLogConversionCompletionHandler)(RadarStatus status,
  @see https://radar.com/documentation/sdk/ios#initialize-sdk
  */
 + (void)initializeWithPublishableKey:(NSString *_Nonnull)publishableKey NS_SWIFT_NAME(initialize(publishableKey:));
-
-/**
- Initializes the Radar SDK.
-
- @warning Call this method from the main thread in your `AppDelegate` class before calling any other Radar methods.
-
- @param publishableKey Your publishable API key.
- @param options Additional initialization options.
-
- @see https://radar.com/documentation/sdk/ios#initialize-sdk
- */
-+ (void)initializeWithPublishableKey:(NSString *_Nonnull)publishableKey 
-                             options:(RadarInitializeOptions *_Nonnull)options NS_SWIFT_NAME(initialize(publishableKey:options:));
-
 
 #pragma mark - Properties
 
