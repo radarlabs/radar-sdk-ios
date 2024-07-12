@@ -22,7 +22,6 @@
 #import "RadarVerificationManager.h"
 #import "RadarReplayBuffer.h"
 #import "RadarFeatureSettings.h"
-#import "RadarInitializeOptions.h"
 #import "RadarLocationPermissionManager.h"
 #import "RadarLocationPermissionStatus.h"
 
@@ -46,19 +45,6 @@
 }
 
 + (void)initializeWithPublishableKey:(NSString *)publishableKey {
-    RadarInitializeOptions *options = [[RadarInitializeOptions alloc] init];
-    [Radar initializeWithPublishableKey:publishableKey options:options];
-}
-
-+ (void)initializeWithPublishableKey:(NSString *_Nonnull)publishableKey
-                       configOptions:(void (^)(RadarInitializeOptions *options))configOptions {
-    RadarInitializeOptions *options = [[RadarInitializeOptions alloc] init];
-    configOptions(options);
-    [Radar initializeWithPublishableKey:publishableKey options:options];
-}
-
-+ (void)initializeWithPublishableKey:(NSString *)publishableKey
-                             options:(RadarInitializeOptions *)options {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"initialize()"];
 
     [[NSNotificationCenter defaultCenter] addObserver:[self sharedInstance]
@@ -67,13 +53,6 @@
                                                object:nil];
     
     [RadarSettings setPublishableKey:publishableKey];
-    
-    if (options.userId != nil) {
-        [RadarSettings setUserId:options.userId];
-    }
-    if (options.metadata != nil) {
-        [RadarSettings setMetadata:options.metadata];
-    }
 
     RadarFeatureSettings *featureSettings = [RadarSettings featureSettings];
     if (featureSettings.usePersistence) {
