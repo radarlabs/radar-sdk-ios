@@ -10,6 +10,7 @@
 #import "RadarLocationPermissionManager.h"
 #import "RadarLocationPermissionStatus+Internal.h"
 #import "RadarDelegateHolder.h"
+#import "RadarLogger.h"
 
 @interface RadarLocationPermissionManager ()
 
@@ -91,7 +92,8 @@
 
         self.danglingBackgroundPermissionRequest = YES;
 
-        [self.locationManager requestAlwaysAuthorization];
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelWarning type:RadarLogTypeSDKCall message:@"This method is disabled in this SDK version as we refine our approach to not introduce spurious permission requirements for apps that don't use background location."];
+
         if (@available(iOS 14.0, *)) {
             RadarLocationPermissionStatus *status = [[RadarLocationPermissionStatus alloc] initWithStatus:self.locationManager.authorizationStatus
                                                                                    backgroundPopupAvailable:NO
