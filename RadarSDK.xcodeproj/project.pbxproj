@@ -165,11 +165,6 @@
 		DD8E2F7A24018C37002D51AB /* CLLocationManagerMock.m in Sources */ = {isa = PBXBuildFile; fileRef = DD8E2F7924018C37002D51AB /* CLLocationManagerMock.m */; };
 		DD8E2F7D24018C54002D51AB /* CLVisitMock.m in Sources */ = {isa = PBXBuildFile; fileRef = DD8E2F7C24018C54002D51AB /* CLVisitMock.m */; };
 		DE1E7644239724FD006F34A1 /* search_geofences.json in Resources */ = {isa = PBXBuildFile; fileRef = DE1E7643239724FD006F34A1 /* search_geofences.json */; };
-		E624465D2BEBEB5D00ECCCAD /* RadarLocationPremissionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = E624465C2BEBEB5D00ECCCAD /* RadarLocationPremissionManager.m */; };
-		E624465F2BEBEB8A00ECCCAD /* RadarLocationPermissionManager.h in Headers */ = {isa = PBXBuildFile; fileRef = E624465E2BEBEB8A00ECCCAD /* RadarLocationPermissionManager.h */; };
-		E62446622BEBF3F900ECCCAD /* RadarLocationPremissionStatus.m in Sources */ = {isa = PBXBuildFile; fileRef = E62446612BEBF3F900ECCCAD /* RadarLocationPremissionStatus.m */; };
-		E62446642BEBF4BB00ECCCAD /* RadarLocationPermissionStatus+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = E62446632BEBF4BB00ECCCAD /* RadarLocationPermissionStatus+Internal.h */; };
-		E62446A72BEC0AC700ECCCAD /* RadarLocationPermissionStatus.h in Headers */ = {isa = PBXBuildFile; fileRef = E62446A52BEC0A4900ECCCAD /* RadarLocationPermissionStatus.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		E6EEC56E2B20F41A00DD096B /* RadarFileStorage.h in Headers */ = {isa = PBXBuildFile; fileRef = E6EEC56D2B20F41A00DD096B /* RadarFileStorage.h */; };
 		E6EEC5702B20F45D00DD096B /* RadarFileStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = E6EEC56F2B20F45D00DD096B /* RadarFileStorage.m */; };
 		F6F959802C3D7D9900BC30FE /* RadarTimeZone.h in Headers */ = {isa = PBXBuildFile; fileRef = F6F9597F2C3D7D9900BC30FE /* RadarTimeZone.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -337,11 +332,6 @@
 		DDD7BD0325EC3015002473B3 /* RadarRouteMatrix.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RadarRouteMatrix.m; sourceTree = "<group>"; };
 		DDF1157C2524E18100D575C4 /* RadarTrip.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RadarTrip.m; sourceTree = "<group>"; };
 		DE1E7643239724FD006F34A1 /* search_geofences.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = search_geofences.json; sourceTree = "<group>"; };
-		E624465C2BEBEB5D00ECCCAD /* RadarLocationPremissionManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RadarLocationPremissionManager.m; sourceTree = "<group>"; };
-		E624465E2BEBEB8A00ECCCAD /* RadarLocationPermissionManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RadarLocationPermissionManager.h; sourceTree = "<group>"; };
-		E62446612BEBF3F900ECCCAD /* RadarLocationPremissionStatus.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RadarLocationPremissionStatus.m; sourceTree = "<group>"; };
-		E62446632BEBF4BB00ECCCAD /* RadarLocationPermissionStatus+Internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "RadarLocationPermissionStatus+Internal.h"; sourceTree = "<group>"; };
-		E62446A52BEC0A4900ECCCAD /* RadarLocationPermissionStatus.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RadarLocationPermissionStatus.h; sourceTree = "<group>"; };
 		E6EEC56D2B20F41A00DD096B /* RadarFileStorage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarFileStorage.h; sourceTree = "<group>"; };
 		E6EEC56F2B20F45D00DD096B /* RadarFileStorage.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RadarFileStorage.m; sourceTree = "<group>"; };
 		F6F9597F2C3D7D9900BC30FE /* RadarTimeZone.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarTimeZone.h; sourceTree = "<group>"; };
@@ -389,7 +379,6 @@
 				96A5A0EC27AD9F7F007B960B /* RadarContext.h */,
 				96A5A0E327AD9F7F007B960B /* RadarCoordinate.h */,
 				96A5A0E727AD9F7F007B960B /* RadarDelegate.h */,
-				E62446A52BEC0A4900ECCCAD /* RadarLocationPermissionStatus.h */,
 				96A5A0DA27AD9F7F007B960B /* RadarEvent.h */,
 				96A5A0E927AD9F7F007B960B /* RadarFraud.h */,
 				96A5A0E627AD9F7F007B960B /* RadarGeofence.h */,
@@ -500,8 +489,6 @@
 				DD633EC5237C5B9C0026C91A /* RadarPermissionsHelper.h */,
 				DD633EC6237C5B9C0026C91A /* RadarPermissionsHelper.m */,
 				82D04AB829722ED20036619F /* RadarReplay.h */,
-				E624465E2BEBEB8A00ECCCAD /* RadarLocationPermissionManager.h */,
-				E624465C2BEBEB5D00ECCCAD /* RadarLocationPremissionManager.m */,
 				82D04AC629771BF10036619F /* RadarReplay.m */,
 				82D04ABA29722ED20036619F /* RadarReplayBuffer.h */,
 				82D04AB929722ED20036619F /* RadarReplayBuffer.m */,
@@ -546,8 +533,6 @@
 		DD27CB7D235D13F000299FEC /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				E62446612BEBF3F900ECCCAD /* RadarLocationPremissionStatus.m */,
-				E62446632BEBF4BB00ECCCAD /* RadarLocationPermissionStatus+Internal.h */,
 				96A5A0B727AD9F40007B960B /* RadarAddress+Internal.h */,
 				78156B9623A8210E0094410E /* RadarAddress.m */,
 				96A5A0B027AD9F40007B960B /* RadarBeacon+Internal.h */,
@@ -632,7 +617,6 @@
 				96A5A0F627AD9F7F007B960B /* RadarRouteGeometry.h in Headers */,
 				0107AA0C26220045008AB52F /* RadarAPIHelper.h in Headers */,
 				96A5A0C127AD9F41007B960B /* RadarRoutes+Internal.h in Headers */,
-				E62446642BEBF4BB00ECCCAD /* RadarLocationPermissionStatus+Internal.h in Headers */,
 				96A5A10C27AD9F7F007B960B /* RadarRoutes.h in Headers */,
 				82D04ABD29722ED20036619F /* RadarReplayBuffer.h in Headers */,
 				82EEA92A2A9E684C0048DCEC /* RadarFeatureSettings.h in Headers */,
@@ -655,7 +639,6 @@
 				96A5A0FF27AD9F7F007B960B /* RadarGeofenceGeometry.h in Headers */,
 				96A5A0CB27AD9F41007B960B /* RadarRoute+Internal.h in Headers */,
 				96A5A10527AD9F7F007B960B /* RadarTrackingOptions.h in Headers */,
-				E62446A72BEC0AC700ECCCAD /* RadarLocationPermissionStatus.h in Headers */,
 				96A5A10927AD9F7F007B960B /* RadarContext.h in Headers */,
 				0107AA1226220049008AB52F /* RadarCollectionAdditions.h in Headers */,
 				E6EEC56E2B20F41A00DD096B /* RadarFileStorage.h in Headers */,
@@ -685,7 +668,6 @@
 				0114F058284EFDB700ADA4E4 /* RadarRouteMode.h in Headers */,
 				96A5A0D527AD9F41007B960B /* RadarRouteDuration+Internal.h in Headers */,
 				96A5A0CE27AD9F41007B960B /* RadarCoordinate+Internal.h in Headers */,
-				E624465F2BEBEB8A00ECCCAD /* RadarLocationPermissionManager.h in Headers */,
 				96A5A11927ADA02F007B960B /* RadarLog.h in Headers */,
 				96A5A10A27AD9F7F007B960B /* RadarAddress.h in Headers */,
 				0107AA1926220052008AB52F /* RadarLocationManager.h in Headers */,
@@ -853,14 +835,12 @@
 				0107AB29262201F4008AB52F /* RadarTrackingOptions.m in Sources */,
 				0107AB2F262201FB008AB52F /* RadarUtils.m in Sources */,
 				0107AA8926220140008AB52F /* RadarChain.m in Sources */,
-				E624465D2BEBEB5D00ECCCAD /* RadarLocationPremissionManager.m in Sources */,
 				0107AB11262201D9008AB52F /* RadarCollectionAdditions.m in Sources */,
 				96FC90F7277379C1000757DF /* RadarFraud.m in Sources */,
 				F6F959842C3D7EDE00BC30FE /* RadarTimeZone.m in Sources */,
 				0107AB1D262201E5008AB52F /* RadarLocationManager.m in Sources */,
 				0107AAB02622016B008AB52F /* RadarPlace.m in Sources */,
 				0107AAE6262201A1008AB52F /* RadarSegment.m in Sources */,
-				E62446622BEBF3F900ECCCAD /* RadarLocationPremissionStatus.m in Sources */,
 				0107AB20262201E9008AB52F /* RadarPermissionsHelper.m in Sources */,
 				0107AAC22622017E008AB52F /* RadarRoute.m in Sources */,
 				0107AAF2262201B2008AB52F /* RadarUser.m in Sources */,
