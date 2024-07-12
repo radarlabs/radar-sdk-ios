@@ -283,12 +283,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 
 - (void)setUp {
     [super setUp];
-    [Radar initializeWithPublishableKey:kPublishableKey options:[RadarInitializeOptions fromDictionary:@{
-        @"userId": @"initUserId",
-        @"metadata": @{
-            @"initMetaKey": @"initMetaValue"
-        }
-    }]];
+    [Radar initializeWithPublishableKey:kPublishableKey];
     [RadarSettings setLogLevel:RadarLogLevelDebug];
 
     self.apiHelperMock = [RadarAPIHelperMock new];
@@ -315,10 +310,6 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 
 - (void)test_Radar_initialize {
     XCTAssertEqualObjects(kPublishableKey, [RadarSettings publishableKey]);
-    XCTAssertEqualObjects(@"initUserId", [Radar getUserId]);
-    XCTAssertEqualObjects(@{
-        @"initMetaKey": @"initMetaValue"
-    }, [Radar getMetadata]);
 }
 
 - (void)test_Radar_setUserId {
@@ -1501,8 +1492,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 - (void)test_RadarSdkConfiguration {
     RadarSdkConfiguration *sdkConfiguration = [[RadarSdkConfiguration alloc] initWithLogLevel:RadarLogLevelWarning
                                                                     startTrackingOnInitialize:YES
-                                                                        trackOnceOnInitialize:YES
-                                                                            trackOnceOnResume:YES];
+                                                                           trackOnceOnAppOpen:YES];
 
     [RadarSettings setSdkConfiguration:sdkConfiguration];
     XCTAssertEqual([RadarSettings logLevel], RadarLogLevelWarning);
@@ -1523,8 +1513,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
         XCTAssertEqual(config.meta.sdkConfiguration.logLevel, RadarLogLevelInfo);
         XCTAssertEqual([RadarSettings logLevel], RadarLogLevelInfo);
         
-        XCTAssertEqual(config.meta.sdkConfiguration.trackOnceOnResume, YES);
-        XCTAssertEqual(config.meta.sdkConfiguration.trackOnceOnInitialize, YES);
+        XCTAssertEqual(config.meta.sdkConfiguration.trackOnceOnAppOpen, YES);
         XCTAssertEqual(config.meta.sdkConfiguration.startTrackingOnInitialize, YES);
 
         [expectation fulfill];
@@ -1542,8 +1531,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     XCTAssertEqual([RadarLog levelFromString:(NSString *)clientSdkConfigurationDict[@"logLevel"]], RadarLogLevelDebug);
     
     RadarSdkConfiguration *savedSdkConfiguration = [RadarSettings sdkConfiguration];
-    XCTAssertEqual(savedSdkConfiguration.trackOnceOnResume, YES);
-    XCTAssertEqual(savedSdkConfiguration.trackOnceOnInitialize, YES);
+    XCTAssertEqual(savedSdkConfiguration.trackOnceOnAppOpen, YES);
     XCTAssertEqual(savedSdkConfiguration.startTrackingOnInitialize, YES);
 }
 
