@@ -91,8 +91,7 @@
 
         self.danglingBackgroundPermissionRequest = YES;
 
-        // temporarily disabling this call so as to prevent all users from modifying their plist
-        // [self.locationManager requestAlwaysAuthorization];
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelWarning type:RadarLogTypeSDKCall message:@"This method is disabled in this minor version of the SDK in preparation for refactoring in the next major version."];
 
         if (@available(iOS 14.0, *)) {
             RadarLocationPermissionStatus *status = [[RadarLocationPermissionStatus alloc] initWithStatus:self.locationManager.authorizationStatus
