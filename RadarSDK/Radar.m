@@ -1276,7 +1276,8 @@
 }
 
 + (void)requestBackgroundLocationPermission {
-    [[RadarLocationPermissionManager sharedInstance] requestBackgroundLocationPermission];
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelWarning type:RadarLogTypeSDKCall message:@"This method is disabled in this minor version of the SDK in preparation for refactoring in the next major version."];
+    // [[RadarLocationPermissionManager sharedInstance] requestBackgroundLocationPermission];
 }
 
 + (void)openAppSettings {

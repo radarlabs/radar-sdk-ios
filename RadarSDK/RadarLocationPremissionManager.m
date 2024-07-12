@@ -91,7 +91,9 @@
 
         self.danglingBackgroundPermissionRequest = YES;
 
-        [self.locationManager requestAlwaysAuthorization];
+        // temporarily disabling this call so as to prevent all users from modifying their plist
+        // [self.locationManager requestAlwaysAuthorization];
+
         if (@available(iOS 14.0, *)) {
             RadarLocationPermissionStatus *status = [[RadarLocationPermissionStatus alloc] initWithStatus:self.locationManager.authorizationStatus
                                                                                    backgroundPopupAvailable:NO
