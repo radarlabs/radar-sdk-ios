@@ -1,5 +1,9 @@
 # Migration guides
 
+# 3.13.x to 3.14.x
+
+- The `Radar.requestBackgroundLocationPermission` is temporary disabled to facilitate improvements and refactors to handling location permission request lifecycle. 
+
 ## 3.12.x to 3.13.x
 -  The `Radar.trackVerified()` method now returns `token: RadarVerifiedLocationToken`, which includes `user`, `events`, `token,`, `expiresAt`, `expiresIn`, and `passed`. The `Radar.trackVerifiedToken()` method has been removed, since `Radar.trackVerified()` now returns a signed JWT.
 
