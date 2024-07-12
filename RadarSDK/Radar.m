@@ -80,7 +80,7 @@
                                          if (sdkConfiguration.startTrackingOnInitialize && ![RadarSettings tracking]) {
                                             [Radar startTrackingWithOptions:[RadarSettings trackingOptions]];
                                          }
-                                         if (sdkConfiguration.trackOnceOnInitialize) {
+                                         if (sdkConfiguration.trackOnceOnAppOpen) {
                                             [Radar trackOnceWithCompletionHandler:nil];
                                          }
 
@@ -1252,7 +1252,7 @@
     [Radar logOpenedAppConversion];
 
     RadarSdkConfiguration *sdkConfiguration = [RadarSettings sdkConfiguration];
-    if (sdkConfiguration.trackOnceOnResume) {
+    if (sdkConfiguration.trackOnceOnAppOpen) {
         [Radar trackOnceWithCompletionHandler:nil];
     }
 }

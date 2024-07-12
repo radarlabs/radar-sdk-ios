@@ -21,17 +21,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, assign) BOOL startTrackingOnInitialize;
 
-@property (nonatomic, assign) BOOL trackOnceOnInitialize;
-
-@property (nonatomic, assign) BOOL trackOnceOnResume;
+@property (nonatomic, assign) BOOL trackOnceOnAppOpen;
 
 /**
  Initializes a new RadarSdkConfiguration object with given value.
  */
 - (instancetype)initWithLogLevel:(RadarLogLevel)logLevel
        startTrackingOnInitialize:(BOOL)startTrackingOnInitialize
-           trackOnceOnInitialize:(BOOL)trackOnceOnInitialize
-               trackOnceOnResume:(BOOL)trackOnceOnResume;
+              trackOnceOnAppOpen:(BOOL)trackOnceOnAppOpen;
 
 /**
  Creates a RadarSdkConfiguration object from the provided dictionary.
