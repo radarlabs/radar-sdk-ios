@@ -10,6 +10,7 @@
 #import "RadarLocationPermissionManager.h"
 #import "RadarLocationPermissionStatus+Internal.h"
 #import "RadarDelegateHolder.h"
+#import "RadarLogger.h"
 
 @interface RadarLocationPermissionManager ()
 
