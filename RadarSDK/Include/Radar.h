@@ -1179,7 +1179,7 @@ logConversionWithNotification
 /**
  Requests background location permissions.
 */
-+ (void)requestBackgroundLocationPermission;
++ (void)logBackgroundLocationPermission;
 
 /**
  Directs the user to the app settings to enable location permissions.

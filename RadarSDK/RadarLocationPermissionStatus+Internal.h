@@ -16,9 +16,9 @@
 + (RadarLocationPermissionStatus *_Nullable) getRadarLocationPermissionStatus;
 
 - (instancetype _Nullable)initWithStatus:(CLAuthorizationStatus)locationManagerStatus
-               fullAccuracyAuthorization:(BOOL)fullAccuracyAuthorization
+               precisePermission:(BOOL)precisePermission
               backgroundRequestAvailable:(BOOL)fullAccuracyAuthorization
                      inForegroundRequest:(BOOL)inForegroundRequest
-       userDeniedBackgroundAuthorization:(BOOL)inForegroundRequest;
+       userDeniedBackgroundPermission:(BOOL)userDeniedBackgroundPermission;
 
 @end

@@ -18,16 +18,16 @@
  The type of location permissions state.
 */
 typedef NS_ENUM(NSInteger, RadarLocationPermissionState) {
-    NoAuthorization,
-    ForegroundAuthorized,
-    ForegroundFullAccuracyDenied,
-    ForegroundAuthorizationDenied,
-    ForegroundAuthorizationRequestInProgress,
-    BackgroundAuthorized,
-    BackgroundFullAccuracyDenied,
-    BackgroundAuthorizationDenied,
-    BackgroundAuthorizationRequestInProgress,
-    AuthorizationRestricted,
+    NoPermission,
+    ForegroundPermissionGranted,
+    ForegroundCoarsePermissionGranted,
+    ForegroundPermissionDenied,
+    ForegroundPermissionRequestInProgress,
+    BackgroundPermissionGranted,
+    BackgroundCoarsePermissionGranted,
+    BackgroundPermissionDenied,
+    BackgroundPermissionRequestInProgress,
+    PermissionRestricted,
     Unknown
 };
 
@@ -38,7 +38,7 @@ typedef NS_ENUM(NSInteger, RadarLocationPermissionState) {
 /**
  The flag indicating if the user authorized full location accuracy instead of reduced location accuracy.
 */
-@property (nonatomic, assign) BOOL fullAccuracyAuthorization;
+@property (nonatomic, assign) BOOL precisePermission;
 /**
  The flag indicating if the user has been prompted for background location permissions.
 */
@@ -50,7 +50,7 @@ typedef NS_ENUM(NSInteger, RadarLocationPermissionState) {
 /**
  The flag indicating if the user has rejected background location permissions.
 */
-@property (nonatomic, assign) BOOL userDeniedBackgroundAuthorization;
+@property (nonatomic, assign) BOOL userDeniedBackgroundPermission;
 /**
  The state of the location permissions represented by the RadarLocationPermissionState enum.
 */

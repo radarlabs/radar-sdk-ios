@@ -43,10 +43,10 @@
         } else{
             if (@available(iOS 14.0, *)) {
                 self.status = [[RadarLocationPermissionStatus alloc] initWithStatus:self.locationManager.authorizationStatus
-                                                          fullAccuracyAuthorization:self.locationManager.accuracyAuthorization == CLAccuracyAuthorizationFullAccuracy
+                                                          precisePermission:self.locationManager.accuracyAuthorization == CLAccuracyAuthorizationFullAccuracy
                                                          backgroundRequestAvailable:YES
                                                                 inForegroundRequest:NO
-                                                  userDeniedBackgroundAuthorization:NO];
+                                                  userDeniedBackgroundPermission:NO];
             }
         }
        
@@ -88,7 +88,7 @@
     }
 }
 
-- (void)requestBackgroundLocationPermission {
+- (void)logBackgroundLocationPermission {
     if (self.status.locationManagerStatus == kCLAuthorizationStatusAuthorizedWhenInUse) {
 
         self.danglingBackgroundPermissionRequest = YES;
@@ -97,10 +97,10 @@
 
         if (@available(iOS 14.0, *)) {
             RadarLocationPermissionStatus *status = [[RadarLocationPermissionStatus alloc] initWithStatus:self.locationManager.authorizationStatus
-                                                                                fullAccuracyAuthorization:self.locationManager.accuracyAuthorization == CLAccuracyAuthorizationFullAccuracy
+                                                                                precisePermission:self.locationManager.accuracyAuthorization == CLAccuracyAuthorizationFullAccuracy
                                                                                backgroundRequestAvailable:NO
                                                                                       inForegroundRequest:self.status.inForegroundRequest
-                                                                        userDeniedBackgroundAuthorization: self.status.userDeniedBackgroundAuthorization];
+                                                                        userDeniedBackgroundPermission: self.status.userDeniedBackgroundPermission];
             [self updateStatus:status];
             // TODO: sync the user's location permission action with the their permission status here
         }
@@ -112,10 +112,10 @@
             if (self.danglingBackgroundPermissionRequest) {
                 if (@available(iOS 14.0, *)) {
                     RadarLocationPermissionStatus *status = [[RadarLocationPermissionStatus alloc] initWithStatus:self.locationManager.authorizationStatus
-                                                                                        fullAccuracyAuthorization:self.locationManager.accuracyAuthorization == CLAccuracyAuthorizationFullAccuracy
+                                                                                        precisePermission:self.locationManager.accuracyAuthorization == CLAccuracyAuthorizationFullAccuracy
                                                                                        backgroundRequestAvailable:self.status.backgroundRequestAvailable
                                                                                               inForegroundRequest:self.status.inForegroundRequest
-                                                                                userDeniedBackgroundAuthorization:YES];
+                                                                                userDeniedBackgroundPermission:YES];
                     [self updateStatus:status];
                 }
             }
@@ -130,10 +130,10 @@
         [self.locationManager requestWhenInUseAuthorization];
         if (@available(iOS 14.0, *)) {
             RadarLocationPermissionStatus *status = [[RadarLocationPermissionStatus alloc] initWithStatus:self.locationManager.authorizationStatus
-                                                                                fullAccuracyAuthorization:self.locationManager.accuracyAuthorization == CLAccuracyAuthorizationFullAccuracy
+                                                                                precisePermission:self.locationManager.accuracyAuthorization == CLAccuracyAuthorizationFullAccuracy
                                                                                backgroundRequestAvailable:self.status.backgroundRequestAvailable
                                                                                       inForegroundRequest:YES
-                                                                        userDeniedBackgroundAuthorization: self.status.userDeniedBackgroundAuthorization];
+                                                                        userDeniedBackgroundPermission: self.status.userDeniedBackgroundPermission];
             [self updateStatus:status];
         }
         // TODO: sync the user's location permission action with the their permission status here
@@ -149,10 +149,10 @@
             if (status == self.status.locationManagerStatus) {
                 // if the status did not changed, we update the status here, otherwise we will update it in the delegate method
                 RadarLocationPermissionStatus *newStatus = [[RadarLocationPermissionStatus alloc] initWithStatus:status
-                                                                                       fullAccuracyAuthorization:self.locationManager.accuracyAuthorization == CLAccuracyAuthorizationFullAccuracy
+                                                                                       precisePermission:self.locationManager.accuracyAuthorization == CLAccuracyAuthorizationFullAccuracy
                                                                                       backgroundRequestAvailable:self.status.backgroundRequestAvailable
                                                                                              inForegroundRequest:self.status.inForegroundRequest
-                                                                               userDeniedBackgroundAuthorization: YES];
+                                                                               userDeniedBackgroundPermission: YES];
                 [self updateStatus:newStatus];
             }
         }
@@ -172,12 +172,12 @@
 - (void)locationManager:(CLLocationManager *)manager didChangeAuthorizationStatus:(CLAuthorizationStatus)status {
     if (@available(iOS 14.0, *)) {
         RadarLocationPermissionStatus *newStatus = [[RadarLocationPermissionStatus alloc] initWithStatus:status
-                                                                               fullAccuracyAuthorization:self.locationManager.accuracyAuthorization == CLAccuracyAuthorizationFullAccuracy
+                                                                               precisePermission:self.locationManager.accuracyAuthorization == CLAccuracyAuthorizationFullAccuracy
                                                                               backgroundRequestAvailable:self.status.backgroundRequestAvailable
                                                     // any change in status will always result in the in foreground request closing
                                                                                       inForegroundRequest:NO
-                                                                        userDeniedBackgroundAuthorization: 
-                                                    self.status.userDeniedBackgroundAuthorization || (status == kCLAuthorizationStatusDenied)];
+                                                                        userDeniedBackgroundPermission: 
+                                                    self.status.userDeniedBackgroundPermission || (status == kCLAuthorizationStatusDenied)];
         [self updateStatus:newStatus];
     }
 }

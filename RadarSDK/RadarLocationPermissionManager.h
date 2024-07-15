@@ -18,7 +18,7 @@
 
 - (void)requestForegroundLocationPermission;
 
-- (void)requestBackgroundLocationPermission;
+- (void)logBackgroundLocationPermission;
 
 - (void)openAppSettings;
 

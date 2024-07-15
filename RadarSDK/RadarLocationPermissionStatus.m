@@ -27,22 +27,22 @@
 }
 
 - (instancetype _Nullable)initWithStatus:(CLAuthorizationStatus)locationManagerStatus
-               fullAccuracyAuthorization:(BOOL)fullAccuracyAuthorization
+               precisePermission:(BOOL)precisePermission
               backgroundRequestAvailable:(BOOL)backgroundRequestAvailable
                      inForegroundRequest:(BOOL)inForegroundRequest
-       userDeniedBackgroundAuthorization:(BOOL)userDeniedBackgroundAuthorization {
+       userDeniedBackgroundPermission:(BOOL)userDeniedBackgroundPermission {
     self = [super init];
     if (self) {
         _locationManagerStatus = locationManagerStatus;
-        _fullAccuracyAuthorization = fullAccuracyAuthorization;
+        _precisePermission = precisePermission;
         _backgroundRequestAvailable = backgroundRequestAvailable;
         _inForegroundRequest = inForegroundRequest;
-        _userDeniedBackgroundAuthorization = userDeniedBackgroundAuthorization;
-        _locationPermissionState = [RadarLocationPermissionStatus locationPermissionStateForLocationManagerStatus:locationManagerStatus 
-                                                                                        fullAccuracyAuthorization:fullAccuracyAuthorization
+        _userDeniedBackgroundPermission = userDeniedBackgroundPermission;
+        _locationPermissionState = [RadarLocationPermissionStatus locationPermissionStateForLocationManagerStatus:locationManagerStatus
+                                                                                                precisePermission:precisePermission
                                                                                        backgroundRequestAvailable:backgroundRequestAvailable
                                                                                               inForegroundRequest:inForegroundRequest
-                                                                                userDeniedBackgroundAuthorization:userDeniedBackgroundAuthorization];
+                                                                                   userDeniedBackgroundPermission:userDeniedBackgroundPermission];
     }
     return self;
 }
@@ -71,10 +71,10 @@
     }
     return @{
         @"locationManagerStatus": statusString,
-        @"fullAccuracyAuthorization": @(self.fullAccuracyAuthorization),
+        @"precisePermission": @(self.precisePermission),
         @"backgroundRequestAvailable": @(self.backgroundRequestAvailable),
         @"inForegroundRequest": @(self.inForegroundRequest),
-        @"userDeniedBackgroundAuthorization": @(self.userDeniedBackgroundAuthorization),
+        @"userDeniedBackgroundPermission": @(self.userDeniedBackgroundPermission),
         @"locationPermissionState": [RadarLocationPermissionStatus stringForLocationPermissionState:self.locationPermissionState]
     };
 }
@@ -95,75 +95,75 @@
     } else {
         locationManagerStatus = kCLAuthorizationStatusNotDetermined;
     }
-    BOOL fullAccuracyAuthorization = [dictionary[@"fullAccuracyAuthorization"] boolValue];
-    BOOL backgroundRequestAvailable = [dictionary[@"inForegroundRequest"] boolValue];
+    BOOL fullAccuracyPermission = [dictionary[@"fullAccuracyPermission"] boolValue];
+    BOOL backgroundRequestAvailable = [dictionary[@"backgroundRequestAvailable"] boolValue];
     BOOL inForegroundRequest = [dictionary[@"inForegroundRequest"] boolValue];
-    BOOL userDeniedBackgroundAuthorization = [dictionary[@"userDeniedBackgroundAuthorization"] boolValue];
+    BOOL userDeniedBackgroundPermission = [dictionary[@"userDeniedBackgroundPermission"] boolValue];
     return [self initWithStatus:locationManagerStatus
-      fullAccuracyAuthorization:fullAccuracyAuthorization
+      precisePermission:userDeniedBackgroundPermission
      backgroundRequestAvailable:backgroundRequestAvailable
             inForegroundRequest:inForegroundRequest
-userDeniedBackgroundAuthorization:userDeniedBackgroundAuthorization];
+userDeniedBackgroundPermission:userDeniedBackgroundPermission];
 }
 
 + (NSString *)stringForLocationPermissionState:(RadarLocationPermissionState)state {
     switch (state) {
-        case NoAuthorization:
-            return @"NO_AUTHORIZATION";
-        case ForegroundAuthorized:
-            return @"FOREGROUND_AUTHORIZED";
-        case ForegroundFullAccuracyDenied:
-            return @"FOREGROUND_FULL_ACCURACY_DENIED";
-        case ForegroundAuthorizationDenied:
-            return @"FOREGROUND_AUTHORIOZATION_DENIED";
-        case ForegroundAuthorizationRequestInProgress:
-            return @"FOREGROUND_AUTHORIZATION_REQUEST_IN_PROGRESS";
-        case BackgroundAuthorized:
-            return @"BACKGROUND_AUTHORIZED";
-        case BackgroundFullAccuracyDenied:
-            return @"BACKGROUND_FULL_ACCURACY_DENIED";
-        case BackgroundAuthorizationDenied:
-            return @"BACKGROUND_AUTHORIZATION_DENIED";
-        case BackgroundAuthorizationRequestInProgress:
-            return @"BACKGROUND_AUTHORIZATION_REQUEST_IN_PROGRESS";
-        case AuthorizationRestricted:
-            return @"AUTHORIZATION_RESTRICTED";
+        case NoPermission:
+            return @"NO_PERMISSION";
+        case ForegroundPermissionGranted:
+            return @"FOREGROUND_PERMISSION_GRANTED"; 
+        case ForegroundCoarsePermissionGranted:
+            return @"FOREGROUND_COARSE_PERMISSION_GRANTED";
+        case ForegroundPermissionDenied:
+            return @"FOREGROUND_PERMISSION_DENIED"; 
+        case ForegroundPermissionRequestInProgress:
+            return @"FOREGROUND_PERMISSION_REQUEST_IN_PROGRESS";
+        case BackgroundPermissionGranted:
+            return @"BACKGROUND_PERMISSION_GRANTED";
+        case BackgroundCoarsePermissionGranted:
+            return @"BACKGROUND_COARSE_PERMISSION_GRANTED";
+        case BackgroundPermissionDenied:
+            return @"BACKGROUND_PERMISSION_DENIED";
+        case BackgroundPermissionRequestInProgress:
+            return @"BACKGROUND_PERMISSION_REQUEST_IN_PROGRESS";
+        case PermissionRestricted:
+            return @"PERMISSION_RESTRICTED";
         default:
             return @"UNKNOWN";
     }
 }
 
 + (RadarLocationPermissionState)locationPermissionStateForLocationManagerStatus:(CLAuthorizationStatus)locationManagerStatus
-                                                      fullAccuracyAuthorization:(BOOL)fullAccuracyAuthorization
+                                                              precisePermission:(BOOL)precisePermission
                                                      backgroundRequestAvailable:(BOOL)backgroundRequestAvailable
                                                             inForegroundRequest:(BOOL)inForegroundRequest
-                                              userDeniedBackgroundAuthorization:(BOOL)userDeniedBackgroundAuthorization {
+                                                 userDeniedBackgroundPermission:(BOOL)userDeniedBackgroundPermission {
 
     if (locationManagerStatus == kCLAuthorizationStatusNotDetermined) {
-        return inForegroundRequest ? ForegroundAuthorizationRequestInProgress : NoAuthorization;
+        return inForegroundRequest ? ForegroundPermissionRequestInProgress : NoPermission;
     }
 
     if (locationManagerStatus == kCLAuthorizationStatusDenied) {
-        return ForegroundAuthorizationDenied;
+        return ForegroundPermissionDenied;
     }
 
     if (locationManagerStatus == kCLAuthorizationStatusAuthorizedAlways) {
-        if (fullAccuracyAuthorization) {
-            return BackgroundAuthorized;
+        if (precisePermission) {
+            return BackgroundPermissionGranted;
         } else {
-            return BackgroundFullAccuracyDenied;
+            return BackgroundCoarsePermissionGranted;
         }
     }
 
     if (locationManagerStatus == kCLAuthorizationStatusAuthorizedWhenInUse) {
-        if (userDeniedBackgroundAuthorization) {
-            return BackgroundAuthorizationDenied;
+        if (userDeniedBackgroundPermission) {
+            return BackgroundPermissionDenied;
         }
-        return backgroundRequestAvailable ? (fullAccuracyAuthorization ? ForegroundAuthorized : ForegroundFullAccuracyDenied) : BackgroundAuthorizationRequestInProgress;
+        return backgroundRequestAvailable ? (precisePermission ? ForegroundPermissionGranted : ForegroundCoarsePermissionGranted) : BackgroundPermissionRequestInProgress;
     }
 
     if (locationManagerStatus == kCLAuthorizationStatusRestricted) {
-        return AuthorizationRestricted;
+        return PermissionRestricted;
     }
     
     return Unknown;

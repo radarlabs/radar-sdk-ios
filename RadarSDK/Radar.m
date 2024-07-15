@@ -1275,8 +1275,8 @@
     [[RadarLocationPermissionManager sharedInstance] requestForegroundLocationPermission];
 }
 
-+ (void)requestBackgroundLocationPermission {
-    [[RadarLocationPermissionManager sharedInstance] requestBackgroundLocationPermission];
++ (void)logBackgroundLocationPermission {
+    [[RadarLocationPermissionManager sharedInstance] logBackgroundLocationPermission];
 }
 
 + (void)openAppSettings {
