@@ -526,6 +526,7 @@
     }
 
     NSMutableDictionary *params = [NSMutableDictionary new];
+    params[@"user"] = [RadarSettings _id];
     params[@"userId"] = RadarSettings.userId;
     params[@"externalId"] = options.externalId;
 

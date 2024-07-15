@@ -21,6 +21,7 @@
 #import "RadarVerificationManager.h"
 #import "RadarReplayBuffer.h"
 #import "RadarFeatureSettings.h"
+#import "RadarTripOptions.h"
 
 @interface Radar ()
 
@@ -497,7 +498,15 @@
     [[RadarAPIClient sharedInstance] createTripWithOptions:tripOptions
                                          completionHandler:^(RadarStatus status, RadarTrip *trip, NSArray<RadarEvent *> *events) {
                                              if (status == RadarStatusSuccess) {
-                                                 [RadarSettings setTripOptions:tripOptions];
+                                                 if (trip != nil) {
+                                                    RadarTripOptions *newTripOptions = [[RadarTripOptions alloc] initWithExternalId:trip.externalId
+                                                                                                destinationGeofenceTag:trip.destinationGeofenceTag
+                                                                                        destinationGeofenceExternalId:trip.destinationGeofenceExternalId
+                                                                                                    scheduledArrivalAt:trip.scheduledArrivalAt
+                                                                                                                metadata:trip.metadata
+                                                                                                                   mode:trip.mode];
+                                                    [RadarSettings setTripOptions:newTripOptions];
+                                                 }
 
                                                  if (Radar.isTracking) {
                                                      [RadarSettings setPreviousTrackingOptions:[RadarSettings trackingOptions]];
@@ -530,7 +539,15 @@
                                                     status:status
                                          completionHandler:^(RadarStatus status, RadarTrip *trip, NSArray<RadarEvent *> *events) {
                                              if (status == RadarStatusSuccess) {
-                                                 [RadarSettings setTripOptions:options];
+                                                if (trip != nil) {
+                                                    RadarTripOptions *newTripOptions = [[RadarTripOptions alloc] initWithExternalId:trip.externalId
+                                                                                                destinationGeofenceTag:trip.destinationGeofenceTag
+                                                                                        destinationGeofenceExternalId:trip.destinationGeofenceExternalId
+                                                                                                    scheduledArrivalAt:trip.scheduledArrivalAt
+                                                                                                                metadata:trip.metadata
+                                                                                                                    mode:trip.mode];
+                                                    [RadarSettings setTripOptions:newTripOptions];
+                                                }
 
                                                  // flush location update to generate events
                                                  [[RadarLocationManager sharedInstance] getLocationWithCompletionHandler:nil];

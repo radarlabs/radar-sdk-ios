@@ -34,11 +34,15 @@ static NSString *const kApproachingThreshold = @"approachingThreshold";
 - (instancetype)initWithExternalId:(NSString *_Nonnull)externalId
             destinationGeofenceTag:(NSString *_Nullable)destinationGeofenceTag
      destinationGeofenceExternalId:(NSString *_Nullable)destinationGeofenceExternalId
-                scheduledArrivalAt:(NSDate *_Nullable)scheduledArrivalAt {
+                scheduledArrivalAt:(NSDate *_Nullable)scheduledArrivalAt
+                          metadata:(NSDictionary *_Nullable)metadata 
+                              mode:(RadarRouteMode)mode {
     self = [self initWithExternalId:externalId destinationGeofenceTag:destinationGeofenceTag destinationGeofenceExternalId:destinationGeofenceExternalId];
 
     if (self) {
         _scheduledArrivalAt = scheduledArrivalAt;
+        _metadata = metadata;
+        _mode = mode;
     }
 
     return self;
@@ -60,25 +64,29 @@ static NSString *const kApproachingThreshold = @"approachingThreshold";
             scheduledArrivalAt = [NSDate dateWithTimeIntervalSince1970:([(NSNumber *)scheduledArrivalAtObj doubleValue] / 1000.0)];
         }
     }
+    NSDictionary *metadata = dict[kMetadata];
+    NSString *modeStr = dict[kMode];
+    RadarRouteMode mode = RadarRouteModeCar;
+    if ([modeStr isEqualToString:@"foot"]) {
+        mode = RadarRouteModeFoot;
+    } else if ([modeStr isEqualToString:@"bike"]) {
+        mode = RadarRouteModeBike;
+    } else if ([modeStr isEqualToString:@"truck"]) {
+        mode = RadarRouteModeTruck;
+    } else if ([modeStr isEqualToString:@"motorbike"]) {
+        mode = RadarRouteModeMotorbike;
+    } else {
+        mode = RadarRouteModeCar;
+    }
 
     RadarTripOptions *options = [[RadarTripOptions alloc] initWithExternalId:dict[kExternalId]
                                                       destinationGeofenceTag:dict[kDestinationGeofenceTag]
                                                destinationGeofenceExternalId:dict[kDestinationGeofenceExternalId]
-                                                          scheduledArrivalAt:scheduledArrivalAt];
-    options.metadata = dict[kMetadata];
-    NSString *modeStr = dict[kMode];
-    if ([modeStr isEqualToString:@"foot"]) {
-        options.mode = RadarRouteModeFoot;
-    } else if ([modeStr isEqualToString:@"bike"]) {
-        options.mode = RadarRouteModeBike;
-    } else if ([modeStr isEqualToString:@"truck"]) {
-        options.mode = RadarRouteModeTruck;
-    } else if ([modeStr isEqualToString:@"motorbike"]) {
-        options.mode = RadarRouteModeMotorbike;
-    } else {
-        options.mode = RadarRouteModeCar;
-    }
+                                                          scheduledArrivalAt:scheduledArrivalAt
+                                                                    metadata:metadata
+                                                                        mode:mode];
     options.approachingThreshold = [dict[kApproachingThreshold] intValue];
+
     return options;
 }
 

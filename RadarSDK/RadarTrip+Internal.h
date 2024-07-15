@@ -19,6 +19,7 @@
                                 mode:(RadarRouteMode)mode
                          etaDistance:(float)etaDistance
                          etaDuration:(float)etaDuration
+                  scheduledArrivalAt:(NSDate *_Nullable)scheduledArrivalAt
                               status:(RadarTripStatus)status;
 - (instancetype _Nullable)initWithObject:(id _Nonnull)object;
 
