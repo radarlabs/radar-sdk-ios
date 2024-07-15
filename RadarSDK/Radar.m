@@ -510,7 +510,10 @@
 
                                                  if (trackingOptions) {
                                                      [self startTrackingWithOptions:trackingOptions];
+                                                 } else if (!Radar.isTracking) {
+                                                     [self startTrackingWithOptions:[RadarSettings remoteTrackingOptions] ?: [RadarSettings trackingOptions]];
                                                  }
+
 
                                                  // flush location update to generate events
                                                  [[RadarLocationManager sharedInstance] getLocationWithCompletionHandler:nil];
