@@ -349,8 +349,4 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         
     }
     
-    func didUpdateLocationPermissionStatus(status: RadarLocationPermissionStatus) {
-        
-    }
-    
 }
