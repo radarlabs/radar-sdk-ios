@@ -33,7 +33,6 @@ static NSString *const kTracking = @"radar-tracking";
 static NSString *const kTrackingOptions = @"radar-trackingOptions";
 static NSString *const kPreviousTrackingOptions = @"radar-previousTrackingOptions";
 static NSString *const kRemoteTrackingOptions = @"radar-remoteTrackingOptions";
-static NSString *const kFeatureSettings = @"radar-featureSettings";
 static NSString *const kClientSdkConfiguration = @"radar-clientSdkConfiguration";
 static NSString *const kSdkConfiguration = @"radar-sdkConfiguration";
 static NSString *const kTripOptions = @"radar-tripOptions";
