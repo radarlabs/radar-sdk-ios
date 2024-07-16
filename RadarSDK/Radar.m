@@ -21,8 +21,6 @@
 #import "RadarUtils.h"
 #import "RadarVerificationManager.h"
 #import "RadarReplayBuffer.h"
-#import "RadarLocationPermissionManager.h"
-#import "RadarLocationPermissionStatus.h"
 
 @interface Radar ()
 
@@ -62,7 +60,6 @@
         [RadarSettings updateSessionId];
     }
 
-    [RadarLocationPermissionManager sharedInstance];
 
     [[RadarLocationManager sharedInstance] updateTrackingFromInitialize];
     
@@ -520,7 +517,10 @@
 
                                                  if (trackingOptions) {
                                                      [self startTrackingWithOptions:trackingOptions];
+                                                 } else if (!Radar.isTracking) {
+                                                     [self startTrackingWithOptions:[RadarSettings remoteTrackingOptions] ?: [RadarSettings trackingOptions]];
                                                  }
+
 
                                                  // flush location update to generate events
                                                  [[RadarLocationManager sharedInstance] getLocationWithCompletionHandler:nil];
@@ -1293,22 +1293,6 @@
                                     }];
                                 }
                             }];
-}
-
-+ (void)requestForegroundLocationPermission {
-    [[RadarLocationPermissionManager sharedInstance] requestForegroundLocationPermission];
-}
-
-+ (void)requestBackgroundLocationPermission {
-    [[RadarLocationPermissionManager sharedInstance] requestBackgroundLocationPermission];
-}
-
-+ (void)openAppSettings {
-    [[RadarLocationPermissionManager sharedInstance] openAppSettings];
-}
-
-+ (RadarLocationPermissionStatus *)getLocationPermissionStatus {
-    return [[RadarLocationPermissionManager sharedInstance] getLocationPermissionStatus];
 }
 
 @end

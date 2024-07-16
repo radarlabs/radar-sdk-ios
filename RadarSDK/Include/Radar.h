@@ -20,7 +20,6 @@
 #import "RadarTrackingOptions.h"
 #import "RadarVerifiedLocationToken.h"
 #import "RadarUser.h"
-#import "RadarLocationPermissionStatus.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -1171,26 +1170,6 @@ logConversionWithNotification
  */
 + (NSDictionary *)dictionaryForLocation:(CLLocation *)location NS_SWIFT_NAME(dictionaryForLocation(_:));
 
-/**
- Requests foreground location permissions.
-*/
-+ (void)requestForegroundLocationPermission;
-
-/**
- Requests background location permissions.
-*/
-+ (void)requestBackgroundLocationPermission;
-
-/**
- Directs the user to the app settings to enable location permissions.
-*/
-+ (void)openAppSettings;
-
-/**
- @return A RadarPermissionsStatus object with the current location permissions status.
-
-*/
-+ (RadarLocationPermissionStatus *)getLocationPermissionStatus;
 
 @end
 
