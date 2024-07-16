@@ -21,7 +21,6 @@
 #import "RadarUtils.h"
 #import "RadarVerificationManager.h"
 #import "RadarReplayBuffer.h"
-#import "RadarFeatureSettings.h"
 #import "RadarLocationPermissionManager.h"
 #import "RadarLocationPermissionStatus.h"
 
@@ -54,8 +53,8 @@
     
     [RadarSettings setPublishableKey:publishableKey];
 
-    RadarFeatureSettings *featureSettings = [RadarSettings featureSettings];
-    if (featureSettings.usePersistence) {
+    RadarSdkConfiguration *sdkConfiguration = [RadarSettings sdkConfiguration];
+    if (sdkConfiguration.usePersistence) {
         [[RadarReplayBuffer sharedInstance] loadReplaysFromPersistentStore];
     }
 
@@ -72,7 +71,6 @@
                                      completionHandler:^(RadarStatus status, RadarConfig *config) {
                                          if (status == RadarStatusSuccess && config) {
                                              [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
-                                             [RadarSettings setFeatureSettings:config.meta.featureSettings];
                                              [RadarSettings setSdkConfiguration:config.meta.sdkConfiguration];
                                          }
                                          
@@ -1243,7 +1241,6 @@
                                                 return;
                                              }
                                              [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
-                                             [RadarSettings setFeatureSettings:config.meta.featureSettings];
                                              [RadarSettings setSdkConfiguration:config.meta.sdkConfiguration];
                                          }];
     }

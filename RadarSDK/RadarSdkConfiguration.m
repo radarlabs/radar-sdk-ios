@@ -15,51 +15,67 @@
 
 @implementation RadarSdkConfiguration
 
-- (instancetype)initWithLogLevel:(RadarLogLevel)logLevel
-       startTrackingOnInitialize:(bool)startTrackingOnInitialize
-              trackOnceOnAppOpen:(BOOL)trackOnceOnAppOpen {
-    if (self = [super init]) {
-        _logLevel = logLevel;
-        _startTrackingOnInitialize = startTrackingOnInitialize;
-        _trackOnceOnAppOpen = trackOnceOnAppOpen;
-    }
-    return self;
-}
-
-+ (RadarSdkConfiguration *_Nullable)sdkConfigurationFromDictionary:(NSDictionary *_Nullable)dict {
-    if (!dict) {
+- (instancetype)initWithDict:(NSDictionary *)dict {
+    self = [super init];
+    if (self == nil) {
         return nil;
     }
 
     NSObject *logLevelObj = dict[@"logLevel"];
-    RadarLogLevel logLevel = RadarLogLevelInfo;
+    _logLevel = RadarLogLevelInfo;
     if (logLevelObj && [logLevelObj isKindOfClass:[NSString class]]) {
-        logLevel = [RadarLog levelFromString:(NSString *)logLevelObj];
+        _logLevel = [RadarLog levelFromString:(NSString *)logLevelObj];
     }
 
     NSObject *startTrackingOnInitializeObj = dict[@"startTrackingOnInitialize"]; 
-    BOOL startTrackingOnInitialize = NO;
+    _startTrackingOnInitialize = NO;
     if (startTrackingOnInitializeObj && [startTrackingOnInitializeObj isKindOfClass:[NSNumber class]]) {
-        startTrackingOnInitialize = [(NSNumber *)startTrackingOnInitializeObj boolValue];
+        _startTrackingOnInitialize = [(NSNumber *)startTrackingOnInitializeObj boolValue];
     }
 
     NSObject *trackOnceOnAppOpenObj = dict[@"trackOnceOnAppOpen"];
-    BOOL trackOnceOnAppOpen = NO;
+    _trackOnceOnAppOpen = NO;
     if (trackOnceOnAppOpenObj && [trackOnceOnAppOpenObj isKindOfClass:[NSNumber class]]) {
-        trackOnceOnAppOpen = [(NSNumber *)trackOnceOnAppOpenObj boolValue];
+        _trackOnceOnAppOpen = [(NSNumber *)trackOnceOnAppOpenObj boolValue];
+    }
+    
+    NSObject *usePersistenceObj = dict[@"usePersistence"];
+    _usePersistence = NO;
+    if (usePersistenceObj && [usePersistenceObj isKindOfClass:[NSNumber class]]) {
+        _usePersistence = [(NSNumber *)usePersistenceObj boolValue];
     }
 
-    return [[RadarSdkConfiguration alloc] initWithLogLevel:logLevel 
-                                 startTrackingOnInitialize:startTrackingOnInitialize
-                                        trackOnceOnAppOpen:trackOnceOnAppOpen];
+    NSObject *extendFlushReplaysObj = dict[@"extendFlushReplays"];
+    _extendFlushReplays = NO;
+    if (extendFlushReplaysObj && [extendFlushReplaysObj isKindOfClass:[NSNumber class]]) {
+        _extendFlushReplays = [(NSNumber *)extendFlushReplaysObj boolValue];
+    }
+
+    NSObject *useLogPersistenceObj = dict[@"useLogPersistence"];
+    _useLogPersistence = NO;
+    if (useLogPersistenceObj && [useLogPersistenceObj isKindOfClass:[NSNumber class]]) {
+        _useLogPersistence = [(NSNumber *)useLogPersistenceObj boolValue];
+    }
+    
+    NSObject *useRadarModifiedBeaconObj = dict[@"useRadarModifiedBeacon"];
+    _useRadarModifiedBeacon = NO;
+    if (useRadarModifiedBeaconObj && [useRadarModifiedBeaconObj isKindOfClass:[NSNumber class]]) {
+        _useRadarModifiedBeacon = [(NSNumber *)useRadarModifiedBeaconObj boolValue];
+    }
+
+    return self;
 }
 
 - (NSDictionary *)dictionaryValue {
     NSMutableDictionary *dict = [NSMutableDictionary new];
-    NSString *logLevelString = [RadarLog stringForLogLevel:_logLevel];
-    [dict setValue:logLevelString forKey:@"logLevel"];
-    [dict setValue:@(_startTrackingOnInitialize) forKey:@"startTrackingOnInitialize"];
-    [dict setValue:@(_trackOnceOnAppOpen) forKey:@"trackOnceOnAppOpen"];
+    
+    dict[@"logLevel"] = [RadarLog stringForLogLevel:_logLevel];
+    dict[@"startTrackingOnInitialize"] = @(_startTrackingOnInitialize);
+    dict[@"trackOnceOnAppOpen"] = @(_trackOnceOnAppOpen);
+    dict[@"usePersistence"] = @(_usePersistence);
+    dict[@"extendFlushReplays"] = @(_extendFlushReplays);
+    dict[@"useLogPersistence"] = @(_useLogPersistence);
+    dict[@"useRadarModifiedBeacon"] = @(_useRadarModifiedBeacon);
     
     return dict;
 }

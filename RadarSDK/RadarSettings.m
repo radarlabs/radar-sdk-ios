@@ -15,7 +15,6 @@
 #import "Radar+Internal.h"
 #import "RadarLogger.h"
 #import "RadarTripOptions.h"
-#import "RadarFeatureSettings.h"
 #import "RadarReplayBuffer.h"
 #import "RadarLogBuffer.h"
 #import "RadarUtils.h"
@@ -75,8 +74,8 @@ static NSString *const kXPlatformSDKVersion = @"radar-xPlatformSDKVersion";
     double timestampSeconds = [[NSDate date] timeIntervalSince1970];
     double sessionIdSeconds = [[NSUserDefaults standardUserDefaults] doubleForKey:kSessionId];
 
-    RadarFeatureSettings *featureSettings = [RadarSettings featureSettings];
-    if (featureSettings.extendFlushReplays) {
+    RadarSdkConfiguration *sdkConfiguration = [RadarSettings sdkConfiguration];
+    if (sdkConfiguration.extendFlushReplays) {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"Flushing replays from updateSessionId()"];
         [[RadarReplayBuffer sharedInstance] flushReplaysWithCompletionHandler:nil completionHandler:nil];
     }
@@ -217,23 +216,6 @@ static NSString *const kXPlatformSDKVersion = @"radar-xPlatformSDKVersion";
     }
 }
 
-+ (RadarFeatureSettings *)featureSettings {
-    NSDictionary *featureSettingsDict = [[NSUserDefaults standardUserDefaults] dictionaryForKey:kFeatureSettings];
-
-    return [RadarFeatureSettings featureSettingsFromDictionary:featureSettingsDict];
-}
-
-+ (void)setFeatureSettings:(RadarFeatureSettings *)featureSettings {
-    if (featureSettings) {
-        [[RadarLogBuffer sharedInstance] setPersistentLogFeatureFlag:featureSettings.useLogPersistence];
-        NSDictionary *featureSettingsDict = [featureSettings dictionaryValue];
-        [[NSUserDefaults standardUserDefaults] setObject:featureSettingsDict forKey:kFeatureSettings];
-    } else {
-        [[RadarLogBuffer sharedInstance] setPersistentLogFeatureFlag:NO];
-        [[NSUserDefaults standardUserDefaults] removeObjectForKey:kFeatureSettings];
-    }
-}
-
 + (NSDictionary *)clientSdkConfiguration {
     NSDictionary *sdkConfigurationDict = [[NSUserDefaults standardUserDefaults] dictionaryForKey:kClientSdkConfiguration];
     if (sdkConfigurationDict == nil) {
@@ -255,16 +237,18 @@ static NSString *const kXPlatformSDKVersion = @"radar-xPlatformSDKVersion";
         message:[NSString stringWithFormat:@"Setting SDK configuration | sdkConfiguration = %@",
                             [RadarUtils dictionaryToJson:[sdkConfiguration dictionaryValue]]]];
     if (sdkConfiguration) {
+        [[RadarLogBuffer sharedInstance] setPersistentLogFeatureFlag:sdkConfiguration.useLogPersistence];
         [[NSUserDefaults standardUserDefaults] setInteger:(int)sdkConfiguration.logLevel forKey:kLogLevel];
         [[NSUserDefaults standardUserDefaults] setObject:[sdkConfiguration dictionaryValue] forKey:kSdkConfiguration];
     } else {
+        [[RadarLogBuffer sharedInstance] setPersistentLogFeatureFlag:NO];
         [[NSUserDefaults standardUserDefaults] removeObjectForKey:kSdkConfiguration];
     }
 }
 
 + (RadarSdkConfiguration *_Nullable)sdkConfiguration {
     NSDictionary *sdkConfigurationDict = [[NSUserDefaults standardUserDefaults] dictionaryForKey:kSdkConfiguration];
-    return [RadarSdkConfiguration sdkConfigurationFromDictionary:sdkConfigurationDict];
+    return [[RadarSdkConfiguration alloc] initWithDict:sdkConfigurationDict];
 }
 
 + (RadarLogLevel)logLevel {
@@ -332,7 +316,7 @@ static NSString *const kXPlatformSDKVersion = @"radar-xPlatformSDKVersion";
 }
 
 + (BOOL)useRadarModifiedBeacon {
-    return [[self featureSettings] useRadarModifiedBeacon];
+    return [[self sdkConfiguration] useRadarModifiedBeacon];
 }
 
 + (BOOL)xPlatform {

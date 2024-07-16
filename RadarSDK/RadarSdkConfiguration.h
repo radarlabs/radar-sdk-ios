@@ -23,19 +23,18 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, assign) BOOL trackOnceOnAppOpen;
 
+@property (nonatomic, assign) BOOL usePersistence;
+
+@property (nonatomic, assign) BOOL extendFlushReplays;
+
+@property (nonatomic, assign) BOOL useLogPersistence;
+
+@property (nonatomic, assign) BOOL useRadarModifiedBeacon;
+
 /**
  Initializes a new RadarSdkConfiguration object with given value.
  */
-- (instancetype)initWithLogLevel:(RadarLogLevel)logLevel
-       startTrackingOnInitialize:(BOOL)startTrackingOnInitialize
-              trackOnceOnAppOpen:(BOOL)trackOnceOnAppOpen;
-
-/**
- Creates a RadarSdkConfiguration object from the provided dictionary.
- 
- @param dict A dictionary to extract the settings from.
- */
-+ (RadarSdkConfiguration *_Nullable)sdkConfigurationFromDictionary:(NSDictionary *_Nullable)dict;
+- (instancetype)initWithDict:(NSDictionary *_Nullable)dict;
 
 /**
  Returns a dictionary representation of the object.

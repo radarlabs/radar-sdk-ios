@@ -205,8 +205,8 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 - (void)stopTracking {
     [RadarSettings setTracking:NO];
     
-    RadarFeatureSettings *featureSettings = [RadarSettings featureSettings];
-    if (featureSettings.extendFlushReplays) {
+    RadarSdkConfiguration *sdkConfiguration = [RadarSettings sdkConfiguration];
+    if (sdkConfiguration.extendFlushReplays) {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"Flushing replays from stopTracking()"];
         [[RadarReplayBuffer sharedInstance] flushReplaysWithCompletionHandler:nil completionHandler:nil];
     }
@@ -875,7 +875,6 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                 self.sending = NO;
                 
                 [self updateTrackingFromMeta:config.meta];
-                [RadarSettings setFeatureSettings:config.meta.featureSettings];
                 [self replaceSyncedGeofences:nearbyGeofences];
             }];
         };
@@ -961,7 +960,6 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                                              }
 
                                              [self updateTrackingFromMeta:config.meta];
-                                             [RadarSettings setFeatureSettings:config.meta.featureSettings];
                                              [self replaceSyncedGeofences:nearbyGeofences];
                                          }];
     }

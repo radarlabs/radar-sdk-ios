@@ -1490,9 +1490,15 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 }
 
 - (void)test_RadarSdkConfiguration {
-    RadarSdkConfiguration *sdkConfiguration = [[RadarSdkConfiguration alloc] initWithLogLevel:RadarLogLevelWarning
-                                                                    startTrackingOnInitialize:YES
-                                                                           trackOnceOnAppOpen:YES];
+    RadarSdkConfiguration *sdkConfiguration = [[RadarSdkConfiguration alloc] initWithDict:@{
+        @"logLevel": @"warning",
+        @"startTrackingOnInitialize": @(YES),
+        @"trackOnceOnAppOpen": @(YES),
+        @"usePersistence": @(NO),
+        @"extendFlushReplays": @(NO),
+        @"useLogPersistence": @(NO),
+        @"useRadarModifiedBeacon": @(NO)
+    }];
 
     [RadarSettings setSdkConfiguration:sdkConfiguration];
     XCTAssertEqual([RadarSettings logLevel], RadarLogLevelWarning);
