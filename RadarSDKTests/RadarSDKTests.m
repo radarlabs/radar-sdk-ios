@@ -284,7 +284,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 - (void)setUp {
     [super setUp];
     [Radar initializeWithPublishableKey:kPublishableKey];
-    [Radar setLogLevel:RadarLogLevelDebug];
+    [RadarSettings setLogLevel:RadarLogLevelDebug];
 
     self.apiHelperMock = [RadarAPIHelperMock new];
     self.locationManagerMock = [CLLocationManagerMock new];
@@ -1489,5 +1489,56 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     [[RadarLogBuffer sharedInstance]clearBuffer];
 }
 
+- (void)test_RadarSdkConfiguration {
+    RadarSdkConfiguration *sdkConfiguration = [[RadarSdkConfiguration alloc] initWithDict:@{
+        @"logLevel": @"warning",
+        @"startTrackingOnInitialize": @(YES),
+        @"trackOnceOnAppOpen": @(YES),
+        @"usePersistence": @(NO),
+        @"extendFlushReplays": @(NO),
+        @"useLogPersistence": @(NO),
+        @"useRadarModifiedBeacon": @(NO)
+    }];
+
+    [RadarSettings setSdkConfiguration:sdkConfiguration];
+    XCTAssertEqual([RadarSettings logLevel], RadarLogLevelWarning);
+
+    self.apiHelperMock.mockStatus = RadarStatusSuccess;
+    self.apiHelperMock.mockResponse = [RadarTestUtils jsonDictionaryFromResource:@"get_config_response"];
+
+    XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
+
+    [[RadarAPIClient sharedInstance] getConfigForUsage:@"sdkConfigUpdate" 
+                                              verified:false
+                                     completionHandler:^(RadarStatus status, RadarConfig *config) {
+        if (status != RadarStatusSuccess || !config) {
+        return;
+        }
+        [RadarSettings setSdkConfiguration:config.meta.sdkConfiguration];
+
+        XCTAssertEqual(config.meta.sdkConfiguration.logLevel, RadarLogLevelInfo);
+        XCTAssertEqual([RadarSettings logLevel], RadarLogLevelInfo);
+        
+        XCTAssertEqual(config.meta.sdkConfiguration.trackOnceOnAppOpen, YES);
+        XCTAssertEqual(config.meta.sdkConfiguration.startTrackingOnInitialize, YES);
+
+        [expectation fulfill];
+    }];
+
+    [self waitForExpectationsWithTimeout:30
+                                 handler:^(NSError *_Nullable error) {
+                                     if (error) {
+                                         XCTFail();
+                                     }
+                                 }];
+    
+    [Radar setLogLevel:RadarLogLevelDebug];
+    NSDictionary *clientSdkConfigurationDict = [RadarSettings clientSdkConfiguration];
+    XCTAssertEqual([RadarLog levelFromString:(NSString *)clientSdkConfigurationDict[@"logLevel"]], RadarLogLevelDebug);
+    
+    RadarSdkConfiguration *savedSdkConfiguration = [RadarSettings sdkConfiguration];
+    XCTAssertEqual(savedSdkConfiguration.trackOnceOnAppOpen, YES);
+    XCTAssertEqual(savedSdkConfiguration.startTrackingOnInitialize, YES);
+}
 
 @end

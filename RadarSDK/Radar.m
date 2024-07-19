@@ -6,6 +6,7 @@
 //
 
 #import "Radar.h"
+#include "RadarSdkConfiguration.h"
 
 #import "RadarAPIClient.h"
 #import "RadarBeaconManager.h"
@@ -20,7 +21,6 @@
 #import "RadarUtils.h"
 #import "RadarVerificationManager.h"
 #import "RadarReplayBuffer.h"
-#import "RadarFeatureSettings.h"
 
 @interface Radar ()
 
@@ -51,8 +51,8 @@
     
     [RadarSettings setPublishableKey:publishableKey];
 
-    RadarFeatureSettings *featureSettings = [RadarSettings featureSettings];
-    if (featureSettings.usePersistence) {
+    RadarSdkConfiguration *sdkConfiguration = [RadarSettings sdkConfiguration];
+    if (sdkConfiguration.usePersistence) {
         [[RadarReplayBuffer sharedInstance] loadReplaysFromPersistentStore];
     }
 
@@ -62,18 +62,28 @@
 
 
     [[RadarLocationManager sharedInstance] updateTrackingFromInitialize];
+    
     [[RadarAPIClient sharedInstance] getConfigForUsage:@"initialize"
                                               verified:NO
                                      completionHandler:^(RadarStatus status, RadarConfig *config) {
-                                         if (status != RadarStatusSuccess || !config) {
-                                            return;
+                                         if (status == RadarStatusSuccess && config) {
+                                             [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
+                                             [RadarSettings setSdkConfiguration:config.meta.sdkConfiguration];
                                          }
-                                         [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
-                                         [RadarSettings setFeatureSettings:config.meta.featureSettings];
+                                         
+                                         RadarSdkConfiguration *sdkConfiguration = [RadarSettings sdkConfiguration];
+                                         if (sdkConfiguration.startTrackingOnInitialize && ![RadarSettings tracking]) {
+                                            [Radar startTrackingWithOptions:[RadarSettings trackingOptions]];
+                                         }
+                                         if (sdkConfiguration.trackOnceOnAppOpen) {
+                                            [Radar trackOnceWithCompletionHandler:nil];
+                                         }
+
                                          [self flushLogs];
                                      }];
-    
 }
+
+
 
 #pragma mark - Properties
 
@@ -1008,7 +1018,18 @@
 #pragma mark - Logging
 
 + (void)setLogLevel:(RadarLogLevel)level {
-    [RadarSettings setLogLevel:level];
+    NSMutableDictionary *sdkConfiguration = [[RadarSettings clientSdkConfiguration] mutableCopy];
+    NSObject *logLevelObj = sdkConfiguration[@"logLevel"];
+    if ([logLevelObj isKindOfClass:[NSString class]] && [[RadarLog stringForLogLevel:level] isEqualToString:(NSString *)logLevelObj]) {
+        return;
+    }
+    [sdkConfiguration setValue:[RadarLog stringForLogLevel:level] forKey:@"logLevel"];
+    [RadarSettings setClientSdkConfiguration:sdkConfiguration];
+    
+    if ([RadarSettings logLevel] == level) {
+        return;
+    }
+    [RadarSdkConfiguration updateSdkConfigurationFromServer];
 }
 
 + (void)logTermination { 
@@ -1220,11 +1241,17 @@
                                                 return;
                                              }
                                              [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
-                                             [RadarSettings setFeatureSettings:config.meta.featureSettings];
+                                             [RadarSettings setSdkConfiguration:config.meta.sdkConfiguration];
                                          }];
     }
+    
 
     [Radar logOpenedAppConversion];
+
+    RadarSdkConfiguration *sdkConfiguration = [RadarSettings sdkConfiguration];
+    if (sdkConfiguration.trackOnceOnAppOpen) {
+        [Radar trackOnceWithCompletionHandler:nil];
+    }
 }
 
 - (void)dealloc {

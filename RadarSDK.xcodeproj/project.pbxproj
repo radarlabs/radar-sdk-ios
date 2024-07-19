@@ -88,8 +88,6 @@
 		82D04ABC29722ED20036619F /* RadarReplayBuffer.m in Sources */ = {isa = PBXBuildFile; fileRef = 82D04AB929722ED20036619F /* RadarReplayBuffer.m */; };
 		82D04ABD29722ED20036619F /* RadarReplayBuffer.h in Headers */ = {isa = PBXBuildFile; fileRef = 82D04ABA29722ED20036619F /* RadarReplayBuffer.h */; };
 		82D04AC729771BF10036619F /* RadarReplay.m in Sources */ = {isa = PBXBuildFile; fileRef = 82D04AC629771BF10036619F /* RadarReplay.m */; };
-		82EEA92A2A9E684C0048DCEC /* RadarFeatureSettings.h in Headers */ = {isa = PBXBuildFile; fileRef = 82EEA9292A9E684C0048DCEC /* RadarFeatureSettings.h */; };
-		82EEA92C2A9E685B0048DCEC /* RadarFeatureSettings.m in Sources */ = {isa = PBXBuildFile; fileRef = 82EEA92B2A9E685B0048DCEC /* RadarFeatureSettings.m */; };
 		82F7FAEB2A65FDD50055AA4B /* RadarNotificationHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 01DDC7C529FC387400C0D039 /* RadarNotificationHelper.m */; };
 		82F7FAEE2A65FE030055AA4B /* RadarVerificationManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 82F7FAEC2A65FE030055AA4B /* RadarVerificationManager.h */; };
 		82F7FAEF2A65FE030055AA4B /* RadarVerificationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 82F7FAED2A65FE030055AA4B /* RadarVerificationManager.m */; };
@@ -167,6 +165,9 @@
 		DE1E7644239724FD006F34A1 /* search_geofences.json in Resources */ = {isa = PBXBuildFile; fileRef = DE1E7643239724FD006F34A1 /* search_geofences.json */; };
 		E6EEC56E2B20F41A00DD096B /* RadarFileStorage.h in Headers */ = {isa = PBXBuildFile; fileRef = E6EEC56D2B20F41A00DD096B /* RadarFileStorage.h */; };
 		E6EEC5702B20F45D00DD096B /* RadarFileStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = E6EEC56F2B20F45D00DD096B /* RadarFileStorage.m */; };
+		F65AF72C2C10B242002BA009 /* get_config_response.json in Resources */ = {isa = PBXBuildFile; fileRef = F65AF72B2C10B242002BA009 /* get_config_response.json */; };
+		F667F8272BFBF3C8001F2F67 /* RadarSdkConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = F667F8262BFBF3C8001F2F67 /* RadarSdkConfiguration.m */; };
+		F667F8292BFBF3D1001F2F67 /* RadarSdkConfiguration.h in Headers */ = {isa = PBXBuildFile; fileRef = F667F8282BFBF3D1001F2F67 /* RadarSdkConfiguration.h */; };
 		F6F959802C3D7D9900BC30FE /* RadarTimeZone.h in Headers */ = {isa = PBXBuildFile; fileRef = F6F9597F2C3D7D9900BC30FE /* RadarTimeZone.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F6F959822C3D7EA200BC30FE /* RadarTimeZone+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = F6F959812C3D7EA200BC30FE /* RadarTimeZone+Internal.h */; };
 		F6F959842C3D7EDE00BC30FE /* RadarTimeZone.m in Sources */ = {isa = PBXBuildFile; fileRef = F6F959832C3D7EDE00BC30FE /* RadarTimeZone.m */; };
@@ -198,8 +199,6 @@
 		82D04AB929722ED20036619F /* RadarReplayBuffer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RadarReplayBuffer.m; sourceTree = "<group>"; };
 		82D04ABA29722ED20036619F /* RadarReplayBuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RadarReplayBuffer.h; sourceTree = "<group>"; };
 		82D04AC629771BF10036619F /* RadarReplay.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RadarReplay.m; sourceTree = "<group>"; };
-		82EEA9292A9E684C0048DCEC /* RadarFeatureSettings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RadarFeatureSettings.h; sourceTree = "<group>"; };
-		82EEA92B2A9E685B0048DCEC /* RadarFeatureSettings.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RadarFeatureSettings.m; sourceTree = "<group>"; };
 		82F7FAEC2A65FE030055AA4B /* RadarVerificationManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RadarVerificationManager.h; sourceTree = "<group>"; };
 		82F7FAED2A65FE030055AA4B /* RadarVerificationManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RadarVerificationManager.m; sourceTree = "<group>"; };
 		966D885F288F7404008C0D00 /* conversion_event.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = conversion_event.json; sourceTree = "<group>"; };
@@ -334,6 +333,9 @@
 		DE1E7643239724FD006F34A1 /* search_geofences.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = search_geofences.json; sourceTree = "<group>"; };
 		E6EEC56D2B20F41A00DD096B /* RadarFileStorage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarFileStorage.h; sourceTree = "<group>"; };
 		E6EEC56F2B20F45D00DD096B /* RadarFileStorage.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RadarFileStorage.m; sourceTree = "<group>"; };
+		F65AF72B2C10B242002BA009 /* get_config_response.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = get_config_response.json; sourceTree = "<group>"; };
+		F667F8262BFBF3C8001F2F67 /* RadarSdkConfiguration.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RadarSdkConfiguration.m; sourceTree = "<group>"; };
+		F667F8282BFBF3D1001F2F67 /* RadarSdkConfiguration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RadarSdkConfiguration.h; sourceTree = "<group>"; };
 		F6F9597F2C3D7D9900BC30FE /* RadarTimeZone.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarTimeZone.h; sourceTree = "<group>"; };
 		F6F959812C3D7EA200BC30FE /* RadarTimeZone+Internal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "RadarTimeZone+Internal.h"; sourceTree = "<group>"; };
 		F6F959832C3D7EDE00BC30FE /* RadarTimeZone.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RadarTimeZone.m; sourceTree = "<group>"; };
@@ -409,6 +411,7 @@
 			isa = PBXGroup;
 			children = (
 				53B3B26A23EE41B400080818 /* context.json */,
+				F65AF72B2C10B242002BA009 /* get_config_response.json */,
 				966D885F288F7404008C0D00 /* conversion_event.json */,
 				968C839828A6D8350030103E /* conversion_event_nil_event.json */,
 				DD5E35E0238205FF002D93FF /* events_verification.json */,
@@ -459,6 +462,7 @@
 				DD236C792308797B00EB88F9 /* Info.plist */,
 				532FC303277A783900989279 /* Radar+Internal.h */,
 				DD236C9023087A3500EB88F9 /* Radar.m */,
+				F667F8282BFBF3D1001F2F67 /* RadarSdkConfiguration.h */,
 				DD236C9823087F9200EB88F9 /* RadarAPIClient.h */,
 				DD236C9923087F9200EB88F9 /* RadarAPIClient.m */,
 				DD633EC1237C5B800026C91A /* RadarAPIHelper.h */,
@@ -473,8 +477,6 @@
 				E6EEC56F2B20F45D00DD096B /* RadarFileStorage.m */,
 				96A5A11727ADA02E007B960B /* RadarDelegateHolder.h */,
 				DD4C104925D87E3E009C2E36 /* RadarDelegateHolder.m */,
-				82EEA9292A9E684C0048DCEC /* RadarFeatureSettings.h */,
-				82EEA92B2A9E685B0048DCEC /* RadarFeatureSettings.m */,
 				DD236CF723088F8400EB88F9 /* RadarLocationManager.h */,
 				DD236CF823088F8400EB88F9 /* RadarLocationManager.m */,
 				96A5A11527ADA02E007B960B /* RadarLog.h */,
@@ -493,6 +495,7 @@
 				82D04ABA29722ED20036619F /* RadarReplayBuffer.h */,
 				82D04AB929722ED20036619F /* RadarReplayBuffer.m */,
 				DD236C782308797B00EB88F9 /* RadarSDK.h */,
+				F667F8262BFBF3C8001F2F67 /* RadarSdkConfiguration.m */,
 				DD236CFB230895D400EB88F9 /* RadarSettings.h */,
 				DD236CFC230895D400EB88F9 /* RadarSettings.m */,
 				DD236D0E2309B3FE00EB88F9 /* RadarState.h */,
@@ -619,7 +622,6 @@
 				96A5A0C127AD9F41007B960B /* RadarRoutes+Internal.h in Headers */,
 				96A5A10C27AD9F7F007B960B /* RadarRoutes.h in Headers */,
 				82D04ABD29722ED20036619F /* RadarReplayBuffer.h in Headers */,
-				82EEA92A2A9E684C0048DCEC /* RadarFeatureSettings.h in Headers */,
 				96A5A11B27ADA02F007B960B /* RadarDelegateHolder.h in Headers */,
 				96A5A10F27AD9F7F007B960B /* RadarRouteDuration.h in Headers */,
 				96A5A10627AD9F7F007B960B /* RadarFraud.h in Headers */,
@@ -653,6 +655,7 @@
 				96A5A0C027AD9F41007B960B /* RadarRouteDistance+Internal.h in Headers */,
 				96A5A0D227AD9F41007B960B /* RadarContext+Internal.h in Headers */,
 				96A5A10E27AD9F7F007B960B /* RadarRouteDistance.h in Headers */,
+				F667F8292BFBF3D1001F2F67 /* RadarSdkConfiguration.h in Headers */,
 				82D04ABB29722ED20036619F /* RadarReplay.h in Headers */,
 				96A5A10727AD9F7F007B960B /* RadarCircleGeometry.h in Headers */,
 				96A5A0F827AD9F7F007B960B /* RadarRegion.h in Headers */,
@@ -773,6 +776,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				966D8860288F7404008C0D00 /* conversion_event.json in Resources */,
+				F65AF72C2C10B242002BA009 /* get_config_response.json in Resources */,
 				DD4D4D2523E648D000D36C1D /* search_autocomplete.json in Resources */,
 				DD5E35E1238205FF002D93FF /* events_verification.json in Resources */,
 				825732512B72BE1900DF8B88 /* PrivacyInfo.xcprivacy in Resources */,
@@ -835,6 +839,8 @@
 				0107AB29262201F4008AB52F /* RadarTrackingOptions.m in Sources */,
 				0107AB2F262201FB008AB52F /* RadarUtils.m in Sources */,
 				0107AA8926220140008AB52F /* RadarChain.m in Sources */,
+				F667F8272BFBF3C8001F2F67 /* RadarSdkConfiguration.m in Sources */,
+				F667F8272BFBF3C8001F2F67 /* RadarSdkConfiguration.m in Sources */,
 				0107AB11262201D9008AB52F /* RadarCollectionAdditions.m in Sources */,
 				96FC90F7277379C1000757DF /* RadarFraud.m in Sources */,
 				F6F959842C3D7EDE00BC30FE /* RadarTimeZone.m in Sources */,
@@ -847,7 +853,6 @@
 				53CCD783275E579800F79CC8 /* RadarLogBuffer.m in Sources */,
 				82D04ABC29722ED20036619F /* RadarReplayBuffer.m in Sources */,
 				82F7FAEF2A65FE030055AA4B /* RadarVerificationManager.m in Sources */,
-				82EEA92C2A9E685B0048DCEC /* RadarFeatureSettings.m in Sources */,
 				0107AA832622013A008AB52F /* RadarBeacon.m in Sources */,
 				82F7FAEB2A65FDD50055AA4B /* RadarNotificationHelper.m in Sources */,
 				0107AAB626220172008AB52F /* RadarPolygonGeometry.m in Sources */,
@@ -1017,7 +1022,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				MARKETING_VERSION = 3.15.0;
+				MARKETING_VERSION = 3.16.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -1075,7 +1080,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				MARKETING_VERSION = 3.15.0;
+				MARKETING_VERSION = 3.16.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				OTHER_CFLAGS = "-fembed-bitcode";

@@ -47,8 +47,8 @@ static const int MAX_BUFFER_SIZE = 120; // one hour of updates
     RadarReplay *radarReplay = [[RadarReplay alloc] initWithParams:replayParams];
     [mutableReplayBuffer addObject:radarReplay];
 
-    RadarFeatureSettings *featureSettings = [RadarSettings featureSettings];
-    if (featureSettings.usePersistence) {
+    RadarSdkConfiguration *sdkConfiguration = [RadarSettings sdkConfiguration];
+    if (sdkConfiguration.usePersistence) {
         NSData *replaysData;
 
         // if buffer length is above 50, remove every fifth replay from the persisted buffer

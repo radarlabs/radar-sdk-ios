@@ -1089,7 +1089,7 @@ logConversionWithNotification
 #pragma mark - Logging
 
 /**
- Sets the log level for debug logs.
+ Sets the preferred log level for debug logs. This can be overridden by the remote SDK configuration set in the dashboard.
 
  @param level The log level.
  */

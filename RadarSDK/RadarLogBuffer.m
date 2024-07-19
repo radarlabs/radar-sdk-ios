@@ -26,7 +26,7 @@ static int fileCounter = 0;
 - (instancetype)init {
     self = [super init];
     if (self) {
-        _persistentLogFeatureFlag = [RadarSettings featureSettings].useLogPersistence;
+        _persistentLogFeatureFlag = [RadarSettings sdkConfiguration].useLogPersistence;
         logBuffer = [NSMutableArray<RadarLog *> new];
         
         NSString *documentsDirectory = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES).firstObject;
