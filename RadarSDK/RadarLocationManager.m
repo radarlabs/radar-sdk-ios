@@ -1131,9 +1131,12 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 }
 
 - (void)locationManager:(CLLocationManager *)manager didChangeAuthorizationStatus:(CLAuthorizationStatus)status {
-    // we are trying to call track once on init, but was unable due to lack of location permissions, and that we finally got foreground/background, we do a track once
     if ((status == kCLAuthorizationStatusAuthorizedAlways || status == kCLAuthorizationStatusAuthorizedWhenInUse) && self.trackOnceWhenPermissionsGranted) {
-        [Radar trackOnceWithCompletionHandler:nil];
+        [Radar trackOnceWithCompletionHandler:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user) {
+                                                if (status == RadarStatusSuccess) {
+                                                   self.trackOnceWhenPermissionsGranted = NO;
+                                                }
+                                            }];
     }
 
 }

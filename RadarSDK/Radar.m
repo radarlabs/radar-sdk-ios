@@ -78,7 +78,6 @@
                                          if (sdkConfiguration.trackOnceOnAppOpen) {
                                             [Radar trackOnceWithCompletionHandler:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user) {
                                                 if (status == RadarStatusErrorPermissions) {
-                                                    // tell the radar location handler to track once when it has permissions
                                                    [[RadarLocationManager sharedInstance] enableTrackOnceWhenPermissionsGranted];
                                                 }
                                             }];
