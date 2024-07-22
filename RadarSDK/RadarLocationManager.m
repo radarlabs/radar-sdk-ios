@@ -51,6 +51,9 @@
  */
 @property (nonnull, strong, nonatomic) NSMutableArray<RadarLocationCompletionHandler> *completionHandlers;
 
+
+@property (assign, nonatomic) BOOL trackOnceWhenPermissionsGranted;
+
 @end
 
 @implementation RadarLocationManager
@@ -1125,6 +1128,18 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     [[RadarDelegateHolder sharedInstance] didFailWithStatus:RadarStatusErrorLocation];
 
     [self callCompletionHandlersWithStatus:RadarStatusErrorLocation location:nil];
+}
+
+- (void)locationManager:(CLLocationManager *)manager didChangeAuthorizationStatus:(CLAuthorizationStatus)status {
+    // we are trying to call track once on init, but was unable due to lack of location permissions, and that we finally got foreground/background, we do a track once
+    if ((status == kCLAuthorizationStatusAuthorizedAlways || status == kCLAuthorizationStatusAuthorizedWhenInUse) && self.trackOnceWhenPermissionsGranted) {
+        [Radar trackOnceWithCompletionHandler:nil];
+    }
+
+}
+
+- (void)enableTrackOnceWhenPermissionsGranted {
+    self.trackOnceWhenPermissionsGranted = YES;
 }
 
 @end

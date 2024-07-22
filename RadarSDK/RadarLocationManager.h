@@ -32,6 +32,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)updateTracking;
 - (void)updateTrackingFromMeta:(RadarMeta *_Nullable)meta;
 - (void)updateTrackingFromInitialize;
+- (void)enableTrackOnceWhenPermissionsGranted;
 
 /**
  If `[RadarSettings previousTrackingOptions]` is not `nil`, remove them and
