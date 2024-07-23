@@ -47,4 +47,13 @@
  */
 + (NSString *_Nonnull)stringForLogLevel:(RadarLogLevel)level NS_SWIFT_NAME(stringForLogLevel(_:));
 
+/**
+ Return the log level for a specific display string
+ 
+ @param string A display string for the log level
+
+ @return A log level.
+*/
++ (RadarLogLevel) levelFromString:(NSString *_Nonnull) string;
+
 @end

@@ -60,6 +60,7 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)didLogMessage:(NSString *_Nonnull)message NS_SWIFT_NAME(didLog(message:));
 
+
 @end
 
 NS_ASSUME_NONNULL_END

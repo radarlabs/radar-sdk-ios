@@ -8,6 +8,7 @@
 #import <Foundation/Foundation.h>
 
 #import "Radar.h"
+#import "RadarVerifiedLocationToken.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -19,11 +20,11 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol RadarVerifiedDelegate<NSObject>
 
 /**
- Tells the delegate that the current user's verified location was updated. Receives a JSON Web Token (JWT). Verify the JWT server-side using your secret key.
+ Tells the delegate that the current user's verified location was updated. Verify the token server-side using your secret key.
 
  @param token The token.
  */
-- (void)didUpdateToken:(NSString *_Nonnull)token NS_SWIFT_NAME(didUpdateToken(_:));
+- (void)didUpdateToken:(RadarVerifiedLocationToken *_Nonnull)token NS_SWIFT_NAME(didUpdateToken(_:));
 
 @end
 

@@ -45,7 +45,7 @@ static NSDateFormatter *_isoDateFormatter;
 }
 
 + (NSString *)sdkVersion {
-    return @"3.10.2-beta.1";
+    return @"3.17.0-beta.1";
 }
 
 + (NSString *)deviceId {
@@ -137,7 +137,7 @@ static NSDateFormatter *_isoDateFormatter;
     if (@available(iOS 15.0, *)) {
         CLLocationSourceInformation *sourceInformation = location.sourceInformation;
         if (sourceInformation) {
-            if (sourceInformation.isSimulatedBySoftware) {
+            if (sourceInformation.isSimulatedBySoftware || sourceInformation.isProducedByAccessory) {
                 dict[@"mocked"] = @(YES);
             } else {
                 dict[@"mocked"] = @(NO);
