@@ -118,6 +118,9 @@
                             return;
                         }
 
+                        // log received res
+                        NSLog(@"getConfigForUsage RESPONSE res: %@", res);
+
                         [Radar flushLogs];
 
                         RadarConfig *config = [RadarConfig fromDictionary:res];
@@ -298,8 +301,12 @@
     if (beacons) {
         params[@"beacons"] = [RadarBeacon arrayForBeacons:beacons];
     }
+
     // log indoorsWhereAmIScan
-    NSLog(@"indoorsWhereAmIScan: %@", indoorsWhereAmIScan);
+    // NSLog(@"indoorsWhereAmIScan: %@", indoorsWhereAmIScan);
+    // log length of indoorsWhereAmIScan
+    NSLog(@"indoorsWhereAmIScan length: %lu", (unsigned long)indoorsWhereAmIScan.length);
+
     if (indoorsWhereAmIScan) {
         params[@"indoorsWhereAmIScan"] = indoorsWhereAmIScan;
     }

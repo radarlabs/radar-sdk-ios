@@ -95,7 +95,7 @@
                      trackWithLocation:location
                      stopped:RadarState.stopped
                      foreground:[RadarUtils foreground]
-                     source:RadarLocationSourceForegroundLocation
+                     source:RadarLocationSourceForegroundLocation   
                      replayed:NO
                      beacons:beacons
                      indoorsWhereAmIScan:@""

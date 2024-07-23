@@ -296,7 +296,38 @@
 - (void)locationManager:(CLLocationManager *)manager didRangeBeacons:(nonnull NSArray<CLBeacon *> *)beacons inRegion:(nonnull CLBeaconRegion *)region {
     for (CLBeacon *beacon in beacons) {
         [self.nearbyBeaconIdentifiers addObject:region.identifier];
+
+        // first, check if this beacon was already in nearbybeacons
+        // if so, and we have a non 0 rssi, update the rssi
+        [self.nearbyBeacons enumerateObjectsUsingBlock:^(RadarBeacon * _Nonnull radarBeacon, BOOL * _Nonnull stop) {
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"radarBeacon uuid: %@", [radarBeacon uuid]]];
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"radarBeacon major: %@", [radarBeacon major]]];
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"radarBeacon minor: %@", [radarBeacon minor]]];
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"radarBeacon.rssi: %ld", (long)radarBeacon.rssi]];
+
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"[beacon.proximityUUID UUIDString]: %@", [beacon.proximityUUID UUIDString]]];
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"beacon.major: %@", beacon.major]];
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"beacon.minor: %@", beacon.minor]];
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"beacon.rssi: %ld", (long)beacon.rssi]];
+
+            
+            if ([radarBeacon.uuid isEqualToString:[beacon.proximityUUID UUIDString]] && [radarBeacon.major isEqualToString:[NSString stringWithFormat:@"%@", beacon.major]] && [radarBeacon.minor isEqualToString:[NSString stringWithFormat:@"%@", beacon.minor]]) {
+                // log "same beacon"
+                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"same beacon!"];
+                if (beacon.rssi != 0 && beacon.rssi != radarBeacon.rssi) {
+                    // OVERWRITING STALE RSSI!!!!
+                    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Overwriting stale RSSI: %ld", (long)radarBeacon.rssi]];
+                    [radarBeacon setRssi:beacon.rssi];
+                }
+                *stop = YES;
+            }
+        }];
+
+
         [self.nearbyBeacons addObject:[RadarBeacon fromCLBeacon:beacon]];
+
+        // log nearbyBeacons 
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"self.nearbyBeacons: %@", [RadarBeacon arrayForBeacons:[self.nearbyBeacons allObjects]]]];
 
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
                                            message:[NSString stringWithFormat:@"Ranged beacon with RSSI %ld | nearbyBeacons.count = %lu; region.identifier = %@; beacon.uuid = %@; beacon.major "

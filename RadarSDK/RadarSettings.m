@@ -33,6 +33,7 @@ static NSString *const kTripOptions = @"radar-tripOptions";
 static NSString *const kLogLevel = @"radar-logLevel";
 static NSString *const kBeaconUUIDs = @"radar-beaconUUIDs";
 static NSString *const kHost = @"radar-host";
+// static NSString *const kDefaultHost = @"https://api.radar-staging.com";
 static NSString *const kDefaultHost = @"https://radar-server-dev-greg.ngrok.io";
 static NSString *const kLastTrackedTime = @"radar-lastTrackedTime";
 static NSString *const kVerifiedHost = @"radar-verifiedHost";

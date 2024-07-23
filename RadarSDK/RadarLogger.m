@@ -73,7 +73,9 @@
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
     request.HTTPMethod = @"POST";
     [request setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
-    NSLog(@"ABOUT TO POST message: %@", message);
+    // NSLog(@"ABOUT TO POST message: %@", message);
+    // NSLog(message);
+    
     NSDictionary *body = @{@"log": message, @"timestamp": dateString};
     NSData *data = [NSJSONSerialization dataWithJSONObject:body options:0 error:nil];
     request.HTTPBody = data;
@@ -87,13 +89,13 @@
             [Radar sendLog:level type:type message:message];
 
             RadarLogLevel logLevel = [RadarSettings logLevel];
-            if (logLevel >= level) {
+            // if (logLevel >= level) {
                 NSString *log = [NSString stringWithFormat:@"%@ | backgroundTimeRemaining = %g", message, [RadarUtils backgroundTimeRemaining]];
 
                 os_log(OS_LOG_DEFAULT, "%@", log);
 
                 [[RadarDelegateHolder sharedInstance] didLogMessage:log];
-            }
+            // }
         });
     }
 }

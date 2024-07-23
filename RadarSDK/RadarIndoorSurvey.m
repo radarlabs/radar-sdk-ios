@@ -6,13 +6,34 @@
 
 @implementation RadarIndoorSurvey
 
++ (instancetype)sharedInstance {
+    static dispatch_once_t once;
+    static id sharedInstance;
+    dispatch_once(&once, ^{
+        sharedInstance = [self new];
+    });
+    return sharedInstance;
+}
+
 - (instancetype)init {
     self = [super init];
     if (self) {
         self.isScanning = NO;
+        self.isWhereAmIScan = NO;
     }
     return self;
 }
+
+// return instance's isScanning
+- (BOOL)isScanning {
+    return _isScanning;
+}
+
+// return instance's isWhereAmIScan
+- (BOOL)isWhereAmIScan {
+    return _isWhereAmIScan;
+}
+
 
 - (void)start:(NSString *)placeLabel forLength:(int)surveyLengthSeconds withKnownLocation:(CLLocation *)knownLocation isWhereAmIScan:(BOOL)isWhereAmIScan withCompletionHandler:(RadarIndoorsSurveyCompletionHandler)completionHandler {
     // convert to [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:message]; call
@@ -33,7 +54,6 @@
         return;
     }
 
-    // set self.isScanning to YES
     self.isScanning = YES;
 
     self.placeLabel = placeLabel;
@@ -110,15 +130,6 @@
     [NSTimer scheduledTimerWithTimeInterval:surveyLengthSeconds target:self selector:@selector(stopScanning) userInfo:nil repeats:NO];    
 }
 
-+ (instancetype)sharedInstance {
-    static dispatch_once_t once;
-    static id sharedInstance;
-    dispatch_once(&once, ^{
-        sharedInstance = [self new];
-    });
-    return sharedInstance;
-}
-
 - (void)startScanning {
     // NSLog(@"startScanning called --- calling scanForPeripheralsWithServices");
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:@"startScanning called --- calling scanForPeripheralsWithServices"];
@@ -182,7 +193,15 @@
 
         // POST payload
         // TODO move to prod server..?
-        NSURL *url = [NSURL URLWithString:@"https://ml-hetzner.radarindoors.com/scan_results"];
+        // FIXME not working right now
+        // FIXME not working right now
+        // FIXME not working right now
+        // FIXME not working right now
+        // FIXME not working right now
+        // FIXME not working right now
+        // FIXME not working right now
+        // FIXME not working right now
+        NSURL *url = [NSURL URLWithString:@"https://ml-prod.radarindoors.com/scan_results"];
 
         NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:url];
         [urlRequest setHTTPMethod:@"POST"];
@@ -267,6 +286,9 @@
     // extract kCBAdvDataIsConnectable from advertisement data if it's available
     NSNumber *isConnectable = advertisementData[@"kCBAdvDataIsConnectable"];
 
+    // extract kCBAdvDataTxPowerLevel from advertisement data if it's available
+    NSNumber *txPowerLevel = advertisementData[@"kCBAdvDataTxPowerLevel"];
+
     NSURLComponents *components = [NSURLComponents componentsWithString: @""];
     NSArray<NSURLQueryItem *> *queryItems = @[
         [NSURLQueryItem queryItemWithName:@"time" value:[NSString stringWithFormat:@"%f", timestamp]],
@@ -302,7 +324,9 @@
         [NSURLQueryItem queryItemWithName:@"magnetometer.field.magnitude" value:[NSString stringWithFormat:@"%f", sqrt(pow(self.lastMagnetometerData.magneticField.x, 2) + pow(self.lastMagnetometerData.magneticField.y, 2) + pow(self.lastMagnetometerData.magneticField.z, 2))]],
 
         // inject isConnectable
-        [NSURLQueryItem queryItemWithName:@"isConnectable" value:[isConnectable stringValue]]
+        [NSURLQueryItem queryItemWithName:@"isConnectable" value:[isConnectable stringValue]],
+        // inject txPowerLevel
+        [NSURLQueryItem queryItemWithName:@"txPowerLevel" value:[txPowerLevel stringValue]]
     ];
     components.queryItems = queryItems;
     NSURL *dataUrl = components.URL;
