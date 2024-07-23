@@ -76,11 +76,7 @@
                                             [Radar startTrackingWithOptions:[RadarSettings trackingOptions]];
                                          }
                                          if (sdkConfiguration.trackOnceOnAppOpen) {
-                                            [Radar trackOnceWithCompletionHandler:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user) {
-                                                if (status == RadarStatusErrorPermissions) {
-                                                   [[RadarLocationManager sharedInstance] enableTrackOnceWhenPermissionsGranted];
-                                                }
-                                            }];
+                                            [Radar trackOnceWithCompletionHandler:nil];
                                          }
 
                                          [self flushLogs];

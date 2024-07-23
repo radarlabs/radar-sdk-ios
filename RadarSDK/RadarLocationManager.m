@@ -51,9 +51,6 @@
  */
 @property (nonnull, strong, nonatomic) NSMutableArray<RadarLocationCompletionHandler> *completionHandlers;
 
-
-@property (assign, nonatomic) BOOL trackOnceWhenPermissionsGranted;
-
 @end
 
 @implementation RadarLocationManager
@@ -1132,17 +1129,8 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 
 - (void)locationManager:(CLLocationManager *)manager didChangeAuthorizationStatus:(CLAuthorizationStatus)status {
     if ((status == kCLAuthorizationStatusAuthorizedAlways || status == kCLAuthorizationStatusAuthorizedWhenInUse) && self.trackOnceWhenPermissionsGranted) {
-        [Radar trackOnceWithCompletionHandler:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user) {
-                                                if (status == RadarStatusSuccess) {
-                                                   self.trackOnceWhenPermissionsGranted = NO;
-                                                }
-                                            }];
+        [Radar trackOnceWithCompletionHandler:nil];
     }
-
-}
-
-- (void)enableTrackOnceWhenPermissionsGranted {
-    self.trackOnceWhenPermissionsGranted = YES;
 }
 
 @end
