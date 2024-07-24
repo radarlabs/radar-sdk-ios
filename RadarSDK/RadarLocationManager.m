@@ -5,7 +5,6 @@
 //  Copyright © 2019 Radar Labs, Inc. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
 #import <UserNotifications/UserNotifications.h>
 
 #import "CLLocation+Radar.h"
@@ -1128,7 +1127,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 }
 
 - (void)locationManager:(CLLocationManager *)manager didChangeAuthorizationStatus:(CLAuthorizationStatus)status {
-    if ((status == kCLAuthorizationStatusAuthorizedAlways || status == kCLAuthorizationStatusAuthorizedWhenInUse)) {
+    if ((status == kCLAuthorizationStatusAuthorizedAlways || status == kCLAuthorizationStatusAuthorizedWhenInUse) && [RadarSettings sdkConfiguration].trackOnceOnAppOpen) {
         [Radar trackOnceWithCompletionHandler:nil];
     }
 }
