@@ -101,28 +101,29 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         _lowPowerLocationManager.distanceFilter = 3000;
         _lowPowerLocationManager.allowsBackgroundLocationUpdates = [RadarUtils locationBackgroundMode];
 
-        RadarSdkConfiguration *sdkConfiguration = [RadarSettings sdkConfiguration];
-        if (sdkConfiguration.useLocationMetadata) { 
+        if ([RadarSettings useLocationMetadata]) { 
             [_locationManager startUpdatingHeading];
 
-            _motionActivityManager = [CMMotionActivityManager new];
-            [_motionActivityManager startActivityUpdatesToQueue:[NSOperationQueue mainQueue] withHandler:^(CMMotionActivity * _Nullable activity) {
+            self.activityManager = [RadarActivityManager sharedInstance];
+            [self.activityManager startActivityUpdatesWithHandler:^(CMMotionActivity *activity) {
                 if (activity) {
-                    NSString *motionActivityType = @"unknown";
+                    RadarActivityType *activityType;
                     if (activity.stationary) {
-                        motionActivityType = @"stationary";
+                       activityType = RadarActivityTypeStationary; 
                     } else if (activity.walking) {
-                        motionActivityType = @"walking";
+                        activityType = RadarActivityTypeFoot;
                     } else if (activity.running) {
-                        motionActivityType = @"running";
+                        activityType = RadarActivityTypeFoot;
                     } else if (activity.automotive) {
-                        motionActivityType = @"driving";
+                        activityType = RadarActivityTypeCar;
                     } else if (activity.cycling) {
-                        motionActivityType = @"cycling";
+                        activityType = RadarActivityTypeBike;
+                    } else {
+                        activityType = RadarActivityTypeUnknown;
                     }
 
                     [RadarState setLastMotionActivityData:@{
-                        @"type" : motionActivityType,
+                        @"type" : [Radar stringForActivityType:activityType],
                         @"timestamp" : @([activity.startDate timeIntervalSince1970]),
                         @"confidence" : @(activity.confidence)
                     }];
@@ -133,39 +134,10 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                     
                 }
             }];
-        
-            _motionManager = [CMMotionManager new];
-            [_motionManager startAccelerometerUpdatesToQueue:[NSOperationQueue mainQueue] withHandler:^(CMAccelerometerData * _Nullable accelerometerData, NSError * _Nullable error) {
-                if (accelerometerData) {
-                    [RadarState setLastAccelerometerData:@{
-                        @"xAcceleration" : @(accelerometerData.acceleration.x),
-                        @"yAcceleration" : @(accelerometerData.acceleration.y),
-                        @"zAcceleration" : @(accelerometerData.acceleration.z)
-                    }];
-                }
-            }];
-            
-            [_motionManager startGyroUpdatesToQueue:[NSOperationQueue mainQueue] withHandler:^(CMGyroData * _Nullable gyroData, NSError * _Nullable error) {
-                if (gyroData) {
-                    [RadarState setLastGyroData:@{
-                        @"xRotationRate" : @(gyroData.rotationRate.x),
-                        @"yRotationRate" : @(gyroData.rotationRate.y),
-                        @"zRotationRate" : @(gyroData.rotationRate.z),
-                    }];
-                }
-            }];
-            
-            [_motionManager startMagnetometerUpdatesToQueue:[NSOperationQueue mainQueue] withHandler:^(CMMagnetometerData * _Nullable magnetometerData, NSError * _Nullable error) {
-                if (magnetometerData) {
-                    [RadarState setLastMagnetometerData:@{
-                        @"xMagneticField" : @(magnetometerData.magneticField.x),
-                        @"yMagneticField" : @(magnetometerData.magneticField.y),
-                        @"zMagneticField" : @(magnetometerData.magneticField.z),
-                    }];
-                }
-            }];
-        }
 
+            [self.activityManager startMotionUpdates];
+        }
+        
         _permissionsHelper = [RadarPermissionsHelper new];
 
         // if not testing, set _notificationCenter to the currentNotificationCenter
@@ -178,7 +150,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 
 - (void)callCompletionHandlersWithStatus:(RadarStatus)status location:(CLLocation *_Nullable)location {
     @synchronized(self) {
-        if (!self.completionHandlers.count) {
+        if (!self.completionHandlers.count || self.newActivityUpdate) {
             return;
         }
 
@@ -276,11 +248,16 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 
 - (void)stopTracking {
     [RadarSettings setTracking:NO];
+
     
     RadarSdkConfiguration *sdkConfiguration = [RadarSettings sdkConfiguration];
     if (sdkConfiguration.extendFlushReplays) {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"Flushing replays from stopTracking()"];
         [[RadarReplayBuffer sharedInstance] flushReplaysWithCompletionHandler:nil completionHandler:nil];
+    }
+
+    if (sdkConfiguration.useLocationMetadata) {
+        [self.activityManager stopActivityAndMotionUpdates];
     }
 
     [self updateTracking];
@@ -919,6 +896,11 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     [RadarState updateLastSentAt];
     self.newActivityUpdate = NO;
 
+    if ([RadarSettings useLocationMetadata]) { 
+        [self.activityManager requestLatestMotionData];
+    }
+
+
     if (source == RadarLocationSourceForegroundLocation) {
         return;
     }
@@ -1198,6 +1180,13 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     [[RadarDelegateHolder sharedInstance] didFailWithStatus:RadarStatusErrorLocation];
 
     [self callCompletionHandlersWithStatus:RadarStatusErrorLocation location:nil];
+}
+
+- (void)stopActivityAndMotionUpdates {
+    if (self.activityManager) {
+        [self.activityManager stopActivityUpdates];
+        [self.activityManager stopMotionUpdates];
+    }
 }
 
 - (void)locationManager:(CLLocationManager *)manager didUpdateHeading:(CLHeading *)newHeading {

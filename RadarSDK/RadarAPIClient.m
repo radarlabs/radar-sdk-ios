@@ -487,7 +487,7 @@
                                 [RadarSettings setUserDebug:user.debug];
 
                                 if (location) {
-                                    [[RadarDelegateHolder sharedInstance] didUpdateLocation:location user:user locationMetadata:params[@"locationMetadata"]]; 
+                                    [[RadarDelegateHolder sharedInstance] didUpdateLocation:location user:user]; 
                                 }
 
                                 if (events.count) {

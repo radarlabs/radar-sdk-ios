@@ -1117,6 +1117,31 @@
     return str;
 }
 
++ (NSString *)stringForActivityType:(RadarActivityType)type {
+    NSString *str;
+    switch (type) {
+    case RadarActivityTypeUnknown:
+        str = @"UNKNOWN";
+        break;
+    case RadarActivityTypeStationary:
+        str = @"STATIONARY";
+        break;
+    case RadarActivityTypeFoot:
+        str = @"FOOT";
+        break;
+    case RadarActivityTypeRun:
+        str = @"RUN";
+        break;
+    case RadarActivityTypeBike:
+        str = @"BIKE";
+        break;
+    case RadarActivityTypeCar:
+        str = @"CAR";
+        break;
+    }
+    return str;
+}
+
 + (NSString *)stringForLocationSource:(RadarLocationSource)source {
     NSString *str;
     switch (source) {

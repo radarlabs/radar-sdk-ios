@@ -40,13 +40,13 @@
     }
 }
 
-- (void)didUpdateLocation:(CLLocation *)location user:(RadarUser *)user locationMetadata:(NSDictionary *)locationMetadata {
+- (void)didUpdateLocation:(CLLocation *)location user:(RadarUser *)user{
     if (!location || !user) {
         return;
     }
 
     if (self.delegate) {
-        [self.delegate didUpdateLocation:location user:user locationMetadata:locationMetadata];
+        [self.delegate didUpdateLocation:location user:user];
     }
 
     [[RadarLogger sharedInstance]
