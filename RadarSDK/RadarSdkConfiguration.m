@@ -9,6 +9,7 @@
 #include "Radar.h"
 
 #import "RadarLog.h"
+#import "RadarLogger.h"
 #import "RadarUtils.h"
 #import "RadarAPIClient.h"
 #import "RadarSettings.h"
@@ -16,6 +17,9 @@
 @implementation RadarSdkConfiguration
 
 - (instancetype)initWithDict:(NSDictionary *)dict {
+    // log the dict
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"RadarSdkConfiguration initWithDict: %@", dict]];
+
     self = [super init];
     if (self == nil) {
         return nil;
@@ -58,8 +62,13 @@
     }
     
     NSObject *useRadarModifiedBeaconObj = dict[@"useRadarModifiedBeacon"];
+    // log useRadarModifiedBeaconObj
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"useRadarModifiedBeaconObj: %@", useRadarModifiedBeaconObj]];
+
     _useRadarModifiedBeacon = NO;
     if (useRadarModifiedBeaconObj && [useRadarModifiedBeaconObj isKindOfClass:[NSNumber class]]) {
+        // log "setting _useRadarModifiedBeacon!!"
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"setting _useRadarModifiedBeacon!!"];
         _useRadarModifiedBeacon = [(NSNumber *)useRadarModifiedBeaconObj boolValue];
     }
 

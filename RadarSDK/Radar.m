@@ -13,6 +13,7 @@
 #import "RadarConfig.h"
 #import "RadarCoordinate+Internal.h"
 #import "RadarDelegateHolder.h"
+#import "RadarIndoorSurvey.h"
 #import "RadarLocationManager.h"
 #import "RadarLogBuffer.h"
 #import "RadarLogger.h"
@@ -165,6 +166,14 @@
                              return;
                          }
 
+                         // TODO indoors...??
+                         // TODO indoors...??
+                         // TODO indoors...??
+                         // TODO indoors...??
+                         // TODO add indoors call / callback logic here??
+                         // it's similar --- but different?? --- than LocationManager's sendLocation...?
+                         // ALSO it doesn't use/call/care about useRadarModifiedBeacon...?
+
                          void (^callTrackAPI)(NSArray<RadarBeacon *> *_Nullable) = ^(NSArray<RadarBeacon *> *_Nullable beacons) {
                              [[RadarAPIClient sharedInstance]
                                  trackWithLocation:location
@@ -173,6 +182,7 @@
                                             source:RadarLocationSourceForegroundLocation
                                           replayed:NO
                                            beacons:beacons
+                               indoorsWhereAmIScan:@""
                                  completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user,
                                                      NSArray<RadarGeofence *> *_Nullable nearbyGeofences, RadarConfig *_Nullable config, RadarVerifiedLocationToken *_Nullable token) {
                                      if (status == RadarStatusSuccess) {
@@ -239,6 +249,12 @@
 }
 
 + (void)trackOnceWithLocation:(CLLocation *)location completionHandler:(RadarTrackCompletionHandler)completionHandler {
+    // TODO do indoors stuff here too...???
+    // TODO do indoors stuff here too...???
+    // TODO do indoors stuff here too...???
+    // TODO do indoors stuff here too...???
+    // TODO do indoors stuff here too...???
+
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"trackOnce()"];
     [[RadarAPIClient sharedInstance] trackWithLocation:location
                                                stopped:NO
@@ -246,6 +262,7 @@
                                                 source:RadarLocationSourceManualLocation
                                               replayed:NO
                                                beacons:nil
+                                   indoorsWhereAmIScan:@""
                                      completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user,
                                                          NSArray<RadarGeofence *> *_Nullable nearbyGeofences, RadarConfig *_Nullable config, RadarVerifiedLocationToken *_Nullable token) {
                                         if (status == RadarStatusSuccess && config != nil) {                                    
@@ -354,6 +371,7 @@
                                    source:RadarLocationSourceMockLocation
                                  replayed:NO
                                   beacons:nil
+                      indoorsWhereAmIScan:@""
                         completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user,
                                             NSArray<RadarGeofence *> *_Nullable nearbyGeofences, RadarConfig *_Nullable config, RadarVerifiedLocationToken *_Nullable token) {
                             if (completionHandler) {
@@ -1013,6 +1031,21 @@
                                                 }];
                                             }
                                         }];
+}
+
+#pragma mark - Indoors
+
++ (void)doIndoorSurvey:(NSString *)placeLabel
+             forLength:(int)surveyLengthSeconds
+     completionHandler:(RadarIndoorsSurveyCompletionHandler)completionHandler {
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"doIndoorsSurvey()"];
+    
+    [[RadarIndoorSurvey sharedInstance] start:placeLabel
+                                    forLength:surveyLengthSeconds
+                            withKnownLocation:nil
+                               isWhereAmIScan:NO
+                        withCompletionHandler:completionHandler
+    ];
 }
 
 #pragma mark - Logging

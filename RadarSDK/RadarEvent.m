@@ -182,6 +182,8 @@
             type = RadarEventTypeUserArrivedAtWrongTripDestination;
         } else if ([typeStr isEqualToString:@"user.failed_fraud"]) {
             type = RadarEventTypeUserFailedFraud;
+        } else if ([typeStr isEqualToString:@"indoors.location"]) {
+            type = RadarEventTypeIndoorLocation;
         } else {
             type = RadarEventTypeConversion;
             conversionName = typeStr;
@@ -296,8 +298,16 @@
         float locationCoordinatesLatitudeFloat = [locationCoordinatesLatitudeNumber floatValue];
 
         id locationAccuracyObj = dict[@"locationAccuracy"];
-        if (locationAccuracyObj && [locationAccuracyObj isKindOfClass:[NSNumber class]]) {
-            NSNumber *locationAccuracyNumber = (NSNumber *)locationAccuracyObj;
+        // FIXME why is this done..........? server side not responding well to accuracy being ... less/more... than...? why?
+        // FIXME why is this done..........? server side not responding well to accuracy being ... less/more... than...? why?
+        // FIXME why is this done..........? server side not responding well to accuracy being ... less/more... than...? why?
+        // FIXME why is this done..........? server side not responding well to accuracy being ... less/more... than...? why?
+        // if (locationAccuracyObj && [locationAccuracyObj isKindOfClass:[NSNumber class]]) {
+        if (YES) {
+            // FIXMED
+            // FIXMED
+            // NSNumber *locationAccuracyNumber = (NSNumber *)locationAccuracyObj;
+            NSNumber *locationAccuracyNumber = [NSNumber numberWithFloat:123.0];
 
             location = [[CLLocation alloc] initWithCoordinate:CLLocationCoordinate2DMake(locationCoordinatesLatitudeFloat, locationCoordinatesLongitudeFloat)
                                                      altitude:-1
@@ -395,6 +405,8 @@
         return @"user.failed_fraud";
     case RadarEventTypeConversion:
         return @"custom";
+    case RadarEventTypeIndoorLocation:
+        return @"indoors.location";
     default:
         return @"unknown";
     }

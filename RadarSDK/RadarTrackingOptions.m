@@ -29,6 +29,7 @@ NSString *const kSyncGeofences = @"syncGeofences";
 NSString *const kUseVisits = @"useVisits";
 NSString *const kUseSignificantLocationChanges = @"useSignificantLocationChanges";
 NSString *const kBeacons = @"beacons";
+NSString *const kDoIndoorsSurvey = @"doIndoorsSurvey";
 
 NSString *const kDesiredAccuracyHigh = @"high";
 NSString *const kDesiredAccuracyMedium = @"medium";
@@ -46,7 +47,7 @@ NSString *const kSyncNone = @"none";
     RadarTrackingOptions *options = [RadarTrackingOptions new];
     options.desiredStoppedUpdateInterval = 30;
     options.desiredMovingUpdateInterval = 30;
-    options.desiredSyncInterval = 20;
+    options.desiredSyncInterval = 10;
     options.desiredAccuracy = RadarTrackingOptionsDesiredAccuracyHigh;
     options.stopDuration = 140;
     options.stopDistance = 70;
@@ -63,6 +64,7 @@ NSString *const kSyncNone = @"none";
     options.useVisits = NO;
     options.useSignificantLocationChanges = NO;
     options.beacons = NO;
+    options.doIndoorsSurvey = NO;
     return options;
 }
 
@@ -87,6 +89,7 @@ NSString *const kSyncNone = @"none";
     options.useVisits = YES;
     options.useSignificantLocationChanges = YES;
     options.beacons = NO;
+    options.doIndoorsSurvey = NO;
     return options;
 }
 
@@ -111,6 +114,7 @@ NSString *const kSyncNone = @"none";
     options.useVisits = YES;
     options.useSignificantLocationChanges = NO;
     options.beacons = NO;
+    options.doIndoorsSurvey = NO;
     return options;
 }
 
@@ -239,6 +243,7 @@ NSString *const kSyncNone = @"none";
     options.useVisits = [dict[kUseVisits] boolValue];
     options.useSignificantLocationChanges = [dict[kUseSignificantLocationChanges] boolValue];
     options.beacons = [dict[kBeacons] boolValue];
+    options.doIndoorsSurvey = [dict[kDoIndoorsSurvey] boolValue];
     return options;
 }
 
@@ -271,6 +276,7 @@ NSString *const kSyncNone = @"none";
     dict[kUseVisits] = @(self.useVisits);
     dict[kUseSignificantLocationChanges] = @(self.useSignificantLocationChanges);
     dict[kBeacons] = @(self.beacons);
+    dict[kDoIndoorsSurvey] = @(self.doIndoorsSurvey);
     return dict;
 }
 
@@ -299,7 +305,7 @@ NSString *const kSyncNone = @"none";
            self.syncLocations == options.syncLocations && self.replay == options.replay && self.showBlueBar == options.showBlueBar &&
            self.useStoppedGeofence == options.useStoppedGeofence && self.stoppedGeofenceRadius == options.stoppedGeofenceRadius &&
            self.useMovingGeofence == options.useMovingGeofence && self.movingGeofenceRadius == options.movingGeofenceRadius && self.syncGeofences == options.syncGeofences &&
-           self.useVisits == options.useVisits && self.useSignificantLocationChanges == options.useSignificantLocationChanges && self.beacons == options.beacons;
+           self.useVisits == options.useVisits && self.useSignificantLocationChanges == options.useSignificantLocationChanges && self.beacons == options.beacons && self.doIndoorsSurvey == options.doIndoorsSurvey;
 }
 
 @end
