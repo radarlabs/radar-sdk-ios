@@ -73,9 +73,7 @@
     [self.motionManager stopMagnetometerUpdates];
 }
 
-- (NSDictionary *)getLatestMotionData {
-    NSMutableDictionary *motionData = [NSMutableDictionary dictionary];
-    
+- (void)requestLatestMotionData {
     if (self.motionManager.isAccelerometerActive) {
         CMAccelerometerData *accelerometerData = self.motionManager.accelerometerData;
         if (accelerometerData) {
@@ -108,8 +106,6 @@
             };
         }
     }
-    
-    return motionData;
 }
 
 @end

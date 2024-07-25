@@ -10,6 +10,6 @@
 - (void)stopActivityUpdates;
 - (void)startMotionUpdates;
 - (void)stopMotionUpdates;
-- (NSDictionary *)getLatestMotionData;
+- (NSDictionary *)requestLatestMotionData;
 
 @end
