@@ -150,6 +150,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 
 - (void)callCompletionHandlersWithStatus:(RadarStatus)status location:(CLLocation *_Nullable)location {
     @synchronized(self) {
+        // todo: verify that we want to check self.newActivityUpdate here
         if (!self.completionHandlers.count || self.newActivityUpdate) {
             return;
         }

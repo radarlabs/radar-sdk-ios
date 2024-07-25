@@ -53,6 +53,11 @@ typedef NS_ENUM(NSInteger, RadarLocationSource);
 @property (nonnull, strong, nonatomic, readonly) CLLocation *location;
 
 /**
+ The user's current activity type.
+ */
+@property (nullable, copy, nonatomic, readonly) RadarActivityType *activityType;
+
+/**
  An array of the user's current geofences. May be `nil` or empty if the user is not in any geofences.
 
  @see https://radar.com/documentation/geofences
