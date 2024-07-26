@@ -192,16 +192,7 @@
         // ML server for training purposes
 
         // POST payload
-        // TODO move to prod server..?
-        // FIXME not working right now
-        // FIXME not working right now
-        // FIXME not working right now
-        // FIXME not working right now
-        // FIXME not working right now
-        // FIXME not working right now
-        // FIXME not working right now
-        // FIXME not working right now
-        NSURL *url = [NSURL URLWithString:@"https://ml-prod.radarindoors.com/scan_results"];
+        NSURL *url = [NSURL URLWithString:@"https://ml-staging.radarindoors.com/scan_results"];
 
         NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:url];
         [urlRequest setHTTPMethod:@"POST"];

@@ -391,7 +391,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                 [self removeSyncedBeacons];
             }    
 
-            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"options.doIndoorsSurvey = %d", options.doIndoorsSurvey]];            
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"options.indoors = %d", options.indoors]];
         } else {
             [self stopUpdates];
             [self removeAllRegions];
@@ -925,7 +925,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
             // FIXME
             // FIXME
             // FIXME
-            if(true || options.doIndoorsSurvey) {
+            if(true || options.indoors) {
                 // do indoor survey, then call track api with the beacons and the indoor survey
                 [[RadarIndoorSurvey sharedInstance] start:@"WHEREAMI"
                                                 forLength:WHERE_AM_I_DURATION_SECONDS

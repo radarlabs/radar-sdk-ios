@@ -166,15 +166,7 @@
                              return;
                          }
 
-                         // TODO indoors...??
-                         // TODO indoors...??
-                         // TODO indoors...??
-                         // TODO indoors...??
-                         // TODO add indoors call / callback logic here??
-                         // it's similar --- but different?? --- than LocationManager's sendLocation...?
-                         // ALSO it doesn't use/call/care about useRadarModifiedBeacon...?
-
-                         void (^callTrackAPI)(NSArray<RadarBeacon *> *_Nullable) = ^(NSArray<RadarBeacon *> *_Nullable beacons) {
+                         void (^callTrackAPI)(NSArray<RadarBeacon *> *_Nullable, NSString *_Nullable) = ^(NSArray<RadarBeacon *> *_Nullable beacons, NSString *_Nullable indoorsWhereAmIScan) {
                              [[RadarAPIClient sharedInstance]
                                  trackWithLocation:location
                                            stopped:stopped
@@ -182,7 +174,7 @@
                                             source:RadarLocationSourceForegroundLocation
                                           replayed:NO
                                            beacons:beacons
-                               indoorsWhereAmIScan:@""
+                               indoorsWhereAmIScan:indoorsWhereAmIScan
                                  completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user,
                                                      NSArray<RadarGeofence *> *_Nullable nearbyGeofences, RadarConfig *_Nullable config, RadarVerifiedLocationToken *_Nullable token) {
                                      if (status == RadarStatusSuccess) {
@@ -201,6 +193,42 @@
                                  }];
                          };
 
+                         // callback used below, after (possibly) fetching beacons and ranging on them.
+                         // at this point, we have beacons but have not yet done the indoor survey, which we might do or not (based on RTO options)
+                         void (^maybeIndoorSurveyThenCallTrackAPI)(NSArray<RadarBeacon *> *_Nullable) = ^(NSArray<RadarBeacon *> *_Nullable beacons) {
+                             // FIXME track once doesn't use RTO/options...?? how to get options.indoors..??
+                             // FIXME track once doesn't use RTO/options...?? how to get options.indoors..??
+                             // FIXME track once doesn't use RTO/options...?? how to get options.indoors..??
+                             // FIXME track once doesn't use RTO/options...?? how to get options.indoors..??
+                             // FIXME track once doesn't use RTO/options...?? how to get options.indoors..??
+                             // FIXME track once doesn't use RTO/options...?? how to get options.indoors..??
+                             // --------------------------------
+                             // should this be exposed in a different call i.e.
+                             // if there is Radar.trackOnce(desiredAccuracy: .high, beacons: true)
+                             // should there be Radar.trackOnce(desiredAccuracy: .high, indoors: true)
+                             // ...........???????
+                             // --------------------------------
+                             if(true) {
+                                 // do indoor survey, then call track api with the beacons and the indoor survey
+                                 [[RadarIndoorSurvey sharedInstance] start:@"WHEREAMI"
+                                                                 forLength:WHERE_AM_I_DURATION_SECONDS
+                                                         withKnownLocation:location
+                                                            isWhereAmIScan:YES
+                                                     withCompletionHandler:^(NSString *_Nullable indoorsWhereAmIScan) {
+
+                                     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
+                                                        message:[NSString stringWithFormat:@"received indoor start indoorsWhereAmIScan: %lu", (unsigned long)indoorsWhereAmIScan.length]];
+
+                                     callTrackAPI(beacons, indoorsWhereAmIScan);
+                                 }];
+
+                             } else {
+                                 // no indoor survey -- just call track api with the given beacons
+                                 callTrackAPI(beacons, nil);
+                             }
+                         };
+
+
                          if (beacons) {
                              [[RadarAPIClient sharedInstance]
                                  searchBeaconsNear:location
@@ -215,12 +243,12 @@
                                              [[RadarBeaconManager sharedInstance] rangeBeaconUUIDs:beaconUUIDs
                                                                                  completionHandler:^(RadarStatus status, NSArray<RadarBeacon *> *_Nullable beacons) {
                                                                                      if (status != RadarStatusSuccess || !beacons) {
-                                                                                         callTrackAPI(nil);
+                                                                                         maybeIndoorSurveyThenCallTrackAPI(nil);
 
                                                                                          return;
                                                                                      }
 
-                                                                                     callTrackAPI(beacons);
+                                                                                     maybeIndoorSurveyThenCallTrackAPI(beacons);
                                                                                  }];
                                          }];
                                      } else if (beacons && beacons.count) {
@@ -230,31 +258,25 @@
                                              [[RadarBeaconManager sharedInstance] rangeBeacons:beacons
                                                                              completionHandler:^(RadarStatus status, NSArray<RadarBeacon *> *_Nullable beacons) {
                                                                                  if (status != RadarStatusSuccess || !beacons) {
-                                                                                     callTrackAPI(nil);
+                                                                                     maybeIndoorSurveyThenCallTrackAPI(nil);
 
                                                                                      return;
                                                                                  }
 
-                                                                                 callTrackAPI(beacons);
+                                                                                 maybeIndoorSurveyThenCallTrackAPI(beacons);
                                                                              }];
                                          }];
                                      } else {
-                                         callTrackAPI(@[]);
+                                         maybeIndoorSurveyThenCallTrackAPI(@[]);
                                      }
                                  }];
                          } else {
-                             callTrackAPI(nil);
+                             maybeIndoorSurveyThenCallTrackAPI(nil);
                          }
                      }];
 }
 
 + (void)trackOnceWithLocation:(CLLocation *)location completionHandler:(RadarTrackCompletionHandler)completionHandler {
-    // TODO do indoors stuff here too...???
-    // TODO do indoors stuff here too...???
-    // TODO do indoors stuff here too...???
-    // TODO do indoors stuff here too...???
-    // TODO do indoors stuff here too...???
-
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"trackOnce()"];
     [[RadarAPIClient sharedInstance] trackWithLocation:location
                                                stopped:NO
@@ -1035,6 +1057,8 @@
 
 #pragma mark - Indoors
 
+// called by waypoint (and others?) to trigger a place survey for a given length
+// i.e. record a bluetooth fingerprint and store it
 + (void)doIndoorSurvey:(NSString *)placeLabel
              forLength:(int)surveyLengthSeconds
      completionHandler:(RadarIndoorsSurveyCompletionHandler)completionHandler {

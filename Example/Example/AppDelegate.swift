@@ -100,6 +100,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
                 print("TrackVerified: status = \(status); token = \(token?.dictionaryValue())")
             }
         }
+
+        demoButton(text: "trackOnce with beacons and indoors") {
+            Radar.trackOnce(desiredAccuracy: .high, beacons: true) { (status, location, events, user) in
+                print("Track once: status = \(Radar.stringForStatus(status)); location = \(String(describing: location)); events = \(String(describing: events)); user = \(String(describing: user))")
+            }
+        }
         
         demoButton(text: "searchPlaces") {
             // In the Radar dashboard settings
