@@ -53,6 +53,12 @@
 @property (assign, nonatomic) BOOL newActivityUpdate;
 
 /**
+YES if the activity manager is currently active.
+*/
+@property (atomic, assign) BOOL isUpdatingActivity;
+
+
+/**
  Callbacks for sending events.
  */
 @property (nonnull, strong, nonatomic) NSMutableArray<RadarLocationCompletionHandler> *completionHandlers;
@@ -89,6 +95,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     if (self) {
         _completionHandlers = [NSMutableArray new];
         _newActivityUpdate = NO;
+        _isUpdatingActivity = NO;
 
         _locationManager = [CLLocationManager new];
         _locationManager.delegate = self;
@@ -337,8 +344,9 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
             self.lowPowerLocationManager.allowsBackgroundLocationUpdates = [RadarUtils locationBackgroundMode];
             self.lowPowerLocationManager.pausesLocationUpdatesAutomatically = NO;
 
-            if ([RadarSettings useLocationMetadata]) { 
+            if ([RadarSettings useLocationMetadata] && !self.isUpdatingActivity) { 
                 [self.locationManager startUpdatingHeading];
+                self.isUpdatingActivity = YES;
 
                 self.activityManager = [RadarActivityManager sharedInstance];
                 [self.activityManager startActivityUpdatesWithHandler:^(CMMotionActivity *activity) {
@@ -1182,6 +1190,9 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 }
 
 - (void)stopActivityAndMotionUpdates {
+    self.isUpdatingActivity = NO;
+    [self.locationManager stopUpdatingHeading];
+
     if (self.activityManager) {
         [self.activityManager stopActivityUpdates];
         [self.activityManager stopMotionUpdates];
