@@ -2,6 +2,7 @@
 
 #import "RadarActivityManager.h"
 #import "RadarLogger.h"
+#import "RadarState.h"
 
 @interface RadarActivityManager ()
 
@@ -81,7 +82,7 @@
                 @"x": @(accelerometerData.acceleration.x),
                 @"y": @(accelerometerData.acceleration.y),
                 @"z": @(accelerometerData.acceleration.z)
-            };
+            }];
         }
     }
     
@@ -103,7 +104,7 @@
                 @"x": @(magnetometerData.magneticField.x),
                 @"y": @(magnetometerData.magneticField.y),
                 @"z": @(magnetometerData.magneticField.z)
-            };
+            }];
         }
     }
 }

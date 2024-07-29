@@ -104,10 +104,10 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         if ([RadarSettings useLocationMetadata]) { 
             [_locationManager startUpdatingHeading];
 
-            self.activityManager = [RadarActivityManager sharedInstance];
-            [self.activityManager startActivityUpdatesWithHandler:^(CMMotionActivity *activity) {
+            _activityManager = [RadarActivityManager sharedInstance];
+            [_activityManager startActivityUpdatesWithHandler:^(CMMotionActivity *activity) {
                 if (activity) {
-                    RadarActivityType *activityType;
+                    RadarActivityType activityType = RadarActivityTypeUnknown;
                     if (activity.stationary) {
                        activityType = RadarActivityTypeStationary; 
                     } else if (activity.walking) {
@@ -118,8 +118,6 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                         activityType = RadarActivityTypeCar;
                     } else if (activity.cycling) {
                         activityType = RadarActivityTypeBike;
-                    } else {
-                        activityType = RadarActivityTypeUnknown;
                     }
 
                     [RadarState setLastMotionActivityData:@{
@@ -135,7 +133,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                 }
             }];
 
-            [self.activityManager startMotionUpdates];
+            [_activityManager startMotionUpdates];
         }
         
         _permissionsHelper = [RadarPermissionsHelper new];
@@ -258,7 +256,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     }
 
     if (sdkConfiguration.useLocationMetadata) {
-        [self.activityManager stopActivityAndMotionUpdates];
+        [self stopActivityAndMotionUpdates];
     }
 
     [self updateTracking];

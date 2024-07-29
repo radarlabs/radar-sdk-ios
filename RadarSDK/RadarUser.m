@@ -25,7 +25,7 @@
                          description:(NSString *)description
                             metadata:(NSDictionary *)metadata
                             location:(CLLocation *)location
-                        activityType:(RadarActivityType *_Nullable)activityType
+                        activityType:(RadarActivityType)activityType
                            geofences:(NSArray *)geofences
                                place:(RadarPlace *)place
                              beacons:(NSArray *)beacons
@@ -84,7 +84,7 @@
     NSString *description;
     NSDictionary *metadata;
     CLLocation *location;
-    RadarActivityType *activityType;
+    RadarActivityType activityType = RadarActivityTypeUnknown;
     NSArray<RadarGeofence *> *geofences;
     RadarPlace *place;
     NSArray<RadarBeacon *> *beacons;
@@ -179,7 +179,7 @@
         } else if ([activityTypeStr isEqualToString:@"FOOT"]) {
             activityType = RadarActivityTypeFoot;
         } else if ([activityTypeStr isEqualToString:@"RUN"]) {
-            activityType = RadarActivityTypeRunning;
+            activityType = RadarActivityTypeRun;
         } else if ([activityTypeStr isEqualToString:@"STATIONARY"]) {
             activityType = RadarActivityTypeStationary;
         }

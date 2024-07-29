@@ -18,7 +18,7 @@
                          description:(NSString *_Nullable)description
                             metadata:(NSDictionary *_Nullable)metadata
                             location:(CLLocation *_Nonnull)location
-                        activityType:(RadarActivityType *_Nullable)activityType
+                        activityType:(RadarActivityType)activityType
                            geofences:(NSArray *_Nullable)geofences
                                place:(RadarPlace *_Nullable)place
                              beacons:(NSArray *_Nullable)beacons
