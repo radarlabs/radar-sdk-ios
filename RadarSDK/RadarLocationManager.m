@@ -108,6 +108,8 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         _lowPowerLocationManager.distanceFilter = 3000;
         _lowPowerLocationManager.allowsBackgroundLocationUpdates = [RadarUtils locationBackgroundMode];
 
+        _activityManager = [RadarActivityManager sharedInstance];
+
         _permissionsHelper = [RadarPermissionsHelper new];
 
         // if not testing, set _notificationCenter to the currentNotificationCenter
@@ -348,7 +350,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                 [self.locationManager startUpdatingHeading];
                 self.isUpdatingActivity = YES;
 
-                self.activityManager = [RadarActivityManager sharedInstance];
+                // _activityManager = [RadarActivityManager sharedInstance];
                 [self.activityManager startActivityUpdatesWithHandler:^(CMMotionActivity *activity) {
                     if (activity) {
                         RadarActivityType activityType = RadarActivityTypeUnknown;
