@@ -21,6 +21,7 @@
 #import "RadarState.h"
 #import "RadarUtils.h"
 #import "RadarReplayBuffer.h"
+#import "RadarActivityManager.h"
 
 @interface RadarLocationManager ()
 
@@ -107,8 +108,6 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         _lowPowerLocationManager.desiredAccuracy = kCLLocationAccuracyThreeKilometers;
         _lowPowerLocationManager.distanceFilter = 3000;
         _lowPowerLocationManager.allowsBackgroundLocationUpdates = [RadarUtils locationBackgroundMode];
-
-        _activityManager = [RadarActivityManager sharedInstance];
 
         _permissionsHelper = [RadarPermissionsHelper new];
 
@@ -350,7 +349,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                 [self.locationManager startUpdatingHeading];
                 self.isUpdatingActivity = YES;
 
-                // _activityManager = [RadarActivityManager sharedInstance];
+                self.activityManager = [RadarActivityManager sharedInstance];
                 [self.activityManager startActivityUpdatesWithHandler:^(CMMotionActivity *activity) {
                     if (activity) {
                         RadarActivityType activityType = RadarActivityTypeUnknown;
