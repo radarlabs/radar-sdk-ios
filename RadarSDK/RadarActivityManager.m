@@ -8,7 +8,7 @@
 
 @property (nonatomic, strong) CMMotionActivityManager *motionActivityManager;
 @property (nonatomic, strong) CMMotionManager *motionManager;
-@property (nonatomic, strong) dispatch_queue_t activityQueue;
+@property (nonatomic, strong) NSOperationQueue *activityQueue;
 
 @end
 
@@ -26,7 +26,10 @@
 - (instancetype)init {
     self = [super init];
     if (self) {
-        _activityQueue = dispatch_queue_create("com.radar.activityQueue", DISPATCH_QUEUE_SERIAL);
+        // _activityQueue = dispatch_queue_create("com.radar.activityQueue", DISPATCH_QUEUE_SERIAL);
+        _activityQueue = [[NSOperationQueue alloc] init];
+        _activityQueue.name = @"com.radar.activityQueue";
+
         _motionActivityManager = [[CMMotionActivityManager alloc] init];
         _motionManager = [[CMMotionManager alloc] init];
     }
@@ -39,15 +42,13 @@
         return;
     }
 
-    dispatch_async(self.activityQueue, ^{
-        [self.motionActivityManager startActivityUpdatesToQueue:[NSOperationQueue currentQueue] withHandler:^(CMMotionActivity *activity) {
-            if (activity) {
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    handler(activity);
-                });
-            }
-        }];
-    });
+    [self.motionActivityManager startActivityUpdatesToQueue:self.activityQueue withHandler:^(CMMotionActivity *activity) {
+        if (activity) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                handler(activity);
+            });
+        }
+    }];
 }
 
 - (void)stopActivityUpdates {

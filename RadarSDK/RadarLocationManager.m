@@ -342,30 +342,30 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 
                 self.activityManager = [RadarActivityManager sharedInstance];
                 [self.activityManager startActivityUpdatesWithHandler:^(CMMotionActivity *activity) {
-                if (activity) {
-                    RadarActivityType activityType = RadarActivityTypeUnknown;
-                    if (activity.stationary) {
-                       activityType = RadarActivityTypeStationary; 
-                    } else if (activity.walking) {
-                        activityType = RadarActivityTypeFoot;
-                    } else if (activity.running) {
-                        activityType = RadarActivityTypeFoot;
-                    } else if (activity.automotive) {
-                        activityType = RadarActivityTypeCar;
-                    } else if (activity.cycling) {
-                        activityType = RadarActivityTypeBike;
-                    }
+                    if (activity) {
+                        RadarActivityType activityType = RadarActivityTypeUnknown;
+                        if (activity.stationary) {
+                        activityType = RadarActivityTypeStationary; 
+                        } else if (activity.walking) {
+                            activityType = RadarActivityTypeFoot;
+                        } else if (activity.running) {
+                            activityType = RadarActivityTypeFoot;
+                        } else if (activity.automotive) {
+                            activityType = RadarActivityTypeCar;
+                        } else if (activity.cycling) {
+                            activityType = RadarActivityTypeBike;
+                        }
 
-                    [RadarState setLastMotionActivityData:@{
-                        @"type" : [Radar stringForActivityType:activityType],
-                        @"timestamp" : @([activity.startDate timeIntervalSince1970]),
-                        @"confidence" : @(activity.confidence)
-                    }];
-                    
-                    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Activity detected, initiating trackOnce"];
-                    self.newActivityUpdate = YES;
-                    [self requestLocation];
-                    
+                        [RadarState setLastMotionActivityData:@{
+                            @"type" : [Radar stringForActivityType:activityType],
+                            @"timestamp" : @([activity.startDate timeIntervalSince1970]),
+                            @"confidence" : @(activity.confidence)
+                        }];
+                        
+                        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Activity detected, initiating trackOnce"];
+                        self.newActivityUpdate = YES;
+                        [self requestLocation];
+                        
                     }
                 }];
 
