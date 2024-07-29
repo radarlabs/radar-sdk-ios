@@ -52,9 +52,7 @@
 }
 
 - (void)stopActivityUpdates {
-    dispatch_async(self.activityQueue, ^{
-        [self.motionActivityManager stopActivityUpdates];
-    });
+    [self.motionActivityManager stopActivityUpdates];
 }
 
 - (void)startMotionUpdates {
