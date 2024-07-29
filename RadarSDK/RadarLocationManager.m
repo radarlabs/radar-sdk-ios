@@ -101,41 +101,6 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         _lowPowerLocationManager.distanceFilter = 3000;
         _lowPowerLocationManager.allowsBackgroundLocationUpdates = [RadarUtils locationBackgroundMode];
 
-        if ([RadarSettings useLocationMetadata]) { 
-            [_locationManager startUpdatingHeading];
-
-            _activityManager = [RadarActivityManager sharedInstance];
-            [_activityManager startActivityUpdatesWithHandler:^(CMMotionActivity *activity) {
-                if (activity) {
-                    RadarActivityType activityType = RadarActivityTypeUnknown;
-                    if (activity.stationary) {
-                       activityType = RadarActivityTypeStationary; 
-                    } else if (activity.walking) {
-                        activityType = RadarActivityTypeFoot;
-                    } else if (activity.running) {
-                        activityType = RadarActivityTypeFoot;
-                    } else if (activity.automotive) {
-                        activityType = RadarActivityTypeCar;
-                    } else if (activity.cycling) {
-                        activityType = RadarActivityTypeBike;
-                    }
-
-                    [RadarState setLastMotionActivityData:@{
-                        @"type" : [Radar stringForActivityType:activityType],
-                        @"timestamp" : @([activity.startDate timeIntervalSince1970]),
-                        @"confidence" : @(activity.confidence)
-                    }];
-                    
-                    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Activity detected, initiating trackOnce"];
-                    self.newActivityUpdate = YES;
-                    [self requestLocation];
-                    
-                }
-            }];
-
-            [_activityManager startMotionUpdates];
-        }
-        
         _permissionsHelper = [RadarPermissionsHelper new];
 
         // if not testing, set _notificationCenter to the currentNotificationCenter
@@ -371,6 +336,41 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 
             self.lowPowerLocationManager.allowsBackgroundLocationUpdates = [RadarUtils locationBackgroundMode];
             self.lowPowerLocationManager.pausesLocationUpdatesAutomatically = NO;
+
+            if ([RadarSettings useLocationMetadata]) { 
+                [self.locationManager startUpdatingHeading];
+
+                self.activityManager = [RadarActivityManager sharedInstance];
+                [self.activityManager startActivityUpdatesWithHandler:^(CMMotionActivity *activity) {
+                if (activity) {
+                    RadarActivityType activityType = RadarActivityTypeUnknown;
+                    if (activity.stationary) {
+                       activityType = RadarActivityTypeStationary; 
+                    } else if (activity.walking) {
+                        activityType = RadarActivityTypeFoot;
+                    } else if (activity.running) {
+                        activityType = RadarActivityTypeFoot;
+                    } else if (activity.automotive) {
+                        activityType = RadarActivityTypeCar;
+                    } else if (activity.cycling) {
+                        activityType = RadarActivityTypeBike;
+                    }
+
+                    [RadarState setLastMotionActivityData:@{
+                        @"type" : [Radar stringForActivityType:activityType],
+                        @"timestamp" : @([activity.startDate timeIntervalSince1970]),
+                        @"confidence" : @(activity.confidence)
+                    }];
+                    
+                    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Activity detected, initiating trackOnce"];
+                    self.newActivityUpdate = YES;
+                    [self requestLocation];
+                    
+                    }
+                }];
+
+                [self.activityManager startMotionUpdates];
+            }
 
             CLLocationAccuracy desiredAccuracy;
             switch (options.desiredAccuracy) {
