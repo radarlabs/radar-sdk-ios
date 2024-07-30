@@ -49,19 +49,12 @@
 }
 
 - (void)logWithLevel:(RadarLogLevel)level type:(RadarLogType)type message:(NSString *)message includeDate:(BOOL)includeDate includeBattery:(BOOL)includeBattery append:(BOOL)append{
-    // RadarLogLevel logLevel = [RadarSettings logLevel];
-    // if (level > logLevel) {
-        // return;
-    // }
+    RadarLogLevel logLevel = [RadarSettings logLevel];
+    if (level > logLevel) {
+        return;
+    }
 
-    // NSString *dateString = [self.dateFormatter stringFromDate:[NSDate date]];
-    includeDate = YES;
-
-    // make date string that includes date, second and millisecond
-    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-    [dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss.SSS"];
-    NSString *dateString = [dateFormatter stringFromDate:[NSDate date]];
-
+    NSString *dateString = [self.dateFormatter stringFromDate:[NSDate date]];
     float batteryLevel = [self.device batteryLevel];
     if (includeDate && includeBattery) {
         message = [NSString stringWithFormat:@"%@ |  at %@ | with %2.f%% battery", message, dateString, batteryLevel*100];
@@ -70,19 +63,6 @@
     } else if (includeBattery) {
         message = [NSString stringWithFormat:@"%@ | with %2.f%% battery", message, batteryLevel*100];
     }
-
-    // ping own (indoors-related) log server for immediate prod remote logging
-    NSURL *url = [NSURL URLWithString:@"https://logs.radarindoors.com"];
-    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
-    request.HTTPMethod = @"POST";
-    [request setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
-
-    NSDictionary *body = @{@"log": message, @"timestamp": dateString};
-    NSData *data = [NSJSONSerialization dataWithJSONObject:body options:0 error:nil];
-    request.HTTPBody = data;
-    NSURLSessionDataTask *task = [[NSURLSession sharedSession] dataTaskWithRequest:request];
-    [task resume];
-
     if (append) {
         [[RadarLogBuffer sharedInstance] write:level type:type message:message forcePersist:YES];
     } else {
