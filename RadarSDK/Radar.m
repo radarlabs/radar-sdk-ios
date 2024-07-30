@@ -196,19 +196,10 @@
                          // callback used below, after (possibly) fetching beacons and ranging on them.
                          // at this point, we have beacons but have not yet done the indoor survey, which we might do or not (based on RTO options)
                          void (^maybeIndoorSurveyThenCallTrackAPI)(NSArray<RadarBeacon *> *_Nullable) = ^(NSArray<RadarBeacon *> *_Nullable beacons) {
-                             // FIXME track once doesn't use RTO/options...?? how to get options.indoors..??
-                             // FIXME track once doesn't use RTO/options...?? how to get options.indoors..??
-                             // FIXME track once doesn't use RTO/options...?? how to get options.indoors..??
-                             // FIXME track once doesn't use RTO/options...?? how to get options.indoors..??
-                             // FIXME track once doesn't use RTO/options...?? how to get options.indoors..??
-                             // FIXME track once doesn't use RTO/options...?? how to get options.indoors..??
-                             // --------------------------------
-                             // should this be exposed in a different call i.e.
-                             // if there is Radar.trackOnce(desiredAccuracy: .high, beacons: true)
-                             // should there be Radar.trackOnce(desiredAccuracy: .high, indoors: true)
-                             // ...........???????
-                             // --------------------------------
-                             if(true) {
+                             // exceptionally, we look into the current options/RTOs to figure out
+                             // if indoors is enabled
+                             RadarTrackingOptions *options = [Radar getTrackingOptions];
+                             if(options.indoors) {
                                  // do indoor survey, then call track api with the beacons and the indoor survey
                                  [[RadarIndoorSurvey sharedInstance] start:@"WHEREAMI"
                                                                  forLength:WHERE_AM_I_DURATION_SECONDS

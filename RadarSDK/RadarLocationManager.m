@@ -735,12 +735,9 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     BOOL force = (source == RadarLocationSourceForegroundLocation || source == RadarLocationSourceManualLocation || source == RadarLocationSourceBeaconEnter ||
                   source == RadarLocationSourceBeaconExit || source == RadarLocationSourceVisitArrival);
 
-    // FIXME indoors --- don't do this.......>???
-    // FIXME indoors --- don't do this.......>???
-    // FIXME indoors --- don't do this.......>???
-    // FIXME indoors --- don't do this.......>???
-    // FIXME -- make sure to not skip location because of inaccurate...??
-    force = true;
+    if(options.indoors) {
+        force = true;
+    }
 
     if (wasStopped && !force && location.horizontalAccuracy >= 1000 && options.desiredAccuracy != RadarTrackingOptionsDesiredAccuracyLow) {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
@@ -922,10 +919,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         // callback used below, after (possibly) fetching beacons and ranging on them.
         // at this point, we have beacons but have not yet done the indoor survey, which we might do or not (based on RTO options)
         void (^maybeIndoorSurveyThenCallTrackAPI)(NSArray<RadarBeacon *> *_Nullable) = ^(NSArray<RadarBeacon *> *_Nullable beacons) {
-            // FIXME
-            // FIXME
-            // FIXME
-            if(true || options.indoors) {
+            if(options.indoors) {
                 // do indoor survey, then call track api with the beacons and the indoor survey
                 [[RadarIndoorSurvey sharedInstance] start:@"WHEREAMI"
                                                 forLength:WHERE_AM_I_DURATION_SECONDS

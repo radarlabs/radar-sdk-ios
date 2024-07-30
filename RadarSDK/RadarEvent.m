@@ -298,16 +298,14 @@
         float locationCoordinatesLatitudeFloat = [locationCoordinatesLatitudeNumber floatValue];
 
         id locationAccuracyObj = dict[@"locationAccuracy"];
-        // FIXME why is this done..........? server side not responding well to accuracy being ... less/more... than...? why?
-        // FIXME why is this done..........? server side not responding well to accuracy being ... less/more... than...? why?
-        // FIXME why is this done..........? server side not responding well to accuracy being ... less/more... than...? why?
-        // FIXME why is this done..........? server side not responding well to accuracy being ... less/more... than...? why?
-        // if (locationAccuracyObj && [locationAccuracyObj isKindOfClass:[NSNumber class]]) {
-        if (YES) {
-            // FIXMED
-            // FIXMED
-            // NSNumber *locationAccuracyNumber = (NSNumber *)locationAccuracyObj;
-            NSNumber *locationAccuracyNumber = [NSNumber numberWithFloat:123.0];
+        if (locationAccuracyObj && [locationAccuracyObj isKindOfClass:[NSNumber class]]) {
+            NSNumber *locationAccuracyNumber = (NSNumber *)locationAccuracyObj;
+
+            // in indoors mode, override accuracy
+            RadarTrackingOptions *options = [Radar getTrackingOptions];
+            if(options.indoors){
+                locationAccuracyNumber = [NSNumber numberWithFloat:10.0];
+            }
 
             location = [[CLLocation alloc] initWithCoordinate:CLLocationCoordinate2DMake(locationCoordinatesLatitudeFloat, locationCoordinatesLongitudeFloat)
                                                      altitude:-1
