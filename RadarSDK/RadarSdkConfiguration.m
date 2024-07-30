@@ -9,7 +9,6 @@
 #include "Radar.h"
 
 #import "RadarLog.h"
-#import "RadarLogger.h"
 #import "RadarUtils.h"
 #import "RadarAPIClient.h"
 #import "RadarSettings.h"
@@ -59,7 +58,6 @@
     }
     
     NSObject *useRadarModifiedBeaconObj = dict[@"useRadarModifiedBeacon"];
-
     _useRadarModifiedBeacon = NO;
     if (useRadarModifiedBeaconObj && [useRadarModifiedBeaconObj isKindOfClass:[NSNumber class]]) {
         _useRadarModifiedBeacon = [(NSNumber *)useRadarModifiedBeaconObj boolValue];

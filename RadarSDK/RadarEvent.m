@@ -5,6 +5,7 @@
 //  Copyright © 2019 Radar Labs, Inc. All rights reserved.
 //
 
+#import "Radar.h"
 #import "RadarEvent.h"
 #import "RadarBeacon+Internal.h"
 #import "RadarEvent+Internal.h"
@@ -12,6 +13,7 @@
 #import "RadarGeofence+Internal.h"
 #import "RadarPlace+Internal.h"
 #import "RadarRegion+Internal.h"
+#import "RadarTrackingOptions.h"
 #import "RadarTrip+Internal.h"
 #import "RadarUtils.h"
 

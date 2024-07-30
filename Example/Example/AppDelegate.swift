@@ -101,9 +101,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
             }
         }
 
-        demoButton(text: "trackOnce with beacons and indoors") {
+        demoButton(text: "indoors: trackOnce") {
             Radar.trackOnce(desiredAccuracy: .high, beacons: true) { (status, location, events, user) in
                 print("Track once: status = \(Radar.stringForStatus(status)); location = \(String(describing: location)); events = \(String(describing: events)); user = \(String(describing: user))")
+            }
+        }
+
+        demoButton(text: "indoors: doIndoorSurvey") {
+            Radar.doIndoorSurvey("example-app-fake-survey", forLength: 10) { (result) in
+                print("doIndoorSurvey done")
             }
         }
         

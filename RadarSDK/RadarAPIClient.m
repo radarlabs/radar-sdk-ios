@@ -303,7 +303,6 @@
         params[@"beacons"] = [RadarBeacon arrayForBeacons:beacons];
     }
 
-    NSLog(@"indoorsWhereAmIScan length: %lu", (unsigned long)indoorsWhereAmIScan.length);
     if (indoorsWhereAmIScan) {
         params[@"indoorsWhereAmIScan"] = indoorsWhereAmIScan;
     }
