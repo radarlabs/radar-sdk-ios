@@ -390,8 +390,6 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
             if (!options.beacons) {
                 [self removeSyncedBeacons];
             }    
-
-            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"options.indoors = %d", options.indoors]];
         } else {
             [self stopUpdates];
             [self removeAllRegions];
@@ -704,9 +702,6 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         return;
     }
 
-    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
-                                       message:[NSString stringWithFormat:@"RadarIndoorSurvey sharedInstance isScanning: %d", [[RadarIndoorSurvey sharedInstance] isScanning]]];
-
     if([[RadarIndoorSurvey sharedInstance] isScanning]) {
         if(![[RadarIndoorSurvey sharedInstance] isWhereAmIScan]) {
             // we _are_ currently scanning, but we are not in the "where am i" mode i.e.
@@ -887,17 +882,13 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 
 - (void)sendLocation:(CLLocation *)location stopped:(BOOL)stopped source:(RadarLocationSource)source replayed:(BOOL)replayed beacons:(NSArray<RadarBeacon *> *_Nullable)beacons {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
-                                       message:[NSString stringWithFormat:@"sendLocation | source = %@; location = %@; stopped = %d; replayed = %d; beacons = %@",
+                                       message:[NSString stringWithFormat:@"Sending location | source = %@; location = %@; stopped = %d; replayed = %d; beacons = %@",
                                                                           [Radar stringForLocationSource:source], location, stopped, replayed, beacons]];
 
     self.sending = YES;
 
     RadarTrackingOptions *options = [Radar getTrackingOptions];
     
-    // log RadarSettings useRadarModifiedBeacon
-    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
-                                       message:[NSString stringWithFormat:@"useRadarModifiedBeacon = %d", [RadarSettings useRadarModifiedBeacon]]];
-
     if ([RadarSettings useRadarModifiedBeacon]) {
         void (^callTrackAPI)(NSArray<RadarBeacon *> *_Nullable, NSString *_Nullable) = ^(NSArray<RadarBeacon *> *_Nullable beacons, NSString *_Nullable indoorsWhereAmIScan) {
             [[RadarAPIClient sharedInstance] trackWithLocation:location
