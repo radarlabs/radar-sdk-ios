@@ -303,7 +303,7 @@
                 // log "same beacon"
                 [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"same beacon!"];
                 if (beacon.rssi != 0 && beacon.rssi != radarBeacon.rssi) {
-                    // OVERWRITING STALE RSSI!!!!
+                    // overwriting stale rssi
                     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Overwriting stale RSSI: %ld", (long)radarBeacon.rssi]];
                     [radarBeacon setRssi:beacon.rssi];
                 }
