@@ -6,9 +6,10 @@
 
 @interface RadarActivityManager ()
 
-@property (nonatomic, strong) CMMotionActivityManager *motionActivityManager;
-@property (nonatomic, strong) CMMotionManager *motionManager;
-@property (nonatomic, strong) NSOperationQueue *activityQueue;
+
+//@property (nonatomic, strong) CMMotionActivityManager *motionActivityManager;
+//@property (nonatomic, strong, nullable) CMMotionManager *motionManager;
+@property (nonatomic, strong, nullable) NSOperationQueue *activityQueue;
 
 @end
 
@@ -26,86 +27,88 @@
 - (instancetype)init {
     self = [super init];
     if (self) {
-        // _activityQueue = dispatch_queue_create("com.radar.activityQueue", DISPATCH_QUEUE_SERIAL);
         _activityQueue = [[NSOperationQueue alloc] init];
         _activityQueue.name = @"com.radar.activityQueue";
+        
+//        if we have imports
+//        _motionActivityManager = [[CMMotionActivityManager alloc] init];
+//        _motionManager = [[CMMotionManager alloc] init];
 
-        _motionActivityManager = [[CMMotionActivityManager alloc] init];
-        _motionManager = [[CMMotionManager alloc] init];
     }
     return self;
 }
 
+// do we need to case this to a different type to beat the analysis? not going to do that for now
 - (void)startActivityUpdatesWithHandler:(void (^)(CMMotionActivity *activity))handler {
-    if (![CMMotionActivityManager isActivityAvailable]) {
-        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Motion activity is not available on this device"];
-        return;
-    }
-
-    [self.motionActivityManager startActivityUpdatesToQueue:self.activityQueue withHandler:^(CMMotionActivity *activity) {
-        if (activity) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                handler(activity);
-            });
-        }
-    }];
+//    if (![CMMotionActivityManager isActivityAvailable]) {
+//        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Motion activity is not available on this device"];
+//        return;
+//    }
+//
+//    [self.motionActivityManager startActivityUpdatesToQueue:self.activityQueue withHandler:^(CMMotionActivity *activity) {
+//        if (activity) {
+//            dispatch_async(dispatch_get_main_queue(), ^{
+//                handler(activity);
+//            });
+//        }
+//    }];
 }
 
 - (void)stopActivityUpdates {
-    [self.motionActivityManager stopActivityUpdates];
+//    [self.motionActivityManager stopActivityUpdates];
 }
 
 - (void)startMotionUpdates {
-    if (self.motionManager.isAccelerometerAvailable) {
-        [self.motionManager startAccelerometerUpdates];
-    }
-    if (self.motionManager.isGyroAvailable) {
-        [self.motionManager startGyroUpdates];
-    }
-    if (self.motionManager.isMagnetometerAvailable) {
-        [self.motionManager startMagnetometerUpdates];
-    }
+//    if (self.motionManager.isAccelerometerAvailable) {
+//        [self.motionManager startAccelerometerUpdates];
+//    }
+//    if (self.motionManager.isGyroAvailable) {
+//        [self.motionManager startGyroUpdates];
+//    }
+//    if (self.motionManager.isMagnetometerAvailable) {
+//        [self.motionManager startMagnetometerUpdates];
+//    }
 }
 
 - (void)stopMotionUpdates {
-    [self.motionManager stopAccelerometerUpdates];
-    [self.motionManager stopGyroUpdates];
-    [self.motionManager stopMagnetometerUpdates];
+//    [self.motionManager stopAccelerometerUpdates];
+//    [self.motionManager stopGyroUpdates];
+//    [self.motionManager stopMagnetometerUpdates];
 }
 
 - (void)requestLatestMotionData {
-    if (self.motionManager.isAccelerometerActive) {
-        CMAccelerometerData *accelerometerData = self.motionManager.accelerometerData;
-        if (accelerometerData) {
-            [RadarState setLastAccelerometerData:@{
-                @"x": @(accelerometerData.acceleration.x),
-                @"y": @(accelerometerData.acceleration.y),
-                @"z": @(accelerometerData.acceleration.z)
-            }];
-        }
-    }
-    
-    if (self.motionManager.isGyroActive) {
-        CMGyroData *gyroData = self.motionManager.gyroData;
-        if (gyroData) {
-            [RadarState setLastGyroData:@{
-                        @"xRotationRate" : @(gyroData.rotationRate.x),
-                        @"yRotationRate" : @(gyroData.rotationRate.y),
-                        @"zRotationRate" : @(gyroData.rotationRate.z),
-                    }];
-        }
-    }
-    
-    if (self.motionManager.isMagnetometerActive) {
-        CMMagnetometerData *magnetometerData = self.motionManager.magnetometerData;
-        if (magnetometerData) {
-            [RadarState setLastMagnetometerData:@{
-                @"x": @(magnetometerData.magneticField.x),
-                @"y": @(magnetometerData.magneticField.y),
-                @"z": @(magnetometerData.magneticField.z)
-            }];
-        }
-    }
+//    if (self.motionManager.isAccelerometerActive) {
+//        CMAccelerometerData *accelerometerData = self.motionManager.accelerometerData;
+//        if (accelerometerData) {
+//            [RadarState setLastAccelerometerData:@{
+//                @"x": @(accelerometerData.acceleration.x),
+//                @"y": @(accelerometerData.acceleration.y),
+//                @"z": @(accelerometerData.acceleration.z)
+//            }];
+//        }
+//    }
+//    
+//    if (self.motionManager.isGyroActive) {
+//        CMGyroData *gyroData = self.motionManager.gyroData;
+//        if (gyroData) {
+//            [RadarState setLastGyroData:@{
+//                        @"xRotationRate" : @(gyroData.rotationRate.x),
+//                        @"yRotationRate" : @(gyroData.rotationRate.y),
+//                        @"zRotationRate" : @(gyroData.rotationRate.z),
+//                    }];
+//        }
+//    }
+//    
+//    if (self.motionManager.isMagnetometerActive) {
+//        CMMagnetometerData *magnetometerData = self.motionManager.magnetometerData;
+//        if (magnetometerData) {
+//            [RadarState setLastMagnetometerData:@{
+//                @"x": @(magnetometerData.magneticField.x),
+//                @"y": @(magnetometerData.magneticField.y),
+//                @"z": @(magnetometerData.magneticField.z)
+//            }];
+//        }
+//    }
 }
 
 @end
