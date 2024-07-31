@@ -21,7 +21,7 @@ let package = Package(
             resources: [.process("PrivacyInfo.xcprivacy")],
             publicHeadersPath: "Include",
             cSettings: [
-                .headerSearchPath(".")
+                .headerSearchPath("."),
                 .headerSearchPath("../RadarSDKMotion/Include")
             ]
         )
