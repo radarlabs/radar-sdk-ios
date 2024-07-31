@@ -6,8 +6,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/radarlabs/radar-sdk-ios-motion",
       "state" : {
-        "branch" : "main",
-        "revision" : "dc28b903a5ea3d3b8acd67b8d5358a28d8381dc2"
+        "revision" : "e58d5e3196d5bf7675e73486a94f6f46254badb7",
+        "version" : "0.0.4"
       }
     }
   ],
