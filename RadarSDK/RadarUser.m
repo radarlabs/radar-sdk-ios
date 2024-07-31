@@ -170,17 +170,17 @@
     if (activityTypeObj && [activityTypeObj isKindOfClass:[NSString class]]) {
         NSString *activityTypeStr = (NSString *)activityTypeObj;
 
-        if ([activityTypeStr isEqualToString:@"UNKNOWN"]) {
+        if ([activityTypeStr isEqualToString:@"unknown"]) {
             activityType = RadarActivityTypeUnknown;
-        } else if ([activityTypeStr isEqualToString:@"CAR"]) {
+        } else if ([activityTypeStr isEqualToString:@"car"]) {
             activityType = RadarActivityTypeCar;
-        } else if ([activityTypeStr isEqualToString:@"BIKE"]) {
+        } else if ([activityTypeStr isEqualToString:@"bike"]) {
             activityType = RadarActivityTypeBike;
-        } else if ([activityTypeStr isEqualToString:@"FOOT"]) {
+        } else if ([activityTypeStr isEqualToString:@"foot"]) {
             activityType = RadarActivityTypeFoot;
-        } else if ([activityTypeStr isEqualToString:@"RUN"]) {
+        } else if ([activityTypeStr isEqualToString:@"run"]) {
             activityType = RadarActivityTypeRun;
-        } else if ([activityTypeStr isEqualToString:@"STATIONARY"]) {
+        } else if ([activityTypeStr isEqualToString:@"stationary"]) {
             activityType = RadarActivityTypeStationary;
         }
     }

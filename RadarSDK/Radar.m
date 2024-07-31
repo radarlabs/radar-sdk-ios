@@ -1121,22 +1121,22 @@
     NSString *str;
     switch (type) {
     case RadarActivityTypeUnknown:
-        str = @"UNKNOWN";
+        str = @"unknown";
         break;
     case RadarActivityTypeStationary:
-        str = @"STATIONARY";
+        str = @"stationary";
         break;
     case RadarActivityTypeFoot:
-        str = @"FOOT";
+        str = @"foot";
         break;
     case RadarActivityTypeRun:
-        str = @"RUN";
+        str = @"run";
         break;
     case RadarActivityTypeBike:
-        str = @"BIKE";
+        str = @"bike";
         break;
     case RadarActivityTypeCar:
-        str = @"CAR";
+        str = @"car";
         break;
     }
     return str;
