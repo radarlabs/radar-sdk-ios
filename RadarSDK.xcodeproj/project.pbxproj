@@ -483,8 +483,9 @@
 				58F950CF2407038300364B15 /* RadarCollectionAdditions.m */,
 				01F99CFA2965C182004E8CF3 /* RadarConfig.h */,
 				01F99CFC2965C1C4004E8CF3 /* RadarConfig.m */,
+				E698B60F2C5AB62300084371 /* RadarMotion.h */,
 				E6EEC56D2B20F41A00DD096B /* RadarFileStorage.h */,
-				E698B60E2C5AB5F700084371 /* Motion */,
+				E698B6112C5AB65E00084371 /* RadarMotion.m */,
 				E6EEC56F2B20F45D00DD096B /* RadarFileStorage.m */,
 				96A5A11727ADA02E007B960B /* RadarDelegateHolder.h */,
 				DD4C104925D87E3E009C2E36 /* RadarDelegateHolder.m */,
@@ -604,15 +605,6 @@
 				0113020E2AE1467800EFC377 /* Network.framework */,
 			);
 			name = Frameworks;
-			sourceTree = "<group>";
-		};
-		E698B60E2C5AB5F700084371 /* Motion */ = {
-			isa = PBXGroup;
-			children = (
-				E698B60F2C5AB62300084371 /* RadarMotion.h */,
-				E698B6112C5AB65E00084371 /* RadarMotion.m */,
-			);
-			path = Motion;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
