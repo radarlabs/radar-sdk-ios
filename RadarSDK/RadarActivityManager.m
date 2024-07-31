@@ -4,8 +4,8 @@
 #import "RadarLogger.h"
 #import "RadarState.h"
 
-#if __has_include("RadarSDKMotion.h")
-#import "RadarSDKMotion.h"
+#if __has_include("RadarMotion.h")
+#import "RadarMotion.h"
 #define HAS_RADARSDKMOTION 1
 #else
 #define HAS_RADARSDKMOTION 0
@@ -15,9 +15,8 @@
 
 @property (nonatomic, strong, nullable) NSOperationQueue *activityQueue;
 #if HAS_RADARSDKMOTION
-@property (nonatomic, strong, nullable) RadarSDKMotion *radarSDKMotion;
+@property (nonatomic, strong, nullable) RadarMotion *radarMotion;
 #endif
-@property (nonatomic) BOOL activityRegistered;
 
 @end
 
@@ -39,59 +38,53 @@
         _activityQueue.name = @"com.radar.activityQueue";
 
         #if HAS_RADARSDKMOTION
-        _radarSDKMotion = [[RadarSDKMotion alloc] init];
+        _radarMotion = [[RadarMotion alloc] init];
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"Starting activity manager"];
         #else
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"Not starting activity manager" ];
         #endif
-        _activityRegistered = YES;
+        
     }
     return self;
 }
 
 - (void)startActivityUpdatesWithHandler:(void (^)(CMMotionActivity *activity))handler {
-    if (_activityRegistered) {
-        return;
-    }
     
     #if HAS_RADARSDKMOTION
-    [_radarSDKMotion startActivityUpdatesToQueue:self.activityQueue withHandler:^(CMMotionActivity *activity) {
-        if (activity) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                handler(activity);
-                self->_activityRegistered = YES;
-            });
-        }
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"Starting updates"];
+    [_radarMotion startActivityUpdatesToQueue:self.activityQueue withHandler:^(CMMotionActivity *activity) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            handler(activity);
+        });
     }];
     #endif
 }
 
 - (void)stopActivityUpdates {
     #if HAS_RADARSDKMOTION
-    [_radarSDKMotion stopActivityUpdates];
+    [_radarMotion stopActivityUpdates];
     #endif
-    _activityRegistered = NO;
 }
 
 - (void)startMotionUpdates {
     #if HAS_RADARSDKMOTION
-    [_radarSDKMotion startMagnetometerUpdates];
-    [_radarSDKMotion startAccelerometerUpdates];
-    [_radarSDKMotion startGyroUpdates];
+    [_radarMotion startMagnetometerUpdates];
+    [_radarMotion startAccelerometerUpdates];
+    [_radarMotion startGyroUpdates];
     #endif
 }
 
 - (void)stopMotionUpdates {
     #if HAS_RADARSDKMOTION
-    [_radarSDKMotion stopGyroUpdates];
-    [_radarSDKMotion stopMagnetometerUpdates];
-    [_radarSDKMotion stopAccelerometerUpdates];
+    [_radarMotion stopGyroUpdates];
+    [_radarMotion stopMagnetometerUpdates];
+    [_radarMotion stopAccelerometerUpdates];
     #endif
 }
 
 - (void)requestLatestMotionData {
     #if HAS_RADARSDKMOTION
-    CMAccelerometerData *accelerometerData = [_radarSDKMotion getAccelerometerData];
+    CMAccelerometerData *accelerometerData = [_radarMotion getAccelerometerData];
     if (accelerometerData) {
         [RadarState setLastAccelerometerData:@{
             @"x": @(accelerometerData.acceleration.x),
@@ -99,7 +92,7 @@
             @"z": @(accelerometerData.acceleration.z)
         }];
     }
-    CMGyroData *gyroData = [_radarSDKMotion getGyroData];
+    CMGyroData *gyroData = [_radarMotion getGyroData];
     if (gyroData) {
         [RadarState setLastGyroData:@{
             @"xRotationRate" : @(gyroData.rotationRate.x),
@@ -107,7 +100,7 @@
             @"zRotationRate" : @(gyroData.rotationRate.z),
         }];
     }
-    CMMagnetometerData *magnetometerData = [_radarSDKMotion getMagnetometerData];
+    CMMagnetometerData *magnetometerData = [_radarMotion getMagnetometerData];
     if (magnetometerData) {
         [RadarState setLastMagnetometerData:@{
             @"x": @(magnetometerData.magneticField.x),

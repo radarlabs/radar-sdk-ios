@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 54;
+	objectVersion = 50;
 	objects = {
 
 /* Begin PBXAggregateTarget section */
@@ -165,7 +165,8 @@
 		DD8E2F7A24018C37002D51AB /* CLLocationManagerMock.m in Sources */ = {isa = PBXBuildFile; fileRef = DD8E2F7924018C37002D51AB /* CLLocationManagerMock.m */; };
 		DD8E2F7D24018C54002D51AB /* CLVisitMock.m in Sources */ = {isa = PBXBuildFile; fileRef = DD8E2F7C24018C54002D51AB /* CLVisitMock.m */; };
 		DE1E7644239724FD006F34A1 /* search_geofences.json in Resources */ = {isa = PBXBuildFile; fileRef = DE1E7643239724FD006F34A1 /* search_geofences.json */; };
-		E698B60A2C5AA30300084371 /* RadarSDKMotion in Frameworks */ = {isa = PBXBuildFile; productRef = E698B6092C5AA30300084371 /* RadarSDKMotion */; };
+		E698B6102C5AB62300084371 /* RadarMotion.h in Headers */ = {isa = PBXBuildFile; fileRef = E698B60F2C5AB62300084371 /* RadarMotion.h */; };
+		E698B6122C5AB65E00084371 /* RadarMotion.m in Sources */ = {isa = PBXBuildFile; fileRef = E698B6112C5AB65E00084371 /* RadarMotion.m */; };
 		E6EEC56E2B20F41A00DD096B /* RadarFileStorage.h in Headers */ = {isa = PBXBuildFile; fileRef = E6EEC56D2B20F41A00DD096B /* RadarFileStorage.h */; };
 		E6EEC5702B20F45D00DD096B /* RadarFileStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = E6EEC56F2B20F45D00DD096B /* RadarFileStorage.m */; };
 		F65AF72C2C10B242002BA009 /* get_config_response.json in Resources */ = {isa = PBXBuildFile; fileRef = F65AF72B2C10B242002BA009 /* get_config_response.json */; };
@@ -336,6 +337,8 @@
 		DDD7BD0325EC3015002473B3 /* RadarRouteMatrix.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RadarRouteMatrix.m; sourceTree = "<group>"; };
 		DDF1157C2524E18100D575C4 /* RadarTrip.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RadarTrip.m; sourceTree = "<group>"; };
 		DE1E7643239724FD006F34A1 /* search_geofences.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = search_geofences.json; sourceTree = "<group>"; };
+		E698B60F2C5AB62300084371 /* RadarMotion.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarMotion.h; sourceTree = "<group>"; };
+		E698B6112C5AB65E00084371 /* RadarMotion.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RadarMotion.m; sourceTree = "<group>"; };
 		E6EEC56D2B20F41A00DD096B /* RadarFileStorage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarFileStorage.h; sourceTree = "<group>"; };
 		E6EEC56F2B20F45D00DD096B /* RadarFileStorage.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RadarFileStorage.m; sourceTree = "<group>"; };
 		F65AF72B2C10B242002BA009 /* get_config_response.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = get_config_response.json; sourceTree = "<group>"; };
@@ -351,7 +354,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E698B60A2C5AA30300084371 /* RadarSDKMotion in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -482,6 +484,7 @@
 				01F99CFA2965C182004E8CF3 /* RadarConfig.h */,
 				01F99CFC2965C1C4004E8CF3 /* RadarConfig.m */,
 				E6EEC56D2B20F41A00DD096B /* RadarFileStorage.h */,
+				E698B60E2C5AB5F700084371 /* Motion */,
 				E6EEC56F2B20F45D00DD096B /* RadarFileStorage.m */,
 				96A5A11727ADA02E007B960B /* RadarDelegateHolder.h */,
 				DD4C104925D87E3E009C2E36 /* RadarDelegateHolder.m */,
@@ -603,6 +606,15 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		E698B60E2C5AB5F700084371 /* Motion */ = {
+			isa = PBXGroup;
+			children = (
+				E698B60F2C5AB62300084371 /* RadarMotion.h */,
+				E698B6112C5AB65E00084371 /* RadarMotion.m */,
+			);
+			path = Motion;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -651,6 +663,7 @@
 				96A5A0CB27AD9F41007B960B /* RadarRoute+Internal.h in Headers */,
 				96A5A10527AD9F7F007B960B /* RadarTrackingOptions.h in Headers */,
 				96A5A10927AD9F7F007B960B /* RadarContext.h in Headers */,
+				E698B6102C5AB62300084371 /* RadarMotion.h in Headers */,
 				0107AA1226220049008AB52F /* RadarCollectionAdditions.h in Headers */,
 				E6EEC56E2B20F41A00DD096B /* RadarFileStorage.h in Headers */,
 				015C53AD29B8E8BA004F53A6 /* (null) in Headers */,
@@ -709,7 +722,6 @@
 			);
 			name = RadarSDK;
 			packageProductDependencies = (
-				E698B6092C5AA30300084371 /* RadarSDKMotion */,
 			);
 			productName = RadarSDK;
 			productReference = 0107A9E82621FFB9008AB52F /* RadarSDK.framework */;
@@ -764,7 +776,6 @@
 			);
 			mainGroup = DD236C6B2308797B00EB88F9;
 			packageReferences = (
-				E698B6082C5AA30200084371 /* XCRemoteSwiftPackageReference "radar-sdk-ios-motion" */,
 			);
 			productRefGroup = DD236C762308797B00EB88F9 /* Products */;
 			projectDirPath = "";
@@ -875,6 +886,7 @@
 				82D04AC729771BF10036619F /* RadarReplay.m in Sources */,
 				0107AADA26220195008AB52F /* RadarRouteMatrix.m in Sources */,
 				0107AA7A26220128008AB52F /* RadarAddress.m in Sources */,
+				E698B6122C5AB65E00084371 /* RadarMotion.m in Sources */,
 				0107AABC26220178008AB52F /* RadarRegion.m in Sources */,
 				0107AB26262201F0008AB52F /* RadarState.m in Sources */,
 				0107AAA126220159008AB52F /* RadarEvent.m in Sources */,
@@ -1190,25 +1202,6 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
-/* Begin XCRemoteSwiftPackageReference section */
-		E698B6082C5AA30200084371 /* XCRemoteSwiftPackageReference "radar-sdk-ios-motion" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/radarlabs/radar-sdk-ios-motion";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 0.0.4;
-			};
-		};
-/* End XCRemoteSwiftPackageReference section */
-
-/* Begin XCSwiftPackageProductDependency section */
-		E698B6092C5AA30300084371 /* RadarSDKMotion */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = E698B6082C5AA30200084371 /* XCRemoteSwiftPackageReference "radar-sdk-ios-motion" */;
-			productName = RadarSDKMotion;
-		};
-/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = DD236C6C2308797B00EB88F9 /* Project object */;
 }
