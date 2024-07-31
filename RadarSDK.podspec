@@ -13,4 +13,6 @@ Pod::Spec.new do |s|
   s.requires_arc          = true
   s.license               = { :type => 'Apache-2.0' }
   s.resource_bundles      = {'RadarSDK' => ['RadarSDK/PrivacyInfo.xcprivacy']}
+
+  s.dependency 'RadarSDKMotion', '0.0.1', :optional => true
 end
