@@ -22,6 +22,7 @@ let package = Package(
             publicHeadersPath: "Include",
             cSettings: [
                 .headerSearchPath(".")
+                .headerSearchPath("../RadarSDKMotion/Include")
             ]
         )
     ]
