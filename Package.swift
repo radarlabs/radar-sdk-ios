@@ -11,32 +11,28 @@ let package = Package(
             name: "RadarSDK",
             targets: ["RadarSDK"]
         ),
-        // .library(
-        //     name: "RadarSDKMotion",
-        //     targets: ["RadarSDK", "RadarSDKMotion"]
-        // )
+        .library(
+            name: "RadarSDKMotion",
+            targets: ["RadarSDKMotion","RadarSDK"]
+        )
     ],
     dependencies: [],
     targets: [
         .target(
             name: "RadarSDK",
             path: "RadarSDK",
-            exclude: ["Info.plist"],
+            exclude: ["Info.plist", "RadarMotion.h", "RadarMotion.m"],
             resources: [.process("PrivacyInfo.xcprivacy")],
             publicHeadersPath: "Include",
             cSettings: [
                 .headerSearchPath("."),
             ]
         ),
-        // .target(
-        //    name: "RadarSDKMotion",
-        //     dependencies: ["RadarSDK"],
-        //     path: "RadarSDK",
-        //     exclude: ["Info.plist"],
-        //     publicHeadersPath: "Include",
-        //     cSettings: [
-        //         .headerSearchPath(".") 
-        //     ]
-        // ),
+        .target(
+           name: "RadarSDKMotion",
+            dependencies: ["RadarSDK"],
+            path: "RadarSDK",
+            sources: ["RadarMotion.h", "RadarMotion.m"]
+        ),
     ]
 )
