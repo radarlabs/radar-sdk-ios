@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 54;
 	objects = {
 
 /* Begin PBXAggregateTarget section */
@@ -758,6 +758,9 @@
 				Base,
 			);
 			mainGroup = DD236C6B2308797B00EB88F9;
+			packageReferences = (
+				E6F3D4402C5A9369009C8D08 /* XCRemoteSwiftPackageReference "radar-sdk-ios-motion" */,
+			);
 			productRefGroup = DD236C762308797B00EB88F9 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -1182,6 +1185,17 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		E6F3D4402C5A9369009C8D08 /* XCRemoteSwiftPackageReference "radar-sdk-ios-motion" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/radarlabs/radar-sdk-ios-motion";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
 	};
 	rootObject = DD236C6C2308797B00EB88F9 /* Project object */;
 }

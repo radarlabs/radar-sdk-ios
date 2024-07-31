@@ -1,0 +1,15 @@
+{
+  "originHash" : "b87e35ad5572e89aed312056b98b94c154fe7a6cbcefb9fb2e814361591a5753",
+  "pins" : [
+    {
+      "identity" : "radar-sdk-ios-motion",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/radarlabs/radar-sdk-ios-motion",
+      "state" : {
+        "branch" : "main",
+        "revision" : "dc28b903a5ea3d3b8acd67b8d5358a28d8381dc2"
+      }
+    }
+  ],
+  "version" : 3
+}
