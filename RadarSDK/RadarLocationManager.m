@@ -343,8 +343,8 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 
             self.lowPowerLocationManager.allowsBackgroundLocationUpdates = [RadarUtils locationBackgroundMode];
             self.lowPowerLocationManager.pausesLocationUpdatesAutomatically = NO;
-
-            if ([RadarSettings useLocationMetadata] && !self.isUpdatingActivity) { 
+            
+            if ([RadarSettings useLocationMetadata] && !self.isUpdatingActivity) {
                 [self.locationManager startUpdatingHeading];
                 self.isUpdatingActivity = YES;
 
@@ -362,6 +362,15 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                             activityType = RadarActivityTypeCar;
                         } else if (activity.cycling) {
                             activityType = RadarActivityTypeBike;
+                        }
+                        
+                        if (activityType == RadarActivityTypeUnknown) {
+                            return;
+                        }
+                        
+                        NSString *previousActivityType = [RadarState lastMotionActivityData][@"type"];
+                        if (previousActivityType != nil && [previousActivityType isEqualToString:[Radar stringForActivityType:activityType]]) {
+                            return;
                         }
 
                         [RadarState setLastMotionActivityData:@{
@@ -1214,6 +1223,9 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 - (void)locationManager:(CLLocationManager *)manager didChangeAuthorizationStatus:(CLAuthorizationStatus)status {
     if ((status == kCLAuthorizationStatusAuthorizedAlways || status == kCLAuthorizationStatusAuthorizedWhenInUse) && ([RadarSettings sdkConfiguration].trackOnceOnAppOpen || [RadarSettings sdkConfiguration].startTrackingOnInitialize)) {
         [Radar trackOnceWithCompletionHandler:nil];
+        if ([RadarSettings sdkConfiguration].startTrackingOnInitialize) {
+            [Radar startTrackingWithOptions:[RadarSettings trackingOptions]];
+        }
     }
 }
 

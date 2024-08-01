@@ -31,7 +31,6 @@
         _activityQueue.name = @"com.radar.activityQueue";
         _motionActivityManager = [[CMMotionActivityManager alloc] init];
         _motionManager = [[CMMotionManager alloc] init];
-        
     }
     return self;
 }
