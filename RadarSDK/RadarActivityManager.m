@@ -10,6 +10,7 @@
 
 @property (nonatomic, strong) CMMotionActivityManager *motionActivityManager;
 @property (nonatomic, strong, nullable) CMMotionManager *motionManager;
+@property (nonatomic) BOOL isUpdatingActivity;
 
 @end
 
@@ -31,6 +32,7 @@
         _activityQueue.name = @"com.radar.activityQueue";
         _motionActivityManager = [[CMMotionActivityManager alloc] init];
         _motionManager = [[CMMotionManager alloc] init];
+        _isUpdatingActivity = NO;
     }
     return self;
 }
@@ -41,6 +43,11 @@
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Motion activity is not available on this device"];
         return;
     }
+
+    if (self.isUpdatingActivity) {
+        return;
+    }
+    self.isUpdatingActivity = YES;
     
     [self.motionActivityManager startActivityUpdatesToQueue:self.activityQueue withHandler:^(CMMotionActivity *activity) {
         if (activity) {
@@ -53,6 +60,7 @@
 
 - (void)stopActivityUpdates {
     [self.motionActivityManager stopActivityUpdates];
+    self.isUpdatingActivity = NO;
 }
 
 - (void)startMotionUpdates {
