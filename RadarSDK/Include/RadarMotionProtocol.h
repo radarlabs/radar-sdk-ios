@@ -8,8 +8,11 @@
 
 #import <Foundation/Foundation.h>
 #import <CoreMotion/CoreMotion.h>
+#import "Radar.h"
 
-@protocol RadarMotion <NSObject>
+NS_ASSUME_NONNULL_BEGIN
+
+@protocol RadarMotionProtocol<NSObject>
 
 
 - (void)stopActivityUpdates;
@@ -26,3 +29,5 @@
 - (void)stopMagnetometerUpdates;
 
 @end
+
+NS_ASSUME_NONNULL_END

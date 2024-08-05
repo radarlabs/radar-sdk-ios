@@ -2,11 +2,11 @@
 
 #import <Foundation/Foundation.h>
 #import <CoreMotion/CoreMotion.h>
-#import "RadarMotion.h"
+#import "RadarMotionProtocol.h"
 
 @interface RadarActivityManager : NSObject
 
-@property (nullable, weak, nonatomic) id<RadarMotion> radarMotion;
+@property (nullable, weak, nonatomic) id<RadarMotionProtocol> radarMotion;
 
 + (instancetype _Nonnull )sharedInstance;
 - (void)startActivityUpdatesWithHandler:(void (^_Nullable)(CMMotionActivity * _Nonnull activity))handler;

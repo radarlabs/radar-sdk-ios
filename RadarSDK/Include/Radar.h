@@ -25,7 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol RadarDelegate;
 @protocol RadarVerifiedDelegate;
-@protocol RadarMotion;
+@protocol RadarMotionProtocol;
 
 @class RadarTripOptions;
 
@@ -1196,8 +1196,7 @@ logConversionWithNotification
 + (NSDictionary *)dictionaryForLocation:(CLLocation *)location NS_SWIFT_NAME(dictionaryForLocation(_:));
 
 
-+ (void)setRadarMotion:(nullable id<RadarMotion>)radarMotion;
-
++ (void)setRadarMotion:(nullable id<RadarMotionProtocol>)radarMotion;
 
 @end
 
