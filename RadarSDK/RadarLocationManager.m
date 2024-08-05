@@ -58,6 +58,8 @@
  */
 @property (nonnull, strong, nonatomic) NSMutableArray<RadarLocationCompletionHandler> *completionHandlers;
 
+
+@property (nonatomic) BOOL firstPermissionCheck;
 @end
 
 @implementation RadarLocationManager
@@ -103,6 +105,8 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         _lowPowerLocationManager.allowsBackgroundLocationUpdates = [RadarUtils locationBackgroundMode];
 
         _permissionsHelper = [RadarPermissionsHelper new];
+
+        _firstPermissionCheck = YES;
 
         // if not testing, set _notificationCenter to the currentNotificationCenter
         if (![[NSProcessInfo processInfo] environment][@"XCTestConfigurationFilePath"]) {
@@ -1213,9 +1217,15 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 }
 
 - (void)locationManager:(CLLocationManager *)manager didChangeAuthorizationStatus:(CLAuthorizationStatus)status {
+    if (_firstPermissionCheck) {
+        _firstPermissionCheck = NO;
+        return;
+    }
+    
     if ((status == kCLAuthorizationStatusAuthorizedAlways || status == kCLAuthorizationStatusAuthorizedWhenInUse) && ([RadarSettings sdkConfiguration].trackOnceOnAppOpen || [RadarSettings sdkConfiguration].startTrackingOnInitialize)) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:@"Location services authorized"];
         [Radar trackOnceWithCompletionHandler:nil];
-        if ([RadarSettings sdkConfiguration].startTrackingOnInitialize) {
+        if ([RadarSettings sdkConfiguration].startTrackingOnInitialize && ![RadarSettings tracking]) {
             [Radar startTrackingWithOptions:[RadarSettings trackingOptions]];
         }
     }
