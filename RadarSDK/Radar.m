@@ -1320,4 +1320,8 @@
                             }];
 }
 
++ (void)setRadarMotion:(id<RadarMotion>)radarMotion {
+    [RadarActivityManager sharedInstance].radarMotion = radarMotion;
+}
+
 @end
