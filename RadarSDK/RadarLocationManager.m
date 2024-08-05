@@ -1130,8 +1130,8 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 }
 
 - (void)locationManager:(CLLocationManager *)manager didChangeAuthorizationStatus:(CLAuthorizationStatus)status {
-    if (_firstPermissionCheck) {
-        _firstPermissionCheck = NO;
+    if (self.firstPermissionCheck) {
+        self.firstPermissionCheck = NO;
         return;
     }
 
