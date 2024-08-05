@@ -157,6 +157,20 @@ typedef NS_ENUM(NSInteger, RadarAddressVerificationStatus) {
     RadarAddressVerificationStatusUnverified NS_SWIFT_NAME(unverified) = 4
 };
 
+ typedef NS_ENUM(NSInteger, RadarActivityType) {
+     /// Unknown
+     RadarActivityTypeUnknown NS_SWIFT_NAME(unknown) = 0,
+     /// Stationary
+     RadarActivityTypeStationary NS_SWIFT_NAME(stationary) = 1,
+     /// Walking
+     RadarActivityTypeFoot NS_SWIFT_NAME(foot) = 2,
+     /// Running
+     RadarActivityTypeRun NS_SWIFT_NAME(run) = 3,
+     /// Biking
+     RadarActivityTypeBike NS_SWIFT_NAME(bike) = 4,
+     /// Driving
+     RadarActivityTypeCar NS_SWIFT_NAME(car) = 5,
+ };
 
 #pragma mark - Callbacks
 
@@ -1132,6 +1146,15 @@ logConversionWithNotification
  @return A string for the address verification status value.
 */
 + (NSString *)stringForVerificationStatus:(RadarAddressVerificationStatus)verificationStatus NS_SWIFT_NAME(stringForVerificationStatus(_:));
+
+/**
+ Returns a display string for an activity type value.
+
+    @param type An activity type value.
+
+    @return A display string for the activity type value.
+    */
++ (NSString *)stringForActivityType:(RadarActivityType)type NS_SWIFT_NAME(stringForActivityType(_:));
 
 
 /**
