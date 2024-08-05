@@ -1,6 +1,7 @@
 .DS_Store
 xcuserdata/
 .idea/
+.vscode/
 Carthage/Checkouts/
 Carthage/Build/
 sonar-reports/

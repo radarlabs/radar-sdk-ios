@@ -326,6 +326,31 @@
         }
     }
     params[@"appId"] = [[NSBundle mainBundle] bundleIdentifier];
+    RadarSdkConfiguration *sdkConfiguration = [RadarSettings sdkConfiguration];
+    if (sdkConfiguration.useLocationMetadata) { 
+        NSMutableDictionary *locationMetadata = [NSMutableDictionary new];
+        locationMetadata[@"motionActivityData"] = [RadarState lastMotionActivityData];
+        locationMetadata[@"accelerometerData"] = [RadarState lastAccelerometerData];
+        locationMetadata[@"gyroData"] = [RadarState lastGyroData];
+        locationMetadata[@"magnetometerData"] = [RadarState lastMagnetometerData];
+        locationMetadata[@"heading"] = [RadarState lastHeadingData];
+        locationMetadata[@"speed"] = @(location.speed);
+        locationMetadata[@"speedAccuracy"] = @(location.speedAccuracy);
+        locationMetadata[@"course"] = @(location.course);
+        if (@available(iOS 13.4, *)) {
+            locationMetadata[@"courseAccuracy"] = @(location.courseAccuracy);
+        }
+        locationMetadata[@"battery"] = @([[UIDevice currentDevice] batteryLevel]);
+        locationMetadata[@"altitude"] = @(location.altitude);
+        if (@available(iOS 15, *)) {
+            locationMetadata[@"ellipsoidalAltitude"] = @(location.ellipsoidalAltitude);
+            locationMetadata[@"isProducedByAccessory"] = @([location.sourceInformation isProducedByAccessory]);
+            locationMetadata[@"isSimulatedBySoftware"] = @([location.sourceInformation isSimulatedBySoftware]);
+        }
+        locationMetadata[@"floor"] = @([location.floor level]);
+        
+        params[@"locationMetadata"] = locationMetadata;
+    }
     
     params[@"fraudFailureReasons"] = fraudFailureReasons;
 
@@ -462,7 +487,7 @@
                                 [RadarSettings setUserDebug:user.debug];
 
                                 if (location) {
-                                    [[RadarDelegateHolder sharedInstance] didUpdateLocation:location user:user];
+                                    [[RadarDelegateHolder sharedInstance] didUpdateLocation:location user:user]; 
                                 }
 
                                 if (events.count) {

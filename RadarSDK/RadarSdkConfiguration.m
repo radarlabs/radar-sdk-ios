@@ -63,6 +63,12 @@
         _useRadarModifiedBeacon = [(NSNumber *)useRadarModifiedBeaconObj boolValue];
     }
 
+    NSObject *useLocationMetadataObj = dict[@"useLocationMetadata"];
+    _useLocationMetadata = NO;
+    if (useLocationMetadataObj && [useLocationMetadataObj isKindOfClass:[NSNumber class]]) {
+        _useLocationMetadata = [(NSNumber *)useLocationMetadataObj boolValue];
+    }
+
     return self;
 }
 
@@ -76,6 +82,7 @@
     dict[@"extendFlushReplays"] = @(_extendFlushReplays);
     dict[@"useLogPersistence"] = @(_useLogPersistence);
     dict[@"useRadarModifiedBeacon"] = @(_useRadarModifiedBeacon);
+    dict[@"useLocationMetadata"] = @(_useLocationMetadata);
     
     return dict;
 }
