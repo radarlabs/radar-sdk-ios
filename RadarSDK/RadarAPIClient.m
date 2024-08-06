@@ -86,27 +86,24 @@
         return;
     }
 
-    NSMutableString *queryString = [NSMutableString new];
-    [queryString appendFormat:@"installId=%@", [RadarSettings installId]];
-    [queryString appendFormat:@"&sessionId=%@", [RadarSettings sessionId]];
-    [queryString appendFormat:@"&id=%@", [RadarSettings _id]];
-    NSString *locationAuthorization = [RadarUtils locationAuthorization];
-    if (locationAuthorization) {
-        [queryString appendFormat:@"&locationAuthorization=%@", locationAuthorization];
+    NSMutableArray *queryString = [[NSMutableArray alloc] init];
+    [queryString addObject:[NSURLQueryItem queryItemWithName:@"installId" value:[RadarSettings installId]]];
+    [queryString addObject:[NSURLQueryItem queryItemWithName:@"sessionId" value:[RadarSettings sessionId]]];
+    NSString *_id = [RadarSettings _id];
+    if (_id != nil) {
+        [queryString addObject:[NSURLQueryItem queryItemWithName:@"id" value:_id]];
     }
-    NSString *locationAccuracyAuthorization = [RadarUtils locationAccuracyAuthorization];
-    if (locationAccuracyAuthorization) {
-        [queryString appendFormat:@"&locationAccuracyAuthorization=%@", locationAccuracyAuthorization];
-    }
+    [queryString addObject:[NSURLQueryItem queryItemWithName:@"locationAuthorization" value:[RadarUtils locationAuthorization]]];
+    [queryString addObject:[NSURLQueryItem queryItemWithName:@"locationAccuracyAuthorization" value:[RadarUtils locationAccuracyAuthorization]]];
     if (usage) {
-        [queryString appendFormat:@"&usage=%@", usage];
+        [queryString addObject:[NSURLQueryItem queryItemWithName:@"usage" value:usage]];
     }
-    [queryString appendFormat:@"&verified=%@", verified ? @"true" : @"false"];
-    [queryString appendFormat:@"&clientSdkConfiguration=%@", [RadarUtils dictionaryToJson:[RadarSettings clientSdkConfiguration]]];
+    [queryString addObject:[NSURLQueryItem queryItemWithName:@"verified" value:(verified ? @"true" : @"false")]];
+    [queryString addObject:[NSURLQueryItem queryItemWithName:@"clientSdkConfiguration" value:[RadarUtils dictionaryToJson:[RadarSettings clientSdkConfiguration]]]];
 
-    NSString *host = verified ? [RadarSettings verifiedHost] : [RadarSettings host];
-    NSString *url = [NSString stringWithFormat:@"%@/v1/config?%@", host, queryString];
-    url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
+    NSURLComponents *query = [[NSURLComponents alloc] init];
+    [query setQueryItems:queryString];
+    NSString *url = [NSString stringWithFormat:@"v1/config%@", query.string];
 
     NSDictionary *headers = [RadarAPIClient headersWithPublishableKey:publishableKey];
 
@@ -117,6 +114,7 @@
                                 sleep:NO
                            logPayload:YES
                       extendedTimeout:NO
+                             verified:verified
                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
                         if (!res) {
                             return;
@@ -137,9 +135,7 @@
         return;
     }
 
-    NSString *host = [RadarSettings host];
-    NSString *url = [NSString stringWithFormat:@"%@/v1/track/replay", host];
-    url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
+    NSString *url = @"v1/track/replay";
 
     NSDictionary *headers = [RadarAPIClient headersWithPublishableKey:publishableKey];
 
@@ -153,6 +149,7 @@
                                 sleep:NO
                            logPayload:NO
                       extendedTimeout:YES
+                             verified:NO
                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
                             id eventsObj = res[@"events"];
                             id userObj = res[@"user"];
@@ -337,8 +334,7 @@
                                          }];
     }
 
-    NSString *host = verified ? [RadarSettings verifiedHost] : [RadarSettings host];
-    NSString *url = [NSString stringWithFormat:@"%@/v1/track", host];
+    NSString *url = @"v1/track";
     url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
 
     NSDictionary *headers = [RadarAPIClient headersWithPublishableKey:publishableKey];
@@ -364,12 +360,13 @@
         }];
     } else {
         [self.apiHelper requestWithMethod:@"POST"
-                                    url:url
-                                headers:headers
-                                params:requestParams
+                                      url:url
+                                  headers:headers
+                                   params:requestParams
                                     sleep:YES
-                            logPayload:YES
-                        extendedTimeout:NO
+                               logPayload:YES
+                          extendedTimeout:NO
+                                 verified:verified
                         completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
                             if (status != RadarStatusSuccess || !res) {
                                 if (options.replay == RadarTrackingOptionsReplayAll) {
@@ -496,9 +493,7 @@
         params[@"verifiedPlaceId"] = verifiedPlaceId;
     }
 
-    NSString *host = [RadarSettings host];
-    NSString *url = [NSString stringWithFormat:@"%@/v1/events/%@/verification", host, eventId];
-    url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
+    NSString *url = [NSString stringWithFormat:@"v1/events/%@/verification", eventId];
 
     NSDictionary *headers = [RadarAPIClient headersWithPublishableKey:publishableKey];
 
@@ -509,6 +504,7 @@
                                 sleep:NO
                            logPayload:YES
                       extendedTimeout:NO
+                             verified:NO
                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res){
 
                     }];
@@ -552,9 +548,7 @@
         params[@"approachingThreshold"] = [NSString stringWithFormat:@"%d", options.approachingThreshold];
     }
 
-    NSString *host = [RadarSettings host];
-    NSString *url = [NSString stringWithFormat:@"%@/v1/trips", host];
-    url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
+    NSString *url = [NSString stringWithFormat:@"v1/trips"];
 
     NSDictionary *headers = [RadarAPIClient headersWithPublishableKey:publishableKey];
 
@@ -565,6 +559,7 @@
                                 sleep:NO
                            logPayload:YES
                       extendedTimeout:NO
+                             verified:NO
                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
                         if (status != RadarStatusSuccess || !res) {
                             return completionHandler(status, nil, nil);
@@ -623,8 +618,7 @@
         params[@"approachingThreshold"] = [NSString stringWithFormat:@"%d", options.approachingThreshold];
     }
 
-    NSString *host = [RadarSettings host];
-    NSString *url = [NSString stringWithFormat:@"%@/v1/trips/%@/update", host, options.externalId];
+    NSString *url = [NSString stringWithFormat:@"v1/trips/%@/update", options.externalId];
     url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
 
     NSDictionary *headers = [RadarAPIClient headersWithPublishableKey:publishableKey];
@@ -636,6 +630,7 @@
                                 sleep:NO
                            logPayload:YES
                       extendedTimeout:NO
+                             verified:NO
                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
                         if (status != RadarStatusSuccess || !res) {
                             return completionHandler(status, nil, nil);
@@ -660,21 +655,25 @@
         return completionHandler(RadarStatusErrorPublishableKey, nil, nil);
     }
 
-    NSMutableString *queryString = [NSMutableString new];
-    [queryString appendFormat:@"coordinates=%.06f,%.06f", location.coordinate.latitude, location.coordinate.longitude];
+    NSMutableArray *queryString = [[NSMutableArray alloc] init];
+    [queryString addObject:[NSURLQueryItem queryItemWithName:@"coordinates"
+                                                       value:[NSString stringWithFormat:@"%.06f,%.06f", location.coordinate.latitude, location.coordinate.longitude]]];
 
-    NSString *host = [RadarSettings host];
-    NSString *url = [NSString stringWithFormat:@"%@/v1/context?%@", host, queryString];
+    NSURLComponents* url = [[NSURLComponents alloc] initWithString:@"v1/context"];
+    [url setQueryItems:queryString];
+    
+    NSLog(@"TEST: %@", url.string);
 
     NSDictionary *headers = [RadarAPIClient headersWithPublishableKey:publishableKey];
 
     [self.apiHelper requestWithMethod:@"GET"
-                                  url:url
+                                  url:url.string
                               headers:headers
                                params:nil
                                 sleep:NO
                            logPayload:YES
                       extendedTimeout:NO
+                             verified:NO
                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
                         if (status != RadarStatusSuccess || !res) {
                             return completionHandler(status, nil, nil);
@@ -703,39 +702,40 @@
         return completionHandler(RadarStatusErrorPublishableKey, nil, nil);
     }
 
-    int finalLimit = MIN(limit, 100);
-
-    NSMutableString *queryString = [NSMutableString new];
-    [queryString appendFormat:@"near=%.06f,%.06f", near.coordinate.latitude, near.coordinate.longitude];
-    [queryString appendFormat:@"&radius=%d", radius];
-    [queryString appendFormat:@"&limit=%d", finalLimit];
+    NSMutableArray *queryString = [[NSMutableArray alloc] init];
+    [queryString addObject:[NSURLQueryItem queryItemWithName:@"near"
+                                                       value:[NSString stringWithFormat:@"%.06f,%.06f", near.coordinate.latitude, near.coordinate.longitude]]];
+    [queryString addObject:[NSURLQueryItem queryItemWithName:@"radius" value:@(radius).stringValue]];
+    [queryString addObject:[NSURLQueryItem queryItemWithName:@"limit" value:@(MIN(limit, 100)).stringValue]];
     if (chains && [chains count] > 0) {
-        [queryString appendFormat:@"&chains=%@", [chains componentsJoinedByString:@","]];
+        [queryString addObject:[NSURLQueryItem queryItemWithName:@"chains" value:[chains componentsJoinedByString:@","]]];
     }
     if (categories && [categories count] > 0) {
-        [queryString appendFormat:@"&categories=%@", [categories componentsJoinedByString:@","]];
+        [queryString addObject:[NSURLQueryItem queryItemWithName:@"categories" value:[categories componentsJoinedByString:@","]]];
     }
     if (groups && [groups count] > 0) {
-        [queryString appendFormat:@"&groups=%@", [groups componentsJoinedByString:@","]];
+        [queryString addObject:[NSURLQueryItem queryItemWithName:@"groups" value:[groups componentsJoinedByString:@","]]];
     }
 
     [chainMetadata enumerateKeysAndObjectsUsingBlock:^(NSString *_Nonnull key, NSString *_Nonnull value, BOOL *_Nonnull stop) {
-        [queryString appendFormat:@"&chainMetadata[%@]=\"%@\"", key, value];
+        [queryString addObject:[NSURLQueryItem queryItemWithName:[NSString stringWithFormat:@"chainMetadata[%@]", key]
+                                                           value:[NSString stringWithFormat:@"\"%@\"", value]]];
     }];
 
-    NSString *host = [RadarSettings host];
-    NSString *url = [NSString stringWithFormat:@"%@/v1/search/places?%@", host, queryString];
-    url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
+    
+    NSURLComponents* url = [[NSURLComponents alloc] initWithString:@"v1/search/places"];
+    [url setQueryItems:queryString];
 
     NSDictionary *headers = [RadarAPIClient headersWithPublishableKey:publishableKey];
 
     [self.apiHelper requestWithMethod:@"GET"
-                                  url:url
+                                  url:url.string
                               headers:headers
                                params:nil
                                 sleep:NO
                            logPayload:YES
                       extendedTimeout:NO
+                             verified:NO
                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
                         if (status != RadarStatusSuccess || !res) {
                             return completionHandler(status, nil, nil);
@@ -763,39 +763,45 @@
         return completionHandler(RadarStatusErrorPublishableKey, nil, nil);
     }
 
-    int finalLimit = MIN(limit, 1000);
-
-    NSMutableString *queryString = [NSMutableString new];
-    [queryString appendFormat:@"near=%.06f,%.06f", near.coordinate.latitude, near.coordinate.longitude];
+    NSMutableArray *queryString = [[NSMutableArray alloc] init];
+    [queryString addObject:[NSURLQueryItem queryItemWithName:@"near"
+                                                       value:[NSString stringWithFormat:@"%.06f,%.06f", near.coordinate.latitude, near.coordinate.longitude]]];
+    
     if (radius > 0) {
-        [queryString appendFormat:@"&radius=%d", radius];
+        [queryString addObject:[NSURLQueryItem queryItemWithName:@"radius"
+                                                           value:@(radius).stringValue]];
+        
     }
-    [queryString appendFormat:@"&limit=%d", finalLimit];
+    
+    [queryString addObject:[NSURLQueryItem queryItemWithName:@"limit"
+                                                       value:@(MIN(limit, 1000)).stringValue]];
     if (tags && [tags count] > 0) {
-        [queryString appendFormat:@"&tags=%@", [tags componentsJoinedByString:@","]];
+        [queryString addObject:[NSURLQueryItem queryItemWithName:@"tags"
+                                                           value:[tags componentsJoinedByString:@","]]];
     }
     if (metadata && [metadata count] > 0) {
         for (NSString *key in metadata) {
-            [queryString appendFormat:@"&metadata[%@]=%@", key, metadata[key]];
+            [queryString addObject:[NSURLQueryItem queryItemWithName:[NSString stringWithFormat:@"metadata[%@]", key]
+                                                               value:[NSString stringWithFormat:@"%@", metadata[key]]]];
         }
     }
     
-    [queryString appendFormat:@"&includeGeometry=%@", includeGeometry ? @"true" : @"false"];
+    [queryString addObject:[NSURLQueryItem queryItemWithName:@"includeGeometry"
+                                                       value:(includeGeometry ? @"true" : @"false")]];
     
-
-    NSString *host = [RadarSettings host];
-    NSString *url = [NSString stringWithFormat:@"%@/v1/search/geofences?%@", host, queryString];
-    url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
-
+    NSURLComponents *url = [[NSURLComponents alloc] initWithString:@"v1/search/geofences%@"];
+    [url setQueryItems:queryString];
+    
     NSDictionary *headers = [RadarAPIClient headersWithPublishableKey:publishableKey];
 
     [self.apiHelper requestWithMethod:@"GET"
-                                  url:url
+                                  url:url.string
                               headers:headers
                                params:nil
                                 sleep:NO
                            logPayload:YES
                       extendedTimeout:NO
+                             verified:NO
                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
                         if (status != RadarStatusSuccess || !res) {
                             return completionHandler(status, nil, nil);
@@ -817,25 +823,24 @@
         return completionHandler(RadarStatusErrorPublishableKey, nil, nil, nil);
     }
 
-    int finalLimit = MIN(limit, 100);
+    NSMutableArray *queryString = [[NSMutableArray alloc] init];
+    [queryString addObject:[NSURLQueryItem queryItemWithName:@"near"
+                                                       value:[NSString stringWithFormat:@"%.06f,%.06f", near.coordinate.latitude, near.coordinate.longitude]]];
+    [queryString addObject:[NSURLQueryItem queryItemWithName:@"radius"  value:@(radius).stringValue]];
+    [queryString addObject:[NSURLQueryItem queryItemWithName:@"limit=%d" value:@(MIN(limit, 100)).stringValue]];
 
-    NSMutableString *queryString = [NSMutableString new];
-    [queryString appendFormat:@"near=%.06f,%.06f", near.coordinate.latitude, near.coordinate.longitude];
-    [queryString appendFormat:@"&radius=%d", radius];
-    [queryString appendFormat:@"&limit=%d", finalLimit];
-
-    NSString *host = [RadarSettings host];
-    NSString *url = [NSString stringWithFormat:@"%@/v1/search/beacons?%@", host, queryString];
-    url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
+    NSURLComponents *url = [[NSURLComponents alloc] initWithString:@"v1/search/beacons"];
+    [url setQueryItems:queryString];
 
     NSDictionary *headers = [RadarAPIClient headersWithPublishableKey:publishableKey];
     [self.apiHelper requestWithMethod:@"GET"
-                                  url:url
+                                  url:url.string
                               headers:headers
                                params:nil
                                 sleep:NO
                            logPayload:YES
                       extendedTimeout:NO
+                             verified:NO
                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
                         if (status != RadarStatusSuccess || !res) {
                             return completionHandler(status, nil, nil, nil);
@@ -881,40 +886,38 @@
         return completionHandler(RadarStatusErrorPublishableKey, nil, nil);
     }
 
-    int finalLimit = MIN(limit, 100);
-
-    NSMutableString *queryString = [NSMutableString new];
-    [queryString appendFormat:@"query=%@", query];
+    NSMutableArray *queryString = [[NSMutableArray alloc] init];
+    [queryString addObject:[NSURLQueryItem queryItemWithName:@"query" value:query]];
     if (near) {
-        [queryString appendFormat:@"&near=%.06f,%.06f", near.coordinate.latitude, near.coordinate.longitude];
+        [queryString addObject:[NSURLQueryItem queryItemWithName:@"near"
+                                                           value:[NSString stringWithFormat:@"%.06f,%.06f", near.coordinate.latitude, near.coordinate.longitude]]];
     }
     if (layers && layers.count > 0) {
-        [queryString appendFormat:@"&layers=%@", [layers componentsJoinedByString:@","]];
+        [queryString addObject:[NSURLQueryItem queryItemWithName:@"layers" value:[layers componentsJoinedByString:@","]]];
     }
     if (limit) {
-        [queryString appendFormat:@"&limit=%d", finalLimit];
+        [queryString addObject:[NSURLQueryItem queryItemWithName:@"limit" value:@(MIN(limit, 100)).stringValue]];
     }
     if (country) {
-        [queryString appendFormat:@"&country=%@", country];
+        [queryString addObject:[NSURLQueryItem queryItemWithName:@"country" value:country]];
     }
     if (mailable) {
-        [queryString appendFormat:@"&mailable=true"];
+        [queryString addObject:[NSURLQueryItem queryItemWithName:@"mailable" value:@"true"]];
     }
-
-
-    NSString *host = [RadarSettings host];
-    NSString *url = [NSString stringWithFormat:@"%@/v1/search/autocomplete?%@", host, queryString];
-    url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
+    
+    NSURLComponents *url = [[NSURLComponents alloc] initWithString:@"v1/search/autocomplete"];
+    [url setQueryItems:queryString];
 
     NSDictionary *headers = [RadarAPIClient headersWithPublishableKey:publishableKey];
 
     [self.apiHelper requestWithMethod:@"GET"
-                                  url:url
+                                  url:url.string
                               headers:headers
                                params:nil
                                 sleep:NO
                            logPayload:YES
                       extendedTimeout:NO
+                             verified:NO
                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
                         if (status != RadarStatusSuccess || !res) {
                             return completionHandler(status, nil, nil);
@@ -943,79 +946,34 @@
 
     int finalLimit = MIN(limit, 100);
 
-    NSMutableString *queryString = [NSMutableString new];
-    [queryString appendFormat:@"query=%@", query];
+    NSMutableArray *queryString = [[NSMutableArray alloc] init];
+    [queryString addObject:[NSURLQueryItem queryItemWithName:@"query" value:query]];
     if (near) {
-        [queryString appendFormat:@"&near=%.06f,%.06f", near.coordinate.latitude, near.coordinate.longitude];
+        [queryString addObject:[NSURLQueryItem queryItemWithName:@"near" value:[NSString stringWithFormat:@"%.06f,%.06f", near.coordinate.latitude, near.coordinate.longitude]]];
     }
     if (layers && layers.count > 0) {
-        [queryString appendFormat:@"&layers=%@", [layers componentsJoinedByString:@","]];
+        [queryString addObject:[NSURLQueryItem queryItemWithName:@"layers" value:[layers componentsJoinedByString:@","]]];
     }
     if (limit) {
-        [queryString appendFormat:@"&limit=%d", finalLimit];
+        [queryString addObject:[NSURLQueryItem queryItemWithName:@"limit" value:@(MIN(limit, 100)).stringValue]];
     }
     if (country) {
-        [queryString appendFormat:@"&country=%@", country];
+        [queryString addObject:[NSURLQueryItem queryItemWithName:@"country" value:country]];
     }
 
-    NSString *host = [RadarSettings host];
-    NSString *url = [NSString stringWithFormat:@"%@/v1/search/autocomplete?%@", host, queryString];
-    url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
-
+    NSURLComponents *url = [[NSURLComponents alloc] initWithString:@"v1/search/autocomplete"];
+    [url setQueryItems:queryString];
+    
     NSDictionary *headers = [RadarAPIClient headersWithPublishableKey:publishableKey];
 
     [self.apiHelper requestWithMethod:@"GET"
-                                  url:url
+                                  url:url.string
                               headers:headers
                                params:nil
                                 sleep:NO
                            logPayload:YES
                       extendedTimeout:NO
-                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
-                        if (status != RadarStatusSuccess || !res) {
-                            return completionHandler(status, nil, nil);
-                        }
-
-                        id addressesObj = res[@"addresses"];
-                        NSArray<RadarAddress *> *addresses = [RadarAddress addressesFromObject:addressesObj];
-                        if (addresses) {
-                            return completionHandler(RadarStatusSuccess, res, addresses);
-                        }
-
-                        completionHandler(RadarStatusErrorServer, nil, nil);
-                    }];
-}
-
-- (void)autocompleteQuery:(NSString *)query near:(CLLocation *_Nullable)near limit:(int)limit completionHandler:(RadarGeocodeAPICompletionHandler)completionHandler {
-    NSString *publishableKey = [RadarSettings publishableKey];
-    if (!publishableKey) {
-        return completionHandler(RadarStatusErrorPublishableKey, nil, nil);
-    }
-
-    int finalLimit = MIN(limit, 100);
-
-    NSMutableString *queryString = [NSMutableString new];
-    [queryString appendFormat:@"query=%@", query];
-    if (near) {
-        [queryString appendFormat:@"&near=%.06f,%.06f", near.coordinate.latitude, near.coordinate.longitude];
-    }
-    if (limit) {
-        [queryString appendFormat:@"&limit=%d", finalLimit];
-    }
-
-    NSString *host = [RadarSettings host];
-    NSString *url = [NSString stringWithFormat:@"%@/v1/search/autocomplete?%@", host, queryString];
-    url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
-
-    NSDictionary *headers = [RadarAPIClient headersWithPublishableKey:publishableKey];
-
-    [self.apiHelper requestWithMethod:@"GET"
-                                  url:url
-                              headers:headers
-                               params:nil
-                                sleep:NO
-                           logPayload:YES
-                      extendedTimeout:NO
+                             verified:NO
                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
                         if (status != RadarStatusSuccess || !res) {
                             return completionHandler(status, nil, nil);
@@ -1037,7 +995,7 @@
         return completionHandler(RadarStatusErrorPublishableKey, nil, nil, RadarAddressVerificationStatusNone);
     }
 
-    NSMutableString *queryString = [NSMutableString new];
+    NSMutableArray *queryString = [[NSMutableArray alloc] init];
     if (!address.countryCode || !address.stateCode || !address.city || !address.number || !address.postalCode || !address.street) {
         if (completionHandler) {
             [RadarUtils runOnMainThread:^{
@@ -1047,31 +1005,32 @@
 
         return;
     } else {
-        [queryString appendFormat:@"countryCode=%@", address.countryCode];
-        [queryString appendFormat:@"&stateCode=%@", address.stateCode];
-        [queryString appendFormat:@"&city=%@", address.city];
-        [queryString appendFormat:@"&number=%@", address.number];
-        [queryString appendFormat:@"&postalCode=%@", address.postalCode];
-        [queryString appendFormat:@"&street=%@", address.street];
+        [queryString addObject:[NSURLQueryItem queryItemWithName:@"countryCode" value:address.countryCode]];
+        [queryString addObject:[NSURLQueryItem queryItemWithName:@"stateCode" value:address.stateCode]];
+        [queryString addObject:[NSURLQueryItem queryItemWithName:@"city" value:address.city]];
+        [queryString addObject:[NSURLQueryItem queryItemWithName:@"number" value:address.number]];
+        [queryString addObject:[NSURLQueryItem queryItemWithName:@"postalCode" value:address.postalCode]];
+        [queryString addObject:[NSURLQueryItem queryItemWithName:@"street" value:address.street]];
     }
 
     if (address.unit) {
-        [queryString appendFormat:@"&unit=%@", address.unit];
+        [queryString addObject:[NSURLQueryItem queryItemWithName:@"unit" value:address.unit]];
     }
 
-    NSString *host = [RadarSettings host];
-    NSString *url = [NSString stringWithFormat:@"%@/v1/addresses/validate?%@", host, queryString];
-    url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
-
+    NSURLComponents *url = [[NSURLComponents alloc] initWithString:@"v1/addresses/validate"];
+    [url setQueryItems:queryString];
+    
+    
     NSDictionary *headers = [RadarAPIClient headersWithPublishableKey:publishableKey];
 
     [self.apiHelper requestWithMethod:@"GET"
-                                  url:url
+                                  url:url.string
                               headers:headers
                                params:nil
                                 sleep:NO
                            logPayload:YES
                       extendedTimeout:NO
+                             verified:NO
                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
                         if (status != RadarStatusSuccess || !res) {
                             return completionHandler(status, nil, nil, RadarAddressVerificationStatusNone);
@@ -1109,28 +1068,28 @@
         return completionHandler(RadarStatusErrorPublishableKey, nil, nil);
     }
 
-    NSMutableString *queryString = [NSMutableString new];
-    [queryString appendFormat:@"query=%@", query];
+    NSMutableArray *queryString = [[NSMutableArray alloc] init];
+    [queryString addObject:[NSURLQueryItem queryItemWithName:@"query" value:query]];
     if (layers && layers.count > 0) {
-        [queryString appendFormat:@"&layers=%@", [layers componentsJoinedByString:@","]];
+        [queryString addObject:[NSURLQueryItem queryItemWithName:@"layers" value:[layers componentsJoinedByString:@","]]];
     }
     if (countries && countries.count > 0) {
-        [queryString appendFormat:@"&country=%@", [countries componentsJoinedByString:@","]];
+        [queryString addObject:[NSURLQueryItem queryItemWithName:@"country" value:[countries componentsJoinedByString:@","]]];
     }
-
-    NSString *host = [RadarSettings host];
-    NSString *url = [NSString stringWithFormat:@"%@/v1/geocode/forward?%@", host, queryString];
-    url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
-
+    
+    NSURLComponents *url = [[NSURLComponents alloc] initWithString:@"v1/geocode/forward"];
+    [url setQueryItems:queryString];
+    
     NSDictionary *headers = [RadarAPIClient headersWithPublishableKey:publishableKey];
 
     [self.apiHelper requestWithMethod:@"GET"
-                                  url:url
+                                  url:url.string
                               headers:headers
                                params:nil
                                 sleep:NO
                            logPayload:YES
                       extendedTimeout:NO
+                             verified:NO
                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
                         if (status != RadarStatusSuccess || !res) {
                             return completionHandler(status, nil, nil);
@@ -1154,25 +1113,26 @@
         return completionHandler(RadarStatusErrorPublishableKey, nil, nil);
     }
 
-    NSMutableString *queryString = [NSMutableString new];
-    [queryString appendFormat:@"coordinates=%.06f,%.06f", location.coordinate.latitude, location.coordinate.longitude];
+    NSMutableArray *queryString = [[NSMutableArray alloc] init];
+    [queryString addObject:[NSURLQueryItem queryItemWithName:@"coordinates"
+                                                       value:[NSString stringWithFormat:@"%.06f,%.06f", location.coordinate.latitude, location.coordinate.longitude]]];
     if (layers && layers.count > 0) {
-        [queryString appendFormat:@"&layers=%@", [layers componentsJoinedByString:@","]];
+        [queryString addObject:[NSURLQueryItem queryItemWithName:@"layers" value:[layers componentsJoinedByString:@","]]];
     }
 
-    NSString *host = [RadarSettings host];
-    NSString *url = [NSString stringWithFormat:@"%@/v1/geocode/reverse?%@", host, queryString];
-    url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
-
+    NSURLComponents *url = [[NSURLComponents alloc] initWithString:@"v1/geocode/reverse"];
+    [url setQueryItems:queryString];
+    
     NSDictionary *headers = [RadarAPIClient headersWithPublishableKey:publishableKey];
 
     [self.apiHelper requestWithMethod:@"GET"
-                                  url:url
+                                  url:url.string
                               headers:headers
                                params:nil
                                 sleep:NO
                            logPayload:YES
                       extendedTimeout:NO
+                             verified:NO
                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
                         if (status != RadarStatusSuccess || !res) {
                             return completionHandler(status, nil, nil);
@@ -1194,8 +1154,7 @@
         return completionHandler(RadarStatusErrorPublishableKey, nil, nil, NO);
     }
 
-    NSString *host = [RadarSettings host];
-    NSString *url = [NSString stringWithFormat:@"%@/v1/geocode/ip", host];
+    NSString *url = @"v1/geocode/ip";
 
     NSDictionary *headers = [RadarAPIClient headersWithPublishableKey:publishableKey];
 
@@ -1206,6 +1165,7 @@
                                 sleep:NO
                            logPayload:YES
                       extendedTimeout:NO
+                             verified:NO
                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
                         if (status != RadarStatusSuccess || !res) {
                             return completionHandler(status, nil, nil, NO);
@@ -1239,9 +1199,9 @@
         return completionHandler(RadarStatusErrorPublishableKey, nil, nil);
     }
 
-    NSMutableString *queryString = [NSMutableString new];
-    [queryString appendFormat:@"origin=%.06f,%.06f", origin.coordinate.latitude, origin.coordinate.longitude];
-    [queryString appendFormat:@"&destination=%.06f,%.06f", destination.coordinate.latitude, destination.coordinate.longitude];
+    NSMutableArray *queryString = [[NSMutableArray alloc] init];
+    [queryString addObject:[NSURLQueryItem queryItemWithName:@"origin" value:[NSString stringWithFormat:@"%.06f,%.06f", origin.coordinate.latitude, origin.coordinate.longitude]]];
+    [queryString addObject:[NSURLQueryItem queryItemWithName:@"destination" value:[NSString stringWithFormat:@"%.06f,%.06f", destination.coordinate.latitude, destination.coordinate.longitude]]];
     NSMutableArray<NSString *> *modesArr = [NSMutableArray array];
     if (modes & RadarRouteModeFoot) {
         [modesArr addObject:@"foot"];
@@ -1258,32 +1218,32 @@
     if (modes & RadarRouteModeMotorbike) {
         [modesArr addObject:@"motorbike"];
     }
-    [queryString appendFormat:@"&modes=%@", [modesArr componentsJoinedByString:@","]];
+    [queryString addObject:[NSURLQueryItem queryItemWithName:@"modes" value:[modesArr componentsJoinedByString:@","]]];
     NSString *unitsStr;
     if (units == RadarRouteUnitsMetric) {
         unitsStr = @"metric";
     } else {
         unitsStr = @"imperial";
     }
-    [queryString appendFormat:@"&units=%@", unitsStr];
+    [queryString addObject:[NSURLQueryItem queryItemWithName:@"units" value:unitsStr]];
     if (geometryPoints > 1) {
-        [queryString appendFormat:@"&geometryPoints=%d", geometryPoints];
+        [queryString addObject:[NSURLQueryItem queryItemWithName:@"geometryPoints" value:@(geometryPoints).stringValue]];
     }
-    [queryString appendString:@"&geometry=linestring"];
+    [queryString addObject:[NSURLQueryItem queryItemWithName:@"&geometry" value:@"linestring"]];
 
-    NSString *host = [RadarSettings host];
-    NSString *url = [NSString stringWithFormat:@"%@/v1/route/distance?%@", host, queryString];
-    url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
-
+    NSURLComponents *url = [[NSURLComponents alloc] initWithString:@"v1/route/distance"];
+    [url setQueryItems:queryString];
+    
     NSDictionary *headers = [RadarAPIClient headersWithPublishableKey:publishableKey];
 
     [self.apiHelper requestWithMethod:@"GET"
-                                  url:url
+                                  url:url.string
                               headers:headers
                                params:nil
                                 sleep:NO
                            logPayload:YES
                       extendedTimeout:NO
+                             verified:NO
                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
                         if (status != RadarStatusSuccess || !res) {
                             return completionHandler(status, nil, nil);
@@ -1309,57 +1269,42 @@
         return completionHandler(RadarStatusErrorPublishableKey, nil, nil);
     }
 
-    NSMutableString *queryString = [NSMutableString new];
-    [queryString appendString:@"origins="];
+    NSMutableArray *queryString = [[NSMutableArray alloc] init];
+    
+    NSMutableArray *originsString = [[NSMutableArray alloc] init];
     for (int i = 0; i < origins.count; i++) {
-        CLLocation *origin = origins[i];
-        [queryString appendFormat:@"%.06f,%.06f", origin.coordinate.latitude, origin.coordinate.longitude];
-        if (i < origins.count - 1) {
-            [queryString appendString:@"|"];
-        }
+        [originsString addObject:[NSString stringWithFormat:@"%.06f,%.06f", origins[i].coordinate.latitude, origins[i].coordinate.longitude]];
     }
-    [queryString appendString:@"&destinations="];
+    [queryString addObject:[NSURLQueryItem queryItemWithName:@"origins" value:[originsString componentsJoinedByString:@"|"]]];
+    
+    NSMutableArray *destinationsString = [[NSMutableArray alloc] init];
     for (int i = 0; i < destinations.count; i++) {
-        CLLocation *destination = destinations[i];
-        [queryString appendFormat:@"%.06f,%.06f", destination.coordinate.latitude, destination.coordinate.longitude];
-        if (i < destinations.count - 1) {
-            [queryString appendString:@"|"];
-        }
+        [destinationsString addObject:[NSString stringWithFormat:@"%.06f,%.06f", origins[i].coordinate.latitude, origins[i].coordinate.longitude]];
     }
-    NSString *modeStr;
-    if (mode == RadarRouteModeFoot) {
-        modeStr = @"foot";
-    } else if (mode == RadarRouteModeBike) {
-        modeStr = @"bike";
-    } else if (mode == RadarRouteModeCar) {
-        modeStr = @"car";
-    } else if (mode == RadarRouteModeTruck) {
-        modeStr = @"truck";
-    } else if (mode == RadarRouteModeMotorbike) {
-        modeStr = @"motorbike";
-    }
-    [queryString appendFormat:@"&mode=%@", modeStr];
+    [queryString addObject:[NSURLQueryItem queryItemWithName:@"destinations" value:[originsString componentsJoinedByString:@"|"]]];
+    
+    [queryString addObject:[NSURLQueryItem queryItemWithName:@"mode" value:[Radar stringForMode:mode]]];
     NSString *unitsStr;
     if (units == RadarRouteUnitsMetric) {
         unitsStr = @"metric";
     } else {
         unitsStr = @"imperial";
     }
-    [queryString appendFormat:@"&units=%@", unitsStr];
+    [queryString addObject:[NSURLQueryItem queryItemWithName:@"units" value:unitsStr]];
 
-    NSString *host = [RadarSettings host];
-    NSString *url = [NSString stringWithFormat:@"%@/v1/route/matrix?%@", host, queryString];
-    url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
-
+    NSURLComponents *url = [[NSURLComponents alloc] initWithString:@"v1/route/matrix"];
+    [url setQueryItems:queryString];
+    
     NSDictionary *headers = [RadarAPIClient headersWithPublishableKey:publishableKey];
 
     [self.apiHelper requestWithMethod:@"GET"
-                                  url:url
+                                  url:url.string
                               headers:headers
                                params:nil
                                 sleep:NO
                            logPayload:YES
                       extendedTimeout:NO
+                             verified:NO
                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
                         if (status != RadarStatusSuccess || !res) {
                             return completionHandler(status, nil, nil);
@@ -1392,10 +1337,8 @@ completionHandler:(RadarSendEventAPICompletionHandler _Nonnull)completionHandler
     params[@"type"] = conversionName;
     params[@"metadata"] = metadata;
 
-    NSString *host = [RadarSettings host];
-    NSString *url = [NSString stringWithFormat:@"%@/v1/events", host];
-    url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
-
+    NSString *url = @"v1/events";
+    
     NSDictionary *headers = [RadarAPIClient headersWithPublishableKey:publishableKey];
 
     [self.apiHelper requestWithMethod:@"POST"
@@ -1405,6 +1348,7 @@ completionHandler:(RadarSendEventAPICompletionHandler _Nonnull)completionHandler
                                 sleep:NO
                            logPayload:YES
                       extendedTimeout:NO
+                             verified:NO
                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
                         if (status != RadarStatusSuccess || !res) {
                             return completionHandler(status, nil, nil);
@@ -1429,8 +1373,7 @@ completionHandler:(RadarSendEventAPICompletionHandler _Nonnull)completionHandler
         return completionHandler(RadarStatusErrorPublishableKey);
     }
 
-    NSString *host = [RadarSettings host];
-    NSString *url = [NSString stringWithFormat:@"%@/v1/logs", host];
+    NSString *url = @"v1/logs";
 
     NSDictionary *headers = [RadarAPIClient headersWithPublishableKey:publishableKey];
 
@@ -1453,6 +1396,7 @@ completionHandler:(RadarSendEventAPICompletionHandler _Nonnull)completionHandler
                                 sleep:NO
                            logPayload:NO // avoid logging the logging call
                       extendedTimeout:NO
+                             verified:NO
                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
                         return completionHandler(status);
                     }];
