@@ -7,7 +7,6 @@
 
 #import <Foundation/Foundation.h>
 #import "RadarSDKMotion.h"
-#import <RadarSDK/RadarMotionProtocol.h>
 
 @interface RadarSDKMotion ()
 

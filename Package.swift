@@ -25,8 +25,7 @@ let package = Package(
             resources: [.process("PrivacyInfo.xcprivacy")],
             publicHeadersPath: "Include",
             cSettings: [
-                .headerSearchPath("."),
-                .define("SPM_BUILD")
+                .headerSearchPath(".")
             ]
         ),
         .target(
@@ -35,10 +34,7 @@ let package = Package(
             path: "RadarSDKMotion/RadarSDKMotion",
             publicHeadersPath: "Include",
             cSettings: [
-                .headerSearchPath("."),
-                .headerSearchPath("../../RadarSDK/Include"),
-                .headerSearchPath("../RadarSDK/Include"),
-                .define("SPM_BUILD")
+                .headerSearchPath(".")
             ] 
         )
     ]

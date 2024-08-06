@@ -8,10 +8,19 @@
 #import <Foundation/Foundation.h>
 #import <CoreMotion/CoreMotion.h>
 
+@interface RadarSDKMotion : NSObject
+- (void)stopActivityUpdates;
+- (void)startActivityUpdatesToQueue:(NSOperationQueue *)queue withHandler:(CMMotionActivityHandler)handler;
 
-@protocol RadarMotionProtocol;
-
-@interface RadarSDKMotion : NSObject <RadarMotionProtocol>
+- (void)startAccelerometerUpdates;
+- (CMAccelerometerData *)getAccelerometerData;
+- (void)stopAccelerometerUpdates;
+- (void)startGyroUpdates;
+- (CMGyroData *)getGyroData;
+- (void)stopGyroUpdates;
+- (void)startMagnetometerUpdates;
+- (CMMagnetometerData *)getMagnetometerData;
+- (void)stopMagnetometerUpdates;
 @end
 
 

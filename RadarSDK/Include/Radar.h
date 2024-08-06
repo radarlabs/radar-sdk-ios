@@ -1196,7 +1196,7 @@ logConversionWithNotification
 + (NSDictionary *)dictionaryForLocation:(CLLocation *)location NS_SWIFT_NAME(dictionaryForLocation(_:));
 
 
-+ (void)setRadarMotion:(nullable id<RadarMotionProtocol>)radarMotion;
++ (void)setRadarMotion:(nullable id)radarMotion;
 
 @end
 
