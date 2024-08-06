@@ -8,10 +8,12 @@
 
 /* Begin PBXBuildFile section */
 		E698B66C2C6167A800084371 /* RadarMotion.docc in Sources */ = {isa = PBXBuildFile; fileRef = E698B66B2C6167A800084371 /* RadarMotion.docc */; };
-		E698B6722C6167A800084371 /* RadarMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E698B6672C6167A800084371 /* RadarMotion.framework */; };
+		E698B6722C6167A800084371 /* RadarSDKMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E698B6672C6167A800084371 /* RadarSDKMotion.framework */; };
 		E698B6772C6167A800084371 /* RadarMotionTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E698B6762C6167A800084371 /* RadarMotionTests.m */; };
 		E698B6782C6167A800084371 /* RadarSDKMotion.h in Headers */ = {isa = PBXBuildFile; fileRef = E698B66A2C6167A800084371 /* RadarSDKMotion.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		E698B6BB2C616C5D00084371 /* RadarSDKMotion.m in Sources */ = {isa = PBXBuildFile; fileRef = E698B6BA2C616C5D00084371 /* RadarSDKMotion.m */; };
+		E698B7512C627A5200084371 /* RadarSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E698B7302C6265F000084371 /* RadarSDK.framework */; };
+		E698B7522C627A5200084371 /* RadarSDK.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = E698B7302C6265F000084371 /* RadarSDK.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -22,16 +24,16 @@
 			remoteGlobalIDString = E698B6662C6167A800084371;
 			remoteInfo = RadarMotion;
 		};
-		E698B7092C61730200084371 /* PBXContainerItemProxy */ = {
+		E698B72D2C6265F000084371 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = E698B7032C61730200084371 /* RadarSDK.xcodeproj */;
+			containerPortal = E698B7272C6265F000084371 /* RadarSDK.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = DD236C7E2308797B00EB88F9;
 			remoteInfo = RadarSDKTests;
 		};
-		E698B70B2C61730200084371 /* PBXContainerItemProxy */ = {
+		E698B72F2C6265F000084371 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = E698B7032C61730200084371 /* RadarSDK.xcodeproj */;
+			containerPortal = E698B7272C6265F000084371 /* RadarSDK.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 0107A9E82621FFB9008AB52F;
 			remoteInfo = RadarSDK;
@@ -45,6 +47,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				E698B7522C627A5200084371 /* RadarSDK.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -52,13 +55,13 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		E698B6672C6167A800084371 /* RadarMotion.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = RadarMotion.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		E698B6672C6167A800084371 /* RadarSDKMotion.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = RadarSDKMotion.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		E698B66A2C6167A800084371 /* RadarSDKMotion.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarSDKMotion.h; sourceTree = "<group>"; };
 		E698B66B2C6167A800084371 /* RadarMotion.docc */ = {isa = PBXFileReference; lastKnownFileType = folder.documentationcatalog; path = RadarMotion.docc; sourceTree = "<group>"; };
-		E698B6712C6167A800084371 /* RadarMotionTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RadarMotionTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		E698B6712C6167A800084371 /* RadarSDKMotionTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RadarSDKMotionTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		E698B6762C6167A800084371 /* RadarMotionTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RadarMotionTests.m; sourceTree = "<group>"; };
 		E698B6BA2C616C5D00084371 /* RadarSDKMotion.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RadarSDKMotion.m; sourceTree = "<group>"; };
-		E698B7032C61730200084371 /* RadarSDK.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RadarSDK.xcodeproj; path = ../RadarSDK.xcodeproj; sourceTree = "<group>"; };
+		E698B7272C6265F000084371 /* RadarSDK.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RadarSDK.xcodeproj; path = ../RadarSDK.xcodeproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -66,6 +69,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E698B7512C627A5200084371 /* RadarSDK.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -73,7 +77,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E698B6722C6167A800084371 /* RadarMotion.framework in Frameworks */,
+				E698B6722C6167A800084371 /* RadarSDKMotion.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -83,8 +87,8 @@
 		E698B65D2C6167A800084371 = {
 			isa = PBXGroup;
 			children = (
-				E698B7032C61730200084371 /* RadarSDK.xcodeproj */,
-				E698B6692C6167A800084371 /* RadarMotion */,
+				E698B7272C6265F000084371 /* RadarSDK.xcodeproj */,
+				E698B6692C6167A800084371 /* RadarSDKMotion */,
 				E698B6752C6167A800084371 /* RadarMotionTests */,
 				E698B6682C6167A800084371 /* Products */,
 				E698B6B22C616BCC00084371 /* Frameworks */,
@@ -94,20 +98,20 @@
 		E698B6682C6167A800084371 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				E698B6672C6167A800084371 /* RadarMotion.framework */,
-				E698B6712C6167A800084371 /* RadarMotionTests.xctest */,
+				E698B6672C6167A800084371 /* RadarSDKMotion.framework */,
+				E698B6712C6167A800084371 /* RadarSDKMotionTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		E698B6692C6167A800084371 /* RadarMotion */ = {
+		E698B6692C6167A800084371 /* RadarSDKMotion */ = {
 			isa = PBXGroup;
 			children = (
 				E698B6B92C616C4600084371 /* Include */,
 				E698B66B2C6167A800084371 /* RadarMotion.docc */,
 				E698B6BA2C616C5D00084371 /* RadarSDKMotion.m */,
 			);
-			path = RadarMotion;
+			path = RadarSDKMotion;
 			sourceTree = "<group>";
 		};
 		E698B6752C6167A800084371 /* RadarMotionTests */ = {
@@ -133,11 +137,11 @@
 			path = Include;
 			sourceTree = "<group>";
 		};
-		E698B7042C61730200084371 /* Products */ = {
+		E698B7282C6265F000084371 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				E698B70A2C61730200084371 /* RadarSDKTests.xctest */,
-				E698B70C2C61730200084371 /* RadarSDK.framework */,
+				E698B72E2C6265F000084371 /* RadarSDKTests.xctest */,
+				E698B7302C6265F000084371 /* RadarSDK.framework */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -156,9 +160,9 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
-		E698B6662C6167A800084371 /* RadarMotion */ = {
+		E698B6662C6167A800084371 /* RadarSDKMotion */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = E698B67B2C6167A800084371 /* Build configuration list for PBXNativeTarget "RadarMotion" */;
+			buildConfigurationList = E698B67B2C6167A800084371 /* Build configuration list for PBXNativeTarget "RadarSDKMotion" */;
 			buildPhases = (
 				E698B6622C6167A800084371 /* Headers */,
 				E698B6632C6167A800084371 /* Sources */,
@@ -170,14 +174,14 @@
 			);
 			dependencies = (
 			);
-			name = RadarMotion;
+			name = RadarSDKMotion;
 			productName = RadarMotion;
-			productReference = E698B6672C6167A800084371 /* RadarMotion.framework */;
+			productReference = E698B6672C6167A800084371 /* RadarSDKMotion.framework */;
 			productType = "com.apple.product-type.framework";
 		};
-		E698B6702C6167A800084371 /* RadarMotionTests */ = {
+		E698B6702C6167A800084371 /* RadarSDKMotionTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = E698B67E2C6167A800084371 /* Build configuration list for PBXNativeTarget "RadarMotionTests" */;
+			buildConfigurationList = E698B67E2C6167A800084371 /* Build configuration list for PBXNativeTarget "RadarSDKMotionTests" */;
 			buildPhases = (
 				E698B66D2C6167A800084371 /* Sources */,
 				E698B66E2C6167A800084371 /* Frameworks */,
@@ -188,9 +192,9 @@
 			dependencies = (
 				E698B6742C6167A800084371 /* PBXTargetDependency */,
 			);
-			name = RadarMotionTests;
+			name = RadarSDKMotionTests;
 			productName = RadarMotionTests;
-			productReference = E698B6712C6167A800084371 /* RadarMotionTests.xctest */;
+			productReference = E698B6712C6167A800084371 /* RadarSDKMotionTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 /* End PBXNativeTarget section */
@@ -210,7 +214,7 @@
 					};
 				};
 			};
-			buildConfigurationList = E698B6612C6167A800084371 /* Build configuration list for PBXProject "RadarMotion" */;
+			buildConfigurationList = E698B6612C6167A800084371 /* Build configuration list for PBXProject "RadarSDKMotion" */;
 			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -223,31 +227,31 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
-					ProductGroup = E698B7042C61730200084371 /* Products */;
-					ProjectRef = E698B7032C61730200084371 /* RadarSDK.xcodeproj */;
+					ProductGroup = E698B7282C6265F000084371 /* Products */;
+					ProjectRef = E698B7272C6265F000084371 /* RadarSDK.xcodeproj */;
 				},
 			);
 			projectRoot = "";
 			targets = (
-				E698B6662C6167A800084371 /* RadarMotion */,
-				E698B6702C6167A800084371 /* RadarMotionTests */,
+				E698B6662C6167A800084371 /* RadarSDKMotion */,
+				E698B6702C6167A800084371 /* RadarSDKMotionTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
-		E698B70A2C61730200084371 /* RadarSDKTests.xctest */ = {
+		E698B72E2C6265F000084371 /* RadarSDKTests.xctest */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.cfbundle;
 			path = RadarSDKTests.xctest;
-			remoteRef = E698B7092C61730200084371 /* PBXContainerItemProxy */;
+			remoteRef = E698B72D2C6265F000084371 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		E698B70C2C61730200084371 /* RadarSDK.framework */ = {
+		E698B7302C6265F000084371 /* RadarSDK.framework */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.framework;
 			path = RadarSDK.framework;
-			remoteRef = E698B70B2C61730200084371 /* PBXContainerItemProxy */;
+			remoteRef = E698B72F2C6265F000084371 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -292,7 +296,7 @@
 /* Begin PBXTargetDependency section */
 		E698B6742C6167A800084371 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = E698B6662C6167A800084371 /* RadarMotion */;
+			target = E698B6662C6167A800084371 /* RadarSDKMotion */;
 			targetProxy = E698B6732C6167A800084371 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -423,10 +427,11 @@
 		E698B67C2C6167A800084371 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;
-				DEVELOPMENT_TEAM = 96GHH65B9D;
+				DEVELOPMENT_TEAM = "";
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
@@ -442,7 +447,7 @@
 				MARKETING_VERSION = 1.0;
 				MODULE_VERIFIER_SUPPORTED_LANGUAGES = "objective-c objective-c++";
 				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "gnu17 gnu++20";
-				PRODUCT_BUNDLE_IDENTIFIER = RadarLabs.RadarMotion;
+				PRODUCT_BUNDLE_IDENTIFIER = RadarLabs.RadarSDKMotion;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -453,10 +458,11 @@
 		E698B67D2C6167A800084371 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;
-				DEVELOPMENT_TEAM = 96GHH65B9D;
+				DEVELOPMENT_TEAM = "";
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
@@ -472,7 +478,7 @@
 				MARKETING_VERSION = 1.0;
 				MODULE_VERIFIER_SUPPORTED_LANGUAGES = "objective-c objective-c++";
 				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "gnu17 gnu++20";
-				PRODUCT_BUNDLE_IDENTIFIER = RadarLabs.RadarMotion;
+				PRODUCT_BUNDLE_IDENTIFIER = RadarLabs.RadarSDKMotion;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -513,7 +519,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		E698B6612C6167A800084371 /* Build configuration list for PBXProject "RadarMotion" */ = {
+		E698B6612C6167A800084371 /* Build configuration list for PBXProject "RadarSDKMotion" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				E698B6792C6167A800084371 /* Debug */,
@@ -522,7 +528,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		E698B67B2C6167A800084371 /* Build configuration list for PBXNativeTarget "RadarMotion" */ = {
+		E698B67B2C6167A800084371 /* Build configuration list for PBXNativeTarget "RadarSDKMotion" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				E698B67C2C6167A800084371 /* Debug */,
@@ -531,7 +537,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		E698B67E2C6167A800084371 /* Build configuration list for PBXNativeTarget "RadarMotionTests" */ = {
+		E698B67E2C6167A800084371 /* Build configuration list for PBXNativeTarget "RadarSDKMotionTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				E698B67F2C6167A800084371 /* Debug */,

@@ -23,6 +23,7 @@
         _activityManager = [[CMMotionActivityManager alloc] init];
         _motionManager = [[CMMotionManager alloc] init];
     }
+    NSLog(@"RadarSDKMotion initialized");
     return self;
 }
 
@@ -31,6 +32,7 @@
 }
 
 - (void)startActivityUpdatesToQueue:(NSOperationQueue *)queue withHandler:(CMMotionActivityHandler)handler {
+    NSLog(@"RadarSDKMotion startActivityUpdatesToQueue");
     if ([CMMotionActivityManager isActivityAvailable]) {
         [self.activityManager startActivityUpdatesToQueue:queue withHandler:handler];
     }
