@@ -53,7 +53,12 @@ jobs:
           event-type: update-xcframework
           client-payload: '{"release": "${{ github.event.release.tag_name }}", "checksum": "${{ steps.checksum.outputs.checksum }}", "url": "${{ github.event.release.html_url }}"}'
 
-      # Lint and deploy the spec to the CocoaPods trunk
-      - uses: michaelhenry/deploy-to-cocoapods-github-action@1.0.10
+      - name: Deploy to Cocoapods
+        run: |
+          set -eo pipefail
+          pod lib lint --allow-warnings RadarSDK.podspec
+          pod trunk push --allow-warnings RadarSDK.podspec
+          pod lib lint --allow-warnings RadarSDKMotion.podspec
+          pod trunk push --allow-warnings RadarSDKMotion.podspec
         env:
           COCOAPODS_TRUNK_TOKEN: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}
