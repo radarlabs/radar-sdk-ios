@@ -547,7 +547,7 @@
         params[@"approachingThreshold"] = [NSString stringWithFormat:@"%d", options.approachingThreshold];
     }
 
-    NSString *url = [NSString stringWithFormat:@"v1/trips"];
+    NSString *url = @"v1/trips";
 
     NSDictionary *headers = [RadarAPIClient headersWithPublishableKey:publishableKey];
 
@@ -660,8 +660,6 @@
 
     NSURLComponents* url = [[NSURLComponents alloc] initWithString:@"v1/context"];
     [url setQueryItems:queryString];
-    
-    NSLog(@"TEST: %@", url.string);
 
     NSDictionary *headers = [RadarAPIClient headersWithPublishableKey:publishableKey];
 
