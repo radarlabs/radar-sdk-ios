@@ -101,14 +101,13 @@
     [queryString addObject:[NSURLQueryItem queryItemWithName:@"verified" value:(verified ? @"true" : @"false")]];
     [queryString addObject:[NSURLQueryItem queryItemWithName:@"clientSdkConfiguration" value:[RadarUtils dictionaryToJson:[RadarSettings clientSdkConfiguration]]]];
 
-    NSURLComponents *query = [[NSURLComponents alloc] init];
-    [query setQueryItems:queryString];
-    NSString *url = [NSString stringWithFormat:@"v1/config%@", query.string];
+    NSURLComponents *url = [[NSURLComponents alloc] initWithString:@"v1/config"];
+    [url setQueryItems:queryString];
 
     NSDictionary *headers = [RadarAPIClient headersWithPublishableKey:publishableKey];
 
     [self.apiHelper requestWithMethod:@"GET"
-                                  url:url
+                                  url:url.string
                               headers:headers
                                params:nil
                                 sleep:NO
@@ -789,7 +788,7 @@
     [queryString addObject:[NSURLQueryItem queryItemWithName:@"includeGeometry"
                                                        value:(includeGeometry ? @"true" : @"false")]];
     
-    NSURLComponents *url = [[NSURLComponents alloc] initWithString:@"v1/search/geofences%@"];
+    NSURLComponents *url = [[NSURLComponents alloc] initWithString:@"v1/search/geofences"];
     [url setQueryItems:queryString];
     
     NSDictionary *headers = [RadarAPIClient headersWithPublishableKey:publishableKey];
