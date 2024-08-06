@@ -35,7 +35,8 @@ let package = Package(
             publicHeadersPath: "Include",
             cSettings: [
                 .headerSearchPath("."),
-                .headerSearchPath("../../RadarSDK/Include")
+                .headerSearchPath("../../RadarSDK/Include"),
+                .headerSearchPath("../RadarSDK/Include")
             ] 
         )
     ]
