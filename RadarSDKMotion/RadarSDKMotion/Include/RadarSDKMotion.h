@@ -7,10 +7,11 @@
 
 #import <Foundation/Foundation.h>
 #import <CoreMotion/CoreMotion.h>
-#import <RadarSDK/RadarMotionProtocol.h>
 
-@interface RadarSDKMotion : NSObject<RadarMotionProtocol>
 
+@protocol RadarMotionProtocol;
+
+@interface RadarSDKMotion : NSObject <RadarMotionProtocol>
 @end
 
 

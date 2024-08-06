@@ -35,7 +35,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         Radar.setDelegate(self)
         Radar.setVerifiedDelegate(self)
         Radar.setLogLevel(RadarLogLevel.info)
-        Radar.setRadarMotion(RadarSDKMotion())
+        Radar.setRadarMotion(RadarSDKMotion() as! RadarMotionProtocol)
         
                 
         return true
