@@ -8,6 +8,7 @@
 import UIKit
 import UserNotifications
 import RadarSDK
+import RadarMotion
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UNUserNotificationCenterDelegate, CLLocationManagerDelegate, RadarDelegate, RadarVerifiedDelegate {

@@ -6,8 +6,6 @@
 //
 
 #import <Foundation/Foundation.h>
-#import <RadarSDK/Radar.h>
-#import <RadarSDK/RadarVerifiedDelegate.h>
 #import <CoreMotion/CoreMotion.h>
 #import <RadarSDK/RadarMotionProtocol.h>
 
