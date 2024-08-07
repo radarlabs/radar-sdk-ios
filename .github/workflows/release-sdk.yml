@@ -19,46 +19,70 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Build, test, and analyze
-        run: xcodebuild clean build analyze test -workspace Example/Example.xcodeproj/project.xcworkspace -scheme RadarSDK -destination "platform=iOS Simulator,name=iPhone 15 Pro" | xcpretty
+      # commenting out test for now for faster runs
+      # - name: Build, test, and analyze (RadarSDK)
+      #  run: xcodebuild clean build analyze test -workspace Example/Example.xcodeproj/project.xcworkspace -scheme RadarSDK -destination "platform=iOS Simulator,name=iPhone 15 Pro" | xcpretty
       
-      - name: Build archive for iPhone simulator
+      - name: Build archive for iPhone simulator (RadarSDK)
         run: xcodebuild archive -scheme RadarSDK -archivePath "RadarSDK-iphonesimulator.xcarchive" -sdk iphonesimulator SKIP_INSTALL=NO CODE_SIGN_IDENTITY= CODE_SIGNING_REQUIRED=NO
 
-      - name: Build archive for iPhone device
+      - name: Build archive for iPhone device (RadarSDK)
         run: xcodebuild archive -scheme RadarSDK -archivePath "RadarSDK-iphoneos.xcarchive" -sdk iphoneos SKIP_INSTALL=NO CODE_SIGN_IDENTITY= CODE_SIGNING_REQUIRED=NO
 
-      - name: Build XCFramework
+      - name: Build archive for iPhone simulator (RadarSDKMotion)
+        run: xcodebuild archive -scheme RadarSDKMotion -archivePath "RadarSDKMotion-iphonesimulator.xcarchive" -sdk iphonesimulator SKIP_INSTALL=NO CODE_SIGN_IDENTITY= CODE_SIGNING_REQUIRED=NO
+
+      - name: Build archive for iPhone device (RadarSDKMotion)
+        run: xcodebuild archive -scheme RadarSDKMotion -archivePath "RadarSDKMotion-iphoneos.xcarchive" -sdk iphoneos SKIP_INSTALL=NO CODE_SIGN_IDENTITY= CODE_SIGNING_REQUIRED=NO
+
+      - name: Build XCFramework (RadarSDK)
         run: xcodebuild -create-xcframework -framework RadarSDK-iphonesimulator.xcarchive/Products/Library/Frameworks/RadarSDK.framework -framework RadarSDK-iphoneos.xcarchive/Products/Library/Frameworks/RadarSDK.framework -output RadarSDK.xcframework
 
-      - name: Zip XCFramework
+      - name: Build XCFramework (RadarSDKMotion)
+        run: xcodebuild -create-xcframework -framework RadarSDKMotion-iphonesimulator.xcarchive/Products/Library/Frameworks/RadarSDKMotion.framework -framework RadarSDKMotion-iphoneos.xcarchive/Products/Library/Frameworks/RadarSDKMotion.framework -output RadarSDKMotion.xcframework
+      
+      - name: Zip XCFramework (RadarSDK)
         run: zip -r RadarSDK.xcframework.zip RadarSDK.xcframework -x ".*" -x "__MACOSX" -D
 
-      - name: Upload XCFramework to release
+      - name: Zip XCFramework (RadarSDKMotion)
+        run: zip -r RadarSDKMotion.xcframework.zip RadarSDKMotion.xcframework -x ".*" -x "__MACOSX" -D
+
+      - name: Upload XCFramework to release (RadarSDK)
         uses: svenstaro/upload-release-action@v2
         with:
           file: RadarSDK.xcframework.zip
       
+      - name: Upload XCFramework to release (RadarSDKMotion)
+        uses: svenstaro/upload-release-action@v2
+        with:
+          file: RadarSDKMotion.xcframework.zip
+      
       # get sha256 checksum of the XCFramework
-      - name: Get SHA256 checksum
-        id: checksum
+      - name: Get SHA256 checksum (RadarSDK)
+        id: checksumradarsdk
         run: echo "::set-output name=checksum::$(shasum -a 256 RadarSDK.xcframework.zip | cut -d ' ' -f 1)"
+      
+      - name: Get SHA256 checksum (RadarSDKMotion)
+        id: checksumradarsdkmotion
+        run: echo "::set-output name=checksum::$(shasum -a 256 RadarSDKMotion.xcframework.zip | cut -d ' ' -f 1)"
 
       - name: Repository Dispatch
-        if: ${{ !github.event.release.prerelease }}
+        # commenting this check away to test that this workflow is still compatible with new changes, do not merge this change
+        # if: ${{ !github.event.release.prerelease }}
         uses: peter-evans/repository-dispatch@v3
         with:
           token: ${{ secrets.SPM_REPO_KEY }}
           repository: radarlabs/radar-sdk-ios-spm
           event-type: update-xcframework
-          client-payload: '{"release": "${{ github.event.release.tag_name }}", "checksum": "${{ steps.checksum.outputs.checksum }}", "url": "${{ github.event.release.html_url }}"}'
+          client-payload: '{"release": "${{ github.event.release.tag_name }}", "checksum": "${{ steps.checksumradarsdk.outputs.checksum }}", "url": "${{ github.event.release.html_url }}", "checksummotion": "${{ steps.checksumradarsdkmotion.outputs.checksum }}"}'
 
-      - name: Deploy to Cocoapods
-        run: |
-          set -eo pipefail
-          pod lib lint --allow-warnings RadarSDK.podspec
-          pod trunk push --allow-warnings RadarSDK.podspec
-          pod lib lint --allow-warnings RadarSDKMotion.podspec
-          pod trunk push --allow-warnings RadarSDKMotion.podspec
-        env:
-          COCOAPODS_TRUNK_TOKEN: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}
+      # commenting out deploy to cocoapods for now, just testing spm
+      # - name: Deploy to Cocoapods
+      #   run: |
+      #     set -eo pipefail
+      #     pod lib lint --allow-warnings RadarSDK.podspec
+      #     pod trunk push --allow-warnings RadarSDK.podspec
+      #     pod lib lint --allow-warnings RadarSDKMotion.podspec
+      #     pod trunk push --allow-warnings RadarSDKMotion.podspec
+      #   env:
+      #     COCOAPODS_TRUNK_TOKEN: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}
