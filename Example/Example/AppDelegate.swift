@@ -29,12 +29,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         // Replace with a valid test publishable key
 
         
-        Radar.initialize(publishableKey: "prj_test_pk_4899327d5733b7741a3bfa223157f3859273be46")
+        Radar.initialize(publishableKey: "prj_test_pk_0000000000000000000000000000000000000000")
         Radar.setUserId("testUserId")
         Radar.setMetadata([ "foo": "bar" ])
         Radar.setDelegate(self)
         Radar.setVerifiedDelegate(self)
-        Radar.setLogLevel(RadarLogLevel.info)
         Radar.setRadarMotion(RadarSDKMotion())
         
                 

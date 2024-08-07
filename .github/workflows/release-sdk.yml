@@ -59,11 +59,11 @@ jobs:
       
       # get sha256 checksum of the XCFramework
       - name: Get SHA256 checksum (RadarSDK)
-        id: checksumradarsdk
+        id: checksum_radarsdk
         run: echo "::set-output name=checksum::$(shasum -a 256 RadarSDK.xcframework.zip | cut -d ' ' -f 1)"
       
       - name: Get SHA256 checksum (RadarSDKMotion)
-        id: checksumradarsdkmotion
+        id: checksum_radarsdkmotion
         run: echo "::set-output name=checksum::$(shasum -a 256 RadarSDKMotion.xcframework.zip | cut -d ' ' -f 1)"
 
       - name: Repository Dispatch
@@ -74,7 +74,7 @@ jobs:
           token: ${{ secrets.SPM_REPO_KEY }}
           repository: radarlabs/radar-sdk-ios-spm
           event-type: update-xcframework
-          client-payload: '{"release": "${{ github.event.release.tag_name }}", "checksum": "${{ steps.checksumradarsdk.outputs.checksum }}", "url": "${{ github.event.release.html_url }}", "checksummotion": "${{ steps.checksumradarsdkmotion.outputs.checksum }}"}'
+          client-payload: '{"release": "${{ github.event.release.tag_name }}", "checksum": "${{ steps.checksum_radarsdk.outputs.checksum }}", "url": "${{ github.event.release.html_url }}", "checksum_motion": "${{ steps.checksum_radarsdkmotion.outputs.checksum }}"}'
 
       # commenting out deploy to cocoapods for now, just testing spm
       # - name: Deploy to Cocoapods
