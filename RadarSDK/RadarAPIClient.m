@@ -941,8 +941,6 @@
         return completionHandler(RadarStatusErrorPublishableKey, nil, nil);
     }
 
-    int finalLimit = MIN(limit, 100);
-
     NSMutableArray *queryString = [[NSMutableArray alloc] init];
     [queryString addObject:[NSURLQueryItem queryItemWithName:@"query" value:query]];
     if (near) {
