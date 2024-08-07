@@ -6,3 +6,4 @@
 //
 
 #import <RadarSDK/RadarSDK.h>
+#import <RadarMotion/RadarSDKMotion.h>

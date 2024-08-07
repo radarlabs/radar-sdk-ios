@@ -10,6 +10,10 @@ let package = Package(
         .library(
             name: "RadarSDK",
             targets: ["RadarSDK"]
+        ),
+        .library(
+            name: "RadarSDKMotion",
+            targets: ["RadarSDKMotion"]
         )
     ],
     dependencies: [],
@@ -23,6 +27,15 @@ let package = Package(
             cSettings: [
                 .headerSearchPath(".")
             ]
+        ),
+        .target(
+            name: "RadarSDKMotion",
+            dependencies: ["RadarSDK"],
+            path: "RadarSDKMotion/RadarSDKMotion",
+            publicHeadersPath: "Include",
+            cSettings: [
+                .headerSearchPath(".")
+            ] 
         )
     ]
 )
