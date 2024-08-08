@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 #import <UserNotifications/UserNotifications.h>
+#import <CoreMotion/CoreMotion.h>
 
 #import "RadarAddress.h"
 #import "RadarContext.h"
@@ -1193,6 +1194,8 @@ logConversionWithNotification
  */
 + (NSDictionary *)dictionaryForLocation:(CLLocation *)location NS_SWIFT_NAME(dictionaryForLocation(_:));
 
+
++ (void)setMotionManager:(CMMotionManager *)motionManager motionActivityManager:(CMMotionActivityManager *)motionActivityManager NS_SWIFT_NAME(setMotionManager(motionManager:motionActivityManager:));
 
 @end
 

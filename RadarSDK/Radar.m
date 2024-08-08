@@ -1320,4 +1320,9 @@
                             }];
 }
 
++ (void)setMotionManager:(CMMotionManager *)motionManager motionActivityManager:(CMMotionActivityManager *)motionActivityManager {
+    [RadarActivityManager sharedInstance].motionActivityManager = motionActivityManager;
+    [RadarActivityManager sharedInstance].motionManager = motionManager;
+}
+
 @end

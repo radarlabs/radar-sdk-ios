@@ -8,8 +8,8 @@
 
 @property (nonatomic, strong, nullable) NSOperationQueue *activityQueue;
 
-@property (nonatomic, strong) CMMotionActivityManager *motionActivityManager;
-@property (nonatomic, strong, nullable) CMMotionManager *motionManager;
+// @property (nonatomic, strong) CMMotionActivityManager *motionActivityManager;
+// @property (nonatomic, strong, nullable) CMMotionManager *motionManager;
 @property (nonatomic) BOOL isUpdatingActivity;
 
 @end
@@ -30,14 +30,21 @@
     if (self) {
         _activityQueue = [[NSOperationQueue alloc] init];
         _activityQueue.name = @"com.radar.activityQueue";
-        _motionActivityManager = [[CMMotionActivityManager alloc] init];
-        _motionManager = [[CMMotionManager alloc] init];
+        // _motionActivityManager = [[CMMotionActivityManager alloc] init];
+        // _motionManager = [[CMMotionManager alloc] init];
         _isUpdatingActivity = NO;
     }
     return self;
 }
 
 - (void)startActivityUpdatesWithHandler:(void (^)(CMMotionActivity *activity))handler {
+
+    if (!self.motionActivityManager) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:@"not initialized motion"];
+        return;
+    }
+    
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:@"initialized motion"];
     
     if (![CMMotionActivityManager isActivityAvailable]) {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Motion activity is not available on this device"];
@@ -59,11 +66,19 @@
 }
 
 - (void)stopActivityUpdates {
+    if (!self.motionActivityManager) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:@"not initialized motion"];
+        return;
+    }
     [self.motionActivityManager stopActivityUpdates];
     self.isUpdatingActivity = NO;
 }
 
 - (void)startMotionUpdates {
+    if (!self.motionManager) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:@"not initialized motion"];
+        return;
+    }
     if (self.motionManager.isAccelerometerAvailable) {
         [self.motionManager startAccelerometerUpdates];
     }
@@ -76,12 +91,20 @@
 }
 
 - (void)stopMotionUpdates {
+    if (!self.motionManager) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:@"not initialized motion"];
+        return;
+    }
     [self.motionManager stopAccelerometerUpdates];
     [self.motionManager stopGyroUpdates];
     [self.motionManager stopMagnetometerUpdates];
 }
 
 - (void)requestLatestMotionData {
+    if (!self.motionManager) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:@"not initialized motion"];
+        return;
+    }
     if (self.motionManager.isAccelerometerActive) {
         CMAccelerometerData *accelerometerData = self.motionManager.accelerometerData;
         if (accelerometerData) {
