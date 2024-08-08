@@ -8,9 +8,81 @@
 import UIKit
 import UserNotifications
 import RadarSDK
+import CoreMotion
 
 @UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UNUserNotificationCenterDelegate, CLLocationManagerDelegate, RadarDelegate, RadarVerifiedDelegate {
+class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UNUserNotificationCenterDelegate, CLLocationManagerDelegate, RadarDelegate, RadarVerifiedDelegate,RadarMotionProtocol {
+    private var activityManager: CMMotionActivityManager
+        private var motionManager: CMMotionManager
+
+    override init() {
+            self.activityManager = CMMotionActivityManager()
+            self.motionManager = CMMotionManager()
+            print("RadarSDKMotion initialized")
+        }
+
+        func stopActivityUpdates() {
+            self.activityManager.stopActivityUpdates()
+        }
+
+        func startActivityUpdates(to queue: OperationQueue, withHandler handler: @escaping CMMotionActivityHandler) {
+            print("RadarSDKMotion startActivityUpdatesToQueue")
+            if CMMotionActivityManager.isActivityAvailable() {
+                self.activityManager.startActivityUpdates(to: queue, withHandler: handler)
+            }
+        }
+
+        func startAccelerometerUpdates() {
+            if self.motionManager.isAccelerometerAvailable {
+                self.motionManager.startAccelerometerUpdates()
+            }
+        }
+
+        func getAccelerometerData() -> CMAccelerometerData? {
+            if self.motionManager.isAccelerometerActive {
+                return self.motionManager.accelerometerData
+            }
+            return nil
+        }
+
+        func stopAccelerometerUpdates() {
+            self.motionManager.stopAccelerometerUpdates()
+        }
+
+        func startGyroUpdates() {
+            if self.motionManager.isGyroAvailable {
+                self.motionManager.startGyroUpdates()
+            }
+        }
+
+        func getGyroData() -> CMGyroData? {
+            if self.motionManager.isGyroActive {
+                return self.motionManager.gyroData
+            }
+            return nil
+        }
+
+        func stopGyroUpdates() {
+            self.motionManager.stopGyroUpdates()
+        }
+
+        func startMagnetometerUpdates() {
+            if self.motionManager.isMagnetometerAvailable {
+                self.motionManager.startMagnetometerUpdates()
+            }
+        }
+
+        func getMagnetometerData() -> CMMagnetometerData? {
+            if self.motionManager.isMagnetometerActive {
+                return self.motionManager.magnetometerData
+            }
+            return nil
+        }
+
+        func stopMagnetometerUpdates() {
+            self.motionManager.stopMagnetometerUpdates()
+        }
+    
 
     let locationManager = CLLocationManager()
     var window: UIWindow? // required for UIWindowSceneDelegate
@@ -26,7 +98,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         self.requestLocationPermissions()
         
         // Replace with a valid test publishable key
-        Radar.initialize(publishableKey: "prj_test_pk_0000000000000000000000000000000000000000")
+//        Radar.setMotionManager(motionManager: CMMotionManager(), motionActivityManager: CMMotionActivityManager())
+        Radar.setRadarMotion(self)
+        Radar.initialize(publishableKey: "prj_test_pk_0000000000000000")
         Radar.setUserId("testUserId")
         Radar.setMetadata([ "foo": "bar" ])
         Radar.setDelegate(self)

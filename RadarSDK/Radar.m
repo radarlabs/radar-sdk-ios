@@ -1320,4 +1320,9 @@
                             }];
 }
 
+
++ (void)setRadarMotion:(id<RadarMotionProtocol>)radarMotion {
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:@"trying to set RadarMotion"];
+    [RadarActivityManager sharedInstance].radarMotion = radarMotion;
+}
 @end
