@@ -1320,9 +1320,9 @@
                             }];
 }
 
-+ (void)setMotionManager:(CMMotionManager *)motionManager motionActivityManager:(CMMotionActivityManager *)motionActivityManager {
-    [RadarActivityManager sharedInstance].motionActivityManager = motionActivityManager;
-    [RadarActivityManager sharedInstance].motionManager = motionManager;
-}
 
++ (void)setRadarMotion:(id<RadarMotionProtocol>)radarMotion {
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:@"trying to set RadarMotion"];
+    [RadarActivityManager sharedInstance].radarMotion = radarMotion;
+}
 @end

@@ -21,11 +21,14 @@
 #import "RadarTrackingOptions.h"
 #import "RadarVerifiedLocationToken.h"
 #import "RadarUser.h"
+#import "RadarMotionProtocol.h"
+
 
 NS_ASSUME_NONNULL_BEGIN
 
 @protocol RadarDelegate;
 @protocol RadarVerifiedDelegate;
+@protocol RadarMotionProtocol;
 @class RadarTripOptions;
 
 #pragma mark - Enums
@@ -1195,8 +1198,9 @@ logConversionWithNotification
 + (NSDictionary *)dictionaryForLocation:(CLLocation *)location NS_SWIFT_NAME(dictionaryForLocation(_:));
 
 
-+ (void)setMotionManager:(CMMotionManager *)motionManager motionActivityManager:(CMMotionActivityManager *)motionActivityManager NS_SWIFT_NAME(setMotionManager(motionManager:motionActivityManager:));
+// + (void)setMotionManager:(CMMotionManager *)motionManager motionActivityManager:(CMMotionActivityManager *)motionActivityManager NS_SWIFT_NAME(setMotionManager(motionManager:motionActivityManager:));
 
++ (void)setRadarMotion:(nullable id<RadarMotionProtocol>)radarMotion;
 @end
 
 NS_ASSUME_NONNULL_END
