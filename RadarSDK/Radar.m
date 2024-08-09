@@ -49,7 +49,11 @@
                                                  name:UIApplicationWillEnterForegroundNotification
                                                object:nil];
     
-    [RadarSettings setPublishableKey:publishableKey];
+    if (publishableKey != nil) {
+        [RadarSettings setPublishableKey:publishableKey];
+    } else {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelWarning type:RadarLogTypeSDKCall message:@"initialize called with nil key"];
+    }
 
     RadarSdkConfiguration *sdkConfiguration = [RadarSettings sdkConfiguration];
     if (sdkConfiguration.usePersistence) {
