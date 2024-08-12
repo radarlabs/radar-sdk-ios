@@ -285,6 +285,7 @@
 }
 
 + (void)setExpectedJurisdictionWithCountryCode:(NSString *)countryCode stateCode:(NSString *)stateCode {
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"setExpectedJurisdiction()"];
     [[RadarVerificationManager sharedInstance]
      setExpectedJurisdictionWithCountryCode:countryCode stateCode:stateCode];
 }
