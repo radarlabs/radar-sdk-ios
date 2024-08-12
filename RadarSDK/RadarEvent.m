@@ -5,6 +5,7 @@
 //  Copyright © 2019 Radar Labs, Inc. All rights reserved.
 //
 
+#import "Radar.h"
 #import "RadarEvent.h"
 #import "RadarBeacon+Internal.h"
 #import "RadarEvent+Internal.h"
@@ -12,6 +13,7 @@
 #import "RadarGeofence+Internal.h"
 #import "RadarPlace+Internal.h"
 #import "RadarRegion+Internal.h"
+#import "RadarTrackingOptions.h"
 #import "RadarTrip+Internal.h"
 #import "RadarUtils.h"
 
@@ -182,6 +184,8 @@
             type = RadarEventTypeUserArrivedAtWrongTripDestination;
         } else if ([typeStr isEqualToString:@"user.failed_fraud"]) {
             type = RadarEventTypeUserFailedFraud;
+        } else if ([typeStr isEqualToString:@"indoors.location"]) {
+            type = RadarEventTypeIndoorLocation;
         } else {
             type = RadarEventTypeConversion;
             conversionName = typeStr;
@@ -299,6 +303,12 @@
         if (locationAccuracyObj && [locationAccuracyObj isKindOfClass:[NSNumber class]]) {
             NSNumber *locationAccuracyNumber = (NSNumber *)locationAccuracyObj;
 
+            // in indoors mode, override accuracy
+            RadarTrackingOptions *options = [Radar getTrackingOptions];
+            if(options.indoors){
+                locationAccuracyNumber = [NSNumber numberWithFloat:10.0];
+            }
+
             location = [[CLLocation alloc] initWithCoordinate:CLLocationCoordinate2DMake(locationCoordinatesLatitudeFloat, locationCoordinatesLongitudeFloat)
                                                      altitude:-1
                                            horizontalAccuracy:[locationAccuracyNumber floatValue]
@@ -395,6 +405,8 @@
         return @"user.failed_fraud";
     case RadarEventTypeConversion:
         return @"custom";
+    case RadarEventTypeIndoorLocation:
+        return @"indoors.location";
     default:
         return @"unknown";
     }

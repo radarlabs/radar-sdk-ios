@@ -38,6 +38,8 @@ class Utils {
             return "Exited country \(event.region!.name) (\(event.region!.code)) with \(confidenceStr)"
         case .conversion:
             return "Received conversion event with name \(event.conversionName!)"
+        case .indoorLocation:
+            return "Received indoor location event with .... TODO TODO TODO"
         default:
             return "Unknown"
         }
