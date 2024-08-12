@@ -198,6 +198,11 @@
                 minInterval = minInterval - 10;
             }
             
+            // min interval is 10 seconds
+            if (minInterval < 10) {
+                minInterval = 10;
+            }
+            
             if (self.scheduled) {
                 [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Token request already scheduled"];
                 
