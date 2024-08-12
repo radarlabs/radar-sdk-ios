@@ -493,7 +493,7 @@ typedef void (^_Nonnull RadarLogConversionCompletionHandler)(RadarStatus status,
 + (void)getVerifiedLocationToken:(RadarTrackVerifiedCompletionHandler _Nullable)completionHandler NS_SWIFT_NAME(getVerifiedLocationToken(completionHandler:));
 
 /**
- Sets the user's expected country and state.
+ Optionally sets the user's expected country and state for jurisdiction checks.
  
  @param countryCode The user's expected two-letter country code.
  @param stateCode The user's expected two-letter state code.
