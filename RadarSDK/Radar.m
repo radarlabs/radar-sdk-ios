@@ -43,6 +43,15 @@
 
 + (void)initializeWithPublishableKey:(NSString *)publishableKey {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"initialize()"];
+    
+    Class RadarSDKMotion = NSClassFromString(@"RadarSDKMotion");
+    if (RadarSDKMotion) {
+        NSLog(@"get have the import");
+        id radarMotion = [[RadarSDKMotion alloc] init];
+        [RadarActivityManager sharedInstance].radarMotion = radarMotion;
+    } else {
+        NSLog(@"RadarSDKMotion not found");
+    }
 
     [[NSNotificationCenter defaultCenter] addObserver:[self sharedInstance]
                                              selector:@selector(applicationWillEnterForeground)
