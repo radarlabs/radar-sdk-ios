@@ -77,12 +77,12 @@ jobs:
           client-payload: '{"release": "${{ github.event.release.tag_name }}", "checksum": "${{ steps.checksum_radarsdk.outputs.checksum }}", "url": "${{ github.event.release.html_url }}", "checksum_motion": "${{ steps.checksum_radarsdkmotion.outputs.checksum }}"}'
 
       # commenting out deploy to cocoapods for now, just testing spm
-      # - name: Deploy to Cocoapods
-      #   run: |
-      #     set -eo pipefail
-      #     pod lib lint --allow-warnings RadarSDK.podspec
-      #     pod trunk push --allow-warnings RadarSDK.podspec
-      #     pod lib lint --allow-warnings RadarSDKMotion.podspec
-      #     pod trunk push --allow-warnings RadarSDKMotion.podspec
-      #   env:
-      #     COCOAPODS_TRUNK_TOKEN: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}
+      - name: Deploy to Cocoapods
+        run: |
+          set -eo pipefail
+          pod lib lint --allow-warnings RadarSDK.podspec
+          pod trunk push --allow-warnings RadarSDK.podspec
+          pod lib lint --allow-warnings RadarSDKMotion.podspec
+          pod trunk push --allow-warnings RadarSDKMotion.podspec
+        env:
+          COCOAPODS_TRUNK_TOKEN: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}
