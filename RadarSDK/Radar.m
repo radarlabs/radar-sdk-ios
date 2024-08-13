@@ -46,11 +46,8 @@
     
     Class RadarSDKMotion = NSClassFromString(@"RadarSDKMotion");
     if (RadarSDKMotion) {
-        NSLog(@"get have the import");
-        id radarMotion = [[RadarSDKMotion alloc] init];
-        [RadarActivityManager sharedInstance].radarMotion = radarMotion;
-    } else {
-        NSLog(@"RadarSDKMotion not found");
+        id radarSDKMotion = [[RadarSDKMotion alloc] init];
+        [RadarActivityManager sharedInstance].radarSDKMotion = radarSDKMotion;
     }
 
     [[NSNotificationCenter defaultCenter] addObserver:[self sharedInstance]
@@ -1327,11 +1324,6 @@
                                     }];
                                 }
                             }];
-}
-
-+ (void)setRadarMotion:(id)radarMotion {
-    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:@"trying to set RadarMotion"];
-    [RadarActivityManager sharedInstance].radarMotion = radarMotion;
 }
 
 @end

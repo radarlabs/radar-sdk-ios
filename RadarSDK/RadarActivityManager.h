@@ -6,7 +6,7 @@
 
 @interface RadarActivityManager : NSObject
 
-@property (nullable, strong, nonatomic) id radarMotion;
+@property (nullable, strong, nonatomic) id radarSDKMotion;
 
 + (instancetype _Nonnull )sharedInstance;
 - (void)startActivityUpdatesWithHandler:(void (^_Nullable)(CMMotionActivity * _Nonnull activity))handler;

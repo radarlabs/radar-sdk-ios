@@ -36,19 +36,19 @@
 
 - (void)startActivityUpdatesWithHandler:(void (^)(CMMotionActivity *activity))handler {
 
-    if (!self.radarMotion) {
-        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:@"RadarMotion is not set"];
+    if (!self.radarSDKMotion) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"radarSDKMotion is not set"];
         return;
     }
 
-    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:@"RadarMotion is set"];
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"radarSDKMotion is set"];
 
     if (self.isUpdatingActivity) {
         return;
     }
     self.isUpdatingActivity = YES;
 
-    [self.radarMotion startActivityUpdatesToQueue:self.activityQueue withHandler:^(CMMotionActivity *activity) {
+    [self.radarSDKMotion startActivityUpdatesToQueue:self.activityQueue withHandler:^(CMMotionActivity *activity) {
         if (activity) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 handler(activity);
@@ -59,43 +59,43 @@
 }
 
 - (void)stopActivityUpdates {
-    if (!self.radarMotion) {
-        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"RadarMotion is not set"];
+    if (!self.radarSDKMotion) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"radarSDKMotion is not set"];
         return;
     }
-    [self.radarMotion stopActivityUpdates];
+    [self.radarSDKMotion stopActivityUpdates];
     self.isUpdatingActivity = NO;
 }
 
 - (void)startMotionUpdates {
-    if (!self.radarMotion) {
-        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"RadarMotion is not set"];
+    if (!self.radarSDKMotion) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"radarSDKMotion is not set"];
         return;
     }
-    [self.radarMotion startAccelerometerUpdates];
-    [self.radarMotion startGyroUpdates];
-    [self.radarMotion startMagnetometerUpdates];
+    [self.radarSDKMotion startAccelerometerUpdates];
+    [self.radarSDKMotion startGyroUpdates];
+    [self.radarSDKMotion startMagnetometerUpdates];
 
 }
 
 - (void)stopMotionUpdates {
-    if (!self.radarMotion) {
-        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"RadarMotion is not set"];
+    if (!self.radarSDKMotion) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"radarSDKMotion is not set"];
         return;
     }
-    [self.radarMotion stopAccelerometerUpdates];
-    [self.radarMotion stopGyroUpdates];
-    [self.radarMotion stopMagnetometerUpdates];
+    [self.radarSDKMotion stopAccelerometerUpdates];
+    [self.radarSDKMotion stopGyroUpdates];
+    [self.radarSDKMotion stopMagnetometerUpdates];
 
 }
 
 - (void)requestLatestMotionData {
-    if (!self.radarMotion) {
-        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"RadarMotion is not set"];
+    if (!self.radarSDKMotion) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"radarSDKMotion is not set"];
         return;
     }
 
-       CMAccelerometerData *accelerometerData = [self.radarMotion getAccelerometerData];
+       CMAccelerometerData *accelerometerData = [self.radarSDKMotion getAccelerometerData];
        if (accelerometerData) {
            [RadarState setLastAccelerometerData:@{
                @"x": @(accelerometerData.acceleration.x),
@@ -104,7 +104,7 @@
            }];
        }
    
-       CMGyroData *gyroData = [self.radarMotion getGyroData];
+       CMGyroData *gyroData = [self.radarSDKMotion getGyroData];
        if (gyroData) {
            [RadarState setLastGyroData:@{
                @"xRotationRate" : @(gyroData.rotationRate.x),
@@ -113,7 +113,7 @@
            }];
        }
    
-       CMMagnetometerData *magnetometerData = [self.radarMotion getMagnetometerData];
+       CMMagnetometerData *magnetometerData = [self.radarSDKMotion getMagnetometerData];
        if (magnetometerData) {
            [RadarState setLastMagnetometerData:@{
                @"x": @(magnetometerData.magneticField.x),
