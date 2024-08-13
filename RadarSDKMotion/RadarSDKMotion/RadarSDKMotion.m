@@ -26,14 +26,15 @@
     return self;
 }
 
-- (void)stopActivityUpdates {
-    [self.activityManager stopActivityUpdates];
-}
 
 - (void)startActivityUpdatesToQueue:(NSOperationQueue *)queue withHandler:(CMMotionActivityHandler)handler {
     if ([CMMotionActivityManager isActivityAvailable]) {
         [self.activityManager startActivityUpdatesToQueue:queue withHandler:handler];
     }
+}
+
+- (void)stopActivityUpdates {
+    [self.activityManager stopActivityUpdates];
 }
 
 - (void)startAccelerometerUpdates {

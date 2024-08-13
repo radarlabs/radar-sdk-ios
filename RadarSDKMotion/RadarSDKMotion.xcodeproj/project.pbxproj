@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		E698B6722C6167A800084371 /* RadarSDKMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E698B6672C6167A800084371 /* RadarSDKMotion.framework */; };
-		E698B6772C6167A800084371 /* RadarMotionTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E698B6762C6167A800084371 /* RadarMotionTests.m */; };
 		E698B6782C6167A800084371 /* RadarSDKMotion.h in Headers */ = {isa = PBXBuildFile; fileRef = E698B66A2C6167A800084371 /* RadarSDKMotion.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		E698B6BB2C616C5D00084371 /* RadarSDKMotion.m in Sources */ = {isa = PBXBuildFile; fileRef = E698B6BA2C616C5D00084371 /* RadarSDKMotion.m */; };
 /* End PBXBuildFile section */
@@ -40,7 +39,6 @@
 		E698B6672C6167A800084371 /* RadarSDKMotion.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = RadarSDKMotion.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		E698B66A2C6167A800084371 /* RadarSDKMotion.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarSDKMotion.h; sourceTree = "<group>"; };
 		E698B6712C6167A800084371 /* RadarSDKMotionTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RadarSDKMotionTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		E698B6762C6167A800084371 /* RadarMotionTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RadarMotionTests.m; sourceTree = "<group>"; };
 		E698B6BA2C616C5D00084371 /* RadarSDKMotion.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RadarSDKMotion.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -67,7 +65,6 @@
 			isa = PBXGroup;
 			children = (
 				E698B6692C6167A800084371 /* RadarSDKMotion */,
-				E698B6752C6167A800084371 /* RadarMotionTests */,
 				E698B6682C6167A800084371 /* Products */,
 				E698B6B22C616BCC00084371 /* Frameworks */,
 			);
@@ -89,14 +86,6 @@
 				E698B6BA2C616C5D00084371 /* RadarSDKMotion.m */,
 			);
 			path = RadarSDKMotion;
-			sourceTree = "<group>";
-		};
-		E698B6752C6167A800084371 /* RadarMotionTests */ = {
-			isa = PBXGroup;
-			children = (
-				E698B6762C6167A800084371 /* RadarMotionTests.m */,
-			);
-			path = RadarMotionTests;
 			sourceTree = "<group>";
 		};
 		E698B6B22C616BCC00084371 /* Frameworks */ = {
@@ -231,7 +220,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E698B6772C6167A800084371 /* RadarMotionTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

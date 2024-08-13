@@ -9,8 +9,9 @@
 #import <CoreMotion/CoreMotion.h>
 
 @interface RadarSDKMotion : NSObject
-- (void)stopActivityUpdates;
 - (void)startActivityUpdatesToQueue:(NSOperationQueue *)queue withHandler:(CMMotionActivityHandler)handler;
+- (void)stopActivityUpdates;
+
 
 - (void)startAccelerometerUpdates;
 - (CMAccelerometerData *)getAccelerometerData;
