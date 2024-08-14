@@ -2,7 +2,7 @@
 //  RadarMotion.m
 //  RadarMotion
 //
-//  Created by Kenny Hu on 8/5/24.
+//  Copyright © 2024 Radar Labs, Inc. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
@@ -44,7 +44,6 @@
 }
 
 - (CMAccelerometerData *)getAccelerometerData {
-    
     if (self.motionManager.isAccelerometerActive) {
         return self.motionManager.accelerometerData;
     }

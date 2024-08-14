@@ -1,4 +1,9 @@
-// RadarActivityManager.m
+//
+// RadarActivityManager.h
+// RadarSDK
+//
+//  Copyright © 2024 Radar Labs, Inc. All rights reserved.
+//
 
 #import "RadarActivityManager.h"
 #import "RadarLogger.h"

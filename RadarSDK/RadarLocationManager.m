@@ -40,7 +40,6 @@
  */
 @property (assign, nonatomic) BOOL sending;
 
-
 /**
  The timer for checking the location at regular intervals, such as in
  continuous tracking mode.
@@ -119,7 +118,6 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 
 - (void)callCompletionHandlersWithStatus:(RadarStatus)status location:(CLLocation *_Nullable)location {
     @synchronized(self) {
-        // todo: verify that we want to check self.newActivityUpdate here
         if (!self.completionHandlers.count || self.newActivityUpdate) {
             return;
         }
@@ -219,7 +217,6 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 - (void)stopTracking {
     [RadarSettings setTracking:NO];
 
-    
     RadarSdkConfiguration *sdkConfiguration = [RadarSettings sdkConfiguration];
     if (sdkConfiguration.extendFlushReplays) {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"Flushing replays from stopTracking()"];
@@ -1218,7 +1215,6 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 }
 
 - (void)locationManager:(CLLocationManager *)manager didChangeAuthorizationStatus:(CLAuthorizationStatus)status {
-
     if (self.firstPermissionCheck) {
         self.firstPermissionCheck = NO;
         return;

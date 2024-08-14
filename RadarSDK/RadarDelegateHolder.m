@@ -40,7 +40,7 @@
     }
 }
 
-- (void)didUpdateLocation:(CLLocation *)location user:(RadarUser *)user{
+- (void)didUpdateLocation:(CLLocation *)location user:(RadarUser *)user {
     if (!location || !user) {
         return;
     }

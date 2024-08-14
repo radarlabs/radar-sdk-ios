@@ -1,4 +1,9 @@
+//
 // RadarActivityManager.h
+// RadarSDK
+//
+//  Copyright © 2024 Radar Labs, Inc. All rights reserved.
+//
 
 #import <Foundation/Foundation.h>
 #import <CoreMotion/CoreMotion.h>

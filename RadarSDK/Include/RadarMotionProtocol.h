@@ -2,7 +2,6 @@
 //  RadarMotion.h
 //  RadarSDK
 //
-//  Created by Kenny Hu on 8/5/24.
 //  Copyright © 2024 Radar Labs, Inc. All rights reserved.
 //
 
