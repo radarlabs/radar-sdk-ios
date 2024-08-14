@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
     s.name                  = 'RadarSDKMotion'
-    s.version               = '3.16.1-beta.7'
+    s.version               = '3.16.2'
     s.summary               = 'Motion detection plugin for RadarSDK, the leading geofencing and location tracking platform'
     s.homepage              = 'https://radar.com'
     s.author                = { 'Radar Labs, Inc.' => 'support@radar.com' }
@@ -11,7 +11,6 @@ Pod::Spec.new do |s|
     s.ios.deployment_target = '10.0'
     s.frameworks            = 'CoreMotion'
     s.requires_arc          = true
-    s.license               = { :type => 'Apache-2.0' }
-  
+    s.license               = { :type => 'Apache-2.0' } 
   end
   
