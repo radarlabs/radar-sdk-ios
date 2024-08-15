@@ -47,12 +47,6 @@
 @property (strong, nonatomic) NSTimer *timer;
 
 /**
- 'YES' if a new activity update has been received.
-*/
-@property (assign, nonatomic) BOOL newActivityUpdate;
-
-
-/**
  Callbacks for sending events.
  */
 @property (nonnull, strong, nonatomic) NSMutableArray<RadarLocationCompletionHandler> *completionHandlers;
@@ -90,7 +84,6 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     self = [super init];
     if (self) {
         _completionHandlers = [NSMutableArray new];
-        _newActivityUpdate = NO;
 
         _locationManager = [CLLocationManager new];
         _locationManager.delegate = self;
@@ -118,7 +111,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 
 - (void)callCompletionHandlersWithStatus:(RadarStatus)status location:(CLLocation *_Nullable)location {
     @synchronized(self) {
-        if (!self.completionHandlers.count || self.newActivityUpdate) {
+        if (!self.completionHandlers.count){
             return;
         }
 
@@ -375,8 +368,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                         }];
                         
                         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Activity detected, initiating trackOnce"];
-                        self.newActivityUpdate = YES;
-                        [self requestLocation];
+                        [Radar trackOnceWithCompletionHandler: nil];
                         
                     }
                 }];
@@ -904,7 +896,6 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         }
     }
     [RadarState updateLastSentAt];
-    self.newActivityUpdate = NO;
 
     if (source == RadarLocationSourceForegroundLocation) {
         return;
@@ -1033,7 +1024,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     }
 
     CLLocation *location = [locations lastObject];
-    if (self.completionHandlers.count || self.newActivityUpdate) {
+    if (self.completionHandlers.count) {
         [self handleLocation:location source:RadarLocationSourceForegroundLocation];
     } else {
         BOOL tracking = [RadarSettings tracking];
