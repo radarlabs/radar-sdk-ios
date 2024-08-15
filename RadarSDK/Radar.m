@@ -22,6 +22,8 @@
 #import "RadarVerificationManager.h"
 #import "RadarReplayBuffer.h"
 
+#import <objc/runtime.h>
+
 @interface Radar ()
 
 @property (nullable, weak, nonatomic) id<RadarDelegate> delegate;
@@ -37,8 +39,58 @@
     static id sharedInstance;
     dispatch_once(&once, ^{
         sharedInstance = [self new];
+        [self swizzleNotificationCenterDelegate];        
     });
     return sharedInstance;
+}
+
++ (void)swizzleNotificationCenterDelegate {
+    id<UNUserNotificationCenterDelegate> delegate = UNUserNotificationCenter.currentNotificationCenter.delegate;
+        if (!delegate) {
+            NSLog(@"Error: UNUserNotificationCenter delegate is nil.");
+            return;
+        }
+        Class class = [UNUserNotificationCenter.currentNotificationCenter.delegate class];
+        SEL originalSelector = @selector(userNotificationCenter:didReceiveNotificationResponse:withCompletionHandler:);
+        SEL swizzledSelector = @selector(swizzled_userNotificationCenter:didReceiveNotificationResponse:withCompletionHandler:);
+
+        Method originalMethod = class_getInstanceMethod(class, originalSelector);
+        Method swizzledMethod = class_getInstanceMethod([self class], swizzledSelector);
+
+        if (originalMethod && swizzledMethod) {
+            BOOL didAddMethod = class_addMethod(class,
+                                                swizzledSelector,
+                                                method_getImplementation(swizzledMethod),
+                                                method_getTypeEncoding(swizzledMethod));
+            if (didAddMethod) {
+                Method newSwizzledMethod = class_getInstanceMethod(class, swizzledSelector);
+                method_exchangeImplementations(originalMethod, newSwizzledMethod);
+            } else {
+                method_exchangeImplementations(originalMethod, swizzledMethod);
+            }
+        } else {
+            NSLog(@"Error: Methods not found for swizzling.");
+        }
+}
+
+- (void)swizzled_userNotificationCenter:(UNUserNotificationCenter *)center
+           didReceiveNotificationResponse:(UNNotificationResponse *)response
+                    withCompletionHandler:(void (^)(void))completionHandler {
+    // Custom implementation
+    NSLog(@"Swizzled method called");
+    NSLog(@"%@", response.notification.request.content.title);
+    NSLog(@"%@", response.notification.request.content.body);
+    if ([RadarState hasPendingNotificationIdentifier:response.notification.request.identifier]) {
+        [[RadarLogger sharedInstance]
+                        logWithLevel:RadarLogLevelDebug
+                            message:[NSString stringWithFormat:@"Getting conversion from notification tap"]];
+        [Radar logConversionWithNotification:response.notification.request];
+    } else {
+        NSLog(@"not from on prem notification");
+    }
+
+    // Call the original method (which is now swizzled)
+    [self swizzled_userNotificationCenter:center didReceiveNotificationResponse:response withCompletionHandler:completionHandler];
 }
 
 + (void)initializeWithPublishableKey:(NSString *)publishableKey {

@@ -541,6 +541,8 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         }
     }
 
+    // remove all the previously remembered indentifiers
+    [RadarState clearPendingNotificationIdentifiers];
     [self removePendingNotificationsWithCompletionHandler: ^{
         for (UNNotificationRequest *request in requests) {
             [self.notificationCenter addNotificationRequest:request withCompletionHandler:^(NSError *_Nullable error) {
@@ -549,6 +551,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                         logWithLevel:RadarLogLevelDebug
                             message:[NSString stringWithFormat:@"Error adding local notification | identifier = %@; error = %@", request.identifier, error]];
                 } else {
+                    [RadarState  addPendingNotificationIdentifier:request.identifier];
                     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
                                                         message:[NSString stringWithFormat:@"Added local notification | identifier = %@", request.identifier]];
                 }

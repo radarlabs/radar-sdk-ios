@@ -22,6 +22,7 @@ static NSString *const kGeofenceIds = @"radar-geofenceIds";
 static NSString *const kPlaceId = @"radar-placeId";
 static NSString *const kRegionIds = @"radar-regionIds";
 static NSString *const kBeaconIds = @"radar-beaconIds";
+static NSString *const kPendingNotificationIdentifiers = @"radar-pendingNotificationIdentifiers";
 
 + (CLLocation *)lastLocation {
     NSDictionary *dict = [[NSUserDefaults standardUserDefaults] dictionaryForKey:kLastLocation];
@@ -148,6 +149,24 @@ static NSString *const kBeaconIds = @"radar-beaconIds";
 
 + (void)setBeaconIds:(NSArray<NSString *> *)beaconIds {
     [[NSUserDefaults standardUserDefaults] setObject:beaconIds forKey:kBeaconIds];
+}
+
++ (NSArray<NSString *> *)pendingNotificationIdentifiers {
+    return [[NSUserDefaults standardUserDefaults] objectForKey:kPendingNotificationIdentifiers];
+}
+
++ (void)addPendingNotificationIdentifier:(NSString *)identifier {
+    NSMutableArray<NSString *> *pendingNotificationIdentifiers = [NSMutableArray arrayWithArray:[self pendingNotificationIdentifiers]];
+    [pendingNotificationIdentifiers addObject:identifier];
+    [[NSUserDefaults standardUserDefaults] setObject:pendingNotificationIdentifiers forKey:kPendingNotificationIdentifiers];
+}
+
++ (void)clearPendingNotificationIdentifiers{
+    [[NSUserDefaults standardUserDefaults] setObject:@[] forKey:kPendingNotificationIdentifiers];
+}
+
++ (BOOL)hasPendingNotificationIdentifier:(NSString *)identifier {
+    return [[self pendingNotificationIdentifiers] containsObject:identifier];
 }
 
 @end
