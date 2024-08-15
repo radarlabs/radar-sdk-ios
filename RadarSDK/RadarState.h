@@ -38,12 +38,6 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)setLastHeadingData:(NSDictionary *_Nullable)lastHeadingData;
 + (NSDictionary *)lastMotionActivityData;
 + (void)setLastMotionActivityData:(NSDictionary *_Nullable)lastMotionActivityData;
-+ (NSDictionary *)lastAccelerometerData;
-+ (void)setLastAccelerometerData:(NSDictionary *_Nullable)lastAccelerometerData;
-+ (NSDictionary *)lastGyroData;
-+ (void)setLastGyroData:(NSDictionary *_Nullable)lastGyroData;
-+ (NSDictionary *)lastMagnetometerData;
-+ (void)setLastMagnetometerData:(NSDictionary *_Nullable)lastMagnetometerData;
 
 @end
 

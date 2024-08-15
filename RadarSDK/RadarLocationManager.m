@@ -381,7 +381,6 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                     }
                 }];
 
-                [self.activityManager startMotionUpdates];
             }
 
             CLLocationAccuracy desiredAccuracy;
@@ -907,11 +906,6 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     [RadarState updateLastSentAt];
     self.newActivityUpdate = NO;
 
-    if ([RadarSettings useLocationMetadata]) { 
-        [self.activityManager requestLatestMotionData];
-    }
-
-
     if (source == RadarLocationSourceForegroundLocation) {
         return;
     }
@@ -1198,7 +1192,6 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 
     if (self.activityManager) {
         [self.activityManager stopActivityUpdates];
-        [self.activityManager stopMotionUpdates];
     }
 }
 

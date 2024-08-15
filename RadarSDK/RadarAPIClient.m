@@ -330,9 +330,6 @@
     if (sdkConfiguration.useLocationMetadata) { 
         NSMutableDictionary *locationMetadata = [NSMutableDictionary new];
         locationMetadata[@"motionActivityData"] = [RadarState lastMotionActivityData];
-        locationMetadata[@"accelerometerData"] = [RadarState lastAccelerometerData];
-        locationMetadata[@"gyroData"] = [RadarState lastGyroData];
-        locationMetadata[@"magnetometerData"] = [RadarState lastMagnetometerData];
         locationMetadata[@"heading"] = [RadarState lastHeadingData];
         locationMetadata[@"speed"] = @(location.speed);
         locationMetadata[@"speedAccuracy"] = @(location.speedAccuracy);

@@ -16,8 +16,6 @@
 + (instancetype _Nonnull )sharedInstance;
 - (void)startActivityUpdatesWithHandler:(void (^_Nullable)(CMMotionActivity * _Nonnull activity))handler;
 - (void)stopActivityUpdates;
-- (void)startMotionUpdates;
-- (void)stopMotionUpdates;
-- (void)requestLatestMotionData;
+
 
 @end
