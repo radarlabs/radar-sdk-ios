@@ -27,6 +27,10 @@ static NSString *const kLastMotionActivityData = @"radar-lastMotionActivityData"
 static NSString *const kLastAccelerometerData = @"radar-lastAccelerometerData";
 static NSString *const kLastGyroData = @"radar-lastGyroData";
 static NSString *const kLastMagnetometerData = @"radar-lastMagnetometerData";
+static NSString * const kLastMotionActivityDataTimestamp = @"kLastMotionActivityDataTimestamp";
+static NSString * const kLastAccelerometerDataTimestamp = @"kLastAccelerometerDataTimestamp";
+static NSString * const kLastGyroDataTimestamp = @"kLastGyroDataTimestamp";
+static NSString * const kLastMagnetometerDataTimestamp = @"kLastMagnetometerDataTimestamp";
 
 + (CLLocation *)lastLocation {
     NSDictionary *dict = [[NSUserDefaults standardUserDefaults] dictionaryForKey:kLastLocation];
@@ -155,6 +159,19 @@ static NSString *const kLastMagnetometerData = @"radar-lastMagnetometerData";
     [[NSUserDefaults standardUserDefaults] setObject:beaconIds forKey:kBeaconIds];
 }
 
++ (void) setTimeStamp:(NSString *)key {
+    [[NSUserDefaults standardUserDefaults] setObject:[NSDate date] forKey:key];
+}
+
++ (BOOL) isTimestampRecent:(NSString *)key {
+    NSDate *lastTimeStamp = [[NSUserDefaults standardUserDefaults] objectForKey:key];
+    if (lastTimeStamp == nil) {
+        return NO;
+    }
+    NSTimeInterval timeInterval = [[NSDate date] timeIntervalSinceDate:lastTimeStamp];
+    return timeInterval < 60;
+}
+
 + (NSDictionary *)lastHeadingData {
     return [[NSUserDefaults standardUserDefaults] dictionaryForKey:kLastHeadingData];
 }
@@ -164,34 +181,50 @@ static NSString *const kLastMagnetometerData = @"radar-lastMagnetometerData";
 }
 
 + (NSDictionary *)lastMotionActivityData {
+    if (![self isTimestampRecent:kLastMotionActivityDataTimestamp]) {
+        return nil;
+    }
     return [[NSUserDefaults standardUserDefaults] dictionaryForKey:kLastMotionActivityData];
 }
 
 + (void)setLastMotionActivityData:(NSDictionary *)lastMotionActivityData {
+    [self setTimeStamp:kLastMotionActivityDataTimestamp];
     [[NSUserDefaults standardUserDefaults] setObject:lastMotionActivityData forKey:kLastMotionActivityData];
 }
 
 + (NSDictionary *)lastAccelerometerData {
+    if (![self isTimestampRecent:kLastAccelerometerDataTimestamp]) {
+        return nil;
+    }
     return [[NSUserDefaults standardUserDefaults] dictionaryForKey:kLastAccelerometerData];
 }
 
 + (void)setLastAccelerometerData:(NSDictionary *)lastAccelerometerData {
+    [self setTimeStamp:kLastAccelerometerDataTimestamp];
     [[NSUserDefaults standardUserDefaults] setObject:lastAccelerometerData forKey:kLastAccelerometerData];
 }
 
 + (NSDictionary *)lastGyroData {
+    if (![self isTimestampRecent:kLastGyroDataTimestamp]) {
+        return nil;
+    }
     return [[NSUserDefaults standardUserDefaults] dictionaryForKey:kLastGyroData];
 }
 
 + (void)setLastGyroData:(NSDictionary *_Nullable)lastGyroData {
+    [self setTimeStamp:kLastGyroDataTimestamp];
     [[NSUserDefaults standardUserDefaults] setObject:lastGyroData forKey:kLastGyroData];
 }
 
 + (NSDictionary *)lastMagnetometerData {
+    if (![self isTimestampRecent:kLastMagnetometerDataTimestamp]) {
+        return nil;
+    }
     return [[NSUserDefaults standardUserDefaults] dictionaryForKey:kLastMagnetometerData];
 }
 
 + (void)setLastMagnetometerData:(NSDictionary *_Nullable)lastMagnetometerData {
+    [self setTimeStamp:kLastMagnetometerDataTimestamp];
     [[NSUserDefaults standardUserDefaults] setObject:lastMagnetometerData forKey:kLastMagnetometerData];
 }
 
