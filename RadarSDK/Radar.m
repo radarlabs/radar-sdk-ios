@@ -45,32 +45,38 @@
 }
 
 + (void)swizzleNotificationCenterDelegate {
+        // Check if running in a test environment
+    if (NSClassFromString(@"XCTestCase")) {
+        NSLog(@"Skipping swizzling in test environment.");
+        return;
+    }
+
     id<UNUserNotificationCenterDelegate> delegate = UNUserNotificationCenter.currentNotificationCenter.delegate;
         if (!delegate) {
             NSLog(@"Error: UNUserNotificationCenter delegate is nil.");
             return;
         }
-        Class class = [UNUserNotificationCenter.currentNotificationCenter.delegate class];
-        SEL originalSelector = @selector(userNotificationCenter:didReceiveNotificationResponse:withCompletionHandler:);
-        SEL swizzledSelector = @selector(swizzled_userNotificationCenter:didReceiveNotificationResponse:withCompletionHandler:);
+    Class class = [UNUserNotificationCenter.currentNotificationCenter.delegate class];
+    SEL originalSelector = @selector(userNotificationCenter:didReceiveNotificationResponse:withCompletionHandler:);
+    SEL swizzledSelector = @selector(swizzled_userNotificationCenter:didReceiveNotificationResponse:withCompletionHandler:);
 
-        Method originalMethod = class_getInstanceMethod(class, originalSelector);
-        Method swizzledMethod = class_getInstanceMethod([self class], swizzledSelector);
+    Method originalMethod = class_getInstanceMethod(class, originalSelector);
+    Method swizzledMethod = class_getInstanceMethod([self class], swizzledSelector);
 
-        if (originalMethod && swizzledMethod) {
-            BOOL didAddMethod = class_addMethod(class,
-                                                swizzledSelector,
-                                                method_getImplementation(swizzledMethod),
-                                                method_getTypeEncoding(swizzledMethod));
-            if (didAddMethod) {
-                Method newSwizzledMethod = class_getInstanceMethod(class, swizzledSelector);
-                method_exchangeImplementations(originalMethod, newSwizzledMethod);
-            } else {
-                method_exchangeImplementations(originalMethod, swizzledMethod);
-            }
+    if (originalMethod && swizzledMethod) {
+        BOOL didAddMethod = class_addMethod(class,
+                                            swizzledSelector,
+                                            method_getImplementation(swizzledMethod),
+                                            method_getTypeEncoding(swizzledMethod));
+        if (didAddMethod) {
+            Method newSwizzledMethod = class_getInstanceMethod(class, swizzledSelector);
+            method_exchangeImplementations(originalMethod, newSwizzledMethod);
         } else {
-            NSLog(@"Error: Methods not found for swizzling.");
+            method_exchangeImplementations(originalMethod, swizzledMethod);
         }
+    } else {
+        NSLog(@"Error: Methods not found for swizzling.");
+    }
 }
 
 - (void)swizzled_userNotificationCenter:(UNUserNotificationCenter *)center
