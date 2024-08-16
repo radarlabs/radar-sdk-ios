@@ -83,7 +83,7 @@
 - (void)getConfigForUsage:(NSString *_Nullable)usage verified:(BOOL)verified completionHandler:(RadarConfigAPICompletionHandler _Nonnull)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
-        return;
+        return completionHandler(RadarStatusErrorPublishableKey, nil);
     }
 
     NSMutableString *queryString = [NSMutableString new];
@@ -185,6 +185,8 @@
                       keyId:nil
            attestationError:nil
                   encrypted:NO
+        expectedCountryCode:nil
+          expectedStateCode:nil
           completionHandler:completionHandler];
 }
 
@@ -199,6 +201,8 @@
                     keyId:(NSString *_Nullable)keyId
          attestationError:(NSString *_Nullable)attestationError
                 encrypted:(BOOL)encrypted
+      expectedCountryCode:(NSString * _Nullable)expectedCountryCode
+        expectedStateCode:(NSString * _Nullable)expectedStateCode
         completionHandler:(RadarTrackAPICompletionHandler _Nonnull)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
@@ -323,6 +327,12 @@
         params[@"compromised"] = @(jailbroken);
         if (jailbroken) {
             [fraudFailureReasons addObject:@"fraud_compromised_jailbroken"];
+        }
+        if (expectedCountryCode) {
+            params[@"expectedCountryCode"] = expectedCountryCode;
+        }
+        if (expectedStateCode) {
+            params[@"expectedStateCode"] = expectedStateCode;
         }
     }
     params[@"appId"] = [[NSBundle mainBundle] bundleIdentifier];
