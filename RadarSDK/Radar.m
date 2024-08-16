@@ -43,6 +43,12 @@
 
 + (void)initializeWithPublishableKey:(NSString *)publishableKey {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"initialize()"];
+    
+    Class RadarSDKMotion = NSClassFromString(@"RadarSDKMotion");
+    if (RadarSDKMotion) {
+        id radarSDKMotion = [[RadarSDKMotion alloc] init];
+        [RadarActivityManager sharedInstance].radarSDKMotion = radarSDKMotion;
+    }
 
     [[NSNotificationCenter defaultCenter] addObserver:[self sharedInstance]
                                              selector:@selector(applicationWillEnterForeground)
@@ -1119,6 +1125,31 @@
         break;
     default:
         str = @"UNKNOWN";
+    }
+    return str;
+}
+
++ (NSString *)stringForActivityType:(RadarActivityType)type {
+    NSString *str;
+    switch (type) {
+    case RadarActivityTypeUnknown:
+        str = @"unknown";
+        break;
+    case RadarActivityTypeStationary:
+        str = @"stationary";
+        break;
+    case RadarActivityTypeFoot:
+        str = @"foot";
+        break;
+    case RadarActivityTypeRun:
+        str = @"run";
+        break;
+    case RadarActivityTypeBike:
+        str = @"bike";
+        break;
+    case RadarActivityTypeCar:
+        str = @"car";
+        break;
     }
     return str;
 }
