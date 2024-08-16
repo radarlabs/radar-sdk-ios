@@ -20,6 +20,7 @@ typedef void (^_Nullable RadarVerificationCompletionHandler)(NSString *_Nullable
 - (void)startTrackingVerifiedWithInterval:(NSTimeInterval)interval beacons:(BOOL)beacons;
 - (void)stopTrackingVerified;
 - (void)getVerifiedLocationTokenWithCompletionHandler:(RadarTrackVerifiedCompletionHandler _Nullable)completionHandler;
+- (void)setExpectedJurisdictionWithCountryCode:(NSString *)countryCode stateCode:(NSString *)stateCode;
 - (void)getAttestationWithNonce:(NSString *)nonce completionHandler:(RadarVerificationCompletionHandler)completionHandler;
 - (BOOL)isJailbroken;
 

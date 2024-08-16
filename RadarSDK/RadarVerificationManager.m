@@ -42,6 +42,8 @@
 @property (assign, nonatomic) NSTimeInterval lastTokenSystemUptime;
 @property (assign, nonatomic) BOOL lastTokenBeacons;
 @property (strong, nonatomic) NSString *lastIPs;
+@property (copy, nonatomic) NSString *expectedCountryCode;
+@property (copy, nonatomic) NSString *expectedStateCode;
 
 @end
 
@@ -103,6 +105,8 @@
                      keyId:keyId
                      attestationError:attestationError
                      encrypted:NO
+                     expectedCountryCode:self.expectedCountryCode
+                     expectedStateCode:self.expectedStateCode
                      completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events,
                                          RadarUser *_Nullable user, NSArray<RadarGeofence *> *_Nullable nearbyGeofences,
                                          RadarConfig *_Nullable config, RadarVerifiedLocationToken *_Nullable token) {
@@ -192,6 +196,11 @@
             // re-request early to maximize the likelihood that a cached token is available
             if (minInterval > 20) {
                 minInterval = minInterval - 10;
+            }
+            
+            // min interval is 10 seconds
+            if (minInterval < 10) {
+                minInterval = 10;
             }
             
             if (self.scheduled) {
@@ -286,6 +295,11 @@
     }
     
     [self trackVerifiedWithBeacons:self.lastTokenBeacons completionHandler:completionHandler];
+}
+
+- (void)setExpectedJurisdictionWithCountryCode:(NSString *)countryCode stateCode:(NSString *)stateCode {
+    self.expectedCountryCode = countryCode;
+    self.expectedStateCode = stateCode;
 }
 
 - (void)getAttestationWithNonce:(NSString *)nonce completionHandler:(RadarVerificationCompletionHandler)completionHandler {

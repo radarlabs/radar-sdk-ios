@@ -336,6 +336,12 @@
      getVerifiedLocationTokenWithCompletionHandler:completionHandler];
 }
 
++ (void)setExpectedJurisdictionWithCountryCode:(NSString *)countryCode stateCode:(NSString *)stateCode {
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"setExpectedJurisdiction()"];
+    [[RadarVerificationManager sharedInstance]
+     setExpectedJurisdictionWithCountryCode:countryCode stateCode:stateCode];
+}
+
 + (void)startTrackingWithOptions:(RadarTrackingOptions *)options {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"startTracking()"];
     [[RadarLocationManager sharedInstance] startTrackingWithOptions:options];
