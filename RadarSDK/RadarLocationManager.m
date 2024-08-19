@@ -551,7 +551,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                         logWithLevel:RadarLogLevelDebug
                             message:[NSString stringWithFormat:@"Error adding local notification | identifier = %@; error = %@", request.identifier, error]];
                 } else {
-                    [RadarState  addPendingNotificationIdentifier:request.identifier];
+                    [RadarState addPendingNotificationIdentifier:request.identifier];
                     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
                                                         message:[NSString stringWithFormat:@"Added local notification | identifier = %@", request.identifier]];
                 }

@@ -87,13 +87,16 @@
     NSLog(@"%@", response.notification.request.content.title);
     NSLog(@"%@", response.notification.request.content.body);
     if ([RadarState hasPendingNotificationIdentifier:response.notification.request.identifier]) {
+        [RadarState removePendingNotificationIdentifier:response.notification.request.identifier];
         [[RadarLogger sharedInstance]
                         logWithLevel:RadarLogLevelDebug
                             message:[NSString stringWithFormat:@"Getting conversion from notification tap"]];
-        [Radar logConversionWithNotification:response.notification.request];
+        [Radar logConversionWithNotification:response.notification.request eventName:@"opened_radar_notification"];
     } else {
         NSLog(@"not from on prem notification");
+        [Radar logConversionWithNotification:response.notification.request eventName:@"opened_notification"];
     }
+    [RadarSettings updateLastAppOpenTime];
 
     // Call the original method (which is now swizzled)
     [self swizzled_userNotificationCenter:center didReceiveNotificationResponse:response withCompletionHandler:completionHandler];
@@ -541,10 +544,22 @@
 
 
 + (void)logConversionWithNotification:(UNNotificationRequest *)request {
+    // NSMutableDictionary *metadata = [[NSMutableDictionary alloc] initWithDictionary:request.content.userInfo];
+    // [metadata setValue:request.identifier forKey:@"identifier"];
+    
+    // [self sendLogConversionRequestWithName:@"opened_notification" metadata:metadata completionHandler:^(RadarStatus status, RadarEvent * _Nullable event) {
+    //     NSString *message = [NSString stringWithFormat:@"Conversion name = %@: status = %@; event = %@", event.conversionName, [Radar stringForStatus:status], event];
+    //     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:message];
+    // }];
+    [self logConversionWithNotification:request eventName:@"opened_notification"];
+}
+
++ (void)logConversionWithNotification:(UNNotificationRequest *)request
+                            eventName:(NSString *)eventName {
     NSMutableDictionary *metadata = [[NSMutableDictionary alloc] initWithDictionary:request.content.userInfo];
     [metadata setValue:request.identifier forKey:@"identifier"];
     
-    [self sendLogConversionRequestWithName:@"opened_notification" metadata:metadata completionHandler:^(RadarStatus status, RadarEvent * _Nullable event) {
+    [self sendLogConversionRequestWithName:eventName metadata:metadata completionHandler:^(RadarStatus status, RadarEvent * _Nullable event) {
         NSString *message = [NSString stringWithFormat:@"Conversion name = %@: status = %@; event = %@", event.conversionName, [Radar stringForStatus:status], event];
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:message];
     }];

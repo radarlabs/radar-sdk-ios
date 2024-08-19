@@ -38,6 +38,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)addPendingNotificationIdentifier:(NSString *)identifier;
 + (void)clearPendingNotificationIdentifiers;
 + (BOOL)hasPendingNotificationIdentifier:(NSString *)identifier;
++ (void)removePendingNotificationIdentifier:(NSString *)identifier;
 
 
 @end

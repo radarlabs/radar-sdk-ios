@@ -10,6 +10,7 @@
 #import "RadarEvent.h"
 #import "RadarLogger.h"
 #import "RadarNotificationHelper.h"
+#import "RadarState.h"
 
 @implementation RadarNotificationHelper
 
@@ -21,15 +22,30 @@ static NSString *const kEventNotificationIdentifierPrefix = @"radar_event_notifi
     }
     
     for (RadarEvent *event in events) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo
+                                           message:@"got event to maybe create notifications with"];
         NSString *notificationText;
         NSDictionary *metadata;
         
         if (event.type == RadarEventTypeUserEnteredGeofence && event.geofence && event.geofence.metadata) {
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo
+                                               message:@"unpacking metadata"];
             metadata = event.geofence.metadata;
+            // print out the metadata
+            for (NSString *key in metadata) {
+                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo
+                                                   message:[NSString stringWithFormat:@"key: %@, value: %@", key, [metadata objectForKey:key]]];
+            }
             notificationText = [metadata objectForKey:@"radar:entryNotificationText"];
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo
+                                               message:notificationText];
         } else if (event.type == RadarEventTypeUserExitedGeofence && event.geofence && event.geofence.metadata) {
             metadata = event.geofence.metadata;
             notificationText = [metadata objectForKey:@"radar:exitNotificationText"];
+            for (NSString *key in metadata) {
+                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo
+                                                   message:[NSString stringWithFormat:@"key: %@, value: %@", key, [metadata objectForKey:key]]];
+            }
         } else if (event.type == RadarEventTypeUserEnteredBeacon && event.beacon && event.beacon.metadata) {
             metadata = event.beacon.metadata;
             notificationText = [metadata objectForKey:@"radar:entryNotificationText"];
@@ -54,12 +70,15 @@ static NSString *const kEventNotificationIdentifierPrefix = @"radar_event_notifi
             content.categoryIdentifier = categoryIdentifier;
 
             UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:identifier content:content trigger:nil];
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo
+                                               message:@"adding notifications"];
             [UNUserNotificationCenter.currentNotificationCenter addNotificationRequest:request withCompletionHandler:^(NSError *_Nullable error) {
                 if (error) {
                     [[RadarLogger sharedInstance]
                      logWithLevel:RadarLogLevelDebug
                      message:[NSString stringWithFormat:@"Error adding local notification | identifier = %@; error = %@", request.identifier, error]];
                 } else {
+                    [RadarState addPendingNotificationIdentifier:request.identifier];
                     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
                                                        message:[NSString stringWithFormat:@"Added local notification | identifier = %@", request.identifier]];
                 }

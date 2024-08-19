@@ -169,4 +169,10 @@ static NSString *const kPendingNotificationIdentifiers = @"radar-pendingNotifica
     return [[self pendingNotificationIdentifiers] containsObject:identifier];
 }
 
++ (void)removePendingNotificationIdentifier:(NSString *)identifier {
+    NSMutableArray<NSString *> *pendingNotificationIdentifiers = [NSMutableArray arrayWithArray:[self pendingNotificationIdentifiers]];
+    [pendingNotificationIdentifiers removeObject:identifier];
+    [[NSUserDefaults standardUserDefaults] setObject:pendingNotificationIdentifiers forKey:kPendingNotificationIdentifiers];
+}
+
 @end
