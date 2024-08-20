@@ -93,10 +93,10 @@ static NSString *const kEventNotificationIdentifierPrefix = @"radar_event_notifi
 // we need to move this into a separate class and also into a dispatch once block
 + (void)swizzleNotificationCenterDelegate {
         // Check if running in a test environment
-    if (NSClassFromString(@"XCTestCase")) {
-        NSLog(@"Skipping swizzling in test environment.");
-        return;
-    }
+//    if (NSClassFromString(@"XCTestCase")) {
+//        NSLog(@"Skipping swizzling in test environment.");
+//        return;
+//    }
 
     id<UNUserNotificationCenterDelegate> delegate = UNUserNotificationCenter.currentNotificationCenter.delegate;
         if (!delegate) {
