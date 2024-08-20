@@ -78,7 +78,7 @@ static NSString *const kEventNotificationIdentifierPrefix = @"radar_event_notifi
                      logWithLevel:RadarLogLevelDebug
                      message:[NSString stringWithFormat:@"Error adding local notification | identifier = %@; error = %@", request.identifier, error]];
                 } else {
-                    [RadarState addPendingNotificationIdentifier:request.identifier];
+                    [RadarState addPendingNotificationRequest:request];
                     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
                                                        message:[NSString stringWithFormat:@"Added local notification | identifier = %@", request.identifier]];
                 }

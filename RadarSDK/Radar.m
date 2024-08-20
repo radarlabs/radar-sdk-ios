@@ -86,8 +86,8 @@
     NSLog(@"Swizzled method called");
     NSLog(@"%@", response.notification.request.content.title);
     NSLog(@"%@", response.notification.request.content.body);
-    if ([RadarState hasPendingNotificationIdentifier:response.notification.request.identifier]) {
-        [RadarState removePendingNotificationIdentifier:response.notification.request.identifier];
+    if ([RadarState hasPendingNotificationRequest: response.notification.request]) {
+        [RadarState removePendingNotificationRequest:response.notification.request];
         [[RadarLogger sharedInstance]
                         logWithLevel:RadarLogLevelDebug
                             message:[NSString stringWithFormat:@"Getting conversion from notification tap"]];
@@ -104,6 +104,29 @@
 
 + (void)initializeWithPublishableKey:(NSString *)publishableKey {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"initialize()"];
+
+    // for the sake of easy dev, dumnping everything here for now, move away later
+
+    // get the list of registered notifications and compare with the ones we remembered.
+    NSArray<UNNotificationRequest *> *registeredNotifications = [RadarState pendingNotificationRequests];
+    [[UNUserNotificationCenter currentNotificationCenter] getPendingNotificationRequestsWithCompletionHandler:^(NSArray<UNNotificationRequest *> *_Nonnull requests) {
+        NSMutableArray *pendingIdentifiers = [NSMutableArray new];
+        // map unnotificationrequest to string
+        for (UNNotificationRequest *request in requests) {
+            [pendingIdentifiers addObject:request.identifier];
+        }
+        // find the strings that exist in pending notifications but not in the registered ones
+        for (UNNotificationRequest *request in registeredNotifications) {
+            // this makes it n^2, prob should change it to hashset later on
+            if (![pendingIdentifiers containsObject:request.identifier]) {
+                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Found pending notification | identifier = %@", request]];
+                
+                // we just want to store the entire object
+                [Radar logConversionWithNotification:request eventName:@"sent_unopened_notification"];
+            }
+        }
+
+    }];
 
     [[NSNotificationCenter defaultCenter] addObserver:[self sharedInstance]
                                              selector:@selector(applicationWillEnterForeground)

@@ -7,6 +7,7 @@
 
 #import <CoreLocation/CoreLocation.h>
 #import <Foundation/Foundation.h>
+#import <UserNotifications/UserNotifications.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -34,11 +35,11 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)setRegionIds:(NSArray<NSString *> *_Nullable)regionIds;
 + (NSArray<NSString *> *)beaconIds;
 + (void)setBeaconIds:(NSArray<NSString *> *_Nullable)beaconIds;
-+ (NSArray<NSString *> *)pendingNotificationIdentifiers;
-+ (void)addPendingNotificationIdentifier:(NSString *)identifier;
-+ (void)clearPendingNotificationIdentifiers;
-+ (BOOL)hasPendingNotificationIdentifier:(NSString *)identifier;
-+ (void)removePendingNotificationIdentifier:(NSString *)identifier;
++ (NSArray<UNNotificationRequest *> *)pendingNotificationRequests;
++ (void)addPendingNotificationRequest:(UNNotificationRequest *)request;
++ (void)clearPendingNotificationRequests;
++ (BOOL)hasPendingNotificationRequest:(UNNotificationRequest *)request;
++ (void)removePendingNotificationRequest:(UNNotificationRequest *)request;
 
 
 @end

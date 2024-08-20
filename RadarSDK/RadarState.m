@@ -22,7 +22,7 @@ static NSString *const kGeofenceIds = @"radar-geofenceIds";
 static NSString *const kPlaceId = @"radar-placeId";
 static NSString *const kRegionIds = @"radar-regionIds";
 static NSString *const kBeaconIds = @"radar-beaconIds";
-static NSString *const kPendingNotificationIdentifiers = @"radar-pendingNotificationIdentifiers";
+static NSString *const kPendingNotificationRequests = @"radar-pendingNotificationRequests";
 
 + (CLLocation *)lastLocation {
     NSDictionary *dict = [[NSUserDefaults standardUserDefaults] dictionaryForKey:kLastLocation];
@@ -151,28 +151,33 @@ static NSString *const kPendingNotificationIdentifiers = @"radar-pendingNotifica
     [[NSUserDefaults standardUserDefaults] setObject:beaconIds forKey:kBeaconIds];
 }
 
-+ (NSArray<NSString *> *)pendingNotificationIdentifiers {
-    return [[NSUserDefaults standardUserDefaults] objectForKey:kPendingNotificationIdentifiers];
++ (NSArray<UNNotificationRequest *> *)pendingNotificationRequests {
+    return [[NSUserDefaults standardUserDefaults] objectForKey:kPendingNotificationRequests];
 }
 
-+ (void)addPendingNotificationIdentifier:(NSString *)identifier {
-    NSMutableArray<NSString *> *pendingNotificationIdentifiers = [NSMutableArray arrayWithArray:[self pendingNotificationIdentifiers]];
-    [pendingNotificationIdentifiers addObject:identifier];
-    [[NSUserDefaults standardUserDefaults] setObject:pendingNotificationIdentifiers forKey:kPendingNotificationIdentifiers];
++ (void)addPendingNotificationRequest:(UNNotificationRequest *)request {
+    NSMutableArray<UNNotificationRequest *> *pendingNotificationRequests = [NSMutableArray arrayWithArray:[self pendingNotificationRequests]];
+    [pendingNotificationRequests addObject:request];
+    [[NSUserDefaults standardUserDefaults] setObject:pendingNotificationRequests forKey:kPendingNotificationRequests];
 }
 
-+ (void)clearPendingNotificationIdentifiers{
-    [[NSUserDefaults standardUserDefaults] setObject:@[] forKey:kPendingNotificationIdentifiers];
++ (void)clearPendingNotificationRequests{
+    [[NSUserDefaults standardUserDefaults] setObject:@[] forKey:kPendingNotificationRequests];
 }
 
-+ (BOOL)hasPendingNotificationIdentifier:(NSString *)identifier {
-    return [[self pendingNotificationIdentifiers] containsObject:identifier];
++ (BOOL)hasPendingNotificationRequest:(UNNotificationRequest *)request {
+    NSString *identifier = request.identifier;
+    if (!identifier) {
+        return NO;
+    }
+    NSArray<NSString *> *pendingNotificationRequestIdentifiers = [[self pendingNotificationRequests] valueForKey:@"identifier"];
+    return [pendingNotificationRequestIdentifiers containsObject:identifier];
 }
 
-+ (void)removePendingNotificationIdentifier:(NSString *)identifier {
-    NSMutableArray<NSString *> *pendingNotificationIdentifiers = [NSMutableArray arrayWithArray:[self pendingNotificationIdentifiers]];
-    [pendingNotificationIdentifiers removeObject:identifier];
-    [[NSUserDefaults standardUserDefaults] setObject:pendingNotificationIdentifiers forKey:kPendingNotificationIdentifiers];
++ (void)removePendingNotificationRequest:(UNNotificationRequest *)request {
+    NSMutableArray<UNNotificationRequest *> *pendingNotificationRequests = [NSMutableArray arrayWithArray:[self pendingNotificationRequests]];
+    [pendingNotificationRequests removeObject:request];
+    [[NSUserDefaults standardUserDefaults] setObject:pendingNotificationRequests forKey:kPendingNotificationRequests];
 }
 
 @end
