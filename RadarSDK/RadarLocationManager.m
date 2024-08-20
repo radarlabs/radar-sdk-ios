@@ -481,7 +481,12 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     for (int i = 0; i < numGeofences; i++) {
         RadarGeofence *geofence = [geofences objectAtIndex:i];
         NSString *geofenceId = geofence._id;
-        NSString *identifier = [NSString stringWithFormat:@"%@%@", kSyncGeofenceIdentifierPrefix, geofenceId];
+
+        NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+        [dateFormatter setDateFormat:@"yyyyMMddHHmmss"];
+        NSString *timestamp = [dateFormatter stringFromDate:[NSDate date]];
+        NSString *identifier = [NSString stringWithFormat:@"%@%@_%@", kSyncGeofenceIdentifierPrefix, geofenceId, timestamp];
+
         RadarCoordinate *center;
         double radius = 100;
         if ([geofence.geometry isKindOfClass:[RadarCircleGeometry class]]) {
@@ -497,7 +502,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
             CLRegion *region = [[CLCircularRegion alloc] initWithCenter:center.coordinate radius:radius identifier:identifier];
             [self.locationManager startMonitoringForRegion:region];
 
-            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo
                                             message:[NSString stringWithFormat:@"Synced geofence | latitude = %f; longitude = %f; radius = %f; identifier = %@",
                                                                                 center.coordinate.latitude, center.coordinate.longitude, radius, identifier]];
 
@@ -542,14 +547,45 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         }
     }
 
+
+    // we only want to perform this in the background
+    if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
+         NSArray<UNNotificationRequest *> *registeredNotifications = [RadarState pendingNotificationRequests];
+        [[UNUserNotificationCenter currentNotificationCenter] getPendingNotificationRequestsWithCompletionHandler:^(NSArray<UNNotificationRequest *> *_Nonnull requests) {
+            NSMutableArray *pendingIdentifiers = [NSMutableArray new];
+            // map unnotificationrequest to string
+            for (UNNotificationRequest *request in requests) {
+                NSLog(@"request identifier of pending request: %@", request.identifier);
+                [pendingIdentifiers addObject:request.identifier];
+            }
+            // find the strings that exist in pending notifications but not in the registered ones
+            for (UNNotificationRequest *request in registeredNotifications) {
+                NSLog(@"request identifier of registered request: %@", request.identifier);
+                // this makes it n^2, prob should change it to hashset later on
+                if (![pendingIdentifiers containsObject:request.identifier]) {
+                    // we mark those notifications as sent
+
+                    //[[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"Found pending notification | identifier = %@", request]];
+                    
+                    // we just want to store the entire object
+                    //[Radar logConversionWithNotification:request eventName:@"sent_unopened_notification"];
+                    NSLog(@"found a sent notification in bg");
+                    [RadarState setNotificationSentInBackground: YES];
+                }
+            }
+
+        }];
+    }
+
     // remove all the previously remembered indentifiers
     [RadarState clearPendingNotificationRequests];
+    
     [self removePendingNotificationsWithCompletionHandler: ^{
         for (UNNotificationRequest *request in requests) {
             [self.notificationCenter addNotificationRequest:request withCompletionHandler:^(NSError *_Nullable error) {
                 if (error) {
                     [[RadarLogger sharedInstance]
-                        logWithLevel:RadarLogLevelDebug
+                        logWithLevel:RadarLogLevelInfo
                             message:[NSString stringWithFormat:@"Error adding local notification | identifier = %@; error = %@", request.identifier, error]];
                 } else {
                     [RadarState addPendingNotificationRequest:request];
@@ -577,7 +613,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         NSMutableArray *identifiers = [NSMutableArray new];
         for (UNNotificationRequest *request in requests) {
             if ([request.identifier hasPrefix:kSyncGeofenceIdentifierPrefix]) {
-                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Found pending notification | identifier = %@", request.identifier]];
+                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"Found pending notification | identifier = %@", request.identifier]];
                 [identifiers addObject:request.identifier];
             }
         }

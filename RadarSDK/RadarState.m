@@ -23,6 +23,7 @@ static NSString *const kPlaceId = @"radar-placeId";
 static NSString *const kRegionIds = @"radar-regionIds";
 static NSString *const kBeaconIds = @"radar-beaconIds";
 static NSString *const kPendingNotificationRequests = @"radar-pendingNotificationRequests";
+static NSString *const kNotificationSentInBackground = @"radar-notificationSentInBackground";
 
 + (CLLocation *)lastLocation {
     NSDictionary *dict = [[NSUserDefaults standardUserDefaults] dictionaryForKey:kLastLocation];
@@ -152,16 +153,31 @@ static NSString *const kPendingNotificationRequests = @"radar-pendingNotificatio
 }
 
 + (NSArray<UNNotificationRequest *> *)pendingNotificationRequests {
-    return [[NSUserDefaults standardUserDefaults] objectForKey:kPendingNotificationRequests];
+    NSArray<NSDictionary *> *storedRequests = [[NSUserDefaults standardUserDefaults] objectForKey:kPendingNotificationRequests];
+    NSMutableArray<UNNotificationRequest *> *requests = [NSMutableArray array];
+    
+    for (NSDictionary *dict in storedRequests) {
+        UNNotificationContent *content = [UNNotificationContent new]; // Create content from dict
+        UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:dict[@"identifier"] content:content trigger:nil];
+        [requests addObject:request];
+    }
+    
+    return [requests copy];
 }
 
 + (void)addPendingNotificationRequest:(UNNotificationRequest *)request {
-    NSMutableArray<UNNotificationRequest *> *pendingNotificationRequests = [NSMutableArray arrayWithArray:[self pendingNotificationRequests]];
-    [pendingNotificationRequests addObject:request];
-    [[NSUserDefaults standardUserDefaults] setObject:pendingNotificationRequests forKey:kPendingNotificationRequests];
+    NSMutableArray<NSDictionary *> *storedRequests = [NSMutableArray arrayWithArray:[[NSUserDefaults standardUserDefaults] objectForKey:kPendingNotificationRequests]];
+    
+    NSDictionary *requestDict = @{
+        @"identifier": request.identifier,
+        // Add other properties of UNNotificationRequest to the dictionary
+    };
+    
+    [storedRequests addObject:requestDict];
+    [[NSUserDefaults standardUserDefaults] setObject:storedRequests forKey:kPendingNotificationRequests];
 }
 
-+ (void)clearPendingNotificationRequests{
++ (void)clearPendingNotificationRequests {
     [[NSUserDefaults standardUserDefaults] setObject:@[] forKey:kPendingNotificationRequests];
 }
 
@@ -175,9 +191,20 @@ static NSString *const kPendingNotificationRequests = @"radar-pendingNotificatio
 }
 
 + (void)removePendingNotificationRequest:(UNNotificationRequest *)request {
-    NSMutableArray<UNNotificationRequest *> *pendingNotificationRequests = [NSMutableArray arrayWithArray:[self pendingNotificationRequests]];
-    [pendingNotificationRequests removeObject:request];
-    [[NSUserDefaults standardUserDefaults] setObject:pendingNotificationRequests forKey:kPendingNotificationRequests];
+    NSMutableArray<NSDictionary *> *storedRequests = [NSMutableArray arrayWithArray:[[NSUserDefaults standardUserDefaults] objectForKey:kPendingNotificationRequests]];
+    
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"identifier != %@", request.identifier];
+    [storedRequests filterUsingPredicate:predicate];
+    
+    [[NSUserDefaults standardUserDefaults] setObject:storedRequests forKey:kPendingNotificationRequests];
+}
+
++ (BOOL)notificationSentInBackground {
+    return [[NSUserDefaults standardUserDefaults] boolForKey:kNotificationSentInBackground];
+}
+
++ (void)setNotificationSentInBackground:(BOOL)notificationSentInBackground {
+    [[NSUserDefaults standardUserDefaults] setBool:notificationSentInBackground forKey:kNotificationSentInBackground];
 }
 
 @end

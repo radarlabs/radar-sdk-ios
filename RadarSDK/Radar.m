@@ -21,6 +21,7 @@
 #import "RadarUtils.h"
 #import "RadarVerificationManager.h"
 #import "RadarReplayBuffer.h"
+#import "RadarNotificationHelper.h"
 
 #import <objc/runtime.h>
 
@@ -39,94 +40,16 @@
     static id sharedInstance;
     dispatch_once(&once, ^{
         sharedInstance = [self new];
-        [self swizzleNotificationCenterDelegate];        
+        //[self swizzleNotificationCenterDelegate];
     });
     return sharedInstance;
 }
 
-+ (void)swizzleNotificationCenterDelegate {
-        // Check if running in a test environment
-    if (NSClassFromString(@"XCTestCase")) {
-        NSLog(@"Skipping swizzling in test environment.");
-        return;
-    }
-
-    id<UNUserNotificationCenterDelegate> delegate = UNUserNotificationCenter.currentNotificationCenter.delegate;
-        if (!delegate) {
-            NSLog(@"Error: UNUserNotificationCenter delegate is nil.");
-            return;
-        }
-    Class class = [UNUserNotificationCenter.currentNotificationCenter.delegate class];
-    SEL originalSelector = @selector(userNotificationCenter:didReceiveNotificationResponse:withCompletionHandler:);
-    SEL swizzledSelector = @selector(swizzled_userNotificationCenter:didReceiveNotificationResponse:withCompletionHandler:);
-
-    Method originalMethod = class_getInstanceMethod(class, originalSelector);
-    Method swizzledMethod = class_getInstanceMethod([self class], swizzledSelector);
-
-    if (originalMethod && swizzledMethod) {
-        BOOL didAddMethod = class_addMethod(class,
-                                            swizzledSelector,
-                                            method_getImplementation(swizzledMethod),
-                                            method_getTypeEncoding(swizzledMethod));
-        if (didAddMethod) {
-            Method newSwizzledMethod = class_getInstanceMethod(class, swizzledSelector);
-            method_exchangeImplementations(originalMethod, newSwizzledMethod);
-        } else {
-            method_exchangeImplementations(originalMethod, swizzledMethod);
-        }
-    } else {
-        NSLog(@"Error: Methods not found for swizzling.");
-    }
-}
-
-- (void)swizzled_userNotificationCenter:(UNUserNotificationCenter *)center
-           didReceiveNotificationResponse:(UNNotificationResponse *)response
-                    withCompletionHandler:(void (^)(void))completionHandler {
-    // Custom implementation
-    NSLog(@"Swizzled method called");
-    NSLog(@"%@", response.notification.request.content.title);
-    NSLog(@"%@", response.notification.request.content.body);
-    if ([RadarState hasPendingNotificationRequest: response.notification.request]) {
-        [RadarState removePendingNotificationRequest:response.notification.request];
-        [[RadarLogger sharedInstance]
-                        logWithLevel:RadarLogLevelDebug
-                            message:[NSString stringWithFormat:@"Getting conversion from notification tap"]];
-        [Radar logConversionWithNotification:response.notification.request eventName:@"opened_radar_notification"];
-    } else {
-        NSLog(@"not from on prem notification");
-        [Radar logConversionWithNotification:response.notification.request eventName:@"opened_notification"];
-    }
-    [RadarSettings updateLastAppOpenTime];
-
-    // Call the original method (which is now swizzled)
-    [self swizzled_userNotificationCenter:center didReceiveNotificationResponse:response withCompletionHandler:completionHandler];
-}
 
 + (void)initializeWithPublishableKey:(NSString *)publishableKey {
+
+
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"initialize()"];
-
-    // for the sake of easy dev, dumnping everything here for now, move away later
-
-    // get the list of registered notifications and compare with the ones we remembered.
-    NSArray<UNNotificationRequest *> *registeredNotifications = [RadarState pendingNotificationRequests];
-    [[UNUserNotificationCenter currentNotificationCenter] getPendingNotificationRequestsWithCompletionHandler:^(NSArray<UNNotificationRequest *> *_Nonnull requests) {
-        NSMutableArray *pendingIdentifiers = [NSMutableArray new];
-        // map unnotificationrequest to string
-        for (UNNotificationRequest *request in requests) {
-            [pendingIdentifiers addObject:request.identifier];
-        }
-        // find the strings that exist in pending notifications but not in the registered ones
-        for (UNNotificationRequest *request in registeredNotifications) {
-            // this makes it n^2, prob should change it to hashset later on
-            if (![pendingIdentifiers containsObject:request.identifier]) {
-                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Found pending notification | identifier = %@", request]];
-                
-                // we just want to store the entire object
-                [Radar logConversionWithNotification:request eventName:@"sent_unopened_notification"];
-            }
-        }
-
-    }];
 
     [[NSNotificationCenter defaultCenter] addObserver:[self sharedInstance]
                                              selector:@selector(applicationWillEnterForeground)
@@ -136,6 +59,12 @@
     [RadarSettings setPublishableKey:publishableKey];
 
     RadarSdkConfiguration *sdkConfiguration = [RadarSettings sdkConfiguration];
+
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        [RadarNotificationHelper swizzleNotificationCenterDelegate];
+    });
+
     if (sdkConfiguration.usePersistence) {
         [[RadarReplayBuffer sharedInstance] loadReplaysFromPersistentStore];
     }
@@ -532,7 +461,36 @@
             NSString *message = [NSString stringWithFormat:@"Conversion name = %@: status = %@; event = %@", event.conversionName, [Radar stringForStatus:status], event];
             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:message];
         }];
+
+        // check if there any pending notifications that have been sent, we will only be doing this if the app is not been opened by a notification
+        NSArray<UNNotificationRequest *> *registeredNotifications = [RadarState pendingNotificationRequests];
+        [[UNUserNotificationCenter currentNotificationCenter] getPendingNotificationRequestsWithCompletionHandler:^(NSArray<UNNotificationRequest *> *_Nonnull requests) {
+            NSMutableArray *pendingIdentifiers = [NSMutableArray new];
+            
+            for (UNNotificationRequest *request in requests) {
+                NSLog(@"request identifier of pending request: %@", request.identifier);
+                [pendingIdentifiers addObject:request.identifier];
+            }
+            
+            for (UNNotificationRequest *request in registeredNotifications) {
+                NSLog(@"request identifier of registered request: %@", request.identifier);
+                // this makes it n^2, prob should change it to hashset later on
+                if (![pendingIdentifiers containsObject:request.identifier]) {
+                    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"Found pending notification | identifier = %@", request]];
+                    
+                    // we just want to store the entire object
+                    [Radar logConversionWithNotification:request eventName:@"not_open_notification"];
+                }
+            }
+        }];
+        // also check if we recorded any notifications send in the background
+        if ([RadarState notificationSentInBackground]) {
+            
+            [Radar logConversionWithName:@"not_open_notification" metadata:nil completionHandler: nil];
+        }
     }
+    [RadarState clearPendingNotificationRequests];
+    [RadarState setNotificationSentInBackground:NO];
 }
 
 + (void)logConversionWithName:(NSString *)name

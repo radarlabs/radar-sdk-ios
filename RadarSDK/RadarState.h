@@ -40,7 +40,8 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)clearPendingNotificationRequests;
 + (BOOL)hasPendingNotificationRequest:(UNNotificationRequest *)request;
 + (void)removePendingNotificationRequest:(UNNotificationRequest *)request;
-
++ (BOOL)notificationSentInBackground;
++ (void)setNotificationSentInBackground:(BOOL)notificationSentInBackground;
 
 @end
 

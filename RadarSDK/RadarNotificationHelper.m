@@ -11,6 +11,9 @@
 #import "RadarLogger.h"
 #import "RadarNotificationHelper.h"
 #import "RadarState.h"
+#import "RadarSettings.h"
+
+#import <objc/runtime.h>
 
 @implementation RadarNotificationHelper
 
@@ -78,13 +81,76 @@ static NSString *const kEventNotificationIdentifierPrefix = @"radar_event_notifi
                      logWithLevel:RadarLogLevelDebug
                      message:[NSString stringWithFormat:@"Error adding local notification | identifier = %@; error = %@", request.identifier, error]];
                 } else {
-                    [RadarState addPendingNotificationRequest:request];
+                    // [RadarState addPendingNotificationRequest:request];
                     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
                                                        message:[NSString stringWithFormat:@"Added local notification | identifier = %@", request.identifier]];
                 }
             }];
         }
     }
+}
+
+// we need to move this into a separate class and also into a dispatch once block
++ (void)swizzleNotificationCenterDelegate {
+        // Check if running in a test environment
+    if (NSClassFromString(@"XCTestCase")) {
+        NSLog(@"Skipping swizzling in test environment.");
+        return;
+    }
+
+    id<UNUserNotificationCenterDelegate> delegate = UNUserNotificationCenter.currentNotificationCenter.delegate;
+        if (!delegate) {
+            NSLog(@"Error: UNUserNotificationCenter delegate is nil.");
+            return;
+        }
+    Class class = [UNUserNotificationCenter.currentNotificationCenter.delegate class];
+    SEL originalSelector = @selector(userNotificationCenter:didReceiveNotificationResponse:withCompletionHandler:);
+    SEL swizzledSelector = @selector(swizzled_userNotificationCenter:didReceiveNotificationResponse:withCompletionHandler:);
+
+    Method originalMethod = class_getInstanceMethod(class, originalSelector);
+    Method swizzledMethod = class_getInstanceMethod([self class], swizzledSelector);
+
+    if (originalMethod && swizzledMethod) {
+        BOOL didAddMethod = class_addMethod(class,
+                                            swizzledSelector,
+                                            method_getImplementation(swizzledMethod),
+                                            method_getTypeEncoding(swizzledMethod));
+        if (didAddMethod) {
+            Method newSwizzledMethod = class_getInstanceMethod(class, swizzledSelector);
+            method_exchangeImplementations(originalMethod, newSwizzledMethod);
+        } else {
+            method_exchangeImplementations(originalMethod, swizzledMethod);
+        }
+    } else {
+        NSLog(@"Error: Methods not found for swizzling.");
+    }
+}
+
+- (void)swizzled_userNotificationCenter:(UNUserNotificationCenter *)center
+           didReceiveNotificationResponse:(UNNotificationResponse *)response
+                    withCompletionHandler:(void (^)(void))completionHandler {
+    // Custom implementation
+    NSLog(@"Swizzled method called");
+    NSLog(@"%@", response.notification.request.content.title);
+    NSLog(@"%@", response.notification.request.content.body);
+    // we should just check the identifier to simplify the implementation
+
+    if ([response.notification.request.identifier hasPrefix:@"radar_"]) {
+        [[RadarLogger sharedInstance]
+                        logWithLevel:RadarLogLevelDebug
+                            message:[NSString stringWithFormat:@"Getting conversion from notification tap"]];
+        [Radar logConversionWithNotification:response.notification.request eventName:@"opened_radar_notification"];
+    } else {
+        NSLog(@"not from on prem notification");
+        // edge case: if there was 2 notifications, one from radar and another from the app, and the user clicked the one from the app, do we take credit?
+        // right now assume yes
+        [Radar logConversionWithNotification:response.notification.request eventName:@"opened_notification"];
+    }
+    [RadarSettings updateLastAppOpenTime];
+    [RadarState clearPendingNotificationRequests];
+
+    // Call the original method (which is now swizzled)
+    [self swizzled_userNotificationCenter:center didReceiveNotificationResponse:response withCompletionHandler:completionHandler];
 }
 
 @end
