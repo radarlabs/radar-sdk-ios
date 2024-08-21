@@ -42,10 +42,6 @@ static NSString *const kSyncGeofenceIdentifierPrefix = @"radar_geofence_";
         } else if (event.type == RadarEventTypeUserExitedGeofence && event.geofence && event.geofence.metadata) {
             metadata = event.geofence.metadata;
             notificationText = [metadata objectForKey:@"radar:exitNotificationText"];
-            for (NSString *key in metadata) {
-                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo
-                                                   message:[NSString stringWithFormat:@"key: %@, value: %@", key, [metadata objectForKey:key]]];
-            }
         } else if (event.type == RadarEventTypeUserEnteredBeacon && event.beacon && event.beacon.metadata) {
             metadata = event.beacon.metadata;
             notificationText = [metadata objectForKey:@"radar:entryNotificationText"];
@@ -87,10 +83,10 @@ static NSString *const kSyncGeofenceIdentifierPrefix = @"radar_geofence_";
 
 + (void)swizzleNotificationCenterDelegate {
     id<UNUserNotificationCenterDelegate> delegate = UNUserNotificationCenter.currentNotificationCenter.delegate;
-        if (!delegate) {
-            NSLog(@"Error: UNUserNotificationCenter delegate is nil.");
-            return;
-        }
+    if (!delegate) {
+        NSLog(@"Error: UNUserNotificationCenter delegate is nil.");
+        return;
+    }
     Class class = [UNUserNotificationCenter.currentNotificationCenter.delegate class];
     SEL originalSelector = @selector(userNotificationCenter:didReceiveNotificationResponse:withCompletionHandler:);
     SEL swizzledSelector = @selector(swizzled_userNotificationCenter:didReceiveNotificationResponse:withCompletionHandler:);
@@ -138,14 +134,13 @@ static NSString *const kSyncGeofenceIdentifierPrefix = @"radar_geofence_";
     NSArray<UNNotificationRequest *> *registeredNotifications = [RadarState pendingNotificationRequests];
     if (NSClassFromString(@"XCTestCase") == nil) {
         [[UNUserNotificationCenter currentNotificationCenter] getPendingNotificationRequestsWithCompletionHandler:^(NSArray<UNNotificationRequest *> *_Nonnull requests) {
-            NSMutableArray *pendingIdentifiers = [NSMutableArray new];
+            NSMutableSet *pendingIdentifiers = [NSMutableSet new];
                 
             for (UNNotificationRequest *request in requests) {
                 [pendingIdentifiers addObject:request.identifier];
             }
                 
             for (UNNotificationRequest *request in registeredNotifications) {
-                // this makes it n^2, prob should change it to hashset later on
                 if (![pendingIdentifiers containsObject:request.identifier]) {
                     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Found pending notification | identifier = %@", request]];
                     
