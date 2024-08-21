@@ -23,8 +23,6 @@
 #import "RadarReplayBuffer.h"
 #import "RadarNotificationHelper.h"
 
-#import <objc/runtime.h>
-
 @interface Radar ()
 
 @property (nullable, weak, nonatomic) id<RadarDelegate> delegate;
@@ -40,15 +38,11 @@
     static id sharedInstance;
     dispatch_once(&once, ^{
         sharedInstance = [self new];
-        //[self swizzleNotificationCenterDelegate];
     });
     return sharedInstance;
 }
 
-
 + (void)initializeWithPublishableKey:(NSString *)publishableKey {
-
-
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"initialize()"];
 
     [[NSNotificationCenter defaultCenter] addObserver:[self sharedInstance]
@@ -1290,7 +1284,6 @@
 }
 
 - (void)applicationDidEnterBackground {
-    NSLog(@"[Radar] applicationDidEnterBackground");
     [RadarNotificationHelper scheduleBackgroundNotificationChecks];
 }
 

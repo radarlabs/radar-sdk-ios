@@ -98,10 +98,6 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 
         _permissionsHelper = [RadarPermissionsHelper new];
 
-        // if not testing, set _notificationCenter to the currentNotificationCenter
-        // if (![[NSProcessInfo processInfo] environment][@"XCTestConfigurationFilePath"]) {
-        //     _notificationCenter = [UNUserNotificationCenter currentNotificationCenter];
-        // }
         _firstPermissionCheck = NO;
     }
     return self;
