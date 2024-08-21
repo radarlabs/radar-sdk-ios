@@ -463,39 +463,8 @@
             NSString *message = [NSString stringWithFormat:@"Conversion name = %@: status = %@; event = %@", event.conversionName, [Radar stringForStatus:status], event];
             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:message];
         }];
-
-        // check if there any pending notifications that have been sent, we will only be doing this if the app is not been opened by a notification
-        NSArray<UNNotificationRequest *> *registeredNotifications = [RadarState pendingNotificationRequests];
-        if (NSClassFromString(@"XCTestCase") == nil) {
-            [[UNUserNotificationCenter currentNotificationCenter] getPendingNotificationRequestsWithCompletionHandler:^(NSArray<UNNotificationRequest *> *_Nonnull requests) {
-                NSMutableArray *pendingIdentifiers = [NSMutableArray new];
-                
-                for (UNNotificationRequest *request in requests) {
-                    NSLog(@"request identifier of pending request: %@", request.identifier);
-                    [pendingIdentifiers addObject:request.identifier];
-                }
-                
-                for (UNNotificationRequest *request in registeredNotifications) {
-                    NSLog(@"request identifier of registered request: %@", request.identifier);
-                    // this makes it n^2, prob should change it to hashset later on
-                    if (![pendingIdentifiers containsObject:request.identifier]) {
-                        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"Found pending notification | identifier = %@", request]];
-                        
-                        // we just want to store the entire object
-                        [Radar logConversionWithNotification:request eventName:@"not_open_notification"];
-                    }
-                }
-            }];
-        }
-        
-        // also check if we recorded any notifications send in the background
-        if ([RadarState notificationSentInBackground]) {
-            
-            [Radar logConversionWithName:@"not_open_notification" metadata:nil completionHandler: nil];
-        }
     }
-    [RadarState clearPendingNotificationRequests];
-    [RadarState setNotificationSentInBackground:NO];
+    [RadarNotificationHelper checkForSentOnPremiseNotifications];
 }
 
 + (void)logConversionWithName:(NSString *)name

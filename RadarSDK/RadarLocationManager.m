@@ -20,6 +20,7 @@
 #import "RadarState.h"
 #import "RadarUtils.h"
 #import "RadarReplayBuffer.h"
+#import "RadarNotificationHelper.h"
 
 @interface RadarLocationManager ()
 
@@ -98,9 +99,9 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         _permissionsHelper = [RadarPermissionsHelper new];
 
         // if not testing, set _notificationCenter to the currentNotificationCenter
-        if (![[NSProcessInfo processInfo] environment][@"XCTestConfigurationFilePath"]) {
-            _notificationCenter = [UNUserNotificationCenter currentNotificationCenter];
-        }
+        // if (![[NSProcessInfo processInfo] environment][@"XCTestConfigurationFilePath"]) {
+        //     _notificationCenter = [UNUserNotificationCenter currentNotificationCenter];
+        // }
         _firstPermissionCheck = NO;
     }
     return self;
@@ -530,12 +531,6 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                         repeats = [notificationRepeats boolValue];
                     }
                     
-                    if (repeats) {
-                        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:@"Notification repeats"];
-                    } else {
-                        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:@"Notification does not repeat"];
-                    }
-
                     UNLocationNotificationTrigger *trigger = [UNLocationNotificationTrigger triggerWithRegion:region repeats:repeats];
 
                     UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:identifier content:content trigger:trigger];
@@ -547,53 +542,15 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         }
     }
 
-
-    // we only want to perform this in the background
+    // when background permission is granted, firing of on premise nottification is proceeded by a geofence sync with which we can check for deliverbility.
     if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
-         NSArray<UNNotificationRequest *> *registeredNotifications = [RadarState pendingNotificationRequests];
-        [[UNUserNotificationCenter currentNotificationCenter] getPendingNotificationRequestsWithCompletionHandler:^(NSArray<UNNotificationRequest *> *_Nonnull requests) {
-            NSMutableArray *pendingIdentifiers = [NSMutableArray new];
-            // map unnotificationrequest to string
-            for (UNNotificationRequest *request in requests) {
-                NSLog(@"request identifier of pending request: %@", request.identifier);
-                [pendingIdentifiers addObject:request.identifier];
-            }
-            // find the strings that exist in pending notifications but not in the registered ones
-            for (UNNotificationRequest *request in registeredNotifications) {
-                NSLog(@"request identifier of registered request: %@", request.identifier);
-                // this makes it n^2, prob should change it to hashset later on
-                if (![pendingIdentifiers containsObject:request.identifier]) {
-                    // we mark those notifications as sent
-
-                    //[[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"Found pending notification | identifier = %@", request]];
-                    
-                    // we just want to store the entire object
-                    //[Radar logConversionWithNotification:request eventName:@"sent_unopened_notification"];
-                    NSLog(@"found a sent notification in bg");
-                    [RadarState setNotificationSentInBackground: YES];
-                }
-            }
-
-        }];
+        [RadarNotificationHelper checkForSentOnPremiseNotifications];
     }
 
-    // remove all the previously remembered indentifiers
     [RadarState clearPendingNotificationRequests];
     
-    [self removePendingNotificationsWithCompletionHandler: ^{
-        for (UNNotificationRequest *request in requests) {
-            [self.notificationCenter addNotificationRequest:request withCompletionHandler:^(NSError *_Nullable error) {
-                if (error) {
-                    [[RadarLogger sharedInstance]
-                        logWithLevel:RadarLogLevelInfo
-                            message:[NSString stringWithFormat:@"Error adding local notification | identifier = %@; error = %@", request.identifier, error]];
-                } else {
-                    [RadarState addPendingNotificationRequest:request];
-                    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo
-                                                        message:[NSString stringWithFormat:@"Added local notification | identifier = %@", request.identifier]];
-                }
-            }];
-        }
+    [RadarNotificationHelper removePendingNotificationsWithCompletionHandler: ^{
+        [RadarNotificationHelper addOnPremiseNotificationRequests:requests];
     }];
 }
 
@@ -607,25 +564,25 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Removed synced geofences"];
 }
 
-- (void)removePendingNotificationsWithCompletionHandler:(void (^)(void))completionHandler {
-    [self.notificationCenter getPendingNotificationRequestsWithCompletionHandler:^(NSArray<UNNotificationRequest *> *_Nonnull requests) {
-        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Found %lu pending notifications", (unsigned long)requests.count]];
-        NSMutableArray *identifiers = [NSMutableArray new];
-        for (UNNotificationRequest *request in requests) {
-            if ([request.identifier hasPrefix:kSyncGeofenceIdentifierPrefix]) {
-                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"Found pending notification | identifier = %@", request.identifier]];
-                [identifiers addObject:request.identifier];
-            }
-        }
+// - (void)removePendingNotificationsWithCompletionHandler:(void (^)(void))completionHandler {
+//     [self.notificationCenter getPendingNotificationRequestsWithCompletionHandler:^(NSArray<UNNotificationRequest *> *_Nonnull requests) {
+//         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Found %lu pending notifications", (unsigned long)requests.count]];
+//         NSMutableArray *identifiers = [NSMutableArray new];
+//         for (UNNotificationRequest *request in requests) {
+//             if ([request.identifier hasPrefix:kSyncGeofenceIdentifierPrefix]) {
+//                 [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"Found pending notification | identifier = %@", request.identifier]];
+//                 [identifiers addObject:request.identifier];
+//             }
+//         }
 
-        if (identifiers.count > 0) {
-            [self.notificationCenter removePendingNotificationRequestsWithIdentifiers:identifiers];
-            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Removed pending notifications"];
-        }
+//         if (identifiers.count > 0) {
+//             [self.notificationCenter removePendingNotificationRequestsWithIdentifiers:identifiers];
+//             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Removed pending notifications"];
+//         }
 
-        completionHandler();
-    }];
-}
+//         completionHandler();
+//     }];
+// }
 
 - (void)replaceSyncedBeacons:(NSArray<RadarBeacon *> *)beacons {
     if ([RadarSettings useRadarModifiedBeacon]) {

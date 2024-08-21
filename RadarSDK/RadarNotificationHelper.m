@@ -18,6 +18,7 @@
 @implementation RadarNotificationHelper
 
 static NSString *const kEventNotificationIdentifierPrefix = @"radar_event_notification_";
+static NSString *const kSyncGeofenceIdentifierPrefix = @"radar_geofence_";
 
 + (void)showNotificationsForEvents:(NSArray<RadarEvent *> *)events {
     if (!events || !events.count) {
@@ -151,6 +152,70 @@ static NSString *const kEventNotificationIdentifierPrefix = @"radar_event_notifi
 
     // Call the original method (which is now swizzled)
     [self swizzled_userNotificationCenter:center didReceiveNotificationResponse:response withCompletionHandler:completionHandler];
+}
+
++ (void)checkForSentOnPremiseNotifications {
+    // check if there any pending notifications that have been sent, we will only be doing this if the app is not been opened by a notification
+    NSArray<UNNotificationRequest *> *registeredNotifications = [RadarState pendingNotificationRequests];
+    if (NSClassFromString(@"XCTestCase") == nil) {
+        [[UNUserNotificationCenter currentNotificationCenter] getPendingNotificationRequestsWithCompletionHandler:^(NSArray<UNNotificationRequest *> *_Nonnull requests) {
+            NSMutableArray *pendingIdentifiers = [NSMutableArray new];
+                
+            for (UNNotificationRequest *request in requests) {
+                NSLog(@"request identifier of pending request: %@", request.identifier);
+                [pendingIdentifiers addObject:request.identifier];
+            }
+                
+            for (UNNotificationRequest *request in registeredNotifications) {
+                NSLog(@"request identifier of registered request: %@", request.identifier);
+                // this makes it n^2, prob should change it to hashset later on
+                if (![pendingIdentifiers containsObject:request.identifier]) {
+                    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"Found pending notification | identifier = %@", request]];
+                    
+                    // we just want to store the entire object
+                    [Radar logConversionWithNotification:request eventName:@"delivered_on_premise_notification"];
+                }
+            }            
+        }];
+    }
+    [RadarState clearPendingNotificationRequests];
+}
+
++ (void)removePendingNotificationsWithCompletionHandler:(void (^)(void))completionHandler {
+    UNUserNotificationCenter *notificationCenter = [UNUserNotificationCenter currentNotificationCenter];
+    [notificationCenter getPendingNotificationRequestsWithCompletionHandler:^(NSArray<UNNotificationRequest *> *_Nonnull requests) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Found %lu pending notifications", (unsigned long)requests.count]];
+        NSMutableArray *identifiers = [NSMutableArray new];
+        for (UNNotificationRequest *request in requests) {
+            if ([request.identifier hasPrefix:kSyncGeofenceIdentifierPrefix]) {
+                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"Found pending notification | identifier = %@", request.identifier]];
+                [identifiers addObject:request.identifier];
+            }
+        }
+
+        if (identifiers.count > 0) {
+            [notificationCenter removePendingNotificationRequestsWithIdentifiers:identifiers];
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Removed pending notifications"];
+        }
+
+        completionHandler();
+    }];
+}
+
++ (void)addOnPremiseNotificationRequests:(NSArray<UNNotificationRequest *> *)requests {
+    for (UNNotificationRequest *request in requests) {
+        [[UNUserNotificationCenter currentNotificationCenter] addNotificationRequest:request withCompletionHandler:^(NSError *_Nullable error) {
+            if (error) {
+                [[RadarLogger sharedInstance]
+                    logWithLevel:RadarLogLevelInfo
+                        message:[NSString stringWithFormat:@"Error adding local notification | identifier = %@; error = %@", request.identifier, error]];
+            } else {
+                [RadarState addPendingNotificationRequest:request];
+                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo
+                                                   message:[NSString stringWithFormat:@"Added local notification | identifier = %@", request.identifier]];
+            }
+        }];
+    }
 }
 
 @end

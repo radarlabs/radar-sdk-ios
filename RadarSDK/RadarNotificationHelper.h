@@ -16,6 +16,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)swizzleNotificationCenterDelegate;
 
++ (void)checkForSentOnPremiseNotifications;
+
++ (void)removePendingNotificationsWithCompletionHandler:(void (^)(void))completionHandler;
+
++ (void)addOnPremiseNotificationRequests:(NSArray<UNNotificationRequest *> *)requests;
+
 @end
 
 NS_ASSUME_NONNULL_END
