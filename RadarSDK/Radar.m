@@ -56,6 +56,11 @@
                                                  name:UIApplicationWillEnterForegroundNotification
                                                object:nil];
     
+    [[NSNotificationCenter defaultCenter] addObserver:[self sharedInstance]
+                                             selector:@selector(applicationDidEnterBackground)
+                                                 name:UIApplicationDidEnterBackgroundNotification
+                                               object:nil];
+    
     [RadarSettings setPublishableKey:publishableKey];
 
     RadarSdkConfiguration *sdkConfiguration = [RadarSettings sdkConfiguration];
@@ -71,10 +76,12 @@
         [[RadarReplayBuffer sharedInstance] loadReplaysFromPersistentStore];
     }
 
+    [RadarNotificationHelper registerBackgroundNotificationChecks];
+    [RadarNotificationHelper scheduleBackgroundNotificationChecks];
+
     if ([[UIApplication sharedApplication] applicationState] != UIApplicationStateBackground) {
         [RadarSettings updateSessionId];
     }
-
 
     [[RadarLocationManager sharedInstance] updateTrackingFromInitialize];
     
@@ -465,6 +472,7 @@
         }];
     }
     [RadarNotificationHelper checkForSentOnPremiseNotifications];
+    [RadarState clearPendingNotificationRequests];
 }
 
 + (void)logConversionWithName:(NSString *)name
@@ -499,13 +507,6 @@
 
 
 + (void)logConversionWithNotification:(UNNotificationRequest *)request {
-    // NSMutableDictionary *metadata = [[NSMutableDictionary alloc] initWithDictionary:request.content.userInfo];
-    // [metadata setValue:request.identifier forKey:@"identifier"];
-    
-    // [self sendLogConversionRequestWithName:@"opened_notification" metadata:metadata completionHandler:^(RadarStatus status, RadarEvent * _Nullable event) {
-    //     NSString *message = [NSString stringWithFormat:@"Conversion name = %@: status = %@; event = %@", event.conversionName, [Radar stringForStatus:status], event];
-    //     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:message];
-    // }];
     [self logConversionWithNotification:request eventName:@"opened_notification"];
 }
 
@@ -1286,6 +1287,11 @@
     if (sdkConfiguration.trackOnceOnAppOpen) {
         [Radar trackOnceWithCompletionHandler:nil];
     }
+}
+
+- (void)applicationDidEnterBackground {
+    NSLog(@"[Radar] applicationDidEnterBackground");
+    [RadarNotificationHelper scheduleBackgroundNotificationChecks];
 }
 
 - (void)dealloc {

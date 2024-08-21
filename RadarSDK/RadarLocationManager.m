@@ -542,10 +542,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         }
     }
 
-    // when background permission is granted, firing of on premise nottification is proceeded by a geofence sync with which we can check for deliverbility.
-    if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
-        [RadarNotificationHelper checkForSentOnPremiseNotifications];
-    }
+    [RadarNotificationHelper checkForSentOnPremiseNotifications];
 
     [RadarState clearPendingNotificationRequests];
     
@@ -563,26 +560,6 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Removed synced geofences"];
 }
-
-// - (void)removePendingNotificationsWithCompletionHandler:(void (^)(void))completionHandler {
-//     [self.notificationCenter getPendingNotificationRequestsWithCompletionHandler:^(NSArray<UNNotificationRequest *> *_Nonnull requests) {
-//         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Found %lu pending notifications", (unsigned long)requests.count]];
-//         NSMutableArray *identifiers = [NSMutableArray new];
-//         for (UNNotificationRequest *request in requests) {
-//             if ([request.identifier hasPrefix:kSyncGeofenceIdentifierPrefix]) {
-//                 [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"Found pending notification | identifier = %@", request.identifier]];
-//                 [identifiers addObject:request.identifier];
-//             }
-//         }
-
-//         if (identifiers.count > 0) {
-//             [self.notificationCenter removePendingNotificationRequestsWithIdentifiers:identifiers];
-//             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Removed pending notifications"];
-//         }
-
-//         completionHandler();
-//     }];
-// }
 
 - (void)replaceSyncedBeacons:(NSArray<RadarBeacon *> *)beacons {
     if ([RadarSettings useRadarModifiedBeacon]) {

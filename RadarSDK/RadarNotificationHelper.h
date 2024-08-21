@@ -22,6 +22,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)addOnPremiseNotificationRequests:(NSArray<UNNotificationRequest *> *)requests;
 
++ (void)registerBackgroundNotificationChecks;
+
++ (void)scheduleBackgroundNotificationChecks;
+
 @end
 
 NS_ASSUME_NONNULL_END

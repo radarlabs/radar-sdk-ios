@@ -12,6 +12,7 @@
 #import "RadarNotificationHelper.h"
 #import "RadarState.h"
 #import "RadarSettings.h"
+#import <BackgroundTasks/BackgroundTasks.h>
 
 #import <objc/runtime.h>
 
@@ -35,11 +36,6 @@ static NSString *const kSyncGeofenceIdentifierPrefix = @"radar_geofence_";
             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo
                                                message:@"unpacking metadata"];
             metadata = event.geofence.metadata;
-            // print out the metadata
-            for (NSString *key in metadata) {
-                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo
-                                                   message:[NSString stringWithFormat:@"key: %@, value: %@", key, [metadata objectForKey:key]]];
-            }
             notificationText = [metadata objectForKey:@"radar:entryNotificationText"];
             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo
                                                message:notificationText];
@@ -74,15 +70,13 @@ static NSString *const kSyncGeofenceIdentifierPrefix = @"radar_geofence_";
             content.categoryIdentifier = categoryIdentifier;
 
             UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:identifier content:content trigger:nil];
-            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo
-                                               message:@"adding notifications"];
+
             [UNUserNotificationCenter.currentNotificationCenter addNotificationRequest:request withCompletionHandler:^(NSError *_Nullable error) {
                 if (error) {
                     [[RadarLogger sharedInstance]
                      logWithLevel:RadarLogLevelDebug
                      message:[NSString stringWithFormat:@"Error adding local notification | identifier = %@; error = %@", request.identifier, error]];
                 } else {
-                    // [RadarState addPendingNotificationRequest:request];
                     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
                                                        message:[NSString stringWithFormat:@"Added local notification | identifier = %@", request.identifier]];
                 }
@@ -91,14 +85,7 @@ static NSString *const kSyncGeofenceIdentifierPrefix = @"radar_geofence_";
     }
 }
 
-// we need to move this into a separate class and also into a dispatch once block
 + (void)swizzleNotificationCenterDelegate {
-        // Check if running in a test environment
-//    if (NSClassFromString(@"XCTestCase")) {
-//        NSLog(@"Skipping swizzling in test environment.");
-//        return;
-//    }
-
     id<UNUserNotificationCenterDelegate> delegate = UNUserNotificationCenter.currentNotificationCenter.delegate;
         if (!delegate) {
             NSLog(@"Error: UNUserNotificationCenter delegate is nil.");
@@ -130,11 +117,6 @@ static NSString *const kSyncGeofenceIdentifierPrefix = @"radar_geofence_";
 - (void)swizzled_userNotificationCenter:(UNUserNotificationCenter *)center
            didReceiveNotificationResponse:(UNNotificationResponse *)response
                     withCompletionHandler:(void (^)(void))completionHandler {
-    // Custom implementation
-    NSLog(@"Swizzled method called");
-    NSLog(@"%@", response.notification.request.content.title);
-    NSLog(@"%@", response.notification.request.content.body);
-    // we should just check the identifier to simplify the implementation
 
     if ([response.notification.request.identifier hasPrefix:@"radar_"]) {
         [[RadarLogger sharedInstance]
@@ -142,9 +124,6 @@ static NSString *const kSyncGeofenceIdentifierPrefix = @"radar_geofence_";
                             message:[NSString stringWithFormat:@"Getting conversion from notification tap"]];
         [Radar logConversionWithNotification:response.notification.request eventName:@"opened_radar_notification"];
     } else {
-        NSLog(@"not from on prem notification");
-        // edge case: if there was 2 notifications, one from radar and another from the app, and the user clicked the one from the app, do we take credit?
-        // right now assume yes
         [Radar logConversionWithNotification:response.notification.request eventName:@"opened_notification"];
     }
     [RadarSettings updateLastAppOpenTime];
@@ -162,23 +141,21 @@ static NSString *const kSyncGeofenceIdentifierPrefix = @"radar_geofence_";
             NSMutableArray *pendingIdentifiers = [NSMutableArray new];
                 
             for (UNNotificationRequest *request in requests) {
-                NSLog(@"request identifier of pending request: %@", request.identifier);
                 [pendingIdentifiers addObject:request.identifier];
             }
                 
             for (UNNotificationRequest *request in registeredNotifications) {
-                NSLog(@"request identifier of registered request: %@", request.identifier);
                 // this makes it n^2, prob should change it to hashset later on
                 if (![pendingIdentifiers containsObject:request.identifier]) {
-                    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"Found pending notification | identifier = %@", request]];
+                    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Found pending notification | identifier = %@", request]];
                     
-                    // we just want to store the entire object
                     [Radar logConversionWithNotification:request eventName:@"delivered_on_premise_notification"];
+                    // prevent double counting of the same notification
+                    [RadarState removePendingNotificationRequest:request];
                 }
             }            
         }];
     }
-    [RadarState clearPendingNotificationRequests];
 }
 
 + (void)removePendingNotificationsWithCompletionHandler:(void (^)(void))completionHandler {
@@ -216,6 +193,28 @@ static NSString *const kSyncGeofenceIdentifierPrefix = @"radar_geofence_";
             }
         }];
     }
+}
+
++ (void)registerBackgroundNotificationChecks {
+    [[BGTaskScheduler sharedScheduler] registerForTaskWithIdentifier:@"io.radar.notificationCheck" usingQueue:nil launchHandler:^(BGTask *task) {
+        [self handleAppRefreshTask:task];
+    }];
+}
+
++ (void)scheduleBackgroundNotificationChecks {
+    BGAppRefreshTaskRequest *request = [[BGAppRefreshTaskRequest alloc] initWithIdentifier:@"io.radar.notificationCheck"];
+    request.earliestBeginDate = [NSDate dateWithTimeIntervalSinceNow:60];
+    NSError *error = nil;
+    [[BGTaskScheduler sharedScheduler] submitTaskRequest:request error:&error];
+    if (error) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelError message:[NSString stringWithFormat:@"Error scheduling app refresh task: %@", error]];
+    }
+}
+
++ (void)handleAppRefreshTask:(BGTask *)task {
+    [self scheduleBackgroundNotificationChecks];
+    [self checkForSentOnPremiseNotifications];
+    [task setTaskCompletedWithSuccess:YES];
 }
 
 @end
