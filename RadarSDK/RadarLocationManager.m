@@ -465,11 +465,10 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     [self removeSyncedGeofences];
 
     if (!geofences) {
-        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:@"Skipping replacing synced geofences"];
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Skipping replacing synced geofences"];
 
         return;
     }
-    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:@"sync geofences"];
 
     RadarTrackingOptions *options = [Radar getTrackingOptions];
     NSUInteger numGeofences = MIN(geofences.count, options.beacons ? 9 : 19);
@@ -499,7 +498,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
             CLRegion *region = [[CLCircularRegion alloc] initWithCenter:center.coordinate radius:radius identifier:identifier];
             [self.locationManager startMonitoringForRegion:region];
 
-            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
                                             message:[NSString stringWithFormat:@"Synced geofence | latitude = %f; longitude = %f; radius = %f; identifier = %@",
                                                                                 center.coordinate.latitude, center.coordinate.longitude, radius, identifier]];
 

@@ -27,18 +27,12 @@ static NSString *const kSyncGeofenceIdentifierPrefix = @"radar_geofence_";
     }
     
     for (RadarEvent *event in events) {
-        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo
-                                           message:@"got event to maybe create notifications with"];
         NSString *notificationText;
         NSDictionary *metadata;
         
         if (event.type == RadarEventTypeUserEnteredGeofence && event.geofence && event.geofence.metadata) {
-            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo
-                                               message:@"unpacking metadata"];
             metadata = event.geofence.metadata;
             notificationText = [metadata objectForKey:@"radar:entryNotificationText"];
-            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo
-                                               message:notificationText];
         } else if (event.type == RadarEventTypeUserExitedGeofence && event.geofence && event.geofence.metadata) {
             metadata = event.geofence.metadata;
             notificationText = [metadata objectForKey:@"radar:exitNotificationText"];
