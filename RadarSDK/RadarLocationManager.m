@@ -724,11 +724,13 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 }
 
 - (void)removeAllRegions {
-    for (CLRegion *region in self.locationManager.monitoredRegions) {
-        if ([region.identifier hasPrefix:kIdentifierPrefix]) {
-            [self.locationManager stopMonitoringForRegion:region];
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        for (CLRegion *region in self.locationManager.monitoredRegions) {
+            if ([region.identifier hasPrefix:kIdentifierPrefix]) {
+                [self.locationManager stopMonitoringForRegion:region];
+            }
         }
-    }
+    });
 }
 
 #pragma mark - handlers
