@@ -249,12 +249,12 @@
         params[@"floorLevel"] = @(location.floor.level);
     }
     long nowMs = (long)([NSDate date].timeIntervalSince1970 * 1000);
+    long timeInMs = (long)(location.timestamp.timeIntervalSince1970 * 1000);
     if (!foreground || sdkConfiguration.provideMoreTimestamps) {
-        long timeInMs = (long)(location.timestamp.timeIntervalSince1970 * 1000);
         params[@"updatedAtMsDiff"] = @(nowMs - timeInMs);
     }
     if (sdkConfiguration.provideMoreTimestamps) {
-        params[@"updatedAtMs"] = @(nowMs);
+        params[@"updatedAtMs"] = @(timeInMs);
     }
     params[@"foreground"] = @(foreground);
     params[@"stopped"] = @(stopped);
