@@ -105,10 +105,13 @@ static const int MAX_BUFFER_SIZE = 120; // one hour of updates
     if (replayParams) {
         newReplayParams = [replayParams mutableCopy];
         newReplayParams[@"replayed"] = @(YES);
-        long nowMs = (long)([NSDate date].timeIntervalSince1970 * 1000);
-        newReplayParams[@"updatedAtMs"] = @(nowMs);
-        // remove the updatedAtMsDiff key because for replays we want to rely on the updatedAtMs key for the time instead
-        [newReplayParams removeObjectForKey:@"updatedAtMsDiff"];
+        RadarSdkConfiguration *sdkConfiguration = [RadarSettings sdkConfiguration];
+        if (!sdkConfiguration.provideMoreTimestamps) {
+            long nowMs = (long)([NSDate date].timeIntervalSince1970 * 1000);
+            newReplayParams[@"updatedAtMs"] = @(nowMs);
+            // remove the updatedAtMsDiff key because for replays we want to rely on the updatedAtMs key for the time instead
+            [newReplayParams removeObjectForKey:@"updatedAtMsDiff"];
+        }
         [replaysRequestArray addObject:newReplayParams];
     }
 
