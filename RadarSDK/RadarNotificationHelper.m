@@ -124,7 +124,6 @@ static NSString *const kSyncGeofenceIdentifierPrefix = @"radar_geofence_";
 }
 
 + (void)checkForSentOnPremiseNotifications {
-    // check if there any pending notifications that have been sent, we will only be doing this if the app is not been opened by a notification
     NSArray<UNNotificationRequest *> *registeredNotifications = [RadarState pendingNotificationRequests];
     if (NSClassFromString(@"XCTestCase") == nil) {
         [[UNUserNotificationCenter currentNotificationCenter] getPendingNotificationRequestsWithCompletionHandler:^(NSArray<UNNotificationRequest *> *_Nonnull requests) {
@@ -195,7 +194,7 @@ static NSString *const kSyncGeofenceIdentifierPrefix = @"radar_geofence_";
 + (void)scheduleBackgroundNotificationChecks {
     if (@available(iOS 13.0, *)) {
         BGAppRefreshTaskRequest *request = [[BGAppRefreshTaskRequest alloc] initWithIdentifier:@"io.radar.notificationCheck"];
-        request.earliestBeginDate = [NSDate dateWithTimeIntervalSinceNow:60];
+        request.earliestBeginDate = [NSDate dateWithTimeIntervalSinceNow:60*60];
         NSError *error = nil;
         
         [[BGTaskScheduler sharedScheduler] submitTaskRequest:request error:&error];

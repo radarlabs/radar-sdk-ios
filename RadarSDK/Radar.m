@@ -465,8 +465,6 @@
             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:message];
         }];
     }
-    [RadarNotificationHelper checkForSentOnPremiseNotifications];
-    [RadarState clearPendingNotificationRequests];
 }
 
 + (void)logConversionWithName:(NSString *)name
@@ -1274,8 +1272,9 @@
                                          }];
     }
     
-
     [Radar logOpenedAppConversion];
+    [RadarNotificationHelper checkForSentOnPremiseNotifications];
+    [RadarState clearPendingNotificationRequests];
 
     RadarSdkConfiguration *sdkConfiguration = [RadarSettings sdkConfiguration];
     if (sdkConfiguration.trackOnceOnAppOpen) {
