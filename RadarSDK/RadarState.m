@@ -8,6 +8,8 @@
 #import "RadarState.h"
 #import "CLLocation+Radar.h"
 #import "RadarUtils.h"
+#import "RadarSettings.h"
+
 
 @implementation RadarState
 
@@ -75,7 +77,13 @@ static NSString *const kLastMotionActivityData = @"radar-lastMotionActivityData"
 }
 
 + (BOOL)stopped {
-    return [[NSUserDefaults standardUserDefaults] boolForKey:kStopped];
+    NSNumber *stoppedValue = [[NSUserDefaults standardUserDefaults] objectForKey:kStopped];
+    if (stoppedValue == nil) {
+        // No value found, use default from RadarSdkConfiguration
+        RadarSdkConfiguration *sdkConfiguration = [RadarSettings sdkConfiguration];
+        return sdkConfiguration.stoppedDefaultValue;
+    }
+    return [stoppedValue boolValue];
 }
 
 + (void)setStopped:(BOOL)stopped {

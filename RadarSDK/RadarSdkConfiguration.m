@@ -69,6 +69,12 @@
         _useLocationMetadata = [(NSNumber *)useLocationMetadataObj boolValue];
     }
 
+    NSObject *stoppedDefaultValueObj = dict[@"stoppedDefaultValue"];
+    _stoppedDefaultValue = NO;
+    if (stoppedDefaultValueObj && [stoppedDefaultValueObj isKindOfClass:[NSNumber class]]) {
+        _stoppedDefaultValue = [(NSNumber *)stoppedDefaultValueObj boolValue];
+    }
+
     return self;
 }
 
@@ -83,6 +89,7 @@
     dict[@"useLogPersistence"] = @(_useLogPersistence);
     dict[@"useRadarModifiedBeacon"] = @(_useRadarModifiedBeacon);
     dict[@"useLocationMetadata"] = @(_useLocationMetadata);
+    dict[@"stoppedDefaultValue"] = @(_stoppedDefaultValue);
     
     return dict;
 }
