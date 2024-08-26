@@ -104,7 +104,6 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         if (![[NSProcessInfo processInfo] environment][@"XCTestConfigurationFilePath"]) {
             _notificationCenter = [UNUserNotificationCenter currentNotificationCenter];
         }
-        _firstPermissionCheck = NO;
     }
     return self;
 }
