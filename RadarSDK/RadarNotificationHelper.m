@@ -116,7 +116,8 @@ static NSString *const kSyncGeofenceIdentifierPrefix = @"radar_geofence_";
     } else {
         [Radar logConversionWithNotification:response.notification.request eventName:@"opened_notification"];
     }
-    [RadarSettings updateLastAppOpenTime];
+    // do we still want to log the normal app open event?
+    //[RadarSettings updateLastAppOpenTime];
     [RadarState clearPendingNotificationRequests];
 
     // Call the original method (which is now swizzled)
