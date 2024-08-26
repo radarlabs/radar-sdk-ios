@@ -1205,6 +1205,9 @@ logConversionWithNotification
  */
 + (NSDictionary *)dictionaryForLocation:(CLLocation *)location NS_SWIFT_NAME(dictionaryForLocation(_:));
 
+
++ (void) setUpSwizzle;
+
 @end
 
 NS_ASSUME_NONNULL_END

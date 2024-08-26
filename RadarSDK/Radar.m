@@ -42,6 +42,13 @@
     return sharedInstance;
 }
 
++ (void) setUpSwizzle {
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        [RadarNotificationHelper swizzleNotificationCenterDelegate];
+    });
+}
+
 + (void)initializeWithPublishableKey:(NSString *)publishableKey {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"initialize()"];
     
@@ -65,12 +72,12 @@
 
     RadarSdkConfiguration *sdkConfiguration = [RadarSettings sdkConfiguration];
 
-    if (NSClassFromString(@"XCTestCase") == nil) {
-        static dispatch_once_t onceToken;
-        dispatch_once(&onceToken, ^{
-            [RadarNotificationHelper swizzleNotificationCenterDelegate];
-        });
-    }
+    // if (NSClassFromString(@"XCTestCase") == nil) {
+    //     static dispatch_once_t onceToken;
+    //     dispatch_once(&onceToken, ^{
+    //         [RadarNotificationHelper swizzleNotificationCenterDelegate];
+    //     });
+    // }
 
     if (sdkConfiguration.usePersistence) {
         [[RadarReplayBuffer sharedInstance] loadReplaysFromPersistentStore];
