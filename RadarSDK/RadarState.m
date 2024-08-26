@@ -26,7 +26,7 @@ static NSString *const kLastHeadingData = @"radar-lastHeadingData";
 static NSString *const kLastMotionActivityData = @"radar-lastMotionActivityData";
 
 static NSString *const kPendingNotificationRequests = @"radar-pendingNotificationRequests";
-static NSString *const kNotificationSentInBackground = @"radar-notificationSentInBackground";
+static NSString *const kLastCheckedOnPremiseNotification = @"radar-lastCheckedOnPremiseNotification";
 
 + (CLLocation *)lastLocation {
     NSDictionary *dict = [[NSUserDefaults standardUserDefaults] dictionaryForKey:kLastLocation];
@@ -232,12 +232,12 @@ static NSString *const kNotificationSentInBackground = @"radar-notificationSentI
     [[NSUserDefaults standardUserDefaults] setObject:storedRequests forKey:kPendingNotificationRequests];
 }
 
-+ (BOOL)notificationSentInBackground {
-    return [[NSUserDefaults standardUserDefaults] boolForKey:kNotificationSentInBackground];
-}
 
-+ (void)setNotificationSentInBackground:(BOOL)notificationSentInBackground {
-    [[NSUserDefaults standardUserDefaults] setBool:notificationSentInBackground forKey:kNotificationSentInBackground];
++ (NSDate *)lastCheckedOnPremiseNotification {
+    return [[NSUserDefaults standardUserDefaults] objectForKey:kLastCheckedOnPremiseNotification];
+}
++ (void)updateLastCheckedOnPremiseNotification {
+    [[NSUserDefaults standardUserDefaults] setObject:[NSDate date] forKey:kLastCheckedOnPremiseNotification];
 }
 
 @end

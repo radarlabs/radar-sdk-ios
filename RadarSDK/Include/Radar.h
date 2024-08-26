@@ -656,7 +656,7 @@ logConversionWithNotification
  */
 + (void)logConversionWithNotification:(UNNotificationRequest *_Nullable)request NS_SWIFT_NAME(logConversion(request:));
 
-+ (void)logConversionWithNotification:(UNNotificationRequest *)request eventName:(NSString *)eventName NS_SWIFT_NAME(logConversion(request:eventName:));
++ (void)logConversionWithNotification:(UNNotificationRequest *)request eventName:(NSString *)eventName deliveredAfter:(NSDate *_Nullable)deliveredAfter NS_SWIFT_NAME(logConversion(request:eventName:deliveredAfter:));
 
 #pragma mark - Trips
 

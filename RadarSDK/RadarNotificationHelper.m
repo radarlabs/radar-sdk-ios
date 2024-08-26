@@ -112,9 +112,9 @@ static NSString *const kSyncGeofenceIdentifierPrefix = @"radar_geofence_";
         [[RadarLogger sharedInstance]
                         logWithLevel:RadarLogLevelDebug
                             message:[NSString stringWithFormat:@"Getting conversion from notification tap"]];
-        [Radar logConversionWithNotification:response.notification.request eventName:@"opened_radar_notification"];
+        [Radar logConversionWithNotification:response.notification.request eventName:@"opened_radar_notification" deliveredAfter:nil];
     } else {
-        [Radar logConversionWithNotification:response.notification.request eventName:@"opened_notification"];
+        [Radar logConversionWithNotification:response.notification.request eventName:@"opened_notification" deliveredAfter:nil];
     }
     // do we still want to log the normal app open event?
     //[RadarSettings updateLastAppOpenTime];
@@ -137,14 +137,15 @@ static NSString *const kSyncGeofenceIdentifierPrefix = @"radar_geofence_";
             for (UNNotificationRequest *request in registeredNotifications) {
                 if (![pendingIdentifiers containsObject:request.identifier]) {
                     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Found pending notification | identifier = %@", request]];
-                    
-                    [Radar logConversionWithNotification:request eventName:@"delivered_on_premise_notification"];
+                    NSDate *lastCheckedTime = [RadarState lastCheckedOnPremiseNotification];
+                    [Radar logConversionWithNotification:request eventName:@"delivered_on_premise_notification" deliveredAfter:lastCheckedTime];
                     // prevent double counting of the same notification
                     [RadarState removePendingNotificationRequest:request];
                 }
             }            
         }];
     }
+    [RadarState lastCheckedOnPremiseNotification];
 }
 
 + (void)removePendingNotificationsWithCompletionHandler:(void (^)(void))completionHandler {

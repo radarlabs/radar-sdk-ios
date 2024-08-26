@@ -510,13 +510,26 @@
 
 
 + (void)logConversionWithNotification:(UNNotificationRequest *)request {
-    [self logConversionWithNotification:request eventName:@"opened_notification"];
+    [self logConversionWithNotification:request eventName:@"opened_notification" deliveredAfter: nil];
 }
 
 + (void)logConversionWithNotification:(UNNotificationRequest *)request
-                            eventName:(NSString *)eventName {
+                            eventName:(NSString *)eventName
+                       deliveredAfter:(NSDate *)deliveredAfter {
+    
+    
     NSMutableDictionary *metadata = [[NSMutableDictionary alloc] initWithDictionary:request.content.userInfo];
-    [metadata setValue:request.identifier forKey:@"identifier"];
+    NSDictionary<NSString *, NSString *> *result = [RadarUtils
+                                                    extractGeofenceIdAndTimestampFromIdentifier:request.identifier];
+    if (result) {
+        NSString *geofenceId = result[@"geofenceId"];
+        [metadata setValue:geofenceId forKey:@"geofenceId"];
+        NSString *timestamp = result[@"registeredAt"];
+        [metadata setValue:timestamp forKey:@"registeredAt"];
+        [metadata setObject:deliveredAfter forKey:@"deliveredAfter"];
+    }
+
+    
     
     [self sendLogConversionRequestWithName:eventName metadata:metadata completionHandler:^(RadarStatus status, RadarEvent * _Nullable event) {
         NSString *message = [NSString stringWithFormat:@"Conversion name = %@: status = %@; event = %@", event.conversionName, [Radar stringForStatus:status], event];

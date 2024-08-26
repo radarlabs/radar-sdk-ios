@@ -164,6 +164,18 @@ static NSDateFormatter *_isoDateFormatter;
     } 
 }
 
++ (NSDictionary<NSString *, NSString *> *)extractGeofenceIdAndTimestampFromIdentifier:(NSString *)identifier {
+    NSArray<NSString *> *components = [identifier componentsSeparatedByString:@"_"];
+    if (components.count != 3) {
+        return nil; // Invalid format
+    }
+    
+    NSString *geofenceId = components[1];
+    NSString *registeredAt = components[2];
+    
+    return @{@"geofenceId": geofenceId, @"registeredAt": registeredAt};
+}
+
 #pragma mark - threading
 
 + (void)runOnMainThread:(dispatch_block_t)block {
