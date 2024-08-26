@@ -31,7 +31,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         Radar.setMetadata([ "foo": "bar" ])
         Radar.setDelegate(self)
         Radar.setVerifiedDelegate(self)
-        
+ 
         return true
     }
     
@@ -83,6 +83,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
                 print("Track once: status = \(Radar.stringForStatus(status)); location = \(String(describing: location)); events = \(String(describing: events)); user = \(String(describing: user))")
             }
         }
+        
+        demoButton(text: "trackOnce") {
+            Radar.trackOnce()
+        }
+
 
         demoButton(text: "startTracking") {
             let options = RadarTrackingOptions.presetContinuous

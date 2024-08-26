@@ -31,6 +31,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, assign) BOOL useRadarModifiedBeacon;
 
+@property (nonatomic, assign) BOOL useLocationMetadata;
+
 /**
  Initializes a new RadarSdkConfiguration object with given value.
  */

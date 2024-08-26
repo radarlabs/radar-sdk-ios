@@ -6,11 +6,13 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <CoreMotion/CoreMotion.h>
 
 #import "Radar.h"
 #import "RadarDelegate.h"
 #import "RadarMeta.h"
 #import "RadarPermissionsHelper.h"
+#import "RadarActivityManager.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -19,6 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonnull, strong, nonatomic) CLLocationManager *locationManager;
 @property (nonnull, strong, nonatomic) CLLocationManager *lowPowerLocationManager;
 @property (nonnull, strong, nonatomic) RadarPermissionsHelper *permissionsHelper;
+@property (nullable, strong, nonatomic) RadarActivityManager *activityManager;
 
 + (instancetype)sharedInstance;
 - (void)getLocationWithCompletionHandler:(RadarLocationCompletionHandler _Nullable)completionHandler;
