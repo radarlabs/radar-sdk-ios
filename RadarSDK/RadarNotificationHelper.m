@@ -168,19 +168,27 @@ static NSString *const kSyncGeofenceIdentifierPrefix = @"radar_geofence_";
 }
 
 + (void)addOnPremiseNotificationRequests:(NSArray<UNNotificationRequest *> *)requests {
-    for (UNNotificationRequest *request in requests) {
-        [[UNUserNotificationCenter currentNotificationCenter] addNotificationRequest:request withCompletionHandler:^(NSError *_Nullable error) {
-            if (error) {
-                [[RadarLogger sharedInstance]
-                    logWithLevel:RadarLogLevelInfo
-                        message:[NSString stringWithFormat:@"Error adding local notification | identifier = %@; error = %@", request.identifier, error]];
-            } else {
-                [RadarState addPendingNotificationRequest:request];
-                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo
-                                                   message:[NSString stringWithFormat:@"Added local notification | identifier = %@", request.identifier]];
-            }
-        }];
-    }
+    UNUserNotificationCenter *notificationCenter = [UNUserNotificationCenter currentNotificationCenter];
+    [notificationCenter getNotificationSettingsWithCompletionHandler:^(UNNotificationSettings *settings) {
+        if (settings.authorizationStatus != UNAuthorizationStatusAuthorized) {
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:@"Notification permissions not granted. Skipping adding notifications."];
+            return;
+        }
+        
+        for (UNNotificationRequest *request in requests) {
+            [notificationCenter addNotificationRequest:request withCompletionHandler:^(NSError *_Nullable error) {
+                if (error) {
+                    [[RadarLogger sharedInstance]
+                        logWithLevel:RadarLogLevelInfo
+                            message:[NSString stringWithFormat:@"Error adding local notification | identifier = %@; error = %@", request.identifier, error]];
+                } else {
+                    [RadarState addPendingNotificationRequest:request];
+                    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo
+                                                       message:[NSString stringWithFormat:@"Added local notification | identifier = %@", request.identifier]];
+                }
+            }];
+        }
+    }];
 }
 
 + (void)registerBackgroundNotificationChecks {
