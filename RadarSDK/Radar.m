@@ -56,15 +56,15 @@
                                                object:nil];
 
     [[NSNotificationCenter defaultCenter] addObserver:[self sharedInstance]
-                                             selector:@selector(logTermination)
+                                             selector:@selector(applicationWillTerminate)
                                                  name:UIApplicationWillTerminateNotification
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:[self sharedInstance]
-                                             selector:@selector(logBackgrounding)
+                                             selector:@selector(applicationDidEnterBackground)
                                                  name:UIApplicationDidEnterBackgroundNotification
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:[self sharedInstance]
-                                             selector:@selector(logResigningActive)
+                                             selector:@selector(applicationWillResignActive)
                                                  name:UIApplicationWillResignActiveNotification
                                                object:nil];
     
@@ -1057,16 +1057,16 @@
     [RadarSdkConfiguration updateSdkConfigurationFromServer];
 }
 
-- (void)logTermination { 
++ (void)logTermination { 
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeNone message:@"App terminating" includeDate:YES includeBattery:YES append:YES];
 }
 
-- (void)logBackgrounding {
++ (void)logBackgrounding {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeNone message:@"App entering background" includeDate:YES includeBattery:YES append:YES];
     [[RadarLogBuffer sharedInstance] persistLogs];
 }
 
-- (void)logResigningActive {
++ (void)logResigningActive {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeNone message:@"App resigning active" includeDate:YES includeBattery:YES];
 }
 
@@ -1302,6 +1302,18 @@
     if (sdkConfiguration.trackOnceOnAppOpen) {
         [Radar trackOnceWithCompletionHandler:nil];
     }
+}
+
+- (void)applicationDidEnterBackground {
+    [Radar logBackgrounding];
+}
+
+- (void)applicationWillResignActive {
+    [Radar logResigningActive];
+}
+
+- (void)applicationWillTerminate {
+    [Radar logTermination];
 }
 
 - (void)dealloc {

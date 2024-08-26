@@ -1119,6 +1119,22 @@ logConversionWithNotification
  */
 + (void)setLogLevel:(RadarLogLevel)level;
 
+
+/**
+  @deprecated Log application terminating. Include this in your application delegate's applicationWillTerminate: method.
+ */
++ (void)logTermination;
+
+/**
+  @deprecated Log application entering background. Include this in your application delegate's applicationDidEnterBackground: method.
+ */
++ (void)logBackgrounding;
+
+/**
+  @deprecated Log application resigning active. Include this in your application delegate's applicationWillResignActive: method.
+ */
++ (void)logResigningActive;
+
 #pragma mark - Helpers
 
 /**
