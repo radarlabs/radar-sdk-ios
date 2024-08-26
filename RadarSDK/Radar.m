@@ -46,6 +46,8 @@
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         [RadarNotificationHelper swizzleNotificationCenterDelegate];
+        [RadarNotificationHelper registerBackgroundNotificationChecks];
+        [RadarNotificationHelper scheduleBackgroundNotificationChecks];
     });
 }
 
@@ -83,8 +85,7 @@
         [[RadarReplayBuffer sharedInstance] loadReplaysFromPersistentStore];
     }
 
-    [RadarNotificationHelper registerBackgroundNotificationChecks];
-    [RadarNotificationHelper scheduleBackgroundNotificationChecks];
+
 
     if ([[UIApplication sharedApplication] applicationState] != UIApplicationStateBackground) {
         [RadarSettings updateSessionId];
