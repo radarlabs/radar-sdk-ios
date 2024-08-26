@@ -42,9 +42,10 @@
     return sharedInstance;
 }
 
-+ (void) setUpBackgroundNotificationChecks {
++ (void) nativeSetup {
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
+        [RadarNotificationHelper swizzleNotificationCenterDelegate];
         [RadarNotificationHelper registerBackgroundNotificationChecks];
         [RadarNotificationHelper scheduleBackgroundNotificationChecks];
     });
@@ -74,10 +75,7 @@
     RadarSdkConfiguration *sdkConfiguration = [RadarSettings sdkConfiguration];
 
     if (NSClassFromString(@"XCTestCase") == nil) {
-        static dispatch_once_t onceToken;
-        dispatch_once(&onceToken, ^{
-            [RadarNotificationHelper swizzleNotificationCenterDelegate];
-        });
+        [Radar nativeSetup];
     }
 
     if (sdkConfiguration.usePersistence) {

@@ -1206,7 +1206,7 @@ logConversionWithNotification
 + (NSDictionary *)dictionaryForLocation:(CLLocation *)location NS_SWIFT_NAME(dictionaryForLocation(_:));
 
 
-+ (void) setUpBackgroundNotificationChecks NS_SWIFT_NAME(setUpBackgroundNotificationChecks());
++ (void) nativeSetup NS_SWIFT_NAME(nativeSetup());
 
 @end
 
