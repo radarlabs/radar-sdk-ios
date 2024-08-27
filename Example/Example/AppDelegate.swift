@@ -315,7 +315,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
     }
     
     func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse) async {
-        NSLog("main func")
+        // Do nothing
     }
 
     func notify(_ body: String) {
