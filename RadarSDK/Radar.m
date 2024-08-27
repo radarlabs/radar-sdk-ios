@@ -510,12 +510,12 @@
 
 
 + (void)logConversionWithNotification:(UNNotificationRequest *)request {
-    [self logConversionWithNotification:request eventName: @"opened_app" source:@"notification" deliveredAfter: nil];
+    [self logConversionWithNotification:request eventName: @"opened_app" conversionSource:@"notification" deliveredAfter: nil];
 }
 
 + (void)logConversionWithNotification:(UNNotificationRequest *)request
                             eventName:(NSString *)eventName
-                            source:(NSString *)source
+                            conversionSource:(NSString *)conversionSource
                        deliveredAfter:(NSDate *)deliveredAfter {
     
     NSMutableDictionary *metadata = [[NSMutableDictionary alloc] initWithDictionary:request.content.userInfo];
@@ -529,8 +529,8 @@
         [metadata setObject:deliveredAfter forKey:@"deliveredAfter"];
     }
 
-    if (source) {
-        [metadata setValue:source forKey:@"source"];
+    if (conversionSource) {
+        [metadata setValue:conversionSource forKey:@"conversion_source"];
     }
     
     [self sendLogConversionRequestWithName:eventName metadata:metadata completionHandler:^(RadarStatus status, RadarEvent * _Nullable event) {
