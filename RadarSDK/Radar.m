@@ -530,7 +530,7 @@
     }
 
     if (conversionSource) {
-        [metadata setValue:conversionSource forKey:@"conversion_source"];
+        [metadata setValue:conversionSource forKey:@"conversionSource"];
     }
     
     [self sendLogConversionRequestWithName:eventName metadata:metadata completionHandler:^(RadarStatus status, RadarEvent * _Nullable event) {
