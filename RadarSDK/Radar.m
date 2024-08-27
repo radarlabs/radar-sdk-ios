@@ -510,13 +510,13 @@
 
 
 + (void)logConversionWithNotification:(UNNotificationRequest *)request {
-    [self logConversionWithNotification:request eventName:@"opened_notification" deliveredAfter: nil];
+    [self logConversionWithNotification:request eventName: @"opened_app" source:@"notification" deliveredAfter: nil];
 }
 
 + (void)logConversionWithNotification:(UNNotificationRequest *)request
                             eventName:(NSString *)eventName
+                            source:(NSString *)source
                        deliveredAfter:(NSDate *)deliveredAfter {
-    
     
     NSMutableDictionary *metadata = [[NSMutableDictionary alloc] initWithDictionary:request.content.userInfo];
     NSDictionary<NSString *, NSString *> *result = [RadarUtils
@@ -529,7 +529,9 @@
         [metadata setObject:deliveredAfter forKey:@"deliveredAfter"];
     }
 
-    
+    if (source) {
+        [metadata setValue:source forKey:@"source"];
+    }
     
     [self sendLogConversionRequestWithName:eventName metadata:metadata completionHandler:^(RadarStatus status, RadarEvent * _Nullable event) {
         NSString *message = [NSString stringWithFormat:@"Conversion name = %@: status = %@; event = %@", event.conversionName, [Radar stringForStatus:status], event];
