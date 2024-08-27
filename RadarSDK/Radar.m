@@ -82,8 +82,6 @@
         [[RadarReplayBuffer sharedInstance] loadReplaysFromPersistentStore];
     }
 
-
-
     if ([[UIApplication sharedApplication] applicationState] != UIApplicationStateBackground) {
         [RadarSettings updateSessionId];
     }
@@ -109,7 +107,6 @@
                                          [self flushLogs];
                                      }];
 }
-
 
 
 #pragma mark - Properties
@@ -515,7 +512,7 @@
 
 + (void)logConversionWithNotification:(UNNotificationRequest *)request
                             eventName:(NSString *)eventName
-                            conversionSource:(NSString *)conversionSource
+                     conversionSource:(NSString *)conversionSource
                        deliveredAfter:(NSDate *)deliveredAfter {
     
     NSMutableDictionary *metadata = [[NSMutableDictionary alloc] initWithDictionary:request.content.userInfo];
