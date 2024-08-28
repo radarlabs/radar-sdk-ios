@@ -1119,21 +1119,20 @@ logConversionWithNotification
  */
 + (void)setLogLevel:(RadarLogLevel)level;
 
-
 /**
   @deprecated Log application terminating. Include this in your application delegate's applicationWillTerminate: method.
  */
-+ (void)logTermination;
++ (void)logTermination __attribute__((deprecated("Logging is now automatic.")));
 
 /**
   @deprecated Log application entering background. Include this in your application delegate's applicationDidEnterBackground: method.
  */
-+ (void)logBackgrounding;
++ (void)logBackgrounding __attribute__((deprecated("Logging is now automatic.")));
 
 /**
   @deprecated Log application resigning active. Include this in your application delegate's applicationWillResignActive: method.
  */
-+ (void)logResigningActive;
++ (void)logResigningActive __attribute__((deprecated("Logging is now automatic.")));
 
 #pragma mark - Helpers
 
