@@ -1316,7 +1316,7 @@
 - (void)applicationWillTerminate {
     [Radar logTermination];
 }
-#pragma clang diagnostic po
+#pragma clang diagnostic pop
 
 - (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
