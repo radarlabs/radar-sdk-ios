@@ -1303,7 +1303,8 @@
         [Radar trackOnceWithCompletionHandler:nil];
     }
 }
-
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
 - (void)applicationDidEnterBackground {
     [Radar logBackgrounding];
 }
@@ -1315,6 +1316,7 @@
 - (void)applicationWillTerminate {
     [Radar logTermination];
 }
+#pragma clang diagnostic po
 
 - (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
