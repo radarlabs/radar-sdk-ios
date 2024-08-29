@@ -42,6 +42,10 @@
 }
 
 + (void)initializeWithPublishableKey:(NSString *)publishableKey {
+    [self initializeWithPublishableKey:publishableKey completionHandler:nil];
+}
+    
++ (void)initializeWithPublishableKey:(NSString *)publishableKey completionHandler:(RadarTrackCompletionHandler)completionHandler {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"initialize()"];
     
     Class RadarSDKMotion = NSClassFromString(@"RadarSDKMotion");
@@ -82,7 +86,7 @@
                                             [Radar startTrackingWithOptions:[RadarSettings trackingOptions]];
                                          }
                                          if (sdkConfiguration.trackOnceOnAppOpen) {
-                                            [Radar trackOnceWithCompletionHandler:nil];
+                                            [Radar trackOnceWithCompletionHandler:completionHandler];
                                          }
 
                                          [self flushLogs];
