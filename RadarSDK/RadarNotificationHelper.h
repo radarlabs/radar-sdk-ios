@@ -12,6 +12,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface RadarNotificationHelper : NSObject
 
+typedef void (^NotificationPermissionCheckCompletion)(BOOL granted);
+
 + (void)showNotificationsForEvents:(NSArray<RadarEvent *> *)events;
 
 + (void)swizzleNotificationCenterDelegate;
@@ -25,6 +27,8 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)registerBackgroundNotificationChecks;
 
 + (void)scheduleBackgroundNotificationChecks;
+
++ (void)checkNotificationPermissionsWithCompletion:(nullable NotificationPermissionCheckCompletion)completion;
 
 @end
 

@@ -24,9 +24,9 @@ static NSString *const kRegionIds = @"radar-regionIds";
 static NSString *const kBeaconIds = @"radar-beaconIds";
 static NSString *const kLastHeadingData = @"radar-lastHeadingData";
 static NSString *const kLastMotionActivityData = @"radar-lastMotionActivityData";
-
 static NSString *const kPendingNotificationRequests = @"radar-pendingNotificationRequests";
 static NSString *const kLastCheckedOnPremiseNotification = @"radar-lastCheckedOnPremiseNotification";
+static NSString *const kNotificationPermissionGranted = @"radar-notificationPermissionGranted";
 
 + (CLLocation *)lastLocation {
     NSDictionary *dict = [[NSUserDefaults standardUserDefaults] dictionaryForKey:kLastLocation];
@@ -232,12 +232,15 @@ static NSString *const kLastCheckedOnPremiseNotification = @"radar-lastCheckedOn
     [[NSUserDefaults standardUserDefaults] setObject:storedRequests forKey:kPendingNotificationRequests];
 }
 
-
 + (NSDate *)lastCheckedOnPremiseNotification {
     return [[NSUserDefaults standardUserDefaults] objectForKey:kLastCheckedOnPremiseNotification];
 }
 + (void)updateLastCheckedOnPremiseNotification {
     [[NSUserDefaults standardUserDefaults] setObject:[NSDate date] forKey:kLastCheckedOnPremiseNotification];
+}
+
++ (void)setNotificationPermissionGranted:(BOOL)notificationPermissionGranted {
+    [[NSUserDefaults standardUserDefaults] setBool:notificationPermissionGranted forKey:kNotificationPermissionGranted];
 }
 
 @end

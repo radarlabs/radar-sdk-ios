@@ -87,6 +87,9 @@
     }
 
     [[RadarLocationManager sharedInstance] updateTrackingFromInitialize];
+
+    // just setting the notification permission status into RadarState for now
+    [RadarNotificationHelper checkNotificationPermissionsWithCompletion:nil];
     
     [[RadarAPIClient sharedInstance] getConfigForUsage:@"initialize"
                                               verified:NO
