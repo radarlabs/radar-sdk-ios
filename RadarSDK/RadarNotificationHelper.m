@@ -186,7 +186,7 @@ static NSString *const kSyncGeofenceIdentifierPrefix = @"radar_geofence_";
                 }];
             }
         } else {
-            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:@"Notification permissions not granted. Skipping adding notifications."];
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Notification permissions not granted. Skipping adding notifications."];
             return;
         }
     }];
@@ -225,7 +225,7 @@ static NSString *const kSyncGeofenceIdentifierPrefix = @"radar_geofence_";
         BOOL granted = (settings.authorizationStatus == UNAuthorizationStatusAuthorized);
         [RadarState setNotificationPermissionGranted:granted];
         if (!granted) {
-            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:@"Notification permissions not granted. Skipping adding notifications."];
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Notification permissions not granted."];
         }
         if (completion) {
             completion(granted);
