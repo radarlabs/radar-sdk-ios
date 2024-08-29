@@ -6,6 +6,7 @@
 //
 
 #import "RadarCoordinate.h"
+#import "RadarTimeZone.h"
 #import <Foundation/Foundation.h>
 
 /**
@@ -133,6 +134,11 @@ The plus4 value for the zip of the address.
 @property (nullable, copy, nonatomic, readonly) NSString *plus4;
 
 /**
+The distance to the search anchor in meters.
+*/
+@property (nullable, copy, nonatomic, readonly) NSNumber *distance; 
+
+/**
 The layer of the address, e.g. 'place', 'address', 'intersection', 'street', 'state', etc.
 */
 @property (nullable, copy, nonatomic, readonly) NSString *layer;
@@ -146,6 +152,12 @@ The metadata of the address.
   The confidence level of the geocoding result.
  */
 @property (nonatomic, assign) enum RadarAddressConfidence confidence;
+
+/**
+The time zone information of the address.
+ */
+@property (nullable, copy, nonatomic, readonly) RadarTimeZone *timeZone;
+
 + (RadarAddress *_Nullable)addressFromObject:(id _Nonnull)object;
 + (NSArray<NSDictionary *> *_Nullable)arrayForAddresses:(NSArray<RadarAddress *> *_Nullable)addresses;
 - (NSDictionary *_Nonnull)dictionaryValue;

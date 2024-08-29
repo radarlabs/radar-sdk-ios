@@ -49,7 +49,12 @@
 }
 
 - (void)logWithLevel:(RadarLogLevel)level type:(RadarLogType)type message:(NSString *)message includeDate:(BOOL)includeDate includeBattery:(BOOL)includeBattery append:(BOOL)append{
-     NSString *dateString = [self.dateFormatter stringFromDate:[NSDate date]];
+    RadarLogLevel logLevel = [RadarSettings logLevel];
+    if (level > logLevel) {
+        return;
+    }
+
+    NSString *dateString = [self.dateFormatter stringFromDate:[NSDate date]];
     float batteryLevel = [self.device batteryLevel];
     if (includeDate && includeBattery) {
         message = [NSString stringWithFormat:@"%@ |  at %@ | with %2.f%% battery", message, dateString, batteryLevel*100];
@@ -64,11 +69,9 @@
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             [Radar sendLog:level type:type message:message];
 
-            RadarLogLevel logLevel = [RadarSettings logLevel];
-            if (logLevel >= level) {
-                NSString *log = [NSString stringWithFormat:@"%@ | backgroundTimeRemaining = %g", message, [RadarUtils backgroundTimeRemaining]];
+            NSString *log = [NSString stringWithFormat:@"%@ | backgroundTimeRemaining = %g", message, [RadarUtils backgroundTimeRemaining]];
 
-                os_log(OS_LOG_DEFAULT, "%@", log);
+            os_log(OS_LOG_DEFAULT, "%@", log);
 
                 dispatch_async(dispatch_get_main_queue(), ^{
                     [[RadarDelegateHolder sharedInstance] didLogMessage:log];

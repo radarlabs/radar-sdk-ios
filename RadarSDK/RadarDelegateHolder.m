@@ -9,6 +9,7 @@
 
 #import "RadarLogger.h"
 #import "RadarNotificationHelper.h"
+#import "RadarUtils.h"
 
 @implementation RadarDelegateHolder
 
@@ -78,12 +79,13 @@
     }
 }
 
-- (void)didUpdateToken:(NSString *)token {
+- (void)didUpdateToken:(RadarVerifiedLocationToken *)token {
     if (self.verifiedDelegate) {
         [self.verifiedDelegate didUpdateToken:token];
     }
 
-    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"📍 Radar token updated | token = %@", token]];
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"📍 Radar token updated | passed = %d; expiresAt = %@; expiresIn = %f; token = %@", token.passed, token.expiresAt, token.expiresIn, token.token]];
 }
+
 
 @end

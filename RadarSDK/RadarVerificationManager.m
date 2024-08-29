@@ -14,6 +14,7 @@
 
 #import "RadarVerificationManager.h"
 
+#import "Radar+Internal.h"
 #import "RadarAPIClient.h"
 #import "RadarBeaconManager.h"
 #import "RadarLocationManager.h"
@@ -28,11 +29,21 @@
 #include <mach-o/dyld.h>
 #include <sys/stat.h>
 #include <stdio.h>
+#include <ifaddrs.h>
+#include <arpa/inet.h>
 
 @interface RadarVerificationManager ()
 
-@property (strong, nonatomic) NSTimer *timer;
+@property (assign, nonatomic) BOOL started;
+@property (assign, nonatomic) BOOL scheduled;
+@property (strong, nonatomic) NSTimer *intervalTimer;
 @property (nonatomic, retain) nw_path_monitor_t monitor;
+@property (strong, nonatomic) RadarVerifiedLocationToken *lastToken;
+@property (assign, nonatomic) NSTimeInterval lastTokenSystemUptime;
+@property (assign, nonatomic) BOOL lastTokenBeacons;
+@property (strong, nonatomic) NSString *lastIPs;
+@property (copy, nonatomic) NSString *expectedCountryCode;
+@property (copy, nonatomic) NSString *expectedStateCode;
 
 @end
 
@@ -55,115 +66,19 @@
     return sharedInstance;
 }
 
-- (void)trackVerifiedWithCompletionHandler:(RadarTrackCompletionHandler)completionHandler {
+- (void)trackVerifiedWithCompletionHandler:(RadarTrackVerifiedCompletionHandler)completionHandler {
     [self trackVerifiedWithBeacons:NO completionHandler:completionHandler];
 }
 
-- (void)trackVerifiedWithBeacons:(BOOL)beacons completionHandler:(RadarTrackCompletionHandler)completionHandler {
+- (void)trackVerifiedWithBeacons:(BOOL)beacons completionHandler:(RadarTrackVerifiedCompletionHandler)completionHandler {
+    BOOL lastTokenBeacons = beacons;
+    
     [[RadarAPIClient sharedInstance]
      getConfigForUsage:@"verify"
      verified:YES
      completionHandler:^(RadarStatus status, RadarConfig *_Nullable config) {
         [[RadarLocationManager sharedInstance]
          getLocationWithDesiredAccuracy:RadarTrackingOptionsDesiredAccuracyMedium
-         completionHandler:^(RadarStatus status, CLLocation *_Nullable location, BOOL stopped) {
-            if (status != RadarStatusSuccess) {
-                if (completionHandler) {
-                    [RadarUtils runOnMainThread:^{
-                        completionHandler(status, nil, nil, nil);
-                    }];
-                }
-                
-                return;
-            }
-            
-            [self getAttestationWithNonce:config.nonce
-                        completionHandler:^(NSString *_Nullable attestationString, NSString *_Nullable keyId, NSString *_Nullable attestationError) {
-                void (^callTrackAPI)(NSArray<RadarBeacon *> *_Nullable) = ^(NSArray<RadarBeacon *> *_Nullable beacons) {
-                    [[RadarAPIClient sharedInstance]
-                     trackWithLocation:location
-                     stopped:RadarState.stopped
-                     foreground:[RadarUtils foreground]
-                     source:RadarLocationSourceForegroundLocation
-                     replayed:NO
-                     beacons:beacons
-                     verified:YES
-                     attestationString:attestationString
-                     keyId:keyId
-                     attestationError:attestationError
-                     encrypted:NO
-                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events,
-                                         RadarUser *_Nullable user, NSArray<RadarGeofence *> *_Nullable nearbyGeofences,
-                                         RadarConfig *_Nullable config, NSString *_Nullable token) {
-                        if (status == RadarStatusSuccess && config != nil) {
-                            [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
-                        }
-                        if (completionHandler) {
-                            [RadarUtils runOnMainThread:^{
-                                completionHandler(status, location, events, user);
-                            }];
-                        }
-                    }];
-                };
-                
-                if (beacons) {
-                    [[RadarAPIClient sharedInstance]
-                     searchBeaconsNear:location
-                     radius:1000
-                     limit:10
-                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarBeacon *> *_Nullable beacons,
-                                         NSArray<NSString *> *_Nullable beaconUUIDs) {
-                        if (beaconUUIDs && beaconUUIDs.count) {
-                            [RadarUtils runOnMainThread:^{
-                                [[RadarBeaconManager sharedInstance]
-                                 rangeBeaconUUIDs:beaconUUIDs
-                                 completionHandler:^(RadarStatus status, NSArray<RadarBeacon *> *_Nullable beacons) {
-                                    if (status != RadarStatusSuccess || !beacons) {
-                                        callTrackAPI(nil);
-                                        
-                                        return;
-                                    }
-                                    
-                                    callTrackAPI(beacons);
-                                }];
-                            }];
-                        } else if (beacons && beacons.count) {
-                            [RadarUtils runOnMainThread:^{
-                                [[RadarBeaconManager sharedInstance]
-                                 rangeBeacons:beacons
-                                 completionHandler:^(RadarStatus status, NSArray<RadarBeacon *> *_Nullable beacons) {
-                                    if (status != RadarStatusSuccess || !beacons) {
-                                        callTrackAPI(nil);
-                                        
-                                        return;
-                                    }
-                                    
-                                    callTrackAPI(beacons);
-                                }];
-                            }];
-                        } else {
-                            callTrackAPI(@[]);
-                        }
-                    }];
-                } else {
-                    callTrackAPI(nil);
-                }
-            }];
-        }];
-    }];
-}
-
-- (void)trackVerifiedTokenWithCompletionHandler:(RadarTrackTokenCompletionHandler)completionHandler {
-    [self trackVerifiedTokenWithBeacons:NO completionHandler:completionHandler];
-}
-
-- (void)trackVerifiedTokenWithBeacons:(BOOL)beacons completionHandler:(RadarTrackTokenCompletionHandler)completionHandler {
-    [[RadarAPIClient sharedInstance]
-     getConfigForUsage:@"verify"
-     verified:YES
-     completionHandler:^(RadarStatus status, RadarConfig *_Nullable config) {
-        [[RadarLocationManager sharedInstance]
-         getLocationWithDesiredAccuracy:RadarTrackingOptionsDesiredAccuracyHigh
          completionHandler:^(RadarStatus status, CLLocation *_Nullable location, BOOL stopped) {
             if (status != RadarStatusSuccess) {
                 if (completionHandler) {
@@ -189,12 +104,19 @@
                      attestationString:attestationString
                      keyId:keyId
                      attestationError:attestationError
-                     encrypted:YES
+                     encrypted:NO
+                     expectedCountryCode:self.expectedCountryCode
+                     expectedStateCode:self.expectedStateCode
                      completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events,
                                          RadarUser *_Nullable user, NSArray<RadarGeofence *> *_Nullable nearbyGeofences,
-                                         RadarConfig *_Nullable config, NSString *_Nullable token) {
+                                         RadarConfig *_Nullable config, RadarVerifiedLocationToken *_Nullable token) {
                         if (status == RadarStatusSuccess && config != nil) {
                             [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
+                        }
+                        if (token) {
+                            self.lastToken = token;
+                            self.lastTokenSystemUptime = [NSProcessInfo processInfo].systemUptime;
+                            self.lastTokenBeacons = lastTokenBeacons;
                         }
                         if (completionHandler) {
                             [RadarUtils runOnMainThread:^{
@@ -251,7 +173,58 @@
     }];
 }
 
-- (void)startTrackingVerified:(BOOL)token interval:(NSTimeInterval)interval beacons:(BOOL)beacons {
+- (void)startTrackingVerifiedWithInterval:(NSTimeInterval)interval beacons:(BOOL)beacons {
+    self.started = YES;
+    self.scheduled = NO;
+    
+    __block void (^trackVerified)(void);
+    __block __weak void (^weakTrackVerified)(void);
+    trackVerified = ^{
+        weakTrackVerified = trackVerified;
+        
+        [self trackVerifiedWithBeacons:beacons completionHandler:^(RadarStatus status, RadarVerifiedLocationToken *_Nullable token) {
+            NSTimeInterval expiresIn = 0;
+            NSTimeInterval minInterval = interval;
+            
+            if (token) {
+                expiresIn = token.expiresIn;
+                
+                // if expiresIn is shorter than interval, override interval
+                minInterval = MIN(expiresIn, interval);
+            }
+            
+            // re-request early to maximize the likelihood that a cached token is available
+            if (minInterval > 20) {
+                minInterval = minInterval - 10;
+            }
+            
+            // min interval is 10 seconds
+            if (minInterval < 10) {
+                minInterval = 10;
+            }
+            
+            if (self.scheduled) {
+                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Token request already scheduled"];
+                
+                return;
+            }
+            
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Requesting token again in %f seconds | minInterval = %f; expiresIn = %f; interval = %f", minInterval, minInterval, expiresIn, interval]];
+            
+            self.scheduled = YES;
+            
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(minInterval * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                if (self.started) {
+                    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Token request interval fired"];
+                    
+                    weakTrackVerified();
+                    
+                    self.scheduled = NO;
+                }
+            });
+        }];
+    };
+    
     if (@available(iOS 12.0, *)) {
         if (!_monitor) {
             _monitor = nw_path_monitor_create();
@@ -261,14 +234,29 @@
             nw_path_monitor_set_update_handler(_monitor, ^(nw_path_t path) {
                 if (nw_path_get_status(path) == nw_path_status_satisfied) {
                     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Network connected"];
-
-                    if (token) {
-                        [self trackVerifiedTokenWithBeacons:beacons completionHandler:nil];
-                    } else {
-                        [self trackVerifiedWithBeacons:beacons completionHandler:nil];
-                    }
                 } else {
                     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Network disconnected"];
+                }
+                
+                NSString *ips = [self getIPs];
+                BOOL changed = NO;
+                
+                if (!self.lastIPs) {
+                    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"First time getting IPs | ips = %@", ips]];
+                    changed = NO;
+                } else if (!ips || [ips isEqualToString:@"error"]) {
+                    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Error getting IPs | ips = %@", ips]];
+                    changed = YES;
+                } else if (![ips isEqualToString:self.lastIPs]) {
+                    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"IPs changed | ips = %@; lastIPs = %@", ips, self.lastIPs]];
+                    changed = YES;
+                } else {
+                    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"IPs unchanged"];
+                }
+                self.lastIPs = ips;
+                
+                if (changed) {
+                    trackVerified();
                 }
             });
 
@@ -276,25 +264,42 @@
         }
     }
 
-    if (!self.timer) {
-        self.timer = [NSTimer scheduledTimerWithTimeInterval:interval
-                                                     repeats:YES
-                                                       block:^(NSTimer *_Nonnull timer) {
-                                                           [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Timer fired"];
+    trackVerified();
+}
 
-                                                           if (token) {
-                                                               [self trackVerifiedTokenWithBeacons:beacons completionHandler:nil];
-                                                           } else {
-                                                               [self trackVerifiedWithBeacons:beacons completionHandler:nil];
-                                                           }
-                                                       }];
+- (void)stopTrackingVerified {
+    self.started = NO;
+    
+    if (@available(iOS 12.0, *)) {
+        if (_monitor) {
+            nw_path_monitor_cancel(_monitor);
+        }
+    }
+}
+
+- (void)getVerifiedLocationTokenWithCompletionHandler:(RadarTrackVerifiedCompletionHandler)completionHandler {
+    NSTimeInterval lastTokenElapsed = [NSProcessInfo processInfo].systemUptime - self.lastTokenSystemUptime;
+    
+    if (self.lastToken) {
+        if (lastTokenElapsed < self.lastToken.expiresIn) {
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Last token valid | lastToken.expiresIn = %f; lastTokenElapsed = %f", self.lastToken.expiresIn, lastTokenElapsed]];
+            
+            [Radar flushLogs];
+            
+            return completionHandler(RadarStatusSuccess, self.lastToken);
+        }
+        
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Last token invalid | lastToken.expiresIn = %f; lastTokenElapsed = %f", self.lastToken.expiresIn, lastTokenElapsed]];
+    } else {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"No last token"];
     }
     
-    if (token) {
-        [self trackVerifiedTokenWithBeacons:beacons completionHandler:nil];
-    } else {
-        [self trackVerifiedWithBeacons:beacons completionHandler:nil];
-    }
+    [self trackVerifiedWithBeacons:self.lastTokenBeacons completionHandler:completionHandler];
+}
+
+- (void)setExpectedJurisdictionWithCountryCode:(NSString *)countryCode stateCode:(NSString *)stateCode {
+    self.expectedCountryCode = countryCode;
+    self.expectedStateCode = stateCode;
 }
 
 - (void)getAttestationWithNonce:(NSString *)nonce completionHandler:(RadarVerificationCompletionHandler)completionHandler {
@@ -564,6 +569,27 @@
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Jailbreak check passed"];
     
     return jailbroken;
+}
+
+- (NSString *)getIPs {
+    NSMutableArray<NSString *> *ips = [NSMutableArray new];
+    struct ifaddrs *interfaces = NULL;
+    struct ifaddrs *temp_addr = NULL;
+    int success = 0;
+    success = getifaddrs(&interfaces);
+    if (success == 0) {
+        temp_addr = interfaces;
+        while(temp_addr != NULL) {
+            if(temp_addr->ifa_addr->sa_family == AF_INET) {
+                NSString *ip = [NSString stringWithUTF8String:inet_ntoa(((struct sockaddr_in *)temp_addr->ifa_addr)->sin_addr)];
+                [ips addObject:ip];
+            }
+            temp_addr = temp_addr->ifa_next;
+        }
+    }
+    freeifaddrs(interfaces);
+    return (ips.count > 0) ? [ips componentsJoinedByString:@","] : @"error";
+
 }
 
 @end
