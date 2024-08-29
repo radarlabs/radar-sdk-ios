@@ -76,6 +76,8 @@
 
     if (NSClassFromString(@"XCTestCase") == nil) {
         [Radar nativeSetup];
+        // just setting the notification permission status into RadarState for now
+        [RadarNotificationHelper checkNotificationPermissionsWithCompletion:nil];
     }
 
     if (sdkConfiguration.usePersistence) {
@@ -87,9 +89,6 @@
     }
 
     [[RadarLocationManager sharedInstance] updateTrackingFromInitialize];
-
-    // just setting the notification permission status into RadarState for now
-    [RadarNotificationHelper checkNotificationPermissionsWithCompletion:nil];
     
     [[RadarAPIClient sharedInstance] getConfigForUsage:@"initialize"
                                               verified:NO
