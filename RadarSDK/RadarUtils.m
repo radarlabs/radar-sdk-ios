@@ -10,6 +10,7 @@
 #import <sys/utsname.h>
 
 #import "RadarUtils.h"
+#import "RadarSettings.h"
 
 @implementation RadarUtils
 
@@ -186,7 +187,10 @@ static NSDateFormatter *_isoDateFormatter;
         return;
     }
 
-    // we can add a feature gate here to disable the queue and just perform the block here
+    if (![RadarSettings useModifiedThreading]) {
+        block();
+        return;
+    }
 
     static dispatch_queue_t serialQueue;
     static dispatch_once_t onceToken;
