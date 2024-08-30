@@ -62,6 +62,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSDate *)lastAppOpenTime;
 + (BOOL)useRadarModifiedBeacon;
 + (BOOL)useLocationMetadata;
++ (BOOL)useModifiedThreading;
 + (BOOL)xPlatform;
 + (NSString *)xPlatformSDKType;
 + (NSString *)xPlatformSDKVersion;

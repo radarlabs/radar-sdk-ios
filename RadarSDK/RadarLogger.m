@@ -66,15 +66,17 @@
     if (append) {
         [[RadarLogBuffer sharedInstance] write:level type:type message:message forcePersist:YES];
     } else {
-        dispatch_async(dispatch_get_main_queue(), ^{
+        [RadarUtils runOnSerialQueue:^{
             [Radar sendLog:level type:type message:message];
 
             NSString *log = [NSString stringWithFormat:@"%@ | backgroundTimeRemaining = %g", message, [RadarUtils backgroundTimeRemaining]];
 
             os_log(OS_LOG_DEFAULT, "%@", log);
 
-            [[RadarDelegateHolder sharedInstance] didLogMessage:log];
-        });
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [[RadarDelegateHolder sharedInstance] didLogMessage:log];
+            });
+        }];
     }
 }
 
