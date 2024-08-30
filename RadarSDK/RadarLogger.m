@@ -73,10 +73,9 @@
 
             os_log(OS_LOG_DEFAULT, "%@", log);
 
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [[RadarDelegateHolder sharedInstance] didLogMessage:log];
-                });
-            }
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [[RadarDelegateHolder sharedInstance] didLogMessage:log];
+            });
         });
     }
 }
