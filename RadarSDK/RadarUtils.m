@@ -166,12 +166,12 @@ static NSDateFormatter *_isoDateFormatter;
 
 + (NSDictionary<NSString *, NSString *> *)extractGeofenceIdAndTimestampFromIdentifier:(NSString *)identifier {
     NSArray<NSString *> *components = [identifier componentsSeparatedByString:@"_"];
-    if (components.count != 3) {
+    if (components.count != 4) {
         return nil; // Invalid format
     }
     
-    NSString *geofenceId = components[1];
-    NSString *registeredAt = components[2];
+    NSString *geofenceId = components[2];
+    NSString *registeredAt = components[3];
     
     return @{@"geofenceId": geofenceId, @"registeredAt": registeredAt};
 }

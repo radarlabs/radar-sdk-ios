@@ -525,7 +525,9 @@
         [metadata setValue:geofenceId forKey:@"geofenceId"];
         NSString *timestamp = result[@"registeredAt"];
         [metadata setValue:timestamp forKey:@"registeredAt"];
-        [metadata setObject:deliveredAfter forKey:@"deliveredAfter"];
+        if (deliveredAfter) {
+            [metadata setObject:deliveredAfter forKey:@"deliveredAfter"];
+        }
     }
 
     if (conversionSource) {

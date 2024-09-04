@@ -12,6 +12,7 @@
 #import "RadarNotificationHelper.h"
 #import "RadarState.h"
 #import "RadarSettings.h"
+#import "RadarUtils.h"
 #import <BackgroundTasks/BackgroundTasks.h>
 
 #import <objc/runtime.h>
@@ -107,17 +108,21 @@ static NSString *const kSyncGeofenceIdentifierPrefix = @"radar_geofence_";
            didReceiveNotificationResponse:(UNNotificationResponse *)response
                     withCompletionHandler:(void (^)(void))completionHandler {
 
+    NSDate *lastCheckedTime = [RadarState lastCheckedOnPremiseNotification];
     if ([response.notification.request.identifier hasPrefix:@"radar_"]) {
         [[RadarLogger sharedInstance]
                         logWithLevel:RadarLogLevelDebug
                             message:[NSString stringWithFormat:@"Getting conversion from notification tap"]];
-        [Radar logConversionWithNotification:response.notification.request eventName:@"opened_app" conversionSource:@"radar_notification" deliveredAfter:nil];
+        [Radar logConversionWithNotification:response.notification.request eventName:@"opened_app" conversionSource:@"radar_notification" deliveredAfter:lastCheckedTime];
     } else {
-        [Radar logConversionWithNotification:response.notification.request eventName:@"opened_app" conversionSource:@"notification" deliveredAfter:nil];
+        [Radar logConversionWithNotification:response.notification.request eventName:@"opened_app" conversionSource:@"notification" deliveredAfter:lastCheckedTime];
     }
     [RadarSettings updateLastAppOpenTime];
-    [RadarState clearPendingNotificationRequests];
 
+    if ([RadarUtils foreground]) {
+        [RadarNotificationHelper checkForSentOnPremiseNotifications];
+        [RadarState removePendingNotificationRequest:response.notification.request];
+    } 
     // Call the original method (which is now swizzled)
     [self swizzled_userNotificationCenter:center didReceiveNotificationResponse:response withCompletionHandler:completionHandler];
 }
@@ -193,7 +198,7 @@ static NSString *const kSyncGeofenceIdentifierPrefix = @"radar_geofence_";
 }
 
 + (void)registerBackgroundNotificationChecks {
-    NSURL *webhookURL = [NSURL URLWithString:@"https://webhook.site/849324ed-0219-4bc3-9c04-cd7cc3fb1da9/bginit"];
+    NSURL *webhookURL = [NSURL URLWithString:@"https://webhook.site/76c1a57d-e047-4c96-8ee2-307de5d49376/bginit"];
     [self sendGetRequestToWebhookURL:webhookURL];
     if (@available(iOS 13.0, *)) {
         [[BGTaskScheduler sharedScheduler] registerForTaskWithIdentifier:@"io.radar.notificationCheck" usingQueue:nil launchHandler:^(BGTask *task) {
@@ -236,9 +241,10 @@ static NSString *const kSyncGeofenceIdentifierPrefix = @"radar_geofence_";
 }
 
 + (void)handleAppRefreshTask:(BGTask *)task  API_AVAILABLE(ios(13.0)){
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"Performing background task of checking for notification sent"]];
     [self scheduleBackgroundNotificationChecks];
     [self checkForSentOnPremiseNotifications];
-    NSURL *webhookURL = [NSURL URLWithString:@"https://webhook.site/849324ed-0219-4bc3-9c04-cd7cc3fb1da9/bgtask"];
+    NSURL *webhookURL = [NSURL URLWithString:@"https://webhook.site/76c1a57d-e047-4c96-8ee2-307de5d49376/bgtask"];
     [self sendGetRequestToWebhookURL:webhookURL];
     [task setTaskCompletedWithSuccess:YES];
 }
