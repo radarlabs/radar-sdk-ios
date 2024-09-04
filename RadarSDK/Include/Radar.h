@@ -302,7 +302,7 @@ typedef void (^_Nonnull RadarRouteMatrixCompletionHandler)(RadarStatus status, R
 
  @see https://radar.com/documentation/api#send-a-custom-event
  */
-typedef void (^_Nonnull RadarLogConversionCompletionHandler)(RadarStatus status, RadarEvent *_Nullable event);
+typedef void (^_Nullable RadarLogConversionCompletionHandler)(RadarStatus status, RadarEvent *_Nullable event);
 
 /**
  The main class used to interact with the Radar SDK.
@@ -655,6 +655,11 @@ logConversionWithNotification
  @see https://radar.com/documentation/api#send-a-custom-event
  */
 + (void)logConversionWithNotification:(UNNotificationRequest *_Nullable)request NS_SWIFT_NAME(logConversion(request:));
+
++ (void)logConversionWithNotification:(UNNotificationRequest *)request 
+                            eventName:(NSString *)eventName
+                     conversionSource:(NSString *_Nullable)conversionSource 
+                       deliveredAfter:(NSDate *_Nullable)deliveredAfter NS_SWIFT_NAME(logConversion(request:eventName:conversionSource:deliveredAfter:));
 
 #pragma mark - Trips
 
@@ -1202,6 +1207,9 @@ logConversionWithNotification
  @return A dictionary for the location.
  */
 + (NSDictionary *)dictionaryForLocation:(CLLocation *)location NS_SWIFT_NAME(dictionaryForLocation(_:));
+
+
++ (void) nativeSetup NS_SWIFT_NAME(nativeSetup());
 
 @end
 

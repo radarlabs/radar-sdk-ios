@@ -19,7 +19,6 @@ NS_ASSUME_NONNULL_BEGIN
 @interface RadarLocationManager : NSObject<CLLocationManagerDelegate>
 
 @property (nonnull, strong, nonatomic) CLLocationManager *locationManager;
-@property (nonnull, strong, nonatomic) UNUserNotificationCenter *notificationCenter;
 @property (nonnull, strong, nonatomic) CLLocationManager *lowPowerLocationManager;
 @property (nonnull, strong, nonatomic) RadarPermissionsHelper *permissionsHelper;
 @property (nullable, strong, nonatomic) RadarActivityManager *activityManager;

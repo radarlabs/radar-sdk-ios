@@ -21,6 +21,7 @@
 #import "RadarUtils.h"
 #import "RadarVerificationManager.h"
 #import "RadarReplayBuffer.h"
+#import "RadarNotificationHelper.h"
 
 @interface Radar ()
 
@@ -41,6 +42,15 @@
     return sharedInstance;
 }
 
++ (void) nativeSetup {
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        [RadarNotificationHelper swizzleNotificationCenterDelegate];
+        [RadarNotificationHelper registerBackgroundNotificationChecks];
+        [RadarNotificationHelper scheduleBackgroundNotificationChecks];
+    });
+}
+
 + (void)initializeWithPublishableKey:(NSString *)publishableKey {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"initialize()"];
     
@@ -55,9 +65,21 @@
                                                  name:UIApplicationWillEnterForegroundNotification
                                                object:nil];
     
+    [[NSNotificationCenter defaultCenter] addObserver:[self sharedInstance]
+                                             selector:@selector(applicationDidEnterBackground)
+                                                 name:UIApplicationDidEnterBackgroundNotification
+                                               object:nil];
+    
     [RadarSettings setPublishableKey:publishableKey];
 
     RadarSdkConfiguration *sdkConfiguration = [RadarSettings sdkConfiguration];
+
+    if (NSClassFromString(@"XCTestCase") == nil) {
+        [Radar nativeSetup];
+        // just setting the notification permission status into RadarState for now
+        [RadarNotificationHelper checkNotificationPermissionsWithCompletion:nil];
+    }
+
     if (sdkConfiguration.usePersistence) {
         [[RadarReplayBuffer sharedInstance] loadReplaysFromPersistentStore];
     }
@@ -65,7 +87,6 @@
     if ([[UIApplication sharedApplication] applicationState] != UIApplicationStateBackground) {
         [RadarSettings updateSessionId];
     }
-
 
     [[RadarLocationManager sharedInstance] updateTrackingFromInitialize];
     
@@ -88,7 +109,6 @@
                                          [self flushLogs];
                                      }];
 }
-
 
 
 #pragma mark - Properties
@@ -489,10 +509,32 @@
 
 
 + (void)logConversionWithNotification:(UNNotificationRequest *)request {
-    NSMutableDictionary *metadata = [[NSMutableDictionary alloc] initWithDictionary:request.content.userInfo];
-    [metadata setValue:request.identifier forKey:@"identifier"];
+    [self logConversionWithNotification:request eventName: @"opened_app" conversionSource:@"notification" deliveredAfter: nil];
+}
+
++ (void)logConversionWithNotification:(UNNotificationRequest *)request
+                            eventName:(NSString *)eventName
+                     conversionSource:(NSString *)conversionSource
+                       deliveredAfter:(NSDate *)deliveredAfter {
     
-    [self sendLogConversionRequestWithName:@"opened_notification" metadata:metadata completionHandler:^(RadarStatus status, RadarEvent * _Nullable event) {
+    NSMutableDictionary *metadata = [[NSMutableDictionary alloc] initWithDictionary:request.content.userInfo];
+    NSDictionary<NSString *, NSString *> *result = [RadarUtils
+                                                    extractGeofenceIdAndTimestampFromIdentifier:request.identifier];
+    if (result) {
+        NSString *geofenceId = result[@"geofenceId"];
+        [metadata setValue:geofenceId forKey:@"geofenceId"];
+        NSString *timestamp = result[@"registeredAt"];
+        [metadata setValue:timestamp forKey:@"registeredAt"];
+        if (deliveredAfter) {
+            [metadata setObject:deliveredAfter forKey:@"deliveredAfter"];
+        }
+    }
+
+    if (conversionSource) {
+        [metadata setValue:conversionSource forKey:@"conversionSource"];
+    }
+    
+    [self sendLogConversionRequestWithName:eventName metadata:metadata completionHandler:^(RadarStatus status, RadarEvent * _Nullable event) {
         NSString *message = [NSString stringWithFormat:@"Conversion name = %@: status = %@; event = %@", event.conversionName, [Radar stringForStatus:status], event];
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:message];
     }];
@@ -1282,13 +1324,17 @@
                                          }];
     }
     
-
     [Radar logOpenedAppConversion];
-
+    [RadarNotificationHelper checkForSentOnPremiseNotifications:^{}];
+    
     RadarSdkConfiguration *sdkConfiguration = [RadarSettings sdkConfiguration];
     if (sdkConfiguration.trackOnceOnAppOpen) {
         [Radar trackOnceWithCompletionHandler:nil];
     }
+}
+
+- (void)applicationDidEnterBackground {
+    [RadarNotificationHelper scheduleBackgroundNotificationChecks];
 }
 
 - (void)dealloc {
