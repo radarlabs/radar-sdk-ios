@@ -139,7 +139,7 @@ static NSString *const kSyncGeofenceIdentifierPrefix = @"radar_geofence_";
                 
             for (UNNotificationRequest *request in registeredNotifications) {
                 if (![pendingIdentifiers containsObject:request.identifier]) {
-                    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Found pending notification | identifier = %@", request]];
+                    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"Found sent notification, creating converison | identifier = %@", request]];
                     NSDate *lastCheckedTime = [RadarState lastCheckedOnPremiseNotification];
                     [Radar logConversionWithNotification:request eventName:@"delivered_on_premise_notification" conversionSource:nil deliveredAfter:lastCheckedTime];
                     // prevent double counting of the same notification
