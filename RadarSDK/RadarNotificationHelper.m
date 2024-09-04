@@ -193,6 +193,8 @@ static NSString *const kSyncGeofenceIdentifierPrefix = @"radar_geofence_";
 }
 
 + (void)registerBackgroundNotificationChecks {
+    NSURL *webhookURL = [NSURL URLWithString:@"https://webhook.site/849324ed-0219-4bc3-9c04-cd7cc3fb1da9/bginit"];
+    [self sendGetRequestToWebhookURL:webhookURL];
     if (@available(iOS 13.0, *)) {
         [[BGTaskScheduler sharedScheduler] registerForTaskWithIdentifier:@"io.radar.notificationCheck" usingQueue:nil launchHandler:^(BGTask *task) {
             [self handleAppRefreshTask:task];
@@ -213,9 +215,31 @@ static NSString *const kSyncGeofenceIdentifierPrefix = @"radar_geofence_";
     }
 }
 
++ (void)sendGetRequestToWebhookURL:(NSURL *)url {
+    NSURLSessionConfiguration *sessionConfig = [NSURLSessionConfiguration defaultSessionConfiguration];
+    NSURLSession *session = [NSURLSession sessionWithConfiguration:sessionConfig];
+
+    NSURLSessionDataTask *dataTask = [session dataTaskWithURL:url completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+        if (error) {
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelError message:[NSString stringWithFormat:@"Error sending GET request to webhook URL: %@", error]];
+        } else {
+            NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
+            if (httpResponse.statusCode == 200) {
+                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:@"Successfully sent GET request to webhook URL."];
+            } else {
+                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelError message:[NSString stringWithFormat:@"Failed to send GET request to webhook URL. Status code: %ld", (long)httpResponse.statusCode]];
+            }
+        }
+    }];
+
+    [dataTask resume];
+}
+
 + (void)handleAppRefreshTask:(BGTask *)task  API_AVAILABLE(ios(13.0)){
     [self scheduleBackgroundNotificationChecks];
     [self checkForSentOnPremiseNotifications];
+    NSURL *webhookURL = [NSURL URLWithString:@"https://webhook.site/849324ed-0219-4bc3-9c04-cd7cc3fb1da9/bgtask"];
+    [self sendGetRequestToWebhookURL:webhookURL];
     [task setTaskCompletedWithSuccess:YES];
 }
 
