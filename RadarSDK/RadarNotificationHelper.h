@@ -18,7 +18,7 @@ typedef void (^NotificationPermissionCheckCompletion)(BOOL granted);
 
 + (void)swizzleNotificationCenterDelegate;
 
-+ (void)checkForSentOnPremiseNotifications;
++ (void)checkForSentOnPremiseNotifications:(void (^)(void))completionHandler;
 
 + (void)removePendingNotificationsWithCompletionHandler:(void (^)(void))completionHandler;
 

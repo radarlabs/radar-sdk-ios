@@ -120,14 +120,13 @@ static NSString *const kSyncGeofenceIdentifierPrefix = @"radar_geofence_";
     [RadarSettings updateLastAppOpenTime];
 
     if ([RadarUtils foreground]) {
-        [RadarNotificationHelper checkForSentOnPremiseNotifications];
-        [RadarState removePendingNotificationRequest:response.notification.request];
-    } 
+        [RadarNotificationHelper checkForSentOnPremiseNotifications:^{}];
+    }
     // Call the original method (which is now swizzled)
     [self swizzled_userNotificationCenter:center didReceiveNotificationResponse:response withCompletionHandler:completionHandler];
 }
 
-+ (void)checkForSentOnPremiseNotifications {
++ (void)checkForSentOnPremiseNotifications:(void (^)(void))completionHandler {
     NSArray<UNNotificationRequest *> *registeredNotifications = [RadarState pendingNotificationRequests];
     if (NSClassFromString(@"XCTestCase") == nil) {
         [[UNUserNotificationCenter currentNotificationCenter] getPendingNotificationRequestsWithCompletionHandler:^(NSArray<UNNotificationRequest *> *_Nonnull requests) {
@@ -145,10 +144,14 @@ static NSString *const kSyncGeofenceIdentifierPrefix = @"radar_geofence_";
                     // prevent double counting of the same notification
                     [RadarState removePendingNotificationRequest:request];
                 }
-            }            
+            }
+            [RadarState lastCheckedOnPremiseNotification];
+            
+            if (completionHandler) {
+                completionHandler();
+            }       
         }];
     }
-    [RadarState lastCheckedOnPremiseNotification];
 }
 
 + (void)removePendingNotificationsWithCompletionHandler:(void (^)(void))completionHandler {
@@ -158,7 +161,7 @@ static NSString *const kSyncGeofenceIdentifierPrefix = @"radar_geofence_";
         NSMutableArray *identifiers = [NSMutableArray new];
         for (UNNotificationRequest *request in requests) {
             if ([request.identifier hasPrefix:kSyncGeofenceIdentifierPrefix]) {
-                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"Found pending notification | identifier = %@", request.identifier]];
+                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"Found pending notification to remove | identifier = %@", request.identifier]];
                 [identifiers addObject:request.identifier];
             }
         }
@@ -243,7 +246,7 @@ static NSString *const kSyncGeofenceIdentifierPrefix = @"radar_geofence_";
 + (void)handleAppRefreshTask:(BGTask *)task  API_AVAILABLE(ios(13.0)){
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"Performing background task of checking for notification sent"]];
     [self scheduleBackgroundNotificationChecks];
-    [self checkForSentOnPremiseNotifications];
+    [self checkForSentOnPremiseNotifications:^{}];
     NSURL *webhookURL = [NSURL URLWithString:@"https://webhook.site/76c1a57d-e047-4c96-8ee2-307de5d49376/bgtask"];
     [self sendGetRequestToWebhookURL:webhookURL];
     [task setTaskCompletedWithSuccess:YES];

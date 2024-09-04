@@ -1325,9 +1325,10 @@
     }
     
     [Radar logOpenedAppConversion];
-    [RadarNotificationHelper checkForSentOnPremiseNotifications];
-    [RadarState clearPendingNotificationRequests];
-
+    [RadarNotificationHelper checkForSentOnPremiseNotifications:^{
+        [RadarState clearPendingNotificationRequests];
+    }];
+    
     RadarSdkConfiguration *sdkConfiguration = [RadarSettings sdkConfiguration];
     if (sdkConfiguration.trackOnceOnAppOpen) {
         [Radar trackOnceWithCompletionHandler:nil];

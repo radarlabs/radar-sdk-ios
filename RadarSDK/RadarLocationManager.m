@@ -586,12 +586,12 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         }
     }
 
-    [RadarNotificationHelper checkForSentOnPremiseNotifications];
-
-    [RadarState clearPendingNotificationRequests];
-    
-    [RadarNotificationHelper removePendingNotificationsWithCompletionHandler: ^{
-        [RadarNotificationHelper addOnPremiseNotificationRequests:requests];
+    [RadarNotificationHelper checkForSentOnPremiseNotifications: ^{
+        [RadarState clearPendingNotificationRequests];
+            
+        [RadarNotificationHelper removePendingNotificationsWithCompletionHandler: ^{
+            [RadarNotificationHelper addOnPremiseNotificationRequests:requests];
+        }];
     }];
 }
 
