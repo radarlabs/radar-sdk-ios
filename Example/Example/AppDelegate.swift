@@ -31,9 +31,27 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         Radar.setMetadata([ "foo": "bar" ])
         Radar.setDelegate(self)
         Radar.setVerifiedDelegate(self)
- 
+        UIApplication.shared.registerForRemoteNotifications()
         return true
     }
+    
+    func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+        Radar.handleDeviceToken(forRemoteNotifications: deviceToken)
+    }
+
+
+    func application(_ application: UIApplication,
+                     didFailToRegisterForRemoteNotificationsWithError
+                     error: Error) {
+        // Try again later.
+    }
+    
+    func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
+        Radar.handleSilentPush(withPayload: userInfo)
+        completionHandler(UIBackgroundFetchResult.newData)
+    }
+    
+
     
     func demoButton(text: String, function: @escaping () -> Void) {
         guard let scrollView = self.scrollView else { return }
