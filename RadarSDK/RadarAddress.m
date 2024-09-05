@@ -7,6 +7,7 @@
 
 #import "RadarAddress+Internal.h"
 #import "RadarCoordinate+Internal.h"
+#import "RadarTimeZone+Internal.h"
 
 @implementation RadarAddress
 
@@ -63,9 +64,11 @@
                                   placeLabel:(NSString *_Nullable)placeLabel
                                         unit:(NSString *_Nullable)unit
                                        plus4:(NSString *_Nullable)plus4
+                                    distance:(NSNumber *_Nullable)distance
                                        layer:(NSString *_Nullable)layer
                                     metadata:(NSDictionary *_Nullable)metadata
-                                  confidence:(RadarAddressConfidence)confidence {
+                                  confidence:(RadarAddressConfidence)confidence
+                                    timeZone:(RadarTimeZone *_Nullable)timeZone {
     self = [super init];
     if (self) {
         _coordinate = coordinate;
@@ -88,9 +91,11 @@
         _placeLabel = placeLabel;
         _unit = unit;
         _plus4 = plus4;
+        _distance = distance;
         _layer = layer;
         _metadata = metadata;
         _confidence = confidence;
+        _timeZone = timeZone;
     }
     return self;
 }
@@ -125,10 +130,12 @@
     NSString *placeLabel;
     NSString *unit;
     NSString *plus4;
+    NSNumber *distance;
     NSString *layer;
     NSMutableDictionary *metadata;
 
     RadarAddressConfidence confidence = RadarAddressConfidenceNone;
+    RadarTimeZone *timeZone;
 
     id latitudeObj = dict[@"latitude"];
     if (latitudeObj && [latitudeObj isKindOfClass:[NSNumber class]]) {
@@ -241,6 +248,11 @@
         plus4 = (NSString *)plus4Obj;
     }
 
+    id distanceObj = dict[@"distance"];
+    if (distanceObj && [distanceObj isKindOfClass:[NSNumber class]]) {
+        distance = (NSNumber *)distanceObj;
+    }
+
     id layerObj = dict[@"layer"];
     if (layerObj && [layerObj isKindOfClass:[NSString class]]) {
         layer = (NSString *)layerObj;
@@ -262,6 +274,11 @@
         } else if ([confidenceStr isEqualToString:@"fallback"]) {
             confidence = RadarAddressConfidenceFallback;
         }
+    }
+    
+    id timeZoneObj = dict[@"timeZone"];
+    if (timeZoneObj && [timeZoneObj isKindOfClass:[NSDictionary class]]) {
+        timeZone = [[RadarTimeZone alloc] initWithObject:timeZoneObj];
     }
 
 
@@ -285,9 +302,11 @@
                                          placeLabel:placeLabel
                                                unit:unit
                                               plus4:plus4
+                                           distance:distance
                                               layer:layer
-                                             metadata:metadata
-                                         confidence:confidence];
+                                           metadata:metadata
+                                         confidence:confidence
+                                           timeZone:timeZone];
 }
 
 + (NSArray<NSDictionary *> *)arrayForAddresses:(NSArray<RadarAddress *> *)addresses {
@@ -353,9 +372,11 @@
     [dict setValue:self.placeLabel forKey:@"placeLabel"];
     [dict setValue:self.unit forKey:@"unit"];
     [dict setValue:self.plus4 forKey:@"plus4"];
+    [dict setValue:self.distance forKey:@"distance"];
     [dict setValue:self.layer forKey:@"layer"];
     [dict setValue:self.metadata forKey:@"metadata"];
     [dict setValue:[RadarAddress stringForConfidence:self.confidence] forKey:@"confidence"];
+    [dict setValue:[self.timeZone dictionaryValue] forKey:@"timeZone"];
     return dict;
 }
 

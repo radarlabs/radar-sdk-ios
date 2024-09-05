@@ -15,7 +15,10 @@
                                   proxy:(BOOL)proxy
                                  mocked:(BOOL)mocked
                             compromised:(BOOL)compromised
-                                 jumped:(BOOL)jumped {
+                                 jumped:(BOOL)jumped
+                             inaccurate:(BOOL)inaccurate
+                                sharing:(BOOL)sharing
+                                blocked:(BOOL)blocked {
     _passed = passed;
     _bypassed = bypassed;
     _verified = verified;
@@ -23,6 +26,9 @@
     _mocked = mocked;
     _compromised = compromised;
     _jumped = jumped;
+    _inaccurate = inaccurate;
+    _sharing = sharing;
+    _blocked = blocked;
 
     return self;
 }
@@ -41,6 +47,9 @@
     _mocked = [self asBool:dict[@"mocked"]];
     _compromised = [self asBool:dict[@"compromised"]];
     _jumped = [self asBool:dict[@"jumped"]];
+    _inaccurate = [self asBool:dict[@"inaccurate"]];
+    _sharing = [self asBool:dict[@"sharing"]];
+    _blocked = [self asBool:dict[@"blocked"]];
 
     return self;
 }
@@ -53,7 +62,10 @@
         @"proxy": @(self.proxy),
         @"mocked": @(self.mocked),
         @"compromised": @(self.compromised),
-        @"jumped": @(self.jumped)
+        @"jumped": @(self.jumped),
+        @"inaccurate": @(self.inaccurate),
+        @"sharing": @(self.sharing),
+        @"blocked": @(self.blocked),
     };
 }
 

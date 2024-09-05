@@ -26,7 +26,7 @@ static int fileCounter = 0;
 - (instancetype)init {
     self = [super init];
     if (self) {
-        _persistentLogFeatureFlag = [RadarSettings featureSettings].useLogPersistence;
+        _persistentLogFeatureFlag = [RadarSettings sdkConfiguration].useLogPersistence;
         logBuffer = [NSMutableArray<RadarLog *> new];
         
         NSString *documentsDirectory = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES).firstObject;
@@ -65,7 +65,7 @@ static int fileCounter = 0;
         [self writeToFileStorage:@[radarLog]];
         return;
     }
-    @synchronized (self) {
+    @synchronized(self) {
         [logBuffer addObject:radarLog];
         if (_persistentLogFeatureFlag || [[NSProcessInfo processInfo] environment][@"XCTestConfigurationFilePath"]) { 
             if ([logBuffer count] >= MAX_MEMORY_BUFFER_SIZE) {
@@ -80,7 +80,7 @@ static int fileCounter = 0;
 }
 
 - (void)persistLogs {
-    @synchronized (self) {
+    @synchronized(self) {
         if (_persistentLogFeatureFlag || [[NSProcessInfo processInfo] environment][@"XCTestConfigurationFilePath"]) {
             if ([logBuffer count] > 0) {
                 [self writeToFileStorage:logBuffer];
@@ -124,7 +124,7 @@ static int fileCounter = 0;
     for (RadarLog *log in logs) {
         NSData *logData = [NSKeyedArchiver archivedDataWithRootObject:log];
         NSTimeInterval unixTimestamp = [log.createdAt timeIntervalSince1970];
-        // Logs may be created in the same millisecond, so we append a counter to the end of the timestamp to "tiebreak"
+        // logs may be created in the same millisecond, so we append a counter to the end of the timestamp to "tiebreak"
         NSString *unixTimestampString = [NSString stringWithFormat:@"%lld_%04d", (long long)unixTimestamp, fileCounter++];
         NSString *filePath = [self.logFileDir stringByAppendingPathComponent:unixTimestampString];
         [self.fileHandler writeData:logData toFileAtPath:filePath];
@@ -132,7 +132,7 @@ static int fileCounter = 0;
  }
 
 - (NSArray<RadarLog *> *)flushableLogs {
-    @synchronized (self) {
+    @synchronized(self) {
         if (_persistentLogFeatureFlag || [[NSProcessInfo processInfo] environment][@"XCTestConfigurationFilePath"]) {
             [self persistLogs];
             [self purgeOldestLogs];
@@ -172,7 +172,7 @@ static int fileCounter = 0;
 
 
 - (void)removeLogs:(NSUInteger)numLogs {
-    @synchronized (self) {
+    @synchronized(self) {
         if (_persistentLogFeatureFlag || [[NSProcessInfo processInfo] environment][@"XCTestConfigurationFilePath"]) {
             NSArray<NSString *> *files = [self getLogFilesInTimeOrder];
             for (NSUInteger i = 0; i < MIN(numLogs, [files count]); i++) {
@@ -188,11 +188,11 @@ static int fileCounter = 0;
 
 
 - (void)onFlush:(BOOL)success logs:(NSArray<RadarLog *> *)logs{
-    @synchronized (self) {
+    @synchronized(self) {
         if (_persistentLogFeatureFlag || [[NSProcessInfo processInfo] environment][@"XCTestConfigurationFilePath"]) {
             if (!success) {
                 [self writeToFileStorage:logs];
-                // Attempt purge to only remove the oldest logs to reduce payload size of next attempt.
+                // attempt to purge oldest logs to reduce the payload size of the next attempt
                 [self purgeOldestLogs];
             }
         } else {
@@ -206,11 +206,9 @@ static int fileCounter = 0;
     }
 }
 
-/**
-* Clears the in-memory buffer and deletes all persisted logs. (For use in testing only.)
-*/
--(void)clearBuffer {
-    @synchronized (self) {
+// clears the in-memory buffer and deletes all persisted logs (for testing only)
+- (void)clearBuffer {
+    @synchronized(self) {
         [logBuffer removeAllObjects];
         NSArray<NSString *> *files = [self getLogFilesInTimeOrder];
         if (files) {

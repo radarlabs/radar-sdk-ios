@@ -39,8 +39,10 @@
                                   placeLabel:(NSString *_Nullable)placeLabel
                                         unit:(NSString *_Nullable)unit
                                        plus4:(NSString *_Nullable)plus4
+                                    distance:(NSNumber *_Nullable)distance
                                        layer:(NSString *_Nullable)layer
                                     metadata:(NSDictionary *_Nullable)metadata
-                                  confidence:(RadarAddressConfidence)confidence;
+                                  confidence:(RadarAddressConfidence)confidence
+                                    timeZone:(RadarTimeZone *_Nullable)timeZone;
 
 @end

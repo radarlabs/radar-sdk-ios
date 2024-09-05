@@ -14,7 +14,11 @@
                       code:(nonnull NSString *)code
                       type:(nonnull NSString *)type
                       flag:(nullable NSString *)flag
-                   allowed:(BOOL)allowed {
+                   allowed:(BOOL)allowed
+                    passed:(BOOL)passed
+           inExclusionZone:(BOOL)inExclusionZone
+              inBufferZone:(BOOL)inBufferZone
+          distanceToBorder:(double)distanceToBorder {
     self = [super init];
     if (self) {
         __id = _id;
@@ -23,6 +27,10 @@
         _type = type;
         _flag = flag;
         _allowed = allowed;
+        _passed = passed;
+        _inExclusionZone = inExclusionZone;
+        _inBufferZone = inBufferZone;
+        _distanceToBorder = distanceToBorder;
     }
     return self;
 }
@@ -40,6 +48,10 @@
     NSString *type = @"";
     NSString *flag = @"";
     BOOL allowed = false;
+    BOOL passed = false;
+    BOOL inExclusionZone = false;
+    BOOL inBufferZone = false;
+    double distanceToBorder = 0;
 
     id idObj = dict[@"_id"];
     if ([idObj isKindOfClass:[NSString class]]) {
@@ -72,9 +84,35 @@
 
         allowed = [allowedNumber boolValue];
     }
+    
+    id passedObj = dict[@"passed"];
+    if (passedObj && [passedObj isKindOfClass:[NSNumber class]]) {
+        NSNumber *passedNumber = (NSNumber *)passedObj;
+
+        passed = [passedNumber boolValue];
+    }
+    
+    id inExclusionZoneObj = dict[@"inExclusionZone"];
+    if (inExclusionZoneObj && [inExclusionZoneObj isKindOfClass:[NSNumber class]]) {
+        NSNumber *inExclusionZoneNumber = (NSNumber *)inExclusionZoneObj;
+
+        inExclusionZone = [inExclusionZoneNumber boolValue];
+    }
+    
+    id inBufferZoneObj = dict[@"inBufferZone"];
+    if (inBufferZoneObj && [inBufferZoneObj isKindOfClass:[NSNumber class]]) {
+        NSNumber *inBufferZoneNumber = (NSNumber *)inBufferZoneObj;
+
+        inBufferZone = [inBufferZoneNumber boolValue];
+    }
+    
+    id distanceToBorderObj = dict[@"distanceToBorder"];
+    if ([distanceToBorderObj isKindOfClass:[NSNumber class]]) {
+        distanceToBorder = ((NSNumber *)distanceToBorderObj).doubleValue;
+    }
 
     if (_id && name && code && type) {
-        return [[RadarRegion alloc] initWithId:_id name:name code:code type:type flag:flag allowed:allowed];
+        return [[RadarRegion alloc] initWithId:_id name:name code:code type:type flag:flag allowed:allowed passed:passed inExclusionZone:inExclusionZone inBufferZone:inBufferZone distanceToBorder:distanceToBorder];
     }
 
     return nil;
@@ -90,6 +128,10 @@
         [dict setValue:self.flag forKey:@"flag"];
     }
     [dict setValue:@(self.allowed) forKey:@"allowed"];
+    [dict setValue:@(self.passed) forKey:@"passed"];
+    [dict setValue:@(self.inExclusionZone) forKey:@"inExclusionZone"];
+    [dict setValue:@(self.inBufferZone) forKey:@"inBufferZone"];
+    [dict setValue:@(self.distanceToBorder) forKey:@"distanceToBorder"];
     return dict;
 }
 

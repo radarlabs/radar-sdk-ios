@@ -5,6 +5,7 @@
 //  Copyright © 2019 Radar Labs, Inc. All rights reserved.
 //
 
+#import <CoreLocation/CLLocation.h>
 #import <Foundation/Foundation.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -21,6 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSString *)deviceId;
 + (NSString *)deviceType;
 + (NSString *)deviceMake;
++ (BOOL)isSimulator;
 + (BOOL)locationBackgroundMode;
 + (NSString *)locationAuthorization;
 + (NSString *)locationAccuracyAuthorization;

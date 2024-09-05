@@ -45,7 +45,7 @@ static NSDateFormatter *_isoDateFormatter;
 }
 
 + (NSString *)sdkVersion {
-    return @"3.9.7";
+    return @"3.17.0";
 }
 
 + (NSString *)deviceId {
@@ -62,6 +62,14 @@ static NSDateFormatter *_isoDateFormatter;
 
 + (NSString *)deviceMake {
     return @"Apple";
+}
+
++ (BOOL)isSimulator {
+#if TARGET_OS_SIMULATOR
+    return YES;
+#else
+    return NO;
+#endif
 }
 
 + (BOOL)locationBackgroundMode {
@@ -129,7 +137,7 @@ static NSDateFormatter *_isoDateFormatter;
     if (@available(iOS 15.0, *)) {
         CLLocationSourceInformation *sourceInformation = location.sourceInformation;
         if (sourceInformation) {
-            if (sourceInformation.isSimulatedBySoftware) {
+            if (sourceInformation.isSimulatedBySoftware || sourceInformation.isProducedByAccessory) {
                 dict[@"mocked"] = @(YES);
             } else {
                 dict[@"mocked"] = @(NO);
