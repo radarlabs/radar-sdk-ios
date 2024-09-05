@@ -21,6 +21,7 @@
 #import "RadarUtils.h"
 #import "RadarVerificationManager.h"
 #import "RadarReplayBuffer.h"
+#import "RadarNotificationHelper.h"
 
 @interface Radar ()
 
@@ -127,6 +128,19 @@
 
 + (void)setAnonymousTrackingEnabled:(BOOL)enabled {
     [RadarSettings setAnonymousTrackingEnabled:enabled];
+}
+
++ (void)handleDeviceTokenForRemoteNotifications:(NSData *)deviceToken {
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Received device token for remote notifications."];
+
+    const char *data = (char *)[deviceToken bytes];
+    NSMutableString *token = [NSMutableString string];
+    for (NSUInteger i = 0; i < [deviceToken length]; i++) {
+        [token appendFormat:@"%02.2hhX", data[i]];
+    }
+    
+    // Save to settings
+    [RadarSettings setDevicePushToken:token];
 }
 
 #pragma mark - Location
@@ -401,6 +415,28 @@
 
 + (BOOL)isUsingRemoteTrackingOptions {
     return [RadarSettings remoteTrackingOptions] != nil;
+}
+
++ (void)handleSilentPushWithPayload:(NSDictionary *)payload {
+    NSString *message = [NSString stringWithFormat:@"App received silent push notification | payload=%@", payload];
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug type:RadarLogTypeNone message:message includeDate:YES includeBattery:YES];
+    [RadarNotificationHelper showDidReceiveSilentPushNotification];
+    
+    // payload contains array of actions, only using a single action for now
+    // action is a dictionary with type and optional data
+    if (payload[@"actions"]) {
+        NSDictionary *action = payload[@"actions"][0];
+
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug type:RadarLogTypeNone message:message includeDate:YES includeBattery:YES];
+
+        // TRACK_ONCE
+        if ([action[@"type"] isEqualToString:@"TRACK_ONCE"]) {
+            [Radar trackOnceWithCompletionHandler:^(RadarStatus status, CLLocation * _Nullable location, NSArray<RadarEvent *> * _Nullable events, RadarUser * _Nullable user) {
+            }];
+        }
+        // START_TRACKING
+        // ...
+    }
 }
 
 #pragma mark - Delegate
