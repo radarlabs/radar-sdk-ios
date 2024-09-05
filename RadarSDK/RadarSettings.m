@@ -27,6 +27,7 @@ static NSString *const kSessionId = @"radar-sessionId";
 static NSString *const kId = @"radar-_id";
 static NSString *const kUserId = @"radar-userId";
 static NSString *const kDescription = @"radar-description";
+static NSString *const kDevicePushToken = @"radar-devicePushToken";
 static NSString *const kMetadata = @"radar-metadata";
 static NSString *const kAnonymous = @"radar-anonymous";
 static NSString *const kTracking = @"radar-tracking";
@@ -116,6 +117,14 @@ static NSString *const kXPlatformSDKVersion = @"radar-xPlatformSDKVersion";
 
 + (void)setDescription:(NSString *)description {
     [[NSUserDefaults standardUserDefaults] setObject:description forKey:kDescription];
+}
+
++ (NSString *)devicePushToken {
+    return [[NSUserDefaults standardUserDefaults] stringForKey:kDevicePushToken];
+}
+
++ (void)setDevicePushToken:(NSString *)devicePushToken {
+    [[NSUserDefaults standardUserDefaults] setObject:devicePushToken forKey:kDevicePushToken];
 }
 
 + (NSDictionary *)metadata {

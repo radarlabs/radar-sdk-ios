@@ -15,6 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 typedef void (^NotificationPermissionCheckCompletion)(BOOL granted);
 
 + (void)showNotificationsForEvents:(NSArray<RadarEvent *> *)events;
++ (void)showDidReceiveSilentPushNotification;
 
 + (void)swizzleNotificationCenterDelegate;
 

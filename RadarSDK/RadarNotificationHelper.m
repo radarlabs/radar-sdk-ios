@@ -266,4 +266,12 @@ static NSString *const kSyncGeofenceIdentifierPrefix = @"radar_geofence_";
     }];
 }
 
++ (void)showDidReceiveSilentPushNotification {
+    UNMutableNotificationContent *content = [UNMutableNotificationContent new];
+    content.body = @"Received silent push; calling startTracking() continuous";
+    UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:[[NSUUID UUID] UUIDString] content:content trigger:nil];
+    [UNUserNotificationCenter.currentNotificationCenter addNotificationRequest:request withCompletionHandler:^(NSError *_Nullable error) {
+    }];
+}
+
 @end
