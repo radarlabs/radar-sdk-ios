@@ -18,15 +18,9 @@ typedef void (^NotificationPermissionCheckCompletion)(BOOL granted);
 
 + (void)swizzleNotificationCenterDelegate;
 
-+ (void)checkForSentOnPremiseNotifications:(void (^)(void))completionHandler;
-
 + (void)removePendingNotificationsWithCompletionHandler:(void (^)(void))completionHandler;
 
 + (void)addOnPremiseNotificationRequests:(NSArray<UNNotificationRequest *> *)requests;
-
-+ (void)registerBackgroundNotificationChecks;
-
-+ (void)scheduleBackgroundNotificationChecks;
 
 + (void)checkNotificationPermissionsWithCompletion:(nullable NotificationPermissionCheckCompletion)completion;
 

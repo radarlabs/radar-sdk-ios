@@ -108,50 +108,18 @@ static NSString *const kSyncGeofenceIdentifierPrefix = @"radar_geofence_";
            didReceiveNotificationResponse:(UNNotificationResponse *)response
                     withCompletionHandler:(void (^)(void))completionHandler {
 
-    NSDate *lastCheckedTime = [RadarState lastCheckedOnPremiseNotification];
     if ([response.notification.request.identifier hasPrefix:@"radar_"]) {
         [[RadarLogger sharedInstance]
                         logWithLevel:RadarLogLevelDebug
                             message:[NSString stringWithFormat:@"Getting conversion from notification tap"]];
-        [Radar logConversionWithNotification:response.notification.request eventName:@"opened_app" conversionSource:@"radar_notification" deliveredAfter:lastCheckedTime];
+        [Radar logConversionWithNotification:response.notification.request eventName:@"opened_app" conversionSource:@"radar_notification" deliveredAfter:nil];
     } else {
-        [Radar logConversionWithNotification:response.notification.request eventName:@"opened_app" conversionSource:@"notification" deliveredAfter:lastCheckedTime];
+        [Radar logConversionWithNotification:response.notification.request eventName:@"opened_app" conversionSource:@"notification" deliveredAfter:nil];
     }
     [RadarSettings updateLastAppOpenTime];
 
-    if ([RadarUtils foreground]) {
-        [RadarNotificationHelper checkForSentOnPremiseNotifications:^{}];
-    }
     // Call the original method (which is now swizzled)
     [self swizzled_userNotificationCenter:center didReceiveNotificationResponse:response withCompletionHandler:completionHandler];
-}
-
-+ (void)checkForSentOnPremiseNotifications:(void (^)(void))completionHandler {
-    NSArray<UNNotificationRequest *> *registeredNotifications = [RadarState pendingNotificationRequests];
-    if (NSClassFromString(@"XCTestCase") == nil) {
-        [[UNUserNotificationCenter currentNotificationCenter] getPendingNotificationRequestsWithCompletionHandler:^(NSArray<UNNotificationRequest *> *_Nonnull requests) {
-            NSMutableSet *pendingIdentifiers = [NSMutableSet new];
-                
-            for (UNNotificationRequest *request in requests) {
-                [pendingIdentifiers addObject:request.identifier];
-            }
-                
-            for (UNNotificationRequest *request in registeredNotifications) {
-                if (![pendingIdentifiers containsObject:request.identifier]) {
-                    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"Found sent notification, creating converison | identifier = %@", request]];
-                    NSDate *lastCheckedTime = [RadarState lastCheckedOnPremiseNotification];
-                    [Radar logConversionWithNotification:request eventName:@"delivered_on_premise_notification" conversionSource:nil deliveredAfter:lastCheckedTime];
-                    // prevent double counting of the same notification
-                    [RadarState removePendingNotificationRequest:request];
-                }
-            }
-            [RadarState lastCheckedOnPremiseNotification];
-            
-            if (completionHandler) {
-                completionHandler();
-            }       
-        }];
-    }
 }
 
 + (void)removePendingNotificationsWithCompletionHandler:(void (^)(void))completionHandler {
@@ -187,7 +155,6 @@ static NSString *const kSyncGeofenceIdentifierPrefix = @"radar_geofence_";
                             logWithLevel:RadarLogLevelInfo
                                 message:[NSString stringWithFormat:@"Error adding local notification | identifier = %@; error = %@", request.identifier, error]];
                     } else {
-                        [RadarState addPendingNotificationRequest:request];
                         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo
                                                         message:[NSString stringWithFormat:@"Added local notification | identifier = %@", request.identifier]];
                     }
@@ -200,57 +167,6 @@ static NSString *const kSyncGeofenceIdentifierPrefix = @"radar_geofence_";
     }];
 }
 
-+ (void)registerBackgroundNotificationChecks {
-    NSURL *webhookURL = [NSURL URLWithString:@"https://webhook.site/76c1a57d-e047-4c96-8ee2-307de5d49376/bginit"];
-    [self sendGetRequestToWebhookURL:webhookURL];
-    if (@available(iOS 13.0, *)) {
-        [[BGTaskScheduler sharedScheduler] registerForTaskWithIdentifier:@"io.radar.notificationCheck" usingQueue:nil launchHandler:^(BGTask *task) {
-            [self handleAppRefreshTask:task];
-        }];
-    }
-}
-
-+ (void)scheduleBackgroundNotificationChecks {
-    if (@available(iOS 13.0, *)) {
-        BGAppRefreshTaskRequest *request = [[BGAppRefreshTaskRequest alloc] initWithIdentifier:@"io.radar.notificationCheck"];
-        request.earliestBeginDate = [NSDate dateWithTimeIntervalSinceNow:60*60];
-        NSError *error = nil;
-        
-        [[BGTaskScheduler sharedScheduler] submitTaskRequest:request error:&error];
-        if (error) {
-            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelError message:[NSString stringWithFormat:@"Error scheduling app refresh task: %@", error]];
-        }
-    }
-}
-
-+ (void)sendGetRequestToWebhookURL:(NSURL *)url {
-    NSURLSessionConfiguration *sessionConfig = [NSURLSessionConfiguration defaultSessionConfiguration];
-    NSURLSession *session = [NSURLSession sessionWithConfiguration:sessionConfig];
-
-    NSURLSessionDataTask *dataTask = [session dataTaskWithURL:url completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-        if (error) {
-            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelError message:[NSString stringWithFormat:@"Error sending GET request to webhook URL: %@", error]];
-        } else {
-            NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
-            if (httpResponse.statusCode == 200) {
-                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:@"Successfully sent GET request to webhook URL."];
-            } else {
-                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelError message:[NSString stringWithFormat:@"Failed to send GET request to webhook URL. Status code: %ld", (long)httpResponse.statusCode]];
-            }
-        }
-    }];
-
-    [dataTask resume];
-}
-
-+ (void)handleAppRefreshTask:(BGTask *)task  API_AVAILABLE(ios(13.0)){
-    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"Performing background task of checking for notification sent"]];
-    [self scheduleBackgroundNotificationChecks];
-    [self checkForSentOnPremiseNotifications:^{}];
-    NSURL *webhookURL = [NSURL URLWithString:@"https://webhook.site/76c1a57d-e047-4c96-8ee2-307de5d49376/bgtask"];
-    [self sendGetRequestToWebhookURL:webhookURL];
-    [task setTaskCompletedWithSuccess:YES];
-}
 
 + (void)checkNotificationPermissionsWithCompletion:(NotificationPermissionCheckCompletion)completion {
     UNUserNotificationCenter *notificationCenter = [UNUserNotificationCenter currentNotificationCenter];

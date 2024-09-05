@@ -46,8 +46,6 @@
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         [RadarNotificationHelper swizzleNotificationCenterDelegate];
-        [RadarNotificationHelper registerBackgroundNotificationChecks];
-        [RadarNotificationHelper scheduleBackgroundNotificationChecks];
     });
 }
 
@@ -65,19 +63,12 @@
                                                  name:UIApplicationWillEnterForegroundNotification
                                                object:nil];
     
-    [[NSNotificationCenter defaultCenter] addObserver:[self sharedInstance]
-                                             selector:@selector(applicationDidEnterBackground)
-                                                 name:UIApplicationDidEnterBackgroundNotification
-                                               object:nil];
-    
     [RadarSettings setPublishableKey:publishableKey];
 
     RadarSdkConfiguration *sdkConfiguration = [RadarSettings sdkConfiguration];
 
     if (NSClassFromString(@"XCTestCase") == nil) {
         [Radar nativeSetup];
-        // just setting the notification permission status into RadarState for now
-        [RadarNotificationHelper checkNotificationPermissionsWithCompletion:nil];
     }
 
     if (sdkConfiguration.usePersistence) {
@@ -1325,7 +1316,6 @@
     }
     
     [Radar logOpenedAppConversion];
-    [RadarNotificationHelper checkForSentOnPremiseNotifications:^{}];
     
     RadarSdkConfiguration *sdkConfiguration = [RadarSettings sdkConfiguration];
     if (sdkConfiguration.trackOnceOnAppOpen) {
@@ -1333,9 +1323,6 @@
     }
 }
 
-- (void)applicationDidEnterBackground {
-    [RadarNotificationHelper scheduleBackgroundNotificationChecks];
-}
 
 - (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self];

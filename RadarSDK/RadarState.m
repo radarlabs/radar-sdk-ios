@@ -24,8 +24,6 @@ static NSString *const kRegionIds = @"radar-regionIds";
 static NSString *const kBeaconIds = @"radar-beaconIds";
 static NSString *const kLastHeadingData = @"radar-lastHeadingData";
 static NSString *const kLastMotionActivityData = @"radar-lastMotionActivityData";
-static NSString *const kPendingNotificationRequests = @"radar-pendingNotificationRequests";
-static NSString *const kLastCheckedOnPremiseNotification = @"radar-lastCheckedOnPremiseNotification";
 static NSString *const kNotificationPermissionGranted = @"radar-notificationPermissionGranted";
 
 + (CLLocation *)lastLocation {
@@ -184,63 +182,9 @@ static NSString *const kNotificationPermissionGranted = @"radar-notificationPerm
     [[NSUserDefaults standardUserDefaults] setObject:lastMotionActivityData forKey:kLastMotionActivityData];
 }
 
-
-+ (NSArray<UNNotificationRequest *> *)pendingNotificationRequests {
-    NSArray<NSDictionary *> *storedRequests = [[NSUserDefaults standardUserDefaults] objectForKey:kPendingNotificationRequests];
-    NSMutableArray<UNNotificationRequest *> *requests = [NSMutableArray array];
-    
-    for (NSDictionary *dict in storedRequests) {
-        UNNotificationContent *content = [UNNotificationContent new]; // Create content from dict
-        UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:dict[@"identifier"] content:content trigger:nil];
-        [requests addObject:request];
-    }
-    
-    return [requests copy];
-}
-
-+ (void)addPendingNotificationRequest:(UNNotificationRequest *)request {
-    NSMutableArray<NSDictionary *> *storedRequests = [NSMutableArray arrayWithArray:[[NSUserDefaults standardUserDefaults] objectForKey:kPendingNotificationRequests]];
-    
-    NSDictionary *requestDict = @{
-        @"identifier": request.identifier,
-        // Add other properties of UNNotificationRequest to the dictionary
-    };
-    
-    [storedRequests addObject:requestDict];
-    [[NSUserDefaults standardUserDefaults] setObject:storedRequests forKey:kPendingNotificationRequests];
-}
-
-+ (void)clearPendingNotificationRequests {
-    [[NSUserDefaults standardUserDefaults] setObject:@[] forKey:kPendingNotificationRequests];
-}
-
-+ (BOOL)hasPendingNotificationRequest:(UNNotificationRequest *)request {
-    NSString *identifier = request.identifier;
-    if (!identifier) {
-        return NO;
-    }
-    NSArray<NSString *> *pendingNotificationRequestIdentifiers = [[self pendingNotificationRequests] valueForKey:@"identifier"];
-    return [pendingNotificationRequestIdentifiers containsObject:identifier];
-}
-
-+ (void)removePendingNotificationRequest:(UNNotificationRequest *)request {
-    NSMutableArray<NSDictionary *> *storedRequests = [NSMutableArray arrayWithArray:[[NSUserDefaults standardUserDefaults] objectForKey:kPendingNotificationRequests]];
-    
-    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"identifier != %@", request.identifier];
-    [storedRequests filterUsingPredicate:predicate];
-    
-    [[NSUserDefaults standardUserDefaults] setObject:storedRequests forKey:kPendingNotificationRequests];
-}
-
-+ (NSDate *)lastCheckedOnPremiseNotification {
-    return [[NSUserDefaults standardUserDefaults] objectForKey:kLastCheckedOnPremiseNotification];
-}
-+ (void)updateLastCheckedOnPremiseNotification {
-    [[NSUserDefaults standardUserDefaults] setObject:[NSDate date] forKey:kLastCheckedOnPremiseNotification];
-}
-
 + (void)setNotificationPermissionGranted:(BOOL)notificationPermissionGranted {
     [[NSUserDefaults standardUserDefaults] setBool:notificationPermissionGranted forKey:kNotificationPermissionGranted];
 }
+
 
 @end
