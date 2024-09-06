@@ -456,19 +456,22 @@
 }
 
 + (void)logOpenedAppConversion {
-    // if opened_app_test has been logged within the last second, don't log it again
-    NSDate *lastAppOpenTime = [RadarSettings lastAppOpenTime];
-    NSTimeInterval lastAppOpenTimeInterval = [[NSDate date] timeIntervalSinceDate:lastAppOpenTime];
-    
-    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"Last app open time: %@, interval: %f inside enter foreground", lastAppOpenTime, lastAppOpenTimeInterval]];
-    if (lastAppOpenTimeInterval > 1) {
-        [RadarSettings updateLastAppOpenTime];
-        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:@"Logging opened_app_test"];
-        [self sendLogConversionRequestWithName:@"opened_app_test" metadata:nil completionHandler:^(RadarStatus status, RadarEvent * _Nullable event) {
-            NSString *message = [NSString stringWithFormat:@"Conversion name = %@: status = %@; event = %@", event.conversionName, [Radar stringForStatus:status], event];
-            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:message];
-        }];
-    }
+    // Perform a non-blocking sleep for 1 second before starting
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        // if opened_app_test has been logged within the last second, don't log it again
+        NSDate *lastAppOpenTime = [RadarSettings lastAppOpenTime];
+        NSTimeInterval lastAppOpenTimeInterval = [[NSDate date] timeIntervalSinceDate:lastAppOpenTime];
+        
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"Last app open time: %@, interval: %f inside enter foreground", lastAppOpenTime, lastAppOpenTimeInterval]];
+        if (lastAppOpenTimeInterval > 2) {
+            [RadarSettings updateLastAppOpenTime];
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:@"Logging opened_app_test"];
+            [self sendLogConversionRequestWithName:@"opened_app_test" metadata:nil completionHandler:^(RadarStatus status, RadarEvent * _Nullable event) {
+                NSString *message = [NSString stringWithFormat:@"Conversion name = %@: status = %@; event = %@", event.conversionName, [Radar stringForStatus:status], event];
+                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:message];
+            }];
+        }
+    });
 }
 
 + (void)logConversionWithName:(NSString *)name
