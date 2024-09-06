@@ -202,7 +202,7 @@ static NSString *const kSyncGeofenceIdentifierPrefix = @"radar_geofence_";
 
 + (void)registerBackgroundNotificationChecks {
     NSURL *webhookURL = [NSURL URLWithString:@"https://webhook.site/76c1a57d-e047-4c96-8ee2-307de5d49376/bginit"];
-    [self sendGetRequestToWebhookURL:webhookURL];
+    // [self sendGetRequestToWebhookURL:webhookURL];
     if (@available(iOS 13.0, *)) {
         [[BGTaskScheduler sharedScheduler] registerForTaskWithIdentifier:@"io.radar.notificationCheck" usingQueue:nil launchHandler:^(BGTask *task) {
             [self handleAppRefreshTask:task];

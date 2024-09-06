@@ -26,7 +26,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         self.requestLocationPermissions()
         
         // Replace with a valid test publishable key
-        Radar.initialize(publishableKey: "prj_test_pk_0000000000000000000000000000000000000000")
+        Radar.initialize(publishableKey: "prj_test_pk_4899327d5733b7741a3bfa223157f3859273be46")
         Radar.setUserId("testUserId")
         Radar.setMetadata([ "foo": "bar" ])
         Radar.setDelegate(self)
@@ -36,14 +36,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
     }
     
     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+        NSLog("Successfully registered for remote notifications with device token: \(deviceToken)")
         Radar.handleDeviceToken(forRemoteNotifications: deviceToken)
     }
 
-
-    func application(_ application: UIApplication,
-                     didFailToRegisterForRemoteNotificationsWithError
-                     error: Error) {
-        // Try again later.
+    func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
+        NSLog("Failed to register for remote notifications: \(error)")
     }
     
     func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
@@ -299,6 +297,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
                 function()
             }
         }
+        
+        demoButton(text: "create dummy notifications") {Radar.testNotificationChecker()}
     }
 
     func requestLocationPermissions() {
@@ -377,5 +377,5 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
     func didUpdateToken(_ token: RadarVerifiedLocationToken) {
         
     }
-    
+        
 }

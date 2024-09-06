@@ -150,6 +150,7 @@
 }
 
 + (void)handleDeviceTokenForRemoteNotifications:(NSData *)deviceToken {
+    NSLog(@"i got here");
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Received device token for remote notifications."];
 
     const char *data = (char *)[deviceToken bytes];
@@ -157,6 +158,8 @@
     for (NSUInteger i = 0; i < [deviceToken length]; i++) {
         [token appendFormat:@"%02.2hhX", data[i]];
     }
+    //print the token
+    NSLog(@"deviceToken: %@", token);
     
     // Save to settings
     [RadarSettings setDevicePushToken:token];
@@ -440,22 +443,24 @@
     NSString *message = [NSString stringWithFormat:@"App received silent push notification | payload=%@", payload];
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug type:RadarLogTypeNone message:message includeDate:YES includeBattery:YES];
     [RadarNotificationHelper showDidReceiveSilentPushNotification];
+
+    [RadarNotificationHelper checkForSentOnPremiseNotifications:^{}];
     
     // payload contains array of actions, only using a single action for now
     // action is a dictionary with type and optional data
-    if (payload[@"actions"]) {
-        NSDictionary *action = payload[@"actions"][0];
+    // if (payload[@"actions"]) {
+    //     NSDictionary *action = payload[@"actions"][0];
 
-        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug type:RadarLogTypeNone message:message includeDate:YES includeBattery:YES];
+    //     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug type:RadarLogTypeNone message:message includeDate:YES includeBattery:YES];
 
-        // TRACK_ONCE
-        if ([action[@"type"] isEqualToString:@"TRACK_ONCE"]) {
-            [Radar trackOnceWithCompletionHandler:^(RadarStatus status, CLLocation * _Nullable location, NSArray<RadarEvent *> * _Nullable events, RadarUser * _Nullable user) {
-            }];
-        }
-        // START_TRACKING
-        // ...
-    }
+    //     // TRACK_ONCE
+    //     if ([action[@"type"] isEqualToString:@"TRACK_ONCE"]) {
+    //         [Radar trackOnceWithCompletionHandler:^(RadarStatus status, CLLocation * _Nullable location, NSArray<RadarEvent *> * _Nullable events, RadarUser * _Nullable user) {
+    //         }];
+    //     }
+    //     // START_TRACKING
+    //     // ...
+    // }
 }
 
 #pragma mark - Delegate
@@ -1411,6 +1416,11 @@
                                     }];
                                 }
                             }];
+}
+
++ (void)testNotificationChecker {
+    UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:@"test" content:[UNNotificationContent new] trigger:nil];
+    [RadarState addPendingNotificationRequest:request];
 }
 
 @end

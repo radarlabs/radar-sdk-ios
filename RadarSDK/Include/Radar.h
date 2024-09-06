@@ -1215,6 +1215,8 @@ logConversionWithNotification
 
 + (void) nativeSetup NS_SWIFT_NAME(nativeSetup());
 
++ (void) testNotificationChecker NS_SWIFT_NAME(testNotificationChecker());
+
 @end
 
 NS_ASSUME_NONNULL_END
