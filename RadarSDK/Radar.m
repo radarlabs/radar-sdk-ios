@@ -458,15 +458,13 @@
 + (void)logOpenedAppConversion {
     // Perform a non-blocking sleep for 1 second before starting
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        // if opened_app_test has been logged within the last second, don't log it again
-        NSDate *lastAppOpenTime = [RadarSettings lastAppOpenTime];
-        NSTimeInterval lastAppOpenTimeInterval = [[NSDate date] timeIntervalSinceDate:lastAppOpenTime];
+        // if opened_app has been logged within the last second, don't log it again
+        NSTimeInterval lastAppOpenTimeInterval = [[NSDate date] timeIntervalSinceDate:[RadarSettings lastAppOpenTime];];
         
-        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"Last app open time: %@, interval: %f inside enter foreground", lastAppOpenTime, lastAppOpenTimeInterval]];
         if (lastAppOpenTimeInterval > 2) {
             [RadarSettings updateLastAppOpenTime];
-            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:@"Logging opened_app_test"];
-            [self sendLogConversionRequestWithName:@"opened_app_test" metadata:nil completionHandler:^(RadarStatus status, RadarEvent * _Nullable event) {
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:@"Logging opened_app"];
+            [self sendLogConversionRequestWithName:@"opened_app" metadata:nil completionHandler:^(RadarStatus status, RadarEvent * _Nullable event) {
                 NSString *message = [NSString stringWithFormat:@"Conversion name = %@: status = %@; event = %@", event.conversionName, [Radar stringForStatus:status], event];
                 [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:message];
             }];
@@ -506,7 +504,7 @@
 
 
 + (void)logConversionWithNotification:(UNNotificationRequest *)request {
-    [self logConversionWithNotification:request eventName: @"opened_app_test" conversionSource:@"notification" deliveredAfter: nil];
+    [self logConversionWithNotification:request eventName: @"opened_app" conversionSource:@"notification" deliveredAfter: nil];
 }
 
 + (void)logConversionWithNotification:(UNNotificationRequest *)request
