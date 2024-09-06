@@ -459,7 +459,7 @@
     // Perform a non-blocking sleep for 1 second before starting
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         // if opened_app has been logged within the last second, don't log it again
-        NSTimeInterval lastAppOpenTimeInterval = [[NSDate date] timeIntervalSinceDate:[RadarSettings lastAppOpenTime];];
+        NSTimeInterval lastAppOpenTimeInterval = [[NSDate date] timeIntervalSinceDate:[RadarSettings lastAppOpenTime]];
         
         if (lastAppOpenTimeInterval > 2) {
             [RadarSettings updateLastAppOpenTime];
