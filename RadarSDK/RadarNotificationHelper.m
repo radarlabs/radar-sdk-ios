@@ -109,6 +109,9 @@ static NSString *const kSyncGeofenceIdentifierPrefix = @"radar_geofence_";
                  withCompletionHandler:(void (^)(void))completionHandler {
 
     [RadarSettings updateLastAppOpenTime];
+    NSDate *lastAppOpenTime = [RadarSettings lastAppOpenTime];
+    
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"Last app open time: %@ of swizzle", lastAppOpenTime]];
     if ([response.notification.request.identifier hasPrefix:@"radar_"]) {
         [[RadarLogger sharedInstance]
                         logWithLevel:RadarLogLevelDebug
