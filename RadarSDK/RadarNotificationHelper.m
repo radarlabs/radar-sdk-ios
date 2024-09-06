@@ -105,8 +105,8 @@ static NSString *const kSyncGeofenceIdentifierPrefix = @"radar_geofence_";
 }
 
 - (void)swizzled_userNotificationCenter:(UNUserNotificationCenter *)center
-           didReceiveNotificationResponse:(UNNotificationResponse *)response
-                    withCompletionHandler:(void (^)(void))completionHandler {
+        didReceiveNotificationResponse:(UNNotificationResponse *)response
+                 withCompletionHandler:(void (^)(void))completionHandler {
 
     if ([response.notification.request.identifier hasPrefix:@"radar_"]) {
         [[RadarLogger sharedInstance]
@@ -129,7 +129,7 @@ static NSString *const kSyncGeofenceIdentifierPrefix = @"radar_geofence_";
         NSMutableArray *identifiers = [NSMutableArray new];
         for (UNNotificationRequest *request in requests) {
             if ([request.identifier hasPrefix:kSyncGeofenceIdentifierPrefix]) {
-                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"Found pending notification to remove | identifier = %@", request.identifier]];
+                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Found pending notification to remove | identifier = %@", request.identifier]];
                 [identifiers addObject:request.identifier];
             }
         }
@@ -152,10 +152,10 @@ static NSString *const kSyncGeofenceIdentifierPrefix = @"radar_geofence_";
                 [notificationCenter addNotificationRequest:request withCompletionHandler:^(NSError *_Nullable error) {
                     if (error) {
                         [[RadarLogger sharedInstance]
-                            logWithLevel:RadarLogLevelInfo
+                            logWithLevel:RadarLogLevelError
                                 message:[NSString stringWithFormat:@"Error adding local notification | identifier = %@; error = %@", request.identifier, error]];
                     } else {
-                        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo
+                        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
                                                         message:[NSString stringWithFormat:@"Added local notification | identifier = %@", request.identifier]];
                     }
                 }];

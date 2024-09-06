@@ -101,7 +101,6 @@
                                      }];
 }
 
-
 #pragma mark - Properties
 
 + (NSString *)sdkVersion {
@@ -1316,13 +1315,12 @@
     }
     
     [Radar logOpenedAppConversion];
-    
+
     RadarSdkConfiguration *sdkConfiguration = [RadarSettings sdkConfiguration];
     if (sdkConfiguration.trackOnceOnAppOpen) {
         [Radar trackOnceWithCompletionHandler:nil];
     }
 }
-
 
 - (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
