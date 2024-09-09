@@ -26,8 +26,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         self.requestLocationPermissions()
         
         // Replace with a valid test publishable key
-        Radar.initialize(publishableKey: "prj_test_pk_4899327d5733b7741a3bfa223157f3859273be46")
-        Radar.setUserId("testUserId")
+        Radar.initialize(publishableKey: "prj_test_pk_bc37aecae89516d6eea8c5de1bb70ea3078fe530")
+        Radar.setUserId("pushTestUserId")
         Radar.setMetadata([ "foo": "bar" ])
         Radar.setDelegate(self)
         Radar.setVerifiedDelegate(self)
@@ -47,9 +47,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
     func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
         Radar.handleSilentPush(withPayload: userInfo)
         completionHandler(UIBackgroundFetchResult.newData)
-    }
-    
-
+    } 
     
     func demoButton(text: String, function: @escaping () -> Void) {
         guard let scrollView = self.scrollView else { return }
