@@ -80,25 +80,27 @@
     }
 
     [[RadarLocationManager sharedInstance] updateTrackingFromInitialize];
-    
-    [[RadarAPIClient sharedInstance] getConfigForUsage:@"initialize"
-                                              verified:NO
-                                     completionHandler:^(RadarStatus status, RadarConfig *config) {
-                                         if (status == RadarStatusSuccess && config) {
-                                             [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
-                                             [RadarSettings setSdkConfiguration:config.meta.sdkConfiguration];
-                                         }
-                                         
-                                         RadarSdkConfiguration *sdkConfiguration = [RadarSettings sdkConfiguration];
-                                         if (sdkConfiguration.startTrackingOnInitialize && ![RadarSettings tracking]) {
-                                            [Radar startTrackingWithOptions:[RadarSettings trackingOptions]];
-                                         }
-                                         if (sdkConfiguration.trackOnceOnAppOpen) {
-                                            [Radar trackOnceWithCompletionHandler:nil];
-                                         }
 
-                                         [self flushLogs];
-                                     }];
+   [RadarNotificationHelper checkNotificationPermissionsWithCompletionHandler:^(BOOL granted) {
+        [[RadarAPIClient sharedInstance] getConfigForUsage:@"initialize"
+                                                  verified:NO
+                                         completionHandler:^(RadarStatus status, RadarConfig *config) {
+                                            if (status == RadarStatusSuccess && config) {
+                                                [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
+                                                [RadarSettings setSdkConfiguration:config.meta.sdkConfiguration];
+                                            }
+                                         
+                                            RadarSdkConfiguration *sdkConfiguration = [RadarSettings sdkConfiguration];
+                                            if (sdkConfiguration.startTrackingOnInitialize && ![RadarSettings tracking]) {
+                                                [Radar startTrackingWithOptions:[RadarSettings trackingOptions]];
+                                            }
+                                            if (sdkConfiguration.trackOnceOnAppOpen) {
+                                                [Radar trackOnceWithCompletionHandler:nil];
+                                            }
+
+                                            [self flushLogs];
+                                        }];
+    }];
 }
 
 #pragma mark - Properties
@@ -463,6 +465,7 @@
         
         if (lastAppOpenTimeInterval > 2) {
             [RadarSettings updateLastAppOpenTime];
+            // metadata not needed as app is not opened by notification.
             [self sendLogConversionRequestWithName:@"opened_app" metadata:nil completionHandler:^(RadarStatus status, RadarEvent * _Nullable event) {
                 NSString *message = [NSString stringWithFormat:@"Conversion name = %@: status = %@; event = %@", event.conversionName, [Radar stringForStatus:status], event];
                 [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:message];

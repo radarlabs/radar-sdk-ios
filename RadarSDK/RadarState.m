@@ -186,5 +186,8 @@ static NSString *const kNotificationPermissionGranted = @"radar-notificationPerm
     [[NSUserDefaults standardUserDefaults] setBool:notificationPermissionGranted forKey:kNotificationPermissionGranted];
 }
 
++ (BOOL)notificationPermissionGranted {
+    return [[NSUserDefaults standardUserDefaults] boolForKey:kNotificationPermissionGranted];
+}
 
 @end
