@@ -22,7 +22,7 @@ typedef void (^NotificationPermissionCheckCompletion)(BOOL granted);
 
 + (void)addOnPremiseNotificationRequests:(NSArray<UNNotificationRequest *> *)requests;
 
-+ (void)checkNotificationPermissionsWithCompletion:(nullable NotificationPermissionCheckCompletion)completion;
++ (void)checkNotificationPermissionsWithCompletionHandler:(nullable NotificationPermissionCheckCompletion)completionHandler;
 
 @end
 

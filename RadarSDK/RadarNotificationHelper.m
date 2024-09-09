@@ -146,7 +146,7 @@ static NSString *const kSyncGeofenceIdentifierPrefix = @"radar_geofence_";
 
 + (void)addOnPremiseNotificationRequests:(NSArray<UNNotificationRequest *> *)requests {
 
-    [RadarNotificationHelper checkNotificationPermissionsWithCompletion:^(BOOL granted) {
+    [RadarNotificationHelper checkNotificationPermissionsWithCompletionHandler:^(BOOL granted) {
         if (granted) {
             UNUserNotificationCenter *notificationCenter = [UNUserNotificationCenter currentNotificationCenter];
             for (UNNotificationRequest *request in requests) {
@@ -169,7 +169,7 @@ static NSString *const kSyncGeofenceIdentifierPrefix = @"radar_geofence_";
 }
 
 
-+ (void)checkNotificationPermissionsWithCompletion:(NotificationPermissionCheckCompletion)completion {
++ (void)checkNotificationPermissionsWithCompletionHandler:(NotificationPermissionCheckCompletion)completionHandler {
     UNUserNotificationCenter *notificationCenter = [UNUserNotificationCenter currentNotificationCenter];
     [notificationCenter getNotificationSettingsWithCompletionHandler:^(UNNotificationSettings *settings) {
         BOOL granted = (settings.authorizationStatus == UNAuthorizationStatusAuthorized);
@@ -177,8 +177,8 @@ static NSString *const kSyncGeofenceIdentifierPrefix = @"radar_geofence_";
         if (!granted) {
             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Notification permissions not granted."];
         }
-        if (completion) {
-            completion(granted);
+        if (completionHandler) {
+            completionHandler(granted);
         }
     }];
 }
