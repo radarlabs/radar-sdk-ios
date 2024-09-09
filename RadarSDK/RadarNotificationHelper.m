@@ -107,18 +107,19 @@ static NSString *const kSyncGeofenceIdentifierPrefix = @"radar_geofence_";
 - (void)swizzled_userNotificationCenter:(UNUserNotificationCenter *)center
         didReceiveNotificationResponse:(UNNotificationResponse *)response
                  withCompletionHandler:(void (^)(void))completionHandler {
-
-    [RadarSettings updateLastAppOpenTime];
-    
-    if ([response.notification.request.identifier hasPrefix:@"radar_"]) {
-        [[RadarLogger sharedInstance]
-                        logWithLevel:RadarLogLevelDebug
-                            message:[NSString stringWithFormat:@"Getting conversion from notification tap"]];
-        [Radar logOpenedAppConversionWithNotification:response.notification.request conversionSource:@"radar_notification"];
-    } else {
-        [Radar logOpenedAppConversionWithNotification:response.notification.request conversionSource:@"notification"];
+    if ([RadarSettings useOnPremiseNotificationsConversion]) {
+        [RadarSettings updateLastAppOpenTime];
+        
+        if ([response.notification.request.identifier hasPrefix:@"radar_"]) {
+            [[RadarLogger sharedInstance]
+                            logWithLevel:RadarLogLevelDebug
+                                message:[NSString stringWithFormat:@"Getting conversion from notification tap"]];
+            [Radar logOpenedAppConversionWithNotification:response.notification.request conversionSource:@"radar_notification"];
+        } else {
+            [Radar logOpenedAppConversionWithNotification:response.notification.request conversionSource:@"notification"];
+        }
     }
-    
+
     // Call the original method (which is now swizzled)
     [self swizzled_userNotificationCenter:center didReceiveNotificationResponse:response withCompletionHandler:completionHandler];
 }

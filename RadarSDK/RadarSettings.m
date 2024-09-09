@@ -333,4 +333,15 @@ static NSString *const kXPlatformSDKVersion = @"radar-xPlatformSDKVersion";
     return [[NSUserDefaults standardUserDefaults] stringForKey:kXPlatformSDKVersion];
 }
 
++ (BOOL)useOnPremiseNotificationsConversion {
+
+    if ([self sdkConfiguration] == nil) {
+        return YES;
+    }
+    if ([self sdkConfiguration].startTrackingOnInitialize || [self sdkConfiguration].trackOnceOnAppOpen || [[self sdkConfiguration] useOnPremiseNotificationsConversion]) {
+        return YES;
+    }
+    return [[self sdkConfiguration] useOnPremiseNotificationsConversion];
+}
+
 @end

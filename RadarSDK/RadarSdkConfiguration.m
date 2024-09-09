@@ -69,6 +69,12 @@
         _useLocationMetadata = [(NSNumber *)useLocationMetadataObj boolValue];
     }
 
+    NSObject *useOnPremiseNotificationsConversion = dict[@"useOnPremiseNotificationsConversion"];
+    _useOnPremiseNotificationsConversion = NO;
+    if (useOnPremiseNotificationsConversion && [useOnPremiseNotificationsConversion isKindOfClass:[NSNumber class]]) {
+        _useOnPremiseNotificationsConversion = [(NSNumber *)useOnPremiseNotificationsConversion boolValue];
+    }
+
     return self;
 }
 
@@ -83,6 +89,7 @@
     dict[@"useLogPersistence"] = @(_useLogPersistence);
     dict[@"useRadarModifiedBeacon"] = @(_useRadarModifiedBeacon);
     dict[@"useLocationMetadata"] = @(_useLocationMetadata);
+    dict[@"useOnPremiseNotificationsConversion"] = @(_useOnPremiseNotificationsConversion);
     
     return dict;
 }
