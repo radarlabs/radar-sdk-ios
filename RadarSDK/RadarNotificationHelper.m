@@ -14,7 +14,7 @@
 #import "RadarSettings.h"
 #import "RadarUtils.h"
 #import <BackgroundTasks/BackgroundTasks.h>
-
+#import "Radar+Internal.h"
 #import <objc/runtime.h>
 
 @implementation RadarNotificationHelper
@@ -114,9 +114,9 @@ static NSString *const kSyncGeofenceIdentifierPrefix = @"radar_geofence_";
         [[RadarLogger sharedInstance]
                         logWithLevel:RadarLogLevelDebug
                             message:[NSString stringWithFormat:@"Getting conversion from notification tap"]];
-        [Radar logConversionWithNotification:response.notification.request eventName:@"opened_app" conversionSource:@"radar_notification" deliveredAfter:nil];
+        [Radar logOpenedAppConversionWithNotification:response.notification.request conversionSource:@"radar_notification"];
     } else {
-        [Radar logConversionWithNotification:response.notification.request eventName:@"opened_app" conversionSource:@"notification" deliveredAfter:nil];
+        [Radar logOpenedAppConversionWithNotification:response.notification.request conversionSource:@"notification"];
     }
     
     // Call the original method (which is now swizzled)
