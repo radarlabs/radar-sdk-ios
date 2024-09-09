@@ -656,6 +656,8 @@ logConversionWithNotification
  */
 + (void)logConversionWithNotification:(UNNotificationRequest *_Nullable)request NS_SWIFT_NAME(logConversion(request:));
 
+#pragma mark - Trips
+
 /**
  Returns the current trip options.
 

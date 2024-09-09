@@ -16,12 +16,12 @@
 
 + (void)logOpenedAppConversion;
 
-+ (void)logConversionWithNotification:(UNNotificationRequest *)request 
-                            eventName:(NSString *)eventName
++ (void)logConversionWithNotification:(UNNotificationRequest *_Nonnull)request 
+                            eventName:(NSString *_Nonnull)eventName
                      conversionSource:(NSString *_Nullable)conversionSource 
                        deliveredAfter:(NSDate *_Nullable)deliveredAfter;
 
-+ (void)logOpenedAppConversionWithNotification:(UNNotificationRequest *)request 
++ (void)logOpenedAppConversionWithNotification:(UNNotificationRequest *_Nonnull)request 
                               conversionSource:(NSString *_Nullable)conversionSource;
 
 @end
