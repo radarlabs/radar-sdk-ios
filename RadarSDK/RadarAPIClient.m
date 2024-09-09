@@ -98,7 +98,7 @@
     if (locationAccuracyAuthorization) {
         [queryString appendFormat:@"&locationAccuracyAuthorization=%@", locationAccuracyAuthorization];
     }
-    NSString *notificationAuthorization = [RadarState notificationPermissionGranted]?@"true":@"false";
+    NSString *notificationAuthorization = [RadarState notificationPermissionGranted] ? @"true" : @"false";
     [queryString appendFormat:@"&notificationAuthorization=%@", notificationAuthorization];
     if (usage) {
         [queryString appendFormat:@"&usage=%@", usage];
@@ -313,7 +313,7 @@
     if (locationAccuracyAuthorization) {
         params[@"locationAccuracyAuthorization"] = locationAccuracyAuthorization;
     }
-    params[@"notificationAuthorization"] = [RadarState notificationPermissionGranted]?@"true":@"false";
+    params[@"notificationAuthorization"] = [RadarState notificationPermissionGranted] ? @"true" : @"false";
 
     params[@"trackingOptions"] = [options dictionaryValue];
 
