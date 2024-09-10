@@ -49,7 +49,7 @@
     });
 }
 
-+ (void)initializeWithPublishableKey:(NSString *)publishableKey {
++ (void)initializeWithPublishableKey:(NSString *)publishableKey radarInitializeOptions:(RadarInitializeOptions *)radarInitializeOptions {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"initialize()"];
     
     Class RadarSDKMotion = NSClassFromString(@"RadarSDKMotion");
@@ -67,7 +67,7 @@
 
     RadarSdkConfiguration *sdkConfiguration = [RadarSettings sdkConfiguration];
 
-    if (NSClassFromString(@"XCTestCase") == nil) {
+    if (NSClassFromString(@"XCTestCase") == nil && radarInitializeOptions.autoSetupNotificationConversion) {
         [Radar nativeSetup];
     }
 
@@ -101,6 +101,11 @@
                                             [self flushLogs];
                                         }];
     }];
+
+}
+
++ (void)initializeWithPublishableKey:(NSString *)publishableKey {
+    [self initializeWithPublishableKey:publishableKey radarInitializeOptions:[RadarInitializeOptions new]];
 }
 
 #pragma mark - Properties
@@ -540,6 +545,10 @@
         NSString *message = [NSString stringWithFormat:@"Conversion name = %@: status = %@; event = %@", event.conversionName, [Radar stringForStatus:status], event];
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:message];
     }];
+}
+
++ (void)logConversionWithNotificationResponse:(UNNotificationResponse *)response {
+    [RadarNotificationHelper logConversionWithNotificationResponse:response];
 }
 
 #pragma mark - Trips

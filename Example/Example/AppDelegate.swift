@@ -26,7 +26,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         self.requestLocationPermissions()
         
         // Replace with a valid test publishable key
-        Radar.initialize(publishableKey: "prj_test_pk_0000000000000000000000000000000000000000")
+        let radarInitializeOptions = RadarInitializeOptions()
+        //radarInitializeOptions.autoSetupNotificationConversion = true
+        Radar.initialize(publishableKey: "prj_test_pk_0000000000000000000000000000000000000000", radarInitializeOptions: radarInitializeOptions )
         Radar.setUserId("testUserId")
         Radar.setMetadata([ "foo": "bar" ])
         Radar.setDelegate(self)
@@ -316,6 +318,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
     
     func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse) async {
         // Do nothing
+        Radar.logConversion(response: response)
     }
 
     func notify(_ body: String) {

@@ -24,6 +24,8 @@ typedef void (^NotificationPermissionCheckCompletion)(BOOL granted);
 
 + (void)checkNotificationPermissionsWithCompletionHandler:(nullable NotificationPermissionCheckCompletion)completionHandler;
 
++ (void)logConversionWithNotificationResponse:(UNNotificationResponse *)response;
+
 @end
 
 NS_ASSUME_NONNULL_END

@@ -107,6 +107,14 @@ static NSString *const kSyncGeofenceIdentifierPrefix = @"radar_geofence_";
 - (void)swizzled_userNotificationCenter:(UNUserNotificationCenter *)center
         didReceiveNotificationResponse:(UNNotificationResponse *)response
                  withCompletionHandler:(void (^)(void))completionHandler {
+
+    [RadarNotificationHelper logConversionWithNotificationResponse:response];
+
+    // Call the original method (which is now swizzled)
+    [self swizzled_userNotificationCenter:center didReceiveNotificationResponse:response withCompletionHandler:completionHandler];
+}
+
++ (void)logConversionWithNotificationResponse:(UNNotificationResponse *)response {
     if ([RadarSettings useOnPremiseNotificationsConversion]) {
         [RadarSettings updateLastAppOpenTime];
         
@@ -119,9 +127,6 @@ static NSString *const kSyncGeofenceIdentifierPrefix = @"radar_geofence_";
             [Radar logOpenedAppConversionWithNotification:response.notification.request conversionSource:@"notification"];
         }
     }
-
-    // Call the original method (which is now swizzled)
-    [self swizzled_userNotificationCenter:center didReceiveNotificationResponse:response withCompletionHandler:completionHandler];
 }
 
 + (void)removePendingNotificationsWithCompletionHandler:(void (^)(void))completionHandler {

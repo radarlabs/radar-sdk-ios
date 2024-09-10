@@ -20,6 +20,7 @@
 #import "RadarTrackingOptions.h"
 #import "RadarVerifiedLocationToken.h"
 #import "RadarUser.h"
+#import "RadarInitializeOptions.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -324,6 +325,7 @@ typedef void (^_Nullable RadarLogConversionCompletionHandler)(RadarStatus status
  */
 + (void)initializeWithPublishableKey:(NSString *_Nonnull)publishableKey NS_SWIFT_NAME(initialize(publishableKey:));
 
++ (void)initializeWithPublishableKey:(NSString *)publishableKey radarInitializeOptions:(RadarInitializeOptions *)radarInitializeOptions NS_SWIFT_NAME(initialize(publishableKey:radarInitializeOptions:));
 #pragma mark - Properties
 
 /**
@@ -655,6 +657,8 @@ logConversionWithNotification
  @see https://radar.com/documentation/api#send-a-custom-event
  */
 + (void)logConversionWithNotification:(UNNotificationRequest *_Nullable)request NS_SWIFT_NAME(logConversion(request:));
+
++ (void)logConversionWithNotificationResponse:(UNNotificationResponse *)response NS_SWIFT_NAME(logConversion(response:));
 
 #pragma mark - Trips
 
