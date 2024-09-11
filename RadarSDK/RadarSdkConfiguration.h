@@ -33,7 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, assign) BOOL useLocationMetadata;
 
-@property (nonatomic, assign) BOOL useOnPremiseNotificationsConversion;
+@property (nonatomic, assign) BOOL useOpenedAppConversion;
 /**
  Initializes a new RadarSdkConfiguration object with given value.
  */

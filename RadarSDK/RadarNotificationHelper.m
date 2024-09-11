@@ -115,7 +115,7 @@ static NSString *const kSyncGeofenceIdentifierPrefix = @"radar_geofence_";
 }
 
 + (void)logConversionWithNotificationResponse:(UNNotificationResponse *)response {
-    if ([RadarSettings useOnPremiseNotificationsConversion]) {
+    if ([RadarSettings useOpenedAppConversion]) {
         [RadarSettings updateLastAppOpenTime];
         
         if ([response.notification.request.identifier hasPrefix:@"radar_"]) {

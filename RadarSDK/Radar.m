@@ -463,6 +463,10 @@
 }
 
 + (void)logOpenedAppConversion {
+    if (![RadarSettings useOpenedAppConversion]) {
+        return;
+    }
+    
     // Perform a non-blocking sleep for 1 second before starting, this is to address the fact that swizzled notification method may be called at a different relative live as compared to this method depending on framework.
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         // if opened_app has been logged within the last second, don't log it again
