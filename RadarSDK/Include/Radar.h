@@ -325,6 +325,17 @@ typedef void (^_Nullable RadarLogConversionCompletionHandler)(RadarStatus status
  */
 + (void)initializeWithPublishableKey:(NSString *_Nonnull)publishableKey NS_SWIFT_NAME(initialize(publishableKey:));
 
+/**
+ Initializes the Radar SDK.
+
+ @warning Call this method from the main thread in your `AppDelegate` class before calling any other Radar methods.
+
+ @param publishableKey Your publishable API key.
+ @param radarInitializeOptions Radar SDK initialization options.
+
+ @see https://radar.com/documentation/sdk/ios#initialize-sdk
+ */
+
 + (void)initializeWithPublishableKey:(NSString *)publishableKey radarInitializeOptions:(RadarInitializeOptions *)radarInitializeOptions NS_SWIFT_NAME(initialize(publishableKey:radarInitializeOptions:));
 #pragma mark - Properties
 
@@ -651,12 +662,19 @@ typedef void (^_Nullable RadarLogConversionCompletionHandler)(RadarStatus status
             completionHandler:(RadarLogConversionCompletionHandler)completionHandler NS_SWIFT_NAME(logConversion(name:revenue:metadata:completionHandler:));
 
 /**
-logConversionWithNotification
+Logs a conversion with a notification
  @param request The request associated with the notification
 
  @see https://radar.com/documentation/api#send-a-custom-event
  */
 + (void)logConversionWithNotification:(UNNotificationRequest *_Nullable)request NS_SWIFT_NAME(logConversion(request:));
+
+/**
+Logs a conversion with a notification. This should only be used to manually setup logging of notification conversions.
+ @param response The response associated with user interaction with the notification. 
+
+ @see https://radar.com/documentation/api#send-a-custom-event
+ */
 
 + (void)logConversionWithNotificationResponse:(UNNotificationResponse *)response NS_SWIFT_NAME(logConversion(response:));
 
@@ -1208,6 +1226,10 @@ logConversionWithNotification
 + (NSDictionary *)dictionaryForLocation:(CLLocation *)location NS_SWIFT_NAME(dictionaryForLocation(_:));
 
 
+/**
+ Perform optional setup for Radar SDK within the app delegate. This method only needs to be called if Radar is initalized in cross platform code.
+
+ */
 + (void) nativeSetup NS_SWIFT_NAME(nativeSetup());
 
 @end
