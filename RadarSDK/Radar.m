@@ -442,7 +442,9 @@
 + (void)handleSilentPushWithPayload:(NSDictionary *)payload {
     NSString *message = [NSString stringWithFormat:@"App received silent push notification | payload=%@", payload];
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug type:RadarLogTypeNone message:message includeDate:YES includeBattery:YES];
-    [RadarNotificationHelper showDidReceiveSilentPushNotification];
+    
+    
+    [RadarNotificationHelper showDidReceiveSilentPushNotification:payload];
 
     [RadarNotificationHelper checkForSentOnPremiseNotifications:^{}];
     

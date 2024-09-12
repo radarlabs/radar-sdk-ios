@@ -266,12 +266,36 @@ static NSString *const kSyncGeofenceIdentifierPrefix = @"radar_geofence_";
     }];
 }
 
-+ (void)showDidReceiveSilentPushNotification {
-    UNMutableNotificationContent *content = [UNMutableNotificationContent new];
-    content.body = @"Received silent push; calling startTracking() continuous";
-    UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:[[NSUUID UUID] UUIDString] content:content trigger:nil];
-    [UNUserNotificationCenter.currentNotificationCenter addNotificationRequest:request withCompletionHandler:^(NSError *_Nullable error) {
-    }];
++ (void)showDidReceiveSilentPushNotification:(NSDictionary *)payload {
+    if (!payload) {
+        return;
+    }
+    if (payload[@"action"]) {
+        NSString *action = payload[@"action"];
+        if ([action isEqualToString:@"CHECK_ON_PREMISE_NOTIFICATION_RECEIPT"]) {
+            [RadarNotificationHelper checkForSentOnPremiseNotifications:^{}];
+        }
+
+        if ([action isEqualToString:@"PING"]) {
+            UNMutableNotificationContent *content = [UNMutableNotificationContent new];
+            
+            // Get the current date and time
+
+            NSString *currentDateTime = [[RadarUtils isoDateFormatter] stringFromDate:[NSDate date]];
+            
+            // Set the notification body to include the current date and time
+            content.body = [NSString stringWithFormat:@"Received silent push at %@;", currentDateTime];
+            
+            UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:[[NSUUID UUID] UUIDString] content:content trigger:nil];
+            [UNUserNotificationCenter.currentNotificationCenter addNotificationRequest:request withCompletionHandler:^(NSError *_Nullable error) {
+                if (error) {
+                    NSLog(@"Error adding notification request: %@", error);
+                }
+            }];
+        }
+    }
+
+
 }
 
 @end
