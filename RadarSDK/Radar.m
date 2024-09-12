@@ -1295,9 +1295,9 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-+ (BOOL)isTestKey {
++ (BOOL)canFlushLogs {
     NSString *publishableKey = [RadarSettings publishableKey];
-    if ([publishableKey hasPrefix:@"prj_test_pk"] || [publishableKey hasPrefix:@"org_test_pk"] || [RadarSettings userDebug]) {
+    if ([publishableKey hasPrefix:@"prj_test_pk"] || [publishableKey hasPrefix:@"org_test_pk"] || [RadarSettings sdkConfiguration].logLevel == RadarLogLevelDebug) {
         return YES;
     }
     return NO;
@@ -1308,7 +1308,7 @@
 }
 
 + (void)flushLogs {
-    if (![self isTestKey]) {
+    if (![self canFlushLogs]) {
         return;
     }
 
