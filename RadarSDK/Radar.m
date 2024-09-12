@@ -49,7 +49,7 @@
     });
 }
 
-+ (void)initializeWithPublishableKey:(NSString *)publishableKey radarInitializeOptions:(RadarInitializeOptions *)radarInitializeOptions {
++ (void)initializeWithPublishableKey:(NSString *)publishableKey options:(RadarInitializeOptions *)options {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"initialize()"];
     
     Class RadarSDKMotion = NSClassFromString(@"RadarSDKMotion");
@@ -67,7 +67,7 @@
 
     RadarSdkConfiguration *sdkConfiguration = [RadarSettings sdkConfiguration];
 
-    if (NSClassFromString(@"XCTestCase") == nil && radarInitializeOptions.autoSetupNotificationConversion) {
+    if (NSClassFromString(@"XCTestCase") == nil && options.autoLogNotificationConversions) {
         [Radar nativeSetup];
     }
 
@@ -105,7 +105,7 @@
 }
 
 + (void)initializeWithPublishableKey:(NSString *)publishableKey {
-    [self initializeWithPublishableKey:publishableKey radarInitializeOptions:[RadarInitializeOptions new]];
+    [self initializeWithPublishableKey:publishableKey options:[RadarInitializeOptions new]];
 }
 
 #pragma mark - Properties

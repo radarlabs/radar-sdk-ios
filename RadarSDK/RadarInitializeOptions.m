@@ -15,7 +15,7 @@
 - (instancetype)init {
     self = [super init];
     if (self) {
-        _autoSetupNotificationConversion = NO;
+        _autoLogNotificationConversions = NO;
     }
     return self;
 }

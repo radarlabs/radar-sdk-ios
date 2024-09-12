@@ -29,7 +29,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         let radarInitializeOptions = RadarInitializeOptions()
         // Uncomment to enable automatic setup for notification conversions
         // radarInitializeOptions.autoSetupNotificationConversion = true
-        Radar.initialize(publishableKey: "prj_test_pk_0000000000000000000000000000000000000000", radarInitializeOptions: radarInitializeOptions )
+        Radar.initialize(publishableKey: "prj_test_pk_0000000000000000000000000000000000000000", options: radarInitializeOptions )
         Radar.setUserId("testUserId")
         Radar.setMetadata([ "foo": "bar" ])
         Radar.setDelegate(self)

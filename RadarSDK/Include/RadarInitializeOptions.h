@@ -11,7 +11,7 @@
 
 @interface RadarInitializeOptions : NSObject
 
-@property (assign, nonatomic) BOOL autoSetupNotificationConversion;
+@property (assign, nonatomic) BOOL autoLogNotificationConversions;
 
 @end
 
