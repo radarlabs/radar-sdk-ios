@@ -38,6 +38,8 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)setLastHeadingData:(NSDictionary *_Nullable)lastHeadingData;
 + (NSDictionary *)lastMotionActivityData;
 + (void)setLastMotionActivityData:(NSDictionary *_Nullable)lastMotionActivityData;
++ (void)setNotificationPermissionGranted:(BOOL)granted;
++ (BOOL)notificationPermissionGranted;
 
 @end
 
