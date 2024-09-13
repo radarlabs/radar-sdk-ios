@@ -69,6 +69,12 @@
         _useLocationMetadata = [(NSNumber *)useLocationMetadataObj boolValue];
     }
 
+    NSObject *provideMoreTimestampsObj = dict[@"provideMoreTimestamps"];
+    _provideMoreTimestamps = YES;
+    if (provideMoreTimestampsObj && [provideMoreTimestampsObj isKindOfClass:[NSNumber class]]) {
+        _provideMoreTimestamps = [(NSNumber *)provideMoreTimestampsObj boolValue];
+    }
+
     return self;
 }
 
@@ -83,6 +89,7 @@
     dict[@"useLogPersistence"] = @(_useLogPersistence);
     dict[@"useRadarModifiedBeacon"] = @(_useRadarModifiedBeacon);
     dict[@"useLocationMetadata"] = @(_useLocationMetadata);
+    dict[@"provideMoreTimestamps"] = @(_provideMoreTimestamps);
     
     return dict;
 }
