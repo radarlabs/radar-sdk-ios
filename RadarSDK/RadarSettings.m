@@ -288,7 +288,7 @@ static NSString *const kXPlatformSDKVersion = @"radar-xPlatformSDKVersion";
     // point to staging for development
     // NSString *host = [[NSUserDefaults standardUserDefaults] stringForKey:kHost];
     // return host ? host : kDefaultHost;
-    return @"https://arriving-eagle-magnetic.ngrok-free.app";
+    return @"https://api-kenny.radar-staging.com";
 }
 
 + (void)updateLastTrackedTime {
