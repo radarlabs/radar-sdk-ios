@@ -1297,7 +1297,7 @@
 
 + (BOOL)canFlushLogs {
     NSString *publishableKey = [RadarSettings publishableKey];
-    if ([publishableKey hasPrefix:@"prj_test_pk"] || [publishableKey hasPrefix:@"org_test_pk"] || [RadarSettings sdkConfiguration].logLevel == RadarLogLevelDebug) {
+    if ([publishableKey hasPrefix:@"prj_test_pk"] || [publishableKey hasPrefix:@"org_test_pk"] || [RadarSettings userDebug] || ([RadarSettings sdkConfiguration].logLevel && [RadarSettings sdkConfiguration].logLevel != RadarLogLevelNone)) {
         return YES;
     }
     return NO;
