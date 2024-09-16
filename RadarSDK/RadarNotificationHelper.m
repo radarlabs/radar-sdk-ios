@@ -203,20 +203,6 @@ static NSString *const kSyncGeofenceIdentifierPrefix = @"radar_geofence_";
     }];
 }
 
-+ (void)checkNotificationPermissionsWithCompletion:(NotificationPermissionCheckCompletion)completion {
-    UNUserNotificationCenter *notificationCenter = [UNUserNotificationCenter currentNotificationCenter];
-    [notificationCenter getNotificationSettingsWithCompletionHandler:^(UNNotificationSettings *settings) {
-        BOOL granted = (settings.authorizationStatus == UNAuthorizationStatusAuthorized);
-        [RadarState setNotificationPermissionGranted:granted];
-        if (!granted) {
-            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Notification permissions not granted."];
-        }
-        if (completion) {
-            completion(granted);
-        }
-    }];
-}
-
 + (void)showDidReceiveSilentPushNotification:(NSDictionary *)payload {
     if (!payload) {
         return;
