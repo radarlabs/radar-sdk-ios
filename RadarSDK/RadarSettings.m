@@ -285,7 +285,7 @@ static NSString *const kXPlatformSDKVersion = @"radar-xPlatformSDKVersion";
 }
 
 + (NSString *)host {
-    point to staging for development
+    // point to staging for development
     NSString *host = [[NSUserDefaults standardUserDefaults] stringForKey:kHost];
     return host ? host : kDefaultHost;
 }

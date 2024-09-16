@@ -246,8 +246,4 @@ static NSString *const kNotificationPermissionGranted = @"radar-notificationPerm
     [[NSUserDefaults standardUserDefaults] setObject:[NSDate date] forKey:kLastCheckedOnPremiseNotification];
 }
 
-+ (void)setNotificationPermissionGranted:(BOOL)notificationPermissionGranted {
-    [[NSUserDefaults standardUserDefaults] setBool:notificationPermissionGranted forKey:kNotificationPermissionGranted];
-}
-
 @end

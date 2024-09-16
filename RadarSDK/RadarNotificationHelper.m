@@ -305,6 +305,7 @@ static NSString *const kSyncGeofenceIdentifierPrefix = @"radar_geofence_";
             }
         }
     }
+}
 
 + (void)checkNotificationPermissionsWithCompletionHandler:(NotificationPermissionCheckCompletion)completionHandler {
     if (NSClassFromString(@"XCTestCase") == nil) {

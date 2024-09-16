@@ -76,7 +76,6 @@
 
 
     if (NSClassFromString(@"XCTestCase") == nil && options.autoLogNotificationConversions) {
-        [RadarNotificationHelper checkNotificationPermissionsWithCompletion:nil];
         if (options.autoLogNotificationConversions) {
             [Radar nativeSetup];
         }
@@ -158,7 +157,6 @@
 }
 
 + (void)handleDeviceTokenForRemoteNotifications:(NSData *)deviceToken {
-    NSLog(@"i got here");
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Received device token for remote notifications."];
 
     const char *data = (char *)[deviceToken bytes];
@@ -1402,7 +1400,7 @@
 }
 
 - (void)applicationDidEnterBackground {
-    [RadarNotificationHelper scheduleBackgroundNotificationChecks];
+    // [RadarNotificationHelper scheduleBackgroundNotificationChecks];
 }
 
 - (void)dealloc {
