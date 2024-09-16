@@ -446,7 +446,7 @@
     
     [RadarNotificationHelper showDidReceiveSilentPushNotification:payload];
 
-    [RadarNotificationHelper checkForSentOnPremiseNotifications:^{}];
+    // [RadarNotificationHelper checkForSentOnPremiseNotifications:^{}];
     
     // payload contains array of actions, only using a single action for now
     // action is a dictionary with type and optional data

@@ -26,7 +26,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         self.requestLocationPermissions()
         
         // Replace with a valid test publishable key
-        Radar.initialize(publishableKey: "prj_test_pk_bc37aecae89516d6eea8c5de1bb70ea3078fe530")
+        Radar.initialize(publishableKey: "prj_test_pk_0000000000000000000000000000000000000000")
         Radar.setUserId("pushTestUserId")
         Radar.setMetadata([ "foo": "bar" ])
         Radar.setDelegate(self)
@@ -45,7 +45,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
     }
     
     func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
-        Radar.handleSilentPush(withPayload: userInfo)
+        NSLog("didReceiveRemoteNotification with userInfo: %@", userInfo)
+        Radar.handleSilentPush(payload: userInfo)
         completionHandler(UIBackgroundFetchResult.newData)
     } 
     
@@ -356,20 +357,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
 
     func didUpdateLocation(_ location: CLLocation, user: RadarUser) {
         let body = "\(user.stopped ? "Stopped at" : "Moved to") location (\(location.coordinate.latitude), \(location.coordinate.longitude)) with accuracy \(location.horizontalAccuracy) meters"
-        self.notify(body)
+        //self.notify(body)
     }
 
     func didUpdateClientLocation(_ location: CLLocation, stopped: Bool, source: RadarLocationSource) {
         let body = "\(stopped ? "Client stopped at" : "Client moved to") location (\(location.coordinate.latitude), \(location.coordinate.longitude)) with accuracy \(location.horizontalAccuracy) meters and source \(Utils.stringForRadarLocationSource(source))"
-        self.notify(body)
+        //self.notify(body)
     }
 
     func didFail(status: RadarStatus) {
-        self.notify(Radar.stringForStatus(status))
+        //self.notify(Radar.stringForStatus(status))
     }
 
     func didLog(message: String) {
-        self.notify(message)
+        //self.notify(message)
     }
 
     func didUpdateToken(_ token: RadarVerifiedLocationToken) {

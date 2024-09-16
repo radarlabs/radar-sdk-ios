@@ -579,7 +579,7 @@ typedef void (^_Nullable RadarLogConversionCompletionHandler)(RadarStatus status
  */
 + (BOOL)isUsingRemoteTrackingOptions;
 
-+ (void)handleSilentPushWithPayload:(NSDictionary *)payload;
++ (void)handleSilentPushWithPayload:(NSDictionary *)payload NS_SWIFT_NAME(handleSilentPush(payload:));
 
 #pragma mark - Delegate
 
