@@ -203,58 +203,6 @@ static NSString *const kSyncGeofenceIdentifierPrefix = @"radar_geofence_";
     }];
 }
 
-+ (void)registerBackgroundNotificationChecks {
-    NSURL *webhookURL = [NSURL URLWithString:@"https://webhook.site/76c1a57d-e047-4c96-8ee2-307de5d49376/bginit"];
-    // [self sendGetRequestToWebhookURL:webhookURL];
-    if (@available(iOS 13.0, *)) {
-        [[BGTaskScheduler sharedScheduler] registerForTaskWithIdentifier:@"io.radar.notificationCheck" usingQueue:nil launchHandler:^(BGTask *task) {
-            [self handleAppRefreshTask:task];
-        }];
-    }
-}
-
-+ (void)scheduleBackgroundNotificationChecks {
-    if (@available(iOS 13.0, *)) {
-        BGAppRefreshTaskRequest *request = [[BGAppRefreshTaskRequest alloc] initWithIdentifier:@"io.radar.notificationCheck"];
-        request.earliestBeginDate = [NSDate dateWithTimeIntervalSinceNow:60*60];
-        NSError *error = nil;
-        
-        [[BGTaskScheduler sharedScheduler] submitTaskRequest:request error:&error];
-        if (error) {
-            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelError message:[NSString stringWithFormat:@"Error scheduling app refresh task: %@", error]];
-        }
-    }
-}
-
-+ (void)sendGetRequestToWebhookURL:(NSURL *)url {
-    NSURLSessionConfiguration *sessionConfig = [NSURLSessionConfiguration defaultSessionConfiguration];
-    NSURLSession *session = [NSURLSession sessionWithConfiguration:sessionConfig];
-
-    NSURLSessionDataTask *dataTask = [session dataTaskWithURL:url completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-        if (error) {
-            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelError message:[NSString stringWithFormat:@"Error sending GET request to webhook URL: %@", error]];
-        } else {
-            NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
-            if (httpResponse.statusCode == 200) {
-                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:@"Successfully sent GET request to webhook URL."];
-            } else {
-                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelError message:[NSString stringWithFormat:@"Failed to send GET request to webhook URL. Status code: %ld", (long)httpResponse.statusCode]];
-            }
-        }
-    }];
-
-    [dataTask resume];
-}
-
-+ (void)handleAppRefreshTask:(BGTask *)task  API_AVAILABLE(ios(13.0)){
-    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"Performing background task of checking for notification sent"]];
-    [self scheduleBackgroundNotificationChecks];
-    [self checkForSentOnPremiseNotifications:^{}];
-    NSURL *webhookURL = [NSURL URLWithString:@"https://webhook.site/76c1a57d-e047-4c96-8ee2-307de5d49376/bgtask"];
-    [self sendGetRequestToWebhookURL:webhookURL];
-    [task setTaskCompletedWithSuccess:YES];
-}
-
 + (void)checkNotificationPermissionsWithCompletion:(NotificationPermissionCheckCompletion)completion {
     UNUserNotificationCenter *notificationCenter = [UNUserNotificationCenter currentNotificationCenter];
     [notificationCenter getNotificationSettingsWithCompletionHandler:^(UNNotificationSettings *settings) {

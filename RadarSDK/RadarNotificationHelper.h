@@ -26,10 +26,6 @@ typedef void (^NotificationPermissionCheckCompletion)(BOOL granted);
 
 + (void)addOnPremiseNotificationRequests:(NSArray<UNNotificationRequest *> *)requests;
 
-+ (void)registerBackgroundNotificationChecks;
-
-+ (void)scheduleBackgroundNotificationChecks;
-
 + (void)checkNotificationPermissionsWithCompletionHandler:(nullable NotificationPermissionCheckCompletion)completionHandler;
 
 + (void)logConversionWithNotificationResponse:(UNNotificationResponse *)response;

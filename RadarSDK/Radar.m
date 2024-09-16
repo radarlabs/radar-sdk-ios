@@ -46,8 +46,6 @@
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         [RadarNotificationHelper swizzleNotificationCenterDelegate];
-        //[RadarNotificationHelper registerBackgroundNotificationChecks];
-        //[RadarNotificationHelper scheduleBackgroundNotificationChecks];
     });
 }
 
@@ -1400,7 +1398,7 @@
 }
 
 - (void)applicationDidEnterBackground {
-    // [RadarNotificationHelper scheduleBackgroundNotificationChecks];
+
 }
 
 - (void)dealloc {
