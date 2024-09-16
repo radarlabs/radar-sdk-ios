@@ -67,6 +67,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (BOOL)xPlatform;
 + (NSString *)xPlatformSDKType;
 + (NSString *)xPlatformSDKVersion;
++ (BOOL)useOpenedAppConversion;
 
 @end
 

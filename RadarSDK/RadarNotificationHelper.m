@@ -14,7 +14,7 @@
 #import "RadarSettings.h"
 #import "RadarUtils.h"
 #import <BackgroundTasks/BackgroundTasks.h>
-
+#import "Radar+Internal.h"
 #import <objc/runtime.h>
 
 @implementation RadarNotificationHelper
@@ -105,23 +105,11 @@ static NSString *const kSyncGeofenceIdentifierPrefix = @"radar_geofence_";
 }
 
 - (void)swizzled_userNotificationCenter:(UNUserNotificationCenter *)center
-           didReceiveNotificationResponse:(UNNotificationResponse *)response
-                    withCompletionHandler:(void (^)(void))completionHandler {
+        didReceiveNotificationResponse:(UNNotificationResponse *)response
+                 withCompletionHandler:(void (^)(void))completionHandler {
 
-    NSDate *lastCheckedTime = [RadarState lastCheckedOnPremiseNotification];
-    if ([response.notification.request.identifier hasPrefix:@"radar_"]) {
-        [[RadarLogger sharedInstance]
-                        logWithLevel:RadarLogLevelDebug
-                            message:[NSString stringWithFormat:@"Getting conversion from notification tap"]];
-        [Radar logConversionWithNotification:response.notification.request eventName:@"opened_app" conversionSource:@"radar_notification" deliveredAfter:lastCheckedTime];
-    } else {
-        [Radar logConversionWithNotification:response.notification.request eventName:@"opened_app" conversionSource:@"notification" deliveredAfter:lastCheckedTime];
-    }
-    [RadarSettings updateLastAppOpenTime];
+    [RadarNotificationHelper logConversionWithNotificationResponse:response];
 
-    if ([RadarUtils foreground]) {
-        [RadarNotificationHelper checkForSentOnPremiseNotifications:^{}];
-    }
     // Call the original method (which is now swizzled)
     [self swizzled_userNotificationCenter:center didReceiveNotificationResponse:response withCompletionHandler:completionHandler];
 }
@@ -154,6 +142,21 @@ static NSString *const kSyncGeofenceIdentifierPrefix = @"radar_geofence_";
     }
 }
 
++ (void)logConversionWithNotificationResponse:(UNNotificationResponse *)response {
+    if ([RadarSettings useOpenedAppConversion]) {
+        [RadarSettings updateLastAppOpenTime];
+        
+        if ([response.notification.request.identifier hasPrefix:@"radar_"]) {
+            [[RadarLogger sharedInstance]
+                            logWithLevel:RadarLogLevelDebug
+                                message:[NSString stringWithFormat:@"Getting conversion from notification tap"]];
+            [Radar logOpenedAppConversionWithNotification:response.notification.request conversionSource:@"radar_notification"];
+        } else {
+            [Radar logOpenedAppConversionWithNotification:response.notification.request conversionSource:@"notification"];
+        }
+    }
+}
+
 + (void)removePendingNotificationsWithCompletionHandler:(void (^)(void))completionHandler {
     UNUserNotificationCenter *notificationCenter = [UNUserNotificationCenter currentNotificationCenter];
     [notificationCenter getPendingNotificationRequestsWithCompletionHandler:^(NSArray<UNNotificationRequest *> *_Nonnull requests) {
@@ -161,7 +164,7 @@ static NSString *const kSyncGeofenceIdentifierPrefix = @"radar_geofence_";
         NSMutableArray *identifiers = [NSMutableArray new];
         for (UNNotificationRequest *request in requests) {
             if ([request.identifier hasPrefix:kSyncGeofenceIdentifierPrefix]) {
-                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"Found pending notification to remove | identifier = %@", request.identifier]];
+                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Found pending notification to remove | identifier = %@", request.identifier]];
                 [identifiers addObject:request.identifier];
             }
         }
@@ -177,7 +180,7 @@ static NSString *const kSyncGeofenceIdentifierPrefix = @"radar_geofence_";
 
 + (void)addOnPremiseNotificationRequests:(NSArray<UNNotificationRequest *> *)requests {
 
-    [RadarNotificationHelper checkNotificationPermissionsWithCompletion:^(BOOL granted) {
+    [RadarNotificationHelper checkNotificationPermissionsWithCompletionHandler:^(BOOL granted) {
         if (granted) {
             UNUserNotificationCenter *notificationCenter = [UNUserNotificationCenter currentNotificationCenter];
             for (UNNotificationRequest *request in requests) {
@@ -302,6 +305,26 @@ static NSString *const kSyncGeofenceIdentifierPrefix = @"radar_geofence_";
             }
         }
     }
+
++ (void)checkNotificationPermissionsWithCompletionHandler:(NotificationPermissionCheckCompletion)completionHandler {
+    if (NSClassFromString(@"XCTestCase") == nil) {
+        UNUserNotificationCenter *notificationCenter = [UNUserNotificationCenter currentNotificationCenter];
+        [notificationCenter getNotificationSettingsWithCompletionHandler:^(UNNotificationSettings *settings) {
+            BOOL granted = (settings.authorizationStatus == UNAuthorizationStatusAuthorized);
+            [RadarState setNotificationPermissionGranted:granted];
+            if (!granted) {
+                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Notification permissions not granted."];
+            }
+            if (completionHandler) {
+                completionHandler(granted);
+            }
+        }];
+    } else {
+        if (completionHandler) {
+            completionHandler(NO);
+        }
+    }
+   
 }
 
 @end

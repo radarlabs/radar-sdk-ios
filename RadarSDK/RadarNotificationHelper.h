@@ -30,7 +30,9 @@ typedef void (^NotificationPermissionCheckCompletion)(BOOL granted);
 
 + (void)scheduleBackgroundNotificationChecks;
 
-+ (void)checkNotificationPermissionsWithCompletion:(nullable NotificationPermissionCheckCompletion)completion;
++ (void)checkNotificationPermissionsWithCompletionHandler:(nullable NotificationPermissionCheckCompletion)completionHandler;
+
++ (void)logConversionWithNotificationResponse:(UNNotificationResponse *)response;
 
 @end
 

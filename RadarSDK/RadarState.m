@@ -184,6 +184,13 @@ static NSString *const kNotificationPermissionGranted = @"radar-notificationPerm
     [[NSUserDefaults standardUserDefaults] setObject:lastMotionActivityData forKey:kLastMotionActivityData];
 }
 
++ (void)setNotificationPermissionGranted:(BOOL)notificationPermissionGranted {
+    [[NSUserDefaults standardUserDefaults] setBool:notificationPermissionGranted forKey:kNotificationPermissionGranted];
+}
+
++ (BOOL)notificationPermissionGranted {
+    return [[NSUserDefaults standardUserDefaults] boolForKey:kNotificationPermissionGranted];
+}
 
 + (NSArray<UNNotificationRequest *> *)pendingNotificationRequests {
     NSArray<NSDictionary *> *storedRequests = [[NSUserDefaults standardUserDefaults] objectForKey:kPendingNotificationRequests];

@@ -47,6 +47,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSDate *)lastCheckedOnPremiseNotification;
 + (void)updateLastCheckedOnPremiseNotification;
 + (void)setNotificationPermissionGranted:(BOOL)granted;
++ (BOOL)notificationPermissionGranted;
 
 @end
 

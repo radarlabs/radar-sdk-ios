@@ -343,4 +343,11 @@ static NSString *const kXPlatformSDKVersion = @"radar-xPlatformSDKVersion";
     return [[NSUserDefaults standardUserDefaults] stringForKey:kXPlatformSDKVersion];
 }
 
++ (BOOL)useOpenedAppConversion {
+    if (![self sdkConfiguration]) {
+        return YES;
+    }
+    return [[self sdkConfiguration] useOpenedAppConversion];
+}
+
 @end
