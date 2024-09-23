@@ -9,7 +9,7 @@
 
 #import "RadarLogger.h"
 #import "RadarSettings.h"
-#import "RadarUtils.h"
+#import "RadarSDK/RadarSDK-Swift.h"
 
 @interface RadarAPIHelper ()
 

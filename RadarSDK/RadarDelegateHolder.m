@@ -9,7 +9,7 @@
 
 #import "RadarLogger.h"
 #import "RadarNotificationHelper.h"
-#import "RadarUtils.h"
+#import "RadarSDK/RadarSDK-Swift.h"
 
 @implementation RadarDelegateHolder
 

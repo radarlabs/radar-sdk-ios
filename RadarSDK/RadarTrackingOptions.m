@@ -6,7 +6,7 @@
 //
 
 #import "RadarTrackingOptions.h"
-#import "RadarUtils.h"
+#import "RadarSDK/RadarSDK-Swift.h"
 
 @implementation RadarTrackingOptions
 

@@ -6,7 +6,7 @@
 //
 
 #import "RadarLogBuffer.h"
-#import "RadarLog.h"
+#import "RadarSDK/RadarSDK-Swift.h"
 #import "RadarFileStorage.h"
 #import "RadarSettings.h"
 
@@ -25,6 +25,7 @@ static int fileCounter = 0;
 
 - (instancetype)init {
     self = [super init];
+    
     if (self) {
         _persistentLogFeatureFlag = [RadarSettings sdkConfiguration].useLogPersistence;
         logBuffer = [NSMutableArray<RadarLog *> new];
@@ -59,7 +60,8 @@ static int fileCounter = 0;
 }
 
 - (void)write:(RadarLogLevel)level type:(RadarLogType)type message:(NSString *)message forcePersist:(BOOL)forcePersist {
-    RadarLog *radarLog = [[RadarLog alloc] initWithLevel:level type:type message:message];
+    RadarLog *radarLog = [[RadarLog alloc] initWithLevel:level type:type message:message createdAt:[NSDate new]];
+    
     // bypass sync lock here to ensure that other writes or persisting logs don't block the current thread as the app is terminating
     if (forcePersist && (_persistentLogFeatureFlag || [[NSProcessInfo processInfo] environment][@"XCTestConfigurationFilePath"])) {
         [self writeToFileStorage:@[radarLog]];
@@ -157,14 +159,14 @@ static int fileCounter = 0;
             dirSize = [[self getLogFilesInTimeOrder] count];
             if (!printedPurgedLogs) {
                 printedPurgedLogs = YES;
-                RadarLog *purgeLog = [[RadarLog alloc] initWithLevel:RadarLogLevelDebug type:RadarLogTypeNone message:kPurgedLogLine];
+                RadarLog *purgeLog = [[RadarLog alloc] initWithLevel:RadarLogLevelDebug type:RadarLogTypeNone message:kPurgedLogLine createdAt:[NSDate new]];
                 [self writeToFileStorage:@[purgeLog]];
             }
         } 
     } else {
         // drop the oldest N logs from the buffer
         [logBuffer removeObjectsInRange:NSMakeRange(0, PURGE_AMOUNT)];
-        RadarLog *purgeLog = [[RadarLog alloc] initWithLevel:RadarLogLevelDebug type:RadarLogTypeNone message:kPurgedLogLine];
+        RadarLog *purgeLog = [[RadarLog alloc] initWithLevel:RadarLogLevelDebug type:RadarLogTypeNone message:kPurgedLogLine createdAt:[NSDate new]];
         [logBuffer insertObject:purgeLog atIndex:0];
     }
 }

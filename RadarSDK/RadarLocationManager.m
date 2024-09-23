@@ -18,10 +18,11 @@
 #import "RadarPolygonGeometry.h"
 #import "RadarSettings.h"
 #import "RadarState.h"
-#import "RadarUtils.h"
 #import "RadarReplayBuffer.h"
 #import "RadarActivityManager.h"
 #import "RadarNotificationHelper.h"
+
+#import "RadarSDK/RadarSDK-Swift.h"
 
 @interface RadarLocationManager ()
 

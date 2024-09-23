@@ -20,7 +20,7 @@
 #import "RadarLocationManager.h"
 #import "RadarLogger.h"
 #import "RadarState.h"
-#import "RadarUtils.h"
+#import "RadarSDK/RadarSDK-Swift.h"
 
 #include <dlfcn.h>
 #include <unistd.h>

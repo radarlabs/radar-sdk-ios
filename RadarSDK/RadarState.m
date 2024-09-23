@@ -7,7 +7,7 @@
 
 #import "RadarState.h"
 #import "CLLocation+Radar.h"
-#import "RadarUtils.h"
+#import "RadarSDK/RadarSDK-Swift.h"
 
 @implementation RadarState
 

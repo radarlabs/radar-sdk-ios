@@ -30,10 +30,12 @@
 #import "RadarTrip+Internal.h"
 #import "RadarTripOptions.h"
 #import "RadarUser+Internal.h"
-#import "RadarUtils.h"
+#import "RadarSDK/RadarSDK-Swift.h"
 #import "RadarVerificationManager.h"
 #import "RadarVerifiedLocationToken+Internal.h"
 #import <os/log.h>
+
+#import "RadarSDK/RadarSDK-Swift.h"
 
 @implementation RadarAPIClient
 

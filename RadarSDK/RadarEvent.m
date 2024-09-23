@@ -13,7 +13,7 @@
 #import "RadarPlace+Internal.h"
 #import "RadarRegion+Internal.h"
 #import "RadarTrip+Internal.h"
-#import "RadarUtils.h"
+#import "RadarSDK/RadarSDK-Swift.h"
 
 @implementation RadarEvent
 

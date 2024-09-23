@@ -7,8 +7,10 @@
 
 #import <Foundation/Foundation.h>
 
-#import "RadarLog.h"
+#import "RadarSDK.h"
 #import "RadarFileStorage.h"
+
+@class RadarLog;
 
 NS_ASSUME_NONNULL_BEGIN
 

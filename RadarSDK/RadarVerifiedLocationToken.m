@@ -9,7 +9,7 @@
 #import "RadarEvent+Internal.h"
 #import "RadarVerifiedLocationToken+Internal.h"
 #import "RadarUser+Internal.h"
-#import "RadarUtils.h"
+#import "RadarSDK/RadarSDK-Swift.h"
 
 @implementation RadarVerifiedLocationToken
 

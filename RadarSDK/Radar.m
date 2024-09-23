@@ -18,10 +18,11 @@
 #import "RadarLogger.h"
 #import "RadarSettings.h"
 #import "RadarState.h"
-#import "RadarUtils.h"
 #import "RadarVerificationManager.h"
 #import "RadarReplayBuffer.h"
 #import "RadarNotificationHelper.h"
+
+#import "RadarSDK/RadarSDK-Swift.h"
 
 @interface Radar ()
 

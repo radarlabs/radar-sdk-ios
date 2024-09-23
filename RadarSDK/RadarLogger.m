@@ -9,10 +9,10 @@
 #import "Radar+Internal.h"
 #import "RadarDelegateHolder.h"
 #import "RadarSettings.h"
-#import "RadarUtils.h"
 #import <os/log.h>
-#import "RadarLog.h"
 #import "RadarLogBuffer.h"
+
+#import "RadarSDK/RadarSDK-Swift.h"
 
 @implementation RadarLogger
 

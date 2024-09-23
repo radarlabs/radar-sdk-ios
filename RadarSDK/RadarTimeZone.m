@@ -6,7 +6,7 @@
 //
 
 #import "RadarTimeZone.h"
-#import "RadarUtils.h"
+#import "RadarSDK/RadarSDK-Swift.h"
 
 @implementation RadarTimeZone
 

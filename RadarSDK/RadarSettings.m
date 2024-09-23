@@ -17,7 +17,7 @@
 #import "RadarTripOptions.h"
 #import "RadarReplayBuffer.h"
 #import "RadarLogBuffer.h"
-#import "RadarUtils.h"
+#import "RadarSDK/RadarSDK-Swift.h"
 
 @implementation RadarSettings
 

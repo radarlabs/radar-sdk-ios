@@ -14,12 +14,13 @@
 #import "RadarConfig.h"
 #import "RadarContext.h"
 #import "RadarEvent.h"
-#import "RadarLog.h"
 #import "RadarRegion.h"
 #import "RadarRouteMatrix.h"
 #import "RadarRoutes.h"
 #import "RadarUser.h"
 #import "RadarVerifiedLocationToken.h"
+
+@class RadarLog;
 
 NS_ASSUME_NONNULL_BEGIN
 
