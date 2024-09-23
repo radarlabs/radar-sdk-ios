@@ -162,6 +162,19 @@ import UIKit
         }
     }
 
+    @objc public static func extractGeofenceIdAndTimestampFrom(identifier: String) -> Dictionary<String, String>? {
+        let components = identifier.components(separatedBy: "_");
+        
+        if (components.count != 4) {
+            return nil; // Invalid format
+        }
+            
+        let geofenceId = components[2];
+        let registeredAt = components[3];
+
+        return ["geofenceId": geofenceId, "registeredAt": registeredAt];
+    }
+    
     // MARK: - Threading
 
     @MainActor // probably can't be here, we'll see

@@ -12,10 +12,10 @@
 #import "RadarNotificationHelper.h"
 #import "RadarState.h"
 #import "RadarSettings.h"
-#import "RadarUtils.h"
 #import <BackgroundTasks/BackgroundTasks.h>
 #import "Radar+Internal.h"
 #import <objc/runtime.h>
+#import "RadarSDK/RadarSDK-Swift.h"
 
 @implementation RadarNotificationHelper
 
