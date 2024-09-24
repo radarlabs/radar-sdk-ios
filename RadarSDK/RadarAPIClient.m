@@ -35,7 +35,7 @@
 #import "RadarVerifiedLocationToken+Internal.h"
 #import <os/log.h>
 
-#import "RadarSDK/RadarSDK-Swift.h"
+#import "RadarLog.h"
 
 @implementation RadarAPIClient
 

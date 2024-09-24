@@ -10,7 +10,7 @@
 
 #import "RadarAPIClient.h"
 #import "RadarSettings.h"
-#import "RadarSDK/RadarSDK-Swift.h"
+#import "RadarLog.h"
 
 @implementation RadarSdkConfiguration
 

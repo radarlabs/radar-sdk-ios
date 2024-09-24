@@ -6,7 +6,7 @@
 //
 
 #import "RadarLogBuffer.h"
-#import "RadarSDK/RadarSDK-Swift.h"
+#import "RadarLog.h"
 #import "RadarFileStorage.h"
 #import "RadarSettings.h"
 
@@ -60,7 +60,7 @@ static int fileCounter = 0;
 }
 
 - (void)write:(RadarLogLevel)level type:(RadarLogType)type message:(NSString *)message forcePersist:(BOOL)forcePersist {
-    RadarLog *radarLog = [[RadarLog alloc] initWithLevel:level type:type message:message createdAt:[NSDate new]];
+    RadarLog *radarLog = [[RadarLog alloc] initWithLevel:level type:type message:message];
     
     // bypass sync lock here to ensure that other writes or persisting logs don't block the current thread as the app is terminating
     if (forcePersist && (_persistentLogFeatureFlag || [[NSProcessInfo processInfo] environment][@"XCTestConfigurationFilePath"])) {
@@ -159,14 +159,14 @@ static int fileCounter = 0;
             dirSize = [[self getLogFilesInTimeOrder] count];
             if (!printedPurgedLogs) {
                 printedPurgedLogs = YES;
-                RadarLog *purgeLog = [[RadarLog alloc] initWithLevel:RadarLogLevelDebug type:RadarLogTypeNone message:kPurgedLogLine createdAt:[NSDate new]];
+                RadarLog *purgeLog = [[RadarLog alloc] initWithLevel:RadarLogLevelDebug type:RadarLogTypeNone message:kPurgedLogLine];
                 [self writeToFileStorage:@[purgeLog]];
             }
         } 
     } else {
         // drop the oldest N logs from the buffer
         [logBuffer removeObjectsInRange:NSMakeRange(0, PURGE_AMOUNT)];
-        RadarLog *purgeLog = [[RadarLog alloc] initWithLevel:RadarLogLevelDebug type:RadarLogTypeNone message:kPurgedLogLine createdAt:[NSDate new]];
+        RadarLog *purgeLog = [[RadarLog alloc] initWithLevel:RadarLogLevelDebug type:RadarLogTypeNone message:kPurgedLogLine];
         [logBuffer insertObject:purgeLog atIndex:0];
     }
 }

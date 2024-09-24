@@ -9,7 +9,24 @@
 import Foundation
 
 
-@objc public class RadarLog: NSObject {
+@objc(RadarLog)
+class RadarLog: NSObject, NSCoding {
+    public func encode(with coder: NSCoder) {
+        coder.encode(level, forKey: "level")
+        coder.encode(message, forKey: "message")
+        coder.encode(type.rawValue, forKey: "type")
+        coder.encode(createdAt, forKey: "createdAt")
+    }
+    
+    public required convenience init?(coder: NSCoder) {
+        let level = coder.decodeObject(forKey: "level") as! RadarLogLevel
+        let type = RadarLogType(rawValue: coder.decodeObject(forKey: "type") as! Int)!
+        let message = coder.decodeObject(forKey: "message") as! NSString
+        let createdAt = coder.decodeObject(forKey: "createdAt") as! NSDate
+
+        self.init(level: level, type: type, message: message)
+    }
+    
     /**
      The levels for debug logs.
      */
@@ -30,11 +47,11 @@ import Foundation
      */
     @objc public let createdAt: NSDate;
 
-    @objc public init(level: RadarLogLevel, type: RadarLogType, message: NSString, createdAt: NSDate) {
+    @objc public init(level: RadarLogLevel, type: RadarLogType, message: NSString) {
         self.level = level
         self.message = message
         self.type = type
-        self.createdAt = createdAt
+        self.createdAt = NSDate()
     }
     
     @objc public func dictionaryValue() -> Dictionary<String, Any> {
@@ -135,5 +152,12 @@ import Foundation
             return RadarLogLevel.info;
         }
     }
+//    
+//    @objc public func encode(withCoder coder: NSCoder){
+//        coder.encode(level.rawValue, forKey: "level")
+//        coder.encode(message, forKey: "message")
+//        coder.encode(type.rawValue, forKey: "type")
+//        coder.encode(createdAt, forKey: "createdAt")
+//    }
 
 }

@@ -23,6 +23,7 @@
 #import "RadarNotificationHelper.h"
 
 #import "RadarSDK/RadarSDK-Swift.h"
+#import "RadarLog.h"
 
 @interface Radar ()
 
