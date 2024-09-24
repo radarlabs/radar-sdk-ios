@@ -77,6 +77,15 @@
      getConfigForUsage:@"verify"
      verified:YES
      completionHandler:^(RadarStatus status, RadarConfig *_Nullable config) {
+        if (status != RadarStatusSuccess || !config) {
+            if (completionHandler) {
+                [RadarUtils runOnMainThread:^{
+                    completionHandler(status, nil);
+                }];
+            }
+            return;
+        }
+        
         [[RadarLocationManager sharedInstance]
          getLocationWithDesiredAccuracy:RadarTrackingOptionsDesiredAccuracyMedium
          completionHandler:^(RadarStatus status, CLLocation *_Nullable location, BOOL stopped) {

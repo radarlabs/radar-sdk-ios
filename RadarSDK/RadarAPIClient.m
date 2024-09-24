@@ -121,6 +121,7 @@
                       extendedTimeout:NO
                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
                         if (!res) {
+                            completionHandler(status, nil);
                             return;
                         }
 
