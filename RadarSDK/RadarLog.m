@@ -130,4 +130,8 @@
     [coder encodeObject:_createdAt forKey:@"createdAt"];
 }
 
++ (BOOL)supportsSecureCoding  {
+    return YES;
+}
+
 @end

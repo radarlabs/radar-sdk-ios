@@ -57,4 +57,8 @@
     return [self.replayParams hash];
 }
 
++ (BOOL)supportsSecureCoding  {
+    return YES;
+}
+
 @end

@@ -59,9 +59,17 @@ static const int MAX_BUFFER_SIZE = 120; // one hour of updates
                     [prunedBuffer addObject:mutableReplayBuffer[i]];
                 }
             }
-            replaysData = [NSKeyedArchiver archivedDataWithRootObject:prunedBuffer];
+            if (@available(iOS 11.0, *)) {
+                replaysData = [NSKeyedArchiver archivedDataWithRootObject:prunedBuffer requiringSecureCoding:true error:nil];
+            } else {
+                replaysData = [NSKeyedArchiver archivedDataWithRootObject:prunedBuffer];
+            }
         } else {
-            replaysData = [NSKeyedArchiver archivedDataWithRootObject:mutableReplayBuffer];
+            if (@available(iOS 11.0, *)) {
+                replaysData = [NSKeyedArchiver archivedDataWithRootObject:mutableReplayBuffer requiringSecureCoding:true error:nil];
+            } else {
+                replaysData = [NSKeyedArchiver archivedDataWithRootObject:mutableReplayBuffer];
+            }
         }
 
         [[NSUserDefaults standardUserDefaults] setObject:replaysData forKey:@"radar-replays"];
@@ -150,14 +158,25 @@ static const int MAX_BUFFER_SIZE = 120; // one hour of updates
     [mutableReplayBuffer removeObjectsInArray:replays];
 
     // persist the updated buffer
-    NSData *replaysData = [NSKeyedArchiver archivedDataWithRootObject:mutableReplayBuffer];
+    NSData *replaysData;
+    if (@available(iOS 11.0, *)) {
+        replaysData = [NSKeyedArchiver archivedDataWithRootObject:mutableReplayBuffer requiringSecureCoding:true error:nil];
+    } else {
+        replaysData = [NSKeyedArchiver archivedDataWithRootObject:mutableReplayBuffer];
+    }
     [[NSUserDefaults standardUserDefaults] setObject:replaysData forKey:@"radar-replays"];
 }
 
 - (void)loadReplaysFromPersistentStore {
     NSData *replaysData = [[NSUserDefaults standardUserDefaults] objectForKey:@"radar-replays"];
     if (replaysData) {
-        NSArray *replays = [NSKeyedUnarchiver unarchiveObjectWithData:replaysData];
+        NSArray *replays;
+        if (@available(iOS 11.0, *)) {
+            NSSet *allowedClasses = [NSSet setWithObjects:[NSArray class], [RadarReplay class], [NSDictionary class], [NSString class], [NSNumber class], nil];
+            replays = [NSKeyedUnarchiver unarchivedObjectOfClasses:allowedClasses fromData:replaysData error:nil];
+        } else {
+            replays = [NSKeyedUnarchiver unarchiveObjectWithData:replaysData];
+        }
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Loaded replays | length = %lu", (unsigned long)[replays count]]];
         mutableReplayBuffer = [NSMutableArray arrayWithArray:replays];
     }

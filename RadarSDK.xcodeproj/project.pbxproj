@@ -376,7 +376,6 @@
 			children = (
 				9679F4A027CD8D0600800797 /* CLLocation+Radar.h */,
 				9679F4A227CD8DE200800797 /* CLLocation+Radar.m */,
-				53CCD782275E579800F79CC8 /* RadarLogBuffer.m */,
 			);
 			name = Util;
 			sourceTree = "<group>";
@@ -497,6 +496,7 @@
 				96A5A11527ADA02E007B960B /* RadarLog.h */,
 				96A5A11427ADA02E007B960B /* RadarLog.m */,
 				96A5A11627ADA02E007B960B /* RadarLogBuffer.h */,
+				53CCD782275E579800F79CC8 /* RadarLogBuffer.m */,
 				DD236D66230A0D6700EB88F9 /* RadarLogger.h */,
 				DD236D67230A0D6700EB88F9 /* RadarLogger.m */,
 				9683FD6127B36C26009EBB6B /* RadarMeta.h */,
