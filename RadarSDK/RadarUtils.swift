@@ -106,7 +106,6 @@ import UIKit
         return UIApplication.shared.applicationState != .background
     }
 
-    @MainActor
     @objc static var backgroundTimeRemaining: TimeInterval {
         let backgroundTimeRemaining = UIApplication.shared.backgroundTimeRemaining
         return (backgroundTimeRemaining == TimeInterval.infinity) ? 180 : backgroundTimeRemaining
