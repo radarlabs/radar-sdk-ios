@@ -11,16 +11,16 @@ import Foundation
 
 @objc(RadarLog)
 class RadarLog: NSObject, NSCoding {
-    public func encode(with coder: NSCoder) {
-        coder.encode(level, forKey: "level")
-        coder.encode(message, forKey: "message")
+    func encode(with coder: NSCoder) {
+        coder.encode(level.rawValue, forKey: "level")
         coder.encode(type.rawValue, forKey: "type")
+        coder.encode(message, forKey: "message")
         coder.encode(createdAt, forKey: "createdAt")
     }
     
-    public required convenience init?(coder: NSCoder) {
-        let level = coder.decodeObject(forKey: "level") as! RadarLogLevel
-        let type = RadarLogType(rawValue: coder.decodeObject(forKey: "type") as! Int)!
+    required convenience init?(coder: NSCoder) {
+        let level = RadarLogLevel(rawValue: coder.decodeInteger(forKey: "level"))!
+        let type = RadarLogType(rawValue: coder.decodeInteger(forKey: "type"))!
         let message = coder.decodeObject(forKey: "message") as! NSString
         let createdAt = coder.decodeObject(forKey: "createdAt") as! NSDate
 
@@ -152,12 +152,4 @@ class RadarLog: NSObject, NSCoding {
             return RadarLogLevel.info;
         }
     }
-//    
-//    @objc public func encode(withCoder coder: NSCoder){
-//        coder.encode(level.rawValue, forKey: "level")
-//        coder.encode(message, forKey: "message")
-//        coder.encode(type.rawValue, forKey: "type")
-//        coder.encode(createdAt, forKey: "createdAt")
-//    }
-
 }

@@ -20,6 +20,7 @@
 #import "RadarTestUtils.h"
 #import "RadarTripOptions.h"
 #import "RadarFileStorage.h"
+#import "RadarLog.h"
 
 
 @interface RadarSDKTests : XCTestCase
