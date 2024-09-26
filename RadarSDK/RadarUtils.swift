@@ -108,7 +108,7 @@ import UIKit
 
     @objc static var backgroundTimeRemaining: TimeInterval {
         let backgroundTimeRemaining = UIApplication.shared.backgroundTimeRemaining
-        return (backgroundTimeRemaining == TimeInterval.infinity) ? 180 : backgroundTimeRemaining
+        return (backgroundTimeRemaining.isFinite && backgroundTimeRemaining < 1e100) ? backgroundTimeRemaining : 180;
     }
 
     @objc static func locationFor(dictionary: [String: Any]) -> CLLocation? {
