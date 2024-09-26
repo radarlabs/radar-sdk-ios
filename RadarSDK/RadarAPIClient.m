@@ -83,7 +83,7 @@
 - (void)getConfigForUsage:(NSString *_Nullable)usage verified:(BOOL)verified completionHandler:(RadarConfigAPICompletionHandler _Nonnull)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
-        return;
+        return completionHandler(RadarStatusErrorPublishableKey, nil);
     }
 
     NSMutableString *queryString = [NSMutableString new];
@@ -98,6 +98,8 @@
     if (locationAccuracyAuthorization) {
         [queryString appendFormat:@"&locationAccuracyAuthorization=%@", locationAccuracyAuthorization];
     }
+    NSString *notificationAuthorization = [RadarState notificationPermissionGranted] ? @"true" : @"false";
+    [queryString appendFormat:@"&notificationAuthorization=%@", notificationAuthorization];
     if (usage) {
         [queryString appendFormat:@"&usage=%@", usage];
     }
@@ -119,6 +121,7 @@
                       extendedTimeout:NO
                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
                         if (!res) {
+                            completionHandler(status, nil);
                             return;
                         }
 
@@ -185,6 +188,8 @@
                       keyId:nil
            attestationError:nil
                   encrypted:NO
+        expectedCountryCode:nil
+          expectedStateCode:nil
           completionHandler:completionHandler];
 }
 
@@ -199,6 +204,8 @@
                     keyId:(NSString *_Nullable)keyId
          attestationError:(NSString *_Nullable)attestationError
                 encrypted:(BOOL)encrypted
+      expectedCountryCode:(NSString * _Nullable)expectedCountryCode
+        expectedStateCode:(NSString * _Nullable)expectedStateCode
         completionHandler:(RadarTrackAPICompletionHandler _Nonnull)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
@@ -307,6 +314,7 @@
     if (locationAccuracyAuthorization) {
         params[@"locationAccuracyAuthorization"] = locationAccuracyAuthorization;
     }
+    params[@"notificationAuthorization"] = [RadarState notificationPermissionGranted] ? @"true" : @"false";
 
     params[@"trackingOptions"] = [options dictionaryValue];
 
@@ -324,8 +332,39 @@
         if (jailbroken) {
             [fraudFailureReasons addObject:@"fraud_compromised_jailbroken"];
         }
+        if (expectedCountryCode) {
+            params[@"expectedCountryCode"] = expectedCountryCode;
+        }
+        if (expectedStateCode) {
+            params[@"expectedStateCode"] = expectedStateCode;
+        }
     }
     params[@"appId"] = [[NSBundle mainBundle] bundleIdentifier];
+    RadarSdkConfiguration *sdkConfiguration = [RadarSettings sdkConfiguration];
+    if (sdkConfiguration.useLocationMetadata) { 
+        NSMutableDictionary *locationMetadata = [NSMutableDictionary new];
+        locationMetadata[@"motionActivityData"] = [RadarState lastMotionActivityData];
+        locationMetadata[@"heading"] = [RadarState lastHeadingData];
+        locationMetadata[@"speed"] = @(location.speed);
+        locationMetadata[@"speedAccuracy"] = @(location.speedAccuracy);
+        locationMetadata[@"course"] = @(location.course);
+
+        if (@available(iOS 13.4, *)) {
+            locationMetadata[@"courseAccuracy"] = @(location.courseAccuracy);
+        }
+        
+        locationMetadata[@"battery"] = @([[UIDevice currentDevice] batteryLevel]);
+        locationMetadata[@"altitude"] = @(location.altitude);
+
+        if (@available(iOS 15, *)) {
+            locationMetadata[@"ellipsoidalAltitude"] = @(location.ellipsoidalAltitude);
+            locationMetadata[@"isProducedByAccessory"] = @([location.sourceInformation isProducedByAccessory]);
+            locationMetadata[@"isSimulatedBySoftware"] = @([location.sourceInformation isSimulatedBySoftware]);
+        }
+        locationMetadata[@"floor"] = @([location.floor level]);
+        
+        params[@"locationMetadata"] = locationMetadata;
+    }
     
     params[@"fraudFailureReasons"] = fraudFailureReasons;
 

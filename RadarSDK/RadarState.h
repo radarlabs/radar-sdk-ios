@@ -34,6 +34,12 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)setRegionIds:(NSArray<NSString *> *_Nullable)regionIds;
 + (NSArray<NSString *> *)beaconIds;
 + (void)setBeaconIds:(NSArray<NSString *> *_Nullable)beaconIds;
++ (NSDictionary *)lastHeadingData;
++ (void)setLastHeadingData:(NSDictionary *_Nullable)lastHeadingData;
++ (NSDictionary *)lastMotionActivityData;
++ (void)setLastMotionActivityData:(NSDictionary *_Nullable)lastMotionActivityData;
++ (void)setNotificationPermissionGranted:(BOOL)granted;
++ (BOOL)notificationPermissionGranted;
 
 @end
 
