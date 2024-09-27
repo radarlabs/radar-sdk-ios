@@ -62,6 +62,19 @@
                                              selector:@selector(applicationWillEnterForeground)
                                                  name:UIApplicationWillEnterForegroundNotification
                                                object:nil];
+
+    [[NSNotificationCenter defaultCenter] addObserver:[self sharedInstance]
+                                             selector:@selector(applicationWillTerminate)
+                                                 name:UIApplicationWillTerminateNotification
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:[self sharedInstance]
+                                             selector:@selector(applicationDidEnterBackground)
+                                                 name:UIApplicationDidEnterBackgroundNotification
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:[self sharedInstance]
+                                             selector:@selector(applicationWillResignActive)
+                                                 name:UIApplicationWillResignActiveNotification
+                                               object:nil];
     
     [RadarSettings setPublishableKey:publishableKey];
 
@@ -1346,6 +1359,20 @@
         [Radar trackOnceWithCompletionHandler:nil];
     }
 }
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+- (void)applicationDidEnterBackground {
+    [Radar logBackgrounding];
+}
+
+- (void)applicationWillResignActive {
+    [Radar logResigningActive];
+}
+
+- (void)applicationWillTerminate {
+    [Radar logTermination];
+}
+#pragma clang diagnostic pop
 
 - (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self];

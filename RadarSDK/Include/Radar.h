@@ -1142,22 +1142,19 @@ typedef void (^_Nullable RadarLogConversionCompletionHandler)(RadarStatus status
 + (void)setLogLevel:(RadarLogLevel)level;
 
 /**
- Log application terminating. Include this in your application delegate's applicationWillTerminate: method.
-
+  @deprecated Log application terminating. Include this in your application delegate's applicationWillTerminate: method.
  */
-+ (void)logTermination;
++ (void)logTermination __attribute__((deprecated("Logging is now automatic.")));
 
 /**
- Log application entering background. Include this in your application delegate's applicationDidEnterBackground: method.
+  @deprecated Log application entering background. Include this in your application delegate's applicationDidEnterBackground: method.
  */
-+ (void)logBackgrounding;
++ (void)logBackgrounding __attribute__((deprecated("Logging is now automatic.")));
 
 /**
- Log application resigning active. Include this in your application delegate's applicationWillResignActive: method.
-
+  @deprecated Log application resigning active. Include this in your application delegate's applicationWillResignActive: method.
  */
-+ (void)logResigningActive;
-
++ (void)logResigningActive __attribute__((deprecated("Logging is now automatic.")));
 
 #pragma mark - Helpers
 
