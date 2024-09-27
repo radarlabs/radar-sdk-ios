@@ -111,7 +111,13 @@ static int fileCounter = 0;
     for (NSString *file in files) {
         NSString *filePath = [self.logFileDir stringByAppendingPathComponent:file];
         NSData *fileData = [self.fileHandler readFileAtPath:filePath];
-        RadarLog *log = [NSKeyedUnarchiver unarchiveObjectWithData:fileData];
+        RadarLog *log;
+        if (@available(iOS 11.0, *)) {
+            log = [NSKeyedUnarchiver unarchivedObjectOfClasses:[NSSet setWithObjects:[NSString class], [RadarLog class], [NSDate class], nil] fromData:fileData error:nil];
+        } else {
+            log = [NSKeyedUnarchiver unarchiveObjectWithData:fileData];
+        }
+        
         if (log && log.message) {
             [logs addObject:log];
         }
@@ -122,7 +128,14 @@ static int fileCounter = 0;
 
  - (void)writeToFileStorage:(NSArray <RadarLog *> *)logs {
     for (RadarLog *log in logs) {
-        NSData *logData = [NSKeyedArchiver archivedDataWithRootObject:log];
+        
+        NSData *logData;
+        if (@available(iOS 11.0, *)) {
+            logData = [NSKeyedArchiver archivedDataWithRootObject:log requiringSecureCoding:YES error:nil];
+        } else {
+            logData = [NSKeyedArchiver archivedDataWithRootObject:log];
+        }
+        
         NSTimeInterval unixTimestamp = [log.createdAt timeIntervalSince1970];
         // logs may be created in the same millisecond, so we append a counter to the end of the timestamp to "tiebreak"
         NSString *unixTimestampString = [NSString stringWithFormat:@"%lld_%04d", (long long)unixTimestamp, fileCounter++];
