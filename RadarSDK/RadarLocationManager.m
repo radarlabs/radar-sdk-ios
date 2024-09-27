@@ -20,6 +20,8 @@
 #import "RadarState.h"
 #import "RadarUtils.h"
 #import "RadarReplayBuffer.h"
+#import "RadarActivityManager.h"
+#import "RadarNotificationHelper.h"
 
 @interface RadarLocationManager ()
 
@@ -97,10 +99,8 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 
         _permissionsHelper = [RadarPermissionsHelper new];
 
-        // if not testing, set _notificationCenter to the currentNotificationCenter
-        if (![[NSProcessInfo processInfo] environment][@"XCTestConfigurationFilePath"]) {
-            _notificationCenter = [UNUserNotificationCenter currentNotificationCenter];
-        }
+        _firstPermissionCheck = YES;
+
         _firstPermissionCheck = NO;
     }
     return self;
@@ -108,7 +108,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 
 - (void)callCompletionHandlersWithStatus:(RadarStatus)status location:(CLLocation *_Nullable)location {
     @synchronized(self) {
-        if (!self.completionHandlers.count) {
+        if (!self.completionHandlers.count){
             return;
         }
 
@@ -206,11 +206,15 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 
 - (void)stopTracking {
     [RadarSettings setTracking:NO];
-    
+
     RadarSdkConfiguration *sdkConfiguration = [RadarSettings sdkConfiguration];
     if (sdkConfiguration.extendFlushReplays) {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"Flushing replays from stopTracking()"];
         [[RadarReplayBuffer sharedInstance] flushReplaysWithCompletionHandler:nil completionHandler:nil];
+    }
+
+    if (sdkConfiguration.useLocationMetadata) {
+        [self stopActivityAndMotionUpdates];
     }
 
     [self updateTracking];
@@ -325,6 +329,48 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 
             self.lowPowerLocationManager.allowsBackgroundLocationUpdates = [RadarUtils locationBackgroundMode];
             self.lowPowerLocationManager.pausesLocationUpdatesAutomatically = NO;
+            
+            if ([RadarSettings useLocationMetadata]) {
+                [self.locationManager startUpdatingHeading];
+
+                self.activityManager = [RadarActivityManager sharedInstance];
+                [self.activityManager startActivityUpdatesWithHandler:^(CMMotionActivity *activity) {
+                    if (activity) {
+                        RadarActivityType activityType = RadarActivityTypeUnknown;
+                        if (activity.stationary) {
+                        activityType = RadarActivityTypeStationary; 
+                        } else if (activity.walking) {
+                            activityType = RadarActivityTypeFoot;
+                        } else if (activity.running) {
+                            activityType = RadarActivityTypeFoot;
+                        } else if (activity.automotive) {
+                            activityType = RadarActivityTypeCar;
+                        } else if (activity.cycling) {
+                            activityType = RadarActivityTypeBike;
+                        }
+                        
+                        if (activityType == RadarActivityTypeUnknown) {
+                            return;
+                        }
+                        
+                        NSString *previousActivityType = [RadarState lastMotionActivityData][@"type"];
+                        if (previousActivityType != nil && [previousActivityType isEqualToString:[Radar stringForActivityType:activityType]]) {
+                            return;
+                        }
+
+                        [RadarState setLastMotionActivityData:@{
+                            @"type" : [Radar stringForActivityType:activityType],
+                            @"timestamp" : @([activity.startDate timeIntervalSince1970]),
+                            @"confidence" : @(activity.confidence)
+                        }];
+                        
+                        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Activity detected, initiating trackOnce"];
+                        [Radar trackOnceWithCompletionHandler: nil];
+                        
+                    }
+                }];
+
+            }
 
             CLLocationAccuracy desiredAccuracy;
             switch (options.desiredAccuracy) {
@@ -523,7 +569,6 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                     if (notificationRepeats) {
                         repeats = [notificationRepeats boolValue];
                     }
-                    
                     if (repeats) {
                         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Notification repeats"];
                     } else {
@@ -541,19 +586,8 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         }
     }
 
-    [self removePendingNotificationsWithCompletionHandler: ^{
-        for (UNNotificationRequest *request in requests) {
-            [self.notificationCenter addNotificationRequest:request withCompletionHandler:^(NSError *_Nullable error) {
-                if (error) {
-                    [[RadarLogger sharedInstance]
-                        logWithLevel:RadarLogLevelDebug
-                            message:[NSString stringWithFormat:@"Error adding local notification | identifier = %@; error = %@", request.identifier, error]];
-                } else {
-                    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
-                                                        message:[NSString stringWithFormat:@"Added local notification | identifier = %@", request.identifier]];
-                }
-            }];
-        }
+    [RadarNotificationHelper removePendingNotificationsWithCompletionHandler: ^{
+        [RadarNotificationHelper addOnPremiseNotificationRequests:requests];
     }];
 }
 
@@ -565,26 +599,6 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     }
 
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Removed synced geofences"];
-}
-
-- (void)removePendingNotificationsWithCompletionHandler:(void (^)(void))completionHandler {
-    [self.notificationCenter getPendingNotificationRequestsWithCompletionHandler:^(NSArray<UNNotificationRequest *> *_Nonnull requests) {
-        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Found %lu pending notifications", (unsigned long)requests.count]];
-        NSMutableArray *identifiers = [NSMutableArray new];
-        for (UNNotificationRequest *request in requests) {
-            if ([request.identifier hasPrefix:kSyncGeofenceIdentifierPrefix]) {
-                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Found pending notification | identifier = %@", request.identifier]];
-                [identifiers addObject:request.identifier];
-            }
-        }
-
-        if (identifiers.count > 0) {
-            [self.notificationCenter removePendingNotificationRequestsWithIdentifiers:identifiers];
-            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Removed pending notifications"];
-        }
-
-        completionHandler();
-    }];
 }
 
 - (void)replaceSyncedBeacons:(NSArray<RadarBeacon *> *)beacons {
@@ -1127,6 +1141,26 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     [[RadarDelegateHolder sharedInstance] didFailWithStatus:RadarStatusErrorLocation];
 
     [self callCompletionHandlersWithStatus:RadarStatusErrorLocation location:nil];
+}
+
+- (void)stopActivityAndMotionUpdates {
+    [self.locationManager stopUpdatingHeading];
+
+    if (self.activityManager) {
+        [self.activityManager stopActivityUpdates];
+    }
+}
+
+- (void)locationManager:(CLLocationManager *)manager didUpdateHeading:(CLHeading *)newHeading {
+    [RadarState setLastHeadingData:@{
+        @"magneticHeading" : @(newHeading.magneticHeading),
+        @"trueHeading" : @(newHeading.trueHeading),
+        @"headingAccuracy" : @(newHeading.headingAccuracy),
+        @"x" : @(newHeading.x),
+        @"y" : @(newHeading.y),
+        @"z" : @(newHeading.z),
+        @"timestamp" : @([newHeading.timestamp timeIntervalSince1970]),
+    }];
 }
 
 - (void)locationManager:(CLLocationManager *)manager didChangeAuthorizationStatus:(CLAuthorizationStatus)status {

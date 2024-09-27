@@ -25,6 +25,7 @@
                          description:(NSString *)description
                             metadata:(NSDictionary *)metadata
                             location:(CLLocation *)location
+                        activityType:(RadarActivityType)activityType
                            geofences:(NSArray *)geofences
                                place:(RadarPlace *)place
                              beacons:(NSArray *)beacons
@@ -49,6 +50,7 @@
         ___description = description;
         _metadata = metadata;
         _location = location;
+        _activityType = activityType;
         _geofences = geofences;
         _place = place;
         _beacons = beacons;
@@ -82,6 +84,7 @@
     NSString *description;
     NSDictionary *metadata;
     CLLocation *location;
+    RadarActivityType activityType = RadarActivityTypeUnknown;
     NSArray<RadarGeofence *> *geofences;
     RadarPlace *place;
     NSArray<RadarBeacon *> *beacons;
@@ -162,6 +165,26 @@
                                                     timestamp:[NSDate date]];
         }
     }
+
+    id activityTypeObj = dict[@"activityType"];
+    if (activityTypeObj && [activityTypeObj isKindOfClass:[NSString class]]) {
+        NSString *activityTypeStr = (NSString *)activityTypeObj;
+
+        if ([activityTypeStr isEqualToString:@"unknown"]) {
+            activityType = RadarActivityTypeUnknown;
+        } else if ([activityTypeStr isEqualToString:@"car"]) {
+            activityType = RadarActivityTypeCar;
+        } else if ([activityTypeStr isEqualToString:@"bike"]) {
+            activityType = RadarActivityTypeBike;
+        } else if ([activityTypeStr isEqualToString:@"foot"]) {
+            activityType = RadarActivityTypeFoot;
+        } else if ([activityTypeStr isEqualToString:@"run"]) {
+            activityType = RadarActivityTypeRun;
+        } else if ([activityTypeStr isEqualToString:@"stationary"]) {
+            activityType = RadarActivityTypeStationary;
+        }
+    }
+
 
     id geofencesObj = dict[@"geofences"];
     if (geofencesObj && [geofencesObj isKindOfClass:[NSArray class]]) {
@@ -274,6 +297,7 @@
                                  description:description
                                     metadata:metadata
                                     location:location
+                                activityType:activityType
                                    geofences:geofences
                                        place:place
                                      beacons:beacons
@@ -307,6 +331,7 @@
     NSArray *coordinates = @[@(self.location.coordinate.longitude), @(self.location.coordinate.latitude)];
     locationDict[@"coordinates"] = coordinates;
     [dict setValue:locationDict forKey:@"location"];
+    [dict setValue:[Radar stringForActivityType:self.activityType] forKey:@"activityType"];
     NSArray *geofencesArr = [RadarGeofence arrayForGeofences:self.geofences];
     [dict setValue:geofencesArr forKey:@"geofences"];
     if (self.place) {
