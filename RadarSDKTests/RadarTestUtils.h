@@ -21,6 +21,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (NSDictionary *)jsonDictionaryFromResource:(NSString *)resource;
 
+/**
+ Construct a track param dict which can be used to test replays from paramters of the track call.
+ uses the stored values from `RadarSettings`, `RadarUtils`, and `RadarState`
+ */
 + (NSMutableDictionary *)createTrackParamWithLocation:(CLLocation *_Nonnull)location
                                               stopped:(BOOL)stopped
                                            foreground:(BOOL)foreground
