@@ -17,7 +17,7 @@
 @property (nullable, weak, nonatomic) id<RadarURLDelegate> urlDelegate;
 
 - (NSDictionary *_Nonnull)dictionaryValue;
-- (instancetype)initWithDict:(NSDictionary *_Nullable)dict;
+- (instancetype _Nonnull)initWithDict:(NSDictionary *_Nullable)dict;
 
 @end
 
