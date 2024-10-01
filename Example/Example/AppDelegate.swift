@@ -298,14 +298,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
                 function()
             }
         }
-        
-        demoButton(text: "open URL") {
-            //UIApplication.shared.openURL(URL(string:UIApplication.openSettingsURLString)!)
-             let application = UIApplication.shared
-             if let url = URL(string:UIApplication.openSettingsURLString) {
-                 application.open(url, options: [:])
-             }
-        }
     }
 
     func requestLocationPermissions() {

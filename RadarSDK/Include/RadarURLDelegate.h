@@ -11,17 +11,16 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- A delegate for client-side delivery of events, location updates, and debug logs. For more information, see https://radar.com/documentation/sdk/ios
+ A delegate tpo handle notification opens with embedded URLs. For more information, see https://radar.com/documentation/notifications
 
- @see https://radar.com/documentation/sdk/ios
+ @see https://radar.com/documentation/notifications
  */
 @protocol RadarURLDelegate<NSObject>
 
 /**
- Tells the delegate that events were received.
+ Tells the delegate that URL was received.
 
- @param events The events received.
- @param user The user, if any.
+ @param url The URL received.
  */
 - (BOOL)didHandleURL:(NSURL *)url NS_SWIFT_NAME(didHandleURL(_:));
 
