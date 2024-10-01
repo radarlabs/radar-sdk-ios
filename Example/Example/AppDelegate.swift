@@ -36,7 +36,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         // Uncomment to enable automatic setup for notification conversions
         radarInitializeOptions.autoLogNotificationConversions = true
         radarInitializeOptions.urlDelegate = self
-        Radar.initialize(publishableKey: "prj_test_pk_bc37aecae89516d6eea8c5de1bb70ea3078fe530", options: radarInitializeOptions )
+        Radar.initialize(publishableKey: "prj_test_pk_0000000000000000000000000000000000000000", options: radarInitializeOptions )
         Radar.setUserId("testUserId")
         Radar.setMetadata([ "foo": "bar" ])
         Radar.setDelegate(self)
@@ -45,30 +45,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         return true
     }
 
-//    func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
-//        // Handle the URL and perform any navigation or logic you desire
-//        print("I got called")
-//        print("Opened URL: \(url)")
-//        demoButton(text: "Opened URL") {
-//            print("Opened URL")
-//        }
-//        return true
-//    }
     
     func application(_ app: UIApplication, open url: URL,
                      options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
-        NSLog("i got called")
-        if let scheme = url.scheme,
-            scheme.localizedCaseInsensitiveCompare("io.radar") == .orderedSame,
-            let view = url.host {
-            
-            var parameters: [String: String] = [:]
-            URLComponents(url: url, resolvingAgainstBaseURL: false)?.queryItems?.forEach {
-                parameters[$0.name] = $0.value
-            }
-            
-            //redirect(to: view, with: parameters)
-        }
+        // Handle opening via standard URL               
         return true
     }
     
@@ -360,7 +340,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
     }
     
     func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse) async {
-        // Uncomment for manual setup for notification conversions
+        // Uncomment for manual setup for notification conversions and URLs
         // Radar.logConversion(response: response)
         // Radar.extractURLFromNotification(response.notification)
     }
@@ -381,26 +361,26 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
 
     func didReceiveEvents(_ events: [RadarEvent], user: RadarUser?) {
         for event in events {
-            //notify(Utils.stringForRadarEvent(event))
+            notify(Utils.stringForRadarEvent(event))
         }
     }
 
     func didUpdateLocation(_ location: CLLocation, user: RadarUser) {
         let body = "\(user.stopped ? "Stopped at" : "Moved to") location (\(location.coordinate.latitude), \(location.coordinate.longitude)) with accuracy \(location.horizontalAccuracy) meters"
-        //self.notify(body)
+        self.notify(body)
     }
 
     func didUpdateClientLocation(_ location: CLLocation, stopped: Bool, source: RadarLocationSource) {
         let body = "\(stopped ? "Client stopped at" : "Client moved to") location (\(location.coordinate.latitude), \(location.coordinate.longitude)) with accuracy \(location.horizontalAccuracy) meters and source \(Utils.stringForRadarLocationSource(source))"
-        //self.notify(body)
+        self.notify(body)
     }
 
     func didFail(status: RadarStatus) {
-        //self.notify(Radar.stringForStatus(status))
+        self.notify(Radar.stringForStatus(status))
     }
 
     func didLog(message: String) {
-        //self.notify(message)
+        self.notify(message)
     }
 
     func didUpdateToken(_ token: RadarVerifiedLocationToken) {

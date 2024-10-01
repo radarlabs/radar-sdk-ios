@@ -116,23 +116,17 @@ static NSString *const kSyncGeofenceIdentifierPrefix = @"radar_geofence_";
 }
 
 + (void)extractURLFromNotification:(UNNotification *)notification {
-    //NSLog(@"Extracting URL from notification");
 
     if ([notification.request.identifier hasPrefix:@"radar_"]) {
         NSString *urlString = notification.request.content.userInfo[@"url"];
-        //NSLog(@"URL String: %@", urlString);
         if (urlString) {
-            //NSLog(@"URL String: %@", urlString);
             NSURL *url = [NSURL URLWithString:urlString];
             if (url) {
                 if([[RadarDelegateHolder sharedInstance] didHandleURL:url]) {
-                    NSLog(@"handled with delegate");
                     return;
                 }
-                // NSLog(@"got a url %@", url);
                 UIApplication *application = [UIApplication sharedApplication];
                 if ([application canOpenURL:url]) {
-                    NSLog(@"Inside the SDK, Opening URL: %@", url);
                    [application openURL:url options:@{} completionHandler:nil];
                }
             }
