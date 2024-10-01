@@ -16,8 +16,8 @@
 @property (assign, nonatomic) BOOL autoHandleNotificationDeepLinks;
 @property (nullable, weak, nonatomic) id<RadarURLDelegate> urlDelegate;
 
-- (NSDictionary *)dictionaryValue;
-- (instancetype)initWithDict:(NSDictionary *)dict;
+- (NSDictionary *_Nonnull)dictionaryValue;
+- (instancetype)initWithDict:(NSDictionary *_Nullable)dict;
 
 @end
 
