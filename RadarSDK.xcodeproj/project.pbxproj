@@ -165,6 +165,7 @@
 		DD8E2F7A24018C37002D51AB /* CLLocationManagerMock.m in Sources */ = {isa = PBXBuildFile; fileRef = DD8E2F7924018C37002D51AB /* CLLocationManagerMock.m */; };
 		DD8E2F7D24018C54002D51AB /* CLVisitMock.m in Sources */ = {isa = PBXBuildFile; fileRef = DD8E2F7C24018C54002D51AB /* CLVisitMock.m */; };
 		DE1E7644239724FD006F34A1 /* search_geofences.json in Resources */ = {isa = PBXBuildFile; fileRef = DE1E7643239724FD006F34A1 /* search_geofences.json */; };
+		E632FA1F2CAC505B00E86C85 /* RadarURLDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = E632FA1E2CAC505B00E86C85 /* RadarURLDelegate.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		E698B6502C6112FA00084371 /* RadarMotionProtocol.h in Headers */ = {isa = PBXBuildFile; fileRef = E698B64F2C6112FA00084371 /* RadarMotionProtocol.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		E6B93B722C90E2B8003CB858 /* RadarInitializeOptions.h in Headers */ = {isa = PBXBuildFile; fileRef = E6B93B712C90E2B8003CB858 /* RadarInitializeOptions.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		E6B93B742C90E5B8003CB858 /* RadarInitializeOptions.m in Sources */ = {isa = PBXBuildFile; fileRef = E6B93B732C90E5B8003CB858 /* RadarInitializeOptions.m */; };
@@ -339,6 +340,7 @@
 		DDD7BD0325EC3015002473B3 /* RadarRouteMatrix.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RadarRouteMatrix.m; sourceTree = "<group>"; };
 		DDF1157C2524E18100D575C4 /* RadarTrip.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RadarTrip.m; sourceTree = "<group>"; };
 		DE1E7643239724FD006F34A1 /* search_geofences.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = search_geofences.json; sourceTree = "<group>"; };
+		E632FA1E2CAC505B00E86C85 /* RadarURLDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarURLDelegate.h; sourceTree = "<group>"; };
 		E698B64F2C6112FA00084371 /* RadarMotionProtocol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarMotionProtocol.h; sourceTree = "<group>"; };
 		E6B93B712C90E2B8003CB858 /* RadarInitializeOptions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarInitializeOptions.h; sourceTree = "<group>"; };
 		E6B93B732C90E5B8003CB858 /* RadarInitializeOptions.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RadarInitializeOptions.m; sourceTree = "<group>"; };
@@ -409,6 +411,7 @@
 				96A5A0EF27AD9F7F007B960B /* RadarRoutes.h */,
 				96A5A0EB27AD9F7F007B960B /* RadarSegment.h */,
 				96A5A0E827AD9F7F007B960B /* RadarTrackingOptions.h */,
+				E632FA1E2CAC505B00E86C85 /* RadarURLDelegate.h */,
 				E698B64F2C6112FA00084371 /* RadarMotionProtocol.h */,
 				96A5A0E127AD9F7F007B960B /* RadarTrip.h */,
 				96A5A0EE27AD9F7F007B960B /* RadarTripOptions.h */,
@@ -646,6 +649,7 @@
 				96A5A0CF27AD9F41007B960B /* RadarAddress+Internal.h in Headers */,
 				F6F959822C3D7EA200BC30FE /* RadarTimeZone+Internal.h in Headers */,
 				96A5A11127AD9F7F007B960B /* RadarBeacon.h in Headers */,
+				E632FA1F2CAC505B00E86C85 /* RadarURLDelegate.h in Headers */,
 				019514362BD078D90031ABA2 /* RadarVerifiedLocationToken.h in Headers */,
 				96A5A10B27AD9F7F007B960B /* RadarTripOptions.h in Headers */,
 				E698B6502C6112FA00084371 /* RadarMotionProtocol.h in Headers */,

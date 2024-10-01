@@ -67,6 +67,10 @@
 
     RadarSdkConfiguration *sdkConfiguration = [RadarSettings sdkConfiguration];
 
+    if (NSClassFromString(@"XCTestCase") == nil && options.urlDelegate) {
+        [RadarDelegateHolder sharedInstance].urlDelegate = options.urlDelegate;
+    }
+    
     if (NSClassFromString(@"XCTestCase") == nil && options.autoLogNotificationConversions) {
         [Radar nativeSetup];
     }
@@ -1386,6 +1390,10 @@
                                     }];
                                 }
                             }];
+}
+
++ (void)extractURLFromNotification:(UNNotification *)notification {
+    [RadarNotificationHelper extractURLFromNotification:notification];
 }
 
 @end

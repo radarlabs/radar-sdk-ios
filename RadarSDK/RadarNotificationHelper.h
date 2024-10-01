@@ -7,6 +7,8 @@
 
 #import <CoreLocation/CoreLocation.h>
 #import <Foundation/Foundation.h>
+#import "RadarURLDelegate.h"
+#import "RadarDelegateHolder.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -25,6 +27,8 @@ typedef void (^NotificationPermissionCheckCompletion)(BOOL granted);
 + (void)checkNotificationPermissionsWithCompletionHandler:(nullable NotificationPermissionCheckCompletion)completionHandler;
 
 + (void)logConversionWithNotificationResponse:(UNNotificationResponse *)response;
+
++ (void)extractURLFromNotification:(UNNotification *)notification;
 
 @end
 

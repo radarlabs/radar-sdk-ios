@@ -1232,6 +1232,8 @@ typedef void (^_Nullable RadarLogConversionCompletionHandler)(RadarStatus status
  */
 + (void)nativeSetup NS_SWIFT_NAME(nativeSetup());
 
++ (void)extractURLFromNotification:(UNNotification *)notification NS_SWIFT_NAME(extractURLFromNotification(_:));
+
 @end
 
 NS_ASSUME_NONNULL_END

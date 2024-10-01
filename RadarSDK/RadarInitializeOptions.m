@@ -16,6 +16,7 @@
     self = [super init];
     if (self) {
         _autoLogNotificationConversions = NO;
+        _urlDelegate = nil;
     }
     return self;
 }
