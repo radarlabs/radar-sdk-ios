@@ -13,7 +13,11 @@
 @interface RadarInitializeOptions : NSObject
 
 @property (assign, nonatomic) BOOL autoLogNotificationConversions;
+@property (assign, nonatomic) BOOL autoHandleNotificationDeepLinks;
 @property (nullable, weak, nonatomic) id<RadarURLDelegate> urlDelegate;
+
+- (NSDictionary *)dictionaryValue;
+- (instancetype)initWithDict:(NSDictionary *)dict;
 
 @end
 

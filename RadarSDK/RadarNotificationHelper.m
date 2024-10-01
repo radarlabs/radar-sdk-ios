@@ -108,8 +108,13 @@ static NSString *const kSyncGeofenceIdentifierPrefix = @"radar_geofence_";
         didReceiveNotificationResponse:(UNNotificationResponse *)response
                  withCompletionHandler:(void (^)(void))completionHandler {
 
-    [RadarNotificationHelper logConversionWithNotificationResponse:response];
-    [RadarNotificationHelper extractURLFromNotification:response.notification];
+    RadarInitializeOptions *options = [RadarSettings initializeOptions];
+    if (options.autoHandleNotificationDeepLinks) {
+        [RadarNotificationHelper extractURLFromNotification:response.notification];
+    }
+    if (options.autoLogNotificationConversions) {
+        [RadarNotificationHelper logConversionWithNotificationResponse:response];
+    }
 
     // Call the original method (which is now swizzled)
     [self swizzled_userNotificationCenter:center didReceiveNotificationResponse:response withCompletionHandler:completionHandler];

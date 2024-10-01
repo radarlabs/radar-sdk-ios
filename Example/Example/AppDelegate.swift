@@ -14,6 +14,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
     
     func didHandleURL(_ url: URL) -> Bool {
         print(" called with url %@", url)
+        // handle navigation here
         return true
     }
     
@@ -35,6 +36,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         let radarInitializeOptions = RadarInitializeOptions()
         // Uncomment to enable automatic setup for notification conversions
         radarInitializeOptions.autoLogNotificationConversions = true
+        radarInitializeOptions.autoHandleNotificationDeepLinks = true
         radarInitializeOptions.urlDelegate = self
         Radar.initialize(publishableKey: "prj_test_pk_0000000000000000000000000000000000000000", options: radarInitializeOptions )
         Radar.setUserId("testUserId")
