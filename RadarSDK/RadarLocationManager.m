@@ -552,8 +552,6 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                 NSString *notificationTitle = [geofence.metadata objectForKey:@"radar:notificationTitle"];
                 NSString *notificationSubtitle = [geofence.metadata objectForKey:@"radar:notificationSubtitle"];
                 NSString *notificationURL = [geofence.metadata objectForKey:@"radar:notificationURL"];
-                //NSLog(@"Notification URL: %@", notificationURL);
-                //NSLog(@"Geofence Metadata: %@", geofence.metadata);
                 if (notificationText) {
                     UNMutableNotificationContent *content = [UNMutableNotificationContent new];
                     if (notificationTitle) {
