@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
     s.name                  = 'RadarSDKLocationPermissions'
-    s.version               = '3.18.1'
+    s.version               = '3.19.0-beta.1'
     s.summary               = 'Location permissions plugin for RadarSDK'
     s.homepage              = 'https://radar.com'
     s.author                = { 'Radar Labs, Inc.' => 'support@radar.com' }
