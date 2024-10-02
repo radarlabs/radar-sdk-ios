@@ -68,13 +68,14 @@
     RadarSdkConfiguration *sdkConfiguration = [RadarSettings sdkConfiguration];
 
     [RadarSettings setInitializeOptions:options];
-
-    if (NSClassFromString(@"XCTestCase") == nil && options.urlDelegate) {
-        [RadarDelegateHolder sharedInstance].urlDelegate = options.urlDelegate;
-    }
     
-    if (NSClassFromString(@"XCTestCase") == nil && (options.autoLogNotificationConversions || options.autoHandleNotificationDeepLinks)) {
-        [Radar nativeSetup];
+    if (NSClassFromString(@"XCTestCase") == nil) {
+        if (options.urlDelegate) {
+            [RadarDelegateHolder sharedInstance].urlDelegate = options.urlDelegate;
+        }
+        if (options.autoLogNotificationConversions || options.autoHandleNotificationDeepLinks) {
+            [Radar nativeSetup];
+        }
     }
 
     if (sdkConfiguration.usePersistence) {
