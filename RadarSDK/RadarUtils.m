@@ -45,7 +45,7 @@ static NSDateFormatter *_isoDateFormatter;
 }
 
 + (NSString *)sdkVersion {
-    return @"3.12.0";
+    return @"3.18.1";
 }
 
 + (NSString *)deviceId {
@@ -137,7 +137,7 @@ static NSDateFormatter *_isoDateFormatter;
     if (@available(iOS 15.0, *)) {
         CLLocationSourceInformation *sourceInformation = location.sourceInformation;
         if (sourceInformation) {
-            if (sourceInformation.isSimulatedBySoftware) {
+            if (sourceInformation.isSimulatedBySoftware || sourceInformation.isProducedByAccessory) {
                 dict[@"mocked"] = @(YES);
             } else {
                 dict[@"mocked"] = @(NO);
@@ -162,6 +162,18 @@ static NSDateFormatter *_isoDateFormatter;
     } else {
         return [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
     } 
+}
+
++ (NSDictionary<NSString *, NSString *> *)extractGeofenceIdAndTimestampFromIdentifier:(NSString *)identifier {
+    NSArray<NSString *> *components = [identifier componentsSeparatedByString:@"_"];
+    if (components.count != 4) {
+        return nil; // Invalid format
+    }
+    
+    NSString *geofenceId = components[2];
+    NSString *registeredAt = components[3];
+    
+    return @{@"geofenceId": geofenceId, @"registeredAt": registeredAt};
 }
 
 #pragma mark - threading

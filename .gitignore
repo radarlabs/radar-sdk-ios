@@ -1,6 +1,7 @@
 .DS_Store
 xcuserdata/
 .idea/
+.vscode/
 Carthage/Checkouts/
 Carthage/Build/
 sonar-reports/
@@ -11,4 +12,5 @@ build/
 docs/undocumented.json
 *.xcarchive
 IntegrationExamples
-
+.build/
+Example/Example.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/

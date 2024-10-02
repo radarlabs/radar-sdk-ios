@@ -19,6 +19,7 @@
 #import "RadarRouteMatrix.h"
 #import "RadarRoutes.h"
 #import "RadarUser.h"
+#import "RadarVerifiedLocationToken.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -28,7 +29,7 @@ typedef void (^_Nonnull RadarTrackAPICompletionHandler)(RadarStatus status,
                                                         RadarUser *_Nullable user,
                                                         NSArray<RadarGeofence *> *_Nullable nearbyGeofences,
                                                         RadarConfig *_Nullable config,
-                                                        NSString *_Nullable token);
+                                                        RadarVerifiedLocationToken *_Nullable token);
 
 typedef void (^_Nonnull RadarFlushReplaysAPICompletionHandler)(RadarStatus status, NSDictionary *_Nullable res);
 
@@ -90,6 +91,8 @@ typedef void (^_Nonnull RadarSyncLogsAPICompletionHandler)(RadarStatus status);
                     keyId:(NSString *_Nullable)keyId
          attestationError:(NSString *_Nullable)attestationError
                 encrypted:(BOOL)encrypted
+      expectedCountryCode:(NSString *_Nullable)expectedCountryCode
+        expectedStateCode:(NSString *_Nullable)expectedStateCode
         completionHandler:(RadarTrackAPICompletionHandler _Nonnull)completionHandler;
 
 - (void)flushReplays:(NSArray<NSDictionary *> *_Nonnull)replays completionHandler:(RadarFlushReplaysAPICompletionHandler _Nonnull)completionHandler;
