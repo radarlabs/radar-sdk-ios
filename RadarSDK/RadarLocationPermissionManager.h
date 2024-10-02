@@ -8,11 +8,13 @@
 
 #import <CoreLocation/CoreLocation.h>
 #import "RadarLocationPermissionStatus.h"
+#import "RadarLocationPermissionProtocol.h"
 
 @interface RadarLocationPermissionManager : NSObject <CLLocationManagerDelegate>
 
 @property (nonatomic, strong) RadarLocationPermissionStatus * _Nullable status;
 @property (nonatomic, strong) CLLocationManager * _Nonnull locationManager;
+@property (nullable, strong, nonatomic) id radarSDKLocationPermissions;
 
 + (instancetype _Nonnull )sharedInstance;
 

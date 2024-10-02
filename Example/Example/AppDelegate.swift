@@ -87,6 +87,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
             }
         }
         
+        demoButton(text: "foreground request"){
+            Radar.requestForegroundLocationPermission()
+        }
+        
+        demoButton(text: "background request"){
+            Radar.requestBackgroundLocationPermission()
+        }
+        
         demoButton(text: "trackOnce") {
             Radar.trackOnce()
         }
@@ -299,13 +307,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         if #available(iOS 13.4, *) {
             // On iOS 13.4 and later, prompt for foreground first. If granted, prompt for background. The OS will show the background prompt in-app.
             if status == .notDetermined {
-                self.locationManager.requestWhenInUseAuthorization()
+                // self.locationManager.requestWhenInUseAuthorization()
             } else if status == .authorizedWhenInUse {
-                self.locationManager.requestAlwaysAuthorization()
+                // self.locationManager.requestAlwaysAuthorization()
             }
         } else {
             // Before iOS 13.4, prompt for background first. On iOS 13, the OS will show a foreground prompt in-app. The OS will show the background prompt outside of the app later, at a time determined by the OS.
-            self.locationManager.requestAlwaysAuthorization()
+            // self.locationManager.requestAlwaysAuthorization()
         }
     }
 
@@ -365,7 +373,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
     }
     
     func didUpdateLocationPermissionStatus(status: RadarLocationPermissionStatus){
-        
+        print(status)
     }
     
 }

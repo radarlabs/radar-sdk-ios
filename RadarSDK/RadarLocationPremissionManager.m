@@ -87,11 +87,15 @@
 }
 
 - (void)requestBackgroundLocationPermission {
+    if (!self.radarSDKLocationPermissions) {
+        return;
+    }
     if (self.status.locationManagerStatus == kCLAuthorizationStatusAuthorizedWhenInUse) {
 
         self.danglingBackgroundPermissionRequest = YES;
 
-        [self.locationManager requestAlwaysAuthorization];
+        //[self.locationManager requestAlwaysAuthorization];
+        [self.radarSDKLocationPermissions requestBackgroundPermission];
         if (@available(iOS 14.0, *)) {
             RadarLocationPermissionStatus *status = [[RadarLocationPermissionStatus alloc] initWithStatus:self.locationManager.authorizationStatus
                                                                                    backgroundPopupAvailable:NO

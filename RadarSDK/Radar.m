@@ -59,6 +59,11 @@
         id radarSDKMotion = [[RadarSDKMotion alloc] init];
         [RadarActivityManager sharedInstance].radarSDKMotion = radarSDKMotion;
     }
+    Class RadarSDKLocationPermissions = NSClassFromString(@"RadarSDKLocationPermissions");
+    if (RadarSDKLocationPermissions) {
+        id radarSDKLocationPermissions = [[RadarSDKLocationPermissions alloc] init];
+        [RadarLocationPermissionManager sharedInstance].radarSDKLocationPermissions = radarSDKLocationPermissions;
+    }
 
     [[NSNotificationCenter defaultCenter] addObserver:[self sharedInstance]
                                              selector:@selector(applicationWillEnterForeground)
