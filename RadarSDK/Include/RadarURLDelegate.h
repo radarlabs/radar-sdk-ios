@@ -11,16 +11,16 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- A delegate tpo handle notification opens with embedded URLs. For more information, see https://radar.com/documentation/notifications
+ A delegate to handle notification opens with embedded URLs. For more information, see https://radar.com/documentation/notifications
 
  @see https://radar.com/documentation/notifications
  */
 @protocol RadarURLDelegate<NSObject>
 
 /**
- Tells the delegate that URL was received.
+ Tells the delegate that URL was received and to handle the URL.
 
- @param url The URL received.
+ @param url The URL received from the notification.
  */
 - (BOOL)didHandleURL:(NSURL *)url NS_SWIFT_NAME(didHandleURL(_:));
 
