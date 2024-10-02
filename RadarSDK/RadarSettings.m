@@ -250,12 +250,24 @@ static NSString *const kXPlatformSDKVersion = @"radar-xPlatformSDKVersion";
     return [[RadarSdkConfiguration alloc] initWithDict:sdkConfigurationDict];
 }
 
++ (BOOL)isTestKey {
+    NSString *publishableKey = [RadarSettings publishableKey];
+    if ([publishableKey hasPrefix:@"prj_test_pk"] || [publishableKey hasPrefix:@"org_test_pk"] || [RadarSettings userDebug]) {
+        return YES;
+    }
+    return NO;
+}
+
 + (RadarLogLevel)logLevel {
     RadarLogLevel logLevel;
     if ([RadarSettings userDebug]) {
         logLevel = RadarLogLevelDebug;
     } else if ([[NSUserDefaults standardUserDefaults] objectForKey:kLogLevel] == nil) {
-        logLevel = RadarLogLevelInfo;
+        if ([RadarSettings isTestKey]) {
+            logLevel = RadarLogLevelNone;
+        } else {
+            logLevel = RadarLogLevelInfo;
+        }
     } else {
         logLevel = (RadarLogLevel)[[NSUserDefaults standardUserDefaults] integerForKey:kLogLevel];
     }
