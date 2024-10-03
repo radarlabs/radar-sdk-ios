@@ -1,5 +1,5 @@
 //
-//  RadarLocationPremissionsManager.m
+//  RadarLocationPermissionsManager.m
 //  RadarSDK
 //
 //  Created by Kenny Hu on 5/8/24.

@@ -165,9 +165,9 @@
 		DD8E2F7A24018C37002D51AB /* CLLocationManagerMock.m in Sources */ = {isa = PBXBuildFile; fileRef = DD8E2F7924018C37002D51AB /* CLLocationManagerMock.m */; };
 		DD8E2F7D24018C54002D51AB /* CLVisitMock.m in Sources */ = {isa = PBXBuildFile; fileRef = DD8E2F7C24018C54002D51AB /* CLVisitMock.m */; };
 		DE1E7644239724FD006F34A1 /* search_geofences.json in Resources */ = {isa = PBXBuildFile; fileRef = DE1E7643239724FD006F34A1 /* search_geofences.json */; };
-		E624465D2BEBEB5D00ECCCAD /* RadarLocationPremissionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = E624465C2BEBEB5D00ECCCAD /* RadarLocationPremissionManager.m */; };
+		E624465D2BEBEB5D00ECCCAD /* RadarLocationPermissionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = E624465C2BEBEB5D00ECCCAD /* RadarLocationPermissionManager.m */; };
 		E624465F2BEBEB8A00ECCCAD /* RadarLocationPermissionManager.h in Headers */ = {isa = PBXBuildFile; fileRef = E624465E2BEBEB8A00ECCCAD /* RadarLocationPermissionManager.h */; };
-		E62446622BEBF3F900ECCCAD /* RadarLocationPremissionStatus.m in Sources */ = {isa = PBXBuildFile; fileRef = E62446612BEBF3F900ECCCAD /* RadarLocationPremissionStatus.m */; };
+		E62446622BEBF3F900ECCCAD /* RadarLocationPermissionStatus.m in Sources */ = {isa = PBXBuildFile; fileRef = E62446612BEBF3F900ECCCAD /* RadarLocationPermissionStatus.m */; };
 		E62446642BEBF4BB00ECCCAD /* RadarLocationPermissionStatus+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = E62446632BEBF4BB00ECCCAD /* RadarLocationPermissionStatus+Internal.h */; };
 		E62446A72BEC0AC700ECCCAD /* RadarLocationPermissionStatus.h in Headers */ = {isa = PBXBuildFile; fileRef = E62446A52BEC0A4900ECCCAD /* RadarLocationPermissionStatus.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		E632FA4F2CADCEDB00E86C85 /* RadarLocationPermissionProtocol.h in Headers */ = {isa = PBXBuildFile; fileRef = E632FA4E2CADCEDB00E86C85 /* RadarLocationPermissionProtocol.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -345,9 +345,9 @@
 		DDD7BD0325EC3015002473B3 /* RadarRouteMatrix.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RadarRouteMatrix.m; sourceTree = "<group>"; };
 		DDF1157C2524E18100D575C4 /* RadarTrip.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RadarTrip.m; sourceTree = "<group>"; };
 		DE1E7643239724FD006F34A1 /* search_geofences.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = search_geofences.json; sourceTree = "<group>"; };
-		E624465C2BEBEB5D00ECCCAD /* RadarLocationPremissionManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RadarLocationPremissionManager.m; sourceTree = "<group>"; };
+		E624465C2BEBEB5D00ECCCAD /* RadarLocationPermissionManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RadarLocationPermissionManager.m; sourceTree = "<group>"; };
 		E624465E2BEBEB8A00ECCCAD /* RadarLocationPermissionManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RadarLocationPermissionManager.h; sourceTree = "<group>"; };
-		E62446612BEBF3F900ECCCAD /* RadarLocationPremissionStatus.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RadarLocationPremissionStatus.m; sourceTree = "<group>"; };
+		E62446612BEBF3F900ECCCAD /* RadarLocationPermissionStatus.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RadarLocationPermissionStatus.m; sourceTree = "<group>"; };
 		E62446632BEBF4BB00ECCCAD /* RadarLocationPermissionStatus+Internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "RadarLocationPermissionStatus+Internal.h"; sourceTree = "<group>"; };
 		E62446A52BEC0A4900ECCCAD /* RadarLocationPermissionStatus.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RadarLocationPermissionStatus.h; sourceTree = "<group>"; };
 		E632FA4E2CADCEDB00E86C85 /* RadarLocationPermissionProtocol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarLocationPermissionProtocol.h; sourceTree = "<group>"; };
@@ -521,7 +521,7 @@
 				DD633EC6237C5B9C0026C91A /* RadarPermissionsHelper.m */,
 				82D04AB829722ED20036619F /* RadarReplay.h */,
 				E624465E2BEBEB8A00ECCCAD /* RadarLocationPermissionManager.h */,
-				E624465C2BEBEB5D00ECCCAD /* RadarLocationPremissionManager.m */,
+				E624465C2BEBEB5D00ECCCAD /* RadarLocationPermissionManager.m */,
 				82D04AC629771BF10036619F /* RadarReplay.m */,
 				82D04ABA29722ED20036619F /* RadarReplayBuffer.h */,
 				82D04AB929722ED20036619F /* RadarReplayBuffer.m */,
@@ -568,7 +568,7 @@
 		DD27CB7D235D13F000299FEC /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				E62446612BEBF3F900ECCCAD /* RadarLocationPremissionStatus.m */,
+				E62446612BEBF3F900ECCCAD /* RadarLocationPermissionStatus.m */,
 				E62446632BEBF4BB00ECCCAD /* RadarLocationPermissionStatus+Internal.h */,
 				96A5A0B727AD9F40007B960B /* RadarAddress+Internal.h */,
 				78156B9623A8210E0094410E /* RadarAddress.m */,
@@ -885,7 +885,7 @@
 				0107AB2F262201FB008AB52F /* RadarUtils.m in Sources */,
 				E6B93B752C90E5B8003CB858 /* RadarInitializeOptions.m in Sources */,
 				0107AA8926220140008AB52F /* RadarChain.m in Sources */,
-				E624465D2BEBEB5D00ECCCAD /* RadarLocationPremissionManager.m in Sources */,
+				E624465D2BEBEB5D00ECCCAD /* RadarLocationPermissionManager.m in Sources */,
 				F667F8272BFBF3C8001F2F67 /* RadarSdkConfiguration.m in Sources */,
 				F667F8272BFBF3C8001F2F67 /* RadarSdkConfiguration.m in Sources */,
 				0107AB11262201D9008AB52F /* RadarCollectionAdditions.m in Sources */,
@@ -894,7 +894,7 @@
 				0107AB1D262201E5008AB52F /* RadarLocationManager.m in Sources */,
 				0107AAB02622016B008AB52F /* RadarPlace.m in Sources */,
 				0107AAE6262201A1008AB52F /* RadarSegment.m in Sources */,
-				E62446622BEBF3F900ECCCAD /* RadarLocationPremissionStatus.m in Sources */,
+				E62446622BEBF3F900ECCCAD /* RadarLocationPermissionStatus.m in Sources */,
 				0107AB20262201E9008AB52F /* RadarPermissionsHelper.m in Sources */,
 				0107AAC22622017E008AB52F /* RadarRoute.m in Sources */,
 				0107AAF2262201B2008AB52F /* RadarUser.m in Sources */,
