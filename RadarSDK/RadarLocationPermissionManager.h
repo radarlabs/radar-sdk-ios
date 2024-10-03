@@ -14,7 +14,7 @@
 
 @property (nonatomic, strong) RadarLocationPermissionStatus * _Nullable status;
 @property (nonatomic, strong) CLLocationManager * _Nonnull locationManager;
-@property (nullable, strong, nonatomic) id radarSDKLocationPermissions;
+@property (nullable, strong, nonatomic) id radarSDKLocationPermission;
 
 + (instancetype _Nonnull )sharedInstance;
 

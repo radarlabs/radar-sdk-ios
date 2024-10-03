@@ -59,10 +59,10 @@
         id radarSDKMotion = [[RadarSDKMotion alloc] init];
         [RadarActivityManager sharedInstance].radarSDKMotion = radarSDKMotion;
     }
-    Class RadarSDKLocationPermissions = NSClassFromString(@"RadarSDKLocationPermissions");
-    if (RadarSDKLocationPermissions) {
-        id radarSDKLocationPermissions = [[RadarSDKLocationPermissions alloc] init];
-        [RadarLocationPermissionManager sharedInstance].radarSDKLocationPermissions = radarSDKLocationPermissions;
+    Class RadarSDKLocationPermission = NSClassFromString(@"RadarSDKLocationPermission");
+    if (RadarSDKLocationPermission) {
+        id radarSDKLocationPermission = [[RadarSDKLocationPermission alloc] init];
+        [RadarLocationPermissionManager sharedInstance].radarSDKLocationPermission = radarSDKLocationPermission;
     }
 
     [[NSNotificationCenter defaultCenter] addObserver:[self sharedInstance]

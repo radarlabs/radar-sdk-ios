@@ -7,83 +7,83 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		E632FA3C2CADCD7900E86C85 /* RadarSDKLocationPermissions.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E632FA312CADCD7900E86C85 /* RadarSDKLocationPermissions.framework */; };
+		E632FB142CAEE94C00E86C85 /* RadarSDKLocationPermission.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E632FB092CAEE94B00E86C85 /* RadarSDKLocationPermission.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		E632FA3D2CADCD7900E86C85 /* PBXContainerItemProxy */ = {
+		E632FB152CAEE94C00E86C85 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = E632FA282CADCD7900E86C85 /* Project object */;
+			containerPortal = E632FB002CAEE94B00E86C85 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = E632FA302CADCD7900E86C85;
-			remoteInfo = RadarSDKLocationPermissions;
+			remoteGlobalIDString = E632FB082CAEE94B00E86C85;
+			remoteInfo = RadarSDKLocationPermission;
 		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		E632FA312CADCD7900E86C85 /* RadarSDKLocationPermissions.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = RadarSDKLocationPermissions.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		E632FA3B2CADCD7900E86C85 /* RadarSDKLocationPermissionsTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RadarSDKLocationPermissionsTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		E632FB092CAEE94B00E86C85 /* RadarSDKLocationPermission.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = RadarSDKLocationPermission.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		E632FB132CAEE94C00E86C85 /* RadarSDKLocationPermissionTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RadarSDKLocationPermissionTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		E632FA432CADCD7900E86C85 /* Exceptions for "RadarSDKLocationPermissions" folder in "RadarSDKLocationPermissions" target */ = {
+		E632FB1B2CAEE94C00E86C85 /* Exceptions for "RadarSDKLocationPermission" folder in "RadarSDKLocationPermission" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			publicHeaders = (
-				Include/RadarSDKLocationPermissions.h,
+				Include/RadarSDKLocationPermission.h,
 			);
-			target = E632FA302CADCD7900E86C85 /* RadarSDKLocationPermissions */;
+			target = E632FB082CAEE94B00E86C85 /* RadarSDKLocationPermission */;
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		E632FA332CADCD7900E86C85 /* RadarSDKLocationPermissions */ = {
+		E632FB0B2CAEE94B00E86C85 /* RadarSDKLocationPermission */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				E632FA432CADCD7900E86C85 /* Exceptions for "RadarSDKLocationPermissions" folder in "RadarSDKLocationPermissions" target */,
+				E632FB1B2CAEE94C00E86C85 /* Exceptions for "RadarSDKLocationPermission" folder in "RadarSDKLocationPermission" target */,
 			);
-			path = RadarSDKLocationPermissions;
+			path = RadarSDKLocationPermission;
 			sourceTree = "<group>";
 		};
-		E632FA3F2CADCD7900E86C85 /* RadarSDKLocationPermissionsTests */ = {
+		E632FB172CAEE94C00E86C85 /* RadarSDKLocationPermissionTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = RadarSDKLocationPermissionsTests;
+			path = RadarSDKLocationPermissionTests;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		E632FA2E2CADCD7900E86C85 /* Frameworks */ = {
+		E632FB062CAEE94B00E86C85 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		E632FA382CADCD7900E86C85 /* Frameworks */ = {
+		E632FB102CAEE94C00E86C85 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E632FA3C2CADCD7900E86C85 /* RadarSDKLocationPermissions.framework in Frameworks */,
+				E632FB142CAEE94C00E86C85 /* RadarSDKLocationPermission.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		E632FA272CADCD7900E86C85 = {
+		E632FAFF2CAEE94B00E86C85 = {
 			isa = PBXGroup;
 			children = (
-				E632FA332CADCD7900E86C85 /* RadarSDKLocationPermissions */,
-				E632FA3F2CADCD7900E86C85 /* RadarSDKLocationPermissionsTests */,
-				E632FA322CADCD7900E86C85 /* Products */,
+				E632FB0B2CAEE94B00E86C85 /* RadarSDKLocationPermission */,
+				E632FB172CAEE94C00E86C85 /* RadarSDKLocationPermissionTests */,
+				E632FB0A2CAEE94B00E86C85 /* Products */,
 			);
 			sourceTree = "<group>";
 		};
-		E632FA322CADCD7900E86C85 /* Products */ = {
+		E632FB0A2CAEE94B00E86C85 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				E632FA312CADCD7900E86C85 /* RadarSDKLocationPermissions.framework */,
-				E632FA3B2CADCD7900E86C85 /* RadarSDKLocationPermissionsTests.xctest */,
+				E632FB092CAEE94B00E86C85 /* RadarSDKLocationPermission.framework */,
+				E632FB132CAEE94C00E86C85 /* RadarSDKLocationPermissionTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -91,7 +91,7 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		E632FA2C2CADCD7900E86C85 /* Headers */ = {
+		E632FB042CAEE94B00E86C85 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -101,99 +101,99 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
-		E632FA302CADCD7900E86C85 /* RadarSDKLocationPermissions */ = {
+		E632FB082CAEE94B00E86C85 /* RadarSDKLocationPermission */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = E632FA442CADCD7900E86C85 /* Build configuration list for PBXNativeTarget "RadarSDKLocationPermissions" */;
+			buildConfigurationList = E632FB1C2CAEE94C00E86C85 /* Build configuration list for PBXNativeTarget "RadarSDKLocationPermission" */;
 			buildPhases = (
-				E632FA2C2CADCD7900E86C85 /* Headers */,
-				E632FA2D2CADCD7900E86C85 /* Sources */,
-				E632FA2E2CADCD7900E86C85 /* Frameworks */,
-				E632FA2F2CADCD7900E86C85 /* Resources */,
+				E632FB042CAEE94B00E86C85 /* Headers */,
+				E632FB052CAEE94B00E86C85 /* Sources */,
+				E632FB062CAEE94B00E86C85 /* Frameworks */,
+				E632FB072CAEE94B00E86C85 /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				E632FA332CADCD7900E86C85 /* RadarSDKLocationPermissions */,
+				E632FB0B2CAEE94B00E86C85 /* RadarSDKLocationPermission */,
 			);
-			name = RadarSDKLocationPermissions;
+			name = RadarSDKLocationPermission;
 			packageProductDependencies = (
 			);
-			productName = RadarSDKLocationPermissions;
-			productReference = E632FA312CADCD7900E86C85 /* RadarSDKLocationPermissions.framework */;
+			productName = RadarSDKLocationPermission;
+			productReference = E632FB092CAEE94B00E86C85 /* RadarSDKLocationPermission.framework */;
 			productType = "com.apple.product-type.framework";
 		};
-		E632FA3A2CADCD7900E86C85 /* RadarSDKLocationPermissionsTests */ = {
+		E632FB122CAEE94C00E86C85 /* RadarSDKLocationPermissionTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = E632FA492CADCD7900E86C85 /* Build configuration list for PBXNativeTarget "RadarSDKLocationPermissionsTests" */;
+			buildConfigurationList = E632FB212CAEE94C00E86C85 /* Build configuration list for PBXNativeTarget "RadarSDKLocationPermissionTests" */;
 			buildPhases = (
-				E632FA372CADCD7900E86C85 /* Sources */,
-				E632FA382CADCD7900E86C85 /* Frameworks */,
-				E632FA392CADCD7900E86C85 /* Resources */,
+				E632FB0F2CAEE94C00E86C85 /* Sources */,
+				E632FB102CAEE94C00E86C85 /* Frameworks */,
+				E632FB112CAEE94C00E86C85 /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				E632FA3E2CADCD7900E86C85 /* PBXTargetDependency */,
+				E632FB162CAEE94C00E86C85 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
-				E632FA3F2CADCD7900E86C85 /* RadarSDKLocationPermissionsTests */,
+				E632FB172CAEE94C00E86C85 /* RadarSDKLocationPermissionTests */,
 			);
-			name = RadarSDKLocationPermissionsTests;
+			name = RadarSDKLocationPermissionTests;
 			packageProductDependencies = (
 			);
-			productName = RadarSDKLocationPermissionsTests;
-			productReference = E632FA3B2CADCD7900E86C85 /* RadarSDKLocationPermissionsTests.xctest */;
+			productName = RadarSDKLocationPermissionTests;
+			productReference = E632FB132CAEE94C00E86C85 /* RadarSDKLocationPermissionTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		E632FA282CADCD7900E86C85 /* Project object */ = {
+		E632FB002CAEE94B00E86C85 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1600;
 				LastUpgradeCheck = 1600;
 				TargetAttributes = {
-					E632FA302CADCD7900E86C85 = {
+					E632FB082CAEE94B00E86C85 = {
 						CreatedOnToolsVersion = 16.0;
 					};
-					E632FA3A2CADCD7900E86C85 = {
+					E632FB122CAEE94C00E86C85 = {
 						CreatedOnToolsVersion = 16.0;
 					};
 				};
 			};
-			buildConfigurationList = E632FA2B2CADCD7900E86C85 /* Build configuration list for PBXProject "RadarSDKLocationPermissions" */;
+			buildConfigurationList = E632FB032CAEE94B00E86C85 /* Build configuration list for PBXProject "RadarSDKLocationPermission" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
 				Base,
 			);
-			mainGroup = E632FA272CADCD7900E86C85;
+			mainGroup = E632FAFF2CAEE94B00E86C85;
 			minimizedProjectReferenceProxies = 1;
 			preferredProjectObjectVersion = 77;
-			productRefGroup = E632FA322CADCD7900E86C85 /* Products */;
+			productRefGroup = E632FB0A2CAEE94B00E86C85 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				E632FA302CADCD7900E86C85 /* RadarSDKLocationPermissions */,
-				E632FA3A2CADCD7900E86C85 /* RadarSDKLocationPermissionsTests */,
+				E632FB082CAEE94B00E86C85 /* RadarSDKLocationPermission */,
+				E632FB122CAEE94C00E86C85 /* RadarSDKLocationPermissionTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		E632FA2F2CADCD7900E86C85 /* Resources */ = {
+		E632FB072CAEE94B00E86C85 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		E632FA392CADCD7900E86C85 /* Resources */ = {
+		E632FB112CAEE94C00E86C85 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -203,14 +203,14 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		E632FA2D2CADCD7900E86C85 /* Sources */ = {
+		E632FB052CAEE94B00E86C85 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		E632FA372CADCD7900E86C85 /* Sources */ = {
+		E632FB0F2CAEE94C00E86C85 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -220,15 +220,15 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		E632FA3E2CADCD7900E86C85 /* PBXTargetDependency */ = {
+		E632FB162CAEE94C00E86C85 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = E632FA302CADCD7900E86C85 /* RadarSDKLocationPermissions */;
-			targetProxy = E632FA3D2CADCD7900E86C85 /* PBXContainerItemProxy */;
+			target = E632FB082CAEE94B00E86C85 /* RadarSDKLocationPermission */;
+			targetProxy = E632FB152CAEE94C00E86C85 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		E632FA452CADCD7900E86C85 /* Debug */ = {
+		E632FB1D2CAEE94C00E86C85 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
@@ -251,7 +251,7 @@
 				MARKETING_VERSION = 1.0;
 				MODULE_VERIFIER_SUPPORTED_LANGUAGES = "objective-c objective-c++";
 				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "gnu17 gnu++20";
-				PRODUCT_BUNDLE_IDENTIFIER = RadarLabs.RadarSDKLocationPermissions;
+				PRODUCT_BUNDLE_IDENTIFIER = RadarLabs.RadarSDKLocationPermission;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -261,7 +261,7 @@
 			};
 			name = Debug;
 		};
-		E632FA462CADCD7900E86C85 /* Release */ = {
+		E632FB1E2CAEE94C00E86C85 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
@@ -284,7 +284,7 @@
 				MARKETING_VERSION = 1.0;
 				MODULE_VERIFIER_SUPPORTED_LANGUAGES = "objective-c objective-c++";
 				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "gnu17 gnu++20";
-				PRODUCT_BUNDLE_IDENTIFIER = RadarLabs.RadarSDKLocationPermissions;
+				PRODUCT_BUNDLE_IDENTIFIER = RadarLabs.RadarSDKLocationPermission;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -294,7 +294,7 @@
 			};
 			name = Release;
 		};
-		E632FA472CADCD7900E86C85 /* Debug */ = {
+		E632FB1F2CAEE94C00E86C85 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -360,7 +360,7 @@
 			};
 			name = Debug;
 		};
-		E632FA482CADCD7900E86C85 /* Release */ = {
+		E632FB202CAEE94C00E86C85 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -419,7 +419,7 @@
 			};
 			name = Release;
 		};
-		E632FA4A2CADCD7900E86C85 /* Debug */ = {
+		E632FB222CAEE94C00E86C85 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
@@ -427,7 +427,7 @@
 				DEVELOPMENT_TEAM = 96GHH65B9D;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = RadarLabs.RadarSDKLocationPermissionsTests;
+				PRODUCT_BUNDLE_IDENTIFIER = RadarLabs.RadarSDKLocationPermissionTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
@@ -435,7 +435,7 @@
 			};
 			name = Debug;
 		};
-		E632FA4B2CADCD7900E86C85 /* Release */ = {
+		E632FB232CAEE94C00E86C85 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
@@ -443,7 +443,7 @@
 				DEVELOPMENT_TEAM = 96GHH65B9D;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = RadarLabs.RadarSDKLocationPermissionsTests;
+				PRODUCT_BUNDLE_IDENTIFIER = RadarLabs.RadarSDKLocationPermissionTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
@@ -454,34 +454,34 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		E632FA2B2CADCD7900E86C85 /* Build configuration list for PBXProject "RadarSDKLocationPermissions" */ = {
+		E632FB032CAEE94B00E86C85 /* Build configuration list for PBXProject "RadarSDKLocationPermission" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				E632FA472CADCD7900E86C85 /* Debug */,
-				E632FA482CADCD7900E86C85 /* Release */,
+				E632FB1F2CAEE94C00E86C85 /* Debug */,
+				E632FB202CAEE94C00E86C85 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		E632FA442CADCD7900E86C85 /* Build configuration list for PBXNativeTarget "RadarSDKLocationPermissions" */ = {
+		E632FB1C2CAEE94C00E86C85 /* Build configuration list for PBXNativeTarget "RadarSDKLocationPermission" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				E632FA452CADCD7900E86C85 /* Debug */,
-				E632FA462CADCD7900E86C85 /* Release */,
+				E632FB1D2CAEE94C00E86C85 /* Debug */,
+				E632FB1E2CAEE94C00E86C85 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		E632FA492CADCD7900E86C85 /* Build configuration list for PBXNativeTarget "RadarSDKLocationPermissionsTests" */ = {
+		E632FB212CAEE94C00E86C85 /* Build configuration list for PBXNativeTarget "RadarSDKLocationPermissionTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				E632FA4A2CADCD7900E86C85 /* Debug */,
-				E632FA4B2CADCD7900E86C85 /* Release */,
+				E632FB222CAEE94C00E86C85 /* Debug */,
+				E632FB232CAEE94C00E86C85 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
-	rootObject = E632FA282CADCD7900E86C85 /* Project object */;
+	rootObject = E632FB002CAEE94B00E86C85 /* Project object */;
 }

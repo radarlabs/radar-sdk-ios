@@ -88,8 +88,8 @@
 }
 
 - (void)requestBackgroundLocationPermission {
-    if (!self.radarSDKLocationPermissions) {
-        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelError message:@"RadarSDKLocationPermissions not found"];
+    if (!self.radarSDKLocationPermission) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelError message:@"RadarSDKLocationPermission not found"];
         return;
     }
     if (self.status.locationManagerStatus == kCLAuthorizationStatusAuthorizedWhenInUse) {
@@ -97,7 +97,7 @@
         self.danglingBackgroundPermissionRequest = YES;
 
         //[self.locationManager requestAlwaysAuthorization];
-        [self.radarSDKLocationPermissions requestBackgroundPermission];
+        [self.radarSDKLocationPermission requestBackgroundPermission];
         if (@available(iOS 14.0, *)) {
             RadarLocationPermissionStatus *status = [[RadarLocationPermissionStatus alloc] initWithStatus:self.locationManager.authorizationStatus
                                                                                    backgroundPopupAvailable:NO
