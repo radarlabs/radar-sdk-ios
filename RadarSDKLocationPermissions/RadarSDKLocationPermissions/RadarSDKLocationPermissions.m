@@ -12,10 +12,6 @@
 
 @implementation RadarSDKLocationPermissions
 
-- (void)requestForegroundPermission {
-    [[CLLocationManager new] requestWhenInUseAuthorization];
-}
-
 - (void)requestBackgroundPermission {
     [[CLLocationManager new] requestAlwaysAuthorization];
 }

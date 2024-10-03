@@ -13,7 +13,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol RadarLocationPermissionProtocol<NSObject>
 
-- (void)requestForegroundPermission;
 - (void)requestBackgroundPermission;
 
 

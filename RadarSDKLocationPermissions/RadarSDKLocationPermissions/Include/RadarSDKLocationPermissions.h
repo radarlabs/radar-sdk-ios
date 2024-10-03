@@ -10,7 +10,6 @@
 
 @interface RadarSDKLocationPermissions : NSObject
 
-- (void)requestForegroundPermission;
 - (void)requestBackgroundPermission;
 
 @end
