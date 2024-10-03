@@ -14,7 +14,7 @@ let package = Package(
         .library(
             name: "RadarSDKMotion",
             targets: ["RadarSDKMotion"]
-        )
+        ),
         .library(
             name: "RadarSDKLocationPermissions",
             targets: ["RadarSDKLocationPermissions"]
