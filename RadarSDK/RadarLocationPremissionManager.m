@@ -88,6 +88,7 @@
 
 - (void)requestBackgroundLocationPermission {
     if (!self.radarSDKLocationPermissions) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelError message:@"RadarSDKLocationPermissions not found"];
         return;
     }
     if (self.status.locationManagerStatus == kCLAuthorizationStatusAuthorizedWhenInUse) {
