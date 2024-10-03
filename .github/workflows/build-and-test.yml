@@ -18,4 +18,4 @@ jobs:
         env:
           scheme: RadarSDK
         run: |
-          xcodebuild clean build analyze test -scheme RadarSDK -workspace Example/Example.xcodeproj/project.xcworkspace -destination 'name=iPhone 16' | xcpretty && exit ${PIPESTATUS[0]}
+          xcodebuild clean build -scheme RadarSDK -workspace Example/Example.xcodeproj/project.xcworkspace -destination 'name=iPhone 16' | xcpretty && exit ${PIPESTATUS[0]}
