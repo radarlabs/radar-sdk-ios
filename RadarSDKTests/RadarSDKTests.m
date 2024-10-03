@@ -284,7 +284,8 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 - (void)setUp {
     [super setUp];
     [Radar initializeWithPublishableKey:kPublishableKey];
-    [RadarSettings setLogLevel:RadarLogLevelDebug];
+    // set log level for testing
+    [[NSUserDefaults standardUserDefaults] setInteger:(int)RadarLogLevelDebug forKey:@"radar-logLevel"];
 
     self.apiHelperMock = [RadarAPIHelperMock new];
     self.locationManagerMock = [CLLocationManagerMock new];
