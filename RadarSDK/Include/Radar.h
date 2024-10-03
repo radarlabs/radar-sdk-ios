@@ -20,6 +20,7 @@
 #import "RadarTrackingOptions.h"
 #import "RadarVerifiedLocationToken.h"
 #import "RadarUser.h"
+#import "RadarLocationPermissionStatus.h"
 #import "RadarInitializeOptions.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -27,6 +28,7 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol RadarDelegate;
 @protocol RadarVerifiedDelegate;
 @protocol RadarMotionProtocol;
+@protocol RadarLocationPermissionProtocol;
 
 @class RadarTripOptions;
 
@@ -1225,6 +1227,26 @@ typedef void (^_Nullable RadarLogConversionCompletionHandler)(RadarStatus status
  */
 + (NSDictionary *)dictionaryForLocation:(CLLocation *)location NS_SWIFT_NAME(dictionaryForLocation(_:));
 
+/**
+ Requests foreground location permissions.
+*/
++ (void)requestForegroundLocationPermission;
+
+/**
+ Requests background location permissions.
+*/
++ (void)requestBackgroundLocationPermission;
+
+/**
+ Directs the user to the app settings to enable location permissions.
+*/
++ (void)openAppSettings;
+
+/**
+ @return A RadarPermissionsStatus object with the current location permissions status.
+
+*/
++ (RadarLocationPermissionStatus *)getLocationPermissionStatus;
 
 /**
  Performs optional setup for Radar SDK within the AppDelegate. This method only needs to be called if Radar is initalized in cross-platform code.

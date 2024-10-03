@@ -21,6 +21,8 @@
 #import "RadarUtils.h"
 #import "RadarVerificationManager.h"
 #import "RadarReplayBuffer.h"
+#import "RadarLocationPermissionManager.h"
+#import "RadarLocationPermissionStatus.h"
 #import "RadarNotificationHelper.h"
 
 @interface Radar ()
@@ -57,6 +59,11 @@
         id radarSDKMotion = [[RadarSDKMotion alloc] init];
         [RadarActivityManager sharedInstance].radarSDKMotion = radarSDKMotion;
     }
+    Class RadarSDKLocationPermission = NSClassFromString(@"RadarSDKLocationPermission");
+    if (RadarSDKLocationPermission) {
+        id radarSDKLocationPermission = [[RadarSDKLocationPermission alloc] init];
+        [RadarLocationPermissionManager sharedInstance].radarSDKLocationPermission = radarSDKLocationPermission;
+    }
 
     [[NSNotificationCenter defaultCenter] addObserver:[self sharedInstance]
                                              selector:@selector(applicationWillEnterForeground)
@@ -78,6 +85,8 @@
     if ([[UIApplication sharedApplication] applicationState] != UIApplicationStateBackground) {
         [RadarSettings updateSessionId];
     }
+
+    [RadarLocationPermissionManager sharedInstance];
 
     [[RadarLocationManager sharedInstance] updateTrackingFromInitialize];
 
@@ -1386,6 +1395,22 @@
                                     }];
                                 }
                             }];
+}
+
++ (void)requestForegroundLocationPermission {
+    [[RadarLocationPermissionManager sharedInstance] requestForegroundLocationPermission];
+}
+
++ (void)requestBackgroundLocationPermission {
+    [[RadarLocationPermissionManager sharedInstance] requestBackgroundLocationPermission];
+}
+
++ (void)openAppSettings {
+    [[RadarLocationPermissionManager sharedInstance] openAppSettings];
+}
+
++ (RadarLocationPermissionStatus *)getLocationPermissionStatus {
+    return [[RadarLocationPermissionManager sharedInstance] getLocationPermissionStatus];
 }
 
 @end
