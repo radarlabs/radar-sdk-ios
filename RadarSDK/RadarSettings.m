@@ -237,7 +237,7 @@ static NSString *const kXPlatformSDKVersion = @"radar-xPlatformSDKVersion";
                             [RadarUtils dictionaryToJson:[sdkConfiguration dictionaryValue]]]];
     if (sdkConfiguration) {
         [[RadarLogBuffer sharedInstance] setPersistentLogFeatureFlag:sdkConfiguration.useLogPersistence];
-        [[NSUserDefaults standardUserDefaults] setInteger:(int)sdkConfiguration.logLevel forKey:kLogLevel];
+        [RadarSettings setLogLevel:sdkConfiguration.logLevel];
         [[NSUserDefaults standardUserDefaults] setObject:[sdkConfiguration dictionaryValue] forKey:kSdkConfiguration];
     } else {
         [[RadarLogBuffer sharedInstance] setPersistentLogFeatureFlag:NO];
@@ -263,7 +263,7 @@ static NSString *const kXPlatformSDKVersion = @"radar-xPlatformSDKVersion";
 }
 
 + (void)setLogLevel:(RadarLogLevel)level {
-    
+    [[NSUserDefaults standardUserDefaults] setInteger:(int)level forKey:kLogLevel];
 }
 
 + (NSArray<NSString *> *_Nullable)beaconUUIDs {
