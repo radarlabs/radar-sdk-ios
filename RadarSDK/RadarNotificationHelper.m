@@ -110,7 +110,7 @@ static NSString *const kSyncGeofenceIdentifierPrefix = @"radar_geofence_";
 
     RadarInitializeOptions *options = [RadarSettings initializeOptions];
     if (options.autoHandleNotificationDeepLinks) {
-        [RadarNotificationHelper extractURLFromNotification:response.notification];
+        [RadarNotificationHelper handleURLFromNotification:response.notification];
     }
     if (options.autoLogNotificationConversions) {
         [RadarNotificationHelper logConversionWithNotificationResponse:response];
@@ -120,7 +120,7 @@ static NSString *const kSyncGeofenceIdentifierPrefix = @"radar_geofence_";
     [self swizzled_userNotificationCenter:center didReceiveNotificationResponse:response withCompletionHandler:completionHandler];
 }
 
-+ (void)extractURLFromNotification:(UNNotification *)notification {
++ (void)handleURLFromNotification:(UNNotification *)notification {
 
     if ([notification.request.identifier hasPrefix:@"radar_"]) {
         NSString *urlString = notification.request.content.userInfo[@"url"];

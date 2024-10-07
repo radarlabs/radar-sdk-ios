@@ -28,7 +28,7 @@ typedef void (^NotificationPermissionCheckCompletion)(BOOL granted);
 
 + (void)logConversionWithNotificationResponse:(UNNotificationResponse *)response;
 
-+ (void)extractURLFromNotification:(UNNotification *)notification;
++ (void)handleURLFromNotification:(UNNotification *)notification;
 
 @end
 
