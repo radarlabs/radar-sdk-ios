@@ -130,6 +130,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
             Radar.searchGeofences() { (status, location, geofences) in
                 print("Search geofences: status = \(Radar.stringForStatus(status)); geofences = \(String(describing: geofences))")
             }
+            Radar.searchGeofences(near: nil, radius: 1000, tags: nil, metadata: [ "meta": "data" ], limit: 10, includeGeometry: false) { (status, location, geofences) in
+                print("Search geofences: status = \(Radar.stringForStatus(status)); geofences = \(String(describing: geofences))")
+            }
         }
 
         demoButton(text: "geocode") {

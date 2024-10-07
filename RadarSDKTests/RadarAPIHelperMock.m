@@ -32,8 +32,12 @@
                     sleep:(BOOL)sleep
                logPayload:(BOOL)logPayload
           extendedTimeout:(BOOL)extendedTimeout
+                 verified:(BOOL)verified
         completionHandler:(RadarAPICompletionHandler)completionHandler {
-    NSDictionary *mockResponseForUrl = self.mockResponses[url];
+    NSURL *host = [NSURL URLWithString:(verified ? @"https://api-verified.radar.io" : @"https://api.radar.io")];
+    NSString *urlString = [[NSURL URLWithString:url relativeToURL:host] absoluteString];
+                                        
+    NSDictionary *mockResponseForUrl = self.mockResponses[urlString];
 
     if (mockResponseForUrl) {
         completionHandler(self.mockStatus, mockResponseForUrl);

@@ -37,15 +37,17 @@
                     sleep:(BOOL)sleep
                logPayload:(BOOL)logPayload
           extendedTimeout:(BOOL)extendedTimeout
+                 verified:(BOOL)verified
         completionHandler:(RadarAPICompletionHandler)completionHandler {
     dispatch_async(self.queue, ^{
         if (sleep) {
             dispatch_semaphore_wait(self.semaphore, DISPATCH_TIME_FOREVER);
         }
 
-        NSMutableURLRequest *req = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:url]];
+        NSURL *host = [NSURL URLWithString:(verified ? [RadarSettings verifiedHost] : [RadarSettings host])];
+        NSMutableURLRequest *req = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:url relativeToURL:host]];
         req.HTTPMethod = method;
-
+        
         NSString * paramJsonStr = [RadarUtils dictionaryToJson:params];
         NSString * headersJsonStr = [RadarUtils dictionaryToJson:headers];
 
