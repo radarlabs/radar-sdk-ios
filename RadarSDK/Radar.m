@@ -1358,23 +1358,11 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-+ (BOOL)canFlushLogs {
-    NSString *publishableKey = [RadarSettings publishableKey];
-    if ([publishableKey hasPrefix:@"prj_test_pk"] || [publishableKey hasPrefix:@"org_test_pk"] || [RadarSettings userDebug] || ([RadarSettings sdkConfiguration].logLevel && [RadarSettings sdkConfiguration].logLevel != RadarLogLevelNone)) {
-        return YES;
-    }
-    return NO;
-}
-
 + (void)sendLog:(RadarLogLevel)level type:(RadarLogType)type message:(NSString *_Nonnull)message {
     [[RadarLogBuffer sharedInstance] write:level type:type message:message ];
 }
 
 + (void)flushLogs {
-    if (![self canFlushLogs]) {
-        return;
-    }
-
     NSArray<RadarLog *> *flushableLogs = [[RadarLogBuffer sharedInstance] flushableLogs]; 
     NSUInteger pendingLogCount = [flushableLogs count];
     if (pendingLogCount == 0) {
