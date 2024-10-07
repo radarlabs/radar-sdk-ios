@@ -336,7 +336,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
     func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse) async {
         // Uncomment for manual setup for notification conversions and URLs
         // Radar.logConversion(response: response)
-        // Radar.handleURLFromNotification(response.notification)
+        // Radar.openURLFromNotification(response.notification)
     }
 
     func notify(_ body: String) {

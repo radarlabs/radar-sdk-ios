@@ -1232,7 +1232,7 @@ typedef void (^_Nullable RadarLogConversionCompletionHandler)(RadarStatus status
  */
 + (void)nativeSetup:(RadarInitializeOptions *)options NS_SWIFT_NAME(nativeSetup(_:));
 
-+ (void)handleURLFromNotification:(UNNotification *)notification NS_SWIFT_NAME(handleURLFromNotification(_:));
++ (void)openURLFromNotification:(UNNotification *)notification NS_SWIFT_NAME(openURLFromNotification(_:));
 
 @end
 

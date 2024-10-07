@@ -1387,8 +1387,8 @@
                             }];
 }
 
-+ (void)handleURLFromNotification:(UNNotification *)notification {
-    [RadarNotificationHelper handleURLFromNotification:notification];
++ (void)openURLFromNotification:(UNNotification *)notification {
+    [RadarNotificationHelper openURLFromNotification:notification];
 }
 
 @end
