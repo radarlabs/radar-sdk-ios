@@ -42,9 +42,10 @@
     return sharedInstance;
 }
 
-+ (void) nativeSetup {
++ (void) nativeSetup:(RadarInitializeOptions *)options {
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
+        [RadarSettings setInitializeOptions:options];
         [RadarNotificationHelper swizzleNotificationCenterDelegate];
     });
 }
@@ -67,14 +68,17 @@
 
     RadarSdkConfiguration *sdkConfiguration = [RadarSettings sdkConfiguration];
 
-    [RadarSettings setInitializeOptions:options];
-    
-    if (NSClassFromString(@"XCTestCase") == nil) {
-        if (options.urlDelegate) {
-            [RadarDelegateHolder sharedInstance].urlDelegate = options.urlDelegate;
-        }
-        if (options.autoLogNotificationConversions || options.autoHandleNotificationDeepLinks) {
-            [Radar nativeSetup];
+    if (options) {
+
+        [RadarSettings setInitializeOptions:options];
+        
+        if (NSClassFromString(@"XCTestCase") == nil) {
+            if (options.urlDelegate) {
+                [RadarDelegateHolder sharedInstance].urlDelegate = options.urlDelegate;
+            }
+            if (options.autoLogNotificationConversions || options.autoHandleNotificationDeepLinks) {
+                [Radar nativeSetup: options];
+            }
         }
     }
 
@@ -112,7 +116,7 @@
 }
 
 + (void)initializeWithPublishableKey:(NSString *)publishableKey {
-    [self initializeWithPublishableKey:publishableKey options:[RadarInitializeOptions new]];
+    [self initializeWithPublishableKey:publishableKey options:nil];
 }
 
 #pragma mark - Properties
