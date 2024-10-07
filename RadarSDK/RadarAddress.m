@@ -336,13 +336,13 @@
 }
 
 + (RadarAddressVerificationStatus)addressVerificationStatusForString:(NSString *)string {
-    if ([string isEqualToString:@"v"]) {
+    if ([string isEqualToString:@"verified"]) {
         return RadarAddressVerificationStatusVerified;
-    } else if ([string isEqualToString:@"p"]) {
+    } else if ([string isEqualToString:@"partially verified"]) {
         return RadarAddressVerificationStatusPartiallyVerified;
-    } else if ([string isEqualToString:@"a"]) {
+    } else if ([string isEqualToString:@"ambiguous"]) {
         return RadarAddressVerificationStatusAmbiguous;
-    } else if ([string isEqualToString:@"u"]) {
+    } else if ([string isEqualToString:@"unverified"]) {
         return RadarAddressVerificationStatusUnverified;
     } else {
         return RadarAddressVerificationStatusNone;
