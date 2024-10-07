@@ -221,6 +221,9 @@
     [dict setValue:self.externalId forKey:@"externalId"];
     [dict setValue:self.__description forKey:@"description"];
     [dict setValue:self.metadata forKey:@"metadata"];
+    if (self.operatingHours) {
+        [dict setValue:self.operatingHours.hours forKey:@"operatingHours"];
+    }
     if ([self.geometry isKindOfClass:[RadarCircleGeometry class]]) {
         RadarCircleGeometry *circleGeometry = (RadarCircleGeometry *)self.geometry;
         [dict setValue:@(circleGeometry.radius) forKey:@"geometryRadius"];
