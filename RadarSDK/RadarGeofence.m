@@ -9,7 +9,7 @@
 #import "RadarCoordinate+Internal.h"
 #import "RadarGeofence+Internal.h"
 #import "RadarPolygonGeometry+Internal.h"
-#import "RadarOperatingHour+Internal.h"
+#import "RadarOperatingHours+Internal.h"
 
 @implementation RadarGeofence
 
@@ -37,7 +37,7 @@
                                  tag:(NSString *)tag
                           externalId:(NSString *_Nullable)externalId
                             metadata:(NSDictionary *_Nullable)metadata
-                      operatingHours: (RadarOperatingHour *_Nullable) operatingHours
+                      operatingHours: (RadarOperatingHours *_Nullable) operatingHours
                             geometry:(RadarGeofenceGeometry *_Nonnull)geometry {
     self = [super init];
     if (self) {
@@ -64,7 +64,7 @@
     NSString *tag;
     NSString *externalId;
     NSDictionary *metadata;
-    RadarOperatingHour *operatingHours;
+    RadarOperatingHours *operatingHours;
     RadarGeofenceGeometry *geometry;
 
     id idObj = dict[@"_id"];
@@ -94,7 +94,7 @@
 
     id operatingHoursObj = dict[@"operatingHours"];
     if (operatingHoursObj && [operatingHoursObj isKindOfClass:[NSDictionary class]]) {
-        operatingHours = [[RadarOperatingHour alloc] initWithDictionary:operatingHoursObj];
+        operatingHours = [[RadarOperatingHours alloc] initWithDictionary:operatingHoursObj];
     }
 
     id typeObj = dict[@"type"];

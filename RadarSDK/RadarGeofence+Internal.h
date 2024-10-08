@@ -16,7 +16,7 @@
                                  tag:(NSString *_Nullable)tag
                           externalId:(NSString *_Nullable)externalId
                             metadata:(NSDictionary *_Nullable)metadata
-                      operatingHours:(RadarOperatingHour *_Nullable)operatingHours
+                      operatingHours:(RadarOperatingHours *_Nullable)operatingHours
                             geometry:(RadarGeofenceGeometry *_Nonnull)geometry;
 - (instancetype _Nullable)initWithObject:(id _Nonnull)object;
 
