@@ -7,7 +7,7 @@
 
 #import "RadarGeofenceGeometry.h"
 #import <Foundation/Foundation.h>
-#import "RadarOperatingHour.h"
+#import "RadarOperatingHours.h"
 
 /**
  Represents a geofence.
@@ -49,7 +49,7 @@
 /**
  The optional operating hours for the geofence.
  */
-@property (nullable, copy, nonatomic, readonly) RadarOperatingHour *operatingHours;
+@property (nullable, copy, nonatomic, readonly) RadarOperatingHours *operatingHours;
 
 + (NSArray<NSDictionary *> *_Nullable)arrayForGeofences:(NSArray<RadarGeofence *> *_Nullable)geofences;
 - (NSDictionary *_Nonnull)dictionaryValue;

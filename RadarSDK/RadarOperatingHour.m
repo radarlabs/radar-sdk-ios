@@ -8,9 +8,9 @@
 
 #import <Foundation/Foundation.h>
 
-#import "RadarOperatingHour+Internal.h"
+#import "RadarOperatingHours+Internal.h"
 
-@implementation RadarOperatingHour
+@implementation RadarOperatingHours
 
 - (instancetype)initWithDictionary:(NSDictionary *)dictionary {
     self = [super init];

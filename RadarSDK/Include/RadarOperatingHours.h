@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
-@interface RadarOperatingHour : NSObject
+@interface RadarOperatingHours : NSObject
 
 @property (nonatomic, strong, readonly) NSDictionary<NSString *, NSArray<NSArray<NSString *> *> *> *hours;
 

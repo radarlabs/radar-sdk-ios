@@ -6,9 +6,9 @@
 //  Copyright © 2024 Radar Labs, Inc. All rights reserved.
 //
 
-#import "RadarOperatingHour.h"
+#import "RadarOperatingHours.h"
 
-@interface RadarOperatingHour()
+@interface RadarOperatingHours()
 
 - (instancetype)initWithDictionary:(NSDictionary *)dictionary;
 
