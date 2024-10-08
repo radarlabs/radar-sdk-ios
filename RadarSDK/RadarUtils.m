@@ -10,6 +10,7 @@
 #import <sys/utsname.h>
 
 #import "RadarUtils.h"
+#import "RadarLogger.h"
 
 @implementation RadarUtils
 
@@ -191,6 +192,37 @@ static NSDateFormatter *_isoDateFormatter;
         });
     }
     return;
+}
+
++ (void)executeTrackVerifiedBlock:(void (^)(RadarTrackVerifiedCompletionHandler))block
+                      withTimeout:(NSTimeInterval)timeout
+                completionHandler:(RadarTrackVerifiedCompletionHandler)completionHandler {
+    
+    dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+    
+    __block BOOL hasCompleted = NO;
+        
+    RadarTrackVerifiedCompletionHandler wrappedCompletionHandler = ^(RadarStatus status, RadarVerifiedLocationToken * _Nullable token) {
+        if (!hasCompleted) {
+            hasCompleted = YES;
+            completionHandler(status, token);
+        } else {
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelError message:@"TrackVerified already timeouted"];
+        }
+    };
+    
+    dispatch_async(queue, ^{
+        block(wrappedCompletionHandler);
+    });
+
+    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(timeout * NSEC_PER_SEC));
+    dispatch_after(popTime, queue, ^(void){
+        if (!hasCompleted) {
+        hasCompleted = YES;
+        completionHandler(RadarStatusErrorUnknown, nil);
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelError message:@"TrackVerified timeout"];
+    }
+    });   
 }
 
 @end
