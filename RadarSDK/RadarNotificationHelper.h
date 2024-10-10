@@ -26,6 +26,10 @@ typedef void (^NotificationPermissionCheckCompletion)(BOOL granted);
 
 + (void)logConversionWithNotificationResponse:(UNNotificationResponse *)response;
 
++ (void)registerBackgroundNotificationChecks;
+
++ (void)scheduleBackgroundNotificationChecks;
+
 @end
 
 NS_ASSUME_NONNULL_END
