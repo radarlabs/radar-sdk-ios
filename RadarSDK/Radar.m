@@ -46,6 +46,8 @@
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         [RadarNotificationHelper swizzleNotificationCenterDelegate];
+        [RadarNotificationHelper registerBackgroundNotificationChecks];
+        [RadarNotificationHelper scheduleBackgroundNotificationChecks];
     });
 }
 

@@ -196,4 +196,38 @@ static NSString *const kSyncGeofenceIdentifierPrefix = @"radar_geofence_";
    
 }
 
++ (void)registerBackgroundNotificationChecks {
+    if (@available(iOS 13.0, *)) {
+        [[BGTaskScheduler sharedScheduler] registerForTaskWithIdentifier:@"io.radar.notificationCheck" usingQueue:nil launchHandler:^(BGTask *task) {
+            [self handleAppRefreshTask:task];
+        }];
+    }
+}
+
++ (void)scheduleBackgroundNotificationChecks {
+    if (@available(iOS 13.0, *)) {
+        BGAppRefreshTaskRequest *request = [[BGAppRefreshTaskRequest alloc] initWithIdentifier:@"io.radar.notificationCheck"];
+        request.earliestBeginDate = [NSDate dateWithTimeIntervalSinceNow:60*60];
+        NSError *error = nil;
+
+        [[BGTaskScheduler sharedScheduler] submitTaskRequest:request error:&error];
+        if (error) {
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelError message:[NSString stringWithFormat:@"Error scheduling app refresh task: %@", error]];
+        } else {
+            NSLog(@"scheduled bg task");
+        }
+    }
+}
+
+
++ (void)handleAppRefreshTask:(BGTask *)task  API_AVAILABLE(ios(13.0)){
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"Performing background task of checking for notification sent"]];
+    [self scheduleBackgroundNotificationChecks];
+    [Radar logConversionWithName:@"background_job_firing" metadata:nil completionHandler:^(RadarStatus status, RadarEvent * _Nullable event) {
+        NSString *message = [NSString stringWithFormat:@"Conversion name = %@: status = %@; event = %@", @"app_refresh", [Radar stringForStatus:status], event];
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:message];
+    }];
+    [task setTaskCompletedWithSuccess:YES];
+}
+
 @end
