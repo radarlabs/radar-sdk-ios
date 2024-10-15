@@ -1115,6 +1115,8 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
                        NSDictionary *geofenceDict = [geofence dictionaryValue];
                        XCTAssertNotNil(geofenceDict[@"geometryCenter"]);
                        XCTAssertNotNil(geofenceDict[@"geometryRadius"]);
+                       XCTAssertNotNil(geofenceDict[@"operatingHours"]);
+        
 
                        [expectation fulfill];
                    }];
