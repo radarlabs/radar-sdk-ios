@@ -29,8 +29,8 @@
 		0107AA1626220050008AB52F /* RadarLogger.h in Headers */ = {isa = PBXBuildFile; fileRef = DD236D66230A0D6700EB88F9 /* RadarLogger.h */; };
 		0107AA1926220052008AB52F /* RadarLocationManager.h in Headers */ = {isa = PBXBuildFile; fileRef = DD236CF723088F8400EB88F9 /* RadarLocationManager.h */; };
 		0107AA1C26220055008AB52F /* RadarPermissionsHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = DD633EC5237C5B9C0026C91A /* RadarPermissionsHelper.h */; };
-		0107AA1F26220059008AB52F /* RadarSettings.h in Headers */ = {isa = PBXBuildFile; fileRef = DD236CFB230895D400EB88F9 /* RadarSettings.h */; };
-		0107AA222622005B008AB52F /* RadarState.h in Headers */ = {isa = PBXBuildFile; fileRef = DD236D0E2309B3FE00EB88F9 /* RadarState.h */; };
+		0107AA1F26220059008AB52F /* RadarSettings.h in Headers */ = {isa = PBXBuildFile; fileRef = DD236CFB230895D400EB88F9 /* RadarSettings.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		0107AA222622005B008AB52F /* RadarState.h in Headers */ = {isa = PBXBuildFile; fileRef = DD236D0E2309B3FE00EB88F9 /* RadarState.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		0107AA2B26220066008AB52F /* RadarUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = DD236D0323099B8400EB88F9 /* RadarUtils.h */; };
 		0107AA7A26220128008AB52F /* RadarAddress.m in Sources */ = {isa = PBXBuildFile; fileRef = 78156B9623A8210E0094410E /* RadarAddress.m */; };
 		0107AA832622013A008AB52F /* RadarBeacon.m in Sources */ = {isa = PBXBuildFile; fileRef = DD6F4F8525741B1700AFA38B /* RadarBeacon.m */; };
@@ -75,7 +75,7 @@
 		019514392BD081630031ABA2 /* RadarVerifiedLocationToken.m in Sources */ = {isa = PBXBuildFile; fileRef = 019514372BD081630031ABA2 /* RadarVerifiedLocationToken.m */; };
 		0195143A2BD081630031ABA2 /* RadarVerifiedLocationToken+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 019514382BD081630031ABA2 /* RadarVerifiedLocationToken+Internal.h */; };
 		01F810702AF0119800BD7088 /* RadarVerifiedDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 01F8106F2AF0119800BD7088 /* RadarVerifiedDelegate.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		01F99CFB2965C182004E8CF3 /* RadarConfig.h in Headers */ = {isa = PBXBuildFile; fileRef = 01F99CFA2965C182004E8CF3 /* RadarConfig.h */; };
+		01F99CFB2965C182004E8CF3 /* RadarConfig.h in Headers */ = {isa = PBXBuildFile; fileRef = 01F99CFA2965C182004E8CF3 /* RadarConfig.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		01F99CFD2965C1C4004E8CF3 /* RadarConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = 01F99CFC2965C1C4004E8CF3 /* RadarConfig.m */; };
 		532FC304277A790600989279 /* Radar+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 532FC303277A783900989279 /* Radar+Internal.h */; };
 		53B3B26B23EE41B400080818 /* context.json in Resources */ = {isa = PBXBuildFile; fileRef = 53B3B26A23EE41B400080818 /* context.json */; };
@@ -96,7 +96,7 @@
 		966D8860288F7404008C0D00 /* conversion_event.json in Resources */ = {isa = PBXBuildFile; fileRef = 966D885F288F7404008C0D00 /* conversion_event.json */; };
 		9679F4A127CD8D0600800797 /* CLLocation+Radar.h in Headers */ = {isa = PBXBuildFile; fileRef = 9679F4A027CD8D0600800797 /* CLLocation+Radar.h */; };
 		9679F4A327CD8DE200800797 /* CLLocation+Radar.m in Sources */ = {isa = PBXBuildFile; fileRef = 9679F4A227CD8DE200800797 /* CLLocation+Radar.m */; };
-		9683FD6427B36C26009EBB6B /* RadarMeta.h in Headers */ = {isa = PBXBuildFile; fileRef = 9683FD6127B36C26009EBB6B /* RadarMeta.h */; };
+		9683FD6427B36C26009EBB6B /* RadarMeta.h in Headers */ = {isa = PBXBuildFile; fileRef = 9683FD6127B36C26009EBB6B /* RadarMeta.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		9683FD6527B36C26009EBB6B /* RadarMeta.m in Sources */ = {isa = PBXBuildFile; fileRef = 9683FD6227B36C26009EBB6B /* RadarMeta.m */; };
 		968C839928A6D8350030103E /* conversion_event_nil_event.json in Resources */ = {isa = PBXBuildFile; fileRef = 968C839828A6D8350030103E /* conversion_event_nil_event.json */; };
 		96A0AC2728A4066D00B41D40 /* search_places_chain_metadata.json in Resources */ = {isa = PBXBuildFile; fileRef = 96A0AC2628A4066D00B41D40 /* search_places_chain_metadata.json */; };
@@ -165,6 +165,9 @@
 		DD8E2F7A24018C37002D51AB /* CLLocationManagerMock.m in Sources */ = {isa = PBXBuildFile; fileRef = DD8E2F7924018C37002D51AB /* CLLocationManagerMock.m */; };
 		DD8E2F7D24018C54002D51AB /* CLVisitMock.m in Sources */ = {isa = PBXBuildFile; fileRef = DD8E2F7C24018C54002D51AB /* CLVisitMock.m */; };
 		DE1E7644239724FD006F34A1 /* search_geofences.json in Resources */ = {isa = PBXBuildFile; fileRef = DE1E7643239724FD006F34A1 /* search_geofences.json */; };
+		E649476A2CBFFB720002C047 /* RadarOfflineManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E64947692CBFFB720002C047 /* RadarOfflineManager.swift */; };
+		E649476B2CBFFB720002C047 /* RadarOfflineManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E64947692CBFFB720002C047 /* RadarOfflineManager.swift */; };
+		E649476D2CBFFE480002C047 /* RadarOfflineManager.h in Headers */ = {isa = PBXBuildFile; fileRef = E649476C2CBFFE480002C047 /* RadarOfflineManager.h */; };
 		E658DB072CB46277004E0F01 /* RadarOperatingHours.h in Headers */ = {isa = PBXBuildFile; fileRef = E658DB062CB46277004E0F01 /* RadarOperatingHours.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		E658DB092CB462AA004E0F01 /* RadarOperatingHour.m in Sources */ = {isa = PBXBuildFile; fileRef = E658DB082CB462AA004E0F01 /* RadarOperatingHour.m */; };
 		E658DB0A2CB462AA004E0F01 /* RadarOperatingHour.m in Sources */ = {isa = PBXBuildFile; fileRef = E658DB082CB462AA004E0F01 /* RadarOperatingHour.m */; };
@@ -177,7 +180,7 @@
 		E6EEC5702B20F45D00DD096B /* RadarFileStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = E6EEC56F2B20F45D00DD096B /* RadarFileStorage.m */; };
 		F65AF72C2C10B242002BA009 /* get_config_response.json in Resources */ = {isa = PBXBuildFile; fileRef = F65AF72B2C10B242002BA009 /* get_config_response.json */; };
 		F667F8272BFBF3C8001F2F67 /* RadarSdkConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = F667F8262BFBF3C8001F2F67 /* RadarSdkConfiguration.m */; };
-		F667F8292BFBF3D1001F2F67 /* RadarSdkConfiguration.h in Headers */ = {isa = PBXBuildFile; fileRef = F667F8282BFBF3D1001F2F67 /* RadarSdkConfiguration.h */; };
+		F667F8292BFBF3D1001F2F67 /* RadarSdkConfiguration.h in Headers */ = {isa = PBXBuildFile; fileRef = F667F8282BFBF3D1001F2F67 /* RadarSdkConfiguration.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F6F959802C3D7D9900BC30FE /* RadarTimeZone.h in Headers */ = {isa = PBXBuildFile; fileRef = F6F9597F2C3D7D9900BC30FE /* RadarTimeZone.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F6F959822C3D7EA200BC30FE /* RadarTimeZone+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = F6F959812C3D7EA200BC30FE /* RadarTimeZone+Internal.h */; };
 		F6F959842C3D7EDE00BC30FE /* RadarTimeZone.m in Sources */ = {isa = PBXBuildFile; fileRef = F6F959832C3D7EDE00BC30FE /* RadarTimeZone.m */; };
@@ -343,6 +346,10 @@
 		DDD7BD0325EC3015002473B3 /* RadarRouteMatrix.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RadarRouteMatrix.m; sourceTree = "<group>"; };
 		DDF1157C2524E18100D575C4 /* RadarTrip.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RadarTrip.m; sourceTree = "<group>"; };
 		DE1E7643239724FD006F34A1 /* search_geofences.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = search_geofences.json; sourceTree = "<group>"; };
+		E64947672CBFFB720002C047 /* RadarSDKTests-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "RadarSDKTests-Bridging-Header.h"; sourceTree = "<group>"; };
+		E64947682CBFFB720002C047 /* XCFramework-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "XCFramework-Bridging-Header.h"; sourceTree = "<group>"; };
+		E64947692CBFFB720002C047 /* RadarOfflineManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarOfflineManager.swift; sourceTree = "<group>"; };
+		E649476C2CBFFE480002C047 /* RadarOfflineManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarOfflineManager.h; sourceTree = "<group>"; };
 		E658DB062CB46277004E0F01 /* RadarOperatingHours.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarOperatingHours.h; sourceTree = "<group>"; };
 		E658DB082CB462AA004E0F01 /* RadarOperatingHour.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RadarOperatingHour.m; sourceTree = "<group>"; };
 		E658DB0B2CB46B50004E0F01 /* RadarOperatingHours+Internal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "RadarOperatingHours+Internal.h"; sourceTree = "<group>"; };
@@ -508,6 +515,8 @@
 				DD236D66230A0D6700EB88F9 /* RadarLogger.h */,
 				DD236D67230A0D6700EB88F9 /* RadarLogger.m */,
 				9683FD6127B36C26009EBB6B /* RadarMeta.h */,
+				E64947692CBFFB720002C047 /* RadarOfflineManager.swift */,
+				E649476C2CBFFE480002C047 /* RadarOfflineManager.h */,
 				9683FD6227B36C26009EBB6B /* RadarMeta.m */,
 				01DDC7C629FC387400C0D039 /* RadarNotificationHelper.h */,
 				01DDC7C529FC387400C0D039 /* RadarNotificationHelper.m */,
@@ -532,6 +541,8 @@
 				82F7FAED2A65FE030055AA4B /* RadarVerificationManager.m */,
 				DD27CB7D235D13F000299FEC /* Models */,
 				53CCD781275E576B00F79CC8 /* Util */,
+				E64947672CBFFB720002C047 /* RadarSDKTests-Bridging-Header.h */,
+				E64947682CBFFB720002C047 /* XCFramework-Bridging-Header.h */,
 			);
 			path = RadarSDK;
 			sourceTree = "<group>";
@@ -635,12 +646,12 @@
 				96A5A0C227AD9F41007B960B /* RadarSegment+Internal.h in Headers */,
 				96A5A0C527AD9F41007B960B /* RadarFraud+Internal.h in Headers */,
 				0107AA0726220040008AB52F /* RadarAPIClient.h in Headers */,
+				E649476D2CBFFE480002C047 /* RadarOfflineManager.h in Headers */,
 				96A5A10D27AD9F7F007B960B /* RadarPolygonGeometry.h in Headers */,
 				96A5A0D627AD9F41007B960B /* RadarRouteMatrix+Internal.h in Headers */,
 				96A5A0FA27AD9F7F007B960B /* RadarRouteMatrix.h in Headers */,
 				96A5A0CC27AD9F41007B960B /* RadarUser+Internal.h in Headers */,
 				96A5A10327AD9F7F007B960B /* RadarGeofence.h in Headers */,
-				0107AA222622005B008AB52F /* RadarState.h in Headers */,
 				96A5A11A27ADA02F007B960B /* RadarLogBuffer.h in Headers */,
 				0107A9FF26220037008AB52F /* RadarSDK.h in Headers */,
 				96A5A0F627AD9F7F007B960B /* RadarRouteGeometry.h in Headers */,
@@ -652,7 +663,6 @@
 				96A5A11B27ADA02F007B960B /* RadarDelegateHolder.h in Headers */,
 				96A5A10F27AD9F7F007B960B /* RadarRouteDuration.h in Headers */,
 				96A5A10627AD9F7F007B960B /* RadarFraud.h in Headers */,
-				01F99CFB2965C182004E8CF3 /* RadarConfig.h in Headers */,
 				96A5A0CF27AD9F41007B960B /* RadarAddress+Internal.h in Headers */,
 				F6F959822C3D7EA200BC30FE /* RadarTimeZone+Internal.h in Headers */,
 				96A5A11127AD9F7F007B960B /* RadarBeacon.h in Headers */,
@@ -660,7 +670,12 @@
 				96A5A10B27AD9F7F007B960B /* RadarTripOptions.h in Headers */,
 				E698B6502C6112FA00084371 /* RadarMotionProtocol.h in Headers */,
 				E658DB072CB46277004E0F01 /* RadarOperatingHours.h in Headers */,
+				01F99CFB2965C182004E8CF3 /* RadarConfig.h in Headers */,
 				E658DB0C2CB46B50004E0F01 /* RadarOperatingHours+Internal.h in Headers */,
+				F667F8292BFBF3D1001F2F67 /* RadarSdkConfiguration.h in Headers */,
+				9683FD6427B36C26009EBB6B /* RadarMeta.h in Headers */,
+				0107AA222622005B008AB52F /* RadarState.h in Headers */,
+				0107AA1F26220059008AB52F /* RadarSettings.h in Headers */,
 				E6B93B722C90E2B8003CB858 /* RadarInitializeOptions.h in Headers */,
 				82F7FAEE2A65FE030055AA4B /* RadarVerificationManager.h in Headers */,
 				96A5A0C727AD9F41007B960B /* RadarChain+Internal.h in Headers */,
@@ -682,11 +697,9 @@
 				0107AA0F26220047008AB52F /* RadarBeaconManager.h in Headers */,
 				96A5A0D027AD9F41007B960B /* RadarRouteGeometry+Internal.h in Headers */,
 				0107AA1626220050008AB52F /* RadarLogger.h in Headers */,
-				0107AA1F26220059008AB52F /* RadarSettings.h in Headers */,
 				96A5A0C027AD9F41007B960B /* RadarRouteDistance+Internal.h in Headers */,
 				96A5A0D227AD9F41007B960B /* RadarContext+Internal.h in Headers */,
 				96A5A10E27AD9F7F007B960B /* RadarRouteDistance.h in Headers */,
-				F667F8292BFBF3D1001F2F67 /* RadarSdkConfiguration.h in Headers */,
 				82D04ABB29722ED20036619F /* RadarReplay.h in Headers */,
 				96A5A10727AD9F7F007B960B /* RadarCircleGeometry.h in Headers */,
 				96A5A0F827AD9F7F007B960B /* RadarRegion.h in Headers */,
@@ -694,7 +707,6 @@
 				9679F4A127CD8D0600800797 /* CLLocation+Radar.h in Headers */,
 				96A5A0D127AD9F41007B960B /* RadarEvent+Internal.h in Headers */,
 				96A5A0D327AD9F41007B960B /* RadarPolygonGeometry+Internal.h in Headers */,
-				9683FD6427B36C26009EBB6B /* RadarMeta.h in Headers */,
 				96A5A11027AD9F7F007B960B /* RadarPlace.h in Headers */,
 				96A5A0D427AD9F41007B960B /* RadarGeofence+Internal.h in Headers */,
 				96A5A0C427AD9F41007B960B /* RadarCircleGeometry+Internal.h in Headers */,
@@ -764,14 +776,15 @@
 				TargetAttributes = {
 					0107A9E72621FFB9008AB52F = {
 						CreatedOnToolsVersion = 12.4;
-						LastSwiftMigration = 1320;
+						LastSwiftMigration = 1600;
 					};
 					0107AB3826220308008AB52F = {
 						CreatedOnToolsVersion = 12.4;
+						LastSwiftMigration = 1600;
 					};
 					DD236C7D2308797B00EB88F9 = {
 						CreatedOnToolsVersion = 11.0;
-						LastSwiftMigration = 1320;
+						LastSwiftMigration = 1600;
 					};
 				};
 			};
@@ -874,6 +887,7 @@
 				E6EEC5702B20F45D00DD096B /* RadarFileStorage.m in Sources */,
 				0107AB29262201F4008AB52F /* RadarTrackingOptions.m in Sources */,
 				0107AB2F262201FB008AB52F /* RadarUtils.m in Sources */,
+				E649476A2CBFFB720002C047 /* RadarOfflineManager.swift in Sources */,
 				E6B93B752C90E5B8003CB858 /* RadarInitializeOptions.m in Sources */,
 				0107AA8926220140008AB52F /* RadarChain.m in Sources */,
 				F667F8272BFBF3C8001F2F67 /* RadarSdkConfiguration.m in Sources */,
@@ -920,6 +934,7 @@
 				E658DB0A2CB462AA004E0F01 /* RadarOperatingHour.m in Sources */,
 				96B465BC27D6732500D7119B /* CLLocation+RadarTests.m in Sources */,
 				E6B93B742C90E5B8003CB858 /* RadarInitializeOptions.m in Sources */,
+				E649476B2CBFFB720002C047 /* RadarOfflineManager.swift in Sources */,
 				DD103211237E0C47003DD408 /* RadarSDKTests.m in Sources */,
 				DD8E2F7124018BF9002D51AB /* RadarTestUtils.m in Sources */,
 				DD8E2F7D24018C54002D51AB /* CLVisitMock.m in Sources */,
@@ -933,6 +948,7 @@
 		0107A9ED2621FFB9008AB52F /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = NO;
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
@@ -955,6 +971,8 @@
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				"PROVISIONING_PROFILE_SPECIFIER[sdk=macosx*]" = "";
 				SKIP_INSTALL = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TVOS_DEPLOYMENT_TARGET = 10.0;
 			};
@@ -963,6 +981,7 @@
 		0107A9EE2621FFB9008AB52F /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = NO;
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
@@ -985,6 +1004,7 @@
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				"PROVISIONING_PROFILE_SPECIFIER[sdk=macosx*]" = "";
 				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TVOS_DEPLOYMENT_TARGET = 10.0;
 			};
@@ -993,18 +1013,25 @@
 		0107AB3A26220308008AB52F /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 96GHH65B9D;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "RadarSDK/XCFramework-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 6.0;
 			};
 			name = Debug;
 		};
 		0107AB3B26220308008AB52F /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 96GHH65B9D;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "RadarSDK/XCFramework-Bridging-Header.h";
+				SWIFT_VERSION = 6.0;
 			};
 			name = Release;
 		};
@@ -1147,6 +1174,7 @@
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = io.radar.RadarSDKTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "RadarSDK/RadarSDKTests-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -1169,6 +1197,7 @@
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = io.radar.RadarSDKTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "RadarSDK/RadarSDKTests-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};

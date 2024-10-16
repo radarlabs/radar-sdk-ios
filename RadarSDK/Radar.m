@@ -271,15 +271,15 @@
                                                beacons:nil
                                      completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user,
                                                          NSArray<RadarGeofence *> *_Nullable nearbyGeofences, RadarConfig *_Nullable config, RadarVerifiedLocationToken *_Nullable token) {
-                                        if (status == RadarStatusSuccess && config != nil) {                                    
+                                        if (config != nil) {                                    
                                             [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];                                            
                                         }
-                                         if (completionHandler) {
-                                             [RadarUtils runOnMainThread:^{
-                                                 completionHandler(status, location, events, user);
-                                             }];
-                                         }
-                                     }];
+                                        if (completionHandler) {
+                                            [RadarUtils runOnMainThread:^{
+                                                completionHandler(status, location, events, user);
+                                            }];
+                                        }
+                                    }];
 }
 
 + (void)trackVerifiedWithCompletionHandler:(RadarTrackVerifiedCompletionHandler)completionHandler {

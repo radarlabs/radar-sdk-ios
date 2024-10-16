@@ -8,6 +8,7 @@
 #import "RadarState.h"
 #import "CLLocation+Radar.h"
 #import "RadarUtils.h"
+#import "RadarGeofence+Internal.h"
 
 @implementation RadarState
 
@@ -25,6 +26,7 @@ static NSString *const kBeaconIds = @"radar-beaconIds";
 static NSString *const kLastHeadingData = @"radar-lastHeadingData";
 static NSString *const kLastMotionActivityData = @"radar-lastMotionActivityData";
 static NSString *const kNotificationPermissionGranted = @"radar-notificationPermissionGranted";
+static NSString *const KNearbyGeofences = @"radar-nearbyGeofences";
 
 + (CLLocation *)lastLocation {
     NSDictionary *dict = [[NSUserDefaults standardUserDefaults] dictionaryForKey:kLastLocation];
@@ -188,6 +190,29 @@ static NSString *const kNotificationPermissionGranted = @"radar-notificationPerm
 
 + (BOOL)notificationPermissionGranted {
     return [[NSUserDefaults standardUserDefaults] boolForKey:kNotificationPermissionGranted];
+}
+
++ (void)setNearbyGeofences:(NSArray<RadarGeofence *> *_Nullable)nearbyGeofences {
+    NSMutableArray *nearbyGeofencesArray = [NSMutableArray new];
+    for (RadarGeofence *geofence in nearbyGeofences) {
+        [nearbyGeofencesArray addObject:[geofence dictionaryValue]];
+    }
+    [[NSUserDefaults standardUserDefaults] setObject:nearbyGeofencesArray forKey:KNearbyGeofences];
+}
+
++ (NSArray<RadarGeofence *> *_Nullable)nearbyGeofences {
+    NSArray *nearbyGeofencesArray = [[NSUserDefaults standardUserDefaults] objectForKey:KNearbyGeofences];
+    if (!nearbyGeofencesArray) {
+        return nil;
+    }
+    NSMutableArray *nearbyGeofences = [NSMutableArray new];
+    for (NSDictionary *geofenceDict in nearbyGeofencesArray) {
+        RadarGeofence *geofence = [[RadarGeofence alloc] initWithObject:geofenceDict];
+        if (geofence) {
+            [nearbyGeofences addObject:geofence];
+        }
+    }
+    return nearbyGeofences;
 }
 
 @end

@@ -34,6 +34,7 @@
 #import "RadarVerificationManager.h"
 #import "RadarVerifiedLocationToken+Internal.h"
 #import <os/log.h>
+#import "RadarOfflineManager.h"
 
 @implementation RadarAPIClient
 
@@ -216,6 +217,7 @@
     params[@"anonymous"] = @(anonymous);
     if (anonymous) {
         params[@"deviceId"] = @"anonymous";
+        // this can be updated by offline event detection, which feels correct, not going to address right now for simplicity
         params[@"geofenceIds"] = [RadarState geofenceIds];
         params[@"placeId"] = [RadarState placeId];
         params[@"regionIds"] = [RadarState regionIds];
@@ -427,9 +429,15 @@
 
                                 [[RadarDelegateHolder sharedInstance] didFailWithStatus:status];
 
-                                return completionHandler(status, nil, nil, nil, nil, nil, nil);
-                            }
+                                // this is where we need to perform the offline detection
+                                // in essence, we want to replace what the server would had done
+                                // we also need to update the tracking, we do this by syncing some states and ensuring that radarsetting returns the ramp up value
+                                return [RadarOfflineManager contextualizeLocation:location completionHandler:^(RadarConfig * _Nullable config) {
+                                    return completionHandler(status, nil, nil, nil, nil, config, nil);
+                                }];
 
+                            }
+                            // since we had a successful track, the do we need to clear anything here?
                             [[RadarReplayBuffer sharedInstance] clearBuffer];
                             [RadarState setLastFailedStoppedLocation:nil];
                             [Radar flushLogs];

@@ -194,6 +194,17 @@ NSString *const kSyncNone = @"none";
     return sync;
 }
 
++ (RadarTrackingOptions *)trackingOptionsFromObject:(NSObject *)object {
+    if (!object || ![object isKindOfClass:[NSDictionary class]]) {
+        return nil;
+    }
+    
+    NSDictionary *dict = (NSDictionary *)object;
+    
+    return [RadarTrackingOptions trackingOptionsFromDictionary:dict];
+}
+   
+
 + (RadarTrackingOptions *)trackingOptionsFromDictionary:(NSDictionary *)dict {
     if (!dict) {
         return nil;

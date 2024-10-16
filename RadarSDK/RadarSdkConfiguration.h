@@ -34,6 +34,14 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) BOOL useLocationMetadata;
 
 @property (nonatomic, assign) BOOL useOpenedAppConversion;
+
+@property (nonatomic, copy, nullable) RadarTrackingOptions *inGeofenceTrackingOptions;
+
+@property (nonatomic, copy, nullable) RadarTrackingOptions *defaultTrackingOptions;
+
+@property (nonatomic, copy, nullable) RadarTrackingOptions *onTripTrackingOptions;
+
+@property (nonatomic, copy, nullable) NSArray<NSString *> *inGeofenceTrackingOptionsTags;
 /**
  Initializes a new RadarSdkConfiguration object with given value.
  */
