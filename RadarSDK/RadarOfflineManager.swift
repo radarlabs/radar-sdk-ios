@@ -45,7 +45,6 @@ import RadarSDK
         // if there are no rampup geofence tags, we never had ramped up so we do not need to ramp down (reason a little more about this)
         let rampUpGeofenceTagsOptional = RadarSettings.sdkConfiguration()?.inGeofenceTrackingOptionsTags
         if let rampUpGeofenceTags = rampUpGeofenceTagsOptional {
-
             let inRampedUpGeofence = !Set(rampUpGeofenceTags).isDisjoint(with: Set(newGeofenceTags))
             let sdkConfig = RadarSettings.sdkConfiguration()
             var newTrackingOptions: RadarTrackingOptions? = nil
@@ -54,7 +53,6 @@ import RadarSDK
                 // ramp up
                 newTrackingOptions = sdkConfig?.inGeofenceTrackingOptions
             } else {
-                let to = Radar.getTripOptions()
                 // ramp down if needed
                 if let onTripOptions = sdkConfig?.onTripTrackingOptions,
                    let _ = Radar.getTripOptions() {
