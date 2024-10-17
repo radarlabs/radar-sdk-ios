@@ -89,7 +89,7 @@ static NSString *const kApproachingThreshold = @"approachingThreshold";
     dict[kDestinationGeofenceTag] = self.destinationGeofenceTag;
     dict[kDestinationGeofenceExternalId] = self.destinationGeofenceExternalId;
     dict[kMode] = [Radar stringForMode:self.mode];
-    dict[kScheduledArrivalAt] = self.scheduledArrivalAt;
+    dict[kScheduledArrivalAt] = [RadarUtils.isoDateFormatter stringFromDate:self.scheduledArrivalAt];
     if (self.approachingThreshold && self.approachingThreshold > 0) {
         dict[kApproachingThreshold] = @(self.approachingThreshold);
     }
