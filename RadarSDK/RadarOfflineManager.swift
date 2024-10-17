@@ -8,7 +8,6 @@
 
 import Foundation
 import CoreLocation
-import RadarSDK
 
 @objc(RadarOfflineManager) class RadarOfflineManager: NSObject {
     @objc public static func contextualizeLocation(_ location: CLLocation, completionHandler: @escaping (RadarConfig?) -> Void) {
