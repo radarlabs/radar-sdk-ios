@@ -493,16 +493,22 @@
             completionHandler:(RadarLogConversionCompletionHandler)completionHandler {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"logConversion()"];
     NSTimeInterval lastTrackedTimeInterval = [[NSDate date] timeIntervalSinceDate:[RadarSettings lastTrackedTime]];
-    BOOL isLastTrackRecent = lastTrackedTimeInterval < 60;
+    //BOOL isLastTrackRecent = lastTrackedTimeInterval < 60;
+    BOOL isLastTrackRecent = false;
 
     CLAuthorizationStatus authorizationStatus = [[RadarLocationManager sharedInstance].permissionsHelper locationAuthorizationStatus];
+    NSLog(@"authorization status = %d", authorizationStatus);
+    NSLog(@"isLastTrackRecent = %d", isLastTrackRecent);
     if (!(authorizationStatus == kCLAuthorizationStatusAuthorizedWhenInUse || authorizationStatus == kCLAuthorizationStatusAuthorizedAlways) || isLastTrackRecent) {
+        NSLog(@"skipping track");
         [self sendLogConversionRequestWithName:name metadata:metadata completionHandler:completionHandler];
         
         return;
     }
     
     [self trackOnceWithCompletionHandler:^(RadarStatus status, CLLocation * _Nullable location, NSArray<RadarEvent *> * _Nullable events, RadarUser * _Nullable user) {
+        NSLog(@"Conversion name = %@: status = %@; event = %@", name, [Radar stringForStatus:status], events);
+        NSLog(@"location = %@", location);
         [self sendLogConversionRequestWithName:name metadata:metadata completionHandler:completionHandler];
     }];
 }
