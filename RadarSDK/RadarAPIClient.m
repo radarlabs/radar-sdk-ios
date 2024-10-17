@@ -34,6 +34,7 @@
 #import "RadarVerificationManager.h"
 #import "RadarVerifiedLocationToken+Internal.h"
 #import <os/log.h>
+#import "RadarOfflineManager.h"
 
 @implementation RadarAPIClient
 
@@ -216,6 +217,7 @@
     params[@"anonymous"] = @(anonymous);
     if (anonymous) {
         params[@"deviceId"] = @"anonymous";
+        // this can be updated by offline event detection, which feels correct, not going to address right now for simplicity
         params[@"geofenceIds"] = [RadarState geofenceIds];
         params[@"placeId"] = [RadarState placeId];
         params[@"regionIds"] = [RadarState regionIds];
@@ -426,10 +428,16 @@
                                 }
 
                                 [[RadarDelegateHolder sharedInstance] didFailWithStatus:status];
+                                if ([RadarSettings sdkConfiguration].useOfflineRTOUpdates) { 
+                                    return [RadarOfflineManager contextualizeLocation:location completionHandler:^(RadarConfig * _Nullable config) {
+                                        return completionHandler(status, nil, nil, nil, nil, config, nil);
+                                    }];
+                                } else {
+                                    return completionHandler(status, nil, nil, nil, nil, nil, nil);
+                                }
+                                
 
-                                return completionHandler(status, nil, nil, nil, nil, nil, nil);
                             }
-
                             [[RadarReplayBuffer sharedInstance] clearBuffer];
                             [RadarState setLastFailedStoppedLocation:nil];
                             [Radar flushLogs];
