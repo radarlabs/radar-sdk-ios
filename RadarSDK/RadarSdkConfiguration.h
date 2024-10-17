@@ -35,6 +35,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, assign) BOOL useOpenedAppConversion;
 
+@property (nonatomic, assign) BOOL useOfflineRTOUpdates;
+
 @property (nonatomic, copy, nullable) RadarTrackingOptions *inGeofenceTrackingOptions;
 
 @property (nonatomic, copy, nullable) RadarTrackingOptions *defaultTrackingOptions;

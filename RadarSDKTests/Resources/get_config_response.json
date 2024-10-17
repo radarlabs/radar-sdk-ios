@@ -12,6 +12,7 @@
       "logLevel": "info",
       "startTrackingOnInitialize": true,
       "trackOnceOnAppOpen": true,
+      "useOfflineRTOUpdates": true,
       "inGeofenceTrackingOptions": {
         "desiredStoppedUpdateInterval": 0,
         "desiredMovingUpdateInterval": 0,

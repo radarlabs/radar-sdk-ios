@@ -74,6 +74,13 @@
     if (useOpenedAppConversion && [useOpenedAppConversion isKindOfClass:[NSNumber class]]) {
         _useOpenedAppConversion = [(NSNumber *)useOpenedAppConversion boolValue];
     }
+
+    NSObject *useOfflineRTOUpdates = dict[@"useOfflineRTOUpdates"];
+    _useOfflineRTOUpdates = NO;
+    if (useOfflineRTOUpdates && [useOfflineRTOUpdates isKindOfClass:[NSNumber class]]) {
+        _useOfflineRTOUpdates = [(NSNumber *)useOfflineRTOUpdates boolValue];
+    }
+
     NSObject *inGeofenceTrackingOptionsObj = dict[@"inGeofenceTrackingOptions"];
     _inGeofenceTrackingOptions = nil;
     if (inGeofenceTrackingOptionsObj && [inGeofenceTrackingOptionsObj isKindOfClass:[NSDictionary class]]) {
@@ -122,6 +129,7 @@
     dict[@"useRadarModifiedBeacon"] = @(_useRadarModifiedBeacon);
     dict[@"useLocationMetadata"] = @(_useLocationMetadata);
     dict[@"useOpenedAppConversion"] = @(_useOpenedAppConversion);
+    dict[@"useOfflineRTOUpdates"] = @(_useOfflineRTOUpdates);
     dict[@"inGeofenceTrackingOptions"] = [_inGeofenceTrackingOptions dictionaryValue];
     dict[@"defaultTrackingOptions"] = [_defaultTrackingOptions dictionaryValue];
     dict[@"onTripTrackingOptions"] = [_onTripTrackingOptions dictionaryValue];
