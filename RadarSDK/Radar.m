@@ -198,20 +198,19 @@
                                            beacons:beacons
                                  completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user,
                                                      NSArray<RadarGeofence *> *_Nullable nearbyGeofences, RadarConfig *_Nullable config, RadarVerifiedLocationToken *_Nullable token) {
-                                     if (status == RadarStatusSuccess) {
-                                         [[RadarLocationManager sharedInstance] replaceSyncedGeofences:nearbyGeofences];
-                                         if (config != nil) {
-                                             [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
-                                         }
-                                         
-                                     }
+                                    if (config != nil) {
+                                        [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
+                                    }
+                                    if (status == RadarStatusSuccess) {
+                                        [[RadarLocationManager sharedInstance] replaceSyncedGeofences:nearbyGeofences];
+                                    }
 
-                                     if (completionHandler) {
-                                         [RadarUtils runOnMainThread:^{
-                                             completionHandler(status, location, events, user);
-                                         }];
-                                     }
-                                 }];
+                                    if (completionHandler) {
+                                        [RadarUtils runOnMainThread:^{
+                                            completionHandler(status, location, events, user);
+                                        }];
+                                    }
+                                }];
                          };
 
                          if (beacons) {
