@@ -428,10 +428,14 @@
                                 }
 
                                 [[RadarDelegateHolder sharedInstance] didFailWithStatus:status];
-
-                                return [RadarOfflineManager contextualizeLocation:location completionHandler:^(RadarConfig * _Nullable config) {
-                                    return completionHandler(status, nil, nil, nil, nil, config, nil);
-                                }];
+                                if ([RadarSettings sdkConfiguration].useOfflineRTOUpdates) { 
+                                    return [RadarOfflineManager contextualizeLocation:location completionHandler:^(RadarConfig * _Nullable config) {
+                                        return completionHandler(status, nil, nil, nil, nil, config, nil);
+                                    }];
+                                } else {
+                                    return completionHandler(status, nil, nil, nil, nil, nil, nil);
+                                }
+                                
 
                             }
                             [[RadarReplayBuffer sharedInstance] clearBuffer];
