@@ -13,12 +13,10 @@ import CoreLocation
     @objc public static func contextualizeLocation(_ location: CLLocation, completionHandler: @escaping (RadarConfig?) -> Void) {
         var newGeofenceIds = [String]()
         var newGeofenceTags = [String]()
-        // get all the nearby geofences
         let nearbyGeofences = RadarState.nearbyGeofences()
         if (nearbyGeofences == nil) {
             return completionHandler(nil)
         }
-        // for each of the nearby geofences, check if the location is inside the geofence
         for geofence in nearbyGeofences! {
             var center: RadarCoordinate?
             var radius: Double = 100
@@ -30,7 +28,8 @@ import CoreLocation
                 center = geometry.center
                 radius = geometry.radius
             } else {
-                // something went wrong with the geofence geometry
+                // log error
+                RadarLogger.sharedInstance().log(level:RadarLogLevel.error, message:"error parsing geometry with no circular representation")
                 continue
             }
             if (isPointInsideCircle(center: center!.coordinate, radius: radius, point: location)) {
@@ -41,31 +40,32 @@ import CoreLocation
             }    
         }
         RadarState.setGeofenceIds(newGeofenceIds)
-        // if there are no rampup geofence tags, we never had ramped up so we do not need to ramp down (reason a little more about this)
+
         let rampUpGeofenceTagsOptional = RadarSettings.sdkConfiguration()?.inGeofenceTrackingOptionsTags
+        var inRampedUpGeofence = false 
         if let rampUpGeofenceTags = rampUpGeofenceTagsOptional {
-            let inRampedUpGeofence = !Set(rampUpGeofenceTags).isDisjoint(with: Set(newGeofenceTags))
-            let sdkConfig = RadarSettings.sdkConfiguration()
-            var newTrackingOptions: RadarTrackingOptions? = nil
+            inRampedUpGeofence = !Set(rampUpGeofenceTags).isDisjoint(with: Set(newGeofenceTags))
+        }
+        let sdkConfig = RadarSettings.sdkConfiguration()
+        var newTrackingOptions: RadarTrackingOptions? = nil
             
-            if inRampedUpGeofence {
-                // ramp up
-                newTrackingOptions = sdkConfig?.inGeofenceTrackingOptions
+        if inRampedUpGeofence {
+            // ramp up
+            newTrackingOptions = sdkConfig?.inGeofenceTrackingOptions
+        } else {
+            // ramp down if needed
+            if let onTripOptions = sdkConfig?.onTripTrackingOptions,
+                let _ = Radar.getTripOptions() {
+                newTrackingOptions = onTripOptions
             } else {
-                // ramp down if needed
-                if let onTripOptions = sdkConfig?.onTripTrackingOptions,
-                   let _ = Radar.getTripOptions() {
-                    newTrackingOptions = onTripOptions
-                } else {
-                    newTrackingOptions = sdkConfig?.defaultTrackingOptions
-                }
+                newTrackingOptions = sdkConfig?.defaultTrackingOptions
             }
-            if (newTrackingOptions != nil) {
-                let metaDict: [String: Any] = ["trackingOptions": newTrackingOptions?.dictionaryValue() as Any]
-                let configDict: [String: Any] = ["meta": metaDict]
-                if let radarConfig = RadarConfig.fromDictionary(configDict) {
-                        completionHandler(radarConfig)
-                }
+        }
+        if (newTrackingOptions != nil) {
+            let metaDict: [String: Any] = ["trackingOptions": newTrackingOptions?.dictionaryValue() as Any]
+            let configDict: [String: Any] = ["meta": metaDict]
+            if let radarConfig = RadarConfig.fromDictionary(configDict) {
+                    completionHandler(radarConfig)
             }
         }
         return completionHandler(nil)

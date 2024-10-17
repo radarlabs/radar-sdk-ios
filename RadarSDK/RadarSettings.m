@@ -277,7 +277,6 @@ static NSString *const kXPlatformSDKVersion = @"radar-xPlatformSDKVersion";
 }
 
 + (NSString *)host {
-    //return @"https://api-kenny.radar-staging.com";
     NSString *host = [[NSUserDefaults standardUserDefaults] stringForKey:kHost];
     return host ? host : kDefaultHost;
 }

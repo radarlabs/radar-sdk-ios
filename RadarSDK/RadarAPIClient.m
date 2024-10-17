@@ -429,15 +429,11 @@
 
                                 [[RadarDelegateHolder sharedInstance] didFailWithStatus:status];
 
-                                // this is where we need to perform the offline detection
-                                // in essence, we want to replace what the server would had done
-                                // we also need to update the tracking, we do this by syncing some states and ensuring that radarsetting returns the ramp up value
                                 return [RadarOfflineManager contextualizeLocation:location completionHandler:^(RadarConfig * _Nullable config) {
                                     return completionHandler(status, nil, nil, nil, nil, config, nil);
                                 }];
 
                             }
-                            // since we had a successful track, the do we need to clear anything here?
                             [[RadarReplayBuffer sharedInstance] clearBuffer];
                             [RadarState setLastFailedStoppedLocation:nil];
                             [Radar flushLogs];
