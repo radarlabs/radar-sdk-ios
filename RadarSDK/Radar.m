@@ -503,8 +503,6 @@
     }
     
     [self trackOnceWithCompletionHandler:^(RadarStatus status, CLLocation * _Nullable location, NSArray<RadarEvent *> * _Nullable events, RadarUser * _Nullable user) {
-        NSLog(@"Conversion name = %@: status = %@; event = %@", name, [Radar stringForStatus:status], events);
-        NSLog(@"location = %@", location);
         [self sendLogConversionRequestWithName:name metadata:metadata completionHandler:completionHandler];
     }];
 }
