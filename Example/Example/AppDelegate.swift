@@ -10,7 +10,14 @@ import UserNotifications
 import RadarSDK
 
 @UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UNUserNotificationCenterDelegate, CLLocationManagerDelegate, RadarDelegate, RadarVerifiedDelegate {
+class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UNUserNotificationCenterDelegate, CLLocationManagerDelegate, RadarDelegate, RadarVerifiedDelegate, RadarURLDelegate {
+    
+    func didHandleURL(_ url: URL) -> Bool {
+        print(" called with url %@", url)
+        // handle navigation here
+        return true
+    }
+    
 
     let locationManager = CLLocationManager()
     var window: UIWindow? // required for UIWindowSceneDelegate
@@ -28,13 +35,22 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         // Replace with a valid test publishable key
         let radarInitializeOptions = RadarInitializeOptions()
         // Uncomment to enable automatic setup for notification conversions
-        // radarInitializeOptions.autoSetupNotificationConversion = true
+        radarInitializeOptions.autoLogNotificationConversions = true
+        radarInitializeOptions.autoHandleNotificationDeepLinks = true
+        radarInitializeOptions.urlDelegate = self
         Radar.initialize(publishableKey: "prj_test_pk_0000000000000000000000000000000000000000", options: radarInitializeOptions )
         Radar.setUserId("testUserId")
         Radar.setMetadata([ "foo": "bar" ])
         Radar.setDelegate(self)
         Radar.setVerifiedDelegate(self)
  
+        return true
+    }
+
+    
+    func application(_ app: UIApplication, open url: URL,
+                     options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
+        // Handle opening via standard URL               
         return true
     }
     
@@ -318,8 +334,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
     }
     
     func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse) async {
-        // Uncomment for manual setup for notification conversions
+        // Uncomment for manual setup for notification conversions and URLs
         // Radar.logConversion(response: response)
+        // Radar.openURLFromNotification(response.notification)
     }
 
     func notify(_ body: String) {
