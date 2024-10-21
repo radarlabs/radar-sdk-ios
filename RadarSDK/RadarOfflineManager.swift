@@ -13,6 +13,7 @@ import CoreLocation
     @objc public static func contextualizeLocation(_ location: CLLocation, completionHandler: @escaping (RadarConfig?) -> Void) {
         var newGeofenceIds = [String]()
         var newGeofenceTags = [String]()
+        let sdkConfig = RadarSettings.sdkConfiguration()
         let nearbyGeofences = RadarState.nearbyGeofences()
         if (nearbyGeofences == nil) {
             return completionHandler(nil)
@@ -40,13 +41,13 @@ import CoreLocation
             }    
         }
         RadarState.setGeofenceIds(newGeofenceIds)
-
-        let rampUpGeofenceTagsOptional = RadarSettings.sdkConfiguration()?.inGeofenceTrackingOptionsTags
-        var inRampedUpGeofence = false 
+        
+        let rampUpGeofenceTagsOptional = sdkConfig?.inGeofenceTrackingOptionsTags
+        var inRampedUpGeofence = false
         if let rampUpGeofenceTags = rampUpGeofenceTagsOptional {
             inRampedUpGeofence = !Set(rampUpGeofenceTags).isDisjoint(with: Set(newGeofenceTags))
         }
-        let sdkConfig = RadarSettings.sdkConfiguration()
+        
         var newTrackingOptions: RadarTrackingOptions? = nil
             
         if inRampedUpGeofence {
@@ -65,7 +66,7 @@ import CoreLocation
             let metaDict: [String: Any] = ["trackingOptions": newTrackingOptions?.dictionaryValue() as Any]
             let configDict: [String: Any] = ["meta": metaDict]
             if let radarConfig = RadarConfig.fromDictionary(configDict) {
-                    completionHandler(radarConfig)
+                     return completionHandler(radarConfig)
             }
         }
         return completionHandler(nil)
