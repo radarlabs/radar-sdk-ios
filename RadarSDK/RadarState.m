@@ -9,6 +9,7 @@
 #import "CLLocation+Radar.h"
 #import "RadarUtils.h"
 #import "RadarGeofence+Internal.h"
+#import "RadarLogger.h"
 
 @implementation RadarState
 
@@ -194,10 +195,14 @@ static NSString *const KNearbyGeofences = @"radar-nearbyGeofences";
 
 + (void)setNearbyGeofences:(NSArray<RadarGeofence *> *_Nullable)nearbyGeofences {
     NSMutableArray *nearbyGeofencesArray = [NSMutableArray new];
+    NSMutableArray *nearbyGeofencesArrayIds = [NSMutableArray new];
     for (RadarGeofence *geofence in nearbyGeofences) {
         [nearbyGeofencesArray addObject:[geofence dictionaryValue]];
+        [nearbyGeofencesArrayIds addObject:geofence._id];
     }
     [[NSUserDefaults standardUserDefaults] setObject:nearbyGeofencesArray forKey:KNearbyGeofences];
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"nearbyGeofencesArray = %@", nearbyGeofencesArray]];
+    
 }
 
 + (NSArray<RadarGeofence *> *_Nullable)nearbyGeofences {
