@@ -67,8 +67,23 @@
             }
 
             if (params) {
-                [req setHTTPBody:[NSJSONSerialization dataWithJSONObject:params options:0 error:NULL]];
+                if (!params[@"updatedAtMsDiff"]) {
+                    [req setHTTPBody:[NSJSONSerialization dataWithJSONObject:params options:0 error:NULL]];
+                } else {
+                    // We replace updatedAtMsDiff because there might have been a delay in sending a /track with SLEEP:YES
+                    NSNumber *locationMs = params[@"locationMs"];
+                    if (locationMs) {
+                        long nowMs = (long)([NSDate date].timeIntervalSince1970 * 1000);
+                        long updatedAtMsDiff = nowMs - [locationMs longValue];
+                        NSMutableDictionary *requestParams = [params mutableCopy];
+                        requestParams[@"updatedAtMsDiff"] = @(updatedAtMsDiff);
+                        [req setHTTPBody:[NSJSONSerialization dataWithJSONObject:requestParams options:0 error:NULL]];
+                    } else {
+                        [req setHTTPBody:[NSJSONSerialization dataWithJSONObject:params options:0 error:NULL]];
+                    }
+                }
             }
+
 
             NSURLSessionConfiguration *configuration;
             if (extendedTimeout) {
