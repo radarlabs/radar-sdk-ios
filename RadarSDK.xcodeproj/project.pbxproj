@@ -167,6 +167,7 @@
 		DE1E7644239724FD006F34A1 /* search_geofences.json in Resources */ = {isa = PBXBuildFile; fileRef = DE1E7643239724FD006F34A1 /* search_geofences.json */; };
 		E649476A2CBFFB720002C047 /* RadarOfflineManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E64947692CBFFB720002C047 /* RadarOfflineManager.swift */; };
 		E649476D2CBFFE480002C047 /* RadarOfflineManager.h in Headers */ = {isa = PBXBuildFile; fileRef = E649476C2CBFFE480002C047 /* RadarOfflineManager.h */; };
+		E64947732CC6D8A90002C047 /* RadarSdkConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = F667F8262BFBF3C8001F2F67 /* RadarSdkConfiguration.m */; };
 		E658DB072CB46277004E0F01 /* RadarOperatingHours.h in Headers */ = {isa = PBXBuildFile; fileRef = E658DB062CB46277004E0F01 /* RadarOperatingHours.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		E658DB092CB462AA004E0F01 /* RadarOperatingHour.m in Sources */ = {isa = PBXBuildFile; fileRef = E658DB082CB462AA004E0F01 /* RadarOperatingHour.m */; };
 		E658DB0C2CB46B50004E0F01 /* RadarOperatingHours+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = E658DB0B2CB46B50004E0F01 /* RadarOperatingHours+Internal.h */; };
@@ -863,6 +864,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E64947732CC6D8A90002C047 /* RadarSdkConfiguration.m in Sources */,
 				0107AAA726220160008AB52F /* RadarGeofence.m in Sources */,
 				0107AAC826220184008AB52F /* RadarRouteDistance.m in Sources */,
 				E658DB092CB462AA004E0F01 /* RadarOperatingHour.m in Sources */,
