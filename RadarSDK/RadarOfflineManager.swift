@@ -38,7 +38,8 @@ import CoreLocation
                 if (geofence.tag != nil) {
                     newGeofenceTags.append(geofence.tag!)
                 }
-            }    
+                RadarLogger.sharedInstance().log(level: RadarLogLevel.debug, message: "Radar offline manager detected user inside geofence: " + geofence._id)
+            }
         }
         RadarState.setGeofenceIds(newGeofenceIds)
         
@@ -52,14 +53,17 @@ import CoreLocation
             
         if inRampedUpGeofence {
             // ramp up
+            RadarLogger.sharedInstance().log(level: RadarLogLevel.debug, message: "Ramping up from Radar offline manager")
             newTrackingOptions = sdkConfig?.inGeofenceTrackingOptions
         } else {
             // ramp down if needed
             if let onTripOptions = sdkConfig?.onTripTrackingOptions,
                 let _ = Radar.getTripOptions() {
                 newTrackingOptions = onTripOptions
+                RadarLogger.sharedInstance().log(level: RadarLogLevel.debug, message: "Ramping down from Radar offline manager to trip tracking options")
             } else {
                 newTrackingOptions = sdkConfig?.defaultTrackingOptions
+                RadarLogger.sharedInstance().log(level: RadarLogLevel.debug, message: "Ramping down from Radar offline manager to default tracking options")
             }
         }
         if (newTrackingOptions != nil) {
