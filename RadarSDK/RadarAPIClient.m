@@ -148,6 +148,8 @@
 
     NSMutableDictionary *requestParams = [NSMutableDictionary new];
     requestParams[@"replays"] = replays;
+    long nowMs = (long)([NSDate date].timeIntervalSince1970 * 1000);
+    requestParams[@"replayRequestMs"] = @(nowMs);
 
     [self.apiHelper requestWithMethod:@"POST"
                                   url:url
@@ -251,10 +253,11 @@
         params[@"floorLevel"] = @(location.floor.level);
     }
     long nowMs = (long)([NSDate date].timeIntervalSince1970 * 1000);
-    if (!foreground) {
+    if (!foreground || options.replay != RadarTrackingOptionsReplayNone) {
         long timeInMs = (long)(location.timestamp.timeIntervalSince1970 * 1000);
         params[@"updatedAtMsDiff"] = @(nowMs - timeInMs);
     }
+    params[@"locationMs"] = @(timeInMs);
     params[@"foreground"] = @(foreground);
     params[@"stopped"] = @(stopped);
     params[@"replayed"] = @(replayed);
