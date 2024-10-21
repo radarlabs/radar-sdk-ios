@@ -316,7 +316,7 @@
     if (locationAccuracyAuthorization) {
         params[@"locationAccuracyAuthorization"] = locationAccuracyAuthorization;
     }
-    params[@"notificationAuthorization"] = [RadarState notificationPermissionGranted] ? @"true" : @"false";
+    params[@"notificationAuthorization"] = @([RadarState notificationPermissionGranted]);
 
     params[@"trackingOptions"] = [options dictionaryValue];
 
