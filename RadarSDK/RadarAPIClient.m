@@ -253,8 +253,9 @@
         params[@"floorLevel"] = @(location.floor.level);
     }
     long nowMs = (long)([NSDate date].timeIntervalSince1970 * 1000);
+    long timeInMs = (long)(location.timestamp.timeIntervalSince1970 * 1000);
+    RadarTrackingOptions *options = [Radar getTrackingOptions];
     if (!foreground || options.replay != RadarTrackingOptionsReplayNone) {
-        long timeInMs = (long)(location.timestamp.timeIntervalSince1970 * 1000);
         params[@"updatedAtMsDiff"] = @(nowMs - timeInMs);
     }
     params[@"locationMs"] = @(timeInMs);
@@ -302,7 +303,6 @@
         params[@"tripOptions"] = tripParams;
     }
 
-    RadarTrackingOptions *options = [Radar getTrackingOptions];
     if (options.syncGeofences) {
         params[@"nearbyGeofences"] = @(YES);
     }
