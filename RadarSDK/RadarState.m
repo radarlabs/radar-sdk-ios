@@ -201,7 +201,7 @@ static NSString *const KNearbyGeofences = @"radar-nearbyGeofences";
         [nearbyGeofencesArrayIds addObject:geofence._id];
     }
     [[NSUserDefaults standardUserDefaults] setObject:nearbyGeofencesArray forKey:KNearbyGeofences];
-    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"nearbyGeofencesArray = %@", nearbyGeofencesArray]];
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"nearbyGeofencesArray in RadarState:%@", nearbyGeofencesArray]];
     
 }
 

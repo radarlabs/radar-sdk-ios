@@ -547,6 +547,49 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     }];
 }
 
+- (void)test_Radar_trackOnce_offlineRampDown_default {
+    [RadarSettings setTripOptions:nil];
+    self.apiHelperMock.mockStatus = RadarStatusSuccess;
+    self.apiHelperMock.mockResponse = [RadarTestUtils jsonDictionaryFromResource:@"get_config_response"];
+    
+    [[RadarAPIClient sharedInstance] getConfigForUsage:@"sdkConfigUpdate"
+                                              verified:false
+                                     completionHandler:^(RadarStatus status, RadarConfig *config) {
+        if (status != RadarStatusSuccess || !config) {
+            return;
+        }
+        [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
+        [RadarSettings setSdkConfiguration:config.meta.sdkConfiguration];
+        
+        XCTAssertTrue([[Radar getTrackingOptions] isEqual:RadarTrackingOptions.presetResponsive]);
+        // have a successful call that populates the nearby geofences
+        self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusAuthorizedWhenInUse;
+        CLLocation *testLocation = [[CLLocation alloc] initWithCoordinate:CLLocationCoordinate2DMake(40.78382, -73.97536)
+                                                                 altitude:-1
+                                                       horizontalAccuracy:65
+                                                         verticalAccuracy:-1
+                                                                timestamp:[NSDate new]];
+        self.locationManagerMock.mockLocation = testLocation;
+        self.apiHelperMock.mockStatus = RadarStatusSuccess;
+        self.apiHelperMock.mockResponse = [RadarTestUtils jsonDictionaryFromResource:@"track_with_ramp_up"];
+        [Radar trackOnceWithCompletionHandler:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user) {
+            XCTAssertEqual(status, RadarStatusSuccess);
+            XCTAssertTrue([[Radar getTrackingOptions] isEqual:RadarTrackingOptions.presetEfficient]);
+            // have a failed call, but then perform the offline tracking
+            self.apiHelperMock.mockStatus = RadarStatusErrorNetwork;
+            CLLocation *testLocationOutsideGeofence = [[CLLocation alloc] initWithCoordinate:CLLocationCoordinate2DMake(50.78382, -83.97536)
+                                                                                    altitude:-1
+                                                                          horizontalAccuracy:65
+                                                                            verticalAccuracy:-1
+                                                                                   timestamp:[NSDate new]];
+            [Radar trackOnceWithLocation: testLocationOutsideGeofence completionHandler:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user) {
+                XCTAssertEqual(status, RadarStatusErrorNetwork);
+                XCTAssertTrue([[Radar getTrackingOptions] isEqual:RadarTrackingOptions.presetResponsive]);
+            }];
+        }];
+    }];
+}
+
 - (void)test_Radar_trackOnce_offlineRampDown_trips {
     RadarTripOptions *options = [[RadarTripOptions alloc] initWithExternalId:@"tripExternalId"
                                                       destinationGeofenceTag:@"tripDestinationGeofenceTag"
@@ -591,50 +634,6 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
                 XCTAssertEqual(status, RadarStatusErrorNetwork);
                 XCTAssertTrue([[Radar getTrackingOptions] isEqual:RadarTrackingOptions.presetContinuous]);
                 [Radar completeTrip];
-            }];
-        }];
-    }];
-}
-
-- (void)test_Radar_trackOnce_offlineRampDown_default {
-    [RadarSettings setTripOptions:nil];
-    self.apiHelperMock.mockStatus = RadarStatusSuccess;
-    self.apiHelperMock.mockResponse = [RadarTestUtils jsonDictionaryFromResource:@"get_config_response"];
-    
-    [[RadarAPIClient sharedInstance] getConfigForUsage:@"sdkConfigUpdate"
-                                              verified:false
-                                     completionHandler:^(RadarStatus status, RadarConfig *config) {
-        if (status != RadarStatusSuccess || !config) {
-            return;
-        }
-        [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
-        [RadarSettings setSdkConfiguration:config.meta.sdkConfiguration];
-        
-        XCTAssertTrue([[Radar getTrackingOptions] isEqual:RadarTrackingOptions.presetResponsive]);
-        // have a successful call that populates the nearby geofences
-        self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusAuthorizedWhenInUse;
-        CLLocation *testLocation = [[CLLocation alloc] initWithCoordinate:CLLocationCoordinate2DMake(40.78382, -73.97536)
-                                                                 altitude:-1
-                                                       horizontalAccuracy:65
-                                                         verticalAccuracy:-1
-                                                                timestamp:[NSDate new]];
-        self.locationManagerMock.mockLocation = testLocation;
-        self.apiHelperMock.mockStatus = RadarStatusSuccess;
-        self.apiHelperMock.mockResponse = [RadarTestUtils jsonDictionaryFromResource:@"track"];
-        [Radar trackOnceWithCompletionHandler:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user) {
-            XCTAssertEqual(status, RadarStatusSuccess);
-            // simulate a ramp up
-            [RadarSettings setRemoteTrackingOptions:RadarTrackingOptions.presetContinuous];
-            // have a failed call, but then perform the offline tracking
-            self.apiHelperMock.mockStatus = RadarStatusErrorNetwork;
-            CLLocation *testLocationOutsideGeofence = [[CLLocation alloc] initWithCoordinate:CLLocationCoordinate2DMake(50.78382, -83.97536)
-                                                                                    altitude:-1
-                                                                          horizontalAccuracy:65
-                                                                            verticalAccuracy:-1
-                                                                                   timestamp:[NSDate new]];
-            [Radar trackOnceWithLocation: testLocationOutsideGeofence completionHandler:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user) {
-                XCTAssertEqual(status, RadarStatusErrorNetwork);
-                XCTAssertTrue([[Radar getTrackingOptions] isEqual:RadarTrackingOptions.presetResponsive]);
             }];
         }];
     }];

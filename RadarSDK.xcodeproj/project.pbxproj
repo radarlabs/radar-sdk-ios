@@ -168,6 +168,7 @@
 		E649476A2CBFFB720002C047 /* RadarOfflineManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E64947692CBFFB720002C047 /* RadarOfflineManager.swift */; };
 		E649476D2CBFFE480002C047 /* RadarOfflineManager.h in Headers */ = {isa = PBXBuildFile; fileRef = E649476C2CBFFE480002C047 /* RadarOfflineManager.h */; };
 		E64947732CC6D8A90002C047 /* RadarSdkConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = F667F8262BFBF3C8001F2F67 /* RadarSdkConfiguration.m */; };
+		E64947752CC82B8A0002C047 /* track_with_ramp_up.json in Resources */ = {isa = PBXBuildFile; fileRef = E64947742CC82B8A0002C047 /* track_with_ramp_up.json */; };
 		E658DB072CB46277004E0F01 /* RadarOperatingHours.h in Headers */ = {isa = PBXBuildFile; fileRef = E658DB062CB46277004E0F01 /* RadarOperatingHours.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		E658DB092CB462AA004E0F01 /* RadarOperatingHour.m in Sources */ = {isa = PBXBuildFile; fileRef = E658DB082CB462AA004E0F01 /* RadarOperatingHour.m */; };
 		E658DB0C2CB46B50004E0F01 /* RadarOperatingHours+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = E658DB0B2CB46B50004E0F01 /* RadarOperatingHours+Internal.h */; };
@@ -347,6 +348,7 @@
 		E64947682CBFFB720002C047 /* XCFramework-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "XCFramework-Bridging-Header.h"; sourceTree = "<group>"; };
 		E64947692CBFFB720002C047 /* RadarOfflineManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarOfflineManager.swift; sourceTree = "<group>"; };
 		E649476C2CBFFE480002C047 /* RadarOfflineManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarOfflineManager.h; sourceTree = "<group>"; };
+		E64947742CC82B8A0002C047 /* track_with_ramp_up.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = track_with_ramp_up.json; sourceTree = "<group>"; };
 		E658DB062CB46277004E0F01 /* RadarOperatingHours.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarOperatingHours.h; sourceTree = "<group>"; };
 		E658DB082CB462AA004E0F01 /* RadarOperatingHour.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RadarOperatingHour.m; sourceTree = "<group>"; };
 		E658DB0B2CB46B50004E0F01 /* RadarOperatingHours+Internal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "RadarOperatingHours+Internal.h"; sourceTree = "<group>"; };
@@ -442,6 +444,7 @@
 				DD5E35E0238205FF002D93FF /* events_verification.json */,
 				78D8CE3D23AD7FEE009E91F5 /* geocode_ip.json */,
 				78D8CE3B23AD78A1009E91F5 /* geocode.json */,
+				E64947742CC82B8A0002C047 /* track_with_ramp_up.json */,
 				DD4D4D2623E648FF00D36C1D /* route_distance.json */,
 				DD4D4D2423E648D000D36C1D /* search_autocomplete.json */,
 				DE1E7643239724FD006F34A1 /* search_geofences.json */,
@@ -827,6 +830,7 @@
 				825732512B72BE1900DF8B88 /* PrivacyInfo.xcprivacy in Resources */,
 				96A0AC2728A4066D00B41D40 /* search_places_chain_metadata.json in Resources */,
 				53B3B26B23EE41B400080818 /* context.json in Resources */,
+				E64947752CC82B8A0002C047 /* track_with_ramp_up.json in Resources */,
 				78D8CE3C23AD78A1009E91F5 /* geocode.json in Resources */,
 				DE1E7644239724FD006F34A1 /* search_geofences.json in Resources */,
 				968C839928A6D8350030103E /* conversion_event_nil_event.json in Resources */,
