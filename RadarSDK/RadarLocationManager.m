@@ -1123,6 +1123,10 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         return;
     }
 
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
+                                       message:[NSString stringWithFormat:@"Visit detected | arrival = %@; departure = %@; horizontalAccuracy = %f; visit.coordinate = %@; manager.location = %@",
+                                                                          visit.arrivalDate, visit.departureDate, visit.horizontalAccuracy, visit.coordinate, manager.location]];
+
     BOOL tracking = [RadarSettings tracking];
     if (!tracking) {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Ignoring visit: not tracking"];
