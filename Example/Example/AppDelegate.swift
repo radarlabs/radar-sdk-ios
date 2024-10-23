@@ -102,6 +102,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
                 print("Context: status = \(Radar.stringForStatus(status)); location = \(String(describing: location)); context?.geofences = \(String(describing: context?.geofences)); context?.place = \(String(describing: context?.place)); context?.country = \(String(describing: context?.country))")
             }
         }
+        
+        demoButton(text: "startTrackingVerified") {
+            Radar.startTrackingVerified(interval: 60, beacons: false)
+        }
+        
+        demoButton(text: "stopTrackingVerified") {
+            Radar.stopTrackingVerified()
+        }
+        
+        demoButton(text: "getVerifiedLocationToken") {
+            Radar.getVerifiedLocationToken() { (status, token) in
+                print("getVerifiedLocationToken: status = \(status); token = \(token?.dictionaryValue())")
+            }
+        }
 
         demoButton(text: "trackVerified") {
             Radar.trackVerified() { (status, token) in
