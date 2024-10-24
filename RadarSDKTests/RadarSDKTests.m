@@ -620,7 +620,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
                                                                 timestamp:[NSDate new]];
         self.locationManagerMock.mockLocation = testLocation;
         self.apiHelperMock.mockStatus = RadarStatusSuccess;
-        self.apiHelperMock.mockResponse = [RadarTestUtils jsonDictionaryFromResource:@"track"];
+        self.apiHelperMock.mockResponse = [RadarTestUtils jsonDictionaryFromResource:@"track_with_ramp_up"];
         [Radar trackOnceWithCompletionHandler:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user) {
             XCTAssertEqual(status, RadarStatusSuccess);
             // have a failed call, but then perform the offline tracking
