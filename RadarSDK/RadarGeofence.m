@@ -131,7 +131,7 @@
             radius = [((NSNumber *)radiusObj) floatValue];
         }
 
-        if ([type isEqualToString:@"circle"]) {
+        if ([type isEqualToString:@"circle"] || [type isEqualToString:@"Circle"]) {
             geometry = [[RadarCircleGeometry alloc] initWithCenter:center radius:radius];
         } else if ([type isEqualToString:@"polygon"] || [type isEqualToString:@"Polygon"] || [type isEqualToString:@"isochrone"]) {
             NSMutableArray<RadarCoordinate *> *mutablePolygonCoordinates = [self getPolygonCoordinates:dict]; 
@@ -228,7 +228,7 @@
         RadarCircleGeometry *circleGeometry = (RadarCircleGeometry *)self.geometry;
         [dict setValue:@(circleGeometry.radius) forKey:@"geometryRadius"];
         [dict setValue:[circleGeometry.center dictionaryValue] forKey:@"geometryCenter"];
-        [dict setValue:@"circle" forKey:@"type"];
+        [dict setValue:@"Circle" forKey:@"type"];
     } else if ([self.geometry isKindOfClass:[RadarPolygonGeometry class]]) {
         RadarPolygonGeometry *polygonGeometry = (RadarPolygonGeometry *)self.geometry;
         [dict setValue:@(polygonGeometry.radius) forKey:@"geometryRadius"];
@@ -237,7 +237,7 @@
             // Nest coordinate array; Per GeoJSON spec: for type "Polygon", the "coordinates" member must be an array of LinearRing coordinate arrays.
             [dict setValue:@[[RadarGeofence arrayForGeometryCoordinates:polygonGeometry._coordinates]] forKey:@"coordinates"];
         }
-        [dict setValue:@"polygon" forKey:@"type"];
+        [dict setValue:@"Polygon" forKey:@"type"];
     }
 
     return dict;
