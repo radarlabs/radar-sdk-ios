@@ -395,19 +395,17 @@
             if (status != RadarStatusSuccess) {
                 [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Failed to flush replays"]];
                 [[RadarDelegateHolder sharedInstance] didFailWithStatus:status];
+                if ([RadarSettings sdkConfiguration].useOfflineRTOUpdates) { 
+                    return [RadarOfflineManager contextualizeLocation:location completionHandler:^(RadarConfig * _Nullable config) {
+                        return completionHandler(status, nil, nil, nil, nil, config, nil);
+                    }];
+                }
             } else {
                 [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Successfully flushed replays"]];
                 [RadarState setLastFailedStoppedLocation:nil];
                 [RadarSettings updateLastTrackedTime];
             }
-
-            if ([RadarSettings sdkConfiguration].useOfflineRTOUpdates) { 
-                return [RadarOfflineManager contextualizeLocation:location completionHandler:^(RadarConfig * _Nullable config) {
-                    return completionHandler(status, nil, nil, nil, nil, config, nil);
-                }];
-            } else {
-                return completionHandler(status, nil, nil, nil, nil, nil, nil);
-            }
+            return completionHandler(status, nil, nil, nil, nil, nil, nil);
         }];
     } else {
         [self.apiHelper requestWithMethod:@"POST"
