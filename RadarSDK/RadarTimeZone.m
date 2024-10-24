@@ -8,6 +8,16 @@
 #import "RadarTimeZone.h"
 #import "RadarUtils.h"
 
+NSDateFormatter *_timezoneDateFormatter = nil;
+NSDateFormatter * timezoneDateFormatter(void) {
+    if (_timezoneDateFormatter == nil) {
+        _timezoneDateFormatter = [[NSDateFormatter alloc] init];
+        _timezoneDateFormatter.locale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US_POSIX"];
+        [_timezoneDateFormatter setDateFormat:@"yyyy-MM-dd'T'HH:mm:ssZZZZZ"];
+    }
+    return _timezoneDateFormatter;
+}
+
 @implementation RadarTimeZone
 
 - (instancetype _Nullable)initWithObject:(id)object {
@@ -35,7 +45,8 @@
 
     id currentTimeObj = dict[@"currentTime"];
     if (currentTimeObj && [currentTimeObj isKindOfClass:[NSString class]]) {
-        _currentTime = [RadarUtils.isoDateFormatter dateFromString:(NSString *)currentTimeObj];
+        
+        _currentTime = [timezoneDateFormatter() dateFromString:(NSString *)currentTimeObj];
     }
 
     id utcOffsetObj = dict[@"utcOffset"];
@@ -56,7 +67,7 @@
     dict[@"_id"] = self._id;
     dict[@"name"] = self.name;
     dict[@"code"] = self.code;
-    dict[@"currentTime"] = self.currentTime;
+    dict[@"currentTime"] = [timezoneDateFormatter() stringFromDate:self.currentTime];
     dict[@"utcOffset"] = @(self.utcOffset);
     dict[@"dstOffset"] = @(self.dstOffset);
     return dict;
