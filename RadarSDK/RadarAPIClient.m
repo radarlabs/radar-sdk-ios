@@ -401,7 +401,13 @@
                 [RadarSettings updateLastTrackedTime];
             }
 
-            completionHandler(status, nil, nil, nil, nil, nil, nil);
+            if ([RadarSettings sdkConfiguration].useOfflineRTOUpdates) { 
+                return [RadarOfflineManager contextualizeLocation:location completionHandler:^(RadarConfig * _Nullable config) {
+                    return completionHandler(status, nil, nil, nil, nil, config, nil);
+                }];
+            } else {
+                return completionHandler(status, nil, nil, nil, nil, nil, nil);
+            }
         }];
     } else {
         [self.apiHelper requestWithMethod:@"POST"
