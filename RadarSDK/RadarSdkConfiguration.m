@@ -81,37 +81,10 @@
         _useOfflineRTOUpdates = [(NSNumber *)useOfflineRTOUpdates boolValue];
     }
 
-    NSObject *inGeofenceTrackingOptionsObj = dict[@"inGeofenceTrackingOptions"];
-    _inGeofenceTrackingOptions = nil;
-    if (inGeofenceTrackingOptionsObj && [inGeofenceTrackingOptionsObj isKindOfClass:[NSDictionary class]]) {
-        RadarTrackingOptions *radarTrackingOptions = [RadarTrackingOptions trackingOptionsFromObject:inGeofenceTrackingOptionsObj];
-        if (radarTrackingOptions) {
-            _inGeofenceTrackingOptions = radarTrackingOptions;
-        }
-    }
-
-    NSObject *defaultTrackingOptionsObj = dict[@"defaultTrackingOptions"];
-    _defaultTrackingOptions = nil;
-    if (defaultTrackingOptionsObj && [defaultTrackingOptionsObj isKindOfClass:[NSDictionary class]]) {
-        RadarTrackingOptions *radarTrackingOptions = [RadarTrackingOptions trackingOptionsFromObject:defaultTrackingOptionsObj];
-        if (radarTrackingOptions) {
-            _defaultTrackingOptions = radarTrackingOptions;
-        }
-    } 
-
-    NSObject *onTripTrackingOptionsObj = dict[@"onTripTrackingOptions"];
-    _onTripTrackingOptions = nil;
-    if (onTripTrackingOptionsObj && [onTripTrackingOptionsObj isKindOfClass:[NSDictionary class]]) {
-        RadarTrackingOptions *radarTrackingOptions = [RadarTrackingOptions trackingOptionsFromObject:onTripTrackingOptionsObj];
-        if (radarTrackingOptions) {
-            _onTripTrackingOptions = radarTrackingOptions;
-        }
-    } 
-
-    NSObject *inGeofenceTrackingOptionsTagsObj = dict[@"inGeofenceTrackingOptionsTags"];
-    _inGeofenceTrackingOptionsTags = nil;
-    if (inGeofenceTrackingOptionsTagsObj && [inGeofenceTrackingOptionsTagsObj isKindOfClass:[NSArray class]]) {
-        _inGeofenceTrackingOptionsTags = (NSArray *)inGeofenceTrackingOptionsTagsObj;
+    NSObject *alternativeTrackingOptionsObj = dict[@"alternativeTrackingOptions"];
+    _alternativeTrackingOptions = nil;
+    if (alternativeTrackingOptionsObj && [alternativeTrackingOptionsObj isKindOfClass:[NSArray class]]) {
+        _alternativeTrackingOptions = [RadarAlternativeTrackingOptions AlternativeTrackingOptionsFromObject:alternativeTrackingOptionsObj];
     }
 
     return self;
@@ -130,10 +103,7 @@
     dict[@"useLocationMetadata"] = @(_useLocationMetadata);
     dict[@"useOpenedAppConversion"] = @(_useOpenedAppConversion);
     dict[@"useOfflineRTOUpdates"] = @(_useOfflineRTOUpdates);
-    dict[@"inGeofenceTrackingOptions"] = [_inGeofenceTrackingOptions dictionaryValue];
-    dict[@"defaultTrackingOptions"] = [_defaultTrackingOptions dictionaryValue];
-    dict[@"onTripTrackingOptions"] = [_onTripTrackingOptions dictionaryValue];
-    dict[@"inGeofenceTrackingOptionsTags"] = _inGeofenceTrackingOptionsTags;
+    dict[@"alternativeTrackingOptions"] = [RadarAlternativeTrackingOptions arrayForAlternativeTrackingOptions:_alternativeTrackingOptions];
     return dict;
 }
 

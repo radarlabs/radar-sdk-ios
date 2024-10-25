@@ -1669,6 +1669,17 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     RadarSdkConfiguration *savedSdkConfiguration = [RadarSettings sdkConfiguration];
     XCTAssertEqual(savedSdkConfiguration.trackOnceOnAppOpen, YES);
     XCTAssertEqual(savedSdkConfiguration.startTrackingOnInitialize, YES);
+    XCTAssertTrue(savedSdkConfiguration.useOfflineRTOUpdates);
+    NSArray<RadarAlternativeTrackingOptions *> * alternativeTrackingOptions = savedSdkConfiguration.alternativeTrackingOptions;
+    XCTAssertEqual(alternativeTrackingOptions.count, 3);
+    XCTAssertTrue([alternativeTrackingOptions[0].type isEqualToString:@"default"]);
+    XCTAssertTrue([alternativeTrackingOptions[0].trackingOptions isEqual:RadarTrackingOptions.presetResponsive]);
+    XCTAssertTrue([alternativeTrackingOptions[1].type isEqualToString:@"inGeofence"]);
+    XCTAssertTrue([alternativeTrackingOptions[1].trackingOptions isEqual:RadarTrackingOptions.presetEfficient]);
+    XCTAssertTrue([alternativeTrackingOptions[1].geofenceTags[0] isEqualToString:@"venue"]);
+    XCTAssertTrue([alternativeTrackingOptions[2].type isEqualToString:@"onTrip"]);
+    XCTAssertTrue([alternativeTrackingOptions[2].trackingOptions isEqual:RadarTrackingOptions.presetContinuous]);
+    
 }
 
 @end

@@ -43,7 +43,7 @@ import CoreLocation
         }
         RadarState.setGeofenceIds(newGeofenceIds)
         
-        let rampUpGeofenceTagsOptional = sdkConfig?.inGeofenceTrackingOptionsTags
+        let rampUpGeofenceTagsOptional = getGeofenceTags(sdkConfiguration: sdkConfig)
         var inRampedUpGeofence = false
         if let rampUpGeofenceTags = rampUpGeofenceTagsOptional {
             inRampedUpGeofence = !Set(rampUpGeofenceTags).isDisjoint(with: Set(newGeofenceTags))
@@ -54,15 +54,15 @@ import CoreLocation
         if inRampedUpGeofence {
             // ramp up
             RadarLogger.sharedInstance().log(level: RadarLogLevel.debug, message: "Ramping up from Radar offline manager")
-            newTrackingOptions = sdkConfig?.inGeofenceTrackingOptions
+            newTrackingOptions = getAlternativeTrackingOptionsWithKey(sdkConfiguration: sdkConfig, type: "inGeofence")
         } else {
             // ramp down if needed
-            if let onTripOptions = sdkConfig?.onTripTrackingOptions,
+            if let onTripOptions = getAlternativeTrackingOptionsWithKey(sdkConfiguration: sdkConfig, type: "onTrip"),
                 let _ = Radar.getTripOptions() {
                 newTrackingOptions = onTripOptions
                 RadarLogger.sharedInstance().log(level: RadarLogLevel.debug, message: "Ramping down from Radar offline manager to trip tracking options")
             } else {
-                newTrackingOptions = sdkConfig?.defaultTrackingOptions
+                newTrackingOptions = getAlternativeTrackingOptionsWithKey(sdkConfiguration: sdkConfig, type: "default")
                 RadarLogger.sharedInstance().log(level: RadarLogLevel.debug, message: "Ramping down from Radar offline manager to default tracking options")
             }
         }
@@ -82,5 +82,33 @@ import CoreLocation
         let distance = centerLocation.distance(from: point)
         
         return distance <= radius
+    }
+    
+    private static func getAlternativeTrackingOptionsWithKey(sdkConfiguration: RadarSdkConfiguration?, type: String) -> RadarTrackingOptions? {
+        if sdkConfiguration == nil {return nil}
+        let alternativeTrackingOptions = sdkConfiguration?.alternativeTrackingOptions
+        if (alternativeTrackingOptions == nil){
+            return nil
+        }
+        for alternativeTrackingOptions in alternativeTrackingOptions! {
+            if (alternativeTrackingOptions.type == type) {
+                return alternativeTrackingOptions.trackingOptions
+            }
+        }
+        return nil
+    }
+    
+    private static func getGeofenceTags(sdkConfiguration: RadarSdkConfiguration?) -> [String]? {
+        if sdkConfiguration == nil {return nil}
+        let alternativeTrackingOptions = sdkConfiguration?.alternativeTrackingOptions
+        if (alternativeTrackingOptions == nil){
+            return nil
+        }
+        for alternativeTrackingOptions in alternativeTrackingOptions! {
+            if (alternativeTrackingOptions.type == "inGeofence") {
+                return alternativeTrackingOptions.geofenceTags
+            }
+        }
+        return nil
     }
 }

@@ -169,6 +169,8 @@
 		E649476D2CBFFE480002C047 /* RadarOfflineManager.h in Headers */ = {isa = PBXBuildFile; fileRef = E649476C2CBFFE480002C047 /* RadarOfflineManager.h */; };
 		E64947732CC6D8A90002C047 /* RadarSdkConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = F667F8262BFBF3C8001F2F67 /* RadarSdkConfiguration.m */; };
 		E64947752CC82B8A0002C047 /* track_with_ramp_up.json in Resources */ = {isa = PBXBuildFile; fileRef = E64947742CC82B8A0002C047 /* track_with_ramp_up.json */; };
+		E64947782CCBE6290002C047 /* RadarAlternativeTrackingOptions.h in Headers */ = {isa = PBXBuildFile; fileRef = E64947772CCBE6290002C047 /* RadarAlternativeTrackingOptions.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		E649477A2CCBE94C0002C047 /* RadarAlternativeTrackingOptions.m in Sources */ = {isa = PBXBuildFile; fileRef = E64947792CCBE94C0002C047 /* RadarAlternativeTrackingOptions.m */; };
 		E658DB072CB46277004E0F01 /* RadarOperatingHours.h in Headers */ = {isa = PBXBuildFile; fileRef = E658DB062CB46277004E0F01 /* RadarOperatingHours.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		E658DB092CB462AA004E0F01 /* RadarOperatingHour.m in Sources */ = {isa = PBXBuildFile; fileRef = E658DB082CB462AA004E0F01 /* RadarOperatingHour.m */; };
 		E658DB0C2CB46B50004E0F01 /* RadarOperatingHours+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = E658DB0B2CB46B50004E0F01 /* RadarOperatingHours+Internal.h */; };
@@ -349,6 +351,8 @@
 		E64947692CBFFB720002C047 /* RadarOfflineManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarOfflineManager.swift; sourceTree = "<group>"; };
 		E649476C2CBFFE480002C047 /* RadarOfflineManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarOfflineManager.h; sourceTree = "<group>"; };
 		E64947742CC82B8A0002C047 /* track_with_ramp_up.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = track_with_ramp_up.json; sourceTree = "<group>"; };
+		E64947772CCBE6290002C047 /* RadarAlternativeTrackingOptions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarAlternativeTrackingOptions.h; sourceTree = "<group>"; };
+		E64947792CCBE94C0002C047 /* RadarAlternativeTrackingOptions.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RadarAlternativeTrackingOptions.m; sourceTree = "<group>"; };
 		E658DB062CB46277004E0F01 /* RadarOperatingHours.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarOperatingHours.h; sourceTree = "<group>"; };
 		E658DB082CB462AA004E0F01 /* RadarOperatingHour.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RadarOperatingHour.m; sourceTree = "<group>"; };
 		E658DB0B2CB46B50004E0F01 /* RadarOperatingHours+Internal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "RadarOperatingHours+Internal.h"; sourceTree = "<group>"; };
@@ -620,6 +624,8 @@
 				DD236CBB2308812700EB88F9 /* RadarUser.m */,
 				019514382BD081630031ABA2 /* RadarVerifiedLocationToken+Internal.h */,
 				019514372BD081630031ABA2 /* RadarVerifiedLocationToken.m */,
+				E64947792CCBE94C0002C047 /* RadarAlternativeTrackingOptions.m */,
+				E64947772CCBE6290002C047 /* RadarAlternativeTrackingOptions.h */,
 			);
 			name = Models;
 			sourceTree = "<group>";
@@ -678,6 +684,7 @@
 				0107AA1F26220059008AB52F /* RadarSettings.h in Headers */,
 				0107AA1626220050008AB52F /* RadarLogger.h in Headers */,
 				E6B93B722C90E2B8003CB858 /* RadarInitializeOptions.h in Headers */,
+				E64947782CCBE6290002C047 /* RadarAlternativeTrackingOptions.h in Headers */,
 				82F7FAEE2A65FE030055AA4B /* RadarVerificationManager.h in Headers */,
 				96A5A0C727AD9F41007B960B /* RadarChain+Internal.h in Headers */,
 				96A5A0C827AD9F41007B960B /* RadarBeacon+Internal.h in Headers */,
@@ -915,6 +922,7 @@
 				0107AB26262201F0008AB52F /* RadarState.m in Sources */,
 				0107AAA126220159008AB52F /* RadarEvent.m in Sources */,
 				0107AAE02622019B008AB52F /* RadarRoutes.m in Sources */,
+				E649477A2CCBE94C0002C047 /* RadarAlternativeTrackingOptions.m in Sources */,
 				96A5A11827ADA02F007B960B /* RadarLog.m in Sources */,
 				01F99CFD2965C1C4004E8CF3 /* RadarConfig.m in Sources */,
 				82DF187A2C58324900301B17 /* RadarActivityManager.m in Sources */,

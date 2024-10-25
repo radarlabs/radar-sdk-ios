@@ -6,6 +6,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "RadarAlternativeTrackingOptions.h"
 #import "Radar.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -37,13 +38,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, assign) BOOL useOfflineRTOUpdates;
 
-@property (nonatomic, copy, nullable) RadarTrackingOptions *inGeofenceTrackingOptions;
-
-@property (nonatomic, copy, nullable) RadarTrackingOptions *defaultTrackingOptions;
-
-@property (nonatomic, copy, nullable) RadarTrackingOptions *onTripTrackingOptions;
-
-@property (nonatomic, copy, nullable) NSArray<NSString *> *inGeofenceTrackingOptionsTags;
+@property (nonatomic, copy, nullable) NSArray<RadarAlternativeTrackingOptions *> *alternativeTrackingOptions;
 /**
  Initializes a new RadarSdkConfiguration object with given value.
  */
