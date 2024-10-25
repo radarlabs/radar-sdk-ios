@@ -176,7 +176,37 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         
         demoButton(text: "ipGeocode") {
             Radar.ipGeocode { (status, address, proxy) in
-                print("IP geocode: status = \(Radar.stringForStatus(status)); country = \(String(describing: address?.countryCode)); city = \(String(describing: address?.city)); proxy = \(proxy)")
+                print("IP geocode: status = \(Radar.stringForStatus(status)); country = \(String(describing: address?.countryCode)); city = \(String(describing: address?.city)); proxy = \(proxy); full address: \(String(describing: address?.dictionaryValue()))")
+            }
+        }
+
+        demoButton(text: "validateAddress") {
+            let address: RadarAddress = RadarAddress(from: [
+                "latitude": 0,
+                "longitude": 0,
+                "city": "New York",
+                "stateCode": "NY",
+                "postalCode": "10003",
+                "countryCode": "US",
+                "street": "Broadway",
+                "number": "841",
+            ])!
+            
+            Radar.validateAddress(address: address) { (status, address, verificationStatus) in
+                print("Validate address with street + number: status = \(Radar.stringForStatus(status)); country = \(String(describing: address?.countryCode)); city = \(String(describing: address?.city)); verificationStatus = \(verificationStatus)")
+            }
+            
+            let addressLabel: RadarAddress = RadarAddress(from: [
+                "latitude": 0,
+                "longitude": 0,
+                "city": "New York",
+                "stateCode": "NY",
+                "postalCode": "10003",
+                "countryCode": "US",
+                "addressLabel": "Broadway 841",
+            ])!
+            Radar.validateAddress(address: addressLabel) { (status, address, verificationStatus) in
+                print("Validate address with address label: status = \(Radar.stringForStatus(status)); country = \(String(describing: address?.countryCode)); city = \(String(describing: address?.city)); verificationStatus = \(verificationStatus)")
             }
         }
         
