@@ -67,20 +67,34 @@
             }
 
             if (params) {
-                if (!params[@"updatedAtMsDiff"]) {
+                if (!params[@"updatedAtMsDiff"] && !params[@"replays"]) {
                     [req setHTTPBody:[NSJSONSerialization dataWithJSONObject:params options:0 error:NULL]];
                 } else {
-                    // We replace updatedAtMsDiff because there might have been a delay in sending a /track with SLEEP:YES
+                    NSMutableDictionary *requestParams = [params mutableCopy];
                     NSNumber *locationMs = params[@"locationMs"];
+                    long nowMs = (long)([NSDate date].timeIntervalSince1970 * 1000);
+
                     if (locationMs) {
-                        long nowMs = (long)([NSDate date].timeIntervalSince1970 * 1000);
                         long updatedAtMsDiff = nowMs - [locationMs longValue];
-                        NSMutableDictionary *requestParams = [params mutableCopy];
                         requestParams[@"updatedAtMsDiff"] = @(updatedAtMsDiff);
-                        [req setHTTPBody:[NSJSONSerialization dataWithJSONObject:requestParams options:0 error:NULL]];
-                    } else {
-                        [req setHTTPBody:[NSJSONSerialization dataWithJSONObject:params options:0 error:NULL]];
                     }
+
+                    NSArray *replays = params[@"replays"];
+                    if (replays) {
+                        NSMutableArray *updatedReplays = [NSMutableArray arrayWithCapacity:replays.count];
+                        for (NSDictionary *replay in replays) {
+                            NSMutableDictionary *updatedReplay = [replay mutableCopy];
+                            NSNumber *replayLocationMs = replay[@"locationMs"];
+                            if (replayLocationMs) {
+                                long replayUpdatedAtMsDiff = nowMs - [replayLocationMs longValue];
+                                updatedReplay[@"updatedAtMsDiff"] = @(replayUpdatedAtMsDiff);
+                            }
+                            [updatedReplays addObject:updatedReplay];
+                        }
+                        requestParams[@"replays"] = updatedReplays;
+                    }
+
+                    [req setHTTPBody:[NSJSONSerialization dataWithJSONObject:requestParams options:0 error:NULL]];
                 }
             }
 

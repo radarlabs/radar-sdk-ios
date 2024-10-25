@@ -148,8 +148,6 @@
 
     NSMutableDictionary *requestParams = [NSMutableDictionary new];
     requestParams[@"replays"] = replays;
-    long nowMs = (long)([NSDate date].timeIntervalSince1970 * 1000);
-    requestParams[@"replayRequestMs"] = @(nowMs);
 
     [self.apiHelper requestWithMethod:@"POST"
                                   url:url
@@ -418,9 +416,6 @@
                                     // create a copy of params that we can use to write to the buffer in case of request failure
                                     NSMutableDictionary *bufferParams = [params mutableCopy];
                                     bufferParams[@"replayed"] = @(YES);
-                                    bufferParams[@"updatedAtMs"] = @(nowMs);
-                                    // remove the updatedAtMsDiff key because for replays we want to rely on the updatedAtMs key for the time instead
-                                    [bufferParams removeObjectForKey:@"updatedAtMsDiff"];
 
                                     [[RadarReplayBuffer sharedInstance] writeNewReplayToBuffer:bufferParams];
                                 } else if (options.replay == RadarTrackingOptionsReplayStops && stopped &&
