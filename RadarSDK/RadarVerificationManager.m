@@ -34,6 +34,7 @@
 
 @interface RadarVerificationManager ()
 
+@property (assign, nonatomic) BOOL started;
 @property (assign, nonatomic) NSTimeInterval startedInterval;
 @property (assign, nonatomic) BOOL startedBeacons;
 @property (strong, nonatomic) NSTimer *intervalTimer;
@@ -189,6 +190,10 @@
 }
 
 - (void)callTrackVerified {
+    if (!self.started) {
+        return;
+    }
+    
     [self trackVerifiedWithBeacons:self.startedBeacons completionHandler:^(RadarStatus status, RadarVerifiedLocationToken *_Nullable token) {
         NSTimeInterval expiresIn = 0;
         NSTimeInterval minInterval = self.startedInterval;
@@ -197,12 +202,8 @@
             expiresIn = token.expiresIn;
             
             // if expiresIn is shorter than interval, override interval
-            minInterval = MIN(expiresIn, self.startedInterval);
-        }
-        
-        // re-request early to maximize the likelihood that a cached token is available
-        if (minInterval > 20) {
-            minInterval = minInterval - 10;
+            // re-request early to maximize the likelihood that a cached token is available
+            minInterval = MIN(expiresIn - 10, self.startedInterval);
         }
         
         // min interval is 10 seconds
@@ -211,6 +212,10 @@
         }
         
         [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(intervalFired) object:nil];
+        
+        if (!self.started) {
+            return;
+        }
         
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Requesting token again in %f seconds | minInterval = %f; expiresIn = %f; startedInterval = %f", minInterval, minInterval, expiresIn, self.startedInterval]];
         
@@ -221,6 +226,7 @@
 - (void)startTrackingVerifiedWithInterval:(NSTimeInterval)interval beacons:(BOOL)beacons {
     [self stopTrackingVerified];
     
+    self.started = YES;
     self.startedInterval = interval;
     self.startedBeacons = beacons;
     
@@ -267,6 +273,8 @@
 }
 
 - (void)stopTrackingVerified {
+    self.started = NO;
+    
     if (@available(iOS 12.0, *)) {
         if (_monitor) {
             nw_path_monitor_cancel(_monitor);
