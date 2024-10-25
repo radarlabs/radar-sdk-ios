@@ -78,8 +78,10 @@ jobs:
         run: |
           VERSION=$(pod ipc spec RadarSDK.podspec | jq -r .version)
           ! pod trunk info RadarSDK | grep -q $VERSION
+          echo "RadarSDK version is OK"
           VERSION=$(pod ipc spec RadarSDKMotion.podspec | jq -r .version)
           ! pod trunk info RadarSDKMotion | grep -q $VERSION
+          echo "RadarSDKMotion version is OK"
 
       - name: Deploy to Cocoapods
         run: |

@@ -15,14 +15,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      # temp, just checking if these lines work as expected
-      - name: Check versions is not duplicate
-        run: |
-          VERSION=$(pod ipc spec RadarSDK.podspec | jq -r .version)
-          ! pod trunk info RadarSDK | grep -q $VERSION
-          VERSION=$(pod ipc spec RadarSDKMotion.podspec | jq -r .version)
-          ! pod trunk info RadarSDKMotion | grep -q $VERSION
-
       - name: Build, Analyze, & Test
         env:
           scheme: RadarSDK

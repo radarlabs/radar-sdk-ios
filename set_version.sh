@@ -1,5 +1,7 @@
+#!/bin/sh
+
 if [ $# -lt 1 ]; then
-  echo "Usage: $0 version_string"
+  echo "Usage: $0 <version_string>"
   exit 1
 fi
 
