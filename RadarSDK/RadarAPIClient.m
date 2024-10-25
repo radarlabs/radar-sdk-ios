@@ -253,9 +253,7 @@
     long nowMs = (long)([NSDate date].timeIntervalSince1970 * 1000);
     long timeInMs = (long)(location.timestamp.timeIntervalSince1970 * 1000);
     RadarTrackingOptions *options = [Radar getTrackingOptions];
-    if (!foreground || options.replay != RadarTrackingOptionsReplayNone) {
-        params[@"updatedAtMsDiff"] = @(nowMs - timeInMs);
-    }
+    params[@"updatedAtMsDiff"] = @(nowMs - timeInMs);
     params[@"locationMs"] = @(timeInMs);
     params[@"foreground"] = @(foreground);
     params[@"stopped"] = @(stopped);
