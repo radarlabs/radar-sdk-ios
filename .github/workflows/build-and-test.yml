@@ -14,11 +14,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Build, Analyze, & Test
-        env:
-          scheme: RadarSDK
-        run: |
-          xcodebuild clean build analyze test -scheme RadarSDK -workspace Example/Example.xcodeproj/project.xcworkspace -destination 'name=iPhone 15 Pro' | xcpretty && exit ${PIPESTATUS[0]}
 
       # temp, just checking if these lines work as expected
       - name: Check versions is not duplicate
@@ -27,7 +22,9 @@ jobs:
           ! pod trunk info RadarSDK | grep -q $VERSION
           VERSION=$(pod ipc spec RadarSDKMotion.podspec | jq -r .version)
           ! pod trunk info RadarSDKMotion | grep -q $VERSION
-      
-      - name: Next action
+
+      - name: Build, Analyze, & Test
+        env:
+          scheme: RadarSDK
         run: |
-          echo "THIS WAS RAN"
+          xcodebuild clean build analyze test -scheme RadarSDK -workspace Example/Example.xcodeproj/project.xcworkspace -destination 'name=iPhone 15 Pro' | xcpretty && exit ${PIPESTATUS[0]}
