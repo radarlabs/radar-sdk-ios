@@ -136,7 +136,6 @@ static NSString *const kSyncGeofenceIdentifierPrefix = @"radar_geofence_";
         NSMutableArray *identifiers = [NSMutableArray new];
         for (UNNotificationRequest *request in requests) {
             if ([request.identifier hasPrefix:kSyncGeofenceIdentifierPrefix]) {
-                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Found pending notification to remove | identifier = %@", request.identifier]];
                 [identifiers addObject:request.identifier];
             }
         }
