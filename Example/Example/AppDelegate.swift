@@ -102,6 +102,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
                 print("Context: status = \(Radar.stringForStatus(status)); location = \(String(describing: location)); context?.geofences = \(String(describing: context?.geofences)); context?.place = \(String(describing: context?.place)); context?.country = \(String(describing: context?.country))")
             }
         }
+        
+        demoButton(text: "startTrackingVerified") {
+            Radar.startTrackingVerified(interval: 60, beacons: false)
+        }
+        
+        demoButton(text: "stopTrackingVerified") {
+            Radar.stopTrackingVerified()
+        }
+        
+        demoButton(text: "getVerifiedLocationToken") {
+            Radar.getVerifiedLocationToken() { (status, token) in
+                print("getVerifiedLocationToken: status = \(status); token = \(token?.dictionaryValue())")
+            }
+        }
 
         demoButton(text: "trackVerified") {
             Radar.trackVerified() { (status, token) in
@@ -162,7 +176,37 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         
         demoButton(text: "ipGeocode") {
             Radar.ipGeocode { (status, address, proxy) in
-                print("IP geocode: status = \(Radar.stringForStatus(status)); country = \(String(describing: address?.countryCode)); city = \(String(describing: address?.city)); proxy = \(proxy)")
+                print("IP geocode: status = \(Radar.stringForStatus(status)); country = \(String(describing: address?.countryCode)); city = \(String(describing: address?.city)); proxy = \(proxy); full address: \(String(describing: address?.dictionaryValue()))")
+            }
+        }
+
+        demoButton(text: "validateAddress") {
+            let address: RadarAddress = RadarAddress(from: [
+                "latitude": 0,
+                "longitude": 0,
+                "city": "New York",
+                "stateCode": "NY",
+                "postalCode": "10003",
+                "countryCode": "US",
+                "street": "Broadway",
+                "number": "841",
+            ])!
+            
+            Radar.validateAddress(address: address) { (status, address, verificationStatus) in
+                print("Validate address with street + number: status = \(Radar.stringForStatus(status)); country = \(String(describing: address?.countryCode)); city = \(String(describing: address?.city)); verificationStatus = \(verificationStatus)")
+            }
+            
+            let addressLabel: RadarAddress = RadarAddress(from: [
+                "latitude": 0,
+                "longitude": 0,
+                "city": "New York",
+                "stateCode": "NY",
+                "postalCode": "10003",
+                "countryCode": "US",
+                "addressLabel": "Broadway 841",
+            ])!
+            Radar.validateAddress(address: addressLabel) { (status, address, verificationStatus) in
+                print("Validate address with address label: status = \(Radar.stringForStatus(status)); country = \(String(describing: address?.countryCode)); city = \(String(describing: address?.city)); verificationStatus = \(verificationStatus)")
             }
         }
         
