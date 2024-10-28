@@ -21,5 +21,6 @@
 + (NSArray<RadarAlternativeTrackingOptions *> *_Nullable)AlternativeTrackingOptionsFromObject:(id _Nonnull)object;
 - (instancetype _Nullable)initWithObject:(id _Nonnull)object;
 - (instancetype _Nullable)initWithType:(NSString *_Nonnull)type trackingOptions:(RadarTrackingOptions *_Nonnull)trackingOptions geofenceTags:(NSArray<NSString *> *_Nullable)geofenceTags;
-
++ (NSArray<NSString *> *_Nullable)getGeofenceTagsWithKey:(NSString *_Nonnull)key alternativeTrackingOptions:(NSArray<RadarAlternativeTrackingOptions *> *_Nullable)alternativeTrackingOptions NS_SWIFT_NAME(getGeofenceTags(key:alternativeTrackingOptions:));
++ (RadarTrackingOptions *_Nullable)getTrackingOptionsWithKey:(NSString *_Nonnull)key alternativeTrackingOptions:(NSArray<RadarAlternativeTrackingOptions *> *_Nullable)alternativeTrackingOptions NS_SWIFT_NAME(getTrackingOptions(key:alternativeTrackingOptions:));
 @end

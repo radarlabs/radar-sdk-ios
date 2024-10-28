@@ -86,5 +86,35 @@
     return self;
 }
 
++ (NSArray<NSString *> *)getGeofenceTagsWithKey:(NSString *)key alternativeTrackingOptions:(NSArray<RadarAlternativeTrackingOptions *> *)alternativeTrackingOptions {
+    if (alternativeTrackingOptions == nil) {
+        return nil;
+    }
+    for (RadarAlternativeTrackingOptions *alternativeTrackingOption in alternativeTrackingOptions) {
+        if (alternativeTrackingOption == nil) {
+            continue;
+        }
+        if ([alternativeTrackingOption.type isEqualToString:key]) {
+            return alternativeTrackingOption.geofenceTags;
+        }
+    }
+    return nil;
+}
+
++ (RadarTrackingOptions *)getTrackingOptionsWithKey:(NSString *)key alternativeTrackingOptions:(NSArray<RadarAlternativeTrackingOptions *> *)alternativeTrackingOptions {
+    if (alternativeTrackingOptions == nil) {
+        return nil;
+    }
+    for (RadarAlternativeTrackingOptions *alternativeTrackingOption in alternativeTrackingOptions) {
+        if (alternativeTrackingOption == nil) {
+            continue;
+        }
+        if ([alternativeTrackingOption.type isEqualToString:key]) {
+            return alternativeTrackingOption.trackingOptions;
+        }
+    }
+    return nil;
+}
+
 @end
 
