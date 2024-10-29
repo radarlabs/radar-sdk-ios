@@ -13,7 +13,7 @@
       "startTrackingOnInitialize": true,
       "trackOnceOnAppOpen": true,
       "useOfflineRTOUpdates": true,
-      "alternativeTrackingOptions": [
+      "remoteTrackingOptions": [
         {
           "type": "default",
           "trackingOptions": {

@@ -42,7 +42,7 @@ import CoreLocation
             }
         }
         RadarState.setGeofenceIds(newGeofenceIds)
-        let rampUpGeofenceTagsOptional = RadarAlternativeTrackingOptions.getGeofenceTags(key: "inGeofence", alternativeTrackingOptions: sdkConfig?.alternativeTrackingOptions)
+        let rampUpGeofenceTagsOptional = RadarRemoteTrackingOptions.getGeofenceTags(key: "inGeofence", remoteTrackingOptions: sdkConfig?.remoteTrackingOptions)
         var inRampedUpGeofence = false
         if let rampUpGeofenceTags = rampUpGeofenceTagsOptional {
             inRampedUpGeofence = !Set(rampUpGeofenceTags).isDisjoint(with: Set(newGeofenceTags))
@@ -53,15 +53,15 @@ import CoreLocation
         if inRampedUpGeofence {
             // ramp up
             RadarLogger.sharedInstance().log(level: RadarLogLevel.debug, message: "Ramping up from Radar offline manager")
-            newTrackingOptions = RadarAlternativeTrackingOptions.getTrackingOptions(key: "inGeofence", alternativeTrackingOptions: sdkConfig?.alternativeTrackingOptions)
+            newTrackingOptions = RadarRemoteTrackingOptions.getTrackingOptions(key: "inGeofence", remoteTrackingOptions: sdkConfig?.remoteTrackingOptions)
         } else {
             // ramp down if needed
-            if let onTripOptions = RadarAlternativeTrackingOptions.getTrackingOptions(key: "onTrip", alternativeTrackingOptions: sdkConfig?.alternativeTrackingOptions),
+            if let onTripOptions = RadarRemoteTrackingOptions.getTrackingOptions(key: "onTrip", remoteTrackingOptions: sdkConfig?.remoteTrackingOptions),
                 let _ = Radar.getTripOptions() {
                 newTrackingOptions = onTripOptions
                 RadarLogger.sharedInstance().log(level: RadarLogLevel.debug, message: "Ramping down from Radar offline manager to trip tracking options")
             } else {
-                newTrackingOptions = RadarAlternativeTrackingOptions.getTrackingOptions(key: "default", alternativeTrackingOptions: sdkConfig?.alternativeTrackingOptions)
+                newTrackingOptions = RadarRemoteTrackingOptions.getTrackingOptions(key: "default", remoteTrackingOptions: sdkConfig?.remoteTrackingOptions)
                 RadarLogger.sharedInstance().log(level: RadarLogLevel.debug, message: "Ramping down from Radar offline manager to default tracking options")
             }
         }

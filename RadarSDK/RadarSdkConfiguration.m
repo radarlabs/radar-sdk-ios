@@ -81,10 +81,10 @@
         _useOfflineRTOUpdates = [(NSNumber *)useOfflineRTOUpdates boolValue];
     }
 
-    NSObject *alternativeTrackingOptionsObj = dict[@"alternativeTrackingOptions"];
-    _alternativeTrackingOptions = nil;
-    if (alternativeTrackingOptionsObj && [alternativeTrackingOptionsObj isKindOfClass:[NSArray class]]) {
-        _alternativeTrackingOptions = [RadarAlternativeTrackingOptions AlternativeTrackingOptionsFromObject:alternativeTrackingOptionsObj];
+    NSObject *remoteTrackingOptionsObj = dict[@"remoteTrackingOptions"];
+    _remoteTrackingOptions = nil;
+    if (remoteTrackingOptionsObj && [remoteTrackingOptionsObj isKindOfClass:[NSArray class]]) {
+        _remoteTrackingOptions = [RadarRemoteTrackingOptions RemoteTrackingOptionsFromObject:remoteTrackingOptionsObj];
     }
 
     return self;
@@ -103,7 +103,7 @@
     dict[@"useLocationMetadata"] = @(_useLocationMetadata);
     dict[@"useOpenedAppConversion"] = @(_useOpenedAppConversion);
     dict[@"useOfflineRTOUpdates"] = @(_useOfflineRTOUpdates);
-    dict[@"alternativeTrackingOptions"] = [RadarAlternativeTrackingOptions arrayForAlternativeTrackingOptions:_alternativeTrackingOptions];
+    dict[@"remoteTrackingOptions"] = [RadarRemoteTrackingOptions arrayForRemoteTrackingOptions:_remoteTrackingOptions];
     return dict;
 }
 

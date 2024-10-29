@@ -1,5 +1,5 @@
 //
-//  RadarAlternativeTrackingOptions.m
+//  RadarRemoteTrackingOptions.m
 //  RadarSDK
 //
 //  Created by Kenny Hu on 10/25/24.
@@ -8,30 +8,30 @@
 
 #import <Foundation/Foundation.h>
 
-#import "RadarAlternativeTrackingOptions.h"
+#import "RadarRemoteTrackingOptions.h"
 
-@implementation RadarAlternativeTrackingOptions
-+ (NSArray<RadarAlternativeTrackingOptions *> * _Nullable)AlternativeTrackingOptionsFromObject:(id _Nonnull)object {
+@implementation RadarRemoteTrackingOptions
++ (NSArray<RadarRemoteTrackingOptions *> * _Nullable)RemoteTrackingOptionsFromObject:(id _Nonnull)object {
     if (!object || ![object isKindOfClass:[NSArray class]]) {
         return nil;
     }
-    NSMutableArray *mutableAlternativeTrackingOptions = [NSMutableArray new];
-    NSArray *alternativeTrackingOptions = (NSArray *)object;
-    for (id alternativeTrackingOptionObj in alternativeTrackingOptions) {
-        RadarAlternativeTrackingOptions *alternativeTrackingOption = [[RadarAlternativeTrackingOptions alloc] initWithObject:alternativeTrackingOptionObj];
-        if (alternativeTrackingOption) {
-            [mutableAlternativeTrackingOptions addObject:alternativeTrackingOption];
+    NSMutableArray *mutableRemoteTrackingOptions = [NSMutableArray new];
+    NSArray *remoteTrackingOptions = (NSArray *)object;
+    for (id remoteTrackingOptionObj in remoteTrackingOptions) {
+        RadarRemoteTrackingOptions *remoteTrackingOption = [[RadarRemoteTrackingOptions alloc] initWithObject:remoteTrackingOptionObj];
+        if (remoteTrackingOption) {
+            [mutableRemoteTrackingOptions addObject:remoteTrackingOption];
         }
     }
-    return mutableAlternativeTrackingOptions;
+    return mutableRemoteTrackingOptions;
 }
 
-+ (NSArray<NSDictionary *> * _Nullable)arrayForAlternativeTrackingOptions:(NSArray<RadarAlternativeTrackingOptions *> * _Nullable)alternativeTrackingOptions {
-    if (!alternativeTrackingOptions) {
++ (NSArray<NSDictionary *> * _Nullable)arrayForRemoteTrackingOptions:(NSArray<RadarRemoteTrackingOptions *> * _Nullable)remoteTrackingOptions {
+    if (!remoteTrackingOptions) {
         return nil;
     }
-    NSMutableArray *arr = [[NSMutableArray alloc] initWithCapacity:alternativeTrackingOptions.count];
-    for (RadarAlternativeTrackingOptions *alternativeTrackingOption in alternativeTrackingOptions) {
+    NSMutableArray *arr = [[NSMutableArray alloc] initWithCapacity:remoteTrackingOptions.count];
+    for (RadarRemoteTrackingOptions *alternativeTrackingOption in remoteTrackingOptions) {
         [arr addObject:[alternativeTrackingOption dictionaryValue]];
     }
     return arr;
@@ -73,7 +73,7 @@
         geofenceTags = (NSArray *)geofenceTagsObj;
     }
 
-    return [[RadarAlternativeTrackingOptions alloc] initWithType:type trackingOptions:trackingOptions geofenceTags:geofenceTags];
+    return [[RadarRemoteTrackingOptions alloc] initWithType:type trackingOptions:trackingOptions geofenceTags:geofenceTags];
 }
 
 - (instancetype _Nullable)initWithType:(NSString * _Nonnull)type trackingOptions:(RadarTrackingOptions * _Nonnull)trackingOptions geofenceTags:(NSArray<NSString *> * _Nullable)geofenceTags {
@@ -86,11 +86,11 @@
     return self;
 }
 
-+ (NSArray<NSString *> *)getGeofenceTagsWithKey:(NSString *)key alternativeTrackingOptions:(NSArray<RadarAlternativeTrackingOptions *> *)alternativeTrackingOptions {
-    if (alternativeTrackingOptions == nil) {
++ (NSArray<NSString *> *)getGeofenceTagsWithKey:(NSString *)key remoteTrackingOptions:(NSArray<RadarRemoteTrackingOptions *> *)remoteTrackingOptions {
+    if (remoteTrackingOptions == nil) {
         return nil;
     }
-    for (RadarAlternativeTrackingOptions *alternativeTrackingOption in alternativeTrackingOptions) {
+    for (RadarRemoteTrackingOptions *alternativeTrackingOption in remoteTrackingOptions) {
         if (alternativeTrackingOption == nil) {
             continue;
         }
@@ -101,11 +101,11 @@
     return nil;
 }
 
-+ (RadarTrackingOptions *)getTrackingOptionsWithKey:(NSString *)key alternativeTrackingOptions:(NSArray<RadarAlternativeTrackingOptions *> *)alternativeTrackingOptions {
-    if (alternativeTrackingOptions == nil) {
++ (RadarTrackingOptions *)getTrackingOptionsWithKey:(NSString *)key remoteTrackingOptions:(NSArray<RadarRemoteTrackingOptions *> *)remoteTrackingOptions {
+    if (remoteTrackingOptions == nil) {
         return nil;
     }
-    for (RadarAlternativeTrackingOptions *alternativeTrackingOption in alternativeTrackingOptions) {
+    for (RadarRemoteTrackingOptions *alternativeTrackingOption in remoteTrackingOptions) {
         if (alternativeTrackingOption == nil) {
             continue;
         }
