@@ -6,9 +6,6 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Xcode version
-          command: xcode-select -p
-      - run:
           name: List simulators
           command: xcrun simctl list
       - run:
