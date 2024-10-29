@@ -10,14 +10,7 @@ import UserNotifications
 import RadarSDK
 
 @UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UNUserNotificationCenterDelegate, CLLocationManagerDelegate, RadarDelegate, RadarVerifiedDelegate, RadarURLDelegate {
-    
-    func didHandleURL(_ url: URL) -> Bool {
-        print(" called with url %@", url)
-        // handle navigation here
-        return true
-    }
-    
+class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UNUserNotificationCenterDelegate, CLLocationManagerDelegate, RadarDelegate, RadarVerifiedDelegate{    
 
     let locationManager = CLLocationManager()
     var window: UIWindow? // required for UIWindowSceneDelegate
@@ -34,10 +27,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         
         // Replace with a valid test publishable key
         let radarInitializeOptions = RadarInitializeOptions()
-        // Uncomment to enable automatic setup for notification conversions
-        radarInitializeOptions.autoLogNotificationConversions = true
-        radarInitializeOptions.autoHandleNotificationDeepLinks = true
-        radarInitializeOptions.urlDelegate = self
+        // Uncomment to enable automatic setup for notification conversions or deep linking
+        //radarInitializeOptions.autoLogNotificationConversions = true
+        //radarInitializeOptions.autoHandleNotificationDeepLinks = true
         Radar.initialize(publishableKey: "prj_test_pk_0000000000000000000000000000000000000000", options: radarInitializeOptions )
         Radar.setUserId("testUserId")
         Radar.setMetadata([ "foo": "bar" ])

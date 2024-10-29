@@ -127,9 +127,6 @@ static NSString *const kSyncGeofenceIdentifierPrefix = @"radar_geofence_";
         if (urlString) {
             NSURL *url = [NSURL URLWithString:urlString];
             if (url) {
-                if([[RadarDelegateHolder sharedInstance] didHandleURL:url]) {
-                    return;
-                }
                 UIApplication *application = [UIApplication sharedApplication];
                 if ([application canOpenURL:url]) {
                    [application openURL:url options:@{} completionHandler:nil];

@@ -17,7 +17,6 @@
     if (self) {
         _autoLogNotificationConversions = NO;
         _autoHandleNotificationDeepLinks = NO;
-        _urlDelegate = nil;
     }
     return self;
 }

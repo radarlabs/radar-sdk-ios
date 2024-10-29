@@ -67,15 +67,11 @@
     [RadarSettings setPublishableKey:publishableKey];
 
     RadarSdkConfiguration *sdkConfiguration = [RadarSettings sdkConfiguration];
-
+    // For most users not using these features, options be null and skipped,
+    //  For X-platform users initlizing Radar in the crossplatform layer, the optiosn will also be null as nativeSetup would had been called ealier 
     if (options) {
-
         [RadarSettings setInitializeOptions:options];
-        
         if (NSClassFromString(@"XCTestCase") == nil) {
-            if (options.urlDelegate) {
-                [RadarDelegateHolder sharedInstance].urlDelegate = options.urlDelegate;
-            }
             if (options.autoLogNotificationConversions || options.autoHandleNotificationDeepLinks) {
                 [Radar nativeSetup: options];
             }
