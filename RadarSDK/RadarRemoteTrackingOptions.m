@@ -31,8 +31,8 @@
         return nil;
     }
     NSMutableArray *arr = [[NSMutableArray alloc] initWithCapacity:remoteTrackingOptions.count];
-    for (RadarRemoteTrackingOptions *alternativeTrackingOption in remoteTrackingOptions) {
-        [arr addObject:[alternativeTrackingOption dictionaryValue]];
+    for (RadarRemoteTrackingOptions *remoteTrackingOption in remoteTrackingOptions) {
+        [arr addObject:[remoteTrackingOption dictionaryValue]];
     }
     return arr;
 }
@@ -90,12 +90,12 @@
     if (remoteTrackingOptions == nil) {
         return nil;
     }
-    for (RadarRemoteTrackingOptions *alternativeTrackingOption in remoteTrackingOptions) {
-        if (alternativeTrackingOption == nil) {
+    for (RadarRemoteTrackingOptions *remoteTrackingOption in remoteTrackingOptions) {
+        if (remoteTrackingOption == nil) {
             continue;
         }
-        if ([alternativeTrackingOption.type isEqualToString:key]) {
-            return alternativeTrackingOption.geofenceTags;
+        if ([remoteTrackingOption.type isEqualToString:key]) {
+            return remoteTrackingOption.geofenceTags;
         }
     }
     return nil;
@@ -105,12 +105,12 @@
     if (remoteTrackingOptions == nil) {
         return nil;
     }
-    for (RadarRemoteTrackingOptions *alternativeTrackingOption in remoteTrackingOptions) {
-        if (alternativeTrackingOption == nil) {
+    for (RadarRemoteTrackingOptions *remoteTrackingOption in remoteTrackingOptions) {
+        if (remoteTrackingOption == nil) {
             continue;
         }
-        if ([alternativeTrackingOption.type isEqualToString:key]) {
-            return alternativeTrackingOption.trackingOptions;
+        if ([remoteTrackingOption.type isEqualToString:key]) {
+            return remoteTrackingOption.trackingOptions;
         }
     }
     return nil;
