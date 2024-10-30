@@ -521,7 +521,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
         if (status != RadarStatusSuccess || !config) {
             return;
         }
-        [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
+        [[RadarLocationManager sharedInstance] updateTrackingFromConfig:config];
         [RadarSettings setSdkConfiguration:config.meta.sdkConfiguration];
         
         XCTAssertTrue([[Radar getTrackingOptions] isEqual:RadarTrackingOptions.presetResponsive]);
@@ -558,7 +558,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
         if (status != RadarStatusSuccess || !config) {
             return;
         }
-        [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
+        [[RadarLocationManager sharedInstance] updateTrackingFromConfig:config];
         [RadarSettings setSdkConfiguration:config.meta.sdkConfiguration];
         
         XCTAssertTrue([[Radar getTrackingOptions] isEqual:RadarTrackingOptions.presetResponsive]);
@@ -607,7 +607,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
         if (status != RadarStatusSuccess || !config) {
             return;
         }
-        [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
+        [[RadarLocationManager sharedInstance] updateTrackingFromConfig:config];
         [RadarSettings setSdkConfiguration:config.meta.sdkConfiguration];
         
         XCTAssertTrue([[Radar getTrackingOptions] isEqual:RadarTrackingOptions.presetResponsive]);

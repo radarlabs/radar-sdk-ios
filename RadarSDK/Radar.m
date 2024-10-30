@@ -86,7 +86,7 @@
                                                   verified:NO
                                          completionHandler:^(RadarStatus status, RadarConfig *config) {
                                             if (status == RadarStatusSuccess && config) {
-                                                [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
+                                                [[RadarLocationManager sharedInstance] updateTrackingFromConfig:config];
                                                 [RadarSettings setSdkConfiguration:config.meta.sdkConfiguration];
                                             }
                                          
@@ -198,9 +198,7 @@
                                            beacons:beacons
                                  completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user,
                                                      NSArray<RadarGeofence *> *_Nullable nearbyGeofences, RadarConfig *_Nullable config, RadarVerifiedLocationToken *_Nullable token) {
-                                    if (config != nil) {
-                                        [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
-                                    }
+                                    [[RadarLocationManager sharedInstance] updateTrackingFromConfig:config];
                                     if (status == RadarStatusSuccess) {
                                         [[RadarLocationManager sharedInstance] replaceSyncedGeofences:nearbyGeofences];
                                     }
@@ -270,9 +268,7 @@
                                                beacons:nil
                                      completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user,
                                                          NSArray<RadarGeofence *> *_Nullable nearbyGeofences, RadarConfig *_Nullable config, RadarVerifiedLocationToken *_Nullable token) {
-                                        if (config != nil) {                                    
-                                            [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];                                            
-                                        }
+                                        [[RadarLocationManager sharedInstance] updateTrackingFromConfig:config];                                            
                                         if (completionHandler) {
                                             [RadarUtils runOnMainThread:^{
                                                 completionHandler(status, location, events, user);
@@ -1333,7 +1329,7 @@
                                              if (status != RadarStatusSuccess || !config) {
                                                 return;
                                              }
-                                             [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
+                                             [[RadarLocationManager sharedInstance] updateTrackingFromConfig:config];
                                              [RadarSettings setSdkConfiguration:config.meta.sdkConfiguration];
                                          }];
     }

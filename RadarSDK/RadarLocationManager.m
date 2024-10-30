@@ -456,12 +456,15 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     });
 }
 
-- (void)updateTrackingFromMeta:(RadarMeta *_Nullable)meta {
-    if (meta) {
-        if ([meta trackingOptions]) {
+- (void)updateTrackingFromConfig:(RadarConfig *_Nullable)config {
+    if (config != nil) {
+        return;
+    }
+    if (config.meta) {
+        if ([config.meta trackingOptions]) {
             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
-                                               message:[NSString stringWithFormat:@"Setting remote tracking options | trackingOptions = %@", meta.trackingOptions]];
-            [RadarSettings setRemoteTrackingOptions:[meta trackingOptions]];
+                                               message:[NSString stringWithFormat:@"Setting remote tracking options | trackingOptions = %@", config.meta.trackingOptions]];
+            [RadarSettings setRemoteTrackingOptions:[config.meta trackingOptions]];
         } else {
             [RadarSettings removeRemoteTrackingOptions];
             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
@@ -893,9 +896,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                                                                  NSArray<RadarGeofence *> *_Nullable nearbyGeofences, RadarConfig *_Nullable config, RadarVerifiedLocationToken *_Nullable token) {
                 self.sending = NO;
 
-                if (config != nil) {
-                    [self updateTrackingFromMeta:config.meta];
-                }
+                [self updateTrackingFromConfig:config];
 
                 if (status != RadarStatusSuccess || !config) {
                     return;
@@ -982,9 +983,8 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                                                              NSArray<RadarGeofence *> *_Nullable nearbyGeofences, RadarConfig *_Nullable config, RadarVerifiedLocationToken *_Nullable token) {
                                             self.sending = NO;
 
-                                            if (config != nil) {
-                                                [self updateTrackingFromMeta:config.meta];
-                                            }
+                                            [self updateTrackingFromConfig:config];
+                                            
                                             if (status != RadarStatusSuccess || !config) {
                                                 return;
                                             }
