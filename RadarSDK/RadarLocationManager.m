@@ -514,8 +514,6 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 }
 
 - (void)replaceSyncedGeofences:(NSArray<RadarGeofence *> *)geofences {
-    [self removeSyncedGeofences];
-
     if (!geofences) {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Skipping replacing synced geofences"];
 
@@ -523,6 +521,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     }
 
     [RadarState setNearbyGeofences:geofences];
+    [self removeSyncedGeofences];
 
     RadarTrackingOptions *options = [Radar getTrackingOptions];
     NSUInteger numGeofences = MIN(geofences.count, options.beacons ? 9 : 19);
