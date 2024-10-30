@@ -10,7 +10,7 @@ import Foundation
 import CoreLocation
 
 @objc(RadarOfflineManager) class RadarOfflineManager: NSObject {
-    @objc public static func contextualizeLocation(_ location: CLLocation, completionHandler: @escaping (RadarConfig?) -> Void) {
+    @objc public static func updateTrackingOptionsFromOfflineLocation(_ location: CLLocation, completionHandler: @escaping (RadarConfig?) -> Void) {
         var newGeofenceIds = [String]()
         var newGeofenceTags = [String]()
         let sdkConfig = RadarSettings.sdkConfiguration()

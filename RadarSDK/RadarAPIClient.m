@@ -396,7 +396,7 @@
                 [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Failed to flush replays"]];
                 [[RadarDelegateHolder sharedInstance] didFailWithStatus:status];
                 if ([RadarSettings sdkConfiguration].useOfflineRTOUpdates) { 
-                    return [RadarOfflineManager contextualizeLocation:location completionHandler:^(RadarConfig * _Nullable config) {
+                    return [RadarOfflineManager updateTrackingOptionsFromOfflineLocation:location completionHandler:^(RadarConfig * _Nullable config) {
                         return completionHandler(status, nil, nil, nil, nil, config, nil);
                     }];
                 }
@@ -433,7 +433,7 @@
 
                                 [[RadarDelegateHolder sharedInstance] didFailWithStatus:status];
                                 if ([RadarSettings sdkConfiguration].useOfflineRTOUpdates) { 
-                                    return [RadarOfflineManager contextualizeLocation:location completionHandler:^(RadarConfig * _Nullable config) {
+                                    return [RadarOfflineManager updateTrackingOptionsFromOfflineLocation:location completionHandler:^(RadarConfig * _Nullable config) {
                                         return completionHandler(status, nil, nil, nil, nil, config, nil);
                                     }];
                                 } else {

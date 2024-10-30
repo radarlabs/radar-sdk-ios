@@ -13,7 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface RadarOfflineManager : NSObject
 
-+ (void)contextualizeLocation:(CLLocation *)location completionHandler:(void (^)(RadarConfig *))completionHandler;
++ (void)updateTrackingOptionsFromOfflineLocation:(CLLocation *)location completionHandler:(void (^)(RadarConfig *))completionHandler;
 
 @end
 

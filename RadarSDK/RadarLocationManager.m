@@ -457,7 +457,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 }
 
 - (void)updateTrackingFromConfig:(RadarConfig *_Nullable)config {
-    if (config != nil) {
+    if (config == nil) {
         return;
     }
     if (config.meta) {
