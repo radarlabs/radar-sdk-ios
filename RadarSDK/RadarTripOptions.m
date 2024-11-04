@@ -17,7 +17,7 @@ static NSString *const kDestinationGeofenceExternalId = @"destinationGeofenceExt
 static NSString *const kMode = @"mode";
 static NSString *const kScheduledArrivalAt = @"scheduledArrivalAt";
 static NSString *const kApproachingThreshold = @"approachingThreshold";
-static NSString *const kScheduled = @"scheduled";
+static NSString *const kStartTracking = @"startTracking";
 
 
 - (instancetype)initWithExternalId:(NSString *_Nonnull)externalId
@@ -29,7 +29,7 @@ static NSString *const kScheduled = @"scheduled";
         _destinationGeofenceTag = destinationGeofenceTag;
         _destinationGeofenceExternalId = destinationGeofenceExternalId;
         _mode = RadarRouteModeCar;
-        _scheduled = NO;
+        _startTracking = YES;
 
     }
     return self;
@@ -52,14 +52,14 @@ static NSString *const kScheduled = @"scheduled";
             destinationGeofenceTag:(NSString *_Nullable)destinationGeofenceTag
      destinationGeofenceExternalId:(NSString *_Nullable)destinationGeofenceExternalId
                 scheduledArrivalAt:(NSDate *_Nullable)scheduledArrivalAt
-                       scheduled:(BOOL)scheduled {
+                       startTracking:(BOOL)startTracking {
     self = [self initWithExternalId:externalId 
             destinationGeofenceTag:destinationGeofenceTag 
      destinationGeofenceExternalId:destinationGeofenceExternalId
                 scheduledArrivalAt:scheduledArrivalAt];
     
     if (self) {
-        _scheduled = scheduled;
+        _startTracking = startTracking;
     }
     
     return self;
@@ -100,8 +100,8 @@ static NSString *const kScheduled = @"scheduled";
         options.mode = RadarRouteModeCar;
     }
     options.approachingThreshold = [dict[kApproachingThreshold] intValue];
-    options.scheduled = [dict[kScheduled] boolValue];
-    
+    options.startTracking = dict[kStartTracking] ? [dict[kStartTracking] boolValue] : YES;
+
     return options;
 }
 
@@ -116,7 +116,7 @@ static NSString *const kScheduled = @"scheduled";
     if (self.approachingThreshold && self.approachingThreshold > 0) {
         dict[kApproachingThreshold] = @(self.approachingThreshold);
     }
-    dict[kScheduled] = @(self.scheduled);
+    dict[kStartTracking] = @(self.startTracking);
 
     return dict;
 }
@@ -146,7 +146,7 @@ static NSString *const kScheduled = @"scheduled";
            ((!self.scheduledArrivalAt && !options.scheduledArrivalAt) ||
             (self.scheduledArrivalAt != nil && options.scheduledArrivalAt != nil && [self.scheduledArrivalAt isEqualToDate:options.scheduledArrivalAt])) &&
            self.mode == options.mode && ((!self.approachingThreshold && !options.approachingThreshold) || (self.approachingThreshold == options.approachingThreshold)) &&
-           self.scheduled == options.scheduled;
+           self.startTracking == options.startTracking;
 }
 
 @end

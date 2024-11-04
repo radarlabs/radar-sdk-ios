@@ -31,7 +31,7 @@ NS_ASSUME_NONNULL_BEGIN
             destinationGeofenceTag:(NSString *_Nullable)destinationGeofenceTag
      destinationGeofenceExternalId:(NSString *_Nullable)destinationGeofenceExternalId
                 scheduledArrivalAt:(NSDate *_Nullable)scheduledArrivalAt
-                         scheduled:(BOOL)scheduled;
+                         startTracking:(BOOL)startTracking;
 /**
  A stable unique ID for the trip.
  */
@@ -64,7 +64,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, assign) UInt16 approachingThreshold;
 
-@property (nonatomic, assign) BOOL scheduled;
+@property (nonatomic, assign) BOOL startTracking;
 
 + (RadarTripOptions *_Nullable)tripOptionsFromDictionary:(NSDictionary *)dict;
 - (NSDictionary *)dictionaryValue;
