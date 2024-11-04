@@ -17,6 +17,8 @@ static NSString *const kDestinationGeofenceExternalId = @"destinationGeofenceExt
 static NSString *const kMode = @"mode";
 static NSString *const kScheduledArrivalAt = @"scheduledArrivalAt";
 static NSString *const kApproachingThreshold = @"approachingThreshold";
+static NSString *const kScheduled = @"scheduled";
+
 
 - (instancetype)initWithExternalId:(NSString *_Nonnull)externalId
             destinationGeofenceTag:(NSString *_Nullable)destinationGeofenceTag
@@ -27,6 +29,8 @@ static NSString *const kApproachingThreshold = @"approachingThreshold";
         _destinationGeofenceTag = destinationGeofenceTag;
         _destinationGeofenceExternalId = destinationGeofenceExternalId;
         _mode = RadarRouteModeCar;
+        _scheduled = NO;
+
     }
     return self;
 }
@@ -41,6 +45,23 @@ static NSString *const kApproachingThreshold = @"approachingThreshold";
         _scheduledArrivalAt = scheduledArrivalAt;
     }
 
+    return self;
+}
+
+- (instancetype)initWithExternalId:(NSString *_Nonnull)externalId
+            destinationGeofenceTag:(NSString *_Nullable)destinationGeofenceTag
+     destinationGeofenceExternalId:(NSString *_Nullable)destinationGeofenceExternalId
+                scheduledArrivalAt:(NSDate *_Nullable)scheduledArrivalAt
+                       scheduled:(BOOL)scheduled {
+    self = [self initWithExternalId:externalId 
+            destinationGeofenceTag:destinationGeofenceTag 
+     destinationGeofenceExternalId:destinationGeofenceExternalId
+                scheduledArrivalAt:scheduledArrivalAt];
+    
+    if (self) {
+        _scheduled = scheduled;
+    }
+    
     return self;
 }
 
@@ -79,6 +100,8 @@ static NSString *const kApproachingThreshold = @"approachingThreshold";
         options.mode = RadarRouteModeCar;
     }
     options.approachingThreshold = [dict[kApproachingThreshold] intValue];
+    options.scheduled = [dict[kScheduled] boolValue];
+    
     return options;
 }
 
@@ -93,6 +116,8 @@ static NSString *const kApproachingThreshold = @"approachingThreshold";
     if (self.approachingThreshold && self.approachingThreshold > 0) {
         dict[kApproachingThreshold] = @(self.approachingThreshold);
     }
+    dict[kScheduled] = @(self.scheduled);
+
     return dict;
 }
 
@@ -120,7 +145,8 @@ static NSString *const kApproachingThreshold = @"approachingThreshold";
              [self.destinationGeofenceExternalId isEqualToString:options.destinationGeofenceExternalId])) &&
            ((!self.scheduledArrivalAt && !options.scheduledArrivalAt) ||
             (self.scheduledArrivalAt != nil && options.scheduledArrivalAt != nil && [self.scheduledArrivalAt isEqualToDate:options.scheduledArrivalAt])) &&
-           self.mode == options.mode && ((!self.approachingThreshold && !options.approachingThreshold) || (self.approachingThreshold == options.approachingThreshold));
+           self.mode == options.mode && ((!self.approachingThreshold && !options.approachingThreshold) || (self.approachingThreshold == options.approachingThreshold)) &&
+           self.scheduled == options.scheduled;
 }
 
 @end

@@ -315,6 +315,7 @@
 
 + (void)startTrackingWithOptions:(RadarTrackingOptions *)options {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"startTracking()"];
+
     [[RadarLocationManager sharedInstance] startTrackingWithOptions:options];
 }
 
@@ -584,12 +585,13 @@
                                                      [RadarSettings removePreviousTrackingOptions];
                                                  }
 
-                                                 if (trackingOptions) {
+                                                 if (trackingOptions && trackingOptions.startTrackingAfter == nil) {
                                                      [self startTrackingWithOptions:trackingOptions];
-                                                 } else if (!Radar.isTracking) {
+                                                 } else if (trackingOptions) {
+                                                     [RadarSettings setTrackingOptions:trackingOptions];
+                                                 } else if (!Radar.isTracking && !tripOptions.scheduled) {
                                                      [self startTrackingWithOptions:[RadarSettings remoteTrackingOptions] ?: [RadarSettings trackingOptions]];
                                                  }
-
 
                                                  // flush location update to generate events
                                                  [[RadarLocationManager sharedInstance] getLocationWithCompletionHandler:nil];
