@@ -300,10 +300,14 @@
         [tripParams setValue:[Radar stringForMode:tripOptions.mode] forKey:@"mode"];
         params[@"tripOptions"] = tripParams;
     }
+    RadarSdkConfiguration *sdkConfiguration = [RadarSettings sdkConfiguration];
 
     RadarTrackingOptions *options = [Radar getTrackingOptions];
     if (options.syncGeofences) {
         params[@"nearbyGeofences"] = @(YES);
+        if (sdkConfiguration.useOfflineRTOUpdates) {
+            params[@"nearbyGeofencesLimit"] = @(100);
+        }
     }
     if (beacons) {
         params[@"beacons"] = [RadarBeacon arrayForBeacons:beacons];
@@ -342,7 +346,7 @@
         }
     }
     params[@"appId"] = [[NSBundle mainBundle] bundleIdentifier];
-    RadarSdkConfiguration *sdkConfiguration = [RadarSettings sdkConfiguration];
+    
     if (sdkConfiguration.useLocationMetadata) { 
         NSMutableDictionary *locationMetadata = [NSMutableDictionary new];
         locationMetadata[@"motionActivityData"] = [RadarState lastMotionActivityData];
