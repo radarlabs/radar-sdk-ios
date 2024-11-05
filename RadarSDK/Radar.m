@@ -22,6 +22,7 @@
 #import "RadarVerificationManager.h"
 #import "RadarReplayBuffer.h"
 #import "RadarNotificationHelper.h"
+#import "RadarTripOptions.h"
 
 @interface Radar ()
 
