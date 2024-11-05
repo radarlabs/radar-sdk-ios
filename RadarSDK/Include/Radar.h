@@ -1198,6 +1198,12 @@ typedef void (^_Nullable RadarLogConversionCompletionHandler)(RadarStatus status
  */
 + (NSString *)stringForLocationSource:(RadarLocationSource)source NS_SWIFT_NAME(stringForLocationSource(_:));
 
+/**
+ Returns a display string for a travel mode value.
+ @param mode A travel mode value.
+ @return A display string for the travel mode value.
+ */
++ (NSString *)stringForMode:(RadarRouteMode)mode NS_SWIFT_NAME(stringForMode(_:));
 
 /**
  Returns a display string for a trip status value.
