@@ -1,27 +1,23 @@
+// RadarRouteMode.m
 #import "RadarRouteMode.h"
 
-@implementation RadarRouteMode
+@implementation RadarRouteModeUtils
 
 + (NSString *)stringForMode:(RadarRouteMode)mode {
-    NSString *str;
     switch (mode) {
         case RadarRouteModeFoot:
-            str = @"foot";
-            break;
+            return @"foot";
         case RadarRouteModeBike:
-            str = @"bike";
-            break;
+            return @"bike";
         case RadarRouteModeCar:
-            str = @"car";
-            break;
+            return @"car";
         case RadarRouteModeTruck:
-            str = @"truck";
-            break;
+            return @"truck";
         case RadarRouteModeMotorbike:
-            str = @"motorbike";
-            break;
+            return @"motorbike";
+        default:
+            return @"unknown";
     }
-    return str;
 }
 
 @end

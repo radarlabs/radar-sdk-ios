@@ -111,7 +111,7 @@ static NSString *const kStartTracking = @"startTracking";
     dict[kMetadata] = self.metadata;
     dict[kDestinationGeofenceTag] = self.destinationGeofenceTag;
     dict[kDestinationGeofenceExternalId] = self.destinationGeofenceExternalId;
-    dict[kMode] = [RadarRouteMode stringForMode:self.mode];
+    dict[kMode] = [RadarRouteModeUtils stringForMode:self.mode];
     dict[kScheduledArrivalAt] = [RadarUtils.isoDateFormatter stringFromDate:self.scheduledArrivalAt];
     if (self.approachingThreshold && self.approachingThreshold > 0) {
         dict[kApproachingThreshold] = @(self.approachingThreshold);
