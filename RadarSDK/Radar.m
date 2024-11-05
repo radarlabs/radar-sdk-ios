@@ -1254,7 +1254,7 @@
 }
 
 + (NSString *)stringForMode:(RadarRouteMode)mode {
-    return [RRadarRouteModeUtils stringForMode:mode];
+    return [RadarRouteModeUtils stringForMode:mode];
 }
 
 + (NSString *)stringForTripStatus:(RadarTripStatus)status {
