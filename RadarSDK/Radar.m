@@ -590,7 +590,7 @@
                                                      [self startTrackingWithOptions:trackingOptions];
                                                  } else if (trackingOptions) {
                                                      [RadarSettings setTrackingOptions:trackingOptions];
-                                                 } else if (!Radar.isTracking && tripOptions && !tripOptions.startTracking) {
+                                                 } else if (!Radar.isTracking && tripOptions && tripOptions.startTracking) {
                                                      [self startTrackingWithOptions:[RadarSettings remoteTrackingOptions] ?: [RadarSettings trackingOptions]];
                                                  }
 
