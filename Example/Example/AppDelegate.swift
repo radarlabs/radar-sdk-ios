@@ -285,7 +285,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         }
 
         demoButton(text: "startTrip with tracking options") {
-            let tripOptions = RadarTripOptions(externalId: "302", destinationGeofenceTag: "store", destinationGeofenceExternalId: "123", scheduledArrivalAt: nil)
             let tripOptions = RadarTripOptions(externalId: "301", destinationGeofenceTag: "store", destinationGeofenceExternalId: "123", scheduledArrivalAt: nil, startTracking: false)
             tripOptions.mode = .car
             tripOptions.approachingThreshold = 9
