@@ -254,7 +254,7 @@
     long locationMs = (long)(location.timestamp.timeIntervalSince1970 * 1000);
     RadarTrackingOptions *options = [Radar getTrackingOptions];
     // if not verified
-    if (!verified) {}
+    if (!verified) {
         params[@"updatedAtMsDiff"] = @(nowMs - locationMs);
     }
     params[@"locationMs"] = @(locationMs);
