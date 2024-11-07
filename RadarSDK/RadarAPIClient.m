@@ -253,7 +253,6 @@
     long nowMs = (long)([NSDate date].timeIntervalSince1970 * 1000);
     long locationMs = (long)(location.timestamp.timeIntervalSince1970 * 1000);
     RadarTrackingOptions *options = [Radar getTrackingOptions];
-    // if not verified
     if (!verified) {
         params[@"updatedAtMsDiff"] = @(nowMs - locationMs);
     }
