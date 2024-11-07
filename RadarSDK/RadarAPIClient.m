@@ -251,10 +251,13 @@
         params[@"floorLevel"] = @(location.floor.level);
     }
     long nowMs = (long)([NSDate date].timeIntervalSince1970 * 1000);
-    long timeInMs = (long)(location.timestamp.timeIntervalSince1970 * 1000);
+    long locationMs = (long)(location.timestamp.timeIntervalSince1970 * 1000);
     RadarTrackingOptions *options = [Radar getTrackingOptions];
-    params[@"updatedAtMsDiff"] = @(nowMs - timeInMs);
-    params[@"locationMs"] = @(timeInMs);
+    // if not verified
+    if (!verified) {}
+        params[@"updatedAtMsDiff"] = @(nowMs - locationMs);
+    }
+    params[@"locationMs"] = @(locationMs);
     params[@"foreground"] = @(foreground);
     params[@"stopped"] = @(stopped);
     params[@"replayed"] = @(replayed);
