@@ -252,10 +252,7 @@
     }
     long nowMs = (long)([NSDate date].timeIntervalSince1970 * 1000);
     long locationMs = (long)(location.timestamp.timeIntervalSince1970 * 1000);
-    RadarTrackingOptions *options = [Radar getTrackingOptions];
-    if (!foreground) {
-        params[@"updatedAtMsDiff"] = @(nowMs - locationMs);
-    }
+    params[@"updatedAtMsDiff"] = @(nowMs - locationMs);
     params[@"locationMs"] = @(locationMs);
     params[@"foreground"] = @(foreground);
     params[@"stopped"] = @(stopped);
@@ -300,7 +297,7 @@
         [tripParams setValue:[Radar stringForMode:tripOptions.mode] forKey:@"mode"];
         params[@"tripOptions"] = tripParams;
     }
-
+    RadarTrackingOptions *options = [Radar getTrackingOptions];
     if (options.syncGeofences) {
         params[@"nearbyGeofences"] = @(YES);
     }
