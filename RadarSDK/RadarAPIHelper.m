@@ -72,9 +72,9 @@
                 } else {
                     NSMutableDictionary *requestParams = [params mutableCopy];
                     NSNumber *locationMs = params[@"locationMs"];
+                    NSNumber *prevUpdatedAtMsDiff = params[@"updatedAtMsDiff"];
                     long nowMs = (long)([NSDate date].timeIntervalSince1970 * 1000);
-
-                    if (locationMs) {
+                    if (locationMs && prevUpdatedAtMsDiff) {
                         long updatedAtMsDiff = nowMs - [locationMs longValue];
                         requestParams[@"updatedAtMsDiff"] = @(updatedAtMsDiff);
                     }
