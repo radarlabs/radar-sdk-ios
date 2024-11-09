@@ -114,6 +114,34 @@ static NSString *const kSyncGeofenceIdentifierPrefix = @"radar_geofence_";
     [self swizzled_userNotificationCenter:center didReceiveNotificationResponse:response withCompletionHandler:completionHandler];
 }
 
++ (void)checkForSentOnPremiseNotifications:(void (^)(void))completionHandler {
+    NSArray<UNNotificationRequest *> *registeredNotifications = [RadarState pendingNotificationRequests];
+    if (NSClassFromString(@"XCTestCase") == nil) {
+        [[UNUserNotificationCenter currentNotificationCenter] getPendingNotificationRequestsWithCompletionHandler:^(NSArray<UNNotificationRequest *> *_Nonnull requests) {
+            NSMutableSet *pendingIdentifiers = [NSMutableSet new];
+                
+            for (UNNotificationRequest *request in requests) {
+                [pendingIdentifiers addObject:request.identifier];
+            }
+                
+            for (UNNotificationRequest *request in registeredNotifications) {
+                if (![pendingIdentifiers containsObject:request.identifier]) {
+                    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"Found sent notification, creating converison | identifier = %@", request]];
+                    NSDate *lastCheckedTime = [RadarState lastCheckedOnPremiseNotification];
+                    [Radar logConversionWithNotification:request eventName:@"delivered_on_premise_notification" conversionSource:nil deliveredAfter:lastCheckedTime];
+                    // prevent double counting of the same notification
+                    [RadarState removePendingNotificationRequest:request];
+                }
+            }
+            [RadarState lastCheckedOnPremiseNotification];
+            
+            if (completionHandler) {
+                completionHandler();
+            }       
+        }];
+    }
+}
+
 + (void)logConversionWithNotificationResponse:(UNNotificationResponse *)response {
     if ([RadarSettings useOpenedAppConversion]) {
         [RadarSettings updateLastAppOpenTime];
@@ -159,10 +187,11 @@ static NSString *const kSyncGeofenceIdentifierPrefix = @"radar_geofence_";
                 [notificationCenter addNotificationRequest:request withCompletionHandler:^(NSError *_Nullable error) {
                     if (error) {
                         [[RadarLogger sharedInstance]
-                            logWithLevel:RadarLogLevelError
+                            logWithLevel:RadarLogLevelInfo
                                 message:[NSString stringWithFormat:@"Error adding local notification | identifier = %@; error = %@", request.identifier, error]];
                     } else {
-                        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
+                        [RadarState addPendingNotificationRequest:request];
+                        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo
                                                         message:[NSString stringWithFormat:@"Added local notification | identifier = %@", request.identifier]];
                     }
                 }];
@@ -174,6 +203,43 @@ static NSString *const kSyncGeofenceIdentifierPrefix = @"radar_geofence_";
     }];
 }
 
++ (void)showDidReceiveSilentPushNotification:(NSDictionary *)payload {
+    if (!payload) {
+        return;
+    }
+    NSLog(@"payload: %@", payload);
+    
+    NSArray *actions = payload[@"actions"];
+    if (actions) {
+        for (NSDictionary *actionDict in actions) {
+            NSString *action = actionDict[@"type"];
+            NSLog(@"action: %@", action);
+            if ([action isEqualToString:@"CHECK_ON_PREMISE_NOTIFICATION_RECEIPT"]) {
+                [RadarNotificationHelper checkForSentOnPremiseNotifications:^{}];
+            }
+
+            if ([action isEqualToString:@"PING"]) {
+                // just for demo
+                [RadarNotificationHelper checkForSentOnPremiseNotifications:^{}];
+
+                UNMutableNotificationContent *content = [UNMutableNotificationContent new];
+                
+                // Get the current date and time
+                NSString *currentDateTime = [[RadarUtils isoDateFormatter] stringFromDate:[NSDate date]];
+                
+                // Set the notification body to include the current date and time
+                content.body = [NSString stringWithFormat:@"Received silent push at %@;", currentDateTime];
+                
+                UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:[[NSUUID UUID] UUIDString] content:content trigger:nil];
+                [UNUserNotificationCenter.currentNotificationCenter addNotificationRequest:request withCompletionHandler:^(NSError *_Nullable error) {
+                    if (error) {
+                        NSLog(@"Error adding notification request: %@", error);
+                    }
+                }];
+            }
+        }
+    }
+}
 
 + (void)checkNotificationPermissionsWithCompletionHandler:(NotificationPermissionCheckCompletion)completionHandler {
     if (NSClassFromString(@"XCTestCase") == nil) {

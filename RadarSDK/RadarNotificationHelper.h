@@ -16,7 +16,11 @@ typedef void (^NotificationPermissionCheckCompletion)(BOOL granted);
 
 + (void)showNotificationsForEvents:(NSArray<RadarEvent *> *)events;
 
++ (void)showDidReceiveSilentPushNotification:(NSDictionary *)payload;
+
 + (void)swizzleNotificationCenterDelegate;
+
++ (void)checkForSentOnPremiseNotifications:(void (^)(void))completionHandler;
 
 + (void)removePendingNotificationsWithCompletionHandler:(void (^)(void))completionHandler;
 

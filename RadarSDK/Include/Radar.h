@@ -409,6 +409,8 @@ typedef void (^_Nullable RadarLogConversionCompletionHandler)(RadarStatus status
  */
 + (void)setAnonymousTrackingEnabled:(BOOL)enabled;
 
++ (void)handleDeviceTokenForRemoteNotifications:(NSData *)deviceToken;
+
 #pragma mark - Location
 
 /**
@@ -589,6 +591,8 @@ typedef void (^_Nullable RadarLogConversionCompletionHandler)(RadarStatus status
 
  */
 + (BOOL)isUsingRemoteTrackingOptions;
+
++ (void)handleSilentPushWithPayload:(NSDictionary *)payload NS_SWIFT_NAME(handleSilentPush(payload:));
 
 #pragma mark - Delegate
 
@@ -1229,6 +1233,8 @@ typedef void (^_Nullable RadarLogConversionCompletionHandler)(RadarStatus status
 
  */
 + (void)nativeSetup NS_SWIFT_NAME(nativeSetup());
+
++ (void) testNotificationChecker NS_SWIFT_NAME(testNotificationChecker());
 
 @end
 

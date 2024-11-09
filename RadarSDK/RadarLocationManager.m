@@ -534,7 +534,12 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     for (int i = 0; i < numGeofences; i++) {
         RadarGeofence *geofence = [geofences objectAtIndex:i];
         NSString *geofenceId = geofence._id;
-        NSString *identifier = [NSString stringWithFormat:@"%@%@", kSyncGeofenceIdentifierPrefix, geofenceId];
+
+        NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+        [dateFormatter setDateFormat:@"yyyyMMddHHmmss"];
+        NSString *timestamp = [dateFormatter stringFromDate:[NSDate date]];
+        NSString *identifier = [NSString stringWithFormat:@"%@%@_%@", kSyncGeofenceIdentifierPrefix, geofenceId, timestamp];
+
         RadarCoordinate *center;
         double radius = 100;
         if ([geofence.geometry isKindOfClass:[RadarCircleGeometry class]]) {
@@ -582,7 +587,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                     } else {
                         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Notification does not repeat"];
                     }
-
+                  
                     UNLocationNotificationTrigger *trigger = [UNLocationNotificationTrigger triggerWithRegion:region repeats:repeats];
 
                     UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:identifier content:content trigger:trigger];
@@ -594,8 +599,12 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         }
     }
 
-    [RadarNotificationHelper removePendingNotificationsWithCompletionHandler: ^{
-        [RadarNotificationHelper addOnPremiseNotificationRequests:requests];
+    [RadarNotificationHelper checkForSentOnPremiseNotifications: ^{
+        [RadarState clearPendingNotificationRequests];
+            
+        [RadarNotificationHelper removePendingNotificationsWithCompletionHandler: ^{
+            [RadarNotificationHelper addOnPremiseNotificationRequests:requests];
+        }];
     }];
 }
 

@@ -7,6 +7,7 @@
 
 #import <CoreLocation/CoreLocation.h>
 #import <Foundation/Foundation.h>
+#import <UserNotifications/UserNotifications.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -38,6 +39,13 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)setLastHeadingData:(NSDictionary *_Nullable)lastHeadingData;
 + (NSDictionary *)lastMotionActivityData;
 + (void)setLastMotionActivityData:(NSDictionary *_Nullable)lastMotionActivityData;
++ (NSArray<UNNotificationRequest *> *)pendingNotificationRequests;
++ (void)addPendingNotificationRequest:(UNNotificationRequest *)request;
++ (void)clearPendingNotificationRequests;
++ (BOOL)hasPendingNotificationRequest:(UNNotificationRequest *)request;
++ (void)removePendingNotificationRequest:(UNNotificationRequest *)request;
++ (NSDate *)lastCheckedOnPremiseNotification;
++ (void)updateLastCheckedOnPremiseNotification;
 + (void)setNotificationPermissionGranted:(BOOL)granted;
 + (BOOL)notificationPermissionGranted;
 
