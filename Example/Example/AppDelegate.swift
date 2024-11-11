@@ -279,10 +279,40 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         }
 
         demoButton(text: "startTrip") {
-            let tripOptions = RadarTripOptions(externalId: "299", destinationGeofenceTag: "store", destinationGeofenceExternalId: "123")
+            let tripOptions = RadarTripOptions(externalId: "300", destinationGeofenceTag: "store", destinationGeofenceExternalId: "123")
             tripOptions.mode = .car
             tripOptions.approachingThreshold = 9
             Radar.startTrip(options: tripOptions)
+        }
+
+        demoButton(text: "startTrip with start tracking false") {
+            let tripOptions = RadarTripOptions(externalId: "301", destinationGeofenceTag: "store", destinationGeofenceExternalId: "123", scheduledArrivalAt: nil, startTracking: false)
+            tripOptions.mode = .car
+            tripOptions.approachingThreshold = 9
+            Radar.startTrip(options: tripOptions)
+        }
+
+        demoButton(text: "startTrip with tracking options") {
+            let tripOptions = RadarTripOptions(externalId: "301", destinationGeofenceTag: "store", destinationGeofenceExternalId: "123", scheduledArrivalAt: nil, startTracking: false)
+            tripOptions.mode = .car
+            tripOptions.approachingThreshold = 9
+            let trackingOptions = RadarTrackingOptions.presetContinuous
+            Radar.startTrip(options: tripOptions, trackingOptions: trackingOptions)
+        }
+
+        demoButton(text: "startTrip with tracking options and startTrackingAfter") {
+            let tripOptions = RadarTripOptions(externalId: "303", destinationGeofenceTag: "store", destinationGeofenceExternalId: "123", scheduledArrivalAt: nil)
+            tripOptions.startTracking = false
+            tripOptions.mode = .car
+            tripOptions.approachingThreshold = 9
+            let trackingOptions = RadarTrackingOptions.presetContinuous
+            // startTrackingAfter 3 minutes from now
+            trackingOptions.startTrackingAfter = Date().addingTimeInterval(180)
+            Radar.startTrip(options: tripOptions, trackingOptions: trackingOptions)
+        }
+
+        demoButton(text: "completeTrip") {
+            Radar.completeTrip()
         }
 
         demoButton(text: "mockTracking") {

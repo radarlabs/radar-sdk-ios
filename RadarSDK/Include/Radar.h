@@ -1200,9 +1200,7 @@ typedef void (^_Nullable RadarLogConversionCompletionHandler)(RadarStatus status
 
 /**
  Returns a display string for a travel mode value.
-
  @param mode A travel mode value.
-
  @return A display string for the travel mode value.
  */
 + (NSString *)stringForMode:(RadarRouteMode)mode NS_SWIFT_NAME(stringForMode(_:));

@@ -217,6 +217,13 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         [self stopActivityAndMotionUpdates];
     }
 
+    // null out startTrackingAfter and stopTrackingAfter in local tracking options
+    // so that subsequent trackOnce calls don't restart tracking
+    RadarTrackingOptions *trackingOptions = [RadarSettings trackingOptions];
+    trackingOptions.startTrackingAfter = nil;
+    trackingOptions.stopTrackingAfter = nil;
+    [RadarSettings setTrackingOptions:trackingOptions];
+
     [self updateTracking];
 }
 
@@ -304,17 +311,18 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     dispatch_async(dispatch_get_main_queue(), ^{
         BOOL tracking = [RadarSettings tracking];
         RadarTrackingOptions *options = [Radar getTrackingOptions];
+        RadarTrackingOptions *localOptions = [RadarSettings trackingOptions];
 
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
                                            message:[NSString stringWithFormat:@"Updating tracking | options = %@; location = %@", [options dictionaryValue], location]];
 
-        if (!tracking && [options.startTrackingAfter timeIntervalSinceNow] < 0) {
+        if (!tracking && [localOptions.startTrackingAfter timeIntervalSinceNow] < 0) {
             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
                                                message:[NSString stringWithFormat:@"Starting time-based tracking | startTrackingAfter = %@", options.startTrackingAfter]];
 
             [RadarSettings setTracking:YES];
             tracking = YES;
-        } else if (tracking && [options.stopTrackingAfter timeIntervalSinceNow] < 0) {
+        } else if (tracking && [localOptions.stopTrackingAfter timeIntervalSinceNow] < 0) {
             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
                                                message:[NSString stringWithFormat:@"Stopping time-based tracking | stopTrackingAfter = %@", options.stopTrackingAfter]];
 
@@ -511,13 +519,13 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 }
 
 - (void)replaceSyncedGeofences:(NSArray<RadarGeofence *> *)geofences {
-    [self removeSyncedGeofences];
-
     if (!geofences) {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Skipping replacing synced geofences"];
 
         return;
     }
+
+    [self removeSyncedGeofences];
 
     RadarTrackingOptions *options = [Radar getTrackingOptions];
     NSUInteger numGeofences = MIN(geofences.count, options.beacons ? 9 : 19);
