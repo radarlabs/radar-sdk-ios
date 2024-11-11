@@ -121,7 +121,7 @@
                                          RadarUser *_Nullable user, NSArray<RadarGeofence *> *_Nullable nearbyGeofences,
                                          RadarConfig *_Nullable config, RadarVerifiedLocationToken *_Nullable token) {
                         if (status == RadarStatusSuccess && config != nil) {
-                            [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
+                            [[RadarLocationManager sharedInstance] updateTrackingFromConfig:config];
                         }
                         if (token) {
                             self.lastToken = token;

@@ -464,12 +464,15 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     });
 }
 
-- (void)updateTrackingFromMeta:(RadarMeta *_Nullable)meta {
-    if (meta) {
-        if ([meta trackingOptions]) {
+- (void)updateTrackingFromConfig:(RadarConfig *_Nullable)config {
+    if (config == nil) {
+        return;
+    }
+    if (config.meta) {
+        if ([config.meta trackingOptions]) {
             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
-                                               message:[NSString stringWithFormat:@"Setting remote tracking options | trackingOptions = %@", meta.trackingOptions]];
-            [RadarSettings setRemoteTrackingOptions:[meta trackingOptions]];
+                                               message:[NSString stringWithFormat:@"Setting remote tracking options | trackingOptions = %@", config.meta.trackingOptions]];
+            [RadarSettings setRemoteTrackingOptions:[config.meta trackingOptions]];
         } else {
             [RadarSettings removeRemoteTrackingOptions];
             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
@@ -525,10 +528,11 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         return;
     }
 
+    [RadarState setNearbyGeofences:geofences];
     [self removeSyncedGeofences];
 
     RadarTrackingOptions *options = [Radar getTrackingOptions];
-    NSUInteger numGeofences = MIN(geofences.count, options.beacons ? 9 : 19);
+    NSUInteger numGeofences = MIN(MIN(geofences.count,19), options.beacons ? 9 : 19);
     NSMutableArray *requests = [NSMutableArray array]; 
 
     for (int i = 0; i < numGeofences; i++) {
@@ -593,10 +597,11 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
             }
         }
     }
-
-    [RadarNotificationHelper removePendingNotificationsWithCompletionHandler: ^{
-        [RadarNotificationHelper addOnPremiseNotificationRequests:requests];
-    }];
+    if (NSClassFromString(@"XCTestCase") == nil) {
+        [RadarNotificationHelper removePendingNotificationsWithCompletionHandler: ^{
+            [RadarNotificationHelper addOnPremiseNotificationRequests:requests];
+        }];
+    }
 }
 
 - (void)removeSyncedGeofences {
@@ -897,8 +902,13 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                                              completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user,
                                                                  NSArray<RadarGeofence *> *_Nullable nearbyGeofences, RadarConfig *_Nullable config, RadarVerifiedLocationToken *_Nullable token) {
                 self.sending = NO;
-                
-                [self updateTrackingFromMeta:config.meta];
+
+                [self updateTrackingFromConfig:config];
+
+                if (status != RadarStatusSuccess || !config) {
+                    return;
+                }
+
                 [self replaceSyncedGeofences:nearbyGeofences];
             }];
         };
@@ -978,13 +988,15 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                                                    beacons:beacons
                                          completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user,
                                                              NSArray<RadarGeofence *> *_Nullable nearbyGeofences, RadarConfig *_Nullable config, RadarVerifiedLocationToken *_Nullable token) {
-                                             self.sending = NO;
-                                             if (status != RadarStatusSuccess || !config) {
-                                                 return;
-                                             }
+                                            self.sending = NO;
 
-                                             [self updateTrackingFromMeta:config.meta];
-                                             [self replaceSyncedGeofences:nearbyGeofences];
+                                            [self updateTrackingFromConfig:config];
+                                            
+                                            if (status != RadarStatusSuccess || !config) {
+                                                return;
+                                            }
+
+                                            [self replaceSyncedGeofences:nearbyGeofences];
                                          }];
     }
 }
