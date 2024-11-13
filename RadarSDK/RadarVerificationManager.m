@@ -21,6 +21,7 @@
 #import "RadarLogger.h"
 #import "RadarState.h"
 #import "RadarUtils.h"
+#import "RadarProfiler.h"
 
 #include <dlfcn.h>
 #include <unistd.h>
@@ -74,10 +75,15 @@
 - (void)trackVerifiedWithBeacons:(BOOL)beacons completionHandler:(RadarTrackVerifiedCompletionHandler)completionHandler {
     BOOL lastTokenBeacons = beacons;
     
+    RadarProfiler* profiler = [[RadarProfiler alloc] init];
+    [profiler start:@"total"];
+    [profiler start:@"getConfig"];
+    
     [[RadarAPIClient sharedInstance]
      getConfigForUsage:@"verify"
      verified:YES
      completionHandler:^(RadarStatus status, RadarConfig *_Nullable config) {
+        [profiler end:@"getConfig"];
         if (status != RadarStatusSuccess || !config) {
             if (completionHandler) {
                 [RadarUtils runOnMainThread:^{
@@ -87,9 +93,11 @@
             return;
         }
         
+        [profiler start:@"getLocation"];
         [[RadarLocationManager sharedInstance]
          getLocationWithDesiredAccuracy:RadarTrackingOptionsDesiredAccuracyMedium
          completionHandler:^(RadarStatus status, CLLocation *_Nullable location, BOOL stopped) {
+            [profiler end:@"getLocation"];
             if (status != RadarStatusSuccess) {
                 if (completionHandler) {
                     [RadarUtils runOnMainThread:^{
@@ -100,9 +108,13 @@
                 return;
             }
             
+            
+            [profiler start:@"getAttestToken"];
             [self getAttestationWithNonce:config.nonce
                         completionHandler:^(NSString *_Nullable attestationString, NSString *_Nullable keyId, NSString *_Nullable attestationError) {
+                [profiler end:@"getAttestToken"];
                 void (^callTrackAPI)(NSArray<RadarBeacon *> *_Nullable) = ^(NSArray<RadarBeacon *> *_Nullable beacons) {
+                    [profiler start:@"trackAPI"];
                     [[RadarAPIClient sharedInstance]
                      trackWithLocation:location
                      stopped:RadarState.stopped
@@ -120,6 +132,12 @@
                      completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events,
                                          RadarUser *_Nullable user, NSArray<RadarGeofence *> *_Nullable nearbyGeofences,
                                          RadarConfig *_Nullable config, RadarVerifiedLocationToken *_Nullable token) {
+                        [profiler end:@"trackAPI"];
+                        [profiler end:@"total"];
+                        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
+                                                           message:[NSString stringWithFormat:@"[PROFILER] trackVerified | %@",
+                                                                    [profiler formatted]]];
+                        
                         if (status == RadarStatusSuccess && config != nil) {
                             [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
                         }
@@ -137,6 +155,7 @@
                 };
                 
                 if (beacons) {
+                    [profiler start:@"getBeacons"];
                     [[RadarAPIClient sharedInstance]
                      searchBeaconsNear:location
                      radius:1000
@@ -148,6 +167,7 @@
                                 [[RadarBeaconManager sharedInstance]
                                  rangeBeaconUUIDs:beaconUUIDs
                                  completionHandler:^(RadarStatus status, NSArray<RadarBeacon *> *_Nullable beacons) {
+                                    [profiler end:@"getBeacons"];
                                     if (status != RadarStatusSuccess || !beacons) {
                                         callTrackAPI(nil);
                                         
@@ -162,6 +182,7 @@
                                 [[RadarBeaconManager sharedInstance]
                                  rangeBeacons:beacons
                                  completionHandler:^(RadarStatus status, NSArray<RadarBeacon *> *_Nullable beacons) {
+                                    [profiler end:@"getConfig"];
                                     if (status != RadarStatusSuccess || !beacons) {
                                         callTrackAPI(nil);
                                         
@@ -172,6 +193,7 @@
                                 }];
                             }];
                         } else {
+                            [profiler end:@"getConfig"];
                             callTrackAPI(@[]);
                         }
                     }];
