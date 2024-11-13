@@ -33,6 +33,7 @@
 #import "RadarUtils.h"
 #import "RadarVerificationManager.h"
 #import "RadarVerifiedLocationToken+Internal.h"
+
 #import <os/log.h>
 
 @implementation RadarAPIClient
