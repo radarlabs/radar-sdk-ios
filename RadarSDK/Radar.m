@@ -43,7 +43,7 @@
     return sharedInstance;
 }
 
-+ (void) nativeSetup:(RadarInitializeOptions *)options {
++ (void)nativeSetup:(RadarInitializeOptions *)options {
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         [RadarSettings setInitializeOptions:options];
