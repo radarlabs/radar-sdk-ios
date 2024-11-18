@@ -13,12 +13,16 @@ import NIOSSL
 import NIOHTTP1
 import UserNotifications
 
-@objc class RadarVerifyServer: NSObject, CLLocationManagerDelegate {
+@objc class RadarVerifyServer: NSObject, CLLocationManagerDelegate, @unchecked Sendable {
+    @objc static let sharedInstance = RadarVerifyServer()
+    
     private let certificateURL = URL(string: "https://s3.us-east-2.amazonaws.com/app.radar-verify.com/mac/c.pem")!
     private let keyURL = URL(string: "https://s3.us-east-2.amazonaws.com/app.radar-verify.com/mac/k.pem")!
     
     private var locationManager = CLLocationManager()
     private var server: Server?
+    
+    private let queue = DispatchQueue(label: "RadarVerifyServer")
 
     override init() {
         super.init()
@@ -33,21 +37,31 @@ import UserNotifications
     }
     
     @objc func startServer() async {
-        do {
-            let certificateData = try await self.downloadData(from: certificateURL)
-            let keyData = try await self.downloadData(from: keyURL)
+        queue.async { [weak self] in
+            guard let self = self else { return }
             
-            server = try Server(certificateData: certificateData, keyData: keyData)
-            try server?.start()
-            
-            locationManager.startUpdatingLocation()
-        } catch {
-            print("Error starting server: \(error)")
+            Task {
+                do {
+                    let certificateData = try await self.downloadData(from: certificateURL)
+                    let keyData = try await self.downloadData(from: keyURL)
+                    
+                    server = try Server(certificateData: certificateData, keyData: keyData)
+                    try server?.start()
+                    
+                    locationManager.startUpdatingLocation()
+                } catch {
+                    print("Error starting server: \(error)")
+                }
+            }
         }
     }
     
     @objc func stopServer() {
-        server?.stop()
+        queue.async { [weak self] in
+            guard let self = self else { return }
+            
+            self.server?.stop()
+        }
     }
     
     private func downloadData(from url: URL) async throws -> Data {
