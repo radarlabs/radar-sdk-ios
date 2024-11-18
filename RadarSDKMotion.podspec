@@ -8,7 +8,7 @@ Pod::Spec.new do |s|
     s.source                = { :git => 'https://github.com/radarlabs/radar-sdk-ios.git', :tag => s.version.to_s }
     s.source_files          = ["RadarSDKMotion/RadarSDKMotion/*.{h,m}", "RadarSDKMotion/RadarSDKMotion/Include/*.h"]
     s.module_name           = 'RadarSDKMotion'
-    s.ios.deployment_target = '10.0'
+    s.ios.deployment_target = '12.0'
     s.frameworks            = 'CoreMotion'
     s.requires_arc          = true
     s.license               = { :type => 'Apache-2.0' } 
