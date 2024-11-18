@@ -13,3 +13,4 @@ docs/undocumented.json
 *.xcarchive
 IntegrationExamples
 .build/
+Example/Example.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/

@@ -7,7 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
-#import "Radar.h"
+#import "RadarRouteMode.h"
+
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -27,6 +28,11 @@ NS_ASSUME_NONNULL_BEGIN
      destinationGeofenceExternalId:(NSString *_Nullable)destinationGeofenceExternalId
                 scheduledArrivalAt:(NSDate *_Nullable)scheduledArrivalAt;
 
+- (instancetype)initWithExternalId:(NSString *_Nonnull)externalId
+            destinationGeofenceTag:(NSString *_Nullable)destinationGeofenceTag
+     destinationGeofenceExternalId:(NSString *_Nullable)destinationGeofenceExternalId
+                scheduledArrivalAt:(NSDate *_Nullable)scheduledArrivalAt
+                         startTracking:(BOOL)startTracking;
 /**
  A stable unique ID for the trip.
  */
@@ -58,6 +64,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) RadarRouteMode mode;
 
 @property (nonatomic, assign) UInt16 approachingThreshold;
+
+@property (nonatomic, assign) BOOL startTracking;
 
 + (RadarTripOptions *_Nullable)tripOptionsFromDictionary:(NSDictionary *)dict;
 - (NSDictionary *)dictionaryValue;

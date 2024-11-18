@@ -26,12 +26,23 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         self.requestLocationPermissions()
         
         // Replace with a valid test publishable key
-        Radar.initialize(publishableKey: "prj_test_pk_0000000000000000000000000000000000000000")
+        let radarInitializeOptions = RadarInitializeOptions()
+        // Uncomment to enable automatic setup for notification conversions or deep linking
+        //radarInitializeOptions.autoLogNotificationConversions = true
+        //radarInitializeOptions.autoHandleNotificationDeepLinks = true
+        Radar.initialize(publishableKey: "prj_test_pk_0000000000000000000000000000000000000000", options: radarInitializeOptions )
         Radar.setUserId("testUserId")
         Radar.setMetadata([ "foo": "bar" ])
         Radar.setDelegate(self)
         Radar.setVerifiedDelegate(self)
  
+        return true
+    }
+
+    
+    func application(_ app: UIApplication, open url: URL,
+                     options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
+        // Handle opening via standard URL               
         return true
     }
     
@@ -99,6 +110,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
                 print("Context: status = \(Radar.stringForStatus(status)); location = \(String(describing: location)); context?.geofences = \(String(describing: context?.geofences)); context?.place = \(String(describing: context?.place)); context?.country = \(String(describing: context?.country))")
             }
         }
+        
+        demoButton(text: "startTrackingVerified") {
+            Radar.startTrackingVerified(interval: 60, beacons: false)
+        }
+        
+        demoButton(text: "stopTrackingVerified") {
+            Radar.stopTrackingVerified()
+        }
+        
+        demoButton(text: "getVerifiedLocationToken") {
+            Radar.getVerifiedLocationToken() { (status, token) in
+                print("getVerifiedLocationToken: status = \(status); token = \(token?.dictionaryValue())")
+            }
+        }
 
         demoButton(text: "trackVerified") {
             Radar.trackVerified() { (status, token) in
@@ -159,7 +184,37 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         
         demoButton(text: "ipGeocode") {
             Radar.ipGeocode { (status, address, proxy) in
-                print("IP geocode: status = \(Radar.stringForStatus(status)); country = \(String(describing: address?.countryCode)); city = \(String(describing: address?.city)); proxy = \(proxy)")
+                print("IP geocode: status = \(Radar.stringForStatus(status)); country = \(String(describing: address?.countryCode)); city = \(String(describing: address?.city)); proxy = \(proxy); full address: \(String(describing: address?.dictionaryValue()))")
+            }
+        }
+
+        demoButton(text: "validateAddress") {
+            let address: RadarAddress = RadarAddress(from: [
+                "latitude": 0,
+                "longitude": 0,
+                "city": "New York",
+                "stateCode": "NY",
+                "postalCode": "10003",
+                "countryCode": "US",
+                "street": "Broadway",
+                "number": "841",
+            ])!
+            
+            Radar.validateAddress(address: address) { (status, address, verificationStatus) in
+                print("Validate address with street + number: status = \(Radar.stringForStatus(status)); country = \(String(describing: address?.countryCode)); city = \(String(describing: address?.city)); verificationStatus = \(verificationStatus)")
+            }
+            
+            let addressLabel: RadarAddress = RadarAddress(from: [
+                "latitude": 0,
+                "longitude": 0,
+                "city": "New York",
+                "stateCode": "NY",
+                "postalCode": "10003",
+                "countryCode": "US",
+                "addressLabel": "Broadway 841",
+            ])!
+            Radar.validateAddress(address: addressLabel) { (status, address, verificationStatus) in
+                print("Validate address with address label: status = \(Radar.stringForStatus(status)); country = \(String(describing: address?.countryCode)); city = \(String(describing: address?.city)); verificationStatus = \(verificationStatus)")
             }
         }
         
@@ -224,10 +279,40 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         }
 
         demoButton(text: "startTrip") {
-            let tripOptions = RadarTripOptions(externalId: "299", destinationGeofenceTag: "store", destinationGeofenceExternalId: "123")
+            let tripOptions = RadarTripOptions(externalId: "300", destinationGeofenceTag: "store", destinationGeofenceExternalId: "123")
             tripOptions.mode = .car
             tripOptions.approachingThreshold = 9
             Radar.startTrip(options: tripOptions)
+        }
+
+        demoButton(text: "startTrip with start tracking false") {
+            let tripOptions = RadarTripOptions(externalId: "301", destinationGeofenceTag: "store", destinationGeofenceExternalId: "123", scheduledArrivalAt: nil, startTracking: false)
+            tripOptions.mode = .car
+            tripOptions.approachingThreshold = 9
+            Radar.startTrip(options: tripOptions)
+        }
+
+        demoButton(text: "startTrip with tracking options") {
+            let tripOptions = RadarTripOptions(externalId: "301", destinationGeofenceTag: "store", destinationGeofenceExternalId: "123", scheduledArrivalAt: nil, startTracking: false)
+            tripOptions.mode = .car
+            tripOptions.approachingThreshold = 9
+            let trackingOptions = RadarTrackingOptions.presetContinuous
+            Radar.startTrip(options: tripOptions, trackingOptions: trackingOptions)
+        }
+
+        demoButton(text: "startTrip with tracking options and startTrackingAfter") {
+            let tripOptions = RadarTripOptions(externalId: "303", destinationGeofenceTag: "store", destinationGeofenceExternalId: "123", scheduledArrivalAt: nil)
+            tripOptions.startTracking = false
+            tripOptions.mode = .car
+            tripOptions.approachingThreshold = 9
+            let trackingOptions = RadarTrackingOptions.presetContinuous
+            // startTrackingAfter 3 minutes from now
+            trackingOptions.startTrackingAfter = Date().addingTimeInterval(180)
+            Radar.startTrip(options: tripOptions, trackingOptions: trackingOptions)
+        }
+
+        demoButton(text: "completeTrip") {
+            Radar.completeTrip()
         }
 
         demoButton(text: "mockTracking") {
@@ -312,6 +397,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
 
     func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
         completionHandler([.list, .banner, .sound])
+    }
+    
+    func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse) async {
+        // Uncomment for manual setup for notification conversions and URLs
+        // Radar.logConversion(response: response)
+        // Radar.openURLFromNotification(response.notification)
     }
 
     func notify(_ body: String) {

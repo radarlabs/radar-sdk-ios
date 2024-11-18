@@ -10,10 +10,17 @@
 #import "RadarEvent.h"
 #import "RadarLogger.h"
 #import "RadarNotificationHelper.h"
+#import "RadarState.h"
+#import "RadarSettings.h"
+#import "RadarUtils.h"
+#import <BackgroundTasks/BackgroundTasks.h>
+#import "Radar+Internal.h"
+#import <objc/runtime.h>
 
 @implementation RadarNotificationHelper
 
 static NSString *const kEventNotificationIdentifierPrefix = @"radar_event_notification_";
+static NSString *const kSyncGeofenceIdentifierPrefix = @"radar_geofence_";
 
 + (void)showNotificationsForEvents:(NSArray<RadarEvent *> *)events {
     if (!events || !events.count) {
@@ -66,6 +73,149 @@ static NSString *const kEventNotificationIdentifierPrefix = @"radar_event_notifi
             }];
         }
     }
+}
+
++ (void)swizzleNotificationCenterDelegate {
+    id<UNUserNotificationCenterDelegate> delegate = UNUserNotificationCenter.currentNotificationCenter.delegate;
+    if (!delegate) {
+        NSLog(@"Error: UNUserNotificationCenter delegate is nil.");
+        return;
+    }
+    Class class = [UNUserNotificationCenter.currentNotificationCenter.delegate class];
+    SEL originalSelector = @selector(userNotificationCenter:didReceiveNotificationResponse:withCompletionHandler:);
+    SEL swizzledSelector = @selector(swizzled_userNotificationCenter:didReceiveNotificationResponse:withCompletionHandler:);
+
+    Method originalMethod = class_getInstanceMethod(class, originalSelector);
+    Method swizzledMethod = class_getInstanceMethod([self class], swizzledSelector);
+
+    if (originalMethod && swizzledMethod) {
+        BOOL didAddMethod = class_addMethod(class,
+                                            swizzledSelector,
+                                            method_getImplementation(swizzledMethod),
+                                            method_getTypeEncoding(swizzledMethod));
+        if (didAddMethod) {
+            Method newSwizzledMethod = class_getInstanceMethod(class, swizzledSelector);
+            method_exchangeImplementations(originalMethod, newSwizzledMethod);
+        } else {
+            method_exchangeImplementations(originalMethod, swizzledMethod);
+        }
+    } else {
+        NSLog(@"Error: Methods not found for swizzling.");
+    }
+}
+
+- (void)swizzled_userNotificationCenter:(UNUserNotificationCenter *)center
+        didReceiveNotificationResponse:(UNNotificationResponse *)response
+                 withCompletionHandler:(void (^)(void))completionHandler {
+
+    RadarInitializeOptions *options = [RadarSettings initializeOptions];
+    if (options.autoHandleNotificationDeepLinks) {
+        [RadarNotificationHelper openURLFromNotification:response.notification];
+    }
+    if (options.autoLogNotificationConversions) {
+        [RadarNotificationHelper logConversionWithNotificationResponse:response];
+    }
+
+    // Call the original method (which is now swizzled)
+    [self swizzled_userNotificationCenter:center didReceiveNotificationResponse:response withCompletionHandler:completionHandler];
+}
+
++ (void)openURLFromNotification:(UNNotification *)notification {
+
+    if ([notification.request.identifier hasPrefix:@"radar_"]) {
+        NSString *urlString = notification.request.content.userInfo[@"url"];
+        if (urlString) {
+            NSURL *url = [NSURL URLWithString:urlString];
+            if (url) {
+                UIApplication *application = [UIApplication sharedApplication];
+                if ([application canOpenURL:url]) {
+                   [application openURL:url options:@{} completionHandler:nil];
+               }
+            }
+        }
+    } 
+}
+
++ (void)logConversionWithNotificationResponse:(UNNotificationResponse *)response {
+    if ([RadarSettings useOpenedAppConversion]) {
+        [RadarSettings updateLastAppOpenTime];
+        
+        if ([response.notification.request.identifier hasPrefix:@"radar_"]) {
+            [[RadarLogger sharedInstance]
+                            logWithLevel:RadarLogLevelDebug
+                                message:[NSString stringWithFormat:@"Getting conversion from notification tap"]];
+            [Radar logOpenedAppConversionWithNotification:response.notification.request conversionSource:@"radar_notification"];
+        } else {
+            [Radar logOpenedAppConversionWithNotification:response.notification.request conversionSource:@"notification"];
+        }
+    }
+}
+
++ (void)removePendingNotificationsWithCompletionHandler:(void (^)(void))completionHandler {
+    UNUserNotificationCenter *notificationCenter = [UNUserNotificationCenter currentNotificationCenter];
+    [notificationCenter getPendingNotificationRequestsWithCompletionHandler:^(NSArray<UNNotificationRequest *> *_Nonnull requests) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Found %lu pending notifications", (unsigned long)requests.count]];
+        NSMutableArray *identifiers = [NSMutableArray new];
+        for (UNNotificationRequest *request in requests) {
+            if ([request.identifier hasPrefix:kSyncGeofenceIdentifierPrefix]) {
+                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Found pending notification to remove | identifier = %@", request.identifier]];
+                [identifiers addObject:request.identifier];
+            }
+        }
+
+        if (identifiers.count > 0) {
+            [notificationCenter removePendingNotificationRequestsWithIdentifiers:identifiers];
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Removed pending notifications"];
+        }
+
+        completionHandler();
+    }];
+}
+
++ (void)addOnPremiseNotificationRequests:(NSArray<UNNotificationRequest *> *)requests {
+
+    [RadarNotificationHelper checkNotificationPermissionsWithCompletionHandler:^(BOOL granted) {
+        if (granted) {
+            UNUserNotificationCenter *notificationCenter = [UNUserNotificationCenter currentNotificationCenter];
+            for (UNNotificationRequest *request in requests) {
+                [notificationCenter addNotificationRequest:request withCompletionHandler:^(NSError *_Nullable error) {
+                    if (error) {
+                        [[RadarLogger sharedInstance]
+                            logWithLevel:RadarLogLevelError
+                                message:[NSString stringWithFormat:@"Error adding local notification | identifier = %@; error = %@", request.identifier, error]];
+                    } else {
+                        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
+                                                        message:[NSString stringWithFormat:@"Added local notification | identifier = %@", request.identifier]];
+                    }
+                }];
+            }
+        } else {
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Notification permissions not granted. Skipping adding notifications."];
+            return;
+        }
+    }];
+}
+
+
++ (void)checkNotificationPermissionsWithCompletionHandler:(NotificationPermissionCheckCompletion)completionHandler {
+    if (NSClassFromString(@"XCTestCase") == nil) {
+        UNUserNotificationCenter *notificationCenter = [UNUserNotificationCenter currentNotificationCenter];
+        [notificationCenter getNotificationSettingsWithCompletionHandler:^(UNNotificationSettings *settings) {
+            BOOL granted = (settings.authorizationStatus == UNAuthorizationStatusAuthorized);
+            [RadarState setNotificationPermissionGranted:granted];
+            if (!granted) {
+                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Notification permissions not granted."];
+            }
+            if (completionHandler) {
+                completionHandler(granted);
+            }
+        }];
+    } else {
+        if (completionHandler) {
+            completionHandler(NO);
+        }
+    }
+   
 }
 
 @end

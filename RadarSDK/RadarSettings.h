@@ -11,6 +11,7 @@
 #import "Radar.h"
 #import "RadarTrackingOptions.h"
 #import "RadarSdkConfiguration.h"
+#import "RadarInitializeOptions.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -66,6 +67,9 @@ NS_ASSUME_NONNULL_BEGIN
 + (BOOL)xPlatform;
 + (NSString *)xPlatformSDKType;
 + (NSString *)xPlatformSDKVersion;
++ (BOOL)useOpenedAppConversion;
++ (void)setInitializeOptions:(RadarInitializeOptions *)options;
++ (RadarInitializeOptions *)initializeOptions;
 
 @end
 

@@ -98,6 +98,8 @@
     if (locationAccuracyAuthorization) {
         [queryString appendFormat:@"&locationAccuracyAuthorization=%@", locationAccuracyAuthorization];
     }
+    NSString *notificationAuthorization = [RadarState notificationPermissionGranted] ? @"true" : @"false";
+    [queryString appendFormat:@"&notificationAuthorization=%@", notificationAuthorization];
     if (usage) {
         [queryString appendFormat:@"&usage=%@", usage];
     }
@@ -119,6 +121,7 @@
                       extendedTimeout:NO
                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
                         if (!res) {
+                            completionHandler(status, nil);
                             return;
                         }
 
@@ -311,6 +314,7 @@
     if (locationAccuracyAuthorization) {
         params[@"locationAccuracyAuthorization"] = locationAccuracyAuthorization;
     }
+    params[@"notificationAuthorization"] = @([RadarState notificationPermissionGranted]);
 
     params[@"trackingOptions"] = [options dictionaryValue];
 
@@ -1073,7 +1077,8 @@
     }
 
     NSMutableString *queryString = [NSMutableString new];
-    if (!address.countryCode || !address.stateCode || !address.city || !address.number || !address.postalCode || !address.street) {
+    if (!address.countryCode || !address.stateCode || !address.city || !address.postalCode || 
+        !((address.street && address.number) || address.addressLabel)) {
         if (completionHandler) {
             [RadarUtils runOnMainThread:^{
                 completionHandler(RadarStatusErrorBadRequest, nil, nil, RadarAddressVerificationStatusNone);
@@ -1085,9 +1090,16 @@
         [queryString appendFormat:@"countryCode=%@", address.countryCode];
         [queryString appendFormat:@"&stateCode=%@", address.stateCode];
         [queryString appendFormat:@"&city=%@", address.city];
-        [queryString appendFormat:@"&number=%@", address.number];
         [queryString appendFormat:@"&postalCode=%@", address.postalCode];
-        [queryString appendFormat:@"&street=%@", address.street];
+        if (address.street) {
+            [queryString appendFormat:@"&street=%@", address.street];
+        }
+        if (address.number) {
+            [queryString appendFormat:@"&number=%@", address.number];
+        }
+        if (address.addressLabel) {
+            [queryString appendFormat:@"&addressLabel=%@", address.addressLabel];
+        }
     }
 
     if (address.unit) {
@@ -1128,6 +1140,7 @@
                                 [RadarUtils runOnMainThread:^{
                                     completionHandler(RadarStatusSuccess, res, address, verificationStatus);
                                 }];
+                                return;
                             }
                         }
 

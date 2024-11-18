@@ -16,10 +16,49 @@
 	<string>$(PRODUCT_BUNDLE_PACKAGE_TYPE)</string>
 	<key>CFBundleShortVersionString</key>
 	<string>$(MARKETING_VERSION)</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLIconFile</key>
+			<string>Default-568h@2x</string>
+			<key>CFBundleURLName</key>
+			<string>io.radar.example</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>io.radar</string>
+			</array>
+		</dict>
+	</array>
 	<key>CFBundleVersion</key>
 	<string>1</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<false/>
+		<key>NSPinnedDomains</key>
+		<dict>
+			<key>api-verified.radar.io</key>
+			<dict>
+				<key>NSIncludesSubdomains</key>
+				<true/>
+				<key>NSPinnedLeafIdentities</key>
+				<array>
+					<dict>
+						<key>SPKI-SHA256-BASE64</key>
+						<string>15ktYXSSU2llpy7YyCgeqUKDBkjcimK/weUcec960sI=</string>
+					</dict>
+					<dict>
+						<key>SPKI-SHA256-BASE64</key>
+						<string>15ktYXSSU2llpy7YyCgeqUKDBkjcimK/weUcec960sI=</string>
+					</dict>
+				</array>
+			</dict>
+		</dict>
+	</dict>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>Your background location usage description goes here.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
@@ -45,6 +84,7 @@
 	</dict>
 	<key>UIBackgroundModes</key>
 	<array>
+		<string>fetch</string>
 		<string>location</string>
 	</array>
 	<key>UILaunchStoryboardName</key>
@@ -68,29 +108,5 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
-	<key>NSAppTransportSecurity</key>
-	<dict>
-		<key>NSAllowsArbitraryLoads</key>
-		<false/>
-		<key>NSPinnedDomains</key>
-		<dict>
-			<key>api-verified.radar.io</key>
-			<dict>
-				<key>NSIncludesSubdomains</key>
-				<true/>
-				<key>NSPinnedLeafIdentities</key>
-				<array>
-					<dict>
-						<key>SPKI-SHA256-BASE64</key>
-						<string>15ktYXSSU2llpy7YyCgeqUKDBkjcimK/weUcec960sI=</string>
-					</dict>
-					<dict>
-						<key>SPKI-SHA256-BASE64</key>
-						<string>15ktYXSSU2llpy7YyCgeqUKDBkjcimK/weUcec960sI=</string>
-					</dict>
-				</array>
-			</dict>
-		</dict>
-	</dict>
 </dict>
 </plist>

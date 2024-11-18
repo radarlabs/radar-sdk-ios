@@ -9,6 +9,7 @@
 #import "RadarCoordinate+Internal.h"
 #import "RadarGeofence+Internal.h"
 #import "RadarPolygonGeometry+Internal.h"
+#import "RadarOperatingHours+Internal.h"
 
 @implementation RadarGeofence
 
@@ -36,6 +37,7 @@
                                  tag:(NSString *)tag
                           externalId:(NSString *_Nullable)externalId
                             metadata:(NSDictionary *_Nullable)metadata
+                      operatingHours: (RadarOperatingHours *_Nullable) operatingHours
                             geometry:(RadarGeofenceGeometry *_Nonnull)geometry {
     self = [super init];
     if (self) {
@@ -44,6 +46,7 @@
         _tag = tag;
         _externalId = externalId;
         _metadata = metadata;
+        _operatingHours = operatingHours;
         _geometry = geometry;
     }
     return self;
@@ -61,6 +64,7 @@
     NSString *tag;
     NSString *externalId;
     NSDictionary *metadata;
+    RadarOperatingHours *operatingHours;
     RadarGeofenceGeometry *geometry;
 
     id idObj = dict[@"_id"];
@@ -86,6 +90,11 @@
     id metadataObj = dict[@"metadata"];
     if (metadataObj && [metadataObj isKindOfClass:[NSDictionary class]]) {
         metadata = (NSDictionary *)metadataObj;
+    }
+
+    id operatingHoursObj = dict[@"operatingHours"];
+    if (operatingHoursObj && [operatingHoursObj isKindOfClass:[NSDictionary class]]) {
+        operatingHours = [[RadarOperatingHours alloc] initWithDictionary:operatingHoursObj];
     }
 
     id typeObj = dict[@"type"];
@@ -130,7 +139,7 @@
         }
     }
 
-    return [[RadarGeofence alloc] initWithId:_id description:description tag:tag externalId:externalId metadata:metadata geometry:geometry];
+    return [[RadarGeofence alloc] initWithId:_id description:description tag:tag externalId:externalId metadata:metadata operatingHours:operatingHours geometry:geometry];
 }
 
 - (NSMutableArray<RadarCoordinate *> *)getPolygonCoordinates:(NSDictionary *)dict {
@@ -212,6 +221,9 @@
     [dict setValue:self.externalId forKey:@"externalId"];
     [dict setValue:self.__description forKey:@"description"];
     [dict setValue:self.metadata forKey:@"metadata"];
+    if (self.operatingHours) {
+        [dict setValue:self.operatingHours.hours forKey:@"operatingHours"];
+    }
     if ([self.geometry isKindOfClass:[RadarCircleGeometry class]]) {
         RadarCircleGeometry *circleGeometry = (RadarCircleGeometry *)self.geometry;
         [dict setValue:@(circleGeometry.radius) forKey:@"geometryRadius"];
