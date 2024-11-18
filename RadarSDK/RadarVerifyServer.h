@@ -10,6 +10,7 @@
 
 @interface RadarVerifyServer: NSObject
 
++ (instancetype)sharedInstance;
 - (void)startServer;
 - (void)stopServer;
 

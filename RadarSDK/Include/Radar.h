@@ -511,6 +511,20 @@ typedef void (^_Nullable RadarLogConversionCompletionHandler)(RadarStatus status
 + (void)stopTrackingVerified NS_SWIFT_NAME(stopTrackingVerified());
 
 /**
+ Starts the Radar Verify companion app server.
+
+ @warning Note that you must configure SSL pinning before calling this method.
+ */
++ (void)startVerifyServer NS_SWIFT_NAME(startVerifyServer());
+
+/**
+ Stops the Radar Verify companion app server.
+
+ @warning Note that you must configure SSL pinning before calling this method.
+ */
++ (void)stopVerifyServer NS_SWIFT_NAME(stopVerifyServer());
+
+/**
  Returns the user's last verified location token if still valid, or requests a fresh token if not.
 
  @warning Note that you must configure SSL pinning before calling this method.

@@ -23,6 +23,7 @@
 #import "RadarReplayBuffer.h"
 #import "RadarNotificationHelper.h"
 #import "RadarTripOptions.h"
+#import "RadarVerifyServer.h"
 
 @interface Radar ()
 
@@ -307,6 +308,16 @@
 + (void)stopTrackingVerified {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"stopTrackingVerified()"];
     [[RadarVerificationManager sharedInstance] stopTrackingVerified];
+}
+
++ (void)startVerifyServer {
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"startVerifyServer()"];
+    [[RadarVerifyServer sharedInstance] startServer];
+}
+
++ (void)stopVerifyServer {
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"stopVerifyServer()"];
+    [[RadarVerifyServer sharedInstance] stopServer];
 }
 
 + (void)getVerifiedLocationToken:(RadarTrackVerifiedCompletionHandler)completionHandler {
