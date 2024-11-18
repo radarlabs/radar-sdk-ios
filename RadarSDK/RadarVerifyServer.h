@@ -10,12 +10,8 @@
 
 @interface RadarVerifyServer: NSObject
 
-<<<<<<< HEAD
 + (instancetype)sharedInstance;
 - (void)startServerWithCertData:(NSData *)certData identityData:(NSData *)identityData;
-=======
-- (void)startServer;
->>>>>>> bd54448e (RadarVerifyServer)
 - (void)stopServer;
 
 @end
