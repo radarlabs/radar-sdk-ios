@@ -230,44 +230,43 @@
     self.startedInterval = interval;
     self.startedBeacons = beacons;
     
-    if (@available(iOS 12.0, *)) {
-        if (!_monitor) {
-            _monitor = nw_path_monitor_create();
+    
+    if (!_monitor) {
+        _monitor = nw_path_monitor_create();
 
-            nw_path_monitor_set_queue(_monitor, dispatch_get_main_queue());
+        nw_path_monitor_set_queue(_monitor, dispatch_get_main_queue());
 
-            nw_path_monitor_set_update_handler(_monitor, ^(nw_path_t path) {
-                if (nw_path_get_status(path) == nw_path_status_satisfied) {
-                    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Network connected"];
-                } else {
-                    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Network disconnected"];
-                }
+        nw_path_monitor_set_update_handler(_monitor, ^(nw_path_t path) {
+            if (nw_path_get_status(path) == nw_path_status_satisfied) {
+                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Network connected"];
+            } else {
+                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Network disconnected"];
+            }
                 
-                NSString *ips = [self getIPs];
-                BOOL changed = NO;
-                
-                if (!self.lastIPs) {
-                    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"First time getting IPs | ips = %@", ips]];
-                    changed = NO;
-                } else if (!ips || [ips isEqualToString:@"error"]) {
-                    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Error getting IPs | ips = %@", ips]];
-                    changed = YES;
-                } else if (![ips isEqualToString:self.lastIPs]) {
-                    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"IPs changed | ips = %@; lastIPs = %@", ips, self.lastIPs]];
-                    changed = YES;
-                } else {
-                    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"IPs unchanged"];
-                }
-                self.lastIPs = ips;
-                
-                if (changed) {
-                    [self callTrackVerified];
-                }
-            });
-
-            nw_path_monitor_start(_monitor);
-        }
+            NSString *ips = [self getIPs];
+            BOOL changed = NO;
+            
+            if (!self.lastIPs) {
+                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"First time getting IPs | ips = %@", ips]];
+                changed = NO;
+            } else if (!ips || [ips isEqualToString:@"error"]) {
+                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Error getting IPs | ips = %@", ips]];
+                changed = YES;
+            } else if (![ips isEqualToString:self.lastIPs]) {
+                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"IPs changed | ips = %@; lastIPs = %@", ips, self.lastIPs]];
+                changed = YES;
+            } else {
+                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"IPs unchanged"];
+            }
+            self.lastIPs = ips;
+            
+            if (changed) {
+                [self callTrackVerified];
+            }
+        });
+        nw_path_monitor_start(_monitor);
     }
+    
 
     [self callTrackVerified];
 }
@@ -275,11 +274,11 @@
 - (void)stopTrackingVerified {
     self.started = NO;
     
-    if (@available(iOS 12.0, *)) {
-        if (_monitor) {
-            nw_path_monitor_cancel(_monitor);
-        }
+
+    if (_monitor) {
+        nw_path_monitor_cancel(_monitor);
     }
+    
     
     [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(intervalFired) object:nil];
 }
