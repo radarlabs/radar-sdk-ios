@@ -111,7 +111,12 @@ static int fileCounter = 0;
     for (NSString *file in files) {
         NSString *filePath = [self.logFileDir stringByAppendingPathComponent:file];
         NSData *fileData = [self.fileHandler readFileAtPath:filePath];
-        RadarLog *log = [NSKeyedUnarchiver unarchiveObjectWithData:fileData];
+        NSError *error;
+        RadarLog *log = [NSKeyedUnarchiver unarchivedObjectOfClasses:[NSSet setWithObjects:[NSString class], [RadarLog class], [NSDate class], nil] fromData:fileData error:nil];
+        if (error) {
+            NSLog(@"Failed to unarchive log: %@", error);
+            return logs;
+        }
         if (log && log.message) {
             [logs addObject:log];
         }

@@ -168,7 +168,13 @@ static const int MAX_BUFFER_SIZE = 120; // one hour of updates
 - (void)loadReplaysFromPersistentStore {
     NSData *replaysData = [[NSUserDefaults standardUserDefaults] objectForKey:@"radar-replays"];
     if (replaysData) {
-        NSArray *replays = [NSKeyedUnarchiver unarchiveObjectWithData:replaysData];
+        NSError *error;
+        NSSet *allowedClasses = [NSSet setWithObjects:[NSArray class], [RadarReplay class], [NSDictionary class], [NSString class], [NSNumber class], nil];
+        NSArray<RadarReplay *> *replays = [NSKeyedUnarchiver unarchivedObjectOfClasses:allowedClasses fromData:replaysData error:&error];
+        if (error) {
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Error unarchiving replays"]; 
+            return;
+        }
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Loaded replays | length = %lu", (unsigned long)[replays count]]];
         mutableReplayBuffer = [NSMutableArray arrayWithArray:replays];
     }
