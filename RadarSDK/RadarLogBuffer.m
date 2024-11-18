@@ -122,7 +122,12 @@ static int fileCounter = 0;
 
  - (void)writeToFileStorage:(NSArray <RadarLog *> *)logs {
     for (RadarLog *log in logs) {
-        NSData *logData = [NSKeyedArchiver archivedDataWithRootObject:log];
+        NSError *error;
+        NSData *logData = [NSKeyedArchiver archivedDataWithRootObject:log requiringSecureCoding:YES error:&error];
+        if (error) {
+            NSLog(@"Failed to archive log: %@", error);
+            return;
+        }
         NSTimeInterval unixTimestamp = [log.createdAt timeIntervalSince1970];
         // logs may be created in the same millisecond, so we append a counter to the end of the timestamp to "tiebreak"
         NSString *unixTimestampString = [NSString stringWithFormat:@"%lld_%04d", (long long)unixTimestamp, fileCounter++];

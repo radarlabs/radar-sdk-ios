@@ -10,7 +10,7 @@
 /**
  Represents a debug log.
  */
-@interface RadarLog : NSObject <NSCoding>
+@interface RadarLog : NSObject <NSCoding, NSSecureCoding>
 
 /**
  The levels for debug logs.

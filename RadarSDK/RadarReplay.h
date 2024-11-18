@@ -7,7 +7,7 @@
 
 #import "Radar.h"
 
-@interface RadarReplay : NSObject <NSCoding>
+@interface RadarReplay : NSObject <NSCoding, NSSecureCoding>
 
 @property (nonnull, copy, nonatomic, readonly) NSDictionary *replayParams;
 
