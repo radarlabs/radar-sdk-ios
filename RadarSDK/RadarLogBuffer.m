@@ -112,10 +112,9 @@ static int fileCounter = 0;
         NSString *filePath = [self.logFileDir stringByAppendingPathComponent:file];
         NSData *fileData = [self.fileHandler readFileAtPath:filePath];
         NSError *error;
-        RadarLog *log = [NSKeyedUnarchiver unarchivedObjectOfClasses:[NSSet setWithObjects:[NSString class], [RadarLog class], [NSDate class], nil] fromData:fileData error:nil];
+        RadarLog *log = [NSKeyedUnarchiver unarchivedObjectOfClasses:[NSSet setWithObjects:[NSString class], [RadarLog class], [NSDate class], nil] fromData:fileData error:&error];
         if (error) {
             NSLog(@"Failed to unarchive log: %@", error);
-            return logs;
         }
         if (log && log.message) {
             [logs addObject:log];
@@ -131,7 +130,6 @@ static int fileCounter = 0;
         NSData *logData = [NSKeyedArchiver archivedDataWithRootObject:log requiringSecureCoding:YES error:&error];
         if (error) {
             NSLog(@"Failed to archive log: %@", error);
-            return;
         }
         NSTimeInterval unixTimestamp = [log.createdAt timeIntervalSince1970];
         // logs may be created in the same millisecond, so we append a counter to the end of the timestamp to "tiebreak"
