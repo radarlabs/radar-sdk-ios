@@ -230,7 +230,6 @@
     self.startedInterval = interval;
     self.startedBeacons = beacons;
     
-    
     if (!_monitor) {
         _monitor = nw_path_monitor_create();
 
@@ -267,18 +266,15 @@
         nw_path_monitor_start(_monitor);
     }
     
-
     [self callTrackVerified];
 }
 
 - (void)stopTrackingVerified {
     self.started = NO;
-    
 
     if (_monitor) {
         nw_path_monitor_cancel(_monitor);
     }
-    
     
     [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(intervalFired) object:nil];
 }
