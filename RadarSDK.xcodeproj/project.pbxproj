@@ -76,12 +76,12 @@
 		015867472CEB3E48007BEAC0 /* NIOEmbedded in Frameworks */ = {isa = PBXBuildFile; productRef = 015867462CEB3E48007BEAC0 /* NIOEmbedded */; };
 		015867492CEB3E48007BEAC0 /* NIOFoundationCompat in Frameworks */ = {isa = PBXBuildFile; productRef = 015867482CEB3E48007BEAC0 /* NIOFoundationCompat */; };
 		0158674C2CEB3E5C007BEAC0 /* NIOSSL in Frameworks */ = {isa = PBXBuildFile; productRef = 0158674B2CEB3E5C007BEAC0 /* NIOSSL */; };
-		0158674E2CEB3E5C007BEAC0 /* NIOSSLHTTP1Client in Frameworks */ = {isa = PBXBuildFile; productRef = 0158674D2CEB3E5C007BEAC0 /* NIOSSLHTTP1Client */; };
 		015867502CEB3E5C007BEAC0 /* NIOTLSServer in Frameworks */ = {isa = PBXBuildFile; productRef = 0158674F2CEB3E5C007BEAC0 /* NIOTLSServer */; };
 		015867572CEB5071007BEAC0 /* RadarVerifyServer.h in Headers */ = {isa = PBXBuildFile; fileRef = 015867562CEB5071007BEAC0 /* RadarVerifyServer.h */; };
 		019514362BD078D90031ABA2 /* RadarVerifiedLocationToken.h in Headers */ = {isa = PBXBuildFile; fileRef = 019514352BD077D10031ABA2 /* RadarVerifiedLocationToken.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		019514392BD081630031ABA2 /* RadarVerifiedLocationToken.m in Sources */ = {isa = PBXBuildFile; fileRef = 019514372BD081630031ABA2 /* RadarVerifiedLocationToken.m */; };
 		0195143A2BD081630031ABA2 /* RadarVerifiedLocationToken+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 019514382BD081630031ABA2 /* RadarVerifiedLocationToken+Internal.h */; };
+		01A58B682CEB886200AF641F /* NIOHTTP1 in Frameworks */ = {isa = PBXBuildFile; productRef = 01A58B672CEB886200AF641F /* NIOHTTP1 */; };
 		01F810702AF0119800BD7088 /* RadarVerifiedDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 01F8106F2AF0119800BD7088 /* RadarVerifiedDelegate.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		01F99CFB2965C182004E8CF3 /* RadarConfig.h in Headers */ = {isa = PBXBuildFile; fileRef = 01F99CFA2965C182004E8CF3 /* RadarConfig.h */; };
 		01F99CFD2965C1C4004E8CF3 /* RadarConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = 01F99CFC2965C1C4004E8CF3 /* RadarConfig.m */; };
@@ -377,13 +377,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				015867452CEB3E48007BEAC0 /* NIOCore in Frameworks */,
-				0158674E2CEB3E5C007BEAC0 /* NIOSSLHTTP1Client in Frameworks */,
 				015867492CEB3E48007BEAC0 /* NIOFoundationCompat in Frameworks */,
 				0158674C2CEB3E5C007BEAC0 /* NIOSSL in Frameworks */,
 				015867502CEB3E5C007BEAC0 /* NIOTLSServer in Frameworks */,
 				015867412CEB3E48007BEAC0 /* NIO in Frameworks */,
 				015867432CEB3E48007BEAC0 /* NIOConcurrencyHelpers in Frameworks */,
 				015867472CEB3E48007BEAC0 /* NIOEmbedded in Frameworks */,
+				01A58B682CEB886200AF641F /* NIOHTTP1 in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -762,6 +762,7 @@
 				0158674B2CEB3E5C007BEAC0 /* NIOSSL */,
 				0158674D2CEB3E5C007BEAC0 /* NIOSSLHTTP1Client */,
 				0158674F2CEB3E5C007BEAC0 /* NIOTLSServer */,
+				01A58B672CEB886200AF641F /* NIOHTTP1 */,
 			);
 			productName = RadarSDK;
 			productReference = 0107A9E82621FFB9008AB52F /* RadarSDK.framework */;
@@ -1313,6 +1314,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 0158674A2CEB3E5C007BEAC0 /* XCRemoteSwiftPackageReference "swift-nio-ssl" */;
 			productName = NIOTLSServer;
+		};
+		01A58B672CEB886200AF641F /* NIOHTTP1 */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0158673F2CEB3E48007BEAC0 /* XCRemoteSwiftPackageReference "swift-nio" */;
+			productName = NIOHTTP1;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

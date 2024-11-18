@@ -13,7 +13,7 @@ import NIOSSL
 import NIOHTTP1
 import UserNotifications
 
-@objc class RadarVerifyServer: NSObject, CLLocationManagerDelegate, @unchecked Sendable {
+@objc(RadarVerifyServer) class RadarVerifyServer: NSObject, CLLocationManagerDelegate, @unchecked Sendable {
     @objc static let sharedInstance = RadarVerifyServer()
     
     private let certificateURL = URL(string: "https://s3.us-east-2.amazonaws.com/app.radar-verify.com/mac/c.pem")!
