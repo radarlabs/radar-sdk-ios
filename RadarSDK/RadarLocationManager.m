@@ -108,23 +108,21 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 
 - (void)callCompletionHandlersWithStatus:(RadarStatus)status location:(CLLocation *_Nullable)location {
     @synchronized(self) {
-        [RadarUtils runOnMainThread:^{
-            if (!self.completionHandlers.count){
-                return;
-            }
+        if (!self.completionHandlers.count){
+            return;
+        }
 
-            [[RadarLogger sharedInstance]
-                logWithLevel:RadarLogLevelDebug
-                    message:[NSString stringWithFormat:@"Calling completion handlers | self.completionHandlers.count = %lu", (unsigned long)self.completionHandlers.count]];
+        [[RadarLogger sharedInstance]
+            logWithLevel:RadarLogLevelDebug
+                 message:[NSString stringWithFormat:@"Calling completion handlers | self.completionHandlers.count = %lu", (unsigned long)self.completionHandlers.count]];
 
-            for (RadarLocationCompletionHandler completionHandler in self.completionHandlers) {
-                [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(timeoutWithCompletionHandler:) object:completionHandler];
+        for (RadarLocationCompletionHandler completionHandler in self.completionHandlers) {
+            [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(timeoutWithCompletionHandler:) object:completionHandler];
 
-                completionHandler(status, location, [RadarState stopped]);
-            }
+            completionHandler(status, location, [RadarState stopped]);
+        }
 
-            [self.completionHandlers removeAllObjects];
-        }];
+        [self.completionHandlers removeAllObjects];
     }
 }
 
@@ -720,172 +718,170 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 }
 
 - (void)handleLocation:(CLLocation *)location source:(RadarLocationSource)source beacons:(NSArray<RadarBeacon *> *)beacons {
-    [RadarUtils runOnSerialQueue:^{
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
+                                       message:[NSString stringWithFormat:@"Handling location | source = %@; location = %@", [Radar stringForLocationSource:source], location]];
+
+    [self cancelTimeouts];
+
+    if (!location.isValid) {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
-                                        message:[NSString stringWithFormat:@"Handling location | source = %@; location = %@", [Radar stringForLocationSource:source], location]];
+                                           message:[NSString stringWithFormat:@"Invalid location | source = %@; location = %@", [Radar stringForLocationSource:source], location]];
 
-        [self cancelTimeouts];
+        [self callCompletionHandlersWithStatus:RadarStatusErrorLocation location:nil];
 
-        if (!location.isValid) {
-            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
-                                            message:[NSString stringWithFormat:@"Invalid location | source = %@; location = %@", [Radar stringForLocationSource:source], location]];
+        return;
+    }
 
-            [self callCompletionHandlersWithStatus:RadarStatusErrorLocation location:nil];
+    RadarTrackingOptions *options = [Radar getTrackingOptions];
+    BOOL wasStopped = [RadarState stopped];
+    BOOL stopped = NO;
+
+    BOOL force = (source == RadarLocationSourceForegroundLocation || source == RadarLocationSourceManualLocation || source == RadarLocationSourceBeaconEnter ||
+                  source == RadarLocationSourceBeaconExit || source == RadarLocationSourceVisitArrival);
+    if (wasStopped && !force && location.horizontalAccuracy >= 1000 && options.desiredAccuracy != RadarTrackingOptionsDesiredAccuracyLow) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
+                                           message:[NSString stringWithFormat:@"Skipping location: inaccurate | accuracy = %f", location.horizontalAccuracy]];
+
+        [self updateTracking:location];
+
+        return;
+    }
+
+    BOOL tracking = [RadarSettings tracking];
+    if (!force && !tracking) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Skipping location: not tracking"];
+
+        return;
+    }
+
+    CLLocationDistance distance = CLLocationDistanceMax;
+    NSTimeInterval duration = 0;
+    if (options.stopDistance > 0 && options.stopDuration > 0) {
+        CLLocation *lastMovedLocation = [RadarState lastMovedLocation];
+        if (!lastMovedLocation) {
+            lastMovedLocation = location;
+            [RadarState setLastMovedLocation:lastMovedLocation];
+        }
+        NSDate *lastMovedAt = [RadarState lastMovedAt];
+        if (!lastMovedAt) {
+            lastMovedAt = location.timestamp;
+            [RadarState setLastMovedAt:lastMovedAt];
+        }
+        if (!force && [lastMovedAt timeIntervalSinceDate:location.timestamp] > 0) {
+            [[RadarLogger sharedInstance]
+                logWithLevel:RadarLogLevelDebug
+                     message:[NSString stringWithFormat:@"Skipping location: old | lastMovedAt = %@; location.timestamp = %@", lastMovedAt, location.timestamp]];
 
             return;
         }
-
-        RadarTrackingOptions *options = [Radar getTrackingOptions];
-        BOOL wasStopped = [RadarState stopped];
-        BOOL stopped = NO;
-
-        BOOL force = (source == RadarLocationSourceForegroundLocation || source == RadarLocationSourceManualLocation || source == RadarLocationSourceBeaconEnter ||
-                    source == RadarLocationSourceBeaconExit || source == RadarLocationSourceVisitArrival);
-        if (wasStopped && !force && location.horizontalAccuracy >= 1000 && options.desiredAccuracy != RadarTrackingOptionsDesiredAccuracyLow) {
-            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
-                                            message:[NSString stringWithFormat:@"Skipping location: inaccurate | accuracy = %f", location.horizontalAccuracy]];
-
-            [self updateTracking:location];
-
-            return;
-        }
-
-        BOOL tracking = [RadarSettings tracking];
-        if (!force && !tracking) {
-            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Skipping location: not tracking"];
-
-            return;
-        }
-
-        CLLocationDistance distance = CLLocationDistanceMax;
-        NSTimeInterval duration = 0;
-        if (options.stopDistance > 0 && options.stopDuration > 0) {
-            CLLocation *lastMovedLocation = [RadarState lastMovedLocation];
-            if (!lastMovedLocation) {
-                lastMovedLocation = location;
-                [RadarState setLastMovedLocation:lastMovedLocation];
+        if (location && lastMovedLocation && lastMovedAt) {
+            distance = [location distanceFromLocation:lastMovedLocation];
+            duration = [location.timestamp timeIntervalSinceDate:lastMovedAt];
+            if (duration == 0) {
+                duration = -[location.timestamp timeIntervalSinceNow];
             }
-            NSDate *lastMovedAt = [RadarState lastMovedAt];
-            if (!lastMovedAt) {
-                lastMovedAt = location.timestamp;
-                [RadarState setLastMovedAt:lastMovedAt];
-            }
-            if (!force && [lastMovedAt timeIntervalSinceDate:location.timestamp] > 0) {
-                [[RadarLogger sharedInstance]
-                    logWithLevel:RadarLogLevelDebug
-                        message:[NSString stringWithFormat:@"Skipping location: old | lastMovedAt = %@; location.timestamp = %@", lastMovedAt, location.timestamp]];
+            BOOL arrival = source == RadarLocationSourceVisitArrival;
+            stopped = (distance <= options.stopDistance && duration >= options.stopDuration) || arrival;
 
-                return;
-            }
-            if (location && lastMovedLocation && lastMovedAt) {
-                distance = [location distanceFromLocation:lastMovedLocation];
-                duration = [location.timestamp timeIntervalSinceDate:lastMovedAt];
-                if (duration == 0) {
-                    duration = -[location.timestamp timeIntervalSinceNow];
-                }
-                BOOL arrival = source == RadarLocationSourceVisitArrival;
-                stopped = (distance <= options.stopDistance && duration >= options.stopDuration) || arrival;
+            [[RadarLogger sharedInstance]
+                logWithLevel:RadarLogLevelDebug
+                     message:[NSString stringWithFormat:@"Calculating stopped | stopped = %d; arrival = %d; distance = %f; duration = %f; location.timestamp = %@; lastMovedAt = %@", stopped,
+                              arrival, distance, duration, location.timestamp, lastMovedAt]];
 
-                [[RadarLogger sharedInstance]
-                    logWithLevel:RadarLogLevelDebug
-                        message:[NSString stringWithFormat:@"Calculating stopped | stopped = %d; arrival = %d; distance = %f; duration = %f; location.timestamp = %@; lastMovedAt = %@", stopped,
-                                arrival, distance, duration, location.timestamp, lastMovedAt]];
+            if (distance > options.stopDistance) {
+                [RadarState setLastMovedLocation:location];
 
-                if (distance > options.stopDistance) {
-                    [RadarState setLastMovedLocation:location];
-
-                    if (!stopped) {
-                        [RadarState setLastMovedAt:location.timestamp];
-                    }
+                if (!stopped) {
+                    [RadarState setLastMovedAt:location.timestamp];
                 }
             }
-        } else {
-            stopped = (force || source == RadarLocationSourceVisitArrival);
         }
-        BOOL justStopped = stopped && !wasStopped;
-        [RadarState setStopped:stopped];
+    } else {
+        stopped = (force || source == RadarLocationSourceVisitArrival);
+    }
+    BOOL justStopped = stopped && !wasStopped;
+    [RadarState setStopped:stopped];
 
-        [RadarState setLastLocation:location];
+    [RadarState setLastLocation:location];
 
-        [[RadarDelegateHolder sharedInstance] didUpdateClientLocation:location stopped:stopped source:source];
+    [[RadarDelegateHolder sharedInstance] didUpdateClientLocation:location stopped:stopped source:source];
 
-        if (source != RadarLocationSourceManualLocation) {
-            [self updateTracking:location];
-        }
+    if (source != RadarLocationSourceManualLocation) {
+        [self updateTracking:location];
+    }
 
-        [self callCompletionHandlersWithStatus:RadarStatusSuccess location:location];
+    [self callCompletionHandlersWithStatus:RadarStatusSuccess location:location];
 
-        CLLocation *sendLocation = location;
+    CLLocation *sendLocation = location;
 
-        CLLocation *lastFailedStoppedLocation = [RadarState lastFailedStoppedLocation];
-        BOOL replayed = NO;
-        if (options.replay == RadarTrackingOptionsReplayStops && lastFailedStoppedLocation && !justStopped) {
-            sendLocation = lastFailedStoppedLocation;
-            stopped = YES;
-            replayed = YES;
-            [RadarState setLastFailedStoppedLocation:nil];
+    CLLocation *lastFailedStoppedLocation = [RadarState lastFailedStoppedLocation];
+    BOOL replayed = NO;
+    if (options.replay == RadarTrackingOptionsReplayStops && lastFailedStoppedLocation && !justStopped) {
+        sendLocation = lastFailedStoppedLocation;
+        stopped = YES;
+        replayed = YES;
+        [RadarState setLastFailedStoppedLocation:nil];
 
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
+                                           message:[NSString stringWithFormat:@"Replaying location | location = %@; stopped = %d", sendLocation, stopped]];
+    }
+
+    NSDate *lastSentAt = [RadarState lastSentAt];
+    BOOL ignoreSync =
+        !lastSentAt || self.completionHandlers.count || justStopped || replayed || source == RadarLocationSourceBeaconEnter || source == RadarLocationSourceBeaconExit;
+    NSDate *now = [NSDate new];
+    NSTimeInterval lastSyncInterval = [now timeIntervalSinceDate:lastSentAt];
+    if (!ignoreSync) {
+        if (!force && stopped && wasStopped && distance <= options.stopDistance &&
+            (options.desiredStoppedUpdateInterval == 0 || options.syncLocations != RadarTrackingOptionsSyncAll)) {
             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
-                                            message:[NSString stringWithFormat:@"Replaying location | location = %@; stopped = %d", sendLocation, stopped]];
-        }
+                                               message:[NSString stringWithFormat:@"Skipping sync: already stopped | stopped = %d; wasStopped = %d", stopped, wasStopped]];
 
-        NSDate *lastSentAt = [RadarState lastSentAt];
-        BOOL ignoreSync =
-            !lastSentAt || self.completionHandlers.count || justStopped || replayed || source == RadarLocationSourceBeaconEnter || source == RadarLocationSourceBeaconExit;
-        NSDate *now = [NSDate new];
-        NSTimeInterval lastSyncInterval = [now timeIntervalSinceDate:lastSentAt];
-        if (!ignoreSync) {
-            if (!force && stopped && wasStopped && distance <= options.stopDistance &&
-                (options.desiredStoppedUpdateInterval == 0 || options.syncLocations != RadarTrackingOptionsSyncAll)) {
-                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
-                                                message:[NSString stringWithFormat:@"Skipping sync: already stopped | stopped = %d; wasStopped = %d", stopped, wasStopped]];
-
-                return;
-            }
-
-            // add a 0.1 second buffer to account for the fact that the timer may fire slightly before the desired interval
-            NSTimeInterval lastSyncIntervalWithBuffer = lastSyncInterval + 0.1;
-            if (lastSyncIntervalWithBuffer < options.desiredSyncInterval) {
-                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
-                                                message:[NSString stringWithFormat:@"Skipping sync: desired sync interval | desiredSyncInterval = %d; lastSyncInterval = %f",
-                                                                                    options.desiredSyncInterval, lastSyncIntervalWithBuffer]];
-
-                return;
-            }
-
-            if (!force && !justStopped && lastSyncInterval < 1) {
-                [[RadarLogger sharedInstance]
-                    logWithLevel:RadarLogLevelDebug
-                        message:[NSString stringWithFormat:@"Skipping sync: rate limit | justStopped = %d; lastSyncInterval = %f", justStopped, lastSyncInterval]];
-
-                return;
-            }
-
-            if (options.syncLocations == RadarTrackingOptionsSyncNone) {
-                [[RadarLogger sharedInstance]
-                    logWithLevel:RadarLogLevelDebug
-                        message:[NSString stringWithFormat:@"Skipping sync: sync mode | sync = %@", [RadarTrackingOptions stringForSyncLocations:options.syncLocations]]];
-
-                return;
-            }
-
-            BOOL canExit = [RadarState canExit];
-            if (!canExit && options.syncLocations == RadarTrackingOptionsSyncStopsAndExits) {
-                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
-                                                message:[NSString stringWithFormat:@"Skipping sync: can't exit | sync = %@; canExit = %d",
-                                                                                    [RadarTrackingOptions stringForSyncLocations:options.syncLocations], canExit]];
-
-                return;
-            }
-        }
-        [RadarState updateLastSentAt];
-
-        if (source == RadarLocationSourceForegroundLocation) {
             return;
         }
 
-        [self sendLocation:sendLocation stopped:stopped source:source replayed:replayed beacons:beacons];
-    }];
+        // add a 0.1 second buffer to account for the fact that the timer may fire slightly before the desired interval
+        NSTimeInterval lastSyncIntervalWithBuffer = lastSyncInterval + 0.1;
+        if (lastSyncIntervalWithBuffer < options.desiredSyncInterval) {
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
+                                               message:[NSString stringWithFormat:@"Skipping sync: desired sync interval | desiredSyncInterval = %d; lastSyncInterval = %f",
+                                                                                  options.desiredSyncInterval, lastSyncIntervalWithBuffer]];
+
+            return;
+        }
+
+        if (!force && !justStopped && lastSyncInterval < 1) {
+            [[RadarLogger sharedInstance]
+                logWithLevel:RadarLogLevelDebug
+                     message:[NSString stringWithFormat:@"Skipping sync: rate limit | justStopped = %d; lastSyncInterval = %f", justStopped, lastSyncInterval]];
+
+            return;
+        }
+
+        if (options.syncLocations == RadarTrackingOptionsSyncNone) {
+            [[RadarLogger sharedInstance]
+                logWithLevel:RadarLogLevelDebug
+                     message:[NSString stringWithFormat:@"Skipping sync: sync mode | sync = %@", [RadarTrackingOptions stringForSyncLocations:options.syncLocations]]];
+
+            return;
+        }
+
+        BOOL canExit = [RadarState canExit];
+        if (!canExit && options.syncLocations == RadarTrackingOptionsSyncStopsAndExits) {
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
+                                               message:[NSString stringWithFormat:@"Skipping sync: can't exit | sync = %@; canExit = %d",
+                                                                                  [RadarTrackingOptions stringForSyncLocations:options.syncLocations], canExit]];
+
+            return;
+        }
+    }
+    [RadarState updateLastSentAt];
+
+    if (source == RadarLocationSourceForegroundLocation) {
+        return;
+    }
+
+    [self sendLocation:sendLocation stopped:stopped source:source replayed:replayed beacons:beacons];
 }
 
 - (void)sendLocation:(CLLocation *)location stopped:(BOOL)stopped source:(RadarLocationSource)source replayed:(BOOL)replayed beacons:(NSArray<RadarBeacon *> *_Nullable)beacons {

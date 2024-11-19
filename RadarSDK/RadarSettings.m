@@ -323,10 +323,6 @@ static NSString *const kInitializeOptions = @"radar-initializeOptions";
     return [[self sdkConfiguration] useLocationMetadata];
 }
 
-+ (BOOL)useModifiedThreading {
-    return [[self sdkConfiguration] useModifiedThreading];
-}
-
 + (BOOL)xPlatform {
     return [[NSUserDefaults standardUserDefaults] stringForKey:kXPlatformSDKType] != nil &&
     [[NSUserDefaults standardUserDefaults] stringForKey:kXPlatformSDKVersion];

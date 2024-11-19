@@ -69,16 +69,10 @@
         _useLocationMetadata = [(NSNumber *)useLocationMetadataObj boolValue];
     }
 
-    NSObject *useModifiedThreading = dict[@"useModifiedThreading"];
-    _useModifiedThreading = NO;
-    if (useModifiedThreading && [useModifiedThreading isKindOfClass:[NSNumber class]]) {
-        _useModifiedThreading = [(NSNumber *)useModifiedThreading boolValue];
-
     NSObject *useOpenedAppConversion = dict[@"useOpenedAppConversion"];
     _useOpenedAppConversion = NO;
     if (useOpenedAppConversion && [useOpenedAppConversion isKindOfClass:[NSNumber class]]) {
         _useOpenedAppConversion = [(NSNumber *)useOpenedAppConversion boolValue];
-
     }
 
     return self;
@@ -95,7 +89,6 @@
     dict[@"useLogPersistence"] = @(_useLogPersistence);
     dict[@"useRadarModifiedBeacon"] = @(_useRadarModifiedBeacon);
     dict[@"useLocationMetadata"] = @(_useLocationMetadata);
-    dict[@"useModifiedThreading"] = @(_useModifiedThreading);
     dict[@"useOpenedAppConversion"] = @(_useOpenedAppConversion);
     
     return dict;

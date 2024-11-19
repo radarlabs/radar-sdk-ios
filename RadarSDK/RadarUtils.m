@@ -10,7 +10,6 @@
 #import <sys/utsname.h>
 
 #import "RadarUtils.h"
-#import "RadarSettings.h"
 
 @implementation RadarUtils
 
@@ -196,11 +195,6 @@ static NSDateFormatter *_isoDateFormatter;
 
 + (void)runOnSerialQueue:(dispatch_block_t)block {
     if (!block) {
-        return;
-    }
-
-    if (![RadarSettings useModifiedThreading]) {
-        block();
         return;
     }
 
