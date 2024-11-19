@@ -27,14 +27,22 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         
         // Replace with a valid test publishable key
         let radarInitializeOptions = RadarInitializeOptions()
-        // Uncomment to enable automatic setup for notification conversions
-        // radarInitializeOptions.autoSetupNotificationConversion = true
+        // Uncomment to enable automatic setup for notification conversions or deep linking
+        //radarInitializeOptions.autoLogNotificationConversions = true
+        //radarInitializeOptions.autoHandleNotificationDeepLinks = true
         Radar.initialize(publishableKey: "prj_test_pk_0000000000000000000000000000000000000000", options: radarInitializeOptions )
         Radar.setUserId("testUserId")
         Radar.setMetadata([ "foo": "bar" ])
         Radar.setDelegate(self)
         Radar.setVerifiedDelegate(self)
  
+        return true
+    }
+
+    
+    func application(_ app: UIApplication, open url: URL,
+                     options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
+        // Handle opening via standard URL               
         return true
     }
     
@@ -271,10 +279,40 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         }
 
         demoButton(text: "startTrip") {
-            let tripOptions = RadarTripOptions(externalId: "299", destinationGeofenceTag: "store", destinationGeofenceExternalId: "123")
+            let tripOptions = RadarTripOptions(externalId: "300", destinationGeofenceTag: "store", destinationGeofenceExternalId: "123")
             tripOptions.mode = .car
             tripOptions.approachingThreshold = 9
             Radar.startTrip(options: tripOptions)
+        }
+
+        demoButton(text: "startTrip with start tracking false") {
+            let tripOptions = RadarTripOptions(externalId: "301", destinationGeofenceTag: "store", destinationGeofenceExternalId: "123", scheduledArrivalAt: nil, startTracking: false)
+            tripOptions.mode = .car
+            tripOptions.approachingThreshold = 9
+            Radar.startTrip(options: tripOptions)
+        }
+
+        demoButton(text: "startTrip with tracking options") {
+            let tripOptions = RadarTripOptions(externalId: "301", destinationGeofenceTag: "store", destinationGeofenceExternalId: "123", scheduledArrivalAt: nil, startTracking: false)
+            tripOptions.mode = .car
+            tripOptions.approachingThreshold = 9
+            let trackingOptions = RadarTrackingOptions.presetContinuous
+            Radar.startTrip(options: tripOptions, trackingOptions: trackingOptions)
+        }
+
+        demoButton(text: "startTrip with tracking options and startTrackingAfter") {
+            let tripOptions = RadarTripOptions(externalId: "303", destinationGeofenceTag: "store", destinationGeofenceExternalId: "123", scheduledArrivalAt: nil)
+            tripOptions.startTracking = false
+            tripOptions.mode = .car
+            tripOptions.approachingThreshold = 9
+            let trackingOptions = RadarTrackingOptions.presetContinuous
+            // startTrackingAfter 3 minutes from now
+            trackingOptions.startTrackingAfter = Date().addingTimeInterval(180)
+            Radar.startTrip(options: tripOptions, trackingOptions: trackingOptions)
+        }
+
+        demoButton(text: "completeTrip") {
+            Radar.completeTrip()
         }
 
         demoButton(text: "mockTracking") {
@@ -362,8 +400,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
     }
     
     func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse) async {
-        // Uncomment for manual setup for notification conversions
+        // Uncomment for manual setup for notification conversions and URLs
         // Radar.logConversion(response: response)
+        // Radar.openURLFromNotification(response.notification)
     }
 
     func notify(_ body: String) {

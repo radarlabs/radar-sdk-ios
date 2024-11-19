@@ -26,6 +26,8 @@ typedef void (^NotificationPermissionCheckCompletion)(BOOL granted);
 
 + (void)logConversionWithNotificationResponse:(UNNotificationResponse *)response;
 
++ (void)openURLFromNotification:(UNNotification *)notification;
+
 @end
 
 NS_ASSUME_NONNULL_END

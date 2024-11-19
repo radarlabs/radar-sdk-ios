@@ -22,6 +22,7 @@
 #import "RadarVerificationManager.h"
 #import "RadarReplayBuffer.h"
 #import "RadarNotificationHelper.h"
+#import "RadarTripOptions.h"
 
 @interface Radar ()
 
@@ -42,9 +43,10 @@
     return sharedInstance;
 }
 
-+ (void) nativeSetup {
++ (void)nativeSetup:(RadarInitializeOptions *)options {
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
+        [RadarSettings setInitializeOptions:options];
         [RadarNotificationHelper swizzleNotificationCenterDelegate];
     });
 }
@@ -66,9 +68,15 @@
     [RadarSettings setPublishableKey:publishableKey];
 
     RadarSdkConfiguration *sdkConfiguration = [RadarSettings sdkConfiguration];
-
-    if (NSClassFromString(@"XCTestCase") == nil && options.autoLogNotificationConversions) {
-        [Radar nativeSetup];
+    // For most users not using these features, options be null and skipped,
+    //  For X-platform users initializing Radar in the crossplatform layer, the options will also be null as nativeSetup would had been called ealier 
+    if (options) {
+        [RadarSettings setInitializeOptions:options];
+        if (NSClassFromString(@"XCTestCase") == nil) {
+            if (options.autoLogNotificationConversions || options.autoHandleNotificationDeepLinks) {
+                [Radar nativeSetup: options];
+            }
+        }
     }
 
     if (sdkConfiguration.usePersistence) {
@@ -105,7 +113,7 @@
 }
 
 + (void)initializeWithPublishableKey:(NSString *)publishableKey {
-    [self initializeWithPublishableKey:publishableKey options:[RadarInitializeOptions new]];
+    [self initializeWithPublishableKey:publishableKey options:nil];
 }
 
 #pragma mark - Properties
@@ -315,6 +323,7 @@
 
 + (void)startTrackingWithOptions:(RadarTrackingOptions *)options {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"startTracking()"];
+
     [[RadarLocationManager sharedInstance] startTrackingWithOptions:options];
 }
 
@@ -584,12 +593,13 @@
                                                      [RadarSettings removePreviousTrackingOptions];
                                                  }
 
-                                                 if (trackingOptions) {
+                                                 if (trackingOptions && trackingOptions.startTrackingAfter == nil) {
                                                      [self startTrackingWithOptions:trackingOptions];
-                                                 } else if (!Radar.isTracking) {
+                                                 } else if (trackingOptions) {
+                                                     [RadarSettings setTrackingOptions:trackingOptions];
+                                                 } else if (!Radar.isTracking && tripOptions && tripOptions.startTracking) {
                                                      [self startTrackingWithOptions:[RadarSettings remoteTrackingOptions] ?: [RadarSettings trackingOptions]];
                                                  }
-
 
                                                  // flush location update to generate events
                                                  [[RadarLocationManager sharedInstance] getLocationWithCompletionHandler:nil];
@@ -1251,25 +1261,7 @@
 }
 
 + (NSString *)stringForMode:(RadarRouteMode)mode {
-    NSString *str;
-    switch (mode) {
-    case RadarRouteModeFoot:
-        str = @"foot";
-        break;
-    case RadarRouteModeBike:
-        str = @"bike";
-        break;
-    case RadarRouteModeCar:
-        str = @"car";
-        break;
-    case RadarRouteModeTruck:
-        str = @"truck";
-        break;
-    case RadarRouteModeMotorbike:
-        str = @"motorbike";
-        break;
-    }
-    return str;
+    return [RadarRouteModeUtils stringForMode:mode];
 }
 
 + (NSString *)stringForTripStatus:(RadarTripStatus)status {
@@ -1374,6 +1366,10 @@
                                     }];
                                 }
                             }];
+}
+
++ (void)openURLFromNotification:(UNNotification *)notification {
+    [RadarNotificationHelper openURLFromNotification:notification];
 }
 
 @end
