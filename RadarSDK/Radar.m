@@ -1391,6 +1391,7 @@
 
 + (RadarLocationPermissionStatus *)getLocationPermissionStatus {
     return [[RadarLocationPermissionManager sharedInstance] getLocationPermissionStatus];
+}
 
 + (void)openURLFromNotification:(UNNotification *)notification {
     [RadarNotificationHelper openURLFromNotification:notification];

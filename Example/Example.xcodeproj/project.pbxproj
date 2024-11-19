@@ -13,10 +13,10 @@
 		DD236D30230A006900EB88F9 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DD236D2F230A006900EB88F9 /* Assets.xcassets */; };
 		DD291169230D0AF900049D3A /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD291168230D0AF900049D3A /* Utils.swift */; };
 		DDB861D32385FC3E00770661 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DDB861D22385FC3E00770661 /* Default-568h@2x.png */; };
-		E632FABE2CADE70400E86C85 /* RadarSDKMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E632FAB92CADE6F200E86C85 /* RadarSDKMotion.framework */; };
-		E632FABF2CADE70400E86C85 /* RadarSDKMotion.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = E632FAB92CADE6F200E86C85 /* RadarSDKMotion.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		E632FB512CAEE9FC00E86C85 /* RadarSDKLocationPermission.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E632FB4A2CAEE9EC00E86C85 /* RadarSDKLocationPermission.framework */; };
-		E632FB522CAEE9FC00E86C85 /* RadarSDKLocationPermission.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = E632FB4A2CAEE9EC00E86C85 /* RadarSDKLocationPermission.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		E698B7492C626B0600084371 /* RadarSDKMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E698B7412C626AE600084371 /* RadarSDKMotion.framework */; };
+		E698B7502C627A1600084371 /* RadarSDKMotion.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = E698B7412C626AE600084371 /* RadarSDKMotion.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		E6B718A02CED30B900E43726 /* RadarSDKLocationPermission.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E6B7189B2CED301200E43726 /* RadarSDKLocationPermission.framework */; };
+		E6B718A12CED30B900E43726 /* RadarSDKLocationPermission.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = E6B7189B2CED301200E43726 /* RadarSDKLocationPermission.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		F625D7F92C3337650024D1E7 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F625D7F82C3337650024D1E7 /* Launch Screen.storyboard */; };
 /* End PBXBuildFile section */
 
@@ -35,30 +35,30 @@
 			remoteGlobalIDString = DD236C7E2308797B00EB88F9;
 			remoteInfo = RadarSDKTests;
 		};
-		E632FAB82CADE6F200E86C85 /* PBXContainerItemProxy */ = {
+		E698B7402C626AE600084371 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = E632FA9E2CADE69800E86C85 /* RadarSDKMotion.xcodeproj */;
+			containerPortal = E698B7382C626AE600084371 /* RadarSDKMotion.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = E698B6672C6167A800084371;
 			remoteInfo = RadarSDKMotion;
 		};
-		E632FABA2CADE6F200E86C85 /* PBXContainerItemProxy */ = {
+		E698B7422C626AE600084371 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = E632FA9E2CADE69800E86C85 /* RadarSDKMotion.xcodeproj */;
+			containerPortal = E698B7382C626AE600084371 /* RadarSDKMotion.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = E698B6712C6167A800084371;
 			remoteInfo = RadarSDKMotionTests;
 		};
-		E632FB492CAEE9EC00E86C85 /* PBXContainerItemProxy */ = {
+		E6B7189A2CED301200E43726 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = E632FB272CAEE9E400E86C85 /* RadarSDKLocationPermission.xcodeproj */;
+			containerPortal = E6B718822CED2FFC00E43726 /* RadarSDKLocationPermission.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = E632FB092CAEE94B00E86C85;
 			remoteInfo = RadarSDKLocationPermission;
 		};
-		E632FB4B2CAEE9EC00E86C85 /* PBXContainerItemProxy */ = {
+		E6B7189C2CED301200E43726 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = E632FB272CAEE9E400E86C85 /* RadarSDKLocationPermission.xcodeproj */;
+			containerPortal = E6B718822CED2FFC00E43726 /* RadarSDKLocationPermission.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = E632FB132CAEE94C00E86C85;
 			remoteInfo = RadarSDKLocationPermissionTests;
@@ -72,9 +72,9 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				E632FABF2CADE70400E86C85 /* RadarSDKMotion.framework in Embed Frameworks */,
-				E632FB522CAEE9FC00E86C85 /* RadarSDKLocationPermission.framework in Embed Frameworks */,
+				E6B718A12CED30B900E43726 /* RadarSDKLocationPermission.framework in Embed Frameworks */,
 				013D7AF326D327C400574AD5 /* RadarSDK.framework in Embed Frameworks */,
+				E698B7502C627A1600084371 /* RadarSDKMotion.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -90,9 +90,9 @@
 		DD86FCF9239185F4003225F6 /* RadarSDK.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RadarSDK.xcodeproj; path = ../RadarSDK.xcodeproj; sourceTree = SOURCE_ROOT; };
 		DD86FD0B23918B3C003225F6 /* Example-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Example-Bridging-Header.h"; sourceTree = "<group>"; };
 		DDB861D22385FC3E00770661 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
-    E632FB272CAEE9E400E86C85 /* RadarSDKLocationPermission.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RadarSDKLocationPermission.xcodeproj; path = ../RadarSDKLocationPermission/RadarSDKLocationPermission.xcodeproj; sourceTree = SOURCE_ROOT; };
 		E632FA1C2CAC366C00E86C85 /* Example.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Example.entitlements; sourceTree = "<group>"; };
 		E698B7382C626AE600084371 /* RadarSDKMotion.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RadarSDKMotion.xcodeproj; path = ../../RadarSDKMotion/RadarSDKMotion.xcodeproj; sourceTree = "<group>"; };
+		E6B718822CED2FFC00E43726 /* RadarSDKLocationPermission.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RadarSDKLocationPermission.xcodeproj; path = ../RadarSDKLocationPermission/RadarSDKLocationPermission.xcodeproj; sourceTree = SOURCE_ROOT; };
 		F625D7F82C3337650024D1E7 /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -101,9 +101,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E632FABE2CADE70400E86C85 /* RadarSDKMotion.framework in Frameworks */,
-				E632FB512CAEE9FC00E86C85 /* RadarSDKLocationPermission.framework in Frameworks */,
+				E6B718A02CED30B900E43726 /* RadarSDKLocationPermission.framework in Frameworks */,
 				013D7AF226D327C400574AD5 /* RadarSDK.framework in Frameworks */,
+				E698B7492C626B0600084371 /* RadarSDKMotion.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -137,9 +137,9 @@
 				DD236D26230A006700EB88F9 /* AppDelegate.swift */,
 				DD291168230D0AF900049D3A /* Utils.swift */,
 				DD236D2F230A006900EB88F9 /* Assets.xcassets */,
-				E632FB272CAEE9E400E86C85 /* RadarSDKLocationPermission.xcodeproj */,
-				E632FA9E2CADE69800E86C85 /* RadarSDKMotion.xcodeproj */,
+				E6B718822CED2FFC00E43726 /* RadarSDKLocationPermission.xcodeproj */,
 				DD86FCF9239185F4003225F6 /* RadarSDK.xcodeproj */,
+				E698B7382C626AE600084371 /* RadarSDKMotion.xcodeproj */,
 				F625D7F82C3337650024D1E7 /* Launch Screen.storyboard */,
 			);
 			path = Example;
@@ -161,20 +161,20 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		E632FAA92CADE6F100E86C85 /* Products */ = {
+		E698B7392C626AE600084371 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				E632FAB92CADE6F200E86C85 /* RadarSDKMotion.framework */,
-				E632FABB2CADE6F200E86C85 /* RadarSDKMotionTests.xctest */,
+				E698B7412C626AE600084371 /* RadarSDKMotion.framework */,
+				E698B7432C626AE600084371 /* RadarSDKMotionTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		E632FB422CAEE9EC00E86C85 /* Products */ = {
+		E6B718932CED301100E43726 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				E632FB4A2CAEE9EC00E86C85 /* RadarSDKLocationPermission.framework */,
-				E632FB4C2CAEE9EC00E86C85 /* RadarSDKLocationPermissionTests.xctest */,
+				E6B7189B2CED301200E43726 /* RadarSDKLocationPermission.framework */,
+				E6B7189D2CED301200E43726 /* RadarSDKLocationPermissionTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -236,12 +236,12 @@
 					ProjectRef = DD86FCF9239185F4003225F6 /* RadarSDK.xcodeproj */;
 				},
 				{
-					ProductGroup = E632FB422CAEE9EC00E86C85 /* Products */;
-					ProjectRef = E632FB272CAEE9E400E86C85 /* RadarSDKLocationPermission.xcodeproj */;
+					ProductGroup = E6B718932CED301100E43726 /* Products */;
+					ProjectRef = E6B718822CED2FFC00E43726 /* RadarSDKLocationPermission.xcodeproj */;
 				},
 				{
-					ProductGroup = E632FAA92CADE6F100E86C85 /* Products */;
-					ProjectRef = E632FA9E2CADE69800E86C85 /* RadarSDKMotion.xcodeproj */;
+					ProductGroup = E698B7392C626AE600084371 /* Products */;
+					ProjectRef = E698B7382C626AE600084371 /* RadarSDKMotion.xcodeproj */;
 				},
 			);
 			projectRoot = "";
@@ -266,32 +266,32 @@
 			remoteRef = DD55C3BB2395D25600C34B40 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		E632FAB92CADE6F200E86C85 /* RadarSDKMotion.framework */ = {
+		E698B7412C626AE600084371 /* RadarSDKMotion.framework */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.framework;
 			path = RadarSDKMotion.framework;
-			remoteRef = E632FAB82CADE6F200E86C85 /* PBXContainerItemProxy */;
+			remoteRef = E698B7402C626AE600084371 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		E632FABB2CADE6F200E86C85 /* RadarSDKMotionTests.xctest */ = {
+		E698B7432C626AE600084371 /* RadarSDKMotionTests.xctest */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.cfbundle;
 			path = RadarSDKMotionTests.xctest;
-			remoteRef = E632FABA2CADE6F200E86C85 /* PBXContainerItemProxy */;
+			remoteRef = E698B7422C626AE600084371 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		E632FB4A2CAEE9EC00E86C85 /* RadarSDKLocationPermission.framework */ = {
+		E6B7189B2CED301200E43726 /* RadarSDKLocationPermission.framework */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.framework;
 			path = RadarSDKLocationPermission.framework;
-			remoteRef = E632FB492CAEE9EC00E86C85 /* PBXContainerItemProxy */;
+			remoteRef = E6B7189A2CED301200E43726 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		E632FB4C2CAEE9EC00E86C85 /* RadarSDKLocationPermissionTests.xctest */ = {
+		E6B7189D2CED301200E43726 /* RadarSDKLocationPermissionTests.xctest */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.cfbundle;
 			path = RadarSDKLocationPermissionTests.xctest;
-			remoteRef = E632FB4B2CAEE9EC00E86C85 /* PBXContainerItemProxy */;
+			remoteRef = E6B7189C2CED301200E43726 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
