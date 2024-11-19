@@ -2,19 +2,17 @@ version: 2
 jobs:
   build_and_test:
     macos:
-      xcode: 16.0.0
+      xcode: 16.0
     steps:
       - checkout
-      - run:
-          name: Xcode version
-          command: xcode-select -p
       - run:
           name: List simulators
           command: xcrun simctl list
       - run:
           name: Install dependencies
           command: |
-            gem install xcpretty cocoapods jazzy
+            gem install xcpretty jazzy
+            gem install cocoapods -v '1.15.2'
       - run:
           name: Test
           command: make clean test-pretty

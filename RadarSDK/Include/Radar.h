@@ -338,7 +338,7 @@ typedef void (^_Nullable RadarLogConversionCompletionHandler)(RadarStatus status
  @see https://radar.com/documentation/sdk/ios#initialize-sdk
  */
 
-+ (void)initializeWithPublishableKey:(NSString *)publishableKey options:(RadarInitializeOptions *)options NS_SWIFT_NAME(initialize(publishableKey:options:));
++ (void)initializeWithPublishableKey:(NSString *_Nonnull)publishableKey options:(RadarInitializeOptions *_Nullable)options NS_SWIFT_NAME(initialize(publishableKey:options:));
 #pragma mark - Properties
 
 /**
@@ -1202,9 +1202,7 @@ typedef void (^_Nullable RadarLogConversionCompletionHandler)(RadarStatus status
 
 /**
  Returns a display string for a travel mode value.
-
  @param mode A travel mode value.
-
  @return A display string for the travel mode value.
  */
 + (NSString *)stringForMode:(RadarRouteMode)mode NS_SWIFT_NAME(stringForMode(_:));
@@ -1252,7 +1250,9 @@ typedef void (^_Nullable RadarLogConversionCompletionHandler)(RadarStatus status
  Performs optional setup for Radar SDK within the AppDelegate. This method only needs to be called if Radar is initalized in cross-platform code.
 
  */
-+ (void)nativeSetup NS_SWIFT_NAME(nativeSetup());
++ (void)nativeSetup:(RadarInitializeOptions *)options NS_SWIFT_NAME(nativeSetup(_:));
+
++ (void)openURLFromNotification:(UNNotification *)notification NS_SWIFT_NAME(openURLFromNotification(_:));
 
 @end
 

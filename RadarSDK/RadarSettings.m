@@ -47,6 +47,7 @@ static NSString *const kLastAppOpenTime = @"radar-lastAppOpenTime";
 static NSString *const kUserDebug = @"radar-userDebug";
 static NSString *const kXPlatformSDKType = @"radar-xPlatformSDKType";
 static NSString *const kXPlatformSDKVersion = @"radar-xPlatformSDKVersion";
+static NSString *const kInitializeOptions = @"radar-initializeOptions";
 
 + (NSString *)publishableKey {
     return [[NSUserDefaults standardUserDefaults] stringForKey:kPublishableKey];
@@ -237,7 +238,7 @@ static NSString *const kXPlatformSDKVersion = @"radar-xPlatformSDKVersion";
                             [RadarUtils dictionaryToJson:[sdkConfiguration dictionaryValue]]]];
     if (sdkConfiguration) {
         [[RadarLogBuffer sharedInstance] setPersistentLogFeatureFlag:sdkConfiguration.useLogPersistence];
-        [[NSUserDefaults standardUserDefaults] setInteger:(int)sdkConfiguration.logLevel forKey:kLogLevel];
+        [RadarSettings setLogLevel:sdkConfiguration.logLevel];
         [[NSUserDefaults standardUserDefaults] setObject:[sdkConfiguration dictionaryValue] forKey:kSdkConfiguration];
     } else {
         [[RadarLogBuffer sharedInstance] setPersistentLogFeatureFlag:NO];
@@ -263,7 +264,7 @@ static NSString *const kXPlatformSDKVersion = @"radar-xPlatformSDKVersion";
 }
 
 + (void)setLogLevel:(RadarLogLevel)level {
-    
+    [[NSUserDefaults standardUserDefaults] setInteger:(int)level forKey:kLogLevel];
 }
 
 + (NSArray<NSString *> *_Nullable)beaconUUIDs {
@@ -340,4 +341,15 @@ static NSString *const kXPlatformSDKVersion = @"radar-xPlatformSDKVersion";
     return [[self sdkConfiguration] useOpenedAppConversion];
 }
 
++ (void)setInitializeOptions:(RadarInitializeOptions *)options {
+    [[NSUserDefaults standardUserDefaults] setObject:[options dictionaryValue] forKey:kInitializeOptions];
+}
+
++ (RadarInitializeOptions *)initializeOptions {
+    NSDictionary *dict = [[NSUserDefaults standardUserDefaults] dictionaryForKey:kInitializeOptions];
+    if (!dict) {
+        return nil;
+    }
+    return [[RadarInitializeOptions alloc] initWithDict:dict];
+}
 @end

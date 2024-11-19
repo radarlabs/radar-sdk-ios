@@ -25,6 +25,9 @@ jobs:
       - name: Deploy to Cocoapods
         run: |
           set -eo pipefail
+          gem install cocoapods
+          pod lib lint --allow-warnings RadarSDK.podspec
+          pod trunk push --allow-warnings RadarSDK.podspec
           pod lib lint --allow-warnings RadarSDKMotion.podspec
           pod trunk push --allow-warnings RadarSDKMotion.podspec
           pod lib lint --allow-warnings RadarSDKLocationPermission.podspec

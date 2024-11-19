@@ -90,8 +90,9 @@
 		DD86FCF9239185F4003225F6 /* RadarSDK.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RadarSDK.xcodeproj; path = ../RadarSDK.xcodeproj; sourceTree = SOURCE_ROOT; };
 		DD86FD0B23918B3C003225F6 /* Example-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Example-Bridging-Header.h"; sourceTree = "<group>"; };
 		DDB861D22385FC3E00770661 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
-		E632FA9E2CADE69800E86C85 /* RadarSDKMotion.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RadarSDKMotion.xcodeproj; path = ../RadarSDKMotion/RadarSDKMotion.xcodeproj; sourceTree = SOURCE_ROOT; };
-		E632FB272CAEE9E400E86C85 /* RadarSDKLocationPermission.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RadarSDKLocationPermission.xcodeproj; path = ../RadarSDKLocationPermission/RadarSDKLocationPermission.xcodeproj; sourceTree = SOURCE_ROOT; };
+    E632FB272CAEE9E400E86C85 /* RadarSDKLocationPermission.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RadarSDKLocationPermission.xcodeproj; path = ../RadarSDKLocationPermission/RadarSDKLocationPermission.xcodeproj; sourceTree = SOURCE_ROOT; };
+		E632FA1C2CAC366C00E86C85 /* Example.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Example.entitlements; sourceTree = "<group>"; };
+		E698B7382C626AE600084371 /* RadarSDKMotion.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RadarSDKMotion.xcodeproj; path = ../../RadarSDKMotion/RadarSDKMotion.xcodeproj; sourceTree = "<group>"; };
 		F625D7F82C3337650024D1E7 /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -129,6 +130,7 @@
 		DD236D25230A006700EB88F9 /* Example */ = {
 			isa = PBXGroup;
 			children = (
+				E632FA1C2CAC366C00E86C85 /* Example.entitlements */,
 				DD86FD0B23918B3C003225F6 /* Example-Bridging-Header.h */,
 				DD236D34230A006900EB88F9 /* Info.plist */,
 				DDB861D22385FC3E00770661 /* Default-568h@2x.png */,
@@ -440,6 +442,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Example/Example.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 96GHH65B9D;
@@ -457,7 +460,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 3.5.0;
-				PRODUCT_BUNDLE_IDENTIFIER = io.radar.example;
+				PRODUCT_BUNDLE_IDENTIFIER = io.radar.iosexample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 5.0;
@@ -469,6 +472,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Example/Example.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 96GHH65B9D;
@@ -486,7 +490,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 3.5.0;
-				PRODUCT_BUNDLE_IDENTIFIER = io.radar.example;
+				PRODUCT_BUNDLE_IDENTIFIER = io.radar.iosexample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 5.0;

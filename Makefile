@@ -24,7 +24,7 @@ build-example:
 	xcodebuild $(XC_EXAMPLE_ARGS)
 
 lint:
-	pod lib lint --verbose
+	pod lib lint 
 
 format:
 	./clang_format.sh

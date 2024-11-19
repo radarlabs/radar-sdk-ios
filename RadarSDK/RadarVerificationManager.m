@@ -35,7 +35,8 @@
 @interface RadarVerificationManager ()
 
 @property (assign, nonatomic) BOOL started;
-@property (assign, nonatomic) BOOL scheduled;
+@property (assign, nonatomic) NSTimeInterval startedInterval;
+@property (assign, nonatomic) BOOL startedBeacons;
 @property (strong, nonatomic) NSTimer *intervalTimer;
 @property (nonatomic, retain) nw_path_monitor_t monitor;
 @property (strong, nonatomic) RadarVerifiedLocationToken *lastToken;
@@ -182,123 +183,115 @@
     }];
 }
 
-- (void)startTrackingVerifiedWithInterval:(NSTimeInterval)interval beacons:(BOOL)beacons {
-    self.started = YES;
-    self.scheduled = NO;
+- (void)intervalFired {
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Token request interval fired"];
     
-    __block void (^trackVerified)(void);
-    __block __weak void (^weakTrackVerified)(void);
-    trackVerified = ^{
-        weakTrackVerified = trackVerified;
-        
-        [self trackVerifiedWithBeacons:beacons completionHandler:^(RadarStatus status, RadarVerifiedLocationToken *_Nullable token) {
-            NSTimeInterval expiresIn = 0;
-            NSTimeInterval minInterval = interval;
-            
-            if (token) {
-                expiresIn = token.expiresIn;
-                
-                // if expiresIn is shorter than interval, override interval
-                minInterval = MIN(expiresIn, interval);
-            }
-            
-            // re-request early to maximize the likelihood that a cached token is available
-            if (minInterval > 20) {
-                minInterval = minInterval - 10;
-            }
-            
-            // min interval is 10 seconds
-            if (minInterval < 10) {
-                minInterval = 10;
-            }
-            
-            if (self.scheduled) {
-                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Token request already scheduled"];
-                
-                return;
-            }
-            
-            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Requesting token again in %f seconds | minInterval = %f; expiresIn = %f; interval = %f", minInterval, minInterval, expiresIn, interval]];
-            
-            self.scheduled = YES;
-            
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(minInterval * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                if (self.started) {
-                    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Token request interval fired"];
-                    
-                    weakTrackVerified();
-                    
-                    self.scheduled = NO;
-                }
-            });
-        }];
-    };
-    
-    if (@available(iOS 12.0, *)) {
-        if (!_monitor) {
-            _monitor = nw_path_monitor_create();
+    [self callTrackVerified];
+}
 
-            nw_path_monitor_set_queue(_monitor, dispatch_get_main_queue());
-
-            nw_path_monitor_set_update_handler(_monitor, ^(nw_path_t path) {
-                if (nw_path_get_status(path) == nw_path_status_satisfied) {
-                    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Network connected"];
-                } else {
-                    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Network disconnected"];
-                }
-                
-                NSString *ips = [self getIPs];
-                BOOL changed = NO;
-                
-                if (!self.lastIPs) {
-                    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"First time getting IPs | ips = %@", ips]];
-                    changed = NO;
-                } else if (!ips || [ips isEqualToString:@"error"]) {
-                    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Error getting IPs | ips = %@", ips]];
-                    changed = YES;
-                } else if (![ips isEqualToString:self.lastIPs]) {
-                    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"IPs changed | ips = %@; lastIPs = %@", ips, self.lastIPs]];
-                    changed = YES;
-                } else {
-                    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"IPs unchanged"];
-                }
-                self.lastIPs = ips;
-                
-                if (changed) {
-                    trackVerified();
-                }
-            });
-
-            nw_path_monitor_start(_monitor);
-        }
+- (void)callTrackVerified {
+    if (!self.started) {
+        return;
     }
+    
+    [self trackVerifiedWithBeacons:self.startedBeacons completionHandler:^(RadarStatus status, RadarVerifiedLocationToken *_Nullable token) {
+        NSTimeInterval expiresIn = 0;
+        NSTimeInterval minInterval = self.startedInterval;
+        
+        if (token) {
+            expiresIn = token.expiresIn;
+            
+            // if expiresIn is shorter than interval, override interval
+            // re-request early to maximize the likelihood that a cached token is available
+            minInterval = MIN(expiresIn - 10, self.startedInterval);
+        }
+        
+        // min interval is 10 seconds
+        if (minInterval < 10) {
+            minInterval = 10;
+        }
+        
+        [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(intervalFired) object:nil];
+        
+        if (!self.started) {
+            return;
+        }
+        
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Requesting token again in %f seconds | minInterval = %f; expiresIn = %f; startedInterval = %f", minInterval, minInterval, expiresIn, self.startedInterval]];
+        
+        [self performSelector:@selector(intervalFired) withObject:nil afterDelay:minInterval];
+    }];
+}
 
-    trackVerified();
+- (void)startTrackingVerifiedWithInterval:(NSTimeInterval)interval beacons:(BOOL)beacons {
+    [self stopTrackingVerified];
+    
+    self.started = YES;
+    self.startedInterval = interval;
+    self.startedBeacons = beacons;
+    
+    if (!_monitor) {
+        _monitor = nw_path_monitor_create();
+
+        nw_path_monitor_set_queue(_monitor, dispatch_get_main_queue());
+
+        nw_path_monitor_set_update_handler(_monitor, ^(nw_path_t path) {
+            if (nw_path_get_status(path) == nw_path_status_satisfied) {
+                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Network connected"];
+            } else {
+                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Network disconnected"];
+            }
+                
+            NSString *ips = [self getIPs];
+            BOOL changed = NO;
+            
+            if (!self.lastIPs) {
+                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"First time getting IPs | ips = %@", ips]];
+                changed = NO;
+            } else if (!ips || [ips isEqualToString:@"error"]) {
+                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Error getting IPs | ips = %@", ips]];
+                changed = YES;
+            } else if (![ips isEqualToString:self.lastIPs]) {
+                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"IPs changed | ips = %@; lastIPs = %@", ips, self.lastIPs]];
+                changed = YES;
+            } else {
+                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"IPs unchanged"];
+            }
+            self.lastIPs = ips;
+            
+            if (changed) {
+                [self callTrackVerified];
+            }
+        });
+        nw_path_monitor_start(_monitor);
+    }
+    
+    [self callTrackVerified];
 }
 
 - (void)stopTrackingVerified {
     self.started = NO;
-    
-    if (@available(iOS 12.0, *)) {
-        if (_monitor) {
-            nw_path_monitor_cancel(_monitor);
-        }
+
+    if (_monitor) {
+        nw_path_monitor_cancel(_monitor);
     }
+    
+    [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(intervalFired) object:nil];
 }
 
 - (void)getVerifiedLocationTokenWithCompletionHandler:(RadarTrackVerifiedCompletionHandler)completionHandler {
     NSTimeInterval lastTokenElapsed = [NSProcessInfo processInfo].systemUptime - self.lastTokenSystemUptime;
     
     if (self.lastToken) {
-        if (lastTokenElapsed < self.lastToken.expiresIn) {
-            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Last token valid | lastToken.expiresIn = %f; lastTokenElapsed = %f", self.lastToken.expiresIn, lastTokenElapsed]];
+        if (lastTokenElapsed < self.lastToken.expiresIn && self.lastToken.passed) {
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Last token valid | lastToken.expiresIn = %f; lastTokenElapsed = %f; lastToken.passed = %d", self.lastToken.expiresIn, lastTokenElapsed, self.lastToken.passed]];
             
             [Radar flushLogs];
             
             return completionHandler(RadarStatusSuccess, self.lastToken);
         }
         
-        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Last token invalid | lastToken.expiresIn = %f; lastTokenElapsed = %f", self.lastToken.expiresIn, lastTokenElapsed]];
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Last token invalid | lastToken.expiresIn = %f; lastTokenElapsed = %f; lastToken.passed = %d", self.lastToken.expiresIn, lastTokenElapsed, self.lastToken.passed]];
     } else {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"No last token"];
     }
