@@ -74,13 +74,22 @@ jobs:
           event-type: update-xcframework
           client-payload: '{"release": "${{ github.event.release.tag_name }}", "checksum": "${{ steps.checksum_radarsdk.outputs.checksum }}", "url": "${{ github.event.release.html_url }}", "checksum_motion": "${{ steps.checksum_radarsdkmotion.outputs.checksum }}"}'
 
+      - name: Check versions is not duplicate
+        run: |
+          VERSION=$(pod ipc spec RadarSDK.podspec | jq -r .version)
+          ! pod trunk info RadarSDK | grep -q $VERSION
+          echo "RadarSDK version is OK"
+          VERSION=$(pod ipc spec RadarSDKMotion.podspec | jq -r .version)
+          ! pod trunk info RadarSDKMotion | grep -q $VERSION
+          echo "RadarSDKMotion version is OK"
+
       - name: Deploy to Cocoapods
         run: |
           set -eo pipefail
           gem install cocoapods
           pod lib lint --allow-warnings RadarSDK.podspec
-          pod trunk push --allow-warnings RadarSDK.podspec
           pod lib lint --allow-warnings RadarSDKMotion.podspec
+          pod trunk push --allow-warnings RadarSDK.podspec
           pod trunk push --allow-warnings RadarSDKMotion.podspec
         env:
           COCOAPODS_TRUNK_TOKEN: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}
