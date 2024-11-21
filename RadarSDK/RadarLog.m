@@ -80,6 +80,9 @@
     case RadarLogTypePermissionEvent:
         str = @"PERMISSION_EVENT";
         break;
+    case RadarLogTypeTelemetry:
+        str = @"TELEMETRY";
+        break;
     }
     return str;
 }

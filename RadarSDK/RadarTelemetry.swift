@@ -7,7 +7,7 @@
 
 import Foundation
 
-@objc(RadarProfiler) class RadarProfiler: NSObject {
+@objc(RadarTelemetry) class RadarTelemetry: NSObject {
     
     var startTimes = [String:Double]()
     var endTimes = [String:Double]()

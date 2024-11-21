@@ -179,10 +179,10 @@
 		F65AF72C2C10B242002BA009 /* get_config_response.json in Resources */ = {isa = PBXBuildFile; fileRef = F65AF72B2C10B242002BA009 /* get_config_response.json */; };
 		F667F8272BFBF3C8001F2F67 /* RadarSdkConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = F667F8262BFBF3C8001F2F67 /* RadarSdkConfiguration.m */; };
 		F667F8292BFBF3D1001F2F67 /* RadarSdkConfiguration.h in Headers */ = {isa = PBXBuildFile; fileRef = F667F8282BFBF3D1001F2F67 /* RadarSdkConfiguration.h */; };
-		F69AA9602CE52FB1009CF18B /* RadarProfiler.h in Headers */ = {isa = PBXBuildFile; fileRef = F69AA95F2CE52FAC009CF18B /* RadarProfiler.h */; };
-		F69AA9622CE52FC6009CF18B /* RadarProfiler.swift in Sources */ = {isa = PBXBuildFile; fileRef = F69AA9612CE52FC6009CF18B /* RadarProfiler.swift */; };
+		F69AA9602CE52FB1009CF18B /* RadarTelemetry.h in Headers */ = {isa = PBXBuildFile; fileRef = F69AA95F2CE52FAC009CF18B /* RadarTelemetry.h */; };
+		F69AA9622CE52FC6009CF18B /* RadarTelemetry.swift in Sources */ = {isa = PBXBuildFile; fileRef = F69AA9612CE52FC6009CF18B /* RadarTelemetry.swift */; };
 		F69AA9652CE53E08009CF18B /* RadarSDKTestsSwift.swift in Sources */ = {isa = PBXBuildFile; fileRef = F69AA9642CE53E08009CF18B /* RadarSDKTestsSwift.swift */; };
-		F69AA9662CE53FAE009CF18B /* RadarProfiler.swift in Sources */ = {isa = PBXBuildFile; fileRef = F69AA9612CE52FC6009CF18B /* RadarProfiler.swift */; };
+		F69AA9662CE53FAE009CF18B /* RadarTelemetry.swift in Sources */ = {isa = PBXBuildFile; fileRef = F69AA9612CE52FC6009CF18B /* RadarTelemetry.swift */; };
 		F6F959802C3D7D9900BC30FE /* RadarTimeZone.h in Headers */ = {isa = PBXBuildFile; fileRef = F6F9597F2C3D7D9900BC30FE /* RadarTimeZone.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F6F959822C3D7EA200BC30FE /* RadarTimeZone+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = F6F959812C3D7EA200BC30FE /* RadarTimeZone+Internal.h */; };
 		F6F959842C3D7EDE00BC30FE /* RadarTimeZone.m in Sources */ = {isa = PBXBuildFile; fileRef = F6F959832C3D7EDE00BC30FE /* RadarTimeZone.m */; };
@@ -360,8 +360,8 @@
 		F65AF72B2C10B242002BA009 /* get_config_response.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = get_config_response.json; sourceTree = "<group>"; };
 		F667F8262BFBF3C8001F2F67 /* RadarSdkConfiguration.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RadarSdkConfiguration.m; sourceTree = "<group>"; };
 		F667F8282BFBF3D1001F2F67 /* RadarSdkConfiguration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RadarSdkConfiguration.h; sourceTree = "<group>"; };
-		F69AA95F2CE52FAC009CF18B /* RadarProfiler.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarProfiler.h; sourceTree = "<group>"; };
-		F69AA9612CE52FC6009CF18B /* RadarProfiler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarProfiler.swift; sourceTree = "<group>"; };
+		F69AA95F2CE52FAC009CF18B /* RadarTelemetry.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarTelemetry.h; sourceTree = "<group>"; };
+		F69AA9612CE52FC6009CF18B /* RadarTelemetry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarTelemetry.swift; sourceTree = "<group>"; };
 		F69AA9632CE53E07009CF18B /* RadarSDKTests-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "RadarSDKTests-Bridging-Header.h"; sourceTree = "<group>"; };
 		F69AA9642CE53E08009CF18B /* RadarSDKTestsSwift.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarSDKTestsSwift.swift; sourceTree = "<group>"; };
 		F6F9597F2C3D7D9900BC30FE /* RadarTimeZone.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarTimeZone.h; sourceTree = "<group>"; };
@@ -510,8 +510,8 @@
 				E6EEC56F2B20F45D00DD096B /* RadarFileStorage.m */,
 				96A5A11727ADA02E007B960B /* RadarDelegateHolder.h */,
 				DD4C104925D87E3E009C2E36 /* RadarDelegateHolder.m */,
-				F69AA95F2CE52FAC009CF18B /* RadarProfiler.h */,
-				F69AA9612CE52FC6009CF18B /* RadarProfiler.swift */,
+				F69AA95F2CE52FAC009CF18B /* RadarTelemetry.h */,
+				F69AA9612CE52FC6009CF18B /* RadarTelemetry.swift */,
 				DD236CF723088F8400EB88F9 /* RadarLocationManager.h */,
 				DD236CF823088F8400EB88F9 /* RadarLocationManager.m */,
 				96A5A11527ADA02E007B960B /* RadarLog.h */,
@@ -684,7 +684,7 @@
 				96A5A10427AD9F7F007B960B /* RadarDelegate.h in Headers */,
 				01F810702AF0119800BD7088 /* RadarVerifiedDelegate.h in Headers */,
 				96A5A0CA27AD9F41007B960B /* RadarTrip+Internal.h in Headers */,
-				F69AA9602CE52FB1009CF18B /* RadarProfiler.h in Headers */,
+				F69AA9602CE52FB1009CF18B /* RadarTelemetry.h in Headers */,
 				96A5A0FF27AD9F7F007B960B /* RadarGeofenceGeometry.h in Headers */,
 				96A5A0CB27AD9F41007B960B /* RadarRoute+Internal.h in Headers */,
 				96A5A10527AD9F7F007B960B /* RadarTrackingOptions.h in Headers */,
@@ -899,7 +899,7 @@
 				96FC90F7277379C1000757DF /* RadarFraud.m in Sources */,
 				F6F959842C3D7EDE00BC30FE /* RadarTimeZone.m in Sources */,
 				0107AB1D262201E5008AB52F /* RadarLocationManager.m in Sources */,
-				F69AA9622CE52FC6009CF18B /* RadarProfiler.swift in Sources */,
+				F69AA9622CE52FC6009CF18B /* RadarTelemetry.swift in Sources */,
 				0107AAB02622016B008AB52F /* RadarPlace.m in Sources */,
 				0107AAE6262201A1008AB52F /* RadarSegment.m in Sources */,
 				0107AB20262201E9008AB52F /* RadarPermissionsHelper.m in Sources */,
@@ -939,7 +939,7 @@
 				F69AA9652CE53E08009CF18B /* RadarSDKTestsSwift.swift in Sources */,
 				96B465BC27D6732500D7119B /* CLLocation+RadarTests.m in Sources */,
 				E6B93B742C90E5B8003CB858 /* RadarInitializeOptions.m in Sources */,
-				F69AA9662CE53FAE009CF18B /* RadarProfiler.swift in Sources */,
+				F69AA9662CE53FAE009CF18B /* RadarTelemetry.swift in Sources */,
 				DD103211237E0C47003DD408 /* RadarSDKTests.m in Sources */,
 				DD8E2F7124018BF9002D51AB /* RadarTestUtils.m in Sources */,
 				DD8E2F7D24018C54002D51AB /* CLVisitMock.m in Sources */,

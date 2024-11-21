@@ -8,7 +8,7 @@
 #import <Foundation/Foundation.h>
 
 
-@interface RadarProfiler: NSObject
+@interface RadarTelemetry: NSObject
 
 - (void)start:(NSString*_Nullable)tag;
 - (void)end:(NSString*_Nullable)tag;

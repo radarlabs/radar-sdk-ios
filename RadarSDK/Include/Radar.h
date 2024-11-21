@@ -128,6 +128,8 @@ typedef NS_ENUM(NSInteger, RadarLogType) {
     RadarLogTypeAppLifecycleEvent = 4,
     /// Permission Event
     RadarLogTypePermissionEvent = 5,
+    /// Telemetry
+    RadarLogTypeTelemetry = 6,
 };
 
 /**
