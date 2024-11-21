@@ -134,7 +134,7 @@
                                          RadarConfig *_Nullable config, RadarVerifiedLocationToken *_Nullable token) {
                         [telemetry end:@"trackAPI"];
                         [telemetry end:@"total"];
-                        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
+                        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo
                                                               type:RadarLogTypeTelemetry
                                                            message:[NSString stringWithFormat:@"trackVerified | %@",
                                                                     [telemetry formatted]]];

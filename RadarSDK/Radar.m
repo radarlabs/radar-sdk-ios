@@ -178,7 +178,7 @@
 + (void)trackOnceWithDesiredAccuracy:(RadarTrackingOptionsDesiredAccuracy)desiredAccuracy beacons:(BOOL)beacons completionHandler:(RadarTrackCompletionHandler)completionHandler {
     
     RadarTelemetry* telemetry = [[RadarTelemetry alloc] init];
-    [telemetry start:NULL];
+    [telemetry start:@"total"];
     [telemetry start:@"getLocation"];
     
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"trackOnce()"];
@@ -209,6 +209,8 @@
                                  completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user,
                                                      NSArray<RadarGeofence *> *_Nullable nearbyGeofences, RadarConfig *_Nullable config, RadarVerifiedLocationToken *_Nullable token) {
                                      [telemetry end:@"trackAPI"];
+                                     [telemetry end:@"total"];
+
                                      if (status == RadarStatusSuccess) {
                                          [[RadarLocationManager sharedInstance] replaceSyncedGeofences:nearbyGeofences];
                                          if (config != nil) {
@@ -217,6 +219,11 @@
                                          
                                      }
 
+                                     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo
+                                                                           type:RadarLogTypeTelemetry
+                                                                        message:[NSString stringWithFormat:@"trackOnce | %@",
+                                                                                 [telemetry formatted]]];
+                                        
                                      if (completionHandler) {
                                          [RadarUtils runOnMainThread:^{
                                              completionHandler(status, location, events, user);
