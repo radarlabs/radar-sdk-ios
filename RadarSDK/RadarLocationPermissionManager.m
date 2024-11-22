@@ -126,6 +126,7 @@
 
         self.danglingBackgroundPermissionRequest = YES;
         NSLog(@"requesting background");
+        [RadarLocationPermissionManager setUserRequestedBackgroundPermission:YES];
         [self.radarSDKLocationPermission requestBackgroundPermission];
 
         // We set a flag that request has been made and start a timer. If we resign active we unset the timer.
@@ -134,7 +135,7 @@
        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
            if (self.danglingBackgroundPermissionRequest) {
                if (@available(iOS 14.0, *)) {
-                    [RadarLocationPermissionManager setUserDeniedBackgroundPermission:YES];
+                    [RadarLocationPermissionManager setUserDeniedLocationPermission:YES];
                     RadarLocationPermissionStatus *status = [[RadarLocationPermissionStatus alloc] initWithAccuracy:[RadarLocationPermissionStatus radarLocationPermissionAccuracyFromCLLocationAccuracy: self.locationManager.accuracyAuthorization]
                                                                                                  permissionGranted:[RadarLocationPermissionStatus radarLocationPermissionLevelFromCLLocationAuthorizationStatus:status]
                                                                                                    requestAvailable: RadarPermissionLevelNone];
@@ -168,7 +169,7 @@
             CLAuthorizationStatus status = self.locationManager.authorizationStatus;
            if (status == kCLAuthorizationStatusAuthorizedWhenInUse) {
                // if the status did not changed, we update the status here, otherwise we will update it in the delegate method
-                    [RadarLocationPermissionManager setUserDeniedBackgroundPermission:YES];
+                    [RadarLocationPermissionManager setUserDeniedLocationPermission:YES];
                     RadarLocationPermissionStatus *status = [[RadarLocationPermissionStatus alloc] initWithAccuracy:[RadarLocationPermissionStatus radarLocationPermissionAccuracyFromCLLocationAccuracy: self.locationManager.accuracyAuthorization]
                                                                                                  permissionGranted:[RadarLocationPermissionStatus radarLocationPermissionLevelFromCLLocationAuthorizationStatus:status]
                                                                                                    requestAvailable: RadarPermissionLevelNone];
@@ -219,7 +220,7 @@
 
     switch (self.locationManager.authorizationStatus) {
         case kCLAuthorizationStatusAuthorizedWhenInUse:
-            if ([RadarLocationPermissionManager userDeniedBackgroundPermission] || [RadarLocationPermissionManager userDeniedLocationPermission]) {
+            if ([RadarLocationPermissionManager userRequestedBackgroundPermission] || [RadarLocationPermissionManager userDeniedLocationPermission]) {
                 level = RadarPermissionLevelNone;
             } else {
                 level = RadarPermissionLevelBackground;
@@ -275,14 +276,14 @@
     }
 }
 
-+ (void)setUserDeniedBackgroundPermission:(BOOL)userDeniedForegroundPermission {
-    [[NSUserDefaults standardUserDefaults] setBool:userDeniedForegroundPermission forKey:@"radar-user-denied-background-permission"];
++ (void)setUserRequestedBackgroundPermission:(BOOL)userRequestedBackgroundPermission {
+    [[NSUserDefaults standardUserDefaults] setBool:userRequestedBackgroundPermission forKey:@"radar-user-requested-background-permission"];
 }
 
-+ (BOOL)userDeniedBackgroundPermission {
++ (BOOL)userRequestedBackgroundPermission {
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    if ([[defaults dictionaryRepresentation].allKeys containsObject:@"radar-user-denied-background-permission"]) {
-        return [defaults boolForKey:@"radar-user-denied-background-permission"];
+    if ([[defaults dictionaryRepresentation].allKeys containsObject:@"radar-user-requested-background-permission"]) {
+        return [defaults boolForKey:@"radar-user-requested-background-permission"];
     } else {
         return NO; 
     }
