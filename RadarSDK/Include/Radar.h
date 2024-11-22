@@ -307,6 +307,8 @@ typedef void (^_Nonnull RadarRouteMatrixCompletionHandler)(RadarStatus status, R
  */
 typedef void (^_Nullable RadarLogConversionCompletionHandler)(RadarStatus status, RadarEvent *_Nullable event);
 
+typedef void (^_Nullable RadarLocationPermissionCompletionHandler)(RadarLocationPermissionStatus *status);
+
 /**
  The main class used to interact with the Radar SDK.
 
@@ -1228,12 +1230,12 @@ typedef void (^_Nullable RadarLogConversionCompletionHandler)(RadarStatus status
 /**
  Requests foreground location permissions.
 */
-+ (void)requestForegroundLocationPermission;
++ (void)requestForegroundLocationPermissionWithCompletionHandler:(RadarLocationPermissionCompletionHandler)completionHandler NS_SWIFT_NAME(requestForegroundLocationPermission(completionHandler:));
 
 /**
  Requests background location permissions.
 */
-+ (void)requestBackgroundLocationPermission;
++ (void)requestBackgroundLocationPermissionWithCompletionHandler:(RadarLocationPermissionCompletionHandler)completionHandler NS_SWIFT_NAME(requestBackgroundLocationPermission(completionHandler:));
 
 /**
  Directs the user to the app settings to enable location permissions.

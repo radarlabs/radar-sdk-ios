@@ -11,12 +11,13 @@
 #import "RadarLocationPermissionStatus+Internal.h"
 #import "RadarDelegateHolder.h"
 #import "RadarLogger.h"
+#import "RadarLocationPermissionStatus.h"
 
 @interface RadarLocationPermissionManager ()
 
 @property (assign, nonatomic) BOOL danglingBackgroundPermissionRequest;
 @property (assign, nonatomic) BOOL inBackgroundLocationPopUp;
-
+@property (nullable, nonatomic, copy) RadarLocationPermissionCompletionHandler completionHandler;
 @end
 
 @implementation RadarLocationPermissionManager
@@ -38,14 +39,37 @@
         RadarLocationPermissionStatus *status = [RadarLocationPermissionStatus getRadarLocationPermissionStatus];
         if (status) {
             self.status = status;
-            // we should not start in the popup state
-            self.status.inForegroundPopup = NO;
         } else{
             if (@available(iOS 14.0, *)) {
-                self.status = [[RadarLocationPermissionStatus alloc] initWithStatus:self.locationManager.authorizationStatus
-                                                            backgroundPopupAvailable:YES
-                                                                   inForegroundPopup:NO
-                                                   userRejectedBackgroundPermission:NO];
+                // need to improve this to handle the case where the app is initilized with some existing state
+                RadarLocationPermissionAccuracy accuracy = [RadarLocationPermissionStatus radarLocationPermissionAccuracyFromCLLocationAccuracy:self.locationManager.accuracyAuthorization];
+                switch (self.locationManager.authorizationStatus) {
+                    case kCLAuthorizationStatusAuthorizedWhenInUse:
+                        self.status = [[RadarLocationPermissionStatus alloc] initWithAccuracy:[RadarLocationPermissionStatus radarLocationPermissionAccuracyFromCLLocationAccuracy:self.locationManager.accuracyAuthorization]
+                                                                        permissionGranted:RadarPermissionLevelForeground
+                                                                        requestAvailable:RadarPermissionLevelBackground];
+                        break;
+                    case kCLAuthorizationStatusAuthorizedAlways:
+                        self.status = [[RadarLocationPermissionStatus alloc] initWithAccuracy:[RadarLocationPermissionStatus radarLocationPermissionAccuracyFromCLLocationAccuracy:self.locationManager.accuracyAuthorization]
+                                                                        permissionGranted:RadarPermissionLevelBackground
+                                                                        requestAvailable:RadarPermissionLevelNone];
+                        break;
+                    case kCLAuthorizationStatusDenied:
+                        self.status = [[RadarLocationPermissionStatus alloc] initWithAccuracy:RadarPermissionAccuracyUnknown
+                                                                        permissionGranted:RadarPermissionLevelUnknown
+                                                                        requestAvailable:RadarPermissionLevelNone];
+                        break;
+                    case kCLAuthorizationStatusRestricted:
+                        self.status = [[RadarLocationPermissionStatus alloc] initWithAccuracy:RadarPermissionAccuracyUnknown
+                                                                        permissionGranted:RadarPermissionLevelUnknown
+                                                                        requestAvailable:RadarPermissionLevelNone];
+                        break;
+                    default:
+                        self.status = [[RadarLocationPermissionStatus alloc] initWithAccuracy:RadarPermissionAccuracyUnknown
+                                                                        permissionGranted:RadarPermissionLevelUnknown
+                                                                        requestAvailable:RadarPermissionLevelUnknown];
+                        break;
+                }
             }
         }
        
@@ -59,7 +83,7 @@
                                                    object:nil];        
         
     }
-    // TODO: sync the user's state with the new permission status here
+    // TODO: sync the user's state with the new permission status here, do i need to? esp with the accuracy hook?
     return self;
 }
 
@@ -68,10 +92,14 @@
     [RadarLocationPermissionStatus radarLocationPermissionStatus:status];
     if (@available(iOS 14.0, *)) {
         [[RadarDelegateHolder sharedInstance] didUpdateLocationPermissionStatus:self.status];
-        // TODO: sync the user's state with the new permission status here
+    }
+    if (self.completionHandler) {
+        self.completionHandler(self.status);
+        self.completionHandler = nil;
     }
 }
 
+// do we still want to expose this?
 - (void)openAppSettings {
     NSURL *appSettingsURL = [NSURL URLWithString:UIApplicationOpenSettingsURLString];
     if ([[UIApplication sharedApplication] canOpenURL:appSettingsURL]) {
@@ -87,57 +115,49 @@
     }
 }
 
-- (void)requestBackgroundLocationPermission {
+- (void)requestBackgroundLocationPermissionWithCompletionHandler:(RadarLocationPermissionCompletionHandler)completionHandler {
     if (!self.radarSDKLocationPermission) {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelError message:@"RadarSDKLocationPermission not found"];
-        return;
+        return completionHandler(self.status);
     }
-    if (self.status.locationManagerStatus == kCLAuthorizationStatusAuthorizedWhenInUse) {
+
+    if (self.locationManager.authorizationStatus == kCLAuthorizationStatusAuthorizedWhenInUse) {
+        self.completionHandler = completionHandler;
 
         self.danglingBackgroundPermissionRequest = YES;
-
-        //[self.locationManager requestAlwaysAuthorization];
+        NSLog(@"requesting background");
         [self.radarSDKLocationPermission requestBackgroundPermission];
-        if (@available(iOS 14.0, *)) {
-            RadarLocationPermissionStatus *status = [[RadarLocationPermissionStatus alloc] initWithStatus:self.locationManager.authorizationStatus
-                                                                                   backgroundPopupAvailable:NO
-                                                                                          inForegroundPopup:self.status.inForegroundPopup
-                                                                          userRejectedBackgroundPermission: self.status.userRejectedBackgroundPermission];
-            [self updateStatus:status];
-            // TODO: sync the user's location permission action with the their permission status here
-        }
 
         // We set a flag that request has been made and start a timer. If we resign active we unset the timer.
         // When the timer fires and the flag has not been unset, we assume that app never resigned active.
         // Usually this means that the user has previously rejected the background permission.
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            if (self.danglingBackgroundPermissionRequest) {
-                if (@available(iOS 14.0, *)) {
-                    RadarLocationPermissionStatus *status = [[RadarLocationPermissionStatus alloc] initWithStatus:self.locationManager.authorizationStatus
-                                                                                            backgroundPopupAvailable:self.status.backgroundPopupAvailable
-                                                                                                    inForegroundPopup:self.status.inForegroundPopup
-                                                                                    userRejectedBackgroundPermission:YES];
-                    [self updateStatus:status];
-                }
-            }
-            self.danglingBackgroundPermissionRequest = NO;
-        });
+       dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+           if (self.danglingBackgroundPermissionRequest) {
+               if (@available(iOS 14.0, *)) {
+                    [RadarLocationPermissionManager setUserDeniedBackgroundPermission:YES];
+                    RadarLocationPermissionStatus *status = [[RadarLocationPermissionStatus alloc] initWithAccuracy:[RadarLocationPermissionStatus radarLocationPermissionAccuracyFromCLLocationAccuracy: self.locationManager.accuracyAuthorization]
+                                                                                                 permissionGranted:[RadarLocationPermissionStatus radarLocationPermissionLevelFromCLLocationAuthorizationStatus:status]
+                                                                                                   requestAvailable: RadarPermissionLevelNone];
+                   [self updateStatus:status];
+               }
+           }
+           self.danglingBackgroundPermissionRequest = NO;
+       });
+    } else {
+        return completionHandler(self.status);
     }
 }
 
 
-- (void)requestForegroundLocationPermission {
-    if (self.status.locationManagerStatus == kCLAuthorizationStatusNotDetermined) {
+- (void)requestForegroundLocationPermissionWithCompletionHandler:(RadarLocationPermissionCompletionHandler)completionHandler {
+    
+    if (self.locationManager.authorizationStatus == kCLAuthorizationStatusNotDetermined) {
+        self.completionHandler = completionHandler;
+        [RadarLocationPermissionManager setUserRequestedForegroundPermission:YES];
         [self.locationManager requestWhenInUseAuthorization];
-        if (@available(iOS 14.0, *)) {
-            RadarLocationPermissionStatus *status = [[RadarLocationPermissionStatus alloc] initWithStatus:self.locationManager.authorizationStatus
-                                                                                   backgroundPopupAvailable:self.status.backgroundPopupAvailable
-                                                                                          inForegroundPopup:YES
-                                                                          userRejectedBackgroundPermission: self.status.userRejectedBackgroundPermission];
-            [self updateStatus:status];
-        }
-        // TODO: sync the user's location permission action with the their permission status here
-    }    
+    } else {
+        return completionHandler(self.status);
+    } 
 }
 
 - (void)applicationDidBecomeActive {
@@ -146,14 +166,14 @@
 
         if (@available(iOS 14.0, *)) {
             CLAuthorizationStatus status = self.locationManager.authorizationStatus;
-            if (status == self.status.locationManagerStatus) {
-                // if the status did not changed, we update the status here, otherwise we will update it in the delegate method
-                RadarLocationPermissionStatus *newStatus = [[RadarLocationPermissionStatus alloc] initWithStatus:status
-                                                                                          backgroundPopupAvailable:self.status.backgroundPopupAvailable
-                                                                                                 inForegroundPopup:self.status.inForegroundPopup
-                                                                                 userRejectedBackgroundPermission: YES];
-                [self updateStatus:newStatus];
-            }
+           if (status == kCLAuthorizationStatusAuthorizedWhenInUse) {
+               // if the status did not changed, we update the status here, otherwise we will update it in the delegate method
+                    [RadarLocationPermissionManager setUserDeniedBackgroundPermission:YES];
+                    RadarLocationPermissionStatus *status = [[RadarLocationPermissionStatus alloc] initWithAccuracy:[RadarLocationPermissionStatus radarLocationPermissionAccuracyFromCLLocationAccuracy: self.locationManager.accuracyAuthorization]
+                                                                                                 permissionGranted:[RadarLocationPermissionStatus radarLocationPermissionLevelFromCLLocationAuthorizationStatus:status]
+                                                                                                   requestAvailable: RadarPermissionLevelNone];
+                   [self updateStatus:status];
+           }
         }
     }
 
@@ -169,13 +189,57 @@
 }
 
 - (void)locationManager:(CLLocationManager *)manager didChangeAuthorizationStatus:(CLAuthorizationStatus)status {
-    RadarLocationPermissionStatus *newStatus = [[RadarLocationPermissionStatus alloc] initWithStatus:status
-                                                                              backgroundPopupAvailable:self.status.backgroundPopupAvailable
-                                                                                     // any change in status will always result in the in foreground popup closing
-                                                                                     inForegroundPopup:NO
-                                                                     userRejectedBackgroundPermission: 
-                                                                     self.status.userRejectedBackgroundPermission || (status == kCLAuthorizationStatusDenied)];
+    NSLog(@"didChangeAuthorizationStatus");
+
+    if (status == kCLAuthorizationStatusDenied) {
+        [RadarLocationPermissionManager setUserRequestedForegroundPermission:YES];
+        [RadarLocationPermissionManager setUserDeniedLocationPermission:YES];
+    }
+
+    // do we want to hardcode accuracy to unknown fi we do not yet have any other permission?
+    RadarLocationPermissionStatus *newStatus = [[RadarLocationPermissionStatus alloc] initWithAccuracy:[RadarLocationPermissionStatus radarLocationPermissionAccuracyFromCLLocationAccuracy: self.locationManager.accuracyAuthorization]
+                                                                                    permissionGranted:[RadarLocationPermissionStatus radarLocationPermissionLevelFromCLLocationAuthorizationStatus:status]
+                                                                                    requestAvailable:[self inferRequestAvalible]];
+        //RadarLocationPermissionStatus *newStatus = [[RadarLocationPermissionStatus alloc] initWithAccuracy:RadarPermissionAccuracyUnknown
+                                                                                     //permissionGranted:RadarPermissionLevelUnknown
+                                                                                      //requestAvailable:RadarPermissionLevelUnknown];
+    
+    
+    // initWithStatus:status
+    //                                                                           backgroundPopupAvailable:self.status.backgroundPopupAvailable
+    //                                                                                  // any change in status will always result in the in foreground popup closing
+    //                                                                                  inForegroundPopup:NO
+    //                                                                  userRejectedBackgroundPermission: 
+    //                                                                  self.status.userRejectedBackgroundPermission || (status == kCLAuthorizationStatusDenied)];
     [self updateStatus:newStatus];
+}
+
+- (RadarLocationPermissionLevel)inferRequestAvalible {
+    RadarLocationPermissionLevel level = RadarPermissionLevelNone;
+
+    switch (self.locationManager.authorizationStatus) {
+        case kCLAuthorizationStatusAuthorizedWhenInUse:
+            if ([RadarLocationPermissionManager userDeniedBackgroundPermission] || [RadarLocationPermissionManager userDeniedLocationPermission]) {
+                level = RadarPermissionLevelNone;
+            } else {
+                level = RadarPermissionLevelBackground;
+            }
+            break;
+        case kCLAuthorizationStatusDenied:
+            level = RadarPermissionLevelNone;
+            break;
+        case kCLAuthorizationStatusNotDetermined:
+            if ([RadarLocationPermissionManager userRequestedForegroundPermission]) {
+                level = RadarPermissionLevelNone;
+            } else {
+                level = RadarPermissionLevelForeground;
+            }
+            break;
+        default:
+            level = RadarPermissionLevelNone;
+            break;
+    }
+    return level;
 }
 
 - (RadarLocationPermissionStatus *)getLocationPermissionStatus {
@@ -184,5 +248,45 @@
     }
     return nil;
 }
+
++ (void)setUserDeniedLocationPermission:(BOOL)userDeniedLocationPermission {
+    [[NSUserDefaults standardUserDefaults] setBool:userDeniedLocationPermission forKey:@"radar-user-denied-location-permission"];
+}
+
++ (BOOL)userDeniedLocationPermission {
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    if ([[defaults dictionaryRepresentation].allKeys containsObject:@"radar-user-denied-location-permission"]) {
+        return [defaults boolForKey:@"radar-user-denied-location-permission"];
+    } else {
+        return NO; 
+    }
+}
+
++ (void)setUserRequestedForegroundPermission:(BOOL)userRequestedForegroundPermission {
+    [[NSUserDefaults standardUserDefaults] setBool:userRequestedForegroundPermission forKey:@"radar-user-requested-foreground-permission"];
+}
+
++ (BOOL)userRequestedForegroundPermission {
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    if ([[defaults dictionaryRepresentation].allKeys containsObject:@"radar-user-requested-foreground-permission"]) {
+        return [defaults boolForKey:@"radar-user-requested-foreground-permission"];
+    } else {
+        return NO; 
+    }
+}
+
++ (void)setUserDeniedBackgroundPermission:(BOOL)userDeniedForegroundPermission {
+    [[NSUserDefaults standardUserDefaults] setBool:userDeniedForegroundPermission forKey:@"radar-user-denied-background-permission"];
+}
+
++ (BOOL)userDeniedBackgroundPermission {
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    if ([[defaults dictionaryRepresentation].allKeys containsObject:@"radar-user-denied-background-permission"]) {
+        return [defaults boolForKey:@"radar-user-denied-background-permission"];
+    } else {
+        return NO; 
+    }
+}
+
 
 @end

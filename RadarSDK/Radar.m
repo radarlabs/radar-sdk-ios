@@ -61,7 +61,9 @@
         id radarSDKMotion = [[RadarSDKMotion alloc] init];
         [RadarActivityManager sharedInstance].radarSDKMotion = radarSDKMotion;
     }
+    [RadarLocationPermissionManager sharedInstance];
     Class RadarSDKLocationPermission = NSClassFromString(@"RadarSDKLocationPermission");
+    
     if (RadarSDKLocationPermission) {
         id radarSDKLocationPermission = [[RadarSDKLocationPermission alloc] init];
         [RadarLocationPermissionManager sharedInstance].radarSDKLocationPermission = radarSDKLocationPermission;
@@ -94,7 +96,7 @@
         [RadarSettings updateSessionId];
     }
 
-    [RadarLocationPermissionManager sharedInstance];
+    
 
     [[RadarLocationManager sharedInstance] updateTrackingFromInitialize];
 
@@ -1377,12 +1379,12 @@
                             }];
 }
 
-+ (void)requestForegroundLocationPermission {
-    [[RadarLocationPermissionManager sharedInstance] requestForegroundLocationPermission];
++ (void)requestForegroundLocationPermissionWithCompletionHandler:(RadarLocationPermissionCompletionHandler)completionHandler {
+    [[RadarLocationPermissionManager sharedInstance] requestForegroundLocationPermissionWithCompletionHandler:completionHandler];
 }
 
-+ (void)requestBackgroundLocationPermission {
-    [[RadarLocationPermissionManager sharedInstance] requestBackgroundLocationPermission];
++ (void)requestBackgroundLocationPermissionWithCompletionHandler:(RadarLocationPermissionCompletionHandler)completionHandler {
+    [[RadarLocationPermissionManager sharedInstance] requestBackgroundLocationPermissionWithCompletionHandler:completionHandler];
 }
 
 + (void)openAppSettings {

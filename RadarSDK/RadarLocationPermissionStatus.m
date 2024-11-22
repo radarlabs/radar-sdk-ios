@@ -26,129 +26,120 @@
     return nil;
 }
 
-- (instancetype _Nullable)initWithStatus:(CLAuthorizationStatus)locationManagerStatus
-                backgroundPopupAvailable:(BOOL)backgroundPopupAvailable
-                       inForegroundPopup:(BOOL)inForegroundPopup
-       userRejectedBackgroundPermission:(BOOL)userRejectedBackgroundPermission {
+- (instancetype _Nullable)initWithAccuracy:(RadarLocationPermissionAccuracy)accuracy
+                        permissionGranted:(RadarLocationPermissionLevel)permissionGranted
+                         requestAvailable:(RadarLocationPermissionLevel)requestAvailable {
     self = [super init];
     if (self) {
-        _locationManagerStatus = locationManagerStatus;
-        _backgroundPopupAvailable = backgroundPopupAvailable;
-        _inForegroundPopup = inForegroundPopup;
-        _userRejectedBackgroundPermission = userRejectedBackgroundPermission;
-        _locationPermissionState = [RadarLocationPermissionStatus locationPermissionStateForLocationManagerStatus:locationManagerStatus backgroundPopupAvailable:backgroundPopupAvailable inForegroundPopup:inForegroundPopup userRejectedBackgroundPermission:userRejectedBackgroundPermission];
+        _accuracy = accuracy;
+        _permissionGranted = permissionGranted;
+        _requestAvailable = requestAvailable;
     }
     return self;
 }
 
-- (NSDictionary *)dictionaryValue {
-    NSString *statusString;
+- (NSString *)radarLocationPermissionAccuracyToString:(RadarLocationPermissionAccuracy)accuracy {
+    NSString *accuracyString;
     
-    switch (self.locationManagerStatus) {
-        case kCLAuthorizationStatusNotDetermined:
-            statusString = @"NotDetermined";
+    switch (accuracy) {
+        case RadarPermissionAccuracyFull:
+            accuracyString = @"Full";
             break;
-        case kCLAuthorizationStatusRestricted:
-            statusString = @"Restricted";
-            break;
-        case kCLAuthorizationStatusDenied:
-            statusString = @"Denied";
-            break;
-        case kCLAuthorizationStatusAuthorizedAlways:
-            statusString = @"AuthorizedAlways";
-            break;
-        case kCLAuthorizationStatusAuthorizedWhenInUse:
-            statusString = @"AuthorizedWhenInUse";
+        case RadarPermissionAccuracyApproximate:
+            accuracyString = @"Approximate";
             break;
         default:
-            statusString = @"Unknown";
+            accuracyString = @"Unknown";
     }
+    return accuracyString;
+}
+
+-  (RadarLocationPermissionAccuracy)radarLocationPermissionAccuracyFromString:(NSString *)accuracyString {
+    RadarLocationPermissionAccuracy accuracy;
+    
+    if ([accuracyString isEqualToString:@"Full"]) {
+        accuracy = RadarPermissionAccuracyFull;
+    } else if ([accuracyString isEqualToString:@"Approximate"]) {
+        accuracy = RadarPermissionAccuracyApproximate;
+    } else {
+        accuracy = RadarPermissionAccuracyUnknown;
+    }
+    return accuracy;
+}
+
++ (RadarLocationPermissionAccuracy)radarLocationPermissionAccuracyFromCLLocationAccuracy:(CLAccuracyAuthorization)accuracy {
+    RadarLocationPermissionAccuracy radarAccuracy = RadarPermissionAccuracyUnknown;
+    
+    if (accuracy == CLAccuracyAuthorizationReducedAccuracy) {
+        radarAccuracy = RadarPermissionAccuracyApproximate;
+    } 
+    if (accuracy == CLAccuracyAuthorizationFullAccuracy) {
+        radarAccuracy = RadarPermissionAccuracyFull;
+    }
+    return radarAccuracy;
+}
+
+- (NSString *)radarLocationPermissionLevelToString:(RadarLocationPermissionLevel)level {
+    NSString *levelString;
+    
+    switch (level) {
+        case RadarPermissionLevelForeground:
+            levelString = @"Foreground";
+            break;
+        case RadarPermissionLevelBackground:
+            levelString = @"BackgroundLocation";
+            break;
+        case RadarPermissionLevelNone:
+            levelString = @"None";
+            break;
+        default:
+            levelString = @"Unknown";
+    }
+    return levelString;
+}
+
+-  (RadarLocationPermissionLevel)radarLocationPermissionLevelFromString:(NSString *)levelString {
+    RadarLocationPermissionLevel level;
+    
+    if ([levelString isEqualToString:@"Foreground"]) {
+        level = RadarPermissionLevelForeground;
+    } else if ([levelString isEqualToString:@"BackgroundLocation"]) {
+        level = RadarPermissionLevelBackground;
+    } else if ([levelString isEqualToString:@"None"]) {
+        level = RadarPermissionLevelNone;
+    } else {
+        level = RadarPermissionLevelUnknown;
+    }
+    return level;
+}
+
++ (RadarLocationPermissionLevel)radarLocationPermissionLevelFromCLLocationAuthorizationStatus:(CLAuthorizationStatus)status {
+    RadarLocationPermissionLevel level;
+    
+    if (status == kCLAuthorizationStatusAuthorizedWhenInUse) {
+        level = RadarPermissionLevelForeground;
+    } else if (status == kCLAuthorizationStatusAuthorizedAlways) {
+        level = RadarPermissionLevelBackground;
+    } else if (status == kCLAuthorizationStatusDenied) {
+        level = RadarPermissionLevelNone;
+    } else {
+        level = RadarPermissionLevelUnknown;
+    }
+    return level;
+}
+
+- (NSDictionary *)dictionaryValue {
     return @{
-        @"locationManagerStatus": statusString,
-        @"backgroundPopupAvailable": @(self.backgroundPopupAvailable),
-        @"inForegroundPopup": @(self.inForegroundPopup),
-        @"userRejectedBackgroundPermission": @(self.userRejectedBackgroundPermission),
-        @"locationPermissionState": [RadarLocationPermissionStatus stringForLocationPermissionState:self.locationPermissionState]
+        @"accuracy": [self radarLocationPermissionAccuracyToString:self.accuracy],
+        @"permissionGranted": [self radarLocationPermissionLevelToString:self.permissionGranted],
+        @"requestAvailable": [self radarLocationPermissionLevelToString:self.requestAvailable]
     };
 }
 
 - (instancetype _Nullable)initWithDictionary:(NSDictionary *)dictionary {
-    NSString *statusString = dictionary[@"locationManagerStatus"];
-    CLAuthorizationStatus locationManagerStatus;
-    if ([statusString isEqualToString:@"NotDetermined"]) {
-        locationManagerStatus = kCLAuthorizationStatusNotDetermined;
-    } else if ([statusString isEqualToString:@"Restricted"]) {
-        locationManagerStatus = kCLAuthorizationStatusRestricted;
-    } else if ([statusString isEqualToString:@"Denied"]) {
-        locationManagerStatus = kCLAuthorizationStatusDenied;
-    } else if ([statusString isEqualToString:@"AuthorizedAlways"]) {
-        locationManagerStatus = kCLAuthorizationStatusAuthorizedAlways;
-    } else if ([statusString isEqualToString:@"AuthorizedWhenInUse"]) {
-        locationManagerStatus = kCLAuthorizationStatusAuthorizedWhenInUse;
-    } else {
-        locationManagerStatus = kCLAuthorizationStatusNotDetermined;
-    }
-    BOOL backgroundPopupAvailable = [dictionary[@"backgroundPopupAvailable"] boolValue];
-    BOOL inForegroundPopup = [dictionary[@"inForegroundPopup"] boolValue];
-    BOOL userRejectedBackgroundPermission = [dictionary[@"userRejectedBackgroundPermission"] boolValue];
-    return [self initWithStatus:locationManagerStatus 
-       backgroundPopupAvailable:backgroundPopupAvailable 
-              inForegroundPopup:inForegroundPopup 
-userRejectedBackgroundPermission:userRejectedBackgroundPermission];
-}
-
-+ (NSString *)stringForLocationPermissionState:(RadarLocationPermissionState)state {
-    switch (state) {
-        case NoPermissionGranted:
-            return @"NoPermissionGranted";
-        case ForegroundPermissionGranted:
-            return @"ForegroundPermissionGranted";
-        case ForegroundPermissionRejected:
-            return @"ForegroundPermissionRejected";
-        case ForegroundPermissionPending:
-            return @"ForegroundPermissionPending";
-        case BackgroundPermissionGranted:
-            return @"BackgroundPermissionGranted";
-        case BackgroundPermissionRejected:
-            return @"BackgroundPermissionRejected";
-        case BackgroundPermissionPending:
-            return @"BackgroundPermissionPending";
-        case PermissionRestricted:
-            return @"PermissionRestricted";
-        default:
-            return @"Unknown";
-    }
-}
-
-+ (RadarLocationPermissionState)locationPermissionStateForLocationManagerStatus:(CLAuthorizationStatus)locationManagerStatus
-                                                       backgroundPopupAvailable:(BOOL)backgroundPopupAvailable
-                                                              inForegroundPopup:(BOOL)inForegroundPopup
-                                              userRejectedBackgroundPermission:(BOOL)userRejectedBackgroundPermission {
-
-    if (locationManagerStatus == kCLAuthorizationStatusNotDetermined) {
-        return inForegroundPopup ? ForegroundPermissionPending : NoPermissionGranted;
-    }
-
-    if (locationManagerStatus == kCLAuthorizationStatusDenied) {
-        return ForegroundPermissionRejected;
-    }
-
-    if (locationManagerStatus == kCLAuthorizationStatusAuthorizedAlways) {
-        return BackgroundPermissionGranted;
-    }
-
-    if (locationManagerStatus == kCLAuthorizationStatusAuthorizedWhenInUse) {
-        if (userRejectedBackgroundPermission) {
-            return BackgroundPermissionRejected;
-        }
-        return backgroundPopupAvailable ? ForegroundPermissionGranted : BackgroundPermissionPending;
-    }
-
-    if (locationManagerStatus == kCLAuthorizationStatusRestricted) {
-        return PermissionRestricted;
-    }
-    
-    return Unknown;
+    return [self initWithAccuracy:[self radarLocationPermissionAccuracyFromString:dictionary[@"accuracy"]]
+                permissionGranted:[self radarLocationPermissionLevelFromString:dictionary[@"permissionGranted"]]
+                 requestAvailable:[self radarLocationPermissionLevelFromString:dictionary[@"requestAvailable"]]];
 }
 
 @end

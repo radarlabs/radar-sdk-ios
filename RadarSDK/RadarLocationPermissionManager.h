@@ -18,9 +18,9 @@
 
 + (instancetype _Nonnull )sharedInstance;
 
-- (void)requestForegroundLocationPermission;
+- (void)requestForegroundLocationPermissionWithCompletionHandler:(RadarLocationPermissionCompletionHandler _Nullable)completionHandler;
 
-- (void)requestBackgroundLocationPermission;
+- (void)requestBackgroundLocationPermissionWithCompletionHandler:(RadarLocationPermissionCompletionHandler _Nullable)completionHandler;
 
 - (void)openAppSettings;
 

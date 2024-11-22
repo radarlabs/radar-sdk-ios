@@ -11,13 +11,16 @@
 
 @interface RadarLocationPermissionStatus()
 
-+ (void) radarLocationPermissionStatus:(RadarLocationPermissionStatus *_Nonnull)status;
++ (void)radarLocationPermissionStatus:(RadarLocationPermissionStatus *_Nonnull)status;
 
 + (RadarLocationPermissionStatus *_Nullable) getRadarLocationPermissionStatus;
 
-- (instancetype _Nullable)initWithStatus:(CLAuthorizationStatus)locationManagerStatus
-                backgroundPopupAvailable:(BOOL)backgroundPopupAvailable
-                       inForegroundPopup:(BOOL)inForegroundPopup
-       userRejectedBackgroundPermission:(BOOL)userRejectedBackgroundPermission;
+- (instancetype _Nullable)initWithAccuracy:(RadarLocationPermissionAccuracy)accuracy
+                         permissionGranted:(RadarLocationPermissionLevel)permissionGranted
+                          requestAvailable:(RadarLocationPermissionLevel)requestAvailable;
+
++ (RadarLocationPermissionAccuracy)radarLocationPermissionAccuracyFromCLLocationAccuracy:(CLAccuracyAuthorization)accuracy;
+
++ (RadarLocationPermissionLevel)radarLocationPermissionLevelFromCLLocationAuthorizationStatus:(CLAuthorizationStatus)status;
 
 @end
