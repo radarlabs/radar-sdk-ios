@@ -137,7 +137,7 @@
                if (@available(iOS 14.0, *)) {
                     [RadarLocationPermissionManager setUserDeniedLocationPermission:YES];
                     RadarLocationPermissionStatus *status = [[RadarLocationPermissionStatus alloc] initWithAccuracy:[RadarLocationPermissionStatus radarLocationPermissionAccuracyFromCLLocationAccuracy: self.locationManager.accuracyAuthorization]
-                                                                                                 permissionGranted:[RadarLocationPermissionStatus radarLocationPermissionLevelFromCLLocationAuthorizationStatus:status]
+                                                                                                  permissionGranted:[RadarLocationPermissionStatus radarLocationPermissionLevelFromCLLocationAuthorizationStatus:self.locationManager.authorizationStatus]
                                                                                                    requestAvailable: RadarPermissionLevelNone];
                    [self updateStatus:status];
                }
@@ -171,7 +171,7 @@
                // if the status did not changed, we update the status here, otherwise we will update it in the delegate method
                     [RadarLocationPermissionManager setUserDeniedLocationPermission:YES];
                     RadarLocationPermissionStatus *status = [[RadarLocationPermissionStatus alloc] initWithAccuracy:[RadarLocationPermissionStatus radarLocationPermissionAccuracyFromCLLocationAccuracy: self.locationManager.accuracyAuthorization]
-                                                                                                 permissionGranted:[RadarLocationPermissionStatus radarLocationPermissionLevelFromCLLocationAuthorizationStatus:status]
+                                                                                                 permissionGranted:[RadarLocationPermissionStatus radarLocationPermissionLevelFromCLLocationAuthorizationStatus:self.locationManager.authorizationStatus]
                                                                                                    requestAvailable: RadarPermissionLevelNone];
                    [self updateStatus:status];
            }
