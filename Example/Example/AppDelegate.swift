@@ -30,6 +30,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         // Uncomment to enable automatic setup for notification conversions or deep linking
         //radarInitializeOptions.autoLogNotificationConversions = true
         //radarInitializeOptions.autoHandleNotificationDeepLinks = true
+        Radar.setLogLevel(RadarLogLevel.none)
         Radar.initialize(publishableKey: "prj_test_pk_0000000000000000000000000000000000000000", options: radarInitializeOptions )
         Radar.setUserId("testUserId")
         Radar.setMetadata([ "foo": "bar" ])
@@ -92,6 +93,22 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
 
             Radar.trackOnce { (status, location, events, user) in
                 print("Track once: status = \(Radar.stringForStatus(status)); location = \(String(describing: location)); events = \(String(describing: events)); user = \(String(describing: user))")
+            }
+        }
+        
+        demoButton(text: "foreground request"){
+            Radar.requestForegroundLocationPermission() {
+                (status) in
+                print("from callback")
+                print(status.dictionaryValue())
+                
+            }
+        }
+        
+        demoButton(text: "background request"){
+            Radar.requestBackgroundLocationPermission() {status in
+                print("from background callback")
+                print(status.dictionaryValue())
             }
         }
         
@@ -381,13 +398,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         if #available(iOS 13.4, *) {
             // On iOS 13.4 and later, prompt for foreground first. If granted, prompt for background. The OS will show the background prompt in-app.
             if status == .notDetermined {
-                self.locationManager.requestWhenInUseAuthorization()
+                // self.locationManager.requestWhenInUseAuthorization()
             } else if status == .authorizedWhenInUse {
-                self.locationManager.requestAlwaysAuthorization()
+                // self.locationManager.requestAlwaysAuthorization()
             }
         } else {
             // Before iOS 13.4, prompt for background first. On iOS 13, the OS will show a foreground prompt in-app. The OS will show the background prompt outside of the app later, at a time determined by the OS.
-            self.locationManager.requestAlwaysAuthorization()
+            // self.locationManager.requestAlwaysAuthorization()
         }
     }
 
@@ -421,30 +438,34 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
 
     func didReceiveEvents(_ events: [RadarEvent], user: RadarUser?) {
         for event in events {
-            notify(Utils.stringForRadarEvent(event))
+            //notify(Utils.stringForRadarEvent(event))
         }
     }
 
     func didUpdateLocation(_ location: CLLocation, user: RadarUser) {
         let body = "\(user.stopped ? "Stopped at" : "Moved to") location (\(location.coordinate.latitude), \(location.coordinate.longitude)) with accuracy \(location.horizontalAccuracy) meters"
-        self.notify(body)
+        //self.notify(body)
     }
 
     func didUpdateClientLocation(_ location: CLLocation, stopped: Bool, source: RadarLocationSource) {
         let body = "\(stopped ? "Client stopped at" : "Client moved to") location (\(location.coordinate.latitude), \(location.coordinate.longitude)) with accuracy \(location.horizontalAccuracy) meters and source \(Utils.stringForRadarLocationSource(source))"
-        self.notify(body)
+        //self.notify(body)
     }
 
     func didFail(status: RadarStatus) {
-        self.notify(Radar.stringForStatus(status))
+        //self.notify(Radar.stringForStatus(status))
     }
 
     func didLog(message: String) {
-        self.notify(message)
+        //self.notify(message)
     }
 
     func didUpdateToken(_ token: RadarVerifiedLocationToken) {
         
+    }
+    
+    func didUpdateLocationPermissionStatus(status: RadarLocationPermissionStatus){
+        print(status.dictionaryValue())
     }
     
 }

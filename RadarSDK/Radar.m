@@ -21,6 +21,8 @@
 #import "RadarUtils.h"
 #import "RadarVerificationManager.h"
 #import "RadarReplayBuffer.h"
+#import "RadarLocationPermissionManager.h"
+#import "RadarLocationPermissionStatus.h"
 #import "RadarNotificationHelper.h"
 #import "RadarTripOptions.h"
 
@@ -59,6 +61,13 @@
         id radarSDKMotion = [[RadarSDKMotion alloc] init];
         [RadarActivityManager sharedInstance].radarSDKMotion = radarSDKMotion;
     }
+    [RadarLocationPermissionManager sharedInstance];
+    Class RadarSDKLocationPermission = NSClassFromString(@"RadarSDKLocationPermission");
+    
+    if (RadarSDKLocationPermission) {
+        id radarSDKLocationPermission = [[RadarSDKLocationPermission alloc] init];
+        [RadarLocationPermissionManager sharedInstance].radarSDKLocationPermission = radarSDKLocationPermission;
+    }
 
     [[NSNotificationCenter defaultCenter] addObserver:[self sharedInstance]
                                              selector:@selector(applicationWillEnterForeground)
@@ -86,6 +95,8 @@
     if ([[UIApplication sharedApplication] applicationState] != UIApplicationStateBackground) {
         [RadarSettings updateSessionId];
     }
+
+    
 
     [[RadarLocationManager sharedInstance] updateTrackingFromInitialize];
 
@@ -1366,6 +1377,22 @@
                                     }];
                                 }
                             }];
+}
+
++ (void)requestForegroundLocationPermissionWithCompletionHandler:(RadarLocationPermissionCompletionHandler)completionHandler {
+    [[RadarLocationPermissionManager sharedInstance] requestForegroundLocationPermissionWithCompletionHandler:completionHandler];
+}
+
++ (void)requestBackgroundLocationPermissionWithCompletionHandler:(RadarLocationPermissionCompletionHandler)completionHandler {
+    [[RadarLocationPermissionManager sharedInstance] requestBackgroundLocationPermissionWithCompletionHandler:completionHandler];
+}
+
++ (void)openAppSettings {
+    [[RadarLocationPermissionManager sharedInstance] openAppSettings];
+}
+
++ (RadarLocationPermissionStatus *)getLocationPermissionStatus {
+    return [[RadarLocationPermissionManager sharedInstance] getLocationPermissionStatus];
 }
 
 + (void)openURLFromNotification:(UNNotification *)notification {

@@ -34,17 +34,29 @@ jobs:
       - name: Build archive for iPhone device (RadarSDKMotion)
         run: cd RadarSDKMotion && xcodebuild archive -scheme RadarSDKMotion -archivePath "../RadarSDKMotion-iphoneos.xcarchive" -sdk iphoneos SKIP_INSTALL=NO CODE_SIGN_IDENTITY= CODE_SIGNING_REQUIRED=NO
       
+      - name: Build archive for iPhone simulator (RadarSDKLocationPermission)
+        run: cd RadarSDKLocationPermission && xcodebuild archive -scheme RadarSDKLocationPermission -archivePath "../RadarSDKLocationPermission-iphonesimulator.xcarchive" -sdk iphonesimulator SKIP_INSTALL=NO CODE_SIGN_IDENTITY= CODE_SIGNING_REQUIRED=NO
+
+      - name: Build archive for iPhone device (RadarSDKLocationPermission)      
+        run: cd RadarSDKLocationPermission && xcodebuild archive -scheme RadarSDKLocationPermission -archivePath "../RadarSDKLocationPermission-iphoneos.xcarchive" -sdk iphoneos SKIP_INSTALL=NO CODE_SIGN_IDENTITY= CODE_SIGNING_REQUIRED=NO
+      
       - name: Build XCFramework (RadarSDK)
         run: xcodebuild -create-xcframework -framework RadarSDK-iphonesimulator.xcarchive/Products/Library/Frameworks/RadarSDK.framework -framework RadarSDK-iphoneos.xcarchive/Products/Library/Frameworks/RadarSDK.framework -output RadarSDK.xcframework
 
       - name: Build XCFramework (RadarSDKMotion)
         run: xcodebuild -create-xcframework -framework RadarSDKMotion-iphonesimulator.xcarchive/Products/Library/Frameworks/RadarSDKMotion.framework -framework RadarSDKMotion-iphoneos.xcarchive/Products/Library/Frameworks/RadarSDKMotion.framework -output RadarSDKMotion.xcframework
       
+      - name: Build XCFramework (RadarSDKLocationPermission)
+        run: xcodebuild -create-xcframework -framework RadarSDKLocationPermission-iphonesimulator.xcarchive/Products/Library/Frameworks/RadarSDKLocationPermission.framework -framework RadarSDKLocationPermission-iphoneos.xcarchive/Products/Library/Frameworks/RadarSDKLocationPermission.framework -output RadarSDKLocationPermission.xcframework
+
       - name: Zip XCFramework (RadarSDK)
         run: zip -r RadarSDK.xcframework.zip RadarSDK.xcframework -x ".*" -x "__MACOSX" -D
 
       - name: Zip XCFramework (RadarSDKMotion)
         run: zip -r RadarSDKMotion.xcframework.zip RadarSDKMotion.xcframework -x ".*" -x "__MACOSX" -D
+      
+      - name: Zip XCFramework (RadarSDKLocationPermission)
+        run: zip -r RadarSDKLocationPermission.xcframework.zip RadarSDKLocationPermission.xcframework -x ".*" -x "__MACOSX" -D
 
       - name: Upload XCFramework to release (RadarSDK)
         uses: svenstaro/upload-release-action@v2
@@ -56,6 +68,11 @@ jobs:
         with:
           file: RadarSDKMotion.xcframework.zip
       
+      - name: Upload XCFramework to release (RadarSDKLocationPermission)
+        uses: svenstaro/upload-release-action@v2
+        with:
+          file: RadarSDKLocationPermission.xcframework.zip
+      
       # get sha256 checksum of the XCFramework
       - name: Get SHA256 checksum (RadarSDK)
         id: checksum_radarsdk
@@ -65,6 +82,9 @@ jobs:
         id: checksum_radarsdkmotion
         run: echo "::set-output name=checksum::$(shasum -a 256 RadarSDKMotion.xcframework.zip | cut -d ' ' -f 1)"
 
+      - name: Get SHA256 checksum (RadarSDKLocationPermission)
+        id: checksum_radarsdklocationpermission
+        run: echo "::set-output name=checksum::$(shasum -a 256 RadarSDKLocationPermission.xcframework.zip | cut -d ' ' -f 1)"
       - name: Repository Dispatch
         if: ${{ !github.event.release.prerelease }}
         uses: peter-evans/repository-dispatch@v3
@@ -72,7 +92,7 @@ jobs:
           token: ${{ secrets.SPM_REPO_KEY }}
           repository: radarlabs/radar-sdk-ios-spm
           event-type: update-xcframework
-          client-payload: '{"release": "${{ github.event.release.tag_name }}", "checksum": "${{ steps.checksum_radarsdk.outputs.checksum }}", "url": "${{ github.event.release.html_url }}", "checksum_motion": "${{ steps.checksum_radarsdkmotion.outputs.checksum }}"}'
+          client-payload: '{"release": "${{ github.event.release.tag_name }}", "checksum": "${{ steps.checksum_radarsdk.outputs.checksum }}", "url": "${{ github.event.release.html_url }}", "checksum_motion": "${{ steps.checksum_radarsdkmotion.outputs.checksum }}", "checksum_locationpermission": "${{ steps.checksum_radarsdklocationpermission.outputs.checksum }}"}'
 
       - name: Check versions is not duplicate
         run: |
@@ -86,10 +106,11 @@ jobs:
       - name: Deploy to Cocoapods
         run: |
           set -eo pipefail
-          gem install cocoapods
           pod lib lint --allow-warnings RadarSDK.podspec
           pod lib lint --allow-warnings RadarSDKMotion.podspec
           pod trunk push --allow-warnings RadarSDK.podspec
           pod trunk push --allow-warnings RadarSDKMotion.podspec
+          pod lib lint --allow-warnings RadarSDKLocationPermission.podspec
+          pod trunk push --allow-warnings RadarSDKLocationPermission.podspec
         env:
           COCOAPODS_TRUNK_TOKEN: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}

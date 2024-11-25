@@ -13,6 +13,7 @@
 #import "RadarMeta.h"
 #import "RadarPermissionsHelper.h"
 #import "RadarActivityManager.h"
+#import "RadarLocationPermissionStatus.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
