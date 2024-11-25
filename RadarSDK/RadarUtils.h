@@ -33,6 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSString *)dictionaryToJson:(NSDictionary *)dict;
 + (NSDictionary<NSString *, NSString *> *)extractGeofenceIdAndTimestampFromIdentifier:(NSString *)identifier;
 + (void)runOnMainThread:(dispatch_block_t)block;
++ (void)runOnSerialQueue:(dispatch_block_t)block;
 
 @end
 
