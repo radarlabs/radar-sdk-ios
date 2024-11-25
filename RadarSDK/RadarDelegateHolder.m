@@ -74,7 +74,7 @@
 }
 
 - (void)didLogMessage:(NSString *)message {
-    [RadarUtils runOnSerialQueue:^{
+    [RadarUtils runOnMainThread:^{
         if (self.delegate) {
             [self.delegate didLogMessage:message];
         }
