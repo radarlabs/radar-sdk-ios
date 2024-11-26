@@ -7,8 +7,10 @@
 //
 
 import Foundation
-import Telegraph
 import UserNotifications
+
+#if canImport(Telegraph)
+import Telegraph
 
 @objc(RadarVerifyServer) class RadarVerifyServer: NSObject, CLLocationManagerDelegate {
     @MainActor @objc static let sharedInstance = RadarVerifyServer()
@@ -139,3 +141,17 @@ import UserNotifications
     }
     
 }
+#else
+@objc(RadarVerifyServer) class RadarVerifyServer: NSObject {
+    @MainActor @objc static let sharedInstance = RadarVerifyServer()
+    
+    @objc func startServer(withCertData certData: Data, identityData: Data) {
+        print("Error starting server: Missing dependencies")
+    }
+    
+    @objc func stopServer() {
+        print("Error stopping server: Error parsing cert data")
+    }
+    
+}
+#endif
