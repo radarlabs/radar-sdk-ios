@@ -16,7 +16,10 @@ let package = Package(
             targets: ["RadarSDKMotion"]
         )
     ],
-    dependencies: [],
+    dependencies: [
+        .package(url: "https://github.com/apple/swift-nio.git", from: "2.62.0"),
+        .package(url: "https://github.com/apple/swift-nio-ssl.git", from: "2.25.0")
+    ],
     targets: [
         .target(
             name: "RadarSDK",
@@ -26,6 +29,10 @@ let package = Package(
             publicHeadersPath: "Include",
             cSettings: [
                 .headerSearchPath(".")
+            ],
+            dependencies: [
+                .product(name: "NIO", package: "swift-nio"),
+                .product(name: "NIOHTTP1", package: "swift-nio")
             ]
         ),
         .target(
