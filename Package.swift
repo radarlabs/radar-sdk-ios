@@ -16,6 +16,7 @@ let package = Package(
             targets: ["RadarSDKMotion"]
         )
     ],
+    dependencies: [],
     targets: [
         .target(
             name: "RadarSDK",
