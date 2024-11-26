@@ -12,28 +12,28 @@ import Testing
 struct RadarSDKTestsSwift {
     
     @Test func test_profiler() async throws {
-        let profiler = RadarProfiler()
-        profiler.start("total")
-        profiler.start("test")
+        let telemetry = RadarTelemetry()
+        telemetry.start("total")
+        telemetry.start("test")
         
         usleep(1500000)
         
-        profiler.end("test")
+        telemetry.end("test")
         
-        #expect(profiler.formatted() == String(format: "test: %.3f", profiler.get("test")))
+        #expect(telemetry.formatted() == String(format: "test: %.3f", telemetry.get("test")))
         
-        profiler.start("other")
+        telemetry.start("other")
         
         usleep(1000000)
         
-        profiler.end("other")
-        profiler.end("total")
+        telemetry.end("other")
+        telemetry.end("total")
         
-        #expect(profiler.get("other") < profiler.get("test"))
-        #expect(profiler.get("total") >= profiler.get("test") + profiler.get("other"))
+        #expect(telemetry.get("other") < telemetry.get("test"))
+        #expect(telemetry.get("total") >= telemetry.get("test") + telemetry.get("other"))
         
-        #expect(profiler.formatted().contains(String(format: "other: %.3f", profiler.get("other"))))
-        #expect(profiler.formatted().contains(String(format: "total: %.3f", profiler.get("total"))))
-        #expect(profiler.formatted().contains(String(format: "test: %.3f", profiler.get("test"))))
+        #expect(telemetry.formatted().contains(String(format: "other: %.3f", telemetry.get("other"))))
+        #expect(telemetry.formatted().contains(String(format: "total: %.3f", telemetry.get("total"))))
+        #expect(telemetry.formatted().contains(String(format: "test: %.3f", telemetry.get("test"))))
     }
 }

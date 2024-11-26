@@ -302,7 +302,7 @@
 
     RadarTrackingOptions *options = [Radar getTrackingOptions];
     if (options.syncGeofences) {
-        params[@"nearbyGeofences"] = @(YES);
+        params[@" "] = @(YES);
     }
     if (beacons) {
         params[@"beacons"] = [RadarBeacon arrayForBeacons:beacons];
