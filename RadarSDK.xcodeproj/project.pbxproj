@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 54;
+	objectVersion = 50;
 	objects = {
 
 /* Begin PBXAggregateTarget section */
@@ -368,14 +368,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				015867452CEB3E48007BEAC0 /* NIOCore in Frameworks */,
-				0158674E2CEB3E5C007BEAC0 /* NIOSSLHTTP1Client in Frameworks */,
-				015867492CEB3E48007BEAC0 /* NIOFoundationCompat in Frameworks */,
-				0158674C2CEB3E5C007BEAC0 /* NIOSSL in Frameworks */,
-				015867502CEB3E5C007BEAC0 /* NIOTLSServer in Frameworks */,
-				015867412CEB3E48007BEAC0 /* NIO in Frameworks */,
-				015867432CEB3E48007BEAC0 /* NIOConcurrencyHelpers in Frameworks */,
-				015867472CEB3E48007BEAC0 /* NIOEmbedded in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -746,14 +738,6 @@
 			);
 			name = RadarSDK;
 			packageProductDependencies = (
-				015867402CEB3E48007BEAC0 /* NIO */,
-				015867422CEB3E48007BEAC0 /* NIOConcurrencyHelpers */,
-				015867442CEB3E48007BEAC0 /* NIOCore */,
-				015867462CEB3E48007BEAC0 /* NIOEmbedded */,
-				015867482CEB3E48007BEAC0 /* NIOFoundationCompat */,
-				0158674B2CEB3E5C007BEAC0 /* NIOSSL */,
-				0158674D2CEB3E5C007BEAC0 /* NIOSSLHTTP1Client */,
-				0158674F2CEB3E5C007BEAC0 /* NIOTLSServer */,
 			);
 			productName = RadarSDK;
 			productReference = 0107A9E82621FFB9008AB52F /* RadarSDK.framework */;
@@ -808,8 +792,6 @@
 			);
 			mainGroup = DD236C6B2308797B00EB88F9;
 			packageReferences = (
-				0158673F2CEB3E48007BEAC0 /* XCRemoteSwiftPackageReference "swift-nio" */,
-				0158674A2CEB3E5C007BEAC0 /* XCRemoteSwiftPackageReference "swift-nio-ssl" */,
 			);
 			productRefGroup = DD236C762308797B00EB88F9 /* Products */;
 			projectDirPath = "";
@@ -1243,68 +1225,6 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
-/* Begin XCRemoteSwiftPackageReference section */
-		0158673F2CEB3E48007BEAC0 /* XCRemoteSwiftPackageReference "swift-nio" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/apple/swift-nio.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 2.62.0;
-			};
-		};
-		0158674A2CEB3E5C007BEAC0 /* XCRemoteSwiftPackageReference "swift-nio-ssl" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/apple/swift-nio-ssl";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 2.25.0;
-			};
-		};
-/* End XCRemoteSwiftPackageReference section */
-
-/* Begin XCSwiftPackageProductDependency section */
-		015867402CEB3E48007BEAC0 /* NIO */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 0158673F2CEB3E48007BEAC0 /* XCRemoteSwiftPackageReference "swift-nio" */;
-			productName = NIO;
-		};
-		015867422CEB3E48007BEAC0 /* NIOConcurrencyHelpers */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 0158673F2CEB3E48007BEAC0 /* XCRemoteSwiftPackageReference "swift-nio" */;
-			productName = NIOConcurrencyHelpers;
-		};
-		015867442CEB3E48007BEAC0 /* NIOCore */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 0158673F2CEB3E48007BEAC0 /* XCRemoteSwiftPackageReference "swift-nio" */;
-			productName = NIOCore;
-		};
-		015867462CEB3E48007BEAC0 /* NIOEmbedded */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 0158673F2CEB3E48007BEAC0 /* XCRemoteSwiftPackageReference "swift-nio" */;
-			productName = NIOEmbedded;
-		};
-		015867482CEB3E48007BEAC0 /* NIOFoundationCompat */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 0158673F2CEB3E48007BEAC0 /* XCRemoteSwiftPackageReference "swift-nio" */;
-			productName = NIOFoundationCompat;
-		};
-		0158674B2CEB3E5C007BEAC0 /* NIOSSL */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 0158674A2CEB3E5C007BEAC0 /* XCRemoteSwiftPackageReference "swift-nio-ssl" */;
-			productName = NIOSSL;
-		};
-		0158674D2CEB3E5C007BEAC0 /* NIOSSLHTTP1Client */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 0158674A2CEB3E5C007BEAC0 /* XCRemoteSwiftPackageReference "swift-nio-ssl" */;
-			productName = NIOSSLHTTP1Client;
-		};
-		0158674F2CEB3E5C007BEAC0 /* NIOTLSServer */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 0158674A2CEB3E5C007BEAC0 /* XCRemoteSwiftPackageReference "swift-nio-ssl" */;
-			productName = NIOTLSServer;
-		};
-/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = DD236C6C2308797B00EB88F9 /* Project object */;
 }
