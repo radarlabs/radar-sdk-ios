@@ -11,7 +11,7 @@
 @interface RadarVerifyServer: NSObject
 
 + (instancetype)sharedInstance;
-- (void)startServer;
+- (void)startServerWithCertData:(NSData *)certData identityData:(NSData *)identityData;
 - (void)stopServer;
 
 @end

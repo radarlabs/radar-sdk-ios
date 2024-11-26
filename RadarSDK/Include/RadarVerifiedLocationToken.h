@@ -56,6 +56,11 @@
  */
 @property (nullable, copy, nonatomic, readonly) NSString *_id;
 
+/**
+ The raw dictionary value of the token.
+ */
+@property (nullable, copy, nonatomic, readonly) NSDictionary *rawDict;
+
 - (NSDictionary *_Nonnull)dictionaryValue;
 
 @end

@@ -132,8 +132,6 @@ typedef NS_ENUM(NSInteger, RadarActivityType);
  */
 @property (nullable, copy, nonatomic, readonly) NSArray<RadarChain *> *topChains;
 
-- (NSDictionary *_Nonnull)dictionaryValue;
-
 /**
  The source of the user's current location.
  */
@@ -157,5 +155,7 @@ typedef NS_ENUM(NSInteger, RadarActivityType);
  @see https://radar.com/documentation/fraud
  */
 @property (nullable, copy, nonatomic, readonly) RadarFraud *fraud;
+
+- (NSDictionary *_Nonnull)dictionaryValue;
 
 @end
