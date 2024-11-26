@@ -70,21 +70,7 @@
 		0107AB7A2622061A008AB52F /* RadarSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0107A9E82621FFB9008AB52F /* RadarSDK.framework */; };
 		0114F058284EFDB700ADA4E4 /* RadarRouteMode.h in Headers */ = {isa = PBXBuildFile; fileRef = 0114F057284EFDB700ADA4E4 /* RadarRouteMode.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		0158673E2CEB3B83007BEAC0 /* RadarVerifyServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0158673D2CEB3B83007BEAC0 /* RadarVerifyServer.swift */; };
-<<<<<<< HEAD
 		015867572CEB5071007BEAC0 /* RadarVerifyServer.h in Headers */ = {isa = PBXBuildFile; fileRef = 015867562CEB5071007BEAC0 /* RadarVerifyServer.h */; };
-=======
-		015867412CEB3E48007BEAC0 /* NIO in Frameworks */ = {isa = PBXBuildFile; productRef = 015867402CEB3E48007BEAC0 /* NIO */; };
-		015867432CEB3E48007BEAC0 /* NIOConcurrencyHelpers in Frameworks */ = {isa = PBXBuildFile; productRef = 015867422CEB3E48007BEAC0 /* NIOConcurrencyHelpers */; };
-		015867452CEB3E48007BEAC0 /* NIOCore in Frameworks */ = {isa = PBXBuildFile; productRef = 015867442CEB3E48007BEAC0 /* NIOCore */; };
-		015867472CEB3E48007BEAC0 /* NIOEmbedded in Frameworks */ = {isa = PBXBuildFile; productRef = 015867462CEB3E48007BEAC0 /* NIOEmbedded */; };
-		015867492CEB3E48007BEAC0 /* NIOFoundationCompat in Frameworks */ = {isa = PBXBuildFile; productRef = 015867482CEB3E48007BEAC0 /* NIOFoundationCompat */; };
-		0158674C2CEB3E5C007BEAC0 /* NIOSSL in Frameworks */ = {isa = PBXBuildFile; productRef = 0158674B2CEB3E5C007BEAC0 /* NIOSSL */; };
-		0158674E2CEB3E5C007BEAC0 /* NIOSSLHTTP1Client in Frameworks */ = {isa = PBXBuildFile; productRef = 0158674D2CEB3E5C007BEAC0 /* NIOSSLHTTP1Client */; };
-		015867502CEB3E5C007BEAC0 /* NIOTLSServer in Frameworks */ = {isa = PBXBuildFile; productRef = 0158674F2CEB3E5C007BEAC0 /* NIOTLSServer */; };
-		015867572CEB5071007BEAC0 /* RadarVerifyServer.h in Headers */ = {isa = PBXBuildFile; fileRef = 015867562CEB5071007BEAC0 /* RadarVerifyServer.h */; };
-		015C53AD29B8E8BA004F53A6 /* (null) in Headers */ = {isa = PBXBuildFile; };
-		015C53AE29B8E8BA004F53A6 /* (null) in Sources */ = {isa = PBXBuildFile; };
->>>>>>> bd54448e (RadarVerifyServer)
 		019514362BD078D90031ABA2 /* RadarVerifiedLocationToken.h in Headers */ = {isa = PBXBuildFile; fileRef = 019514352BD077D10031ABA2 /* RadarVerifiedLocationToken.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		019514392BD081630031ABA2 /* RadarVerifiedLocationToken.m in Sources */ = {isa = PBXBuildFile; fileRef = 019514372BD081630031ABA2 /* RadarVerifiedLocationToken.m */; };
 		0195143A2BD081630031ABA2 /* RadarVerifiedLocationToken+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 019514382BD081630031ABA2 /* RadarVerifiedLocationToken+Internal.h */; };
