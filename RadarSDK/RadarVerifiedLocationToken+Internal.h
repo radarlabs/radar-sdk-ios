@@ -17,7 +17,8 @@
                              expiresIn:(NSTimeInterval)expiresIn
                                 passed:(BOOL)passed
                         failureReasons:(NSArray<NSString *> *_Nonnull)failureReasons
-                                   _id:(NSString *_Nonnull)_id;
+                                   _id:(NSString *_Nonnull)_id
+                               rawDict:(NSDictionary *_Nonnull)rawDict;
 - (instancetype _Nullable)initWithObject:(id _Nonnull)object;
 
 @end
