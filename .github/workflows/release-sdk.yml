@@ -23,13 +23,13 @@ jobs:
         run: xcodebuild clean build analyze test -workspace Example/Example.xcodeproj/project.xcworkspace -scheme RadarSDK -destination "platform=iOS Simulator,name=iPhone 15 Pro" | xcpretty
       
       - name: Build archive for iPhone simulator (RadarSDK)
-        run: xcodebuild archive -scheme RadarSDK -archivePath "RadarSDK-iphonesimulator.xcarchive" -sdk iphonesimulator SKIP_INSTALL=NO CODE_SIGN_IDENTITY= CODE_SIGNING_REQUIRED=NO
+        run: xcodebuild archive -scheme RadarSDK -archivePath "RadarSDK-iphonesimulator.xcarchive" -sdk iphonesimulator SKIP_INSTALL=NO CODE_SIGN_IDENTITY= CODE_SIGNING_REQUIRED=NO BUILD_LIBRARY_FOR_DISTRIBUTION=YES
 
       - name: Build archive for iPhone device (RadarSDK)
-        run: xcodebuild archive -scheme RadarSDK -archivePath "RadarSDK-iphoneos.xcarchive" -sdk iphoneos SKIP_INSTALL=NO CODE_SIGN_IDENTITY= CODE_SIGNING_REQUIRED=NO
+        run: xcodebuild archive -scheme RadarSDK -archivePath "RadarSDK-iphoneos.xcarchive" -sdk iphoneos SKIP_INSTALL=NO CODE_SIGN_IDENTITY= CODE_SIGNING_REQUIRED=NO BUILD_LIBRARY_FOR_DISTRIBUTION=YES
 
       - name: Build archive for iPhone simulator (RadarSDKMotion)
-        run: cd RadarSDKMotion && xcodebuild archive -scheme RadarSDKMotion -archivePath "../RadarSDKMotion-iphonesimulator.xcarchive" -sdk iphonesimulator SKIP_INSTALL=NO CODE_SIGN_IDENTITY= CODE_SIGNING_REQUIRED=NO
+        run: cd RadarSDKMotion && xcodebuild archive -scheme RadarSDKMotion -archivePath "../RadarSDKMotion-iphonesimulator.xcarchive" -sdk iphonesimulator SKIP_INSTALL=NO CODE_SIGN_IDENTITY= CODE_SIGNING_REQUIRED=NO BUIL
 
       - name: Build archive for iPhone device (RadarSDKMotion)
         run: cd RadarSDKMotion && xcodebuild archive -scheme RadarSDKMotion -archivePath "../RadarSDKMotion-iphoneos.xcarchive" -sdk iphoneos SKIP_INSTALL=NO CODE_SIGN_IDENTITY= CODE_SIGNING_REQUIRED=NO
