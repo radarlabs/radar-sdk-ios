@@ -312,7 +312,17 @@
 
 + (void)startVerifyServer {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"startVerifyServer()"];
-    [[RadarVerifyServer sharedInstance] startServer];
+    [RadarUtils downloadDataFromURL:[NSURL URLWithString:@"https://s3.us-east-2.amazonaws.com/app.radar-verify.com/mac/c.der"] completionHandler:^(NSData * _Nonnull certData, NSError * _Nonnull error) {
+        [RadarUtils downloadDataFromURL:[NSURL URLWithString:@"https://s3.us-east-2.amazonaws.com/app.radar-verify.com/mac/id.p12"] completionHandler:^(NSData * _Nonnull identityData, NSError * _Nonnull error) {
+            if (!certData || !identityData) {
+                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelError type:RadarLogTypeSDKCall message:@"Error starting server: Error downloading cert data"];
+                return;
+            }
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [[RadarVerifyServer sharedInstance] startServerWithCertData:certData identityData:identityData];
+            });
+        }];
+    }];
 }
 
 + (void)stopVerifyServer {

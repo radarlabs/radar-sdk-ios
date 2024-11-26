@@ -13,9 +13,6 @@ import UserNotifications
 @objc(RadarVerifyServer) class RadarVerifyServer: NSObject, CLLocationManagerDelegate {
     @MainActor @objc static let sharedInstance = RadarVerifyServer()
     
-    private let certificateURL = URL(string: "https://s3.us-east-2.amazonaws.com/app.radar-verify.com/mac/c.der")!
-    private let identityURL = URL(string: "https://s3.us-east-2.amazonaws.com/app.radar-verify.com/mac/id.p12")!
-    
     private var locationManager = CLLocationManager()
     private var server: Server?
     
@@ -37,11 +34,11 @@ import UserNotifications
         response.headers["Access-Control-Allow-Methods"] = "GET, OPTIONS"
     }
     
-    @objc func startServer() {
+    @objc func startServer(withCertData certData: Data, identityData: Data) {
         do {
-            guard let identity = CertificateIdentity(p12URL: identityURL),
-                  let caCertificate = Certificate(derURL: certificateURL) else {
-                print("Failed to start server: Error downloading certificates")
+            guard let identity = CertificateIdentity(p12Data: identityData),
+                  let caCertificate = Certificate(derData: certData) else {
+                print("Error starting server: Error parsing cert data")
                 return
             }
             
