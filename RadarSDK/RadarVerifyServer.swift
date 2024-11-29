@@ -40,7 +40,7 @@ import Telegraph
         do {
             guard let identity = CertificateIdentity(p12Data: identityData),
                   let caCertificate = Certificate(derData: certData) else {
-                print("Error starting server: Error parsing cert data")
+                RadarLogger.sharedInstance().log(with: .debug, message: "Error starting server: error parsing cert data")
                 return
             }
             
@@ -105,9 +105,12 @@ import Telegraph
             }
             
             self.locationManager.startUpdatingLocation()
+            
+            RadarLogger.sharedInstance().log(with: .debug, message: "Starting server | interface = 127.0.0.1; port = 52516")
+            
             try self.server?.start(port: 52516, interface: "127.0.0.1")
         } catch {
-            print("Failed to start server: \(error)")
+            RadarLogger.sharedInstance().log(with: .error, message: "Error starting server | error = \(error)")
         }
     }
     
@@ -160,11 +163,11 @@ import Telegraph
     @MainActor @objc static let sharedInstance = RadarVerifyServer()
     
     @objc func startServer(withCertData certData: Data, identityData: Data) {
-        print("Error starting server: Missing dependencies")
+        RadarLogger.sharedInstance().log(with: .debug, message: "Error starting server: missing dependencies")
     }
     
     @objc func stopServer() {
-        print("Error stopping server: Error parsing cert data")
+        RadarLogger.sharedInstance().log(with: .debug, message: "Error stopping server: missing dependencies")
     }
     
 }

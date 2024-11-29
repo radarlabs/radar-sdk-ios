@@ -26,7 +26,7 @@
 		0107AA0C26220045008AB52F /* RadarAPIHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = DD633EC1237C5B800026C91A /* RadarAPIHelper.h */; };
 		0107AA0F26220047008AB52F /* RadarBeaconManager.h in Headers */ = {isa = PBXBuildFile; fileRef = DD6F4F662573174400AFA38B /* RadarBeaconManager.h */; };
 		0107AA1226220049008AB52F /* RadarCollectionAdditions.h in Headers */ = {isa = PBXBuildFile; fileRef = 58F950CE2407038300364B15 /* RadarCollectionAdditions.h */; };
-		0107AA1626220050008AB52F /* RadarLogger.h in Headers */ = {isa = PBXBuildFile; fileRef = DD236D66230A0D6700EB88F9 /* RadarLogger.h */; };
+		0107AA1626220050008AB52F /* RadarLogger.h in Headers */ = {isa = PBXBuildFile; fileRef = DD236D66230A0D6700EB88F9 /* RadarLogger.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		0107AA1926220052008AB52F /* RadarLocationManager.h in Headers */ = {isa = PBXBuildFile; fileRef = DD236CF723088F8400EB88F9 /* RadarLocationManager.h */; };
 		0107AA1C26220055008AB52F /* RadarPermissionsHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = DD633EC5237C5B9C0026C91A /* RadarPermissionsHelper.h */; };
 		0107AA1F26220059008AB52F /* RadarSettings.h in Headers */ = {isa = PBXBuildFile; fileRef = DD236CFB230895D400EB88F9 /* RadarSettings.h */; };
@@ -408,6 +408,7 @@
 				96A5A0E627AD9F7F007B960B /* RadarGeofence.h */,
 				E6B93B712C90E2B8003CB858 /* RadarInitializeOptions.h */,
 				96A5A0E227AD9F7F007B960B /* RadarGeofenceGeometry.h */,
+				DD236D66230A0D6700EB88F9 /* RadarLogger.h */,
 				96A5A0F327AD9F7F007B960B /* RadarPlace.h */,
 				96A5A0F027AD9F7F007B960B /* RadarPolygonGeometry.h */,
 				96A5A0DB27AD9F7F007B960B /* RadarRegion.h */,
@@ -509,7 +510,6 @@
 				96A5A11527ADA02E007B960B /* RadarLog.h */,
 				96A5A11427ADA02E007B960B /* RadarLog.m */,
 				96A5A11627ADA02E007B960B /* RadarLogBuffer.h */,
-				DD236D66230A0D6700EB88F9 /* RadarLogger.h */,
 				DD236D67230A0D6700EB88F9 /* RadarLogger.m */,
 				9683FD6127B36C26009EBB6B /* RadarMeta.h */,
 				9683FD6227B36C26009EBB6B /* RadarMeta.m */,
