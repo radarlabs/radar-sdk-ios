@@ -127,18 +127,32 @@ import Telegraph
         UNUserNotificationCenter.current().add(request, withCompletionHandler: nil)
     }
     
-    private func downloadData(from url: URL) async throws -> Data {
+    private func downloadData(from url: URL, completion: @escaping (Result<Data, Error>) -> Void) {
         var request = URLRequest(url: url)
         request.cachePolicy = .reloadIgnoringLocalCacheData
-        
-        let (data, response) = try await URLSession.shared.data(for: request)
-        
-        guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
-            throw URLError(.badServerResponse)
+
+        let task = URLSession.shared.dataTask(with: request) { data, response, error in
+            if let error = error {
+                completion(.failure(error))
+                return
+            }
+
+            guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
+                completion(.failure(URLError(.badServerResponse)))
+                return
+            }
+
+            guard let data = data else {
+                completion(.failure(URLError(.unknown)))
+                return
+            }
+
+            completion(.success(data))
         }
-        
-        return data
+
+        task.resume()
     }
+
     
 }
 #else
