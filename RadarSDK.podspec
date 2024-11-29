@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name                  = 'RadarSDK'
-  s.version               = '3.19.2-beta.5'
+  s.version               = '3.19.2-beta.6'
   s.summary               = 'iOS SDK for Radar, the leading geofencing and location tracking platform'
   s.homepage              = 'https://radar.com'
   s.author                = { 'Radar Labs, Inc.' => 'support@radar.com' }
@@ -14,4 +14,5 @@ Pod::Spec.new do |s|
   s.license               = { :type => 'Apache-2.0' }
   s.resource_bundles      = {'RadarSDK' => ['RadarSDK/PrivacyInfo.xcprivacy']}
   s.swift_version         = '5.0'
+  s.dependency "Telegraph", "~> 0.30.0"
 end
