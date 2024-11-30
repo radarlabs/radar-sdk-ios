@@ -45,7 +45,7 @@ static NSDateFormatter *_isoDateFormatter;
 }
 
 + (NSString *)sdkVersion {
-    return @"3.19.1";
+    return @"3.19.2-beta.9";
 }
 
 + (NSString *)deviceId {
@@ -174,6 +174,15 @@ static NSDateFormatter *_isoDateFormatter;
     NSString *registeredAt = components[3];
     
     return @{@"geofenceId": geofenceId, @"registeredAt": registeredAt};
+}
+
++ (void)downloadDataFromURL:(NSURL *)url completionHandler:(void (^)(NSData *data, NSError *error))completionHandler {
+    NSURLSessionDataTask *dataTask = [[NSURLSession sharedSession] dataTaskWithURL:url completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+        if (completionHandler) {
+            completionHandler(data, error);
+        }
+    }];
+    [dataTask resume];
 }
 
 #pragma mark - threading

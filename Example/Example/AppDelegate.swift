@@ -131,6 +131,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
             }
         }
         
+        demoButton(text: "startVerifyServer") {
+            Radar.startVerifyServer()
+        }
+        
+        demoButton(text: "stopVerifyServer") {
+            Radar.stopVerifyServer()
+        }
+        
         demoButton(text: "searchPlaces") {
             // In the Radar dashboard settings
             // (https://radar.com/dashboard/settings), add this to the chain

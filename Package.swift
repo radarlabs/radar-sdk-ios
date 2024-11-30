@@ -4,7 +4,7 @@ import PackageDescription
 let package = Package(
     name: "RadarSDK",
     platforms: [
-        .iOS(.v10)
+        .iOS(.v12)
     ],
     products: [
         .library(
@@ -35,7 +35,7 @@ let package = Package(
             publicHeadersPath: "Include",
             cSettings: [
                 .headerSearchPath(".")
-            ] 
+            ]
         )
     ]
 )
