@@ -6,7 +6,7 @@ Pod::Spec.new do |s|
   s.author                = { 'Radar Labs, Inc.' => 'support@radar.com' }
   s.platform              = :ios
   s.source                = { :git => 'https://github.com/radarlabs/radar-sdk-ios.git', :tag => s.version.to_s }
-  s.source_files          = ['RadarSDKMotion/RadarSDKMotion/*.{h,m}', 'RadarSDKMotion/RadarSDKMotion/Include/*.h']
+  s.source_files          = ["RadarSDKMotion/RadarSDKMotion/*.{h,m}", "RadarSDKMotion/RadarSDKMotion/Include/*.h"]
   s.module_name           = 'RadarSDKMotion'
   s.ios.deployment_target = '12.0'
   s.frameworks            = 'CoreMotion'
