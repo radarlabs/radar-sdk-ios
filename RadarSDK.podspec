@@ -20,14 +20,6 @@ Pod::Spec.new do |s|
     ss.dependency 'CocoaAsyncSocket', '~> 7.6'
     ss.dependency 'HTTPParserC', '~> 2.9'
   
-    ss.pod_target_xcconfig = {
-      'DEFINES_MODULE' => 'YES'
-    }
-  
-    ss.swift_version = '5.0'
-  
-    ss.subspec_dependency_modular_headers('Telegraph', true)
-    ss.subspec_dependency_modular_headers('CocoaAsyncSocket', true)
-    ss.subspec_dependency_modular_headers('HTTPParserC', true)
+    ss.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES' }
   end
 end
