@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name                  = 'RadarSDK'
-  s.version               = '3.19.2-beta.8'
+  s.version               = '3.19.2-beta.9'
   s.summary               = 'iOS SDK for Radar, the leading geofencing and location tracking platform'
   s.homepage              = 'https://radar.com'
   s.author                = { 'Radar Labs, Inc.' => 'support@radar.com' }
@@ -16,6 +16,8 @@ Pod::Spec.new do |s|
   s.swift_version         = '5.0'
 
   s.subspec 'Verify' do |ss|
-    ss.dependency 'Telegraph', '~> 0.30.0'
+    ss.dependency 'Telegraph', '~> 0.30.0', :modular_headers => true
+    ss.dependency 'CocoaAsyncSocket', '~> 7.6', :modular_headers => true
+    ss.dependency 'HTTPParserC', '~> 2.9', :modular_headers => true
   end
 end
