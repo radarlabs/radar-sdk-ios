@@ -89,7 +89,7 @@
 
 - (void)didFailVerifiedWithStatus:(RadarStatus)status {
     if (self.verifiedDelegate) {
-        [self.verifiedDelegate didFailWithStatus:status];
+        [self.verifiedDelegate didFailVerifiedWithStatus:status];
     }
 
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelError type:RadarLogTypeSDKError message:[NSString stringWithFormat:@"📍 Radar verified error received | status = %@", [Radar stringForStatus:status]]];
