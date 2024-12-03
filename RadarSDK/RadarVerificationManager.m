@@ -17,6 +17,7 @@
 #import "Radar+Internal.h"
 #import "RadarAPIClient.h"
 #import "RadarBeaconManager.h"
+#import "RadarDelegateHolder.h"
 #import "RadarLocationManager.h"
 #import "RadarLogger.h"
 #import "RadarState.h"
@@ -79,11 +80,16 @@
      verified:YES
      completionHandler:^(RadarStatus status, RadarConfig *_Nullable config) {
         if (status != RadarStatusSuccess || !config) {
-            if (completionHandler) {
-                [RadarUtils runOnMainThread:^{
+            [RadarUtils runOnMainThread:^{
+                if (status != RadarStatusSuccess) {
+                    [[RadarDelegateHolder sharedInstance] didFailWithStatus:status];
+                }
+                
+                if (completionHandler) {
                     completionHandler(status, nil);
-                }];
-            }
+                }
+            }];
+            
             return;
         }
         
@@ -91,11 +97,13 @@
          getLocationWithDesiredAccuracy:RadarTrackingOptionsDesiredAccuracyMedium
          completionHandler:^(RadarStatus status, CLLocation *_Nullable location, BOOL stopped) {
             if (status != RadarStatusSuccess) {
-                if (completionHandler) {
-                    [RadarUtils runOnMainThread:^{
+                [RadarUtils runOnMainThread:^{
+                    [[RadarDelegateHolder sharedInstance] didFailWithStatus:status];
+                    
+                    if (completionHandler) {
                         completionHandler(status, nil);
-                    }];
-                }
+                    }
+                }];
                 
                 return;
             }
@@ -123,16 +131,22 @@
                         if (status == RadarStatusSuccess && config != nil) {
                             [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
                         }
+                        
                         if (token) {
                             self.lastToken = token;
                             self.lastTokenSystemUptime = [NSProcessInfo processInfo].systemUptime;
                             self.lastTokenBeacons = lastTokenBeacons;
                         }
-                        if (completionHandler) {
-                            [RadarUtils runOnMainThread:^{
+                        
+                        [RadarUtils runOnMainThread:^{
+                            if (status != RadarStatusSuccess) {
+                                [[RadarDelegateHolder sharedInstance] didFailWithStatus:status];
+                            }
+                            
+                            if (completionHandler) {
                                 completionHandler(status, token);
-                            }];
-                        }
+                            }
+                        }];
                     }];
                 };
                 

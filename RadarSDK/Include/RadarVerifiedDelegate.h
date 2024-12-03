@@ -26,6 +26,13 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)didUpdateToken:(RadarVerifiedLocationToken *_Nonnull)token NS_SWIFT_NAME(didUpdateToken(_:));
 
+/**
+ Tells the delegate that a request failed.
+
+ @param status The status.
+ */
+- (void)didFailWithStatus:(RadarStatus)status NS_SWIFT_NAME(didFail(status:));
+
 @end
 
 NS_ASSUME_NONNULL_END

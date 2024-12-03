@@ -87,5 +87,13 @@
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"📍 Radar token updated | passed = %d; expiresAt = %@; expiresIn = %f; token = %@", token.passed, token.expiresAt, token.expiresIn, token.token]];
 }
 
+- (void)didFailVerifiedWithStatus:(RadarStatus)status {
+    if (self.verifiedDelegate) {
+        [self.verifiedDelegate didFailWithStatus:status];
+    }
+
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelError type:RadarLogTypeSDKError message:[NSString stringWithFormat:@"📍 Radar verified error received | status = %@", [Radar stringForStatus:status]]];
+}
+
 
 @end
