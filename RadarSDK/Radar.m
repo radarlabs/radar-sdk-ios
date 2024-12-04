@@ -89,7 +89,7 @@
 
     [[RadarLocationManager sharedInstance] updateTrackingFromInitialize];
 
-   [RadarNotificationHelper checkNotificationPermissionsWithCompletionHandler:^(BOOL granted) {
+    [RadarNotificationHelper checkNotificationPermissionsWithCompletionHandler:^(BOOL granted) {
         [[RadarAPIClient sharedInstance] getConfigForUsage:@"initialize"
                                                   verified:NO
                                          completionHandler:^(RadarStatus status, RadarConfig *config) {

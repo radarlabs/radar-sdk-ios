@@ -298,7 +298,7 @@ static NSString *const kInitializeOptions = @"radar-initializeOptions";
 
 + (BOOL)userDebug {
     NSNumber *userDebug = [[NSUserDefaults standardUserDefaults] objectForKey:kUserDebug];
-    return userDebug ? [userDebug boolValue] : YES;
+    return userDebug ? [userDebug boolValue] : NO;
 }
 
 + (void)setUserDebug:(BOOL)userDebug {
