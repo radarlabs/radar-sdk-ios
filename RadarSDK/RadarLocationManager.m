@@ -558,6 +558,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                 NSString *notificationTitle = [geofence.metadata objectForKey:@"radar:notificationTitle"];
                 NSString *notificationSubtitle = [geofence.metadata objectForKey:@"radar:notificationSubtitle"];
                 NSString *notificationURL = [geofence.metadata objectForKey:@"radar:notificationURL"];
+                NSString *campaignId = [geofence.metadata objectForKey:@"radar:campaignId"];
                 if (notificationText) {
                     UNMutableNotificationContent *content = [UNMutableNotificationContent new];
                     if (notificationTitle) {
@@ -587,6 +588,10 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                     } else {
                         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Notification does not repeat"];
                     }
+
+                    if (campaignId) {
+                        identifier = [RadarNotificationHelper getNotificationIdentifier:geofenceId campaignId:campaignId];
+                    }                   
 
                     UNLocationNotificationTrigger *trigger = [UNLocationNotificationTrigger triggerWithRegion:region repeats:repeats];
 

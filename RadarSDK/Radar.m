@@ -492,6 +492,7 @@
     });
 }
 
+// we should remove this
 + (void)logOpenedAppConversionWithNotification:(UNNotificationRequest *)request 
                               conversionSource:(NSString *_Nullable)conversionSource {
     [self logConversionWithNotification:request eventName:@"opened_app" conversionSource:conversionSource deliveredAfter:nil];
@@ -538,8 +539,7 @@
                        deliveredAfter:(NSDate *)deliveredAfter {
     
     NSMutableDictionary *metadata = [[NSMutableDictionary alloc] initWithDictionary:request.content.userInfo];
-    NSDictionary<NSString *, NSString *> *result = [RadarUtils
-                                                    extractGeofenceIdAndTimestampFromIdentifier:request.identifier];
+    NSDictionary<NSString *, NSString *> *result = [RadarNotificationHelper extractMetadataFromNotificationIdentifier: request.identifier];
     if (result) {
         NSString *geofenceId = result[@"geofenceId"];
         [metadata setValue:geofenceId forKey:@"geofenceId"];
@@ -547,6 +547,9 @@
         [metadata setValue:timestamp forKey:@"registeredAt"];
         if (deliveredAfter) {
             [metadata setObject:deliveredAfter forKey:@"deliveredAfter"];
+        }
+        if (result[@"campaignId"]) {
+            [metadata setValue:result[@"campaignId"] forKey:@"campaignId"];
         }
     }
 
