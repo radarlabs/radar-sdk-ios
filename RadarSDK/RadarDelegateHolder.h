@@ -20,7 +20,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (instancetype)sharedInstance;
 - (void)didFailWithStatus:(RadarStatus)status;
-- (void)didFailVerifiedWithStatus:(RadarStatus)status;
 
 @end
 

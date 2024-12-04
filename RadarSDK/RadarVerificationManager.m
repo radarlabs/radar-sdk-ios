@@ -82,7 +82,7 @@
         if (status != RadarStatusSuccess || !config) {
             [RadarUtils runOnMainThread:^{
                 if (status != RadarStatusSuccess) {
-                    [[RadarDelegateHolder sharedInstance] didFailVerifiedWithStatus:status];
+                    [[RadarDelegateHolder sharedInstance] didFailWithStatus:status];
                 }
                 
                 if (completionHandler) {
@@ -98,7 +98,7 @@
          completionHandler:^(RadarStatus status, CLLocation *_Nullable location, BOOL stopped) {
             if (status != RadarStatusSuccess) {
                 [RadarUtils runOnMainThread:^{
-                    [[RadarDelegateHolder sharedInstance] didFailVerifiedWithStatus:status];
+                    [[RadarDelegateHolder sharedInstance] didFailWithStatus:status];
                     
                     if (completionHandler) {
                         completionHandler(status, nil);
@@ -140,7 +140,7 @@
                         
                         [RadarUtils runOnMainThread:^{
                             if (status != RadarStatusSuccess) {
-                                [[RadarDelegateHolder sharedInstance] didFailVerifiedWithStatus:status];
+                                [[RadarDelegateHolder sharedInstance] didFailWithStatus:status];
                             }
                             
                             if (completionHandler) {
