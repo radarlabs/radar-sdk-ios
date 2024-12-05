@@ -73,7 +73,7 @@
                     NSMutableDictionary *requestParams = [params mutableCopy];
                     long nowMs = (long)([NSDate date].timeIntervalSince1970 * 1000);
                     NSNumber *locationMs = params[@"locationMs"];
-                    
+
                     if (locationMs && prevUpdatedAtMsDiff) {
                         long updatedAtMsDiff = nowMs - [locationMs longValue];
                         requestParams[@"updatedAtMsDiff"] = @(updatedAtMsDiff);
@@ -84,7 +84,7 @@
                         for (NSDictionary *replay in replays) {
                             NSMutableDictionary *updatedReplay = [replay mutableCopy];
                             NSNumber *replayLocationMs = replay[@"locationMs"];
-                            if (replayLocationMs) {
+                            if (replayLocationMs != nil) {
                                 long replayUpdatedAtMsDiff = nowMs - [replayLocationMs longValue];
                                 updatedReplay[@"updatedAtMsDiff"] = @(replayUpdatedAtMsDiff);
                             }
