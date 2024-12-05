@@ -218,14 +218,14 @@ static NSString *const kSyncGeofenceIdentifierPrefix = @"radar_geofence_";
     } 
 }
 
-+ (NSString *)getNotificationIdentifier:(NSString *)geofenceId campaignId:(NSString *)campaignId {
++ (NSString *)getNotificationIdentifier:(NSString *)geofenceId campaignName:(NSString *)campaignName {
     NSString *identifier = [NSString stringWithFormat:@"%@%@", kSyncGeofenceIdentifierPrefix, geofenceId];
     NSDate *now = [NSDate new];
     NSTimeInterval lastSyncInterval = [now timeIntervalSince1970];
     identifier = [identifier stringByAppendingString:[NSString stringWithFormat:@"_%f", lastSyncInterval]];
-    if (campaignId) {
+    if (campaignName) {
         identifier = [identifier stringByAppendingString:@"_"];
-        identifier = [identifier stringByAppendingString:campaignId];
+        identifier = [identifier stringByAppendingString:campaignName];
     }
     return identifier;
 }
@@ -238,8 +238,8 @@ static NSString *const kSyncGeofenceIdentifierPrefix = @"radar_geofence_";
             NSString *geofenceId = components[2];
             NSString *registeredAt = components[3];
             if (components.count == 5) {
-                NSString *campaignId = components[4];
-                result = @{@"geofenceId": geofenceId, @"registeredAt": registeredAt, @"campaignId":campaignId};
+                NSString *campaignName = components[4];
+                result = @{@"geofenceId": geofenceId, @"registeredAt": registeredAt, @"campaignName":campaignName};
             } else {
                 
                 result = @{@"geofenceId": geofenceId, @"registeredAt": registeredAt};
@@ -249,15 +249,15 @@ static NSString *const kSyncGeofenceIdentifierPrefix = @"radar_geofence_";
     return result;
 }
 
-+ (NSString *)getCampaignIdFromNotificationIdentifier:(NSString *)notificationIdentifier {
-    NSString *campaignId = nil;
++ (NSString *)getcampaignNameFromNotificationIdentifier:(NSString *)notificationIdentifier {
+    NSString *campaignName = nil;
     if ([notificationIdentifier hasPrefix:kSyncGeofenceIdentifierPrefix]) {
         NSArray *components = [notificationIdentifier componentsSeparatedByString:@"_"];
         if (components.count == 4) {
-            campaignId = components[3];
+            campaignName = components[3];
         }
     }
-    return campaignId;
+    return campaignName;
 }
 
 @end
