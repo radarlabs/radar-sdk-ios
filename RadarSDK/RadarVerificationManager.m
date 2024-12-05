@@ -298,7 +298,7 @@
     
     if (self.lastToken) {
         double lastDistanceToStateBorder = -1;
-        if (self.lastToken.user && self.lastToken.user.state && self.lastToken.user.state) {
+        if (self.lastToken.user && self.lastToken.user.state) {
             lastDistanceToStateBorder = self.lastToken.user.state.distanceToBorder;
         }
         
