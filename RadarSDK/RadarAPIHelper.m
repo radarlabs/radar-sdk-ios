@@ -67,19 +67,18 @@
             }
 
             if (params) {
-                if (!params[@"updatedAtMsDiff"] && !params[@"replays"]) {
-                    [req setHTTPBody:[NSJSONSerialization dataWithJSONObject:params options:0 error:NULL]];
-                } else {
+                NSNumber *prevUpdatedAtMsDiff = params[@"updatedAtMsDiff"];
+                NSArray *replays = params[@"replays"];
+                if (prevUpdatedAtMsDiff || replays) {
                     NSMutableDictionary *requestParams = [params mutableCopy];
-                    NSNumber *locationMs = params[@"locationMs"];
-                    NSNumber *prevUpdatedAtMsDiff = params[@"updatedAtMsDiff"];
                     long nowMs = (long)([NSDate date].timeIntervalSince1970 * 1000);
+                    NSNumber *locationMs = params[@"locationMs"];
+                    
                     if (locationMs && prevUpdatedAtMsDiff) {
                         long updatedAtMsDiff = nowMs - [locationMs longValue];
                         requestParams[@"updatedAtMsDiff"] = @(updatedAtMsDiff);
                     }
 
-                    NSArray *replays = params[@"replays"];
                     if (replays) {
                         NSMutableArray *updatedReplays = [NSMutableArray arrayWithCapacity:replays.count];
                         for (NSDictionary *replay in replays) {
@@ -95,6 +94,8 @@
                     }
 
                     [req setHTTPBody:[NSJSONSerialization dataWithJSONObject:requestParams options:0 error:NULL]];
+                } else {
+                    [req setHTTPBody:[NSJSONSerialization dataWithJSONObject:params options:0 error:NULL]];
                 }
             }
 
