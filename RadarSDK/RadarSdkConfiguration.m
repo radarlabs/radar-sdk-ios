@@ -69,10 +69,16 @@
         _useLocationMetadata = [(NSNumber *)useLocationMetadataObj boolValue];
     }
 
-    NSObject *useOpenedAppConversion = dict[@"useOpenedAppConversion"];
+    NSObject *useOpenedAppConversionObj = dict[@"useOpenedAppConversion"];
     _useOpenedAppConversion = NO;
-    if (useOpenedAppConversion && [useOpenedAppConversion isKindOfClass:[NSNumber class]]) {
-        _useOpenedAppConversion = [(NSNumber *)useOpenedAppConversion boolValue];
+    if (useOpenedAppConversionObj && [useOpenedAppConversionObj isKindOfClass:[NSNumber class]]) {
+        _useOpenedAppConversion = [(NSNumber *)useOpenedAppConversionObj boolValue];
+    }
+
+    NSObject *useForegroundLocationUpdatedAtMsDiffObj = dict[@"foregroundLocationUseUpdatedAtMsDiff"];
+    _useForegroundLocationUpdatedAtMsDiff = NO;
+    if (useForegroundLocationUpdatedAtMsDiffObj && [useForegroundLocationUpdatedAtMsDiffObj isKindOfClass:[NSNumber class]]) {
+        _useForegroundLocationUpdatedAtMsDiff = [(NSNumber *)useForegroundLocationUpdatedAtMsDiffObj boolValue];
     }
 
     return self;
@@ -90,6 +96,7 @@
     dict[@"useRadarModifiedBeacon"] = @(_useRadarModifiedBeacon);
     dict[@"useLocationMetadata"] = @(_useLocationMetadata);
     dict[@"useOpenedAppConversion"] = @(_useOpenedAppConversion);
+    dict[@"useForegroundLocationUpdatedAtMsDiff"] = @(_useForegroundLocationUpdatedAtMsDiff);
     
     return dict;
 }

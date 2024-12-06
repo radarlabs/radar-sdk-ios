@@ -74,7 +74,7 @@
                     long nowMs = (long)([NSDate date].timeIntervalSince1970 * 1000);
                     NSNumber *locationMs = params[@"locationMs"];
 
-                    if (locationMs && prevUpdatedAtMsDiff) {
+                    if (locationMs != nil && prevUpdatedAtMsDiff != nil) {
                         long updatedAtMsDiff = nowMs - [locationMs longValue];
                         requestParams[@"updatedAtMsDiff"] = @(updatedAtMsDiff);
                     }
