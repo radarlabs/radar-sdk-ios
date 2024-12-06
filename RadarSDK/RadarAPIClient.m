@@ -212,6 +212,7 @@
         return completionHandler(RadarStatusErrorPublishableKey, nil, nil, nil, nil, nil, nil);
     }
     NSMutableDictionary *params = [NSMutableDictionary new];
+    RadarSdkConfiguration *sdkConfiguration = [RadarSettings sdkConfiguration];
     BOOL anonymous = [RadarSettings anonymousTrackingEnabled];
     params[@"anonymous"] = @(anonymous);
     if (anonymous) {
@@ -251,10 +252,11 @@
         params[@"floorLevel"] = @(location.floor.level);
     }
     long nowMs = (long)([NSDate date].timeIntervalSince1970 * 1000);
-    if (!foreground) {
-        long timeInMs = (long)(location.timestamp.timeIntervalSince1970 * 1000);
-        params[@"updatedAtMsDiff"] = @(nowMs - timeInMs);
+    long locationMs = (long)(location.timestamp.timeIntervalSince1970 * 1000);
+    if (sdkConfiguration.useForegroundLocationUpdatedAtMsDiff || !foreground) {
+        params[@"updatedAtMsDiff"] = @(nowMs - locationMs);
     }
+    params[@"locationMs"] = @(locationMs);
     params[@"foreground"] = @(foreground);
     params[@"stopped"] = @(stopped);
     params[@"replayed"] = @(replayed);
@@ -298,7 +300,6 @@
         [tripParams setValue:[Radar stringForMode:tripOptions.mode] forKey:@"mode"];
         params[@"tripOptions"] = tripParams;
     }
-
     RadarTrackingOptions *options = [Radar getTrackingOptions];
     if (options.syncGeofences) {
         params[@"nearbyGeofences"] = @(YES);
@@ -340,7 +341,6 @@
         }
     }
     params[@"appId"] = [[NSBundle mainBundle] bundleIdentifier];
-    RadarSdkConfiguration *sdkConfiguration = [RadarSettings sdkConfiguration];
     if (sdkConfiguration.useLocationMetadata) { 
         NSMutableDictionary *locationMetadata = [NSMutableDictionary new];
         locationMetadata[@"motionActivityData"] = [RadarState lastMotionActivityData];
@@ -415,9 +415,6 @@
                                     // create a copy of params that we can use to write to the buffer in case of request failure
                                     NSMutableDictionary *bufferParams = [params mutableCopy];
                                     bufferParams[@"replayed"] = @(YES);
-                                    bufferParams[@"updatedAtMs"] = @(nowMs);
-                                    // remove the updatedAtMsDiff key because for replays we want to rely on the updatedAtMs key for the time instead
-                                    [bufferParams removeObjectForKey:@"updatedAtMsDiff"];
 
                                     [[RadarReplayBuffer sharedInstance] writeNewReplayToBuffer:bufferParams];
                                 } else if (options.replay == RadarTrackingOptionsReplayStops && stopped &&

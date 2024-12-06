@@ -67,8 +67,38 @@
             }
 
             if (params) {
-                [req setHTTPBody:[NSJSONSerialization dataWithJSONObject:params options:0 error:NULL]];
+                NSNumber *prevUpdatedAtMsDiff = params[@"updatedAtMsDiff"];
+                NSArray *replays = params[@"replays"];
+                if (prevUpdatedAtMsDiff || replays) {
+                    NSMutableDictionary *requestParams = [params mutableCopy];
+                    long nowMs = (long)([NSDate date].timeIntervalSince1970 * 1000);
+                    NSNumber *locationMs = params[@"locationMs"];
+
+                    if (locationMs != nil && prevUpdatedAtMsDiff != nil) {
+                        long updatedAtMsDiff = nowMs - [locationMs longValue];
+                        requestParams[@"updatedAtMsDiff"] = @(updatedAtMsDiff);
+                    }
+
+                    if (replays) {
+                        NSMutableArray *updatedReplays = [NSMutableArray arrayWithCapacity:replays.count];
+                        for (NSDictionary *replay in replays) {
+                            NSMutableDictionary *updatedReplay = [replay mutableCopy];
+                            NSNumber *replayLocationMs = replay[@"locationMs"];
+                            if (replayLocationMs != nil) {
+                                long replayUpdatedAtMsDiff = nowMs - [replayLocationMs longValue];
+                                updatedReplay[@"updatedAtMsDiff"] = @(replayUpdatedAtMsDiff);
+                            }
+                            [updatedReplays addObject:updatedReplay];
+                        }
+                        requestParams[@"replays"] = updatedReplays;
+                    }
+
+                    [req setHTTPBody:[NSJSONSerialization dataWithJSONObject:requestParams options:0 error:NULL]];
+                } else {
+                    [req setHTTPBody:[NSJSONSerialization dataWithJSONObject:params options:0 error:NULL]];
+                }
             }
+
 
             NSURLSessionConfiguration *configuration;
             if (extendedTimeout) {

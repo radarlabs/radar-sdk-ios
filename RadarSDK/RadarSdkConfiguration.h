@@ -34,6 +34,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) BOOL useLocationMetadata;
 
 @property (nonatomic, assign) BOOL useOpenedAppConversion;
+
+@property (nonatomic, assign) BOOL useForegroundLocationUpdatedAtMsDiff;
+
 /**
  Initializes a new RadarSdkConfiguration object with given value.
  */
