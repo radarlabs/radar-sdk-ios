@@ -94,7 +94,7 @@
         }
         
         [[RadarLocationManager sharedInstance]
-         getLocationWithDesiredAccuracy:RadarTrackingOptionsDesiredAccuracyMedium
+         getLocationWithDesiredAccuracy:RadarTrackingOptionsDesiredAccuracyHigh
          completionHandler:^(RadarStatus status, CLLocation *_Nullable location, BOOL stopped) {
             if (status != RadarStatusSuccess) {
                 [RadarUtils runOnMainThread:^{
