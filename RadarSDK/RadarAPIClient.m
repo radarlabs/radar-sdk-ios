@@ -413,7 +413,7 @@
                             if (status != RadarStatusSuccess || !res) {
                                 if (options.replay == RadarTrackingOptionsReplayAll) {
                                     // create a copy of params that we can use to write to the buffer in case of request failure
-                                    NSMutableDictionary *bufferParams = [par!ams mutableCopy];
+                                    NSMutableDictionary *bufferParams = [params mutableCopy];
                                     bufferParams[@"replayed"] = @(YES);
 
                                     [[RadarReplayBuffer sharedInstance] writeNewReplayToBuffer:bufferParams];
