@@ -28,6 +28,10 @@ typedef void (^NotificationPermissionCheckCompletion)(BOOL granted);
 
 + (void)openURLFromNotification:(UNNotification *)notification;
 
++ (NSString *)getNotificationIdentifier:(NSString *)geofenceId campaignName:(NSString *)campaignName;
+
++ (NSDictionary<NSString *, NSString *> *)extractMetadataFromNotificationIdentifier:(NSString *)identifier;
+
 @end
 
 NS_ASSUME_NONNULL_END

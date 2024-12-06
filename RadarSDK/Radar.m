@@ -538,8 +538,7 @@
                        deliveredAfter:(NSDate *)deliveredAfter {
     
     NSMutableDictionary *metadata = [[NSMutableDictionary alloc] initWithDictionary:request.content.userInfo];
-    NSDictionary<NSString *, NSString *> *result = [RadarUtils
-                                                    extractGeofenceIdAndTimestampFromIdentifier:request.identifier];
+    NSDictionary<NSString *, NSString *> *result = [RadarNotificationHelper extractMetadataFromNotificationIdentifier: request.identifier];
     if (result) {
         NSString *geofenceId = result[@"geofenceId"];
         [metadata setValue:geofenceId forKey:@"geofenceId"];
@@ -547,6 +546,9 @@
         [metadata setValue:timestamp forKey:@"registeredAt"];
         if (deliveredAfter) {
             [metadata setObject:deliveredAfter forKey:@"deliveredAfter"];
+        }
+        if (result[@"campaignName"]) {
+            [metadata setValue:result[@"campaignName"] forKey:@"campaignName"];
         }
     }
 
