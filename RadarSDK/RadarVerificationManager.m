@@ -93,8 +93,13 @@
             return;
         }
         
+        RadarTrackingOptionsDesiredAccuracy desiredAccuracy = RadarTrackingOptionsDesiredAccuracyMedium;
+        if (self.lastToken && self.lastToken.user && self.lastToken.user.state && self.lastToken.user.state.distanceToBorder < 1609) {
+            desiredAccuracy = RadarTrackingOptionsDesiredAccuracyHigh;
+        }
+        
         [[RadarLocationManager sharedInstance]
-         getLocationWithDesiredAccuracy:RadarTrackingOptionsDesiredAccuracyHigh
+         getLocationWithDesiredAccuracy:desiredAccuracy
          completionHandler:^(RadarStatus status, CLLocation *_Nullable location, BOOL stopped) {
             if (status != RadarStatusSuccess) {
                 [RadarUtils runOnMainThread:^{
