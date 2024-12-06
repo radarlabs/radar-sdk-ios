@@ -492,7 +492,6 @@
     });
 }
 
-// we should remove this
 + (void)logOpenedAppConversionWithNotification:(UNNotificationRequest *)request 
                               conversionSource:(NSString *_Nullable)conversionSource {
     [self logConversionWithNotification:request eventName:@"opened_app" conversionSource:conversionSource deliveredAfter:nil];

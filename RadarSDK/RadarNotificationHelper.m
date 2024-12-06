@@ -144,7 +144,6 @@ static NSString *const kSyncGeofenceIdentifierPrefix = @"radar_geofence_";
             [[RadarLogger sharedInstance]
                             logWithLevel:RadarLogLevelDebug
                                 message:[NSString stringWithFormat:@"Getting conversion from notification tap"]];
-            
             [Radar logOpenedAppConversionWithNotification:response.notification.request conversionSource:@"radar_notification"];
         } else {
             [Radar logOpenedAppConversionWithNotification:response.notification.request conversionSource:@"notification"];
@@ -247,17 +246,6 @@ static NSString *const kSyncGeofenceIdentifierPrefix = @"radar_geofence_";
         }
     }
     return result;
-}
-
-+ (NSString *)getcampaignNameFromNotificationIdentifier:(NSString *)notificationIdentifier {
-    NSString *campaignName = nil;
-    if ([notificationIdentifier hasPrefix:kSyncGeofenceIdentifierPrefix]) {
-        NSArray *components = [notificationIdentifier componentsSeparatedByString:@"_"];
-        if (components.count == 4) {
-            campaignName = components[3];
-        }
-    }
-    return campaignName;
 }
 
 @end

@@ -31,7 +31,6 @@ NS_ASSUME_NONNULL_BEGIN
 + (CLLocation *)locationForDictionary:(NSDictionary *_Nonnull)dict;
 + (NSDictionary *)dictionaryForLocation:(CLLocation *)location;
 + (NSString *)dictionaryToJson:(NSDictionary *)dict;
-// + (NSDictionary<NSString *, NSString *> *)extractGeofenceIdAndTimestampFromIdentifier:(NSString *)identifier;
 + (void)runOnMainThread:(dispatch_block_t)block;
 
 @end

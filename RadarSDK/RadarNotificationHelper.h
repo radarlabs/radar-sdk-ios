@@ -32,8 +32,6 @@ typedef void (^NotificationPermissionCheckCompletion)(BOOL granted);
 
 + (NSDictionary<NSString *, NSString *> *)extractMetadataFromNotificationIdentifier:(NSString *)identifier;
 
-// + (NSString *)getcampaignNameFromNotificationIdentifier:(NSString *)notificationIdentifier;
-
 @end
 
 NS_ASSUME_NONNULL_END
