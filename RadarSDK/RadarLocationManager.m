@@ -396,9 +396,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
             }
             self.locationManager.desiredAccuracy = desiredAccuracy;
 
-            if (@available(iOS 11.0, *)) {
-                self.lowPowerLocationManager.showsBackgroundLocationIndicator = options.showBlueBar;
-            }
+            self.lowPowerLocationManager.showsBackgroundLocationIndicator = options.showBlueBar;
 
             BOOL startUpdates = options.showBlueBar || [CLLocationManager authorizationStatus] == kCLAuthorizationStatusAuthorizedAlways;
             BOOL stopped = [RadarState stopped];
@@ -559,6 +557,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                 NSString *notificationText = [geofence.metadata objectForKey:@"radar:notificationText"];
                 NSString *notificationTitle = [geofence.metadata objectForKey:@"radar:notificationTitle"];
                 NSString *notificationSubtitle = [geofence.metadata objectForKey:@"radar:notificationSubtitle"];
+                NSString *notificationURL = [geofence.metadata objectForKey:@"radar:notificationURL"];
                 if (notificationText) {
                     UNMutableNotificationContent *content = [UNMutableNotificationContent new];
                     if (notificationTitle) {
@@ -568,7 +567,13 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                         content.subtitle = [NSString localizedUserNotificationStringForKey:notificationSubtitle arguments:nil];
                     }
                     content.body = [NSString localizedUserNotificationStringForKey:notificationText arguments:nil];
-                    content.userInfo = geofence.metadata;
+                    
+                    NSMutableDictionary *mutableUserInfo = [geofence.metadata mutableCopy];
+                    if (notificationURL) {
+                        mutableUserInfo[@"url"] = notificationURL;
+                    }
+                    
+                    content.userInfo = [mutableUserInfo copy];
 
                     region.notifyOnEntry = YES;
                     region.notifyOnExit = NO;

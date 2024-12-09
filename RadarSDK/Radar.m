@@ -43,9 +43,10 @@
     return sharedInstance;
 }
 
-+ (void) nativeSetup {
++ (void)nativeSetup:(RadarInitializeOptions *)options {
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
+        [RadarSettings setInitializeOptions:options];
         [RadarNotificationHelper swizzleNotificationCenterDelegate];
     });
 }
@@ -67,9 +68,15 @@
     [RadarSettings setPublishableKey:publishableKey];
 
     RadarSdkConfiguration *sdkConfiguration = [RadarSettings sdkConfiguration];
-
-    if (NSClassFromString(@"XCTestCase") == nil && options.autoLogNotificationConversions) {
-        [Radar nativeSetup];
+    // For most users not using these features, options be null and skipped,
+    //  For X-platform users initializing Radar in the crossplatform layer, the options will also be null as nativeSetup would had been called ealier 
+    if (options) {
+        [RadarSettings setInitializeOptions:options];
+        if (NSClassFromString(@"XCTestCase") == nil) {
+            if (options.autoLogNotificationConversions || options.autoHandleNotificationDeepLinks) {
+                [Radar nativeSetup: options];
+            }
+        }
     }
 
     if (sdkConfiguration.usePersistence) {
@@ -82,7 +89,7 @@
 
     [[RadarLocationManager sharedInstance] updateTrackingFromInitialize];
 
-   [RadarNotificationHelper checkNotificationPermissionsWithCompletionHandler:^(BOOL granted) {
+    [RadarNotificationHelper checkNotificationPermissionsWithCompletionHandler:^(BOOL granted) {
         [[RadarAPIClient sharedInstance] getConfigForUsage:@"initialize"
                                                   verified:NO
                                          completionHandler:^(RadarStatus status, RadarConfig *config) {
@@ -106,7 +113,7 @@
 }
 
 + (void)initializeWithPublishableKey:(NSString *)publishableKey {
-    [self initializeWithPublishableKey:publishableKey options:[RadarInitializeOptions new]];
+    [self initializeWithPublishableKey:publishableKey options:nil];
 }
 
 #pragma mark - Properties
@@ -1359,6 +1366,10 @@
                                     }];
                                 }
                             }];
+}
+
++ (void)openURLFromNotification:(UNNotification *)notification {
+    [RadarNotificationHelper openURLFromNotification:notification];
 }
 
 @end
