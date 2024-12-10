@@ -547,8 +547,8 @@
         if (deliveredAfter) {
             [metadata setObject:deliveredAfter forKey:@"deliveredAfter"];
         }
-        if (result[@"campaignName"]) {
-            [metadata setValue:result[@"campaignName"] forKey:@"campaignName"];
+        if (result[@"campaignId"]) {
+            [metadata setValue:result[@"campaignId"] forKey:@"campaignId"];
         }
     }
 
