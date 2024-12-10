@@ -214,8 +214,7 @@ static NSString *const kSyncGeofenceIdentifierPrefix = @"radar_geofence_";
         if (completionHandler) {
             completionHandler(NO);
         }
-    }
-   
+    } 
 }
 
 @end

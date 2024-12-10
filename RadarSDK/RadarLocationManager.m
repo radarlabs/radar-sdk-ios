@@ -558,6 +558,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                 NSString *notificationTitle = [geofence.metadata objectForKey:@"radar:notificationTitle"];
                 NSString *notificationSubtitle = [geofence.metadata objectForKey:@"radar:notificationSubtitle"];
                 NSString *notificationURL = [geofence.metadata objectForKey:@"radar:notificationURL"];
+                NSString *campaignId = [geofence.metadata objectForKey:@"radar:campaignId"];
                 if (notificationText) {
                     UNMutableNotificationContent *content = [UNMutableNotificationContent new];
                     if (notificationTitle) {
@@ -569,8 +570,18 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                     content.body = [NSString localizedUserNotificationStringForKey:notificationText arguments:nil];
                     
                     NSMutableDictionary *mutableUserInfo = [geofence.metadata mutableCopy];
+
+                    mutableUserInfo[@"geofenceId"] = geofence._id;
+                    NSDate *now = [NSDate new];
+                    NSTimeInterval lastSyncInterval = [now timeIntervalSince1970];
+                    mutableUserInfo[@"registeredAt"] = [NSString stringWithFormat:@"%f", lastSyncInterval];
+
                     if (notificationURL) {
                         mutableUserInfo[@"url"] = notificationURL;
+                    }
+
+                    if (campaignId) {
+                        mutableUserInfo[@"campaignId"] = campaignId;
                     }
                     
                     content.userInfo = [mutableUserInfo copy];
