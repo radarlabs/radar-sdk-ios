@@ -217,35 +217,4 @@ static NSString *const kSyncGeofenceIdentifierPrefix = @"radar_geofence_";
     } 
 }
 
-+ (NSString *)getNotificationIdentifier:(NSString *)geofenceId campaignId:(NSString *)campaignId {
-    NSString *identifier = [NSString stringWithFormat:@"%@%@", kSyncGeofenceIdentifierPrefix, geofenceId];
-    NSDate *now = [NSDate new];
-    NSTimeInterval lastSyncInterval = [now timeIntervalSince1970];
-    identifier = [identifier stringByAppendingString:[NSString stringWithFormat:@"_%f", lastSyncInterval]];
-    if (campaignId) {
-        identifier = [identifier stringByAppendingString:@"_"];
-        identifier = [identifier stringByAppendingString:campaignId];
-    }
-    return identifier;
-}
-
-+ (NSDictionary<NSString *, NSString *> *)extractMetadataFromNotificationIdentifier:(NSString *)identifier {
-    NSDictionary<NSString *, NSString *> *result = nil;
-    if ([identifier hasPrefix:kSyncGeofenceIdentifierPrefix]) {
-        NSArray<NSString *> *components = [identifier componentsSeparatedByString:@"_"];
-        if (components.count >= 4) {
-            NSString *geofenceId = components[2];
-            NSString *registeredAt = components[3];
-            if (components.count == 5) {
-                NSString *campaignId = components[4];
-                result = @{@"geofenceId": geofenceId, @"registeredAt": registeredAt, @"campaignId":campaignId};
-            } else {
-                
-                result = @{@"geofenceId": geofenceId, @"registeredAt": registeredAt};
-            }
-        }
-    }
-    return result;
-}
-
 @end
