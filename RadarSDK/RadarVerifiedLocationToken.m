@@ -21,7 +21,7 @@
                                 passed:(BOOL)passed
                         failureReasons:(NSArray<NSString *> * _Nonnull)failureReasons
                                    _id:(NSString * _Nonnull)_id
-                               rawDict:(NSDictionary *_Nonnull)rawDict {
+                               fullDict:(NSDictionary *_Nonnull)fullDict {
     self = [super init];
     if (self) {
         _user = user;
@@ -32,7 +32,7 @@
         _passed = passed;
         _failureReasons = failureReasons;
         __id = _id;
-        _rawDict = rawDict;
+        _fullDict = fullDict;
     }
     return self;
 }
@@ -70,11 +70,10 @@
         expiresIn = [expiresInNumber floatValue];
     }
     
-    id userObj = dict[@"user"];
-    if (userObj && [userObj isKindOfClass:[NSDictionary class]]) {
-        user = [[RadarUser alloc] initWithObject:userObj];
-        
-        passed = user && user.fraud && user.fraud.passed && user.country && user.country.passed && user.state && user.state.passed;
+    id passedObj = dict[@"passed"];
+    if (passedObj && [passedObj isKindOfClass:[NSNumber class]]) {
+        NSNumber *passedNumber = (NSNumber *)passedObj;
+        passed = [passedNumber boolValue];
     }
     
     id eventsObj = dict[@"events"];
@@ -93,14 +92,14 @@
     }
     
     if (user && events && token && expiresAt) {
-        return [[RadarVerifiedLocationToken alloc] initWithUser:user events:events token:token expiresAt:expiresAt expiresIn:expiresIn passed:passed failureReasons:failureReasons _id:_id rawDict:dict];
+        return [[RadarVerifiedLocationToken alloc] initWithUser:user events:events token:token expiresAt:expiresAt expiresIn:expiresIn passed:passed failureReasons:failureReasons _id:_id fullDict:dict];
     }
     
     return nil;
 }
 
 - (NSDictionary *)dictionaryValue {
-    return self.rawDict;
+    return self.fullDict;
 }
 
 @end
