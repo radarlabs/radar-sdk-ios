@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 54;
 	objects = {
 
 /* Begin PBXAggregateTarget section */
@@ -75,6 +75,9 @@
 		019514392BD081630031ABA2 /* RadarVerifiedLocationToken.m in Sources */ = {isa = PBXBuildFile; fileRef = 019514372BD081630031ABA2 /* RadarVerifiedLocationToken.m */; };
 		0195143A2BD081630031ABA2 /* RadarVerifiedLocationToken+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 019514382BD081630031ABA2 /* RadarVerifiedLocationToken+Internal.h */; };
 		01BA5A182CF656D900F033AC /* RadarSdkConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = F667F8262BFBF3C8001F2F67 /* RadarSdkConfiguration.m */; };
+		01BD56DE2D09F8E300183D3A /* c.der in Resources */ = {isa = PBXBuildFile; fileRef = 01BD56DC2D09F8E300183D3A /* c.der */; };
+		01BD56DF2D09F8E300183D3A /* id.p12 in Resources */ = {isa = PBXBuildFile; fileRef = 01BD56DD2D09F8E300183D3A /* id.p12 */; };
+		01BD56E22D09FA0800183D3A /* Telegraph in Frameworks */ = {isa = PBXBuildFile; productRef = 01BD56E12D09FA0800183D3A /* Telegraph */; };
 		01F810702AF0119800BD7088 /* RadarVerifiedDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 01F8106F2AF0119800BD7088 /* RadarVerifiedDelegate.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		01F99CFB2965C182004E8CF3 /* RadarConfig.h in Headers */ = {isa = PBXBuildFile; fileRef = 01F99CFA2965C182004E8CF3 /* RadarConfig.h */; };
 		01F99CFD2965C1C4004E8CF3 /* RadarConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = 01F99CFC2965C1C4004E8CF3 /* RadarConfig.m */; };
@@ -193,6 +196,8 @@
 		019514352BD077D10031ABA2 /* RadarVerifiedLocationToken.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarVerifiedLocationToken.h; sourceTree = "<group>"; };
 		019514372BD081630031ABA2 /* RadarVerifiedLocationToken.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RadarVerifiedLocationToken.m; sourceTree = "<group>"; };
 		019514382BD081630031ABA2 /* RadarVerifiedLocationToken+Internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "RadarVerifiedLocationToken+Internal.h"; sourceTree = "<group>"; };
+		01BD56DC2D09F8E300183D3A /* c.der */ = {isa = PBXFileReference; lastKnownFileType = file; path = c.der; sourceTree = "<group>"; };
+		01BD56DD2D09F8E300183D3A /* id.p12 */ = {isa = PBXFileReference; lastKnownFileType = file; path = id.p12; sourceTree = "<group>"; };
 		01DDC7C529FC387400C0D039 /* RadarNotificationHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RadarNotificationHelper.m; sourceTree = "<group>"; };
 		01DDC7C629FC387400C0D039 /* RadarNotificationHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RadarNotificationHelper.h; sourceTree = "<group>"; };
 		01F8106F2AF0119800BD7088 /* RadarVerifiedDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RadarVerifiedDelegate.h; sourceTree = "<group>"; };
@@ -368,6 +373,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				01BD56E22D09FA0800183D3A /* Telegraph in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -483,6 +489,8 @@
 		DD236C772308797B00EB88F9 /* RadarSDK */ = {
 			isa = PBXGroup;
 			children = (
+				01BD56DC2D09F8E300183D3A /* c.der */,
+				01BD56DD2D09F8E300183D3A /* id.p12 */,
 				825732502B72BE1900DF8B88 /* PrivacyInfo.xcprivacy */,
 				96A5A0D827AD9F7F007B960B /* Include */,
 				DD236C792308797B00EB88F9 /* Info.plist */,
@@ -738,6 +746,7 @@
 			);
 			name = RadarSDK;
 			packageProductDependencies = (
+				01BD56E12D09FA0800183D3A /* Telegraph */,
 			);
 			productName = RadarSDK;
 			productReference = 0107A9E82621FFB9008AB52F /* RadarSDK.framework */;
@@ -792,6 +801,7 @@
 			);
 			mainGroup = DD236C6B2308797B00EB88F9;
 			packageReferences = (
+				01BD56E02D09FA0800183D3A /* XCRemoteSwiftPackageReference "Telegraph" */,
 			);
 			productRefGroup = DD236C762308797B00EB88F9 /* Products */;
 			projectDirPath = "";
@@ -810,6 +820,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				825732522B72BE1900DF8B88 /* PrivacyInfo.xcprivacy in Resources */,
+				01BD56DE2D09F8E300183D3A /* c.der in Resources */,
+				01BD56DF2D09F8E300183D3A /* id.p12 in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1224,6 +1236,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		01BD56E02D09FA0800183D3A /* XCRemoteSwiftPackageReference "Telegraph" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Building42/Telegraph";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.30.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		01BD56E12D09FA0800183D3A /* Telegraph */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 01BD56E02D09FA0800183D3A /* XCRemoteSwiftPackageReference "Telegraph" */;
+			productName = Telegraph;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = DD236C6C2308797B00EB88F9 /* Project object */;
 }

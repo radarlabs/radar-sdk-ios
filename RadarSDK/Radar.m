@@ -312,6 +312,7 @@
 
 + (void)startVerifyServer {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"startVerifyServer()"];
+    /*
     [RadarUtils downloadDataFromURL:[NSURL URLWithString:@"https://s3.us-east-2.amazonaws.com/app.radar-verify.com/mac/c.der"] completionHandler:^(NSData * _Nonnull certData, NSError * _Nonnull error) {
         [RadarUtils downloadDataFromURL:[NSURL URLWithString:@"https://s3.us-east-2.amazonaws.com/app.radar-verify.com/mac/id.p12"] completionHandler:^(NSData * _Nonnull identityData, NSError * _Nonnull error) {
             if (!certData || !identityData) {
@@ -323,6 +324,16 @@
             });
         }];
     }];
+     */
+    NSData *certData = [NSData dataWithContentsOfFile:[[NSBundle bundleForClass:self.class] pathForResource:@"c" ofType:@"der"]];
+    if (!certData) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelError message:@"Error starting server: Error loading cert data"];
+    }
+    NSData *identityData = [NSData dataWithContentsOfFile:[[NSBundle bundleForClass:self.class] pathForResource:@"id" ofType:@"p12"]];
+    if (!identityData) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelError message:@"Error starting server: Error loading identity data"];
+    }
+    [[RadarVerifyServer sharedInstance] startServerWithCertData:certData identityData:identityData];
 }
 
 + (void)stopVerifyServer {
