@@ -76,6 +76,11 @@
         passed = [passedNumber boolValue];
     }
     
+    id userObj = dict[@"user"];
+    if (userObj && [userObj isKindOfClass:[NSDictionary class]]) {
+        user = [[RadarUser alloc] initWithObject:userObj];
+    }
+    
     id eventsObj = dict[@"events"];
     if (eventsObj && [eventsObj isKindOfClass:[NSArray class]]) {
         events = [RadarEvent eventsFromObject:eventsObj];
