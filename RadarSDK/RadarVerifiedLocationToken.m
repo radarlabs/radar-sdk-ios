@@ -100,7 +100,7 @@
 }
 
 - (NSDictionary *)dictionaryValue {
-    return rawDict;
+    return self.rawDict;
 }
 
 @end
