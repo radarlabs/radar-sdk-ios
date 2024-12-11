@@ -20,7 +20,8 @@
                              expiresIn:(NSTimeInterval)expiresIn
                                 passed:(BOOL)passed
                         failureReasons:(NSArray<NSString *> * _Nonnull)failureReasons
-                                   _id:(NSString * _Nonnull)_id {
+                                   _id:(NSString * _Nonnull)_id
+                               rawDict:(NSDictionary *_Nonnull)rawDict {
     self = [super init];
     if (self) {
         _user = user;
@@ -31,6 +32,7 @@
         _passed = passed;
         _failureReasons = failureReasons;
         __id = _id;
+        _rawDict = rawDict;
     }
     return self;
 }
@@ -91,21 +93,14 @@
     }
     
     if (user && events && token && expiresAt) {
-        return [[RadarVerifiedLocationToken alloc] initWithUser:user events:events token:token expiresAt:expiresAt expiresIn:expiresIn passed:passed failureReasons:failureReasons _id:_id];
+        return [[RadarVerifiedLocationToken alloc] initWithUser:user events:events token:token expiresAt:expiresAt expiresIn:expiresIn passed:passed failureReasons:failureReasons _id:_id rawDict:dict];
     }
     
     return nil;
 }
 
 - (NSDictionary *)dictionaryValue {
-    NSMutableDictionary *dict = [NSMutableDictionary new];
-    dict[@"user"] = [self.user dictionaryValue];
-    dict[@"events"] = [RadarEvent arrayForEvents:self.events];
-    dict[@"token"] = self.token;
-    dict[@"expiresAt"] = [RadarUtils.isoDateFormatter stringFromDate:self.expiresAt];
-    dict[@"expiresIn"] = @(self.expiresIn);
-    dict[@"passed"] = @(self.passed);
-    return dict;
+    return rawDict;
 }
 
 @end
