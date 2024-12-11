@@ -11,6 +11,8 @@
 
 #import "RadarUtils.h"
 
+#define SDK_VERSION @"3.19.5"
+
 @implementation RadarUtils
 
 static NSDateFormatter *_isoDateFormatter;
@@ -45,7 +47,7 @@ static NSDateFormatter *_isoDateFormatter;
 }
 
 + (NSString *)sdkVersion {
-    return @"3.19.5";
+    return SDK_VERSION;
 }
 
 + (NSString *)deviceId {
