@@ -38,8 +38,12 @@ import Telegraph
     
     @objc func startServer(withCertData certData: Data, identityData: Data) {
         do {
-            guard let identity = CertificateIdentity(p12Data: identityData),
-                  let caCertificate = Certificate(derData: certData) else {
+            guard let identity = CertificateIdentity(p12Data: identityData) else {
+                RadarLogger.sharedInstance().log(with: .debug, message: "Error starting server: error parsing identity data")
+                return
+            }
+            
+            guard let caCertificate = Certificate(derData: certData) else {
                 RadarLogger.sharedInstance().log(with: .debug, message: "Error starting server: error parsing cert data")
                 return
             }
