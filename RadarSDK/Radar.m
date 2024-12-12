@@ -1055,6 +1055,11 @@
      completionHandler:(RadarIndoorsSurveyCompletionHandler)completionHandler {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"doIndoorsSurvey()"];
     
+    // get location...?
+    // get beacons for location
+    // range for beacons for location
+    // do indoor survey, give it ranged beacons
+
     [[RadarIndoorSurvey sharedInstance] start:placeLabel
                                     forLength:surveyLengthSeconds
                             withKnownLocation:nil

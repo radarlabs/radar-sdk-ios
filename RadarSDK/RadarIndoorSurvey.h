@@ -22,6 +22,7 @@
 @property (nonatomic) BOOL isWhereAmIScan;
 // store whether we are scannig
 @property (nonatomic) BOOL isScanning;
+@property (nonatomic, strong) NSArray<RadarBeacon *> *rangedBeacons;
 
 #define WHERE_AM_I_DURATION_SECONDS 10
 
@@ -30,6 +31,7 @@
 - (void)start:(NSString *)placeLabel forLength:(int)surveyLengthSeconds withKnownLocation:(CLLocation *)knownLocation isWhereAmIScan:(BOOL)isWhereAmIScan withCompletionHandler:(RadarIndoorsSurveyCompletionHandler)completionHandler;
 - (void)startScanning;
 - (void)stopScanning;
+- (void)doBeaconRangingThenKickoffMotionAndBluetooth:(CLLocation *)location andSurveyLength:(int)surveyLengthSeconds;
 - (void)kickOffMotionAndBluetooth:(int)surveyLengthSeconds;
 
 @end

@@ -1,3 +1,5 @@
+#import "RadarAPIClient.h"
+#import "RadarBeaconManager.h"
 #import "RadarIndoorSurvey.h"
 #import "NSData+GZIP.h"
 #import "RadarUtils.h"
@@ -35,7 +37,11 @@
 }
 
 
-- (void)start:(NSString *)placeLabel forLength:(int)surveyLengthSeconds withKnownLocation:(CLLocation *)knownLocation isWhereAmIScan:(BOOL)isWhereAmIScan withCompletionHandler:(RadarIndoorsSurveyCompletionHandler)completionHandler {
+- (void)start:(NSString *)placeLabel
+           forLength:(int)surveyLengthSeconds
+   withKnownLocation:(CLLocation *)knownLocation
+      isWhereAmIScan:(BOOL)isWhereAmIScan
+withCompletionHandler:(RadarIndoorsSurveyCompletionHandler)completionHandler {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"RadarIndoorSurvey start called with placeLabel: %@, surveyLengthSeconds: %d, isWhereAmIScan: %d", placeLabel, surveyLengthSeconds, isWhereAmIScan]];
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"self.isScanning: %d", self.isScanning]];
 
@@ -58,6 +64,8 @@
 
     // set fresh uuid on self.scanId
     self.scanId = [[NSUUID UUID] UUIDString];
+
+    self.rangedBeacons = nil;
 
     // if isWhereAmIScan but no knownLocation, throw error
     // as we are expecting to have been called from track
@@ -88,13 +96,74 @@
 
                              self.locationAtTimeOfSurveyStart = location;
 
-                             [self kickOffMotionAndBluetooth:surveyLengthSeconds];
+                             [self doBeaconRangingThenKickoffMotionAndBluetooth:location andSurveyLength:surveyLengthSeconds];
         }];
     }
 }
 
+// accept survey length and location
+- (void)doBeaconRangingThenKickoffMotionAndBluetooth:(CLLocation *)location andSurveyLength:(int)surveyLengthSeconds {
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:@"doBeaconRangingThenKickoffMotionAndBluetooth"];
+
+    void (^kickOffMotionAndBluetoothCallback)(NSArray<RadarBeacon *> *_Nullable) = ^(NSArray<RadarBeacon *> *_Nullable beacons) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"ranged beacons: %@", beacons]];
+
+        if (beacons && beacons.count) {
+            self.rangedBeacons = beacons;
+        }
+
+        [self kickOffMotionAndBluetooth:surveyLengthSeconds];
+    };
+
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:@"calling searchBeaconsNear"];
+    [[RadarAPIClient sharedInstance]
+        searchBeaconsNear:location
+                   radius:1000
+                    limit:10
+        completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarBeacon *> *_Nullable beacons,
+                            NSArray<NSString *> *_Nullable beaconUUIDs) {
+
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"beacons: %@", beacons]];
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"beaconUUIDs: %@", beaconUUIDs]];
+
+            if (beaconUUIDs && beaconUUIDs.count) {
+                [[RadarLocationManager sharedInstance] replaceSyncedBeaconUUIDs:beaconUUIDs];
+
+                [RadarUtils runOnMainThread:^{
+                    [[RadarBeaconManager sharedInstance] rangeBeaconUUIDs:beaconUUIDs
+                                                        completionHandler:^(RadarStatus status, NSArray<RadarBeacon *> *_Nullable beacons) {
+                                                            if (status != RadarStatusSuccess || !beacons) {
+                                                                kickOffMotionAndBluetoothCallback(nil);
+
+                                                                return;
+                                                            }
+
+                                                            kickOffMotionAndBluetoothCallback(beacons);
+                                                        }];
+                }];
+            } else if (beacons && beacons.count) {
+                [[RadarLocationManager sharedInstance] replaceSyncedBeacons:beacons];
+
+                [RadarUtils runOnMainThread:^{
+                    [[RadarBeaconManager sharedInstance] rangeBeacons:beacons
+                                                    completionHandler:^(RadarStatus status, NSArray<RadarBeacon *> *_Nullable beacons) {
+                                                        if (status != RadarStatusSuccess || !beacons) {
+                                                            kickOffMotionAndBluetoothCallback(nil);
+
+                                                            return;
+                                                        }
+
+                                                        kickOffMotionAndBluetoothCallback(beacons);
+                                                    }];
+                }];
+            } else {
+                kickOffMotionAndBluetoothCallback(@[]);
+            }
+        }];
+}
+
 - (void)kickOffMotionAndBluetooth:(int)surveyLengthSeconds {
-    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:@"kicking off CMMotionManager"];
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:@"kickOffMotionAndBluetooth"];
     self.motionManager = [[CMMotionManager alloc] init];
     [self.motionManager startMagnetometerUpdatesToQueue:[NSOperationQueue mainQueue] withHandler:^(CMMagnetometerData *magnetometerData, NSError *error) {
         if (error) {
@@ -137,9 +206,24 @@
 
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"payload length: %lu", (unsigned long)[payload length]]];
 
+    NSArray<NSDictionary *> * rangedBeaconsArray = @[];
+    if(self.rangedBeacons) {
+        rangedBeaconsArray = [RadarBeacon arrayForBeacons:self.rangedBeacons];
+    }
+
+    // combine payload (newline separate payload) and rangedBeaconsArray (a native array) into a json structure i.e.
+    // {"advertisements": (payload), "rangedBeacons": (rangedBeaconsPayload)}
+    // create dict first and then json-ify-it
+    NSDictionary *dict = @{
+        @"advertisements": payload,
+        @"rangedBeacons": rangedBeaconsArray
+    };
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:dict options:0 error:nil];
+    NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+
     // compress payload and base64 encode it
     // compress payload
-    NSData *compressedData = [payload dataUsingEncoding:NSUTF8StringEncoding];
+    NSData *compressedData = [jsonString dataUsingEncoding:NSUTF8StringEncoding];
     NSData *compressedDataGzipped = [compressedData gzippedData];
     // print length of compressed payload
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"compressedDataGzipped length: %lu", (unsigned long)[compressedDataGzipped length]]];
@@ -149,7 +233,6 @@
      
     // print length of base64 encoded payload
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"compressedDataGzippedBase64 length: %lu", (unsigned long)[compressedDataGzippedBase64 length]]];
-
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"self.isWhereAmIScan %d", self.isWhereAmIScan]];
 
     // if self.isWhereAmIScan, call callback with the payload string
@@ -186,6 +269,7 @@
     self.scanId = nil;
     self.locationAtTimeOfSurveyStart = nil;
     self.lastMagnetometerData = nil;
+    self.rangedBeacons = nil;
 
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:@"stopScanning end"];
 
