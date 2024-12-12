@@ -11,6 +11,9 @@
 
 #import "RadarUtils.h"
 
+// the version below should be left as a define/string literal to allow for easy replacement using set_version.shf
+#define SDK_VERSION @"3.19.5"
+
 @implementation RadarUtils
 
 static NSDateFormatter *_isoDateFormatter;
@@ -45,7 +48,7 @@ static NSDateFormatter *_isoDateFormatter;
 }
 
 + (NSString *)sdkVersion {
-    return @"3.19.5-beta.1";
+    return SDK_VERSION;
 }
 
 + (NSString *)deviceId {
