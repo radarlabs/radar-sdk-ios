@@ -277,15 +277,6 @@ static NSString *const kRegisteredNotifications = @"radar-registeredNotification
     [[NSUserDefaults standardUserDefaults] setValue:beaconUUIDs forKey:kBeaconUUIDs];
 }
 
-+ (NSArray<NSDictionary *> *_Nullable)registeredNotifications {
-    NSArray<NSDictionary *> *registeredNotifications = [[NSUserDefaults standardUserDefaults] valueForKey:kRegisteredNotifications];
-    return registeredNotifications;
-}
-
-+ (void)setRegisteredNotifications:(NSArray<NSDictionary *> *_Nullable)registeredNotifications {
-    [[NSUserDefaults standardUserDefaults] setValue:registeredNotifications forKey:kRegisteredNotifications];
-}
-
 + (NSString *)host {
     NSString *host = [[NSUserDefaults standardUserDefaults] stringForKey:kHost];
     return host ? host : kDefaultHost;

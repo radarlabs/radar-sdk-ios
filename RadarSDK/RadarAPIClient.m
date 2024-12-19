@@ -459,7 +459,7 @@
                                     NSMutableDictionary *bufferParams = [params mutableCopy];
                                     bufferParams[@"replayed"] = @(YES);
 
-                                    [RadarSettings setRegisteredNotifications:notificationsRemaining];
+                                    [RadarState setRegisteredNotifications:notificationsRemaining];
 
                                     [[RadarReplayBuffer sharedInstance] writeNewReplayToBuffer:bufferParams];
                                 } else if (options.replay == RadarTrackingOptionsReplayStops && stopped &&
