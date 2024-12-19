@@ -53,6 +53,8 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)setLogLevel:(RadarLogLevel)level;
 + (NSArray<NSString *> *_Nullable)beaconUUIDs;
 + (void)setBeaconUUIDs:(NSArray<NSString *> *_Nullable)beaconUUIDs;
++ (NSArray<NSDictionary *> *_Nullable)registeredNotifications;
++ (void)setRegisteredNotifications:(NSArray<NSDictionary *> *_Nullable)registeredNotifications;
 + (NSString *)host;
 + (void)updateLastTrackedTime;
 + (NSDate *)lastTrackedTime;

@@ -33,6 +33,7 @@
 #import "RadarUtils.h"
 #import "RadarVerificationManager.h"
 #import "RadarVerifiedLocationToken+Internal.h"
+#import "RadarNotificationHelper.h"
 #import <os/log.h>
 
 @implementation RadarAPIClient
@@ -376,6 +377,48 @@
                                          }];
     }
 
+    if (sdkConfiguration.useDeliveredNotifications) {
+        // TODO: think through how this handles two successive trackOnce calls
+        [RadarNotificationHelper getNotificationDiffWithCompletionHandler:^(NSArray *notificationsDelivered, NSArray *notificationsRemaining) {
+            if (notificationsDelivered) {
+                params[@"notificationsDelivered"] = notificationsDelivered;
+            }
+
+            [[RadarAPIClient sharedInstance] makeTrackRequestWithParams:params
+                                                                options:options
+                                                                stopped:stopped
+                                                            location:location
+                                                                source:source
+                                                            verified:verified
+                                                        publishableKey:publishableKey
+                                                notificationsRemaining:notificationsDelivered
+                                                    completionHandler:completionHandler];
+        }];
+    } else {
+        [[RadarAPIClient sharedInstance] makeTrackRequestWithParams:params
+                                                            options:options
+                                                            stopped:stopped
+                                                           location:location
+                                                             source:source
+                                                           verified:verified
+                                                     publishableKey:publishableKey
+                                             notificationsRemaining:@[]
+                                                  completionHandler:completionHandler];
+    }
+
+
+}
+
+- (void)makeTrackRequestWithParams:(NSDictionary *)params
+                        options:(RadarTrackingOptions *)options
+                        stopped:(BOOL)stopped
+                        location:(CLLocation *)location
+                        source:(RadarLocationSource)source
+                        verified:(BOOL)verified
+                publishableKey:(NSString *)publishableKey
+                notificationsRemaining:(NSArray *)notificationsRemaining 
+            completionHandler:(RadarTrackAPICompletionHandler)completionHandler {
+
     NSString *host = verified ? [RadarSettings verifiedHost] : [RadarSettings host];
     NSString *url = [NSString stringWithFormat:@"%@/v1/track", host];
     url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
@@ -415,6 +458,8 @@
                                     // create a copy of params that we can use to write to the buffer in case of request failure
                                     NSMutableDictionary *bufferParams = [params mutableCopy];
                                     bufferParams[@"replayed"] = @(YES);
+
+                                    [RadarSettings setRegisteredNotifications:notificationsRemaining];
 
                                     [[RadarReplayBuffer sharedInstance] writeNewReplayToBuffer:bufferParams];
                                 } else if (options.replay == RadarTrackingOptionsReplayStops && stopped &&
@@ -517,7 +562,6 @@
                             completionHandler(RadarStatusErrorServer, nil, nil, nil, nil, nil, nil);
                         }];
     }
-}
 
 - (void)verifyEventId:(NSString *)eventId verification:(RadarEventVerification)verification verifiedPlaceId:(NSString *)verifiedPlaceId {
     NSString *publishableKey = [RadarSettings publishableKey];

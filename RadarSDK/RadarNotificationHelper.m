@@ -173,7 +173,7 @@ static NSString *const kSyncGeofenceIdentifierPrefix = @"radar_geofence_";
 }
 
 + (void)addOnPremiseNotificationRequests:(NSArray<UNNotificationRequest *> *)requests {
-
+    NSMutableArray *registeredNotifications = [NSMutableArray new];
     [RadarNotificationHelper checkNotificationPermissionsWithCompletionHandler:^(BOOL granted) {
         if (granted) {
             UNUserNotificationCenter *notificationCenter = [UNUserNotificationCenter currentNotificationCenter];
@@ -184,11 +184,17 @@ static NSString *const kSyncGeofenceIdentifierPrefix = @"radar_geofence_";
                             logWithLevel:RadarLogLevelError
                                 message:[NSString stringWithFormat:@"Error adding local notification | identifier = %@; error = %@", request.identifier, error]];
                     } else {
+                        NSDictionary *userInfo = request.content.userInfo;
+                        if (userInfo) {
+                            [registeredNotifications addObject:userInfo];
+                        }
+
                         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
                                                         message:[NSString stringWithFormat:@"Added local notification | identifier = %@", request.identifier]];
                     }
                 }];
             }
+            [RadarSettings setRegisteredNotifications:registeredNotifications];
         } else {
             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Notification permissions not granted. Skipping adding notifications."];
             return;
@@ -196,6 +202,27 @@ static NSString *const kSyncGeofenceIdentifierPrefix = @"radar_geofence_";
     }];
 }
 
++ (void)getNotificationDiffWithCompletionHandler:(void (^)(NSArray *notificationsDelivered, NSArray *notificationsRemaining))completionHandler {
+    UNUserNotificationCenter *notificationCenter = [UNUserNotificationCenter currentNotificationCenter];
+    NSArray *registeredNotifications = [RadarSettings registeredNotifications];
+    
+    [notificationCenter getPendingNotificationRequestsWithCompletionHandler:^(NSArray<UNNotificationRequest *> *requests) {
+        NSMutableArray *currentNotifications = [NSMutableArray new];
+        
+        for (UNNotificationRequest *request in requests) {
+            if (request.content.userInfo) {
+                [currentNotifications addObject:request.content.userInfo];
+            }
+        }
+        
+        NSMutableArray *notificationsDelivered = [NSMutableArray arrayWithArray:registeredNotifications];
+        [notificationsDelivered removeObjectsInArray:currentNotifications];
+        
+        if (completionHandler) {
+            completionHandler(notificationsDelivered, currentNotifications);
+        }
+    }];
+}
 
 + (void)checkNotificationPermissionsWithCompletionHandler:(NotificationPermissionCheckCompletion)completionHandler {
     if (NSClassFromString(@"XCTestCase") == nil) {

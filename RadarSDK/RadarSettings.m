@@ -48,6 +48,7 @@ static NSString *const kUserDebug = @"radar-userDebug";
 static NSString *const kXPlatformSDKType = @"radar-xPlatformSDKType";
 static NSString *const kXPlatformSDKVersion = @"radar-xPlatformSDKVersion";
 static NSString *const kInitializeOptions = @"radar-initializeOptions";
+static NSString *const kRegisteredNotifications = @"radar-registeredNotifications";
 
 + (NSString *)publishableKey {
     return [[NSUserDefaults standardUserDefaults] stringForKey:kPublishableKey];
@@ -274,6 +275,15 @@ static NSString *const kInitializeOptions = @"radar-initializeOptions";
 
 + (void)setBeaconUUIDs:(NSArray<NSString *> *_Nullable)beaconUUIDs {
     [[NSUserDefaults standardUserDefaults] setValue:beaconUUIDs forKey:kBeaconUUIDs];
+}
+
++ (NSArray<NSDictionary *> *_Nullable)registeredNotifications {
+    NSArray<NSDictionary *> *registeredNotifications = [[NSUserDefaults standardUserDefaults] valueForKey:kRegisteredNotifications];
+    return registeredNotifications;
+}
+
++ (void)setRegisteredNotifications:(NSArray<NSDictionary *> *_Nullable)registeredNotifications {
+    [[NSUserDefaults standardUserDefaults] setValue:registeredNotifications forKey:kRegisteredNotifications];
 }
 
 + (NSString *)host {
