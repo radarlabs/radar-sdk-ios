@@ -190,4 +190,12 @@ static NSString *const kNotificationPermissionGranted = @"radar-notificationPerm
     return [[NSUserDefaults standardUserDefaults] boolForKey:kNotificationPermissionGranted];
 }
 
++ (NSArray<NSDictionary *> *_Nullable)registeredNotifications {
+    NSArray<NSDictionary *> *registeredNotifications = [[NSUserDefaults standardUserDefaults] valueForKey:kRegisteredNotifications];
+    return registeredNotifications;
+}
+
++ (void)setRegisteredNotifications:(NSArray<NSDictionary *> *_Nullable)registeredNotifications {
+    [[NSUserDefaults standardUserDefaults] setValue:registeredNotifications forKey:kRegisteredNotifications];
+}
 @end
