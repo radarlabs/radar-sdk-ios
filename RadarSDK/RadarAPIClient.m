@@ -565,6 +565,7 @@
                             completionHandler(RadarStatusErrorServer, nil, nil, nil, nil, nil, nil);
                         }];
     }
+}
 
 - (void)verifyEventId:(NSString *)eventId verification:(RadarEventVerification)verification verifiedPlaceId:(NSString *)verifiedPlaceId {
     NSString *publishableKey = [RadarSettings publishableKey];
