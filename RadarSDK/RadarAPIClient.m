@@ -378,7 +378,6 @@
     }
 
     if (sdkConfiguration.useNotificationDiff) {
-        // TODO: think through how this handles two successive trackOnce calls
         [RadarNotificationHelper getNotificationDiffWithCompletionHandler:^(NSArray *notificationsDelivered, NSArray *notificationsRemaining) {
             if (notificationsDelivered) {
                 params[@"notificationDiff"] = notificationsDelivered;

@@ -186,7 +186,6 @@ static NSString *const kSyncGeofenceIdentifierPrefix = @"radar_geofence_";
                     } else {
                         NSDictionary *userInfo = request.content.userInfo;
                         if (userInfo) {
-                            //[registeredNotifications addObject:userInfo];
                             [RadarState addRegisteredNotification:userInfo];
                         }
 
