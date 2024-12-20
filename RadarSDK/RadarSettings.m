@@ -50,6 +50,7 @@ static NSString *const kXPlatformSDKVersion = @"radar-xPlatformSDKVersion";
 static NSString *const kInitializeOptions = @"radar-initializeOptions";
 static NSString *const kRegisteredNotifications = @"radar-registeredNotifications";
 
+
 + (NSString *)publishableKey {
     return [[NSUserDefaults standardUserDefaults] stringForKey:kPublishableKey];
 }
