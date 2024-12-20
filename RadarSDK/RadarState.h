@@ -42,6 +42,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (BOOL)notificationPermissionGranted;
 + (NSArray<NSDictionary *> *_Nullable)registeredNotifications;
 + (void)setRegisteredNotifications:(NSArray<NSDictionary *> *_Nullable)registeredNotifications;
++ (void)addRegisteredNotification:(NSDictionary *)registeredNotification;
 
 @end
 

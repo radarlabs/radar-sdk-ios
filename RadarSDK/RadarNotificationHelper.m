@@ -173,10 +173,10 @@ static NSString *const kSyncGeofenceIdentifierPrefix = @"radar_geofence_";
 }
 
 + (void)addOnPremiseNotificationRequests:(NSArray<UNNotificationRequest *> *)requests {
-    NSMutableArray *registeredNotifications = [NSMutableArray new];
     [RadarNotificationHelper checkNotificationPermissionsWithCompletionHandler:^(BOOL granted) {
         if (granted) {
             UNUserNotificationCenter *notificationCenter = [UNUserNotificationCenter currentNotificationCenter];
+            [RadarState setRegisteredNotifications: [NSArray new]];
             for (UNNotificationRequest *request in requests) {
                 [notificationCenter addNotificationRequest:request withCompletionHandler:^(NSError *_Nullable error) {
                     if (error) {
@@ -186,7 +186,8 @@ static NSString *const kSyncGeofenceIdentifierPrefix = @"radar_geofence_";
                     } else {
                         NSDictionary *userInfo = request.content.userInfo;
                         if (userInfo) {
-                            [registeredNotifications addObject:userInfo];
+                            //[registeredNotifications addObject:userInfo];
+                            [RadarState addRegisteredNotification:userInfo];
                         }
 
                         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
@@ -194,9 +195,6 @@ static NSString *const kSyncGeofenceIdentifierPrefix = @"radar_geofence_";
                     }
                 }];
             }
-
-            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Setting %lu notifications remaining after re-registering", (unsigned long)registeredNotifications.count]]; 
-            [RadarState setRegisteredNotifications:registeredNotifications];
         } else {
             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Notification permissions not granted. Skipping adding notifications."];
             return;

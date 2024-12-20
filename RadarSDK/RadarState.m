@@ -199,4 +199,15 @@ static NSString *const kRegisteredNotifications = @"radar-registeredNotification
 + (void)setRegisteredNotifications:(NSArray<NSDictionary *> *_Nullable)registeredNotifications {
     [[NSUserDefaults standardUserDefaults] setValue:registeredNotifications forKey:kRegisteredNotifications];
 }
+
+
++ (void)addRegisteredNotification:(NSDictionary *)notification {
+    NSMutableArray *registeredNotifications = [NSMutableArray new];
+    NSArray *notifications = [RadarState registeredNotifications];
+    if (notifications) {
+        [registeredNotifications addObjectsFromArray:notifications];
+    }
+    [registeredNotifications addObject:notification];
+    [RadarState setRegisteredNotifications:registeredNotifications];
+}
 @end
