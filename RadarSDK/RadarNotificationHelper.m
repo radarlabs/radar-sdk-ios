@@ -194,6 +194,8 @@ static NSString *const kSyncGeofenceIdentifierPrefix = @"radar_geofence_";
                     }
                 }];
             }
+
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Setting %lu notifications remaining after re-registering", (unsigned long)notificationsRemaining.count]]; 
             [RadarState setRegisteredNotifications:registeredNotifications];
         } else {
             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Notification permissions not granted. Skipping adding notifications."];
