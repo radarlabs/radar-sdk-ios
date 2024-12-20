@@ -82,8 +82,7 @@
     }
 
     NSObject *useNotificationDiffObj = dict[@"useNotificationDiff"];
-    // TODO: make this default NO
-    _useNotificationDiff = YES;
+    _useNotificationDiff = NO;
     if (useNotificationDiffObj && [useNotificationDiffObj isKindOfClass:[NSNumber class]]) {
         _useNotificationDiff = [(NSNumber *)useNotificationDiffObj boolValue];
     }
