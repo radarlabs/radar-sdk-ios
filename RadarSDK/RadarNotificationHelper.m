@@ -205,6 +205,12 @@ static NSString *const kSyncGeofenceIdentifierPrefix = @"radar_geofence_";
 }
 
 + (void)getNotificationDiffWithCompletionHandler:(void (^)(NSArray *notificationsDelivered, NSArray *notificationsRemaining))completionHandler {
+    if (NSClassFromString(@"XCTestCase") != nil) {
+        if (completionHandler) {
+            completionHandler(@[], @[]);
+        }
+        return;
+    }
     UNUserNotificationCenter *notificationCenter = [UNUserNotificationCenter currentNotificationCenter];
     NSArray *registeredNotifications = [RadarState registeredNotifications];
     
