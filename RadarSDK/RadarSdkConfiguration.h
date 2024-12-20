@@ -37,6 +37,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, assign) BOOL useForegroundLocationUpdatedAtMsDiff;
 
+@property (nonatomic, assign) BOOL useNotificationDiff;
+
 /**
  Initializes a new RadarSdkConfiguration object with given value.
  */
