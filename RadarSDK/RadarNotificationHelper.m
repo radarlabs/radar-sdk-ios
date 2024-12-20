@@ -187,6 +187,7 @@ static NSString *const kSyncGeofenceIdentifierPrefix = @"radar_geofence_";
                         NSDictionary *userInfo = request.content.userInfo;
                         if (userInfo) {
                             [RadarState addRegisteredNotification:userInfo];
+                            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"Added local notification to registered notifications | userInfo = %@", userInfo]];
                         }
 
                         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
@@ -224,6 +225,7 @@ static NSString *const kSyncGeofenceIdentifierPrefix = @"radar_geofence_";
         [notificationsDelivered removeObjectsInArray:currentNotifications];
         
         if (completionHandler) {
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"Setting %lu notifications remaining after re-registering", (unsigned long)notificationsDelivered.count]];
             completionHandler(notificationsDelivered, currentNotifications);
         }
     }];
