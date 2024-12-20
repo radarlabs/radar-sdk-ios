@@ -381,7 +381,7 @@
         // TODO: think through how this handles two successive trackOnce calls
         [RadarNotificationHelper getNotificationDiffWithCompletionHandler:^(NSArray *notificationsDelivered, NSArray *notificationsRemaining) {
             if (notificationsDelivered) {
-                params[@"notificationsDelivered"] = notificationsDelivered;
+                params[@"notificationDiff"] = notificationsDelivered;
             }
 
             [[RadarAPIClient sharedInstance] makeTrackRequestWithParams:params
