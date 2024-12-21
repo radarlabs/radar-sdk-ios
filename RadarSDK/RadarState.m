@@ -25,6 +25,7 @@ static NSString *const kBeaconIds = @"radar-beaconIds";
 static NSString *const kLastHeadingData = @"radar-lastHeadingData";
 static NSString *const kLastMotionActivityData = @"radar-lastMotionActivityData";
 static NSString *const kNotificationPermissionGranted = @"radar-notificationPermissionGranted";
+static NSString *const kRegisteredNotifications = @"radar-registeredNotifications";
 
 + (CLLocation *)lastLocation {
     NSDictionary *dict = [[NSUserDefaults standardUserDefaults] dictionaryForKey:kLastLocation];
@@ -190,4 +191,23 @@ static NSString *const kNotificationPermissionGranted = @"radar-notificationPerm
     return [[NSUserDefaults standardUserDefaults] boolForKey:kNotificationPermissionGranted];
 }
 
++ (NSArray<NSDictionary *> *_Nullable)registeredNotifications {
+    NSArray<NSDictionary *> *registeredNotifications = [[NSUserDefaults standardUserDefaults] valueForKey:kRegisteredNotifications];
+    return registeredNotifications;
+}
+
++ (void)setRegisteredNotifications:(NSArray<NSDictionary *> *_Nullable)registeredNotifications {
+    [[NSUserDefaults standardUserDefaults] setValue:registeredNotifications forKey:kRegisteredNotifications];
+}
+
+
++ (void)addRegisteredNotification:(NSDictionary *)notification {
+    NSMutableArray *registeredNotifications = [NSMutableArray new];
+    NSArray *notifications = [RadarState registeredNotifications];
+    if (notifications) {
+        [registeredNotifications addObjectsFromArray:notifications];
+    }
+    [registeredNotifications addObject:notification];
+    [RadarState setRegisteredNotifications:registeredNotifications];
+}
 @end
