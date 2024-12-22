@@ -35,10 +35,10 @@ jobs:
         run: cd RadarSDKMotion && xcodebuild archive -scheme RadarSDKMotion -archivePath "../RadarSDKMotion-iphoneos.xcarchive" -sdk iphoneos SKIP_INSTALL=NO CODE_SIGN_IDENTITY= CODE_SIGNING_REQUIRED=NO
       
       - name: Build XCFramework (RadarSDK)
-        run: xcodebuild -create-xcframework -framework RadarSDK-iphonesimulator.xcarchive/Products/Library/Frameworks/RadarSDK.framework -framework RadarSDK-iphoneos.xcarchive/Products/Library/Frameworks/RadarSDK.framework -output RadarSDK.xcframework
+        run: xcodebuild -create-xcframework -framework RadarSDK-iphonesimulator.xcarchive/Products/Library/Frameworks/RadarSDK.framework -debug-symbols "$(pwd -P)"/RadarSDK-iphonesimulator.xcarchive/dSYMs/RadarSDK.framework.dSYM -framework RadarSDK-iphoneos.xcarchive/Products/Library/Frameworks/RadarSDK.framework -debug-symbols "$(pwd -P)"/RadarSDK-iphoneos.xcarchive/dSYMs/RadarSDK.framework.dSYM -output RadarSDK.xcframework
 
       - name: Build XCFramework (RadarSDKMotion)
-        run: xcodebuild -create-xcframework -framework RadarSDKMotion-iphonesimulator.xcarchive/Products/Library/Frameworks/RadarSDKMotion.framework -framework RadarSDKMotion-iphoneos.xcarchive/Products/Library/Frameworks/RadarSDKMotion.framework -output RadarSDKMotion.xcframework
+        run: xcodebuild -create-xcframework -framework RadarSDKMotion-iphonesimulator.xcarchive/Products/Library/Frameworks/RadarSDKMotion.framework -debug-symbols ""$(pwd -P)"/RadarSDKMotion-iphonesimulator.xcarchive/dSYMs/RadarSDKMotion.framework.dSYM" -framework RadarSDKMotion-iphoneos.xcarchive/Products/Library/Frameworks/RadarSDKMotion.framework -debug-symbols "$(pwd -P)"/RadarSDKMotion-iphoneos.xcarchive/dSYMs/RadarSDKMotion.framework.dSYM -output RadarSDKMotion.xcframework
       
       - name: Zip XCFramework (RadarSDK)
         run: zip -r RadarSDK.xcframework.zip RadarSDK.xcframework -x ".*" -x "__MACOSX" -D
