@@ -33,6 +33,7 @@
 #import "RadarUtils.h"
 #import "RadarVerificationManager.h"
 #import "RadarVerifiedLocationToken+Internal.h"
+#import "RadarNotificationHelper.h"
 #import <os/log.h>
 #import "RadarOfflineManager.h"
 
@@ -213,6 +214,7 @@
         return completionHandler(RadarStatusErrorPublishableKey, nil, nil, nil, nil, nil, nil);
     }
     NSMutableDictionary *params = [NSMutableDictionary new];
+    RadarSdkConfiguration *sdkConfiguration = [RadarSettings sdkConfiguration];
     BOOL anonymous = [RadarSettings anonymousTrackingEnabled];
     params[@"anonymous"] = @(anonymous);
     if (anonymous) {
@@ -253,10 +255,11 @@
         params[@"floorLevel"] = @(location.floor.level);
     }
     long nowMs = (long)([NSDate date].timeIntervalSince1970 * 1000);
-    if (!foreground) {
-        long timeInMs = (long)(location.timestamp.timeIntervalSince1970 * 1000);
-        params[@"updatedAtMsDiff"] = @(nowMs - timeInMs);
+    long locationMs = (long)(location.timestamp.timeIntervalSince1970 * 1000);
+    if (sdkConfiguration.useForegroundLocationUpdatedAtMsDiff || !foreground) {
+        params[@"updatedAtMsDiff"] = @(nowMs - locationMs);
     }
+    params[@"locationMs"] = @(locationMs);
     params[@"foreground"] = @(foreground);
     params[@"stopped"] = @(stopped);
     params[@"replayed"] = @(replayed);
@@ -300,8 +303,6 @@
         [tripParams setValue:[Radar stringForMode:tripOptions.mode] forKey:@"mode"];
         params[@"tripOptions"] = tripParams;
     }
-    RadarSdkConfiguration *sdkConfiguration = [RadarSettings sdkConfiguration];
-
     RadarTrackingOptions *options = [Radar getTrackingOptions];
     if (options.syncGeofences) {
         params[@"nearbyGeofences"] = @(YES);
@@ -346,7 +347,6 @@
         }
     }
     params[@"appId"] = [[NSBundle mainBundle] bundleIdentifier];
-    
     if (sdkConfiguration.useLocationMetadata) { 
         NSMutableDictionary *locationMetadata = [NSMutableDictionary new];
         locationMetadata[@"motionActivityData"] = [RadarState lastMotionActivityData];
@@ -381,6 +381,47 @@
 
                                          }];
     }
+
+    if (sdkConfiguration.useNotificationDiff) {
+        [RadarNotificationHelper getNotificationDiffWithCompletionHandler:^(NSArray *notificationsDelivered, NSArray *notificationsRemaining) {
+            if (notificationsDelivered) {
+                params[@"notificationDiff"] = notificationsDelivered;
+            }
+
+            [[RadarAPIClient sharedInstance] makeTrackRequestWithParams:params
+                                                                options:options
+                                                                stopped:stopped
+                                                            location:location
+                                                                source:source
+                                                            verified:verified
+                                                        publishableKey:publishableKey
+                                                notificationsRemaining:notificationsDelivered
+                                                    completionHandler:completionHandler];
+        }];
+    } else {
+        [[RadarAPIClient sharedInstance] makeTrackRequestWithParams:params
+                                                            options:options
+                                                            stopped:stopped
+                                                           location:location
+                                                             source:source
+                                                           verified:verified
+                                                     publishableKey:publishableKey
+                                             notificationsRemaining:@[]
+                                                  completionHandler:completionHandler];
+    }
+
+
+}
+
+- (void)makeTrackRequestWithParams:(NSDictionary *)params
+                        options:(RadarTrackingOptions *)options
+                        stopped:(BOOL)stopped
+                        location:(CLLocation *)location
+                        source:(RadarLocationSource)source
+                        verified:(BOOL)verified
+                publishableKey:(NSString *)publishableKey
+                notificationsRemaining:(NSArray *)notificationsRemaining 
+            completionHandler:(RadarTrackAPICompletionHandler)completionHandler {
 
     NSString *host = verified ? [RadarSettings verifiedHost] : [RadarSettings host];
     NSString *url = [NSString stringWithFormat:@"%@/v1/track", host];
@@ -425,10 +466,9 @@
                                     // create a copy of params that we can use to write to the buffer in case of request failure
                                     NSMutableDictionary *bufferParams = [params mutableCopy];
                                     bufferParams[@"replayed"] = @(YES);
-                                    bufferParams[@"updatedAtMs"] = @(nowMs);
-                                    // remove the updatedAtMsDiff key because for replays we want to rely on the updatedAtMs key for the time instead
-                                    [bufferParams removeObjectForKey:@"updatedAtMsDiff"];
 
+                                    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"Setting %lu notifications remaining", (unsigned long)notificationsRemaining.count]];
+                                    [RadarState setRegisteredNotifications:notificationsRemaining];
                                     [[RadarReplayBuffer sharedInstance] writeNewReplayToBuffer:bufferParams];
                                 } else if (options.replay == RadarTrackingOptionsReplayStops && stopped &&
                                         !(source == RadarLocationSourceForegroundLocation || source == RadarLocationSourceManualLocation)) {
@@ -529,6 +569,9 @@
                                 }
 
                                 return completionHandler(RadarStatusSuccess, res, events, user, nearbyGeofences, config, token);
+                            } else {
+                                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"Setting %lu notifications remaining", (unsigned long)notificationsRemaining.count]];
+                                [RadarState setRegisteredNotifications:notificationsRemaining];
                             }
 
                             [[RadarDelegateHolder sharedInstance] didFailWithStatus:status];

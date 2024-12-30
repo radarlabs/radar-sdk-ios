@@ -45,7 +45,7 @@ static NSDateFormatter *_isoDateFormatter;
 }
 
 + (NSString *)sdkVersion {
-    return @"3.18.6-beta.1";
+    return @"3.19.6";
 }
 
 + (NSString *)deviceId {
@@ -162,18 +162,6 @@ static NSDateFormatter *_isoDateFormatter;
     } else {
         return [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
     } 
-}
-
-+ (NSDictionary<NSString *, NSString *> *)extractGeofenceIdAndTimestampFromIdentifier:(NSString *)identifier {
-    NSArray<NSString *> *components = [identifier componentsSeparatedByString:@"_"];
-    if (components.count != 4) {
-        return nil; // Invalid format
-    }
-    
-    NSString *geofenceId = components[2];
-    NSString *registeredAt = components[3];
-    
-    return @{@"geofenceId": geofenceId, @"registeredAt": registeredAt};
 }
 
 #pragma mark - threading

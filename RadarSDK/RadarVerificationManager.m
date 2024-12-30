@@ -17,6 +17,7 @@
 #import "Radar+Internal.h"
 #import "RadarAPIClient.h"
 #import "RadarBeaconManager.h"
+#import "RadarDelegateHolder.h"
 #import "RadarLocationManager.h"
 #import "RadarLogger.h"
 #import "RadarState.h"
@@ -79,23 +80,30 @@
      verified:YES
      completionHandler:^(RadarStatus status, RadarConfig *_Nullable config) {
         if (status != RadarStatusSuccess || !config) {
-            if (completionHandler) {
-                [RadarUtils runOnMainThread:^{
+            [RadarUtils runOnMainThread:^{
+                if (status != RadarStatusSuccess) {
+                    [[RadarDelegateHolder sharedInstance] didFailWithStatus:status];
+                }
+                
+                if (completionHandler) {
                     completionHandler(status, nil);
-                }];
-            }
+                }
+            }];
+            
             return;
         }
         
         [[RadarLocationManager sharedInstance]
-         getLocationWithDesiredAccuracy:RadarTrackingOptionsDesiredAccuracyMedium
+         getLocationWithDesiredAccuracy:RadarTrackingOptionsDesiredAccuracyHigh
          completionHandler:^(RadarStatus status, CLLocation *_Nullable location, BOOL stopped) {
             if (status != RadarStatusSuccess) {
-                if (completionHandler) {
-                    [RadarUtils runOnMainThread:^{
+                [RadarUtils runOnMainThread:^{
+                    [[RadarDelegateHolder sharedInstance] didFailWithStatus:status];
+                    
+                    if (completionHandler) {
                         completionHandler(status, nil);
-                    }];
-                }
+                    }
+                }];
                 
                 return;
             }
@@ -123,16 +131,22 @@
                         if (status == RadarStatusSuccess && config != nil) {
                             [[RadarLocationManager sharedInstance] updateTrackingFromConfig:config];
                         }
+                        
                         if (token) {
                             self.lastToken = token;
                             self.lastTokenSystemUptime = [NSProcessInfo processInfo].systemUptime;
                             self.lastTokenBeacons = lastTokenBeacons;
                         }
-                        if (completionHandler) {
-                            [RadarUtils runOnMainThread:^{
+                        
+                        [RadarUtils runOnMainThread:^{
+                            if (status != RadarStatusSuccess) {
+                                [[RadarDelegateHolder sharedInstance] didFailWithStatus:status];
+                            }
+                            
+                            if (completionHandler) {
                                 completionHandler(status, token);
-                            }];
-                        }
+                            }
+                        }];
                     }];
                 };
                 
@@ -230,55 +244,50 @@
     self.startedInterval = interval;
     self.startedBeacons = beacons;
     
-    if (@available(iOS 12.0, *)) {
-        if (!_monitor) {
-            _monitor = nw_path_monitor_create();
+    if (!_monitor) {
+        _monitor = nw_path_monitor_create();
 
-            nw_path_monitor_set_queue(_monitor, dispatch_get_main_queue());
+        nw_path_monitor_set_queue(_monitor, dispatch_get_main_queue());
 
-            nw_path_monitor_set_update_handler(_monitor, ^(nw_path_t path) {
-                if (nw_path_get_status(path) == nw_path_status_satisfied) {
-                    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Network connected"];
-                } else {
-                    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Network disconnected"];
-                }
+        nw_path_monitor_set_update_handler(_monitor, ^(nw_path_t path) {
+            if (nw_path_get_status(path) == nw_path_status_satisfied) {
+                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Network connected"];
+            } else {
+                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Network disconnected"];
+            }
                 
-                NSString *ips = [self getIPs];
-                BOOL changed = NO;
-                
-                if (!self.lastIPs) {
-                    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"First time getting IPs | ips = %@", ips]];
-                    changed = NO;
-                } else if (!ips || [ips isEqualToString:@"error"]) {
-                    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Error getting IPs | ips = %@", ips]];
-                    changed = YES;
-                } else if (![ips isEqualToString:self.lastIPs]) {
-                    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"IPs changed | ips = %@; lastIPs = %@", ips, self.lastIPs]];
-                    changed = YES;
-                } else {
-                    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"IPs unchanged"];
-                }
-                self.lastIPs = ips;
-                
-                if (changed) {
-                    [self callTrackVerified];
-                }
-            });
-
-            nw_path_monitor_start(_monitor);
-        }
+            NSString *ips = [self getIPs];
+            BOOL changed = NO;
+            
+            if (!self.lastIPs) {
+                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"First time getting IPs | ips = %@", ips]];
+                changed = NO;
+            } else if (!ips || [ips isEqualToString:@"error"]) {
+                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Error getting IPs | ips = %@", ips]];
+                changed = YES;
+            } else if (![ips isEqualToString:self.lastIPs]) {
+                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"IPs changed | ips = %@; lastIPs = %@", ips, self.lastIPs]];
+                changed = YES;
+            } else {
+                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"IPs unchanged"];
+            }
+            self.lastIPs = ips;
+            
+            if (changed) {
+                [self callTrackVerified];
+            }
+        });
+        nw_path_monitor_start(_monitor);
     }
-
+    
     [self callTrackVerified];
 }
 
 - (void)stopTrackingVerified {
     self.started = NO;
-    
-    if (@available(iOS 12.0, *)) {
-        if (_monitor) {
-            nw_path_monitor_cancel(_monitor);
-        }
+
+    if (_monitor) {
+        nw_path_monitor_cancel(_monitor);
     }
     
     [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(intervalFired) object:nil];
@@ -288,15 +297,20 @@
     NSTimeInterval lastTokenElapsed = [NSProcessInfo processInfo].systemUptime - self.lastTokenSystemUptime;
     
     if (self.lastToken) {
-        if (lastTokenElapsed < self.lastToken.expiresIn && self.lastToken.passed) {
-            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Last token valid | lastToken.expiresIn = %f; lastTokenElapsed = %f; lastToken.passed = %d", self.lastToken.expiresIn, lastTokenElapsed, self.lastToken.passed]];
+        double lastDistanceToStateBorder = -1;
+        if (self.lastToken.user && self.lastToken.user.state) {
+            lastDistanceToStateBorder = self.lastToken.user.state.distanceToBorder;
+        }
+        
+        if (lastTokenElapsed < self.lastToken.expiresIn && self.lastToken.passed && lastDistanceToStateBorder > 1609) {
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Last token valid | lastToken.expiresIn = %f; lastTokenElapsed = %f; lastToken.passed = %d; lastDistanceToStateBorder = %f", self.lastToken.expiresIn, lastTokenElapsed, self.lastToken.passed, lastDistanceToStateBorder]];
             
             [Radar flushLogs];
             
             return completionHandler(RadarStatusSuccess, self.lastToken);
         }
         
-        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Last token invalid | lastToken.expiresIn = %f; lastTokenElapsed = %f; lastToken.passed = %d", self.lastToken.expiresIn, lastTokenElapsed, self.lastToken.passed]];
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Last token invalid | lastToken.expiresIn = %f; lastTokenElapsed = %f; lastToken.passed = %d; lastDistanceToStateBorder = %f", self.lastToken.expiresIn, lastTokenElapsed, self.lastToken.passed, lastDistanceToStateBorder]];
     } else {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"No last token"];
     }

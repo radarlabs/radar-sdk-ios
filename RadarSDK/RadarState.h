@@ -43,6 +43,9 @@ NS_ASSUME_NONNULL_BEGIN
 + (BOOL)notificationPermissionGranted;
 + (void)setNearbyGeofences:(NSArray<RadarGeofence *> *_Nullable)nearbyGeofences NS_SWIFT_NAME(setNearbyGeofences(_:));
 + (NSArray<RadarGeofence *> *_Nullable)nearbyGeofences NS_SWIFT_NAME(nearbyGeofences());
++ (NSArray<NSDictionary *> *_Nullable)registeredNotifications;
++ (void)setRegisteredNotifications:(NSArray<NSDictionary *> *_Nullable)registeredNotifications;
++ (void)addRegisteredNotification:(NSDictionary *)registeredNotification;
 
 @end
 

@@ -50,6 +50,7 @@ static const int MAX_BUFFER_SIZE = 120; // one hour of updates
     RadarSdkConfiguration *sdkConfiguration = [RadarSettings sdkConfiguration];
     if (sdkConfiguration.usePersistence) {
         NSData *replaysData;
+        NSError *error;
 
         // if buffer length is above 50, remove every fifth replay from the persisted buffer
         if ([mutableReplayBuffer count] > 50) {
@@ -59,12 +60,16 @@ static const int MAX_BUFFER_SIZE = 120; // one hour of updates
                     [prunedBuffer addObject:mutableReplayBuffer[i]];
                 }
             }
-            replaysData = [NSKeyedArchiver archivedDataWithRootObject:prunedBuffer];
+            replaysData = [NSKeyedArchiver archivedDataWithRootObject:prunedBuffer requiringSecureCoding:YES error:&error];
         } else {
-            replaysData = [NSKeyedArchiver archivedDataWithRootObject:mutableReplayBuffer];
+            replaysData = [NSKeyedArchiver archivedDataWithRootObject:mutableReplayBuffer requiringSecureCoding:YES error:&error];
         }
-
-        [[NSUserDefaults standardUserDefaults] setObject:replaysData forKey:@"radar-replays"];
+        if (error) {
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Error archiving replays"]; 
+            return;
+        } else {
+            [[NSUserDefaults standardUserDefaults] setObject:replaysData forKey:@"radar-replays"];
+        }
     }
 }
 
@@ -150,14 +155,26 @@ static const int MAX_BUFFER_SIZE = 120; // one hour of updates
     [mutableReplayBuffer removeObjectsInArray:replays];
 
     // persist the updated buffer
-    NSData *replaysData = [NSKeyedArchiver archivedDataWithRootObject:mutableReplayBuffer];
-    [[NSUserDefaults standardUserDefaults] setObject:replaysData forKey:@"radar-replays"];
+    NSError *error;
+    NSData *replaysData = [NSKeyedArchiver archivedDataWithRootObject:mutableReplayBuffer requiringSecureCoding:YES error:&error];
+    if (error) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Error archiving replays"]; 
+        return;
+    } else {
+        [[NSUserDefaults standardUserDefaults] setObject:replaysData forKey:@"radar-replays"];
+    }
 }
 
 - (void)loadReplaysFromPersistentStore {
     NSData *replaysData = [[NSUserDefaults standardUserDefaults] objectForKey:@"radar-replays"];
     if (replaysData) {
-        NSArray *replays = [NSKeyedUnarchiver unarchiveObjectWithData:replaysData];
+        NSError *error;
+        NSSet *allowedClasses = [NSSet setWithObjects:[NSArray class], [RadarReplay class], [NSDictionary class], [NSString class], [NSNumber class], nil];
+        NSArray<RadarReplay *> *replays = [NSKeyedUnarchiver unarchivedObjectOfClasses:allowedClasses fromData:replaysData error:&error];
+        if (error) {
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Error unarchiving replays"]; 
+            return;
+        }
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Loaded replays | length = %lu", (unsigned long)[replays count]]];
         mutableReplayBuffer = [NSMutableArray arrayWithArray:replays];
     }

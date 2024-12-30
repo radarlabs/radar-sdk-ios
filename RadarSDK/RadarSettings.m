@@ -47,6 +47,8 @@ static NSString *const kLastAppOpenTime = @"radar-lastAppOpenTime";
 static NSString *const kUserDebug = @"radar-userDebug";
 static NSString *const kXPlatformSDKType = @"radar-xPlatformSDKType";
 static NSString *const kXPlatformSDKVersion = @"radar-xPlatformSDKVersion";
+static NSString *const kInitializeOptions = @"radar-initializeOptions";
+
 
 + (NSString *)publishableKey {
     return [[NSUserDefaults standardUserDefaults] stringForKey:kPublishableKey];
@@ -297,7 +299,7 @@ static NSString *const kXPlatformSDKVersion = @"radar-xPlatformSDKVersion";
 
 + (BOOL)userDebug {
     NSNumber *userDebug = [[NSUserDefaults standardUserDefaults] objectForKey:kUserDebug];
-    return userDebug ? [userDebug boolValue] : YES;
+    return userDebug ? [userDebug boolValue] : NO;
 }
 
 + (void)setUserDebug:(BOOL)userDebug {
@@ -340,4 +342,15 @@ static NSString *const kXPlatformSDKVersion = @"radar-xPlatformSDKVersion";
     return [[self sdkConfiguration] useOpenedAppConversion];
 }
 
++ (void)setInitializeOptions:(RadarInitializeOptions *)options {
+    [[NSUserDefaults standardUserDefaults] setObject:[options dictionaryValue] forKey:kInitializeOptions];
+}
+
++ (RadarInitializeOptions *)initializeOptions {
+    NSDictionary *dict = [[NSUserDefaults standardUserDefaults] dictionaryForKey:kInitializeOptions];
+    if (!dict) {
+        return nil;
+    }
+    return [[RadarInitializeOptions alloc] initWithDict:dict];
+}
 @end
