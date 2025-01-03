@@ -296,7 +296,9 @@
 
 + (void)trackVerifiedWithBeacons:(BOOL)beacons completionHandler:(RadarTrackVerifiedCompletionHandler)completionHandler {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"trackVerified()"];
-    [[RadarVerificationManager sharedInstance] trackVerifiedWithBeacons:(BOOL)beacons completionHandler:completionHandler];
+    [RadarUtils executeTrackVerifiedBlock:^(RadarTrackVerifiedCompletionHandler innerCompletionHandler) {
+        [[RadarVerificationManager sharedInstance] trackVerifiedWithBeacons:beacons completionHandler:innerCompletionHandler];
+    } withTimeout:5.0 completionHandler:completionHandler];
 }
 
 + (void)startTrackingVerifiedWithInterval:(NSTimeInterval)interval beacons:(BOOL)beacons {
