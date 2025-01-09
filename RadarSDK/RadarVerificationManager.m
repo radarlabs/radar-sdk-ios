@@ -236,13 +236,9 @@
         return;
     }
     
-    if ([self isLastTokenValid]) {
-        [self scheduleNextIntervalWithToken:self.lastToken];
-    } else {
-        [self trackVerifiedWithBeacons:self.startedBeacons desiredAccuracy:RadarTrackingOptionsDesiredAccuracyHigh completionHandler:^(RadarStatus status, RadarVerifiedLocationToken *_Nullable token) {
-            [self scheduleNextIntervalWithToken:token];
-        }];
-    }
+    [self trackVerifiedWithBeacons:self.startedBeacons desiredAccuracy:RadarTrackingOptionsDesiredAccuracyHigh completionHandler:^(RadarStatus status, RadarVerifiedLocationToken *_Nullable token) {
+        [self scheduleNextIntervalWithToken:token];
+    }];
 }
 
 - (void)startTrackingVerifiedWithInterval:(NSTimeInterval)interval beacons:(BOOL)beacons {
@@ -288,7 +284,11 @@
         nw_path_monitor_start(_monitor);
     }
     
-    [self callTrackVerified];
+    if ([self isLastTokenValid]) {
+        [self scheduleNextIntervalWithToken:self.lastToken];
+    } else {
+        [self callTrackVerified];
+    }
 }
 
 - (void)stopTrackingVerified {
