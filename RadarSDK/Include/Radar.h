@@ -489,11 +489,12 @@ typedef void (^_Nullable RadarLogConversionCompletionHandler)(RadarStatus status
  @warning Note that you must configure SSL pinning before calling this method.
 
  @param beacons A boolean indicating whether to range beacons.
+ @param desiredAccuracy The desired accuracy.
  @param completionHandler An optional completion handler.
 
  @see https://radar.com/documentation/fraud
  */
-+ (void)trackVerifiedWithBeacons:(BOOL)beacons completionHandler:(RadarTrackVerifiedCompletionHandler _Nullable)completionHandler NS_SWIFT_NAME(trackVerified(beacons:completionHandler:));
++ (void)trackVerifiedWithBeacons:(BOOL)beacons desiredAccuracy:(RadarTrackingOptionsDesiredAccuracy)desiredAccuracy completionHandler:(RadarTrackVerifiedCompletionHandler _Nullable)completionHandler NS_SWIFT_NAME(trackVerified(beacons:desiredAccuracy:completionHandler:));
 
 /**
  Starts tracking the user's location with device integrity information for location verification use cases.
@@ -520,6 +521,26 @@ typedef void (^_Nullable RadarLogConversionCompletionHandler)(RadarStatus status
  @see https://radar.com/documentation/fraud
  */
 + (void)getVerifiedLocationToken:(RadarTrackVerifiedCompletionHandler _Nullable)completionHandler NS_SWIFT_NAME(getVerifiedLocationToken(completionHandler:));
+
+/**
+ Returns the user's last verified location token if still valid, or requests a fresh token if not.
+
+ @warning Note that you must configure SSL pinning before calling this method.
+ 
+ @param beacons A boolean indicating whether to range beacons.
+ @param desiredAccuracy The desired accuracy.
+ @param completionHandler An optional completion handler.
+
+ @see https://radar.com/documentation/fraud
+ */
++ (void)getVerifiedLocationTokenWithBeacons:(BOOL)beacons desiredAccuracy:(RadarTrackingOptionsDesiredAccuracy)desiredAccuracy completionHandler:(RadarTrackVerifiedCompletionHandler _Nullable)completionHandler NS_SWIFT_NAME(getVerifiedLocationToken(beacons:desiredAccuracy:completionHandler:));
+
+/**
+ Clears the user's last verified location token.
+
+ @see https://radar.com/documentation/fraud
+ */
++ (void)clearVerifiedLocationToken NS_SWIFT_NAME(clearVerifiedLocationToken);
 
 /**
  Optionally sets the user's expected country and state for jurisdiction checks.
