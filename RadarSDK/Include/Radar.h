@@ -540,7 +540,7 @@ typedef void (^_Nullable RadarLogConversionCompletionHandler)(RadarStatus status
 
  @see https://radar.com/documentation/fraud
  */
-+ (void)clearVerifiedLocationToken NS_SWIFT_NAME(clearVerifiedLocationToken);
++ (void)clearVerifiedLocationToken;
 
 /**
  Optionally sets the user's expected country and state for jurisdiction checks.
