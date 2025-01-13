@@ -203,16 +203,20 @@
     [self callTrackVerified];
 }
 
-- (void)scheduleNextIntervalWithToken:(RadarVerifiedLocationToken *)token {
+- (void)scheduleNextIntervalWithLastToken {
     NSTimeInterval expiresIn = 0;
     NSTimeInterval minInterval = self.startedInterval;
     
-    if (token) {
-        expiresIn = token.expiresIn;
+    if (self.lastToken) {
+        expiresIn = self.lastToken.expiresIn;
+        
+        NSTimeInterval lastTokenElapsed = [NSProcessInfo processInfo].systemUptime - self.lastTokenSystemUptime;
         
         // if expiresIn is shorter than interval, override interval
         // re-request early to maximize the likelihood that a cached token is available
-        minInterval = MIN(expiresIn - 10, self.startedInterval);
+        minInterval = MIN(expiresIn - 10 - lastTokenElapsed, self.startedInterval);
+        
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Calculated next interval | minInterval = %f; expiresIn = %f; lastTokenElapsed = %f, startedInterval = %f", minInterval, expiresIn, lastTokenElapsed,  self.startedInterval]];
     }
     
     // min interval is 10 seconds
@@ -226,7 +230,7 @@
         return;
     }
     
-    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Requesting token again in %f seconds | minInterval = %f; expiresIn = %f; startedInterval = %f", minInterval, minInterval, expiresIn, self.startedInterval]];
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Requesting token again in %f seconds", minInterval]];
     
     [self performSelector:@selector(intervalFired) withObject:nil afterDelay:minInterval];
 }
@@ -237,7 +241,7 @@
     }
     
     [self trackVerifiedWithBeacons:self.startedBeacons desiredAccuracy:RadarTrackingOptionsDesiredAccuracyHigh completionHandler:^(RadarStatus status, RadarVerifiedLocationToken *_Nullable token) {
-        [self scheduleNextIntervalWithToken:token];
+        [self scheduleNextIntervalWithLastToken];
     }];
 }
 
@@ -285,7 +289,7 @@
     }
     
     if ([self isLastTokenValid]) {
-        [self scheduleNextIntervalWithToken:self.lastToken];
+        [self scheduleNextIntervalWithLastToken];
     } else {
         [self callTrackVerified];
     }
