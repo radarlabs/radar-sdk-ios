@@ -204,24 +204,23 @@
 }
 
 - (void)scheduleNextIntervalWithLastToken {
-    NSTimeInterval expiresIn = 0;
     NSTimeInterval minInterval = self.startedInterval;
     
     if (self.lastToken) {
-        expiresIn = self.lastToken.expiresIn;
-        
         NSTimeInterval lastTokenElapsed = [NSProcessInfo processInfo].systemUptime - self.lastTokenSystemUptime;
         
-        // if expiresIn is shorter than interval, override interval
-        // re-request early to maximize the likelihood that a cached token is available
-        minInterval = MIN(expiresIn - 10 - lastTokenElapsed, self.startedInterval);
+        // if expiresIn - lastTokenElapsed is shorter than interval, override interval
+        minInterval = MIN(self.lastToken.expiresIn - lastTokenElapsed, self.startedInterval);
         
-        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Calculated next interval | minInterval = %f; expiresIn = %f; lastTokenElapsed = %f, startedInterval = %f", minInterval, expiresIn, lastTokenElapsed,  self.startedInterval]];
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Calculated next interval | minInterval = %f; expiresIn = %f; lastTokenElapsed = %f, startedInterval = %f", minInterval, self.lastToken.expiresIn, lastTokenElapsed,  self.startedInterval]];
     }
     
+    // re-request early to maximize the likelihood that a cached token is available
+    NSTimeInterval interval = minInterval - 10;
+    
     // min interval is 10 seconds
-    if (minInterval < 10) {
-        minInterval = 10;
+    if (interval < 10) {
+        interval = 10;
     }
     
     [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(intervalFired) object:nil];
@@ -230,9 +229,9 @@
         return;
     }
     
-    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Requesting token again in %f seconds", minInterval]];
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Requesting token again in %f seconds", interval]];
     
-    [self performSelector:@selector(intervalFired) withObject:nil afterDelay:minInterval];
+    [self performSelector:@selector(intervalFired) withObject:nil afterDelay:interval];
 }
 
 - (void)callTrackVerified {
