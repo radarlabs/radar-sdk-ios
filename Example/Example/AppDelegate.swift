@@ -141,6 +141,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
                 chainMetadata: ["orderActive": "true"],
                 categories: nil,
                 groups: nil,
+                countryCodes: ["US"],
                 limit: 10
             ) { (status, location, places) in
                 print("Search places: status = \(Radar.stringForStatus(status)); places = \(String(describing: places))")
