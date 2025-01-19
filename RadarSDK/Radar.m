@@ -731,9 +731,10 @@
                         chains:(NSArray *_Nullable)chains
                     categories:(NSArray *_Nullable)categories
                         groups:(NSArray *_Nullable)groups
+                  countryCodes:(NSArray *_Nullable)countryCodes
                          limit:(int)limit
              completionHandler:(RadarSearchPlacesCompletionHandler)completionHandler {
-    [Radar searchPlacesWithRadius:radius chains:chains chainMetadata:nil categories:categories groups:groups limit:limit completionHandler:completionHandler];
+    [Radar searchPlacesWithRadius:radius chains:chains chainMetadata:nil categories:categories groups:groups  countryCodes:countryCodes limit:limit completionHandler:completionHandler];
 }
 
 + (void)searchPlacesWithRadius:(int)radius
@@ -741,6 +742,7 @@
                  chainMetadata:(NSDictionary<NSString *, NSString *> *_Nullable)chainMetadata
                     categories:(NSArray *_Nullable)categories
                         groups:(NSArray *_Nullable)groups
+                  countryCodes:(NSArray *_Nullable)countryCodes
                          limit:(int)limit
              completionHandler:(RadarSearchPlacesCompletionHandler)completionHandler {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"searchPlaces()"];
@@ -761,6 +763,7 @@
                                             chainMetadata:chainMetadata
                                                categories:categories
                                                    groups:groups
+                                             countryCodes:countryCodes
                                                     limit:limit
                                         completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarPlace *> *_Nullable places) {
                                             if (completionHandler) {
@@ -777,9 +780,10 @@
                   chains:(NSArray *_Nullable)chains
               categories:(NSArray *_Nullable)categories
                   groups:(NSArray *_Nullable)groups
+            countryCodes:(NSArray *_Nullable)countryCodes
                    limit:(int)limit
        completionHandler:(RadarSearchPlacesCompletionHandler)completionHandler {
-    [Radar searchPlacesNear:near radius:radius chains:chains chainMetadata:nil categories:categories groups:groups limit:limit completionHandler:completionHandler];
+    [Radar searchPlacesNear:near radius:radius chains:chains chainMetadata:nil categories:categories groups:groups countryCodes:countryCodes limit:limit completionHandler:completionHandler];
 }
 
 + (void)searchPlacesNear:(CLLocation *_Nonnull)near
@@ -788,6 +792,7 @@
            chainMetadata:(NSDictionary<NSString *, NSString *> *_Nullable)chainMetadata
               categories:(NSArray *_Nullable)categories
                   groups:(NSArray *_Nullable)groups
+            countryCodes:(NSArray *_Nullable)countryCodes
                    limit:(int)limit
        completionHandler:(RadarSearchPlacesCompletionHandler)completionHandler {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"searchPlaces()"];
@@ -797,6 +802,7 @@
                                         chainMetadata:chainMetadata
                                            categories:categories
                                                groups:groups
+                                         countryCodes:countryCodes
                                                 limit:limit
                                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarPlace *> *_Nullable places) {
                                         [RadarUtils runOnMainThread:^{

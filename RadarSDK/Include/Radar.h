@@ -822,6 +822,7 @@ typedef void (^_Nullable RadarLogConversionCompletionHandler)(RadarStatus status
  @param categories An array of categories to filter. See https://radar.com/documentation/places/categories
  @param groups An array of groups to filter. See https://radar.com/documentation/places/groups
  @param limit The max number of places to return. A number between 1 and 100.
+ @param countryCodes An array of country codes to filter. See https://radar.com/documentation/regions/countries
  @param completionHandler A completion handler.
 
  @see https://radar.com/documentation/api#search-places
@@ -830,8 +831,9 @@ typedef void (^_Nullable RadarLogConversionCompletionHandler)(RadarStatus status
                         chains:(NSArray<NSString *> *_Nullable)chains
                     categories:(NSArray<NSString *> *_Nullable)categories
                         groups:(NSArray<NSString *> *_Nullable)groups
+                 countryCodes:(NSArray<NSString *> *_Nullable)countryCodes
                          limit:(int)limit
-             completionHandler:(RadarSearchPlacesCompletionHandler)completionHandler NS_SWIFT_NAME(searchPlaces(radius:chains:categories:groups:limit:completionHandler:));
+             completionHandler:(RadarSearchPlacesCompletionHandler)completionHandler NS_SWIFT_NAME(searchPlaces(radius:chains:categories:groups:countryCodes:limit:completionHandler:));
 
 /**
  Gets the device's current location, then searches for places near that location, sorted by distance.
@@ -843,6 +845,7 @@ typedef void (^_Nullable RadarLogConversionCompletionHandler)(RadarStatus status
  @param chainMetadata Optional chain metadata filters. Keys and values must be strings. See https://radar.com/documentation/places#metadata.
  @param categories An array of categories to filter. See https://radar.com/documentation/places/categories
  @param groups An array of groups to filter. See https://radar.com/documentation/places/groups
+ @param countryCodes An array of country codes to filter. See https://radar.com/documentation/regions/countries
  @param limit The max number of places to return. A number between 1 and 100.
  @param completionHandler A completion handler.
 
@@ -853,8 +856,9 @@ typedef void (^_Nullable RadarLogConversionCompletionHandler)(RadarStatus status
                  chainMetadata:(NSDictionary<NSString *, NSString *> *_Nullable)chainMetadata
                     categories:(NSArray<NSString *> *_Nullable)categories
                         groups:(NSArray<NSString *> *_Nullable)groups
+                  countryCodes:(NSArray<NSString *> *_Nullable)countryCodes
                          limit:(int)limit
-             completionHandler:(RadarSearchPlacesCompletionHandler)completionHandler NS_SWIFT_NAME(searchPlaces(radius:chains:chainMetadata:categories:groups:limit:completionHandler:));
+             completionHandler:(RadarSearchPlacesCompletionHandler)completionHandler NS_SWIFT_NAME(searchPlaces(radius:chains:chainMetadata:categories:groups:countryCodes:limit:completionHandler:));
 
 /**
  Searches for places near a location, sorted by distance.
@@ -866,6 +870,7 @@ typedef void (^_Nullable RadarLogConversionCompletionHandler)(RadarStatus status
  @param chains An array of chain slugs to filter. See https://radar.com/documentation/places/chains
  @param categories An array of categories to filter. See https://radar.com/documentation/places/categories
  @param groups An array of groups to filter. See https://radar.com/documentation/places/groups
+ @param countryCodes An array of country codes to filter. See https://radar.com/documentation/regions/countries
  @param limit The max number of places to return. A number between 1 and 100.
  @param completionHandler A completion handler.
 
@@ -876,8 +881,9 @@ typedef void (^_Nullable RadarLogConversionCompletionHandler)(RadarStatus status
                   chains:(NSArray<NSString *> *_Nullable)chains
               categories:(NSArray<NSString *> *_Nullable)categories
                   groups:(NSArray<NSString *> *_Nullable)groups
+             countryCodes:(NSArray<NSString *> *_Nullable)countryCodes
                    limit:(int)limit
-       completionHandler:(RadarSearchPlacesCompletionHandler)completionHandler NS_SWIFT_NAME(searchPlaces(near:radius:chains:categories:groups:limit:completionHandler:));
+       completionHandler:(RadarSearchPlacesCompletionHandler)completionHandler NS_SWIFT_NAME(searchPlaces(near:radius:chains:categories:groups:countryCodes:limit:completionHandler:));
 
 /**
  Searches for places near a location, sorted by distance.
@@ -890,6 +896,7 @@ typedef void (^_Nullable RadarLogConversionCompletionHandler)(RadarStatus status
  @param chainMetadata Optional chain metadata filters. Keys and values must be strings. See https://radar.com/documentation/places#metadata.
  @param categories An array of categories to filter. See https://radar.com/documentation/places/categories
  @param groups An array of groups to filter. See https://radar.com/documentation/places/groups
+ @param countryCodes An array of country codes to filter. See https://radar.com/documentation/regions/countries
  @param limit The max number of places to return. A number between 1 and 100.
  @param completionHandler A completion handler.
 
@@ -901,8 +908,9 @@ typedef void (^_Nullable RadarLogConversionCompletionHandler)(RadarStatus status
            chainMetadata:(NSDictionary<NSString *, NSString *> *_Nullable)chainMetadata
               categories:(NSArray<NSString *> *_Nullable)categories
                   groups:(NSArray<NSString *> *_Nullable)groups
+            countryCodes:(NSArray<NSString *> *_Nullable)countryCodes
                    limit:(int)limit
-       completionHandler:(RadarSearchPlacesCompletionHandler)completionHandler NS_SWIFT_NAME(searchPlaces(near:radius:chains:chainMetadata:categories:groups:limit:completionHandler:));
+       completionHandler:(RadarSearchPlacesCompletionHandler)completionHandler NS_SWIFT_NAME(searchPlaces(near:radius:chains:chainMetadata:categories:groups:countryCodes:limit:completionHandler:));
 
 /**
  Gets the device's current location, then searches for geofences near that location, sorted by distance.
