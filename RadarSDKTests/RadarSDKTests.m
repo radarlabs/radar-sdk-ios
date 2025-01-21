@@ -1300,28 +1300,99 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 }
 
 - (void)test_Radar_reverseGeocodeLocation_success {
-    self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusAuthorizedWhenInUse;
-    self.apiHelperMock.mockStatus = RadarStatusSuccess;
-    self.apiHelperMock.mockResponse = [RadarTestUtils jsonDictionaryFromResource:@"geocode"];
+   self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusAuthorizedWhenInUse;
+   self.apiHelperMock.mockStatus = RadarStatusSuccess;
+   self.apiHelperMock.mockResponse = [RadarTestUtils jsonDictionaryFromResource:@"geocode"];
 
-    CLLocation *location = [[CLLocation alloc] initWithLatitude:40.78382 longitude:-73.97536];
+   CLLocation *location = [[CLLocation alloc] initWithLatitude:40.78382 longitude:-73.97536];
+
+   XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
+
+   [Radar reverseGeocodeLocation:location
+               completionHandler:^(RadarStatus status, NSArray<RadarAddress *> *_Nullable addresses) {
+                   XCTAssertEqual(status, RadarStatusSuccess);
+                   AssertAddressesOk(addresses);
+                   
+                   RadarAddress *address = addresses.firstObject;
+                   XCTAssertNotNil(address.timeZone);
+                   XCTAssertEqualObjects(address.timeZone._id, @"America/New_York");
+                   XCTAssertEqualObjects(address.timeZone.name, @"Eastern Standard Time");
+                   XCTAssertEqualObjects(address.timeZone.code, @"EST");
+                   XCTAssertEqual(address.timeZone.utcOffset, (NSInteger)-18000);
+                   XCTAssertEqual(address.timeZone.dstOffset, (NSInteger)0);
+
+                    NSDictionary *timezoneDict = [address.timeZone dictionaryValue];
+                    NSString *currentTime = timezoneDict[@"currentTime"]; 
+                   XCTAssertTrue([currentTime hasSuffix:@"-05:00"], @"NYC time should end with -05:00 but was: %@", currentTime);
+
+                   [expectation fulfill];
+               }];
+
+   [self waitForExpectationsWithTimeout:30
+                                handler:^(NSError *_Nullable error) {
+                                    if (error) {
+                                        XCTFail();
+                                    }
+                                }];
+}
+
+- (void)test_Radar_reverseGeocode_london_timezone {
+    self.apiHelperMock.mockStatus = RadarStatusSuccess;
+    self.apiHelperMock.mockResponse = [RadarTestUtils jsonDictionaryFromResource:@"geocode_london"];
+
+    CLLocation *location = [[CLLocation alloc] initWithLatitude:51.5074 longitude:-0.1278];
 
     XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
 
     [Radar reverseGeocodeLocation:location
                 completionHandler:^(RadarStatus status, NSArray<RadarAddress *> *_Nullable addresses) {
                     XCTAssertEqual(status, RadarStatusSuccess);
-                    AssertAddressesOk(addresses);
+                    RadarAddress *address = addresses.firstObject;
+                    XCTAssertNotNil(address.timeZone);
+                    XCTAssertEqualObjects(address.timeZone._id, @"Europe/London");
+                    XCTAssertEqualObjects(address.timeZone.name, @"Greenwich Mean Time");
+                    XCTAssertEqualObjects(address.timeZone.code, @"GMT");
+                    XCTAssertEqual(address.timeZone.utcOffset, (NSInteger)0);
+                    XCTAssertEqual(address.timeZone.dstOffset, (NSInteger)0);
+                    
+
+                    NSDictionary *timezoneDict = [address.timeZone dictionaryValue];
+                    NSString *currentTime = timezoneDict[@"currentTime"];
+                    XCTAssertTrue([currentTime hasSuffix:@"Z"], @"London time should end with Z but was: %@", currentTime);
 
                     [expectation fulfill];
                 }];
 
-    [self waitForExpectationsWithTimeout:30
-                                 handler:^(NSError *_Nullable error) {
-                                     if (error) {
-                                         XCTFail();
-                                     }
-                                 }];
+    [self waitForExpectationsWithTimeout:30 handler:nil];
+}
+
+- (void)test_Radar_reverseGeocode_darwin_timezone {
+    self.apiHelperMock.mockStatus = RadarStatusSuccess;
+    self.apiHelperMock.mockResponse = [RadarTestUtils jsonDictionaryFromResource:@"geocode_darwin"];
+
+    CLLocation *location = [[CLLocation alloc] initWithLatitude:-12.463872 longitude:130.844064];
+
+    XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
+
+    [Radar reverseGeocodeLocation:location
+                completionHandler:^(RadarStatus status, NSArray<RadarAddress *> *_Nullable addresses) {
+                    XCTAssertEqual(status, RadarStatusSuccess);
+                    RadarAddress *address = addresses.firstObject;
+                    XCTAssertNotNil(address.timeZone);
+                    XCTAssertEqualObjects(address.timeZone._id, @"Australia/Darwin");
+                    XCTAssertEqualObjects(address.timeZone.name, @"Australian Central Standard Time");
+                    XCTAssertEqualObjects(address.timeZone.code, @"ACST");
+                    XCTAssertEqual(address.timeZone.utcOffset, (NSInteger)34200);
+                    XCTAssertEqual(address.timeZone.dstOffset, (NSInteger)0);
+
+                    NSDictionary *timezoneDict = [address.timeZone dictionaryValue];
+                    NSString *currentTime = timezoneDict[@"currentTime"]; 
+                    XCTAssertTrue([currentTime hasSuffix:@"+09:30"], @"Darwin time should end with +09:30 but was: %@", currentTime);
+
+                    [expectation fulfill];
+                }];
+
+    [self waitForExpectationsWithTimeout:30 handler:nil];
 }
 
 - (void)test_Radar_ipGeocode_error {

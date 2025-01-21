@@ -26,7 +26,15 @@
          "neighborhood": "DUMBO",
          "number": "20",
          "confidence": "exact",
-         "addressLabel": "20 Jay Street"
+         "addressLabel": "20 Jay Street",
+         "timeZone": {
+            "id": "America/New_York",
+            "name": "Eastern Standard Time",
+            "code": "EST",
+            "currentTime": "2025-01-21T12:19:23-05:00",
+            "utcOffset": -18000,
+            "dstOffset": 0
+          }
       }
    ]
 }

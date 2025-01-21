@@ -8,16 +8,6 @@
 #import "RadarTimeZone.h"
 #import "RadarUtils.h"
 
-NSDateFormatter *_timezoneDateFormatter = nil;
-NSDateFormatter * timezoneDateFormatter(void) {
-    if (_timezoneDateFormatter == nil) {
-        _timezoneDateFormatter = [[NSDateFormatter alloc] init];
-        _timezoneDateFormatter.locale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US_POSIX"];
-        [_timezoneDateFormatter setDateFormat:@"yyyy-MM-dd'T'HH:mm:ssZZZZZ"];
-    }
-    return _timezoneDateFormatter;
-}
-
 @implementation RadarTimeZone
 
 - (instancetype _Nullable)initWithObject:(id)object {
@@ -28,7 +18,7 @@ NSDateFormatter * timezoneDateFormatter(void) {
 
     NSDictionary *dict = (NSDictionary *)object;
 
-    id idObj = dict[@"_id"];
+    id idObj = dict[@"id"];
     if ([idObj isKindOfClass:[NSString class]]) {
         __id = (NSString *)idObj;
     }
@@ -45,8 +35,10 @@ NSDateFormatter * timezoneDateFormatter(void) {
 
     id currentTimeObj = dict[@"currentTime"];
     if (currentTimeObj && [currentTimeObj isKindOfClass:[NSString class]]) {
-        
-        _currentTime = [timezoneDateFormatter() dateFromString:(NSString *)currentTimeObj];
+        NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+        formatter.locale = [NSLocale localeWithLocaleIdentifier:@"en_US_POSIX"];
+        formatter.dateFormat = @"yyyy-MM-dd'T'HH:mm:ssZZZZZ";
+        _currentTime = [formatter dateFromString:(NSString *)currentTimeObj];
     }
 
     id utcOffsetObj = dict[@"utcOffset"];
@@ -67,9 +59,18 @@ NSDateFormatter * timezoneDateFormatter(void) {
     dict[@"_id"] = self._id;
     dict[@"name"] = self.name;
     dict[@"code"] = self.code;
-    dict[@"currentTime"] = [timezoneDateFormatter() stringFromDate:self.currentTime];
-    dict[@"utcOffset"] = @(self.utcOffset);
-    dict[@"dstOffset"] = @(self.dstOffset);
+    
+    NSTimeZone *tz = [NSTimeZone timeZoneWithName:self._id];
+    
+    NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+    formatter.locale = [NSLocale localeWithLocaleIdentifier:@"en_US_POSIX"];
+    formatter.dateFormat = @"yyyy-MM-dd'T'HH:mm:ssZZZZZ";
+    formatter.timeZone = tz;
+    
+    dict[@"currentTime"] = [formatter stringFromDate:self.currentTime];
+    dict[@"utcOffset"]   = @(self.utcOffset);
+    dict[@"dstOffset"]   = @(self.dstOffset);
+    
     return dict;
 }
 
