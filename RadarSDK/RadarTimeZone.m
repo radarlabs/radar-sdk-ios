@@ -60,11 +60,16 @@
     dict[@"name"] = self.name;
     dict[@"code"] = self.code;
     
-    NSTimeZone *tz = [NSTimeZone timeZoneWithName:self._id];
-    
     NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
     formatter.locale = [NSLocale localeWithLocaleIdentifier:@"en_US_POSIX"];
     formatter.dateFormat = @"yyyy-MM-dd'T'HH:mm:ssZZZZZ";
+    NSTimeZone *tz = nil;
+    if (self._id) {
+        tz = [NSTimeZone timeZoneWithName:self._id];
+    }
+    if (!tz) {
+        tz = [NSTimeZone timeZoneForSecondsFromGMT:self.utcOffset * 3600];
+    }
     formatter.timeZone = tz;
     
     dict[@"currentTime"] = [formatter stringFromDate:self.currentTime];
