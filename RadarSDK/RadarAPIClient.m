@@ -779,6 +779,7 @@
            chainMetadata:(NSDictionary<NSString *, NSString *> *_Nullable)chainMetadata
               categories:(NSArray *_Nullable)categories
                   groups:(NSArray *_Nullable)groups
+            countryCodes:(NSArray *_Nullable)countryCodes
                    limit:(int)limit
        completionHandler:(RadarSearchPlacesAPICompletionHandler)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
@@ -800,6 +801,10 @@
     }
     if (groups && [groups count] > 0) {
         [queryString appendFormat:@"&groups=%@", [groups componentsJoinedByString:@","]];
+    }
+
+    if (countryCodes && [countryCodes count] > 0) {
+        [queryString appendFormat:@"&country=%@", [countryCodes componentsJoinedByString:@","]];
     }
 
     [chainMetadata enumerateKeysAndObjectsUsingBlock:^(NSString *_Nonnull key, NSString *_Nonnull value, BOOL *_Nonnull stop) {
