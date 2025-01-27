@@ -81,6 +81,12 @@
         _useForegroundLocationUpdatedAtMsDiff = [(NSNumber *)useForegroundLocationUpdatedAtMsDiffObj boolValue];
     }
 
+    NSObject *useNotificationDiffObj = dict[@"useNotificationDiff"];
+    _useNotificationDiff = NO;
+    if (useNotificationDiffObj && [useNotificationDiffObj isKindOfClass:[NSNumber class]]) {
+        _useNotificationDiff = [(NSNumber *)useNotificationDiffObj boolValue];
+    }
+
     return self;
 }
 
@@ -97,6 +103,7 @@
     dict[@"useLocationMetadata"] = @(_useLocationMetadata);
     dict[@"useOpenedAppConversion"] = @(_useOpenedAppConversion);
     dict[@"useForegroundLocationUpdatedAtMsDiff"] = @(_useForegroundLocationUpdatedAtMsDiff);
+    dict[@"useNotificationDiff"] = @(_useNotificationDiff);
     
     return dict;
 }

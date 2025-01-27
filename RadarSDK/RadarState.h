@@ -40,6 +40,9 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)setLastMotionActivityData:(NSDictionary *_Nullable)lastMotionActivityData;
 + (void)setNotificationPermissionGranted:(BOOL)granted;
 + (BOOL)notificationPermissionGranted;
++ (NSArray<NSDictionary *> *_Nullable)registeredNotifications;
++ (void)setRegisteredNotifications:(NSArray<NSDictionary *> *_Nullable)registeredNotifications;
++ (void)addRegisteredNotification:(NSDictionary *)registeredNotification;
 
 @end
 
