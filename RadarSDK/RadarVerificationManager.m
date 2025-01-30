@@ -35,7 +35,6 @@
 
 @interface RadarVerificationManager ()
 
-@property (assign, nonatomic) BOOL started;
 @property (assign, nonatomic) NSTimeInterval startedInterval;
 @property (assign, nonatomic) BOOL startedBeacons;
 @property (strong, nonatomic) NSTimer *intervalTimer;

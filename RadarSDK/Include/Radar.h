@@ -503,13 +503,26 @@ typedef void (^_Nullable RadarLogConversionCompletionHandler)(RadarStatus status
  @param beacons A boolean indicating whether to range beacons.
 
  @warning Note that you must configure SSL pinning before calling this method.
+ 
+ @see https://radar.com/documentation/fraud
  */
 + (void)startTrackingVerifiedWithInterval:(NSTimeInterval)interval beacons:(BOOL)beacons NS_SWIFT_NAME(startTrackingVerified(interval:beacons:));
 
 /**
  Stops tracking the user's location with device integrity information for location verification use cases.
+ 
+ @see https://radar.com/documentation/fraud
  */
 + (void)stopTrackingVerified NS_SWIFT_NAME(stopTrackingVerified());
+
+/**
+ Returns a boolean indicating whether verified tracking has been started.
+
+ @return A boolean indicating whether verified tracking has been started.
+
+ @see https://radar.com/documentation/sdk/fraud
+ */
++ (BOOL)isTrackingVerified;
 
 /**
  Returns the user's last verified location token if still valid, or requests a fresh token if not.

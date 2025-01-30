@@ -18,7 +18,8 @@
                             passed:(BOOL)passed
                    inExclusionZone:(BOOL)inExclusionZone
                       inBufferZone:(BOOL)inBufferZone
-                  distanceToBorder:(double)distanceToBorder;
+                  distanceToBorder:(double)distanceToBorder
+                          expected:(BOOL)expected;
 - (nullable instancetype)initWithObject:(nullable id)object;
 
 @end

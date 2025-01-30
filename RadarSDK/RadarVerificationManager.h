@@ -12,6 +12,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface RadarVerificationManager : NSObject
 
+@property (assign, nonatomic) BOOL started;
+
 typedef void (^_Nullable RadarVerificationCompletionHandler)(NSString *_Nullable attestationString, NSString *_Nullable keyId, NSString *_Nullable attestationError);
 
 + (instancetype)sharedInstance;

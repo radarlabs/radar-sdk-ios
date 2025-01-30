@@ -309,6 +309,10 @@
     [[RadarVerificationManager sharedInstance] stopTrackingVerified];
 }
 
++ (BOOL)isTrackingVerified {
+    [RadarVerificationManager sharedInstance].started;
+}
+
 + (void)getVerifiedLocationToken:(RadarTrackVerifiedCompletionHandler)completionHandler {
     [self getVerifiedLocationTokenWithBeacons:NO desiredAccuracy:RadarTrackingOptionsDesiredAccuracyMedium completionHandler:completionHandler];
 }
