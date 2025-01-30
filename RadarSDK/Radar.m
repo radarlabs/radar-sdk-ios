@@ -310,7 +310,7 @@
 }
 
 + (BOOL)isTrackingVerified {
-    [RadarVerificationManager sharedInstance].started;
+    return [RadarVerificationManager sharedInstance].started;
 }
 
 + (void)getVerifiedLocationToken:(RadarTrackVerifiedCompletionHandler)completionHandler {
