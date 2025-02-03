@@ -402,6 +402,20 @@ typedef void (^_Nullable RadarLogConversionCompletionHandler)(RadarStatus status
 + (NSDictionary *_Nullable)getMetadata;
 
 /**
+ Sets an optional product name, displayed in the dashboard and reports.
+
+ @param product A product name. If `nil`, the previous `product` will be cleared.
+ */
++ (void)setProduct:(NSString *_Nullable)product;
+
+/**
+ Returns the current `product`.
+
+ @return The current `product`.
+ */
++ (NSString *_Nullable)getProduct;
+
+/**
  Enables anonymous tracking for privacy reasons. Avoids creating user records on the server and avoids sending any stable device IDs, user IDs, and user metadata
  to the server when calling `trackOnce()` or `startTracking()`. Disabled by default.
 
