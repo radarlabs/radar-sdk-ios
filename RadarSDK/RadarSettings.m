@@ -27,6 +27,7 @@ static NSString *const kSessionId = @"radar-sessionId";
 static NSString *const kId = @"radar-_id";
 static NSString *const kUserId = @"radar-userId";
 static NSString *const kDescription = @"radar-description";
+static NSString *const kProduct = @"radar-product";
 static NSString *const kMetadata = @"radar-metadata";
 static NSString *const kAnonymous = @"radar-anonymous";
 static NSString *const kTracking = @"radar-tracking";
@@ -118,6 +119,14 @@ static NSString *const kInitializeOptions = @"radar-initializeOptions";
 
 + (void)setDescription:(NSString *)description {
     [[NSUserDefaults standardUserDefaults] setObject:description forKey:kDescription];
+}
+
++ (NSString *)product {
+    return [[NSUserDefaults standardUserDefaults] stringForKey:kProduct];
+}
+
++ (void)setProduct:(NSString *)product {
+    [[NSUserDefaults standardUserDefaults] setObject:product forKey:kProduct];
 }
 
 + (NSDictionary *)metadata {

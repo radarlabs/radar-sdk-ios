@@ -28,6 +28,8 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)setUserId:(NSString *_Nullable)userId;
 + (NSString *_Nullable)__description;
 + (void)setDescription:(NSString *_Nullable)description;
++ (NSString *_Nullable)product;
++ (void)setProduct:(NSString *_Nullable)product;
 + (NSDictionary *_Nullable)metadata;
 + (void)setMetadata:(NSDictionary *_Nullable)metadata;
 + (BOOL)anonymousTrackingEnabled;
