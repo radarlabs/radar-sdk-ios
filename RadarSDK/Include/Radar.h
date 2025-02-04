@@ -402,6 +402,20 @@ typedef void (^_Nullable RadarLogConversionCompletionHandler)(RadarStatus status
 + (NSDictionary *_Nullable)getMetadata;
 
 /**
+ Sets an optional product name, displayed in the dashboard and reports.
+
+ @param product A product name. If `nil`, the previous `product` will be cleared.
+ */
++ (void)setProduct:(NSString *_Nullable)product;
+
+/**
+ Returns the current `product`.
+
+ @return The current `product`.
+ */
++ (NSString *_Nullable)getProduct;
+
+/**
  Enables anonymous tracking for privacy reasons. Avoids creating user records on the server and avoids sending any stable device IDs, user IDs, and user metadata
  to the server when calling `trackOnce()` or `startTracking()`. Disabled by default.
 
@@ -503,13 +517,26 @@ typedef void (^_Nullable RadarLogConversionCompletionHandler)(RadarStatus status
  @param beacons A boolean indicating whether to range beacons.
 
  @warning Note that you must configure SSL pinning before calling this method.
+ 
+ @see https://radar.com/documentation/fraud
  */
 + (void)startTrackingVerifiedWithInterval:(NSTimeInterval)interval beacons:(BOOL)beacons NS_SWIFT_NAME(startTrackingVerified(interval:beacons:));
 
 /**
  Stops tracking the user's location with device integrity information for location verification use cases.
+ 
+ @see https://radar.com/documentation/fraud
  */
 + (void)stopTrackingVerified NS_SWIFT_NAME(stopTrackingVerified());
+
+/**
+ Returns a boolean indicating whether verified tracking has been started.
+
+ @return A boolean indicating whether verified tracking has been started.
+
+ @see https://radar.com/documentation/sdk/fraud
+ */
++ (BOOL)isTrackingVerified;
 
 /**
  Returns the user's last verified location token if still valid, or requests a fresh token if not.

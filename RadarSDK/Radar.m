@@ -150,6 +150,14 @@
     return [RadarSettings metadata];
 }
 
++ (void)setProduct:(NSString *)product {
+    [RadarSettings setProduct:product];
+}
+
++ (NSString *_Nullable)getProduct {
+    return [RadarSettings product];
+}
+
 + (void)setAnonymousTrackingEnabled:(BOOL)enabled {
     [RadarSettings setAnonymousTrackingEnabled:enabled];
 }
@@ -307,6 +315,10 @@
 + (void)stopTrackingVerified {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"stopTrackingVerified()"];
     [[RadarVerificationManager sharedInstance] stopTrackingVerified];
+}
+
++ (BOOL)isTrackingVerified {
+    return [RadarVerificationManager sharedInstance].started;
 }
 
 + (void)getVerifiedLocationToken:(RadarTrackVerifiedCompletionHandler)completionHandler {

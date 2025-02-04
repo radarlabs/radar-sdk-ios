@@ -234,6 +234,7 @@
             params[@"sessionId"] = sessionId;
         }
     }
+    params[@"product"] = [RadarSettings product];
     params[@"latitude"] = @(location.coordinate.latitude);
     params[@"longitude"] = @(location.coordinate.longitude);
     CLLocationAccuracy accuracy = location.horizontalAccuracy;
@@ -342,7 +343,19 @@
         }
     }
     params[@"appId"] = [[NSBundle mainBundle] bundleIdentifier];
-    if (sdkConfiguration.useLocationMetadata) { 
+    NSString *appName = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleName"];
+    if (appName) {
+        params[@"appName"] = appName;
+    }
+    NSString *appVersion = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"];
+    if (appVersion) {
+        params[@"appVersion"] = appVersion;
+    }
+    NSString *appBuild = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"];
+    if (appBuild) {
+        params[@"appBuild"] = appBuild;
+    }
+    if (sdkConfiguration.useLocationMetadata) {
         NSMutableDictionary *locationMetadata = [NSMutableDictionary new];
         locationMetadata[@"motionActivityData"] = [RadarState lastMotionActivityData];
         locationMetadata[@"heading"] = [RadarState lastHeadingData];
