@@ -26,10 +26,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         self.requestLocationPermissions()
         
         // Replace with a valid test publishable key
-        UserDefaults.standard.set("https://api-greg.radar-staging.com", forKey: "radar-host")
-        Radar.setLogLevel(.debug)
-
-        Radar.initialize(publishableKey: "prj_test_pk_2236cce4dabfd26f891738e119b66270be6d3d01")
+        Radar.initialize(publishableKey: "prj_test_pk_0000000000000000000000000000000000000000")
         Radar.setUserId("testUserId")
         Radar.setMetadata([ "foo": "bar" ])
         Radar.setDelegate(self)
