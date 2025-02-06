@@ -61,36 +61,37 @@
 
     // if isWhereAmIScan but no knownLocation, throw error
     // as we are expecting to have been called from track
-    if (isWhereAmIScan && !knownLocation) {
-        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelError message:@"Error: start called with isWhereAmIScan but no knownLocation"];
-        completionHandler(@"Error: start called with isWhereAmIScan but no knownLocation");
-        self.isScanning = NO;
-        return;
-    } else if(isWhereAmIScan && knownLocation) {
-        // if isWhereAmIScan and knownLocation,
-        // set self.locationAtTimeOfSurveyStart to knownLocation
-        self.locationAtTimeOfSurveyStart = knownLocation;
+    // if (isWhereAmIScan && !knownLocation) {
+    //     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelError message:@"Error: start called with isWhereAmIScan but no knownLocation"];
+    //     completionHandler(@"Error: start called with isWhereAmIScan but no knownLocation");
+    //     self.isScanning = NO;
+    //     return;
+    // } else if(isWhereAmIScan && knownLocation) {
+    //     // if isWhereAmIScan and knownLocation,
+    //     // set self.locationAtTimeOfSurveyStart to knownLocation
+    //     self.locationAtTimeOfSurveyStart = knownLocation;
 
-        [self kickOffMotionAndBluetooth:surveyLengthSeconds];
-    } else if(!isWhereAmIScan) {        
-        // get location at time of survey start
+    //     [self kickOffMotionAndBluetooth:surveyLengthSeconds];
+    // } else if(!isWhereAmIScan) {
+    //     // get location at time of survey start
 
-        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"calling RadarLocationManager getLocationWithDesiredAccuracy"];
-        [[RadarLocationManager sharedInstance]
-            getLocationWithDesiredAccuracy:RadarTrackingOptionsDesiredAccuracyMedium
-                         completionHandler:^(RadarStatus status, CLLocation *_Nullable location, BOOL stopped) {
-                             if (status != RadarStatusSuccess) {
-                                 return;
-                             }
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"calling RadarLocationManager getLocationWithDesiredAccuracy"];
+    [[RadarLocationManager sharedInstance]
+        getLocationWithDesiredAccuracy:RadarTrackingOptionsDesiredAccuracyMedium
+                     completionHandler:^(RadarStatus status, CLLocation *_Nullable location, BOOL stopped) {
+                         if (status != RadarStatusSuccess) {
+                             return;
+                         }
 
-                             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"location: %f, %f", location.coordinate.latitude, location.coordinate.longitude]];
-                             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"%@", location]];
+                         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"location: %f, %f", location.coordinate.latitude, location.coordinate.longitude]];
+                         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"%@", location]];
 
-                             self.locationAtTimeOfSurveyStart = location;
+                         self.locationAtTimeOfSurveyStart = location;
 
-                             [self kickOffMotionAndBluetooth:surveyLengthSeconds];
-        }];
-    }
+                         [self kickOffMotionAndBluetooth:surveyLengthSeconds];
+    }];
+
+    // }
 }
 
 - (void)kickOffMotionAndBluetooth:(int)surveyLengthSeconds {
@@ -152,32 +153,41 @@
 
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"self.isWhereAmIScan %d", self.isWhereAmIScan]];
 
+    // url is /whereami/greg when isWhereAmIScan is true
+    // otherwise its /scan_results
+
+
+    // NSString *urlString = self.isWhereAmIScan ? @"https://89f8-2600-4041-5d11-a800-7431-aab7-65a-985b.ngrok-free.app/whereami/greg" : @"https://89f8-2600-4041-5d11-a800-7431-aab7-65a-985b.ngrok-free.app/scan_results";
+    NSString *urlString = self.isWhereAmIScan ? @"https://indoors-rtls.radarindoors.com/whereami/greg" : @"https://indoors-rtls.radarindoors.com/scan_results";
+
     // if self.isWhereAmIScan, call callback with the payload string
-    if (self.isWhereAmIScan) {
-        if (self.completionHandler) {
-            self.completionHandler(compressedDataGzippedBase64);
-        }
-    } else {
+    // if (self.isWhereAmIScan) {
+    //     if (self.completionHandler) {
+    //         self.completionHandler(compressedDataGzippedBase64);
+    //     }
+    // } else {
         // this is a survey scan i.e. we are sending data back to the
         // ML server for training purposes
 
-        // POST payload
-        NSURL *url = [NSURL URLWithString:@"https://ml-staging.radarindoors.com/scan_results"];
+    // POST payload
+    // NSURL *url = [NSURL URLWithString:@"https://ml-staging.radarindoors.com/scan_results"];
+    // NSURL *url = [NSURL URLWithString:@"https://89f8-2600-4041-5d11-a800-7431-aab7-65a-985b.ngrok-free.app/scan_results"];
+    NSURL *url = [NSURL URLWithString:urlString];
 
-        NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:url];
-        [urlRequest setHTTPMethod:@"POST"];
-        [urlRequest setHTTPBody:[compressedDataGzippedBase64 dataUsingEncoding:NSUTF8StringEncoding]];
-        [urlRequest setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
-        NSURLSessionDataTask *task = [[NSURLSession sharedSession] dataTaskWithRequest:urlRequest completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-            if (data && self.completionHandler) {
-                // decode data to string
-                NSString *responseString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"responseString: %@", responseString]];
-                self.completionHandler(responseString);
-            }
-        }];
-        [task resume];
-    }
+    NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:url];
+    [urlRequest setHTTPMethod:@"POST"];
+    [urlRequest setHTTPBody:[compressedDataGzippedBase64 dataUsingEncoding:NSUTF8StringEncoding]];
+    [urlRequest setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
+    NSURLSessionDataTask *task = [[NSURLSession sharedSession] dataTaskWithRequest:urlRequest completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+        if (data && self.completionHandler) {
+            // decode data to string
+            NSString *responseString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"responseString: %@", responseString]];
+            self.completionHandler(responseString);
+        }
+    }];
+    [task resume];
+    // }
 
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:@"calling removeAllObjects, clearing scanId, etc."];
 

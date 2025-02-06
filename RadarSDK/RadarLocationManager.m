@@ -703,22 +703,22 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     }
 
     if([[RadarIndoorSurvey sharedInstance] isScanning]) {
-        if(![[RadarIndoorSurvey sharedInstance] isWhereAmIScan]) {
-            // we _are_ currently scanning, but we are not in the "where am i" mode i.e.
-            // we are surveying! in this case, getLocationWithDesiredAccuracy was called
-            // which led to (this) handleLocation being called.
-            // return the location we just got to the completion handler.
+        // if(![[RadarIndoorSurvey sharedInstance] isWhereAmIScan]) {
+        //     // we _are_ currently scanning, but we are not in the "where am i" mode i.e.
+        //     // we are surveying! in this case, getLocationWithDesiredAccuracy was called
+        //     // which led to (this) handleLocation being called.
+        //     // return the location we just got to the completion handler.
 
             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
                                                message:[NSString stringWithFormat:@"Indoor surveying, returning location to completion handler | source = %@; location = %@", [Radar stringForLocationSource:source], location]];
 
             [self callCompletionHandlersWithStatus:RadarStatusSuccess location:location];
-        }
+        // }
 
-        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
-                                           message:[NSString stringWithFormat:@"Cannot initiate scan while scanning, caching current location | source = %@; location = %@", [Radar stringForLocationSource:source], location]];
+        // [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
+        //                                    message:[NSString stringWithFormat:@"Cannot initiate scan while scanning, caching current location | source = %@; location = %@", [Radar stringForLocationSource:source], location]];
 
-        [self callCompletionHandlersWithStatus:RadarStatusErrorLocation location:nil];
+        // [self callCompletionHandlersWithStatus:RadarStatusErrorLocation location:nil];
 
         return;
     }

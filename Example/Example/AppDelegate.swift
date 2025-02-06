@@ -18,6 +18,45 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
     var scrollView: UIScrollView?
     var demoFunctions = Array<() -> Void>()
 
+    var geofenceButtons: [String: UIButton] = [:] // geofenceId -> button
+
+    func fetchAllGeofences(callback: @escaping ([(String, String)]) -> Void) {
+        let API_KEY = "prj_test_sk_26576f21c9ddd02079383a63ae06ee33fbde4f5f"
+        let URL = "https://api.radar.io/v1/geofences"
+        
+        // var request = URLRequest(url: URL(string: URL)!)
+        let url = Foundation.URL(string: URL)
+        var request = URLRequest(url: url!)
+        request.httpMethod = "GET"
+        request.setValue(API_KEY, forHTTPHeaderField: "Authorization")
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.setValue("application/json", forHTTPHeaderField: "Accept")
+        
+        let task = URLSession.shared.dataTask(with: request) { data, response, error in
+            if let data = data {
+                do {
+                    guard let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
+                          let geofences = json["geofences"] as? [[String: Any]] else {
+                        return
+                    }
+                    
+                    let out: [(String, String)] = geofences.compactMap { geofence in
+                        guard let id = geofence["_id"] as? String,
+                              let description = geofence["description"] as? String else {
+                            return nil
+                        }
+                        return (id, description)
+                    }.sorted { $0.1 < $1.1 }
+                    
+                    callback(out)
+                } catch {
+                    print("JSON parsing error: \(error)")
+                }
+            }
+        }
+        task.resume()
+    }
+    
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { (_, _) in }
         UNUserNotificationCenter.current().delegate = self
@@ -26,11 +65,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         self.requestLocationPermissions()
         
         // Replace with a valid test publishable key
+        /*
         Radar.initialize(publishableKey: "prj_test_pk_0000000000000000000000000000000000000000")
         Radar.setUserId("testUserId")
         Radar.setMetadata([ "foo": "bar" ])
         Radar.setDelegate(self)
         Radar.setVerifiedDelegate(self)
+        */
         
         return true
     }
@@ -38,7 +79,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
     func demoButton(text: String, function: @escaping () -> Void) {
         guard let scrollView = self.scrollView else { return }
         
-        let buttonHeight = 30
+        let buttonHeight = 50
         scrollView.contentSize.height += CGFloat(buttonHeight)
         
         let buttonFrame = CGRect(x: 0, y: demoFunctions.count * buttonHeight, width: Int(scrollView.frame.width), height: buttonHeight)
@@ -54,6 +95,73 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         scrollView.addSubview(button)
     }
     
+    @objc func didTapGeofenceButton(_ geofenceId: String, _ description: String, sender: UIButton) {
+        print("tapped geofence button")
+        print(geofenceId, description)
+
+        print("sender, DISABLING")
+        DispatchQueue.main.async {
+            sender.isEnabled = false
+        }
+
+        let geofenceIdForSurvey = "geofenceid:\(geofenceId)"
+        Radar.doIndoorSurvey(geofenceIdForSurvey, forLength: 60, isWhereAmIScan:false) { _ in
+            print("done doIndoorSurvey")
+
+            DispatchQueue.main.async {
+                sender.isEnabled = true
+            }
+        }
+    }
+
+    func startContinuousInference() {
+        // WHERAMI HAS TO BE MORE THAN 5 SECONDS WHICH IS THE WINDOW
+        Radar.doIndoorSurvey("WHEREAMI", forLength: 6, isWhereAmIScan:true) { output in
+            print("output", output)
+            
+            // Parse the JSON string
+            if let data = output!.data(using: .utf8),
+               let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+               let response = json["response"] as? [String: Any],
+               let probability = response["avg_probability"] as? Double,
+               let topPrediction = response["top_prediction"] as? String {
+
+                // Update button title on main thread
+                DispatchQueue.main.async {
+                    // reset all button titles to remove old probabilities
+                    self.geofenceButtons.forEach { (geofenceId, button) in
+                        if let originalTitle = button.title(for: .normal),
+                           let cleanTitle = originalTitle.split(separator: " (").first {
+                            button.setTitle(String(cleanTitle), for: .normal)
+                            button.titleLabel?.font = .systemFont(ofSize: 17) // Reset to regular font
+                        }
+                    }
+
+                    if let button = self.geofenceButtons[topPrediction] {
+                        if let currentTitle = button.title(for: .normal) {
+                            let probabilityPercentage = Int(probability * 100)
+                            button.setTitle("\(currentTitle) (\(probabilityPercentage)%)", for: .normal)
+                            button.titleLabel?.font = .boldSystemFont(ofSize: 17) // Make predicted geofence bold
+                            
+                            UIView.animate(withDuration: 0.15, animations: {
+                                button.alpha = 0.3
+                            }, completion: { _ in
+                                UIView.animate(withDuration: 0.15) {
+                                    button.alpha = 1.0
+                                }
+                            })
+                        }
+                    }
+
+                    self.startContinuousInference()
+                }
+            } else {
+                print("did not work to set the button title")
+            }
+        }
+    }
+
+
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         // Use this method to optionally configure and attach the UIWindow `window` to the provided UIWindowScene `scene`.
         // If using a storyboard, the `window` property will automatically be initialized and attached to the scene.
@@ -74,220 +182,35 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         
         self.window = window
         
-        if UIApplication.shared.applicationState != .background {
-            Radar.getLocation { (status, location, stopped) in
-                print("Location: status = \(Radar.stringForStatus(status)); location = \(String(describing: location))")
-            }
-
-            Radar.trackOnce { (status, location, events, user) in
-                print("Track once: status = \(Radar.stringForStatus(status)); location = \(String(describing: location)); events = \(String(describing: events)); user = \(String(describing: user))")
-            }
-        }
-
-        demoButton(text: "startTracking") {
-            let options = RadarTrackingOptions.presetContinuous
-            Radar.startTracking(trackingOptions: options)
-        }
-
-        demoButton(text: "getContext") {
-            Radar.getContext { (status, location, context) in
-                print("Context: status = \(Radar.stringForStatus(status)); location = \(String(describing: location)); context?.geofences = \(String(describing: context?.geofences)); context?.place = \(String(describing: context?.place)); context?.country = \(String(describing: context?.country))")
-            }
-        }
-
-        demoButton(text: "trackVerified") {
-            Radar.trackVerified() { (status, token) in
-                print("TrackVerified: status = \(status); token = \(token?.dictionaryValue())")
-            }
-        }
-
-        demoButton(text: "indoors: trackOnce") {
-            Radar.trackOnce(desiredAccuracy: .high, beacons: true) { (status, location, events, user) in
-                print("Track once: status = \(Radar.stringForStatus(status)); location = \(String(describing: location)); events = \(String(describing: events)); user = \(String(describing: user))")
-            }
-        }
-
-        demoButton(text: "indoors: doIndoorSurvey") {
-            Radar.doIndoorSurvey("example-app-fake-survey", forLength: 10) { (result) in
-                print("doIndoorSurvey done")
-            }
-        }
-        
-        demoButton(text: "searchPlaces") {
-            // In the Radar dashboard settings
-            // (https://radar.com/dashboard/settings), add this to the chain
-            // metadata: {"mcdonalds":{"orderActive":"true"}}.
-            Radar.searchPlaces(
-                radius: 1000,
-                chains: ["mcdonalds"],
-                chainMetadata: ["orderActive": "true"],
-                categories: nil,
-                groups: nil,
-                limit: 10
-            ) { (status, location, places) in
-                print("Search places: status = \(Radar.stringForStatus(status)); places = \(String(describing: places))")
-            }
-        }
-
-        
-        demoButton(text: "searchGeofences") {
-            Radar.searchGeofences() { (status, location, geofences) in
-                print("Search geofences: status = \(Radar.stringForStatus(status)); geofences = \(String(describing: geofences))")
-            }
-        }
-
-        demoButton(text: "geocode") {
-            Radar.geocode(address: "20 jay st brooklyn") { (status, addresses) in
-                print("Geocode: status = \(Radar.stringForStatus(status)); coordinate = \(String(describing: addresses?.first?.coordinate))")
-            }
-            
-            Radar.geocode(address: "20 jay st brooklyn", layers: ["place", "locality"], countries: ["US", "CA"]) { (status, addresses) in
-                print("Geocode: status = \(Radar.stringForStatus(status)); coordinate = \(String(describing: addresses?.first?.coordinate))")
-            }
-        }
-
-        demoButton(text: "reverseGeocode") {
-            Radar.reverseGeocode { (status, addresses) in
-                print("Reverse geocode: status = \(Radar.stringForStatus(status)); formattedAddress = \(String(describing: addresses?.first?.formattedAddress))")
-            }
-            
-            Radar.reverseGeocode(layers: ["locality", "state"]) { (status, addresses) in
-                print("Reverse geocode: status = \(Radar.stringForStatus(status)); formattedAddress = \(String(describing: addresses?.first?.formattedAddress))")
-            }
-            
-            Radar.reverseGeocode(location: CLLocation(latitude: 40.70390, longitude: -73.98670)) { (status, addresses) in
-                print("Reverse geocode: status = \(Radar.stringForStatus(status)); formattedAddress = \(String(describing: addresses?.first?.formattedAddress))")
-            }
-            
-            Radar.reverseGeocode(location: CLLocation(latitude: 40.70390, longitude: -73.98670), layers: ["locality", "state"]) { (status, addresses) in
-                print("Reverse geocode: status = \(Radar.stringForStatus(status)); formattedAddress = \(String(describing: addresses?.first?.formattedAddress))")
-            }
-        }
-        
-        demoButton(text: "ipGeocode") {
-            Radar.ipGeocode { (status, address, proxy) in
-                print("IP geocode: status = \(Radar.stringForStatus(status)); country = \(String(describing: address?.countryCode)); city = \(String(describing: address?.city)); proxy = \(proxy)")
-            }
-        }
-        
-        demoButton(text: "autocomplete") {
-            let origin = CLLocation(latitude: 40.78382, longitude: -73.97536)
-            
-            Radar.autocomplete(
-                query: "brooklyn",
-                near: origin,
-                layers: ["locality"],
-                limit: 10,
-                country: "US"
-            ) { (status, addresses) in
-                print("Autocomplete: status = \(Radar.stringForStatus(status)); formattedAddress = \(String(describing: addresses?.first?.formattedAddress))")
+        demoButton(text: "fetch geofences") {
+            print("fetching geofences")
+            self.fetchAllGeofences(callback: { (geofences) in
+                print("fetched geofences")
                 
-                if let address = addresses?.first {
-                    Radar.validateAddress(address: address) { (status, address, verificationStatus) in
-                        print("Validate address: status = \(Radar.stringForStatus(status)); address = \(String(describing: address)); verificationStatus = \(Radar.stringForVerificationStatus(verificationStatus))")
+                geofences.enumerated().forEach { (geofenceIndex, geofence) in
+                    DispatchQueue.main.async {
+                        var button = UIButton()
+                        button = UIButton(frame: CGRect(x: 20, y: 0, width: self.window!.frame.size.width - 40, height: 50))  // 20pt padding on each side
+                        button.setTitle(geofence.1, for: .normal)
+                        button.setTitleColor(.black, for: .normal)
+                        button.setTitleColor(.lightGray, for: .highlighted)
+                        button.setTitleColor(.systemGray4, for: .disabled)  // A light gray color that clearly shows the disabled state
+                        button.addAction(UIAction { [weak self] _ in
+                            self?.didTapGeofenceButton(geofence.0, geofence.1, sender: button)
+                        }, for: .touchUpInside)
+                        button.frame.origin.y = 250 + CGFloat(geofenceIndex) * 50
+                        self.window!.addSubview(button)
+                        
+                        self.geofenceButtons[geofence.0] = button
                     }
                 }
-            }
-            
-            Radar.autocomplete(
-                query: "brooklyn",
-                near: origin,
-                layers: ["locality"],
-                limit: 10,
-                country: "US",
-                mailable:true
-            ) { (status, addresses) in
-                print("Autocomplete: status = \(Radar.stringForStatus(status)); formattedAddress = \(String(describing: addresses?.first?.formattedAddress))")
-                
-                if let address = addresses?.first {
-                    Radar.validateAddress(address: address) { (status, address, verificationStatus) in
-                        print("Validate address: status = \(Radar.stringForStatus(status)); address = \(String(describing: address)); verificationStatus = \(Radar.stringForVerificationStatus(verificationStatus))")
-                    }
-                }
-            }
-            
-            Radar.autocomplete(
-                query: "brooklyn",
-                near: origin,
-                layers: ["locality"],
-                limit: 10,
-                country: "US"
-            ) { (status, addresses) in
-                print("Autocomplete: status = \(Radar.stringForStatus(status)); formattedAddress = \(String(describing: addresses?.first?.formattedAddress))")
-            }
-        }
-
-        demoButton(text: "getDistance") {
-            let origin = CLLocation(latitude: 40.78382, longitude: -73.97536)
-            let destination = CLLocation(latitude: 40.70390, longitude: -73.98670)
-            Radar.getDistance(
-                origin: origin,
-                destination: destination,
-                modes: [.foot, .car],
-                units: .imperial
-            ) { (status, routes) in
-                print("Distance: status = \(Radar.stringForStatus(status)); routes.car.distance.value = \(String(describing: routes?.car?.distance.value)); routes.car.distance.text = \(String(describing: routes?.car?.distance.text)); routes.car.duration.value = \(String(describing: routes?.car?.duration.value)); routes.car.duration.text = \(String(describing: routes?.car?.duration.text))")
-            }
-        }
-
-        demoButton(text: "startTrip") {
-            let tripOptions = RadarTripOptions(externalId: "299", destinationGeofenceTag: "store", destinationGeofenceExternalId: "123")
-            tripOptions.mode = .car
-            tripOptions.approachingThreshold = 9
-            Radar.startTrip(options: tripOptions)
-        }
-
-        demoButton(text: "mockTracking") {
-            let origin = CLLocation(latitude: 40.78382, longitude: -73.97536)
-            let destination = CLLocation(latitude: 40.70390, longitude: -73.98670)
-            var i = 0
-            Radar.mockTracking(
-                origin: origin,
-                destination: destination,
-                mode: .car,
-                steps: 3,
-                interval: 3
-            ) { (status, location, events, user) in
-                print("Mock track: status = \(Radar.stringForStatus(status)); location = \(String(describing: location)); events = \(String(describing: events)); user = \(String(describing: user))")
-                
-                if (i == 2) {
-                    Radar.completeTrip()
-                }
-                
-                i += 1
-            }
-        }
-
-        demoButton(text: "getMatrix") {
-            let origins = [
-                CLLocation(latitude: 40.78382, longitude: -73.97536),
-                CLLocation(latitude: 40.70390, longitude: -73.98670)
-            ]
-            let destinations = [
-                CLLocation(latitude: 40.64189, longitude: -73.78779),
-                CLLocation(latitude: 35.99801, longitude: -78.94294)
-            ]
-            
-            Radar.getMatrix(origins: origins, destinations: destinations, mode: .car, units: .imperial) { (status, matrix) in
-                print("Matrix: status = \(Radar.stringForStatus(status)); matrix[0][0].duration.text = \(String(describing: matrix?.routeBetween(originIndex: 0, destinationIndex: 0)?.duration.text)); matrix[0][1].duration.text = \(String(describing: matrix?.routeBetween(originIndex: 0, destinationIndex: 1)?.duration.text)); matrix[1][0].duration.text = \(String(describing: matrix?.routeBetween(originIndex: 1, destinationIndex: 0)?.duration.text)); matrix[1][1].duration.text = \(String(describing: matrix?.routeBetween(originIndex: 1, destinationIndex: 1)?.duration.text))")
-            }
-        }
-
-        demoButton(text: "logConversion") {
-            Radar.logConversion(name: "conversion_event", metadata: ["data": "test"]) { (status, event) in
-                if let conversionEvent = event, conversionEvent.type == .conversion {
-                    print("Conversion name: \(conversionEvent.conversionName!)")
-                }
-                
-                print("Log Conversion: status = \(Radar.stringForStatus(status)); event = \(String(describing: event))")
-            }
+            })
         }
         
-        demoButton(text: "Run all") {
-            for function in self.demoFunctions.dropLast() {
-                function()
-            }
+        demoButton(text: "Start Infer Forever Loop") {
+            self.startContinuousInference()
         }
+
     }
 
     func requestLocationPermissions() {

@@ -1093,6 +1093,7 @@ logConversionWithNotification
 
 + (void)doIndoorSurvey:(NSString *)placeLabel
             forLength:(int)surveyLengthSeconds
+       isWhereAmIScan:(BOOL)isWhereAmIScan
     completionHandler:(RadarIndoorsSurveyCompletionHandler)completionHandler;
 
 #pragma mark - Logging

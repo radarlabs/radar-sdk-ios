@@ -1052,13 +1052,14 @@
 // i.e. record a bluetooth fingerprint and store it
 + (void)doIndoorSurvey:(NSString *)placeLabel
              forLength:(int)surveyLengthSeconds
+        isWhereAmIScan:(BOOL)isWhereAmIScan
      completionHandler:(RadarIndoorsSurveyCompletionHandler)completionHandler {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"doIndoorsSurvey()"];
     
     [[RadarIndoorSurvey sharedInstance] start:placeLabel
                                     forLength:surveyLengthSeconds
                             withKnownLocation:nil
-                               isWhereAmIScan:NO
+                               isWhereAmIScan:isWhereAmIScan
                         withCompletionHandler:completionHandler
     ];
 }
