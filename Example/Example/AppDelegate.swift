@@ -127,25 +127,41 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         Radar.doIndoorSurvey("WHEREAMI", forLength: 6, isWhereAmIScan:true) { output in
             print("output", output)
             
-            // Parse the JSON string
-            if let data = output!.data(using: .utf8),
-               let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
-               // response is now
-               // {"response": ["67a3b1d57cfde39ce8ec226a", 0.9940016233766232]}
-               let response = json["response"] as? [Any],
-               let topPrediction = response[0] as? String,
-                let probability = response[1] as? Double
-               {
-                print("got prediction", topPrediction, "probability", probability)
-                
-                DispatchQueue.main.async {
-                    self.mapViewController?.handlePrediction(geofenceId: topPrediction, confidence: probability)
-                }
+            // response is now
+            // {"response": ["67a3b1d57cfde39ce8ec226a", 0.9940016233766232]}
 
-                // LOOP
-                self.startContinuousInference()
+            if let data = output!.data(using: .utf8),
+               let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any] {
+                
+                if let errorMessage = json["error"] as? String {
+                    // If there's an error in the JSON, display it in the confidence label
+                    DispatchQueue.main.async {
+                        self.mapViewController?.confidenceLabel?.text = errorMessage
+                    }
+                } else if let response = json["response"] as? [Any],
+                          let topPrediction = response[0] as? String,
+                          let probability = response[1] as? Double {
+                    print("got prediction", topPrediction, "probability", probability)
+                    
+                    DispatchQueue.main.async {
+                        self.mapViewController?.handlePrediction(geofenceId: topPrediction, confidence: probability)
+                    }
+
+                    // LOOP
+                    self.startContinuousInference()
+                } else {
+                    print("infer json parsing problem!!!")
+                    // update the confidence label with the output text
+                    DispatchQueue.main.async {
+                        self.mapViewController?.confidenceLabel?.text = "Inference failed"
+                    }
+                }
             } else {
                 print("infer json parsing problem!!!")
+                // update the confidence label with the output text
+                DispatchQueue.main.async {
+                    self.mapViewController?.confidenceLabel?.text = "Inference failed"
+                }
             }
         }
     }
