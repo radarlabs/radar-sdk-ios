@@ -17,7 +17,7 @@ class MapViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let mapView = UIHostingController(rootView: MapView(
+        let mapHostingController = UIHostingController(rootView: MapView(
             fetchGeofences: appDelegate.fetchAllGeofences,
             onGeofenceTap: { id, description, completion in
                 // Your existing tap handler function with completion
@@ -32,24 +32,28 @@ class MapViewController: UIViewController {
         
         // Add a label for confidence
         let confidenceLabel = UILabel()
-        confidenceLabel.frame = CGRect(x: 20, y: 750, width: view.frame.width - 40, height: 30)  // 720 is just after the map's 700 height
         confidenceLabel.textAlignment = .center
-        view.addSubview(confidenceLabel)
-        self.confidenceLabel = confidenceLabel  // Store the reference
+        confidenceLabel.translatesAutoresizingMaskIntoConstraints = false
+        self.confidenceLabel = confidenceLabel
 
-        addChild(mapView)
-        view.addSubview(mapView.view)
-        
-        mapView.view.translatesAutoresizingMaskIntoConstraints = false
+        addChild(mapHostingController)
+        view.addSubview(mapHostingController.view)
+        view.addSubview(confidenceLabel)
+
+        mapHostingController.view.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            mapView.view.topAnchor.constraint(equalTo: view.topAnchor),
-            mapView.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            mapView.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            mapView.view.heightAnchor.constraint(equalToConstant: 700) // Adjust height as needed
+            mapHostingController.view.topAnchor.constraint(equalTo: view.topAnchor),
+            mapHostingController.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            mapHostingController.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            mapHostingController.view.heightAnchor.constraint(equalToConstant: 700),
+
+            confidenceLabel.topAnchor.constraint(equalTo: mapHostingController.view.bottomAnchor, constant: 50), // changed from 10 to 30
+            confidenceLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            confidenceLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+            confidenceLabel.heightAnchor.constraint(equalToConstant: 30)
         ])
-        
-        mapView.didMove(toParent: self)
-    }
+        mapHostingController.didMove(toParent: self)
+}
 
     func handlePrediction(geofenceId: String, confidence: Double) {
         print("Handling prediction", geofenceId, confidence)
@@ -96,6 +100,7 @@ struct MapView: UIViewRepresentable {
         let mapView = MLNMapView(frame: .zero, styleURL: styleURL)
         mapView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         mapView.logoView.isHidden = true
+        mapView.showsUserLocation = true
 
         mapView.setCenter(
           CLLocationCoordinate2D(latitude: 40.7342, longitude: -73.9911),
