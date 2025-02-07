@@ -3,12 +3,14 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 54;
 	objects = {
 
 /* Begin PBXBuildFile section */
 		013D7AF226D327C400574AD5 /* RadarSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0107AA77262200DA008AB52F /* RadarSDK.framework */; };
 		013D7AF326D327C400574AD5 /* RadarSDK.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 0107AA77262200DA008AB52F /* RadarSDK.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		507690162D56A65200E58635 /* MapLibre in Frameworks */ = {isa = PBXBuildFile; productRef = 507690152D56A65200E58635 /* MapLibre */; };
+		5076901B2D56A69F00E58635 /* MapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5076901A2D56A69900E58635 /* MapView.swift */; };
 		DD236D27230A006700EB88F9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD236D26230A006700EB88F9 /* AppDelegate.swift */; };
 		DD236D30230A006900EB88F9 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DD236D2F230A006900EB88F9 /* Assets.xcassets */; };
 		DD291169230D0AF900049D3A /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD291168230D0AF900049D3A /* Utils.swift */; };
@@ -48,7 +50,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		DD236D23230A006700EB88F9 /* Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		5076901A2D56A69900E58635 /* MapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapView.swift; sourceTree = "<group>"; };
+		DD236D23230A006700EB88F9 /* Indoors AI.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Indoors AI.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		DD236D26230A006700EB88F9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		DD236D2F230A006900EB88F9 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		DD236D34230A006900EB88F9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -64,6 +67,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				507690162D56A65200E58635 /* MapLibre in Frameworks */,
 				013D7AF226D327C400574AD5 /* RadarSDK.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -83,7 +87,7 @@
 		DD236D24230A006700EB88F9 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				DD236D23230A006700EB88F9 /* Example.app */,
+				DD236D23230A006700EB88F9 /* Indoors AI.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -95,6 +99,7 @@
 				DD236D34230A006900EB88F9 /* Info.plist */,
 				DDB861D22385FC3E00770661 /* Default-568h@2x.png */,
 				DD236D26230A006700EB88F9 /* AppDelegate.swift */,
+				5076901A2D56A69900E58635 /* MapView.swift */,
 				DD291168230D0AF900049D3A /* Utils.swift */,
 				DD236D2F230A006900EB88F9 /* Assets.xcassets */,
 				DD86FCF9239185F4003225F6 /* RadarSDK.xcodeproj */,
@@ -122,9 +127,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		DD236D22230A006700EB88F9 /* Example */ = {
+		DD236D22230A006700EB88F9 /* Indoors AI */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = DD236D37230A006900EB88F9 /* Build configuration list for PBXNativeTarget "Example" */;
+			buildConfigurationList = DD236D37230A006900EB88F9 /* Build configuration list for PBXNativeTarget "Indoors AI" */;
 			buildPhases = (
 				DD236D1F230A006700EB88F9 /* Sources */,
 				DD236D20230A006700EB88F9 /* Frameworks */,
@@ -135,9 +140,9 @@
 			);
 			dependencies = (
 			);
-			name = Example;
+			name = "Indoors AI";
 			productName = Example;
-			productReference = DD236D23230A006700EB88F9 /* Example.app */;
+			productReference = DD236D23230A006700EB88F9 /* Indoors AI.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -164,6 +169,9 @@
 				Base,
 			);
 			mainGroup = DD236D1A230A006700EB88F9;
+			packageReferences = (
+				507690142D56A65200E58635 /* XCRemoteSwiftPackageReference "maplibre-gl-native-distribution" */,
+			);
 			productRefGroup = DD236D24230A006700EB88F9 /* Products */;
 			projectDirPath = "";
 			projectReferences = (
@@ -174,7 +182,7 @@
 			);
 			projectRoot = "";
 			targets = (
-				DD236D22230A006700EB88F9 /* Example */,
+				DD236D22230A006700EB88F9 /* Indoors AI */,
 			);
 		};
 /* End PBXProject section */
@@ -215,6 +223,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				DD236D27230A006700EB88F9 /* AppDelegate.swift in Sources */,
+				5076901B2D56A69F00E58635 /* MapView.swift in Sources */,
 				DD291169230D0AF900049D3A /* Utils.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -352,7 +361,7 @@
 				);
 				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/RadarSDK";
 				INFOPLIST_FILE = Example/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = Example;
+				INFOPLIST_KEY_CFBundleDisplayName = "Indoors AI";
 				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -385,7 +394,7 @@
 				);
 				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/RadarSDK";
 				INFOPLIST_FILE = Example/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = Example;
+				INFOPLIST_KEY_CFBundleDisplayName = "Indoors AI";
 				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -416,7 +425,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		DD236D37230A006900EB88F9 /* Build configuration list for PBXNativeTarget "Example" */ = {
+		DD236D37230A006900EB88F9 /* Build configuration list for PBXNativeTarget "Indoors AI" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				DD236D38230A006900EB88F9 /* Debug */,
@@ -426,6 +435,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		507690142D56A65200E58635 /* XCRemoteSwiftPackageReference "maplibre-gl-native-distribution" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/maplibre/maplibre-gl-native-distribution";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 6.11.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		507690152D56A65200E58635 /* MapLibre */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 507690142D56A65200E58635 /* XCRemoteSwiftPackageReference "maplibre-gl-native-distribution" */;
+			productName = MapLibre;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = DD236D1B230A006700EB88F9 /* Project object */;
 }

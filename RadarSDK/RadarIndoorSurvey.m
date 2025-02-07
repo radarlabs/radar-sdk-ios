@@ -157,8 +157,12 @@
     // otherwise its /scan_results
 
 
-    // NSString *urlString = self.isWhereAmIScan ? @"https://89f8-2600-4041-5d11-a800-7431-aab7-65a-985b.ngrok-free.app/whereami/greg" : @"https://89f8-2600-4041-5d11-a800-7431-aab7-65a-985b.ngrok-free.app/scan_results";
-    NSString *urlString = self.isWhereAmIScan ? @"https://indoors-rtls.radarindoors.com/whereami/greg" : @"https://indoors-rtls.radarindoors.com/scan_results";
+    // NSString *server = @"https://0947-2600-4041-5d11-a800-48a2-2eca-37c5-9caa.ngrok-free.app";
+    NSString *server = @"https://indoors-rtls.radarindoors.com";
+
+    // NSString *urlString = self.isWhereAmIScan ? @"https://indoors-rtls.radarindoors.com/whereami/greg" : @"https://indoors-rtls.radarindoors.com/scan_results";
+    NSString *urlString = self.isWhereAmIScan ? [NSString stringWithFormat:@"%@/whereami/greg", server] : [NSString stringWithFormat:@"%@/scan_results", server];
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"urlString: %@", urlString]];
 
     // if self.isWhereAmIScan, call callback with the payload string
     // if (self.isWhereAmIScan) {

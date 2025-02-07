@@ -15,8 +15,8 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "DD236D22230A006700EB88F9"
-               BuildableName = "Example.app"
-               BlueprintName = "Example"
+               BuildableName = "Indoors AI.app"
+               BlueprintName = "Indoors AI"
                ReferencedContainer = "container:Example.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -33,8 +33,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "DD236D22230A006700EB88F9"
-            BuildableName = "Example.app"
-            BlueprintName = "Example"
+            BuildableName = "Indoors AI.app"
+            BlueprintName = "Indoors AI"
             ReferencedContainer = "container:Example.xcodeproj">
          </BuildableReference>
          <BuildableReference
@@ -73,8 +73,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "DD236D22230A006700EB88F9"
-            BuildableName = "Example.app"
-            BlueprintName = "Example"
+            BuildableName = "Indoors AI.app"
+            BlueprintName = "Indoors AI"
             ReferencedContainer = "container:Example.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
@@ -90,8 +90,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "DD236D22230A006700EB88F9"
-            BuildableName = "Example.app"
-            BlueprintName = "Example"
+            BuildableName = "Indoors AI.app"
+            BlueprintName = "Indoors AI"
             ReferencedContainer = "container:Example.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>

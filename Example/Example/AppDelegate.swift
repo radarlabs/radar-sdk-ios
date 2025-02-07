@@ -20,11 +20,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
 
     var geofenceButtons: [String: UIButton] = [:] // geofenceId -> button
 
-    func fetchAllGeofences(callback: @escaping ([(String, String)]) -> Void) {
+    var onPredictionUpdate: ((String, Double) -> Void)?
+
+    weak var mapViewController: MapViewController?  // Make it weak to avoid retain cycles
+
+    func fetchAllGeofences(callback: @escaping ([(String, String, [[CLLocationCoordinate2D]], String)]) -> Void) {
         let API_KEY = "prj_test_sk_26576f21c9ddd02079383a63ae06ee33fbde4f5f"
         let URL = "https://api.radar.io/v1/geofences"
         
-        // var request = URLRequest(url: URL(string: URL)!)
         let url = Foundation.URL(string: URL)
         var request = URLRequest(url: url!)
         request.httpMethod = "GET"
@@ -40,13 +43,24 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
                         return
                     }
                     
-                    let out: [(String, String)] = geofences.compactMap { geofence in
+                    let out: [(String, String, [[CLLocationCoordinate2D]], String)] = geofences.compactMap { geofence in
                         guard let id = geofence["_id"] as? String,
-                              let description = geofence["description"] as? String else {
+                              let description = geofence["description"] as? String,
+                              let geometry = geofence["geometry"] as? [String: Any],
+                              let coordinates = geometry["coordinates"] as? [[[Double]]],
+                              let tag = geofence["tag"] as? String else {
                             return nil
                         }
-                        return (id, description)
-                    }.sorted { $0.1 < $1.1 }
+                        
+                        // Convert coordinates to CLLocationCoordinate2D
+                        // Note: The first array in coordinates is the outer ring
+                        let polygonCoordinates = coordinates[0].map { coord in
+                            // GeoJSON format is [longitude, latitude]
+                            CLLocationCoordinate2D(latitude: coord[1], longitude: coord[0])
+                        }
+                        
+                        return (id, description, [polygonCoordinates], tag)
+                    }
                     
                     callback(out)
                 } catch {
@@ -56,6 +70,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         }
         task.resume()
     }
+
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { (_, _) in }
@@ -95,22 +110,26 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         scrollView.addSubview(button)
     }
     
-    @objc func didTapGeofenceButton(_ geofenceId: String, _ description: String, sender: UIButton) {
+    @objc func didTapGeofenceButton(_ geofenceId: String, _ description: String, completion: @escaping () -> Void) {
         print("tapped geofence button")
         print(geofenceId, description)
 
-        print("sender, DISABLING")
-        DispatchQueue.main.async {
-            sender.isEnabled = false
-        }
-
         let geofenceIdForSurvey = "geofenceid:\(geofenceId)"
-        Radar.doIndoorSurvey(geofenceIdForSurvey, forLength: 60, isWhereAmIScan:false) { _ in
+        // FIXME
+        // FIXME
+        // FIXME
+        // FIXME
+        // FIXME
+        // FIXME
+        // FIXME
+        // FIXME
+        // FIXME
+        // FIXME
+        // FIXME
+        // FIXME
+        Radar.doIndoorSurvey(geofenceIdForSurvey, forLength: 1, isWhereAmIScan: false) { _ in
             print("done doIndoorSurvey")
-
-            DispatchQueue.main.async {
-                sender.isEnabled = true
-            }
+            completion()  // Call the completion handler when done
         }
     }
 
@@ -122,41 +141,22 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
             // Parse the JSON string
             if let data = output!.data(using: .utf8),
                let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
-               let response = json["response"] as? [String: Any],
-               let probability = response["avg_probability"] as? Double,
-               let topPrediction = response["top_prediction"] as? String {
-
-                // Update button title on main thread
+               // response is now
+               // {"response": ["67a3b1d57cfde39ce8ec226a", 0.9940016233766232]}
+               let response = json["response"] as? [Any],
+               let topPrediction = response[0] as? String,
+                let probability = response[1] as? Double
+               {
+                print("got prediction", topPrediction, "probability", probability)
+                
                 DispatchQueue.main.async {
-                    // reset all button titles to remove old probabilities
-                    self.geofenceButtons.forEach { (geofenceId, button) in
-                        if let originalTitle = button.title(for: .normal),
-                           let cleanTitle = originalTitle.split(separator: " (").first {
-                            button.setTitle(String(cleanTitle), for: .normal)
-                            button.titleLabel?.font = .systemFont(ofSize: 17) // Reset to regular font
-                        }
-                    }
-
-                    if let button = self.geofenceButtons[topPrediction] {
-                        if let currentTitle = button.title(for: .normal) {
-                            let probabilityPercentage = Int(probability * 100)
-                            button.setTitle("\(currentTitle) (\(probabilityPercentage)%)", for: .normal)
-                            button.titleLabel?.font = .boldSystemFont(ofSize: 17) // Make predicted geofence bold
-                            
-                            UIView.animate(withDuration: 0.15, animations: {
-                                button.alpha = 0.3
-                            }, completion: { _ in
-                                UIView.animate(withDuration: 0.15) {
-                                    button.alpha = 1.0
-                                }
-                            })
-                        }
-                    }
-
-                    self.startContinuousInference()
+                    self.mapViewController?.handlePrediction(geofenceId: topPrediction, confidence: probability)
                 }
+
+                // LOOP
+                self.startContinuousInference()
             } else {
-                print("did not work to set the button title")
+                print("infer json parsing problem!!!")
             }
         }
     }
@@ -169,10 +169,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         guard let windowScene = (scene as? UIWindowScene) else { return }
 
         let window = UIWindow(windowScene: windowScene)
-        
         window.backgroundColor = .white
         
-        scrollView = UIScrollView(frame: CGRect(x: 0, y: 100, width: window.frame.size.width, height: window.frame.size.height))
+        
+        // Add MapViewController
+        let mapViewController = MapViewController()
+        self.mapViewController = mapViewController  // Store strong reference
+        window.addSubview(mapViewController.view)
+    
+        scrollView = UIScrollView(frame: CGRect(x: 0, y: 600, width: window.frame.size.width, height: window.frame.size.height - 300))
         scrollView!.contentSize.height = 0
         scrollView!.contentSize.width = window.frame.size.width
         
@@ -181,32 +186,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         window.makeKeyAndVisible()
         
         self.window = window
-        
-        demoButton(text: "fetch geofences") {
-            print("fetching geofences")
-            self.fetchAllGeofences(callback: { (geofences) in
-                print("fetched geofences")
-                
-                geofences.enumerated().forEach { (geofenceIndex, geofence) in
-                    DispatchQueue.main.async {
-                        var button = UIButton()
-                        button = UIButton(frame: CGRect(x: 20, y: 0, width: self.window!.frame.size.width - 40, height: 50))  // 20pt padding on each side
-                        button.setTitle(geofence.1, for: .normal)
-                        button.setTitleColor(.black, for: .normal)
-                        button.setTitleColor(.lightGray, for: .highlighted)
-                        button.setTitleColor(.systemGray4, for: .disabled)  // A light gray color that clearly shows the disabled state
-                        button.addAction(UIAction { [weak self] _ in
-                            self?.didTapGeofenceButton(geofence.0, geofence.1, sender: button)
-                        }, for: .touchUpInside)
-                        button.frame.origin.y = 250 + CGFloat(geofenceIndex) * 50
-                        self.window!.addSubview(button)
-                        
-                        self.geofenceButtons[geofence.0] = button
-                    }
-                }
-            })
-        }
-        
+       
         demoButton(text: "Start Infer Forever Loop") {
             self.startContinuousInference()
         }
