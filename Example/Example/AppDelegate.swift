@@ -16,7 +16,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
     var window: UIWindow? // required for UIWindowSceneDelegate
     
     var scrollView: UIScrollView?
-    var demoFunctions = Array<() -> Void>()
+    var demoFunctions = Array<(UIButton) -> Void>()
 
     var geofenceButtons: [String: UIButton] = [:] // geofenceId -> button
 
@@ -91,16 +91,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         return true
     }
     
-    func demoButton(text: String, function: @escaping () -> Void) {
+    func demoButton(text: String, function: @escaping (UIButton) -> Void) {
         guard let scrollView = self.scrollView else { return }
         
         let buttonHeight = 50
         scrollView.contentSize.height += CGFloat(buttonHeight)
         
         let buttonFrame = CGRect(x: 0, y: demoFunctions.count * buttonHeight, width: Int(scrollView.frame.width), height: buttonHeight)
-        let button = UIButton(frame: buttonFrame, primaryAction:UIAction(handler:{ _ in
-            function()
-        }))
+        let button = UIButton(frame: buttonFrame)
+        button.addAction(UIAction(handler: { _ in
+            function(button)
+        }), for: .touchUpInside)
         button.setTitleColor(.black, for: .normal)
         button.setTitleColor(.lightGray, for: .highlighted)
         button.setTitle(text, for: .normal)
@@ -177,7 +178,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         self.mapViewController = mapViewController  // Store strong reference
         window.addSubview(mapViewController.view)
     
-        scrollView = UIScrollView(frame: CGRect(x: 0, y: 600, width: window.frame.size.width, height: window.frame.size.height - 300))
+        scrollView = UIScrollView(frame: CGRect(x: 0, y: 700, width: window.frame.size.width, height: window.frame.size.height - 300))
         scrollView!.contentSize.height = 0
         scrollView!.contentSize.width = window.frame.size.width
         
@@ -187,7 +188,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         
         self.window = window
        
-        demoButton(text: "Start Infer Forever Loop") {
+        demoButton(text: "Start Infer Forever Loop") { button in
+            button.setTitle("Running inference...", for: .normal)
             self.startContinuousInference()
         }
 

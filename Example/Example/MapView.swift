@@ -12,7 +12,7 @@ import MapLibre
 class MapViewController: UIViewController {
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     weak var mapCoordinator: MapView.Coordinator?  // Add this to store coordinator reference
-
+    var confidenceLabel: UILabel?  // Add this
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -32,9 +32,10 @@ class MapViewController: UIViewController {
         
         // Add a label for confidence
         let confidenceLabel = UILabel()
-        confidenceLabel.frame = CGRect(x: 20, y: mapView.view.frame.maxY + 10, width: view.frame.width - 40, height: 30)
+        confidenceLabel.frame = CGRect(x: 20, y: 750, width: view.frame.width - 40, height: 30)  // 720 is just after the map's 700 height
         confidenceLabel.textAlignment = .center
         view.addSubview(confidenceLabel)
+        self.confidenceLabel = confidenceLabel  // Store the reference
 
         addChild(mapView)
         view.addSubview(mapView.view)
@@ -44,7 +45,7 @@ class MapViewController: UIViewController {
             mapView.view.topAnchor.constraint(equalTo: view.topAnchor),
             mapView.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             mapView.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            mapView.view.heightAnchor.constraint(equalToConstant: 600) // Adjust height as needed
+            mapView.view.heightAnchor.constraint(equalToConstant: 700) // Adjust height as needed
         ])
         
         mapView.didMove(toParent: self)
@@ -55,6 +56,9 @@ class MapViewController: UIViewController {
         if let coordinator = mapCoordinator {
             print("calling coordinator.updateHighlight")
             coordinator.updateHighlight(geofenceId: geofenceId)
+
+            print("confidenceLabel", confidenceLabel)
+            confidenceLabel?.text = String(format: "Confidence: %.1f%%", confidence * 100)
         } else {
             print("Coordinator not found!!!!!!!!!!!!")
         }
@@ -196,6 +200,7 @@ struct MapView: UIViewRepresentable {
                 let (fillColor, strokeColor, fillOpacity, strokeWidth) = styleForTag(id)
                 fillLayer.fillColor = NSExpression(forConstantValue: fillColor.withAlphaComponent(fillOpacity))
                 strokeLayer.lineColor = NSExpression(forConstantValue: strokeColor)
+                strokeLayer.lineWidth = NSExpression(forConstantValue: strokeWidth)
             }
             
             // Highlight selected geofence
