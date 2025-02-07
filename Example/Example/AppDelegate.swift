@@ -116,19 +116,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         print(geofenceId, description)
 
         let geofenceIdForSurvey = "geofenceid:\(geofenceId)"
-        // FIXME
-        // FIXME
-        // FIXME
-        // FIXME
-        // FIXME
-        // FIXME
-        // FIXME
-        // FIXME
-        // FIXME
-        // FIXME
-        // FIXME
-        // FIXME
-        Radar.doIndoorSurvey(geofenceIdForSurvey, forLength: 1, isWhereAmIScan: false) { _ in
+        Radar.doIndoorSurvey(geofenceIdForSurvey, forLength: 60, isWhereAmIScan: false) { _ in
             print("done doIndoorSurvey")
             completion()  // Call the completion handler when done
         }
