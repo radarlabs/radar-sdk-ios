@@ -205,7 +205,7 @@
                                                                  forLength:WHERE_AM_I_DURATION_SECONDS
                                                          withKnownLocation:location
                                                             isWhereAmIScan:YES
-                                                     withCompletionHandler:^(NSString *_Nullable indoorsWhereAmIScan) {
+                                                     withCompletionHandler:^(NSString *_Nullable indoorsWhereAmIScan, CLLocation *_Nonnull locationAtStartOfSurvey) {
 
                                      [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
                                                         message:[NSString stringWithFormat:@"received indoor start indoorsWhereAmIScan: %lu", (unsigned long)indoorsWhereAmIScan.length]];

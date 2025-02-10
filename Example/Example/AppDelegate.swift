@@ -9,6 +9,52 @@ import UIKit
 import UserNotifications
 import RadarSDK
 
+// Helper function to check if a point is inside a polygon
+func isPointInPolygon(point: CLLocationCoordinate2D, polygon: [CLLocationCoordinate2D]) -> Bool {
+    var inside = false
+    var j = polygon.count - 1
+    
+    for i in 0..<polygon.count {
+        let pi = polygon[i]
+        let pj = polygon[j]
+        
+        if ((pi.longitude > point.longitude) != (pj.longitude > point.longitude)) &&
+            (point.latitude < (pj.latitude - pi.latitude) * (point.longitude - pi.longitude) / 
+             (pj.longitude - pi.longitude) + pi.latitude) {
+            inside = !inside
+        }
+        j = i
+    }
+    return inside
+}
+
+// Helper function to check if a circle intersects with a polygon
+func doesCircleIntersectPolygon(center: CLLocationCoordinate2D, radius: CLLocationDistance, polygon: [CLLocationCoordinate2D]) -> Bool {
+    // First, check if center point is inside polygon
+    if isPointInPolygon(point: center, polygon: polygon) {
+        return true
+    }
+    
+    // Then check if any polygon edge intersects with circle
+    for i in 0..<polygon.count {
+        let start = polygon[i]
+        let end = polygon[(i + 1) % polygon.count]
+        
+        // Convert coordinates to meters for distance calculation
+        let startLocation = CLLocation(latitude: start.latitude, longitude: start.longitude)
+        let endLocation = CLLocation(latitude: end.latitude, longitude: end.longitude)
+        let centerLocation = CLLocation(latitude: center.latitude, longitude: center.longitude)
+        
+        // Calculate distance from center to line segment
+        let distance = centerLocation.distance(from: startLocation)
+        if distance <= radius {
+            return true
+        }
+    }
+    
+    return false
+}
+
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UNUserNotificationCenterDelegate, CLLocationManagerDelegate, RadarDelegate, RadarVerifiedDelegate {
 
@@ -24,9 +70,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
 
     weak var mapViewController: MapViewController?  // Make it weak to avoid retain cycles
 
+    // store copy of geofences (mapview will also fetch/have a copy)
+    var fetchedGeofences: [(String, String, [[CLLocationCoordinate2D]], String)] = []
+
     func fetchAllGeofences(callback: @escaping ([(String, String, [[CLLocationCoordinate2D]], String)]) -> Void) {
         let API_KEY = "prj_test_sk_26576f21c9ddd02079383a63ae06ee33fbde4f5f"
-        let URL = "https://api.radar.io/v1/geofences"
+        let URL = "https://api.radar.io/v1/geofences?limit=1000"
         
         let url = Foundation.URL(string: URL)
         var request = URLRequest(url: url!)
@@ -79,15 +128,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         locationManager.delegate = self
         self.requestLocationPermissions()
         
-        // Replace with a valid test publishable key
-        /*
-        Radar.initialize(publishableKey: "prj_test_pk_0000000000000000000000000000000000000000")
-        Radar.setUserId("testUserId")
-        Radar.setMetadata([ "foo": "bar" ])
-        Radar.setDelegate(self)
-        Radar.setVerifiedDelegate(self)
-        */
-        
         return true
     }
     
@@ -116,7 +156,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         print(geofenceId, description)
 
         let geofenceIdForSurvey = "geofenceid:\(geofenceId)"
-        Radar.doIndoorSurvey(geofenceIdForSurvey, forLength: 60, isWhereAmIScan: false) { _ in
+        Radar.doIndoorSurvey(geofenceIdForSurvey, forLength: 60, isWhereAmIScan: false) { _, _ in
             print("done doIndoorSurvey")
             completion()  // Call the completion handler when done
         }
@@ -124,13 +164,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
 
     func startContinuousInference() {
         // WHERAMI HAS TO BE MORE THAN 5 SECONDS WHICH IS THE WINDOW
-        Radar.doIndoorSurvey("WHEREAMI", forLength: 6, isWhereAmIScan:true) { output in
-            print("output", output)
+        Radar.doIndoorSurvey("WHEREAMI", forLength: 6, isWhereAmIScan:true) { serverResponse, locationAtStartOfSurvey in
+            print("serverResponse", serverResponse)
             
             // response is now
-            // {"response": ["67a3b1d57cfde39ce8ec226a", 0.9940016233766232]}
+            // {"response": {"67a3b1d57cfde39ce8ec226a": 0.8140016233766234, "67a40adf5d8fbe57279c9477": 0.1859983766233766}}
+            // where every key is a geofenceId and the value is the probability
 
-            if let data = output!.data(using: .utf8),
+            if let data = serverResponse!.data(using: .utf8),
                let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any] {
                 
                 if let errorMessage = json["error"] as? String {
@@ -138,14 +179,67 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
                     DispatchQueue.main.async {
                         self.mapViewController?.confidenceLabel?.text = errorMessage
                     }
-                } else if let response = json["response"] as? [Any],
-                          let topPrediction = response[0] as? String,
-                          let probability = response[1] as? Double {
-                    print("got prediction", topPrediction, "probability", probability)
-                    
-                    DispatchQueue.main.async {
-                        self.mapViewController?.handlePrediction(geofenceId: topPrediction, confidence: probability)
+                } else if let responseDict = json["response"] as? [String: Double] {
+                    // AT THIS POINT,
+                    // we have self.fetchedGeofences which contains a list of geofence objects
+                    // such as
+                    // { "_id": "67a8f2a5767afb4e7e0861b8", "createdAt": "2025-02-09T18:23:33.992Z", "updatedAt": "2025-02-09T22:09:55.517Z", "live": false, "description": "ORD - Terminal 1 Lobby (Check-in/Security) - 1/3", "tag": "ord-lobbies", "externalId": "ord-t1-lobby-1/3", "type": "polygon", "mode": "car", "stopDetection": false, "geometryCenter": { "type": "Point", "coordinates": [ -87.90619381789712, 41.97952088933131 ] }, "geometryRadius": 42, "geometry": { "type": "Polygon", "coordinates": [ [ [ -87.90623854193908, 41.979889853742606 ], [ -87.90641417002996, 41.97918785152016 ], [ -87.90613812210665, 41.97913670012637 ], [ -87.90598443751283, 41.979869151936114 ], [ -87.90623854193908, 41.979889853742606 ] ] ] }, "ip": [], "enabled": true },
+                    // AND in the response json object, we have all the geofences (known to the current ML model)
+                    // with their probabilities.
+                    // we want to FILTER OUT geofences that are not nearby which is defined by
+                    // the gps point in locationAtStartOfSurvey BUT ALSO by its horizontal accuracy ie
+                    // its the point + the "radius" of uncertainty around it
+                    // that should intersect with all geofences (based on their geometries!) and then
+                    // we should set the most probable geofence as the prediction
+
+                    // print the entire length of fetchedgeofences
+                    print("fetchedGeofences count", self.fetchedGeofences.count)
+//                    print("locationAtStartOfSurvey", locationAtStartOfSurvey)
+                    // print("locationAtStartOfSurvey.coordinate", locationAtStartOfSurvey.coordinate)
+                    // print("locationAtStartOfSurvey.horizontalAccuracy", locationAtStartOfSurvey.horizontalAccuracy)
+
+                    let nearbyGeofences = self.fetchedGeofences.filter { geofence in
+                        let (_, _, polygons, _) = geofence
+                        // Check each polygon in the geofence
+                        return polygons.contains { polygon in
+                            doesCircleIntersectPolygon(
+                                center: locationAtStartOfSurvey.coordinate,
+                                radius: locationAtStartOfSurvey.horizontalAccuracy,
+                                polygon: polygon
+                            )
+                        }
                     }
+
+                    print("nearbyGeofences count", nearbyGeofences.count)
+                    
+                    var highestProbability = 0.0
+                    var mostLikelyGeofenceId = ""
+                    
+                    for (id, _, _, _) in nearbyGeofences {
+                        if let probability = responseDict[id], probability > highestProbability {
+                            highestProbability = probability
+                            mostLikelyGeofenceId = id
+                        }
+                    }
+
+                    if !mostLikelyGeofenceId.isEmpty {
+                        DispatchQueue.main.async {
+                            self.mapViewController?.handlePrediction(
+                                geofenceId: mostLikelyGeofenceId,
+                                confidence: highestProbability
+                            )
+                        }
+                    } else {
+                        DispatchQueue.main.async {
+                            self.mapViewController?.confidenceLabel?.text = "No nearby geofences found"
+                        }
+                    }
+
+                    // print("got prediction", topPrediction, "probability", probability)
+                    
+                    // DispatchQueue.main.async {
+                    //     self.mapViewController?.handlePrediction(geofenceId: topPrediction, confidence: probability)
+                    // }
 
                     // LOOP
                     self.startContinuousInference()
@@ -194,7 +288,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
        
         demoButton(text: "Start Infer Forever Loop") { button in
             button.setTitle("Running inference...", for: .normal)
-            self.startContinuousInference()
+
+            print("fetching geofences!!!!!")
+            self.fetchAllGeofences { geofences in
+                DispatchQueue.main.async {
+                    self.fetchedGeofences = geofences
+                    button.setTitle("Running inference...", for: .normal)
+                    self.startContinuousInference()
+                }
+            }
         }
 
     }

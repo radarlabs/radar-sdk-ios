@@ -43,7 +43,7 @@
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelError message:@"Error: start called while already scanning"];
 
         // call callback, pass bad data
-        completionHandler(@"Error: start called while already scanning");
+        completionHandler(@"Error: start called while already scanning", nil);
 
         return;
     }
@@ -86,6 +86,8 @@
                          [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"location: %f, %f", location.coordinate.latitude, location.coordinate.longitude]];
                          [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"%@", location]];
 
+                         // print the location being set
+                         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"setting locationAtTimeOfSurveyStart TO: %@", location]];
                          self.locationAtTimeOfSurveyStart = location;
 
                          [self kickOffMotionAndBluetooth:surveyLengthSeconds];
@@ -156,9 +158,8 @@
     // url is /whereami/greg when isWhereAmIScan is true
     // otherwise its /scan_results
 
-
-    // NSString *server = @"https://0947-2600-4041-5d11-a800-48a2-2eca-37c5-9caa.ngrok-free.app";
-    NSString *server = @"https://indoors-rtls.radarindoors.com";
+     NSString *server = @"https://0947-2600-4041-5d11-a800-48a2-2eca-37c5-9caa.ngrok-free.app";
+//    NSString *server = @"https://indoors-rtls.radarindoors.com";
 
     // NSString *urlString = self.isWhereAmIScan ? @"https://indoors-rtls.radarindoors.com/whereami/greg" : @"https://indoors-rtls.radarindoors.com/scan_results";
     NSString *urlString = self.isWhereAmIScan ? [NSString stringWithFormat:@"%@/whereami/greg", server] : [NSString stringWithFormat:@"%@/scan_results", server];
@@ -187,7 +188,10 @@
             // decode data to string
             NSString *responseString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"responseString: %@", responseString]];
-            self.completionHandler(responseString);
+            // print self.locationAtTimeOfSurveyStart
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"locationAtTimeOfSurveyStart: %@", self.locationAtTimeOfSurveyStart]];
+            self.completionHandler(responseString, self.locationAtTimeOfSurveyStart);
+            self.locationAtTimeOfSurveyStart = nil;
         }
     }];
     [task resume];
@@ -196,9 +200,9 @@
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:@"calling removeAllObjects, clearing scanId, etc."];
 
     // removeAllObjects from bluetooth readings i.e. clear array
+    // locationAtTimeOfSurveyStart will be reset after completionhandler sends back the value
     [self.bluetoothReadings removeAllObjects];
     self.scanId = nil;
-    self.locationAtTimeOfSurveyStart = nil;
     self.lastMagnetometerData = nil;
 
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:@"stopScanning end"];

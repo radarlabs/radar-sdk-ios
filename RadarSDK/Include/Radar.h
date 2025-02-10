@@ -289,7 +289,7 @@ typedef void (^_Nonnull RadarRouteMatrixCompletionHandler)(RadarStatus status, R
 typedef void (^_Nonnull RadarLogConversionCompletionHandler)(RadarStatus status, RadarEvent *_Nullable event);
 
 // define RadarIndoorsSurveyCompletionHandler -- which is called with no arguments
-typedef void (^_Nonnull RadarIndoorsSurveyCompletionHandler)(NSString *_Nullable result);
+typedef void (^_Nonnull RadarIndoorsSurveyCompletionHandler)(NSString *_Nullable result, CLLocation *_Nonnull locationAtStartOfSurvey);
 
 /**
  The main class used to interact with the Radar SDK.
