@@ -158,8 +158,8 @@
     // url is /whereami/greg when isWhereAmIScan is true
     // otherwise its /scan_results
 
-     NSString *server = @"https://0947-2600-4041-5d11-a800-48a2-2eca-37c5-9caa.ngrok-free.app";
-//    NSString *server = @"https://indoors-rtls.radarindoors.com";
+     // NSString *server = @"https://0947-2600-4041-5d11-a800-48a2-2eca-37c5-9caa.ngrok-free.app";
+   NSString *server = @"https://indoors-rtls.radarindoors.com";
 
     // NSString *urlString = self.isWhereAmIScan ? @"https://indoors-rtls.radarindoors.com/whereami/greg" : @"https://indoors-rtls.radarindoors.com/scan_results";
     NSString *urlString = self.isWhereAmIScan ? [NSString stringWithFormat:@"%@/whereami/greg", server] : [NSString stringWithFormat:@"%@/scan_results", server];
