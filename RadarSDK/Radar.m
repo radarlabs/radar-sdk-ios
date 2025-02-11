@@ -1127,6 +1127,10 @@
     [RadarSdkConfiguration updateSdkConfigurationFromServer];
 }
 
++ (RadarLogLevel )getLogLevel{
+   return [RadarSettings logLevel]; 
+}
+
 + (void)logTermination { 
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug type:RadarLogTypeNone message:@"App terminating" includeDate:YES includeBattery:YES append:YES];
 }
@@ -1139,7 +1143,6 @@
 + (void)logResigningActive {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug type:RadarLogTypeNone message:@"App resigning active" includeDate:YES includeBattery:YES];
 }
-
 
 #pragma mark - Helpers
 
