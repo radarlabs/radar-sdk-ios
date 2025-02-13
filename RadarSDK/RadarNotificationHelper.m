@@ -32,7 +32,7 @@ static NSString *const kSyncGeofenceIdentifierPrefix = @"radar_geofence_";
         NSString *categoryIdentifier = [RadarEvent stringForType:event.type];
         UNMutableNotificationContent *content = [RadarNotificationHelper extractContentFromMetadata:event.metadata geofenceId:nil];
         NSString *campaignType = [event.metadata objectForKey:@"radar:campaignType"];
-        if (content && campaignType) {
+        if (content && campaignType == @"notification") {
             content.categoryIdentifier = categoryIdentifier;
             UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:identifier content:content trigger:nil];
             [UNUserNotificationCenter.currentNotificationCenter addNotificationRequest:request withCompletionHandler:^(NSError *_Nullable error) {
