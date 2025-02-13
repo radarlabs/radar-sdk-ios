@@ -28,7 +28,8 @@ typedef void (^NotificationPermissionCheckCompletion)(BOOL granted);
 
 + (void)openURLFromNotification:(UNNotification *)notification;
 
-#
++ (nullable UNMutableNotificationContent *)extractContentFromMetadata:(nullable NSDictionary *)metadata geofenceId:(nullable NSString *)geofenceId;
+
 + (void)getNotificationDiffWithCompletionHandler:(void (^)(NSArray *notificationsDelivered, NSArray *notificationsRemaining))completionHandler;
 @end
 
