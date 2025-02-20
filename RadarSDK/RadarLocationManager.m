@@ -378,6 +378,13 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                     }
                 }];
 
+                [self.activityManager startRelativeAltitudeWithHandler: ^(CMAltitudeData * _Nullable altitudeData) {
+                    [RadarState setLastRelativeAltitudeData:@{
+                        // we are not including the relativeAltitude field
+                        @"pressure" : @(altitudeData.pressure.doubleValue),
+                        @"timestamp" : @([[NSDate date] timeIntervalSince1970])
+                    }];
+                }];
             }
 
             CLLocationAccuracy desiredAccuracy;
@@ -1177,6 +1184,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 
     if (self.activityManager) {
         [self.activityManager stopActivityUpdates];
+        [self.activityManager stopRelativeAltitudeUpdates];
     }
 }
 

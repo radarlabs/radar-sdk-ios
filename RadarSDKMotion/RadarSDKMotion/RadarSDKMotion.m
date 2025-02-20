@@ -11,6 +11,7 @@
 @interface RadarSDKMotion ()
 
 @property (nonatomic, strong) CMMotionActivityManager *activityManager;
+@property (nonatomic, strong) CMAltimeter *altimiterManager;
 
 @end
 
@@ -20,6 +21,7 @@
     self = [super init];
     if (self) {
         _activityManager = [[CMMotionActivityManager alloc] init];
+        _altimiterManager = [[CMAltimeter alloc] init];
     }
     return self;
 }
@@ -33,6 +35,18 @@
 
 - (void)stopActivityUpdates {
     [self.activityManager stopActivityUpdates];
+}
+
+
+- (void)startRelativeAltitudeUpdatesToQueue:(NSOperationQueue *) queue
+                                 withHandler:(CMAltitudeHandler) handler {
+    if([CMAltimeter isRelativeAltitudeAvailable]) {
+        [self.altimiterManager startRelativeAltitudeUpdatesToQueue:queue withHandler:handler];
+    }
+}
+
+- (void)stopRelativeAltitudeUpdates {
+    [self.altimiterManager stopRelativeAltitudeUpdates];
 }
 
 @end

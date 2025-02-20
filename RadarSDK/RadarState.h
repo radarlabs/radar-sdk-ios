@@ -43,6 +43,8 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSArray<NSDictionary *> *_Nullable)registeredNotifications;
 + (void)setRegisteredNotifications:(NSArray<NSDictionary *> *_Nullable)registeredNotifications;
 + (void)addRegisteredNotification:(NSDictionary *)registeredNotification;
++ (NSDictionary *)lastRelativeAltitudeData;
++ (void)setLastRelativeAltitudeData:(NSDictionary *_Nullable)lastRelativeAltitudeData;
 
 @end
 

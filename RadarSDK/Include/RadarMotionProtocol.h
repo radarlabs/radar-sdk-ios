@@ -15,6 +15,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)startActivityUpdatesToQueue:(NSOperationQueue *)queue withHandler:(CMMotionActivityHandler)handler;
 - (void)stopActivityUpdates;
+- (void)startRelativeAltitudeUpdatesToQueue:(NSOperationQueue *) queue
+                                 withHandler:(CMAltitudeHandler) handler;
+- (void)stopRelativeAltitudeUpdates;
 
 @end
 

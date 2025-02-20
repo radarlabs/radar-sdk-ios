@@ -16,6 +16,7 @@
 + (instancetype _Nonnull )sharedInstance;
 - (void)startActivityUpdatesWithHandler:(void (^_Nullable)(CMMotionActivity * _Nonnull activity))handler;
 - (void)stopActivityUpdates;
-
+- (void)startRelativeAltitudeWithHandler:(void (^_Nullable)(CMAltitudeData * _Nullable altitudeData))handler;
+- (void)stopRelativeAltitudeUpdates;
 
 @end
