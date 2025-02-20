@@ -381,7 +381,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                 [self.activityManager startRelativeAltitudeWithHandler: ^(CMAltitudeData * _Nullable altitudeData) {
                     [RadarState setLastRelativeAltitudeData:@{
                         // we are not including the relativeAltitude field
-                        @"pressure" : @(altitudeData.pressure.doubleValue),
+                        @"pressure" : @(altitudeData.pressure.doubleValue *10), // convert to hPa
                         @"timestamp" : @([[NSDate date] timeIntervalSince1970])
                     }];
                 }];

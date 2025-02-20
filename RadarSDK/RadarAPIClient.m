@@ -362,7 +362,7 @@
         locationMetadata[@"speed"] = @(location.speed);
         locationMetadata[@"speedAccuracy"] = @(location.speedAccuracy);
         locationMetadata[@"course"] = @(location.course);
-        locationMetadata[@"pressure"] = [RadarState lastRelativeAltitudeData];
+        locationMetadata[@"pressureHPa"] = [RadarState lastRelativeAltitudeData];
 
         if (@available(iOS 13.4, *)) {
             locationMetadata[@"courseAccuracy"] = @(location.courseAccuracy);
