@@ -387,7 +387,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                 }];
 
                 if (@available(iOS 15.0, *)) {
-                    [self.activityManager startAbsoluteAltitudeUpdatesToQueue: ^(CMAbsoluteAltitudeData * _Nullable altitudeData) {
+                    [self.activityManager startAbsoluteAltitudeWithHandler: ^(CMAbsoluteAltitudeData * _Nullable altitudeData) {
                         NSMutableDictionary *currentState = [[RadarState lastRelativeAltitudeData] mutableCopy] ?: [NSMutableDictionary new];
                         currentState[@"altitude"] = @(altitudeData.altitude);
                         currentState[@"accuracy"] = @(altitudeData.accuracy);

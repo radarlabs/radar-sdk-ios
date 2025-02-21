@@ -116,7 +116,7 @@
     [self.radarSDKMotion stopRelativeAltitudeUpdates];
 }
 
-- (void)startAbsoluteAltitudeUpdatesToQueue:(void (^)(CMAbsoluteAltitudeData * _Nullable))handler {
+- (void)startAbsoluteAltitudeWithHandler:(void (^)(CMAbsoluteAltitudeData * _Nullable))handler {
     if (!self.radarSDKMotion) {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"radarSDKMotion is not set"];
         return;
