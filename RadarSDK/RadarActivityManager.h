@@ -18,6 +18,6 @@
 - (void)stopActivityUpdates;
 - (void)startRelativeAltitudeWithHandler:(void (^_Nullable)(CMAltitudeData * _Nullable altitudeData))handler;
 - (void)stopRelativeAltitudeUpdates;
-- (void)startAbsoluteAltitudeUpdatesToQueue:(void (^_Nullable)(CMAbsoluteAltitudeData * _Nullable altitudeData))handler;
+- (void)startAbsoluteAltitudeUpdatesToQueue:(void (^_Nullable)(CMAbsoluteAltitudeData * _Nullable altitudeData))handler API_AVAILABLE(ios(15.0));
 - (void)stopAbsoluteAltitudeUpdates;
 @end

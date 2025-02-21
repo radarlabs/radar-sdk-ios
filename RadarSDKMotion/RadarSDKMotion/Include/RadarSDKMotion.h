@@ -15,7 +15,7 @@
                                  withHandler:(CMAltitudeHandler) handler;
 - (void)stopRelativeAltitudeUpdates;
 - (void)startAbsoluteAltitudeUpdatesToQueue:(NSOperationQueue *) queue
-                                 withHandler:(CMAbsoluteAltitudeHandler) handler;
+                                withHandler:(CMAbsoluteAltitudeHandler) handler API_AVAILABLE(ios(15.0));
 - (void)stopAbsoluteAltitudeUpdates;
 
 @end

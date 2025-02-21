@@ -57,7 +57,11 @@
 }
 
 - (void)stopAbsoluteAltitudeUpdates {
-    [self.altimiterManager stopAbsoluteAltitudeUpdates];
+    if (@available(iOS 15.0, *)) {
+        [self.altimiterManager stopAbsoluteAltitudeUpdates];
+    } else {
+        // Fallback on earlier versions
+    }
 }
 
 @end
