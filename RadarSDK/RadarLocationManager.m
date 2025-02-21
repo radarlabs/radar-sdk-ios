@@ -378,6 +378,26 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                     }
                 }];
 
+                [self.activityManager startRelativeAltitudeWithHandler: ^(CMAltitudeData * _Nullable altitudeData) {
+                    NSMutableDictionary *currentState = [[RadarState lastRelativeAltitudeData] mutableCopy] ?: [NSMutableDictionary new];
+                    currentState[@"pressure"] = @(altitudeData.pressure.doubleValue *10); // convert to hPa
+                    currentState[@"relativeAltitude"] = @(altitudeData.relativeAltitude.doubleValue);
+                    currentState[@"relativeAltitudeTimestamp"] = @([[NSDate date] timeIntervalSince1970]);
+                    [RadarState setLastRelativeAltitudeData:currentState];
+                }];
+
+                if (@available(iOS 15.0, *)) {
+                    [self.activityManager startAbsoluteAltitudeWithHandler: ^(CMAbsoluteAltitudeData * _Nullable altitudeData) {
+                        NSMutableDictionary *currentState = [[RadarState lastRelativeAltitudeData] mutableCopy] ?: [NSMutableDictionary new];
+                        currentState[@"altitude"] = @(altitudeData.altitude);
+                        currentState[@"accuracy"] = @(altitudeData.accuracy);
+                        currentState[@"precision"] = @(altitudeData.precision);
+                        currentState[@"absoluteAltitudeTimestamp"] = @([[NSDate date] timeIntervalSince1970]);
+                        [RadarState setLastRelativeAltitudeData:currentState];
+                    }];
+                } else {
+                    // Fallback on earlier versions
+                }
             }
 
             CLLocationAccuracy desiredAccuracy;
@@ -1177,6 +1197,8 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 
     if (self.activityManager) {
         [self.activityManager stopActivityUpdates];
+        [self.activityManager stopRelativeAltitudeUpdates];
+        [self.activityManager stopAbsoluteAltitudeUpdates];
     }
 }
 
