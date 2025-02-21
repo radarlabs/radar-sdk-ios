@@ -11,7 +11,7 @@
 @interface RadarSDKMotion ()
 
 @property (nonatomic, strong) CMMotionActivityManager *activityManager;
-@property (nonatomic, strong) CMAltimeter *altimiterManager;
+@property (nonatomic, strong) CMAltimeter *altimeterManager;
 
 @end
 
@@ -21,7 +21,7 @@
     self = [super init];
     if (self) {
         _activityManager = [[CMMotionActivityManager alloc] init];
-        _altimiterManager = [[CMAltimeter alloc] init];
+        _altimeterManager = [[CMAltimeter alloc] init];
     }
     return self;
 }
@@ -41,24 +41,24 @@
 - (void)startRelativeAltitudeUpdatesToQueue:(NSOperationQueue *) queue
                                  withHandler:(CMAltitudeHandler) handler {
     if([CMAltimeter isRelativeAltitudeAvailable]) {
-        [self.altimiterManager startRelativeAltitudeUpdatesToQueue:queue withHandler:handler];
+        [self.altimeterManager startRelativeAltitudeUpdatesToQueue:queue withHandler:handler];
     }
 }
 
 - (void)stopRelativeAltitudeUpdates {
-    [self.altimiterManager stopRelativeAltitudeUpdates];
+    [self.altimeterManager stopRelativeAltitudeUpdates];
 }
 
 - (void)startAbsoluteAltitudeUpdatesToQueue:(NSOperationQueue *) queue
                                 withHandler:(CMAbsoluteAltitudeHandler) handler  API_AVAILABLE(ios(15.0)){
     if([CMAltimeter isAbsoluteAltitudeAvailable]) {
-        [self.altimiterManager startAbsoluteAltitudeUpdatesToQueue:queue withHandler:handler];
+        [self.altimeterManager startAbsoluteAltitudeUpdatesToQueue:queue withHandler:handler];
     }
 }
 
 - (void)stopAbsoluteAltitudeUpdates {
     if (@available(iOS 15.0, *)) {
-        [self.altimiterManager stopAbsoluteAltitudeUpdates];
+        [self.altimeterManager stopAbsoluteAltitudeUpdates];
     } else {
         // Fallback on earlier versions
     }
