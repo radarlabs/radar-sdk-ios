@@ -13,8 +13,10 @@
 
 @property (nonatomic, strong, nullable) NSOperationQueue *activityQueue;
 @property (nonatomic, strong, nullable) NSOperationQueue *pressureQueue;
+@property (nonatomic, strong, nullable) NSOperationQueue *absoluteAltitudeQueue;
 @property (nonatomic) BOOL isUpdatingActivity;
 @property (nonatomic) BOOL isUpdatingPressure;
+@property (nonatomic) BOOL isUpdatingAbsoluteAltitude;
 
 @end
 
@@ -35,10 +37,13 @@
     if (self) {
         _activityQueue = [[NSOperationQueue alloc] init];
         _pressureQueue = [[NSOperationQueue alloc] init];
+        _absoluteAltitudeQueue = [[NSOperationQueue alloc] init];
         _activityQueue.name = @"com.radar.activityQueue";
         _pressureQueue.name = @"com.radar.pressureQueue";
+        _absoluteAltitudeQueue.name = @"com.radar.absoluteAltitudeQueue";
         _isUpdatingActivity = NO;
         _isUpdatingPressure = NO;
+        _isUpdatingAbsoluteAltitude = NO;
     }
     return self;
 }
@@ -109,6 +114,37 @@
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"stopRelativeAltitudeUpdates"];
     self.isUpdatingPressure = NO;
     [self.radarSDKMotion stopRelativeAltitudeUpdates];
+}
+
+- (void)startAbsoluteAltitudeUpdatesToQueue:(void (^)(CMAbsoluteAltitudeData * _Nullable))handler {
+    if (!self.radarSDKMotion) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"radarSDKMotion is not set"];
+        return;
+    }
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"startAbsoluteAltitudeUpdatesToQueue"];
+    self.isUpdatingAbsoluteAltitude = YES;
+    [self.radarSDKMotion startAbsoluteAltitudeUpdatesToQueue:self.absoluteAltitudeQueue withHandler:^(CMAbsoluteAltitudeData *altitudeData, NSError *error) {
+        if (error) {
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelError message:[NSString stringWithFormat:@"startAbsoluteAltitudeUpdatesToQueue error: %@", error]];
+            return;
+        }
+        if (altitudeData) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"startAbsoluteAltitudeUpdatesToQueue dispatch_async main_queue: %@", altitudeData]];
+                handler(altitudeData);
+            });
+        }
+    }];
+}
+
+- (void)stopAbsoluteAltitudeUpdates {
+    if (!self.radarSDKMotion) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"radarSDKMotion is not set"];
+        return;
+    }
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"stopAbsoluteAltitudeUpdates"];
+    self.isUpdatingAbsoluteAltitude = NO;
+    [self.radarSDKMotion stopAbsoluteAltitudeUpdates];
 }
 
 @end

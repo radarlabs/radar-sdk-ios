@@ -18,5 +18,6 @@
 - (void)stopActivityUpdates;
 - (void)startRelativeAltitudeWithHandler:(void (^_Nullable)(CMAltitudeData * _Nullable altitudeData))handler;
 - (void)stopRelativeAltitudeUpdates;
-
+- (void)startAbsoluteAltitudeUpdatesToQueue:(void (^_Nullable)(CMAbsoluteAltitudeData * _Nullable altitudeData))handler;
+- (void)stopAbsoluteAltitudeUpdates;
 @end
