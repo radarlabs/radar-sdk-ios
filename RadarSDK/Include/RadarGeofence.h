@@ -51,6 +51,8 @@
  */
 @property (nullable, copy, nonatomic, readonly) RadarOperatingHours *operatingHours;
 
+@property(assign, nonatomic, readonly) double confidencePercentage;
+
 + (NSArray<NSDictionary *> *_Nullable)arrayForGeofences:(NSArray<RadarGeofence *> *_Nullable)geofences;
 - (NSDictionary *_Nonnull)dictionaryValue;
 
