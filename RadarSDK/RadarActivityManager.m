@@ -29,7 +29,7 @@
 
 @end
 
-static const NSInteger kMaxBufferSize = 3000;
+static const NSInteger kMaxBufferSize = 1500;
 
 @implementation RadarActivityManager
 
