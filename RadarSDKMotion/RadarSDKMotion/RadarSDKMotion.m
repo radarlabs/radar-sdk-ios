@@ -12,6 +12,8 @@
 
 @property (nonatomic, strong) CMMotionActivityManager *activityManager;
 @property (nonatomic, strong) CMAltimeter *altimeterManager;
+@property (nonatomic, strong) CMMotionManager *motionManager;
+
 
 @end
 
@@ -22,6 +24,7 @@
     if (self) {
         _activityManager = [[CMMotionActivityManager alloc] init];
         _altimeterManager = [[CMAltimeter alloc] init];
+        _motionManager = [[CMMotionManager alloc] init];
     }
     return self;
 }
@@ -63,5 +66,22 @@
         // Fallback on earlier versions
     }
 }
+
+- (void)startAccelerometerUpdatesToQueue:(NSOperationQueue *)queue withHandler:(CMAccelerometerHandler)handler {
+    [self.motionManager startAccelerometerUpdatesToQueue:queue withHandler:handler];
+}
+
+- (void)stopAccelerometerUpdates {
+    [self.motionManager stopAccelerometerUpdates];
+}
+
+- (void)startMagnetometerUpdatesToQueue:(NSOperationQueue *)queue withHandler:(CMMagnetometerHandler)handler {
+    [self.motionManager startMagnetometerUpdatesToQueue:queue withHandler:handler];
+}
+
+- (void)stopMagnetometerUpdates {
+    [self.motionManager stopMagnetometerUpdates];
+}
+
 
 @end

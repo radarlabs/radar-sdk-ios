@@ -12,6 +12,7 @@
 @interface RadarActivityManager : NSObject
 
 @property (nullable, strong, nonatomic) id radarSDKMotion;
+@property (nonatomic, readonly) NSInteger MAX_BUFFER_SIZE;
 
 + (instancetype _Nonnull )sharedInstance;
 - (void)startActivityUpdatesWithHandler:(void (^_Nullable)(CMMotionActivity * _Nonnull activity))handler;
@@ -20,4 +21,12 @@
 - (void)stopRelativeAltitudeUpdates;
 - (void)startAbsoluteAltitudeWithHandler:(void (^_Nullable)(CMAbsoluteAltitudeData * _Nullable altitudeData))handler API_AVAILABLE(ios(15.0));
 - (void)stopAbsoluteAltitudeUpdates;
+
+- (void)startAccelerometerUpdates;
+- (void)stopAccelerometerUpdates;
+- (NSArray *_Nonnull)getAccelerometerData;
+
+- (void)startMagnetometerUpdates;
+- (void)stopMagnetometerUpdates;
+- (NSArray *_Nonnull)getMagnetometerData;
 @end

@@ -342,6 +342,8 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                 [self.locationManager startUpdatingHeading];
 
                 self.activityManager = [RadarActivityManager sharedInstance];
+                [self.activityManager startAccelerometerUpdates];
+                [self.activityManager startMagnetometerUpdates];
                 [self.activityManager startActivityUpdatesWithHandler:^(CMMotionActivity *activity) {
                     if (activity) {
                         RadarActivityType activityType = RadarActivityTypeUnknown;
@@ -1199,6 +1201,8 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         [self.activityManager stopActivityUpdates];
         [self.activityManager stopRelativeAltitudeUpdates];
         [self.activityManager stopAbsoluteAltitudeUpdates];
+        [self.activityManager stopAccelerometerUpdates];
+        [self.activityManager stopMagnetometerUpdates];
     }
 }
 

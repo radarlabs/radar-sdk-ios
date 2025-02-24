@@ -377,9 +377,11 @@
             locationMetadata[@"isSimulatedBySoftware"] = @([location.sourceInformation isSimulatedBySoftware]);
         }
         locationMetadata[@"floor"] = @([location.floor level]);
+        locationMetadata[@"magnetometerData"] = [[RadarActivityManager sharedInstance] getMagnetometerData];
+        locationMetadata[@"accelerationData"] = [[RadarActivityManager sharedInstance] getAccelerometerData];
         
         params[@"locationMetadata"] = locationMetadata;
-    }
+    } 
     
     params[@"fraudFailureReasons"] = fraudFailureReasons;
 
