@@ -72,6 +72,10 @@
 }
 
 - (void)trackVerifiedWithBeacons:(BOOL)beacons desiredAccuracy:(RadarTrackingOptionsDesiredAccuracy)desiredAccuracy reason:(NSString *)reason transactionId:(NSString *)transactionId completionHandler:(RadarTrackVerifiedCompletionHandler)completionHandler {
+    if (!reason) {
+        reason = @"manual";
+    }
+    
     BOOL lastTokenBeacons = beacons;
     
     [[RadarAPIClient sharedInstance]
@@ -201,7 +205,7 @@
 - (void)intervalFired {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Token request interval fired"];
     
-    [self callTrackVerified];
+    [self callTrackVerifiedWithReason:@"interval"];
 }
 
 - (void)scheduleNextIntervalWithLastToken {
@@ -235,12 +239,12 @@
     [self performSelector:@selector(intervalFired) withObject:nil afterDelay:interval];
 }
 
-- (void)callTrackVerified {
+- (void)callTrackVerifiedWithReason:(NSString *)reason {
     if (!self.started) {
         return;
     }
     
-    [self trackVerifiedWithBeacons:self.startedBeacons desiredAccuracy:RadarTrackingOptionsDesiredAccuracyHigh completionHandler:^(RadarStatus status, RadarVerifiedLocationToken *_Nullable token) {
+    [self trackVerifiedWithBeacons:self.startedBeacons desiredAccuracy:RadarTrackingOptionsDesiredAccuracyHigh reason:reason transactionId:nil completionHandler:^(RadarStatus status, RadarVerifiedLocationToken *_Nullable token) {
         [self scheduleNextIntervalWithLastToken];
     }];
 }
@@ -282,7 +286,7 @@
             self.lastIPs = ips;
             
             if (changed) {
-                [self callTrackVerified];
+                [self callTrackVerifiedWithReason:@"ip_change"];
             }
         });
         nw_path_monitor_start(_monitor);
@@ -291,7 +295,7 @@
     if ([self isLastTokenValid]) {
         [self scheduleNextIntervalWithLastToken];
     } else {
-        [self callTrackVerified];
+        [self callTrackVerifiedWithReason:@"start"];
     }
 }
 
@@ -312,7 +316,7 @@
         return completionHandler(RadarStatusSuccess, self.lastToken);
     }
     
-    [self trackVerifiedWithBeacons:beacons desiredAccuracy:desiredAccuracy completionHandler:completionHandler];
+    [self trackVerifiedWithBeacons:beacons desiredAccuracy:desiredAccuracy reason:@"cache" transactionId:nil completionHandler:completionHandler];
 }
 
 - (void)clearVerifiedLocationToken {

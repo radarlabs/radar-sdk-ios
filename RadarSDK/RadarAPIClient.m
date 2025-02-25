@@ -207,6 +207,8 @@
                 encrypted:(BOOL)encrypted
       expectedCountryCode:(NSString * _Nullable)expectedCountryCode
         expectedStateCode:(NSString * _Nullable)expectedStateCode
+                   reason:(NSString * _Nullable)reason
+            transactionId:(NSString * _Nullable)transactionId
         completionHandler:(RadarTrackAPICompletionHandler _Nonnull)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
@@ -340,6 +342,12 @@
         }
         if (expectedStateCode) {
             params[@"expectedStateCode"] = expectedStateCode;
+        }
+        if (reason) {
+            params[@"reason"] = reason;
+        }
+        if (transactionId) {
+            params[@"transactionId"] = transactionId;
         }
     }
     params[@"appId"] = [[NSBundle mainBundle] bundleIdentifier];
