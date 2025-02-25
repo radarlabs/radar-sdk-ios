@@ -103,8 +103,8 @@ struct MapView: UIViewRepresentable {
         mapView.showsUserLocation = true
 
         mapView.setCenter(
-          CLLocationCoordinate2D(latitude: 41.97712, longitude: -87.90619),
-          zoomLevel: 11,
+          CLLocationCoordinate2D(latitude: 40.69528687406046, longitude: -74.1769155204496),
+          zoomLevel: 12,
           animated: false
         )
         

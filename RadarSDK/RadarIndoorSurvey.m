@@ -276,9 +276,10 @@
         [NSURLQueryItem queryItemWithName:@"location.altitude" value:[NSString stringWithFormat:@"%f", self.locationAtTimeOfSurveyStart.altitude]],
         [NSURLQueryItem queryItemWithName:@"location.timestamp" value:[NSString stringWithFormat:@"%@", self.locationAtTimeOfSurveyStart.timestamp]],
         [NSURLQueryItem queryItemWithName:@"location.floor" value:[NSString stringWithFormat:@"%@",
-            self.locationAtTimeOfSurveyStart.floor ? self.locationAtTimeOfSurveyStart.floor : @0
+            (self.locationAtTimeOfSurveyStart && self.locationAtTimeOfSurveyStart.floor) ? 
+                @(self.locationAtTimeOfSurveyStart.floor.level) : @0
         ]],
-
+        
         [NSURLQueryItem queryItemWithName:@"sdkVersion" value:[RadarUtils sdkVersion]],
         [NSURLQueryItem queryItemWithName:@"deviceType" value:[RadarUtils deviceType]],
         [NSURLQueryItem queryItemWithName:@"deviceMake" value:[RadarUtils deviceMake]],

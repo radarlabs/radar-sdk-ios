@@ -97,7 +97,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
                               let description = geofence["description"] as? String,
                               let geometry = geofence["geometry"] as? [String: Any],
                               let coordinates = geometry["coordinates"] as? [[[Double]]],
-                              let tag = geofence["tag"] as? String else {
+                              let tag = geofence["tag"] as? String,
+                              let enabled = geofence["enabled"] as? Bool,
+                              enabled == true else {
                             return nil
                         }
                         
