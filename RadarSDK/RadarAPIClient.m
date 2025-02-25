@@ -66,7 +66,6 @@
         @"X-Radar-Device-Type": [RadarUtils deviceType],
         @"X-Radar-SDK-Version": [RadarUtils sdkVersion],
         @"X-Radar-Mobile-Origin": [[NSBundle mainBundle] bundleIdentifier],
-
     } mutableCopy];
     if ([RadarSettings xPlatform]) {
         [headers addEntriesFromDictionary:@{
@@ -76,6 +75,12 @@
     } else {
         [headers addEntriesFromDictionary:@{
             @"X-Radar-X-Platform-SDK-Type": @"Native"
+        }];
+    }
+    NSString *product = [RadarSettings product];
+    if (product) {
+        [headers addEntriesFromDictionary:@{
+            @"X-Radar-Product": product
         }];
     }
     return headers;
@@ -238,7 +243,6 @@
             params[@"sessionId"] = sessionId;
         }
     }
-    params[@"product"] = [RadarSettings product];
     params[@"latitude"] = @(location.coordinate.latitude);
     params[@"longitude"] = @(location.coordinate.longitude);
     CLLocationAccuracy accuracy = location.horizontalAccuracy;
