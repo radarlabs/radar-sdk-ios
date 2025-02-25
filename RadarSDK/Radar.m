@@ -303,8 +303,12 @@
 }
 
 + (void)trackVerifiedWithBeacons:(BOOL)beacons desiredAccuracy:(RadarTrackingOptionsDesiredAccuracy)desiredAccuracy completionHandler:(RadarTrackVerifiedCompletionHandler)completionHandler {
+    [self trackVerifiedWithBeacons:NO desiredAccuracy:RadarTrackingOptionsDesiredAccuracyMedium reason:nil transactionId:nil completionHandler:completionHandler];
+}
+
++ (void)trackVerifiedWithBeacons:(BOOL)beacons desiredAccuracy:(RadarTrackingOptionsDesiredAccuracy)desiredAccuracy reason:(NSString *)reason transactionId:(NSString *)transactionId completionHandler:(RadarTrackVerifiedCompletionHandler)completionHandler {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"trackVerified()"];
-    [[RadarVerificationManager sharedInstance] trackVerifiedWithBeacons:beacons desiredAccuracy:desiredAccuracy completionHandler:completionHandler];
+    [[RadarVerificationManager sharedInstance] trackVerifiedWithBeacons:beacons desiredAccuracy:desiredAccuracy reason:reason transactionId:transactionId completionHandler:completionHandler];
 }
 
 + (void)startTrackingVerifiedWithInterval:(NSTimeInterval)interval beacons:(BOOL)beacons {

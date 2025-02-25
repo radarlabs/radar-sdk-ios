@@ -511,6 +511,21 @@ typedef void (^_Nullable RadarLogConversionCompletionHandler)(RadarStatus status
 + (void)trackVerifiedWithBeacons:(BOOL)beacons desiredAccuracy:(RadarTrackingOptionsDesiredAccuracy)desiredAccuracy completionHandler:(RadarTrackVerifiedCompletionHandler _Nullable)completionHandler NS_SWIFT_NAME(trackVerified(beacons:desiredAccuracy:completionHandler:));
 
 /**
+ Tracks the user's location with device integrity information for location verification use cases.
+
+ @warning Note that you must configure SSL pinning before calling this method.
+
+ @param beacons A boolean indicating whether to range beacons.
+ @param desiredAccuracy The desired accuracy.
+ @param reason An optional reason, displayed in the dashboard and reports.
+ @param transactionId An optional transaction ID, displayed in the dashboard and reports.
+ @param completionHandler An optional completion handler.
+
+ @see https://radar.com/documentation/fraud
+ */
++ (void)trackVerifiedWithBeacons:(BOOL)beacons desiredAccuracy:(RadarTrackingOptionsDesiredAccuracy)desiredAccuracy reason:(NSString *_Nullable)reason transactionId:(NSString *_Nullable)transactionId completionHandler:(RadarTrackVerifiedCompletionHandler _Nullable)completionHandler NS_SWIFT_NAME(trackVerified(beacons:desiredAccuracy:reason:transactionId:completionHandler:));
+
+/**
  Starts tracking the user's location with device integrity information for location verification use cases.
  
  @param interval The default interval in seconds between each location update.
