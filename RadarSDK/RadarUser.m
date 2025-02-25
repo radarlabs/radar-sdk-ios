@@ -16,6 +16,7 @@
 #import "RadarSegment+Internal.h"
 #import "RadarTrip+Internal.h"
 #import "RadarUser+Internal.h"
+#import "RadarLogger.h"
 
 @implementation RadarUser
 
@@ -315,6 +316,9 @@
     id barometricAltitudeObj = dict[@"barometricAltitude"];
     if (barometricAltitudeObj && [barometricAltitudeObj isKindOfClass:[NSNumber class]]) {
         barometricAltitude = [((NSNumber *)barometricAltitudeObj) doubleValue];
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"barometricAltitude: %f", barometricAltitude]];
+    } else {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"barometricAltitude: null"];
     }
 
     id floorLevelObj = dict[@"floorLevel"];
