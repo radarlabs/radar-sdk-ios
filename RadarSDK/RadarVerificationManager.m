@@ -316,7 +316,7 @@
         return completionHandler(RadarStatusSuccess, self.lastToken);
     }
     
-    [self trackVerifiedWithBeacons:beacons desiredAccuracy:desiredAccuracy reason:@"cache" transactionId:nil completionHandler:completionHandler];
+    [self trackVerifiedWithBeacons:beacons desiredAccuracy:desiredAccuracy reason:@"last_token_invalid" transactionId:nil completionHandler:completionHandler];
 }
 
 - (void)clearVerifiedLocationToken {
