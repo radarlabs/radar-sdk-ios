@@ -179,13 +179,13 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         accuracy = kCLLocationAccuracyBest;
         break;
     case RadarTrackingOptionsDesiredAccuracyMedium:
-        accuracy = kCLLocationAccuracyHundredMeters;
+        accuracy = kCLLocationAccuracyBest;
         break;
     case RadarTrackingOptionsDesiredAccuracyLow:
-        accuracy = kCLLocationAccuracyKilometer;
+        accuracy = kCLLocationAccuracyBest;
         break;
     default:
-        accuracy = kCLLocationAccuracyHundredMeters;
+        accuracy = kCLLocationAccuracyBest;
     }
 
     self.locationManager.desiredAccuracy = accuracy;
@@ -408,13 +408,13 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                 desiredAccuracy = kCLLocationAccuracyBest;
                 break;
             case RadarTrackingOptionsDesiredAccuracyMedium:
-                desiredAccuracy = kCLLocationAccuracyHundredMeters;
+                desiredAccuracy = kCLLocationAccuracyBest;
                 break;
             case RadarTrackingOptionsDesiredAccuracyLow:
-                desiredAccuracy = kCLLocationAccuracyKilometer;
+                desiredAccuracy = kCLLocationAccuracyBest;
                 break;
             default:
-                desiredAccuracy = kCLLocationAccuracyHundredMeters;
+                desiredAccuracy = kCLLocationAccuracyBest;
             }
             self.locationManager.desiredAccuracy = desiredAccuracy;
 
