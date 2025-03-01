@@ -252,7 +252,7 @@ static NSString *const kSyncGeofenceIdentifierPrefix = @"radar_geofence_";
 }
 
 + (void)createDummyNotification {
-    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Creating dummy notification"];
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:@"Creating dummy notification"];
     UNUserNotificationCenter *notificationCenter = [UNUserNotificationCenter currentNotificationCenter];
     UNMutableNotificationContent *content = [UNMutableNotificationContent new];
     content.body = @"Test notification";
