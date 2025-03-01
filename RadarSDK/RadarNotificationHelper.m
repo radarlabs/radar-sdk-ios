@@ -251,4 +251,16 @@ static NSString *const kSyncGeofenceIdentifierPrefix = @"radar_geofence_";
     } 
 }
 
++ (void)createDummyNotification {
+    UNUserNotificationCenter *notificationCenter = [UNUserNotificationCenter currentNotificationCenter];
+    UNMutableNotificationContent *content = [UNMutableNotificationContent new];
+    content.body = @"Test notification";
+    content.userInfo = @{@"campaignId": @"675b0ae4a45ef600aadfce25"};
+    UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:@"radar_dummy_notification" content:content trigger:nil];
+    [notificationCenter addNotificationRequest:request withCompletionHandler:^(NSError *_Nullable error) {
+        if (error) {
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelError message:[NSString stringWithFormat:@"Error adding local notification | identifier = %@; error = %@", request.identifier, error]];
+        }
+    }];
+}
 @end

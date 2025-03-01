@@ -30,6 +30,9 @@ typedef void (^NotificationPermissionCheckCompletion)(BOOL granted);
 
 #
 + (void)getNotificationDiffWithCompletionHandler:(void (^)(NSArray *notificationsDelivered, NSArray *notificationsRemaining))completionHandler;
+
++ (void)createDummyNotification;
+
 @end
 
 NS_ASSUME_NONNULL_END

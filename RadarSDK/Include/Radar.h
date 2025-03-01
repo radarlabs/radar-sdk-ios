@@ -1288,6 +1288,9 @@ typedef void (^_Nullable RadarLogConversionCompletionHandler)(RadarStatus status
 
 + (void)openURLFromNotification:(UNNotification *)notification NS_SWIFT_NAME(openURLFromNotification(_:));
 
+
++ (void)createDummyNotification;
+
 @end
 
 NS_ASSUME_NONNULL_END

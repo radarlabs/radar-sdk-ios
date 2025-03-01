@@ -505,7 +505,7 @@
         if (lastAppOpenTimeInterval > 2) {
             [RadarSettings updateLastAppOpenTime];
             // metadata not needed as app is not opened by notification.
-            [self sendLogConversionRequestWithName:@"opened_app" metadata:nil completionHandler:^(RadarStatus status, RadarEvent * _Nullable event) {
+            [self sendLogConversionRequestWithName:@"opened_app_normal" metadata:nil completionHandler:^(RadarStatus status, RadarEvent * _Nullable event) {
                 NSString *message = [NSString stringWithFormat:@"Conversion name = %@: status = %@; event = %@", event.conversionName, [Radar stringForStatus:status], event];
                 [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:message];
             }];
@@ -515,7 +515,7 @@
 
 + (void)logOpenedAppConversionWithNotification:(UNNotificationRequest *)request 
                               conversionSource:(NSString *_Nullable)conversionSource {
-    [self logConversionWithNotification:request eventName:@"opened_app" conversionSource:conversionSource deliveredAfter:nil];
+    [self logConversionWithNotification:request eventName:@"opened_app_with_notification" conversionSource:conversionSource deliveredAfter:nil];
 }
 
 + (void)logConversionWithName:(NSString *)name
@@ -550,7 +550,7 @@
 
 
 + (void)logConversionWithNotification:(UNNotificationRequest *)request {
-    [self logConversionWithNotification:request eventName: @"opened_app" conversionSource:@"notification" deliveredAfter: nil];
+    [self logConversionWithNotification:request eventName: @"opened_app_with_notification" conversionSource:@"notification" deliveredAfter: nil];
 }
 
 + (void)logConversionWithNotification:(UNNotificationRequest *)request
@@ -1386,6 +1386,10 @@
 
 + (void)openURLFromNotification:(UNNotification *)notification {
     [RadarNotificationHelper openURLFromNotification:notification];
+}
+
++ (void)createDummyNotification {
+    [RadarNotificationHelper createDummyNotification];
 }
 
 @end
