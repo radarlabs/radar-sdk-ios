@@ -571,6 +571,7 @@
 }
 
 + (void)logConversionWithNotificationResponse:(UNNotificationResponse *)response {
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:@"Logging conversion with notification response"];
     [RadarNotificationHelper logConversionWithNotificationResponse:response];
 }
 
