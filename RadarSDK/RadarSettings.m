@@ -261,16 +261,28 @@ static NSString *const kInitializeOptions = @"radar-initializeOptions";
     return [[RadarSdkConfiguration alloc] initWithDict:sdkConfigurationDict];
 }
 
++ (BOOL)isDebugBuild {
+#ifdef DEBUG
+    return YES;
+#else
+    return NO;
+#endif
+}
+
 + (RadarLogLevel)logLevel {
-    RadarLogLevel logLevel;
+    RadarLogLevel defaultLogLevel;
     if ([RadarSettings userDebug]) {
-        logLevel = RadarLogLevelDebug;
-    } else if ([[NSUserDefaults standardUserDefaults] objectForKey:kLogLevel] == nil) {
-        logLevel = RadarLogLevelInfo;
+        defaultLogLevel = RadarLogLevelDebug;
+    } else if ([self isDebugBuild]) {
+        defaultLogLevel = RadarLogLevelInfo;
     } else {
-        logLevel = (RadarLogLevel)[[NSUserDefaults standardUserDefaults] integerForKey:kLogLevel];
+        defaultLogLevel = RadarLogLevelNone;
     }
-    return logLevel;
+
+    if ([[NSUserDefaults standardUserDefaults] objectForKey:kLogLevel] == nil) {
+        return defaultLogLevel;
+    } 
+    return (RadarLogLevel)[[NSUserDefaults standardUserDefaults] integerForKey:kLogLevel];
 }
 
 + (void)setLogLevel:(RadarLogLevel)level {
