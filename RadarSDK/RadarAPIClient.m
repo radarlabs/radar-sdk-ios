@@ -369,13 +369,14 @@
     if (appBuild) {
         params[@"appBuild"] = appBuild;
     }
+    NSMutableDictionary *locationMetadata = [NSMutableDictionary new];
     if (sdkConfiguration.useLocationMetadata) {
-        NSMutableDictionary *locationMetadata = [NSMutableDictionary new];
         locationMetadata[@"motionActivityData"] = [RadarState lastMotionActivityData];
         locationMetadata[@"heading"] = [RadarState lastHeadingData];
         locationMetadata[@"speed"] = @(location.speed);
         locationMetadata[@"speedAccuracy"] = @(location.speedAccuracy);
         locationMetadata[@"course"] = @(location.course);
+        locationMetadata[@"pressureHPa"] = [RadarState lastRelativeAltitudeData];
 
         if (@available(iOS 13.4, *)) {
             locationMetadata[@"courseAccuracy"] = @(location.courseAccuracy);
@@ -390,9 +391,11 @@
             locationMetadata[@"isSimulatedBySoftware"] = @([location.sourceInformation isSimulatedBySoftware]);
         }
         locationMetadata[@"floor"] = @([location.floor level]);
+        locationMetadata[@"magnetometerData"] = [[RadarActivityManager sharedInstance] getMagnetometerData];
+        locationMetadata[@"accelerationData"] = [[RadarActivityManager sharedInstance] getAccelerometerData];
         
         params[@"locationMetadata"] = locationMetadata;
-    }
+    } 
     
     params[@"fraudFailureReasons"] = fraudFailureReasons;
 
@@ -418,6 +421,7 @@
                                                             verified:verified
                                                         publishableKey:publishableKey
                                                 notificationsRemaining:notificationsDelivered
+                                                locationMetadata:locationMetadata
                                                     completionHandler:completionHandler];
         }];
     } else {
@@ -429,6 +433,7 @@
                                                            verified:verified
                                                      publishableKey:publishableKey
                                              notificationsRemaining:@[]
+                                             locationMetadata:locationMetadata
                                                   completionHandler:completionHandler];
     }
 
@@ -442,7 +447,8 @@
                         source:(RadarLocationSource)source
                         verified:(BOOL)verified
                 publishableKey:(NSString *)publishableKey
-                notificationsRemaining:(NSArray *)notificationsRemaining 
+                notificationsRemaining:(NSArray *)notificationsRemaining
+                locationMetadata:(NSDictionary *)locationMetadata
             completionHandler:(RadarTrackAPICompletionHandler)completionHandler {
 
     NSString *host = verified ? [RadarSettings verifiedHost] : [RadarSettings host];
@@ -507,6 +513,11 @@
 
                             id eventsObj = res[@"events"];
                             id userObj = res[@"user"];
+                            if ([userObj isKindOfClass:[NSDictionary class]]) {
+                                NSMutableDictionary *mutableUserObj = [userObj mutableCopy];
+                                mutableUserObj[@"metadata"] = locationMetadata; // your metadata here
+                                userObj = mutableUserObj;
+                            }
                             id nearbyGeofencesObj = res[@"nearbyGeofences"];
                             NSArray<RadarEvent *> *events = [RadarEvent eventsFromObject:eventsObj];
                             RadarUser *user = [[RadarUser alloc] initWithObject:userObj];
