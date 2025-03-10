@@ -356,7 +356,6 @@
             params[@"transactionId"] = transactionId;
         }
         if (UIScreen.mainScreen.isCaptured) {
-            params[@"sharing"] = @(YES);
             [fraudFailureReasons addObject:@"fraud_sharing_screen_captured"];
         }
     }
