@@ -210,7 +210,6 @@ static const NSInteger kMaxBufferSize = 1500;
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"radarSDKMotion is not set"];
         return;
     }
-    //[[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"stopAccelerometerUpdates"];
     self.isUpdatingAccelerometer = NO;
     [self.radarSDKMotion stopAccelerometerUpdates];
 }

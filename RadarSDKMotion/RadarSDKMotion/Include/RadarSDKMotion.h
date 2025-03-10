@@ -18,16 +18,6 @@
                                 withHandler:(CMAbsoluteAltitudeHandler) handler API_AVAILABLE(ios(15.0));
 - (void)stopAbsoluteAltitudeUpdates;
 
-- (void)startAccelerometerUpdatesToQueue:(NSOperationQueue *) queue
-                              withHandler:(CMAccelerometerHandler) handler;
-
-- (void)stopAccelerometerUpdates;
-- (void)startMagnetometerUpdatesToQueue:(NSOperationQueue *) queue
-                            withHandler:(CMMagnetometerHandler) handler;
-
-- (void)stopMagnetometerUpdates;
-
-
 @end
 
 

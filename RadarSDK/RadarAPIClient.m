@@ -510,7 +510,7 @@
                             id userObj = res[@"user"];
                             if ([userObj isKindOfClass:[NSDictionary class]]) {
                                 NSMutableDictionary *mutableUserObj = [userObj mutableCopy];
-                                mutableUserObj[@"metadata"] = locationMetadata; // your metadata here
+                                mutableUserObj[@"metadata"] = locationMetadata;
                                 userObj = mutableUserObj;
                             }
                             id nearbyGeofencesObj = res[@"nearbyGeofences"];

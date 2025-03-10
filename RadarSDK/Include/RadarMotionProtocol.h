@@ -22,14 +22,6 @@ NS_ASSUME_NONNULL_BEGIN
                                  withHandler:(CMAltitudeHandler) handler;
 - (void)stopAbsoluteAltitudeUpdates;
 
-- (void)startAccelerometerUpdatesToQueue:(NSOperationQueue *) queue
-                              withHandler:(CMAccelerometerHandler) handler;
-
-- (void)stopAccelerometerUpdates;
-- (void)startMagnetometerUpdatesToQueue:(NSOperationQueue *) queue
-                            withHandler:(CMMagnetometerHandler) handler;
-- (void)stopMagnetometerUpdates;
-
 @end
 
 NS_ASSUME_NONNULL_END

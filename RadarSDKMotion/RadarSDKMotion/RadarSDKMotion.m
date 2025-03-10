@@ -67,21 +67,5 @@
     }
 }
 
-- (void)startAccelerometerUpdatesToQueue:(NSOperationQueue *)queue withHandler:(CMAccelerometerHandler)handler {
-    [self.motionManager startAccelerometerUpdatesToQueue:queue withHandler:handler];
-}
-
-- (void)stopAccelerometerUpdates {
-    [self.motionManager stopAccelerometerUpdates];
-}
-
-- (void)startMagnetometerUpdatesToQueue:(NSOperationQueue *)queue withHandler:(CMMagnetometerHandler)handler {
-    [self.motionManager startMagnetometerUpdatesToQueue:queue withHandler:handler];
-}
-
-- (void)stopMagnetometerUpdates {
-    [self.motionManager stopMagnetometerUpdates];
-}
-
 
 @end
