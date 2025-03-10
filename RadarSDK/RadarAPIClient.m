@@ -370,7 +370,7 @@
         params[@"appBuild"] = appBuild;
     }
     NSMutableDictionary *locationMetadata = [NSMutableDictionary new];
-    if (options.motionActivity) {
+    if (options.useMotion) {
         locationMetadata[@"motionActivityData"] = [RadarState lastMotionActivityData];
         locationMetadata[@"heading"] = [RadarState lastHeadingData];
         locationMetadata[@"speed"] = @(location.speed);
@@ -388,15 +388,9 @@
             locationMetadata[@"isSimulatedBySoftware"] = @([location.sourceInformation isSimulatedBySoftware]);
         }
         locationMetadata[@"floor"] = @([location.floor level]);
-        locationMetadata[@"magnetometerData"] = [[RadarActivityManager sharedInstance] getMagnetometerData];
-        locationMetadata[@"accelerationData"] = [[RadarActivityManager sharedInstance] getAccelerometerData];
-    }
-    if (options.airPressure) {
-         locationMetadata[@"pressureHPa"] = [RadarState lastRelativeAltitudeData];
-    }
-    if (options.motionActivity || options.airPressure) {        
+        locationMetadata[@"pressureHPa"] = [RadarState lastRelativeAltitudeData];
         params[@"locationMetadata"] = locationMetadata;
-    } 
+    }
     
     params[@"fraudFailureReasons"] = fraudFailureReasons;
 

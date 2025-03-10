@@ -213,28 +213,15 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         [[RadarReplayBuffer sharedInstance] flushReplaysWithCompletionHandler:nil completionHandler:nil];
     }
 
-    // if (sdkConfiguration.useLocationMetadata) {
-    //     [self stopActivityAndMotionUpdates];
-    // }
-
     RadarTrackingOptions *trackingOptions = [RadarSettings trackingOptions];
-    if (trackingOptions.motionActivity) {
+    if (trackingOptions.useMotion) {
        [self.locationManager stopUpdatingHeading];
        if (self.activityManager) {
         [self.activityManager stopActivityUpdates];
-        [self.activityManager stopAccelerometerUpdates];
-        [self.activityManager stopMagnetometerUpdates];
+        [self.activityManager stopRelativeAltitudeUpdates];
+        [self.activityManager stopAbsoluteAltitudeUpdates];
        }
     }
-
-    if (trackingOptions.airPressure) {
-        if (self.activityManager) {
-            [self.activityManager stopRelativeAltitudeUpdates];
-            [self.activityManager stopAbsoluteAltitudeUpdates];
-        }
-    }
-
-
 
     // null out startTrackingAfter and stopTrackingAfter in local tracking options
     // so that subsequent trackOnce calls don't restart tracking
@@ -355,13 +342,13 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 
             self.lowPowerLocationManager.allowsBackgroundLocationUpdates = [RadarUtils locationBackgroundMode];
             self.lowPowerLocationManager.pausesLocationUpdatesAutomatically = NO;
-            
-            if ([RadarSettings useLocationMetadata]) {
-                [self.locationManager startUpdatingHeading];
 
+                
+
+            if (options.useMotion) {
                 self.activityManager = [RadarActivityManager sharedInstance];
-                [self.activityManager startAccelerometerUpdates];
-                [self.activityManager startMagnetometerUpdates];
+                self.locationManager.headingFilter = 5;
+                [self.locationManager startUpdatingHeading];
                 [self.activityManager startActivityUpdatesWithHandler:^(CMMotionActivity *activity) {
                     if (activity) {
                         RadarActivityType activityType = RadarActivityTypeUnknown;
@@ -397,7 +384,6 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                         
                     }
                 }];
-
                 [self.activityManager startRelativeAltitudeWithHandler: ^(CMAltitudeData * _Nullable altitudeData) {
                     NSMutableDictionary *currentState = [[RadarState lastRelativeAltitudeData] mutableCopy] ?: [NSMutableDictionary new];
                     currentState[@"pressure"] = @(altitudeData.pressure.doubleValue *10); // convert to hPa
@@ -415,11 +401,9 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                         currentState[@"absoluteAltitudeTimestamp"] = @([[NSDate date] timeIntervalSince1970]);
                         [RadarState setLastRelativeAltitudeData:currentState];
                     }];
-                } else {
-                    // Fallback on earlier versions
                 }
-            }
-
+            }           
+        
             CLLocationAccuracy desiredAccuracy;
             switch (options.desiredAccuracy) {
             case RadarTrackingOptionsDesiredAccuracyHigh:
