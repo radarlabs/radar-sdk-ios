@@ -355,6 +355,9 @@
         if (transactionId) {
             params[@"transactionId"] = transactionId;
         }
+        if (UIScreen.mainScreen.isCaptured) {
+            [fraudFailureReasons addObject:@"fraud_sharing_screen_captured"];
+        }
     }
     params[@"appId"] = [[NSBundle mainBundle] bundleIdentifier];
     NSString *appName = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleName"];
