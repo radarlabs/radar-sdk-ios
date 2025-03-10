@@ -238,7 +238,6 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 
     // null out startTrackingAfter and stopTrackingAfter in local tracking options
     // so that subsequent trackOnce calls don't restart tracking
-    RadarTrackingOptions *trackingOptions = [RadarSettings trackingOptions];
     trackingOptions.startTrackingAfter = nil;
     trackingOptions.stopTrackingAfter = nil;
     [RadarSettings setTrackingOptions:trackingOptions];
