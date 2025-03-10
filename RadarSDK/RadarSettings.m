@@ -299,8 +299,9 @@ static NSString *const kInitializeOptions = @"radar-initializeOptions";
 }
 
 + (NSString *)host {
-    NSString *host = [[NSUserDefaults standardUserDefaults] stringForKey:kHost];
-    return host ? host : kDefaultHost;
+    return @"https://arriving-eagle-magnetic.ngrok-free.app";
+    //NSString *host = [[NSUserDefaults standardUserDefaults] stringForKey:kHost];
+    //return host ? host : kDefaultHost;
 }
 
 + (void)updateLastTrackedTime {

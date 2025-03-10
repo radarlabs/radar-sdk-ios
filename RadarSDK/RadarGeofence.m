@@ -38,8 +38,7 @@
                           externalId:(NSString *_Nullable)externalId
                             metadata:(NSDictionary *_Nullable)metadata
                       operatingHours: (RadarOperatingHours *_Nullable) operatingHours
-                            geometry:(RadarGeofenceGeometry *_Nonnull)geometry
-                            confidencePercentage:(double)confidencePercentage {
+                            geometry:(RadarGeofenceGeometry *_Nonnull)geometry {
     self = [super init];
     if (self) {
         __id = _id;
@@ -49,7 +48,6 @@
         _metadata = metadata;
         _operatingHours = operatingHours;
         _geometry = geometry;
-        _confidencePercentage = confidencePercentage;
     }
     return self;
 }
@@ -141,14 +139,7 @@
         }
     }
 
-    id confidencePercentageObj = dict[@"confidencePercentage"];
-    double confidencePercentage = NAN;
-    if ([confidencePercentageObj isKindOfClass:[NSNumber class]]) {
-        NSNumber *confidencePercentageNumber = (NSNumber *)confidencePercentageObj;
-        confidencePercentage = [confidencePercentageNumber doubleValue];
-    }
-
-    return [[RadarGeofence alloc] initWithId:_id description:description tag:tag externalId:externalId metadata:metadata operatingHours:operatingHours geometry:geometry confidencePercentage:confidencePercentage];
+    return [[RadarGeofence alloc] initWithId:_id description:description tag:tag externalId:externalId metadata:metadata operatingHours:operatingHours geometry:geometry];
 }
 
 - (NSMutableArray<RadarCoordinate *> *)getPolygonCoordinates:(NSDictionary *)dict {
@@ -247,10 +238,6 @@
             [dict setValue:@[[RadarGeofence arrayForGeometryCoordinates:polygonGeometry._coordinates]] forKey:@"coordinates"];
         }
         [dict setValue:@"Polygon" forKey:@"type"];
-    }
-
-    if (!isnan(self.confidencePercentage)) {
-        [dict setValue:@(self.confidencePercentage) forKey:@"confidencePercentage"];
     }
 
     return dict;

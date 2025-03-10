@@ -1303,6 +1303,7 @@ typedef void (^_Nullable RadarLogConversionCompletionHandler)(RadarStatus status
 
 + (void)openURLFromNotification:(UNNotification *)notification NS_SWIFT_NAME(openURLFromNotification(_:));
 
++ (void)requestMotionActivityPermission NS_SWIFT_NAME(requestMotionActivityPermission());
 @end
 
 NS_ASSUME_NONNULL_END

@@ -16,7 +16,6 @@
 #import "RadarSegment+Internal.h"
 #import "RadarTrip+Internal.h"
 #import "RadarUser+Internal.h"
-#import "RadarLogger.h"
 
 @implementation RadarUser
 
@@ -42,11 +41,7 @@
                               source:(RadarLocationSource)source
                                 trip:(RadarTrip *_Nullable)trip
                                debug:(BOOL)debug
-                               fraud:(RadarFraud *_Nullable)fraud
-                               altitude:(double)altitude
-                            floorLevel:(double)floorLevel
-                     barometricAltitude:(double)barometricAltitude
-                      verticalAccuracy:(double)verticalAccuracy {
+                               fraud:(RadarFraud *_Nullable)fraud {
     self = [super init];
     if (self) {
         __id = _id;
@@ -72,10 +67,6 @@
         _trip = trip;
         _debug = debug;
         _fraud = fraud;
-        _altitude = altitude;
-        _floorLevel = floorLevel;
-        _barometricAltitude = barometricAltitude;
-        _verticalAccuracy = verticalAccuracy;
     }
     return self;
 }
@@ -110,10 +101,6 @@
     RadarTrip *trip;
     RadarFraud *fraud;
     BOOL debug = NO;
-    double altitude = NAN;
-    double verticalAccuracy = NAN;
-    double barometricAltitude = NAN;
-    double floorLevel = NAN;
 
     id idObj = dict[@"_id"];
     if (idObj && [idObj isKindOfClass:[NSString class]]) {
@@ -303,29 +290,6 @@
     id fraudObj = dict[@"fraud"];
     fraud = [[RadarFraud alloc] initWithObject:fraudObj];
 
-    id altitudeObj = dict[@"altitude"];
-    if (altitudeObj && [altitudeObj isKindOfClass:[NSNumber class]]) {
-        altitude = [((NSNumber *)altitudeObj) doubleValue];
-    }
-
-    id verticalAccuracyObj = dict[@"verticalAccuracy"];
-    if (verticalAccuracyObj && [verticalAccuracyObj isKindOfClass:[NSNumber class]]) {
-        verticalAccuracy = [((NSNumber *)verticalAccuracyObj) doubleValue];
-    }
-
-    id barometricAltitudeObj = dict[@"barometricAltitude"];
-    if (barometricAltitudeObj && [barometricAltitudeObj isKindOfClass:[NSNumber class]]) {
-        barometricAltitude = [((NSNumber *)barometricAltitudeObj) doubleValue];
-        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"barometricAltitude: %f", barometricAltitude]];
-    } else {
-        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"barometricAltitude: null"];
-    }
-
-    id floorLevelObj = dict[@"floorLevel"];
-    if (floorLevelObj && [floorLevelObj isKindOfClass:[NSNumber class]]) {
-        floorLevel = [((NSNumber *)floorLevelObj) doubleValue];
-    }
-
     if (_id && location) {
         return [[RadarUser alloc] initWithId:_id
                                       userId:userId
@@ -349,11 +313,7 @@
                                       source:source
                                         trip:trip
                                        debug:debug
-                                       fraud:fraud
-                                       altitude:altitude
-                                    floorLevel:floorLevel
-                             barometricAltitude:barometricAltitude
-                              verticalAccuracy:verticalAccuracy];
+                                       fraud:fraud];
     }
 
     return nil;
@@ -414,22 +374,6 @@
     if (self.fraud) {
         [dict setValue:[self.fraud dictionaryValue] forKey:@"fraud"];
     }
-
-    if (!isnan(self.altitude)) {
-        [dict setValue:@(self.altitude) forKey:@"altitude"];
-    }
-
-    if (!isnan(self.verticalAccuracy)) {
-        [dict setValue:@(self.verticalAccuracy) forKey:@"verticalAccuracy"];
-    }
-
-    if (!isnan(self.barometricAltitude)) {
-        [dict setValue:@(self.barometricAltitude) forKey:@"barometricAltitude"];
-    }
-    if (!isnan(self.floorLevel)) {
-        [dict setValue:@(self.floorLevel) forKey:@"floorLevel"];
-    }
-
     return dict;
 }
 

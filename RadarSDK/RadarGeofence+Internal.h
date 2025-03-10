@@ -17,8 +17,7 @@
                           externalId:(NSString *_Nullable)externalId
                             metadata:(NSDictionary *_Nullable)metadata
                       operatingHours:(RadarOperatingHours *_Nullable)operatingHours
-                            geometry:(RadarGeofenceGeometry *_Nonnull)geometry
-                            confidencePercentage:(double)confidencePercentage;
+                            geometry:(RadarGeofenceGeometry *_Nonnull)geometry;
 - (instancetype _Nullable)initWithObject:(id _Nonnull)object;
 
 @end
