@@ -356,18 +356,15 @@
         params[@"appBuild"] = appBuild;
     }
     NSMutableDictionary *locationMetadata = [NSMutableDictionary new];
-    if (sdkConfiguration.useLocationMetadata) {
+    if (options.motionActivity) {
         locationMetadata[@"motionActivityData"] = [RadarState lastMotionActivityData];
         locationMetadata[@"heading"] = [RadarState lastHeadingData];
         locationMetadata[@"speed"] = @(location.speed);
         locationMetadata[@"speedAccuracy"] = @(location.speedAccuracy);
         locationMetadata[@"course"] = @(location.course);
-        locationMetadata[@"pressureHPa"] = [RadarState lastRelativeAltitudeData];
-
         if (@available(iOS 13.4, *)) {
             locationMetadata[@"courseAccuracy"] = @(location.courseAccuracy);
         }
-        
         locationMetadata[@"battery"] = @([[UIDevice currentDevice] batteryLevel]);
         locationMetadata[@"altitude"] = @(location.altitude);
 
@@ -379,7 +376,11 @@
         locationMetadata[@"floor"] = @([location.floor level]);
         locationMetadata[@"magnetometerData"] = [[RadarActivityManager sharedInstance] getMagnetometerData];
         locationMetadata[@"accelerationData"] = [[RadarActivityManager sharedInstance] getAccelerometerData];
-        
+    }
+    if (options.airPressure) {
+         locationMetadata[@"pressureHPa"] = [RadarState lastRelativeAltitudeData];
+    }
+    if (options.motionActivity || options.airPressure) {        
         params[@"locationMetadata"] = locationMetadata;
     } 
     

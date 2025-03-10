@@ -213,9 +213,28 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         [[RadarReplayBuffer sharedInstance] flushReplaysWithCompletionHandler:nil completionHandler:nil];
     }
 
-    if (sdkConfiguration.useLocationMetadata) {
-        [self stopActivityAndMotionUpdates];
+    // if (sdkConfiguration.useLocationMetadata) {
+    //     [self stopActivityAndMotionUpdates];
+    // }
+
+    RadarTrackingOptions *trackingOptions = [RadarSettings trackingOptions];
+    if (trackingOptions.motionActivity) {
+       [self.locationManager stopUpdatingHeading];
+       if (self.activityManager) {
+        [self.activityManager stopActivityUpdates];
+        [self.activityManager stopAccelerometerUpdates];
+        [self.activityManager stopMagnetometerUpdates];
+       }
     }
+
+    if (trackingOptions.airPressure) {
+        if (self.activityManager) {
+            [self.activityManager stopRelativeAltitudeUpdates];
+            [self.activityManager stopAbsoluteAltitudeUpdates];
+        }
+    }
+
+
 
     // null out startTrackingAfter and stopTrackingAfter in local tracking options
     // so that subsequent trackOnce calls don't restart tracking
