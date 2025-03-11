@@ -20,8 +20,6 @@
 
 @end
 
-static const NSInteger kMaxBufferSize = 1500;
-
 @implementation RadarActivityManager
 
 + (instancetype)sharedInstance {
