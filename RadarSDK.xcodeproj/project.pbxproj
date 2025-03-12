@@ -199,10 +199,8 @@
 		01F8106F2AF0119800BD7088 /* RadarVerifiedDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RadarVerifiedDelegate.h; sourceTree = "<group>"; };
 		01F99CFA2965C182004E8CF3 /* RadarConfig.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarConfig.h; sourceTree = "<group>"; };
 		01F99CFC2965C1C4004E8CF3 /* RadarConfig.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RadarConfig.m; sourceTree = "<group>"; };
-		50967A142C517B1D00363728 /* RadarIndoorSurvey.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RadarIndoorSurvey.m; sourceTree = "<group>"; };
 		50967A152C517B1D00363728 /* NSData+GZIP.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSData+GZIP.m"; sourceTree = "<group>"; };
 		50967A162C517B1D00363728 /* NSData+GZIP.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSData+GZIP.h"; sourceTree = "<group>"; };
-		50967A172C517B1D00363728 /* RadarIndoorSurvey.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RadarIndoorSurvey.h; sourceTree = "<group>"; };
 		50B2B4892D53CBD40067242B /* RadarIndoorSurvey.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarIndoorSurvey.h; sourceTree = "<group>"; };
 		50B2B48A2D53CBD40067242B /* RadarIndoorSurvey.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RadarIndoorSurvey.m; sourceTree = "<group>"; };
 		532FC303277A783900989279 /* Radar+Internal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Radar+Internal.h"; sourceTree = "<group>"; };
@@ -491,8 +489,6 @@
 			children = (
 				50967A162C517B1D00363728 /* NSData+GZIP.h */,
 				50967A152C517B1D00363728 /* NSData+GZIP.m */,
-				50967A172C517B1D00363728 /* RadarIndoorSurvey.h */,
-				50967A142C517B1D00363728 /* RadarIndoorSurvey.m */,
 				825732502B72BE1900DF8B88 /* PrivacyInfo.xcprivacy */,
 				96A5A0D827AD9F7F007B960B /* Include */,
 				DD236C792308797B00EB88F9 /* Info.plist */,
