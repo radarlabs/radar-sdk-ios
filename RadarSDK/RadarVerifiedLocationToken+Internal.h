@@ -15,7 +15,10 @@
                                  token:(NSString *_Nonnull)token
                              expiresAt:(NSDate *_Nonnull)expiresAt
                              expiresIn:(NSTimeInterval)expiresIn
-                                passed:(BOOL)passed;
+                                passed:(BOOL)passed
+                        failureReasons:(NSArray<NSString *> *_Nonnull)failureReasons
+                                   _id:(NSString *_Nonnull)_id
+                              fullDict:(NSDictionary *_Nonnull)fullDict;
 - (instancetype _Nullable)initWithObject:(id _Nonnull)object;
 
 @end

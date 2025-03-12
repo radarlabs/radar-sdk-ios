@@ -22,6 +22,10 @@ static NSString *const kGeofenceIds = @"radar-geofenceIds";
 static NSString *const kPlaceId = @"radar-placeId";
 static NSString *const kRegionIds = @"radar-regionIds";
 static NSString *const kBeaconIds = @"radar-beaconIds";
+static NSString *const kLastHeadingData = @"radar-lastHeadingData";
+static NSString *const kLastMotionActivityData = @"radar-lastMotionActivityData";
+static NSString *const kNotificationPermissionGranted = @"radar-notificationPermissionGranted";
+static NSString *const kRegisteredNotifications = @"radar-registeredNotifications";
 
 + (CLLocation *)lastLocation {
     NSDictionary *dict = [[NSUserDefaults standardUserDefaults] dictionaryForKey:kLastLocation];
@@ -150,4 +154,60 @@ static NSString *const kBeaconIds = @"radar-beaconIds";
     [[NSUserDefaults standardUserDefaults] setObject:beaconIds forKey:kBeaconIds];
 }
 
++ (void) setTimeStamp:(NSString *)key {
+    [[NSUserDefaults standardUserDefaults] setObject:[NSDate date] forKey:key];
+}
+
++ (BOOL) isTimestampRecent:(NSString *)key {
+    NSDate *lastTimeStamp = [[NSUserDefaults standardUserDefaults] objectForKey:key];
+    if (lastTimeStamp == nil) {
+        return NO;
+    }
+    NSTimeInterval timeInterval = [[NSDate date] timeIntervalSinceDate:lastTimeStamp];
+    return timeInterval < 60;
+}
+
++ (NSDictionary *)lastHeadingData {
+    return [[NSUserDefaults standardUserDefaults] dictionaryForKey:kLastHeadingData];
+}
+
++ (void)setLastHeadingData:(NSDictionary *_Nullable)lastHeadingData {
+    [[NSUserDefaults standardUserDefaults] setObject:lastHeadingData forKey:kLastHeadingData];
+}
+
++ (NSDictionary *)lastMotionActivityData {
+    return [[NSUserDefaults standardUserDefaults] dictionaryForKey:kLastMotionActivityData];
+}
+
++ (void)setLastMotionActivityData:(NSDictionary *)lastMotionActivityData {
+    [[NSUserDefaults standardUserDefaults] setObject:lastMotionActivityData forKey:kLastMotionActivityData];
+}
+
++ (void)setNotificationPermissionGranted:(BOOL)notificationPermissionGranted {
+    [[NSUserDefaults standardUserDefaults] setBool:notificationPermissionGranted forKey:kNotificationPermissionGranted];
+}
+
++ (BOOL)notificationPermissionGranted {
+    return [[NSUserDefaults standardUserDefaults] boolForKey:kNotificationPermissionGranted];
+}
+
++ (NSArray<NSDictionary *> *_Nullable)registeredNotifications {
+    NSArray<NSDictionary *> *registeredNotifications = [[NSUserDefaults standardUserDefaults] valueForKey:kRegisteredNotifications];
+    return registeredNotifications;
+}
+
++ (void)setRegisteredNotifications:(NSArray<NSDictionary *> *_Nullable)registeredNotifications {
+    [[NSUserDefaults standardUserDefaults] setValue:registeredNotifications forKey:kRegisteredNotifications];
+}
+
+
++ (void)addRegisteredNotification:(NSDictionary *)notification {
+    NSMutableArray *registeredNotifications = [NSMutableArray new];
+    NSArray *notifications = [RadarState registeredNotifications];
+    if (notifications) {
+        [registeredNotifications addObjectsFromArray:notifications];
+    }
+    [registeredNotifications addObject:notification];
+    [RadarState setRegisteredNotifications:registeredNotifications];
+}
 @end

@@ -11,6 +11,7 @@
 #import "Radar.h"
 #import "RadarTrackingOptions.h"
 #import "RadarSdkConfiguration.h"
+#import "RadarInitializeOptions.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -27,6 +28,8 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)setUserId:(NSString *_Nullable)userId;
 + (NSString *_Nullable)__description;
 + (void)setDescription:(NSString *_Nullable)description;
++ (NSString *_Nullable)product;
++ (void)setProduct:(NSString *_Nullable)product;
 + (NSDictionary *_Nullable)metadata;
 + (void)setMetadata:(NSDictionary *_Nullable)metadata;
 + (BOOL)anonymousTrackingEnabled;
@@ -61,9 +64,13 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)updateLastAppOpenTime;
 + (NSDate *)lastAppOpenTime;
 + (BOOL)useRadarModifiedBeacon;
++ (BOOL)useLocationMetadata;
 + (BOOL)xPlatform;
 + (NSString *)xPlatformSDKType;
 + (NSString *)xPlatformSDKVersion;
++ (BOOL)useOpenedAppConversion;
++ (void)setInitializeOptions:(RadarInitializeOptions *)options;
++ (RadarInitializeOptions *)initializeOptions;
 
 @end
 

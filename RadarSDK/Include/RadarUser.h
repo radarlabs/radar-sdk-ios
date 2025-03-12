@@ -16,6 +16,7 @@
 #import <Foundation/Foundation.h>
 
 typedef NS_ENUM(NSInteger, RadarLocationSource);
+typedef NS_ENUM(NSInteger, RadarActivityType);
 
 /**
  Represents the current user state.
@@ -51,6 +52,11 @@ typedef NS_ENUM(NSInteger, RadarLocationSource);
  The user's current location.
  */
 @property (nonnull, strong, nonatomic, readonly) CLLocation *location;
+
+/**
+ The user's current activity type.
+ */
+@property (assign, nonatomic, readonly) RadarActivityType activityType;
 
 /**
  An array of the user's current geofences. May be `nil` or empty if the user is not in any geofences.

@@ -18,7 +18,10 @@
                                  token:(NSString *_Nonnull)token
                              expiresAt:(NSDate *_Nonnull)expiresAt
                              expiresIn:(NSTimeInterval)expiresIn
-                                passed:(BOOL)passed {
+                                passed:(BOOL)passed
+                        failureReasons:(NSArray<NSString *> * _Nonnull)failureReasons
+                                   _id:(NSString * _Nonnull)_id
+                               fullDict:(NSDictionary *_Nonnull)fullDict {
     self = [super init];
     if (self) {
         _user = user;
@@ -27,6 +30,9 @@
         _expiresAt = expiresAt;
         _expiresIn = expiresIn;
         _passed = passed;
+        _failureReasons = failureReasons;
+        __id = _id;
+        _fullDict = fullDict;
     }
     return self;
 }
@@ -44,6 +50,8 @@
     NSDate *expiresAt;
     NSTimeInterval expiresIn = 0;
     BOOL passed = NO;
+    NSArray<NSString *> *failureReasons = @[];
+    NSString *_id;
     
     id tokenObj = dict[@"token"];
     if (tokenObj && [tokenObj isKindOfClass:[NSString class]]) {
@@ -62,11 +70,15 @@
         expiresIn = [expiresInNumber floatValue];
     }
     
+    id passedObj = dict[@"passed"];
+    if (passedObj && [passedObj isKindOfClass:[NSNumber class]]) {
+        NSNumber *passedNumber = (NSNumber *)passedObj;
+        passed = [passedNumber boolValue];
+    }
+    
     id userObj = dict[@"user"];
     if (userObj && [userObj isKindOfClass:[NSDictionary class]]) {
         user = [[RadarUser alloc] initWithObject:userObj];
-        
-        passed = user && user.fraud && user.fraud.passed && user.country && user.country.passed && user.state && user.state.passed;
     }
     
     id eventsObj = dict[@"events"];
@@ -74,22 +86,25 @@
         events = [RadarEvent eventsFromObject:eventsObj];
     }
     
+    id failureReasonsObj = dict[@"failureReasons"];
+    if (failureReasonsObj && [failureReasonsObj isKindOfClass:[NSArray class]]) {
+        failureReasons = (NSArray *)failureReasonsObj;
+    }
+    
+    id idObj = dict[@"_id"];
+    if (idObj && [idObj isKindOfClass:[NSString class]]) {
+        _id = (NSString *)idObj;
+    }
+    
     if (user && events && token && expiresAt) {
-        return [[RadarVerifiedLocationToken alloc] initWithUser:user events:events token:token expiresAt:expiresAt expiresIn:expiresIn passed:passed];
+        return [[RadarVerifiedLocationToken alloc] initWithUser:user events:events token:token expiresAt:expiresAt expiresIn:expiresIn passed:passed failureReasons:failureReasons _id:_id fullDict:dict];
     }
     
     return nil;
 }
 
 - (NSDictionary *)dictionaryValue {
-    NSMutableDictionary *dict = [NSMutableDictionary new];
-    dict[@"user"] = [self.user dictionaryValue];
-    dict[@"events"] = [RadarEvent arrayForEvents:self.events];
-    dict[@"token"] = self.token;
-    dict[@"expiresAt"] = [RadarUtils.isoDateFormatter stringFromDate:self.expiresAt];
-    dict[@"expiresIn"] = @(self.expiresIn);
-    dict[@"passed"] = @(self.passed);
-    return dict;
+    return self.fullDict;
 }
 
 @end

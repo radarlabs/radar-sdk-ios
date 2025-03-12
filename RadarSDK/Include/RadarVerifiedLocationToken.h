@@ -46,6 +46,21 @@
  */
 @property (assign, nonatomic, readonly) bool passed;
 
+/**
+ An array of failure reasons for jurisdiction and fraud detection checks.
+ */
+@property (nullable, copy, nonatomic, readonly) NSArray<NSString *> *failureReasons;
+
+/**
+ The Radar ID of the location check.
+ */
+@property (nullable, copy, nonatomic, readonly) NSString *_id;
+
+/**
+ The full dictionary value of the token.
+ */
+@property (nullable, copy, nonatomic, readonly) NSDictionary *fullDict;
+
 - (NSDictionary *_Nonnull)dictionaryValue;
 
 @end

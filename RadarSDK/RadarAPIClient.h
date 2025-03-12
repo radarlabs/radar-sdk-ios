@@ -93,6 +93,8 @@ typedef void (^_Nonnull RadarSyncLogsAPICompletionHandler)(RadarStatus status);
                     keyId:(NSString *_Nullable)keyId
          attestationError:(NSString *_Nullable)attestationError
                 encrypted:(BOOL)encrypted
+      expectedCountryCode:(NSString *_Nullable)expectedCountryCode
+        expectedStateCode:(NSString *_Nullable)expectedStateCode
         completionHandler:(RadarTrackAPICompletionHandler _Nonnull)completionHandler;
 
 - (void)flushReplays:(NSArray<NSDictionary *> *_Nonnull)replays completionHandler:(RadarFlushReplaysAPICompletionHandler _Nonnull)completionHandler;
@@ -111,6 +113,7 @@ typedef void (^_Nonnull RadarSyncLogsAPICompletionHandler)(RadarStatus status);
            chainMetadata:(NSDictionary<NSString *, NSString *> *_Nullable)chainMetadata
               categories:(NSArray *_Nullable)categories
                   groups:(NSArray *_Nullable)groups
+            countryCodes:(NSArray *_Nullable)countryCodes
                    limit:(int)limit
        completionHandler:(RadarSearchPlacesAPICompletionHandler _Nonnull)completionHandler;
 

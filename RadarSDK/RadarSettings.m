@@ -27,6 +27,7 @@ static NSString *const kSessionId = @"radar-sessionId";
 static NSString *const kId = @"radar-_id";
 static NSString *const kUserId = @"radar-userId";
 static NSString *const kDescription = @"radar-description";
+static NSString *const kProduct = @"radar-product";
 static NSString *const kMetadata = @"radar-metadata";
 static NSString *const kAnonymous = @"radar-anonymous";
 static NSString *const kTracking = @"radar-tracking";
@@ -47,6 +48,8 @@ static NSString *const kLastAppOpenTime = @"radar-lastAppOpenTime";
 static NSString *const kUserDebug = @"radar-userDebug";
 static NSString *const kXPlatformSDKType = @"radar-xPlatformSDKType";
 static NSString *const kXPlatformSDKVersion = @"radar-xPlatformSDKVersion";
+static NSString *const kInitializeOptions = @"radar-initializeOptions";
+
 
 + (NSString *)publishableKey {
     return [[NSUserDefaults standardUserDefaults] stringForKey:kPublishableKey];
@@ -116,6 +119,14 @@ static NSString *const kXPlatformSDKVersion = @"radar-xPlatformSDKVersion";
 
 + (void)setDescription:(NSString *)description {
     [[NSUserDefaults standardUserDefaults] setObject:description forKey:kDescription];
+}
+
++ (NSString *)product {
+    return [[NSUserDefaults standardUserDefaults] stringForKey:kProduct];
+}
+
++ (void)setProduct:(NSString *)product {
+    [[NSUserDefaults standardUserDefaults] setObject:product forKey:kProduct];
 }
 
 + (NSDictionary *)metadata {
@@ -237,7 +248,7 @@ static NSString *const kXPlatformSDKVersion = @"radar-xPlatformSDKVersion";
                             [RadarUtils dictionaryToJson:[sdkConfiguration dictionaryValue]]]];
     if (sdkConfiguration) {
         [[RadarLogBuffer sharedInstance] setPersistentLogFeatureFlag:sdkConfiguration.useLogPersistence];
-        [[NSUserDefaults standardUserDefaults] setInteger:(int)sdkConfiguration.logLevel forKey:kLogLevel];
+        [RadarSettings setLogLevel:sdkConfiguration.logLevel];
         [[NSUserDefaults standardUserDefaults] setObject:[sdkConfiguration dictionaryValue] forKey:kSdkConfiguration];
     } else {
         [[RadarLogBuffer sharedInstance] setPersistentLogFeatureFlag:NO];
@@ -263,7 +274,7 @@ static NSString *const kXPlatformSDKVersion = @"radar-xPlatformSDKVersion";
 }
 
 + (void)setLogLevel:(RadarLogLevel)level {
-    
+    [[NSUserDefaults standardUserDefaults] setInteger:(int)level forKey:kLogLevel];
 }
 
 + (NSArray<NSString *> *_Nullable)beaconUUIDs {
@@ -297,7 +308,7 @@ static NSString *const kXPlatformSDKVersion = @"radar-xPlatformSDKVersion";
 
 + (BOOL)userDebug {
     NSNumber *userDebug = [[NSUserDefaults standardUserDefaults] objectForKey:kUserDebug];
-    return userDebug ? [userDebug boolValue] : YES;
+    return userDebug ? [userDebug boolValue] : NO;
 }
 
 + (void)setUserDebug:(BOOL)userDebug {
@@ -318,6 +329,10 @@ static NSString *const kXPlatformSDKVersion = @"radar-xPlatformSDKVersion";
     return [[self sdkConfiguration] useRadarModifiedBeacon];
 }
 
++ (BOOL)useLocationMetadata {
+    return [[self sdkConfiguration] useLocationMetadata];
+}
+
 + (BOOL)xPlatform {
     return [[NSUserDefaults standardUserDefaults] stringForKey:kXPlatformSDKType] != nil &&
     [[NSUserDefaults standardUserDefaults] stringForKey:kXPlatformSDKVersion];
@@ -329,4 +344,22 @@ static NSString *const kXPlatformSDKVersion = @"radar-xPlatformSDKVersion";
     return [[NSUserDefaults standardUserDefaults] stringForKey:kXPlatformSDKVersion];
 }
 
++ (BOOL)useOpenedAppConversion {
+    if (![self sdkConfiguration]) {
+        return YES;
+    }
+    return [[self sdkConfiguration] useOpenedAppConversion];
+}
+
++ (void)setInitializeOptions:(RadarInitializeOptions *)options {
+    [[NSUserDefaults standardUserDefaults] setObject:[options dictionaryValue] forKey:kInitializeOptions];
+}
+
++ (RadarInitializeOptions *)initializeOptions {
+    NSDictionary *dict = [[NSUserDefaults standardUserDefaults] dictionaryForKey:kInitializeOptions];
+    if (!dict) {
+        return nil;
+    }
+    return [[RadarInitializeOptions alloc] initWithDict:dict];
+}
 @end

@@ -1,5 +1,5 @@
 SDK ?= "iphonesimulator"
-DESTINATION ?= "platform=iOS Simulator,name=iPhone 14"
+DESTINATION ?= "platform=iOS Simulator,name=iPhone 16"
 PROJECT := RadarSDK
 PROJECT_EXAMPLE := Example/Example
 SCHEME := XCFramework
@@ -24,7 +24,7 @@ build-example:
 	xcodebuild $(XC_EXAMPLE_ARGS)
 
 lint:
-	pod lib lint --verbose
+	pod lib lint 
 
 format:
 	./clang_format.sh
