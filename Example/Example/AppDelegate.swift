@@ -9,52 +9,6 @@ import UIKit
 import UserNotifications
 import RadarSDK
 
-// Helper function to check if a point is inside a polygon
-func isPointInPolygon(point: CLLocationCoordinate2D, polygon: [CLLocationCoordinate2D]) -> Bool {
-    var inside = false
-    var j = polygon.count - 1
-    
-    for i in 0..<polygon.count {
-        let pi = polygon[i]
-        let pj = polygon[j]
-        
-        if ((pi.longitude > point.longitude) != (pj.longitude > point.longitude)) &&
-            (point.latitude < (pj.latitude - pi.latitude) * (point.longitude - pi.longitude) / 
-             (pj.longitude - pi.longitude) + pi.latitude) {
-            inside = !inside
-        }
-        j = i
-    }
-    return inside
-}
-
-// Helper function to check if a circle intersects with a polygon
-func doesCircleIntersectPolygon(center: CLLocationCoordinate2D, radius: CLLocationDistance, polygon: [CLLocationCoordinate2D]) -> Bool {
-    // First, check if center point is inside polygon
-    if isPointInPolygon(point: center, polygon: polygon) {
-        return true
-    }
-    
-    // Then check if any polygon edge intersects with circle
-    for i in 0..<polygon.count {
-        let start = polygon[i]
-        let end = polygon[(i + 1) % polygon.count]
-        
-        // Convert coordinates to meters for distance calculation
-        let startLocation = CLLocation(latitude: start.latitude, longitude: start.longitude)
-        let endLocation = CLLocation(latitude: end.latitude, longitude: end.longitude)
-        let centerLocation = CLLocation(latitude: center.latitude, longitude: center.longitude)
-        
-        // Calculate distance from center to line segment
-        let distance = centerLocation.distance(from: startLocation)
-        if distance <= radius {
-            return true
-        }
-    }
-    
-    return false
-}
-
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UNUserNotificationCenterDelegate, CLLocationManagerDelegate, RadarDelegate, RadarVerifiedDelegate {
 
@@ -62,67 +16,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
     var window: UIWindow? // required for UIWindowSceneDelegate
     
     var scrollView: UIScrollView?
-    var demoFunctions = Array<(UIButton) -> Void>()
+    var demoFunctions = Array<() -> Void>()
 
-    var geofenceButtons: [String: UIButton] = [:] // geofenceId -> button
-
-    var onPredictionUpdate: ((String, Double) -> Void)?
-
-    weak var mapViewController: MapViewController?  // Make it weak to avoid retain cycles
-
-    // store copy of geofences (mapview will also fetch/have a copy)
-    var fetchedGeofences: [(String, String, [[CLLocationCoordinate2D]], String)] = []
-
-    func fetchAllGeofences(callback: @escaping ([(String, String, [[CLLocationCoordinate2D]], String)]) -> Void) {
-        let API_KEY = "prj_test_sk_26576f21c9ddd02079383a63ae06ee33fbde4f5f"
-        let URL = "https://api.radar.io/v1/geofences?limit=1000"
-        
-        let url = Foundation.URL(string: URL)
-        var request = URLRequest(url: url!)
-        request.httpMethod = "GET"
-        request.setValue(API_KEY, forHTTPHeaderField: "Authorization")
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.setValue("application/json", forHTTPHeaderField: "Accept")
-        
-        let task = URLSession.shared.dataTask(with: request) { data, response, error in
-            if let data = data {
-                do {
-                    guard let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
-                          let geofences = json["geofences"] as? [[String: Any]] else {
-                        return
-                    }
-                    
-                    let out: [(String, String, [[CLLocationCoordinate2D]], String)] = geofences.compactMap { geofence in
-                        guard let id = geofence["_id"] as? String,
-                              let description = geofence["description"] as? String,
-                              let geometry = geofence["geometry"] as? [String: Any],
-                              let coordinates = geometry["coordinates"] as? [[[Double]]],
-                              let tag = geofence["tag"] as? String,
-                              let enabled = geofence["enabled"] as? Bool,
-                              enabled == true else {
-                            return nil
-                        }
-                        
-                        // Convert coordinates to CLLocationCoordinate2D
-                        // Note: The first array in coordinates is the outer ring
-                        let polygonCoordinates = coordinates[0].map { coord in
-                            // GeoJSON format is [longitude, latitude]
-                            CLLocationCoordinate2D(latitude: coord[1], longitude: coord[0])
-                        }
-                        
-                        return (id, description, [polygonCoordinates], tag)
-                    }
-                    
-                    callback(out)
-                } catch {
-                    print("JSON parsing error: \(error)")
-                }
-            }
-        }
-        task.resume()
-    }
-
-    
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { (_, _) in }
         UNUserNotificationCenter.current().delegate = self
@@ -130,20 +25,37 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         locationManager.delegate = self
         self.requestLocationPermissions()
         
+        // Replace with a valid test publishable key
+        let radarInitializeOptions = RadarInitializeOptions()
+        // Uncomment to enable automatic setup for notification conversions or deep linking
+        //radarInitializeOptions.autoLogNotificationConversions = true
+        //radarInitializeOptions.autoHandleNotificationDeepLinks = true
+        Radar.initialize(publishableKey: "prj_test_pk_0000000000000000000000000000000000000000", options: radarInitializeOptions )
+        Radar.setUserId("testUserId")
+        Radar.setMetadata([ "foo": "bar" ])
+        Radar.setDelegate(self)
+        Radar.setVerifiedDelegate(self)
+ 
+        return true
+    }
+
+    
+    func application(_ app: UIApplication, open url: URL,
+                     options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
+        // Handle opening via standard URL               
         return true
     }
     
-    func demoButton(text: String, function: @escaping (UIButton) -> Void) {
+    func demoButton(text: String, function: @escaping () -> Void) {
         guard let scrollView = self.scrollView else { return }
         
-        let buttonHeight = 50
+        let buttonHeight = 30
         scrollView.contentSize.height += CGFloat(buttonHeight)
         
         let buttonFrame = CGRect(x: 0, y: demoFunctions.count * buttonHeight, width: Int(scrollView.frame.width), height: buttonHeight)
-        let button = UIButton(frame: buttonFrame)
-        button.addAction(UIAction(handler: { _ in
-            function(button)
-        }), for: .touchUpInside)
+        let button = UIButton(frame: buttonFrame, primaryAction:UIAction(handler:{ _ in
+            function()
+        }))
         button.setTitleColor(.black, for: .normal)
         button.setTitleColor(.lightGray, for: .highlighted)
         button.setTitle(text, for: .normal)
@@ -153,116 +65,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         scrollView.addSubview(button)
     }
     
-    @objc func didTapGeofenceButton(_ geofenceId: String, _ description: String, completion: @escaping () -> Void) {
-        print("tapped geofence button")
-        print(geofenceId, description)
-
-        let geofenceIdForSurvey = "geofenceid:\(geofenceId)"
-        Radar.doIndoorSurvey(geofenceIdForSurvey, forLength: 60, isWhereAmIScan: false) { _, _ in
-            print("done doIndoorSurvey")
-            completion()  // Call the completion handler when done
-        }
-    }
-
-    func startContinuousInference() {
-        // WHERAMI HAS TO BE MORE THAN 5 SECONDS WHICH IS THE WINDOW
-        Radar.doIndoorSurvey("WHEREAMI", forLength: 6, isWhereAmIScan:true) { serverResponse, locationAtStartOfSurvey in
-            print("serverResponse", serverResponse)
-            
-            // response is now
-            // {"response": {"67a3b1d57cfde39ce8ec226a": 0.8140016233766234, "67a40adf5d8fbe57279c9477": 0.1859983766233766}}
-            // where every key is a geofenceId and the value is the probability
-
-            if let data = serverResponse!.data(using: .utf8),
-               let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any] {
-                
-                if let errorMessage = json["error"] as? String {
-                    // If there's an error in the JSON, display it in the confidence label
-                    DispatchQueue.main.async {
-                        self.mapViewController?.confidenceLabel?.text = errorMessage
-                    }
-                } else if let responseDict = json["response"] as? [String: Double] {
-                    // AT THIS POINT,
-                    // we have self.fetchedGeofences which contains a list of geofence objects
-                    // such as
-                    // { "_id": "67a8f2a5767afb4e7e0861b8", "createdAt": "2025-02-09T18:23:33.992Z", "updatedAt": "2025-02-09T22:09:55.517Z", "live": false, "description": "ORD - Terminal 1 Lobby (Check-in/Security) - 1/3", "tag": "ord-lobbies", "externalId": "ord-t1-lobby-1/3", "type": "polygon", "mode": "car", "stopDetection": false, "geometryCenter": { "type": "Point", "coordinates": [ -87.90619381789712, 41.97952088933131 ] }, "geometryRadius": 42, "geometry": { "type": "Polygon", "coordinates": [ [ [ -87.90623854193908, 41.979889853742606 ], [ -87.90641417002996, 41.97918785152016 ], [ -87.90613812210665, 41.97913670012637 ], [ -87.90598443751283, 41.979869151936114 ], [ -87.90623854193908, 41.979889853742606 ] ] ] }, "ip": [], "enabled": true },
-                    // AND in the response json object, we have all the geofences (known to the current ML model)
-                    // with their probabilities.
-                    // we want to FILTER OUT geofences that are not nearby which is defined by
-                    // the gps point in locationAtStartOfSurvey BUT ALSO by its horizontal accuracy ie
-                    // its the point + the "radius" of uncertainty around it
-                    // that should intersect with all geofences (based on their geometries!) and then
-                    // we should set the most probable geofence as the prediction
-
-                    // print the entire length of fetchedgeofences
-                    print("fetchedGeofences count", self.fetchedGeofences.count)
-//                    print("locationAtStartOfSurvey", locationAtStartOfSurvey)
-                    // print("locationAtStartOfSurvey.coordinate", locationAtStartOfSurvey.coordinate)
-                    // print("locationAtStartOfSurvey.horizontalAccuracy", locationAtStartOfSurvey.horizontalAccuracy)
-
-                    let nearbyGeofences = self.fetchedGeofences.filter { geofence in
-                        let (_, _, polygons, _) = geofence
-                        // Check each polygon in the geofence
-                        return polygons.contains { polygon in
-                            doesCircleIntersectPolygon(
-                                center: locationAtStartOfSurvey.coordinate,
-                                radius: locationAtStartOfSurvey.horizontalAccuracy,
-                                polygon: polygon
-                            )
-                        }
-                    }
-
-                    print("nearbyGeofences count", nearbyGeofences.count)
-                    
-                    var highestProbability = 0.0
-                    var mostLikelyGeofenceId = ""
-                    
-                    for (id, _, _, _) in nearbyGeofences {
-                        if let probability = responseDict[id], probability > highestProbability {
-                            highestProbability = probability
-                            mostLikelyGeofenceId = id
-                        }
-                    }
-
-                    if !mostLikelyGeofenceId.isEmpty {
-                        DispatchQueue.main.async {
-                            self.mapViewController?.handlePrediction(
-                                geofenceId: mostLikelyGeofenceId,
-                                confidence: highestProbability
-                            )
-                        }
-                    } else {
-                        DispatchQueue.main.async {
-                            self.mapViewController?.confidenceLabel?.text = "No nearby geofences found"
-                        }
-                    }
-
-                    // print("got prediction", topPrediction, "probability", probability)
-                    
-                    // DispatchQueue.main.async {
-                    //     self.mapViewController?.handlePrediction(geofenceId: topPrediction, confidence: probability)
-                    // }
-
-                    // LOOP
-                    self.startContinuousInference()
-                } else {
-                    print("infer json parsing problem!!!")
-                    // update the confidence label with the output text
-                    DispatchQueue.main.async {
-                        self.mapViewController?.confidenceLabel?.text = "Inference failed"
-                    }
-                }
-            } else {
-                print("infer json parsing problem!!!")
-                // update the confidence label with the output text
-                DispatchQueue.main.async {
-                    self.mapViewController?.confidenceLabel?.text = "Inference failed"
-                }
-            }
-        }
-    }
-
-
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         // Use this method to optionally configure and attach the UIWindow `window` to the provided UIWindowScene `scene`.
         // If using a storyboard, the `window` property will automatically be initialized and attached to the scene.
@@ -270,15 +72,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         guard let windowScene = (scene as? UIWindowScene) else { return }
 
         let window = UIWindow(windowScene: windowScene)
+        
         window.backgroundColor = .white
         
-        
-        // Add MapViewController
-        let mapViewController = MapViewController()
-        self.mapViewController = mapViewController  // Store strong reference
-        window.addSubview(mapViewController.view)
-    
-        scrollView = UIScrollView(frame: CGRect(x: 0, y: 700, width: window.frame.size.width, height: window.frame.size.height - 300))
+        scrollView = UIScrollView(frame: CGRect(x: 0, y: 100, width: window.frame.size.width, height: window.frame.size.height))
         scrollView!.contentSize.height = 0
         scrollView!.contentSize.width = window.frame.size.width
         
@@ -287,20 +84,289 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         window.makeKeyAndVisible()
         
         self.window = window
-       
-        demoButton(text: "Start Infer Forever Loop") { button in
-            button.setTitle("Running inference...", for: .normal)
+        
+        if UIApplication.shared.applicationState != .background {
+            Radar.getLocation { (status, location, stopped) in
+                print("Location: status = \(Radar.stringForStatus(status)); location = \(String(describing: location))")
+            }
 
-            print("fetching geofences!!!!!")
-            self.fetchAllGeofences { geofences in
-                DispatchQueue.main.async {
-                    self.fetchedGeofences = geofences
-                    button.setTitle("Running inference...", for: .normal)
-                    self.startContinuousInference()
-                }
+            Radar.trackOnce { (status, location, events, user) in
+                print("Track once: status = \(Radar.stringForStatus(status)); location = \(String(describing: location)); events = \(String(describing: events)); user = \(String(describing: user))")
+            }
+        }
+        
+        demoButton(text: "trackOnce") {
+            Radar.trackOnce()
+        }
+
+
+        demoButton(text: "startTracking") {
+            let options = RadarTrackingOptions.presetContinuous
+            Radar.startTracking(trackingOptions: options)
+        }
+
+        demoButton(text: "getContext") {
+            Radar.getContext { (status, location, context) in
+                print("Context: status = \(Radar.stringForStatus(status)); location = \(String(describing: location)); context?.geofences = \(String(describing: context?.geofences)); context?.place = \(String(describing: context?.place)); context?.country = \(String(describing: context?.country))")
+            }
+        }
+        
+        demoButton(text: "startTrackingVerified") {
+            Radar.startTrackingVerified(interval: 60, beacons: false)
+        }
+        
+        demoButton(text: "stopTrackingVerified") {
+            Radar.stopTrackingVerified()
+        }
+        
+        demoButton(text: "getVerifiedLocationToken") {
+            Radar.getVerifiedLocationToken() { (status, token) in
+                print("getVerifiedLocationToken: status = \(status); token = \(token?.dictionaryValue())")
             }
         }
 
+        demoButton(text: "trackVerified") {
+            Radar.trackVerified() { (status, token) in
+                print("TrackVerified: status = \(status); token = \(token?.dictionaryValue())")
+            }
+        }
+        
+        demoButton(text: "searchPlaces") {
+            // In the Radar dashboard settings
+            // (https://radar.com/dashboard/settings), add this to the chain
+            // metadata: {"mcdonalds":{"orderActive":"true"}}.
+            Radar.searchPlaces(
+                radius: 1000,
+                chains: ["mcdonalds"],
+                chainMetadata: ["orderActive": "true"],
+                categories: nil,
+                groups: nil,
+                countryCodes: ["US"],
+                limit: 10
+            ) { (status, location, places) in
+                print("Search places: status = \(Radar.stringForStatus(status)); places = \(String(describing: places))")
+            }
+        }
+
+        
+        demoButton(text: "searchGeofences") {
+            Radar.searchGeofences() { (status, location, geofences) in
+                print("Search geofences: status = \(Radar.stringForStatus(status)); geofences = \(String(describing: geofences))")
+            }
+        }
+
+        demoButton(text: "geocode") {
+            Radar.geocode(address: "20 jay st brooklyn") { (status, addresses) in
+                print("Geocode: status = \(Radar.stringForStatus(status)); coordinate = \(String(describing: addresses?.first?.coordinate))")
+            }
+            
+            Radar.geocode(address: "20 jay st brooklyn", layers: ["place", "locality"], countries: ["US", "CA"]) { (status, addresses) in
+                print("Geocode: status = \(Radar.stringForStatus(status)); coordinate = \(String(describing: addresses?.first?.coordinate))")
+            }
+        }
+
+        demoButton(text: "reverseGeocode") {
+            Radar.reverseGeocode { (status, addresses) in
+                print("Reverse geocode: status = \(Radar.stringForStatus(status)); formattedAddress = \(String(describing: addresses?.first?.formattedAddress))")
+            }
+            
+            Radar.reverseGeocode(layers: ["locality", "state"]) { (status, addresses) in
+                print("Reverse geocode: status = \(Radar.stringForStatus(status)); formattedAddress = \(String(describing: addresses?.first?.formattedAddress))")
+            }
+            
+            Radar.reverseGeocode(location: CLLocation(latitude: 40.70390, longitude: -73.98670)) { (status, addresses) in
+                print("Reverse geocode: status = \(Radar.stringForStatus(status)); formattedAddress = \(String(describing: addresses?.first?.formattedAddress))")
+            }
+            
+            Radar.reverseGeocode(location: CLLocation(latitude: 40.70390, longitude: -73.98670), layers: ["locality", "state"]) { (status, addresses) in
+                print("Reverse geocode: status = \(Radar.stringForStatus(status)); formattedAddress = \(String(describing: addresses?.first?.formattedAddress))")
+            }
+        }
+        
+        demoButton(text: "ipGeocode") {
+            Radar.ipGeocode { (status, address, proxy) in
+                print("IP geocode: status = \(Radar.stringForStatus(status)); country = \(String(describing: address?.countryCode)); city = \(String(describing: address?.city)); proxy = \(proxy); full address: \(String(describing: address?.dictionaryValue()))")
+            }
+        }
+
+        demoButton(text: "validateAddress") {
+            let address: RadarAddress = RadarAddress(from: [
+                "latitude": 0,
+                "longitude": 0,
+                "city": "New York",
+                "stateCode": "NY",
+                "postalCode": "10003",
+                "countryCode": "US",
+                "street": "Broadway",
+                "number": "841",
+            ])!
+            
+            Radar.validateAddress(address: address) { (status, address, verificationStatus) in
+                print("Validate address with street + number: status = \(Radar.stringForStatus(status)); country = \(String(describing: address?.countryCode)); city = \(String(describing: address?.city)); verificationStatus = \(verificationStatus)")
+            }
+            
+            let addressLabel: RadarAddress = RadarAddress(from: [
+                "latitude": 0,
+                "longitude": 0,
+                "city": "New York",
+                "stateCode": "NY",
+                "postalCode": "10003",
+                "countryCode": "US",
+                "addressLabel": "Broadway 841",
+            ])!
+            Radar.validateAddress(address: addressLabel) { (status, address, verificationStatus) in
+                print("Validate address with address label: status = \(Radar.stringForStatus(status)); country = \(String(describing: address?.countryCode)); city = \(String(describing: address?.city)); verificationStatus = \(verificationStatus)")
+            }
+        }
+        
+        demoButton(text: "autocomplete") {
+            let origin = CLLocation(latitude: 40.78382, longitude: -73.97536)
+            
+            Radar.autocomplete(
+                query: "brooklyn",
+                near: origin,
+                layers: ["locality"],
+                limit: 10,
+                country: "US"
+            ) { (status, addresses) in
+                print("Autocomplete: status = \(Radar.stringForStatus(status)); formattedAddress = \(String(describing: addresses?.first?.formattedAddress))")
+                
+                if let address = addresses?.first {
+                    Radar.validateAddress(address: address) { (status, address, verificationStatus) in
+                        print("Validate address: status = \(Radar.stringForStatus(status)); address = \(String(describing: address)); verificationStatus = \(Radar.stringForVerificationStatus(verificationStatus))")
+                    }
+                }
+            }
+            
+            Radar.autocomplete(
+                query: "brooklyn",
+                near: origin,
+                layers: ["locality"],
+                limit: 10,
+                country: "US",
+                mailable:true
+            ) { (status, addresses) in
+                print("Autocomplete: status = \(Radar.stringForStatus(status)); formattedAddress = \(String(describing: addresses?.first?.formattedAddress))")
+                
+                if let address = addresses?.first {
+                    Radar.validateAddress(address: address) { (status, address, verificationStatus) in
+                        print("Validate address: status = \(Radar.stringForStatus(status)); address = \(String(describing: address)); verificationStatus = \(Radar.stringForVerificationStatus(verificationStatus))")
+                    }
+                }
+            }
+            
+            Radar.autocomplete(
+                query: "brooklyn",
+                near: origin,
+                layers: ["locality"],
+                limit: 10,
+                country: "US"
+            ) { (status, addresses) in
+                print("Autocomplete: status = \(Radar.stringForStatus(status)); formattedAddress = \(String(describing: addresses?.first?.formattedAddress))")
+            }
+        }
+
+        demoButton(text: "getDistance") {
+            let origin = CLLocation(latitude: 40.78382, longitude: -73.97536)
+            let destination = CLLocation(latitude: 40.70390, longitude: -73.98670)
+            Radar.getDistance(
+                origin: origin,
+                destination: destination,
+                modes: [.foot, .car],
+                units: .imperial
+            ) { (status, routes) in
+                print("Distance: status = \(Radar.stringForStatus(status)); routes.car.distance.value = \(String(describing: routes?.car?.distance.value)); routes.car.distance.text = \(String(describing: routes?.car?.distance.text)); routes.car.duration.value = \(String(describing: routes?.car?.duration.value)); routes.car.duration.text = \(String(describing: routes?.car?.duration.text))")
+            }
+        }
+
+        demoButton(text: "startTrip") {
+            let tripOptions = RadarTripOptions(externalId: "300", destinationGeofenceTag: "store", destinationGeofenceExternalId: "123")
+            tripOptions.mode = .car
+            tripOptions.approachingThreshold = 9
+            Radar.startTrip(options: tripOptions)
+        }
+
+        demoButton(text: "startTrip with start tracking false") {
+            let tripOptions = RadarTripOptions(externalId: "301", destinationGeofenceTag: "store", destinationGeofenceExternalId: "123", scheduledArrivalAt: nil, startTracking: false)
+            tripOptions.mode = .car
+            tripOptions.approachingThreshold = 9
+            Radar.startTrip(options: tripOptions)
+        }
+
+        demoButton(text: "startTrip with tracking options") {
+            let tripOptions = RadarTripOptions(externalId: "301", destinationGeofenceTag: "store", destinationGeofenceExternalId: "123", scheduledArrivalAt: nil, startTracking: false)
+            tripOptions.mode = .car
+            tripOptions.approachingThreshold = 9
+            let trackingOptions = RadarTrackingOptions.presetContinuous
+            Radar.startTrip(options: tripOptions, trackingOptions: trackingOptions)
+        }
+
+        demoButton(text: "startTrip with tracking options and startTrackingAfter") {
+            let tripOptions = RadarTripOptions(externalId: "303", destinationGeofenceTag: "store", destinationGeofenceExternalId: "123", scheduledArrivalAt: nil)
+            tripOptions.startTracking = false
+            tripOptions.mode = .car
+            tripOptions.approachingThreshold = 9
+            let trackingOptions = RadarTrackingOptions.presetContinuous
+            // startTrackingAfter 3 minutes from now
+            trackingOptions.startTrackingAfter = Date().addingTimeInterval(180)
+            Radar.startTrip(options: tripOptions, trackingOptions: trackingOptions)
+        }
+
+        demoButton(text: "completeTrip") {
+            Radar.completeTrip()
+        }
+
+        demoButton(text: "mockTracking") {
+            let origin = CLLocation(latitude: 40.78382, longitude: -73.97536)
+            let destination = CLLocation(latitude: 40.70390, longitude: -73.98670)
+            var i = 0
+            Radar.mockTracking(
+                origin: origin,
+                destination: destination,
+                mode: .car,
+                steps: 3,
+                interval: 3
+            ) { (status, location, events, user) in
+                print("Mock track: status = \(Radar.stringForStatus(status)); location = \(String(describing: location)); events = \(String(describing: events)); user = \(String(describing: user))")
+                
+                if (i == 2) {
+                    Radar.completeTrip()
+                }
+                
+                i += 1
+            }
+        }
+
+        demoButton(text: "getMatrix") {
+            let origins = [
+                CLLocation(latitude: 40.78382, longitude: -73.97536),
+                CLLocation(latitude: 40.70390, longitude: -73.98670)
+            ]
+            let destinations = [
+                CLLocation(latitude: 40.64189, longitude: -73.78779),
+                CLLocation(latitude: 35.99801, longitude: -78.94294)
+            ]
+            
+            Radar.getMatrix(origins: origins, destinations: destinations, mode: .car, units: .imperial) { (status, matrix) in
+                print("Matrix: status = \(Radar.stringForStatus(status)); matrix[0][0].duration.text = \(String(describing: matrix?.routeBetween(originIndex: 0, destinationIndex: 0)?.duration.text)); matrix[0][1].duration.text = \(String(describing: matrix?.routeBetween(originIndex: 0, destinationIndex: 1)?.duration.text)); matrix[1][0].duration.text = \(String(describing: matrix?.routeBetween(originIndex: 1, destinationIndex: 0)?.duration.text)); matrix[1][1].duration.text = \(String(describing: matrix?.routeBetween(originIndex: 1, destinationIndex: 1)?.duration.text))")
+            }
+        }
+
+        demoButton(text: "logConversion") {
+            Radar.logConversion(name: "conversion_event", metadata: ["data": "test"]) { (status, event) in
+                if let conversionEvent = event, conversionEvent.type == .conversion {
+                    print("Conversion name: \(conversionEvent.conversionName!)")
+                }
+                
+                print("Log Conversion: status = \(Radar.stringForStatus(status)); event = \(String(describing: event))")
+            }
+        }
+        
+        demoButton(text: "Run all") {
+            for function in self.demoFunctions.dropLast() {
+                function()
+            }
+        }
     }
 
     func requestLocationPermissions() {
@@ -332,6 +398,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
 
     func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
         completionHandler([.list, .banner, .sound])
+    }
+    
+    func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse) async {
+        // Uncomment for manual setup for notification conversions and URLs
+        // Radar.logConversion(response: response)
+        // Radar.openURLFromNotification(response.notification)
     }
 
     func notify(_ body: String) {

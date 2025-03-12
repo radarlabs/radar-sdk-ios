@@ -16,6 +16,21 @@
 	<string>$(PRODUCT_BUNDLE_PACKAGE_TYPE)</string>
 	<key>CFBundleShortVersionString</key>
 	<string>$(MARKETING_VERSION)</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLIconFile</key>
+			<string>Default-568h@2x</string>
+			<key>CFBundleURLName</key>
+			<string>io.radar.example</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>io.radar</string>
+			</array>
+		</dict>
+	</array>
 	<key>CFBundleVersion</key>
 	<string>1</string>
 	<key>LSRequiresIPhoneOS</key>
@@ -44,14 +59,12 @@
 			</dict>
 		</dict>
 	</dict>
-	<key>NSBluetoothAlwaysUsageDescription</key>
-	<string>Please enable Bluetooth for indoors location</string>
-	<key>NSBluetoothPeripheralUsageDescription</key>
-	<string>Please enable Bluetooth for indoors location</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>Your background location usage description goes here.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Your foreground location usage description goes here.</string>
+	<key>NSMotionUsageDescription</key>
+	<string>Your motion usage description goes here.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
@@ -71,7 +84,7 @@
 	</dict>
 	<key>UIBackgroundModes</key>
 	<array>
-		<string>bluetooth-central</string>
+		<string>fetch</string>
 		<string>location</string>
 	</array>
 	<key>UILaunchStoryboardName</key>
