@@ -213,17 +213,36 @@ static NSString *const kSyncGeofenceIdentifierPrefix = @"radar_geofence_";
     NSArray *registeredNotifications = [RadarState registeredNotifications];
     
     [notificationCenter getPendingNotificationRequestsWithCompletionHandler:^(NSArray<UNNotificationRequest *> *requests) {
+        NSMutableArray *currentNotificationsCampaignIds = [NSMutableArray new];
         NSMutableArray *currentNotifications = [NSMutableArray new];
-        
+        NSMutableArray *identifiers = [NSMutableArray new];
         for (UNNotificationRequest *request in requests) {
-            if (request.content.userInfo) {
+            if ([request.identifier hasPrefix:kSyncGeofenceIdentifierPrefix]) {
+                [identifiers addObject:request.identifier];
+                 if (request.content.userInfo && request.content.userInfo[@"campaignId"]) {
+                    [currentNotificationsCampaignIds addObject:request.content.userInfo[@"campaignId"]];
+                }
                 [currentNotifications addObject:request.content.userInfo];
             }
         }
+
+        if (identifiers.count > 0) {
+            [notificationCenter removePendingNotificationRequestsWithIdentifiers:identifiers];
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Removed pending notifications"];
+        }
         
         NSMutableArray *notificationsDelivered = [NSMutableArray arrayWithArray:registeredNotifications];
-        [notificationsDelivered removeObjectsInArray:currentNotifications];
+        NSMutableArray *notificationsToRemove = [NSMutableArray new];       
+
+        for (NSDictionary *notification in notificationsDelivered) {
+            NSString *campaignId = notification[@"campaignId"];
+            if (campaignId && [currentNotificationsCampaignIds containsObject:campaignId]) {
+                [notificationsToRemove addObject:notification];
+            }
+        }
         
+        [notificationsDelivered removeObjectsInArray:notificationsToRemove];
+
         if (completionHandler) {
             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"Setting %lu notifications remaining after re-registering", (unsigned long)notificationsDelivered.count]];
             completionHandler(notificationsDelivered, currentNotifications);
