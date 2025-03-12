@@ -67,9 +67,7 @@
             [self.radarSDKMotion startAbsoluteAltitudeUpdatesToQueue:self.absoluteAltitudeQueue withHandler:^(CMAbsoluteAltitudeData *altitudeData, NSError *error) {
                 [self.radarSDKMotion stopAbsoluteAltitudeUpdates];
             }];
-        } else {
-            // Fallback on earlier versions
-        }
+        } 
     }
 }
 

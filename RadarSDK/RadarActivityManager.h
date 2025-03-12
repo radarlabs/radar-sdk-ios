@@ -12,7 +12,6 @@
 @interface RadarActivityManager : NSObject
 
 @property (nullable, strong, nonatomic) id radarSDKMotion;
-@property (nonatomic, readonly) NSInteger MAX_BUFFER_SIZE;
 
 + (instancetype _Nonnull )sharedInstance;
 - (void)requestPermission;
