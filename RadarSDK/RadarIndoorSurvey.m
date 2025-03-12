@@ -59,41 +59,27 @@
     // set fresh uuid on self.scanId
     self.scanId = [[NSUUID UUID] UUIDString];
 
-    // if isWhereAmIScan but no knownLocation, throw error
-    // as we are expecting to have been called from track
-    // if (isWhereAmIScan && !knownLocation) {
-    //     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelError message:@"Error: start called with isWhereAmIScan but no knownLocation"];
-    //     completionHandler(@"Error: start called with isWhereAmIScan but no knownLocation");
-    //     self.isScanning = NO;
-    //     return;
-    // } else if(isWhereAmIScan && knownLocation) {
-    //     // if isWhereAmIScan and knownLocation,
-    //     // set self.locationAtTimeOfSurveyStart to knownLocation
-    //     self.locationAtTimeOfSurveyStart = knownLocation;
+    if (isWhereAmIScan && knownLocation != nil) {
+        self.locationAtTimeOfSurveyStart = knownLocation;
+    } else {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"calling RadarLocationManager getLocationWithDesiredAccuracy"];
+        [[RadarLocationManager sharedInstance]
+            getLocationWithDesiredAccuracy:RadarTrackingOptionsDesiredAccuracyMedium
+                        completionHandler:^(RadarStatus status, CLLocation *_Nullable location, BOOL stopped) {
+                            if (status != RadarStatusSuccess) {
+                                return;
+                            }
 
-    //     [self kickOffMotionAndBluetooth:surveyLengthSeconds];
-    // } else if(!isWhereAmIScan) {
-    //     // get location at time of survey start
+                            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"location: %f, %f", location.coordinate.latitude, location.coordinate.longitude]];
+                            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"%@", location]];
 
-    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"calling RadarLocationManager getLocationWithDesiredAccuracy"];
-    [[RadarLocationManager sharedInstance]
-        getLocationWithDesiredAccuracy:RadarTrackingOptionsDesiredAccuracyMedium
-                     completionHandler:^(RadarStatus status, CLLocation *_Nullable location, BOOL stopped) {
-                         if (status != RadarStatusSuccess) {
-                             return;
-                         }
+                            // print the location being set
+                            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"setting locationAtTimeOfSurveyStart TO: %@", location]];
+                            self.locationAtTimeOfSurveyStart = location;
 
-                         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"location: %f, %f", location.coordinate.latitude, location.coordinate.longitude]];
-                         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"%@", location]];
-
-                         // print the location being set
-                         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"setting locationAtTimeOfSurveyStart TO: %@", location]];
-                         self.locationAtTimeOfSurveyStart = location;
-
-                         [self kickOffMotionAndBluetooth:surveyLengthSeconds];
-    }];
-
-    // }
+                            [self kickOffMotionAndBluetooth:surveyLengthSeconds];
+        }];
+    }
 }
 
 - (void)kickOffMotionAndBluetooth:(int)surveyLengthSeconds {

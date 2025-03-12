@@ -1046,24 +1046,6 @@
                                         }];
 }
 
-#pragma mark - Indoors
-
-// called by waypoint (and others?) to trigger a place survey for a given length
-// i.e. record a bluetooth fingerprint and store it
-+ (void)doIndoorSurvey:(NSString *)placeLabel
-             forLength:(int)surveyLengthSeconds
-        isWhereAmIScan:(BOOL)isWhereAmIScan
-     completionHandler:(RadarIndoorsSurveyCompletionHandler)completionHandler {
-    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"doIndoorsSurvey()"];
-    
-    [[RadarIndoorSurvey sharedInstance] start:placeLabel
-                                    forLength:surveyLengthSeconds
-                            withKnownLocation:nil
-                               isWhereAmIScan:isWhereAmIScan
-                        withCompletionHandler:completionHandler
-    ];
-}
-
 #pragma mark - Logging
 
 + (void)setLogLevel:(RadarLogLevel)level {
