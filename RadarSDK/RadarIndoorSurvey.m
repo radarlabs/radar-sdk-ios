@@ -83,15 +83,6 @@
 }
 
 - (void)kickOffMotionAndBluetooth:(int)surveyLengthSeconds {
-    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:@"kicking off CMMotionManager"];
-    self.motionManager = [[CMMotionManager alloc] init];
-    [self.motionManager startMagnetometerUpdatesToQueue:[NSOperationQueue mainQueue] withHandler:^(CMMagnetometerData *magnetometerData, NSError *error) {
-        if (error) {
-            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelError message:[NSString stringWithFormat:@"startMagnetometerUpdatesToQueue error: %@", error]];
-        } else {
-            self.lastMagnetometerData = magnetometerData;
-        }
-    }];
 
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:@"kicking off CBCentralManager"];
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"time: %f", [[NSDate date] timeIntervalSince1970]]];
@@ -189,7 +180,6 @@
     // locationAtTimeOfSurveyStart will be reset after completionhandler sends back the value
     [self.bluetoothReadings removeAllObjects];
     self.scanId = nil;
-    self.lastMagnetometerData = nil;
 
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:@"stopScanning end"];
 
@@ -271,14 +261,6 @@
         [NSURLQueryItem queryItemWithName:@"deviceMake" value:[RadarUtils deviceMake]],
         [NSURLQueryItem queryItemWithName:@"deviceModel" value:[RadarUtils deviceModel]],
         [NSURLQueryItem queryItemWithName:@"deviceOS" value:[RadarUtils deviceOS]],
-
-        // inject x, y, z from self.lastMagnetometerData
-        // and add sqrt(pow(magnet.field.x, 2) + pow(magnet.field.y, 2) + pow(magnet.field.z, 2)) as well
-        [NSURLQueryItem queryItemWithName:@"magnetometer.field.x" value:[NSString stringWithFormat:@"%f", self.lastMagnetometerData.magneticField.x]],
-        [NSURLQueryItem queryItemWithName:@"magnetometer.field.y" value:[NSString stringWithFormat:@"%f", self.lastMagnetometerData.magneticField.y]],
-        [NSURLQueryItem queryItemWithName:@"magnetometer.field.z" value:[NSString stringWithFormat:@"%f", self.lastMagnetometerData.magneticField.z]],
-        [NSURLQueryItem queryItemWithName:@"magnetometer.timestamp" value:[NSString stringWithFormat:@"%f", self.lastMagnetometerData.timestamp]],
-        [NSURLQueryItem queryItemWithName:@"magnetometer.field.magnitude" value:[NSString stringWithFormat:@"%f", sqrt(pow(self.lastMagnetometerData.magneticField.x, 2) + pow(self.lastMagnetometerData.magneticField.y, 2) + pow(self.lastMagnetometerData.magneticField.z, 2))]],
 
         [NSURLQueryItem queryItemWithName:@"isConnectable" value:[isConnectable stringValue]],
         [NSURLQueryItem queryItemWithName:@"txPowerLevel" value:[txPowerLevel stringValue]]
