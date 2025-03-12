@@ -3,6 +3,7 @@
 #import "RadarUtils.h"
 #import "RadarLogger.h"
 #import "RadarLocationManager.h"
+#import "CLLocation+Radar.h"
 
 @implementation RadarIndoorSurvey
 
@@ -59,7 +60,7 @@
     // set fresh uuid on self.scanId
     self.scanId = [[NSUUID UUID] UUIDString];
 
-    if (isWhereAmIScan && knownLocation != nil) {
+    if (isWhereAmIScan && knownLocation != nil && knownLocation.isValid) {
         self.locationAtTimeOfSurveyStart = knownLocation;
     } else {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"calling RadarLocationManager getLocationWithDesiredAccuracy"];
