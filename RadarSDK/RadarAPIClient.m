@@ -66,7 +66,6 @@
         @"X-Radar-Device-Type": [RadarUtils deviceType],
         @"X-Radar-SDK-Version": [RadarUtils sdkVersion],
         @"X-Radar-Mobile-Origin": [[NSBundle mainBundle] bundleIdentifier],
-
     } mutableCopy];
     if ([RadarSettings xPlatform]) {
         [headers addEntriesFromDictionary:@{
@@ -76,6 +75,12 @@
     } else {
         [headers addEntriesFromDictionary:@{
             @"X-Radar-X-Platform-SDK-Type": @"Native"
+        }];
+    }
+    NSString *product = [RadarSettings product];
+    if (product) {
+        [headers addEntriesFromDictionary:@{
+            @"X-Radar-Product": product
         }];
     }
     return headers;
@@ -193,6 +198,8 @@
                   encrypted:NO
         expectedCountryCode:nil
           expectedStateCode:nil
+                     reason:nil
+              transactionId:nil
           completionHandler:completionHandler];
 }
 
@@ -210,6 +217,8 @@
                 encrypted:(BOOL)encrypted
       expectedCountryCode:(NSString * _Nullable)expectedCountryCode
         expectedStateCode:(NSString * _Nullable)expectedStateCode
+                   reason:(NSString * _Nullable)reason
+            transactionId:(NSString * _Nullable)transactionId
         completionHandler:(RadarTrackAPICompletionHandler _Nonnull)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
@@ -237,7 +246,6 @@
             params[@"sessionId"] = sessionId;
         }
     }
-    params[@"product"] = [RadarSettings product];
     params[@"latitude"] = @(location.coordinate.latitude);
     params[@"longitude"] = @(location.coordinate.longitude);
     CLLocationAccuracy accuracy = location.horizontalAccuracy;
@@ -348,6 +356,12 @@
         }
         if (expectedStateCode) {
             params[@"expectedStateCode"] = expectedStateCode;
+        }
+        if (reason) {
+            params[@"reason"] = reason;
+        }
+        if (transactionId) {
+            params[@"transactionId"] = transactionId;
         }
     }
     params[@"appId"] = [[NSBundle mainBundle] bundleIdentifier];
