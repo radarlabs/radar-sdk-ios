@@ -158,4 +158,7 @@ typedef NS_ENUM(NSInteger, RadarActivityType);
  */
 @property (nullable, copy, nonatomic, readonly) RadarFraud *fraud;
 
+
+@property (assign, nonatomic, readonly) double barometricAltitude;
+
 @end

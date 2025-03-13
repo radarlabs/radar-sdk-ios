@@ -16,6 +16,7 @@
 #import "RadarSegment+Internal.h"
 #import "RadarTrip+Internal.h"
 #import "RadarUser+Internal.h"
+#import "RadarLogger.h"
 
 @implementation RadarUser
 
@@ -41,7 +42,8 @@
                               source:(RadarLocationSource)source
                                 trip:(RadarTrip *_Nullable)trip
                                debug:(BOOL)debug
-                               fraud:(RadarFraud *_Nullable)fraud {
+                               fraud:(RadarFraud *_Nullable)fraud 
+                  barometricAltitude:(double)barometricAltitude {
     self = [super init];
     if (self) {
         __id = _id;
@@ -67,6 +69,7 @@
         _trip = trip;
         _debug = debug;
         _fraud = fraud;
+        _barometricAltitude: = barometricAltitude;
     }
     return self;
 }
@@ -101,6 +104,7 @@
     RadarTrip *trip;
     RadarFraud *fraud;
     BOOL debug = NO;
+    double barometricAltitude = NAN;
 
     id idObj = dict[@"_id"];
     if (idObj && [idObj isKindOfClass:[NSString class]]) {
@@ -290,6 +294,14 @@
     id fraudObj = dict[@"fraud"];
     fraud = [[RadarFraud alloc] initWithObject:fraudObj];
 
+    id barometricAltitudeObj = dict[@"barometricAltitude"];
+    if (barometricAltitudeObj && [barometricAltitudeObj isKindOfClass:[NSNumber class]]) {
+        barometricAltitude = [((NSNumber *)barometricAltitudeObj) doubleValue];
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"barometricAltitude: %f", barometricAltitude]];
+    } else {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"barometricAltitude: null"];
+    }
+
     if (_id && location) {
         return [[RadarUser alloc] initWithId:_id
                                       userId:userId
@@ -313,7 +325,8 @@
                                       source:source
                                         trip:trip
                                        debug:debug
-                                       fraud:fraud];
+                                       fraud:fraud
+                          barometricAltitude:barometricAltitude];
     }
 
     return nil;
@@ -373,6 +386,9 @@
     [dict setValue:@(self.debug) forKey:@"debug"];
     if (self.fraud) {
         [dict setValue:[self.fraud dictionaryValue] forKey:@"fraud"];
+    }
+    if (!isnan(self.barometricAltitude)) {
+        [dict setValue:@(self.barometricAltitude) forKey:@"barometricAltitude"];
     }
     return dict;
 }
