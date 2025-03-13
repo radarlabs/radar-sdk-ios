@@ -69,7 +69,7 @@
         _trip = trip;
         _debug = debug;
         _fraud = fraud;
-        _barometricAltitude: = barometricAltitude;
+        _barometricAltitude = barometricAltitude;
     }
     return self;
 }
