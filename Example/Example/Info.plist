@@ -41,7 +41,7 @@
 		<false/>
 		<key>NSPinnedDomains</key>
 		<dict>
-			<key>api-verified.radar.io</key>
+			<key>api-verified.radar-staging.com</key>
 			<dict>
 				<key>NSIncludesSubdomains</key>
 				<true/>
@@ -49,11 +49,7 @@
 				<array>
 					<dict>
 						<key>SPKI-SHA256-BASE64</key>
-						<string>15ktYXSSU2llpy7YyCgeqUKDBkjcimK/weUcec960sI=</string>
-					</dict>
-					<dict>
-						<key>SPKI-SHA256-BASE64</key>
-						<string>15ktYXSSU2llpy7YyCgeqUKDBkjcimK/weUcec960sI=</string>
+						<string>09MICn++JSUz2tk36fH+5qiuUAbbxx4JzrAHR3QHu/I=</string>
 					</dict>
 				</array>
 			</dict>

@@ -30,8 +30,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         // Uncomment to enable automatic setup for notification conversions or deep linking
         //radarInitializeOptions.autoLogNotificationConversions = true
         //radarInitializeOptions.autoHandleNotificationDeepLinks = true
-        Radar.initialize(publishableKey: "prj_test_pk_0000000000000000000000000000000000000000", options: radarInitializeOptions )
-        Radar.setUserId("testUserId")
+        Radar.initialize(publishableKey: "prj_test_pk_...", options: radarInitializeOptions )
+        Radar.setUserId("xcodeSimUserId")
         Radar.setMetadata([ "foo": "bar" ])
         Radar.setDelegate(self)
         Radar.setVerifiedDelegate(self)
@@ -126,6 +126,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         }
 
         demoButton(text: "trackVerified") {
+            Radar.stopTracking()
             Radar.trackVerified() { (status, token) in
                 print("TrackVerified: status = \(status); token = \(token?.dictionaryValue())")
             }
