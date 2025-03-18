@@ -356,7 +356,7 @@
             params[@"transactionId"] = transactionId;
         }
         if (UIScreen.mainScreen.isCaptured) {
-            [fraudFailureReasons addObject:@"fraud_sharing_screen_captured"];
+            [fraudFailureReasons addObject:@"fraud_sharing_capturing_screen"];
         }
     }
     params[@"appId"] = [[NSBundle mainBundle] bundleIdentifier];
