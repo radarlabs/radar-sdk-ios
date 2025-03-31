@@ -1392,4 +1392,8 @@
     [RadarNotificationHelper openURLFromNotification:notification];
 }
 
++ (void)requestMotionActivityPermission {
+    [[RadarActivityManager sharedInstance] requestPermission];
+}
+
 @end

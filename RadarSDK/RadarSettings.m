@@ -341,10 +341,6 @@ static NSString *const kInitializeOptions = @"radar-initializeOptions";
     return [[self sdkConfiguration] useRadarModifiedBeacon];
 }
 
-+ (BOOL)useLocationMetadata {
-    return [[self sdkConfiguration] useLocationMetadata];
-}
-
 + (BOOL)xPlatform {
     return [[NSUserDefaults standardUserDefaults] stringForKey:kXPlatformSDKType] != nil &&
     [[NSUserDefaults standardUserDefaults] stringForKey:kXPlatformSDKVersion];
