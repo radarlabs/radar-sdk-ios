@@ -20,7 +20,7 @@
 #import "RadarTestUtils.h"
 #import "RadarTripOptions.h"
 #import "RadarFileStorage.h"
-
+#import "RadarReplayBuffer.h"
 
 @interface RadarSDKTests : XCTestCase
 
@@ -30,6 +30,7 @@
 @property (nonatomic, strong) RadarFileStorage *fileSystem;
 @property (nonatomic, strong) NSString *testFilePath;
 @property (nonatomic, strong) RadarLogBuffer *logBuffer;
+@property (nonatomic, strong) RadarReplayBuffer *replayBuffer;
 @end
 
 @implementation RadarSDKTests
@@ -299,7 +300,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     self.testFilePath = [NSTemporaryDirectory() stringByAppendingPathComponent:@"testfile"];
     [[RadarLogBuffer sharedInstance]clearBuffer];
     [[RadarLogBuffer sharedInstance]setPersistentLogFeatureFlag:YES];
-    
+    [[RadarReplayBuffer sharedInstance]clearBuffer];
 }
 
 - (void)tearDown {
@@ -897,6 +898,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
                            chains:@[@"walmart"]
                        categories:nil
                            groups:nil
+                     countryCodes:nil
                             limit:100
                 completionHandler:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarPlace *> *_Nullable places) {
                     XCTAssertEqual(status, RadarStatusErrorPermissions);
@@ -922,6 +924,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
                            chains:@[@"walmart"]
                        categories:nil
                            groups:nil
+                     countryCodes:nil
                             limit:100
                 completionHandler:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarPlace *> *_Nullable places) {
                     XCTAssertEqual(status, RadarStatusErrorLocation);
@@ -953,6 +956,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
                            chains:@[@"walmart"]
                        categories:nil
                            groups:nil
+                     countryCodes:nil
                             limit:100
                 completionHandler:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarPlace *> *_Nullable places) {
                     XCTAssertEqual(status, RadarStatusSuccess);
@@ -987,6 +991,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
                     chainMetadata:@{@"orderActive": @"true"}
                        categories:nil
                            groups:nil
+                     countryCodes:nil
                             limit:100
                 completionHandler:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarPlace *> *_Nullable places) {
                     XCTAssertEqual(status, RadarStatusSuccess);
@@ -1024,6 +1029,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
                      chains:nil
                  categories:@[@"restaurant"]
                      groups:nil
+               countryCodes:nil
                       limit:100
           completionHandler:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarPlace *> *_Nullable places) {
               XCTAssertEqual(status, RadarStatusSuccess);
@@ -1489,6 +1495,22 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     XCTAssertEqualObjects(logs.firstObject.message, @"message_250");
     XCTAssertEqualObjects(logs.lastObject.message, @"----- purged oldest logs -----");
     [[RadarLogBuffer sharedInstance]clearBuffer];
+}
+
+- (void)test_RadarReplayBuffer_writeAndRead {
+    RadarSdkConfiguration *sdkConfiguration = [RadarSettings sdkConfiguration];
+    sdkConfiguration.usePersistence = true;
+    [RadarSettings setSdkConfiguration:sdkConfiguration];
+    
+    CLLocation *location = [[CLLocation alloc] initWithLatitude:0.1 longitude:0.1];
+    NSMutableDictionary * params = [RadarTestUtils createTrackParamWithLocation:location stopped:YES foreground:YES source:RadarLocationSourceGeofenceEnter replayed:YES beacons:[NSArray arrayWithObject:[RadarBeacon alloc]] verified:YES attestationString:@"attestationString" keyId:@"keyID" attestationError:@"attestationError" encrypted:YES expectedCountryCode:@"CountryCode" expectedStateCode:@"StateCode"];
+    
+    [[RadarReplayBuffer sharedInstance] writeNewReplayToBuffer:params];
+    [[RadarReplayBuffer sharedInstance] setValue:NULL forKey:@"mutableReplayBuffer"];
+    [[RadarReplayBuffer sharedInstance] loadReplaysFromPersistentStore];
+    NSMutableArray<RadarReplay *> *mutableReplayBuffer = [[RadarReplayBuffer sharedInstance] valueForKey:@"mutableReplayBuffer"];
+    XCTAssertEqual(mutableReplayBuffer.count, 1);
+    XCTAssertEqualObjects(mutableReplayBuffer.firstObject.replayParams, params);
 }
 
 - (void)test_RadarSdkConfiguration {

@@ -89,7 +89,7 @@
 
     [[RadarLocationManager sharedInstance] updateTrackingFromInitialize];
 
-   [RadarNotificationHelper checkNotificationPermissionsWithCompletionHandler:^(BOOL granted) {
+    [RadarNotificationHelper checkNotificationPermissionsWithCompletionHandler:^(BOOL granted) {
         [[RadarAPIClient sharedInstance] getConfigForUsage:@"initialize"
                                                   verified:NO
                                          completionHandler:^(RadarStatus status, RadarConfig *config) {
@@ -148,6 +148,14 @@
 
 + (NSDictionary *_Nullable)getMetadata {
     return [RadarSettings metadata];
+}
+
++ (void)setProduct:(NSString *)product {
+    [RadarSettings setProduct:product];
+}
+
++ (NSString *_Nullable)getProduct {
+    return [RadarSettings product];
 }
 
 + (void)setAnonymousTrackingEnabled:(BOOL)enabled {
@@ -291,12 +299,16 @@
 }
 
 + (void)trackVerifiedWithCompletionHandler:(RadarTrackVerifiedCompletionHandler)completionHandler {
-    [self trackVerifiedWithBeacons:NO completionHandler:completionHandler];
+    [self trackVerifiedWithBeacons:NO desiredAccuracy:RadarTrackingOptionsDesiredAccuracyMedium completionHandler:completionHandler];
 }
 
-+ (void)trackVerifiedWithBeacons:(BOOL)beacons completionHandler:(RadarTrackVerifiedCompletionHandler)completionHandler {
++ (void)trackVerifiedWithBeacons:(BOOL)beacons desiredAccuracy:(RadarTrackingOptionsDesiredAccuracy)desiredAccuracy completionHandler:(RadarTrackVerifiedCompletionHandler)completionHandler {
+    [self trackVerifiedWithBeacons:NO desiredAccuracy:RadarTrackingOptionsDesiredAccuracyMedium reason:nil transactionId:nil completionHandler:completionHandler];
+}
+
++ (void)trackVerifiedWithBeacons:(BOOL)beacons desiredAccuracy:(RadarTrackingOptionsDesiredAccuracy)desiredAccuracy reason:(NSString *)reason transactionId:(NSString *)transactionId completionHandler:(RadarTrackVerifiedCompletionHandler)completionHandler {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"trackVerified()"];
-    [[RadarVerificationManager sharedInstance] trackVerifiedWithBeacons:(BOOL)beacons completionHandler:completionHandler];
+    [[RadarVerificationManager sharedInstance] trackVerifiedWithBeacons:beacons desiredAccuracy:desiredAccuracy reason:reason transactionId:transactionId completionHandler:completionHandler];
 }
 
 + (void)startTrackingVerifiedWithInterval:(NSTimeInterval)interval beacons:(BOOL)beacons {
@@ -309,10 +321,23 @@
     [[RadarVerificationManager sharedInstance] stopTrackingVerified];
 }
 
++ (BOOL)isTrackingVerified {
+    return [RadarVerificationManager sharedInstance].started;
+}
+
 + (void)getVerifiedLocationToken:(RadarTrackVerifiedCompletionHandler)completionHandler {
+    [self getVerifiedLocationTokenWithBeacons:NO desiredAccuracy:RadarTrackingOptionsDesiredAccuracyMedium completionHandler:completionHandler];
+}
+
++ (void)getVerifiedLocationTokenWithBeacons:(BOOL)beacons desiredAccuracy:(RadarTrackingOptionsDesiredAccuracy)desiredAccuracy completionHandler:(RadarTrackVerifiedCompletionHandler)completionHandler {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"getVerifiedLocationToken()"];
     [[RadarVerificationManager sharedInstance]
-     getVerifiedLocationTokenWithCompletionHandler:completionHandler];
+     getVerifiedLocationTokenWithBeacons:beacons desiredAccuracy:desiredAccuracy completionHandler:completionHandler];
+}
+
++ (void)clearVerifiedLocationToken {
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"clearVerifiedLocationToken()"];
+    [[RadarVerificationManager sharedInstance] clearVerifiedLocationToken];
 }
 
 + (void)setExpectedJurisdictionWithCountryCode:(NSString *)countryCode stateCode:(NSString *)stateCode {
@@ -538,17 +563,6 @@
                        deliveredAfter:(NSDate *)deliveredAfter {
     
     NSMutableDictionary *metadata = [[NSMutableDictionary alloc] initWithDictionary:request.content.userInfo];
-    NSDictionary<NSString *, NSString *> *result = [RadarUtils
-                                                    extractGeofenceIdAndTimestampFromIdentifier:request.identifier];
-    if (result) {
-        NSString *geofenceId = result[@"geofenceId"];
-        [metadata setValue:geofenceId forKey:@"geofenceId"];
-        NSString *timestamp = result[@"registeredAt"];
-        [metadata setValue:timestamp forKey:@"registeredAt"];
-        if (deliveredAfter) {
-            [metadata setObject:deliveredAfter forKey:@"deliveredAfter"];
-        }
-    }
 
     if (conversionSource) {
         [metadata setValue:conversionSource forKey:@"conversionSource"];
@@ -733,9 +747,10 @@
                         chains:(NSArray *_Nullable)chains
                     categories:(NSArray *_Nullable)categories
                         groups:(NSArray *_Nullable)groups
+                  countryCodes:(NSArray *_Nullable)countryCodes
                          limit:(int)limit
              completionHandler:(RadarSearchPlacesCompletionHandler)completionHandler {
-    [Radar searchPlacesWithRadius:radius chains:chains chainMetadata:nil categories:categories groups:groups limit:limit completionHandler:completionHandler];
+    [Radar searchPlacesWithRadius:radius chains:chains chainMetadata:nil categories:categories groups:groups  countryCodes:countryCodes limit:limit completionHandler:completionHandler];
 }
 
 + (void)searchPlacesWithRadius:(int)radius
@@ -743,6 +758,7 @@
                  chainMetadata:(NSDictionary<NSString *, NSString *> *_Nullable)chainMetadata
                     categories:(NSArray *_Nullable)categories
                         groups:(NSArray *_Nullable)groups
+                  countryCodes:(NSArray *_Nullable)countryCodes
                          limit:(int)limit
              completionHandler:(RadarSearchPlacesCompletionHandler)completionHandler {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"searchPlaces()"];
@@ -763,6 +779,7 @@
                                             chainMetadata:chainMetadata
                                                categories:categories
                                                    groups:groups
+                                             countryCodes:countryCodes
                                                     limit:limit
                                         completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarPlace *> *_Nullable places) {
                                             if (completionHandler) {
@@ -779,9 +796,10 @@
                   chains:(NSArray *_Nullable)chains
               categories:(NSArray *_Nullable)categories
                   groups:(NSArray *_Nullable)groups
+            countryCodes:(NSArray *_Nullable)countryCodes
                    limit:(int)limit
        completionHandler:(RadarSearchPlacesCompletionHandler)completionHandler {
-    [Radar searchPlacesNear:near radius:radius chains:chains chainMetadata:nil categories:categories groups:groups limit:limit completionHandler:completionHandler];
+    [Radar searchPlacesNear:near radius:radius chains:chains chainMetadata:nil categories:categories groups:groups countryCodes:countryCodes limit:limit completionHandler:completionHandler];
 }
 
 + (void)searchPlacesNear:(CLLocation *_Nonnull)near
@@ -790,6 +808,7 @@
            chainMetadata:(NSDictionary<NSString *, NSString *> *_Nullable)chainMetadata
               categories:(NSArray *_Nullable)categories
                   groups:(NSArray *_Nullable)groups
+            countryCodes:(NSArray *_Nullable)countryCodes
                    limit:(int)limit
        completionHandler:(RadarSearchPlacesCompletionHandler)completionHandler {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"searchPlaces()"];
@@ -799,6 +818,7 @@
                                         chainMetadata:chainMetadata
                                            categories:categories
                                                groups:groups
+                                         countryCodes:countryCodes
                                                 limit:limit
                                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarPlace *> *_Nullable places) {
                                         [RadarUtils runOnMainThread:^{

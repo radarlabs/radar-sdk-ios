@@ -35,7 +35,7 @@
 
     for (RadarEvent *event in events) {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo
-                                           message:[NSString stringWithFormat:@"📍 Radar event received | type = %@; replayed= %d; link = https://radar.com/dashboard/events/%@",
+                                           message:[NSString stringWithFormat:@"📍 Radar event received | type = %@; replayed = %d; link = https://radar.com/dashboard/events/%@",
                                                                               [RadarEvent stringForType:event.type], event.replayed, event._id]];
     }
 }
@@ -88,6 +88,5 @@
 
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"📍 Radar token updated | passed = %d; expiresAt = %@; expiresIn = %f; token = %@", token.passed, token.expiresAt, token.expiresIn, token.token]];
 }
-
 
 @end

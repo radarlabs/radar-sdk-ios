@@ -27,6 +27,7 @@ static NSString *const kSessionId = @"radar-sessionId";
 static NSString *const kId = @"radar-_id";
 static NSString *const kUserId = @"radar-userId";
 static NSString *const kDescription = @"radar-description";
+static NSString *const kProduct = @"radar-product";
 static NSString *const kMetadata = @"radar-metadata";
 static NSString *const kAnonymous = @"radar-anonymous";
 static NSString *const kTracking = @"radar-tracking";
@@ -48,6 +49,7 @@ static NSString *const kUserDebug = @"radar-userDebug";
 static NSString *const kXPlatformSDKType = @"radar-xPlatformSDKType";
 static NSString *const kXPlatformSDKVersion = @"radar-xPlatformSDKVersion";
 static NSString *const kInitializeOptions = @"radar-initializeOptions";
+
 
 + (NSString *)publishableKey {
     return [[NSUserDefaults standardUserDefaults] stringForKey:kPublishableKey];
@@ -117,6 +119,14 @@ static NSString *const kInitializeOptions = @"radar-initializeOptions";
 
 + (void)setDescription:(NSString *)description {
     [[NSUserDefaults standardUserDefaults] setObject:description forKey:kDescription];
+}
+
++ (NSString *)product {
+    return [[NSUserDefaults standardUserDefaults] stringForKey:kProduct];
+}
+
++ (void)setProduct:(NSString *)product {
+    [[NSUserDefaults standardUserDefaults] setObject:product forKey:kProduct];
 }
 
 + (NSDictionary *)metadata {
@@ -251,16 +261,28 @@ static NSString *const kInitializeOptions = @"radar-initializeOptions";
     return [[RadarSdkConfiguration alloc] initWithDict:sdkConfigurationDict];
 }
 
++ (BOOL)isDebugBuild {
+#ifdef DEBUG
+    return YES;
+#else
+    return NO;
+#endif
+}
+
 + (RadarLogLevel)logLevel {
-    RadarLogLevel logLevel;
+    RadarLogLevel defaultLogLevel;
     if ([RadarSettings userDebug]) {
-        logLevel = RadarLogLevelDebug;
-    } else if ([[NSUserDefaults standardUserDefaults] objectForKey:kLogLevel] == nil) {
-        logLevel = RadarLogLevelInfo;
+        defaultLogLevel = RadarLogLevelDebug;
+    } else if ([self isDebugBuild]) {
+        defaultLogLevel = RadarLogLevelInfo;
     } else {
-        logLevel = (RadarLogLevel)[[NSUserDefaults standardUserDefaults] integerForKey:kLogLevel];
+        defaultLogLevel = RadarLogLevelNone;
     }
-    return logLevel;
+
+    if ([[NSUserDefaults standardUserDefaults] objectForKey:kLogLevel] == nil) {
+        return defaultLogLevel;
+    } 
+    return (RadarLogLevel)[[NSUserDefaults standardUserDefaults] integerForKey:kLogLevel];
 }
 
 + (void)setLogLevel:(RadarLogLevel)level {
@@ -298,7 +320,7 @@ static NSString *const kInitializeOptions = @"radar-initializeOptions";
 
 + (BOOL)userDebug {
     NSNumber *userDebug = [[NSUserDefaults standardUserDefaults] objectForKey:kUserDebug];
-    return userDebug ? [userDebug boolValue] : YES;
+    return userDebug ? [userDebug boolValue] : NO;
 }
 
 + (void)setUserDebug:(BOOL)userDebug {

@@ -396,9 +396,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
             }
             self.locationManager.desiredAccuracy = desiredAccuracy;
 
-            if (@available(iOS 11.0, *)) {
-                self.lowPowerLocationManager.showsBackgroundLocationIndicator = options.showBlueBar;
-            }
+            self.lowPowerLocationManager.showsBackgroundLocationIndicator = options.showBlueBar;
 
             BOOL startUpdates = options.showBlueBar || [CLLocationManager authorizationStatus] == kCLAuthorizationStatusAuthorizedAlways;
             BOOL stopped = [RadarState stopped];
@@ -560,6 +558,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                 NSString *notificationTitle = [geofence.metadata objectForKey:@"radar:notificationTitle"];
                 NSString *notificationSubtitle = [geofence.metadata objectForKey:@"radar:notificationSubtitle"];
                 NSString *notificationURL = [geofence.metadata objectForKey:@"radar:notificationURL"];
+                NSString *campaignId = [geofence.metadata objectForKey:@"radar:campaignId"];
                 if (notificationText) {
                     UNMutableNotificationContent *content = [UNMutableNotificationContent new];
                     if (notificationTitle) {
@@ -571,8 +570,18 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                     content.body = [NSString localizedUserNotificationStringForKey:notificationText arguments:nil];
                     
                     NSMutableDictionary *mutableUserInfo = [geofence.metadata mutableCopy];
+
+                    mutableUserInfo[@"geofenceId"] = geofence._id;
+                    NSDate *now = [NSDate new];
+                    NSTimeInterval lastSyncInterval = [now timeIntervalSince1970];
+                    mutableUserInfo[@"registeredAt"] = [NSString stringWithFormat:@"%f", lastSyncInterval];
+
                     if (notificationURL) {
                         mutableUserInfo[@"url"] = notificationURL;
+                    }
+
+                    if (campaignId) {
+                        mutableUserInfo[@"campaignId"] = campaignId;
                     }
                     
                     content.userInfo = [mutableUserInfo copy];
@@ -1138,6 +1147,10 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         return;
     }
 
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
+                                   message:[NSString stringWithFormat:@"Visit detected | arrival = %@; departure = %@; horizontalAccuracy = %f; visit.coordinate = (%f, %f); manager.location = %@",
+                                                                      visit.arrivalDate, visit.departureDate, visit.horizontalAccuracy, visit.coordinate.latitude, visit.coordinate.longitude, manager.location]];
+
     BOOL tracking = [RadarSettings tracking];
     if (!tracking) {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Ignoring visit: not tracking"];
@@ -1153,6 +1166,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 }
 
 - (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error {
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"CLLocation manager error | error = %@", error]];
     [[RadarDelegateHolder sharedInstance] didFailWithStatus:RadarStatusErrorLocation];
 
     [self callCompletionHandlersWithStatus:RadarStatusErrorLocation location:nil];

@@ -18,7 +18,8 @@
                     passed:(BOOL)passed
            inExclusionZone:(BOOL)inExclusionZone
               inBufferZone:(BOOL)inBufferZone
-          distanceToBorder:(double)distanceToBorder {
+          distanceToBorder:(double)distanceToBorder
+                  expected:(BOOL)expected{
     self = [super init];
     if (self) {
         __id = _id;
@@ -31,6 +32,7 @@
         _inExclusionZone = inExclusionZone;
         _inBufferZone = inBufferZone;
         _distanceToBorder = distanceToBorder;
+        _expected = expected;
     }
     return self;
 }
@@ -52,6 +54,7 @@
     BOOL inExclusionZone = false;
     BOOL inBufferZone = false;
     double distanceToBorder = 0;
+    BOOL expected = false;
 
     id idObj = dict[@"_id"];
     if ([idObj isKindOfClass:[NSString class]]) {
@@ -110,9 +113,16 @@
     if ([distanceToBorderObj isKindOfClass:[NSNumber class]]) {
         distanceToBorder = ((NSNumber *)distanceToBorderObj).doubleValue;
     }
+    
+    id expectedObj = dict[@"expected"];
+    if (expectedObj && [expectedObj isKindOfClass:[NSNumber class]]) {
+        NSNumber *expectedNumber = (NSNumber *)expectedObj;
+
+        expected = [expectedNumber boolValue];
+    }
 
     if (_id && name && code && type) {
-        return [[RadarRegion alloc] initWithId:_id name:name code:code type:type flag:flag allowed:allowed passed:passed inExclusionZone:inExclusionZone inBufferZone:inBufferZone distanceToBorder:distanceToBorder];
+        return [[RadarRegion alloc] initWithId:_id name:name code:code type:type flag:flag allowed:allowed passed:passed inExclusionZone:inExclusionZone inBufferZone:inBufferZone distanceToBorder:distanceToBorder expected:expected];
     }
 
     return nil;
@@ -132,6 +142,7 @@
     [dict setValue:@(self.inExclusionZone) forKey:@"inExclusionZone"];
     [dict setValue:@(self.inBufferZone) forKey:@"inBufferZone"];
     [dict setValue:@(self.distanceToBorder) forKey:@"distanceToBorder"];
+    [dict setValue:@(self.expected) forKey:@"expected"];
     return dict;
 }
 
