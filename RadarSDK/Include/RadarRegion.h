@@ -67,6 +67,11 @@ NS_ASSUME_NONNULL_BEGIN
 @property (assign, nonatomic, readonly) double distanceToBorder;
 
 /**
+ A boolean indicating whether the jurisdiction is expected based on the values passed to `setExpectedJurisdiction()`.
+ */
+@property (assign, nonatomic, readonly) BOOL expected;
+
+/**
  
  */
 

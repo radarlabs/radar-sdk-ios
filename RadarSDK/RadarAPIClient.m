@@ -67,7 +67,6 @@
         @"X-Radar-Device-Type": [RadarUtils deviceType],
         @"X-Radar-SDK-Version": [RadarUtils sdkVersion],
         @"X-Radar-Mobile-Origin": [[NSBundle mainBundle] bundleIdentifier],
-
     } mutableCopy];
     if ([RadarSettings xPlatform]) {
         [headers addEntriesFromDictionary:@{
@@ -77,6 +76,12 @@
     } else {
         [headers addEntriesFromDictionary:@{
             @"X-Radar-X-Platform-SDK-Type": @"Native"
+        }];
+    }
+    NSString *product = [RadarSettings product];
+    if (product) {
+        [headers addEntriesFromDictionary:@{
+            @"X-Radar-Product": product
         }];
     }
     return headers;
@@ -192,6 +197,8 @@
                   encrypted:NO
         expectedCountryCode:nil
           expectedStateCode:nil
+                     reason:nil
+              transactionId:nil
           completionHandler:completionHandler];
 }
 
@@ -208,6 +215,8 @@
                 encrypted:(BOOL)encrypted
       expectedCountryCode:(NSString * _Nullable)expectedCountryCode
         expectedStateCode:(NSString * _Nullable)expectedStateCode
+                   reason:(NSString * _Nullable)reason
+            transactionId:(NSString * _Nullable)transactionId
         completionHandler:(RadarTrackAPICompletionHandler _Nonnull)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
@@ -345,9 +354,27 @@
         if (expectedStateCode) {
             params[@"expectedStateCode"] = expectedStateCode;
         }
+        if (reason) {
+            params[@"reason"] = reason;
+        }
+        if (transactionId) {
+            params[@"transactionId"] = transactionId;
+        }
     }
     params[@"appId"] = [[NSBundle mainBundle] bundleIdentifier];
-    if (sdkConfiguration.useLocationMetadata) { 
+    NSString *appName = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleName"];
+    if (appName) {
+        params[@"appName"] = appName;
+    }
+    NSString *appVersion = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"];
+    if (appVersion) {
+        params[@"appVersion"] = appVersion;
+    }
+    NSString *appBuild = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"];
+    if (appBuild) {
+        params[@"appBuild"] = appBuild;
+    }
+    if (sdkConfiguration.useLocationMetadata) {
         NSMutableDictionary *locationMetadata = [NSMutableDictionary new];
         locationMetadata[@"motionActivityData"] = [RadarState lastMotionActivityData];
         locationMetadata[@"heading"] = [RadarState lastHeadingData];
@@ -794,6 +821,7 @@
            chainMetadata:(NSDictionary<NSString *, NSString *> *_Nullable)chainMetadata
               categories:(NSArray *_Nullable)categories
                   groups:(NSArray *_Nullable)groups
+            countryCodes:(NSArray *_Nullable)countryCodes
                    limit:(int)limit
        completionHandler:(RadarSearchPlacesAPICompletionHandler)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
@@ -815,6 +843,10 @@
     }
     if (groups && [groups count] > 0) {
         [queryString appendFormat:@"&groups=%@", [groups componentsJoinedByString:@","]];
+    }
+
+    if (countryCodes && [countryCodes count] > 0) {
+        [queryString appendFormat:@"&country=%@", [countryCodes componentsJoinedByString:@","]];
     }
 
     [chainMetadata enumerateKeysAndObjectsUsingBlock:^(NSString *_Nonnull key, NSString *_Nonnull value, BOOL *_Nonnull stop) {
