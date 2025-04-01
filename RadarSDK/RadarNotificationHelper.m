@@ -31,8 +31,7 @@ static NSString *const kSyncGeofenceIdentifierPrefix = @"radar_geofence_";
         NSString *identifier = [NSString stringWithFormat:@"%@%@", kEventNotificationIdentifierPrefix, event._id];
         NSString *categoryIdentifier = [RadarEvent stringForType:event.type];
         UNMutableNotificationContent *content = [RadarNotificationHelper extractContentFromMetadata:event.metadata geofenceId:nil];
-        NSString *campaignType = [event.metadata objectForKey:@"radar:campaignType"];
-        if (content && [campaignType isEqual:@"notification"]) {
+        if (content) {
             content.categoryIdentifier = categoryIdentifier;
             UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:identifier content:content trigger:nil];
             [UNUserNotificationCenter.currentNotificationCenter addNotificationRequest:request withCompletionHandler:^(NSError *_Nullable error) {
@@ -110,7 +109,7 @@ static NSString *const kSyncGeofenceIdentifierPrefix = @"radar_geofence_";
     NSString *notificationURL = [metadata objectForKey:@"radar:notificationURL"];
     NSString *campaignId = [metadata objectForKey:@"radar:campaignId"];
 
-    if (notificationText) {
+    if (notificationText && [RadarNotificationHelper isNotificationCampaign:metadata]) {
         UNMutableNotificationContent *content = [UNMutableNotificationContent new];
         if (notificationTitle) {
             content.title = [NSString localizedUserNotificationStringForKey:notificationTitle arguments:nil];
@@ -316,6 +315,10 @@ static NSString *const kSyncGeofenceIdentifierPrefix = @"radar_geofence_";
             completionHandler(NO);
         }
     } 
+}
+
++ (BOOL)isNotificationCampaign:(NSDictionary *)metadata {
+    return [metadata objectForKey:@"radar:campaignType"] != nil && ([[metadata objectForKey:@"radar:campaignType"] isEqual:@"clientSide"] || [[metadata objectForKey:@"radar:campaignType"] isEqual:@"eventBased"]);
 }
 
 @end
