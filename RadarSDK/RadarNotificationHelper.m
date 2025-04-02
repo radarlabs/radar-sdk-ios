@@ -27,28 +27,6 @@ static NSString *const kEventNotificationIdentifierPrefix = @"radar_event_notifi
     }
     
     for (RadarEvent *event in events) {
-        NSString *identifier = [NSString stringWithFormat:@"%@%@", kEventNotificationIdentifierPrefix, event._id];
-        NSString *categoryIdentifier = [RadarEvent stringForType:event.type];
-        UNMutableNotificationContent *content = [RadarNotificationHelper extractContentFromMetadata:event.metadata geofenceId:nil];
-        if (content) {
-            content.categoryIdentifier = categoryIdentifier;
-            UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:identifier content:content trigger:nil];
-            [UNUserNotificationCenter.currentNotificationCenter addNotificationRequest:request withCompletionHandler:^(NSError *_Nullable error) {
-                if (error) {
-                    [[RadarLogger sharedInstance]
-                     logWithLevel:RadarLogLevelDebug
-                     message:[NSString stringWithFormat:@"Error adding local notification | identifier = %@; error = %@", request.identifier, error]];
-                } else {
-                    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
-                                                       message:[NSString stringWithFormat:@"Added local notification | identifier = %@", request.identifier]];
-                    
-                }
-            }];
-        } else {
-            continue;
-        }
-
-
         NSString *notificationText;
         NSDictionary *metadata;
         
@@ -73,6 +51,8 @@ static NSString *const kEventNotificationIdentifierPrefix = @"radar_event_notifi
         }
         
         if (notificationText) {
+            NSString *identifier = [NSString stringWithFormat:@"%@%@", kEventNotificationIdentifierPrefix, event._id];
+            NSString *categoryIdentifier = [RadarEvent stringForType:event.type];
             
             UNMutableNotificationContent *content = [UNMutableNotificationContent new];
             content.body = [NSString localizedUserNotificationStringForKey:notificationText arguments:nil];
@@ -91,10 +71,8 @@ static NSString *const kEventNotificationIdentifierPrefix = @"radar_event_notifi
                 }
             }];
         }
-
     }
 }
-
 
 + (UNMutableNotificationContent *)extractContentFromMetadata:(NSDictionary *)metadata geofenceId:(NSString *)geofenceId {
     
