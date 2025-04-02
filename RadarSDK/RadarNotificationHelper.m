@@ -108,7 +108,7 @@ static NSString *const kEventNotificationIdentifierPrefix = @"radar_event_notifi
     NSString *notificationURL = [metadata objectForKey:@"radar:notificationURL"];
     NSString *campaignId = [metadata objectForKey:@"radar:campaignId"];
 
-    if (notificationText && [RadarNotificationHelper isNotificationCampaign:metadata]) {
+    if (notificationText) {
         UNMutableNotificationContent *content = [UNMutableNotificationContent new];
         if (notificationTitle) {
             content.title = [NSString localizedUserNotificationStringForKey:notificationTitle arguments:nil];
@@ -314,12 +314,6 @@ static NSString *const kEventNotificationIdentifierPrefix = @"radar_event_notifi
             completionHandler(NO);
         }
     } 
-}
-
-+ (BOOL)isNotificationCampaign:(NSDictionary *)metadata {
-    return YES;
-    // skip this check for now
-    //return [metadata objectForKey:@"radar:campaignType"] != nil && ([[metadata objectForKey:@"radar:campaignType"] isEqual:@"clientSide"] || [[metadata objectForKey:@"radar:campaignType"] isEqual:@"eventBased"]);
 }
 
 @end
