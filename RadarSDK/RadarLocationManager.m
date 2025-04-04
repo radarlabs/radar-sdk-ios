@@ -342,8 +342,8 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
             [self.locationManager stopUpdatingLocation];
             [self.activityManager stopRelativeAltitudeUpdates];
             [self.activityManager stopAbsoluteAltitudeUpdates];
-            [RadarState setLastLocationManagerRestart:[NSDate date]];
         }
+        [RadarState setLastLocationManagerRestart:[NSDate date]];
 
         if (tracking) {
             self.locationManager.allowsBackgroundLocationUpdates =
