@@ -336,12 +336,13 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
             tracking = NO;
         }
 
-        // if location is not null, and location.timestamp is valid and is older than 2 minutes, turn off location manager and also activity manager
-        if (location && location.timestamp && [[NSDate date] timeIntervalSinceDate:location.timestamp] > 120) {
+        NSDate *lastRestart = [RadarState lastLocationManagerRestart];
+        if (lastRestart && [[NSDate date] timeIntervalSinceDate:lastRestart] > 120) {
             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Location is older than 2 minutes, turning off location manager and activity manager"];
             [self.locationManager stopUpdatingLocation];
             [self.activityManager stopRelativeAltitudeUpdates];
             [self.activityManager stopAbsoluteAltitudeUpdates];
+            [RadarState setLastLocationManagerRestart:[NSDate date]];
         }
 
         if (tracking) {
