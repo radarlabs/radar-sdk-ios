@@ -249,7 +249,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 
                                                            [self requestLocation];
                                                        }];
-
+        
         [self.lowPowerLocationManager startUpdatingLocation];
         // Change for beta version only, not for merging into main.
         if (blueBar && interval <= 20) {
@@ -334,6 +334,14 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 
             [RadarSettings setTracking:NO];
             tracking = NO;
+        }
+
+        // if location is not null, and location.timestamp is valid and is older than 2 minutes, turn off location manager and also activity manager
+        if (location && location.timestamp && [[NSDate date] timeIntervalSinceDate:location.timestamp] > 120) {
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Location is older than 2 minutes, turning off location manager and activity manager"];
+            [self.locationManager stopUpdatingLocation];
+            [self.activityManager stopRelativeAltitudeUpdates];
+            [self.activityManager stopAbsoluteAltitudeUpdates];
         }
 
         if (tracking) {
