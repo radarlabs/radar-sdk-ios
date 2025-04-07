@@ -30,7 +30,6 @@ static NSString *const kRegisteredNotifications = @"radar-registeredNotification
 static NSDictionary *_lastRelativeAltitudeDataInMemory = nil;
 static NSDate *_lastPressureBackupTime = nil;
 static NSTimeInterval const kBackupInterval = 2.0; // 2 seconds
-static NSString *const kLastLocationManagerRestart = @"radar-lastLocationManagerRestart";
 + (CLLocation *)lastLocation {
     NSDictionary *dict = [[NSUserDefaults standardUserDefaults] dictionaryForKey:kLastLocation];
     CLLocation *lastLocation = [RadarUtils locationForDictionary:dict];
@@ -248,15 +247,6 @@ static NSString *const kLastLocationManagerRestart = @"radar-lastLocationManager
     }
     [registeredNotifications addObject:notification];
     [RadarState setRegisteredNotifications:registeredNotifications];
-}
-
-+ (NSDate *)lastLocationManagerRestart {
-    NSDate *lastLocationManagerRestart = [[NSUserDefaults standardUserDefaults] objectForKey:kLastLocationManagerRestart];
-    return lastLocationManagerRestart;
-}
-
-+ (void)setLastLocationManagerRestart:(NSDate *)lastLocationManagerRestart {
-    [[NSUserDefaults standardUserDefaults] setObject:lastLocationManagerRestart forKey:kLastLocationManagerRestart];
 }
 
 @end

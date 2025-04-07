@@ -336,16 +336,6 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
             tracking = NO;
         }
 
-        NSDate *lastRestart = [RadarState lastLocationManagerRestart];
-        if ( (lastRestart && [[NSDate date] timeIntervalSinceDate:lastRestart] > 120) || !lastRestart) {
-            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Location is older than 2 minutes, turning off location manager and activity manager"];
-            [self.locationManager stopUpdatingLocation];
-            [self.activityManager stopRelativeAltitudeUpdates];
-            [self.activityManager stopAbsoluteAltitudeUpdates];
-            [RadarState setLastLocationManagerRestart:[NSDate date]];
-        }
-        
-
         if (tracking) {
             self.locationManager.allowsBackgroundLocationUpdates =
                 [RadarUtils locationBackgroundMode] && [CLLocationManager authorizationStatus] == kCLAuthorizationStatusAuthorizedAlways;
