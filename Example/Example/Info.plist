@@ -59,6 +59,10 @@
 			</dict>
 		</dict>
 	</dict>
+	<key>NSBluetoothAlwaysUsageDescription</key>
+	<string>Please enable Bluetooth for indoors location</string>
+	<key>NSBluetoothPeripheralUsageDescription</key>
+	<string>Please enable Bluetooth for indoors location</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>Your background location usage description goes here.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
@@ -86,6 +90,7 @@
 	<array>
 		<string>fetch</string>
 		<string>location</string>
+		<string>bluetooth-central</string>
 	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>Launch Screen.storyboard</string>

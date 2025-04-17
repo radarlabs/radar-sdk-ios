@@ -215,6 +215,9 @@ typedef void (^_Nullable RadarFlushReplaysCompletionHandler)(RadarStatus status,
  */
 typedef void (^_Nullable RadarTrackVerifiedCompletionHandler)(RadarStatus status, RadarVerifiedLocationToken *_Nullable token);
 
+// define RadarIndoorsSurveyCompletionHandler -- which is called with no arguments
+typedef void (^_Nonnull RadarIndoorsSurveyCompletionHandler)(NSString *_Nullable result, CLLocation *_Nullable locationAtStartOfSurvey);
+
 /**
  Called when a trip update succeeds, fails, or times out.
 
