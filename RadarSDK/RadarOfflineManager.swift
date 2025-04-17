@@ -11,7 +11,7 @@ import CoreLocation
 
 @objc(RadarOfflineManager) class RadarOfflineManager: NSObject {
 
-private static func getUserGeofences(location: CLLocation) -> [RadarGeofence] {
+private static func getUserGeofencesFromLocation(location: CLLocation) -> [RadarGeofence] {
     //var newGeofenceIds = [String]()
     let nearbyGeofences = RadarState.nearbyGeofences()
     if (nearbyGeofences == nil) {
@@ -94,6 +94,7 @@ private static func getUserGeofences(location: CLLocation) -> [RadarGeofence] {
 
     @objc public static func generateEventsFromOfflineLocations(_ location: CLLocation, userGeofences: [RadarGeofence], completionHandler: @escaping ([RadarEvent], RadarUser, CLLocation) -> Void) {
         let user = RadarState.radarUser()
+        RadarLogger.sharedInstance().log(level: RadarLogLevel.Info, message: "Got this user: \(user)")
         if (user == nil) {
             RadarLogger.sharedInstance().log(level: RadarLogLevel.error, message: "error getting user from offline manager")
             return completionHandler([], user!, location)
@@ -108,6 +109,7 @@ private static func getUserGeofences(location: CLLocation) -> [RadarGeofence] {
         var events = [RadarEvent]()
         for userGeofence in userGeofences {
             if (!userGeofenceIds.contains(userGeofence._id)) {
+                RadarLogger.sharedInstance().log(level: RadarLogLevel.Info, message: "Adding geofence entry event for: \(userGeofence._id)")
                 // geofence entry
                 let eventDict: [String: Any] = [
                     "_id": userGeofence._id,
@@ -129,12 +131,12 @@ private static func getUserGeofences(location: CLLocation) -> [RadarGeofence] {
                 ]
                 if let event = RadarEvent(object: eventDict) {
                     events.append(event)
-                }
-                
+                }   
             }
         }
         for previousGeofenceId in userGeofenceIds {
             if (!userGeofenceIds.contains(previousGeofenceId)) {
+                RadarLogger.sharedInstance().log(level: RadarLogLevel.Info, message: "Adding geofence exit event for: \(previousGeofenceId)")
                 let eventDict: [String: Any] = [
                     "_id": previousGeofenceId,
                     "createdAt": Date(),
