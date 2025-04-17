@@ -8,7 +8,7 @@
 #import <CoreLocation/CLLocation.h>
 #import <Foundation/Foundation.h>
 #import "RadarSettings.h"
-
+#import <ActivityKit/ActivityKit.h>
 NS_ASSUME_NONNULL_BEGIN
 
 @interface RadarUtils : NSObject
@@ -34,7 +34,6 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSString *)dictionaryToJson:(NSDictionary *)dict;
 + (void)runOnMainThread:(dispatch_block_t)block;
 + (BOOL)isLive NS_SWIFT_NAME(isLive());
-
 @end
 
 NS_ASSUME_NONNULL_END

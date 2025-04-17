@@ -331,6 +331,7 @@
         params[@"locationAccuracyAuthorization"] = locationAccuracyAuthorization;
     }
     params[@"notificationAuthorization"] = @([RadarState notificationPermissionGranted]);
+    params[@"liveActivityAvailable"] = @([RadarSwiftUtils areActivitiesEnabled]);
 
     params[@"trackingOptions"] = [options dictionaryValue];
 
