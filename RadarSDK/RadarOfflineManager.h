@@ -8,12 +8,19 @@
 #import <Foundation/Foundation.h>
 #import <CoreLocation/CoreLocation.h>
 #import "RadarConfig.h"
+#import "RadarUtils.h"
+#import "RadarEvent+Internal.h"
+#import "RadarUser+Internal.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface RadarOfflineManager : NSObject
 
-+ (void)updateTrackingOptionsFromOfflineLocation:(CLLocation *)location completionHandler:(void (^)(RadarConfig *))completionHandler;
++ (NSArray<RadarGeofence *> *)getUserGeofencesFromLocation:(CLLocation *)location;
+
++ (void)updateTrackingOptionsFromOfflineLocation:(NSArray<RadarGeofence *> *)userGeofences completionHandler:(void (^)(RadarConfig *))completionHandler;
+
++ (void)generateEventsFromOfflineLocations:(CLLocation *)location userGeofences:(NSArray<RadarGeofence *> *)userGeofences completionHandler:(void (^)(NSArray<RadarEvent *> *, RadarUser *, CLLocation *))completionHandler;
 
 @end
 

@@ -470,8 +470,16 @@
             if (status != RadarStatusSuccess) {
                 [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Failed to flush replays"]];
                 [[RadarDelegateHolder sharedInstance] didFailWithStatus:status];
-                if ([RadarSettings sdkConfiguration].useOfflineRTOUpdates) { 
-                    return [RadarOfflineManager updateTrackingOptionsFromOfflineLocation:location completionHandler:^(RadarConfig * _Nullable config) {
+                if ([RadarSettings sdkConfiguration].useOfflineRTOUpdates) {
+                    NSArray<RadarGeofence *> *userGeofences = [RadarOfflineManager getUserGeofencesFromLocation:location];
+                    [RadarOfflineManager generateEventsFromOfflineLocations:location userGeofences:userGeofences completionHandler:^(NSArray<RadarEvent *> *events, RadarUser *user, CLLocation *location) {
+                        if (events && events.count) {
+                            [[RadarDelegateHolder sharedInstance] didReceiveEvents:events user:user];
+                        }
+                        
+                        [[RadarDelegateHolder sharedInstance] didUpdateLocation:location user:user];
+                    }];
+                    return [RadarOfflineManager updateTrackingOptionsFromOfflineLocation:userGeofences completionHandler:^(RadarConfig * _Nullable config) {
                         return completionHandler(status, nil, nil, nil, nil, config, nil);
                     }];
                 }
@@ -506,8 +514,18 @@
                                 }
 
                                 [[RadarDelegateHolder sharedInstance] didFailWithStatus:status];
-                                if ([RadarSettings sdkConfiguration].useOfflineRTOUpdates) { 
-                                    return [RadarOfflineManager updateTrackingOptionsFromOfflineLocation:location completionHandler:^(RadarConfig * _Nullable config) {
+                                if ([RadarSettings sdkConfiguration].useOfflineRTOUpdates) {
+                                    NSArray<RadarGeofence *> *userGeofences = [RadarOfflineManager getUserGeofencesFromLocation:location];
+                                    [RadarOfflineManager generateEventsFromOfflineLocations:location userGeofences:userGeofences completionHandler:^(NSArray<RadarEvent *> *events, RadarUser *user, CLLocation *location) {
+                                        if (events && events.count) {
+                                            [[RadarDelegateHolder sharedInstance] didReceiveEvents:events user:user];
+                                        }
+                                        
+                                        [[RadarDelegateHolder sharedInstance] didUpdateLocation:location user:user];
+                                        
+                                    }];
+                                    
+                                    return [RadarOfflineManager updateTrackingOptionsFromOfflineLocation:userGeofences completionHandler:^(RadarConfig * _Nullable config) {
                                         return completionHandler(status, nil, nil, nil, nil, config, nil);
                                     }];
                                 } else {
@@ -597,6 +615,8 @@
                                 if (token) {
                                     [[RadarDelegateHolder sharedInstance] didUpdateToken:token];
                                 }
+
+                                [RadarState setRadarUser:user];
 
                                 return completionHandler(RadarStatusSuccess, res, events, user, nearbyGeofences, config, token);
                             } else {

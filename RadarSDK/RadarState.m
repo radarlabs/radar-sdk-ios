@@ -29,7 +29,7 @@ static NSString *const kLastMotionActivityData = @"radar-lastMotionActivityData"
 static NSString *const kNotificationPermissionGranted = @"radar-notificationPermissionGranted";
 static NSString *const KNearbyGeofences = @"radar-nearbyGeofences";
 static NSString *const kRegisteredNotifications = @"radar-registeredNotifications";
-
+static NSString *const kRadarUser = @"radar-radarUser";
 + (CLLocation *)lastLocation {
     NSDictionary *dict = [[NSUserDefaults standardUserDefaults] dictionaryForKey:kLastLocation];
     CLLocation *lastLocation = [RadarUtils locationForDictionary:dict];
@@ -240,4 +240,16 @@ static NSString *const kRegisteredNotifications = @"radar-registeredNotification
     [registeredNotifications addObject:notification];
     [RadarState setRegisteredNotifications:registeredNotifications];
 }
+
++ (void)setRadarUser:(RadarUser *_Nullable)radarUser {
+    NSDictionary *radarUserDict = [radarUser dictionaryValue];
+    [[NSUserDefaults standardUserDefaults] setObject:radarUserDict forKey:kRadarUser];
+}
+
++ (RadarUser *_Nullable)radarUser {
+    NSDictionary *radarUserDict = [[NSUserDefaults standardUserDefaults] objectForKey:kRadarUser];
+    return [[RadarUser alloc] initWithObject:radarUserDict];
+}
+
+
 @end

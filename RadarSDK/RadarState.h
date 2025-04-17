@@ -8,6 +8,7 @@
 #import <CoreLocation/CoreLocation.h>
 #import <Foundation/Foundation.h>
 #import "RadarGeofence.h"
+#import "RadarUser+Internal.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -46,7 +47,8 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSArray<NSDictionary *> *_Nullable)registeredNotifications;
 + (void)setRegisteredNotifications:(NSArray<NSDictionary *> *_Nullable)registeredNotifications;
 + (void)addRegisteredNotification:(NSDictionary *)registeredNotification;
-
++ (void)setRadarUser:(RadarUser *_Nullable)radarUser NS_SWIFT_NAME(setRadarUser(_:));
++ (RadarUser *_Nullable)radarUser NS_SWIFT_NAME(radarUser());
 @end
 
 NS_ASSUME_NONNULL_END
