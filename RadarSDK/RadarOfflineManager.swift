@@ -12,7 +12,6 @@ import CoreLocation
 @objc(RadarOfflineManager) class RadarOfflineManager: NSObject {
 
  @objc public static func getUserGeofencesFromLocation(_ location: CLLocation) -> [RadarGeofence] {
-    //var newGeofenceIds = [String]()
     let nearbyGeofences = RadarState.nearbyGeofences()
     if (nearbyGeofences == nil) {
         return []
@@ -40,21 +39,15 @@ import CoreLocation
         }
         
     }
-    // we should wait for comparison before setting the geofence ids
-    //RadarState.setGeofenceIds(newGeofenceIds)
+
     return userGeofences
 }
 
     @objc public static func updateTrackingOptionsFromOfflineLocation(_ userGeofences: [RadarGeofence], completionHandler: @escaping (RadarConfig?) -> Void) {
-        
         var newGeofenceTags = [String]()
         let sdkConfig = RadarSettings.sdkConfiguration()
 
-        if (userGeofences.count == 0) {
-            return completionHandler(nil)
-        }
         for userGeofence in userGeofences {
-            
             if (userGeofence.tag != nil) {
                 newGeofenceTags.append(userGeofence.tag!)
             }
