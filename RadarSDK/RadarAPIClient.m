@@ -517,9 +517,11 @@
                                 if ([RadarSettings sdkConfiguration].useOfflineRTOUpdates) {
                                     NSArray<RadarGeofence *> *userGeofences = [RadarOfflineManager getUserGeofencesFromLocation:location];
                                     [RadarOfflineManager generateEventsFromOfflineLocations:location userGeofences:userGeofences completionHandler:^(NSArray<RadarEvent *> *events, RadarUser *user, CLLocation *location) {
+                                        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"events from offline manager: %@", events]];
                                         if (events && events.count) {
                                             [[RadarDelegateHolder sharedInstance] didReceiveEvents:events user:user];
                                         }
+                                        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"location from offline manager: %@", location]];
                                         
                                         [[RadarDelegateHolder sharedInstance] didUpdateLocation:location user:user];
                                         
