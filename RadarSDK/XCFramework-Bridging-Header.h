@@ -8,4 +8,3 @@
 #import "RadarGeofence.h"
 #import "RadarGeofence+Internal.h"
 #import "RadarGeofenceGeometry.h"
-#import "RadarGeofenceGeometry+Internal.h"
