@@ -172,7 +172,7 @@ import CoreLocation
             ],
             "locationAccuracy": location.horizontalAccuracy,
             "activityType": user?.activityType as Any,
-            "geofences": userGeofences,
+            "geofences": userGeofences.map { $0.dictionaryValue() as Any },
             "place": user?.place as Any,
             "beacons": user?.beacons as Any,
             "stopped": RadarState.stopped(),
