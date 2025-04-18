@@ -87,7 +87,7 @@ import CoreLocation
 
     @objc public static func generateEventsFromOfflineLocations(_ location: CLLocation, userGeofences: [RadarGeofence], completionHandler: @escaping ([RadarEvent], RadarUser, CLLocation) -> Void) {
         let user = RadarState.radarUser()
-        RadarLogger.sharedInstance().log(level: RadarLogLevel.info, message: "Got this user: \(user)")
+        RadarLogger.sharedInstance().log(level: RadarLogLevel.info, message: "Got this user: \(String(describing: user))")
         if (user == nil) {
             RadarLogger.sharedInstance().log(level: RadarLogLevel.error, message: "error getting user from offline manager")
             return completionHandler([], user!, location)
@@ -141,7 +141,7 @@ import CoreLocation
                     "live": RadarUtils.isLive(),
                     "type": "user.exited_geofence",
                     // get the geofence from the nearby geofences array
-                    "geofence": nearbyGeofences?.first(where: { $0._id == previousGeofenceId })?.dictionaryValue(),
+                    "geofence": nearbyGeofences?.first(where: { $0._id == previousGeofenceId })?.dictionaryValue() as Any,
                     "verification": RadarEventVerification.unverify.rawValue,
                     "confidence": RadarEventConfidence.low.rawValue,
                     "duration": 0,
@@ -162,32 +162,32 @@ import CoreLocation
         }
 
         let newUserDict: [String: Any] = [
-            "_id": user?._id,
-            "userId": user?.userId,
-            "deviceId": user?.deviceId,
-            "description": user?.__description,
-            "metadata": user?.metadata,
+            "_id": user?._id as Any,
+            "userId": user?.userId as Any,
+            "deviceId": user?.deviceId as Any,
+            "description": user?.__description as Any,
+            "metadata": user?.metadata as Any,
             "location": [
                 "coordinates": [location.coordinate.longitude, location.coordinate.latitude]
             ],
             "locationAccuracy": location.horizontalAccuracy,
-            "activityType": user?.activityType,
-            "geofences": userGeofences,
-            "place": user?.place,
-            "beacons": user?.beacons,
+            "activityType": user?.activityType as Any,
+            "geofences": userGeofences.map { $0.dictionaryValue() as Any },
+            "place": user?.place as Any,
+            "beacons": user?.beacons as Any,
             "stopped": RadarState.stopped(),
             "foreground": RadarUtils.foreground(),
-            "country": user?.country,
-            "state": user?.state,
-            "dma": user?.dma,
-            "postalCode": user?.postalCode,
-            "nearbyPlaceChains": user?.nearbyPlaceChains,
-            "segments": user?.segments,
-            "topChains": user?.topChains,
+            "country": user?.country as Any,
+            "state": user?.state as Any,
+            "dma": user?.dma as Any,
+            "postalCode": user?.postalCode as Any,
+            "nearbyPlaceChains": user?.nearbyPlaceChains as Any,
+            "segments": user?.segments as Any,
+            "topChains": user?.topChains as Any,
             "source": RadarLocationSource.offline,
-            "trip": user?.trip,
-            "debug": user?.debug,
-            "fraud": user?.fraud
+            "trip": user?.trip as Any,
+            "debug": user?.debug as Any,
+            "fraud": user?.fraud as Any
         ]
 
         RadarState.setGeofenceIds(newUserGeofenceIds)
