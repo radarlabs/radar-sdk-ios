@@ -396,6 +396,10 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
             }
             self.locationManager.desiredAccuracy = desiredAccuracy;
 
+            if (self.lowPowerLocationManager.showsBackgroundLocationIndicator && !options.showBlueBar) {
+                [self.lowPowerLocationManager stopUpdatingLocation];
+            }
+                
             self.lowPowerLocationManager.showsBackgroundLocationIndicator = options.showBlueBar;
 
             BOOL startUpdates = options.showBlueBar || [CLLocationManager authorizationStatus] == kCLAuthorizationStatusAuthorizedAlways;
