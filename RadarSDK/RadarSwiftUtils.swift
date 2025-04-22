@@ -12,7 +12,11 @@ import ActivityKit
 @objc(RadarSwiftUtils) class RadarSwiftUtils: NSObject {
     @objc public static func areActivitiesEnabled() -> Bool{
         if #available(iOS 16.2, *) {
-            return ActivityAuthorizationInfo().areActivitiesEnabled
+            let areActivitiesEnabled = ActivityAuthorizationInfo().areActivitiesEnabled
+            if (!areActivitiesEnabled) {
+                RadarLogger.sharedInstance().log(level:RadarLogLevel.debug, message:"Live activities are not enabled")
+            }
+            return areActivitiesEnabled
         } else {
             return false
         }
