@@ -395,12 +395,12 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                 desiredAccuracy = kCLLocationAccuracyHundredMeters;
             }
             self.locationManager.desiredAccuracy = desiredAccuracy;
-
-            if (self.lowPowerLocationManager.showsBackgroundLocationIndicator && !options.showBlueBar) {
+            BOOL liveActivitiesActive = [RadarSwiftUtils areLiveActivitiesActive];
+            if (self.lowPowerLocationManager.showsBackgroundLocationIndicator && (!options.showBlueBar || liveActivitiesActive)) {
                 [self stopUpdates];
             }
                 
-            self.lowPowerLocationManager.showsBackgroundLocationIndicator = options.showBlueBar;
+            self.lowPowerLocationManager.showsBackgroundLocationIndicator = options.showBlueBar && !liveActivitiesActive;
 
             BOOL startUpdates = options.showBlueBar || [CLLocationManager authorizationStatus] == kCLAuthorizationStatusAuthorizedAlways;
             BOOL stopped = [RadarState stopped];

@@ -14,7 +14,7 @@
 @interface RadarSwiftUtils : NSObject
 
 + (BOOL)areActivitiesEnabled;
-
++ (BOOL)areLiveActivitiesActive;
 @end
 
 #endif /* RadarSwiftUtils_h */
