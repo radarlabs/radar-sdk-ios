@@ -21,7 +21,9 @@
                                 mode:(RadarRouteMode)mode
                          etaDistance:(float)etaDistance
                          etaDuration:(float)etaDuration
-                              status:(RadarTripStatus)status {
+                              status:(RadarTripStatus)status
+                             delayed:(BOOL)delayed
+           scheduledArrivalTimeDelay:(int)scheduledArrivalTimeDelay{
     self = [super init];
     if (self) {
         __id = _id;
@@ -34,6 +36,8 @@
         _etaDistance = etaDistance;
         _etaDuration = etaDuration;
         _status = status;
+        _delayed = delayed;
+        _scheduledArrivalTimeDelay = scheduledArrivalTimeDelay;
     }
     return self;
 }
@@ -55,6 +59,8 @@
     float etaDistance = 0;
     float etaDuration = 0;
     RadarTripStatus status = RadarTripStatusUnknown;
+    BOOL delayed = NO;
+    int scheduledArrivalTimeDelay = 0;
 
     id idObj = dict[@"_id"];
     if (idObj && [idObj isKindOfClass:[NSString class]]) {
@@ -141,6 +147,13 @@
         }
     }
 
+    id delayObj = dict[@"delay"];
+    if (delayObj && [delayObj isKindOfClass:[NSDictionary class]]) {
+        NSDictionary *delayDict = (NSDictionary *)delayObj;
+        delayed = [delayDict[@"delayed"] boolValue];
+        scheduledArrivalTimeDelay = [delayDict[@"scheduledArrivalTimeDelay"] intValue];
+    }
+
     id statusObj = dict[@"status"];
     if (statusObj && [statusObj isKindOfClass:[NSString class]]) {
         NSString *statusStr = (NSString *)statusObj;
@@ -169,7 +182,9 @@
                                         mode:mode
                                  etaDistance:etaDistance
                                  etaDuration:etaDuration
-                                      status:status];
+                                      status:status
+                                     delayed:delayed
+                   scheduledArrivalTimeDelay:scheduledArrivalTimeDelay];
     }
 
     return nil;
@@ -191,6 +206,8 @@
     NSDictionary *etaDict = @{@"distance": @(self.etaDistance), @"duration": @(self.etaDuration)};
     dict[@"eta"] = etaDict;
     dict[@"status"] = [Radar stringForTripStatus:self.status];
+    NSDictionary *delayDict = @{@"delayed": @(self.delayed), @"scheduledArrivalTimeDelay": @(self.scheduledArrivalTimeDelay)};
+    dict[@"delay"] = delayDict;
     return dict;
 }
 

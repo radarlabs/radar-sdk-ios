@@ -182,6 +182,8 @@
             type = RadarEventTypeUserArrivedAtWrongTripDestination;
         } else if ([typeStr isEqualToString:@"user.failed_fraud"]) {
             type = RadarEventTypeUserFailedFraud;
+        } else if ([typeStr isEqualToString:@"user.delayed_during_trip"]) {
+            type = RadarEventTypeUserDelayedDuringTrip;
         } else {
             type = RadarEventTypeConversion;
             conversionName = typeStr;
@@ -393,6 +395,8 @@
         return @"user.arrived_at_wrong_trip_destination";
     case RadarEventTypeUserFailedFraud:
         return @"user.failed_fraud";
+    case RadarEventTypeUserDelayedDuringTrip:
+        return @"user.delayed_during_trip";
     case RadarEventTypeConversion:
         return @"custom";
     default:
