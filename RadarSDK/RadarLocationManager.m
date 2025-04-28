@@ -576,6 +576,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                         content.subtitle = [NSString localizedUserNotificationStringForKey:notificationSubtitle arguments:nil];
                     }
                     content.body = [NSString localizedUserNotificationStringForKey:notificationText arguments:nil];
+                    content.sound = UNNotificationSound.defaultSound; 
                     
                     NSMutableDictionary *mutableUserInfo = [geofence.metadata mutableCopy];
 
