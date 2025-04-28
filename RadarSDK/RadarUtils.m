@@ -45,7 +45,7 @@ static NSDateFormatter *_isoDateFormatter;
 }
 
 + (NSString *)sdkVersion {
-    return @"3.21.3";
+    return @"3.21.4-beta.1";
 }
 
 + (NSString *)deviceId {
@@ -162,6 +162,14 @@ static NSDateFormatter *_isoDateFormatter;
     } else {
         return [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
     } 
+}
+
++ (BOOL)isLive {
+    NSString *publishableKey = [RadarSettings publishableKey];
+    if (!publishableKey) {
+        return NO;
+    }
+    return [publishableKey hasPrefix:@"prj_live"];
 }
 
 #pragma mark - threading
