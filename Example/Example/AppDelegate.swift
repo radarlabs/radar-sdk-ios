@@ -153,15 +153,32 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         scrollView.addSubview(button)
     }
     
+    // used in simulator as a replacement for the sdk survey
+    func waitThenCall(completion: @escaping () -> Void) {
+        // Create a dispatch queue
+        let queue = DispatchQueue.global(qos: .background)
+        
+        queue.asyncAfter(deadline: .now() + 10.0) {
+            // Execute the callback on the main thread
+            DispatchQueue.main.async {
+                completion()
+            }
+        }
+    }
+
     @objc func didTapGeofenceButton(_ geofenceId: String, _ description: String, completion: @escaping () -> Void) {
         print("tapped geofence button")
         print(geofenceId, description)
-
+       
+#if targetEnvironment(simulator)
+        waitThenCall(completion: completion)
+#else
         let geofenceIdForSurvey = "geofenceid:\(geofenceId)"
         Radar.doIndoorSurvey(geofenceIdForSurvey, forLength: 60, isWhereAmIScan: false) { _, _ in
             print("done doIndoorSurvey")
             completion()  // Call the completion handler when done
         }
+#endif
     }
 
     func startContinuousInference() {
@@ -262,23 +279,21 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         }
     }
 
-
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
-        // Use this method to optionally configure and attach the UIWindow `window` to the provided UIWindowScene `scene`.
-        // If using a storyboard, the `window` property will automatically be initialized and attached to the scene.
-        // This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
         guard let windowScene = (scene as? UIWindowScene) else { return }
 
         let window = UIWindow(windowScene: windowScene)
         window.backgroundColor = .white
         
+        // Create the geofence picker adapter
+        let geofenceAdapter = GeofencePickerAdapter()
         
         // Add MapViewController
         let mapViewController = MapViewController()
         self.mapViewController = mapViewController  // Store strong reference
         window.addSubview(mapViewController.view)
-    
-        scrollView = UIScrollView(frame: CGRect(x: 0, y: 700, width: window.frame.size.width, height: window.frame.size.height - 300))
+
+        scrollView = UIScrollView(frame: CGRect(x: 0, y: 580, width: window.frame.size.width, height: window.frame.size.height - 300))
         scrollView!.contentSize.height = 0
         scrollView!.contentSize.width = window.frame.size.width
         
@@ -287,20 +302,138 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         window.makeKeyAndVisible()
         
         self.window = window
-       
-        demoButton(text: "Start Infer Forever Loop") { button in
-            button.setTitle("Running inference...", for: .normal)
+        
+        // Add a UI container for the dropdown and button
+        let geofenceSelectionContainer = UIView(frame: CGRect(x: 0, y: 0, width: window.frame.size.width, height: 100))
+        scrollView!.addSubview(geofenceSelectionContainer)
+//        scrollView!.contentSize.height += 100
 
-            print("fetching geofences!!!!!")
-            self.fetchAllGeofences { geofences in
-                DispatchQueue.main.async {
-                    self.fetchedGeofences = geofences
-                    button.setTitle("Running inference...", for: .normal)
-                    self.startContinuousInference()
+        // Create a dropdown button 
+        let dropdownButton = UIButton(frame: CGRect(x: 10, y: 0, width: window.frame.size.width - 20, height: 40))
+        dropdownButton.setTitle("Select a geofence...", for: .normal)
+        dropdownButton.setTitleColor(.black, for: .normal)
+        dropdownButton.contentHorizontalAlignment = .left
+        dropdownButton.layer.borderWidth = 1
+        dropdownButton.layer.borderColor = UIColor.lightGray.cgColor
+        dropdownButton.layer.cornerRadius = 5
+        dropdownButton.contentEdgeInsets = UIEdgeInsets(top: 0, left: 10, bottom: 0, right: 10)
+        geofenceSelectionContainer.addSubview(dropdownButton)
+
+        // Create a dropdown table view (initially hidden) - add to scroll view directly
+        let dropdownTableView = UITableView(frame: CGRect(x: 10, y: 40, width: window.frame.size.width - 20, height: 180))
+        dropdownTableView.register(UITableViewCell.self, forCellReuseIdentifier: "GeofenceCell")
+        dropdownTableView.layer.borderWidth = 1
+        dropdownTableView.layer.borderColor = UIColor.lightGray.cgColor
+        dropdownTableView.isHidden = true
+
+        // Set up table view data source and delegate
+        let tableDelegate = TableViewDelegate()
+        tableDelegate.onSelectItem = { (index, title) in
+            if index < geofenceAdapter.geofences.count {
+                let geofence = geofenceAdapter.geofences[index]
+                geofenceAdapter.selectedIndex = index
+                geofenceAdapter.selectedGeofence = (geofence.0, geofence.1)
+                dropdownButton.setTitle(title, for: .normal)
+                dropdownTableView.isHidden = true
+            }
+        }
+        dropdownTableView.dataSource = tableDelegate
+        dropdownTableView.delegate = tableDelegate
+        scrollView!.addSubview(dropdownTableView)
+
+        // Create the button for starting the survey - put it BELOW in the container
+        let surveyButton = UIButton(frame: CGRect(x: 10, y: 50, width: window.frame.size.width - 20, height: 40))
+        surveyButton.setTitle("Survey", for: .normal)
+        surveyButton.setTitleColor(.white, for: .normal)
+        surveyButton.backgroundColor = .systemBlue
+        surveyButton.layer.cornerRadius = 5
+        surveyButton.isUserInteractionEnabled = true
+
+        surveyButton.adjustsImageWhenHighlighted = true
+        surveyButton.setTitleColor(UIColor.white.withAlphaComponent(0.7), for: .highlighted)
+        surveyButton.setTitleColor(UIColor.white.withAlphaComponent(0.5), for: .disabled)
+
+        surveyButton.addAction(UIAction(handler: { _ in
+            print("Survey button tapped", geofenceAdapter.selectedGeofence)
+
+            if let selectedGeofence = geofenceAdapter.selectedGeofence {
+                // Disable button during survey
+                surveyButton.isEnabled = false
+                surveyButton.alpha = 0.7  // Make it slightly transparent when disabled
+                surveyButton.setTitle("Surveying...", for: .disabled)
+                
+                dropdownTableView.isHidden = true  // Now this reference is valid
+                self.didTapGeofenceButton(selectedGeofence.0, selectedGeofence.1) {
+                    print("Survey completed")
+                    // Re-enable button after survey completes
+                    DispatchQueue.main.async {
+                        surveyButton.isEnabled = true
+                        surveyButton.setTitle("Survey", for: .normal)
+                    }
+                }
+            }
+        }), for: .touchUpInside)
+        geofenceSelectionContainer.addSubview(surveyButton)
+
+        // Add action to button to show/hide dropdown
+        dropdownButton.addAction(UIAction(handler: { _ in
+            if dropdownTableView.isHidden {
+                // Position the table view just below the dropdown button
+                tableDelegate.items = geofenceAdapter.geofences.map { $0.1 }
+                dropdownTableView.reloadData()
+                dropdownTableView.isHidden = false
+                // Bring the table view to front
+                self.scrollView!.bringSubviewToFront(dropdownTableView)
+            } else {
+                dropdownTableView.isHidden = true
+            }
+        }), for: .touchUpInside)
+
+        // Fetch geofences immediately
+        self.fetchAllGeofences { geofences in
+            DispatchQueue.main.async {
+                self.fetchedGeofences = geofences
+                
+                // Sort the geofences alphabetically by description and update the adapter
+                let sortedGeofences = geofences.sorted { $0.1 < $1.1 }
+                geofenceAdapter.geofences = sortedGeofences
+                
+                // Set initial selection if available
+                if !sortedGeofences.isEmpty {
+                    geofenceAdapter.selectedIndex = 0
+                    geofenceAdapter.selectedGeofence = (sortedGeofences[0].0, sortedGeofences[0].1)
+                    dropdownButton.setTitle(sortedGeofences[0].1, for: .normal)
                 }
             }
         }
+        
+        /*
+        demoButton(text: "Start Infer Forever Loop") { button in
+            button.setTitle("Running inference...", for: .normal)
+            self.startContinuousInference()
+        }
+         */
+    }
 
+    // Add this class for handling the table view
+    class TableViewDelegate: NSObject, UITableViewDataSource, UITableViewDelegate {
+        var items: [String] = []
+        var onSelectItem: ((Int, String) -> Void)?
+        
+        func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+            return items.count
+        }
+        
+        func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+            let cell = tableView.dequeueReusableCell(withIdentifier: "GeofenceCell", for: indexPath)
+            cell.textLabel?.text = items[indexPath.row]
+            return cell
+        }
+        
+        func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+            onSelectItem?(indexPath.row, items[indexPath.row])
+            tableView.deselectRow(at: indexPath, animated: true)
+        }
     }
 
     func requestLocationPermissions() {
@@ -376,4 +509,29 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         
     }
     
+}
+
+class GeofencePickerAdapter: NSObject, UIPickerViewDataSource, UIPickerViewDelegate {
+    var geofences: [(String, String, [[CLLocationCoordinate2D]], String)] = []
+    var selectedGeofence: (String, String)? // (id, description)
+    var selectedIndex: Int = 0
+    
+    func numberOfComponents(in pickerView: UIPickerView) -> Int {
+        return 1
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+        return geofences.count
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+        return geofences[row].1 // Return the description
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+        if geofences.count > row {
+            let geofence = geofences[row]
+            selectedGeofence = (geofence.0, geofence.1) // (id, description)
+        }
+    }
 }
