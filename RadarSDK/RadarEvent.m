@@ -315,8 +315,17 @@
     }
 
     id metadataObj = dict[@"metadata"];
-    if (metadataObj && [metadataObj isKindOfClass:[NSDictionary class]]) {
-        metadata = (NSDictionary *)metadataObj;
+    if (metadataObj) {
+        if ([metadataObj isKindOfClass:[NSDictionary class]]) {
+            metadata = (NSDictionary *)metadataObj;
+        } else if ([metadataObj isKindOfClass:[NSString class]]) {
+            NSError *jsonError;
+            NSData *jsonData = [((NSString *)metadataObj) dataUsingEncoding:NSUTF8StringEncoding];
+            id jsonObj = [NSJSONSerialization JSONObjectWithData:jsonData options:0 error:&jsonError];
+            if (!jsonError && [jsonObj isKindOfClass:[NSDictionary class]]) {
+                metadata = (NSDictionary *)jsonObj;
+            }
+        }
     }
 
     if (_id && createdAt) {
