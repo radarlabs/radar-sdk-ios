@@ -562,8 +562,37 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 
             NSDictionary *metadata = geofence.metadata;
             if (metadata) {
-                 UNMutableNotificationContent *content = [RadarNotificationHelper extractContentFromMetadata:metadata geofenceId:geofence._id];
-                if (content) {
+                NSString *notificationText = [geofence.metadata objectForKey:@"radar:notificationText"];
+                NSString *notificationTitle = [geofence.metadata objectForKey:@"radar:notificationTitle"];
+                NSString *notificationSubtitle = [geofence.metadata objectForKey:@"radar:notificationSubtitle"];
+                NSString *notificationURL = [geofence.metadata objectForKey:@"radar:notificationURL"];
+                NSString *campaignId = [geofence.metadata objectForKey:@"radar:campaignId"];
+                if (notificationText) {
+                    UNMutableNotificationContent *content = [UNMutableNotificationContent new];
+                    if (notificationTitle) {
+                        content.title = [NSString localizedUserNotificationStringForKey:notificationTitle arguments:nil];
+                    }
+                    if (notificationSubtitle) {
+                        content.subtitle = [NSString localizedUserNotificationStringForKey:notificationSubtitle arguments:nil];
+                    }
+                    content.body = [NSString localizedUserNotificationStringForKey:notificationText arguments:nil];
+                    
+                    NSMutableDictionary *mutableUserInfo = [geofence.metadata mutableCopy];
+
+                    mutableUserInfo[@"geofenceId"] = geofence._id;
+                    NSDate *now = [NSDate new];
+                    NSTimeInterval lastSyncInterval = [now timeIntervalSince1970];
+                    mutableUserInfo[@"registeredAt"] = [NSString stringWithFormat:@"%f", lastSyncInterval];
+
+                    if (notificationURL) {
+                        mutableUserInfo[@"url"] = notificationURL;
+                    }
+
+                    if (campaignId) {
+                        mutableUserInfo[@"campaignId"] = campaignId;
+                    }
+                    
+                    content.userInfo = [mutableUserInfo copy];
 
                     region.notifyOnEntry = YES;
                     region.notifyOnExit = NO;
@@ -589,7 +618,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         }
     }
     if (NSClassFromString(@"XCTestCase") == nil) {
-        [RadarNotificationHelper removePendingNotificationsWithCompletionHandler: ^{
+        [RadarNotificationHelper removePendingNotificationsWithPrefix:kSyncGeofenceIdentifierPrefix completionHandler: ^{
             [RadarNotificationHelper addOnPremiseNotificationRequests:requests];
         }];
     }

@@ -11,7 +11,7 @@
 #import "RadarDelegateHolder.h"
 #import "RadarLogger.h"
 #import "RadarSettings.h"
-
+#import "RadarNotificationHelper.h"
 @interface RadarBeaconManager ()
 
 @property (assign, nonatomic) BOOL started;
@@ -25,6 +25,8 @@
 @end
 
 @implementation RadarBeaconManager
+
+static NSString *const kBeaconNotificationIdentifierPrefix = @"radar_beacon_notification_";
 
 + (instancetype)sharedInstance {
     static dispatch_once_t once;
@@ -150,8 +152,8 @@
 
     self.beacons = beacons;
     self.started = YES;
-
-    for (RadarBeacon *beacon in beacons) {
+    [RadarNotificationHelper removePendingNotificationsWithPrefix:kBeaconNotificationIdentifierPrefix completionHandler: ^{
+        for (RadarBeacon *beacon in beacons) {
         CLBeaconRegion *region = [self regionForBeacon:beacon];
 
         if (region) {
@@ -160,12 +162,21 @@
                                                                                   beacon.major, beacon.minor]];
 
             [self.locationManager startRangingBeaconsInRegion:region];
+            UNMutableNotificationContent *content = [RadarNotificationHelper extractContentFromMetadata:beacon.metadata geofenceId:nil];
+            if (content) {
+                UNLocationNotificationTrigger *trigger = [UNLocationNotificationTrigger triggerWithRegion:region repeats:NO];
+                UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:[NSString stringWithFormat:@"%@%@", kBeaconNotificationIdentifierPrefix, beacon._id] content:content trigger:trigger];
+                [[UNUserNotificationCenter currentNotificationCenter] addNotificationRequest:request withCompletionHandler:nil];
+                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"Added local notification | identifier = %@", request.identifier]];
+            }
         } else {
             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
                                                message:[NSString stringWithFormat:@"Error starting ranging beacon | _id = %@; uuid = %@; major = %@; minor = %@", beacon._id,
                                                                                   beacon.uuid, beacon.major, beacon.minor]];
+            }
         }
-    }
+    }];
+
 }
 
 - (void)rangeBeaconUUIDs:(NSArray<NSString *> *_Nonnull)beaconUUIDs completionHandler:(RadarBeaconCompletionHandler)completionHandler {
