@@ -221,18 +221,27 @@ static NSString *const kBeaconNotificationIdentifierPrefix = @"radar_beacon_noti
 
     self.beaconUUIDs = beaconUUIDs;
     self.started = YES;
+    [RadarNotificationHelper removePendingNotificationsWithPrefix:kBeaconNotificationIdentifierPrefix completionHandler: ^{
+        for (NSString *beaconUUID in beaconUUIDs) {
+                CLBeaconRegion *region = [self regionForUUID:beaconUUID];
 
-    for (NSString *beaconUUID in beaconUUIDs) {
-        CLBeaconRegion *region = [self regionForUUID:beaconUUID];
+                if (region) {
+                    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Starting ranging UUID | beaconUUID = %@", beaconUUID]];
 
-        if (region) {
-            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Starting ranging UUID | beaconUUID = %@", beaconUUID]];
-
-            [self.locationManager startRangingBeaconsInRegion:region];
-        } else {
-            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Error starting ranging UUID | beaconUUID = %@", beaconUUID]];
-        }
-    }
+                    [self.locationManager startRangingBeaconsInRegion:region];
+                    UNMutableNotificationContent *content = [RadarNotificationHelper extractContentFromMetadata:beacon.metadata geofenceId:nil];
+                    if (content) {
+                        UNLocationNotificationTrigger *trigger = [UNLocationNotificationTrigger triggerWithRegion:region repeats:NO];
+                        UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:[NSString stringWithFormat:@"%@%@", kBeaconNotificationIdentifierPrefix, beacon._id] content:content trigger:trigger];
+                        [[UNUserNotificationCenter currentNotificationCenter] addNotificationRequest:request withCompletionHandler:nil];
+                        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"Added local notification | identifier = %@", request.identifier]];
+                    }
+                } else {
+                    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Error starting ranging UUID | beaconUUID = %@", beaconUUID]];
+                }
+            }
+    }];
+    
 }
 
 - (void)stopRanging {
