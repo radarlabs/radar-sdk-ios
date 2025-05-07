@@ -199,16 +199,19 @@ static NSString *const kEventNotificationIdentifierPrefix = @"radar_event_notifi
     UNUserNotificationCenter *notificationCenter = [UNUserNotificationCenter currentNotificationCenter];
     [notificationCenter getPendingNotificationRequestsWithCompletionHandler:^(NSArray<UNNotificationRequest *> *_Nonnull requests) {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Found %lu pending notifications", (unsigned long)requests.count]];
-        NSMutableArray *identifiers = [NSMutableArray new];
+        NSMutableArray *identifiersToRemove = [NSMutableArray new];
+        NSMutableArray *userInfosToKeep = [NSMutableArray new];
         for (UNNotificationRequest *request in requests) {
             if ([request.identifier hasPrefix:prefix]) {
                 [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Found pending notification to remove | identifier = %@", request.identifier]];
-                [identifiers addObject:request.identifier];
+                [identifiersToRemove addObject:request.identifier];
+            } else {
+                [userInfosToKeep addObject:request.content.userInfo];
             }
         }
-
-        if (identifiers.count > 0) {
-            [notificationCenter removePendingNotificationRequestsWithIdentifiers:identifiers];
+        [RadarState setRegisteredNotifications:userInfosToKeep];
+        if (identifiersToRemove.count > 0) {
+            [notificationCenter removePendingNotificationRequestsWithIdentifiers:identifiersToRemove];
             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Removed pending notifications"];
         }
 
@@ -220,7 +223,6 @@ static NSString *const kEventNotificationIdentifierPrefix = @"radar_event_notifi
     [RadarNotificationHelper checkNotificationPermissionsWithCompletionHandler:^(BOOL granted) {
         if (granted) {
             UNUserNotificationCenter *notificationCenter = [UNUserNotificationCenter currentNotificationCenter];
-            [RadarState setRegisteredNotifications: [NSArray new]];
             for (UNNotificationRequest *request in requests) {
                 [notificationCenter addNotificationRequest:request withCompletionHandler:^(NSError *_Nullable error) {
                     if (error) {
