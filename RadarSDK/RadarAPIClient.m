@@ -583,6 +583,12 @@
                                     [[RadarDelegateHolder sharedInstance] didUpdateToken:token];
                                 }
 
+                                id nearbyBeaconsObj = res[@"nearbyBeacons"];
+                                NSArray<RadarBeacon *> *nearbyBeacons = [RadarBeacon beaconsFromObject:nearbyBeaconsObj];
+                                if (nearbyBeacons.count) {
+                                    [[RadarBeaconManager sharedInstance] registerBeaconNotification:nearbyBeacons];
+                                }
+
                                 return completionHandler(RadarStatusSuccess, res, events, user, nearbyGeofences, config, token);
                             } else {
                                 [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"Setting %lu notifications remaining", (unsigned long)notificationsRemaining.count]];

@@ -20,6 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonnull, strong, nonatomic) RadarPermissionsHelper *permissionsHelper;
 
 + (instancetype)sharedInstance;
+- (void)registerBeaconNotification:(NSArray<RadarBeacon *> *_Nonnull)beacons;
 - (void)rangeBeacons:(NSArray<RadarBeacon *> *_Nonnull)beacons completionHandler:(RadarBeaconCompletionHandler)completionHandler;
 - (void)rangeBeaconUUIDs:(NSArray<NSString *> *_Nonnull)beaconUUIDs completionHandler:(RadarBeaconCompletionHandler)completionHandler;
 - (void)handleBeaconEntryForRegion:(CLBeaconRegion *)region completionHandler:(RadarBeaconCompletionHandler)completionHandler;
