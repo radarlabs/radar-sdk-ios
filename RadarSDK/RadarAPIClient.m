@@ -584,10 +584,19 @@
                                     [[RadarDelegateHolder sharedInstance] didUpdateToken:token];
                                 }
 
+                                id nearbyBeaconRegionsObj = res[@"nearbyBeaconRegions"];
+                                if (nearbyBeaconRegionsObj && [nearbyBeaconRegionsObj isKindOfClass:[NSArray class]]) {
+                                    NSArray<NSDictionary<NSString *, NSString *> *> *beaconRegions = (NSArray<NSDictionary<NSString *, NSString *> *> *)nearbyBeaconRegionsObj;
+                                    [[RadarBeaconManager sharedInstance] registerBeaconRegionNotificationsFromArray:beaconRegions];
+                                }
+                                
                                 id nearbyBeaconsObj = res[@"nearbyBeacons"];
                                 NSArray<RadarBeacon *> *nearbyBeacons = [RadarBeacon beaconsFromObject:nearbyBeaconsObj];
                                 if (nearbyBeacons.count) {
-                                    [[RadarBeaconManager sharedInstance] registerBeaconNotification:nearbyBeacons];
+                                    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Setting %lu nearby beacons", (unsigned long)nearbyBeacons.count]];
+                                    [[RadarBeaconManager sharedInstance] registerBeaconNotifications:nearbyBeacons];
+                                } else {
+                                    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"No nearby beacons"]];
                                 }
 
                                 return completionHandler(RadarStatusSuccess, res, events, user, nearbyGeofences, config, token);

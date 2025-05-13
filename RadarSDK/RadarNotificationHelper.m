@@ -27,6 +27,26 @@ static NSString *const kEventNotificationIdentifierPrefix = @"radar_event_notifi
     }
     
     for (RadarEvent *event in events) {
+        NSString *identifier = [NSString stringWithFormat:@"%@%@", kEventNotificationIdentifierPrefix, event._id];
+        NSString *categoryIdentifier = [RadarEvent stringForType:event.type];
+        UNMutableNotificationContent *content = [RadarNotificationHelper extractContentFromMetadata:event.metadata identifier:identifier];
+        if (content) {
+            content.categoryIdentifier = categoryIdentifier;
+            UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:identifier content:content trigger:nil];
+            [UNUserNotificationCenter.currentNotificationCenter addNotificationRequest:request withCompletionHandler:^(NSError *_Nullable error) {
+                if (error) {
+                    [[RadarLogger sharedInstance]
+                     logWithLevel:RadarLogLevelDebug
+                     message:[NSString stringWithFormat:@"Error adding local notification | identifier = %@; error = %@", request.identifier, error]];
+                } else {
+                    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
+                                                       message:[NSString stringWithFormat:@"Added local notification | identifier = %@", request.identifier]];
+
+                }
+            }];
+        } else {
+            continue;
+        }
         NSString *notificationText;
         NSDictionary *metadata;
         
@@ -74,9 +94,11 @@ static NSString *const kEventNotificationIdentifierPrefix = @"radar_event_notifi
     }
 }
 
-+ (UNMutableNotificationContent *)extractContentFromMetadata:(NSDictionary *)metadata geofenceId:(NSString *)geofenceId {
++ (UNMutableNotificationContent *)extractContentFromMetadata:(NSDictionary *)metadata identifier:(NSString *)identifier {
     
     if (!metadata) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelError
+                                                       message:[NSString stringWithFormat:@"No metadata found for identifier = %@", identifier]];
         return nil;
     }
 
@@ -108,8 +130,8 @@ static NSString *const kEventNotificationIdentifierPrefix = @"radar_event_notifi
         if (campaignId) {
             mutableUserInfo[@"campaignId"] = campaignId;
         }
-        if (geofenceId) {
-            mutableUserInfo[@"geofenceId"] = geofenceId;
+        if (identifier) {
+            mutableUserInfo[@"identifier"] = identifier;
         }
         
         content.userInfo = [mutableUserInfo copy];

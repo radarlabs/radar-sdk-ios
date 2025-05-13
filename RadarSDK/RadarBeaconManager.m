@@ -110,17 +110,74 @@ static NSString *const kBeaconNotificationIdentifierPrefix = @"radar_beacon_noti
     [self stopRanging];
 }
 
-- (void)registerBeaconNotifications:(NSArray<RadarBeacon *> *_Nonnull)beacons {
-    [RadarNotificationHelper removePendingNotificationsWithPrefix:kBeaconNotificationIdentifierPrefix completionHandler: ^{
-        for (RadarBeacon *beacon in beacons) {
-            CLBeaconRegion *region = [self regionForBeacon:beacon];
+- (void)registerBeaconRegionNotificationsFromArray:(NSArray<NSDictionary<NSString *, NSString*> *> *_Nonnull)beaconArray {
+    [RadarNotificationHelper removePendingNotificationsWithPrefix:kBeaconNotificationIdentifierPrefix completionHandler:^{
+        for (NSDictionary<NSString *, NSString *> *beaconDict in beaconArray) {
+            // Extract required and optional parameters
+            NSString *uuid = beaconDict[@"uuid"];
+            NSString *major = beaconDict[@"major"];
+            NSString *minor = beaconDict[@"minor"];
+            NSString *metadataString = beaconDict[@"metadata"];
+            
+            // Validate required parameters
+            if (!uuid || !metadataString) {
+                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelError 
+                    message:[NSString stringWithFormat:@"Missing required parameters for beacon notification | uuid = %@, metadata = %@", uuid, metadataString]];
+                continue;
+            }
+            
+            // Parse metadata JSON string to dictionary
+            NSDictionary *metadata;
+            NSData *metadataData = [metadataString dataUsingEncoding:NSUTF8StringEncoding];
+            if (metadataData) {
+                NSError *error;
+                metadata = [NSJSONSerialization JSONObjectWithData:metadataData options:0 error:&error];
+                if (error) {
+                    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelError 
+                        message:[NSString stringWithFormat:@"Failed to parse metadata JSON | error = %@", error]];
+                    continue;
+                }
+            }
+            
+            // Create beacon region
+            CLBeaconRegion *region;
+            if (major && minor) {
+                region = [[CLBeaconRegion alloc] initWithProximityUUID:[[NSUUID alloc] initWithUUIDString:uuid]
+                                                                major:[major intValue]
+                                                                minor:[minor intValue]
+                                                           identifier:uuid];
+            } else if (major) {
+                region = [[CLBeaconRegion alloc] initWithProximityUUID:[[NSUUID alloc] initWithUUIDString:uuid]
+                                                                major:[major intValue]
+                                                           identifier:uuid];
+            } else {
+                region = [[CLBeaconRegion alloc] initWithProximityUUID:[[NSUUID alloc] initWithUUIDString:uuid]
+                                                           identifier:uuid];
+            }
+            
             if (region) {
-                UNMutableNotificationContent *content = [RadarNotificationHelper extractContentFromMetadata:beacon.metadata geofenceId:nil];
+                // Extract notification content from metadata
+                UNMutableNotificationContent *content = [RadarNotificationHelper extractContentFromMetadata:metadata identifier:uuid];
                 if (content) {
+                    // Create and register notification
                     UNLocationNotificationTrigger *trigger = [UNLocationNotificationTrigger triggerWithRegion:region repeats:NO];
-                    UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:[NSString stringWithFormat:@"%@%@", kBeaconNotificationIdentifierPrefix, beacon._id] content:content trigger:trigger];
-                    [[UNUserNotificationCenter currentNotificationCenter] addNotificationRequest:request withCompletionHandler:nil];
-                    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"Added local notification | identifier = %@", request.identifier]];
+                    NSString *notificationId = [NSString stringWithFormat:@"%@%@", kBeaconNotificationIdentifierPrefix, uuid];
+                    UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:notificationId 
+                                                                                        content:content 
+                                                                                        trigger:trigger];
+                    
+                    [[UNUserNotificationCenter currentNotificationCenter] addNotificationRequest:request 
+                                                                          withCompletionHandler:^(NSError * _Nullable error) {
+                        if (error) {
+                            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelError 
+                                message:[NSString stringWithFormat:@"Failed to add local notification | identifier = %@, error = %@", 
+                                        request.identifier, error]];
+                        } else {
+                            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo 
+                                message:[NSString stringWithFormat:@"Added local notification | identifier = %@", 
+                                        request.identifier]];
+                        }
+                    }];
                 }
             }
         }
