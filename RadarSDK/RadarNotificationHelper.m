@@ -44,9 +44,9 @@ static NSString *const kEventNotificationIdentifierPrefix = @"radar_event_notifi
 
                 }
             }];
-        } else {
             continue;
         }
+        
         NSString *notificationText;
         NSDictionary *metadata;
         
