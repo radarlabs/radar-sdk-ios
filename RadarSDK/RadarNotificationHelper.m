@@ -41,12 +41,12 @@ static NSString *const kEventNotificationIdentifierPrefix = @"radar_event_notifi
                 } else {
                     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
                                                        message:[NSString stringWithFormat:@"Added local notification | identifier = %@", request.identifier]];
-
                 }
             }];
             continue;
         }
         
+
         NSString *notificationText;
         NSDictionary *metadata;
         
@@ -71,8 +71,6 @@ static NSString *const kEventNotificationIdentifierPrefix = @"radar_event_notifi
         }
         
         if (notificationText) {
-            NSString *identifier = [NSString stringWithFormat:@"%@%@", kEventNotificationIdentifierPrefix, event._id];
-            NSString *categoryIdentifier = [RadarEvent stringForType:event.type];
             
             UNMutableNotificationContent *content = [UNMutableNotificationContent new];
             content.body = [NSString localizedUserNotificationStringForKey:notificationText arguments:nil];
@@ -91,6 +89,53 @@ static NSString *const kEventNotificationIdentifierPrefix = @"radar_event_notifi
                 }
             }];
         }
+
+    }
+}
+
+
++ (UNMutableNotificationContent *)extractContentFromMetadata:(NSDictionary *)metadata geofenceId:(NSString *)geofenceId {
+    
+    if (!metadata) {
+        return nil;
+    }
+
+    NSString *notificationText = [metadata objectForKey:@"radar:notificationText"];
+    NSString *notificationTitle = [metadata objectForKey:@"radar:notificationTitle"];
+    NSString *notificationSubtitle = [metadata objectForKey:@"radar:notificationSubtitle"];
+    NSString *notificationURL = [metadata objectForKey:@"radar:notificationURL"];
+    NSString *campaignId = [metadata objectForKey:@"radar:campaignId"];
+
+    if (notificationText && [RadarNotificationHelper isNotificationCampaign:metadata]) {
+        UNMutableNotificationContent *content = [UNMutableNotificationContent new];
+        if (notificationTitle) {
+            content.title = [NSString localizedUserNotificationStringForKey:notificationTitle arguments:nil];
+        }
+        if (notificationSubtitle) {
+            content.subtitle = [NSString localizedUserNotificationStringForKey:notificationSubtitle arguments:nil];
+        }
+        content.body = [NSString localizedUserNotificationStringForKey:notificationText arguments:nil];
+        
+        NSMutableDictionary *mutableUserInfo = [metadata mutableCopy];
+
+        NSDate *now = [NSDate new];
+        NSTimeInterval lastSyncInterval = [now timeIntervalSince1970];
+        mutableUserInfo[@"registeredAt"] = [NSString stringWithFormat:@"%f", lastSyncInterval];
+
+        if (notificationURL) {
+            mutableUserInfo[@"url"] = notificationURL;
+        }
+        if (campaignId) {
+            mutableUserInfo[@"campaignId"] = campaignId;
+        }
+        if (geofenceId) {
+            mutableUserInfo[@"geofenceId"] = geofenceId;
+        }
+        
+        content.userInfo = [mutableUserInfo copy];
+        return content;
+    } else {
+        return nil;
     }
 }
 
@@ -316,6 +361,10 @@ static NSString *const kEventNotificationIdentifierPrefix = @"radar_event_notifi
             completionHandler(NO);
         }
     } 
+}
+
++ (BOOL)isNotificationCampaign:(NSDictionary *)metadata {
+    return [metadata objectForKey:@"radar:campaignType"] != nil && ([[metadata objectForKey:@"radar:campaignType"] isEqual:@"clientSide"] || [[metadata objectForKey:@"radar:campaignType"] isEqual:@"eventBased"]);
 }
 
 @end
