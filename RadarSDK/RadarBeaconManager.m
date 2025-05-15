@@ -117,26 +117,23 @@ static NSString *const kBeaconNotificationIdentifierPrefix = @"radar_beacon_noti
             NSString *uuid = beaconDict[@"uuid"];
             NSString *major = beaconDict[@"major"];
             NSString *minor = beaconDict[@"minor"];
-            NSString *metadataString = beaconDict[@"metadata"];
+            id metadataObj = beaconDict[@"metadata"];
             
             // Validate required parameters
-            if (!uuid || !metadataString) {
+            if (!uuid || !metadataObj) {
                 [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelError 
-                    message:[NSString stringWithFormat:@"Missing required parameters for beacon notification | uuid = %@, metadata = %@", uuid, metadataString]];
+                    message:[NSString stringWithFormat:@"Missing required parameters for beacon notification | uuid = %@, metadata = %@", uuid, metadataObj]];
                 continue;
             }
             
-            // Parse metadata JSON string to dictionary
+            // Parse metadata to dictionary
             NSDictionary *metadata;
-            NSData *metadataData = [metadataString dataUsingEncoding:NSUTF8StringEncoding];
-            if (metadataData) {
-                NSError *error;
-                metadata = [NSJSONSerialization JSONObjectWithData:metadataData options:0 error:&error];
-                if (error) {
-                    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelError 
-                        message:[NSString stringWithFormat:@"Failed to parse metadata JSON | error = %@", error]];
-                    continue;
-                }
+            if ([metadataObj isKindOfClass:[NSDictionary class]]) {
+                metadata = (NSDictionary *)metadataObj;
+            } else {
+                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelError 
+                    message:[NSString stringWithFormat:@"Invalid metadata type | type = %@", NSStringFromClass([metadataObj class])]];
+                continue;
             }
             
             // Create beacon region
