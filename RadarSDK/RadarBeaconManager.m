@@ -110,6 +110,77 @@ static NSString *const kBeaconNotificationIdentifierPrefix = @"radar_beacon_noti
     [self stopRanging];
 }
 
+- (void)registerBeaconRegionNotificationsFromArray:(NSArray<NSDictionary<NSString *, NSString*> *> *_Nonnull)beaconArray {
+    [RadarNotificationHelper removePendingNotificationsWithPrefix:kBeaconNotificationIdentifierPrefix completionHandler:^{
+        for (NSDictionary<NSString *, NSString *> *beaconDict in beaconArray) {
+            // Extract required and optional parameters
+            NSString *uuid = beaconDict[@"uuid"];
+            NSString *major = beaconDict[@"major"];
+            NSString *minor = beaconDict[@"minor"];
+            id metadataObj = beaconDict[@"metadata"];
+            
+            // Validate required parameters
+            if (!uuid || !metadataObj) {
+                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelError 
+                    message:[NSString stringWithFormat:@"Missing required parameters for beacon notification | uuid = %@, metadata = %@", uuid, metadataObj]];
+                continue;
+            }
+            
+            // Parse metadata to dictionary
+            NSDictionary *metadata;
+            if ([metadataObj isKindOfClass:[NSDictionary class]]) {
+                metadata = (NSDictionary *)metadataObj;
+            } else {
+                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelError 
+                    message:[NSString stringWithFormat:@"Invalid metadata type | type = %@", NSStringFromClass([metadataObj class])]];
+                continue;
+            }
+            
+            // Create beacon region
+            CLBeaconRegion *region;
+            if (major && minor) {
+                region = [[CLBeaconRegion alloc] initWithProximityUUID:[[NSUUID alloc] initWithUUIDString:uuid]
+                                                                major:[major intValue]
+                                                                minor:[minor intValue]
+                                                           identifier:uuid];
+            } else if (major) {
+                region = [[CLBeaconRegion alloc] initWithProximityUUID:[[NSUUID alloc] initWithUUIDString:uuid]
+                                                                major:[major intValue]
+                                                           identifier:uuid];
+            } else {
+                region = [[CLBeaconRegion alloc] initWithProximityUUID:[[NSUUID alloc] initWithUUIDString:uuid]
+                                                           identifier:uuid];
+            }
+            
+            if (region) {
+                // Extract notification content from metadata
+                UNMutableNotificationContent *content = [RadarNotificationHelper extractContentFromMetadata:metadata identifier:uuid];
+                if (content) {
+                    // Create and register notification
+                    UNLocationNotificationTrigger *trigger = [UNLocationNotificationTrigger triggerWithRegion:region repeats:NO];
+                    NSString *notificationId = [NSString stringWithFormat:@"%@%@", kBeaconNotificationIdentifierPrefix, uuid];
+                    UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:notificationId 
+                                                                                        content:content 
+                                                                                        trigger:trigger];
+                    
+                    [[UNUserNotificationCenter currentNotificationCenter] addNotificationRequest:request 
+                                                                          withCompletionHandler:^(NSError * _Nullable error) {
+                        if (error) {
+                            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelError 
+                                message:[NSString stringWithFormat:@"Failed to add local notification | identifier = %@, error = %@", 
+                                        request.identifier, error]];
+                        } else {
+                            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo 
+                                message:[NSString stringWithFormat:@"Added local notification | identifier = %@", 
+                                        request.identifier]];
+                        }
+                    }];
+                }
+            }
+        }
+    }];
+}
+
 - (void)rangeBeacons:(NSArray<RadarBeacon *> *_Nonnull)beacons completionHandler:(RadarBeaconCompletionHandler)completionHandler {
     CLAuthorizationStatus authorizationStatus = [self.permissionsHelper locationAuthorizationStatus];
     if (!(authorizationStatus == kCLAuthorizationStatusAuthorizedWhenInUse || authorizationStatus == kCLAuthorizationStatusAuthorizedAlways)) {
@@ -152,31 +223,20 @@ static NSString *const kBeaconNotificationIdentifierPrefix = @"radar_beacon_noti
 
     self.beacons = beacons;
     self.started = YES;
-    [RadarNotificationHelper removePendingNotificationsWithPrefix:kBeaconNotificationIdentifierPrefix completionHandler: ^{
-        for (RadarBeacon *beacon in beacons) {
+    for (RadarBeacon *beacon in beacons) {
         CLBeaconRegion *region = [self regionForBeacon:beacon];
-
         if (region) {
             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
                                                message:[NSString stringWithFormat:@"Starting ranging beacon | _id = %@; uuid = %@; major = %@; minor = %@", beacon._id, beacon.uuid,
                                                                                   beacon.major, beacon.minor]];
 
             [self.locationManager startRangingBeaconsInRegion:region];
-            UNMutableNotificationContent *content = [RadarNotificationHelper extractContentFromMetadata:beacon.metadata geofenceId:nil];
-            if (content) {
-                UNLocationNotificationTrigger *trigger = [UNLocationNotificationTrigger triggerWithRegion:region repeats:NO];
-                UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:[NSString stringWithFormat:@"%@%@", kBeaconNotificationIdentifierPrefix, beacon._id] content:content trigger:trigger];
-                [[UNUserNotificationCenter currentNotificationCenter] addNotificationRequest:request withCompletionHandler:nil];
-                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"Added local notification | identifier = %@", request.identifier]];
-            }
         } else {
             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
                                                message:[NSString stringWithFormat:@"Error starting ranging beacon | _id = %@; uuid = %@; major = %@; minor = %@", beacon._id,
                                                                                   beacon.uuid, beacon.major, beacon.minor]];
-            }
         }
-    }];
-
+    }
 }
 
 - (void)rangeBeaconUUIDs:(NSArray<NSString *> *_Nonnull)beaconUUIDs completionHandler:(RadarBeaconCompletionHandler)completionHandler {
@@ -221,7 +281,6 @@ static NSString *const kBeaconNotificationIdentifierPrefix = @"radar_beacon_noti
 
     self.beaconUUIDs = beaconUUIDs;
     self.started = YES;
-
     for (NSString *beaconUUID in beaconUUIDs) {
         CLBeaconRegion *region = [self regionForUUID:beaconUUID];
 
@@ -233,6 +292,7 @@ static NSString *const kBeaconNotificationIdentifierPrefix = @"radar_beacon_noti
             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Error starting ranging UUID | beaconUUID = %@", beaconUUID]];
         }
     }
+    
 }
 
 - (void)stopRanging {

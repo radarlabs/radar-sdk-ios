@@ -11,6 +11,7 @@
 #import "Radar.h"
 #import "RadarAddress+Internal.h"
 #import "RadarBeacon+Internal.h"
+#import "RadarBeaconManager.h"
 #import "RadarConfig.h"
 #import "RadarContext+Internal.h"
 #import "RadarCoordinate+Internal.h"
@@ -546,6 +547,7 @@
 
                             id eventsObj = res[@"events"];
                             id userObj = res[@"user"];
+                            
                             id nearbyGeofencesObj = res[@"nearbyGeofences"];
                             NSArray<RadarEvent *> *events = [RadarEvent eventsFromObject:eventsObj];
                             RadarUser *user = [[RadarUser alloc] initWithObject:userObj];
@@ -595,7 +597,6 @@
                                 }
                                 [RadarState setBeaconIds:beaconIds];
                             }
-
                             if (events && user) {
                                 [RadarSettings setId:user._id];
 
@@ -621,6 +622,12 @@
 
                                 [RadarState setRadarUser:user];
 
+                                id nearbyBeaconRegionsObj = res[@"nearbyBeaconRegions"];
+                                if (nearbyBeaconRegionsObj && [nearbyBeaconRegionsObj isKindOfClass:[NSArray class]]) {
+                                    NSArray<NSDictionary<NSString *, NSString *> *> *beaconRegions = (NSArray<NSDictionary<NSString *, NSString *> *> *)nearbyBeaconRegionsObj;
+                                    [[RadarBeaconManager sharedInstance] registerBeaconRegionNotificationsFromArray:beaconRegions];
+                                }
+                                
                                 return completionHandler(RadarStatusSuccess, res, events, user, nearbyGeofences, config, token);
                             } else {
                                 [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"Setting %lu notifications remaining", (unsigned long)notificationsRemaining.count]];
