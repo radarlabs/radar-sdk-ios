@@ -103,7 +103,7 @@
                                                 [Radar startTrackingWithOptions:[RadarSettings trackingOptions]];
                                             }
                                             if (sdkConfiguration.trackOnceOnAppOpen) {
-                                                [Radar trackOnceWithCompletionHandler:nil];
+                                                [Radar trackOnceWithDesiredAccuracy:RadarTrackingOptionsDesiredAccuracyMedium beacons:[Radar getTrackingOptions].beacons completionHandler:nil];
                                             }
 
                                             [self flushLogs];
@@ -1355,7 +1355,7 @@
 
     RadarSdkConfiguration *sdkConfiguration = [RadarSettings sdkConfiguration];
     if (sdkConfiguration.trackOnceOnAppOpen) {
-        [Radar trackOnceWithCompletionHandler:nil];
+        [Radar trackOnceWithDesiredAccuracy:RadarTrackingOptionsDesiredAccuracyMedium beacons: [Radar getTrackingOptions].beacons completionHandler:nil];
     }
 }
 
