@@ -47,6 +47,18 @@ typedef NS_ENUM(NSInteger, RadarTrackingOptionsSyncLocations) {
 };
 
 /**
+ Specifies how the bubble geofence radius should be determined dynamically.
+ */
+typedef NS_ENUM(NSInteger, RadarDynamicBubbleGeofenceMode) {
+    /// The bubble geofence radius is not determined dynamically; the provided radius is used.
+    RadarDynamicBubbleGeofenceModeOff,
+    /// The bubble geofence radius is the maximum of the provided radius and the distance to the closest nearby geofence.
+    RadarDynamicBubbleGeofenceModeClosest,
+    /// The bubble geofence radius is set to the distance to the furthest nearby geofence. If no nearby geofences, no bubble geofence is created.
+    RadarDynamicBubbleGeofenceModeFurthest
+};
+
+/**
  An options class used to configure background tracking.
  @see https://radar.com/documentation/sdk/ios
  */
@@ -155,6 +167,11 @@ typedef NS_ENUM(NSInteger, RadarTrackingOptionsSyncLocations) {
 @property (nonatomic, assign) BOOL beacons;
 
 /**
+ Specifies the mode for determining the bubble geofence radius dynamically. Defaults to `RadarDynamicBubbleGeofenceModeOff`.
+ */
+@property (nonatomic, assign) RadarDynamicBubbleGeofenceMode dynamicBubbleGeofenceMode;
+
+/**
  Updates about every 30 seconds while moving or stopped. Moderate battery usage. Shows the flashing blue status bar during tracking.
  @see https://developer.apple.com/documentation/corelocation/cllocationmanager/2923541-showsbackgroundlocationindicator
  */
@@ -181,6 +198,8 @@ typedef NS_ENUM(NSInteger, RadarTrackingOptionsSyncLocations) {
 + (RadarTrackingOptionsReplay)replayForString:(NSString *)str;
 + (NSString *)stringForSyncLocations:(RadarTrackingOptionsSyncLocations)syncLocations;
 + (RadarTrackingOptionsSyncLocations)syncLocationsForString:(NSString *)str;
++ (NSString *)stringForDynamicBubbleGeofenceMode:(RadarDynamicBubbleGeofenceMode)mode;
++ (RadarDynamicBubbleGeofenceMode)dynamicBubbleGeofenceModeForString:(NSString *)str;
 + (RadarTrackingOptions *_Nullable)trackingOptionsFromDictionary:(NSDictionary *_Nonnull)dictionary;
 - (NSDictionary *)dictionaryValue;
 
