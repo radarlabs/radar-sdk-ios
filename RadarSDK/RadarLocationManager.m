@@ -590,8 +590,19 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
             if (centerCoordinate) {
                 CLLocation *geofenceCenterLocation = [[CLLocation alloc] initWithLatitude:centerCoordinate.coordinate.latitude longitude:centerCoordinate.coordinate.longitude];
                 CLLocationDistance distance = [lastKnownLocation distanceFromLocation:geofenceCenterLocation];
-                minDistance = MIN(minDistance, distance);
-                maxDistance = MAX(maxDistance, distance);
+
+                double geofenceRadius = 0;
+                if ([geofence.geometry isKindOfClass:[RadarCircleGeometry class]]) {
+                    geofenceRadius = ((RadarCircleGeometry *)geofence.geometry).radius;
+                } else if ([geofence.geometry isKindOfClass:[RadarPolygonGeometry class]]) {
+                    geofenceRadius = ((RadarPolygonGeometry *)geofence.geometry).radius;
+                }
+
+                CLLocationDistance adjustedDistance = distance - geofenceRadius - 70;
+                CLLocationDistance finalDistance = MAX(0, adjustedDistance);
+
+                minDistance = MIN(minDistance, finalDistance);
+                maxDistance = MAX(maxDistance, finalDistance);
                 foundValidGeofenceCenter = YES;
             }
         }
