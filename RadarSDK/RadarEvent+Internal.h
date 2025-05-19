@@ -36,7 +36,7 @@
                             duration:(float)duration
                             location:(CLLocation *_Nonnull)location
                             replayed:(BOOL)replayed
-                            metadata:(NSDictionary *_Nullable)metadata;
+                            metadata:(NSDictionary *_Nullable)metadata NS_SWIFT_NAME(initWithId(id:createdAt:actualCreatedAt:live:type:conversionName:geofence:place:region:beacon:trip:fraud:alternatePlaces:verifiedPlace:verification:confidence:duration:location:replayed:metadata:));
 - (instancetype _Nullable)initWithObject:(id _Nonnull)object;
 
 @end

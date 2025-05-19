@@ -20,7 +20,7 @@
 #import "RadarRoutes.h"
 #import "RadarUser.h"
 #import "RadarVerifiedLocationToken.h"
-
+#import "RadarSwiftUtils.h"
 NS_ASSUME_NONNULL_BEGIN
 
 typedef void (^_Nonnull RadarTrackAPICompletionHandler)(RadarStatus status,
