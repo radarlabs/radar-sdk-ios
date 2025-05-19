@@ -103,7 +103,8 @@
                                                 [Radar startTrackingWithOptions:[RadarSettings trackingOptions]];
                                             }
                                             if (sdkConfiguration.trackOnceOnAppOpen) {
-                                                [Radar trackOnceWithCompletionHandler:nil];
+                                                // [Radar trackOnceWithCompletionHandler:nil];
+                                                [Radar trackOnceWithDesiredAccuracy:RadarTrackingOptionsDesiredAccuracyMedium beacons:[RadarSettings trackingOptions].beacons completionHandler:nil];
                                             }
 
                                             [self flushLogs];
