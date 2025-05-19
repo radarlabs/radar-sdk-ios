@@ -409,9 +409,6 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                     [self startUpdates:options.desiredStoppedUpdateInterval blueBar:options.showBlueBar];
                 }
                 if (options.useStoppedGeofence) {
-                    double radius =  options.stoppedGeofenceRadius;
-                    if 
-
                     if (location) {
                         [self replaceBubbleGeofence:location radius:options.stoppedGeofenceRadius];
                     }
