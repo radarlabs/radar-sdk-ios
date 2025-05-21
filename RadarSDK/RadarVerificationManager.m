@@ -121,6 +121,7 @@
                      source:RadarLocationSourceForegroundLocation
                      replayed:NO
                      beacons:beacons
+                     indoorsWhereAmIScan:@""
                      verified:YES
                      attestationString:attestationString
                      keyId:keyId

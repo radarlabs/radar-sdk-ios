@@ -295,6 +295,22 @@
 
 - (void)locationManager:(CLLocationManager *)manager didRangeBeacons:(nonnull NSArray<CLBeacon *> *)beacons inRegion:(nonnull CLBeaconRegion *)region {
     for (CLBeacon *beacon in beacons) {
+
+        // first, check if this beacon was already in nearbybeacons
+        // if so, and we have a non 0 rssi, update the rssi
+        [self.nearbyBeacons enumerateObjectsUsingBlock:^(RadarBeacon * _Nonnull radarBeacon, BOOL * _Nonnull stop) {
+            if ([radarBeacon.uuid isEqualToString:[beacon.proximityUUID UUIDString]] && [radarBeacon.major isEqualToString:[NSString stringWithFormat:@"%@", beacon.major]] && [radarBeacon.minor isEqualToString:[NSString stringWithFormat:@"%@", beacon.minor]]) {
+                // log "same beacon"
+                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"same beacon!"];
+                if (beacon.rssi != 0 && beacon.rssi != radarBeacon.rssi) {
+                    // overwriting stale rssi
+                    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Overwriting stale RSSI: %ld", (long)radarBeacon.rssi]];
+                    [radarBeacon setRssi:beacon.rssi];
+                }
+                *stop = YES;
+            }
+        }];
+
         [self.nearbyBeaconIdentifiers addObject:region.identifier];
         [self.nearbyBeacons addObject:[RadarBeacon fromCLBeacon:beacon]];
 

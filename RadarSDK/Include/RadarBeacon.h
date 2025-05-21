@@ -69,6 +69,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (NSArray<NSDictionary *> *_Nullable)arrayForBeacons:(NSArray<RadarBeacon *> *_Nullable)beacons;
 - (NSDictionary *_Nonnull)dictionaryValue;
+- (void)setRssi:(NSInteger)rssi;
 
 @end
 

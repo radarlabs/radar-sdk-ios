@@ -12,6 +12,7 @@
 #import "RadarBeaconManager.h"
 #import "RadarCircleGeometry.h"
 #import "RadarDelegateHolder.h"
+#import "RadarIndoorSurvey.h"
 #import "RadarLocationManager.h"
 #import "RadarLogger.h"
 #import "RadarMeta.h"
@@ -442,7 +443,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
             }
             if (!options.beacons) {
                 [self removeSyncedBeacons];
-            }
+            }    
         } else {
             [self stopUpdates];
             [self removeAllRegions];
@@ -712,12 +713,38 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         return;
     }
 
+    if([[RadarIndoorSurvey sharedInstance] isScanning]) {
+        // if(![[RadarIndoorSurvey sharedInstance] isWhereAmIScan]) {
+        //     // we _are_ currently scanning, but we are not in the "where am i" mode i.e.
+        //     // we are surveying! in this case, getLocationWithDesiredAccuracy was called
+        //     // which led to (this) handleLocation being called.
+        //     // return the location we just got to the completion handler.
+
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
+                                               message:[NSString stringWithFormat:@"Indoor surveying, returning location to completion handler | source = %@; location = %@", [Radar stringForLocationSource:source], location]];
+
+            [self callCompletionHandlersWithStatus:RadarStatusSuccess location:location];
+        // }
+
+        // [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
+        //                                    message:[NSString stringWithFormat:@"Cannot initiate scan while scanning, caching current location | source = %@; location = %@", [Radar stringForLocationSource:source], location]];
+
+        // [self callCompletionHandlersWithStatus:RadarStatusErrorLocation location:nil];
+
+        return;
+    }
+
     RadarTrackingOptions *options = [Radar getTrackingOptions];
     BOOL wasStopped = [RadarState stopped];
     BOOL stopped = NO;
 
     BOOL force = (source == RadarLocationSourceForegroundLocation || source == RadarLocationSourceManualLocation || source == RadarLocationSourceBeaconEnter ||
                   source == RadarLocationSourceBeaconExit || source == RadarLocationSourceVisitArrival);
+
+    if(options.indoors) {
+        force = true;
+    }
+
     if (wasStopped && !force && location.horizontalAccuracy >= 1000 && options.desiredAccuracy != RadarTrackingOptionsDesiredAccuracyLow) {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
                                            message:[NSString stringWithFormat:@"Skipping location: inaccurate | accuracy = %f", location.horizontalAccuracy]];
@@ -874,13 +901,14 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     RadarTrackingOptions *options = [Radar getTrackingOptions];
     
     if ([RadarSettings useRadarModifiedBeacon]) {
-        void (^callTrackAPI)(NSArray<RadarBeacon *> *_Nullable) = ^(NSArray<RadarBeacon *> *_Nullable beacons) {
+        void (^callTrackAPI)(NSArray<RadarBeacon *> *_Nullable, NSString *_Nullable) = ^(NSArray<RadarBeacon *> *_Nullable beacons, NSString *_Nullable indoorsWhereAmIScan) {
             [[RadarAPIClient sharedInstance] trackWithLocation:location
                                                        stopped:stopped
                                                     foreground:[RadarUtils foreground]
                                                         source:source
                                                       replayed:replayed
                                                        beacons:beacons
+                                           indoorsWhereAmIScan:indoorsWhereAmIScan
                                              completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user,
                                                                  NSArray<RadarGeofence *> *_Nullable nearbyGeofences, RadarConfig *_Nullable config, RadarVerifiedLocationToken *_Nullable token) {
                 self.sending = NO;
@@ -888,6 +916,29 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                 [self updateTrackingFromMeta:config.meta];
                 [self replaceSyncedGeofences:nearbyGeofences];
             }];
+        };
+
+        // callback used below, after (possibly) fetching beacons and ranging on them.
+        // at this point, we have beacons but have not yet done the indoor survey, which we might do or not (based on RTO options)
+        void (^maybeIndoorSurveyThenCallTrackAPI)(NSArray<RadarBeacon *> *_Nullable) = ^(NSArray<RadarBeacon *> *_Nullable beacons) {
+            if(options.indoors) {
+                // do indoor survey, then call track api with the beacons and the indoor survey
+                [[RadarIndoorSurvey sharedInstance] start:@"WHEREAMI"
+                                                forLength:WHERE_AM_I_DURATION_SECONDS
+                                        withKnownLocation:location
+                                           isWhereAmIScan:YES
+                                    withCompletionHandler:^(NSString *_Nullable indoorsWhereAmIScan, CLLocation *_Nonnull locationAtStartOfSurvey) {
+
+                    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
+                                       message:[NSString stringWithFormat:@"received indoor start indoorsWhereAmIScan: %lu", (unsigned long)indoorsWhereAmIScan.length]];
+
+                    callTrackAPI(beacons, indoorsWhereAmIScan);
+                }];
+
+            } else {
+                // no indoor survey -- just call track api with the given beacons
+                callTrackAPI(beacons, nil);
+            }
         };
         
         if (options.beacons &&
@@ -909,11 +960,11 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                         [[RadarBeaconManager sharedInstance] rangeBeaconUUIDs:beaconUUIDs
                                                             completionHandler:^(RadarStatus status, NSArray<RadarBeacon *> *_Nullable beacons) {
                             if (status != RadarStatusSuccess || !beacons) {
-                                callTrackAPI(nil);
+                                maybeIndoorSurveyThenCallTrackAPI(nil);
                                 return;
                             }
                             
-                            callTrackAPI(beacons);
+                            maybeIndoorSurveyThenCallTrackAPI(beacons);
                         }];
                     }];
                 } else if (beacons && beacons.count) {
@@ -922,20 +973,20 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                         [[RadarBeaconManager sharedInstance] rangeBeacons:beacons
                                                         completionHandler:^(RadarStatus status, NSArray<RadarBeacon *> *_Nullable beacons) {
                             if (status != RadarStatusSuccess || !beacons) {
-                                callTrackAPI(nil);
+                                maybeIndoorSurveyThenCallTrackAPI(nil);
                                 
                                 return;
                             }
                             
-                            callTrackAPI(beacons);
+                            maybeIndoorSurveyThenCallTrackAPI(beacons);
                         }];
                     }];
                 } else {
-                    callTrackAPI(@[]);
+                    maybeIndoorSurveyThenCallTrackAPI(@[]);
                 }
             }];
         } else {
-            callTrackAPI(nil);
+            maybeIndoorSurveyThenCallTrackAPI(nil);
         }
     } else {
         if (options.beacons) {
@@ -963,6 +1014,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                                                     source:source
                                                   replayed:replayed
                                                    beacons:beacons
+                                       indoorsWhereAmIScan:@""
                                          completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user,
                                                              NSArray<RadarGeofence *> *_Nullable nearbyGeofences, RadarConfig *_Nullable config, RadarVerifiedLocationToken *_Nullable token) {
                                              self.sending = NO;

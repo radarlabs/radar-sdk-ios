@@ -232,4 +232,9 @@
     return [self.uuid hash] ^ [self.major hash] ^ [self.minor hash];
 }
 
+// set rssi
+- (void)setRssi:(NSInteger)rssi {
+    _rssi = rssi;
+}
+
 @end
