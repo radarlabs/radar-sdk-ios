@@ -12,6 +12,7 @@
 #import "RadarUtils.h"
 #import "RadarAPIClient.h"
 #import "RadarSettings.h"
+// #import "RadarTrackingOptions.h" // Comment out or remove if no longer needed by other parts of this file
 
 @implementation RadarSdkConfiguration
 

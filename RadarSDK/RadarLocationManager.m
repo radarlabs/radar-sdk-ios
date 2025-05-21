@@ -22,6 +22,8 @@
 #import "RadarReplayBuffer.h"
 #import "RadarActivityManager.h"
 #import "RadarNotificationHelper.h"
+#import "RadarSdkConfiguration.h"
+#import "RadarTrackingOptions.h"
 
 @interface RadarLocationManager ()
 
@@ -37,7 +39,7 @@
 
 /**
  `YES` if `RadarAPIClient.trackWithLocation() has been called, but the
- response hasn't been received yet.
+ response hasn\'t been received yet.
  */
 @property (assign, nonatomic) BOOL sending;
 
@@ -499,12 +501,51 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         return;
     }
 
+    CLLocationDistance finalRadius = radius;
+    RadarTrackingOptions *trackingOptions = [Radar getTrackingOptions];
+    RadarDynamicBubbleGeofence dynamicBubbleGeofence = trackingOptions.dynamicBubbleGeofence;
+
+    if (dynamicBubbleGeofence == RadarDynamicBubbleGeofenceClosest) {
+        CLLocationDistance storedMinDistance = [RadarState minDistanceToClosestGeofence];
+        if (storedMinDistance > 0) {
+            finalRadius = MAX(radius, storedMinDistance);
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
+                                               message:[NSString stringWithFormat:@"DynamicBubble: Closest. originalRadius = %d; storedMinDistance = %f; finalRadius = %f",
+                                                                                  radius, storedMinDistance, finalRadius]];
+        } else {
+            finalRadius = radius;
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
+                                               message:[NSString stringWithFormat:@"DynamicBubble: Closest. No valid storedMinDistance. Using originalRadius = %f", finalRadius]];
+        }
+    } else if (dynamicBubbleGeofence == RadarDynamicBubbleGeofenceFurthest) {
+        CLLocationDistance storedMaxDistance = [RadarState maxDistanceToFurthestGeofence];
+        if (storedMaxDistance > 0) {
+            finalRadius = storedMaxDistance;
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
+                                               message:[NSString stringWithFormat:@"DynamicBubble: Furthest. Using storedMaxDistance = %f as finalRadius", finalRadius]];
+        } else {
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
+                                               message:@"DynamicBubble: Furthest. No valid storedMaxDistance. No bubble geofence will be created."];
+            finalRadius = 0;
+        }
+    } else {
+        finalRadius = radius;
+         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
+                                           message:[NSString stringWithFormat:@"DynamicBubble: Off. Using originalRadius = %f", finalRadius]];
+    }
+
+    if (finalRadius <= 0) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
+                                           message:[NSString stringWithFormat:@"Skipping bubble geofence creation as finalRadius is %f", finalRadius]];
+        return;
+    }
+
     NSString *identifier = [NSString stringWithFormat:@"%@%@", kBubbleGeofenceIdentifierPrefix, [[NSUUID UUID] UUIDString]];
-    CLRegion *region = [[CLCircularRegion alloc] initWithCenter:location.coordinate radius:radius identifier:identifier];
+    CLRegion *region = [[CLCircularRegion alloc] initWithCenter:location.coordinate radius:finalRadius identifier:identifier];
     [self.locationManager startMonitoringForRegion:region];
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
-                                       message:[NSString stringWithFormat:@"Successfully added bubble geofence | latitude = %f; longitude = %f; radius = %d; identifier = %@",
-                                                                          location.coordinate.latitude, location.coordinate.longitude, radius, identifier]];
+                                       message:[NSString stringWithFormat:@"Successfully added bubble geofence | latitude = %f; longitude = %f; radius = %f; identifier = %@",
+                                                                          location.coordinate.latitude, location.coordinate.longitude, finalRadius, identifier]];
 }
 
 - (void)removeBubbleGeofence {
@@ -518,9 +559,64 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 
 - (void)replaceSyncedGeofences:(NSArray<RadarGeofence *> *)geofences {
     if (!geofences) {
-        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Skipping replacing synced geofences"];
-
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Skipping replacing synced geofences (nil input)"];
+        [RadarState setMinDistanceToClosestGeofence:-1];
+        [RadarState setMaxDistanceToFurthestGeofence:-1];
         return;
+    }
+    
+    CLLocation *lastKnownLocation = [RadarState lastLocation];
+    if (!lastKnownLocation) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Resetting stored distances: No lastKnownLocation available"];
+        [RadarState setMinDistanceToClosestGeofence:-1];
+        [RadarState setMaxDistanceToFurthestGeofence:-1];
+    } else if (geofences.count == 0) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Resetting stored distances: Received empty geofences array"];
+        [RadarState setMinDistanceToClosestGeofence:-1];
+        [RadarState setMaxDistanceToFurthestGeofence:-1];
+    } else {
+        CLLocationDistance minDistance = CLLocationDistanceMax;
+        CLLocationDistance maxDistance = 0;
+        BOOL foundValidGeofenceCenter = NO;
+
+        for (RadarGeofence *geofence in geofences) {
+            RadarCoordinate *centerCoordinate = nil;
+            if ([geofence.geometry isKindOfClass:[RadarCircleGeometry class]]) {
+                centerCoordinate = ((RadarCircleGeometry *)geofence.geometry).center;
+            } else if ([geofence.geometry isKindOfClass:[RadarPolygonGeometry class]]) {
+                centerCoordinate = ((RadarPolygonGeometry *)geofence.geometry).center;
+            }
+
+            if (centerCoordinate) {
+                CLLocation *geofenceCenterLocation = [[CLLocation alloc] initWithLatitude:centerCoordinate.coordinate.latitude longitude:centerCoordinate.coordinate.longitude];
+                CLLocationDistance distance = [lastKnownLocation distanceFromLocation:geofenceCenterLocation];
+
+                double geofenceRadius = 0;
+                if ([geofence.geometry isKindOfClass:[RadarCircleGeometry class]]) {
+                    geofenceRadius = ((RadarCircleGeometry *)geofence.geometry).radius;
+                } else if ([geofence.geometry isKindOfClass:[RadarPolygonGeometry class]]) {
+                    geofenceRadius = ((RadarPolygonGeometry *)geofence.geometry).radius;
+                }
+
+                CLLocationDistance adjustedDistance = distance - geofenceRadius - 70;
+                CLLocationDistance finalDistance = MAX(0, adjustedDistance);
+
+                minDistance = MIN(minDistance, finalDistance);
+                maxDistance = MAX(maxDistance, finalDistance);
+                foundValidGeofenceCenter = YES;
+            }
+        }
+
+        if (foundValidGeofenceCenter) {
+            [RadarState setMinDistanceToClosestGeofence:minDistance];
+            [RadarState setMaxDistanceToFurthestGeofence:maxDistance];
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
+                                               message:[NSString stringWithFormat:@"Stored geofence distances: min = %f, max = %f", minDistance, maxDistance]];
+        } else {
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Resetting stored distances: No valid geofence centers found"];
+            [RadarState setMinDistanceToClosestGeofence:-1];
+            [RadarState setMaxDistanceToFurthestGeofence:-1];
+        }
     }
 
     [self removeSyncedGeofences];

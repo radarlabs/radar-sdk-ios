@@ -44,6 +44,12 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)setRegisteredNotifications:(NSArray<NSDictionary *> *_Nullable)registeredNotifications;
 + (void)addRegisteredNotification:(NSDictionary *)registeredNotification;
 
++ (CLLocationDistance)minDistanceToClosestGeofence;
++ (void)setMinDistanceToClosestGeofence:(CLLocationDistance)distance;
+
++ (CLLocationDistance)maxDistanceToFurthestGeofence;
++ (void)setMaxDistanceToFurthestGeofence:(CLLocationDistance)distance;
+
 @end
 
 NS_ASSUME_NONNULL_END

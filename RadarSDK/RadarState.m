@@ -26,6 +26,8 @@ static NSString *const kLastHeadingData = @"radar-lastHeadingData";
 static NSString *const kLastMotionActivityData = @"radar-lastMotionActivityData";
 static NSString *const kNotificationPermissionGranted = @"radar-notificationPermissionGranted";
 static NSString *const kRegisteredNotifications = @"radar-registeredNotifications";
+static NSString *const kMinDistanceToClosestGeofence = @"radar-minDistanceToClosestGeofence";
+static NSString *const kMaxDistanceToFurthestGeofence = @"radar-maxDistanceToFurthestGeofence";
 
 + (CLLocation *)lastLocation {
     NSDictionary *dict = [[NSUserDefaults standardUserDefaults] dictionaryForKey:kLastLocation];
@@ -210,4 +212,29 @@ static NSString *const kRegisteredNotifications = @"radar-registeredNotification
     [registeredNotifications addObject:notification];
     [RadarState setRegisteredNotifications:registeredNotifications];
 }
+
++ (CLLocationDistance)minDistanceToClosestGeofence {
+    NSNumber *distanceNumber = [[NSUserDefaults standardUserDefaults] objectForKey:kMinDistanceToClosestGeofence];
+    if (distanceNumber != nil) {
+        return [distanceNumber doubleValue];
+    }
+    return -1; // Default if not set (invalid distance)
+}
+
++ (void)setMinDistanceToClosestGeofence:(CLLocationDistance)distance {
+    [[NSUserDefaults standardUserDefaults] setObject:@(distance) forKey:kMinDistanceToClosestGeofence];
+}
+
++ (CLLocationDistance)maxDistanceToFurthestGeofence {
+    NSNumber *distanceNumber = [[NSUserDefaults standardUserDefaults] objectForKey:kMaxDistanceToFurthestGeofence];
+    if (distanceNumber != nil) {
+        return [distanceNumber doubleValue];
+    }
+    return -1; // Default if not set (invalid distance)
+}
+
++ (void)setMaxDistanceToFurthestGeofence:(CLLocationDistance)distance {
+    [[NSUserDefaults standardUserDefaults] setObject:@(distance) forKey:kMaxDistanceToFurthestGeofence];
+}
+
 @end
