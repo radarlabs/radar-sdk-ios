@@ -503,9 +503,9 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 
     CLLocationDistance finalRadius = radius;
     RadarTrackingOptions *trackingOptions = [Radar getTrackingOptions];
-    RadarDynamicBubbleGeofenceMode mode = trackingOptions.dynamicBubbleGeofenceMode;
+    RadarDynamicBubbleGeofence dynamicBubbleGeofence = trackingOptions.dynamicBubbleGeofence;
 
-    if (mode == RadarDynamicBubbleGeofenceModeClosest) {
+    if (dynamicBubbleGeofence == RadarDynamicBubbleGeofenceClosest) {
         CLLocationDistance storedMinDistance = [RadarState minDistanceToClosestGeofence];
         if (storedMinDistance > 0) {
             finalRadius = MAX(radius, storedMinDistance);
@@ -517,7 +517,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
                                                message:[NSString stringWithFormat:@"DynamicBubble: Closest. No valid storedMinDistance. Using originalRadius = %f", finalRadius]];
         }
-    } else if (mode == RadarDynamicBubbleGeofenceModeFurthest) {
+    } else if (dynamicBubbleGeofence == RadarDynamicBubbleGeofenceFurthest) {
         CLLocationDistance storedMaxDistance = [RadarState maxDistanceToFurthestGeofence];
         if (storedMaxDistance > 0) {
             finalRadius = storedMaxDistance;
@@ -531,7 +531,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     } else {
         finalRadius = radius;
          [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
-                                           message:[NSString stringWithFormat:@"DynamicBubble: Mode Off. Using originalRadius = %f", finalRadius]];
+                                           message:[NSString stringWithFormat:@"DynamicBubble: Off. Using originalRadius = %f", finalRadius]];
     }
 
     if (finalRadius <= 0) {

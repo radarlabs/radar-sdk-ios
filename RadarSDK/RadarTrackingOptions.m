@@ -29,7 +29,7 @@ NSString *const kSyncGeofences = @"syncGeofences";
 NSString *const kUseVisits = @"useVisits";
 NSString *const kUseSignificantLocationChanges = @"useSignificantLocationChanges";
 NSString *const kBeacons = @"beacons";
-NSString *const kDynamicBubbleGeofenceMode = @"dynamicBubbleGeofenceMode";
+NSString *const kDynamicBubbleGeofence = @"dynamicBubbleGeofence";
 
 NSString *const kDesiredAccuracyHigh = @"high";
 NSString *const kDesiredAccuracyMedium = @"medium";
@@ -43,9 +43,9 @@ NSString *const kSyncAll = @"all";
 NSString *const kSyncStopsAndExits = @"stopsAndExits";
 NSString *const kSyncNone = @"none";
 
-NSString *const kDynamicBubbleGeofenceModeOff = @"off";
-NSString *const kDynamicBubbleGeofenceModeClosest = @"closest";
-NSString *const kDynamicBubbleGeofenceModeFurthest = @"furthest";
+NSString *const kDynamicBubbleGeofenceOff = @"off";
+NSString *const kDynamicBubbleGeofenceClosest = @"closest";
+NSString *const kDynamicBubbleGeofenceFurthest = @"furthest";
 
 + (RadarTrackingOptions *)presetContinuous {
     RadarTrackingOptions *options = [RadarTrackingOptions new];
@@ -68,7 +68,7 @@ NSString *const kDynamicBubbleGeofenceModeFurthest = @"furthest";
     options.useVisits = NO;
     options.useSignificantLocationChanges = NO;
     options.beacons = NO;
-    options.dynamicBubbleGeofenceMode = RadarDynamicBubbleGeofenceModeOff;
+    options.dynamicBubbleGeofence = RadarDynamicBubbleGeofenceOff;
     return options;
 }
 
@@ -93,7 +93,7 @@ NSString *const kDynamicBubbleGeofenceModeFurthest = @"furthest";
     options.useVisits = YES;
     options.useSignificantLocationChanges = YES;
     options.beacons = NO;
-    options.dynamicBubbleGeofenceMode = RadarDynamicBubbleGeofenceModeOff;
+    options.dynamicBubbleGeofence = RadarDynamicBubbleGeofenceOff;
     return options;
 }
 
@@ -118,7 +118,7 @@ NSString *const kDynamicBubbleGeofenceModeFurthest = @"furthest";
     options.useVisits = YES;
     options.useSignificantLocationChanges = NO;
     options.beacons = NO;
-    options.dynamicBubbleGeofenceMode = RadarDynamicBubbleGeofenceModeOff;
+    options.dynamicBubbleGeofence = RadarDynamicBubbleGeofenceOff;
     return options;
 }
 
@@ -202,27 +202,27 @@ NSString *const kDynamicBubbleGeofenceModeFurthest = @"furthest";
     return sync;
 }
 
-+ (NSString *)stringForDynamicBubbleGeofenceMode:(RadarDynamicBubbleGeofenceMode)mode {
++ (NSString *)stringForDynamicBubbleGeofence:(RadarDynamicBubbleGeofence)mode {
     switch (mode) {
-        case RadarDynamicBubbleGeofenceModeClosest:
-            return kDynamicBubbleGeofenceModeClosest;
-        case RadarDynamicBubbleGeofenceModeFurthest:
-            return kDynamicBubbleGeofenceModeFurthest;
-        case RadarDynamicBubbleGeofenceModeOff:
+        case RadarDynamicBubbleGeofenceClosest:
+            return kDynamicBubbleGeofenceClosest;
+        case RadarDynamicBubbleGeofenceFurthest:
+            return kDynamicBubbleGeofenceFurthest;
+        case RadarDynamicBubbleGeofenceOff:
         default:
-            return kDynamicBubbleGeofenceModeOff;
+            return kDynamicBubbleGeofenceOff;
     }
 }
 
-+ (RadarDynamicBubbleGeofenceMode)dynamicBubbleGeofenceModeForString:(NSString *)str {
-    if ([str isEqualToString:kDynamicBubbleGeofenceModeClosest]) {
-        return RadarDynamicBubbleGeofenceModeClosest;
-    } else if ([str isEqualToString:kDynamicBubbleGeofenceModeFurthest]) {
-        return RadarDynamicBubbleGeofenceModeFurthest;
-    } else if ([str isEqualToString:kDynamicBubbleGeofenceModeOff]) {
-        return RadarDynamicBubbleGeofenceModeOff;
++ (RadarDynamicBubbleGeofence)dynamicBubbleGeofenceForString:(NSString *)str {
+    if ([str isEqualToString:kDynamicBubbleGeofenceClosest]) {
+        return RadarDynamicBubbleGeofenceClosest;
+    } else if ([str isEqualToString:kDynamicBubbleGeofenceFurthest]) {
+        return RadarDynamicBubbleGeofenceFurthest;
+    } else if ([str isEqualToString:kDynamicBubbleGeofenceOff]) {
+        return RadarDynamicBubbleGeofenceOff;
     }
-    return RadarDynamicBubbleGeofenceModeOff;
+    return RadarDynamicBubbleGeofenceOff;
 }
 
 + (RadarTrackingOptions *)trackingOptionsFromDictionary:(NSDictionary *)dict {
@@ -270,7 +270,7 @@ NSString *const kDynamicBubbleGeofenceModeFurthest = @"furthest";
     options.useVisits = [dict[kUseVisits] boolValue];
     options.useSignificantLocationChanges = [dict[kUseSignificantLocationChanges] boolValue];
     options.beacons = [dict[kBeacons] boolValue];
-    options.dynamicBubbleGeofenceMode = [RadarTrackingOptions dynamicBubbleGeofenceModeForString:dict[kDynamicBubbleGeofenceMode]];
+    options.dynamicBubbleGeofence = [RadarTrackingOptions dynamicBubbleGeofenceForString:dict[kDynamicBubbleGeofence]];
     return options;
 }
 
@@ -303,7 +303,7 @@ NSString *const kDynamicBubbleGeofenceModeFurthest = @"furthest";
     dict[kUseVisits] = @(self.useVisits);
     dict[kUseSignificantLocationChanges] = @(self.useSignificantLocationChanges);
     dict[kBeacons] = @(self.beacons);
-    dict[kDynamicBubbleGeofenceMode] = [RadarTrackingOptions stringForDynamicBubbleGeofenceMode:self.dynamicBubbleGeofenceMode];
+    dict[kDynamicBubbleGeofence] = [RadarTrackingOptions stringForDynamicBubbleGeofence:self.dynamicBubbleGeofence];
     return dict;
 }
 
@@ -333,7 +333,7 @@ NSString *const kDynamicBubbleGeofenceModeFurthest = @"furthest";
            self.useStoppedGeofence == options.useStoppedGeofence && self.stoppedGeofenceRadius == options.stoppedGeofenceRadius &&
            self.useMovingGeofence == options.useMovingGeofence && self.movingGeofenceRadius == options.movingGeofenceRadius && self.syncGeofences == options.syncGeofences &&
            self.useVisits == options.useVisits && self.useSignificantLocationChanges == options.useSignificantLocationChanges && self.beacons == options.beacons &&
-           self.dynamicBubbleGeofenceMode == options.dynamicBubbleGeofenceMode;
+           self.dynamicBubbleGeofence == options.dynamicBubbleGeofence;
 }
 
 @end

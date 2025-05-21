@@ -49,13 +49,13 @@ typedef NS_ENUM(NSInteger, RadarTrackingOptionsSyncLocations) {
 /**
  Specifies how the bubble geofence radius should be determined dynamically.
  */
-typedef NS_ENUM(NSInteger, RadarDynamicBubbleGeofenceMode) {
+typedef NS_ENUM(NSInteger, RadarDynamicBubbleGeofence) {
     /// The bubble geofence radius is not determined dynamically; the provided radius is used.
-    RadarDynamicBubbleGeofenceModeOff,
+    RadarDynamicBubbleGeofenceOff,
     /// The bubble geofence radius is the maximum of the provided radius and the distance to the closest nearby geofence.
-    RadarDynamicBubbleGeofenceModeClosest,
+    RadarDynamicBubbleGeofenceClosest,
     /// The bubble geofence radius is set to the distance to the furthest nearby geofence. If no nearby geofences, no bubble geofence is created.
-    RadarDynamicBubbleGeofenceModeFurthest
+    RadarDynamicBubbleGeofenceFurthest
 };
 
 /**
@@ -167,9 +167,9 @@ typedef NS_ENUM(NSInteger, RadarDynamicBubbleGeofenceMode) {
 @property (nonatomic, assign) BOOL beacons;
 
 /**
- Specifies the mode for determining the bubble geofence radius dynamically. Defaults to `RadarDynamicBubbleGeofenceModeOff`.
+ Specifies the mode for determining the bubble geofence radius dynamically. Defaults to `RadarDynamicBubbleGeofenceOff`.
  */
-@property (nonatomic, assign) RadarDynamicBubbleGeofenceMode dynamicBubbleGeofenceMode;
+@property (nonatomic, assign) RadarDynamicBubbleGeofence dynamicBubbleGeofence;
 
 /**
  Updates about every 30 seconds while moving or stopped. Moderate battery usage. Shows the flashing blue status bar during tracking.
@@ -198,8 +198,8 @@ typedef NS_ENUM(NSInteger, RadarDynamicBubbleGeofenceMode) {
 + (RadarTrackingOptionsReplay)replayForString:(NSString *)str;
 + (NSString *)stringForSyncLocations:(RadarTrackingOptionsSyncLocations)syncLocations;
 + (RadarTrackingOptionsSyncLocations)syncLocationsForString:(NSString *)str;
-+ (NSString *)stringForDynamicBubbleGeofenceMode:(RadarDynamicBubbleGeofenceMode)mode;
-+ (RadarDynamicBubbleGeofenceMode)dynamicBubbleGeofenceModeForString:(NSString *)str;
++ (NSString *)stringForDynamicBubbleGeofence:(RadarDynamicBubbleGeofence)mode;
++ (RadarDynamicBubbleGeofence)dynamicBubbleGeofenceForString:(NSString *)str;
 + (RadarTrackingOptions *_Nullable)trackingOptionsFromDictionary:(NSDictionary *_Nonnull)dictionary;
 - (NSDictionary *)dictionaryValue;
 
