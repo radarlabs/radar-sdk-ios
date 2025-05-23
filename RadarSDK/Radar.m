@@ -1048,6 +1048,142 @@
 
 #pragma mark - Indoors
 
++ (void)createIndoorSurvey:(NSString *_Nullable)description
+                geofenceId:(NSString *_Nonnull)geofenceId
+                  surveyor:(NSString *_Nonnull)surveyor
+          completionHandler:(RadarCreateSurveyCompletionHandler)completionHandler {
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"createIndoorSurvey()"];
+    
+    NSString *publishableKey = [RadarSettings publishableKey];
+    if (!publishableKey) {
+        completionHandler(RadarStatusErrorPublishableKey, nil, nil);
+        return;
+    }
+    
+    NSString *host = [RadarSettings host];
+    NSString *url = [NSString stringWithFormat:@"%@/v1/indoor/surveys", host];
+    url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
+    
+    NSDictionary *headers = [RadarAPIClient headersWithPublishableKey:publishableKey];
+    
+    NSMutableDictionary *params = [NSMutableDictionary new];
+    
+    // Only add description if it's provided
+    if (description) {
+        params[@"description"] = description;
+    }
+    
+    params[@"geofenceId"] = geofenceId;
+    params[@"surveyor"] = surveyor;
+    
+    [[RadarAPIClient sharedInstance].apiHelper requestWithMethod:@"POST"
+                                                             url:url
+                                                         headers:headers
+                                                          params:params
+                                                           sleep:NO
+                                                      logPayload:YES
+                                                 extendedTimeout:NO
+                                               completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
+        if (status != RadarStatusSuccess || !res) {
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelError type:RadarLogTypeSDKError message:[NSString stringWithFormat:@"Error creating indoor survey: %@", [Radar stringForStatus:status]]];
+            completionHandler(status, nil, nil);
+            return;
+        }
+        
+        NSDictionary *survey = res[@"survey"];
+        NSString *uploadUrl = res[@"uploadUrl"];
+        
+        if (!survey || !uploadUrl) {
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelError type:RadarLogTypeSDKError message:@"Missing survey or uploadUrl in response"];
+            completionHandler(RadarStatusErrorServer, nil, nil);
+            return;
+        }
+        
+        completionHandler(RadarStatusSuccess, survey, uploadUrl);
+    }];
+}
+
++ (void)updateIndoorSurveyStatus:(NSString *_Nonnull)surveyId
+                          status:(NSString *_Nonnull)status
+               completionHandler:(RadarCompleteSurveyCompletionHandler)completionHandler {
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"updateIndoorSurveyStatus()"];
+    
+    NSString *publishableKey = [RadarSettings publishableKey];
+    if (!publishableKey) {
+        completionHandler(RadarStatusErrorPublishableKey);
+        return;
+    }
+    
+    NSString *host = [RadarSettings host];
+    NSString *url = [NSString stringWithFormat:@"%@/v1/indoor/surveys/%@", host, surveyId];
+    url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
+    
+    NSDictionary *headers = [RadarAPIClient headersWithPublishableKey:publishableKey];
+    
+    NSMutableDictionary *params = [NSMutableDictionary new];
+    params[@"status"] = status;
+    
+    [[RadarAPIClient sharedInstance].apiHelper requestWithMethod:@"PATCH"
+                                                             url:url
+                                                         headers:headers
+                                                          params:params
+                                                           sleep:NO
+                                                      logPayload:YES
+                                                 extendedTimeout:NO
+                                               completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
+        if (status != RadarStatusSuccess) {
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelError type:RadarLogTypeSDKError message:[NSString stringWithFormat:@"Error updating indoor survey status: %@", [Radar stringForStatus:status]]];
+        }
+        
+        completionHandler(status);
+    }];
+}
+
++ (void)uploadIndoorSurveyData:(NSString *_Nonnull)base64EncodedData
+                  uploadUrl:(NSString *_Nonnull)uploadUrl
+             completionHandler:(RadarCompleteSurveyCompletionHandler)completionHandler {
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"uploadIndoorSurveyData()"];
+    
+    NSURL *url = [NSURL URLWithString:uploadUrl];
+    if (!url) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelError type:RadarLogTypeSDKError message:@"Invalid upload URL"];
+        completionHandler(RadarStatusErrorBadRequest);
+        return;
+    }
+    
+    // Upload the base64-encoded string as UTF-8 text
+    NSData *data = [base64EncodedData dataUsingEncoding:NSUTF8StringEncoding];
+    if (!data) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelError type:RadarLogTypeSDKError message:@"Failed to convert base64 string to UTF-8 data"];
+        completionHandler(RadarStatusErrorBadRequest);
+        return;
+    }
+    
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
+    [request setHTTPMethod:@"PUT"];
+    [request setHTTPBody:data];
+    
+    NSURLSessionDataTask *task = [[NSURLSession sharedSession] dataTaskWithRequest:request completionHandler:^(NSData * _Nullable responseData, NSURLResponse * _Nullable response, NSError * _Nullable error) {
+        if (error || !response) {
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelError type:RadarLogTypeSDKError message:[NSString stringWithFormat:@"Error uploading survey data: %@", error.localizedDescription]];
+            completionHandler(RadarStatusErrorNetwork);
+            return;
+        }
+        
+        NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
+        if (httpResponse.statusCode < 200 || httpResponse.statusCode >= 300) {
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelError type:RadarLogTypeSDKError message:[NSString stringWithFormat:@"Error uploading survey data: HTTP status %ld", (long)httpResponse.statusCode]];
+            completionHandler(RadarStatusErrorServer);
+            return;
+        }
+        
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"Survey data uploaded successfully"];
+        completionHandler(RadarStatusSuccess);
+    }];
+    
+    [task resume];
+}
+
 // called by waypoint (and others?) to trigger a place survey for a given length
 // i.e. record a bluetooth fingerprint and store it
 + (void)doIndoorSurvey:(NSString *)placeLabel

@@ -74,8 +74,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
     var fetchedGeofences: [(String, String, [[CLLocationCoordinate2D]], String)] = []
 
     func fetchAllGeofences(callback: @escaping ([(String, String, [[CLLocationCoordinate2D]], String)]) -> Void) {
-        let API_KEY = "prj_test_sk_26576f21c9ddd02079383a63ae06ee33fbde4f5f"
-        let URL = "https://api.radar.io/v1/geofences?limit=1000"
+        let API_KEY = "prj_test_sk_5f5fe073c141f17071f003be0e4388f92fea3b43" // Replace with your Radar secret key
+        let URL = "https://api-vivan.radar-staging.com/v1/geofences?limit=1000"
         
         let url = Foundation.URL(string: URL)
         var request = URLRequest(url: url!)
@@ -166,19 +166,294 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         }
     }
 
-    @objc func didTapGeofenceButton(_ geofenceId: String, _ description: String, completion: @escaping () -> Void) {
+    private func getSavedSurveyorName() -> String? {
+        return UserDefaults.standard.string(forKey: "radar_surveyor_name")
+    }
+    
+    private func saveSurveyorName(_ name: String) {
+        UserDefaults.standard.set(name, forKey: "radar_surveyor_name")
+        UserDefaults.standard.synchronize()
+    }
+
+    private func resetSurveyButton(_ button: UIButton) {
+        DispatchQueue.main.async {
+            button.isEnabled = true
+            button.alpha = 1.0
+            button.setTitle("Survey", for: .normal)
+        }
+    }
+
+    private var currentSurveyCompletion: (() -> Void)?
+    
+    private func showErrorAlert(title: String, message: String) {
+        // TODO: (vivan) Fix alert handling issues:
+        // 1. UIApplication.shared.windows is deprecated since iOS 13.0
+        // 2. Should use scene-based approach for iOS 13+
+        // 3. Alert presentation logic should be moved to view controllers
+        DispatchQueue.main.async {
+            let errorAlert = UIAlertController(
+                title: title,
+                message: message,
+                preferredStyle: .alert
+            )
+            
+            errorAlert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+            
+            if let window = UIApplication.shared.windows.first(where: { $0.isKeyWindow }),
+               let rootViewController = window.rootViewController {
+                var topController = rootViewController
+                while let presentedViewController = topController.presentedViewController {
+                    topController = presentedViewController
+                }
+                
+                topController.present(errorAlert, animated: true)
+            }
+        }
+    }
+    
+    @objc func didTapGeofenceButton(_ geofenceId: String, _ description: String, button: UIButton? = nil, completion: @escaping () -> Void) {
         print("tapped geofence button")
         print(geofenceId, description)
        
 #if targetEnvironment(simulator)
         waitThenCall(completion: completion)
 #else
-        let geofenceIdForSurvey = "geofenceid:\(geofenceId)"
-        Radar.doIndoorSurvey(geofenceIdForSurvey, forLength: 60, isWhereAmIScan: false) { _, _ in
-            print("done doIndoorSurvey")
-            completion()  // Call the completion handler when done
+        let alertController = UIAlertController(
+            title: "New Survey",
+            message: "Geofence: \(description)",
+            preferredStyle: .alert
+        )
+        
+        alertController.addTextField { textField in
+            textField.placeholder = "Survey description (optional)"
+        }
+        
+        alertController.addTextField { [weak self] textField in
+            textField.placeholder = "Your name"
+            if let savedName = self?.getSavedSurveyorName() {
+                textField.text = savedName
+            }
+        }
+        
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel) { _ in
+            if let button = button {
+                self.resetSurveyButton(button)
+            }
+            completion()
+        }
+        
+        let submitAction = UIAlertAction(title: "Start Survey", style: .default) { [weak self] _ in
+            guard let self = self else {
+                if let button = button {
+                    self?.resetSurveyButton(button)
+                }
+                completion()
+                return
+            }
+            
+
+            guard let descriptionTextField = alertController.textFields?[0],
+                  let surveyorTextField = alertController.textFields?[1] else {
+                if let button = button {
+                    self.resetSurveyButton(button)
+                }
+                completion()
+                return
+            }
+            
+            guard let surveyorName = surveyorTextField.text, !surveyorName.isEmpty else {
+                if let button = button {
+                    self.resetSurveyButton(button)
+                }
+                
+                self.showErrorAlert(
+                    title: "Validation Error",
+                    message: "Please enter your name."
+                )
+                
+                completion()
+                return
+            }
+            
+            self.saveSurveyorName(surveyorName)
+            
+            let surveyDescription = descriptionTextField.text
+            
+            self.handleSurveyCreation(
+                description: surveyDescription,
+                geofenceId: geofenceId,
+                surveyor: surveyorName,
+                button: button,
+                completion: completion
+            )
+        }
+        
+        alertController.addAction(cancelAction)
+        alertController.addAction(submitAction)
+        
+        // TODO: (vivan) Refactor alert presentation logic:
+        // 1. Extract common "find top view controller" logic into helper method
+        // 2. Use scene-based approach instead of deprecated UIApplication.shared.windows
+        // 3. Consider passing view controller context instead of searching for it
+        // Present the alert controller
+        if let window = UIApplication.shared.windows.first(where: { $0.isKeyWindow }),
+           let rootViewController = window.rootViewController {
+            
+            // Get the topmost view controller (in case there are presented controllers)
+            var topController = rootViewController
+            while let presentedViewController = topController.presentedViewController {
+                topController = presentedViewController
+            }
+            
+            topController.present(alertController, animated: true)
+        } else {
+            if let button = button {
+                resetSurveyButton(button)
+            }
+            completion()
         }
 #endif
+    }
+
+    private func handleSurveyCreation(description: String?, geofenceId: String, surveyor: String, button: UIButton? = nil, completion: @escaping () -> Void) {
+        print("Starting survey: description: \(description ?? "nil"), geofence: \(geofenceId), surveyor: \(surveyor)")
+        
+        Radar.createIndoorSurvey(description: description, geofenceId: geofenceId, surveyor: surveyor) { [weak self] status, survey, uploadUrl in
+            guard let self = self else {
+                if let button = button {
+                    self?.resetSurveyButton(button)
+                }
+                DispatchQueue.main.async {
+                    completion()
+                }
+                return
+            }
+            
+            guard status.rawValue == 0,
+                  let survey = survey,
+                  let surveyId = survey["_id"] as? String,
+                  let uploadUrl = uploadUrl else {
+                print("Failed to create survey with status: \(status.rawValue)")
+                if let button = button {
+                    self.resetSurveyButton(button)
+                }
+                
+                self.showErrorAlert(
+                    title: "Survey Creation Failed",
+                    message: "Could not create new survey. Please try again later."
+                )
+                
+                DispatchQueue.main.async {
+                    completion()
+                }
+                return
+            }
+            
+            print("Survey created with ID: \(surveyId)")
+            
+            let geofenceIdForSurvey = "geofenceid:\(geofenceId)"
+            Radar.doIndoorSurvey(geofenceIdForSurvey, forLength: 60, isWhereAmIScan: false) { [weak self] result, locationAtStartOfSurvey in
+                guard let self = self else {
+                    if let button = button {
+                        self?.resetSurveyButton(button)
+                    }
+                    
+                    Radar.updateIndoorSurveyStatus(surveyId: surveyId, status: "failed") { _ in }
+                    
+                    DispatchQueue.main.async {
+                        completion()
+                    }
+                    return
+                }
+                
+                guard let surveyData = result else {
+                    print("No survey data collected")
+                    if let button = button {
+                        self.resetSurveyButton(button)
+                    }
+                    
+                    Radar.updateIndoorSurveyStatus(surveyId: surveyId, status: "failed") { _ in }
+                    
+                    self.showErrorAlert(
+                        title: "Survey Data Collection Failed",
+                        message: "Could not collect survey data. Please try again later."
+                    )
+                    
+                    DispatchQueue.main.async {
+                        completion()
+                    }
+                    return
+                }
+                
+                print("Survey data collection complete with length: \(surveyData.count)")
+                
+                Radar.uploadIndoorSurveyData(base64EncodedData: surveyData, uploadUrl: uploadUrl) { [weak self] uploadStatus in
+                    guard let self = self else {
+                        if let button = button {
+                            self?.resetSurveyButton(button)
+                        }
+                        
+                        Radar.updateIndoorSurveyStatus(surveyId: surveyId, status: "failed") { _ in }
+                        
+                        DispatchQueue.main.async {
+                            completion()
+                        }
+                        return
+                    }
+                    
+                    guard uploadStatus.rawValue == 0 else { // RadarStatusSuccess
+                        print("Failed to upload survey data with status: \(uploadStatus.rawValue)")
+                        
+                        Radar.updateIndoorSurveyStatus(surveyId: surveyId, status: "failed") { _ in }
+                        
+                        if let button = button {
+                            self.resetSurveyButton(button)
+                        }
+                        
+                        self.showErrorAlert(
+                            title: "Survey Upload Failed",
+                            message: "Could not upload survey data. Please try again later."
+                        )
+                        
+                        DispatchQueue.main.async {
+                            completion()
+                        }
+                        return
+                    }
+                    
+                    print("Survey data uploaded successfully")
+                    
+                    Radar.updateIndoorSurveyStatus(surveyId: surveyId, status: "completed") { [weak self] completeStatus in
+                        if completeStatus.rawValue != 0 {
+                            print("Survey completion notification failed with status: \(completeStatus.rawValue)")
+                            
+                            // TODO: (vivan) Multiple alert presentation without coordination
+                            self?.showErrorAlert(
+                                title: "Survey Upload Successful",
+                                message: "Survey data was uploaded successfully, but status notification failed. The survey will still be processed."
+                            )
+                        } else {
+                            print("Survey status successfully updated to completed")
+                        }
+                    }
+                    
+                    if let button = button {
+                        self.resetSurveyButton(button)
+                    }
+                    
+                    // TODO: (vivan) This is using showErrorAlert for a success message, which is confusing
+                    // Consider creating a separate showSuccessAlert method or a generic showAlert method
+                    self.showErrorAlert(
+                        title: "Survey Completed",
+                        message: "Survey data has been successfully collected and uploaded."
+                    )
+                    
+                    DispatchQueue.main.async {
+                        completion()
+                    }
+                }
+            }
+        }
     }
 
     func startContinuousInference() {
@@ -291,13 +566,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         // Add MapViewController
         let mapViewController = MapViewController()
         self.mapViewController = mapViewController  // Store strong reference
-        window.addSubview(mapViewController.view)
-
+        
+        // Make sure we set the MapViewController as the root view controller
+        window.rootViewController = mapViewController
+        
+        // Add scrollView to the mapViewController's view instead of the window
         scrollView = UIScrollView(frame: CGRect(x: 0, y: 580, width: window.frame.size.width, height: window.frame.size.height - 300))
         scrollView!.contentSize.height = 0
         scrollView!.contentSize.width = window.frame.size.width
         
-        window.addSubview(scrollView!)
+        mapViewController.view.addSubview(scrollView!)
         
         window.makeKeyAndVisible()
         
@@ -363,7 +641,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
                 surveyButton.setTitle("Surveying...", for: .disabled)
                 
                 dropdownTableView.isHidden = true  // Now this reference is valid
-                self.didTapGeofenceButton(selectedGeofence.0, selectedGeofence.1) {
+                self.didTapGeofenceButton(selectedGeofence.0, selectedGeofence.1, button: surveyButton) {
                     print("Survey completed")
                     // Re-enable button after survey completes
                     DispatchQueue.main.async {

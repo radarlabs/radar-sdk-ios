@@ -153,6 +153,13 @@
     // print length of base64 encoded payload
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"compressedDataGzippedBase64 length: %lu", (unsigned long)[compressedDataGzippedBase64 length]]];
 
+    // NEW WORKFLOW:
+    // Instead of posting directly to server, we return the data to the caller
+    if (self.completionHandler) {
+        self.completionHandler(compressedDataGzippedBase64, self.locationAtTimeOfSurveyStart);
+    }
+    
+    /* COMMENTED OUT OLD WORKFLOW:
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"self.isWhereAmIScan %d", self.isWhereAmIScan]];
 
     // url is /whereami/greg when isWhereAmIScan is true
@@ -196,6 +203,7 @@
     }];
     [task resume];
     // }
+    */
 
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:@"calling removeAllObjects, clearing scanId, etc."];
 
@@ -204,6 +212,7 @@
     [self.bluetoothReadings removeAllObjects];
     self.scanId = nil;
     self.lastMagnetometerData = nil;
+    self.locationAtTimeOfSurveyStart = nil;
 
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:@"stopScanning end"];
 

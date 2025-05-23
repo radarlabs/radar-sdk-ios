@@ -126,8 +126,8 @@ extension MapViewController: UITableViewDelegate, UITableViewDataSource {
             
             print("ABOUT TO SURVEY ABOUT TO SURVEY")
             
-            // Trigger survey for this geofence
-            self?.appDelegate.didTapGeofenceButton(geofenceId, geofenceDescription) {
+            // Trigger survey for this geofence - pass the button reference
+            self?.appDelegate.didTapGeofenceButton(geofenceId, geofenceDescription, button: cell.surveyButton) {
                 
                 self?.enableAllSurveyButtons()
             }
@@ -430,8 +430,7 @@ class GeofenceTableViewCell: UITableViewCell {
             textLabel.frame.size.width = contentView.frame.width - 100 // Leave space for button
         }
         
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(surveyButtonTapped))
-        surveyButton.addGestureRecognizer(tapGesture)
+        surveyButton.addTarget(self, action: #selector(surveyButtonTapped), for: .touchUpInside)
     }
     
     // Then add this method to the GeofenceTableViewCell class:

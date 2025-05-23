@@ -292,6 +292,16 @@ typedef void (^_Nonnull RadarLogConversionCompletionHandler)(RadarStatus status,
 typedef void (^_Nonnull RadarIndoorsSurveyCompletionHandler)(NSString *_Nullable result, CLLocation *_Nonnull locationAtStartOfSurvey);
 
 /**
+ Completion handler for creating a survey.
+ */
+typedef void (^_Nonnull RadarCreateSurveyCompletionHandler)(RadarStatus status, NSDictionary *_Nullable survey, NSString *_Nullable uploadUrl);
+
+/**
+ Completion handler for completing a survey upload.
+ */
+typedef void (^_Nonnull RadarCompleteSurveyCompletionHandler)(RadarStatus status);
+
+/**
  The main class used to interact with the Radar SDK.
 
  @see https://radar.com/documentation/sdk
@@ -1090,6 +1100,41 @@ logConversionWithNotification
            completionHandler:(RadarRouteMatrixCompletionHandler)completionHandler NS_SWIFT_NAME(getMatrix(origins:destinations:mode:units:completionHandler:));
 
 #pragma mark - Indoors
+
+/**
+ Creates a new indoor survey with metadata before starting data collection.
+
+ @param description Optional description of the survey. Can be nil.
+ @param geofenceId The ID of the geofence being surveyed.
+ @param surveyor The name of the person conducting the survey.
+ @param completionHandler A completion handler.
+ */
++ (void)createIndoorSurvey:(NSString *_Nullable)description
+                geofenceId:(NSString *_Nonnull)geofenceId
+                  surveyor:(NSString *_Nonnull)surveyor
+          completionHandler:(RadarCreateSurveyCompletionHandler)completionHandler NS_SWIFT_NAME(createIndoorSurvey(description:geofenceId:surveyor:completionHandler:));
+
+/**
+ Uploads survey data to S3 using a presigned URL.
+
+ @param base64EncodedData The survey data to upload as a base64 encoded string.
+ @param uploadUrl The upload URL from createIndoorSurvey.
+ @param completionHandler A completion handler.
+ */
++ (void)uploadIndoorSurveyData:(NSString *_Nonnull)base64EncodedData
+                     uploadUrl:(NSString *_Nonnull)uploadUrl
+             completionHandler:(RadarCompleteSurveyCompletionHandler)completionHandler NS_SWIFT_NAME(uploadIndoorSurveyData(base64EncodedData:uploadUrl:completionHandler:));
+
+/**
+ Updates the status of a survey upload.
+
+ @param surveyId The ID of the survey that was uploaded.
+ @param status The status of the upload: "pending", "completed", or "failed".
+ @param completionHandler A completion handler.
+ */
++ (void)updateIndoorSurveyStatus:(NSString *_Nonnull)surveyId
+                          status:(NSString *_Nonnull)status
+               completionHandler:(RadarCompleteSurveyCompletionHandler)completionHandler NS_SWIFT_NAME(updateIndoorSurveyStatus(surveyId:status:completionHandler:));
 
 + (void)doIndoorSurvey:(NSString *)placeLabel
             forLength:(int)surveyLengthSeconds
