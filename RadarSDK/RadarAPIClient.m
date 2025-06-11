@@ -511,7 +511,6 @@
 
                             id eventsObj = res[@"events"];
                             id userObj = res[@"user"];
-                            
                             id nearbyGeofencesObj = res[@"nearbyGeofences"];
                             NSArray<RadarEvent *> *events = [RadarEvent eventsFromObject:eventsObj];
                             RadarUser *user = [[RadarUser alloc] initWithObject:userObj];

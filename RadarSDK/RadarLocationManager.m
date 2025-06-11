@@ -554,7 +554,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 
             NSDictionary *metadata = geofence.metadata;
             if (metadata) {
-                UNMutableNotificationContent *content = [RadarNotificationHelper extractContentFromMetadata:metadata identifier:geofence._id];
+                UNMutableNotificationContent *content = [RadarNotificationHelper extractContentFromMetadata:metadata identifier:identifier];
                 if (content) {
 
                     region.notifyOnEntry = YES;

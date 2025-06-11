@@ -223,8 +223,10 @@ static NSString *const kBeaconNotificationIdentifierPrefix = @"radar_beacon_noti
 
     self.beacons = beacons;
     self.started = YES;
+    
     for (RadarBeacon *beacon in beacons) {
         CLBeaconRegion *region = [self regionForBeacon:beacon];
+
         if (region) {
             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
                                                message:[NSString stringWithFormat:@"Starting ranging beacon | _id = %@; uuid = %@; major = %@; minor = %@", beacon._id, beacon.uuid,
@@ -281,6 +283,7 @@ static NSString *const kBeaconNotificationIdentifierPrefix = @"radar_beacon_noti
 
     self.beaconUUIDs = beaconUUIDs;
     self.started = YES;
+
     for (NSString *beaconUUID in beaconUUIDs) {
         CLBeaconRegion *region = [self regionForUUID:beaconUUID];
 
@@ -292,7 +295,6 @@ static NSString *const kBeaconNotificationIdentifierPrefix = @"radar_beacon_noti
             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Error starting ranging UUID | beaconUUID = %@", beaconUUID]];
         }
     }
-    
 }
 
 - (void)stopRanging {

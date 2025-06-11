@@ -45,7 +45,6 @@ static NSString *const kEventNotificationIdentifierPrefix = @"radar_event_notifi
             }];
             continue;
         }
-        
 
         NSString *notificationText;
         NSDictionary *metadata;
@@ -107,7 +106,7 @@ static NSString *const kEventNotificationIdentifierPrefix = @"radar_event_notifi
     NSString *notificationURL = [metadata objectForKey:@"radar:notificationURL"];
     NSString *campaignId = [metadata objectForKey:@"radar:campaignId"];
 
-    if (notificationText) {
+    if (notificationText && [RadarNotificationHelper isNotificationCampaign:metadata]) {
         UNMutableNotificationContent *content = [UNMutableNotificationContent new];
         if (notificationTitle) {
             content.title = [NSString localizedUserNotificationStringForKey:notificationTitle arguments:nil];
@@ -131,6 +130,12 @@ static NSString *const kEventNotificationIdentifierPrefix = @"radar_event_notifi
         }
         if (identifier) {
             mutableUserInfo[@"identifier"] = identifier;
+            if ([identifier hasPrefix:@"radar_beacon_notification_"]) {
+                mutableUserInfo[@"beaconId"] = [identifier stringByReplacingOccurrencesOfString:@"radar_beacon_notification_" withString:@""];
+            }
+            if ([identifier hasPrefix:@"radar_geofence_"]) {
+                mutableUserInfo[@"geofenceId"] = [identifier stringByReplacingOccurrencesOfString:@"radar_geofence_" withString:@""];
+            }
         }
         
         content.userInfo = [mutableUserInfo copy];
