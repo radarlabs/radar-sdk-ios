@@ -111,6 +111,7 @@ static NSString *const kBeaconNotificationIdentifierPrefix = @"radar_beacon_noti
 }
 
 - (void)registerBeaconRegionNotificationsFromArray:(NSArray<NSDictionary<NSString *, NSString*> *> *_Nonnull)beaconArray {
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"Registering beacon region notifications from array | beaconArray.count = %lu", (unsigned long)beaconArray.count]];
     [RadarNotificationHelper removePendingNotificationsWithPrefix:kBeaconNotificationIdentifierPrefix completionHandler:^{
         for (NSDictionary<NSString *, NSString *> *beaconDict in beaconArray) {
             // Extract required and optional parameters
@@ -175,7 +176,14 @@ static NSString *const kBeaconNotificationIdentifierPrefix = @"radar_beacon_noti
                                         request.identifier]];
                         }
                     }];
+                } else {
+                    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelError 
+                        message:[NSString stringWithFormat:@"Failed to create notification content | uuid = %@", uuid]];
                 }
+            } else {
+                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelError 
+                    message:[NSString stringWithFormat:@"Failed to create beacon region | uuid = %@", uuid]];
+                continue;
             }
         }
     }];
