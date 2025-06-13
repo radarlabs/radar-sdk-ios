@@ -130,9 +130,6 @@ static NSString *const kEventNotificationIdentifierPrefix = @"radar_event_notifi
         }
         if (identifier) {
             mutableUserInfo[@"identifier"] = identifier;
-            if ([identifier hasPrefix:@"radar_beacon_notification_"]) {
-                mutableUserInfo[@"beaconId"] = [identifier stringByReplacingOccurrencesOfString:@"radar_beacon_notification_" withString:@""];
-            }
             if ([identifier hasPrefix:@"radar_geofence_"]) {
                 mutableUserInfo[@"geofenceId"] = [identifier stringByReplacingOccurrencesOfString:@"radar_geofence_" withString:@""];
             }
@@ -286,7 +283,7 @@ static NSString *const kEventNotificationIdentifierPrefix = @"radar_event_notifi
     
     [notificationCenter getPendingNotificationRequestsWithCompletionHandler:^(NSArray<UNNotificationRequest *> *requests) {
         NSMutableArray *currentNotifications = [NSMutableArray new];
-        
+    
         for (UNNotificationRequest *request in requests) {
             if (request.content.userInfo) {
                 [currentNotifications addObject:request.content.userInfo];
