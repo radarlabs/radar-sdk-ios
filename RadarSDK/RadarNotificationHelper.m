@@ -45,7 +45,6 @@ static NSString *const kEventNotificationIdentifierPrefix = @"radar_event_notifi
             }];
             continue;
         }
-        
 
         NSString *notificationText;
         NSDictionary *metadata;
@@ -93,10 +92,11 @@ static NSString *const kEventNotificationIdentifierPrefix = @"radar_event_notifi
     }
 }
 
-
-+ (UNMutableNotificationContent *)extractContentFromMetadata:(NSDictionary *)metadata geofenceId:(NSString *)geofenceId {
++ (UNMutableNotificationContent *)extractContentFromMetadata:(NSDictionary *)metadata identifier:(NSString *)identifier {
     
     if (!metadata) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelError
+                                                       message:[NSString stringWithFormat:@"No metadata found for identifier = %@", identifier]];
         return nil;
     }
 
@@ -128,55 +128,11 @@ static NSString *const kEventNotificationIdentifierPrefix = @"radar_event_notifi
         if (campaignId) {
             mutableUserInfo[@"campaignId"] = campaignId;
         }
-        if (geofenceId) {
-            mutableUserInfo[@"geofenceId"] = geofenceId;
-        }
-        
-        content.userInfo = [mutableUserInfo copy];
-        return content;
-    } else {
-        return nil;
-    }
-}
-
-+ (UNMutableNotificationContent *)extractContentFromMetadata:(NSDictionary *)metadata identifier:(NSString *)identifier {
-    
-    if (!metadata) {
-        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelError
-                                                       message:[NSString stringWithFormat:@"No metadata found for identifier = %@", identifier]];
-        return nil;
-    }
-
-    NSString *notificationText = [metadata objectForKey:@"radar:notificationText"];
-    NSString *notificationTitle = [metadata objectForKey:@"radar:notificationTitle"];
-    NSString *notificationSubtitle = [metadata objectForKey:@"radar:notificationSubtitle"];
-    NSString *notificationURL = [metadata objectForKey:@"radar:notificationURL"];
-    NSString *campaignId = [metadata objectForKey:@"radar:campaignId"];
-
-    if (notificationText) {
-        UNMutableNotificationContent *content = [UNMutableNotificationContent new];
-        if (notificationTitle) {
-            content.title = [NSString localizedUserNotificationStringForKey:notificationTitle arguments:nil];
-        }
-        if (notificationSubtitle) {
-            content.subtitle = [NSString localizedUserNotificationStringForKey:notificationSubtitle arguments:nil];
-        }
-        content.body = [NSString localizedUserNotificationStringForKey:notificationText arguments:nil];
-        
-        NSMutableDictionary *mutableUserInfo = [metadata mutableCopy];
-
-        NSDate *now = [NSDate new];
-        NSTimeInterval lastSyncInterval = [now timeIntervalSince1970];
-        mutableUserInfo[@"registeredAt"] = [NSString stringWithFormat:@"%f", lastSyncInterval];
-
-        if (notificationURL) {
-            mutableUserInfo[@"url"] = notificationURL;
-        }
-        if (campaignId) {
-            mutableUserInfo[@"campaignId"] = campaignId;
-        }
         if (identifier) {
             mutableUserInfo[@"identifier"] = identifier;
+            if ([identifier hasPrefix:@"radar_geofence_"]) {
+                mutableUserInfo[@"geofenceId"] = [identifier stringByReplacingOccurrencesOfString:@"radar_geofence_" withString:@""];
+            }
         }
         
         content.userInfo = [mutableUserInfo copy];
@@ -327,7 +283,7 @@ static NSString *const kEventNotificationIdentifierPrefix = @"radar_event_notifi
     
     [notificationCenter getPendingNotificationRequestsWithCompletionHandler:^(NSArray<UNNotificationRequest *> *requests) {
         NSMutableArray *currentNotifications = [NSMutableArray new];
-        
+    
         for (UNNotificationRequest *request in requests) {
             if (request.content.userInfo) {
                 [currentNotifications addObject:request.content.userInfo];

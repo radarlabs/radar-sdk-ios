@@ -313,6 +313,7 @@
 
         replayed = [replayedNumber boolValue];
     }
+
     id metadataObj = dict[@"metadata"];
     if (metadataObj) {
         if ([metadataObj isKindOfClass:[NSDictionary class]]) {
