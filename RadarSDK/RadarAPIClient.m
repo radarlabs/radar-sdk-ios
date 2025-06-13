@@ -560,6 +560,7 @@
                                 }
                                 [RadarState setBeaconIds:beaconIds];
                             }
+                            
                             if (events && user) {
                                 [RadarSettings setId:user._id];
 
