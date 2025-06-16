@@ -153,12 +153,12 @@ static NSString *const kBeaconNotificationIdentifierPrefix = @"radar_beacon_noti
         }
         
         if (region) {
+            NSString *notificationId = [NSString stringWithFormat:@"%@%@", kBeaconNotificationIdentifierPrefix, uuid];
             // Extract notification content from metadata
-            UNMutableNotificationContent *content = [RadarNotificationHelper extractContentFromMetadata:metadata identifier:uuid];
+            UNMutableNotificationContent *content = [RadarNotificationHelper extractContentFromMetadata:metadata identifier:notificationId];
             if (content) {
                 // Create and register notification
                 UNLocationNotificationTrigger *trigger = [UNLocationNotificationTrigger triggerWithRegion:region repeats:NO];
-                NSString *notificationId = [NSString stringWithFormat:@"%@%@", kBeaconNotificationIdentifierPrefix, uuid];
                 UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:notificationId 
                                                                                     content:content 
                                                                                     trigger:trigger];

@@ -295,8 +295,8 @@ static NSString *const kEventNotificationIdentifierPrefix = @"radar_event_notifi
         }
         
         NSMutableArray *notificationsDelivered = [NSMutableArray arrayWithArray:registeredNotifications];
-        for (NSDictionary *notification in currentNotifications) {
-            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"Found pending registered notification | userInfo = %@", notification]];
+        for (NSDictionary *notification in notificationsDelivered) {
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"Found notification in radar state | userInfo = %@", notification]];
         }
         [notificationsDelivered removeObjectsInArray:currentNotifications];
         for (NSDictionary *notification in notificationsDelivered) {
