@@ -230,7 +230,6 @@ static dispatch_semaphore_t notificationSemaphore;
 + (void) updateClientSideCampaignsWithPrefix:(NSString *)prefix notificationRequests:(NSArray<UNNotificationRequest *> *)requests {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         dispatch_semaphore_wait(notificationSemaphore, DISPATCH_TIME_FOREVER);
-        // todo: maybe enforce that invariant here
         [self removePendingNotificationsWithPrefix:prefix completionHandler:^{
             [self addOnPremiseNotificationRequests:requests];
         }];
@@ -245,10 +244,8 @@ static dispatch_semaphore_t notificationSemaphore;
         NSMutableArray *userInfosToKeep = [NSMutableArray new];
         for (UNNotificationRequest *request in requests) {
             if ([request.identifier hasPrefix:prefix]) {
-                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"Found pending notification to remove | identifier = %@", request.identifier]];
                 [identifiersToRemove addObject:request.identifier];
             } else {
-                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"Found pending notification to keep | identifier = %@", request.identifier]];
                 [userInfosToKeep addObject:request.content.userInfo];
             }
         }
@@ -281,7 +278,6 @@ static dispatch_semaphore_t notificationSemaphore;
                         NSDictionary *userInfo = request.content.userInfo;
                         if (userInfo) {
                             [RadarState addRegisteredNotification:userInfo];
-                            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"Added local notification to registered notifications | userInfo = %@", userInfo]];
                         }
 
                         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
@@ -318,20 +314,16 @@ static dispatch_semaphore_t notificationSemaphore;
         for (UNNotificationRequest *request in requests) {
             if (request.content.userInfo) {
                 [currentNotifications addObject:request.content.userInfo];
-                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"Found pending registered notification | userInfo = %@", request.content.userInfo]];
+                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Found pending registered notification | userInfo = %@", request.content.userInfo]];
             }
         }
         
         NSMutableArray *notificationsDelivered = [NSMutableArray arrayWithArray:registeredNotifications];
-        for (NSDictionary *notification in notificationsDelivered) {
-            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"Found notification in radar state | userInfo = %@", notification]];
-        }
+
         [notificationsDelivered removeObjectsInArray:currentNotifications];
-        for (NSDictionary *notification in notificationsDelivered) {
-            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"Found registered notification to remove | userInfo = %@", notification]];
-        }
+
         if (completionHandler) {
-            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"Setting %lu notifications remaining after re-registering", (unsigned long)notificationsDelivered.count]];
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Setting %lu notifications remaining after re-registering", (unsigned long)notificationsDelivered.count]];
             completionHandler(notificationsDelivered, currentNotifications);
         }
     }];

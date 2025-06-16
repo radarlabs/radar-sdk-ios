@@ -582,9 +582,6 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     }
 
     [RadarNotificationHelper updateClientSideCampaignsWithPrefix:kSyncGeofenceIdentifierPrefix notificationRequests:requests];
-    // [RadarNotificationHelper removePendingNotificationsWithPrefix:kSyncGeofenceIdentifierPrefix completionHandler: ^{
-    //     [RadarNotificationHelper addOnPremiseNotificationRequests:requests];
-    // }];
 }
 
 - (void)removeSyncedGeofences {

@@ -168,9 +168,6 @@ static NSString *const kBeaconNotificationIdentifierPrefix = @"radar_beacon_noti
         }
     }
     [RadarNotificationHelper updateClientSideCampaignsWithPrefix:kBeaconNotificationIdentifierPrefix notificationRequests:requests];
-    // [RadarNotificationHelper removePendingNotificationsWithPrefix:kBeaconNotificationIdentifierPrefix completionHandler: ^{
-    //     [RadarNotificationHelper addOnPremiseNotificationRequests:requests];
-    // }];
 }
 
 - (void)rangeBeacons:(NSArray<RadarBeacon *> *_Nonnull)beacons completionHandler:(RadarBeaconCompletionHandler)completionHandler {
@@ -215,7 +212,7 @@ static NSString *const kBeaconNotificationIdentifierPrefix = @"radar_beacon_noti
 
     self.beacons = beacons;
     self.started = YES;
-    
+ 
     for (RadarBeacon *beacon in beacons) {
         CLBeaconRegion *region = [self regionForBeacon:beacon];
 
