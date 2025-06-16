@@ -167,9 +167,10 @@ static NSString *const kBeaconNotificationIdentifierPrefix = @"radar_beacon_noti
             }
         }
     }
-    [RadarNotificationHelper removePendingNotificationsWithPrefix:kBeaconNotificationIdentifierPrefix completionHandler: ^{
-        [RadarNotificationHelper addOnPremiseNotificationRequests:requests];
-    }];
+    [RadarNotificationHelper updateClientSideCampaignsWithPrefix:kBeaconNotificationIdentifierPrefix notificationRequests:requests];
+    // [RadarNotificationHelper removePendingNotificationsWithPrefix:kBeaconNotificationIdentifierPrefix completionHandler: ^{
+    //     [RadarNotificationHelper addOnPremiseNotificationRequests:requests];
+    // }];
 }
 
 - (void)rangeBeacons:(NSArray<RadarBeacon *> *_Nonnull)beacons completionHandler:(RadarBeaconCompletionHandler)completionHandler {
