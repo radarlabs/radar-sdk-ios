@@ -228,11 +228,13 @@ static dispatch_semaphore_t notificationSemaphore;
 
 // IMPORTANT: All campaigns request must have the same identifier prefix or frequency capping will be wrong
 + (void) updateClientSideCampaignsWithPrefix:(NSString *)prefix notificationRequests:(NSArray<UNNotificationRequest *> *)requests {
-    dispatch_semaphore_wait(notificationSemaphore, DISPATCH_TIME_FOREVER);
-    // todo: maybe enforce that invariant here
-    [self removePendingNotificationsWithPrefix:prefix completionHandler:^{
-        [self addOnPremiseNotificationRequests:requests];
-    }];
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        dispatch_semaphore_wait(notificationSemaphore, DISPATCH_TIME_FOREVER);
+        // todo: maybe enforce that invariant here
+        [self removePendingNotificationsWithPrefix:prefix completionHandler:^{
+            [self addOnPremiseNotificationRequests:requests];
+        }];
+    });
 }
 
 + (void)removePendingNotificationsWithPrefix:(NSString *)prefix completionHandler:(void (^)(void))completionHandler {
