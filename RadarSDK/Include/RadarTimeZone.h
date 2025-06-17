@@ -18,7 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  The ID of the time zone.
  */
-@property (nonnull, copy, nonatomic, readonly) NSString *_id;
+@property (nonnull, copy, nonatomic, readonly) NSString *id;
 
 /**
  The name of of the time zone.
