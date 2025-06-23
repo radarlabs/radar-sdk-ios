@@ -692,7 +692,7 @@
 
         return kDeviceId;
     } @catch (NSException *exception) {
-        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Error accessing keychain | addStatus = %@", exception]];
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Error accessing keychain | exception = %@", exception]];
         
         return nil;
     }
