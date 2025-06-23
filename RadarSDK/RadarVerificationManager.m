@@ -653,7 +653,8 @@
             (__bridge id)kSecClass: (__bridge id)kSecClassGenericPassword,
             (__bridge id)kSecAttrService: service,
             (__bridge id)kSecAttrAccount: key,
-            (__bridge id)kSecReturnData: @YES
+            (__bridge id)kSecReturnData: @YES,
+            (__bridge id)kSecAttrSynchronizable: @NO
         };
 
         CFTypeRef result = NULL;
@@ -681,7 +682,8 @@
             (__bridge id)kSecAttrService: service,
             (__bridge id)kSecAttrAccount: key,
             (__bridge id)kSecValueData: data,
-            (__bridge id)kSecAttrAccessible: (__bridge id)kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly
+            (__bridge id)kSecAttrAccessible: (__bridge id)kSecAttrAccessibleAfterFirstUnlock,
+            (__bridge id)kSecAttrSynchronizable: @NO
         };
         OSStatus addStatus = SecItemAdd((__bridge CFDictionaryRef)attributes, NULL);
         if (addStatus != errSecSuccess) {
