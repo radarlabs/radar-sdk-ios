@@ -26,6 +26,7 @@ typedef void (^_Nullable RadarVerificationCompletionHandler)(NSString *_Nullable
 - (void)setExpectedJurisdictionWithCountryCode:(NSString *)countryCode stateCode:(NSString *)stateCode;
 - (void)getAttestationWithNonce:(NSString *)nonce completionHandler:(RadarVerificationCompletionHandler)completionHandler;
 - (BOOL)isJailbroken;
+- (NSString *_Nullable)kDeviceId;
 
 @end
 

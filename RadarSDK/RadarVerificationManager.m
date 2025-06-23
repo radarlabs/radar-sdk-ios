@@ -9,6 +9,7 @@
 #import <CommonCrypto/CommonCrypto.h>
 #import <DeviceCheck/DeviceCheck.h>
 #import <Foundation/Foundation.h>
+#import <Security/Security.h>
 #import <objc/runtime.h>
 @import Network;
 
@@ -641,6 +642,40 @@
     freeifaddrs(interfaces);
     return (ips.count > 0) ? [ips componentsJoinedByString:@","] : @"error";
 
+}
+
+- (NSString *)kDeviceId {
+    NSString *key = @"com.radar.kDeviceId";
+    NSString *service = @"com.radar";
+
+    NSDictionary *query = @{
+        (__bridge id)kSecClass: (__bridge id)kSecClassGenericPassword,
+        (__bridge id)kSecAttrService: service,
+        (__bridge id)kSecAttrAccount: key,
+        (__bridge id)kSecReturnData: @YES
+    };
+
+    CFTypeRef result = NULL;
+    OSStatus status = SecItemCopyMatching((__bridge CFDictionaryRef)query, &result);
+    if (status == errSecSuccess && result) {
+        NSData *data = (__bridge_transfer NSData *)result;
+        NSString *kDeviceId = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+        if (kDeviceId) {
+            return kDeviceId;
+        }
+    }
+
+    NSString *kDeviceId = [RadarUtils deviceId];
+    NSData *data = [kDeviceId dataUsingEncoding:NSUTF8StringEncoding];
+    NSDictionary *attributes = @{
+        (__bridge id)kSecClass: (__bridge id)kSecClassGenericPassword,
+        (__bridge id)kSecAttrService: service,
+        (__bridge id)kSecAttrAccount: key,
+        (__bridge id)kSecValueData: data
+    };
+    SecItemAdd((__bridge CFDictionaryRef)attributes, NULL);
+    
+    return kDeviceId;
 }
 
 @end
