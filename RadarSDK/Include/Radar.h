@@ -305,6 +305,9 @@ typedef void (^_Nonnull RadarRouteMatrixCompletionHandler)(RadarStatus status, R
  */
 typedef void (^_Nullable RadarLogConversionCompletionHandler)(RadarStatus status, RadarEvent *_Nullable event);
 
+// define RadarIndoorsSurveyCompletionHandler -- which is called with no arguments
+typedef void (^_Nonnull RadarIndoorsSurveyCompletionHandler)(NSString *_Nullable result, CLLocation *_Nonnull locationAtStartOfSurvey);
+
 /**
  The main class used to interact with the Radar SDK.
 
@@ -1202,6 +1205,13 @@ typedef void (^_Nullable RadarLogConversionCompletionHandler)(RadarStatus status
                         mode:(RadarRouteMode)mode
                        units:(RadarRouteUnits)units
            completionHandler:(RadarRouteMatrixCompletionHandler)completionHandler NS_SWIFT_NAME(getMatrix(origins:destinations:mode:units:completionHandler:));
+
+#pragma mark - Indoors
+
++ (void)doIndoorSurvey:(NSString *)placeLabel
+             forLength:(int)surveyLengthSeconds
+        isWhereAmIScan:(BOOL)isWhereAmIScan
+     completionHandler:(RadarIndoorsSurveyCompletionHandler)completionHandler;
 
 #pragma mark - Logging
 

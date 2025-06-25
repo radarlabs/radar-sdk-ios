@@ -13,6 +13,7 @@
 #import "RadarConfig.h"
 #import "RadarCoordinate+Internal.h"
 #import "RadarDelegateHolder.h"
+#import "RadarIndoorSurvey.h"
 #import "RadarLocationManager.h"
 #import "RadarLogBuffer.h"
 #import "RadarLogger.h"
@@ -1144,6 +1145,22 @@
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug type:RadarLogTypeNone message:@"App resigning active" includeDate:YES includeBattery:YES];
 }
 
+
+#pragma mark - Indoors
+
++ (void)doIndoorSurvey:(NSString *)placeLabel
+             forLength:(int)surveyLengthSeconds
+        isWhereAmIScan:(BOOL)isWhereAmIScan
+     completionHandler:(RadarIndoorsSurveyCompletionHandler)completionHandler {
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"doIndoorsSurvey()"];
+    
+    [[RadarIndoorSurvey sharedInstance] start:placeLabel
+                                    forLength:surveyLengthSeconds
+                            withKnownLocation:nil
+                               isWhereAmIScan:isWhereAmIScan
+                        withCompletionHandler:completionHandler
+    ];
+}
 
 #pragma mark - Helpers
 
