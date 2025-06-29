@@ -33,6 +33,7 @@
     _useOpenedAppConversion = NO;
     _useForegroundLocationUpdatedAtMsDiff = NO;
     _useNotificationDiff = NO;
+    _syncAfterSetUser = NO;
 
     if (dict == nil) {
         return self;
@@ -92,6 +93,11 @@
     if (useNotificationDiffObj && [useNotificationDiffObj isKindOfClass:[NSNumber class]]) {
         _useNotificationDiff = [(NSNumber *)useNotificationDiffObj boolValue];
     }
+    
+    NSObject *syncAfterSetUserObj = dict[@"syncAfterSetUser"];
+    if (syncAfterSetUserObj && [syncAfterSetUserObj isKindOfClass:[NSNumber class]]) {
+        _syncAfterSetUser = [(NSNumber *)syncAfterSetUserObj boolValue];
+    }
 
     return self;
 }
@@ -110,6 +116,7 @@
     dict[@"useOpenedAppConversion"] = @(_useOpenedAppConversion);
     dict[@"useForegroundLocationUpdatedAtMsDiff"] = @(_useForegroundLocationUpdatedAtMsDiff);
     dict[@"useNotificationDiff"] = @(_useNotificationDiff);
+    dict[@"syncAfterSetUser"] = @(_syncAfterSetUser);
     
     return dict;
 }
