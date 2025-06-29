@@ -2,6 +2,9 @@
 #import <CoreMotion/CoreMotion.h>
 #import <CoreLocation/CoreLocation.h>
 
+// Forward declare the completion handler type
+typedef void (^_Nonnull RadarIndoorsSurveyCompletionHandler)(NSString *_Nullable result, CLLocation *_Nonnull locationAtStartOfSurvey);
+
 @class Radar;
 
 @interface RadarIndoorSurvey : NSObject <CBCentralManagerDelegate>
