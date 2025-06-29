@@ -1,8 +1,8 @@
 #import <CoreBluetooth/CoreBluetooth.h>
 #import <CoreMotion/CoreMotion.h>
+#import <CoreLocation/CoreLocation.h>
 
-#import "Radar.h"
-#import "RadarUtils.h"
+@class Radar;
 
 @interface RadarIndoorSurvey : NSObject <CBCentralManagerDelegate>
 

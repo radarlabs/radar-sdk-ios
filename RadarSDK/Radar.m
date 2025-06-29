@@ -13,7 +13,6 @@
 #import "RadarConfig.h"
 #import "RadarCoordinate+Internal.h"
 #import "RadarDelegateHolder.h"
-#import "RadarIndoorSurvey.h"
 #import "RadarLocationManager.h"
 #import "RadarLogBuffer.h"
 #import "RadarLogger.h"
@@ -1154,12 +1153,17 @@
      completionHandler:(RadarIndoorsSurveyCompletionHandler)completionHandler {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"doIndoorsSurvey()"];
     
-    [[RadarIndoorSurvey sharedInstance] start:placeLabel
-                                    forLength:surveyLengthSeconds
-                            withKnownLocation:nil
-                               isWhereAmIScan:isWhereAmIScan
-                        withCompletionHandler:completionHandler
-    ];
+    Class RadarSDKIndoors = NSClassFromString(@"RadarSDKIndoors");
+    if (RadarSDKIndoors) {
+        [RadarSDKIndoors doIndoorSurvey:placeLabel
+                              forLength:surveyLengthSeconds
+                         isWhereAmIScan:isWhereAmIScan
+                      completionHandler:completionHandler];
+    } else {
+        if (completionHandler) {
+            completionHandler(@"ERROR: RadarSDKIndoors submodule not available", [[CLLocation alloc] init]);
+        }
+    }
 }
 
 #pragma mark - Helpers

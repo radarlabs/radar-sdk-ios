@@ -181,11 +181,29 @@
 		F6F959802C3D7D9900BC30FE /* RadarTimeZone.h in Headers */ = {isa = PBXBuildFile; fileRef = F6F9597F2C3D7D9900BC30FE /* RadarTimeZone.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F6F959822C3D7EA200BC30FE /* RadarTimeZone+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = F6F959812C3D7EA200BC30FE /* RadarTimeZone+Internal.h */; };
 		F6F959842C3D7EDE00BC30FE /* RadarTimeZone.m in Sources */ = {isa = PBXBuildFile; fileRef = F6F959832C3D7EDE00BC30FE /* RadarTimeZone.m */; };
+		FE94153D2E0F08D1008ECBEB /* RadarSDKIndoors.h in Headers */ = {isa = PBXBuildFile; fileRef = FE9415382E0F08CA008ECBEB /* RadarSDKIndoors.h */; };
 		FE9E42552E0C6AD6004B66A6 /* RadarIndoorSurvey.m in Sources */ = {isa = PBXBuildFile; fileRef = FE9E42542E0C6AD6004B66A6 /* RadarIndoorSurvey.m */; };
 		FE9E42562E0C6AD6004B66A6 /* NSData+GZIP.m in Sources */ = {isa = PBXBuildFile; fileRef = FE9E42522E0C6AD6004B66A6 /* NSData+GZIP.m */; };
 		FE9E42572E0C6AD6004B66A6 /* NSData+GZIP.h in Headers */ = {isa = PBXBuildFile; fileRef = FE9E42512E0C6AD6004B66A6 /* NSData+GZIP.h */; };
 		FE9E42582E0C6AD6004B66A6 /* RadarIndoorSurvey.h in Headers */ = {isa = PBXBuildFile; fileRef = FE9E42532E0C6AD6004B66A6 /* RadarIndoorSurvey.h */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		FE9415162E0DE701008ECBEB /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = FE9415102E0DE700008ECBEB /* RadarSDKIndoors.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = FE9414F72E0DE3E6008ECBEB;
+			remoteInfo = RadarSDKIndoors;
+		};
+		FE9415182E0DE701008ECBEB /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = FE9415102E0DE700008ECBEB /* RadarSDKIndoors.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = FE9415002E0DE3E6008ECBEB;
+			remoteInfo = RadarSDKIndoorsTests;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		0107A9E82621FFB9008AB52F /* RadarSDK.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = RadarSDK.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -362,6 +380,8 @@
 		F6F9597F2C3D7D9900BC30FE /* RadarTimeZone.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarTimeZone.h; sourceTree = "<group>"; };
 		F6F959812C3D7EA200BC30FE /* RadarTimeZone+Internal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "RadarTimeZone+Internal.h"; sourceTree = "<group>"; };
 		F6F959832C3D7EDE00BC30FE /* RadarTimeZone.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RadarTimeZone.m; sourceTree = "<group>"; };
+		FE9415102E0DE700008ECBEB /* RadarSDKIndoors.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = RadarSDKIndoors.xcodeproj; sourceTree = "<group>"; };
+		FE9415382E0F08CA008ECBEB /* RadarSDKIndoors.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarSDKIndoors.h; sourceTree = "<group>"; };
 		FE9E42512E0C6AD6004B66A6 /* NSData+GZIP.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSData+GZIP.h"; sourceTree = "<group>"; };
 		FE9E42522E0C6AD6004B66A6 /* NSData+GZIP.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSData+GZIP.m"; sourceTree = "<group>"; };
 		FE9E42532E0C6AD6004B66A6 /* RadarIndoorSurvey.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarIndoorSurvey.h; sourceTree = "<group>"; };
@@ -460,6 +480,7 @@
 		DD236C6B2308797B00EB88F9 = {
 			isa = PBXGroup;
 			children = (
+				FE9415112E0DE700008ECBEB /* RadarSDKIndoors */,
 				96D3F20427C6B291007578B9 /* bootstrap.sh */,
 				96D3F20527C6B291007578B9 /* clang_format.sh */,
 				96D3F20327C6B290007578B9 /* Gemfile */,
@@ -487,10 +508,6 @@
 		DD236C772308797B00EB88F9 /* RadarSDK */ = {
 			isa = PBXGroup;
 			children = (
-				FE9E42512E0C6AD6004B66A6 /* NSData+GZIP.h */,
-				FE9E42522E0C6AD6004B66A6 /* NSData+GZIP.m */,
-				FE9E42532E0C6AD6004B66A6 /* RadarIndoorSurvey.h */,
-				FE9E42542E0C6AD6004B66A6 /* RadarIndoorSurvey.m */,
 				825732502B72BE1900DF8B88 /* PrivacyInfo.xcprivacy */,
 				96A5A0D827AD9F7F007B960B /* Include */,
 				DD236C792308797B00EB88F9 /* Info.plist */,
@@ -635,6 +652,44 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		FE94150F2E0DE700008ECBEB /* RadarSDKIndoors */ = {
+			isa = PBXGroup;
+			children = (
+				FE94151B2E0DE710008ECBEB /* Include */,
+				FE9E42512E0C6AD6004B66A6 /* NSData+GZIP.h */,
+				FE9E42542E0C6AD6004B66A6 /* RadarIndoorSurvey.m */,
+				FE9E42522E0C6AD6004B66A6 /* NSData+GZIP.m */,
+			);
+			path = RadarSDKIndoors;
+			sourceTree = "<group>";
+		};
+		FE9415112E0DE700008ECBEB /* RadarSDKIndoors */ = {
+			isa = PBXGroup;
+			children = (
+				FE94150F2E0DE700008ECBEB /* RadarSDKIndoors */,
+				FE9415102E0DE700008ECBEB /* RadarSDKIndoors.xcodeproj */,
+			);
+			path = RadarSDKIndoors;
+			sourceTree = "<group>";
+		};
+		FE9415122E0DE700008ECBEB /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				FE9415172E0DE701008ECBEB /* RadarSDKIndoors.framework */,
+				FE9415192E0DE701008ECBEB /* RadarSDKIndoorsTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		FE94151B2E0DE710008ECBEB /* Include */ = {
+			isa = PBXGroup;
+			children = (
+				FE9415382E0F08CA008ECBEB /* RadarSDKIndoors.h */,
+				FE9E42532E0C6AD6004B66A6 /* RadarIndoorSurvey.h */,
+			);
+			path = Include;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -662,6 +717,7 @@
 				96A5A0C127AD9F41007B960B /* RadarRoutes+Internal.h in Headers */,
 				82DF18792C58324600301B17 /* RadarActivityManager.h in Headers */,
 				96A5A10C27AD9F7F007B960B /* RadarRoutes.h in Headers */,
+				FE94153D2E0F08D1008ECBEB /* RadarSDKIndoors.h in Headers */,
 				82D04ABD29722ED20036619F /* RadarReplayBuffer.h in Headers */,
 				96A5A11B27ADA02F007B960B /* RadarDelegateHolder.h in Headers */,
 				96A5A10F27AD9F7F007B960B /* RadarRouteDuration.h in Headers */,
@@ -805,6 +861,12 @@
 			);
 			productRefGroup = DD236C762308797B00EB88F9 /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = FE9415122E0DE700008ECBEB /* Products */;
+					ProjectRef = FE9415102E0DE700008ECBEB /* RadarSDKIndoors.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				DD236C7D2308797B00EB88F9 /* RadarSDKTests */,
@@ -813,6 +875,23 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		FE9415172E0DE701008ECBEB /* RadarSDKIndoors.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = RadarSDKIndoors.framework;
+			remoteRef = FE9415162E0DE701008ECBEB /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		FE9415192E0DE701008ECBEB /* RadarSDKIndoorsTests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = RadarSDKIndoorsTests.xctest;
+			remoteRef = FE9415182E0DE701008ECBEB /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		0107A9E62621FFB9008AB52F /* Resources */ = {
