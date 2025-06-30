@@ -11,9 +11,11 @@
 #import <CoreLocation/CoreLocation.h>
 
 // Indoor survey completion handler
-typedef void (^_Nonnull RadarIndoorsSurveyCompletionHandler)(NSString *_Nullable result, CLLocation *_Nonnull locationAtStartOfSurvey);
+typedef void (^_Nonnull RadarIndoorsSurveyCompletionHandler)(NSString *_Nullable result, CLLocation *_Nullable locationAtStartOfSurvey);
 
 #import "RadarIndoorSurvey.h"
+
+NS_ASSUME_NONNULL_BEGIN
 
 @interface RadarSDKIndoors : NSObject
 
@@ -26,3 +28,5 @@ typedef void (^_Nonnull RadarIndoorsSurveyCompletionHandler)(NSString *_Nullable
      completionHandler:(RadarIndoorsSurveyCompletionHandler)completionHandler;
 
 @end
+
+NS_ASSUME_NONNULL_END
