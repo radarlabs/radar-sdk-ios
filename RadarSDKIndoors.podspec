@@ -8,7 +8,7 @@ Pod::Spec.new do |s|
   s.source                = { :git => 'https://github.com/radarlabs/radar-sdk-ios.git', :tag => s.version.to_s }
   s.source_files          = ["RadarSDKIndoors/RadarSDKIndoors/*.{h,m}", "RadarSDKIndoors/RadarSDKIndoors/Include/*.h"]
   s.module_name           = 'RadarSDKIndoors'
-  s.ios.deployment_target = '18.4'
+  s.ios.deployment_target = '12.0'
   s.frameworks            = 'CoreBluetooth', 'CoreMotion', 'CoreLocation'
   s.requires_arc          = true
   s.license               = { :type => 'Apache-2.0' }
