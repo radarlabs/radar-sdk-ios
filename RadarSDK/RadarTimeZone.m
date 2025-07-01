@@ -30,7 +30,7 @@ NSDateFormatter * timezoneDateFormatter(void) {
 
     id idObj = dict[@"id"];
     if ([idObj isKindOfClass:[NSString class]]) {
-        _id = (NSString *)idObj;
+        __id = (NSString *)idObj;
     }
 
     id nameObj = dict[@"name"];
@@ -64,7 +64,7 @@ NSDateFormatter * timezoneDateFormatter(void) {
 
 - (NSDictionary *)dictionaryValue {
     NSMutableDictionary *dict = [NSMutableDictionary new];
-    dict[@"id"] = self.id;
+    dict[@"id"] = self._id;
     dict[@"name"] = self.name;
     dict[@"code"] = self.code;
     dict[@"currentTime"] = [timezoneDateFormatter() stringFromDate:self.currentTime];
