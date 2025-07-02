@@ -359,6 +359,10 @@
         if (UIScreen.mainScreen.isCaptured) {
             [fraudFailureReasons addObject:@"fraud_sharing_capturing_screen"];
         }
+        NSString *kDeviceId = [[RadarVerificationManager sharedInstance] kDeviceId];
+        if (kDeviceId) {
+            params[@"kDeviceId"] = kDeviceId;
+        }
     }
     params[@"appId"] = [[NSBundle mainBundle] bundleIdentifier];
     NSString *appName = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleName"];
