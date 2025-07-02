@@ -99,6 +99,18 @@
         _syncAfterSetUser = [(NSNumber *)syncAfterSetUserObj boolValue];
     }
 
+    NSObject *useOfflineRTOUpdates = dict[@"useOfflineRTOUpdates"];
+    _useOfflineRTOUpdates = NO;
+    if (useOfflineRTOUpdates && [useOfflineRTOUpdates isKindOfClass:[NSNumber class]]) {
+        _useOfflineRTOUpdates = [(NSNumber *)useOfflineRTOUpdates boolValue];
+    }
+
+    NSObject *remoteTrackingOptionsObj = dict[@"remoteTrackingOptions"];
+    _remoteTrackingOptions = nil;
+    if (remoteTrackingOptionsObj && [remoteTrackingOptionsObj isKindOfClass:[NSArray class]]) {
+        _remoteTrackingOptions = [RadarRemoteTrackingOptions RemoteTrackingOptionsFromObject:remoteTrackingOptionsObj];
+    }
+
     return self;
 }
 
@@ -114,6 +126,8 @@
     dict[@"useRadarModifiedBeacon"] = @(_useRadarModifiedBeacon);
     dict[@"useLocationMetadata"] = @(_useLocationMetadata);
     dict[@"useOpenedAppConversion"] = @(_useOpenedAppConversion);
+    dict[@"useOfflineRTOUpdates"] = @(_useOfflineRTOUpdates);
+    dict[@"remoteTrackingOptions"] = [RadarRemoteTrackingOptions arrayForRemoteTrackingOptions:_remoteTrackingOptions];
     dict[@"useForegroundLocationUpdatedAtMsDiff"] = @(_useForegroundLocationUpdatedAtMsDiff);
     dict[@"useNotificationDiff"] = @(_useNotificationDiff);
     dict[@"syncAfterSetUser"] = @(_syncAfterSetUser);

@@ -1,6 +1,27 @@
 {
    "meta": {
-      "code": 200
+      "code": 200,
+      "trackingOptions": {
+         "desiredStoppedUpdateInterval": 0,
+         "desiredMovingUpdateInterval": 0,
+         "desiredSyncInterval": 0,
+         "desiredAccuracy": "medium",
+         "stopDuration": 0,
+         "stopDistance": 0,
+         "replay": "stops",
+         "useStoppedGeofence": false,
+         "showBlueBar": false,
+         "startTrackingAfter": null,
+         "stopTrackingAfter": null,
+         "stoppedGeofenceRadius": 0,
+         "useMovingGeofence": false,
+         "movingGeofenceRadius": 0,
+         "syncGeofences": true,
+         "useVisits": true,
+         "useSignificantLocationChanges": false,
+         "beacons": false,
+         "sync": "all"
+       }
    },
    "user": {
       "location": {

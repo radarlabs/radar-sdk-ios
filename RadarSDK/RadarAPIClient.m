@@ -36,6 +36,7 @@
 #import "RadarVerifiedLocationToken+Internal.h"
 #import "RadarNotificationHelper.h"
 #import <os/log.h>
+#import "RadarOfflineManager.h"
 
 @implementation RadarAPIClient
 
@@ -228,6 +229,7 @@
     params[@"anonymous"] = @(anonymous);
     if (anonymous) {
         params[@"deviceId"] = @"anonymous";
+        // this can be updated by offline event detection, which feels correct, not going to address right now for simplicity
         params[@"geofenceIds"] = [RadarState geofenceIds];
         params[@"placeId"] = [RadarState placeId];
         params[@"regionIds"] = [RadarState regionIds];
@@ -314,6 +316,9 @@
     RadarTrackingOptions *options = [Radar getTrackingOptions];
     if (options.syncGeofences) {
         params[@"nearbyGeofences"] = @(YES);
+        if (sdkConfiguration.useOfflineRTOUpdates) {
+            params[@"nearbyGeofencesLimit"] = @(100);
+        }
     }
     if (beacons) {
         params[@"beacons"] = [RadarBeacon arrayForBeacons:beacons];
@@ -470,13 +475,17 @@
             if (status != RadarStatusSuccess) {
                 [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Failed to flush replays"]];
                 [[RadarDelegateHolder sharedInstance] didFailWithStatus:status];
+                if ([RadarSettings sdkConfiguration].useOfflineRTOUpdates) { 
+                    return [RadarOfflineManager updateTrackingOptionsFromOfflineLocation:location completionHandler:^(RadarConfig * _Nullable config) {
+                        return completionHandler(status, nil, nil, nil, nil, config, nil);
+                    }];
+                }
             } else {
                 [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Successfully flushed replays"]];
                 [RadarState setLastFailedStoppedLocation:nil];
                 [RadarSettings updateLastTrackedTime];
             }
-
-            completionHandler(status, nil, nil, nil, nil, nil, nil);
+            return completionHandler(status, nil, nil, nil, nil, nil, nil);
         }];
     } else {
         [self.apiHelper requestWithMethod:@"POST"
@@ -502,10 +511,16 @@
                                 }
 
                                 [[RadarDelegateHolder sharedInstance] didFailWithStatus:status];
+                                if ([RadarSettings sdkConfiguration].useOfflineRTOUpdates) { 
+                                    return [RadarOfflineManager updateTrackingOptionsFromOfflineLocation:location completionHandler:^(RadarConfig * _Nullable config) {
+                                        return completionHandler(status, nil, nil, nil, nil, config, nil);
+                                    }];
+                                } else {
+                                    return completionHandler(status, nil, nil, nil, nil, nil, nil);
+                                }
+                                
 
-                                return completionHandler(status, nil, nil, nil, nil, nil, nil);
                             }
-
                             [[RadarReplayBuffer sharedInstance] clearBuffer];
                             [RadarState setLastFailedStoppedLocation:nil];
                             [Radar flushLogs];

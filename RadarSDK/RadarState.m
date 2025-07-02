@@ -8,6 +8,8 @@
 #import "RadarState.h"
 #import "CLLocation+Radar.h"
 #import "RadarUtils.h"
+#import "RadarGeofence+Internal.h"
+#import "RadarLogger.h"
 
 @implementation RadarState
 
@@ -25,6 +27,7 @@ static NSString *const kBeaconIds = @"radar-beaconIds";
 static NSString *const kLastHeadingData = @"radar-lastHeadingData";
 static NSString *const kLastMotionActivityData = @"radar-lastMotionActivityData";
 static NSString *const kNotificationPermissionGranted = @"radar-notificationPermissionGranted";
+static NSString *const KNearbyGeofences = @"radar-nearbyGeofences";
 static NSString *const kRegisteredNotifications = @"radar-registeredNotifications";
 
 + (CLLocation *)lastLocation {
@@ -189,6 +192,33 @@ static NSString *const kRegisteredNotifications = @"radar-registeredNotification
 
 + (BOOL)notificationPermissionGranted {
     return [[NSUserDefaults standardUserDefaults] boolForKey:kNotificationPermissionGranted];
+}
+
++ (void)setNearbyGeofences:(NSArray<RadarGeofence *> *_Nullable)nearbyGeofences {
+    NSMutableArray *nearbyGeofencesArray = [NSMutableArray new];
+    NSMutableArray *nearbyGeofencesArrayIds = [NSMutableArray new];
+    for (RadarGeofence *geofence in nearbyGeofences) {
+        [nearbyGeofencesArray addObject:[geofence dictionaryValue]];
+        [nearbyGeofencesArrayIds addObject:geofence._id];
+    }
+    [[NSUserDefaults standardUserDefaults] setObject:nearbyGeofencesArray forKey:KNearbyGeofences];
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"nearbyGeofencesArray in RadarState:%@", nearbyGeofencesArray]];
+    
+}
+
++ (NSArray<RadarGeofence *> *_Nullable)nearbyGeofences {
+    NSArray *nearbyGeofencesArray = [[NSUserDefaults standardUserDefaults] objectForKey:KNearbyGeofences];
+    if (!nearbyGeofencesArray) {
+        return nil;
+    }
+    NSMutableArray *nearbyGeofences = [NSMutableArray new];
+    for (NSDictionary *geofenceDict in nearbyGeofencesArray) {
+        RadarGeofence *geofence = [[RadarGeofence alloc] initWithObject:geofenceDict];
+        if (geofence) {
+            [nearbyGeofences addObject:geofence];
+        }
+    }
+    return nearbyGeofences;
 }
 
 + (NSArray<NSDictionary *> *_Nullable)registeredNotifications {
