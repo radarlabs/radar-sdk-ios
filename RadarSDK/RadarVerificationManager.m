@@ -9,6 +9,7 @@
 #import <CommonCrypto/CommonCrypto.h>
 #import <DeviceCheck/DeviceCheck.h>
 #import <Foundation/Foundation.h>
+#import <Security/Security.h>
 #import <objc/runtime.h>
 @import Network;
 
@@ -641,6 +642,62 @@
     freeifaddrs(interfaces);
     return (ips.count > 0) ? [ips componentsJoinedByString:@","] : @"error";
 
+}
+
+- (NSString *)kDeviceId {
+    NSString *key = @"com.radar.kDeviceId";
+    NSString *service = @"com.radar";
+
+    @try {
+        NSDictionary *query = @{
+            (__bridge id)kSecClass: (__bridge id)kSecClassGenericPassword,
+            (__bridge id)kSecAttrService: service,
+            (__bridge id)kSecAttrAccount: key,
+            (__bridge id)kSecReturnData: @YES,
+            (__bridge id)kSecAttrSynchronizable: @NO
+        };
+
+        CFTypeRef result = NULL;
+        OSStatus status = SecItemCopyMatching((__bridge CFDictionaryRef)query, &result);
+        if (status == errSecSuccess && result) {
+            NSData *data = (__bridge_transfer NSData *)result;
+            NSString *kDeviceId = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+            if (kDeviceId.length > 0) {
+                return kDeviceId;
+            }
+        } else if (status != errSecItemNotFound) {
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Error reading from keychain | status = %d", (int)status]];
+        }
+
+        NSString *kDeviceId = [RadarUtils deviceId];
+        if (!kDeviceId || kDeviceId.length == 0) {
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Error getting deviceId"];
+            
+            return nil;
+        }
+        
+        NSData *data = [kDeviceId dataUsingEncoding:NSUTF8StringEncoding];
+        NSDictionary *attributes = @{
+            (__bridge id)kSecClass: (__bridge id)kSecClassGenericPassword,
+            (__bridge id)kSecAttrService: service,
+            (__bridge id)kSecAttrAccount: key,
+            (__bridge id)kSecValueData: data,
+            (__bridge id)kSecAttrAccessible: (__bridge id)kSecAttrAccessibleAfterFirstUnlock,
+            (__bridge id)kSecAttrSynchronizable: @NO
+        };
+        OSStatus addStatus = SecItemAdd((__bridge CFDictionaryRef)attributes, NULL);
+        if (addStatus != errSecSuccess) {
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Error saving to keychain | addStatus = %d", (int)addStatus]];
+            
+            return nil;
+        }
+
+        return kDeviceId;
+    } @catch (NSException *exception) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Error accessing keychain | exception = %@", exception]];
+        
+        return nil;
+    }
 }
 
 @end

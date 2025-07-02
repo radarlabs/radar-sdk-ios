@@ -128,6 +128,9 @@
 
 + (void)setUserId:(NSString *)userId {
     [RadarSettings setUserId:userId];
+    if ([RadarSettings sdkConfiguration].syncAfterSetUser) {
+        [Radar trackOnceWithCompletionHandler:nil];
+    }
 }
 
 + (NSString *_Nullable)getUserId {
@@ -144,6 +147,9 @@
 
 + (void)setMetadata:(NSDictionary *)metadata {
     [RadarSettings setMetadata:metadata];
+    if ([RadarSettings sdkConfiguration].syncAfterSetUser) {
+        [Radar trackOnceWithCompletionHandler:nil];
+    }
 }
 
 + (NSDictionary *_Nullable)getMetadata {
