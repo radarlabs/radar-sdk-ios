@@ -550,38 +550,9 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 
             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
                                             message:[NSString stringWithFormat:@"Synced geofence | latitude = %f; longitude = %f; radius = %f; identifier = %@",
-                                                                                center.coordinate.latitude, center.coordinate.longitude, radius, identifier]];
-
-            NSDictionary *metadata = geofence.metadata;
-            if (metadata) {
-                UNMutableNotificationContent *content = [RadarNotificationHelper extractContentFromMetadata:metadata identifier:identifier];
-                if (content) {
-
-                    region.notifyOnEntry = YES;
-                    region.notifyOnExit = NO;
-                    BOOL repeats = NO;
-                    NSString *notificationRepeats = [geofence.metadata objectForKey:@"radar:notificationRepeats"];
-                    if (notificationRepeats) {
-                        repeats = [notificationRepeats boolValue];
-                    }
-                    if (repeats) {
-                        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Notification repeats"];
-                    } else {
-                        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Notification does not repeat"];
-                    }
-
-                    UNLocationNotificationTrigger *trigger = [UNLocationNotificationTrigger triggerWithRegion:region repeats:repeats];
-
-                    UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:identifier content:content trigger:trigger];
-                    [requests addObject:request];
-                } else {
-                    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"No notification text for geofence | geofenceId = %@", geofenceId]];
-                }
-            }
+                                                                                center.coordinate.latitude, center.coordinate.longitude, radius, identifier]]; 
         }
     }
-
-    [RadarNotificationHelper updateClientSideCampaignsWithPrefix:kSyncGeofenceIdentifierPrefix notificationRequests:requests];
 }
 
 - (void)removeSyncedGeofences {

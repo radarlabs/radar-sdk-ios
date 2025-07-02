@@ -593,6 +593,12 @@
                                     NSArray<NSDictionary<NSString *, NSString *> *> *beaconRegions = (NSArray<NSDictionary<NSString *, NSString *> *> *)nearbyBeaconRegionsObj;
                                     [[RadarBeaconManager sharedInstance] registerBeaconRegionNotificationsFromArray:beaconRegions];
                                 }
+
+                                id csgnObj = res[@"csgn"];
+                                if (csgnObj && [csgnObj isKindOfClass:[NSDictionary class]]) {
+                                    NSArray<RadarGeofence *> *csgn = [RadarGeofence geofencesFromObject:csgnObj];
+                                    [RadarNotificationHelper registerCSGNNotificationsFromArray:csgn];
+                                }
                                 
                                 return completionHandler(RadarStatusSuccess, res, events, user, nearbyGeofences, config, token);
                             } else {
