@@ -584,8 +584,9 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
             }
         }
     }
-
-    [RadarNotificationHelper updateClientSideCampaignsWithPrefix:kSyncGeofenceIdentifierPrefix notificationRequests:requests];
+    if (NSClassFromString(@"XCTestCase") == nil) {
+        [RadarNotificationHelper updateClientSideCampaignsWithPrefix:kSyncGeofenceIdentifierPrefix notificationRequests:requests];
+    }
 }
 
 - (void)removeSyncedGeofences {
