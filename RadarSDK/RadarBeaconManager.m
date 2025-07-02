@@ -11,7 +11,7 @@
 #import "RadarDelegateHolder.h"
 #import "RadarLogger.h"
 #import "RadarSettings.h"
-
+#import "RadarNotificationHelper.h"
 @interface RadarBeaconManager ()
 
 @property (assign, nonatomic) BOOL started;
@@ -25,6 +25,8 @@
 @end
 
 @implementation RadarBeaconManager
+
+static NSString *const kBeaconNotificationIdentifierPrefix = @"radar_beacon_notification_";
 
 + (instancetype)sharedInstance {
     static dispatch_once_t once;
@@ -108,6 +110,66 @@
     [self stopRanging];
 }
 
+- (void)registerBeaconRegionNotificationsFromArray:(NSArray<NSDictionary<NSString *, NSString*> *> *_Nonnull)beaconArray {
+    NSMutableArray<UNNotificationRequest *> *requests = [NSMutableArray new];
+    for (NSDictionary<NSString *, NSString *> *beaconDict in beaconArray) {
+        // Extract required and optional parameters
+        NSString *uuid = beaconDict[@"uuid"];
+        NSString *major = beaconDict[@"major"];
+        NSString *minor = beaconDict[@"minor"];
+        id metadataObj = beaconDict[@"metadata"];
+        
+        // Validate required parameters
+        if (!uuid || !metadataObj) {
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelError 
+                message:[NSString stringWithFormat:@"Missing required parameters for beacon notification | uuid = %@, metadata = %@", uuid, metadataObj]];
+            continue;
+        }
+        
+        // Parse metadata to dictionary
+        NSDictionary *metadata;
+        if ([metadataObj isKindOfClass:[NSDictionary class]]) {
+            metadata = (NSDictionary *)metadataObj;
+        } else {
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelError 
+                message:[NSString stringWithFormat:@"Invalid metadata type | type = %@", NSStringFromClass([metadataObj class])]];
+            continue;
+        }
+        
+        // Create beacon region
+        CLBeaconRegion *region;
+        if (major && minor) {
+            region = [[CLBeaconRegion alloc] initWithProximityUUID:[[NSUUID alloc] initWithUUIDString:uuid]
+                                                            major:[major intValue]
+                                                            minor:[minor intValue]
+                                                       identifier:uuid];
+        } else if (major) {
+            region = [[CLBeaconRegion alloc] initWithProximityUUID:[[NSUUID alloc] initWithUUIDString:uuid]
+                                                            major:[major intValue]
+                                                       identifier:uuid];
+        } else {
+            region = [[CLBeaconRegion alloc] initWithProximityUUID:[[NSUUID alloc] initWithUUIDString:uuid]
+                                                       identifier:uuid];
+        }
+        
+        if (region) {
+            NSString *notificationId = [NSString stringWithFormat:@"%@%@", kBeaconNotificationIdentifierPrefix, uuid];
+            // Extract notification content from metadata
+            UNMutableNotificationContent *content = [RadarNotificationHelper extractContentFromMetadata:metadata identifier:notificationId];
+            if (content) {
+                // Create and register notification
+                UNLocationNotificationTrigger *trigger = [UNLocationNotificationTrigger triggerWithRegion:region repeats:NO];
+                UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:notificationId 
+                                                                                    content:content 
+                                                                                    trigger:trigger];
+                
+                [requests addObject:request];
+            }
+        }
+    }
+    [RadarNotificationHelper updateClientSideCampaignsWithPrefix:kBeaconNotificationIdentifierPrefix notificationRequests:requests];
+}
+
 - (void)rangeBeacons:(NSArray<RadarBeacon *> *_Nonnull)beacons completionHandler:(RadarBeaconCompletionHandler)completionHandler {
     CLAuthorizationStatus authorizationStatus = [self.permissionsHelper locationAuthorizationStatus];
     if (!(authorizationStatus == kCLAuthorizationStatusAuthorizedWhenInUse || authorizationStatus == kCLAuthorizationStatusAuthorizedAlways)) {
@@ -150,7 +212,7 @@
 
     self.beacons = beacons;
     self.started = YES;
-
+ 
     for (RadarBeacon *beacon in beacons) {
         CLBeaconRegion *region = [self regionForBeacon:beacon];
 
