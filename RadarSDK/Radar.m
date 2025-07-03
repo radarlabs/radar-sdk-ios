@@ -1151,6 +1151,27 @@
 }
 
 
+#pragma mark - Indoors
+
++ (void)doIndoorSurvey:(NSString *)placeLabel
+             forLength:(int)surveyLengthSeconds
+        isWhereAmIScan:(BOOL)isWhereAmIScan
+     completionHandler:(RadarIndoorsSurveyCompletionHandler)completionHandler {
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"doIndoorsSurvey()"];
+    
+    Class RadarSDKIndoors = NSClassFromString(@"RadarSDKIndoors");
+    if (RadarSDKIndoors) {
+        [RadarSDKIndoors doIndoorSurvey:placeLabel
+                              forLength:surveyLengthSeconds
+                         isWhereAmIScan:isWhereAmIScan
+                      completionHandler:completionHandler];
+    } else {
+        if (completionHandler) {
+            completionHandler(@"ERROR: RadarSDKIndoors submodule not available", [[CLLocation alloc] init]);
+        }
+    }
+}
+
 #pragma mark - Helpers
 
 + (NSString *)stringForStatus:(RadarStatus)status {
