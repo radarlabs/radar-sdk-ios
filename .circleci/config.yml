@@ -4,7 +4,8 @@ jobs:
     macos:
       xcode: 16.0
     steps:
-      - checkout
+      - checkout:
+          submodules: true
       - run:
           name: List simulators
           command: xcrun simctl list
