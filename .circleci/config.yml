@@ -4,6 +4,10 @@ jobs:
     macos:
       xcode: 16.0
     steps:
+      - run:
+          name: Configure Git to use PAT for submodules
+          command: |
+            git config --global url."https://${SUBMODULESTOKEN}:x-oauth-basic@github.com/".insteadOf "https://github.com/"
       - checkout:
           submodules: true
       - run:
