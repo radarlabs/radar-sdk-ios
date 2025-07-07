@@ -103,7 +103,7 @@
                                                 [Radar startTrackingWithOptions:[RadarSettings trackingOptions]];
                                             }
                                             if (sdkConfiguration.trackOnceOnAppOpen) {
-                                                [Radar trackOnceWithCompletionHandler:nil];
+                                                [Radar trackOnceWithDesiredAccuracy:RadarTrackingOptionsDesiredAccuracyMedium beacons:[Radar getTrackingOptions].beacons completionHandler:nil];
                                             }
 
                                             [self flushLogs];
@@ -128,6 +128,9 @@
 
 + (void)setUserId:(NSString *)userId {
     [RadarSettings setUserId:userId];
+    if ([RadarSettings sdkConfiguration].syncAfterSetUser) {
+        [Radar trackOnceWithCompletionHandler:nil];
+    }
 }
 
 + (NSString *_Nullable)getUserId {
@@ -144,6 +147,9 @@
 
 + (void)setMetadata:(NSDictionary *)metadata {
     [RadarSettings setMetadata:metadata];
+    if ([RadarSettings sdkConfiguration].syncAfterSetUser) {
+        [Radar trackOnceWithCompletionHandler:nil];
+    }
 }
 
 + (NSDictionary *_Nullable)getMetadata {
@@ -1376,7 +1382,7 @@
 
     RadarSdkConfiguration *sdkConfiguration = [RadarSettings sdkConfiguration];
     if (sdkConfiguration.trackOnceOnAppOpen) {
-        [Radar trackOnceWithCompletionHandler:nil];
+        [Radar trackOnceWithDesiredAccuracy:RadarTrackingOptionsDesiredAccuracyMedium beacons: [Radar getTrackingOptions].beacons completionHandler:nil];
     }
 }
 
