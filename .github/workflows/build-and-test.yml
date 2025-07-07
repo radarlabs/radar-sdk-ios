@@ -23,3 +23,14 @@ jobs:
           scheme: RadarSDK
         run: |
           xcodebuild clean build analyze test -scheme RadarSDK -workspace Example/Example.xcodeproj/project.xcworkspace -destination 'platform=iOS Simulator,name=iPhone 16 Pro,OS=18.2' | xcpretty && exit ${PIPESTATUS[0]}
+
+      # Temporary step to test RadarSDKIndoors XCFramework build
+      # TODO: Remove this after verifying the project format fix works
+      - name: Test RadarSDKIndoors build - iPhone simulator archive
+        run: cd RadarSDKIndoors && xcodebuild archive -scheme RadarSDKIndoors -archivePath "../RadarSDKIndoors-iphonesimulator.xcarchive" -sdk iphonesimulator SKIP_INSTALL=NO CODE_SIGN_IDENTITY= CODE_SIGNING_REQUIRED=NO
+
+      - name: Test RadarSDKIndoors build - iPhone device archive  
+        run: cd RadarSDKIndoors && xcodebuild archive -scheme RadarSDKIndoors -archivePath "../RadarSDKIndoors-iphoneos.xcarchive" -sdk iphoneos SKIP_INSTALL=NO CODE_SIGN_IDENTITY= CODE_SIGNING_REQUIRED=NO
+
+      - name: Test RadarSDKIndoors build - Create XCFramework
+        run: xcodebuild -create-xcframework -framework RadarSDKIndoors-iphonesimulator.xcarchive/Products/Library/Frameworks/RadarSDKIndoors.framework -debug-symbols "$(pwd -P)"/RadarSDKIndoors-iphonesimulator.xcarchive/dSYMs/RadarSDKIndoors.framework.dSYM -framework RadarSDKIndoors-iphoneos.xcarchive/Products/Library/Frameworks/RadarSDKIndoors.framework -debug-symbols "$(pwd -P)"/RadarSDKIndoors-iphoneos.xcarchive/dSYMs/RadarSDKIndoors.framework.dSYM -output RadarSDKIndoors.xcframework
