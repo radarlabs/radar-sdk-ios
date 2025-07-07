@@ -24,6 +24,15 @@
 #import "RadarNotificationHelper.h"
 #import "RadarTripOptions.h"
 
+// Protocol to define the expected RadarSDKIndoors interface for dynamic loading
+@protocol RadarSDKIndoorsProtocol <NSObject>
++ (void)doIndoorSurvey:(NSString *)placeLabel
+             forLength:(int)surveyLengthSeconds
+      withKnownLocation:(CLLocation *_Nullable)knownLocation
+        isWhereAmIScan:(BOOL)isWhereAmIScan
+     completionHandler:(RadarIndoorsSurveyCompletionHandler)completionHandler;
+@end
+
 @interface Radar ()
 
 @property (nullable, weak, nonatomic) id<RadarDelegate> delegate;
@@ -1159,12 +1168,26 @@
      completionHandler:(RadarIndoorsSurveyCompletionHandler)completionHandler {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"doIndoorsSurvey()"];
     
-    Class RadarSDKIndoors = NSClassFromString(@"RadarSDKIndoors");
+    Class<RadarSDKIndoorsProtocol> RadarSDKIndoors = NSClassFromString(@"RadarSDKIndoors");
     if (RadarSDKIndoors) {
-        [RadarSDKIndoors doIndoorSurvey:placeLabel
-                              forLength:surveyLengthSeconds
-                         isWhereAmIScan:isWhereAmIScan
-                      completionHandler:completionHandler];
+        // get location from the SDK using trackOnce
+        [Radar trackOnceWithDesiredAccuracy:RadarTrackingOptionsDesiredAccuracyHigh
+                                    beacons:NO
+                          completionHandler:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user) {
+            if (status != RadarStatusSuccess || !location) {
+                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelError type:RadarLogTypeSDKCall message:[NSString stringWithFormat:@"Failed to get location for indoor survey: %d", (int)status]];
+                if (completionHandler) {
+                    completionHandler([NSString stringWithFormat:@"ERROR: Failed to get location for indoor survey: %d", (int)status], nil);
+                }
+                return;
+            }
+            
+            [RadarSDKIndoors doIndoorSurvey:placeLabel
+                                  forLength:surveyLengthSeconds
+                           withKnownLocation:location
+                             isWhereAmIScan:isWhereAmIScan
+                          completionHandler:completionHandler];
+        }];
     } else {
         if (completionHandler) {
             completionHandler(@"ERROR: RadarSDKIndoors submodule not available", [[CLLocation alloc] init]);
