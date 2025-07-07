@@ -23,15 +23,7 @@
 #import "RadarReplayBuffer.h"
 #import "RadarNotificationHelper.h"
 #import "RadarTripOptions.h"
-
-// Protocol to define the expected RadarSDKIndoors interface for dynamic loading
-@protocol RadarSDKIndoorsProtocol <NSObject>
-+ (void)doIndoorSurvey:(NSString *)placeLabel
-             forLength:(int)surveyLengthSeconds
-      withKnownLocation:(CLLocation *_Nullable)knownLocation
-        isWhereAmIScan:(BOOL)isWhereAmIScan
-     completionHandler:(RadarIndoorsSurveyCompletionHandler)completionHandler;
-@end
+#import "RadarIndoorsProtocol.h"
 
 @interface Radar ()
 
@@ -1168,7 +1160,7 @@
      completionHandler:(RadarIndoorsSurveyCompletionHandler)completionHandler {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"doIndoorsSurvey()"];
     
-    Class<RadarSDKIndoorsProtocol> RadarSDKIndoors = NSClassFromString(@"RadarSDKIndoors");
+    Class RadarSDKIndoors = NSClassFromString(@"RadarSDKIndoors");
     if (RadarSDKIndoors) {
         // get location from the SDK using trackOnce
         [Radar trackOnceWithDesiredAccuracy:RadarTrackingOptionsDesiredAccuracyHigh

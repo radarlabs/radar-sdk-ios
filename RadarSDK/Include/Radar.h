@@ -27,6 +27,7 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol RadarDelegate;
 @protocol RadarVerifiedDelegate;
 @protocol RadarMotionProtocol;
+@protocol RadarIndoorsProtocol;
 
 @class RadarTripOptions;
 
