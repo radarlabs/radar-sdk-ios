@@ -1,6 +1,8 @@
 // swift-tools-version:5.3
 import PackageDescription
 
+let version = "3.22.0-beta.2"
+
 let package = Package(
     name: "RadarSDK",
     platforms: [
@@ -41,14 +43,9 @@ let package = Package(
                 .headerSearchPath(".")
             ] 
         ),
-        .target(
+        .binaryTarget(
             name: "RadarSDKIndoors",
-            dependencies: ["RadarSDK"],
-            path: "RadarSDKIndoors/RadarSDKIndoors",
-            publicHeadersPath: "Include",
-            cSettings: [
-                .headerSearchPath(".")
-            ]
+            url: "https://github.com/radarlabs/radar-sdk-ios/releases/download/\(version)/RadarSDKIndoors.xcframework.zip"
         )
     ]
 )
