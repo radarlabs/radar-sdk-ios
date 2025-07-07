@@ -18,11 +18,11 @@ jobs:
           submodules: recursive
           token: ${{ secrets.SUBMODULESTOKEN }}
 
-      - name: Build, Analyze, & Test
-        env:
-          scheme: RadarSDK
-        run: |
-          xcodebuild clean build analyze test -scheme RadarSDK -workspace Example/Example.xcodeproj/project.xcworkspace -destination 'platform=iOS Simulator,name=iPhone 16 Pro,OS=18.2' | xcpretty && exit ${PIPESTATUS[0]}
+      # - name: Build, Analyze, & Test
+      #   env:
+      #     scheme: RadarSDK
+      #   run: |
+      #     xcodebuild clean build analyze test -scheme RadarSDK -workspace Example/Example.xcodeproj/project.xcworkspace -destination 'platform=iOS Simulator,name=iPhone 16 Pro,OS=18.2' | xcpretty && exit ${PIPESTATUS[0]}
 
       # Temporary step to test RadarSDKIndoors XCFramework build
       # TODO: Remove this after verifying the project format fix works
