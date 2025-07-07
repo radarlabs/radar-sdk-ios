@@ -5,8 +5,8 @@ Pod::Spec.new do |s|
   s.homepage              = 'https://radar.com'
   s.author                = { 'Radar Labs, Inc.' => 'support@radar.com' }
   s.platform              = :ios
-  s.source                = { :git => 'https://github.com/radarlabs/radar-sdk-ios.git', :tag => s.version.to_s, :submodules => true }
-  s.source_files          = ["RadarSDKIndoors/RadarSDKIndoors/*.{h,m}", "RadarSDKIndoors/RadarSDKIndoors/Include/*.h"]
+  s.source                = { :http => "https://github.com/radarlabs/radar-sdk-ios/releases/download/#{s.version}/RadarSDKIndoors.xcframework.zip" }
+  s.vendored_frameworks   = 'RadarSDKIndoors.xcframework'
   s.module_name           = 'RadarSDKIndoors'
   s.ios.deployment_target = '12.0'
   s.frameworks            = 'CoreBluetooth', 'CoreMotion', 'CoreLocation'
