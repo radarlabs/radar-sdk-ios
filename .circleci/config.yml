@@ -8,40 +8,12 @@ jobs:
           name: Configure Git to use PAT for submodules
           command: |
             git config --global url."https://${SUBMODULESTOKEN}:x-oauth-basic@github.com/".insteadOf "https://github.com/"
-      - run:
-          name: Debug - Check Git configuration
-          command: |
-            echo "Git global config:"
-            git config --global --list | grep url || echo "No URL rewrite rules found"
-            echo "SUBMODULESTOKEN is set: $(if [ -n "$SUBMODULESTOKEN" ]; then echo "YES (length: ${#SUBMODULESTOKEN})"; else echo "NO"; fi)"
       - checkout
       - run:
           name: Initialize and update submodules
           command: |
-            echo "Initializing submodules..."
             git submodule init
-            echo "Updating submodules..."
             git submodule update --recursive
-      - run:
-          name: Debug - Verify submodule status
-          command: |
-            echo "Submodule status:"
-            git submodule status
-            echo ""
-            echo "Checking if RadarSDKIndoors directory exists and has content:"
-            if [ -d "RadarSDKIndoors" ]; then
-              echo "RadarSDKIndoors directory exists"
-              ls -la RadarSDKIndoors/
-              echo ""
-              echo "Checking for .git in submodule:"
-              if [ -f "RadarSDKIndoors/.git" ] || [ -d "RadarSDKIndoors/.git" ]; then
-                echo "RadarSDKIndoors appears to be properly cloned"
-              else
-                echo "RadarSDKIndoors directory exists but .git is missing - submodule not properly cloned"
-              fi
-            else
-              echo "RadarSDKIndoors directory does not exist"
-            fi
       - run:
           name: List simulators
           command: xcrun simctl list
