@@ -14,8 +14,14 @@ jobs:
             echo "Git global config:"
             git config --global --list | grep url || echo "No URL rewrite rules found"
             echo "SUBMODULESTOKEN is set: $(if [ -n "$SUBMODULESTOKEN" ]; then echo "YES (length: ${#SUBMODULESTOKEN})"; else echo "NO"; fi)"
-      - checkout:
-          submodules: true
+      - checkout
+      - run:
+          name: Initialize and update submodules
+          command: |
+            echo "Initializing submodules..."
+            git submodule init
+            echo "Updating submodules..."
+            git submodule update --recursive
       - run:
           name: Debug - Verify submodule status
           command: |
