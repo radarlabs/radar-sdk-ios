@@ -108,6 +108,7 @@ static NSString *const kSyncGeofenceIdentifierPrefix = @"radar_geofence_";
     NSString *notificationSubtitle = [metadata objectForKey:@"radar:notificationSubtitle"];
     NSString *notificationURL = [metadata objectForKey:@"radar:notificationURL"];
     NSString *campaignId = [metadata objectForKey:@"radar:campaignId"];
+    NSString *campaignMetadata = [metadata objectForKey:@"radar:campaignMetadata"];
 
     if (notificationText && [RadarNotificationHelper isNotificationCampaign:metadata]) {
         UNMutableNotificationContent *content = [UNMutableNotificationContent new];
@@ -133,6 +134,14 @@ static NSString *const kSyncGeofenceIdentifierPrefix = @"radar_geofence_";
         }
         if (geofenceId) {
             mutableUserInfo[@"geofenceId"] = geofenceId;
+        }
+        if (campaignMetadata) {
+            NSError *jsonError;
+            NSData *jsonData = [((NSString *)campaignMetadata) dataUsingEncoding:NSUTF8StringEncoding];
+            id jsonObj = [NSJSONSerialization JSONObjectWithData:jsonData options:0 error:&jsonError];
+            if (!jsonError && [jsonObj isKindOfClass:[NSDictionary class]]) {
+                mutableUserInfo[@"campaignMetadata"] = (NSDictionary *)jsonObj;
+            }
         }
         
         content.userInfo = [mutableUserInfo copy];
