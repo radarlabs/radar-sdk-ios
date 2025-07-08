@@ -135,7 +135,7 @@ static NSString *const kSyncGeofenceIdentifierPrefix = @"radar_geofence_";
         if (geofenceId) {
             mutableUserInfo[@"geofenceId"] = geofenceId;
         }
-        if (campaignMetadata) {
+        if (campaignMetadata && [campaignMetadata isKindOfClass:[NSString class]]) {
             NSError *jsonError;
             NSData *jsonData = [((NSString *)campaignMetadata) dataUsingEncoding:NSUTF8StringEncoding];
             id jsonObj = [NSJSONSerialization JSONObjectWithData:jsonData options:0 error:&jsonError];
