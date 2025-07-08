@@ -23,6 +23,7 @@
 #import "RadarReplayBuffer.h"
 #import "RadarNotificationHelper.h"
 #import "RadarTripOptions.h"
+#import "RadarIndoorsProtocol.h"
 
 @interface Radar ()
 
@@ -1150,6 +1151,41 @@
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug type:RadarLogTypeNone message:@"App resigning active" includeDate:YES includeBattery:YES];
 }
 
+
+#pragma mark - Indoors
+
++ (void)doIndoorSurvey:(NSString *)placeLabel
+             forLength:(int)surveyLengthSeconds
+        isWhereAmIScan:(BOOL)isWhereAmIScan
+     completionHandler:(RadarIndoorsSurveyCompletionHandler)completionHandler {
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"doIndoorsSurvey()"];
+    
+    Class RadarSDKIndoors = NSClassFromString(@"RadarSDKIndoors");
+    if (RadarSDKIndoors) {
+        // get location from the SDK using trackOnce
+        [Radar trackOnceWithDesiredAccuracy:RadarTrackingOptionsDesiredAccuracyHigh
+                                    beacons:NO
+                          completionHandler:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user) {
+            if (status != RadarStatusSuccess || !location) {
+                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelError type:RadarLogTypeSDKCall message:[NSString stringWithFormat:@"Failed to get location for indoor survey: %d", (int)status]];
+                if (completionHandler) {
+                    completionHandler([NSString stringWithFormat:@"ERROR: Failed to get location for indoor survey: %d", (int)status], nil);
+                }
+                return;
+            }
+            
+            [RadarSDKIndoors doIndoorSurvey:placeLabel
+                                  forLength:surveyLengthSeconds
+                           withKnownLocation:location
+                             isWhereAmIScan:isWhereAmIScan
+                          completionHandler:completionHandler];
+        }];
+    } else {
+        if (completionHandler) {
+            completionHandler(@"ERROR: RadarSDKIndoors submodule not available", [[CLLocation alloc] init]);
+        }
+    }
+}
 
 #pragma mark - Helpers
 
