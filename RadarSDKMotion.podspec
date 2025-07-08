@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name                  = 'RadarSDKMotion'
-  s.version               = '3.22.0-beta.3'
+  s.version               = '3.22.0-beta.5'
   s.summary               = 'Motion detection plugin for RadarSDK, the leading geofencing and location tracking platform'
   s.homepage              = 'https://radar.com'
   s.author                = { 'Radar Labs, Inc.' => 'support@radar.com' }
