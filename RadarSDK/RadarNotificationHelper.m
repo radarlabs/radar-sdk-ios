@@ -353,7 +353,7 @@ static dispatch_semaphore_t notificationSemaphore;
 }
 
 + (BOOL)isNotificationCampaign:(NSDictionary *)metadata {
-    return [metadata objectForKey:@"radar:campaignType"] != nil && ([[metadata objectForKey:@"radar:campaignType"] isEqual:@"clientSide"] || [[metadata objectForKey:@"radar:campaignType"] isEqual:@"eventBased"]);
+    return [metadata objectForKey:@"radar:campaignType"] != nil && ([[metadata objectForKey:@"radar:campaignType"] isEqualToString:@"clientSide"] || [[metadata objectForKey:@"radar:campaignType"] isEqualToString:@"eventBased"]);
 }
 
 + (void)registerCSGNNotificationsFromArray:(NSArray<RadarGeofence *> *)geofences {
