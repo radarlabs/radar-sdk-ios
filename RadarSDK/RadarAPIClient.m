@@ -595,7 +595,7 @@
                                 }
 
                                 id csgnObj = res[@"csgn"];
-                                if (csgnObj && [csgnObj isKindOfClass:[NSDictionary class]]) {
+                                if (csgnObj && [csgnObj isKindOfClass:[NSArray class]]) {
                                     NSArray<RadarGeofence *> *csgn = [RadarGeofence geofencesFromObject:csgnObj];
                                     [RadarNotificationHelper registerCSGNNotificationsFromArray:csgn];
                                 }
