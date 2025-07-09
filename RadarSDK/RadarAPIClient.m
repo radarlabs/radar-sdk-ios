@@ -11,6 +11,7 @@
 #import "Radar.h"
 #import "RadarAddress+Internal.h"
 #import "RadarBeacon+Internal.h"
+#import "RadarBeaconManager.h"
 #import "RadarConfig.h"
 #import "RadarContext+Internal.h"
 #import "RadarCoordinate+Internal.h"
@@ -358,6 +359,10 @@
         if (UIScreen.mainScreen.isCaptured) {
             [fraudFailureReasons addObject:@"fraud_sharing_capturing_screen"];
         }
+        NSString *kDeviceId = [[RadarVerificationManager sharedInstance] kDeviceId];
+        if (kDeviceId) {
+            params[@"kDeviceId"] = kDeviceId;
+        }
     }
     params[@"appId"] = [[NSBundle mainBundle] bundleIdentifier];
     NSString *appName = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleName"];
@@ -583,6 +588,12 @@
                                     [[RadarDelegateHolder sharedInstance] didUpdateToken:token];
                                 }
 
+                                id nearbyBeaconRegionsObj = res[@"nearbyBeaconRegions"];
+                                if (nearbyBeaconRegionsObj && [nearbyBeaconRegionsObj isKindOfClass:[NSArray class]]) {
+                                    NSArray<NSDictionary<NSString *, NSString *> *> *beaconRegions = (NSArray<NSDictionary<NSString *, NSString *> *> *)nearbyBeaconRegionsObj;
+                                    [[RadarBeaconManager sharedInstance] registerBeaconRegionNotificationsFromArray:beaconRegions];
+                                }
+                                
                                 return completionHandler(RadarStatusSuccess, res, events, user, nearbyGeofences, config, token);
                             } else {
                                 [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"Setting %lu notifications remaining", (unsigned long)notificationsRemaining.count]];
