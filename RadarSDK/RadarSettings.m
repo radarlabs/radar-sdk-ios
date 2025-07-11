@@ -49,6 +49,7 @@ static NSString *const kUserDebug = @"radar-userDebug";
 static NSString *const kXPlatformSDKType = @"radar-xPlatformSDKType";
 static NSString *const kXPlatformSDKVersion = @"radar-xPlatformSDKVersion";
 static NSString *const kInitializeOptions = @"radar-initializeOptions";
+static NSString *const kUserTags = @"radar-userTags";
 
 
 + (NSString *)publishableKey {
@@ -374,4 +375,39 @@ static NSString *const kInitializeOptions = @"radar-initializeOptions";
     }
     return [[RadarInitializeOptions alloc] initWithDict:dict];
 }
+
++ (NSArray<NSString *> *_Nullable)userTags {
+    return [[NSUserDefaults standardUserDefaults] arrayForKey:kUserTags];
+}
+
++ (void)addUserTags:(NSArray<NSString *> *_Nonnull)userTags {
+    NSMutableArray<NSString *> *existingTags = [[self userTags] mutableCopy];
+    if (!existingTags) {
+        existingTags = [NSMutableArray new];
+    }
+    
+    for (NSString *tag in userTags) {
+        if (![existingTags containsObject:tag]) {
+            [existingTags addObject:tag];
+        }
+    }
+    
+    [[NSUserDefaults standardUserDefaults] setObject:existingTags forKey:kUserTags];
+}
+
++ (void)removeUserTags:(NSArray<NSString *> *_Nonnull)userTags {
+    NSMutableArray<NSString *> *existingTags = [[self userTags] mutableCopy];
+    if (!existingTags) {
+        return;
+    }
+    
+    [existingTags removeObjectsInArray:userTags];
+    
+    if (existingTags.count > 0) {
+        [[NSUserDefaults standardUserDefaults] setObject:existingTags forKey:kUserTags];
+    } else {
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:kUserTags];
+    }
+}
+
 @end

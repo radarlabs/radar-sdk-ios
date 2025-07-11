@@ -301,6 +301,12 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     [[RadarLogBuffer sharedInstance]clearBuffer];
     [[RadarLogBuffer sharedInstance]setPersistentLogFeatureFlag:YES];
     [[RadarReplayBuffer sharedInstance]clearBuffer];
+    
+    // Clear user tags to ensure tests don't interfere with each other
+    NSArray<NSString *> *existingTags = [Radar getUserTags];
+    if (existingTags && existingTags.count > 0) {
+        [Radar removeUserTags:existingTags];
+    }
 }
 
 - (void)tearDown {
@@ -343,8 +349,126 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     XCTAssertEqualObjects(metadata, [Radar getMetadata]);
 }
 
+- (void)test_Radar_setUserTags {
+    NSArray<NSString *> *userTags = @[@"tag1", @"tag2", @"tag3"];
+    [Radar addUserTags:userTags];
+    NSArray<NSString *> *actualTags = [Radar getUserTags];
+    XCTAssertEqualObjects([userTags sortedArrayUsingSelector:@selector(compare:)], [actualTags sortedArrayUsingSelector:@selector(compare:)]);
+}
+
 - (void)test_Radar_setMetadata_nil {
     NSDictionary *metadata = nil;
+    [Radar setMetadata:metadata];
+    XCTAssertEqualObjects(metadata, [Radar getMetadata]);
+}
+
+- (void)test_Radar_addUserTags {
+    NSArray<NSString *> *initialTags = @[@"tag1", @"tag2"];
+    [Radar addUserTags:initialTags];
+    
+    NSArray<NSString *> *newTags = @[@"tag3", @"tag4"];
+    [Radar addUserTags:newTags];
+    
+    NSArray<NSString *> *expectedTags = @[@"tag1", @"tag2", @"tag3", @"tag4"];
+    NSArray<NSString *> *actualTags = [Radar getUserTags];
+    XCTAssertEqualObjects([expectedTags sortedArrayUsingSelector:@selector(compare:)], [actualTags sortedArrayUsingSelector:@selector(compare:)]);
+}
+
+- (void)test_Radar_addUserTags_duplicate {
+    NSArray<NSString *> *initialTags = @[@"tag1", @"tag2"];
+    [Radar addUserTags:initialTags];
+    
+    NSArray<NSString *> *newTags = @[@"tag2", @"tag3"]; // tag2 is duplicate
+    [Radar addUserTags:newTags];
+    
+    NSArray<NSString *> *expectedTags = @[@"tag1", @"tag2", @"tag3"];
+    NSArray<NSString *> *actualTags = [Radar getUserTags];
+    XCTAssertEqualObjects([expectedTags sortedArrayUsingSelector:@selector(compare:)], [actualTags sortedArrayUsingSelector:@selector(compare:)]);
+}
+
+- (void)test_Radar_removeUserTags {
+    NSArray<NSString *> *initialTags = @[@"tag1", @"tag2", @"tag3", @"tag4"];
+    [Radar addUserTags:initialTags];
+    
+    NSArray<NSString *> *tagsToRemove = @[@"tag2", @"tag4"];
+    [Radar removeUserTags:tagsToRemove];
+    
+    NSArray<NSString *> *expectedTags = @[@"tag1", @"tag3"];
+    NSArray<NSString *> *actualTags = [Radar getUserTags];
+    XCTAssertEqualObjects([expectedTags sortedArrayUsingSelector:@selector(compare:)], [actualTags sortedArrayUsingSelector:@selector(compare:)]);
+}
+
+- (void)test_Radar_removeUserTags_nonexistent {
+    NSArray<NSString *> *initialTags = @[@"tag1", @"tag2"];
+    [Radar addUserTags:initialTags];
+    
+    NSArray<NSString *> *tagsToRemove = @[@"tag3", @"tag4"]; // don't exist
+    [Radar removeUserTags:tagsToRemove];
+    
+    NSArray<NSString *> *expectedTags = @[@"tag1", @"tag2"];
+    NSArray<NSString *> *actualTags = [Radar getUserTags];
+    XCTAssertEqualObjects([expectedTags sortedArrayUsingSelector:@selector(compare:)], [actualTags sortedArrayUsingSelector:@selector(compare:)]);
+}
+
+- (void)test_Radar_removeUserTags_all {
+    NSArray<NSString *> *initialTags = @[@"tag1", @"tag2"];
+    [Radar addUserTags:initialTags];
+    
+    NSArray<NSString *> *tagsToRemove = @[@"tag1", @"tag2"];
+    [Radar removeUserTags:tagsToRemove];
+    
+    XCTAssertNil([Radar getUserTags]);
+}
+
+- (void)test_Radar_userTags_included_in_track_api {
+    // Set up user tags
+    
+    NSArray<NSString *> *userTags = @[@"premium_user", @"beta_tester", @"location_enabled"];
+    [Radar addUserTags:userTags];
+    
+    // Set up mock location and API response
+    self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusAuthorizedWhenInUse;
+    self.locationManagerMock.mockLocation = [[CLLocation alloc] initWithCoordinate:CLLocationCoordinate2DMake(40.78382, -73.97536)
+                                                                          altitude:-1
+                                                                horizontalAccuracy:65
+                                                                  verticalAccuracy:-1
+                                                                         timestamp:[NSDate new]];
+    self.apiHelperMock.mockStatus = RadarStatusSuccess;
+    self.apiHelperMock.mockResponse = [RadarTestUtils jsonDictionaryFromResource:@"track"];
+
+    XCTestExpectation *expectation = [self expectationWithDescription:@"trackOnce with user tags"];
+
+    [Radar trackOnceWithCompletionHandler:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user) {
+        XCTAssertEqual(status, RadarStatusSuccess);
+        
+        // Verify that the API call was made with the correct parameters
+        XCTAssertNotNil(self.apiHelperMock.lastParams);
+        XCTAssertEqualObjects(self.apiHelperMock.lastMethod, @"POST");
+        XCTAssertTrue([self.apiHelperMock.lastUrl containsString:@"/v1/track"]);
+        
+        // Verify that userTags are included in the API parameters
+        NSArray<NSString *> *apiUserTags = self.apiHelperMock.lastParams[@"userTags"];
+        XCTAssertNotNil(apiUserTags);
+        XCTAssertEqual(apiUserTags.count, 3);
+        
+        // Verify the tags are present (order doesn't matter for this test)
+        NSArray<NSString *> *sortedApiTags = [apiUserTags sortedArrayUsingSelector:@selector(compare:)];
+        NSArray<NSString *> *sortedExpectedTags = [userTags sortedArrayUsingSelector:@selector(compare:)];
+        XCTAssertEqualObjects(sortedApiTags, sortedExpectedTags);
+        
+        [expectation fulfill];
+    }];
+
+    [self waitForExpectationsWithTimeout:30
+                                 handler:^(NSError *_Nullable error) {
+                                     if (error) {
+                                         XCTFail();
+                                     }
+                                 }];
+}
+
+- (void)test_Radar_getMetadata {
+    NSDictionary *metadata = @{@"key1": @"value1", @"key2": @"value2"};
     [Radar setMetadata:metadata];
     XCTAssertEqualObjects(metadata, [Radar getMetadata]);
 }

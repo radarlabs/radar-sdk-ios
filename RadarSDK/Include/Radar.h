@@ -402,6 +402,27 @@ typedef void (^_Nullable RadarLogConversionCompletionHandler)(RadarStatus status
 + (NSDictionary *_Nullable)getMetadata;
 
 /**
+ Returns the current `userTags`.
+
+ @return The current `userTags`.
+ */
++ (NSArray<NSString *> *_Nullable)getUserTags;
+
+/**
+ Adds user tags to the existing set.
+
+ @param userTags An array of user tags to add.
+ */
++ (void)addUserTags:(NSArray<NSString *> *_Nonnull)userTags;
+
+/**
+ Removes user tags from the existing set.
+
+ @param userTags An array of user tags to remove.
+ */
++ (void)removeUserTags:(NSArray<NSString *> *_Nonnull)userTags;
+
+/**
  Sets an optional product name, displayed in the dashboard and reports.
 
  @param product A product name. If `nil`, the previous `product` will be cleared.

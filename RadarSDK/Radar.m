@@ -156,6 +156,24 @@
     return [RadarSettings metadata];
 }
 
++ (NSArray<NSString *> *_Nullable)getUserTags {
+    return [RadarSettings userTags];
+}
+
++ (void)addUserTags:(NSArray<NSString *> *_Nonnull)userTags {
+    [RadarSettings addUserTags:userTags];
+    if ([RadarSettings sdkConfiguration].syncAfterSetUser) {
+        [Radar trackOnceWithCompletionHandler:nil];
+    }
+}
+
++ (void)removeUserTags:(NSArray<NSString *> *_Nonnull)userTags {
+    [RadarSettings removeUserTags:userTags];
+    if ([RadarSettings sdkConfiguration].syncAfterSetUser) {
+        [Radar trackOnceWithCompletionHandler:nil];
+    }
+}
+
 + (void)setProduct:(NSString *)product {
     [RadarSettings setProduct:product];
 }

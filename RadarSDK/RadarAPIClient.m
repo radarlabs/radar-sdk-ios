@@ -239,6 +239,10 @@
         params[@"deviceId"] = [RadarUtils deviceId];
         params[@"description"] = [RadarSettings __description];
         params[@"metadata"] = [RadarSettings metadata];
+        NSArray<NSString *> *userTags = [RadarSettings userTags];
+        if (userTags && userTags.count > 0) {
+            params[@"userTags"] = userTags;
+        }
         NSString *sessionId = [RadarSettings sessionId];
         if (sessionId) {
             params[@"sessionId"] = sessionId;
