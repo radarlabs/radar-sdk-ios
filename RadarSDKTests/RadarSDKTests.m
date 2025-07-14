@@ -349,13 +349,6 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     XCTAssertEqualObjects(metadata, [Radar getMetadata]);
 }
 
-- (void)test_Radar_setUserTags {
-    NSArray<NSString *> *userTags = @[@"tag1", @"tag2", @"tag3"];
-    [Radar addUserTags:userTags];
-    NSArray<NSString *> *actualTags = [Radar getUserTags];
-    XCTAssertEqualObjects([userTags sortedArrayUsingSelector:@selector(compare:)], [actualTags sortedArrayUsingSelector:@selector(compare:)]);
-}
-
 - (void)test_Radar_setMetadata_nil {
     NSDictionary *metadata = nil;
     [Radar setMetadata:metadata];
@@ -418,6 +411,41 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     [Radar removeUserTags:tagsToRemove];
     
     XCTAssertNil([Radar getUserTags]);
+}
+
+- (void)test_Radar_setUserTags {
+    NSArray<NSString *> *userTags = @[@"tag1", @"tag2", @"tag3"];
+    [Radar setUserTags:userTags];
+    NSArray<NSString *> *actualTags = [Radar getUserTags];
+    XCTAssertEqualObjects([userTags sortedArrayUsingSelector:@selector(compare:)], [actualTags sortedArrayUsingSelector:@selector(compare:)]);
+}
+
+- (void)test_Radar_setUserTags_nil {
+    // First add some tags
+    NSArray<NSString *> *initialTags = @[@"tag1", @"tag2"];
+    [Radar addUserTags:initialTags];
+    
+    // Then set to nil to clear all tags
+    [Radar setUserTags:nil];
+    XCTAssertNil([Radar getUserTags]);
+}
+
+- (void)test_Radar_setUserTags_replaces_existing {
+    // First add some tags
+    NSArray<NSString *> *initialTags = @[@"tag1", @"tag2", @"tag3"];
+    [Radar addUserTags:initialTags];
+    
+    // Then set completely different tags
+    NSArray<NSString *> *newTags = @[@"newTag1", @"newTag2"];
+    [Radar setUserTags:newTags];
+    
+    NSArray<NSString *> *actualTags = [Radar getUserTags];
+    XCTAssertEqualObjects([newTags sortedArrayUsingSelector:@selector(compare:)], [actualTags sortedArrayUsingSelector:@selector(compare:)]);
+    
+    // Verify old tags are gone
+    XCTAssertFalse([actualTags containsObject:@"tag1"]);
+    XCTAssertFalse([actualTags containsObject:@"tag2"]);
+    XCTAssertFalse([actualTags containsObject:@"tag3"]);
 }
 
 - (void)test_Radar_userTags_included_in_track_api {

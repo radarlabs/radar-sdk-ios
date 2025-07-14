@@ -409,6 +409,13 @@ typedef void (^_Nullable RadarLogConversionCompletionHandler)(RadarStatus status
 + (NSArray<NSString *> *_Nullable)getUserTags;
 
 /**
+ Sets user tags, replacing any existing tags.
+
+ @param userTags An array of user tags. If `nil`, all user tags will be cleared.
+ */
++ (void)setUserTags:(NSArray<NSString *> *_Nullable)userTags;
+
+/**
  Adds user tags to the existing set.
 
  @param userTags An array of user tags to add.

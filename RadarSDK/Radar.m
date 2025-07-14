@@ -160,18 +160,16 @@
     return [RadarSettings userTags];
 }
 
++ (void)setUserTags:(NSArray<NSString *> *_Nullable)userTags {
+    [RadarSettings setUserTags:userTags];
+}
+
 + (void)addUserTags:(NSArray<NSString *> *_Nonnull)userTags {
     [RadarSettings addUserTags:userTags];
-    if ([RadarSettings sdkConfiguration].syncAfterSetUser) {
-        [Radar trackOnceWithCompletionHandler:nil];
-    }
 }
 
 + (void)removeUserTags:(NSArray<NSString *> *_Nonnull)userTags {
     [RadarSettings removeUserTags:userTags];
-    if ([RadarSettings sdkConfiguration].syncAfterSetUser) {
-        [Radar trackOnceWithCompletionHandler:nil];
-    }
 }
 
 + (void)setProduct:(NSString *)product {

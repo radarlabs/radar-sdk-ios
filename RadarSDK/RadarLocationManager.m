@@ -427,7 +427,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                     [self removeBubbleGeofence];
                 }
             }
-            if (!options.syncGeofences) {
+            if (options.syncGeofences == RadarTrackingOptionsSyncGeofencesNone) {
                 [self removeSyncedGeofences];
             }
             if (options.useVisits) {

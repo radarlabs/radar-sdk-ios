@@ -46,6 +46,15 @@ typedef NS_ENUM(NSInteger, RadarTrackingOptionsSyncLocations) {
     RadarTrackingOptionsSyncNone
 };
 
+typedef NS_ENUM(NSInteger, RadarTrackingOptionsSyncGeofences) {
+    /// Syncs no geofences from the server
+    RadarTrackingOptionsSyncGeofencesNone,
+    /// Syncs nearby geofences from the server
+    RadarTrackingOptionsSyncGeofencesNearest,
+    /// Syncs campaign geofences from the server
+    RadarTrackingOptionsSyncGeofencesCampaignOnly
+};
+
 /**
  An options class used to configure background tracking.
  @see https://radar.com/documentation/sdk/ios
@@ -135,7 +144,7 @@ typedef NS_ENUM(NSInteger, RadarTrackingOptionsSyncLocations) {
 /**
  Determines whether to sync nearby geofences from the server to the client to improve responsiveness.
  */
-@property (nonatomic, assign) BOOL syncGeofences;
+@property (nonatomic, assign) RadarTrackingOptionsSyncGeofences syncGeofences;
 
 /**
  Determines whether to use the iOS visit monitoring service.

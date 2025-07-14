@@ -380,6 +380,14 @@ static NSString *const kUserTags = @"radar-userTags";
     return [[NSUserDefaults standardUserDefaults] arrayForKey:kUserTags];
 }
 
++ (void)setUserTags:(NSArray<NSString *> *_Nullable)userTags {
+    if (userTags) {
+        [[NSUserDefaults standardUserDefaults] setObject:userTags forKey:kUserTags];
+    } else {
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:kUserTags];
+    }
+}
+
 + (void)addUserTags:(NSArray<NSString *> *_Nonnull)userTags {
     NSMutableArray<NSString *> *existingTags = [[self userTags] mutableCopy];
     if (!existingTags) {

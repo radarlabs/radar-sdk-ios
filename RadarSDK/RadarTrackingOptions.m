@@ -42,6 +42,10 @@ NSString *const kSyncAll = @"all";
 NSString *const kSyncStopsAndExits = @"stopsAndExits";
 NSString *const kSyncNone = @"none";
 
+NSString *const kSyncGeofencesNone = @"none";
+NSString *const kSyncGeofencesNearest = @"nearest";
+NSString *const kSyncGeofencesCampaignOnly = @"campaign-only";
+
 + (RadarTrackingOptions *)presetContinuous {
     RadarTrackingOptions *options = [RadarTrackingOptions new];
     options.desiredStoppedUpdateInterval = 30;
@@ -59,7 +63,7 @@ NSString *const kSyncNone = @"none";
     options.stoppedGeofenceRadius = 0;
     options.useMovingGeofence = NO;
     options.movingGeofenceRadius = 0;
-    options.syncGeofences = YES;
+    options.syncGeofences = RadarTrackingOptionsSyncGeofencesNearest;
     options.useVisits = NO;
     options.useSignificantLocationChanges = NO;
     options.beacons = NO;
@@ -83,7 +87,7 @@ NSString *const kSyncNone = @"none";
     options.stoppedGeofenceRadius = 100;
     options.useMovingGeofence = YES;
     options.movingGeofenceRadius = 100;
-    options.syncGeofences = YES;
+    options.syncGeofences = RadarTrackingOptionsSyncGeofencesNearest;
     options.useVisits = YES;
     options.useSignificantLocationChanges = YES;
     options.beacons = NO;
@@ -107,7 +111,7 @@ NSString *const kSyncNone = @"none";
     options.stoppedGeofenceRadius = 0;
     options.useMovingGeofence = NO;
     options.movingGeofenceRadius = 0;
-    options.syncGeofences = YES;
+    options.syncGeofences = RadarTrackingOptionsSyncGeofencesNearest;
     options.useVisits = YES;
     options.useSignificantLocationChanges = NO;
     options.beacons = NO;
@@ -194,6 +198,34 @@ NSString *const kSyncNone = @"none";
     return sync;
 }
 
++ (NSString *)stringForSyncGeofences:(RadarTrackingOptionsSyncGeofences)sync {
+    NSString *str;
+    switch (sync) {
+    case RadarTrackingOptionsSyncGeofencesNone:
+        str = kSyncGeofencesNone;
+        break;
+    case RadarTrackingOptionsSyncGeofencesNearest:
+        str = kSyncGeofencesNearest;
+        break;
+    case RadarTrackingOptionsSyncGeofencesCampaignOnly:
+        str = kSyncGeofencesCampaignOnly;
+        break;
+    default:
+        str = kSyncGeofencesNone;
+    }
+    return str;
+}
+
++ (RadarTrackingOptionsSyncGeofences)syncGeofencesForString:(NSString *)str {
+    RadarTrackingOptionsSyncGeofences sync = RadarTrackingOptionsSyncGeofencesNone;
+    if ([str isEqualToString:kSyncGeofencesNearest]) {
+        sync = RadarTrackingOptionsSyncGeofencesNearest;
+    } else if ([str isEqualToString:kSyncGeofencesCampaignOnly]) {
+        sync = RadarTrackingOptionsSyncGeofencesCampaignOnly;
+    }
+    return sync;
+}
+
 + (RadarTrackingOptions *)trackingOptionsFromDictionary:(NSDictionary *)dict {
     if (!dict) {
         return nil;
@@ -235,7 +267,16 @@ NSString *const kSyncNone = @"none";
     options.stoppedGeofenceRadius = [dict[kStoppedGeofenceRadius] intValue];
     options.useMovingGeofence = [dict[kUseMovingGeofence] boolValue];
     options.movingGeofenceRadius = [dict[kMovingGeofenceRadius] intValue];
-    options.syncGeofences = [dict[kSyncGeofences] boolValue];
+    id syncGeofencesValue = dict[kSyncGeofences];
+    if ([syncGeofencesValue isKindOfClass:[NSString class]]) {
+        options.syncGeofences = [RadarTrackingOptions syncGeofencesForString:(NSString *)syncGeofencesValue];
+    } else if ([syncGeofencesValue isKindOfClass:[NSNumber class]]) {
+        // If it's a boolean, treat YES as Nearest, NO as None
+        BOOL boolValue = [(NSNumber *)syncGeofencesValue boolValue];
+        options.syncGeofences = boolValue ? RadarTrackingOptionsSyncGeofencesNearest : RadarTrackingOptionsSyncGeofencesNone;
+    } else {
+        options.syncGeofences = RadarTrackingOptionsSyncGeofencesNone;
+    }
     options.useVisits = [dict[kUseVisits] boolValue];
     options.useSignificantLocationChanges = [dict[kUseSignificantLocationChanges] boolValue];
     options.beacons = [dict[kBeacons] boolValue];
@@ -267,7 +308,7 @@ NSString *const kSyncNone = @"none";
     dict[kStoppedGeofenceRadius] = @(self.stoppedGeofenceRadius);
     dict[kUseMovingGeofence] = @(self.useMovingGeofence);
     dict[kMovingGeofenceRadius] = @(self.movingGeofenceRadius);
-    dict[kSyncGeofences] = @(self.syncGeofences);
+    dict[kSyncGeofences] = [RadarTrackingOptions stringForSyncGeofences:self.syncGeofences];
     dict[kUseVisits] = @(self.useVisits);
     dict[kUseSignificantLocationChanges] = @(self.useSignificantLocationChanges);
     dict[kBeacons] = @(self.beacons);
