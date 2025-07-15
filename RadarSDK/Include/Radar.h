@@ -306,7 +306,6 @@ typedef void (^_Nonnull RadarRouteMatrixCompletionHandler)(RadarStatus status, R
  */
 typedef void (^_Nullable RadarLogConversionCompletionHandler)(RadarStatus status, RadarEvent *_Nullable event);
 
-// define RadarIndoorsSurveyCompletionHandler -- which is called with no arguments
 typedef void (^_Nonnull RadarIndoorsSurveyCompletionHandler)(NSString *_Nullable result, CLLocation *_Nullable locationAtStartOfSurvey);
 
 /**
@@ -1209,10 +1208,10 @@ typedef void (^_Nonnull RadarIndoorsSurveyCompletionHandler)(NSString *_Nullable
 
 #pragma mark - Indoors
 
-+ (void)doIndoorSurvey:(NSString *)placeLabel
-             forLength:(int)surveyLengthSeconds
-        isWhereAmIScan:(BOOL)isWhereAmIScan
-     completionHandler:(RadarIndoorsSurveyCompletionHandler)completionHandler;
++ (void)startIndoorSurvey:(NSString *)placeLabel
+                forLength:(int)surveyLengthSeconds
+           isWhereAmIScan:(BOOL)isWhereAmIScan
+        completionHandler:(RadarIndoorsSurveyCompletionHandler)completionHandler;
 
 #pragma mark - Logging
 

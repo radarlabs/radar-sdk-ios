@@ -1154,11 +1154,11 @@
 
 #pragma mark - Indoors
 
-+ (void)doIndoorSurvey:(NSString *)placeLabel
-             forLength:(int)surveyLengthSeconds
-        isWhereAmIScan:(BOOL)isWhereAmIScan
-     completionHandler:(RadarIndoorsSurveyCompletionHandler)completionHandler {
-    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"doIndoorsSurvey()"];
++ (void)startIndoorSurvey:(NSString *)placeLabel
+                forLength:(int)surveyLengthSeconds
+           isWhereAmIScan:(BOOL)isWhereAmIScan
+        completionHandler:(RadarIndoorsSurveyCompletionHandler)completionHandler {
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"startIndoorSurvey()"];
     
     Class RadarSDKIndoors = NSClassFromString(@"RadarSDKIndoors");
     if (RadarSDKIndoors) {
@@ -1174,11 +1174,11 @@
                 return;
             }
             
-            [RadarSDKIndoors doIndoorSurvey:placeLabel
-                                  forLength:surveyLengthSeconds
-                           withKnownLocation:location
-                             isWhereAmIScan:isWhereAmIScan
-                          completionHandler:completionHandler];
+            [RadarSDKIndoors startIndoorSurvey:placeLabel
+                                    forLength:surveyLengthSeconds
+                             withKnownLocation:location
+                               isWhereAmIScan:isWhereAmIScan
+                            completionHandler:completionHandler];
         }];
     } else {
         if (completionHandler) {
