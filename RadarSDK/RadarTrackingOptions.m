@@ -271,7 +271,9 @@ NSString *const kSyncGeofencesCampaignOnly = @"campaign-only";
     if ([syncGeofencesValue isKindOfClass:[NSString class]]) {
         options.syncGeofences = [RadarTrackingOptions syncGeofencesForString:(NSString *)syncGeofencesValue];
     } else if ([syncGeofencesValue isKindOfClass:[NSNumber class]]) {
-        // If it's a boolean, treat YES as Nearest, NO as None
+        // Backward compatibility: Older versions of the SDK stored the syncGeofences value as a boolean.
+        // In this case, YES is interpreted as RadarTrackingOptionsSyncGeofencesNearest, and NO as RadarTrackingOptionsSyncGeofencesNone.
+        // This logic ensures compatibility with data stored in previous formats. For new implementations, prefer using the string representation.
         BOOL boolValue = [(NSNumber *)syncGeofencesValue boolValue];
         options.syncGeofences = boolValue ? RadarTrackingOptionsSyncGeofencesNearest : RadarTrackingOptionsSyncGeofencesNone;
     } else {
