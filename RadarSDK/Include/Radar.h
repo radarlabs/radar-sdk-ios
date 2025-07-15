@@ -1210,7 +1210,6 @@ typedef void (^_Nonnull RadarIndoorsSurveyCompletionHandler)(NSString *_Nullable
 
 + (void)startIndoorSurvey:(NSString *)placeLabel
                 forLength:(int)surveyLengthSeconds
-           isWhereAmIScan:(BOOL)isWhereAmIScan
         completionHandler:(RadarIndoorsSurveyCompletionHandler)completionHandler;
 
 #pragma mark - Logging

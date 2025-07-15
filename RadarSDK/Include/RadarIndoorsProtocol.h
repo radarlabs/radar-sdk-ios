@@ -16,7 +16,6 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)startIndoorSurvey:(NSString *)placeLabel
                 forLength:(int)surveyLengthSeconds
         withKnownLocation:(CLLocation *_Nullable)knownLocation
-           isWhereAmIScan:(BOOL)isWhereAmIScan
         completionHandler:(RadarIndoorsSurveyCompletionHandler)completionHandler;
 
 @end

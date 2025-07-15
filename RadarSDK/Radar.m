@@ -1156,7 +1156,6 @@
 
 + (void)startIndoorSurvey:(NSString *)placeLabel
                 forLength:(int)surveyLengthSeconds
-           isWhereAmIScan:(BOOL)isWhereAmIScan
         completionHandler:(RadarIndoorsSurveyCompletionHandler)completionHandler {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"startIndoorSurvey()"];
     
@@ -1174,11 +1173,10 @@
                 return;
             }
             
-            [RadarSDKIndoors startIndoorSurvey:placeLabel
-                                    forLength:surveyLengthSeconds
-                             withKnownLocation:location
-                               isWhereAmIScan:isWhereAmIScan
-                            completionHandler:completionHandler];
+            [RadarSDKIndoors doIndoorSurvey:placeLabel
+                                  forLength:surveyLengthSeconds
+                           withKnownLocation:location
+                           completionHandler:completionHandler];
         }];
     } else {
         if (completionHandler) {
