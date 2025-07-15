@@ -1173,10 +1173,10 @@
                 return;
             }
             
-            [RadarSDKIndoors doIndoorSurvey:placeLabel
-                                  forLength:surveyLengthSeconds
-                           withKnownLocation:location
-                           completionHandler:completionHandler];
+            [RadarSDKIndoors startIndoorSurvey:placeLabel
+                                    forLength:surveyLengthSeconds
+                            withKnownLocation:location
+                            completionHandler:completionHandler];
         }];
     } else {
         if (completionHandler) {
