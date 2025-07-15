@@ -72,6 +72,8 @@ typedef NS_ENUM(NSInteger, RadarEventType) {
     RadarEventTypeUserArrivedAtWrongTripDestination NS_SWIFT_NAME(userArrivedAtWrongTripDestination),
     /// `user.failed_fraud`
     RadarEventTypeUserFailedFraud NS_SWIFT_NAME(userFailedFraud)
+    /// `user.fired_trip_orders`
++    RadarEventTypeUserFiredTripOrders NS_SWIFT_NAME(userFiredTripOrders)
 };
 
 /**
