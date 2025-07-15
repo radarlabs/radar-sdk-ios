@@ -239,7 +239,7 @@
         params[@"deviceId"] = [RadarUtils deviceId];
         params[@"description"] = [RadarSettings __description];
         params[@"metadata"] = [RadarSettings metadata];
-        NSArray<NSString *> *userTags = [RadarSettings userTags];
+        NSArray<NSString *> *userTags = [RadarSettings tags];
         if (userTags && userTags.count > 0) {
             params[@"userTags"] = userTags;
         }

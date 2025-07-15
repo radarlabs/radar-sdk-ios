@@ -303,9 +303,9 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     [[RadarReplayBuffer sharedInstance]clearBuffer];
     
     // Clear user tags to ensure tests don't interfere with each other
-    NSArray<NSString *> *existingTags = [Radar getUserTags];
+    NSArray<NSString *> *existingTags = [Radar getTags];
     if (existingTags && existingTags.count > 0) {
-        [Radar removeUserTags:existingTags];
+        [Radar removeTags:existingTags];
     }
 }
 
@@ -357,89 +357,89 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 
 - (void)test_Radar_addUserTags {
     NSArray<NSString *> *initialTags = @[@"tag1", @"tag2"];
-    [Radar addUserTags:initialTags];
+    [Radar addTags:initialTags];
     
     NSArray<NSString *> *newTags = @[@"tag3", @"tag4"];
-    [Radar addUserTags:newTags];
+    [Radar addTags:newTags];
     
     NSArray<NSString *> *expectedTags = @[@"tag1", @"tag2", @"tag3", @"tag4"];
-    NSArray<NSString *> *actualTags = [Radar getUserTags];
+    NSArray<NSString *> *actualTags = [Radar getTags];
     XCTAssertEqualObjects([expectedTags sortedArrayUsingSelector:@selector(compare:)], [actualTags sortedArrayUsingSelector:@selector(compare:)]);
 }
 
 - (void)test_Radar_addUserTags_duplicate {
     NSArray<NSString *> *initialTags = @[@"tag1", @"tag2"];
-    [Radar addUserTags:initialTags];
+    [Radar addTags:initialTags];
     
     NSArray<NSString *> *newTags = @[@"tag2", @"tag3"]; // tag2 is duplicate
-    [Radar addUserTags:newTags];
+    [Radar addTags:newTags];
     
     NSArray<NSString *> *expectedTags = @[@"tag1", @"tag2", @"tag3"];
-    NSArray<NSString *> *actualTags = [Radar getUserTags];
+    NSArray<NSString *> *actualTags = [Radar getTags];
     XCTAssertEqualObjects([expectedTags sortedArrayUsingSelector:@selector(compare:)], [actualTags sortedArrayUsingSelector:@selector(compare:)]);
 }
 
 - (void)test_Radar_removeUserTags {
     NSArray<NSString *> *initialTags = @[@"tag1", @"tag2", @"tag3", @"tag4"];
-    [Radar addUserTags:initialTags];
+    [Radar addTags:initialTags];
     
     NSArray<NSString *> *tagsToRemove = @[@"tag2", @"tag4"];
-    [Radar removeUserTags:tagsToRemove];
+    [Radar removeTags:tagsToRemove];
     
     NSArray<NSString *> *expectedTags = @[@"tag1", @"tag3"];
-    NSArray<NSString *> *actualTags = [Radar getUserTags];
+    NSArray<NSString *> *actualTags = [Radar getTags];
     XCTAssertEqualObjects([expectedTags sortedArrayUsingSelector:@selector(compare:)], [actualTags sortedArrayUsingSelector:@selector(compare:)]);
 }
 
 - (void)test_Radar_removeUserTags_nonexistent {
     NSArray<NSString *> *initialTags = @[@"tag1", @"tag2"];
-    [Radar addUserTags:initialTags];
+    [Radar addTags:initialTags];
     
     NSArray<NSString *> *tagsToRemove = @[@"tag3", @"tag4"]; // don't exist
-    [Radar removeUserTags:tagsToRemove];
+    [Radar removeTags:tagsToRemove];
     
     NSArray<NSString *> *expectedTags = @[@"tag1", @"tag2"];
-    NSArray<NSString *> *actualTags = [Radar getUserTags];
+    NSArray<NSString *> *actualTags = [Radar getTags];
     XCTAssertEqualObjects([expectedTags sortedArrayUsingSelector:@selector(compare:)], [actualTags sortedArrayUsingSelector:@selector(compare:)]);
 }
 
 - (void)test_Radar_removeUserTags_all {
     NSArray<NSString *> *initialTags = @[@"tag1", @"tag2"];
-    [Radar addUserTags:initialTags];
+    [Radar addTags:initialTags];
     
     NSArray<NSString *> *tagsToRemove = @[@"tag1", @"tag2"];
-    [Radar removeUserTags:tagsToRemove];
+    [Radar removeTags:tagsToRemove];
     
-    XCTAssertNil([Radar getUserTags]);
+    XCTAssertNil([Radar getTags]);
 }
 
 - (void)test_Radar_setUserTags {
     NSArray<NSString *> *userTags = @[@"tag1", @"tag2", @"tag3"];
-    [Radar setUserTags:userTags];
-    NSArray<NSString *> *actualTags = [Radar getUserTags];
+    [Radar setTags:userTags];
+    NSArray<NSString *> *actualTags = [Radar getTags];
     XCTAssertEqualObjects([userTags sortedArrayUsingSelector:@selector(compare:)], [actualTags sortedArrayUsingSelector:@selector(compare:)]);
 }
 
 - (void)test_Radar_setUserTags_nil {
     // First add some tags
     NSArray<NSString *> *initialTags = @[@"tag1", @"tag2"];
-    [Radar addUserTags:initialTags];
+    [Radar addTags:initialTags];
     
     // Then set to nil to clear all tags
-    [Radar setUserTags:nil];
-    XCTAssertNil([Radar getUserTags]);
+    [Radar setTags:nil];
+    XCTAssertNil([Radar getTags]);
 }
 
 - (void)test_Radar_setUserTags_replaces_existing {
     // First add some tags
     NSArray<NSString *> *initialTags = @[@"tag1", @"tag2", @"tag3"];
-    [Radar addUserTags:initialTags];
+    [Radar addTags:initialTags];
     
     // Then set completely different tags
     NSArray<NSString *> *newTags = @[@"newTag1", @"newTag2"];
-    [Radar setUserTags:newTags];
+    [Radar setTags:newTags];
     
-    NSArray<NSString *> *actualTags = [Radar getUserTags];
+    NSArray<NSString *> *actualTags = [Radar getTags];
     XCTAssertEqualObjects([newTags sortedArrayUsingSelector:@selector(compare:)], [actualTags sortedArrayUsingSelector:@selector(compare:)]);
     
     // Verify old tags are gone
@@ -452,7 +452,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     // Set up user tags
     
     NSArray<NSString *> *userTags = @[@"premium_user", @"beta_tester", @"location_enabled"];
-    [Radar addUserTags:userTags];
+    [Radar addTags:userTags];
     
     // Set up mock location and API response
     self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusAuthorizedWhenInUse;

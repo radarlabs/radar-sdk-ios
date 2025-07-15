@@ -376,25 +376,25 @@ static NSString *const kUserTags = @"radar-userTags";
     return [[RadarInitializeOptions alloc] initWithDict:dict];
 }
 
-+ (NSArray<NSString *> *_Nullable)userTags {
++ (NSArray<NSString *> *_Nullable)tags {
     return [[NSUserDefaults standardUserDefaults] arrayForKey:kUserTags];
 }
 
-+ (void)setUserTags:(NSArray<NSString *> *_Nullable)userTags {
-    if (userTags) {
-        [[NSUserDefaults standardUserDefaults] setObject:userTags forKey:kUserTags];
++ (void)setTags:(NSArray<NSString *> *_Nullable)tags {
+    if (tags) {
+        [[NSUserDefaults standardUserDefaults] setObject:tags forKey:kUserTags];
     } else {
         [[NSUserDefaults standardUserDefaults] removeObjectForKey:kUserTags];
     }
 }
 
-+ (void)addUserTags:(NSArray<NSString *> *_Nonnull)userTags {
-    NSMutableArray<NSString *> *existingTags = [[self userTags] mutableCopy];
++ (void)addTags:(NSArray<NSString *> *_Nonnull)tags {
+    NSMutableArray<NSString *> *existingTags = [[self tags] mutableCopy];
     if (!existingTags) {
         existingTags = [NSMutableArray new];
     }
     
-    for (NSString *tag in userTags) {
+    for (NSString *tag in tags) {
         if (![existingTags containsObject:tag]) {
             [existingTags addObject:tag];
         }
@@ -403,13 +403,13 @@ static NSString *const kUserTags = @"radar-userTags";
     [[NSUserDefaults standardUserDefaults] setObject:existingTags forKey:kUserTags];
 }
 
-+ (void)removeUserTags:(NSArray<NSString *> *_Nonnull)userTags {
-    NSMutableArray<NSString *> *existingTags = [[self userTags] mutableCopy];
++ (void)removeTags:(NSArray<NSString *> *_Nonnull)tags {
+    NSMutableArray<NSString *> *existingTags = [[self tags] mutableCopy];
     if (!existingTags) {
         return;
     }
     
-    [existingTags removeObjectsInArray:userTags];
+    [existingTags removeObjectsInArray:tags];
     
     if (existingTags.count > 0) {
         [[NSUserDefaults standardUserDefaults] setObject:existingTags forKey:kUserTags];
