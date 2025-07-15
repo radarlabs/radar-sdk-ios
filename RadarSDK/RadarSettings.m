@@ -394,8 +394,9 @@ static NSString *const kUserTags = @"radar-userTags";
         existingTags = [NSMutableArray new];
     }
     
+    NSSet<NSString *> *existingTagsSet = [NSSet setWithArray:existingTags];
     for (NSString *tag in tags) {
-        if (![existingTags containsObject:tag]) {
+        if (![existingTagsSet containsObject:tag]) {
             [existingTags addObject:tag];
         }
     }
