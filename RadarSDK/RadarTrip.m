@@ -22,29 +22,6 @@
                                 mode:(RadarRouteMode)mode
                          etaDistance:(float)etaDistance
                          etaDuration:(float)etaDuration
-                              status:(RadarTripStatus)status {
-    return [self initWithId:_id
-                 externalId:externalId
-                   metadata:metadata
-     destinationGeofenceTag:destinationGeofenceTag
-destinationGeofenceExternalId:destinationGeofenceExternalId
-        destinationLocation:destinationLocation
-                       mode:mode
-                etaDistance:etaDistance
-                etaDuration:etaDuration
-                     status:status
-                     orders:nil];
-}
-
-- (instancetype _Nullable)initWithId:(NSString *_Nonnull)_id
-                          externalId:(NSString *_Nonnull)externalId
-                            metadata:(NSDictionary *_Nullable)metadata
-              destinationGeofenceTag:(NSString *_Nullable)destinationGeofenceTag
-       destinationGeofenceExternalId:(NSString *_Nullable)destinationGeofenceExternalId
-                 destinationLocation:(RadarCoordinate *_Nullable)destinationLocation
-                                mode:(RadarRouteMode)mode
-                         etaDistance:(float)etaDistance
-                         etaDuration:(float)etaDuration
                               status:(RadarTripStatus)status
                               orders:(NSArray<RadarTripOrder *> *_Nullable)orders {
     self = [super init];
