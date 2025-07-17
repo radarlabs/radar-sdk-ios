@@ -87,7 +87,7 @@
 		825732522B72BE1900DF8B88 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 825732502B72BE1900DF8B88 /* PrivacyInfo.xcprivacy */; };
 		828D1A462E29599500663787 /* RadarTripOrder.m in Sources */ = {isa = PBXBuildFile; fileRef = 828D1A452E29599500663787 /* RadarTripOrder.m */; };
 		828D1A472E29599500663787 /* RadarTripOrder.m in Sources */ = {isa = PBXBuildFile; fileRef = 828D1A452E29599500663787 /* RadarTripOrder.m */; };
-		828D1A4D2E295C9F00663787 /* RadarTripOrder.h in Headers */ = {isa = PBXBuildFile; fileRef = 828D1A4C2E295C9F00663787 /* RadarTripOrder.h */; };
+		828D1A4F2E295D3600663787 /* RadarTripOrder.h in Headers */ = {isa = PBXBuildFile; fileRef = 828D1A4E2E295D3600663787 /* RadarTripOrder.h */; };
 		82D04ABB29722ED20036619F /* RadarReplay.h in Headers */ = {isa = PBXBuildFile; fileRef = 82D04AB829722ED20036619F /* RadarReplay.h */; };
 		82D04ABC29722ED20036619F /* RadarReplayBuffer.m in Sources */ = {isa = PBXBuildFile; fileRef = 82D04AB929722ED20036619F /* RadarReplayBuffer.m */; };
 		82D04ABD29722ED20036619F /* RadarReplayBuffer.h in Headers */ = {isa = PBXBuildFile; fileRef = 82D04ABA29722ED20036619F /* RadarReplayBuffer.h */; };
@@ -210,7 +210,7 @@
 		8227EF0B2CDAB69B00C47290 /* RadarRouteMode.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RadarRouteMode.m; sourceTree = "<group>"; };
 		825732502B72BE1900DF8B88 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		828D1A452E29599500663787 /* RadarTripOrder.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RadarTripOrder.m; sourceTree = "<group>"; };
-		828D1A4C2E295C9F00663787 /* RadarTripOrder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarTripOrder.h; sourceTree = "<group>"; };
+		828D1A4E2E295D3600663787 /* RadarTripOrder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarTripOrder.h; sourceTree = "<group>"; };
 		82D04AB829722ED20036619F /* RadarReplay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RadarReplay.h; sourceTree = "<group>"; };
 		82D04AB929722ED20036619F /* RadarReplayBuffer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RadarReplayBuffer.m; sourceTree = "<group>"; };
 		82D04ABA29722ED20036619F /* RadarReplayBuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RadarReplayBuffer.h; sourceTree = "<group>"; };
@@ -397,7 +397,7 @@
 		96A5A0D827AD9F7F007B960B /* Include */ = {
 			isa = PBXGroup;
 			children = (
-				828D1A4C2E295C9F00663787 /* RadarTripOrder.h */,
+				828D1A4E2E295D3600663787 /* RadarTripOrder.h */,
 				96A5A0F527AD9F7F007B960B /* Radar.h */,
 				96A5A0ED27AD9F7F007B960B /* RadarAddress.h */,
 				96A5A0F427AD9F7F007B960B /* RadarBeacon.h */,
@@ -691,7 +691,7 @@
 				0107AA0F26220047008AB52F /* RadarBeaconManager.h in Headers */,
 				96A5A0D027AD9F41007B960B /* RadarRouteGeometry+Internal.h in Headers */,
 				0107AA1626220050008AB52F /* RadarLogger.h in Headers */,
-				828D1A4D2E295C9F00663787 /* RadarTripOrder.h in Headers */,
+				828D1A4F2E295D3600663787 /* RadarTripOrder.h in Headers */,
 				0107AA1F26220059008AB52F /* RadarSettings.h in Headers */,
 				96A5A0C027AD9F41007B960B /* RadarRouteDistance+Internal.h in Headers */,
 				96A5A0D227AD9F41007B960B /* RadarContext+Internal.h in Headers */,
