@@ -22,6 +22,7 @@
 #import "RadarReplayBuffer.h"
 #import "RadarActivityManager.h"
 #import "RadarNotificationHelper.h"
+#import "RadarSDK/RadarSDK-Swift.h"
 
 @interface RadarLocationManager ()
 
@@ -871,23 +872,29 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 
     RadarTrackingOptions *options = [Radar getTrackingOptions];
     
+    void (^callTrackAPI)(NSArray<RadarBeacon *> *_Nullable) = ^(NSArray<RadarBeacon *> *_Nullable beacons) {
+        [[RadarAPIClient sharedInstance] trackWithLocation:location
+                                                   stopped:stopped
+                                                foreground:[RadarUtils foreground]
+                                                    source:source
+                                                  replayed:replayed
+                                                   beacons:beacons
+                                         completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user,
+                                                             NSArray<RadarGeofence *> *_Nullable nearbyGeofences, RadarConfig *_Nullable config, RadarVerifiedLocationToken *_Nullable token) {
+            self.sending = NO;
+            if (status != RadarStatusSuccess || !config) {
+                return;
+            }
+            
+            [self updateTrackingFromMeta:config.meta];
+            [self replaceSyncedGeofences:nearbyGeofences];
+            
+            
+            
+        }];
+    };
+    
     if ([RadarSettings useRadarModifiedBeacon]) {
-        void (^callTrackAPI)(NSArray<RadarBeacon *> *_Nullable) = ^(NSArray<RadarBeacon *> *_Nullable beacons) {
-            [[RadarAPIClient sharedInstance] trackWithLocation:location
-                                                       stopped:stopped
-                                                    foreground:[RadarUtils foreground]
-                                                        source:source
-                                                      replayed:replayed
-                                                       beacons:beacons
-                                             completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user,
-                                                                 NSArray<RadarGeofence *> *_Nullable nearbyGeofences, RadarConfig *_Nullable config, RadarVerifiedLocationToken *_Nullable token) {
-                self.sending = NO;
-                
-                [self updateTrackingFromMeta:config.meta];
-                [self replaceSyncedGeofences:nearbyGeofences];
-            }];
-        };
-        
         if (options.beacons &&
             source != RadarLocationSourceBeaconEnter &&
             source != RadarLocationSourceBeaconExit &&
@@ -955,22 +962,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
             }
         }
 
-        [[RadarAPIClient sharedInstance] trackWithLocation:location
-                                                   stopped:stopped
-                                                foreground:[RadarUtils foreground]
-                                                    source:source
-                                                  replayed:replayed
-                                                   beacons:beacons
-                                         completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user,
-                                                             NSArray<RadarGeofence *> *_Nullable nearbyGeofences, RadarConfig *_Nullable config, RadarVerifiedLocationToken *_Nullable token) {
-                                             self.sending = NO;
-                                             if (status != RadarStatusSuccess || !config) {
-                                                 return;
-                                             }
-
-                                             [self updateTrackingFromMeta:config.meta];
-                                             [self replaceSyncedGeofences:nearbyGeofences];
-                                         }];
+        callTrackAPI(beacons);
     }
 }
 
@@ -1029,6 +1021,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                                                       }];
     } else if (manager.location) {
         [self handleLocation:manager.location source:RadarLocationSourceGeofenceEnter];
+        
     }
 }
 

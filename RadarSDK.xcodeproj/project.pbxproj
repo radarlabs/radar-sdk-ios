@@ -176,6 +176,9 @@
 		E6B93B752C90E5B8003CB858 /* RadarInitializeOptions.m in Sources */ = {isa = PBXBuildFile; fileRef = E6B93B732C90E5B8003CB858 /* RadarInitializeOptions.m */; };
 		E6EEC56E2B20F41A00DD096B /* RadarFileStorage.h in Headers */ = {isa = PBXBuildFile; fileRef = E6EEC56D2B20F41A00DD096B /* RadarFileStorage.h */; };
 		E6EEC5702B20F45D00DD096B /* RadarFileStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = E6EEC56F2B20F45D00DD096B /* RadarFileStorage.m */; };
+		F62F2DEF2E20541D0009B77F /* RadarInAppMessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F62F2DEE2E20541D0009B77F /* RadarInAppMessageView.swift */; };
+		F62F2DF32E205C570009B77F /* RadarInAppMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F62F2DF22E205C570009B77F /* RadarInAppMessage.swift */; };
+		F62F2DFE2E255AAA0009B77F /* RadarInAppMessageConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = F62F2DFD2E255AAA0009B77F /* RadarInAppMessageConfig.swift */; };
 		F65AF72C2C10B242002BA009 /* get_config_response.json in Resources */ = {isa = PBXBuildFile; fileRef = F65AF72B2C10B242002BA009 /* get_config_response.json */; };
 		F667F8292BFBF3D1001F2F67 /* RadarSdkConfiguration.h in Headers */ = {isa = PBXBuildFile; fileRef = F667F8282BFBF3D1001F2F67 /* RadarSdkConfiguration.h */; };
 		F6F959802C3D7D9900BC30FE /* RadarTimeZone.h in Headers */ = {isa = PBXBuildFile; fileRef = F6F9597F2C3D7D9900BC30FE /* RadarTimeZone.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -352,6 +355,9 @@
 		E6B93B732C90E5B8003CB858 /* RadarInitializeOptions.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RadarInitializeOptions.m; sourceTree = "<group>"; };
 		E6EEC56D2B20F41A00DD096B /* RadarFileStorage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarFileStorage.h; sourceTree = "<group>"; };
 		E6EEC56F2B20F45D00DD096B /* RadarFileStorage.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RadarFileStorage.m; sourceTree = "<group>"; };
+		F62F2DEE2E20541D0009B77F /* RadarInAppMessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarInAppMessageView.swift; sourceTree = "<group>"; };
+		F62F2DF22E205C570009B77F /* RadarInAppMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarInAppMessage.swift; sourceTree = "<group>"; };
+		F62F2DFD2E255AAA0009B77F /* RadarInAppMessageConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarInAppMessageConfig.swift; sourceTree = "<group>"; };
 		F65AF72B2C10B242002BA009 /* get_config_response.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = get_config_response.json; sourceTree = "<group>"; };
 		F667F8262BFBF3C8001F2F67 /* RadarSdkConfiguration.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RadarSdkConfiguration.m; sourceTree = "<group>"; };
 		F667F8282BFBF3D1001F2F67 /* RadarSdkConfiguration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RadarSdkConfiguration.h; sourceTree = "<group>"; };
@@ -534,6 +540,9 @@
 				82F7FAED2A65FE030055AA4B /* RadarVerificationManager.m */,
 				DD27CB7D235D13F000299FEC /* Models */,
 				53CCD781275E576B00F79CC8 /* Util */,
+				F62F2DEE2E20541D0009B77F /* RadarInAppMessageView.swift */,
+				F62F2DF22E205C570009B77F /* RadarInAppMessage.swift */,
+				F62F2DFD2E255AAA0009B77F /* RadarInAppMessageConfig.swift */,
 			);
 			path = RadarSDK;
 			sourceTree = "<group>";
@@ -767,7 +776,7 @@
 				TargetAttributes = {
 					0107A9E72621FFB9008AB52F = {
 						CreatedOnToolsVersion = 12.4;
-						LastSwiftMigration = 1320;
+						LastSwiftMigration = 1640;
 					};
 					0107AB3826220308008AB52F = {
 						CreatedOnToolsVersion = 12.4;
@@ -897,11 +906,13 @@
 				0107AAB626220172008AB52F /* RadarPolygonGeometry.m in Sources */,
 				0107AB0E262201D5008AB52F /* RadarBeaconManager.m in Sources */,
 				82D04AC729771BF10036619F /* RadarReplay.m in Sources */,
+				F62F2DEF2E20541D0009B77F /* RadarInAppMessageView.swift in Sources */,
 				0107AADA26220195008AB52F /* RadarRouteMatrix.m in Sources */,
 				0107AA7A26220128008AB52F /* RadarAddress.m in Sources */,
 				0107AABC26220178008AB52F /* RadarRegion.m in Sources */,
 				0107AB26262201F0008AB52F /* RadarState.m in Sources */,
 				0107AAA126220159008AB52F /* RadarEvent.m in Sources */,
+				F62F2DF32E205C570009B77F /* RadarInAppMessage.swift in Sources */,
 				0107AAE02622019B008AB52F /* RadarRoutes.m in Sources */,
 				96A5A11827ADA02F007B960B /* RadarLog.m in Sources */,
 				01F99CFD2965C1C4004E8CF3 /* RadarConfig.m in Sources */,
@@ -909,6 +920,7 @@
 				0107AB1A262201E2008AB52F /* RadarLogger.m in Sources */,
 				019514392BD081630031ABA2 /* RadarVerifiedLocationToken.m in Sources */,
 				0107AACE2622018A008AB52F /* RadarRouteDuration.m in Sources */,
+				F62F2DFE2E255AAA0009B77F /* RadarInAppMessageConfig.swift in Sources */,
 				0107AB17262201DE008AB52F /* RadarDelegateHolder.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -935,7 +947,9 @@
 		0107A9ED2621FFB9008AB52F /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = NO;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;
@@ -954,8 +968,9 @@
 				PRODUCT_BUNDLE_IDENTIFIER = io.radar.sdk;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=macosx*]" = "";
 				SKIP_INSTALL = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TVOS_DEPLOYMENT_TARGET = 12.0;
 			};
@@ -964,7 +979,9 @@
 		0107A9EE2621FFB9008AB52F /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = NO;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;
@@ -983,8 +1000,8 @@
 				PRODUCT_BUNDLE_IDENTIFIER = io.radar.sdk;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=macosx*]" = "";
 				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TVOS_DEPLOYMENT_TARGET = 12.0;
 			};

@@ -23,6 +23,7 @@
 #import "RadarReplayBuffer.h"
 #import "RadarNotificationHelper.h"
 #import "RadarTripOptions.h"
+#import <RadarSDK/RadarSDK-Swift.h>
 
 @interface Radar ()
 
@@ -49,6 +50,15 @@
         [RadarSettings setInitializeOptions:options];
         [RadarNotificationHelper swizzleNotificationCenterDelegate];
     });
+}
+
++ (void)inAppMessage:(RadarInAppMessageConfig*)config {
+    if (@available(iOS 13.0, *)) {
+        [RadarInAppMessage showInAppMessageWithConfig:config];
+    } else {
+        // Fallback on earlier versions
+    }
+//    [UIApplication sharedApplication];
 }
 
 + (void)initializeWithPublishableKey:(NSString *)publishableKey options:(RadarInitializeOptions *)options {
