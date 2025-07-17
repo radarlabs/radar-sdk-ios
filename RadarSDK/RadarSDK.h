@@ -34,7 +34,6 @@ FOUNDATION_EXPORT const unsigned char RadarSDKVersionString[];
 #import "RadarTrackingOptions.h"
 #import "RadarTrip.h"
 #import "RadarTripOptions.h"
-#import "RadarTripOrder.h"
 #import "RadarUser.h"
 #import "RadarVerifiedDelegate.h"
 #import "RadarMotionProtocol.h"
