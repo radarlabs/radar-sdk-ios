@@ -86,6 +86,6 @@ typedef NS_ENUM(NSInteger, RadarTripOrderStatus) {
 - (instancetype _Nullable)initWithObject:(id _Nonnull)object;
 
 + (NSArray<RadarTripOrder *> *_Nullable)ordersFromObject:(id _Nonnull)object;
-+ (NSArray<NSDictionary *> *)arrayForOrders:(NSArray<RadarTripOrder *> *)orders;
++ (NSArray<NSDictionary *> *_Nullable)arrayForOrders:(NSArray<RadarTripOrder *> *_Nullable)orders;
 
 @end 
