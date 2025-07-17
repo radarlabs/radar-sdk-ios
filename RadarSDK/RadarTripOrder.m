@@ -5,7 +5,7 @@
 //  Copyright © 2024 Radar Labs, Inc. All rights reserved.
 //
 
-#import "RadarTripOrder.h"
+#import "Include/RadarTripOrder.h"
 #import "RadarUtils.h"
 
 @implementation RadarTripOrder

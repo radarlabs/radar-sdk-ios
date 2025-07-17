@@ -9,7 +9,7 @@
 #import "Radar.h"
 #import "RadarCoordinate+Internal.h"
 #import "RadarTrip+Internal.h"
-#import "RadarTripOrder.h"
+#import "Include/RadarTripOrder.h"
 
 @implementation RadarTrip
 
