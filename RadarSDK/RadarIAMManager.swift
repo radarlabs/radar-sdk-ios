@@ -20,25 +20,30 @@ class RadarIAMManager: NSObject {
     private static var showingMessages: [RadarInAppMessage] = []
     private static var displayTimer: Timer? = nil
     
-//    public static var delegate: RadarIAMDelegate_ObjC = RadarIAMDelegate_ObjC()
+    public static var delegate: RadarIAMDelegate_ObjC = RadarIAMDelegate_ObjC()
     
     @objc public static func showInAppMessage(_ message: RadarInAppMessage) async {
         guard let currentWindowScene = UIApplication.shared.connectedScenes.first as?  UIWindowScene else {
             print("no current window scene")
             return
         }
+        print("Called show in app msg")
         
         let overlayWindow = UIWindow(windowScene: currentWindowScene)
         overlayWindow.windowLevel = UIWindow.Level.alert
         overlayWindow.backgroundColor = .clear
         
-//        let view = delegate.getIAMViewController(message)
-//        overlayWindow.frame = view.view.frame
-//        overlayWindow.layer.position = view.view.layer.position
+        let view = await withCheckedContinuation { continuation in
+            print("waiting for view")
+            delegate.getIAMViewController(message) { result in
+                continuation.resume(returning: result)
+            }
+        }
+        overlayWindow.layer.position = view.view.layer.position
         
-//        overlayWindow.rootViewController = view
+        overlayWindow.rootViewController = view
         overlayWindow.isHidden = false
-//        overlayWindow.makeKeyAndVisible()
+        overlayWindow.makeKeyAndVisible()
         
         window = overlayWindow
     }
@@ -83,8 +88,8 @@ class RadarIAMManager: NSObject {
         }
     }
     
-//    @objc public static func setDelegate(_ delegate: RadarIAMDelegate_ObjC) {
-//        self.delegate = delegate
-//        print("DELEGATE SET!")
-//    }
+    @objc public static func setDelegate(_ delegate: RadarIAMDelegate_ObjC) {
+        self.delegate = delegate
+        print("DELEGATE SET!")
+    }
 }

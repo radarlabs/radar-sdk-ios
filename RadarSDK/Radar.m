@@ -64,7 +64,7 @@
 
 + (void)setIAMDelegate:(id)delegate {
     if (@available(iOS 13.0, *)) {
-//        [RadarIAMManager setDelegate:delegate];
+        [RadarIAMManager setDelegate:delegate];
     } else {
         // Fallback on earlier versions
     }

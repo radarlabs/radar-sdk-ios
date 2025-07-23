@@ -14,13 +14,25 @@
 
 @implementation RadarIAMDelegate
 
+API_AVAILABLE(ios(13.0))
+RadarIAMDelegate* radarIAMDelegate = nil;
+
 - (instancetype) init {
+    if (radarIAMDelegate == nil) {
+        radarIAMDelegate = [RadarIAMDelegate_Swift alloc];
+        radarIAMDelegate = [radarIAMDelegate init];
+        NSLog(@"iam Initialized IAM Delegate");
+    }
     return self;
 }
 
-//- (id)getIAMViewController:(RadarInAppMessage * _Nonnull)message completionHandler:(nonnull UIViewController * _Nonnull (^)(void))completionHandler {
-//    return nil;
-//}
+- (void)getIAMViewController:(RadarInAppMessage * _Nonnull)message completionHandler:(nonnull void (^)(UIViewController * _Nonnull __strong))completionHandler {
+    NSLog(@"iam GETTING CONTROLLER");
+    [radarIAMDelegate getIAMViewController:message completionHandler:completionHandler];
+}
+
+- (void)onIAMPositiveAction:(RadarInAppMessage * _Nonnull)message {
+    [radarIAMDelegate onIAMPositiveAction:message];
+}
 
 @end
-

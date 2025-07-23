@@ -35,7 +35,7 @@ struct RadarIAMView: View {
                 Text(message.title?.text ?? "").foregroundColor(Color(message.title?.color ?? UIColor.black))
                 Text(message.body?.text ?? "").foregroundColor(Color(message.body?.color ?? UIColor.black))
                 Button(message.action?.text ?? "") {
-//                    RadarIAMManager.delegate.onIAMPositiveAction(message)
+                    RadarIAMManager.delegate.onIAMPositiveAction(message)
                     RadarIAMManager.dismissInAppMessage()
                 }.foregroundColor(Color(message.action?.color ?? UIColor.black))
                  .background(Color(message.action?.backgroundColor ?? UIColor.white))

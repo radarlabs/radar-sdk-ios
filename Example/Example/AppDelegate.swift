@@ -10,6 +10,7 @@ import UserNotifications
 import RadarSDK
 import SwiftUI
 
+
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UNUserNotificationCenterDelegate, CLLocationManagerDelegate, RadarDelegate, RadarVerifiedDelegate {
 
@@ -39,7 +40,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         Radar.setDelegate(self)
         Radar.setVerifiedDelegate(self)
         
-//        Radar.setIAMDelegate(MyIAMDelegate())
+        Radar.setIAMDelegate(MyObjC_IAMDelegate())
  
         return true
     }

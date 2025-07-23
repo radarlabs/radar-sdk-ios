@@ -11,13 +11,13 @@ import RadarSDK
 import SwiftUICore
 
 
-//class MyIAMDelegate: RadarIAMDelegate_Swift {
-////    override func onIAMPositiveAction(_ message: RadarInAppMessage) {
-////        if let url = message.action?.url {
-////            UIApplication.shared.open(URL(string: url)!)
-////        }
-////        print("OVER HERE But mine")
-////        // possibly log conversion
-////    }
-//}
+class MyIAMDelegate: RadarIAMDelegate {
+    override func onIAMPositiveAction(_ message: RadarInAppMessage) {
+        if let url = message.action?.url {
+            UIApplication.shared.open(URL(string: url)!)
+        }
+        print("custom on IAM positive action")
+        // possibly log conversion
+    }
+}
 

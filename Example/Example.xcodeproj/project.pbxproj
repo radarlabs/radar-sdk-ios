@@ -20,6 +20,7 @@
 		F62F2E022E2942470009B77F /* papyrus.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F62F2E012E2942470009B77F /* papyrus.ttf */; };
 		F62F2E1A2E2FE6B50009B77F /* IAMDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F62F2E192E2FE6B50009B77F /* IAMDelegate.swift */; };
 		F62F2E212E2FECC80009B77F /* UIKitView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F62F2E202E2FECC80009B77F /* UIKitView.swift */; };
+		F6B650372E3152AF0088E0D6 /* IAMDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = F6B650362E3152AF0088E0D6 /* IAMDelegate.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -84,6 +85,9 @@
 		F62F2E012E2942470009B77F /* papyrus.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = papyrus.ttf; sourceTree = "<group>"; };
 		F62F2E192E2FE6B50009B77F /* IAMDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IAMDelegate.swift; sourceTree = "<group>"; };
 		F62F2E202E2FECC80009B77F /* UIKitView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIKitView.swift; sourceTree = "<group>"; };
+		F6B650342E3151BE0088E0D6 /* IAMDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IAMDelegate.h; sourceTree = "<group>"; };
+		F6B650352E3152AF0088E0D6 /* Example-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Example-Bridging-Header.h"; sourceTree = "<group>"; };
+		F6B650362E3152AF0088E0D6 /* IAMDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = IAMDelegate.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -128,11 +132,14 @@
 				DD291168230D0AF900049D3A /* Utils.swift */,
 				F62F2E192E2FE6B50009B77F /* IAMDelegate.swift */,
 				F62F2DF62E2146B40009B77F /* TestPage.swift */,
+				F6B650342E3151BE0088E0D6 /* IAMDelegate.h */,
+				F6B650362E3152AF0088E0D6 /* IAMDelegate.m */,
 				F62F2E202E2FECC80009B77F /* UIKitView.swift */,
 				DD236D2F230A006900EB88F9 /* Assets.xcassets */,
 				DD86FCF9239185F4003225F6 /* RadarSDK.xcodeproj */,
 				E698B7382C626AE600084371 /* RadarSDKMotion.xcodeproj */,
 				F625D7F82C3337650024D1E7 /* Launch Screen.storyboard */,
+				F6B650352E3152AF0088E0D6 /* Example-Bridging-Header.h */,
 			);
 			path = Example;
 			sourceTree = "<group>";
@@ -197,6 +204,7 @@
 				TargetAttributes = {
 					DD236D22230A006700EB88F9 = {
 						CreatedOnToolsVersion = 11.0;
+						LastSwiftMigration = 1640;
 					};
 				};
 			};
@@ -284,6 +292,7 @@
 				F62F2DF72E2146B40009B77F /* TestPage.swift in Sources */,
 				F62F2E1A2E2FE6B50009B77F /* IAMDelegate.swift in Sources */,
 				DD291169230D0AF900049D3A /* Utils.swift in Sources */,
+				F6B650372E3152AF0088E0D6 /* IAMDelegate.m in Sources */,
 				F62F2E212E2FECC80009B77F /* UIKitView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -411,6 +420,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = Example/Example.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
@@ -432,6 +442,8 @@
 				PRODUCT_BUNDLE_IDENTIFIER = io.radar.iosexample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				SWIFT_OBJC_BRIDGING_HEADER = "Example/Example-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -441,6 +453,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = Example/Example.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
@@ -462,6 +475,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = io.radar.iosexample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				SWIFT_OBJC_BRIDGING_HEADER = "Example/Example-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};

@@ -35,21 +35,29 @@ func loadImage(_ url: String) async -> UIImage? {
 
 @available(iOS 13.0, *)
 @objc(RadarIAMDelegate_Swift)
+@objcMembers
 open class RadarIAMDelegate : RadarIAMDelegate_ObjC {
     /**
      returns the view controller for the message to show, can be overwritten to display a custom view
      */
-    @MainActor @objc open func getIAMViewController(_ message: RadarInAppMessage) async -> UIViewController  {
-        let image = await loadImage(message.imageURL)
-        return UIHostingController(rootView: RadarIAMView(message: message, image: image))
+    open override func getIAMViewController(_ message: RadarInAppMessage, completionHandler: @escaping (UIViewController) -> Void) {
+        print("HELLO GETTING VIEW CONTROLLER")
+        Task {
+            let image = await loadImage(message.imageURL)
+            let viewController = UIHostingController(rootView: RadarIAMView(message: message, image: image))
+            completionHandler(viewController)
+        }
     }
     
-    @MainActor  @objc open func onIAMPositiveAction(_ message: RadarInAppMessage) {
+    open override func onIAMPositiveAction(_ message: RadarInAppMessage) {
         if let url = message.action?.url {
             UIApplication.shared.open(URL(string: url)!)
         }
-        print("OVER HERE")
-        // possibly log conversion
+        print("onIAMPositiveAction")
+    }
+    
+    func RadarIAMDelegate() {
+        return;
     }
 }
 

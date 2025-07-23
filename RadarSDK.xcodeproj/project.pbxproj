@@ -178,10 +178,10 @@
 		F62F2E162E2FD4990009B77F /* RadarIAMView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F62F2E152E2FD4990009B77F /* RadarIAMView.swift */; };
 		F62F2E182E2FD4B90009B77F /* RadarInAppMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F62F2E172E2FD4B90009B77F /* RadarInAppMessage.swift */; };
 		F62F2E272E3119730009B77F /* RadarIAMDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = F62F2E262E3119730009B77F /* RadarIAMDelegate.m */; };
-		F62F2E412E312C540009B77F /* RadarIAMDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = F62F2E402E312C540009B77F /* RadarIAMDelegate.h */; };
+		F62F2E412E312C540009B77F /* RadarIAMDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = F62F2E402E312C540009B77F /* RadarIAMDelegate.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F65AF72C2C10B242002BA009 /* get_config_response.json in Resources */ = {isa = PBXBuildFile; fileRef = F65AF72B2C10B242002BA009 /* get_config_response.json */; };
 		F667F8292BFBF3D1001F2F67 /* RadarSdkConfiguration.h in Headers */ = {isa = PBXBuildFile; fileRef = F667F8282BFBF3D1001F2F67 /* RadarSdkConfiguration.h */; };
-		F6B650102E3136A70088E0D6 /* RadarIAMDelegate_SWIFT.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6B6500F2E3136A70088E0D6 /* RadarIAMDelegate_SWIFT.swift */; };
+		F6B650102E3136A70088E0D6 /* RadarIAMDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6B6500F2E3136A70088E0D6 /* RadarIAMDelegate.swift */; };
 		F6F959802C3D7D9900BC30FE /* RadarTimeZone.h in Headers */ = {isa = PBXBuildFile; fileRef = F6F9597F2C3D7D9900BC30FE /* RadarTimeZone.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F6F959822C3D7EA200BC30FE /* RadarTimeZone+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = F6F959812C3D7EA200BC30FE /* RadarTimeZone+Internal.h */; };
 		F6F959842C3D7EDE00BC30FE /* RadarTimeZone.m in Sources */ = {isa = PBXBuildFile; fileRef = F6F959832C3D7EDE00BC30FE /* RadarTimeZone.m */; };
@@ -362,7 +362,7 @@
 		F65AF72B2C10B242002BA009 /* get_config_response.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = get_config_response.json; sourceTree = "<group>"; };
 		F667F8262BFBF3C8001F2F67 /* RadarSdkConfiguration.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RadarSdkConfiguration.m; sourceTree = "<group>"; };
 		F667F8282BFBF3D1001F2F67 /* RadarSdkConfiguration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RadarSdkConfiguration.h; sourceTree = "<group>"; };
-		F6B6500F2E3136A70088E0D6 /* RadarIAMDelegate_SWIFT.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarIAMDelegate_SWIFT.swift; sourceTree = "<group>"; };
+		F6B6500F2E3136A70088E0D6 /* RadarIAMDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarIAMDelegate.swift; sourceTree = "<group>"; };
 		F6F9597F2C3D7D9900BC30FE /* RadarTimeZone.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarTimeZone.h; sourceTree = "<group>"; };
 		F6F959812C3D7EA200BC30FE /* RadarTimeZone+Internal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "RadarTimeZone+Internal.h"; sourceTree = "<group>"; };
 		F6F959832C3D7EDE00BC30FE /* RadarTimeZone.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RadarTimeZone.m; sourceTree = "<group>"; };
@@ -544,7 +544,7 @@
 				F62F2E152E2FD4990009B77F /* RadarIAMView.swift */,
 				F62F2E262E3119730009B77F /* RadarIAMDelegate.m */,
 				F62F2DF22E205C570009B77F /* RadarIAMManager.swift */,
-				F6B6500F2E3136A70088E0D6 /* RadarIAMDelegate_SWIFT.swift */,
+				F6B6500F2E3136A70088E0D6 /* RadarIAMDelegate.swift */,
 				F62F2E172E2FD4B90009B77F /* RadarInAppMessage.swift */,
 			);
 			path = RadarSDK;
@@ -658,6 +658,7 @@
 				96A5A11A27ADA02F007B960B /* RadarLogBuffer.h in Headers */,
 				0107A9FF26220037008AB52F /* RadarSDK.h in Headers */,
 				96A5A0F627AD9F7F007B960B /* RadarRouteGeometry.h in Headers */,
+				F62F2E412E312C540009B77F /* RadarIAMDelegate.h in Headers */,
 				0107AA0C26220045008AB52F /* RadarAPIHelper.h in Headers */,
 				96A5A0C127AD9F41007B960B /* RadarRoutes+Internal.h in Headers */,
 				82DF18792C58324600301B17 /* RadarActivityManager.h in Headers */,
@@ -711,7 +712,6 @@
 				9683FD6427B36C26009EBB6B /* RadarMeta.h in Headers */,
 				96A5A11027AD9F7F007B960B /* RadarPlace.h in Headers */,
 				96A5A0D427AD9F41007B960B /* RadarGeofence+Internal.h in Headers */,
-				F62F2E412E312C540009B77F /* RadarIAMDelegate.h in Headers */,
 				96A5A0C427AD9F41007B960B /* RadarCircleGeometry+Internal.h in Headers */,
 				F6F959802C3D7D9900BC30FE /* RadarTimeZone.h in Headers */,
 				96A5A0D527AD9F41007B960B /* RadarRouteDuration+Internal.h in Headers */,
@@ -902,7 +902,7 @@
 				0107AAF2262201B2008AB52F /* RadarUser.m in Sources */,
 				53CCD783275E579800F79CC8 /* RadarLogBuffer.m in Sources */,
 				F62F2E162E2FD4990009B77F /* RadarIAMView.swift in Sources */,
-				F6B650102E3136A70088E0D6 /* RadarIAMDelegate_SWIFT.swift in Sources */,
+				F6B650102E3136A70088E0D6 /* RadarIAMDelegate.swift in Sources */,
 				82D04ABC29722ED20036619F /* RadarReplayBuffer.m in Sources */,
 				82F7FAEF2A65FE030055AA4B /* RadarVerificationManager.m in Sources */,
 				0107AA832622013A008AB52F /* RadarBeacon.m in Sources */,
