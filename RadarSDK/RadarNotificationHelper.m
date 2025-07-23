@@ -332,6 +332,18 @@ static dispatch_semaphore_t notificationSemaphore;
     }];
 }
 
++ (void)cleanUpNotificationDiffWithCompletionHandler:(void (^)(void))completionHandler {
+    NSArray *registeredNotifications = [RadarState registeredNotifications]; 
+    [self getNotificationDiffWithCompletionHandler:^(NSArray *notificationsDelivered, NSArray *notificationsRemaining) {
+        NSMutableArray *currentNotifications = [NSMutableArray arrayWithArray:registeredNotifications];
+        [currentNotifications removeObjectsInArray:notificationsDelivered];
+        [RadarState setRegisteredNotifications:currentNotifications];
+        if (completionHandler) {
+            completionHandler();
+        }
+    }];
+}
+
 + (void)checkNotificationPermissionsWithCompletionHandler:(NotificationPermissionCheckCompletion)completionHandler {
     if (NSClassFromString(@"XCTestCase") == nil) {
         UNUserNotificationCenter *notificationCenter = [UNUserNotificationCenter currentNotificationCenter];

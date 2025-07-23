@@ -592,18 +592,21 @@
                                     [[RadarDelegateHolder sharedInstance] didUpdateToken:token];
                                 }
 
-                                id nearbyBeaconRegionsObj = res[@"nearbyBeaconRegions"];
-                                if (nearbyBeaconRegionsObj && [nearbyBeaconRegionsObj isKindOfClass:[NSArray class]]) {
-                                    NSArray<NSDictionary<NSString *, NSString *> *> *beaconRegions = (NSArray<NSDictionary<NSString *, NSString *> *> *)nearbyBeaconRegionsObj;
-                                    [[RadarBeaconManager sharedInstance] registerBeaconRegionNotificationsFromArray:beaconRegions];
-                                }
+                                // at this point, we want to clean up all the orphaned registered notifications that has been handled by the server
+                                [RadarNotificationHelper cleanUpNotificationDiffWithCompletionHandler:^{
+                                    id nearbyBeaconRegionsObj = res[@"nearbyBeaconRegions"];
+                                    if (nearbyBeaconRegionsObj && [nearbyBeaconRegionsObj isKindOfClass:[NSArray class]]) {
+                                        NSArray<NSDictionary<NSString *, NSString *> *> *beaconRegions = (NSArray<NSDictionary<NSString *, NSString *> *> *)nearbyBeaconRegionsObj;
+                                        [[RadarBeaconManager sharedInstance] registerBeaconRegionNotificationsFromArray:beaconRegions];
+                                    }
 
-                                id csgnObj = res[@"csgn"];
-                                if (csgnObj && [csgnObj isKindOfClass:[NSArray class]]) {
-                                    NSArray<RadarGeofence *> *csgn = [RadarGeofence geofencesFromObject:csgnObj];
-                                    [RadarNotificationHelper registerCSGNNotificationsFromArray:csgn];
-                                }
-                                
+                                    id csgnObj = res[@"csgn"];
+                                    if (csgnObj && [csgnObj isKindOfClass:[NSArray class]]) {
+                                        NSArray<RadarGeofence *> *csgn = [RadarGeofence geofencesFromObject:csgnObj];
+                                        [RadarNotificationHelper registerCSGNNotificationsFromArray:csgn];
+                                    }
+                                }];
+
                                 return completionHandler(RadarStatusSuccess, res, events, user, nearbyGeofences, config, token);
                             } else {
                                 [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"Setting %lu notifications remaining", (unsigned long)notificationsRemaining.count]];
