@@ -23,6 +23,7 @@
 #import "RadarReplayBuffer.h"
 #import "RadarNotificationHelper.h"
 #import "RadarTripOptions.h"
+#import "RadarIAMDelegate.h"
 #import <RadarSDK/RadarSDK-Swift.h>
 
 @interface Radar ()
@@ -52,13 +53,21 @@
     });
 }
 
-+ (void)inAppMessage:(RadarInAppMessageConfig*)config {
++ (void)inAppMessage:(RadarInAppMessage*)message {
     if (@available(iOS 13.0, *)) {
-        [RadarInAppMessage showInAppMessageWithConfig:config];
+        [RadarIAMManager showInAppMessage:message completionHandler:^(){}];
     } else {
         // Fallback on earlier versions
     }
 //    [UIApplication sharedApplication];
+}
+
++ (void)setIAMDelegate:(id)delegate {
+    if (@available(iOS 13.0, *)) {
+//        [RadarIAMManager setDelegate:delegate];
+    } else {
+        // Fallback on earlier versions
+    }
 }
 
 + (void)initializeWithPublishableKey:(NSString *)publishableKey options:(RadarInitializeOptions *)options {
@@ -1297,34 +1306,39 @@
 }
 
 + (NSString *)stringForMode:(RadarRouteMode)mode {
-    return [RadarRouteModeUtils stringForMode:mode];
+    switch (mode) {
+        case RadarRouteModeFoot:
+            return @"foot";
+        case RadarRouteModeBike:
+            return @"bike";
+        case RadarRouteModeCar:
+            return @"car";
+        case RadarRouteModeTruck:
+            return @"truck";
+        case RadarRouteModeMotorbike:
+            return @"motorbike";
+        default:
+            return @"unknown";
+    }
 }
 
 + (NSString *)stringForTripStatus:(RadarTripStatus)status {
-    NSString *str;
     switch (status) {
-    case RadarTripStatusStarted:
-        str = @"started";
-        break;
-    case RadarTripStatusApproaching:
-        str = @"approaching";
-        break;
-    case RadarTripStatusArrived:
-        str = @"arrived";
-        break;
-    case RadarTripStatusExpired:
-        str = @"expired";
-        break;
-    case RadarTripStatusCompleted:
-        str = @"completed";
-        break;
-    case RadarTripStatusCanceled:
-        str = @"canceled";
-        break;
-    default:
-        str = @"unknown";
+        case RadarTripStatusStarted:
+            return @"started";
+        case RadarTripStatusApproaching:
+            return @"approaching";
+        case RadarTripStatusArrived:
+            return @"arrived";
+        case RadarTripStatusExpired:
+            return @"expired";
+        case RadarTripStatusCompleted:
+            return @"completed";
+        case RadarTripStatusCanceled:
+            return @"canceled";
+        default:
+            return @"unknown";
     }
-    return str;
 }
 
 + (NSDictionary *)dictionaryForLocation:(CLLocation *)location {

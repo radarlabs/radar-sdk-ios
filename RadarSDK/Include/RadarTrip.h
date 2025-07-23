@@ -6,7 +6,7 @@
 //
 
 #import "RadarCoordinate.h"
-#import "RadarRouteMode.h"
+#import "RadarRoute.h"
 #import <Foundation/Foundation.h>
 
 /**

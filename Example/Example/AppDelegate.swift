@@ -38,6 +38,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         Radar.setMetadata([ "foo": "bar" ])
         Radar.setDelegate(self)
         Radar.setVerifiedDelegate(self)
+        
+//        Radar.setIAMDelegate(MyIAMDelegate())
  
         return true
     }
@@ -101,14 +103,25 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         
         
         demoButton(text: "Send it") {
-            let config = RadarInAppMessageConfig.fromDictionary(dict: [
+            let message = RadarInAppMessage.fromDictionary(dict: [
                 "type": "banner",
-                "title": "Hello World",
-                "body": "This is a demo message.",
-                "font": "papyrus",
+                "title": [
+                    "text": "This is the title",
+                    "color": "ff00007f"
+                ],
+                "body": [
+                    "text": "This is a demo message.",
+                    "color": "00ff00ff"
+                ],
+                "action": [
+                    "text": "Buy it",
+                    "color": "0000ffff",
+                    "backgroundColor": "ffffffff",
+                ],
+                "imageURL": "https://images.pexels.com/photos/949587/pexels-photo-949587.jpeg",
             ])
             
-            Radar.inAppMessage(config)
+            Radar.inAppMessage(message)
         }
         
         demoButton(text: "trackOnce") {

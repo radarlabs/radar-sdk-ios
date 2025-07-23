@@ -7,6 +7,7 @@
 
 #import "RadarTripOptions.h"
 #import "RadarUtils.h"
+#import "RadarSDK.h"
 
 @implementation RadarTripOptions
 
@@ -111,7 +112,7 @@ static NSString *const kStartTracking = @"startTracking";
     dict[kMetadata] = self.metadata;
     dict[kDestinationGeofenceTag] = self.destinationGeofenceTag;
     dict[kDestinationGeofenceExternalId] = self.destinationGeofenceExternalId;
-    dict[kMode] = [RadarRouteModeUtils stringForMode:self.mode];
+    dict[kMode] = [Radar stringForMode:self.mode];
     dict[kScheduledArrivalAt] = [RadarUtils.isoDateFormatter stringFromDate:self.scheduledArrivalAt];
     if (self.approachingThreshold && self.approachingThreshold > 0) {
         dict[kApproachingThreshold] = @(self.approachingThreshold);

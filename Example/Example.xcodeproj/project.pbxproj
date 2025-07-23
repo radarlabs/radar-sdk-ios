@@ -18,6 +18,8 @@
 		F625D7F92C3337650024D1E7 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F625D7F82C3337650024D1E7 /* Launch Screen.storyboard */; };
 		F62F2DF72E2146B40009B77F /* TestPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F62F2DF62E2146B40009B77F /* TestPage.swift */; };
 		F62F2E022E2942470009B77F /* papyrus.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F62F2E012E2942470009B77F /* papyrus.ttf */; };
+		F62F2E1A2E2FE6B50009B77F /* IAMDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F62F2E192E2FE6B50009B77F /* IAMDelegate.swift */; };
+		F62F2E212E2FECC80009B77F /* UIKitView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F62F2E202E2FECC80009B77F /* UIKitView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -80,6 +82,8 @@
 		F625D7F82C3337650024D1E7 /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
 		F62F2DF62E2146B40009B77F /* TestPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestPage.swift; sourceTree = "<group>"; };
 		F62F2E012E2942470009B77F /* papyrus.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = papyrus.ttf; sourceTree = "<group>"; };
+		F62F2E192E2FE6B50009B77F /* IAMDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IAMDelegate.swift; sourceTree = "<group>"; };
+		F62F2E202E2FECC80009B77F /* UIKitView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIKitView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -122,7 +126,9 @@
 				DD236D26230A006700EB88F9 /* AppDelegate.swift */,
 				F62F2E012E2942470009B77F /* papyrus.ttf */,
 				DD291168230D0AF900049D3A /* Utils.swift */,
+				F62F2E192E2FE6B50009B77F /* IAMDelegate.swift */,
 				F62F2DF62E2146B40009B77F /* TestPage.swift */,
+				F62F2E202E2FECC80009B77F /* UIKitView.swift */,
 				DD236D2F230A006900EB88F9 /* Assets.xcassets */,
 				DD86FCF9239185F4003225F6 /* RadarSDK.xcodeproj */,
 				E698B7382C626AE600084371 /* RadarSDKMotion.xcodeproj */,
@@ -276,7 +282,9 @@
 			files = (
 				DD236D27230A006700EB88F9 /* AppDelegate.swift in Sources */,
 				F62F2DF72E2146B40009B77F /* TestPage.swift in Sources */,
+				F62F2E1A2E2FE6B50009B77F /* IAMDelegate.swift in Sources */,
 				DD291169230D0AF900049D3A /* Utils.swift in Sources */,
+				F62F2E212E2FECC80009B77F /* UIKitView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

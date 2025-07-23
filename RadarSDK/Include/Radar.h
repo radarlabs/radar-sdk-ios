@@ -15,7 +15,6 @@
 #import "RadarEvent.h"
 #import "RadarRegion.h"
 #import "RadarRouteMatrix.h"
-#import "RadarRouteMode.h"
 #import "RadarRoutes.h"
 #import "RadarTrackingOptions.h"
 #import "RadarVerifiedLocationToken.h"
@@ -29,7 +28,8 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol RadarMotionProtocol;
 
 @class RadarTripOptions;
-@class RadarInAppMessageConfig;
+@class RadarInAppMessage;
+@class RadarIAMDelegate;
 
 #pragma mark - Enums
 
@@ -315,7 +315,9 @@ typedef void (^_Nullable RadarLogConversionCompletionHandler)(RadarStatus status
 
 #pragma mark - Initialization
 
-+ (void)inAppMessage:(RadarInAppMessageConfig*)config;
++ (void)inAppMessage:(RadarInAppMessage*)message;
+
++ (void)setIAMDelegate:(RadarIAMDelegate*)delegate;
 
 /**
  Initializes the Radar SDK.
