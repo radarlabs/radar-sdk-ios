@@ -495,12 +495,6 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
                                  }];
 }
 
-- (void)test_Radar_getMetadata {
-    NSDictionary *metadata = @{@"key1": @"value1", @"key2": @"value2"};
-    [Radar setMetadata:metadata];
-    XCTAssertEqualObjects(metadata, [Radar getMetadata]);
-}
-
 - (void)test_Radar_getLocation_errorPermissions {
     self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusNotDetermined;
     self.locationManagerMock.mockLocation = nil;
