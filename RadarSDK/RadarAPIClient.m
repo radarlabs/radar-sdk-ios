@@ -593,6 +593,7 @@
                                 }
 
                                 // at this point, we want to clean up all the orphaned registered notifications that has been handled by the server
+                                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Cleaning up orphaned notifications"];
                                 [RadarNotificationHelper cleanUpNotificationDiffWithCompletionHandler:^{
                                     id nearbyBeaconRegionsObj = res[@"nearbyBeaconRegions"];
                                     if (nearbyBeaconRegionsObj && [nearbyBeaconRegionsObj isKindOfClass:[NSArray class]]) {
@@ -602,6 +603,7 @@
 
                                     id csgnObj = res[@"csgn"];
                                     if (csgnObj && [csgnObj isKindOfClass:[NSArray class]]) {
+                                        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"CSGN"];
                                         NSArray<RadarGeofence *> *csgn = [RadarGeofence geofencesFromObject:csgnObj];
                                         [RadarNotificationHelper registerCSGNNotificationsFromArray:csgn];
                                     }

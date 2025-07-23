@@ -371,6 +371,7 @@ static dispatch_semaphore_t notificationSemaphore;
 + (void)registerCSGNNotificationsFromArray:(NSArray<RadarGeofence *> *)geofences {
     NSMutableArray *requests = [NSMutableArray new];
     for (RadarGeofence *geofence in geofences) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Registering CSGN notification for geofence | geofenceId = %@", geofence._id]];
         NSString *geofenceId = geofence._id;
         NSString *identifier = [NSString stringWithFormat:@"%@%@", kSyncGeofenceIdentifierPrefix, geofenceId];
         RadarCoordinate *center;
