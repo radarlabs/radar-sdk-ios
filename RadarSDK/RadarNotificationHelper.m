@@ -233,35 +233,28 @@ static dispatch_semaphore_t notificationSemaphore;
 + (void) updateClientSideCampaignsWithPrefix:(NSString *)prefix notificationRequests:(NSArray<UNNotificationRequest *> *)requests {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         dispatch_semaphore_wait(notificationSemaphore, DISPATCH_TIME_FOREVER);
-        [self removePendingNotificationsWithPrefix:prefix completionHandler:^{
-            [self addOnPremiseNotificationRequests:requests];
-        }];
+        [self addOnPremiseNotificationRequests:requests];
     });
 }
 
-+ (void)removePendingNotificationsWithPrefix:(NSString *)prefix completionHandler:(void (^)(void))completionHandler {
++ (void)cleanUpNotificationDiffWithCompletionHandler:(void (^)(void))completionHandler {
     UNUserNotificationCenter *notificationCenter = [UNUserNotificationCenter currentNotificationCenter];
     [notificationCenter getPendingNotificationRequestsWithCompletionHandler:^(NSArray<UNNotificationRequest *> *_Nonnull requests) {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Found %lu pending notifications", (unsigned long)requests.count]];
         NSMutableArray *identifiersToRemove = [NSMutableArray new];
-        NSMutableArray *userInfosToKeep = [NSMutableArray new];
         for (UNNotificationRequest *request in requests) {
-            if ([request.identifier hasPrefix:prefix]) {
+            if ([request.identifier hasPrefix:@"radar_"]) {
                 [identifiersToRemove addObject:request.identifier];
-            } else {
-                [userInfosToKeep addObject:request.content.userInfo];
             }
         }
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Found %lu pending notifications to remove", (unsigned long)identifiersToRemove.count]];        
-        [RadarState setRegisteredNotifications:userInfosToKeep];
+        [RadarState setRegisteredNotifications:@[]];
         if (identifiersToRemove.count > 0) {
             [notificationCenter removePendingNotificationRequestsWithIdentifiers:identifiersToRemove];
             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Removed pending notifications"];
         }
-
         completionHandler();
     }];
-
 }
 
 + (void)addOnPremiseNotificationRequests:(NSArray<UNNotificationRequest *> *)requests {
@@ -269,7 +262,7 @@ static dispatch_semaphore_t notificationSemaphore;
         if (granted) {
             UNUserNotificationCenter *notificationCenter = [UNUserNotificationCenter currentNotificationCenter];
             dispatch_group_t group = dispatch_group_create();
-            
+            dispatch_group_enter(group);
             for (UNNotificationRequest *request in requests) {
                 dispatch_group_enter(group);
                 [notificationCenter addNotificationRequest:request withCompletionHandler:^(NSError *_Nullable error) {
@@ -289,6 +282,7 @@ static dispatch_semaphore_t notificationSemaphore;
                     dispatch_group_leave(group);
                 }];
             }
+            dispatch_group_leave(group);
             
             dispatch_group_notify(group, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                 dispatch_semaphore_signal(notificationSemaphore);
@@ -328,18 +322,6 @@ static dispatch_semaphore_t notificationSemaphore;
         if (completionHandler) {
             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Setting %lu notifications remaining after re-registering", (unsigned long)notificationsDelivered.count]];
             completionHandler(notificationsDelivered, currentNotifications);
-        }
-    }];
-}
-
-+ (void)cleanUpNotificationDiffWithCompletionHandler:(void (^)(void))completionHandler {
-    NSArray *registeredNotifications = [RadarState registeredNotifications]; 
-    [self getNotificationDiffWithCompletionHandler:^(NSArray *notificationsDelivered, NSArray *notificationsRemaining) {
-        NSMutableArray *currentNotifications = [NSMutableArray arrayWithArray:registeredNotifications];
-        [currentNotifications removeObjectsInArray:notificationsDelivered];
-        [RadarState setRegisteredNotifications:currentNotifications];
-        if (completionHandler) {
-            completionHandler();
         }
     }];
 }

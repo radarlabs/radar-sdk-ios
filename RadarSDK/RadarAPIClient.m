@@ -575,7 +575,7 @@
                                 // if user was on a trip that ended server-side, restore previous tracking options
                                 if (!user.trip && [RadarSettings tripOptions]) {
                                     [[RadarLocationManager sharedInstance] restartPreviousTrackingOptions];
-                                    [RadarSettings setTripOptions:nil];
+                                [RadarSettings setTripOptions:nil];
                                 }
 
                                 [RadarSettings setUserDebug:user.debug];
