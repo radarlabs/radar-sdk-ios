@@ -16,13 +16,10 @@
 #import <BackgroundTasks/BackgroundTasks.h>
 #import "Radar+Internal.h"
 #import <objc/runtime.h>
-#import "RadarCircleGeometry.h"
-#import "RadarPolygonGeometry.h"
 
 @implementation RadarNotificationHelper
 
 static NSString *const kEventNotificationIdentifierPrefix = @"radar_event_notification_";
-static NSString *const kSyncGeofenceIdentifierPrefix = @"radar_geofence_";
 static dispatch_semaphore_t notificationSemaphore;
 
 + (void)initialize {
@@ -115,6 +112,7 @@ static dispatch_semaphore_t notificationSemaphore;
     NSString *notificationSubtitle = [metadata objectForKey:@"radar:notificationSubtitle"];
     NSString *notificationURL = [metadata objectForKey:@"radar:notificationURL"];
     NSString *campaignId = [metadata objectForKey:@"radar:campaignId"];
+    NSString *campaignMetadata = [metadata objectForKey:@"radar:campaignMetadata"];
 
     if (notificationText && [RadarNotificationHelper isNotificationCampaign:metadata]) {
         UNMutableNotificationContent *content = [UNMutableNotificationContent new];
@@ -143,6 +141,14 @@ static dispatch_semaphore_t notificationSemaphore;
 
             if ([identifier hasPrefix:@"radar_geofence_"]) {
                 mutableUserInfo[@"geofenceId"] = [identifier stringByReplacingOccurrencesOfString:@"radar_geofence_" withString:@""];
+            }
+        }
+        if (campaignMetadata && [campaignMetadata isKindOfClass:[NSString class]]) {
+            NSError *jsonError;
+            NSData *jsonData = [((NSString *)campaignMetadata) dataUsingEncoding:NSUTF8StringEncoding];
+            id jsonObj = [NSJSONSerialization JSONObjectWithData:jsonData options:0 error:&jsonError];
+            if (!jsonError && [jsonObj isKindOfClass:[NSDictionary class]]) {
+                mutableUserInfo[@"campaignMetadata"] = (NSDictionary *)jsonObj;
             }
         }
         
@@ -233,28 +239,35 @@ static dispatch_semaphore_t notificationSemaphore;
 + (void) updateClientSideCampaignsWithPrefix:(NSString *)prefix notificationRequests:(NSArray<UNNotificationRequest *> *)requests {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         dispatch_semaphore_wait(notificationSemaphore, DISPATCH_TIME_FOREVER);
-        [self addOnPremiseNotificationRequests:requests];
+        [self removePendingNotificationsWithPrefix:prefix completionHandler:^{
+            [self addOnPremiseNotificationRequests:requests];
+        }];
     });
 }
 
-+ (void)cleanUpNotificationDiffWithCompletionHandler:(void (^)(void))completionHandler {
++ (void)removePendingNotificationsWithPrefix:(NSString *)prefix completionHandler:(void (^)(void))completionHandler {
     UNUserNotificationCenter *notificationCenter = [UNUserNotificationCenter currentNotificationCenter];
     [notificationCenter getPendingNotificationRequestsWithCompletionHandler:^(NSArray<UNNotificationRequest *> *_Nonnull requests) {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Found %lu pending notifications", (unsigned long)requests.count]];
         NSMutableArray *identifiersToRemove = [NSMutableArray new];
+        NSMutableArray *userInfosToKeep = [NSMutableArray new];
         for (UNNotificationRequest *request in requests) {
-            if ([request.identifier hasPrefix:@"radar_"]) {
+            if ([request.identifier hasPrefix:prefix]) {
                 [identifiersToRemove addObject:request.identifier];
+            } else {
+                [userInfosToKeep addObject:request.content.userInfo];
             }
         }
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Found %lu pending notifications to remove", (unsigned long)identifiersToRemove.count]];        
-        [RadarState setRegisteredNotifications:@[]];
+        [RadarState setRegisteredNotifications:userInfosToKeep];
         if (identifiersToRemove.count > 0) {
             [notificationCenter removePendingNotificationRequestsWithIdentifiers:identifiersToRemove];
             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Removed pending notifications"];
         }
+
         completionHandler();
     }];
+
 }
 
 + (void)addOnPremiseNotificationRequests:(NSArray<UNNotificationRequest *> *)requests {
@@ -262,7 +275,7 @@ static dispatch_semaphore_t notificationSemaphore;
         if (granted) {
             UNUserNotificationCenter *notificationCenter = [UNUserNotificationCenter currentNotificationCenter];
             dispatch_group_t group = dispatch_group_create();
-            dispatch_group_enter(group);
+            
             for (UNNotificationRequest *request in requests) {
                 dispatch_group_enter(group);
                 [notificationCenter addNotificationRequest:request withCompletionHandler:^(NSError *_Nullable error) {
@@ -282,7 +295,6 @@ static dispatch_semaphore_t notificationSemaphore;
                     dispatch_group_leave(group);
                 }];
             }
-            dispatch_group_leave(group);
             
             dispatch_group_notify(group, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                 dispatch_semaphore_signal(notificationSemaphore);
@@ -347,42 +359,7 @@ static dispatch_semaphore_t notificationSemaphore;
 }
 
 + (BOOL)isNotificationCampaign:(NSDictionary *)metadata {
-    return [metadata objectForKey:@"radar:campaignType"] != nil && ([[metadata objectForKey:@"radar:campaignType"] isEqualToString:@"clientSide"] || [[metadata objectForKey:@"radar:campaignType"] isEqualToString:@"eventBased"]);
-}
-
-+ (void)registerCSGNNotificationsFromArray:(NSArray<RadarGeofence *> *)geofences {
-    NSMutableArray *requests = [NSMutableArray new];
-    for (RadarGeofence *geofence in geofences) {
-        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Registering CSGN notification for geofence | geofenceId = %@", geofence._id]];
-        NSString *geofenceId = geofence._id;
-        NSString *identifier = [NSString stringWithFormat:@"%@%@", kSyncGeofenceIdentifierPrefix, geofenceId];
-        RadarCoordinate *center;
-        double radius = 100;
-        if ([geofence.geometry isKindOfClass:[RadarCircleGeometry class]]) {
-            RadarCircleGeometry *geometry = (RadarCircleGeometry *)geofence.geometry;
-            center = geometry.center;
-            radius = geometry.radius;
-        } else if ([geofence.geometry isKindOfClass:[RadarPolygonGeometry class]]) {
-            RadarPolygonGeometry *geometry = (RadarPolygonGeometry *)geofence.geometry;
-            center = geometry.center;
-            radius = geometry.radius;
-        }
-        NSDictionary *metadata = geofence.metadata;
-        if (center && metadata) {
-            UNMutableNotificationContent *content = [RadarNotificationHelper extractContentFromMetadata:metadata identifier:identifier];
-            if (content) {
-                CLRegion *region = [[CLCircularRegion alloc] initWithCenter:center.coordinate radius:radius identifier:identifier];
-                region.notifyOnEntry = YES;
-                region.notifyOnExit = NO;
-                UNLocationNotificationTrigger *trigger = [UNLocationNotificationTrigger triggerWithRegion:region repeats:NO];
-                UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:identifier content:content trigger:trigger];
-                [requests addObject:request];
-            }
-        } else {
-            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Unable to register CSGN notification for geofence | geofenceId = %@", geofenceId]];
-        }
-    }
-    [self updateClientSideCampaignsWithPrefix:kSyncGeofenceIdentifierPrefix notificationRequests:requests];
+    return [metadata objectForKey:@"radar:campaignType"] != nil && ([[metadata objectForKey:@"radar:campaignType"] isEqual:@"clientSide"] || [[metadata objectForKey:@"radar:campaignType"] isEqual:@"eventBased"]);
 }
 
 @end

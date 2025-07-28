@@ -29,10 +29,6 @@ typedef void (^NotificationPermissionCheckCompletion)(BOOL granted);
 + (nullable UNMutableNotificationContent *)extractContentFromMetadata:(nullable NSDictionary *)metadata identifier:(nullable NSString *)identifier;
 
 + (void)getNotificationDiffWithCompletionHandler:(void (^)(NSArray *notificationsDelivered, NSArray *notificationsRemaining))completionHandler;
-
-+ (void)cleanUpNotificationDiffWithCompletionHandler:(void (^)(void))completionHandler;
-
-+ (void)registerCSGNNotificationsFromArray:(NSArray<RadarGeofence *> *)geofences;
 @end
 
 NS_ASSUME_NONNULL_END
