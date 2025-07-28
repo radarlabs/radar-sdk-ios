@@ -592,7 +592,6 @@
                                     [[RadarDelegateHolder sharedInstance] didUpdateToken:token];
                                 }
 
-
                                 id nearbyBeaconRegionsObj = res[@"nearbyBeaconRegions"];
                                 if (nearbyBeaconRegionsObj && [nearbyBeaconRegionsObj isKindOfClass:[NSArray class]]) {
                                     NSArray<NSDictionary<NSString *, NSString *> *> *beaconRegions = (NSArray<NSDictionary<NSString *, NSString *> *> *)nearbyBeaconRegionsObj;
