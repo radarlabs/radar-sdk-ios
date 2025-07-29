@@ -4,20 +4,29 @@
 @implementation RadarRouteModeUtils
 
 + (NSString *)stringForMode:(RadarRouteMode)mode {
-    switch (mode) {
-        case RadarRouteModeFoot:
-            return @"foot";
-        case RadarRouteModeBike:
-            return @"bike";
-        case RadarRouteModeCar:
-            return @"car";
-        case RadarRouteModeTruck:
-            return @"truck";
-        case RadarRouteModeMotorbike:
-            return @"motorbike";
-        default:
-            return @"unknown";
+    if (mode == 0) {
+        return @"unknown";
     }
+    NSMutableArray *modes = [NSMutableArray array];
+    if (mode & RadarRouteModeFoot) {
+        [modes addObject:@"foot"];
+    }
+    if (mode & RadarRouteModeBike) {
+        [modes addObject:@"bike"];
+    }
+    if (mode & RadarRouteModeCar) {
+        [modes addObject:@"car"];
+    }
+    if (mode & RadarRouteModeTruck) {
+        [modes addObject:@"truck"];
+    }
+    if (mode & RadarRouteModeMotorbike) {
+        [modes addObject:@"motorbike"];
+    }
+    if (modes.count == 0) {
+        return @"unknown";
+    }
+    return [modes componentsJoinedByString:@","];
 }
 
 @end
