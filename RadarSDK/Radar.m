@@ -1135,7 +1135,7 @@
                         mode:(RadarRouteMode)mode
                        units:(RadarRouteUnits)units
            completionHandler:(RadarRouteMatrixCompletionHandler)completionHandler {
-    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:[NSString stringWithFormat:@"getMatrixFromOrigins(origins: %@, destinations: %@, mode: %@, units: %@)", origins, destinations, [Radar stringForMode:mode], [RadarLog stringForLogLevel:units]]];
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:[NSString stringWithFormat:@"getMatrixFromOrigins(origins: %@, destinations: %@, mode: %@, units: %@)", origins, destinations, [Radar stringForMode:mode], [Radar stringForRouteUnits:units]]];
     [[RadarAPIClient sharedInstance] getMatrixFromOrigins:origins
                                              destinations:destinations
                                                      mode:mode
