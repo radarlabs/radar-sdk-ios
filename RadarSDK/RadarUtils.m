@@ -45,7 +45,7 @@ static NSDateFormatter *_isoDateFormatter;
 }
 
 + (NSString *)sdkVersion {
-    return @"3.21.6";
+    return @"3.22.0-beta.1";
 }
 
 + (NSString *)deviceId {
@@ -161,7 +161,7 @@ static NSDateFormatter *_isoDateFormatter;
         return @"{}";
     } else {
         return [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-    } 
+    }
 }
 
 #pragma mark - threading

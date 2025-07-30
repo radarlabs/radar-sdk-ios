@@ -103,7 +103,7 @@
                                                 [Radar startTrackingWithOptions:[RadarSettings trackingOptions]];
                                             }
                                             if (sdkConfiguration.trackOnceOnAppOpen) {
-                                                [Radar trackOnceWithCompletionHandler:nil];
+                                                [Radar trackOnceWithDesiredAccuracy:RadarTrackingOptionsDesiredAccuracyMedium beacons:[Radar getTrackingOptions].beacons completionHandler:nil];
                                             }
 
                                             [self flushLogs];
@@ -160,6 +160,22 @@
 + (NSDictionary *_Nullable)getMetadata {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"getMetadata()"];
     return [RadarSettings metadata];
+}
+
++ (NSArray<NSString *> *_Nullable)getTags {
+    return [RadarSettings tags];
+}
+
++ (void)setTags:(NSArray<NSString *> *_Nullable)tags {
+    [RadarSettings setTags:tags];
+}
+
++ (void)addTags:(NSArray<NSString *> *_Nonnull)tags {
+    [RadarSettings addTags:tags];
+}
+
++ (void)removeTags:(NSArray<NSString *> *_Nonnull)tags {
+    [RadarSettings removeTags:tags];
 }
 
 + (void)setProduct:(NSString *)product {
@@ -1415,7 +1431,7 @@
 
     RadarSdkConfiguration *sdkConfiguration = [RadarSettings sdkConfiguration];
     if (sdkConfiguration.trackOnceOnAppOpen) {
-        [Radar trackOnceWithCompletionHandler:nil];
+        [Radar trackOnceWithDesiredAccuracy:RadarTrackingOptionsDesiredAccuracyMedium beacons: [Radar getTrackingOptions].beacons completionHandler:nil];
     }
 }
 
