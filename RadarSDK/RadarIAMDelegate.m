@@ -27,7 +27,6 @@ RadarIAMDelegate* radarIAMDelegate = nil;
 }
 
 - (void)getIAMViewController:(RadarInAppMessage * _Nonnull)message completionHandler:(nonnull void (^)(UIViewController * _Nonnull __strong))completionHandler {
-    NSLog(@"iam GETTING CONTROLLER");
     [radarIAMDelegate getIAMViewController:message completionHandler:completionHandler];
 }
 

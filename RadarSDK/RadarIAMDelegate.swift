@@ -41,16 +41,17 @@ open class RadarIAMDelegate : RadarIAMDelegate_ObjC {
      returns the view controller for the message to show, can be overwritten to display a custom view
      */
     open override func getIAMViewController(_ message: RadarInAppMessage, completionHandler: @escaping (UIViewController) -> Void) {
-        print("HELLO GETTING VIEW CONTROLLER")
-        Task {
-            let image = await loadImage(message.imageURL)
-            let viewController = UIHostingController(rootView: RadarIAMView(message: message, image: image))
-            completionHandler(viewController)
+        if let imageUrl = message.image?.url {
+            Task {
+                let image = await loadImage(imageUrl)
+                let viewController = UIHostingController(rootView: RadarIAMView(message: message, image: image))
+                completionHandler(viewController)
+            }
         }
     }
     
     open override func onIAMPositiveAction(_ message: RadarInAppMessage) {
-        if let url = message.action?.url {
+        if let url = message.button?.url {
             UIApplication.shared.open(URL(string: url)!)
         }
         print("onIAMPositiveAction")

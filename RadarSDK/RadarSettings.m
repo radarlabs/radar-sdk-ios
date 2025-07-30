@@ -156,10 +156,10 @@ static NSString *const kInitializeOptions = @"radar-initializeOptions";
 + (RadarTrackingOptions *)trackingOptions {
     NSDictionary *optionsDict = [[NSUserDefaults standardUserDefaults] dictionaryForKey:kTrackingOptions];
 
-    if (optionsDict != nil) {
-        return [RadarTrackingOptions trackingOptionsFromDictionary:optionsDict];
+    RadarTrackingOptions *options = [RadarTrackingOptions trackingOptionsFromDictionary:optionsDict];
+    if (options != nil) {
+        return options;
     } else {
-        // default to efficient preset
         return RadarTrackingOptions.presetEfficient;
     }
 }

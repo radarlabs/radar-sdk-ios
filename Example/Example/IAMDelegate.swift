@@ -13,7 +13,7 @@ import SwiftUICore
 
 class MyIAMDelegate: RadarIAMDelegate {
     override func onIAMPositiveAction(_ message: RadarInAppMessage) {
-        if let url = message.action?.url {
+        if let url = message.button?.url {
             UIApplication.shared.open(URL(string: url)!)
         }
         print("custom on IAM positive action")

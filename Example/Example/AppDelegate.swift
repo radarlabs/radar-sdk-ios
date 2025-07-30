@@ -34,7 +34,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         // Uncomment to enable automatic setup for notification conversions or deep linking
         //radarInitializeOptions.autoLogNotificationConversions = true
         //radarInitializeOptions.autoHandleNotificationDeepLinks = true
-        Radar.initialize(publishableKey: "prj_live_pk_bbcc3b729cf153b34d67170da37e1a3b50c7c631", options: radarInitializeOptions )
+        Radar.initialize(publishableKey: "prj_live_pk_", options: radarInitializeOptions )
         Radar.setUserId("testUserId")
         Radar.setMetadata([ "foo": "bar" ])
         Radar.setDelegate(self)
@@ -87,7 +87,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         scrollView!.contentSize.width = window.frame.size.width
         
         window.addSubview(scrollView!)
-        
         window.makeKeyAndVisible()
         
         self.window = window
@@ -102,24 +101,26 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
             }
         }
         
-        
         demoButton(text: "Send it") {
-            let message = RadarInAppMessage.fromDictionary(dict: [
+            let message = RadarInAppMessage.fromDictionary([
                 "type": "banner",
                 "title": [
                     "text": "This is the title",
-                    "color": "ff00007f"
+                    "color": "#ff0000"
                 ],
                 "body": [
                     "text": "This is a demo message.",
-                    "color": "00ff00ff"
+                    "color": "#00ff00"
                 ],
-                "action": [
+                "button": [
                     "text": "Buy it",
-                    "color": "0000ffff",
-                    "backgroundColor": "ffffffff",
+                    "color": "#0000ff",
+                    "backgroundColor": "#EB0083",
                 ],
-                "imageURL": "https://images.pexels.com/photos/949587/pexels-photo-949587.jpeg",
+                "image": [
+                    "url": "https://images.pexels.com/photos/949587/pexels-photo-949587.jpeg",
+                    "name": "image.jpeg"
+                ]
             ])
             
             Radar.inAppMessage(message)

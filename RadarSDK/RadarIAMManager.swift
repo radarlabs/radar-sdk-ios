@@ -21,46 +21,49 @@ class RadarIAMManager: NSObject {
     private static var displayTimer: Timer? = nil
     
     public static var delegate: RadarIAMDelegate_ObjC = RadarIAMDelegate_ObjC()
+    public static var view: UIView?
     
     @objc public static func showInAppMessage(_ message: RadarInAppMessage) async {
-        guard let currentWindowScene = UIApplication.shared.connectedScenes.first as?  UIWindowScene else {
-            print("no current window scene")
+        guard let keyWindow = UIApplication.shared.windows.first(where: { $0.isKeyWindow }) else {
+            // No key window
             return
         }
-        print("Called show in app msg")
         
-        let overlayWindow = UIWindow(windowScene: currentWindowScene)
-        overlayWindow.windowLevel = UIWindow.Level.alert
-        overlayWindow.backgroundColor = .clear
-        
-        let view = await withCheckedContinuation { continuation in
-            print("waiting for view")
+        let viewController = await withCheckedContinuation { continuation in
             delegate.getIAMViewController(message) { result in
                 continuation.resume(returning: result)
             }
         }
-        overlayWindow.layer.position = view.view.layer.position
-        
-        overlayWindow.rootViewController = view
-        overlayWindow.isHidden = false
-        overlayWindow.makeKeyAndVisible()
-        
-        window = overlayWindow
+        if (view != nil) {
+            return
+        }
+        view = viewController.view
+        viewController.view.frame = UIScreen.main.bounds
+        viewController.view.backgroundColor = UIColor.black.withAlphaComponent(0.5)
+        keyWindow.addSubview(viewController.view)
     }
     
     @objc public static func enableIAM() {
         
     }
     
-    @objc public static func onIAMReceived(message: RadarInAppMessage) {
+    @objc public static func onIAMReceived(message: [RadarInAppMessage]) {
+        print("IAM received")
         if suppressed {
             // goes to queue
-            message.receivedLive = false
-            messageQueue.append(message)
+//            message.receivedLive = false
+            messageQueue.append(contentsOf: message)
         } else {
             // show
-            showingMessages.append(contentsOf: messageQueue)
+            showingMessages.append(contentsOf: message)
+            if (!showingMessages.isEmpty) {
+                Task {
+                    await showInAppMessage(showingMessages.first!)
+                }
+            }
         }
+        
+        
     }
     
     @objc public static func suppressIAM() {
@@ -75,10 +78,8 @@ class RadarIAMManager: NSObject {
     }
     
     @objc public static func dismissInAppMessage() {
-        window?.isHidden = true
-        window?.rootViewController = nil
-        window?.removeFromSuperview()
-        window = nil
+        view?.removeFromSuperview()
+        view = nil
         
         if !messageQueue.isEmpty && !suppressed {
             let message = messageQueue.removeFirst()
@@ -90,6 +91,5 @@ class RadarIAMManager: NSObject {
     
     @objc public static func setDelegate(_ delegate: RadarIAMDelegate_ObjC) {
         self.delegate = delegate
-        print("DELEGATE SET!")
     }
 }
