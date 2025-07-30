@@ -163,18 +163,22 @@
 }
 
 + (NSArray<NSString *> *_Nullable)getTags {
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"getTags()"];
     return [RadarSettings tags];
 }
 
 + (void)setTags:(NSArray<NSString *> *_Nullable)tags {
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:[NSString stringWithFormat:@"setTags(tags: %@)", tags]];
     [RadarSettings setTags:tags];
 }
 
 + (void)addTags:(NSArray<NSString *> *_Nonnull)tags {
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:[NSString stringWithFormat:@"addTags(tags: %@)", tags]];
     [RadarSettings addTags:tags];
 }
 
 + (void)removeTags:(NSArray<NSString *> *_Nonnull)tags {
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:[NSString stringWithFormat:@"removeTags(tags: %@)", tags]];
     [RadarSettings removeTags:tags];
 }
 
