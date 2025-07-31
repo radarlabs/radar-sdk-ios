@@ -470,7 +470,7 @@
 
 + (RadarTrackingOptions *)getTrackingOptions {
     RadarTrackingOptions *remoteTrackingOptions = [RadarSettings remoteTrackingOptions];
-    return remoteTrackingOptions ? remoteTrackingOptions: [RadarSettings trackingOptions];
+    return remoteTrackingOptions ? remoteTrackingOptions : [RadarSettings trackingOptions];
 }
 
 + (BOOL)isUsingRemoteTrackingOptions {
