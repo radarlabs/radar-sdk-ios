@@ -974,7 +974,8 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     }
 
     CLLocation *location = [locations lastObject];
-    if (self.completionHandlers.count) {
+    
+    if (self.completionHandlers.count && UIApplication.sharedApplication.applicationState == UIApplicationStateActive) {
         [self handleLocation:location source:RadarLocationSourceForegroundLocation];
     } else {
         BOOL tracking = [RadarSettings tracking];

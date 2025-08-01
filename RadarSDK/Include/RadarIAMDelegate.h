@@ -12,6 +12,11 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+typedef NS_ENUM(NSInteger, RadarIAMResponse) {
+    RadarIAMShow,
+    RadarIAMIgnore,
+};
+
 NS_SWIFT_NAME(RadarIAMDelegate_ObjC)
 API_AVAILABLE(ios(13.0))
 NS_SWIFT_UI_ACTOR
@@ -22,6 +27,8 @@ NS_SWIFT_UI_ACTOR
 - (void)getIAMViewController:(RadarInAppMessage * _Nonnull)message completionHandler:(void (^)(UIViewController *))completionHandler;
 
 - (void)onIAMPositiveAction:(RadarInAppMessage * _Nonnull)message;
+
+- (RadarIAMResponse)onNewMessage:(RadarInAppMessage * _Nonnull)message;
 
 @end
 

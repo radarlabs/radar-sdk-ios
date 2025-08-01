@@ -24,6 +24,10 @@ class RadarIAMManager: NSObject {
     public static var view: UIView?
     
     @objc public static func showInAppMessage(_ message: RadarInAppMessage) async {
+        // check before getting the view that there is no existing IAM shown
+        if (view != nil) {
+            return
+        }
         guard let keyWindow = UIApplication.shared.windows.first(where: { $0.isKeyWindow }) else {
             // No key window
             return
@@ -34,6 +38,7 @@ class RadarIAMManager: NSObject {
                 continuation.resume(returning: result)
             }
         }
+        // check after getting the view asynchronously that there is no existing IAM shown
         if (view != nil) {
             return
         }
@@ -43,50 +48,21 @@ class RadarIAMManager: NSObject {
         keyWindow.addSubview(viewController.view)
     }
     
-    @objc public static func enableIAM() {
-        
-    }
-    
-    @objc public static func onIAMReceived(message: [RadarInAppMessage]) {
+    @objc public static func onIAMReceived(messages: [RadarInAppMessage]) {
         print("IAM received")
-        if suppressed {
-            // goes to queue
-//            message.receivedLive = false
-            messageQueue.append(contentsOf: message)
-        } else {
-            // show
-            showingMessages.append(contentsOf: message)
-            if (!showingMessages.isEmpty) {
+        for message in messages {
+            if (delegate.onNewMessage(message) == RadarIAMResponse.show) {
                 Task {
-                    await showInAppMessage(showingMessages.first!)
+                    await showInAppMessage(message)
                 }
+                break
             }
         }
-        
-        
-    }
-    
-    @objc public static func suppressIAM() {
-        suppressed = true
-        // cancel any active view
-        dismissInAppMessage()
-    }
-    
-    @objc public static func unsuppressIAM() {
-        suppressed = false
-        
     }
     
     @objc public static func dismissInAppMessage() {
         view?.removeFromSuperview()
         view = nil
-        
-        if !messageQueue.isEmpty && !suppressed {
-            let message = messageQueue.removeFirst()
-            Task {
-                await showInAppMessage(message)
-            }
-        }
     }
     
     @objc public static func setDelegate(_ delegate: RadarIAMDelegate_ObjC) {

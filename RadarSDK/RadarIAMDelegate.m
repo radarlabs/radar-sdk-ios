@@ -21,7 +21,6 @@ RadarIAMDelegate* radarIAMDelegate = nil;
     if (radarIAMDelegate == nil) {
         radarIAMDelegate = [RadarIAMDelegate_Swift alloc];
         radarIAMDelegate = [radarIAMDelegate init];
-        NSLog(@"iam Initialized IAM Delegate");
     }
     return self;
 }
@@ -32,6 +31,10 @@ RadarIAMDelegate* radarIAMDelegate = nil;
 
 - (void)onIAMPositiveAction:(RadarInAppMessage * _Nonnull)message {
     [radarIAMDelegate onIAMPositiveAction:message];
+}
+
+- (RadarIAMResponse)onNewMessage:(RadarInAppMessage * _Nonnull)message {
+    return [radarIAMDelegate onNewMessage:message];
 }
 
 @end
