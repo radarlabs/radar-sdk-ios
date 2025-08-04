@@ -16,14 +16,27 @@ func loadImage(_ url: String) async -> UIImage? {
     }
     
     let image: UIImage? = await withCheckedContinuation { continuation in
-        URLSession.shared.dataTask(with: URL(string: url)!) {
+        var request = URLRequest(url: URL(string: url)!)
+        request.httpMethod = "GET"
+        
+        if (!url.starts(with: "http")) {
+            let publishableKey = UserDefaults.standard.string(forKey: "radar-publishableKey")!
+            let radarHost = UserDefaults.standard.string(forKey: "radar-host")!
+            request.url = URL(string: "\(radarHost)/v1/assets/\(url)")
+            request.addValue(publishableKey, forHTTPHeaderField: "Authorization")
+        }
+        
+        URLSession.shared.dataTask(with: request) {
             data, response, error in
             guard let data = data else {
                 continuation.resume(returning: nil)
+                print("Error on data")
                 return
             }
+            
             guard let image = UIImage(data: data) else {
                 continuation.resume(returning: nil)
+                print("Error on image")
                 return
             }
             continuation.resume(returning: image)
