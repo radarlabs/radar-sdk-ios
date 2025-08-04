@@ -15,12 +15,11 @@
 @implementation RadarIAMDelegate
 
 API_AVAILABLE(ios(13.0))
-RadarIAMDelegate* radarIAMDelegate = nil;
+RadarIAMDelegate_Swift* radarIAMDelegate = nil;
 
 - (instancetype) init {
     if (radarIAMDelegate == nil) {
-        radarIAMDelegate = [RadarIAMDelegate_Swift alloc];
-        radarIAMDelegate = [radarIAMDelegate init];
+        radarIAMDelegate = [[RadarIAMDelegate_Swift alloc] init];
     }
     return self;
 }

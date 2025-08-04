@@ -36,7 +36,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         //radarInitializeOptions.autoHandleNotificationDeepLinks = true
         UserDefaults.standard.set("https://api-shicheng.radar-staging.com", forKey: "radar-host")
         
-        Radar.initialize(publishableKey: "prj_live_pk_bbcc3b729cf153b34d67170da37e1a3b50c7c631", options: radarInitializeOptions )
+        Radar.initialize(publishableKey: "prj_live_pk_", options: radarInitializeOptions )
         Radar.setUserId("testUserId")
         Radar.setMetadata([ "foo": "bar" ])
         Radar.setDelegate(self)

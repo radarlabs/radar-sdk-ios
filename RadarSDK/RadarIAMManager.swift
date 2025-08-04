@@ -20,7 +20,7 @@ class RadarIAMManager: NSObject {
     private static var showingMessages: [RadarInAppMessage] = []
     private static var displayTimer: Timer? = nil
     
-    public static var delegate: RadarIAMDelegate_ObjC = RadarIAMDelegate_ObjC()
+    public static var delegate: RadarIAMProtocol = RadarIAMDelegate()
     public static var view: UIView?
     
     @objc public static func showInAppMessage(_ message: RadarInAppMessage) async {
@@ -49,7 +49,6 @@ class RadarIAMManager: NSObject {
     }
     
     @objc public static func onIAMReceived(messages: [RadarInAppMessage]) {
-        print("IAM received")
         for message in messages {
             if (delegate.onNewMessage(message) == RadarIAMResponse.show) {
                 Task {

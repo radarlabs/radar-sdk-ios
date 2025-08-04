@@ -17,18 +17,24 @@ typedef NS_ENUM(NSInteger, RadarIAMResponse) {
     RadarIAMIgnore,
 };
 
-NS_SWIFT_NAME(RadarIAMDelegate_ObjC)
-API_AVAILABLE(ios(13.0))
 NS_SWIFT_UI_ACTOR
-@interface RadarIAMDelegate : NSObject
-
-- (instancetype) init;
+@protocol RadarIAMProtocol <NSObject>
 
 - (void)getIAMViewController:(RadarInAppMessage * _Nonnull)message completionHandler:(void (^)(UIViewController *))completionHandler;
 
 - (void)onIAMPositiveAction:(RadarInAppMessage * _Nonnull)message;
 
 - (RadarIAMResponse)onNewMessage:(RadarInAppMessage * _Nonnull)message;
+
+@end
+
+// This is the default implementation class for Objective-C, override specific methods of this class 
+NS_SWIFT_NAME(RadarIAMDelegate_ObjC)
+API_AVAILABLE(ios(13.0))
+NS_SWIFT_UI_ACTOR
+@interface RadarIAMDelegate : NSObject <RadarIAMProtocol>
+
+- (instancetype) init;
 
 @end
 
