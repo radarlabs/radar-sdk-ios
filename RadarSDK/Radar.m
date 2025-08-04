@@ -243,7 +243,7 @@
                              if(options.useIndoorScan) {
                                  Class RadarSDKIndoors = NSClassFromString(@"RadarSDKIndoors");
                                  if (RadarSDKIndoors) {
-                                     [RadarSDKIndoors startIndoorSurvey:nil
+                                     [RadarSDKIndoors startIndoorSurvey:@""
                                                              forLength:5
                                                      withKnownLocation:location
                                                      completionHandler:^(NSString *_Nullable indoorSurveyResult, CLLocation *_Nullable locationAtStartOfSurvey) {
