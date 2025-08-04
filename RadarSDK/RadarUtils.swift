@@ -9,9 +9,11 @@ import Foundation
 import CoreLocation
 import UIKit
 
-@objc(RadarUtils) class RadarUtils: NSObject {
+@objc(RadarUtils)
+@objcMembers
+class RadarUtils: NSObject {
 
-    @objc static let isoDateFormatter: DateFormatter = {
+    static let isoDateFormatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.locale = Locale(identifier: "en_US_POSIX")
         formatter.timeZone = TimeZone(abbreviation: "UTC")
@@ -19,7 +21,7 @@ import UIKit
         return formatter
     }()
 
-    @objc static var deviceModel: String {
+    static var deviceModel: String {
         var systemInfo = utsname()
         uname(&systemInfo)
         let machineMirror = Mirror(reflecting: systemInfo.machine)
@@ -30,35 +32,35 @@ import UIKit
         return machineString
     }
 
-    @objc static var deviceOS: String {
+    static var deviceOS: String {
         return UIDevice.current.systemVersion
     }
 
-    @objc static var country: String? {
+    static var country: String? {
         return Locale.current.regionCode
     }
 
-    @objc static var timeZoneOffset: NSNumber {
+    static var timeZoneOffset: NSNumber {
         return NSNumber(value: TimeZone.current.secondsFromGMT())
     }
 
-    @objc static var sdkVersion: String {
+    static var sdkVersion: String {
         return "3.16.0"
     }
 
-    @objc static var deviceId: String? {
+    static var deviceId: String? {
         return UIDevice.current.identifierForVendor?.uuidString
     }
 
-    @objc static var deviceType: String {
+    static var deviceType: String {
         return "iOS"
     }
 
-    @objc static var deviceMake: String {
+    static var deviceMake: String {
         return "Apple"
     }
 
-    @objc static var isSimulator: Bool {
+    static var isSimulator: Bool {
         #if targetEnvironment(simulator)
         return true
         #else
@@ -66,14 +68,14 @@ import UIKit
         #endif
     }
 
-    @objc static var locationBackgroundMode: Bool {
+    static var locationBackgroundMode: Bool {
         guard let backgroundModes = Bundle.main.infoDictionary?["UIBackgroundModes"] as? [String] else {
             return false
         }
         return backgroundModes.contains("location")
     }
 
-    @objc static var locationAuthorization: String {
+    static var locationAuthorization: String {
         let authorizationStatus = CLLocationManager.authorizationStatus()
         switch authorizationStatus {
         case .authorizedWhenInUse:
@@ -87,7 +89,7 @@ import UIKit
         }
     }
 
-    @objc static var locationAccuracyAuthorization: String {
+    static var locationAccuracyAuthorization: String {
         let locationManager = CLLocationManager()
         if #available(iOS 14.0, *) {
             let accuracyAuthorization = locationManager.accuracyAuthorization
@@ -102,16 +104,16 @@ import UIKit
         }
     }
 
-    @objc static var foreground: Bool {
+    static var foreground: Bool {
         return UIApplication.shared.applicationState != .background
     }
 
-    @objc static var backgroundTimeRemaining: TimeInterval {
+    static var backgroundTimeRemaining: TimeInterval {
         let backgroundTimeRemaining = UIApplication.shared.backgroundTimeRemaining
         return (backgroundTimeRemaining.isFinite && backgroundTimeRemaining < 1e100) ? backgroundTimeRemaining : 180;
     }
 
-    @objc static func locationFor(dictionary: [String: Any]) -> CLLocation? {
+    static func locationFor(dictionary: [String: Any]) -> CLLocation? {
         guard let latitude = dictionary["latitude"] as? CLLocationDegrees,
               let longitude = dictionary["longitude"] as? CLLocationDegrees else {
             return nil
@@ -128,7 +130,7 @@ import UIKit
                           timestamp: timestamp)
     }
 
-    @objc static func dictionaryFor(location: CLLocation) -> [String: Any] {
+    static func dictionaryFor(location: CLLocation) -> [String: Any] {
         var dict: [String: Any] = [
             "latitude": location.coordinate.latitude,
             "longitude": location.coordinate.longitude,
@@ -145,7 +147,7 @@ import UIKit
         return dict
     }
 
-    @objc static func dictionaryToJson(_ dict: [String: Any]?) -> String {
+    static func dictionaryToJson(_ dict: [String: Any]?) -> String {
         guard let dict = dict else { return "{}" }
         
         do {
@@ -157,7 +159,7 @@ import UIKit
         }
     }
 
-    @objc static func extractGeofenceIdAndTimestampFrom(identifier: String) -> Dictionary<String, String>? {
+    static func extractGeofenceIdAndTimestampFrom(identifier: String) -> Dictionary<String, String>? {
         let components = identifier.components(separatedBy: "_");
         
         if (components.count != 4) {
@@ -172,7 +174,7 @@ import UIKit
     
     // MARK: - Threading
     
-    @objc static func runOnMainThread(_ block: @escaping () -> Void) {
+    static func runOnMainThread(_ block: @escaping () -> Void) {
         if Thread.isMainThread {
             block()
         } else {
