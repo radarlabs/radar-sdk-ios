@@ -23,7 +23,7 @@
 #import "RadarReplayBuffer.h"
 #import "RadarNotificationHelper.h"
 #import "RadarTripOptions.h"
-#import "RadarIAMDelegate.h"
+#import "RadarInAppMessageDelegate.h"
 #import <RadarSDK/RadarSDK-Swift.h>
 
 @interface Radar ()
@@ -55,16 +55,16 @@
 
 + (void)inAppMessage:(RadarInAppMessage*)message {
     if (@available(iOS 13.0, *)) {
-        [RadarIAMManager showInAppMessage:message completionHandler:^(){}];
+        [RadarInAppMessageManager showInAppMessage:message completionHandler:^(){}];
     } else {
         // Fallback on earlier versions
     }
 //    [UIApplication sharedApplication];
 }
 
-+ (void)setIAMDelegate:(id)delegate {
++ (void)setInAppMessageDelegate:(id)delegate {
     if (@available(iOS 13.0, *)) {
-        [RadarIAMManager setDelegate:delegate];
+        [RadarInAppMessageManager setDelegate:delegate];
     } else {
         // Fallback on earlier versions
     }

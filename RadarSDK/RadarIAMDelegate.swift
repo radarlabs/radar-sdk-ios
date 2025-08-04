@@ -46,14 +46,14 @@ func loadImage(_ url: String) async -> UIImage? {
 }
 
 @available(iOS 13.0, *)
-@objc(RadarIAMDelegate_Swift)
+@objc(RadarInAppMessageDelegate_Swift)
 @objcMembers
 @MainActor
-open class RadarIAMDelegate : NSObject, RadarIAMProtocol {
+open class RadarInAppMessageDelegate : NSObject, RadarInAppMessageProtocol {
     /**
      returns the view controller for the message to show, can be overwritten to display a custom view
      */
-    open func getIAMViewController(_ message: RadarInAppMessage, completionHandler: @escaping (UIViewController) -> Void) {
+    open func createInAppMessageView(_ message: RadarInAppMessage, completionHandler: @escaping (UIViewController) -> Void) {
         Task {
             var image: UIImage? = nil
             if let imageUrl = message.image?.url {
@@ -64,14 +64,18 @@ open class RadarIAMDelegate : NSObject, RadarIAMProtocol {
         }
     }
     
-    open func onIAMPositiveAction(_ message: RadarInAppMessage) {
+    open func onInAppMessageButtonClicked(_ message: RadarInAppMessage) {
         if let url = message.button?.url {
             UIApplication.shared.open(URL(string: url)!)
         }
         print("onIAMPositiveAction")
     }
     
-    open func onNewMessage(_ message: RadarInAppMessage) -> RadarIAMResponse {
+    open func onInAppMessageDismissed(_ message: RadarInAppMessage) {
+        RadarInAppMessageManager.dismissInAppMessage()
+    }
+    
+    open func onNewInAppMessage(_ message: RadarInAppMessage) -> RadarInAppMessageOperation {
         return .show
     }
 }

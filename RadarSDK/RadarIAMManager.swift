@@ -13,14 +13,14 @@ import SwiftUI
 @available(iOS 13.0, *)
 @objc
 public
-class RadarIAMManager: NSObject {
+class RadarInAppMessageManager: NSObject {
     private static var window: UIWindow? = nil
     private static var messageQueue: [RadarInAppMessage] = []
     private static var suppressed: Bool = false
     private static var showingMessages: [RadarInAppMessage] = []
     private static var displayTimer: Timer? = nil
     
-    public static var delegate: RadarIAMProtocol = RadarIAMDelegate()
+    public static var delegate: RadarInAppMessageProtocol = RadarInAppMessageDelegate()
     public static var view: UIView?
     
     @objc public static func showInAppMessage(_ message: RadarInAppMessage) async {
@@ -34,7 +34,7 @@ class RadarIAMManager: NSObject {
         }
         
         let viewController = await withCheckedContinuation { continuation in
-            delegate.getIAMViewController(message) { result in
+            delegate.createInAppMessageView(message) { result in
                 continuation.resume(returning: result)
             }
         }
@@ -50,7 +50,7 @@ class RadarIAMManager: NSObject {
     
     @objc public static func onIAMReceived(messages: [RadarInAppMessage]) {
         for message in messages {
-            if (delegate.onNewMessage(message) == RadarIAMResponse.show) {
+            if (delegate.onNewInAppMessage(message) == RadarInAppMessageOperation.show) {
                 Task {
                     await showInAppMessage(message)
                 }
@@ -64,7 +64,7 @@ class RadarIAMManager: NSObject {
         view = nil
     }
     
-    @objc public static func setDelegate(_ delegate: RadarIAMDelegate_ObjC) {
+    @objc public static func setDelegate(_ delegate: RadarInAppMessageProtocol) {
         self.delegate = delegate
     }
 }

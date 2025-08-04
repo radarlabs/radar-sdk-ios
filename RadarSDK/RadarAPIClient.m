@@ -528,7 +528,7 @@
                             // handle in app messages after completion handler?
                             if (@available(iOS 13.0, *)) {
                                 if (inAppMessages) {
-                                    [RadarIAMManager onIAMReceivedWithMessages:inAppMessages];
+                                    [RadarInAppMessageManager onIAMReceivedWithMessages:inAppMessages];
                                 }
                             }
             

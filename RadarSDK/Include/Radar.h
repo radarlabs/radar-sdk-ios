@@ -26,10 +26,10 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol RadarDelegate;
 @protocol RadarVerifiedDelegate;
 @protocol RadarMotionProtocol;
+@protocol RadarInAppMessageProtocol;
 
 @class RadarTripOptions;
 @class RadarInAppMessage;
-@class RadarIAMDelegate;
 
 #pragma mark - Enums
 
@@ -317,7 +317,7 @@ typedef void (^_Nullable RadarLogConversionCompletionHandler)(RadarStatus status
 
 + (void)inAppMessage:(RadarInAppMessage*)message;
 
-+ (void)setIAMDelegate:(RadarIAMDelegate*)delegate;
++ (void)setInAppMessageDelegate:(nullable id<RadarInAppMessageProtocol>)delegate NS_SWIFT_NAME(setInAppMessageDelegate(_:));
 
 /**
  Initializes the Radar SDK.

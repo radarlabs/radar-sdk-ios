@@ -12,7 +12,7 @@
 
 @implementation MyObjC_IAMDelegate
 
-- (void)onIAMPositiveAction:(RadarInAppMessage * _Nonnull)message {
+- (void)onInAppMessageButtonClicked:(RadarInAppMessage *)message {
     NSLog(@"onIAMPositiveAction ObjC");
 }
 

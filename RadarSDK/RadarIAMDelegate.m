@@ -10,30 +10,34 @@
 
 #import "RadarSDK/RadarSDK-Swift.h"
 #import "UIKit/UIkit.h"
-#import "RadarIAMDelegate.h"
+#import "RadarInAppMessageDelegate.h"
 
-@implementation RadarIAMDelegate
+@implementation RadarInAppMessageDelegate
 
 API_AVAILABLE(ios(13.0))
-RadarIAMDelegate_Swift* radarIAMDelegate = nil;
+RadarInAppMessageDelegate_Swift* radarIAMDelegate = nil;
 
 - (instancetype) init {
     if (radarIAMDelegate == nil) {
-        radarIAMDelegate = [[RadarIAMDelegate_Swift alloc] init];
+        radarIAMDelegate = [[RadarInAppMessageDelegate_Swift alloc] init];
     }
     return self;
 }
 
-- (void)getIAMViewController:(RadarInAppMessage * _Nonnull)message completionHandler:(nonnull void (^)(UIViewController * _Nonnull __strong))completionHandler {
-    [radarIAMDelegate getIAMViewController:message completionHandler:completionHandler];
+- (void)createInAppMessageView:(RadarInAppMessage * _Nonnull)message completionHandler:(nonnull void (^)(UIViewController * _Nonnull __strong))completionHandler {
+    [radarIAMDelegate createInAppMessageView:message completionHandler:completionHandler];
 }
 
-- (void)onIAMPositiveAction:(RadarInAppMessage * _Nonnull)message {
-    [radarIAMDelegate onIAMPositiveAction:message];
+- (void)onInAppMessageButtonClicked:(RadarInAppMessage * _Nonnull)message {
+    [radarIAMDelegate onInAppMessageButtonClicked:message];
 }
 
-- (RadarIAMResponse)onNewMessage:(RadarInAppMessage * _Nonnull)message {
-    return [radarIAMDelegate onNewMessage:message];
+- (void)onInAppMessageDismissed:(RadarInAppMessage * _Nonnull)message {
+    [radarIAMDelegate onInAppMessageDismissed:message];
+}
+
+- (RadarInAppMessageOperation)onNewInAppMessage:(RadarInAppMessage * _Nonnull)message {
+    return [radarIAMDelegate onNewInAppMessage:message];
 }
 
 @end

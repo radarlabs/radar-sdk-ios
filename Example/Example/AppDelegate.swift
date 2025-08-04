@@ -42,7 +42,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         Radar.setDelegate(self)
         Radar.setVerifiedDelegate(self)
         
-        Radar.setIAMDelegate(MyObjC_IAMDelegate())
+        Radar.setInAppMessageDelegate(RadarInAppMessageDelegate())
  
         return true
     }

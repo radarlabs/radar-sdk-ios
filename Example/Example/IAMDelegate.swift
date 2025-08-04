@@ -11,8 +11,8 @@ import RadarSDK
 import SwiftUICore
 
 
-class MyIAMDelegate: RadarIAMDelegate {
-    override func onIAMPositiveAction(_ message: RadarInAppMessage) {
+class MyIAMDelegate: RadarInAppMessageDelegate {
+    override func onInAppMessageButtonClicked(_ message: RadarInAppMessage) {
         if let url = message.button?.url {
             UIApplication.shared.open(URL(string: url)!)
         }

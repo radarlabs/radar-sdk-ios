@@ -10,14 +10,14 @@
 #define IAMDelegate_h
 
 
-#import "RadarSDK/RadarIAMDelegate.h"
+#import "RadarSDK/RadarInAppMessageDelegate.h"
 
 NS_SWIFT_NAME(MyObjC_IAMDelegate)
-@interface MyObjC_IAMDelegate : RadarIAMDelegate
+@interface MyObjC_IAMDelegate : RadarInAppMessageDelegate
 
 //- (void)getIAMViewController:(RadarInAppMessage * _Nonnull)message completionHandler:(void (^)(UIViewController *))completionHandler;
 
-- (void)onIAMPositiveAction:(RadarInAppMessage * _Nonnull)message;
+- (void)onInAppMessageButtonClicked:(RadarInAppMessage * _Nonnull)message;
 
 @end
 

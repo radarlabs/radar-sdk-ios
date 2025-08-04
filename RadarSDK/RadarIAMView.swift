@@ -42,8 +42,8 @@ struct RadarIAMView: View {
                     
                     // Button
                     Button(action: {
-                        RadarIAMManager.delegate.onIAMPositiveAction(message)
-                        RadarIAMManager.dismissInAppMessage()
+                        RadarInAppMessageManager.delegate.onInAppMessageButtonClicked(message)
+                        RadarInAppMessageManager.delegate.onInAppMessageDismissed(message)
                     }) {
                         Text(message.button?.text ?? "")
                             .frame(width: 310, height: 50)
@@ -57,7 +57,7 @@ struct RadarIAMView: View {
             
             // Close button
             Button(action: {
-                RadarIAMManager.dismissInAppMessage()
+                RadarInAppMessageManager.delegate.onInAppMessageDismissed(message)
             }, label: {
                 ZStack {
                     Image(systemName: "circle.fill")
