@@ -211,7 +211,7 @@
                              return;
                          }
 
-                         void (^callTrackAPI)(NSArray<RadarBeacon *> *_Nullable) = ^(NSArray<RadarBeacon *> *_Nullable beacons) {
+                         void (^callTrackAPI)(NSArray<RadarBeacon *> *_Nullable, NSString *_Nullable) = ^(NSArray<RadarBeacon *> *_Nullable beacons, NSString *_Nullable indoorSurvey) {
                              [[RadarAPIClient sharedInstance]
                                  trackWithLocation:location
                                            stopped:stopped
@@ -219,6 +219,7 @@
                                             source:RadarLocationSourceForegroundLocation
                                           replayed:NO
                                            beacons:beacons
+                                      indoorSurvey:indoorSurvey
                                  completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user,
                                                      NSArray<RadarGeofence *> *_Nullable nearbyGeofences, RadarConfig *_Nullable config, RadarVerifiedLocationToken *_Nullable token) {
                                      if (status == RadarStatusSuccess) {
@@ -237,6 +238,31 @@
                                  }];
                          };
 
+                         void (^maybeIndoorSurveyThenCallTrackAPI)(NSArray<RadarBeacon *> *_Nullable) = ^(NSArray<RadarBeacon *> *_Nullable beacons) {
+                             RadarTrackingOptions *options = [Radar getTrackingOptions];
+                             if(options.useIndoorScan) {
+                                 Class RadarSDKIndoors = NSClassFromString(@"RadarSDKIndoors");
+                                 if (RadarSDKIndoors) {
+                                     [RadarSDKIndoors startIndoorSurvey:nil
+                                                             forLength:5
+                                                     withKnownLocation:location
+                                                     completionHandler:^(NSString *_Nullable indoorSurveyResult, CLLocation *_Nullable locationAtStartOfSurvey) {
+
+                                         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
+                                                            message:[NSString stringWithFormat:@"received indoor survey result: %lu chars", (unsigned long)(indoorSurveyResult ? indoorSurveyResult.length : 0)]];
+
+                                         callTrackAPI(beacons, indoorSurveyResult);
+                                     }];
+                                 } else {
+                                     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
+                                                        message:@"RadarSDKIndoors not available, skipping indoor survey"];
+                                     callTrackAPI(beacons, nil);
+                                 }
+                             } else {
+                                 callTrackAPI(beacons, nil);
+                             }
+                         };
+
                          if (beacons) {
                              [[RadarAPIClient sharedInstance]
                                  searchBeaconsNear:location
@@ -251,12 +277,12 @@
                                              [[RadarBeaconManager sharedInstance] rangeBeaconUUIDs:beaconUUIDs
                                                                                  completionHandler:^(RadarStatus status, NSArray<RadarBeacon *> *_Nullable beacons) {
                                                                                      if (status != RadarStatusSuccess || !beacons) {
-                                                                                         callTrackAPI(nil);
+                                                                                         maybeIndoorSurveyThenCallTrackAPI(nil);
 
                                                                                          return;
                                                                                      }
 
-                                                                                     callTrackAPI(beacons);
+                                                                                     maybeIndoorSurveyThenCallTrackAPI(beacons);
                                                                                  }];
                                          }];
                                      } else if (beacons && beacons.count) {
@@ -266,20 +292,20 @@
                                              [[RadarBeaconManager sharedInstance] rangeBeacons:beacons
                                                                              completionHandler:^(RadarStatus status, NSArray<RadarBeacon *> *_Nullable beacons) {
                                                                                  if (status != RadarStatusSuccess || !beacons) {
-                                                                                     callTrackAPI(nil);
+                                                                                     maybeIndoorSurveyThenCallTrackAPI(nil);
 
                                                                                      return;
                                                                                  }
 
-                                                                                 callTrackAPI(beacons);
+                                                                                 maybeIndoorSurveyThenCallTrackAPI(beacons);
                                                                              }];
                                          }];
                                      } else {
-                                         callTrackAPI(@[]);
+                                         maybeIndoorSurveyThenCallTrackAPI(@[]);
                                      }
                                  }];
                          } else {
-                             callTrackAPI(nil);
+                             maybeIndoorSurveyThenCallTrackAPI(nil);
                          }
                      }];
 }
@@ -292,6 +318,7 @@
                                                 source:RadarLocationSourceManualLocation
                                               replayed:NO
                                                beacons:nil
+                                          indoorSurvey:nil
                                      completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user,
                                                          NSArray<RadarGeofence *> *_Nullable nearbyGeofences, RadarConfig *_Nullable config, RadarVerifiedLocationToken *_Nullable token) {
                                         if (status == RadarStatusSuccess && config != nil) {                                    
@@ -424,6 +451,7 @@
                                    source:RadarLocationSourceMockLocation
                                  replayed:NO
                                   beacons:nil
+                             indoorSurvey:nil
                         completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user,
                                             NSArray<RadarGeofence *> *_Nullable nearbyGeofences, RadarConfig *_Nullable config, RadarVerifiedLocationToken *_Nullable token) {
                             if (completionHandler) {
