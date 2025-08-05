@@ -29,7 +29,7 @@
 		0107AA1626220050008AB52F /* RadarLogger.h in Headers */ = {isa = PBXBuildFile; fileRef = DD236D66230A0D6700EB88F9 /* RadarLogger.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		0107AA1926220052008AB52F /* RadarLocationManager.h in Headers */ = {isa = PBXBuildFile; fileRef = DD236CF723088F8400EB88F9 /* RadarLocationManager.h */; };
 		0107AA1C26220055008AB52F /* RadarPermissionsHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = DD633EC5237C5B9C0026C91A /* RadarPermissionsHelper.h */; };
-		0107AA1F26220059008AB52F /* RadarSettings.h in Headers */ = {isa = PBXBuildFile; fileRef = DD236CFB230895D400EB88F9 /* RadarSettings.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		0107AA1F26220059008AB52F /* RadarSettings.h in Headers */ = {isa = PBXBuildFile; fileRef = DD236CFB230895D400EB88F9 /* RadarSettings.h */; };
 		0107AA222622005B008AB52F /* RadarState.h in Headers */ = {isa = PBXBuildFile; fileRef = DD236D0E2309B3FE00EB88F9 /* RadarState.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		0107AA2B26220066008AB52F /* RadarUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = DD236D0323099B8400EB88F9 /* RadarUtils.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		0107AA7A26220128008AB52F /* RadarAddress.m in Sources */ = {isa = PBXBuildFile; fileRef = 78156B9623A8210E0094410E /* RadarAddress.m */; };

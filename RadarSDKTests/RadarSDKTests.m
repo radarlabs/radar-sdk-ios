@@ -11,6 +11,7 @@
 #import "../RadarSDK/RadarAPIClient.h"
 #import "../RadarSDK/RadarAPIHelper.h"
 #import "../RadarSDK/RadarLocationManager.h"
+#import "../RadarSDK/RadarSettings.h"
 #import "../RadarSDK/RadarLogBuffer.h"
 #import "CLLocationManagerMock.h"
 #import "CLVisitMock.h"
