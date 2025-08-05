@@ -240,7 +240,7 @@
 
                          void (^maybeIndoorSurveyThenCallTrackAPI)(NSArray<RadarBeacon *> *_Nullable) = ^(NSArray<RadarBeacon *> *_Nullable beacons) {
                              RadarTrackingOptions *options = [Radar getTrackingOptions];
-                             if(options.useIndoorScan) {
+                             if(options.useIndoorScan && ![RadarSettings isInSurveyMode]) {
                                  Class RadarSDKIndoors = NSClassFromString(@"RadarSDKIndoors");
                                  if (RadarSDKIndoors) {
                                      [RadarSDKIndoors startIndoorSurvey:@""
@@ -1187,6 +1187,8 @@
         completionHandler:(RadarIndoorsSurveyCompletionHandler)completionHandler {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"startIndoorSurvey()"];
     
+    [RadarSettings setInSurveyMode:YES];
+    
     Class RadarSDKIndoors = NSClassFromString(@"RadarSDKIndoors");
     if (RadarSDKIndoors) {
         // get location from the SDK using trackOnce
@@ -1194,6 +1196,7 @@
                                     beacons:NO
                           completionHandler:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user) {
             if (status != RadarStatusSuccess || !location) {
+                [RadarSettings setInSurveyMode:NO];
                 [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelError type:RadarLogTypeSDKCall message:[NSString stringWithFormat:@"Failed to get location for indoor survey: %d", (int)status]];
                 if (completionHandler) {
                     completionHandler([NSString stringWithFormat:@"ERROR: Failed to get location for indoor survey: %d", (int)status], nil);
@@ -1204,9 +1207,15 @@
             [RadarSDKIndoors startIndoorSurvey:placeLabel
                                     forLength:surveyLengthSeconds
                             withKnownLocation:location
-                            completionHandler:completionHandler];
+                            completionHandler:^(NSString *_Nullable indoorSurveyResult, CLLocation *_Nullable locationAtStartOfSurvey) {
+                                [RadarSettings setInSurveyMode:NO];
+                                if (completionHandler) {
+                                    completionHandler(indoorSurveyResult, locationAtStartOfSurvey);
+                                }
+                            }];
         }];
     } else {
+        [RadarSettings setInSurveyMode:NO];
         if (completionHandler) {
             completionHandler(@"ERROR: RadarSDKIndoors submodule not available", [[CLLocation alloc] init]);
         }

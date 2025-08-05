@@ -72,6 +72,8 @@ NS_ASSUME_NONNULL_BEGIN
 + (BOOL)useOpenedAppConversion;
 + (void)setInitializeOptions:(RadarInitializeOptions *)options;
 + (RadarInitializeOptions *)initializeOptions;
++ (BOOL)isInSurveyMode;
++ (void)setInSurveyMode:(BOOL)inSurveyMode;
 
 @end
 
