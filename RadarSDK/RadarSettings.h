@@ -1,6 +1,3 @@
-#ifndef RADARSETTINGS_H
-#define RADARSETTINGS_H
-
 //
 //  RadarSettings.h
 //  RadarSDK
@@ -84,5 +81,3 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 NS_ASSUME_NONNULL_END
-
-#endif // RADARSETTINGS_H
