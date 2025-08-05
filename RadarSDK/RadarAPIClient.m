@@ -11,6 +11,7 @@
 #import "Radar.h"
 #import "RadarAddress+Internal.h"
 #import "RadarBeacon+Internal.h"
+#import "RadarBeaconManager.h"
 #import "RadarConfig.h"
 #import "RadarContext+Internal.h"
 #import "RadarCoordinate+Internal.h"
@@ -240,6 +241,10 @@
         params[@"deviceId"] = [RadarUtils deviceId];
         params[@"description"] = [RadarSettings __description];
         params[@"metadata"] = [RadarSettings metadata];
+        NSArray<NSString *> *userTags = [RadarSettings tags];
+        if (userTags && userTags.count > 0) {
+            params[@"userTags"] = userTags;
+        }
         NSString *sessionId = [RadarSettings sessionId];
         if (sessionId) {
             params[@"sessionId"] = sessionId;
@@ -299,7 +304,7 @@
             }
         }
     }
-    
+
     RadarTripOptions *tripOptions = Radar.getTripOptions;
 
     if (tripOptions) {
@@ -363,6 +368,10 @@
         if (UIScreen.mainScreen.isCaptured) {
             [fraudFailureReasons addObject:@"fraud_sharing_capturing_screen"];
         }
+        NSString *kDeviceId = [[RadarVerificationManager sharedInstance] kDeviceId];
+        if (kDeviceId) {
+            params[@"kDeviceId"] = kDeviceId;
+        }
     }
     params[@"appId"] = [[NSBundle mainBundle] bundleIdentifier];
     NSString *appName = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleName"];
@@ -388,7 +397,7 @@
         if (@available(iOS 13.4, *)) {
             locationMetadata[@"courseAccuracy"] = @(location.courseAccuracy);
         }
-        
+
         locationMetadata[@"battery"] = @([[UIDevice currentDevice] batteryLevel]);
         locationMetadata[@"altitude"] = @(location.altitude);
 
@@ -398,10 +407,10 @@
             locationMetadata[@"isSimulatedBySoftware"] = @([location.sourceInformation isSimulatedBySoftware]);
         }
         locationMetadata[@"floor"] = @([location.floor level]);
-        
+
         params[@"locationMetadata"] = locationMetadata;
     }
-    
+
     params[@"fraudFailureReasons"] = fraudFailureReasons;
 
     if (anonymous) {
@@ -450,7 +459,7 @@
                         source:(RadarLocationSource)source
                         verified:(BOOL)verified
                 publishableKey:(NSString *)publishableKey
-                notificationsRemaining:(NSArray *)notificationsRemaining 
+                notificationsRemaining:(NSArray *)notificationsRemaining
             completionHandler:(RadarTrackAPICompletionHandler)completionHandler {
 
     NSString *host = verified ? [RadarSettings verifiedHost] : [RadarSettings host];
@@ -476,7 +485,7 @@
                         if (events && events.count) {
                             [[RadarDelegateHolder sharedInstance] didReceiveEvents:events user:user];
                         }
-                        
+
                         [[RadarDelegateHolder sharedInstance] didUpdateLocation:location user:user];
                     }];
                     return [RadarOfflineManager updateTrackingOptionsFromOfflineLocation:userGeofences completionHandler:^(RadarConfig * _Nullable config) {
@@ -522,18 +531,18 @@
                                             [[RadarDelegateHolder sharedInstance] didReceiveEvents:events user:user];
                                         }
                                         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"location from offline manager: %@", location]];
-                                        
+
                                         [[RadarDelegateHolder sharedInstance] didUpdateLocation:location user:user];
-                                        
+
                                     }];
-                                    
+
                                     return [RadarOfflineManager updateTrackingOptionsFromOfflineLocation:userGeofences completionHandler:^(RadarConfig * _Nullable config) {
                                         return completionHandler(status, nil, nil, nil, nil, config, nil);
                                     }];
                                 } else {
                                     return completionHandler(status, nil, nil, nil, nil, nil, nil);
                                 }
-                                
+
 
                             }
                             [[RadarReplayBuffer sharedInstance] clearBuffer];
@@ -601,7 +610,7 @@
                                 // if user was on a trip that ended server-side, restore previous tracking options
                                 if (!user.trip && [RadarSettings tripOptions]) {
                                     [[RadarLocationManager sharedInstance] restartPreviousTrackingOptions];
-                                    [RadarSettings setTripOptions:nil];
+                                [RadarSettings setTripOptions:nil];
                                 }
 
                                 [RadarSettings setUserDebug:user.debug];
@@ -613,12 +622,18 @@
                                 if (events.count) {
                                     [[RadarDelegateHolder sharedInstance] didReceiveEvents:events user:user];
                                 }
-                                
+
                                 if (token) {
                                     [[RadarDelegateHolder sharedInstance] didUpdateToken:token];
                                 }
 
                                 [RadarState setRadarUser:user];
+
+                                id nearbyBeaconRegionsObj = res[@"nearbyBeaconRegions"];
+                                if (nearbyBeaconRegionsObj && [nearbyBeaconRegionsObj isKindOfClass:[NSArray class]]) {
+                                    NSArray<NSDictionary<NSString *, NSString *> *> *beaconRegions = (NSArray<NSDictionary<NSString *, NSString *> *> *)nearbyBeaconRegionsObj;
+                                    [[RadarBeaconManager sharedInstance] registerBeaconRegionNotificationsFromArray:beaconRegions];
+                                }
 
                                 return completionHandler(RadarStatusSuccess, res, events, user, nearbyGeofences, config, token);
                             } else {
@@ -934,9 +949,9 @@
             [queryString appendFormat:@"&metadata[%@]=%@", key, metadata[key]];
         }
     }
-    
+
     [queryString appendFormat:@"&includeGeometry=%@", includeGeometry ? @"true" : @"false"];
-    
+
 
     NSString *host = [RadarSettings host];
     NSString *url = [NSString stringWithFormat:@"%@/v1/search/geofences?%@", host, queryString];
@@ -1193,7 +1208,7 @@
     }
 
     NSMutableString *queryString = [NSMutableString new];
-    if (!address.countryCode || !address.stateCode || !address.city || !address.postalCode || 
+    if (!address.countryCode || !address.stateCode || !address.city || !address.postalCode ||
         !((address.street && address.number) || address.addressLabel)) {
         if (completionHandler) {
             [RadarUtils runOnMainThread:^{
@@ -1264,7 +1279,7 @@
                     }];
 }
 
-- (void)geocodeAddress:(NSString *)query 
+- (void)geocodeAddress:(NSString *)query
                 layers:(NSArray<NSString *> *_Nullable)layers
              countries:(NSArray<NSString *> *_Nullable)countries
      completionHandler:(RadarGeocodeAPICompletionHandler)completionHandler {
@@ -1310,7 +1325,7 @@
                     }];
 }
 
-- (void)reverseGeocodeLocation:(CLLocation *)location 
+- (void)reverseGeocodeLocation:(CLLocation *)location
                         layers:(NSArray<NSString *> *_Nullable)layers
              completionHandler:(RadarGeocodeAPICompletionHandler)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];

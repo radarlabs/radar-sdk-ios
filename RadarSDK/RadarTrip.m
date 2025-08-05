@@ -9,6 +9,7 @@
 #import "Radar.h"
 #import "RadarCoordinate+Internal.h"
 #import "RadarTrip+Internal.h"
+#import "Include/RadarTripOrder.h"
 
 @implementation RadarTrip
 
@@ -21,7 +22,8 @@
                                 mode:(RadarRouteMode)mode
                          etaDistance:(float)etaDistance
                          etaDuration:(float)etaDuration
-                              status:(RadarTripStatus)status {
+                              status:(RadarTripStatus)status
+                              orders:(NSArray<RadarTripOrder *> *_Nullable)orders {
     self = [super init];
     if (self) {
         __id = _id;
@@ -34,6 +36,7 @@
         _etaDistance = etaDistance;
         _etaDuration = etaDuration;
         _status = status;
+        _orders = orders;
     }
     return self;
 }
@@ -55,6 +58,7 @@
     float etaDistance = 0;
     float etaDuration = 0;
     RadarTripStatus status = RadarTripStatusUnknown;
+    NSArray<RadarTripOrder *> *orders;
 
     id idObj = dict[@"_id"];
     if (idObj && [idObj isKindOfClass:[NSString class]]) {
@@ -159,6 +163,11 @@
         }
     }
 
+    id ordersObj = dict[@"orders"];
+    if (ordersObj) {
+        orders = [RadarTripOrder ordersFromObject:ordersObj];
+    }
+
     if (externalId) {
         return [[RadarTrip alloc] initWithId:_id
                                   externalId:externalId
@@ -169,7 +178,8 @@
                                         mode:mode
                                  etaDistance:etaDistance
                                  etaDuration:etaDuration
-                                      status:status];
+                                      status:status
+                                      orders:orders];
     }
 
     return nil;
@@ -191,6 +201,12 @@
     NSDictionary *etaDict = @{@"distance": @(self.etaDistance), @"duration": @(self.etaDuration)};
     dict[@"eta"] = etaDict;
     dict[@"status"] = [Radar stringForTripStatus:self.status];
+    if (self.orders && self.orders.count > 0) {
+        NSArray *ordersArray = [RadarTripOrder arrayForOrders:self.orders];
+        if (ordersArray) {
+            dict[@"orders"] = ordersArray;
+        }
+    }
     return dict;
 }
 

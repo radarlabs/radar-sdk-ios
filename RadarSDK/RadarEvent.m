@@ -182,6 +182,8 @@
             type = RadarEventTypeUserArrivedAtWrongTripDestination;
         } else if ([typeStr isEqualToString:@"user.failed_fraud"]) {
             type = RadarEventTypeUserFailedFraud;
+        } else if ([typeStr isEqualToString:@"user.fired_trip_orders"]) {
+            type = RadarEventTypeUserFiredTripOrders;
         } else {
             type = RadarEventTypeConversion;
             conversionName = typeStr;
@@ -315,8 +317,17 @@
     }
 
     id metadataObj = dict[@"metadata"];
-    if (metadataObj && [metadataObj isKindOfClass:[NSDictionary class]]) {
-        metadata = (NSDictionary *)metadataObj;
+    if (metadataObj) {
+        if ([metadataObj isKindOfClass:[NSDictionary class]]) {
+            metadata = (NSDictionary *)metadataObj;
+        } else if ([metadataObj isKindOfClass:[NSString class]]) {
+            NSError *jsonError;
+            NSData *jsonData = [((NSString *)metadataObj) dataUsingEncoding:NSUTF8StringEncoding];
+            id jsonObj = [NSJSONSerialization JSONObjectWithData:jsonData options:0 error:&jsonError];
+            if (!jsonError && [jsonObj isKindOfClass:[NSDictionary class]]) {
+                metadata = (NSDictionary *)jsonObj;
+            }
+        }
     }
 
     if (_id && createdAt) {
@@ -393,6 +404,8 @@
         return @"user.arrived_at_wrong_trip_destination";
     case RadarEventTypeUserFailedFraud:
         return @"user.failed_fraud";
+    case RadarEventTypeUserFiredTripOrders:
+        return @"user.fired_trip_orders";
     case RadarEventTypeConversion:
         return @"custom";
     default:

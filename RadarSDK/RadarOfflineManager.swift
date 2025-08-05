@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  RadarOfflineManager.swift
 //  RadarSDK
 //
 //  Created by Kenny Hu on 10/16/24.
@@ -37,7 +37,7 @@ import CoreLocation
             //newGeofenceIds.append(geofence._id)
             RadarLogger.sharedInstance().log(level: RadarLogLevel.debug, message: "Radar offline manager detected user inside geofence: " + geofence._id)
         }
-        
+
     }
 
     return userGeofences
@@ -57,9 +57,9 @@ import CoreLocation
         if let rampUpGeofenceTags = rampUpGeofenceTagsOptional {
             inRampedUpGeofence = !Set(rampUpGeofenceTags).isDisjoint(with: Set(newGeofenceTags))
         }
-        
+
         var newTrackingOptions: RadarTrackingOptions? = nil
-            
+
         if inRampedUpGeofence {
             // ramp up
             RadarLogger.sharedInstance().log(level: RadarLogLevel.debug, message: "Ramping up from Radar offline manager")
@@ -92,9 +92,9 @@ import CoreLocation
             RadarLogger.sharedInstance().log(level: RadarLogLevel.error, message: "error getting user from offline manager")
             return completionHandler([], user!, location)
         }
-        
-        
-        // generate geofence entry and exit events 
+
+
+        // generate geofence entry and exit events
         // geofence entry
         // we need to check the entire nearby geofences array
         let nearbyGeofences = RadarState.nearbyGeofences()
@@ -191,7 +191,7 @@ import CoreLocation
         ]
 
         RadarState.setGeofenceIds(newUserGeofenceIds)
-        
+
         if let newUser = RadarUser(object: newUserDict) {
             completionHandler(events, newUser, location)
         } else {
@@ -200,13 +200,13 @@ import CoreLocation
             completionHandler(events, user!, location)
         }
     }
-    
+
     private static func isPointInsideCircle(center: CLLocationCoordinate2D, radius: Double, point: CLLocation) -> Bool {
         let centerLocation = CLLocation(latitude: center.latitude, longitude: center.longitude)
-        
+
         let distance = centerLocation.distance(from: point)
-        
+
         return distance <= radius
     }
-      
+
 }

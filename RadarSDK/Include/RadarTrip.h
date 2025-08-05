@@ -7,6 +7,7 @@
 
 #import "RadarCoordinate.h"
 #import "RadarRouteMode.h"
+#import "RadarTripOrder.h"
 #import <Foundation/Foundation.h>
 
 /**
@@ -85,6 +86,11 @@ typedef NS_ENUM(NSInteger, RadarTripStatus) {
  The status of the trip.
  */
 @property (assign, nonatomic, readonly) RadarTripStatus status;
+
+/**
+ The optional array of trip orders associated with this trip.
+ */
+@property (nullable, copy, nonatomic, readonly) NSArray<RadarTripOrder *> *orders;
 
 - (NSDictionary *_Nonnull)dictionaryValue;
 
