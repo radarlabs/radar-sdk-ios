@@ -54,6 +54,13 @@
 + (void)initializeWithPublishableKey:(NSString *)publishableKey options:(RadarInitializeOptions *)options {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"initialize()"];
     
+    // Check for secret key usage
+    if ([publishableKey containsString:@"_sk_"]) {
+        @throw [NSException exceptionWithName:NSInvalidArgumentException 
+                                       reason:@"Secret keys are not allowed. Please use your Radar publishable key." 
+                                     userInfo:nil];
+    }
+    
     Class RadarSDKMotion = NSClassFromString(@"RadarSDKMotion");
     if (RadarSDKMotion) {
         id radarSDKMotion = [[RadarSDKMotion alloc] init];
