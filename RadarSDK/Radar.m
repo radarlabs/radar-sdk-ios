@@ -23,6 +23,8 @@
 #import "RadarReplayBuffer.h"
 #import "RadarNotificationHelper.h"
 #import "RadarTripOptions.h"
+#import "RadarInAppMessageDelegate.h"
+#import <RadarSDK/RadarSDK-Swift.h>
 
 @interface Radar ()
 
@@ -49,6 +51,23 @@
         [RadarSettings setInitializeOptions:options];
         [RadarNotificationHelper swizzleNotificationCenterDelegate];
     });
+}
+
++ (void)inAppMessage:(RadarInAppMessage*)message {
+    if (@available(iOS 13.0, *)) {
+        [RadarInAppMessageManager showInAppMessage:message completionHandler:^(){}];
+    } else {
+        // Fallback on earlier versions
+    }
+//    [UIApplication sharedApplication];
+}
+
++ (void)setInAppMessageDelegate:(id)delegate {
+    if (@available(iOS 13.0, *)) {
+        [RadarInAppMessageManager setDelegate:delegate];
+    } else {
+        // Fallback on earlier versions
+    }
 }
 
 + (void)initializeWithPublishableKey:(NSString *)publishableKey options:(RadarInitializeOptions *)options {
@@ -1265,42 +1284,30 @@
 }
 
 + (NSString *)stringForLocationSource:(RadarLocationSource)source {
-    NSString *str;
     switch (source) {
-    case RadarLocationSourceForegroundLocation:
-        str = @"FOREGROUND_LOCATION";
-        break;
-    case RadarLocationSourceBackgroundLocation:
-        str = @"BACKGROUND_LOCATION";
-        break;
-    case RadarLocationSourceManualLocation:
-        str = @"MANUAL_LOCATION";
-        break;
-    case RadarLocationSourceVisitArrival:
-        str = @"VISIT_ARRIVAL";
-        break;
-    case RadarLocationSourceVisitDeparture:
-        str = @"VISIT_DEPARTURE";
-        break;
-    case RadarLocationSourceGeofenceEnter:
-        str = @"GEOFENCE_ENTER";
-        break;
-    case RadarLocationSourceGeofenceExit:
-        str = @"GEOFENCE_EXIT";
-        break;
-    case RadarLocationSourceMockLocation:
-        str = @"MOCK_LOCATION";
-        break;
-    case RadarLocationSourceBeaconEnter:
-        str = @"BEACON_ENTER";
-        break;
-    case RadarLocationSourceBeaconExit:
-        str = @"BEACON_EXIT";
-        break;
-    case RadarLocationSourceUnknown:
-        str = @"UNKNOWN";
+        case RadarLocationSourceForegroundLocation:
+            return @"FOREGROUND_LOCATION";
+        case RadarLocationSourceBackgroundLocation:
+            return @"BACKGROUND_LOCATION";
+        case RadarLocationSourceManualLocation:
+            return @"MANUAL_LOCATION";
+        case RadarLocationSourceVisitArrival:
+            return @"VISIT_ARRIVAL";
+        case RadarLocationSourceVisitDeparture:
+            return @"VISIT_DEPARTURE";
+        case RadarLocationSourceGeofenceEnter:
+            return @"GEOFENCE_ENTER";
+        case RadarLocationSourceGeofenceExit:
+            return @"GEOFENCE_EXIT";
+        case RadarLocationSourceMockLocation:
+            return @"MOCK_LOCATION";
+        case RadarLocationSourceBeaconEnter:
+            return @"BEACON_ENTER";
+        case RadarLocationSourceBeaconExit:
+            return @"BEACON_EXIT";
+        case RadarLocationSourceUnknown:
+            return @"UNKNOWN";
     }
-    return str;
 }
 
 + (NSString *)stringForMode:(RadarRouteMode)mode {
@@ -1308,30 +1315,22 @@
 }
 
 + (NSString *)stringForTripStatus:(RadarTripStatus)status {
-    NSString *str;
     switch (status) {
-    case RadarTripStatusStarted:
-        str = @"started";
-        break;
-    case RadarTripStatusApproaching:
-        str = @"approaching";
-        break;
-    case RadarTripStatusArrived:
-        str = @"arrived";
-        break;
-    case RadarTripStatusExpired:
-        str = @"expired";
-        break;
-    case RadarTripStatusCompleted:
-        str = @"completed";
-        break;
-    case RadarTripStatusCanceled:
-        str = @"canceled";
-        break;
-    default:
-        str = @"unknown";
+        case RadarTripStatusStarted:
+            return @"started";
+        case RadarTripStatusApproaching:
+            return @"approaching";
+        case RadarTripStatusArrived:
+            return @"arrived";
+        case RadarTripStatusExpired:
+            return @"expired";
+        case RadarTripStatusCompleted:
+            return @"completed";
+        case RadarTripStatusCanceled:
+            return @"canceled";
+        default:
+            return @"unknown";
     }
-    return str;
 }
 
 + (NSDictionary *)dictionaryForLocation:(CLLocation *)location {

@@ -8,6 +8,8 @@
 import UIKit
 import UserNotifications
 import RadarSDK
+import SwiftUI
+
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UNUserNotificationCenterDelegate, CLLocationManagerDelegate, RadarDelegate, RadarVerifiedDelegate {
@@ -17,6 +19,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
     
     var scrollView: UIScrollView?
     var demoFunctions = Array<() -> Void>()
+    
+    private var overlayWindow: UIWindow!
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { (_, _) in }
@@ -30,11 +34,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         // Uncomment to enable automatic setup for notification conversions or deep linking
         //radarInitializeOptions.autoLogNotificationConversions = true
         //radarInitializeOptions.autoHandleNotificationDeepLinks = true
-        Radar.initialize(publishableKey: "prj_test_pk_0000000000000000000000000000000000000000", options: radarInitializeOptions )
+        UserDefaults.standard.set("https://api-shicheng.radar-staging.com", forKey: "radar-host")
+        
+        Radar.initialize(publishableKey: "prj_live_pk_", options: radarInitializeOptions )
         Radar.setUserId("testUserId")
         Radar.setMetadata([ "foo": "bar" ])
         Radar.setDelegate(self)
         Radar.setVerifiedDelegate(self)
+        
+        Radar.setInAppMessageDelegate(RadarInAppMessageDelegate())
  
         return true
     }
@@ -70,8 +78,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         // If using a storyboard, the `window` property will automatically be initialized and attached to the scene.
         // This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
         guard let windowScene = (scene as? UIWindowScene) else { return }
-
+        
         let window = UIWindow(windowScene: windowScene)
+//        window.rootViewController = UIViewController()
         
         window.backgroundColor = .white
         
@@ -80,7 +89,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         scrollView!.contentSize.width = window.frame.size.width
         
         window.addSubview(scrollView!)
-        
         window.makeKeyAndVisible()
         
         self.window = window
@@ -89,16 +97,40 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
             Radar.getLocation { (status, location, stopped) in
                 print("Location: status = \(Radar.stringForStatus(status)); location = \(String(describing: location))")
             }
-
+            
             Radar.trackOnce { (status, location, events, user) in
                 print("Track once: status = \(Radar.stringForStatus(status)); location = \(String(describing: location)); events = \(String(describing: events)); user = \(String(describing: user))")
             }
         }
         
+        demoButton(text: "Send it") {
+            let message = RadarInAppMessage.fromDictionary([
+                "type": "banner",
+                "title": [
+                    "text": "This is the title",
+                    "color": "#ff0000"
+                ],
+                "body": [
+                    "text": "This is a demo message.",
+                    "color": "#00ff00"
+                ],
+                "button": [
+                    "text": "Buy it",
+                    "color": "#0000ff",
+                    "backgroundColor": "#EB0083",
+                ],
+                "image": [
+                    "url": "https://images.pexels.com/photos/949587/pexels-photo-949587.jpeg",
+                    "name": "image.jpeg"
+                ]
+            ])
+            
+            Radar.inAppMessage(message!)
+        }
+        
         demoButton(text: "trackOnce") {
             Radar.trackOnce()
         }
-
 
         demoButton(text: "startTracking") {
             let options = RadarTrackingOptions.presetContinuous
@@ -397,11 +429,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
     }
 
     func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
-        completionHandler([.list, .banner, .sound])
+//        completionHandler([.list, .banner, .sound])
     }
     
     func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse) async {
         // Uncomment for manual setup for notification conversions and URLs
+        let campaignMetadata = response.notification.request.content.userInfo["campaignMetadata"] as? [String: Any]
         // Radar.logConversion(response: response)
         // Radar.openURLFromNotification(response.notification)
     }

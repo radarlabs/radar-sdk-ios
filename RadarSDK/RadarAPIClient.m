@@ -36,6 +36,7 @@
 #import "RadarVerifiedLocationToken+Internal.h"
 #import "RadarNotificationHelper.h"
 #import <os/log.h>
+#import "RadarSDK/RadarSDK-Swift.h"
 
 @implementation RadarAPIClient
 
@@ -520,11 +521,21 @@
                             id eventsObj = res[@"events"];
                             id userObj = res[@"user"];
                             id nearbyGeofencesObj = res[@"nearbyGeofences"];
+                            id inAppMessagesObj = res[@"inAppMessages"];
+            
                             NSArray<RadarEvent *> *events = [RadarEvent eventsFromObject:eventsObj];
                             RadarUser *user = [[RadarUser alloc] initWithObject:userObj];
                             NSArray<RadarGeofence *> *nearbyGeofences = [RadarGeofence geofencesFromObject:nearbyGeofencesObj];
                             RadarVerifiedLocationToken *token = [[RadarVerifiedLocationToken alloc] initWithObject:res];
 
+                            // handle in app messages after completion handler?
+                            if (@available(iOS 13.0, *)) {
+                                NSArray<RadarInAppMessage *> *inAppMessages = [RadarInAppMessage fromArray:inAppMessagesObj];
+                                if (inAppMessages) {
+                                    [RadarInAppMessageManager onInAppMessageReceivedWithMessages:inAppMessages];
+                                }
+                            }
+            
                             if (user) {
                                 BOOL inGeofences = user.geofences && user.geofences.count;
                                 BOOL atPlace = user.place != nil;
