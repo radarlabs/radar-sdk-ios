@@ -8,7 +8,7 @@
 #import "RadarSettings.h"
 #include <Foundation/NSDictionary.h>
 #include <Foundation/NSUserDefaults.h>
-#import "RadarSdkConfiguration.h"
+#include "RadarSdkConfiguration.h"
 #include <objc/NSObject.h>
 
 #import "RadarAPIClient.h"

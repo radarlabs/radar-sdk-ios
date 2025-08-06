@@ -12,36 +12,35 @@ import CoreLocation
 @objc(RadarOfflineManager) class RadarOfflineManager: NSObject {
 
  @objc public static func getUserGeofencesFromLocation(_ location: CLLocation) -> [RadarGeofence] {
-     return []
-//    let nearbyGeofences = RadarState.nearbyGeofences()
-//    if (nearbyGeofences == nil) {
-//        return []
-//    }
-//    var userGeofences = [RadarGeofence]()
-//    for geofence in nearbyGeofences! {
-//        var center: RadarCoordinate?
-//        var radius: Double = 100
-//
-//        if let geometry = geofence.geometry as? RadarCircleGeometry {
-//            center = geometry.center
-//            radius = geometry.radius
-//        } else if let geometry = geofence.geometry as? RadarPolygonGeometry {
-//            center = geometry.center
-//            radius = geometry.radius
-//        } else {
-//            // log error
-//            RadarLogger.sharedInstance().log(level:RadarLogLevel.error, message:"error parsing geometry with no circular representation")
-//            continue
-//        }
-//        if (isPointInsideCircle(center: center!.coordinate, radius: radius, point: location)) {
-//            userGeofences.append(geofence)
-//            //newGeofenceIds.append(geofence._id)
-//            RadarLogger.sharedInstance().log(level: RadarLogLevel.debug, message: "Radar offline manager detected user inside geofence: " + geofence._id)
-//        }
-//
-//    }
-//
-//    return userGeofences
+   let nearbyGeofences = RadarState.nearbyGeofences()
+   if (nearbyGeofences == nil) {
+       return []
+   }
+   var userGeofences = [RadarGeofence]()
+   for geofence in nearbyGeofences! {
+       var center: RadarCoordinate?
+       var radius: Double = 100
+
+       if let geometry = geofence.geometry as? RadarCircleGeometry {
+           center = geometry.center
+           radius = geometry.radius
+       } else if let geometry = geofence.geometry as? RadarPolygonGeometry {
+           center = geometry.center
+           radius = geometry.radius
+       } else {
+           // log error
+           RadarLogger.sharedInstance().log(level:RadarLogLevel.error, message:"error parsing geometry with no circular representation")
+           continue
+       }
+       if (isPointInsideCircle(center: center!.coordinate, radius: radius, point: location)) {
+           userGeofences.append(geofence)
+           //newGeofenceIds.append(geofence._id)
+           RadarLogger.sharedInstance().log(level: RadarLogLevel.debug, message: "Radar offline manager detected user inside geofence: " + geofence._id)
+       }
+
+   }
+
+   return userGeofences
 }
 
     @objc public static func updateTrackingOptionsFromOfflineLocation(_ userGeofences: [RadarGeofence], completionHandler: @escaping (RadarConfig?) -> Void) {
