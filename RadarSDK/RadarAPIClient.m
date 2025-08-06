@@ -11,6 +11,7 @@
 #import "Radar.h"
 #import "RadarAddress+Internal.h"
 #import "RadarBeacon+Internal.h"
+#import "RadarBeaconManager.h"
 #import "RadarConfig.h"
 #import "RadarContext+Internal.h"
 #import "RadarCoordinate+Internal.h"
@@ -238,6 +239,10 @@
         params[@"deviceId"] = [RadarUtils deviceId];
         params[@"description"] = [RadarSettings __description];
         params[@"metadata"] = [RadarSettings metadata];
+        NSArray<NSString *> *userTags = [RadarSettings tags];
+        if (userTags && userTags.count > 0) {
+            params[@"userTags"] = userTags;
+        }
         NSString *sessionId = [RadarSettings sessionId];
         if (sessionId) {
             params[@"sessionId"] = sessionId;
@@ -354,6 +359,13 @@
         }
         if (transactionId) {
             params[@"transactionId"] = transactionId;
+        }
+        if (UIScreen.mainScreen.isCaptured) {
+            [fraudFailureReasons addObject:@"fraud_sharing_capturing_screen"];
+        }
+        NSString *kDeviceId = [[RadarVerificationManager sharedInstance] kDeviceId];
+        if (kDeviceId) {
+            params[@"kDeviceId"] = kDeviceId;
         }
     }
     params[@"appId"] = [[NSBundle mainBundle] bundleIdentifier];
@@ -569,7 +581,7 @@
                                 // if user was on a trip that ended server-side, restore previous tracking options
                                 if (!user.trip && [RadarSettings tripOptions]) {
                                     [[RadarLocationManager sharedInstance] restartPreviousTrackingOptions];
-                                    [RadarSettings setTripOptions:nil];
+                                [RadarSettings setTripOptions:nil];
                                 }
 
                                 [RadarSettings setUserDebug:user.debug];
@@ -584,6 +596,12 @@
                                 
                                 if (token) {
                                     [[RadarDelegateHolder sharedInstance] didUpdateToken:token];
+                                }
+
+                                id nearbyBeaconRegionsObj = res[@"nearbyBeaconRegions"];
+                                if (nearbyBeaconRegionsObj && [nearbyBeaconRegionsObj isKindOfClass:[NSArray class]]) {
+                                    NSArray<NSDictionary<NSString *, NSString *> *> *beaconRegions = (NSArray<NSDictionary<NSString *, NSString *> *> *)nearbyBeaconRegionsObj;
+                                    [[RadarBeaconManager sharedInstance] registerBeaconRegionNotificationsFromArray:beaconRegions];
                                 }
 
                                 return completionHandler(RadarStatusSuccess, res, events, user, nearbyGeofences, config, token);

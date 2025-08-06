@@ -33,6 +33,12 @@
                logPayload:(BOOL)logPayload
           extendedTimeout:(BOOL)extendedTimeout
         completionHandler:(RadarAPICompletionHandler)completionHandler {
+    // Capture the last request for testing
+    self.lastMethod = method;
+    self.lastUrl = url;
+    self.lastHeaders = headers;
+    self.lastParams = params;
+    
     NSDictionary *mockResponseForUrl = self.mockResponses[url];
 
     if (mockResponseForUrl) {

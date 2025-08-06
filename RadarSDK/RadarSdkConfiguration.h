@@ -37,6 +37,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, assign) BOOL useNotificationDiff;
 
+@property (nonatomic, assign) BOOL syncAfterSetUser;
+
 /**
  Initializes a new RadarSdkConfiguration object with given value.
  */

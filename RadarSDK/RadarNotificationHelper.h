@@ -18,9 +18,7 @@ typedef void (^NotificationPermissionCheckCompletion)(BOOL granted);
 
 + (void)swizzleNotificationCenterDelegate;
 
-+ (void)removePendingNotificationsWithCompletionHandler:(void (^)(void))completionHandler;
-
-+ (void)addOnPremiseNotificationRequests:(NSArray<UNNotificationRequest *> *)requests;
++ (void)updateClientSideCampaignsWithPrefix:(NSString *)prefix notificationRequests:(NSArray<UNNotificationRequest *> *)requests;
 
 + (void)checkNotificationPermissionsWithCompletionHandler:(nullable NotificationPermissionCheckCompletion)completionHandler;
 
@@ -28,7 +26,8 @@ typedef void (^NotificationPermissionCheckCompletion)(BOOL granted);
 
 + (void)openURLFromNotification:(UNNotification *)notification;
 
-#
++ (nullable UNMutableNotificationContent *)extractContentFromMetadata:(nullable NSDictionary *)metadata identifier:(nullable NSString *)identifier;
+
 + (void)getNotificationDiffWithCompletionHandler:(void (^)(NSArray *notificationsDelivered, NSArray *notificationsRemaining))completionHandler;
 @end
 

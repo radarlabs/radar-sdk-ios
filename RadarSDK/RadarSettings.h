@@ -72,6 +72,11 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)setInitializeOptions:(RadarInitializeOptions *)options;
 + (RadarInitializeOptions *)initializeOptions;
 
++ (NSArray<NSString *> *_Nullable)tags;
++ (void)setTags:(NSArray<NSString *> *_Nullable)tags;
++ (void)addTags:(NSArray<NSString *> *_Nonnull)tags;
++ (void)removeTags:(NSArray<NSString *> *_Nonnull)tags;
+
 @end
 
 NS_ASSUME_NONNULL_END

@@ -103,7 +103,7 @@
                                                 [Radar startTrackingWithOptions:[RadarSettings trackingOptions]];
                                             }
                                             if (sdkConfiguration.trackOnceOnAppOpen) {
-                                                [Radar trackOnceWithCompletionHandler:nil];
+                                                [Radar trackOnceWithDesiredAccuracy:RadarTrackingOptionsDesiredAccuracyMedium beacons:[Radar getTrackingOptions].beacons completionHandler:nil];
                                             }
 
                                             [self flushLogs];
@@ -128,6 +128,9 @@
 
 + (void)setUserId:(NSString *)userId {
     [RadarSettings setUserId:userId];
+    if ([RadarSettings sdkConfiguration].syncAfterSetUser) {
+        [Radar trackOnceWithCompletionHandler:nil];
+    }
 }
 
 + (NSString *_Nullable)getUserId {
@@ -144,10 +147,29 @@
 
 + (void)setMetadata:(NSDictionary *)metadata {
     [RadarSettings setMetadata:metadata];
+    if ([RadarSettings sdkConfiguration].syncAfterSetUser) {
+        [Radar trackOnceWithCompletionHandler:nil];
+    }
 }
 
 + (NSDictionary *_Nullable)getMetadata {
     return [RadarSettings metadata];
+}
+
++ (NSArray<NSString *> *_Nullable)getTags {
+    return [RadarSettings tags];
+}
+
++ (void)setTags:(NSArray<NSString *> *_Nullable)tags {
+    [RadarSettings setTags:tags];
+}
+
++ (void)addTags:(NSArray<NSString *> *_Nonnull)tags {
+    [RadarSettings addTags:tags];
+}
+
++ (void)removeTags:(NSArray<NSString *> *_Nonnull)tags {
+    [RadarSettings removeTags:tags];
 }
 
 + (void)setProduct:(NSString *)product {
@@ -447,7 +469,8 @@
 }
 
 + (RadarTrackingOptions *)getTrackingOptions {
-    return [RadarSettings remoteTrackingOptions] ? [RadarSettings remoteTrackingOptions] : [RadarSettings trackingOptions];
+    RadarTrackingOptions *remoteTrackingOptions = [RadarSettings remoteTrackingOptions];
+    return remoteTrackingOptions ? remoteTrackingOptions : [RadarSettings trackingOptions];
 }
 
 + (BOOL)isUsingRemoteTrackingOptions {
@@ -1355,7 +1378,7 @@
 
     RadarSdkConfiguration *sdkConfiguration = [RadarSettings sdkConfiguration];
     if (sdkConfiguration.trackOnceOnAppOpen) {
-        [Radar trackOnceWithCompletionHandler:nil];
+        [Radar trackOnceWithDesiredAccuracy:RadarTrackingOptionsDesiredAccuracyMedium beacons: [Radar getTrackingOptions].beacons completionHandler:nil];
     }
 }
 
