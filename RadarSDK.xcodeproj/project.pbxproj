@@ -187,6 +187,7 @@
 		F6B650102E3136A70088E0D6 /* RadarIAMDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6B6500F2E3136A70088E0D6 /* RadarIAMDelegate.swift */; };
 		F6B650672E43DFA30088E0D6 /* RadarRouteMode.m in Sources */ = {isa = PBXBuildFile; fileRef = F6B650662E43DFA30088E0D6 /* RadarRouteMode.m */; };
 		F6B6506B2E43E17B0088E0D6 /* RadarRouteMode.h in Headers */ = {isa = PBXBuildFile; fileRef = F6B6506A2E43E17B0088E0D6 /* RadarRouteMode.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		F6B6506F2E43E2280088E0D6 /* RadarApiHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6B6506E2E43E2280088E0D6 /* RadarApiHelper.swift */; };
 		F6F959802C3D7D9900BC30FE /* RadarTimeZone.h in Headers */ = {isa = PBXBuildFile; fileRef = F6F9597F2C3D7D9900BC30FE /* RadarTimeZone.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F6F959822C3D7EA200BC30FE /* RadarTimeZone+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = F6F959812C3D7EA200BC30FE /* RadarTimeZone+Internal.h */; };
 		F6F959842C3D7EDE00BC30FE /* RadarTimeZone.m in Sources */ = {isa = PBXBuildFile; fileRef = F6F959832C3D7EDE00BC30FE /* RadarTimeZone.m */; };
@@ -372,6 +373,7 @@
 		F6B6500F2E3136A70088E0D6 /* RadarIAMDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarIAMDelegate.swift; sourceTree = "<group>"; };
 		F6B650662E43DFA30088E0D6 /* RadarRouteMode.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RadarRouteMode.m; sourceTree = "<group>"; };
 		F6B6506A2E43E17B0088E0D6 /* RadarRouteMode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarRouteMode.h; sourceTree = "<group>"; };
+		F6B6506E2E43E2280088E0D6 /* RadarApiHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarApiHelper.swift; sourceTree = "<group>"; };
 		F6F9597F2C3D7D9900BC30FE /* RadarTimeZone.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarTimeZone.h; sourceTree = "<group>"; };
 		F6F959812C3D7EA200BC30FE /* RadarTimeZone+Internal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "RadarTimeZone+Internal.h"; sourceTree = "<group>"; };
 		F6F959832C3D7EDE00BC30FE /* RadarTimeZone.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RadarTimeZone.m; sourceTree = "<group>"; };
@@ -558,6 +560,7 @@
 				F62F2E262E3119730009B77F /* RadarIAMDelegate.m */,
 				F62F2DF22E205C570009B77F /* RadarIAMManager.swift */,
 				F6B6500F2E3136A70088E0D6 /* RadarIAMDelegate.swift */,
+				F6B6506E2E43E2280088E0D6 /* RadarApiHelper.swift */,
 				F62F2E172E2FD4B90009B77F /* RadarInAppMessage.swift */,
 			);
 			path = RadarSDK;
@@ -899,6 +902,7 @@
 				0107AAAA26220165008AB52F /* RadarGeofenceGeometry.m in Sources */,
 				0107AAEC262201A6008AB52F /* RadarTrip.m in Sources */,
 				F6B650672E43DFA30088E0D6 /* RadarRouteMode.m in Sources */,
+				F6B6506F2E43E2280088E0D6 /* RadarApiHelper.swift in Sources */,
 				9679F4A327CD8DE200800797 /* CLLocation+Radar.m in Sources */,
 				0107AB08262201CE008AB52F /* RadarAPIClient.m in Sources */,
 				0107AB05262201CB008AB52F /* Radar.m in Sources */,
