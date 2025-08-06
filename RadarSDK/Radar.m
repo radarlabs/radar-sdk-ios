@@ -1284,59 +1284,34 @@
 }
 
 + (NSString *)stringForLocationSource:(RadarLocationSource)source {
-    NSString *str;
     switch (source) {
-    case RadarLocationSourceForegroundLocation:
-        str = @"FOREGROUND_LOCATION";
-        break;
-    case RadarLocationSourceBackgroundLocation:
-        str = @"BACKGROUND_LOCATION";
-        break;
-    case RadarLocationSourceManualLocation:
-        str = @"MANUAL_LOCATION";
-        break;
-    case RadarLocationSourceVisitArrival:
-        str = @"VISIT_ARRIVAL";
-        break;
-    case RadarLocationSourceVisitDeparture:
-        str = @"VISIT_DEPARTURE";
-        break;
-    case RadarLocationSourceGeofenceEnter:
-        str = @"GEOFENCE_ENTER";
-        break;
-    case RadarLocationSourceGeofenceExit:
-        str = @"GEOFENCE_EXIT";
-        break;
-    case RadarLocationSourceMockLocation:
-        str = @"MOCK_LOCATION";
-        break;
-    case RadarLocationSourceBeaconEnter:
-        str = @"BEACON_ENTER";
-        break;
-    case RadarLocationSourceBeaconExit:
-        str = @"BEACON_EXIT";
-        break;
-    case RadarLocationSourceUnknown:
-        str = @"UNKNOWN";
+        case RadarLocationSourceForegroundLocation:
+            return @"FOREGROUND_LOCATION";
+        case RadarLocationSourceBackgroundLocation:
+            return @"BACKGROUND_LOCATION";
+        case RadarLocationSourceManualLocation:
+            return @"MANUAL_LOCATION";
+        case RadarLocationSourceVisitArrival:
+            return @"VISIT_ARRIVAL";
+        case RadarLocationSourceVisitDeparture:
+            return @"VISIT_DEPARTURE";
+        case RadarLocationSourceGeofenceEnter:
+            return @"GEOFENCE_ENTER";
+        case RadarLocationSourceGeofenceExit:
+            return @"GEOFENCE_EXIT";
+        case RadarLocationSourceMockLocation:
+            return @"MOCK_LOCATION";
+        case RadarLocationSourceBeaconEnter:
+            return @"BEACON_ENTER";
+        case RadarLocationSourceBeaconExit:
+            return @"BEACON_EXIT";
+        case RadarLocationSourceUnknown:
+            return @"UNKNOWN";
     }
-    return str;
 }
 
 + (NSString *)stringForMode:(RadarRouteMode)mode {
-    switch (mode) {
-        case RadarRouteModeFoot:
-            return @"foot";
-        case RadarRouteModeBike:
-            return @"bike";
-        case RadarRouteModeCar:
-            return @"car";
-        case RadarRouteModeTruck:
-            return @"truck";
-        case RadarRouteModeMotorbike:
-            return @"motorbike";
-        default:
-            return @"unknown";
-    }
+    return [RadarRouteModeUtils stringForMode:mode];
 }
 
 + (NSString *)stringForTripStatus:(RadarTripStatus)status {

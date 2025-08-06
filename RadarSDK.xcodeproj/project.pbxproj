@@ -185,6 +185,8 @@
 		F65AF72C2C10B242002BA009 /* get_config_response.json in Resources */ = {isa = PBXBuildFile; fileRef = F65AF72B2C10B242002BA009 /* get_config_response.json */; };
 		F667F8292BFBF3D1001F2F67 /* RadarSdkConfiguration.h in Headers */ = {isa = PBXBuildFile; fileRef = F667F8282BFBF3D1001F2F67 /* RadarSdkConfiguration.h */; };
 		F6B650102E3136A70088E0D6 /* RadarIAMDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6B6500F2E3136A70088E0D6 /* RadarIAMDelegate.swift */; };
+		F6B650672E43DFA30088E0D6 /* RadarRouteMode.m in Sources */ = {isa = PBXBuildFile; fileRef = F6B650662E43DFA30088E0D6 /* RadarRouteMode.m */; };
+		F6B6506B2E43E17B0088E0D6 /* RadarRouteMode.h in Headers */ = {isa = PBXBuildFile; fileRef = F6B6506A2E43E17B0088E0D6 /* RadarRouteMode.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F6F959802C3D7D9900BC30FE /* RadarTimeZone.h in Headers */ = {isa = PBXBuildFile; fileRef = F6F9597F2C3D7D9900BC30FE /* RadarTimeZone.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F6F959822C3D7EA200BC30FE /* RadarTimeZone+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = F6F959812C3D7EA200BC30FE /* RadarTimeZone+Internal.h */; };
 		F6F959842C3D7EDE00BC30FE /* RadarTimeZone.m in Sources */ = {isa = PBXBuildFile; fileRef = F6F959832C3D7EDE00BC30FE /* RadarTimeZone.m */; };
@@ -368,6 +370,8 @@
 		F667F8262BFBF3C8001F2F67 /* RadarSdkConfiguration.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RadarSdkConfiguration.m; sourceTree = "<group>"; };
 		F667F8282BFBF3D1001F2F67 /* RadarSdkConfiguration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RadarSdkConfiguration.h; sourceTree = "<group>"; };
 		F6B6500F2E3136A70088E0D6 /* RadarIAMDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarIAMDelegate.swift; sourceTree = "<group>"; };
+		F6B650662E43DFA30088E0D6 /* RadarRouteMode.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RadarRouteMode.m; sourceTree = "<group>"; };
+		F6B6506A2E43E17B0088E0D6 /* RadarRouteMode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarRouteMode.h; sourceTree = "<group>"; };
 		F6F9597F2C3D7D9900BC30FE /* RadarTimeZone.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarTimeZone.h; sourceTree = "<group>"; };
 		F6F959812C3D7EA200BC30FE /* RadarTimeZone+Internal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "RadarTimeZone+Internal.h"; sourceTree = "<group>"; };
 		F6F959832C3D7EDE00BC30FE /* RadarTimeZone.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RadarTimeZone.m; sourceTree = "<group>"; };
@@ -423,6 +427,7 @@
 				96A5A0F027AD9F7F007B960B /* RadarPolygonGeometry.h */,
 				96A5A0DB27AD9F7F007B960B /* RadarRegion.h */,
 				96A5A0E427AD9F7F007B960B /* RadarRoute.h */,
+				F6B6506A2E43E17B0088E0D6 /* RadarRouteMode.h */,
 				96A5A0F127AD9F7F007B960B /* RadarRouteDistance.h */,
 				E658DB062CB46277004E0F01 /* RadarOperatingHours.h */,
 				96A5A0F227AD9F7F007B960B /* RadarRouteDuration.h */,
@@ -531,6 +536,7 @@
 				DD633EC6237C5B9C0026C91A /* RadarPermissionsHelper.m */,
 				82D04AB829722ED20036619F /* RadarReplay.h */,
 				82D04AC629771BF10036619F /* RadarReplay.m */,
+				F6B650662E43DFA30088E0D6 /* RadarRouteMode.m */,
 				82D04ABA29722ED20036619F /* RadarReplayBuffer.h */,
 				82D04AB929722ED20036619F /* RadarReplayBuffer.m */,
 				DD236C782308797B00EB88F9 /* RadarSDK.h */,
@@ -658,6 +664,7 @@
 				0107AA0726220040008AB52F /* RadarAPIClient.h in Headers */,
 				96A5A10D27AD9F7F007B960B /* RadarPolygonGeometry.h in Headers */,
 				96A5A0D627AD9F41007B960B /* RadarRouteMatrix+Internal.h in Headers */,
+				F6B6506B2E43E17B0088E0D6 /* RadarRouteMode.h in Headers */,
 				96A5A0FA27AD9F7F007B960B /* RadarRouteMatrix.h in Headers */,
 				96A5A0CC27AD9F41007B960B /* RadarUser+Internal.h in Headers */,
 				96A5A10327AD9F7F007B960B /* RadarGeofence.h in Headers */,
@@ -891,6 +898,7 @@
 				0107AB23262201EC008AB52F /* RadarSettings.m in Sources */,
 				0107AAAA26220165008AB52F /* RadarGeofenceGeometry.m in Sources */,
 				0107AAEC262201A6008AB52F /* RadarTrip.m in Sources */,
+				F6B650672E43DFA30088E0D6 /* RadarRouteMode.m in Sources */,
 				9679F4A327CD8DE200800797 /* CLLocation+Radar.m in Sources */,
 				0107AB08262201CE008AB52F /* RadarAPIClient.m in Sources */,
 				0107AB05262201CB008AB52F /* Radar.m in Sources */,
