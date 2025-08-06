@@ -14,8 +14,12 @@
 @property (nullable, strong, nonatomic) id radarSDKMotion;
 
 + (instancetype _Nonnull )sharedInstance;
+- (void)requestPermission;
 - (void)startActivityUpdatesWithHandler:(void (^_Nullable)(CMMotionActivity * _Nonnull activity))handler;
 - (void)stopActivityUpdates;
-
+- (void)startRelativeAltitudeWithHandler:(void (^_Nullable)(CMAltitudeData * _Nullable altitudeData))handler;
+- (void)stopRelativeAltitudeUpdates;
+- (void)startAbsoluteAltitudeWithHandler:(void (^_Nullable)(CMAbsoluteAltitudeData * _Nullable altitudeData))handler API_AVAILABLE(ios(15.0));
+- (void)stopAbsoluteAltitudeUpdates;
 
 @end

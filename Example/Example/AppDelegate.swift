@@ -94,6 +94,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
                 print("Track once: status = \(Radar.stringForStatus(status)); location = \(String(describing: location)); events = \(String(describing: events)); user = \(String(describing: user))")
             }
         }
+
+        demoButton(text: "request motion activity permission") {
+            Radar.requestMotionActivityPermission()
+        }
         
         demoButton(text: "trackOnce") {
             Radar.trackOnce()

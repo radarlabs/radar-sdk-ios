@@ -112,7 +112,6 @@
     dict[@"extendFlushReplays"] = @(_extendFlushReplays);
     dict[@"useLogPersistence"] = @(_useLogPersistence);
     dict[@"useRadarModifiedBeacon"] = @(_useRadarModifiedBeacon);
-    dict[@"useLocationMetadata"] = @(_useLocationMetadata);
     dict[@"useOpenedAppConversion"] = @(_useOpenedAppConversion);
     dict[@"useForegroundLocationUpdatedAtMsDiff"] = @(_useForegroundLocationUpdatedAtMsDiff);
     dict[@"useNotificationDiff"] = @(_useNotificationDiff);
