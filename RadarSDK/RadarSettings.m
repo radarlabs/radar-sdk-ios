@@ -8,7 +8,7 @@
 #import "RadarSettings.h"
 #include <Foundation/NSDictionary.h>
 #include <Foundation/NSUserDefaults.h>
-#include "RadarSdkConfiguration.h"
+#import "RadarSdkConfiguration.h"
 #include <objc/NSObject.h>
 
 #import "RadarAPIClient.h"
@@ -86,7 +86,7 @@ static NSString *const kUserTags = @"radar-userTags";
         [[NSUserDefaults standardUserDefaults] setDouble:timestampSeconds forKey:kSessionId];
 
         [Radar logOpenedAppConversion];
-        
+
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"New session | sessionId = %@", [RadarSettings sessionId]]];
 
         return YES;
@@ -231,7 +231,7 @@ static NSString *const kUserTags = @"radar-userTags";
     NSDictionary *sdkConfigurationDict = [[NSUserDefaults standardUserDefaults] dictionaryForKey:kClientSdkConfiguration];
     if (sdkConfigurationDict == nil) {
         sdkConfigurationDict = [[NSDictionary alloc] init];
-    } 
+    }
     return sdkConfigurationDict;
 }
 
@@ -282,7 +282,7 @@ static NSString *const kUserTags = @"radar-userTags";
 
     if ([[NSUserDefaults standardUserDefaults] objectForKey:kLogLevel] == nil) {
         return defaultLogLevel;
-    } 
+    }
     return (RadarLogLevel)[[NSUserDefaults standardUserDefaults] integerForKey:kLogLevel];
 }
 
@@ -393,14 +393,14 @@ static NSString *const kUserTags = @"radar-userTags";
     if (!existingTags) {
         existingTags = [NSMutableArray new];
     }
-    
+
     NSSet<NSString *> *existingTagsSet = [NSSet setWithArray:existingTags];
     for (NSString *tag in tags) {
         if (![existingTagsSet containsObject:tag]) {
             [existingTags addObject:tag];
         }
     }
-    
+
     [[NSUserDefaults standardUserDefaults] setObject:existingTags forKey:kUserTags];
 }
 
@@ -409,9 +409,9 @@ static NSString *const kUserTags = @"radar-userTags";
     if (!existingTags) {
         return;
     }
-    
+
     [existingTags removeObjectsInArray:tags];
-    
+
     if (existingTags.count > 0) {
         [[NSUserDefaults standardUserDefaults] setObject:existingTags forKey:kUserTags];
     } else {

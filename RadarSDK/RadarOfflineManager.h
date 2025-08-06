@@ -16,11 +16,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface RadarOfflineManager : NSObject
 
-// + (NSArray<RadarGeofence *> *)getUserGeofencesFromLocation:(CLLocation *)location;
++ (NSArray<RadarGeofence *> *)getUserGeofencesFromLocation:(CLLocation *)location;
 
-// + (void)updateTrackingOptionsFromOfflineLocation:(NSArray<RadarGeofence *> *)userGeofences completionHandler:(void (^)(RadarConfig *))completionHandler;
++ (void)updateTrackingOptionsFromOfflineLocation:(NSArray<RadarGeofence *> *)userGeofences completionHandler:(void (^)(RadarConfig *))completionHandler;
 
-// + (void)generateEventsFromOfflineLocations:(CLLocation *)location userGeofences:(NSArray<RadarGeofence *> *)userGeofences completionHandler:(void (^)(NSArray<RadarEvent *> *, RadarUser *, CLLocation *))completionHandler;
++ (void)generateEventsFromOfflineLocations:(CLLocation *)location userGeofences:(NSArray<RadarGeofence *> *)userGeofences completionHandler:(void (^)(NSArray<RadarEvent *> *, RadarUser *, CLLocation *))completionHandler;
 
 @end
 

@@ -6,7 +6,7 @@
 //
 
 #import "Radar.h"
-#include "RadarSdkConfiguration.h"
+#import "RadarSdkConfiguration.h"
 
 #import "RadarAPIClient.h"
 #import "RadarBeaconManager.h"
@@ -53,7 +53,7 @@
 
 + (void)initializeWithPublishableKey:(NSString *)publishableKey options:(RadarInitializeOptions *)options {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"initialize()"];
-    
+
     Class RadarSDKMotion = NSClassFromString(@"RadarSDKMotion");
     if (RadarSDKMotion) {
         id radarSDKMotion = [[RadarSDKMotion alloc] init];
@@ -64,12 +64,12 @@
                                              selector:@selector(applicationWillEnterForeground)
                                                  name:UIApplicationWillEnterForegroundNotification
                                                object:nil];
-    
+
     [RadarSettings setPublishableKey:publishableKey];
 
     RadarSdkConfiguration *sdkConfiguration = [RadarSettings sdkConfiguration];
     // For most users not using these features, options be null and skipped,
-    //  For X-platform users initializing Radar in the crossplatform layer, the options will also be null as nativeSetup would had been called ealier 
+    //  For X-platform users initializing Radar in the crossplatform layer, the options will also be null as nativeSetup would had been called ealier
     if (options) {
         [RadarSettings setInitializeOptions:options];
         if (NSClassFromString(@"XCTestCase") == nil) {
@@ -97,7 +97,7 @@
                                                 [[RadarLocationManager sharedInstance] updateTrackingFromConfig:config];
                                                 [RadarSettings setSdkConfiguration:config.meta.sdkConfiguration];
                                             }
-                                         
+
                                             RadarSdkConfiguration *sdkConfiguration = [RadarSettings sdkConfiguration];
                                             if (sdkConfiguration.startTrackingOnInitialize && ![RadarSettings tracking]) {
                                                 [Radar startTrackingWithOptions:[RadarSettings trackingOptions]];
@@ -306,7 +306,7 @@
                                                beacons:nil
                                      completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user,
                                                          NSArray<RadarGeofence *> *_Nullable nearbyGeofences, RadarConfig *_Nullable config, RadarVerifiedLocationToken *_Nullable token) {
-                                        [[RadarLocationManager sharedInstance] updateTrackingFromConfig:config];                                            
+                                        [[RadarLocationManager sharedInstance] updateTrackingFromConfig:config];
                                         if (completionHandler) {
                                             [RadarUtils runOnMainThread:^{
                                                 completionHandler(status, location, events, user);
@@ -504,7 +504,7 @@
 
             return;
         }
-        
+
         if (completionHandler) {
             [RadarUtils runOnMainThread:^{
                 completionHandler(status, event);
@@ -517,12 +517,12 @@
     if (![RadarSettings useOpenedAppConversion]) {
         return;
     }
-    
+
     // Perform a non-blocking sleep for 1 second before starting, this is to address the fact that swizzled notification method may be called at a different relative live as compared to this method depending on framework.
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         // if opened_app has been logged within the last second, don't log it again
         NSTimeInterval lastAppOpenTimeInterval = [[NSDate date] timeIntervalSinceDate:[RadarSettings lastAppOpenTime]];
-        
+
         if (lastAppOpenTimeInterval > 2) {
             [RadarSettings updateLastAppOpenTime];
             // metadata not needed as app is not opened by notification.
@@ -534,7 +534,7 @@
     });
 }
 
-+ (void)logOpenedAppConversionWithNotification:(UNNotificationRequest *)request 
++ (void)logOpenedAppConversionWithNotification:(UNNotificationRequest *)request
                               conversionSource:(NSString *_Nullable)conversionSource {
     [self logConversionWithNotification:request eventName:@"opened_app" conversionSource:conversionSource deliveredAfter:nil];
 }
@@ -549,10 +549,10 @@
     CLAuthorizationStatus authorizationStatus = [[RadarLocationManager sharedInstance].permissionsHelper locationAuthorizationStatus];
     if (!(authorizationStatus == kCLAuthorizationStatusAuthorizedWhenInUse || authorizationStatus == kCLAuthorizationStatusAuthorizedAlways) || isLastTrackRecent) {
         [self sendLogConversionRequestWithName:name metadata:metadata completionHandler:completionHandler];
-        
+
         return;
     }
-    
+
     [self trackOnceWithCompletionHandler:^(RadarStatus status, CLLocation * _Nullable location, NSArray<RadarEvent *> * _Nullable events, RadarUser * _Nullable user) {
         [self sendLogConversionRequestWithName:name metadata:metadata completionHandler:completionHandler];
     }];
@@ -563,9 +563,9 @@
                      metadata:(NSDictionary * _Nullable)metadata
             completionHandler:(RadarLogConversionCompletionHandler)completionHandler {
     NSMutableDictionary *mutableMetadata = [[NSMutableDictionary alloc] initWithDictionary:metadata];
-    
+
     [mutableMetadata setValue:revenue forKey:@"revenue"];
-    
+
     [self logConversionWithName:name metadata:mutableMetadata completionHandler:completionHandler];
 }
 
@@ -578,13 +578,13 @@
                             eventName:(NSString *)eventName
                      conversionSource:(NSString *)conversionSource
                        deliveredAfter:(NSDate *)deliveredAfter {
-    
+
     NSMutableDictionary *metadata = [[NSMutableDictionary alloc] initWithDictionary:request.content.userInfo];
 
     if (conversionSource) {
         [metadata setValue:conversionSource forKey:@"conversionSource"];
     }
-    
+
     [self sendLogConversionRequestWithName:eventName metadata:metadata completionHandler:^(RadarStatus status, RadarEvent * _Nullable event) {
         NSString *message = [NSString stringWithFormat:@"Conversion name = %@: status = %@; event = %@", event.conversionName, [Radar stringForStatus:status], event];
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:message];
@@ -865,7 +865,7 @@
                     }];
                 }
                 return;
-            }           
+            }
             [[RadarAPIClient sharedInstance] searchGeofencesNear:location
                                                           radius:radius
                                                             tags:tags
@@ -879,7 +879,7 @@
                                                     }];
                                                 }
                                               }];
-        }];    
+        }];
     } else {
         [[RadarAPIClient sharedInstance] searchGeofencesNear:near
                                                      radius:radius
@@ -980,7 +980,7 @@
 
 #pragma mark - Geocoding
 
-+ (void)geocodeAddress:(NSString *)query 
++ (void)geocodeAddress:(NSString *)query
                 layers:(NSArray<NSString *> *_Nullable)layers
              countries:(NSArray<NSString *> *_Nullable)countries
      completionHandler:(RadarGeocodeCompletionHandler)completionHandler {
@@ -1141,14 +1141,14 @@
     }
     [sdkConfiguration setValue:[RadarLog stringForLogLevel:level] forKey:@"logLevel"];
     [RadarSettings setClientSdkConfiguration:sdkConfiguration];
-    
+
     if ([RadarSettings logLevel] == level) {
         return;
     }
     [RadarSdkConfiguration updateSdkConfigurationFromServer];
 }
 
-+ (void)logTermination { 
++ (void)logTermination {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug type:RadarLogTypeNone message:@"App terminating" includeDate:YES includeBattery:YES append:YES];
 }
 
@@ -1370,7 +1370,7 @@
                                              [RadarSettings setSdkConfiguration:config.meta.sdkConfiguration];
                                          }];
     }
-    
+
     [Radar logOpenedAppConversion];
 
     RadarSdkConfiguration *sdkConfiguration = [RadarSettings sdkConfiguration];
@@ -1388,7 +1388,7 @@
 }
 
 + (void)flushLogs {
-    NSArray<RadarLog *> *flushableLogs = [[RadarLogBuffer sharedInstance] flushableLogs]; 
+    NSArray<RadarLog *> *flushableLogs = [[RadarLogBuffer sharedInstance] flushableLogs];
     NSUInteger pendingLogCount = [flushableLogs count];
     if (pendingLogCount == 0) {
         return;
