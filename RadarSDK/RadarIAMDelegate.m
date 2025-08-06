@@ -2,7 +2,6 @@
 //  RadarIAMDelegate.m
 //  RadarSDK
 //
-//  Created by ShiCheng Lu on 7/23/25.
 //  Copyright © 2025 Radar Labs, Inc. All rights reserved.
 //
 

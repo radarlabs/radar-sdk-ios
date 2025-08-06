@@ -2,7 +2,6 @@
 //  RadarIAMDelegate.swift
 //  RadarSDK
 //
-//  Created by ShiCheng Lu on 7/22/25.
 //  Copyright © 2025 Radar Labs, Inc. All rights reserved.
 //
 
@@ -28,15 +27,9 @@ func loadImage(_ url: String) async -> UIImage? {
         
         URLSession.shared.dataTask(with: request) {
             data, response, error in
-            guard let data = data else {
+            guard let data = data,
+                  let image = UIImage(data: data) else {
                 continuation.resume(returning: nil)
-                print("Error on data")
-                return
-            }
-            
-            guard let image = UIImage(data: data) else {
-                continuation.resume(returning: nil)
-                print("Error on image")
                 return
             }
             continuation.resume(returning: image)
@@ -68,7 +61,6 @@ open class RadarInAppMessageDelegate : NSObject, RadarInAppMessageProtocol {
         if let url = message.button?.url {
             UIApplication.shared.open(URL(string: url)!)
         }
-        print("onIAMPositiveAction")
     }
     
     open func onInAppMessageDismissed(_ message: RadarInAppMessage) {

@@ -2,7 +2,6 @@
 //  RadarInAppMessage.swift
 //  RadarSDK
 //
-//  Created by ShiCheng Lu on 7/10/25.
 //  Copyright © 2025 Radar Labs, Inc. All rights reserved.
 //
 
@@ -48,7 +47,7 @@ class RadarInAppMessageManager: NSObject {
         keyWindow.addSubview(viewController.view)
     }
     
-    @objc public static func onIAMReceived(messages: [RadarInAppMessage]) {
+    @objc public static func onInAppMessageReceived(messages: [RadarInAppMessage]) {
         for message in messages {
             if (delegate.onNewInAppMessage(message) == RadarInAppMessageOperation.show) {
                 Task {

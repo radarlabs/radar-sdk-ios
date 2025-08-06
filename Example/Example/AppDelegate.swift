@@ -125,7 +125,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
                 ]
             ])
             
-            Radar.inAppMessage(message)
+            Radar.inAppMessage(message!)
         }
         
         demoButton(text: "trackOnce") {
@@ -434,6 +434,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
     
     func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse) async {
         // Uncomment for manual setup for notification conversions and URLs
+        let campaignMetadata = response.notification.request.content.userInfo["campaignMetadata"] as? [String: Any]
         // Radar.logConversion(response: response)
         // Radar.openURLFromNotification(response.notification)
     }

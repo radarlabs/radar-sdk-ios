@@ -2,7 +2,6 @@
 //  RadarInAppMessageView.swift
 //  RadarSDK
 //
-//  Created by ShiCheng Lu on 7/10/25.
 //  Copyright © 2025 Radar Labs, Inc. All rights reserved.
 //
 
@@ -27,13 +26,13 @@ struct RadarIAMView: View {
                 }
                 VStack {
                     // Title
-                    Text(message.title?.text ?? "")
-                        .foregroundColor(Color(message.title?.color ?? UIColor.black))
+                    Text(message.title.text)
+                        .foregroundColor(Color(message.title.color))
                         .font(Font.system(size: 32, weight: .bold))
                     
                     // Body
-                    Text(message.body?.text ?? "")
-                        .foregroundColor(Color(message.body?.color ?? UIColor.black))
+                    Text(message.body.text)
+                        .foregroundColor(Color(message.body.color))
                         .multilineTextAlignment(.center)
                         .frame(maxWidth: 310)
                         .padding(.top, 5)
@@ -84,7 +83,7 @@ struct RadarIAMView: View {
                     "color": "#000000"
                 ],
                 "body": [
-                    "text": "This is a demo message. maybe multiple lines lsajdfl lajsdllajsld j",
+                    "text": "This is a demo message",
                     "color": "#666666"
                 ],
                 "button": [
@@ -96,7 +95,7 @@ struct RadarIAMView: View {
                     "url": "https://images.pexels.com/photos/949587/pexels-photo-949587.jpeg",
                     "name": "image.jpeg"
                 ]
-            ]),
+        ])!,
              image: UIImage(named: "background")
         )
     }

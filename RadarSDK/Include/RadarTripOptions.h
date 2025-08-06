@@ -6,7 +6,9 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "RadarRoute.h"
+
+#import "RadarRouteMode.h"
+
 
 NS_ASSUME_NONNULL_BEGIN
 

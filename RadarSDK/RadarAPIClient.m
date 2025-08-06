@@ -519,7 +519,6 @@
                             id nearbyGeofencesObj = res[@"nearbyGeofences"];
                             id inAppMessagesObj = res[@"inAppMessages"];
             
-                            NSArray<RadarInAppMessage *> *inAppMessages = [RadarInAppMessage fromArray:inAppMessagesObj];
                             NSArray<RadarEvent *> *events = [RadarEvent eventsFromObject:eventsObj];
                             RadarUser *user = [[RadarUser alloc] initWithObject:userObj];
                             NSArray<RadarGeofence *> *nearbyGeofences = [RadarGeofence geofencesFromObject:nearbyGeofencesObj];
@@ -527,8 +526,9 @@
 
                             // handle in app messages after completion handler?
                             if (@available(iOS 13.0, *)) {
+                                NSArray<RadarInAppMessage *> *inAppMessages = [RadarInAppMessage fromArray:inAppMessagesObj];
                                 if (inAppMessages) {
-                                    [RadarInAppMessageManager onIAMReceivedWithMessages:inAppMessages];
+                                    [RadarInAppMessageManager onInAppMessageReceivedWithMessages:inAppMessages];
                                 }
                             }
             
