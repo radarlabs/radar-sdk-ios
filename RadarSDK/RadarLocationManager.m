@@ -1170,7 +1170,6 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     [self.locationManager stopUpdatingHeading];
 
     if (self.activityManager) {
-        // [self.activityManager stopActivityUpdates];
         [self.activityManager stopRelativeAltitudeUpdates];
         [self.activityManager stopAbsoluteAltitudeUpdates];
     }
