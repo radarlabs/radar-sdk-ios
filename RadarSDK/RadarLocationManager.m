@@ -215,11 +215,11 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 
     RadarTrackingOptions *trackingOptions = [RadarSettings trackingOptions];
     if (trackingOptions.useMotion) {
-       [self.locationManager stopUpdatingHeading];
-       if (self.activityManager) {
-        [self.activityManager stopActivityUpdates];
-        [self.activityManager stopRelativeAltitudeUpdates];
-        [self.activityManager stopAbsoluteAltitudeUpdates];
+        [self.locationManager stopUpdatingHeading];
+        if (self.activityManager) {
+            [self.activityManager stopActivityUpdates];
+            [self.activityManager stopRelativeAltitudeUpdates];
+            [self.activityManager stopAbsoluteAltitudeUpdates];
        }
     }
 
@@ -249,9 +249,8 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 
                                                            [self requestLocation];
                                                        }];
-        
+
         [self.lowPowerLocationManager startUpdatingLocation];
-        // Change for beta version only, not for merging into main.
         if (blueBar && interval <= 5) {
             [self.locationManager startUpdatingLocation];
         } else {
@@ -327,7 +326,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                                                message:[NSString stringWithFormat:@"Starting time-based tracking | startTrackingAfter = %@", options.startTrackingAfter]];
 
             [RadarSettings setTracking:YES];
-            tracking = YES;       
+            tracking = YES;
         } else if (tracking && [localOptions.stopTrackingAfter timeIntervalSinceNow] < 0) {
             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
                                                message:[NSString stringWithFormat:@"Stopping time-based tracking | stopTrackingAfter = %@", options.stopTrackingAfter]];
