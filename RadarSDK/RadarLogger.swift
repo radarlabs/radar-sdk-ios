@@ -57,13 +57,10 @@ class RadarLogger : NSObject {
         }
         
         // TODO: implement RadarLogBuffer
-        if (append) {
-            Radar.__writeToLogBuffer(with: level, type: type, message: message, forcePersist: true)
-        } else {
+        Radar.__writeToLogBuffer(with: level, type: type, message: message, forcePersist: append)
+        if (!append) {
             DispatchQueue.main.async {
-                Radar.__writeToLogBuffer(with: level, type: type, message: message, forcePersist: false)
-                
-                let backgroundTime = UIApplication.shared.backgroundTimeRemaining > .greatestFiniteMagnitude ? 180 : UIApplication.shared.backgroundTimeRemaining
+                let backgroundTime = UIApplication.shared.backgroundTimeRemaining >= .greatestFiniteMagnitude ? 180 : UIApplication.shared.backgroundTimeRemaining
                 let logMessage = "\(message) | backgroundTimeRemaining = \(backgroundTime)"
                 if #available(iOS 14.0, *) {
                     RadarLogger.logger.log("\(logMessage)")

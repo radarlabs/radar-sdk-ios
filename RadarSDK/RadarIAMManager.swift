@@ -33,7 +33,7 @@ class RadarInAppMessageManager: NSObject {
         let duration = messageClickTime.timeIntervalSince(messageShownTime)
         
         var metadata: [String: Any] = [:]
-        metadata["display_duration"] = duration
+        metadata["duration"] = duration
         metadata["campaignId"] = message.metadata["radar:campaignId"] as? String
         metadata["campaignName"] = message.metadata["radar:campaignName"] as? String
         metadata["geofenceId"] = message.metadata["radar:geofenceId"] as? String
@@ -41,7 +41,7 @@ class RadarInAppMessageManager: NSObject {
         // logConversion runs asynchronously
         Radar.logConversion(name: name, metadata: metadata, completionHandler: { status, event in
             if let event = event {
-                RadarLogger.shared.info("Conversion name = \(event.conversionName ?? "-"): status = \(status); event = \(event)")
+                RadarLogger.shared.info("Conversion name = \(event.conversionName ?? "-"): status = \(status); event = \(event.dictionaryValue())")
             } else {
                 RadarLogger.shared.info("Conversion name = \(name): status = \(status); no event")
             }

@@ -95,13 +95,14 @@ extension RadarInAppMessage.Text {
 
 extension RadarInAppMessage.Button {
     static func fromDictionary(dict: Any?) -> RadarInAppMessage.Button? {
-        guard let dict = dict as? Dictionary<String, String>,
-              let text = dict["text"],
-              let color = uiColorFromString(dict["color"]!),
-              let backgroundColor = uiColorFromString(dict["backgroundColor"]!) else {
+        print("Parsing button")
+        guard let dict = dict as? Dictionary<String, String?>,
+              let text = dict["text"] ?? nil,
+              let color = uiColorFromString(dict["color"] ?? nil),
+              let backgroundColor = uiColorFromString(dict["backgroundColor"] ?? nil) else {
             return nil
         }
-        let url = dict["url"]
+        let url = dict["url"] ?? nil
         
         return RadarInAppMessage.Button(
             text: text, color: color, backgroundColor: backgroundColor, url: url
