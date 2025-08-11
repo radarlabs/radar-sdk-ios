@@ -30,8 +30,11 @@ NS_SWIFT_UI_ACTOR
 - (void) onInAppMessageButtonClicked:(RadarInAppMessage * _Nonnull)message
     NS_SWIFT_NAME(onInAppMessageButtonClicked(_:));
 
-- (void) createInAppMessageView:(RadarInAppMessage * _Nonnull)message completionHandler:(void (^)(UIViewController *))completionHandler
-    NS_SWIFT_NAME(createInAppMessageView(_:completionHandler:));
+- (void) createInAppMessageView:(RadarInAppMessage * _Nonnull)message
+                      onDismiss:(void (^)(void))onDismiss
+          onInAppMessageClicked:(void (^)(void))onInAppMessageClicked
+              completionHandler:(void (^)(UIViewController *))completionHandler
+    NS_SWIFT_NAME(createInAppMessageView(_:onDismiss:onInAppMessageClicked:completionHandler:));
 
 @end
 

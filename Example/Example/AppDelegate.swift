@@ -34,7 +34,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         // Uncomment to enable automatic setup for notification conversions or deep linking
         //radarInitializeOptions.autoLogNotificationConversions = true
         //radarInitializeOptions.autoHandleNotificationDeepLinks = true
-        UserDefaults.standard.set("https://api-shicheng.radar-staging.com", forKey: "radar-host")
+        UserDefaults.standard.set("https://shichengradar.ngrok.app", forKey: "radar-host")
         
         Radar.initialize(publishableKey: "prj_live_pk_", options: radarInitializeOptions )
         Radar.setUserId("testUserId")
@@ -312,9 +312,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         }
 
         demoButton(text: "startTrip") {
-            let tripOptions = RadarTripOptions(externalId: "300", destinationGeofenceTag: "store", destinationGeofenceExternalId: "123")
+            let tripOptions = RadarTripOptions(externalId: "12373242232138421", destinationGeofenceTag: "store", destinationGeofenceExternalId: "123", scheduledArrivalAt: Date().addingTimeInterval(300))
             tripOptions.mode = .car
-            tripOptions.approachingThreshold = 9
             Radar.startTrip(options: tripOptions)
         }
 
@@ -334,7 +333,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         }
 
         demoButton(text: "startTrip with tracking options and startTrackingAfter") {
-            let tripOptions = RadarTripOptions(externalId: "303", destinationGeofenceTag: "store", destinationGeofenceExternalId: "123", scheduledArrivalAt: nil)
+            let d = Date().addingTimeInterval(300)
+            let tripOptions = RadarTripOptions(externalId: "303", destinationGeofenceTag: "store", destinationGeofenceExternalId: "123", scheduledArrivalAt: Date().addingTimeInterval(300))
             tripOptions.startTracking = false
             tripOptions.mode = .car
             tripOptions.approachingThreshold = 9
@@ -455,6 +455,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
 
     func didReceiveEvents(_ events: [RadarEvent], user: RadarUser?) {
         for event in events {
+            print(event.type)
+            if (event.type == RadarEventType.userFiredTripOrders) {
+                print(event.trip?.orders)
+            }
+            
             notify(Utils.stringForRadarEvent(event))
         }
     }

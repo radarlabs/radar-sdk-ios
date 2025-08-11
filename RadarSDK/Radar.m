@@ -500,6 +500,7 @@
 
 + (void)setDelegate:(id<RadarDelegate>)delegate {
     [RadarDelegateHolder sharedInstance].delegate = delegate;
+    [RadarLogger_Swift setDelegate: delegate];
 }
 
 + (void)setVerifiedDelegate:(id<RadarVerifiedDelegate>)verifiedDelegate {
@@ -1412,6 +1413,10 @@
 
 + (void)openURLFromNotification:(UNNotification *)notification {
     [RadarNotificationHelper openURLFromNotification:notification];
+}
+
++ (void) __writeToLogBufferWithLevel:(RadarLogLevel)level type:(RadarLogType)type message:(NSString *)message forcePersist:(BOOL)forcePersist {
+    [[RadarLogBuffer sharedInstance] write:level type:type message:message forcePersist:forcePersist];
 }
 
 @end

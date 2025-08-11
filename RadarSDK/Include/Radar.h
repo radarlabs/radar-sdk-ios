@@ -1337,6 +1337,9 @@ typedef void (^_Nullable RadarLogConversionCompletionHandler)(RadarStatus status
 
 + (void)openURLFromNotification:(UNNotification *)notification NS_SWIFT_NAME(openURLFromNotification(_:));
 
++ (void)__writeToLogBufferWithLevel:(RadarLogLevel)level type:(RadarLogType)type message:(NSString *)message forcePersist:(BOOL)forcePersist
+    NS_SWIFT_NAME(__writeToLogBuffer(with:type:message:forcePersist:));
+
 @end
 
 NS_ASSUME_NONNULL_END

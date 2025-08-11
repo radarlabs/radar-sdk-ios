@@ -10,7 +10,7 @@ import Foundation
 
 @available(iOS 13.0, *)
 class RadarApiHelper {
-    func request(method: String, url: String, query: [String: String] = [:], headers: [String: String] = [:], body: [String: Any] = [:]) async throws -> (Data, HTTPURLResponse) {
+    static func request(method: String, url: String, query: [String: String] = [:], headers: [String: String] = [:], body: [String: Any] = [:]) async throws -> (Data, HTTPURLResponse) {
         
         // transform URL
         // turn query into a string of format: "?key=value&key2=value2" or "" if there are no queries
@@ -31,7 +31,9 @@ class RadarApiHelper {
             request.addValue(value, forHTTPHeaderField: key)
         }
         
-        request.httpBody = try JSONSerialization.data(withJSONObject: body, options: [])
+        if (!body.isEmpty && (method == "POST" || method == "PUT" || method == "PATCH")) {
+            request.httpBody = try JSONSerialization.data(withJSONObject: body, options: [])
+        }
         
         let (data, response) = try await URLSession.shared.data(for: request)
         
@@ -42,17 +44,17 @@ class RadarApiHelper {
         return (data, httpResponse)
     }
     
-    func radarRequest(method: String, url: String, query: [String: String] = [:], headers: [String: String] = [:], body: [String: Any] = [:]) async throws {
+    static func radarRequest(method: String, url: String, query: [String: String] = [:], headers: [String: String] = [:], body: [String: Any] = [:]) async throws -> (Data, HTTPURLResponse) {
         let publishableKey = UserDefaults.standard.string(forKey: "radar-publishableKey")!
         let radarHost = UserDefaults.standard.string(forKey: "radar-host")!
         
         var headers = headers
         headers["Authorization"] = publishableKey
         
-        var url = "\(radarHost)/v1/\(url)"
+        let url = "\(radarHost)/v1/\(url)"
         
         let (data, response) = try await request(method: method, url: url, query: query, headers: headers, body: body)
         
-        
+        return (data, response)
     }
 }

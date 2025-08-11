@@ -11,6 +11,8 @@ import SwiftUI
 struct RadarIAMView: View {
     var message: RadarInAppMessage
     var image: UIImage?
+    var onDismiss: (() -> Void)
+    var onInAppMessageClicked: (() -> Void)
     
     var body: some View {
         ZStack(alignment: .topTrailing) {
@@ -41,8 +43,7 @@ struct RadarIAMView: View {
                     
                     // Button
                     Button(action: {
-                        RadarInAppMessageManager.delegate.onInAppMessageButtonClicked(message)
-                        RadarInAppMessageManager.delegate.onInAppMessageDismissed(message)
+                        onInAppMessageClicked()
                     }) {
                         Text(message.button?.text ?? "")
                             .frame(width: 310, height: 50)
@@ -56,7 +57,7 @@ struct RadarIAMView: View {
             
             // Close button
             Button(action: {
-                RadarInAppMessageManager.delegate.onInAppMessageDismissed(message)
+                onDismiss()
             }, label: {
                 ZStack {
                     Image(systemName: "circle.fill")
@@ -96,7 +97,9 @@ struct RadarIAMView: View {
                     "name": "image.jpeg"
                 ]
         ])!,
-             image: UIImage(named: "background")
+             image: UIImage(named: "background"),
+             onDismiss: { print("Dismissed") },
+             onInAppMessageClicked: { print("Button tapped") }
         )
     }
 }

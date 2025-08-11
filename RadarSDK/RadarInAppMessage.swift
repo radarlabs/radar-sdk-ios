@@ -31,12 +31,14 @@ public class RadarInAppMessage : NSObject {
     public var body: Text
     public var button: Button?
     public var image: Image?
+    public var metadata: [String: Any]
     
-    init(title: Text, body: Text, button: Button?, image: Image?) {
+    init(title: Text, body: Text, button: Button?, image: Image?, metadata: [String: Any]) {
         self.title = title
         self.body = body
         self.button = button
         self.image = image
+        self.metadata = metadata
     }
 
     @objc public static func fromDictionary(_ dict: [String: Any]) -> RadarInAppMessage? {
@@ -48,9 +50,10 @@ public class RadarInAppMessage : NSObject {
         // optional fields
         let button = Button.fromDictionary(dict: dict["button"])
         let image = Image.fromDictionary(dict: dict["image"])
+        let metadata = dict["metadata"] as? [String: Any] ?? [:]
         
         return RadarInAppMessage(
-            title: title, body: body, button: button, image: image
+            title: title, body: body, button: button, image: image, metadata: metadata
         )
     }
     
@@ -95,10 +98,10 @@ extension RadarInAppMessage.Button {
         guard let dict = dict as? Dictionary<String, String>,
               let text = dict["text"],
               let color = uiColorFromString(dict["color"]!),
-              let backgroundColor = uiColorFromString(dict["backgroundColor"]!),
-              let url = dict["url"] else {
+              let backgroundColor = uiColorFromString(dict["backgroundColor"]!) else {
             return nil
         }
+        let url = dict["url"]
         
         return RadarInAppMessage.Button(
             text: text, color: color, backgroundColor: backgroundColor, url: url

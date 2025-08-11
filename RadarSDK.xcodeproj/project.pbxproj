@@ -188,6 +188,9 @@
 		F6B650672E43DFA30088E0D6 /* RadarRouteMode.m in Sources */ = {isa = PBXBuildFile; fileRef = F6B650662E43DFA30088E0D6 /* RadarRouteMode.m */; };
 		F6B6506B2E43E17B0088E0D6 /* RadarRouteMode.h in Headers */ = {isa = PBXBuildFile; fileRef = F6B6506A2E43E17B0088E0D6 /* RadarRouteMode.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F6B6506F2E43E2280088E0D6 /* RadarApiHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6B6506E2E43E2280088E0D6 /* RadarApiHelper.swift */; };
+		F6B650722E44036D0088E0D6 /* InAppMessageTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6B650712E44036D0088E0D6 /* InAppMessageTest.swift */; };
+		F6BD3A3E2E4A3077004980FD /* RadarLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6BD3A3D2E4A3077004980FD /* RadarLogger.swift */; };
+		F6BD3A402E4A31EA004980FD /* RadarSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6BD3A3F2E4A31EA004980FD /* RadarSettings.swift */; };
 		F6F959802C3D7D9900BC30FE /* RadarTimeZone.h in Headers */ = {isa = PBXBuildFile; fileRef = F6F9597F2C3D7D9900BC30FE /* RadarTimeZone.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F6F959822C3D7EA200BC30FE /* RadarTimeZone+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = F6F959812C3D7EA200BC30FE /* RadarTimeZone+Internal.h */; };
 		F6F959842C3D7EDE00BC30FE /* RadarTimeZone.m in Sources */ = {isa = PBXBuildFile; fileRef = F6F959832C3D7EDE00BC30FE /* RadarTimeZone.m */; };
@@ -374,6 +377,10 @@
 		F6B650662E43DFA30088E0D6 /* RadarRouteMode.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RadarRouteMode.m; sourceTree = "<group>"; };
 		F6B6506A2E43E17B0088E0D6 /* RadarRouteMode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarRouteMode.h; sourceTree = "<group>"; };
 		F6B6506E2E43E2280088E0D6 /* RadarApiHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarApiHelper.swift; sourceTree = "<group>"; };
+		F6B650702E44036D0088E0D6 /* RadarSDKTests-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "RadarSDKTests-Bridging-Header.h"; sourceTree = "<group>"; };
+		F6B650712E44036D0088E0D6 /* InAppMessageTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InAppMessageTest.swift; sourceTree = "<group>"; };
+		F6BD3A3D2E4A3077004980FD /* RadarLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarLogger.swift; sourceTree = "<group>"; };
+		F6BD3A3F2E4A31EA004980FD /* RadarSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarSettings.swift; sourceTree = "<group>"; };
 		F6F9597F2C3D7D9900BC30FE /* RadarTimeZone.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarTimeZone.h; sourceTree = "<group>"; };
 		F6F959812C3D7EA200BC30FE /* RadarTimeZone+Internal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "RadarTimeZone+Internal.h"; sourceTree = "<group>"; };
 		F6F959832C3D7EDE00BC30FE /* RadarTimeZone.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RadarTimeZone.m; sourceTree = "<group>"; };
@@ -398,16 +405,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		53CCD781275E576B00F79CC8 /* Util */ = {
-			isa = PBXGroup;
-			children = (
-				9679F4A027CD8D0600800797 /* CLLocation+Radar.h */,
-				9679F4A227CD8DE200800797 /* CLLocation+Radar.m */,
-				53CCD782275E579800F79CC8 /* RadarLogBuffer.m */,
-			);
-			name = Util;
-			sourceTree = "<group>";
-		};
 		96A5A0D827AD9F7F007B960B /* Include */ = {
 			isa = PBXGroup;
 			children = (
@@ -500,7 +497,6 @@
 		DD236C772308797B00EB88F9 /* RadarSDK */ = {
 			isa = PBXGroup;
 			children = (
-				828D1A452E29599500663787 /* RadarTripOrder.m */,
 				825732502B72BE1900DF8B88 /* PrivacyInfo.xcprivacy */,
 				96A5A0D827AD9F7F007B960B /* Include */,
 				DD236C792308797B00EB88F9 /* Info.plist */,
@@ -518,16 +514,17 @@
 				58F950CF2407038300364B15 /* RadarCollectionAdditions.m */,
 				01F99CFA2965C182004E8CF3 /* RadarConfig.h */,
 				01F99CFC2965C1C4004E8CF3 /* RadarConfig.m */,
-				E6EEC56D2B20F41A00DD096B /* RadarFileStorage.h */,
-				E6EEC56F2B20F45D00DD096B /* RadarFileStorage.m */,
 				96A5A11727ADA02E007B960B /* RadarDelegateHolder.h */,
 				DD4C104925D87E3E009C2E36 /* RadarDelegateHolder.m */,
+				E6EEC56D2B20F41A00DD096B /* RadarFileStorage.h */,
+				E6EEC56F2B20F45D00DD096B /* RadarFileStorage.m */,
 				E6B93B732C90E5B8003CB858 /* RadarInitializeOptions.m */,
 				DD236CF723088F8400EB88F9 /* RadarLocationManager.h */,
 				DD236CF823088F8400EB88F9 /* RadarLocationManager.m */,
 				96A5A11527ADA02E007B960B /* RadarLog.h */,
 				96A5A11427ADA02E007B960B /* RadarLog.m */,
 				96A5A11627ADA02E007B960B /* RadarLogBuffer.h */,
+				53CCD782275E579800F79CC8 /* RadarLogBuffer.m */,
 				DD236D66230A0D6700EB88F9 /* RadarLogger.h */,
 				DD236D67230A0D6700EB88F9 /* RadarLogger.m */,
 				9683FD6127B36C26009EBB6B /* RadarMeta.h */,
@@ -550,15 +547,19 @@
 				DD236D0F2309B3FE00EB88F9 /* RadarState.m */,
 				DD236CEB2308821600EB88F9 /* RadarTrackingOptions.m */,
 				DD8CCDF7246872360011690D /* RadarTripOptions.m */,
+				828D1A452E29599500663787 /* RadarTripOrder.m */,
 				DD236D0323099B8400EB88F9 /* RadarUtils.h */,
 				DD236D0423099B8400EB88F9 /* RadarUtils.m */,
 				82F7FAEC2A65FE030055AA4B /* RadarVerificationManager.h */,
 				82F7FAED2A65FE030055AA4B /* RadarVerificationManager.m */,
+				9679F4A027CD8D0600800797 /* CLLocation+Radar.h */,
+				9679F4A227CD8DE200800797 /* CLLocation+Radar.m */,
 				DD27CB7D235D13F000299FEC /* Models */,
-				53CCD781275E576B00F79CC8 /* Util */,
 				F62F2E152E2FD4990009B77F /* RadarIAMView.swift */,
 				F62F2E262E3119730009B77F /* RadarIAMDelegate.m */,
 				F62F2DF22E205C570009B77F /* RadarIAMManager.swift */,
+				F6BD3A3D2E4A3077004980FD /* RadarLogger.swift */,
+				F6BD3A3F2E4A31EA004980FD /* RadarSettings.swift */,
 				F6B6500F2E3136A70088E0D6 /* RadarIAMDelegate.swift */,
 				F6B6506E2E43E2280088E0D6 /* RadarApiHelper.swift */,
 				F62F2E172E2FD4B90009B77F /* RadarInAppMessage.swift */,
@@ -572,6 +573,7 @@
 				96B465BB27D6732500D7119B /* CLLocation+RadarTests.m */,
 				DD8E2F7824018C37002D51AB /* CLLocationManagerMock.h */,
 				DD8E2F7924018C37002D51AB /* CLLocationManagerMock.m */,
+				F6B650712E44036D0088E0D6 /* InAppMessageTest.swift */,
 				DD8E2F7B24018C54002D51AB /* CLVisitMock.h */,
 				DD8E2F7C24018C54002D51AB /* CLVisitMock.m */,
 				DD236C852308797B00EB88F9 /* Info.plist */,
@@ -583,6 +585,7 @@
 				DD8E2F6F24018BF8002D51AB /* RadarTestUtils.h */,
 				DD8E2F7024018BF8002D51AB /* RadarTestUtils.m */,
 				DD103213237F1778003DD408 /* Resources */,
+				F6B650702E44036D0088E0D6 /* RadarSDKTests-Bridging-Header.h */,
 			);
 			path = RadarSDKTests;
 			sourceTree = "<group>";
@@ -804,7 +807,7 @@
 					};
 					DD236C7D2308797B00EB88F9 = {
 						CreatedOnToolsVersion = 11.0;
-						LastSwiftMigration = 1320;
+						LastSwiftMigration = 1640;
 					};
 				};
 			};
@@ -935,8 +938,10 @@
 				F62F2E272E3119730009B77F /* RadarIAMDelegate.m in Sources */,
 				0107AADA26220195008AB52F /* RadarRouteMatrix.m in Sources */,
 				0107AA7A26220128008AB52F /* RadarAddress.m in Sources */,
+				F6BD3A3E2E4A3077004980FD /* RadarLogger.swift in Sources */,
 				0107AABC26220178008AB52F /* RadarRegion.m in Sources */,
 				0107AB26262201F0008AB52F /* RadarState.m in Sources */,
+				F6BD3A402E4A31EA004980FD /* RadarSettings.swift in Sources */,
 				0107AAA126220159008AB52F /* RadarEvent.m in Sources */,
 				F62F2DF32E205C570009B77F /* RadarIAMManager.swift in Sources */,
 				0107AAE02622019B008AB52F /* RadarRoutes.m in Sources */,
@@ -962,6 +967,7 @@
 				DD103211237E0C47003DD408 /* RadarSDKTests.m in Sources */,
 				828D1A462E29599500663787 /* RadarTripOrder.m in Sources */,
 				DD8E2F7124018BF9002D51AB /* RadarTestUtils.m in Sources */,
+				F6B650722E44036D0088E0D6 /* InAppMessageTest.swift in Sources */,
 				DD8E2F7D24018C54002D51AB /* CLVisitMock.m in Sources */,
 				DD8E2F7A24018C37002D51AB /* CLLocationManagerMock.m in Sources */,
 			);
@@ -1057,6 +1063,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				APPLICATION_EXTENSION_API_ONLY = NO;
 				BITCODE_GENERATION_MODE = bitcode;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
@@ -1108,11 +1115,13 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				MARKETING_VERSION = 3.22.0;
+				MODULEMAP_PRIVATE_FILE = "";
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CFLAGS = "-fembed-bitcode";
 				SDKROOT = iphoneos;
+				SWIFT_INCLUDE_PATHS = "";
 				VERSION_INFO_PREFIX = "";
 			};
 			name = Debug;
@@ -1121,6 +1130,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				APPLICATION_EXTENSION_API_ONLY = NO;
 				BITCODE_GENERATION_MODE = bitcode;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
@@ -1166,11 +1176,13 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				MARKETING_VERSION = 3.22.0;
+				MODULEMAP_PRIVATE_FILE = "";
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				OTHER_CFLAGS = "-fembed-bitcode";
 				SDKROOT = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_INCLUDE_PATHS = "";
 				VALIDATE_PRODUCT = YES;
 				VERSION_INFO_PREFIX = "";
 			};
@@ -1192,6 +1204,7 @@
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = io.radar.RadarSDKTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "RadarSDKTests/RadarSDKTests-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -1214,6 +1227,7 @@
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = io.radar.RadarSDKTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "RadarSDKTests/RadarSDKTests-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};

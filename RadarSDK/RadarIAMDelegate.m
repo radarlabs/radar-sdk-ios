@@ -23,8 +23,11 @@ RadarInAppMessageDelegate_Swift* radarIAMDelegate = nil;
     return self;
 }
 
-- (void)createInAppMessageView:(RadarInAppMessage * _Nonnull)message completionHandler:(nonnull void (^)(UIViewController * _Nonnull __strong))completionHandler {
-    [radarIAMDelegate createInAppMessageView:message completionHandler:completionHandler];
+- (void)createInAppMessageView:(RadarInAppMessage * _Nonnull)message
+                     onDismiss:(void (^)(void))onDismiss
+         onInAppMessageClicked:(void (^)(void))onInAppMessageClicked
+             completionHandler:(nonnull void (^)(UIViewController * _Nonnull __strong))completionHandler {
+    [radarIAMDelegate createInAppMessageView:message onDismiss:onDismiss onInAppMessageClicked:onInAppMessageClicked completionHandler:completionHandler];
 }
 
 - (void)onInAppMessageButtonClicked:(RadarInAppMessage * _Nonnull)message {
