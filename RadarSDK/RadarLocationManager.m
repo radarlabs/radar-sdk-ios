@@ -350,41 +350,41 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                 self.activityManager = [RadarActivityManager sharedInstance];
                 self.locationManager.headingFilter = 5;
                 [self.locationManager startUpdatingHeading];
-                // [self.activityManager startActivityUpdatesWithHandler:^(CMMotionActivity *activity) {
-                //     if (activity) {
-                //         RadarActivityType activityType = RadarActivityTypeUnknown;
-                //         if (activity.stationary) {
-                //         activityType = RadarActivityTypeStationary; 
-                //         } else if (activity.walking) {
-                //             activityType = RadarActivityTypeFoot;
-                //         } else if (activity.running) {
-                //             activityType = RadarActivityTypeFoot;
-                //         } else if (activity.automotive) {
-                //             activityType = RadarActivityTypeCar;
-                //         } else if (activity.cycling) {
-                //             activityType = RadarActivityTypeBike;
-                //         }
+                [self.activityManager startActivityUpdatesWithHandler:^(CMMotionActivity *activity) {
+                    if (activity) {
+                        RadarActivityType activityType = RadarActivityTypeUnknown;
+                        if (activity.stationary) {
+                        activityType = RadarActivityTypeStationary; 
+                        } else if (activity.walking) {
+                            activityType = RadarActivityTypeFoot;
+                        } else if (activity.running) {
+                            activityType = RadarActivityTypeFoot;
+                        } else if (activity.automotive) {
+                            activityType = RadarActivityTypeCar;
+                        } else if (activity.cycling) {
+                            activityType = RadarActivityTypeBike;
+                        }
                         
-                //         if (activityType == RadarActivityTypeUnknown) {
-                //             return;
-                //         }
+                        if (activityType == RadarActivityTypeUnknown) {
+                            return;
+                        }
                         
-                //         NSString *previousActivityType = [RadarState lastMotionActivityData][@"type"];
-                //         if (previousActivityType != nil && [previousActivityType isEqualToString:[Radar stringForActivityType:activityType]]) {
-                //             return;
-                //         }
+                        NSString *previousActivityType = [RadarState lastMotionActivityData][@"type"];
+                        if (previousActivityType != nil && [previousActivityType isEqualToString:[Radar stringForActivityType:activityType]]) {
+                            return;
+                        }
 
-                //         [RadarState setLastMotionActivityData:@{
-                //             @"type" : [Radar stringForActivityType:activityType],
-                //             @"timestamp" : @([activity.startDate timeIntervalSince1970]),
-                //             @"confidence" : @(activity.confidence)
-                //         }];
+                        [RadarState setLastMotionActivityData:@{
+                            @"type" : [Radar stringForActivityType:activityType],
+                            @"timestamp" : @([activity.startDate timeIntervalSince1970]),
+                            @"confidence" : @(activity.confidence)
+                        }];
                         
-                //         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Activity detected, initiating trackOnce"];
-                //         [Radar trackOnceWithCompletionHandler: nil];
+                        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Activity detected, initiating trackOnce"];
+                        [Radar trackOnceWithCompletionHandler: nil];
                         
-                //     }
-                // }];
+                    }
+                }];
                 [self.activityManager startRelativeAltitudeWithHandler: ^(CMAltitudeData * _Nullable altitudeData) {
                     NSMutableDictionary *currentState = [[RadarState lastRelativeAltitudeData] mutableCopy] ?: [NSMutableDictionary new];
                     currentState[@"pressure"] = @(altitudeData.pressure.doubleValue *10); // convert to hPa

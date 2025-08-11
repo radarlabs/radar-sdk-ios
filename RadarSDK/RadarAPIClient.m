@@ -381,8 +381,9 @@
     if (appBuild) {
         params[@"appBuild"] = appBuild;
     }
-    NSMutableDictionary *locationMetadata = [NSMutableDictionary new];
+    
     if (options.useMotion) {
+        NSMutableDictionary *locationMetadata = [NSMutableDictionary new];
         locationMetadata[@"motionActivityData"] = [RadarState lastMotionActivityData];
         locationMetadata[@"heading"] = [RadarState lastHeadingData];
         locationMetadata[@"speed"] = @(location.speed);
