@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-#import "RadarSDK/RadarSDK-Swift.h"
+#import <RadarSDK/RadarSDK-Swift.h>
 #import "UIKit/UIkit.h"
 #import "RadarInAppMessageDelegate.h"
 
