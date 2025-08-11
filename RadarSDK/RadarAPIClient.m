@@ -382,8 +382,8 @@
         params[@"appBuild"] = appBuild;
     }
     
+    NSMutableDictionary *locationMetadata = [NSMutableDictionary new];
     if (options.useMotion) {
-        NSMutableDictionary *locationMetadata = [NSMutableDictionary new];
         locationMetadata[@"motionActivityData"] = [RadarState lastMotionActivityData];
         locationMetadata[@"heading"] = [RadarState lastHeadingData];
         locationMetadata[@"speed"] = @(location.speed);
@@ -393,7 +393,7 @@
         if (@available(iOS 13.4, *)) {
             locationMetadata[@"courseAccuracy"] = @(location.courseAccuracy);
         }
-        
+
         locationMetadata[@"battery"] = @([[UIDevice currentDevice] batteryLevel]);
         locationMetadata[@"altitude"] = @(location.altitude);
 
