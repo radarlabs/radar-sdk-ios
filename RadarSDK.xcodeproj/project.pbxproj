@@ -191,6 +191,7 @@
 		F6B650722E44036D0088E0D6 /* InAppMessageTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6B650712E44036D0088E0D6 /* InAppMessageTest.swift */; };
 		F6BD3A3E2E4A3077004980FD /* RadarLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6BD3A3D2E4A3077004980FD /* RadarLogger.swift */; };
 		F6BD3A402E4A31EA004980FD /* RadarSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6BD3A3F2E4A31EA004980FD /* RadarSettings.swift */; };
+		F6BD3A612E4A94DC004980FD /* Radar-Swift.h in Headers */ = {isa = PBXBuildFile; fileRef = F6BD3A602E4A94D9004980FD /* Radar-Swift.h */; };
 		F6F959802C3D7D9900BC30FE /* RadarTimeZone.h in Headers */ = {isa = PBXBuildFile; fileRef = F6F9597F2C3D7D9900BC30FE /* RadarTimeZone.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F6F959822C3D7EA200BC30FE /* RadarTimeZone+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = F6F959812C3D7EA200BC30FE /* RadarTimeZone+Internal.h */; };
 		F6F959842C3D7EDE00BC30FE /* RadarTimeZone.m in Sources */ = {isa = PBXBuildFile; fileRef = F6F959832C3D7EDE00BC30FE /* RadarTimeZone.m */; };
@@ -381,6 +382,7 @@
 		F6B650712E44036D0088E0D6 /* InAppMessageTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InAppMessageTest.swift; sourceTree = "<group>"; };
 		F6BD3A3D2E4A3077004980FD /* RadarLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarLogger.swift; sourceTree = "<group>"; };
 		F6BD3A3F2E4A31EA004980FD /* RadarSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarSettings.swift; sourceTree = "<group>"; };
+		F6BD3A602E4A94D9004980FD /* Radar-Swift.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Radar-Swift.h"; sourceTree = "<group>"; };
 		F6F9597F2C3D7D9900BC30FE /* RadarTimeZone.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarTimeZone.h; sourceTree = "<group>"; };
 		F6F959812C3D7EA200BC30FE /* RadarTimeZone+Internal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "RadarTimeZone+Internal.h"; sourceTree = "<group>"; };
 		F6F959832C3D7EDE00BC30FE /* RadarTimeZone.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RadarTimeZone.m; sourceTree = "<group>"; };
@@ -506,6 +508,7 @@
 				DD236C9923087F9200EB88F9 /* RadarAPIClient.m */,
 				82DF18772C5830C300301B17 /* RadarActivityManager.h */,
 				82DF18782C5830C300301B17 /* RadarActivityManager.m */,
+				F6BD3A602E4A94D9004980FD /* Radar-Swift.h */,
 				DD633EC1237C5B800026C91A /* RadarAPIHelper.h */,
 				DD633EC2237C5B800026C91A /* RadarAPIHelper.m */,
 				DD6F4F662573174400AFA38B /* RadarBeaconManager.h */,
@@ -709,6 +712,7 @@
 				96A5A10527AD9F7F007B960B /* RadarTrackingOptions.h in Headers */,
 				96A5A10927AD9F7F007B960B /* RadarContext.h in Headers */,
 				0107AA1226220049008AB52F /* RadarCollectionAdditions.h in Headers */,
+				F6BD3A612E4A94DC004980FD /* Radar-Swift.h in Headers */,
 				E6EEC56E2B20F41A00DD096B /* RadarFileStorage.h in Headers */,
 				015C53AD29B8E8BA004F53A6 /* (null) in Headers */,
 				0107AA1C26220055008AB52F /* RadarPermissionsHelper.h in Headers */,
@@ -989,7 +993,7 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				HEADER_SEARCH_PATHS = "$(SRCROOT)/RadarSDK/Include";
+				HEADER_SEARCH_PATHS = "$(DERIVED_SOURCES_DIR)";
 				INFOPLIST_FILE = RadarSDK/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
@@ -1022,7 +1026,7 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				HEADER_SEARCH_PATHS = "$(SRCROOT)/RadarSDK/Include";
+				HEADER_SEARCH_PATHS = "$(DERIVED_SOURCES_DIR)";
 				INFOPLIST_FILE = RadarSDK/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
@@ -1097,6 +1101,7 @@
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEFINES_MODULE = YES;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
@@ -1120,8 +1125,8 @@
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CFLAGS = "-fembed-bitcode";
+				PRODUCT_MODULE_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SDKROOT = iphoneos;
-				SWIFT_INCLUDE_PATHS = "";
 				VERSION_INFO_PREFIX = "";
 			};
 			name = Debug;
@@ -1164,6 +1169,7 @@
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEFINES_MODULE = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
@@ -1180,9 +1186,9 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				OTHER_CFLAGS = "-fembed-bitcode";
+				PRODUCT_MODULE_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SDKROOT = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;
-				SWIFT_INCLUDE_PATHS = "";
 				VALIDATE_PRODUCT = YES;
 				VERSION_INFO_PREFIX = "";
 			};

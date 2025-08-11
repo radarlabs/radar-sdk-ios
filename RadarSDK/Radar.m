@@ -24,7 +24,7 @@
 #import "RadarNotificationHelper.h"
 #import "RadarTripOptions.h"
 #import "RadarInAppMessageDelegate.h"
-#import <RadarSDK/RadarSDK-Swift.h>
+#import "Radar-Swift.h"
 
 @interface Radar ()
 
@@ -500,7 +500,7 @@
 
 + (void)setDelegate:(id<RadarDelegate>)delegate {
     [RadarDelegateHolder sharedInstance].delegate = delegate;
-    [RadarLogger_Swift setDelegate: delegate];
+    [RadarLogger_Swift setDelegate:delegate];
 }
 
 + (void)setVerifiedDelegate:(id<RadarVerifiedDelegate>)verifiedDelegate {
