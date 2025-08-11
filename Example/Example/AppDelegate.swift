@@ -34,7 +34,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         // Uncomment to enable automatic setup for notification conversions or deep linking
         //radarInitializeOptions.autoLogNotificationConversions = true
         //radarInitializeOptions.autoHandleNotificationDeepLinks = true
-        UserDefaults.standard.set("https://shichengradar.ngrok.app", forKey: "radar-host")
+        UserDefaults.standard.set("https://api-shicheng.radar-staging.com", forKey: "radar-host")
         
         Radar.initialize(publishableKey: "prj_live_pk_", options: radarInitializeOptions )
         Radar.setUserId("testUserId")

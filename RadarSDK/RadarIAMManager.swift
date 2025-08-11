@@ -35,8 +35,9 @@ class RadarInAppMessageManager: NSObject {
         
         var metadata: [String: Any] = [:]
         metadata["display_duration"] = duration
-        metadata["campaign_id"] = message.metadata["campaign_id"] as? String
-        metadata["geofence_id"] = message.metadata["geofence_id"] as? String
+        metadata["campaignId"] = message.metadata["radar:campaignId"] as? String
+        metadata["campaignName"] = message.metadata["radar:campaignName"] as? String
+        metadata["geofenceId"] = message.metadata["radar:geofenceId"] as? String
         
         // logConversion runs asynchronously
         Radar.logConversion(name: name, metadata: metadata, completionHandler: { status, event in
