@@ -24,7 +24,6 @@ class RadarInAppMessageManager: NSObject {
     }
     
     static func logConversion(name: String) {
-        print("Log conversion: ---")
         guard let messageShownTime = messageShownTime,
               let message = currentMessage else {
             return
@@ -58,11 +57,13 @@ class RadarInAppMessageManager: NSObject {
     @objc public static func showInAppMessage(_ message: RadarInAppMessage) async {
         // check before getting the view that there is no existing IAM shown
         if (view != nil) {
+            print("Has existing view")
             return
         }
         
         guard let keyWindow = getKeyWindow() else {
             // No key window
+            print("No key window")
             return
         }
         
@@ -75,6 +76,7 @@ class RadarInAppMessageManager: NSObject {
         }
         // check after getting the view asynchronously that there is no existing IAM shown
         if (view != nil) {
+            print("has existing view 2")
             return
         }
         messageShownTime = Date()
