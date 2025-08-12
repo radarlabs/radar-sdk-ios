@@ -331,6 +331,7 @@
     NSArray *coordinates = @[@(self.location.coordinate.longitude), @(self.location.coordinate.latitude)];
     locationDict[@"coordinates"] = coordinates;
     [dict setValue:locationDict forKey:@"location"];
+    [dict setValue:@(self.location.horizontalAccuracy) forKey:@"locationAccuracy"];
     [dict setValue:[Radar stringForActivityType:self.activityType] forKey:@"activityType"];
     NSArray *geofencesArr = [RadarGeofence arrayForGeofences:self.geofences];
     [dict setValue:geofencesArr forKey:@"geofences"];

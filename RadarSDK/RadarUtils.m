@@ -164,6 +164,14 @@ static NSDateFormatter *_isoDateFormatter;
     } 
 }
 
++ (BOOL)isLive {
+    NSString *publishableKey = [RadarSettings publishableKey];
+    if (!publishableKey) {
+        return NO;
+    }
+    return [publishableKey hasPrefix:@"prj_live"];
+}
+
 #pragma mark - threading
 
 + (void)runOnMainThread:(dispatch_block_t)block {

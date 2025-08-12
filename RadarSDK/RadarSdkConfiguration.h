@@ -6,6 +6,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "RadarRemoteTrackingOptions.h"
 #import "Radar.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -34,6 +35,10 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) BOOL useLocationMetadata;
 
 @property (nonatomic, assign) BOOL useOpenedAppConversion;
+
+@property (nonatomic, assign) BOOL useOfflineRTOUpdates;
+
+@property (nonatomic, copy, nullable) NSArray<RadarRemoteTrackingOptions *> *remoteTrackingOptions;
 
 @property (nonatomic, assign) BOOL useForegroundLocationUpdatedAtMsDiff;
 
