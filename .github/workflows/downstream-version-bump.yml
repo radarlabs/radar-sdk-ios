@@ -20,7 +20,7 @@ jobs:
           'radarlabs/radar-sdk-xamarin',
           'radarlabs/cordova-plugin-radar',
         ]
-    runs-on: macos-latest
+    runs-on: macos-15
     steps:
       - name: Dispatch to downtream SDKs
         uses: peter-evans/repository-dispatch@v2
