@@ -1213,7 +1213,7 @@
     } else {
         [RadarSettings setInSurveyMode:NO];
         if (completionHandler) {
-            completionHandler(@"ERROR: RadarSDKIndoors submodule not available", [[CLLocation alloc] init]);
+            completionHandler(@"ERROR: RadarSDKIndoors submodule not available", nil);
         }
     }
 }
