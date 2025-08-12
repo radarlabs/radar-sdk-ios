@@ -1208,7 +1208,7 @@ typedef void (^_Nonnull RadarIndoorsSurveyCompletionHandler)(NSString *_Nullable
 
 #pragma mark - Indoors
 
-+ (void)startIndoorSurvey:(NSString *)placeLabel
++ (void)startIndoorSurvey:(NSString *)geofenceId
                 forLength:(int)surveyLengthSeconds
         completionHandler:(RadarIndoorsSurveyCompletionHandler)completionHandler;
 

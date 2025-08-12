@@ -1178,7 +1178,7 @@
 
 #pragma mark - Indoors
 
-+ (void)startIndoorSurvey:(NSString *)placeLabel
++ (void)startIndoorSurvey:(NSString *)geofenceId
                 forLength:(int)surveyLengthSeconds
         completionHandler:(RadarIndoorsSurveyCompletionHandler)completionHandler {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"startIndoorSurvey()"];
@@ -1200,7 +1200,7 @@
                 return;
             }
             
-            [RadarSDKIndoors startIndoorSurvey:placeLabel
+            [RadarSDKIndoors startIndoorSurvey:geofenceId
                                     forLength:surveyLengthSeconds
                             withKnownLocation:location
                             completionHandler:^(NSString *_Nullable indoorSurveyResult, CLLocation *_Nullable locationAtStartOfSurvey) {
