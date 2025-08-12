@@ -238,30 +238,26 @@
                                  }];
                          };
 
-                         void (^maybeIndoorSurveyThenCallTrackAPI)(NSArray<RadarBeacon *> *_Nullable) = ^(NSArray<RadarBeacon *> *_Nullable beacons) {
-                             RadarTrackingOptions *options = [Radar getTrackingOptions];
-                             if(options.useIndoorScan && ![RadarSettings isInSurveyMode]) {
-                                 Class RadarSDKIndoors = NSClassFromString(@"RadarSDKIndoors");
-                                 if (RadarSDKIndoors) {
-                                     [RadarSDKIndoors startIndoorSurvey:@""
-                                                             forLength:5
-                                                     withKnownLocation:location
-                                                     completionHandler:^(NSString *_Nullable indoorSurveyResult, CLLocation *_Nullable locationAtStartOfSurvey) {
-
-                                         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
-                                                            message:[NSString stringWithFormat:@"received indoor survey result: %lu chars", (unsigned long)(indoorSurveyResult ? indoorSurveyResult.length : 0)]];
-
-                                         callTrackAPI(beacons, indoorSurveyResult);
-                                     }];
-                                 } else {
-                                     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
-                                                        message:@"RadarSDKIndoors not available, skipping indoor survey"];
-                                     callTrackAPI(beacons, nil);
-                                 }
-                             } else {
-                                 callTrackAPI(beacons, nil);
-                             }
-                         };
+                         void (^performIndoorScanThenTrack)(NSArray<RadarBeacon *> *_Nullable) = ^(NSArray<RadarBeacon *> *_Nullable beacons) {
+                            RadarTrackingOptions *options = [Radar getTrackingOptions];
+                            Class RadarSDKIndoors = NSClassFromString(@"RadarSDKIndoors");
+                            
+                            if (options.useIndoorScan && ![RadarSettings isInSurveyMode] && RadarSDKIndoors) {
+                                [RadarSDKIndoors startIndoorSurvey:@""
+                                                        forLength:5
+                                                withKnownLocation:location
+                                                completionHandler:^(NSString *_Nullable indoorSurveyResult, CLLocation *_Nullable locationAtStartOfSurvey) {
+                                    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
+                                                       message:[NSString stringWithFormat:@"Indoor survey completed: %lu chars", (unsigned long)(indoorSurveyResult ? indoorSurveyResult.length : 0)]];
+                                    callTrackAPI(beacons, indoorSurveyResult);
+                                }];
+                            } else {
+                                if (options.useIndoorScan && ![RadarSettings isInSurveyMode] && !RadarSDKIndoors) {
+                                    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"RadarSDKIndoors not available, skipping indoor survey"];
+                                }
+                                callTrackAPI(beacons, nil);
+                            }
+                        };
 
                          if (beacons) {
                              [[RadarAPIClient sharedInstance]
@@ -277,12 +273,12 @@
                                              [[RadarBeaconManager sharedInstance] rangeBeaconUUIDs:beaconUUIDs
                                                                                  completionHandler:^(RadarStatus status, NSArray<RadarBeacon *> *_Nullable beacons) {
                                                                                      if (status != RadarStatusSuccess || !beacons) {
-                                                                                         maybeIndoorSurveyThenCallTrackAPI(nil);
+                                                                                         performIndoorScanThenTrack(nil);
 
                                                                                          return;
                                                                                      }
 
-                                                                                     maybeIndoorSurveyThenCallTrackAPI(beacons);
+                                                                                     performIndoorScanThenTrack(beacons);
                                                                                  }];
                                          }];
                                      } else if (beacons && beacons.count) {
@@ -292,20 +288,20 @@
                                              [[RadarBeaconManager sharedInstance] rangeBeacons:beacons
                                                                              completionHandler:^(RadarStatus status, NSArray<RadarBeacon *> *_Nullable beacons) {
                                                                                  if (status != RadarStatusSuccess || !beacons) {
-                                                                                     maybeIndoorSurveyThenCallTrackAPI(nil);
+                                                                                     performIndoorScanThenTrack(nil);
 
                                                                                      return;
                                                                                  }
 
-                                                                                 maybeIndoorSurveyThenCallTrackAPI(beacons);
+                                                                                 performIndoorScanThenTrack(beacons);
                                                                              }];
                                          }];
                                      } else {
-                                         maybeIndoorSurveyThenCallTrackAPI(@[]);
+                                         performIndoorScanThenTrack(@[]);
                                      }
                                  }];
                          } else {
-                             maybeIndoorSurveyThenCallTrackAPI(nil);
+                             performIndoorScanThenTrack(nil);
                          }
                      }];
 }
