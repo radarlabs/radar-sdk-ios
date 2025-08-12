@@ -5,6 +5,9 @@ jobs:
       xcode: 16.0
     steps:
       - checkout
+      - run: 
+          name: Create tmp directory
+          command: mkdir -p tmp
       - run:
           name: List simulators
           command: xcrun simctl list
