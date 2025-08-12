@@ -169,7 +169,7 @@
 		DD8E2F7A24018C37002D51AB /* CLLocationManagerMock.m in Sources */ = {isa = PBXBuildFile; fileRef = DD8E2F7924018C37002D51AB /* CLLocationManagerMock.m */; };
 		DD8E2F7D24018C54002D51AB /* CLVisitMock.m in Sources */ = {isa = PBXBuildFile; fileRef = DD8E2F7C24018C54002D51AB /* CLVisitMock.m */; };
 		DE1E7644239724FD006F34A1 /* search_geofences.json in Resources */ = {isa = PBXBuildFile; fileRef = DE1E7643239724FD006F34A1 /* search_geofences.json */; };
-		E649476A2CBFFB720002C047 /* RadarOfflineManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E64947692CBFFB720002C047 /* RadarOfflineManager.swift */; };
+		E649476A2CBFFB720002C047 /* RadarOfflineManager.m in Sources */ = {isa = PBXBuildFile; fileRef = E64947692CBFFB720002C047 /* RadarOfflineManager.m */; };
 		E649476D2CBFFE480002C047 /* RadarOfflineManager.h in Headers */ = {isa = PBXBuildFile; fileRef = E649476C2CBFFE480002C047 /* RadarOfflineManager.h */; };
 		E64947752CC82B8A0002C047 /* track_with_ramp_up.json in Resources */ = {isa = PBXBuildFile; fileRef = E64947742CC82B8A0002C047 /* track_with_ramp_up.json */; };
 		E64947782CCBE6290002C047 /* RadarRemoteTrackingOptions.h in Headers */ = {isa = PBXBuildFile; fileRef = E64947772CCBE6290002C047 /* RadarRemoteTrackingOptions.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -354,7 +354,7 @@
 		DE1E7643239724FD006F34A1 /* search_geofences.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = search_geofences.json; sourceTree = "<group>"; };
 		E64947672CBFFB720002C047 /* RadarSDKTests-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "RadarSDKTests-Bridging-Header.h"; sourceTree = "<group>"; };
 		E64947682CBFFB720002C047 /* XCFramework-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "XCFramework-Bridging-Header.h"; sourceTree = "<group>"; };
-		E64947692CBFFB720002C047 /* RadarOfflineManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarOfflineManager.swift; sourceTree = "<group>"; };
+		E64947692CBFFB720002C047 /* RadarOfflineManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RadarOfflineManager.m; sourceTree = "<group>"; };
 		E649476C2CBFFE480002C047 /* RadarOfflineManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarOfflineManager.h; sourceTree = "<group>"; };
 		E64947742CC82B8A0002C047 /* track_with_ramp_up.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = track_with_ramp_up.json; sourceTree = "<group>"; };
 		E64947772CCBE6290002C047 /* RadarRemoteTrackingOptions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarRemoteTrackingOptions.h; sourceTree = "<group>"; };
@@ -527,7 +527,7 @@
 				DD236D66230A0D6700EB88F9 /* RadarLogger.h */,
 				DD236D67230A0D6700EB88F9 /* RadarLogger.m */,
 				9683FD6127B36C26009EBB6B /* RadarMeta.h */,
-				E64947692CBFFB720002C047 /* RadarOfflineManager.swift */,
+				E64947692CBFFB720002C047 /* RadarOfflineManager.m */,
 				E649476C2CBFFE480002C047 /* RadarOfflineManager.h */,
 				9683FD6227B36C26009EBB6B /* RadarMeta.m */,
 				01DDC7C629FC387400C0D039 /* RadarNotificationHelper.h */,
@@ -798,7 +798,6 @@
 					};
 					0107AB3826220308008AB52F = {
 						CreatedOnToolsVersion = 12.4;
-						LastSwiftMigration = 1600;
 					};
 					DD236C7D2308797B00EB88F9 = {
 						CreatedOnToolsVersion = 11.0;
@@ -907,7 +906,7 @@
 				E6EEC5702B20F45D00DD096B /* RadarFileStorage.m in Sources */,
 				0107AB29262201F4008AB52F /* RadarTrackingOptions.m in Sources */,
 				0107AB2F262201FB008AB52F /* RadarUtils.m in Sources */,
-				E649476A2CBFFB720002C047 /* RadarOfflineManager.swift in Sources */,
+				E649476A2CBFFB720002C047 /* RadarOfflineManager.m in Sources */,
 				E6B93B752C90E5B8003CB858 /* RadarInitializeOptions.m in Sources */,
 				0107AA8926220140008AB52F /* RadarChain.m in Sources */,
 				0107AB11262201D9008AB52F /* RadarCollectionAdditions.m in Sources */,
@@ -989,8 +988,6 @@
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				"PROVISIONING_PROFILE_SPECIFIER[sdk=macosx*]" = "";
 				SKIP_INSTALL = YES;
-				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TVOS_DEPLOYMENT_TARGET = 12.0;
 			};
@@ -1022,7 +1019,6 @@
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				"PROVISIONING_PROFILE_SPECIFIER[sdk=macosx*]" = "";
 				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TVOS_DEPLOYMENT_TARGET = 12.0;
 			};
@@ -1035,9 +1031,6 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 96GHH65B9D;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_OBJC_BRIDGING_HEADER = "RadarSDK/XCFramework-Bridging-Header.h";
-				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
 		};
@@ -1048,8 +1041,6 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 96GHH65B9D;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_OBJC_BRIDGING_HEADER = "RadarSDK/XCFramework-Bridging-Header.h";
-				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
 		};
@@ -1192,9 +1183,6 @@
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = io.radar.RadarSDKTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_OBJC_BRIDGING_HEADER = "RadarSDK/RadarSDKTests-Bridging-Header.h";
-				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -1215,8 +1203,6 @@
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = io.radar.RadarSDKTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_OBJC_BRIDGING_HEADER = "RadarSDK/RadarSDKTests-Bridging-Header.h";
-				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
