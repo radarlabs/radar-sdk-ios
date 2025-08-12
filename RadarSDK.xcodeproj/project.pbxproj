@@ -1182,7 +1182,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 96GHH65B9D;
-				HEADER_SEARCH_PATHS = "$(SRCROOT)/RadarSDK";
+				HEADER_SEARCH_PATHS = "";
 				INFOPLIST_FILE = RadarSDKTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1205,7 +1205,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 96GHH65B9D;
-				HEADER_SEARCH_PATHS = "$(SRCROOT)/RadarSDK";
+				HEADER_SEARCH_PATHS = "";
 				INFOPLIST_FILE = RadarSDKTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
