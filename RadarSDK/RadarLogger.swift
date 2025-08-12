@@ -9,6 +9,7 @@
 import Foundation
 import OSLog
 
+@MainActor
 @objc(RadarLogger_Swift)
 public
 class RadarLogger : NSObject {
