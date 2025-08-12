@@ -405,6 +405,34 @@ typedef void (^_Nonnull RadarIndoorsSurveyCompletionHandler)(NSString *_Nullable
 + (NSDictionary *_Nullable)getMetadata;
 
 /**
+ Returns the current `tags`.
+
+ @return The current `tags`.
+ */
++ (NSArray<NSString *> *_Nullable)getTags;
+
+/**
+ Sets tags, replacing any existing tags.
+
+ @param tags An array of tags. If `nil`, all tags will be cleared.
+ */
++ (void)setTags:(NSArray<NSString *> *_Nullable)tags;
+
+/**
+ Adds tags to the existing set.
+
+ @param tags An array of tags to add.
+ */
++ (void)addTags:(NSArray<NSString *> *_Nonnull)tags;
+
+/**
+ Removes tags from the existing set.
+
+ @param tags An array of tags to remove.
+ */
++ (void)removeTags:(NSArray<NSString *> *_Nonnull)tags;
+
+/**
  Sets an optional product name, displayed in the dashboard and reports.
 
  @param product A product name. If `nil`, the previous `product` will be cleared.

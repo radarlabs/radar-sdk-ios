@@ -75,6 +75,11 @@ NS_ASSUME_NONNULL_BEGIN
 + (BOOL)isInSurveyMode;
 + (void)setInSurveyMode:(BOOL)inSurveyMode;
 
++ (NSArray<NSString *> *_Nullable)tags;
++ (void)setTags:(NSArray<NSString *> *_Nullable)tags;
++ (void)addTags:(NSArray<NSString *> *_Nonnull)tags;
++ (void)removeTags:(NSArray<NSString *> *_Nonnull)tags;
+
 @end
 
 NS_ASSUME_NONNULL_END

@@ -157,6 +157,22 @@
     return [RadarSettings metadata];
 }
 
++ (NSArray<NSString *> *_Nullable)getTags {
+    return [RadarSettings tags];
+}
+
++ (void)setTags:(NSArray<NSString *> *_Nullable)tags {
+    [RadarSettings setTags:tags];
+}
+
++ (void)addTags:(NSArray<NSString *> *_Nonnull)tags {
+    [RadarSettings addTags:tags];
+}
+
++ (void)removeTags:(NSArray<NSString *> *_Nonnull)tags {
+    [RadarSettings removeTags:tags];
+}
+
 + (void)setProduct:(NSString *)product {
     [RadarSettings setProduct:product];
 }
@@ -478,7 +494,8 @@
 }
 
 + (RadarTrackingOptions *)getTrackingOptions {
-    return [RadarSettings remoteTrackingOptions] ? [RadarSettings remoteTrackingOptions] : [RadarSettings trackingOptions];
+    RadarTrackingOptions *remoteTrackingOptions = [RadarSettings remoteTrackingOptions];
+    return remoteTrackingOptions ? remoteTrackingOptions : [RadarSettings trackingOptions];
 }
 
 + (BOOL)isUsingRemoteTrackingOptions {

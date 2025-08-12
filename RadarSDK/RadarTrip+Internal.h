@@ -19,7 +19,9 @@
                                 mode:(RadarRouteMode)mode
                          etaDistance:(float)etaDistance
                          etaDuration:(float)etaDuration
-                              status:(RadarTripStatus)status;
+                              status:(RadarTripStatus)status
+                              orders:(NSArray<RadarTripOrder *> *_Nullable)orders;
+
 - (instancetype _Nullable)initWithObject:(id _Nonnull)object;
 
 @end

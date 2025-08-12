@@ -50,6 +50,7 @@ static NSString *const kInSurveyMode = @"radar-inSurveyMode";
 static NSString *const kXPlatformSDKType = @"radar-xPlatformSDKType";
 static NSString *const kXPlatformSDKVersion = @"radar-xPlatformSDKVersion";
 static NSString *const kInitializeOptions = @"radar-initializeOptions";
+static NSString *const kUserTags = @"radar-userTags";
 
 
 + (NSString *)publishableKey {
@@ -382,6 +383,50 @@ static NSString *const kInitializeOptions = @"radar-initializeOptions";
 
 + (void)setInSurveyMode:(BOOL)inSurveyMode {
     [[NSUserDefaults standardUserDefaults] setBool:inSurveyMode forKey:kInSurveyMode];
+}
+
+
++ (NSArray<NSString *> *_Nullable)tags {
+    return [[NSUserDefaults standardUserDefaults] arrayForKey:kUserTags];
+}
+
++ (void)setTags:(NSArray<NSString *> *_Nullable)tags {
+    if (tags) {
+        [[NSUserDefaults standardUserDefaults] setObject:tags forKey:kUserTags];
+    } else {
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:kUserTags];
+    }
+}
+
++ (void)addTags:(NSArray<NSString *> *_Nonnull)tags {
+    NSMutableArray<NSString *> *existingTags = [[self tags] mutableCopy];
+    if (!existingTags) {
+        existingTags = [NSMutableArray new];
+    }
+    
+    NSSet<NSString *> *existingTagsSet = [NSSet setWithArray:existingTags];
+    for (NSString *tag in tags) {
+        if (![existingTagsSet containsObject:tag]) {
+            [existingTags addObject:tag];
+        }
+    }
+    
+    [[NSUserDefaults standardUserDefaults] setObject:existingTags forKey:kUserTags];
+}
+
++ (void)removeTags:(NSArray<NSString *> *_Nonnull)tags {
+    NSMutableArray<NSString *> *existingTags = [[self tags] mutableCopy];
+    if (!existingTags) {
+        return;
+    }
+    
+    [existingTags removeObjectsInArray:tags];
+    
+    if (existingTags.count > 0) {
+        [[NSUserDefaults standardUserDefaults] setObject:existingTags forKey:kUserTags];
+    } else {
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:kUserTags];
+    }
 }
 
 @end
