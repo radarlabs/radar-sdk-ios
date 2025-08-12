@@ -3,11 +3,13 @@ jobs:
   build_and_test:
     macos:
       xcode: 16.0
+    environment:
+      TMPDIR: /tmp
     steps:
       - checkout
       - run: 
           name: Create tmp directory
-          command: mkdir -p tmp
+          command: mkdir -p /tmp
       - run:
           name: List simulators
           command: xcrun simctl list
