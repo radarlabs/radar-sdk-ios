@@ -4,12 +4,12 @@ jobs:
     macos:
       xcode: 16.0
     environment:
-      TMPDIR: /tmp
+      TMPDIR: ~/tmp
     steps:
       - checkout
       - run: 
           name: Create tmp directory
-          command: mkdir -p /tmp
+          command: echo $TMPDIR && mkdir -p $TMPDIR
       - run:
           name: List simulators
           command: xcrun simctl list
