@@ -359,21 +359,17 @@ static NSString *const kBeaconNotificationIdentifierPrefix = @"radar_beacon_noti
     for (CLBeacon *beacon in beacons) {
         [self.nearbyBeaconIdentifiers addObject:region.identifier];
 
-        __block BOOL foundExistingBeacon = NO;
-        [self.nearbyBeacons enumerateObjectsUsingBlock:^(RadarBeacon * _Nonnull radarBeacon, BOOL * _Nonnull stop) {
-            if ([radarBeacon.uuid isEqualToString:[beacon.proximityUUID UUIDString]] && [radarBeacon.major isEqualToString:[NSString stringWithFormat:@"%@", beacon.major]] && [radarBeacon.minor isEqualToString:[NSString stringWithFormat:@"%@", beacon.minor]]) {
-                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"same beacon!"];
-                if (beacon.rssi != 0 && beacon.rssi != radarBeacon.rssi) {
-                    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Overwriting stale RSSI: %ld", (long)radarBeacon.rssi]];
-                    [radarBeacon setRssi:beacon.rssi];
-                }
-                foundExistingBeacon = YES;
-                *stop = YES;
+        RadarBeacon *newBeacon = [RadarBeacon fromCLBeacon:beacon];
+        RadarBeacon *existingBeacon = [self.nearbyBeacons member:newBeacon];
+        
+        if (existingBeacon) {
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"same beacon!"];
+            if (beacon.rssi != 0 && beacon.rssi != existingBeacon.rssi) {
+                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Overwriting stale RSSI: %ld", (long)existingBeacon.rssi]];
+                [existingBeacon setRssi:beacon.rssi];
             }
-        }];
-
-        if (!foundExistingBeacon) {
-            [self.nearbyBeacons addObject:[RadarBeacon fromCLBeacon:beacon]];
+        } else {
+            [self.nearbyBeacons addObject:newBeacon];
         }
 
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
