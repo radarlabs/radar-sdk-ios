@@ -532,7 +532,7 @@
                             if (@available(iOS 13.0, *)) {
                                 NSArray<RadarInAppMessage *> *inAppMessages = [RadarInAppMessage fromArray:inAppMessagesObj];
                                 if (inAppMessages) {
-                                    [RadarInAppMessageManager onInAppMessageReceivedWithMessages:inAppMessages];
+                                    [[RadarInAppMessageManager shared] onInAppMessageReceivedWithMessages:inAppMessages];
                                 }
                             }
             

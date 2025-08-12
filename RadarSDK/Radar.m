@@ -55,7 +55,7 @@
 
 + (void)inAppMessage:(RadarInAppMessage*)message {
     if (@available(iOS 13.0, *)) {
-        [RadarInAppMessageManager showInAppMessage:message completionHandler:^(){}];
+        [[RadarInAppMessageManager shared] showInAppMessage:message completionHandler:^(){}];
     } else {
         // Fallback on earlier versions
     }
@@ -64,7 +64,7 @@
 
 + (void)setInAppMessageDelegate:(id)delegate {
     if (@available(iOS 13.0, *)) {
-        [RadarInAppMessageManager setDelegate:delegate];
+        [[RadarInAppMessageManager shared] setDelegate:delegate];
     } else {
         // Fallback on earlier versions
     }

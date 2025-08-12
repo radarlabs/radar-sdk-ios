@@ -14,6 +14,11 @@ import SwiftUI
 
 @available(iOS 13.0, *)
 class MockRadarInAppMessageDelegate : NSObject, RadarInAppMessageProtocol {
+    weak var manager: RadarInAppMessageManager?
+    init(manager: RadarInAppMessageManager) {
+        self.manager = manager
+    }
+    
     var onNewInAppMessageCounter = 0
     var onNewInAppMessageReturn = RadarInAppMessageOperation.ignore
     func onNewInAppMessage(_ message: RadarSDK.RadarInAppMessage) -> RadarInAppMessageOperation {
@@ -24,13 +29,13 @@ class MockRadarInAppMessageDelegate : NSObject, RadarInAppMessageProtocol {
     var onInAppMessageDismissedCounter = 0
     func onInAppMessageDismissed(_ message: RadarSDK.RadarInAppMessage) {
         onInAppMessageDismissedCounter += 1
-        RadarInAppMessageManager.dismissInAppMessage()
+        manager?.dismissInAppMessage()
     }
     
     var onInAppMessageButtonClickedCounter = 0
     func onInAppMessageButtonClicked(_ message: RadarSDK.RadarInAppMessage) {
         onInAppMessageButtonClickedCounter += 1
-        RadarInAppMessageManager.dismissInAppMessage()
+        manager?.dismissInAppMessage()
     }
     
     var createInAppMessageViewCounter = 0
@@ -97,16 +102,17 @@ struct InAppMessageTest {
     @MainActor
     @available(iOS 14.0, *)
     func InAppMessageTestCreateView() async throws {
-        let mockDelegate = MockRadarInAppMessageDelegate()
-        RadarInAppMessageManager.setDelegate(mockDelegate)
+        let manager = RadarInAppMessageManager()
+        let mockDelegate = MockRadarInAppMessageDelegate(manager: manager)
+        manager.setDelegate(mockDelegate)
         let mockWindow = MockWindow()
-        RadarInAppMessageManager.getKeyWindow = { return mockWindow }
+        manager.getKeyWindow = { return mockWindow }
         mockDelegate.onNewInAppMessageReturn = .show
         
-        RadarInAppMessageManager.onInAppMessageReceived(messages: [message!])
+        manager.onInAppMessageReceived(messages: [message!])
         
         // wait 50ms for async task onInAppMessageReceived to complete
-        try await Task.sleep(nanoseconds: 50_000_000)
+        try await Task.sleep(nanoseconds: 100_000_000)
         
         #expect(mockDelegate.onNewInAppMessageCounter == 1)
         #expect(mockDelegate.createInAppMessageViewCounter == 1)
@@ -116,7 +122,7 @@ struct InAppMessageTest {
         
         #expect(mockDelegate.onInAppMessageButtonClickedCounter == 1)
         
-        #expect(RadarInAppMessageManager.view == nil)
+        #expect(manager.view == nil)
         
     }
     
@@ -124,14 +130,15 @@ struct InAppMessageTest {
     @MainActor
     @available(iOS 13.0, *)
     func InAppMessageTestNotShow() async throws {
-        let mockDelegate = MockRadarInAppMessageDelegate()
-        RadarInAppMessageManager.setDelegate(mockDelegate)
+        let manager = RadarInAppMessageManager()
+        let mockDelegate = MockRadarInAppMessageDelegate(manager: manager)
+        manager.setDelegate(mockDelegate)
         let mockWindow = MockWindow()
-        RadarInAppMessageManager.getKeyWindow = { return mockWindow }
+        manager.getKeyWindow = { return mockWindow }
         
         mockDelegate.onNewInAppMessageReturn = .ignore
         
-        RadarInAppMessageManager.onInAppMessageReceived(messages: [message!])
+        manager.onInAppMessageReceived(messages: [message!])
         
         #expect(mockDelegate.onNewInAppMessageCounter == 1)
         #expect(mockDelegate.createInAppMessageViewCounter == 0)
@@ -141,17 +148,18 @@ struct InAppMessageTest {
     @MainActor
     @available(iOS 13.0, *)
     func InAppMessageViewAlreadyExist() async throws {
-        let mockDelegate = MockRadarInAppMessageDelegate()
-        RadarInAppMessageManager.setDelegate(mockDelegate)
+        let manager = RadarInAppMessageManager()
+        let mockDelegate = MockRadarInAppMessageDelegate(manager: manager)
+        manager.setDelegate(mockDelegate)
         let mockWindow = MockWindow()
-        RadarInAppMessageManager.getKeyWindow = { return mockWindow }
+        manager.getKeyWindow = { return mockWindow }
         
         mockDelegate.onNewInAppMessageReturn = .show
         
-        RadarInAppMessageManager.onInAppMessageReceived(messages: [message!])
-        RadarInAppMessageManager.onInAppMessageReceived(messages: [message!])
+        manager.onInAppMessageReceived(messages: [message!])
+        manager.onInAppMessageReceived(messages: [message!])
         
-        try await Task.sleep(nanoseconds: 50_000_000)
+        try await Task.sleep(nanoseconds: 100_000_000)
         
         #expect(mockDelegate.onNewInAppMessageCounter == 2)
         // 2 views could be created since creating the view is async
@@ -159,7 +167,7 @@ struct InAppMessageTest {
         // but only 1 should be shown
         #expect(mockWindow.addSubviewCounter == 1)
         
-        RadarInAppMessageManager.onInAppMessageReceived(messages: [message!])
+        manager.onInAppMessageReceived(messages: [message!])
         
         #expect(mockDelegate.onNewInAppMessageCounter == 3)
         // after the view is shown, creating view also shouldn've be called

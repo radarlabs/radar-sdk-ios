@@ -48,16 +48,16 @@ open class RadarInAppMessageDelegate : NSObject, RadarInAppMessageProtocol {
     }
     
     open func onInAppMessageButtonClicked(_ message: RadarInAppMessage) {
-        RadarInAppMessageManager.logConversion(name: "in_app_message_clicked")
+        RadarInAppMessageManager.shared.logConversion(name: "in_app_message_clicked")
         if let url = message.button?.url {
             UIApplication.shared.open(URL(string: url)!)
         }
-        RadarInAppMessageManager.dismissInAppMessage()
+        RadarInAppMessageManager.shared.dismissInAppMessage()
     }
     
     open func onInAppMessageDismissed(_ message: RadarInAppMessage) {
-        RadarInAppMessageManager.logConversion(name: "in_app_message_dismissed")
-        RadarInAppMessageManager.dismissInAppMessage()
+        RadarInAppMessageManager.shared.logConversion(name: "in_app_message_dismissed")
+        RadarInAppMessageManager.shared.dismissInAppMessage()
     }
     
     open func onNewInAppMessage(_ message: RadarInAppMessage) -> RadarInAppMessageOperation {

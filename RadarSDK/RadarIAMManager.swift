@@ -13,17 +13,20 @@ import SwiftUI
 @objc
 public
 class RadarInAppMessageManager: NSObject {
-    public static var delegate: RadarInAppMessageProtocol = RadarInAppMessageDelegate()
-    public static var view: UIView?
+    @objc
+    public static let shared = RadarInAppMessageManager()
     
-    static var messageShownTime: Date?
-    static var currentMessage: RadarInAppMessage?
+    public var delegate: RadarInAppMessageProtocol = RadarInAppMessageDelegate()
+    public var view: UIView?
     
-    internal static var getKeyWindow: () -> UIWindow? = {
+    var messageShownTime: Date?
+    var currentMessage: RadarInAppMessage?
+    
+    internal var getKeyWindow: () -> UIWindow? = {
         return UIApplication.shared.windows.first(where: { $0.isKeyWindow })
     }
     
-    static func logConversion(name: String) {
+    func logConversion(name: String) {
         guard let messageShownTime = messageShownTime,
               let message = currentMessage else {
             return
@@ -48,13 +51,13 @@ class RadarInAppMessageManager: NSObject {
         })
     }
     
-    static func dismissInAppMessage() {
+    func dismissInAppMessage() {
         view?.removeFromSuperview()
         view = nil
         currentMessage = nil
     }
     
-    @objc public static func showInAppMessage(_ message: RadarInAppMessage) async {
+    @objc public func showInAppMessage(_ message: RadarInAppMessage) async {
         // check before getting the view that there is no existing IAM shown
         if (view != nil) {
             print("Has existing view")
@@ -69,8 +72,8 @@ class RadarInAppMessageManager: NSObject {
         
         let viewController = await withCheckedContinuation { continuation in
             delegate.createInAppMessageView(message,
-                                            onDismiss: { delegate.onInAppMessageDismissed(message) },
-                                            onInAppMessageClicked: { delegate.onInAppMessageButtonClicked(message) }) { result in
+                                            onDismiss: { self.delegate.onInAppMessageDismissed(message) },
+                                            onInAppMessageClicked: { self.delegate.onInAppMessageButtonClicked(message) }) { result in
                 continuation.resume(returning: result)
             }
         }
@@ -87,7 +90,7 @@ class RadarInAppMessageManager: NSObject {
         keyWindow.addSubview(viewController.view)
     }
     
-    @objc public static func onInAppMessageReceived(messages: [RadarInAppMessage]) {
+    @objc public func onInAppMessageReceived(messages: [RadarInAppMessage]) {
         for message in messages {
             if (delegate.onNewInAppMessage(message) == RadarInAppMessageOperation.show) {
                 Task {
@@ -98,7 +101,7 @@ class RadarInAppMessageManager: NSObject {
         }
     }
     
-    @objc public static func setDelegate(_ delegate: RadarInAppMessageProtocol) {
+    @objc public func setDelegate(_ delegate: RadarInAppMessageProtocol) {
         self.delegate = delegate
     }
 }
