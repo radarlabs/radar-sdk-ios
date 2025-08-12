@@ -5,7 +5,7 @@
 //  Copyright © 2019 Radar Labs, Inc. All rights reserved.
 //
 
-@import RadarSDK;
+// @import RadarSDK;
 #import <XCTest/XCTest.h>
 
 #import "../RadarSDK/RadarAPIClient.h"
