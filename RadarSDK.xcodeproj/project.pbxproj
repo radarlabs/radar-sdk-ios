@@ -81,8 +81,6 @@
 		53CCD783275E579800F79CC8 /* RadarLogBuffer.m in Sources */ = {isa = PBXBuildFile; fileRef = 53CCD782275E579800F79CC8 /* RadarLogBuffer.m */; };
 		78D8CE3C23AD78A1009E91F5 /* geocode.json in Resources */ = {isa = PBXBuildFile; fileRef = 78D8CE3B23AD78A1009E91F5 /* geocode.json */; };
 		78D8CE3E23AD7FEE009E91F5 /* geocode_ip.json in Resources */ = {isa = PBXBuildFile; fileRef = 78D8CE3D23AD7FEE009E91F5 /* geocode_ip.json */; };
-		825732512B72BE1900DF8B88 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 825732502B72BE1900DF8B88 /* PrivacyInfo.xcprivacy */; };
-		825732522B72BE1900DF8B88 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 825732502B72BE1900DF8B88 /* PrivacyInfo.xcprivacy */; };
 		828D1A462E29599500663787 /* RadarTripOrder.m in Sources */ = {isa = PBXBuildFile; fileRef = 828D1A452E29599500663787 /* RadarTripOrder.m */; };
 		828D1A472E29599500663787 /* RadarTripOrder.m in Sources */ = {isa = PBXBuildFile; fileRef = 828D1A452E29599500663787 /* RadarTripOrder.m */; };
 		828D1A562E295FD400663787 /* RadarTripOrder.h in Headers */ = {isa = PBXBuildFile; fileRef = 828D1A552E295FD400663787 /* RadarTripOrder.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -192,6 +190,7 @@
 		F6BD3A3E2E4A3077004980FD /* RadarLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6BD3A3D2E4A3077004980FD /* RadarLogger.swift */; };
 		F6BD3A402E4A31EA004980FD /* RadarSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6BD3A3F2E4A31EA004980FD /* RadarSettings.swift */; };
 		F6BD3A612E4A94DC004980FD /* Radar-Swift.h in Headers */ = {isa = PBXBuildFile; fileRef = F6BD3A602E4A94D9004980FD /* Radar-Swift.h */; };
+		F6BD3A662E4BB44A004980FD /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = F6BD3A642E4BB3E2004980FD /* PrivacyInfo.xcprivacy */; };
 		F6F959802C3D7D9900BC30FE /* RadarTimeZone.h in Headers */ = {isa = PBXBuildFile; fileRef = F6F9597F2C3D7D9900BC30FE /* RadarTimeZone.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F6F959822C3D7EA200BC30FE /* RadarTimeZone+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = F6F959812C3D7EA200BC30FE /* RadarTimeZone+Internal.h */; };
 		F6F959842C3D7EDE00BC30FE /* RadarTimeZone.m in Sources */ = {isa = PBXBuildFile; fileRef = F6F959832C3D7EDE00BC30FE /* RadarTimeZone.m */; };
@@ -217,7 +216,6 @@
 		78156B9623A8210E0094410E /* RadarAddress.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RadarAddress.m; sourceTree = "<group>"; };
 		78D8CE3B23AD78A1009E91F5 /* geocode.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = geocode.json; sourceTree = "<group>"; };
 		78D8CE3D23AD7FEE009E91F5 /* geocode_ip.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = geocode_ip.json; sourceTree = "<group>"; };
-		825732502B72BE1900DF8B88 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		828D1A452E29599500663787 /* RadarTripOrder.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RadarTripOrder.m; sourceTree = "<group>"; };
 		828D1A552E295FD400663787 /* RadarTripOrder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarTripOrder.h; sourceTree = "<group>"; };
 		82D04AB829722ED20036619F /* RadarReplay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RadarReplay.h; sourceTree = "<group>"; };
@@ -383,6 +381,7 @@
 		F6BD3A3D2E4A3077004980FD /* RadarLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarLogger.swift; sourceTree = "<group>"; };
 		F6BD3A3F2E4A31EA004980FD /* RadarSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarSettings.swift; sourceTree = "<group>"; };
 		F6BD3A602E4A94D9004980FD /* Radar-Swift.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Radar-Swift.h"; sourceTree = "<group>"; };
+		F6BD3A642E4BB3E2004980FD /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		F6F9597F2C3D7D9900BC30FE /* RadarTimeZone.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarTimeZone.h; sourceTree = "<group>"; };
 		F6F959812C3D7EA200BC30FE /* RadarTimeZone+Internal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "RadarTimeZone+Internal.h"; sourceTree = "<group>"; };
 		F6F959832C3D7EDE00BC30FE /* RadarTimeZone.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RadarTimeZone.m; sourceTree = "<group>"; };
@@ -499,7 +498,7 @@
 		DD236C772308797B00EB88F9 /* RadarSDK */ = {
 			isa = PBXGroup;
 			children = (
-				825732502B72BE1900DF8B88 /* PrivacyInfo.xcprivacy */,
+				F6BD3A642E4BB3E2004980FD /* PrivacyInfo.xcprivacy */,
 				96A5A0D827AD9F7F007B960B /* Include */,
 				DD236C792308797B00EB88F9 /* Info.plist */,
 				532FC303277A783900989279 /* Radar+Internal.h */,
@@ -842,7 +841,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				825732522B72BE1900DF8B88 /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -854,7 +852,6 @@
 				F65AF72C2C10B242002BA009 /* get_config_response.json in Resources */,
 				DD4D4D2523E648D000D36C1D /* search_autocomplete.json in Resources */,
 				DD5E35E1238205FF002D93FF /* events_verification.json in Resources */,
-				825732512B72BE1900DF8B88 /* PrivacyInfo.xcprivacy in Resources */,
 				96A0AC2728A4066D00B41D40 /* search_places_chain_metadata.json in Resources */,
 				53B3B26B23EE41B400080818 /* context.json in Resources */,
 				78D8CE3C23AD78A1009E91F5 /* geocode.json in Resources */,
@@ -864,6 +861,7 @@
 				78D8CE3E23AD7FEE009E91F5 /* geocode_ip.json in Resources */,
 				DD5E35E323820796002D93FF /* search_places.json in Resources */,
 				DD103215237F1795003DD408 /* track.json in Resources */,
+				F6BD3A662E4BB44A004980FD /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1202,6 +1200,7 @@
 				DEVELOPMENT_TEAM = 96GHH65B9D;
 				HEADER_SEARCH_PATHS = "$(SRCROOT)/RadarSDK";
 				INFOPLIST_FILE = RadarSDKTests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1225,6 +1224,7 @@
 				DEVELOPMENT_TEAM = 96GHH65B9D;
 				HEADER_SEARCH_PATHS = "$(SRCROOT)/RadarSDK";
 				INFOPLIST_FILE = RadarSDKTests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
