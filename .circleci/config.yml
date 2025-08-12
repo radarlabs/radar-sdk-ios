@@ -3,8 +3,6 @@ jobs:
   build_and_test:
     macos:
       xcode: 16.0
-    environment:
-      TMPDIR: ~/tmp
     steps:
       - checkout
       - run: 
