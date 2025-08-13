@@ -27,8 +27,10 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol RadarDelegate;
 @protocol RadarVerifiedDelegate;
 @protocol RadarMotionProtocol;
+@protocol RadarInAppMessageProtocol;
 
 @class RadarTripOptions;
+@class RadarInAppMessage;
 
 #pragma mark - Enums
 
@@ -1331,7 +1333,16 @@ typedef void (^_Nullable RadarLogConversionCompletionHandler)(RadarStatus status
 
 + (void)openURLFromNotification:(UNNotification *)notification NS_SWIFT_NAME(openURLFromNotification(_:));
 
-+ (NSString *)getMessage;
++ (void)inAppMessage:(RadarInAppMessage*)message;
+
++ (void)setInAppMessageDelegate:(nullable id<RadarInAppMessageProtocol>)delegate NS_SWIFT_NAME(setInAppMessageDelegate(_:));
+
+/**
+ This function should be internal, but it is exposed due to swift migration limitations. It should only be used by internal swift classes while RadarLogBuffer is still in Obj-C
+ */
++ (void)__writeToLogBufferWithLevel:(RadarLogLevel)level type:(RadarLogType)type message:(NSString *)message forcePersist:(BOOL)forcePersist
+    NS_SWIFT_NAME(__writeToLogBuffer(with:type:message:forcePersist:));
+
 
 @end
 

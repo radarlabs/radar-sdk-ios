@@ -23,8 +23,8 @@
 #import "RadarReplayBuffer.h"
 #import "RadarNotificationHelper.h"
 #import "RadarTripOptions.h"
-
-#import <RadarSDK/RadarSDK-Swift.h>
+#import "RadarInAppMessageDelegate.h"
+#import "Radar-Swift.h"
 
 @interface Radar ()
 
@@ -483,6 +483,7 @@
 
 + (void)setDelegate:(id<RadarDelegate>)delegate {
     [RadarDelegateHolder sharedInstance].delegate = delegate;
+    [RadarLogger_Swift setDelegate:delegate];
 }
 
 + (void)setVerifiedDelegate:(id<RadarVerifiedDelegate>)verifiedDelegate {
@@ -1417,9 +1418,25 @@
     [RadarNotificationHelper openURLFromNotification:notification];
 }
 
++ (void)inAppMessage:(RadarInAppMessage*)message {
+    if (@available(iOS 13.0, *)) {
+        [[RadarInAppMessageManager shared] showInAppMessage:message completionHandler:^(){}];
+    } else {
+        // Fallback on earlier versions
+    }
+//    [UIApplication sharedApplication];
+}
 
-+ (NSString *)getMessage {
-    return [RadarInAppMessage getMessage];
++ (void)setInAppMessageDelegate:(id)delegate {
+    if (@available(iOS 13.0, *)) {
+        [[RadarInAppMessageManager shared] setDelegate:delegate];
+    } else {
+        // Fallback on earlier versions
+    }
+}
+
++ (void) __writeToLogBufferWithLevel:(RadarLogLevel)level type:(RadarLogType)type message:(NSString *)message forcePersist:(BOOL)forcePersist {
+    [[RadarLogBuffer sharedInstance] write:level type:type message:message forcePersist:forcePersist];
 }
 
 @end
