@@ -8,7 +8,7 @@
 import Foundation
 import SwiftUI
 
-@objc
+@objc @objcMembers
 public class RadarInAppMessage : NSObject {
     public struct Text {
         public var text: String
@@ -41,7 +41,7 @@ public class RadarInAppMessage : NSObject {
         self.metadata = metadata
     }
 
-    @objc public static func fromDictionary(_ dict: [String: Any]) -> RadarInAppMessage? {
+    public static func fromDictionary(_ dict: [String: Any]) -> RadarInAppMessage? {
         // required fields
         guard let title = Text.fromDictionary(dict: dict["title"]),
               let body = Text.fromDictionary(dict: dict["body"]) else {
@@ -57,7 +57,7 @@ public class RadarInAppMessage : NSObject {
         )
     }
 
-    @objc public static func fromArray(_ array: Any) -> [RadarInAppMessage] {
+    public static func fromArray(_ array: Any) -> [RadarInAppMessage] {
         guard let array = array as? [[String: Any]] else {
             return [];
         }
