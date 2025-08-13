@@ -217,7 +217,6 @@
 		78156B9623A8210E0094410E /* RadarAddress.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RadarAddress.m; sourceTree = "<group>"; };
 		78D8CE3B23AD78A1009E91F5 /* geocode.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = geocode.json; sourceTree = "<group>"; };
 		78D8CE3D23AD7FEE009E91F5 /* geocode_ip.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = geocode_ip.json; sourceTree = "<group>"; };
-		8227EF0B2CDAB69B00C47290 /* RadarRouteMode.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RadarRouteMode.m; sourceTree = "<group>"; };
 		825732502B72BE1900DF8B88 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		828D1A452E29599500663787 /* RadarTripOrder.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RadarTripOrder.m; sourceTree = "<group>"; };
 		828D1A552E295FD400663787 /* RadarTripOrder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarTripOrder.h; sourceTree = "<group>"; };
@@ -477,7 +476,6 @@
 				DD236C822308797B00EB88F9 /* RadarSDKTests */,
 				DD236C762308797B00EB88F9 /* Products */,
 				DDC637F2238C7F9C00747FD4 /* Frameworks */,
-				F6BD3A982E4CF387004980FD /* Recovered References */,
 			);
 			sourceTree = "<group>";
 		};
@@ -649,14 +647,6 @@
 				0113020E2AE1467800EFC377 /* Network.framework */,
 			);
 			name = Frameworks;
-			sourceTree = "<group>";
-		};
-		F6BD3A982E4CF387004980FD /* Recovered References */ = {
-			isa = PBXGroup;
-			children = (
-				8227EF0B2CDAB69B00C47290 /* RadarRouteMode.m */,
-			);
-			name = "Recovered References";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
