@@ -24,6 +24,8 @@
 #import "RadarNotificationHelper.h"
 #import "RadarTripOptions.h"
 
+#import <RadarSDK/RadarSDK-Swift.h>
+
 @interface Radar ()
 
 @property (nullable, weak, nonatomic) id<RadarDelegate> delegate;
@@ -1413,6 +1415,11 @@
 
 + (void)openURLFromNotification:(UNNotification *)notification {
     [RadarNotificationHelper openURLFromNotification:notification];
+}
+
+
++ (NSString *)getMessage {
+    return [RadarInAppMessage getMessage];
 }
 
 @end
