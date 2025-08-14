@@ -13,6 +13,7 @@ import RadarSDK
 import SwiftUI
 
 @available(iOS 13.0, *)
+@MainActor
 class MockRadarInAppMessageDelegate : NSObject, RadarInAppMessageProtocol {
     weak var manager: RadarInAppMessageManager?
     init(manager: RadarInAppMessageManager) {
