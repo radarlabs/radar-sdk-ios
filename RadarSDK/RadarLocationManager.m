@@ -214,12 +214,16 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     }
 
     RadarTrackingOptions *trackingOptions = [RadarSettings trackingOptions];
-    if (trackingOptions.useMotion) {
+    if (trackingOptions.useMotion || trackingOptions.usePressure) {
         [self.locationManager stopUpdatingHeading];
         if (self.activityManager) {
-            [self.activityManager stopActivityUpdates];
-            [self.activityManager stopRelativeAltitudeUpdates];
-            [self.activityManager stopAbsoluteAltitudeUpdates];
+            if (trackingOptions.usePressure) {
+                [self.activityManager stopRelativeAltitudeUpdates];
+                [self.activityManager stopAbsoluteAltitudeUpdates];
+            }
+            if (trackingOptions.useMotion) {
+                [self.activityManager stopActivityUpdates];
+            }
        }
     }
 
@@ -384,6 +388,9 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                         
                     }
                 }];
+                
+            }
+            if (options.usePressure) {
                 [self.activityManager startRelativeAltitudeWithHandler: ^(CMAltitudeData * _Nullable altitudeData) {
                     NSMutableDictionary *currentState = [[RadarState lastRelativeAltitudeData] mutableCopy] ?: [NSMutableDictionary new];
                     currentState[@"pressure"] = @(altitudeData.pressure.doubleValue *10); // convert to hPa
@@ -402,7 +409,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                         [RadarState setLastRelativeAltitudeData:currentState];
                     }];
                 }
-            }           
+            }
         
             CLLocationAccuracy desiredAccuracy;
             switch (options.desiredAccuracy) {

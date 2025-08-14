@@ -154,7 +154,15 @@ typedef NS_ENUM(NSInteger, RadarTrackingOptionsSyncLocations) {
  */
 @property (nonatomic, assign) BOOL beacons;
 
+/**
+ Determines whether to use the iOS motion activity service.
+ */
 @property (nonatomic, assign) BOOL useMotion;
+
+/**
+ Determines whether to use the iOS pressure service.
+ */
+@property (nonatomic, assign) BOOL usePressure;
 
 /**
  Updates about every 30 seconds while moving or stopped. Moderate battery usage. Shows the flashing blue status bar during tracking.

@@ -402,8 +402,15 @@
             locationMetadata[@"isProducedByAccessory"] = @([location.sourceInformation isProducedByAccessory]);
             locationMetadata[@"isSimulatedBySoftware"] = @([location.sourceInformation isSimulatedBySoftware]);
         }
+    }
+
+    if (options.usePressure) {
+        locationMetadata[@"altitude"] = @(location.altitude);
         locationMetadata[@"floor"] = @([location.floor level]);
         locationMetadata[@"pressureHPa"] = [RadarState lastRelativeAltitudeData];
+    }
+
+    if (options.usePressure || options.useMotion) {
         params[@"locationMetadata"] = locationMetadata;
     }
     
