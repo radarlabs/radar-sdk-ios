@@ -15,12 +15,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Use Xcode 18.6
+      - name: Use Xcode 18.4
         run: sudo xcode-select -switch /Applications/Xcode_16.4.app
-
-      - name: List destinations
-        run: xcodebuild -scheme RadarSDK -workspace Example/Example.xcodeproj/project.xcworkspace -showdestinations
-
 
       - name: Build, Analyze, & Test
         env:
