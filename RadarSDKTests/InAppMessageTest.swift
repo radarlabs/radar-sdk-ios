@@ -60,9 +60,8 @@ class MockWindow : UIWindow {
     }
 }
 
-
 @Suite
-struct InAppMessageTest {
+actor InAppMessageTest {
 
     let message = RadarInAppMessage.fromDictionary([
         "title": [
@@ -85,8 +84,7 @@ struct InAppMessageTest {
     ])
 
     @Test("In App message construction")
-    @available(iOS 13.0, *)
-    func InAppMessageTestConstruction() async throws {
+    func InAppMessageTestConstruction() throws {
         #expect(message != nil)
         #expect(message!.title.text == "This is the title")
         #expect(message!.title.color == UIColor(red: 1, green: 0, blue: 0, alpha: 1))

@@ -9,31 +9,31 @@ import Foundation
 import SwiftUI
 
 @objc @objcMembers
-public class RadarInAppMessage : NSObject {
-    public struct Text {
-        public var text: String
-        public var color: UIColor
+public final class RadarInAppMessage : NSObject, Sendable {
+    public struct Text: Sendable {
+        public let text: String
+        public let color: UIColor
     }
 
-    public struct Button {
-        public var text: String
-        public var color: UIColor
-        public var backgroundColor: UIColor
-        public var url: String?
+    public struct Button: Sendable {
+        public let text: String
+        public let color: UIColor
+        public let backgroundColor: UIColor
+        public let url: String?
     }
 
-    public struct Image {
-        public var name: String
-        public var url: String
+    public struct Image: Sendable {
+        public let name: String
+        public let url: String
     }
 
-    public var title: Text
-    public var body: Text
-    public var button: Button?
-    public var image: Image?
-    public var metadata: [String: Any]
+    public let title: Text
+    public let body: Text
+    public let button: Button?
+    public let image: Image?
+    public let metadata: [String: Sendable]
 
-    init(title: Text, body: Text, button: Button?, image: Image?, metadata: [String: Any]) {
+    init(title: Text, body: Text, button: Button?, image: Image?, metadata: [String: Sendable]) {
         self.title = title
         self.body = body
         self.button = button
@@ -50,7 +50,7 @@ public class RadarInAppMessage : NSObject {
         // optional fields
         let button = Button.fromDictionary(dict: dict["button"])
         let image = Image.fromDictionary(dict: dict["image"])
-        let metadata = dict["metadata"] as? [String: Any] ?? [:]
+        let metadata = dict["metadata"] as? [String: Sendable] ?? [:]
 
         return RadarInAppMessage(
             title: title, body: body, button: button, image: image, metadata: metadata

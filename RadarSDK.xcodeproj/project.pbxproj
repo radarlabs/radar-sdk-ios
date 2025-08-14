@@ -1205,6 +1205,7 @@
 				DEVELOPMENT_TEAM = 96GHH65B9D;
 				HEADER_SEARCH_PATHS = "$(SRCROOT)/RadarSDK";
 				INFOPLIST_FILE = RadarSDKTests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1229,6 +1230,7 @@
 				DEVELOPMENT_TEAM = 96GHH65B9D;
 				HEADER_SEARCH_PATHS = "$(SRCROOT)/RadarSDK";
 				INFOPLIST_FILE = RadarSDKTests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
