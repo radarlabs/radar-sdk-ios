@@ -15,8 +15,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: List simulators
-        run: xcrun simctl list devices
+      - name: List destinations
+        run: xcodebuild -scheme RadarSDK -workspace Example/Example.xcodeproj/project.xcworkspace -showdestinations
 
 
       - name: Build, Analyze, & Test
