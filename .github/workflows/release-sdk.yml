@@ -19,6 +19,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
+      - name: Use Xcode 18.4
+        run: sudo xcode-select -switch /Applications/Xcode_16.4.app
+
       - name: Build, test, and analyze (RadarSDK)
         run: xcodebuild clean build analyze test -workspace Example/Example.xcodeproj/project.xcworkspace -scheme RadarSDK -destination "platform=iOS Simulator,name=iPhone 15 Pro" | xcpretty
       
