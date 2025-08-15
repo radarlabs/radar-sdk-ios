@@ -1,0 +1,3 @@
+[submodule "RadarSDKIndoors"]
+	path = RadarSDKIndoors
+	url = https://github.com/radarlabs/radar-sdk-ios-indoors.git
