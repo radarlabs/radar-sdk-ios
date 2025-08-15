@@ -36,6 +36,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         Radar.setDelegate(self)
         Radar.setVerifiedDelegate(self)
  
+        
         return true
     }
 
