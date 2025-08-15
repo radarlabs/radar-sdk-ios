@@ -34,7 +34,8 @@
                               source:(RadarLocationSource)source
                                 trip:(RadarTrip *_Nullable)trip
                                debug:(BOOL)debug
-                               fraud:(RadarFraud *_Nullable)fraud;
+                               fraud:(RadarFraud *_Nullable)fraud
+                  barometricAltitude:(double)barometricAltitude;
 - (instancetype _Nullable)initWithObject:(id _Nonnull)object;
 
 @end

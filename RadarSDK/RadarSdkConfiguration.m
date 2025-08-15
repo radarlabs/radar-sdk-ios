@@ -29,7 +29,6 @@
     _extendFlushReplays = NO;
     _useLogPersistence = NO;
     _useRadarModifiedBeacon = NO;
-    _useLocationMetadata = NO;
     _useOpenedAppConversion = NO;
     _useForegroundLocationUpdatedAtMsDiff = NO;
     _useNotificationDiff = NO;
@@ -74,11 +73,6 @@
         _useRadarModifiedBeacon = [(NSNumber *)useRadarModifiedBeaconObj boolValue];
     }
 
-    NSObject *useLocationMetadataObj = dict[@"useLocationMetadata"];
-    if (useLocationMetadataObj && [useLocationMetadataObj isKindOfClass:[NSNumber class]]) {
-        _useLocationMetadata = [(NSNumber *)useLocationMetadataObj boolValue];
-    }
-
     NSObject *useOpenedAppConversionObj = dict[@"useOpenedAppConversion"];
     if (useOpenedAppConversionObj && [useOpenedAppConversionObj isKindOfClass:[NSNumber class]]) {
         _useOpenedAppConversion = [(NSNumber *)useOpenedAppConversionObj boolValue];
@@ -112,7 +106,6 @@
     dict[@"extendFlushReplays"] = @(_extendFlushReplays);
     dict[@"useLogPersistence"] = @(_useLogPersistence);
     dict[@"useRadarModifiedBeacon"] = @(_useRadarModifiedBeacon);
-    dict[@"useLocationMetadata"] = @(_useLocationMetadata);
     dict[@"useOpenedAppConversion"] = @(_useOpenedAppConversion);
     dict[@"useForegroundLocationUpdatedAtMsDiff"] = @(_useForegroundLocationUpdatedAtMsDiff);
     dict[@"useNotificationDiff"] = @(_useNotificationDiff);
