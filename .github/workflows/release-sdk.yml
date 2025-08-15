@@ -19,7 +19,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Use Xcode 18.4
+      - name: Use Xcode 16.4
         run: sudo xcode-select -switch /Applications/Xcode_16.4.app
 
       - name: Build, test, and analyze (RadarSDK)
