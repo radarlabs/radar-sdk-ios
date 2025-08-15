@@ -1172,15 +1172,6 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     [self callCompletionHandlersWithStatus:RadarStatusErrorLocation location:nil];
 }
 
-- (void)stopActivityAndMotionUpdates {
-    [self.locationManager stopUpdatingHeading];
-
-    if (self.activityManager) {
-        [self.activityManager stopRelativeAltitudeUpdates];
-        [self.activityManager stopAbsoluteAltitudeUpdates];
-    }
-}
-
 - (void)locationManager:(CLLocationManager *)manager didUpdateHeading:(CLHeading *)newHeading {
     [RadarState setLastHeadingData:@{
         @"magneticHeading" : @(newHeading.magneticHeading),
