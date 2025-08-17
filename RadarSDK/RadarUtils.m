@@ -161,7 +161,7 @@ static NSDateFormatter *_isoDateFormatter;
         return @"{}";
     } else {
         return [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-    } 
+    }
 }
 
 #pragma mark - threading
