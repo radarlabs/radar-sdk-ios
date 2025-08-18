@@ -60,13 +60,13 @@ class RadarInAppMessageManager: NSObject {
     @objc public func showInAppMessage(_ message: RadarInAppMessage) async {
         // check before getting the view that there is no existing IAM shown
         if (view != nil) {
-            print("Has existing view")
+            RadarLogger.shared.debug("Existing in-app message view, new in-app message ignored")
             return
         }
 
         guard let keyWindow = getKeyWindow() else {
             // No key window
-            print("No key window")
+            RadarLogger.shared.debug("No key window found for app, new in-app message ignored")
             return
         }
 
@@ -79,7 +79,7 @@ class RadarInAppMessageManager: NSObject {
         }
         // check after getting the view asynchronously that there is no existing IAM shown
         if (view != nil) {
-            print("has existing view 2")
+            RadarLogger.shared.debug("Existing in-app message view, new in-app message ignored")
             return
         }
         messageShownTime = Date()

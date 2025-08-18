@@ -9,6 +9,7 @@ import UIKit
 import UserNotifications
 import RadarSDK
 
+
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UNUserNotificationCenterDelegate, CLLocationManagerDelegate, RadarDelegate, RadarVerifiedDelegate {
 
@@ -35,7 +36,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         Radar.setMetadata([ "foo": "bar" ])
         Radar.setDelegate(self)
         Radar.setVerifiedDelegate(self)
- 
         
         return true
     }
@@ -104,6 +104,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         demoButton(text: "startTracking") {
             let options = RadarTrackingOptions.presetContinuous
             Radar.startTracking(trackingOptions: options)
+            
+            
         }
 
         demoButton(text: "getContext") {

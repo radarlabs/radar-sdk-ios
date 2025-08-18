@@ -36,6 +36,10 @@ class RadarLogger : NSObject {
     @available(iOS 14.0, *)
     static let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "RadarSDK", category: "RadarSDK")
 
+    func debug(_ message: String, type: RadarLogType = .none, includeDate: Bool = false, includeBattery: Bool = false, append: Bool = false) {
+        log(level: .debug, message: message, type: type, includeDate: includeDate, includeBattery: includeBattery, append: append)
+    }
+    
     func info(_ message: String, type: RadarLogType = .none, includeDate: Bool = false, includeBattery: Bool = false, append: Bool = false) {
         log(level: .info, message: message, type: type, includeDate: includeDate, includeBattery: includeBattery, append: append)
     }

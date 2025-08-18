@@ -9,30 +9,30 @@ import Foundation
 import SwiftUI
 
 @available(iOS 13.0, *)
-func loadImage(_ url: String) async -> UIImage? {
-    if (url.isEmpty) {
-        return nil
-    }
-    do {
-        let (data, _) = if (url.starts(with: "http")) {
-            try await RadarApiHelper.request(method: "GET", url: url)
-        } else {
-            try await RadarApiHelper.radarRequest(method: "GET", url: "assets/\(url)")
-        }
-        return UIImage(data: data)
-    } catch {
-        print("API request error")
-        // error in API request or converting to image
-        return nil
-    }
-}
-
-@available(iOS 13.0, *)
 @objc(RadarInAppMessageDelegate_Swift)
 @objcMembers
 @MainActor
 open class RadarInAppMessageDelegate : NSObject, RadarInAppMessageProtocol {
 
+    @available(iOS 13.0, *)
+    public static func loadImage(_ url: String) async -> UIImage? {
+        if (url.isEmpty) {
+            return nil
+        }
+        do {
+            let (data, _) = if (url.starts(with: "http")) {
+                try await RadarApiHelper.request(method: "GET", url: url)
+            } else {
+                try await RadarApiHelper.radarRequest(method: "GET", url: "assets/\(url)")
+            }
+            return UIImage(data: data)
+        } catch {
+            RadarLogger.shared.debug("API request error")
+            // error in API request or converting to image
+            return nil
+        }
+    }
+    
     /**
      returns the view controller for the message to show, can be overwritten to display a custom view
      */
@@ -40,7 +40,7 @@ open class RadarInAppMessageDelegate : NSObject, RadarInAppMessageProtocol {
         Task {
             var image: UIImage? = nil
             if let imageUrl = message.image?.url {
-                image = await loadImage(imageUrl)
+                image = await RadarInAppMessageDelegate.loadImage(imageUrl)
             }
             let viewController = UIHostingController(rootView: RadarIAMView(message: message, image: image, onDismiss: onDismiss, onInAppMessageClicked: onInAppMessageClicked))
             completionHandler(viewController)

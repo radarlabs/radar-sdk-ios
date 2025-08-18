@@ -95,7 +95,6 @@ extension RadarInAppMessage.Text {
 
 extension RadarInAppMessage.Button {
     static func fromDictionary(dict: Any?) -> RadarInAppMessage.Button? {
-        print("Parsing button")
         guard let dict = dict as? Dictionary<String, String?>,
               let text = dict["text"] ?? nil,
               let color = uiColorFromString(dict["color"] ?? nil),

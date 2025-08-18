@@ -1418,20 +1418,19 @@
     [RadarNotificationHelper openURLFromNotification:notification];
 }
 
-+ (void)inAppMessage:(RadarInAppMessage*)message {
-    if (@available(iOS 13.0, *)) {
-        [[RadarInAppMessageManager shared] showInAppMessage:message completionHandler:^(){}];
-    } else {
-        // Fallback on earlier versions
-    }
-//    [UIApplication sharedApplication];
-}
-
 + (void)setInAppMessageDelegate:(id)delegate {
     if (@available(iOS 13.0, *)) {
         [[RadarInAppMessageManager shared] setDelegate:delegate];
     } else {
         // Fallback on earlier versions
+    }
+}
+
++ (void) loadImage:(NSString*)url completionHandler:(void (^ _Nonnull)(UIImage * _Nullable))completionHandler {
+    if (@available(iOS 13.0, *)) {
+        return [RadarInAppMessageDelegate_Swift loadImage:url completionHandler:completionHandler];
+    } else {
+        // Unavailable
     }
 }
 
