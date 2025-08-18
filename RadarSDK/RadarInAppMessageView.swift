@@ -42,15 +42,17 @@ struct RadarIAMView: View {
                         .font(Font.system(size: 17, weight: .regular))
 
                     // Button
-                    Button(action: {
-                        onInAppMessageClicked()
-                    }) {
-                        Text(message.button?.text ?? "")
-                            .frame(width: 310, height: 50)
-                            .foregroundColor(Color(message.button?.color ?? UIColor.black))
-                            .background(Color(message.button?.backgroundColor ?? UIColor.white))
-                            .cornerRadius(10)
-                            .font(Font.system(size: 22, weight: .bold))
+                    if (message.button != nil) {
+                        Button(action: {
+                            onInAppMessageClicked()
+                        }) {
+                            Text(message.button?.text ?? "")
+                                .frame(width: 310, height: 50)
+                                .foregroundColor(Color(message.button?.color ?? UIColor.black))
+                                .background(Color(message.button?.backgroundColor ?? UIColor.white))
+                                .cornerRadius(10)
+                                .font(Font.system(size: 22, weight: .bold))
+                        }
                     }
                 }.padding(.bottom, 20)
             }.background(Color.white).cornerRadius(20)
@@ -87,11 +89,11 @@ struct RadarIAMView: View {
                     "text": "This is a demo message",
                     "color": "#666666"
                 ],
-                "button": [
-                    "text": "Send it",
-                    "color": "#FFFFFF",
-                    "backgroundColor": "#EB0083",
-                ],
+//                "button": [
+//                    "text": "Send it",
+//                    "color": "#FFFFFF",
+//                    "backgroundColor": "#EB0083",
+//                ],
                 "image": [
                     "url": "https://images.pexels.com/photos/949587/pexels-photo-949587.jpeg",
                     "name": "image.jpeg"
