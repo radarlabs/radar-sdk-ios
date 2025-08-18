@@ -38,7 +38,7 @@ struct RadarIAMView: View {
                         .multilineTextAlignment(.center)
                         .frame(maxWidth: 310)
                         .padding(.top, 5)
-                        .padding(.bottom, 20)
+                        .padding(.bottom, 15)
                         .font(Font.system(size: 17, weight: .regular))
 
                     // Button
