@@ -28,8 +28,4 @@ jobs:
         env:
           scheme: RadarSDK
         run: |
-          xcodebuild test -scheme RadarSDK -workspace Example/Example.xcodeproj/project.xcworkspace -destination 'platform=iOS Simulator,name=iPhone 16 Pro,OS=latest' -skip-testing:InAppMessageTest | xcpretty && exit ${PIPESTATUS[0]}
-        
-      - name: Test swift 
-        run: |
-          xcodebuild test -scheme RadarSDK -workspace Example/Example.xcodeproj/project.xcworkspace -destination 'platform=iOS Simulator,name=iPhone 16 Pro,OS=latest' -only-testing:InAppMessageTest | xcpretty && exit ${PIPESTATUS[0]}
+          xcodebuild test -scheme RadarSDK -workspace Example/Example.xcodeproj/project.xcworkspace -destination 'platform=iOS Simulator,name=iPhone 16 Pro,OS=latest' | xcpretty && exit ${PIPESTATUS[0]}
