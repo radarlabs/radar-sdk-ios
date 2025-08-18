@@ -173,9 +173,4 @@ actor InAppMessageTest {
         #expect(mockDelegate.createInAppMessageViewCounter == 2)
         #expect(mockWindow.addSubviewCounter == 1)
     }
-
-    @Test("Force failure")
-    func ForceFailure() throws {
-        #expect(false)
-    }
 }
