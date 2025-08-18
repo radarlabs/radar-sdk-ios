@@ -38,7 +38,7 @@ struct RadarIAMView: View {
                         .multilineTextAlignment(.center)
                         .frame(maxWidth: 310)
                         .padding(.top, 5)
-                        .padding(.bottom, 10)
+                        .padding(.bottom, 20)
                         .font(Font.system(size: 17, weight: .regular))
 
                     // Button
@@ -97,7 +97,7 @@ struct RadarIAMView: View {
                     "name": "image.jpeg"
                 ]
         ])!,
-             image: UIImage(named: "background"),
+//             image: UIImage(named: "background"),
              onDismiss: { print("Dismissed") },
              onInAppMessageClicked: { print("Button tapped") }
         )
