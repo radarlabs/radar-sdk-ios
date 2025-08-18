@@ -50,7 +50,7 @@
         }
     }
 
-    return [userGeofences copy];
+    return userGeofences;
 }
 
 + (void)updateTrackingOptionsFromOfflineLocation:(NSArray<RadarGeofence *> *)userGeofences completionHandler:(void (^)(RadarConfig *))completionHandler {
@@ -63,13 +63,13 @@
         }
     }
 
-    NSArray<NSString *> *rampUpGeofenceTags = [RadarRemoteTrackingOptions getGeofenceTagsWithKey:@"inGeofence" remoteTrackingOptions:sdkConfig.remoteTrackingOptions];
+    NSArray<NSString *> *rampUpGeofenceTags = [RadarRemoteTrackingOptions getGeofenceTagsWithKey:@"inGeofence" remoteTrackingOptions:(sdkConfig ? sdkConfig.remoteTrackingOptions : nil)];
     BOOL inRampedUpGeofence = NO;
 
     if (rampUpGeofenceTags) {
         NSSet *rampUpSet = [NSSet setWithArray:rampUpGeofenceTags];
         NSSet *newTagsSet = [NSSet setWithArray:newGeofenceTags];
-        inRampedUpGeofence = ![rampUpSet intersectsSet:newTagsSet];
+        inRampedUpGeofence = [rampUpSet intersectsSet:newTagsSet];
     }
 
     RadarTrackingOptions *newTrackingOptions = nil;
@@ -77,17 +77,17 @@
     if (inRampedUpGeofence) {
         // ramp up
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Ramping up from Radar offline manager"];
-        newTrackingOptions = [RadarRemoteTrackingOptions getTrackingOptionsWithKey:@"inGeofence" remoteTrackingOptions:sdkConfig.remoteTrackingOptions];
+        newTrackingOptions = [RadarRemoteTrackingOptions getTrackingOptionsWithKey:@"inGeofence" remoteTrackingOptions:(sdkConfig ? sdkConfig.remoteTrackingOptions : nil)];
     } else {
         // ramp down if needed
-        RadarTrackingOptions *onTripOptions = [RadarRemoteTrackingOptions getTrackingOptionsWithKey:@"onTrip" remoteTrackingOptions:sdkConfig.remoteTrackingOptions];
+        RadarTrackingOptions *onTripOptions = [RadarRemoteTrackingOptions getTrackingOptionsWithKey:@"onTrip" remoteTrackingOptions:(sdkConfig ? sdkConfig.remoteTrackingOptions : nil)];
         RadarTripOptions *tripOptions = [Radar getTripOptions];
 
         if (onTripOptions && tripOptions) {
             newTrackingOptions = onTripOptions;
             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Ramping down from Radar offline manager to trip tracking options"];
         } else {
-            newTrackingOptions = [RadarRemoteTrackingOptions getTrackingOptionsWithKey:@"default" remoteTrackingOptions:sdkConfig.remoteTrackingOptions];
+            newTrackingOptions = [RadarRemoteTrackingOptions getTrackingOptionsWithKey:@"default" remoteTrackingOptions:(sdkConfig ? sdkConfig.remoteTrackingOptions : nil)];
             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Ramping down from Radar offline manager to default tracking options"];
         }
     }
@@ -226,7 +226,7 @@
         @"fraud": user.fraud ?: [NSNull null]
     };
 
-    [RadarState setGeofenceIds:[newUserGeofenceIds copy]];
+    [RadarState setGeofenceIds:newUserGeofenceIds];
 
     RadarUser *newUser = [[RadarUser alloc] initWithObject:newUserDict];
     if (newUser) {
