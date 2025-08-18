@@ -22,14 +22,14 @@ jobs:
         env:
           scheme: RadarSDK
         run: |
-          xcodebuild clean build analyze -scheme RadarSDK -workspace Example/Example.xcodeproj/project.xcworkspace -destination 'platform=iOS Simulator,name=iPhone 16 Pro,OS=18.6' | xcpretty && exit ${PIPESTATUS[0]}
+          xcodebuild clean build analyze -scheme RadarSDK -workspace Example/Example.xcodeproj/project.xcworkspace -destination 'platform=iOS Simulator,name=iPhone 16 Pro,OS=latest' | xcpretty && exit ${PIPESTATUS[0]}
 
       - name: Test
         env:
           scheme: RadarSDK
         run: |
-          xcodebuild test -scheme RadarSDK -workspace Example/Example.xcodeproj/project.xcworkspace -destination 'platform=iOS Simulator,name=iPhone 16 Pro,OS=18.6' -skip-testing:RadarSDKTests/InAppMessageTest | xcpretty && exit ${PIPESTATUS[0]}
+          xcodebuild test -scheme RadarSDK -workspace Example/Example.xcodeproj/project.xcworkspace -destination 'platform=iOS Simulator,name=iPhone 16 Pro,OS=latest' -skip-testing:RadarSDKTests/InAppMessageTest | xcpretty && exit ${PIPESTATUS[0]}
         
       - name: Test swift 
         run: |
-          xcodebuild test -scheme RadarSDK -workspace Example/Example.xcodeproj/project.xcworkspace -destination 'platform=iOS Simulator,name=iPhone 16 Pro,OS=18.6' -only-testing:RadarSDKTests/InAppMessageTest | xcpretty && exit ${PIPESTATUS[0]}
+          xcodebuild test -scheme RadarSDK -workspace Example/Example.xcodeproj/project.xcworkspace -destination 'platform=iOS Simulator,name=iPhone 16 Pro,OS=latest' -only-testing:RadarSDKTests/InAppMessageTest | xcpretty && exit ${PIPESTATUS[0]}
