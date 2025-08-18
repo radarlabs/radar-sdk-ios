@@ -1338,7 +1338,7 @@ typedef void (^_Nullable RadarLogConversionCompletionHandler)(RadarStatus status
 /**
  Load image convenience function available for use with custom in-app message views
  */
-+ (UIImage*) loadImage:(NSString*)url completionHandler:(void (^ _Nonnull)(UIImage * _Nullable))completionHandler NS_SWIFT_NAME(loadImage(_:completionHandler:));
++ (void) loadImage:(NSString*)url completionHandler:(void (^ _Nonnull)(UIImage * _Nullable))completionHandler NS_SWIFT_NAME(loadImage(_:completionHandler:));
 
 /**
  This function should be internal, but it is exposed due to swift migration limitations. It should only be used by internal swift classes while RadarLogBuffer is still in Obj-C

@@ -89,11 +89,11 @@ struct RadarIAMView: View {
                     "text": "This is a demo message",
                     "color": "#666666"
                 ],
-//                "button": [
-//                    "text": "Send it",
-//                    "color": "#FFFFFF",
-//                    "backgroundColor": "#EB0083",
-//                ],
+                "button": [
+                    "text": "Send it",
+                    "color": "#FFFFFF",
+                    "backgroundColor": "#EB0083",
+                ],
                 "image": [
                     "url": "https://images.pexels.com/photos/949587/pexels-photo-949587.jpeg",
                     "name": "image.jpeg"
