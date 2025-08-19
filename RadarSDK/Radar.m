@@ -1421,8 +1421,6 @@
 + (void)setInAppMessageDelegate:(id)delegate {
     if (@available(iOS 13.0, *)) {
         [[RadarInAppMessageManager shared] setDelegate:delegate];
-    } else {
-        // Fallback on earlier versions
     }
 }
 
@@ -1430,7 +1428,7 @@
     if (@available(iOS 13.0, *)) {
         return [RadarInAppMessageDelegate_Swift loadImage:url completionHandler:completionHandler];
     } else {
-        // Unavailable
+        completionHandler(nil);
     }
 }
 

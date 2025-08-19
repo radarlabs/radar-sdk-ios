@@ -527,7 +527,6 @@
                             NSArray<RadarGeofence *> *nearbyGeofences = [RadarGeofence geofencesFromObject:nearbyGeofencesObj];
                             RadarVerifiedLocationToken *token = [[RadarVerifiedLocationToken alloc] initWithObject:res];
 
-                            // handle in app messages after completion handler?
                             if (@available(iOS 13.0, *)) {
                                 NSArray<RadarInAppMessage *> *inAppMessages = [RadarInAppMessage fromArray:inAppMessagesObj];
                                 if (inAppMessages) {
