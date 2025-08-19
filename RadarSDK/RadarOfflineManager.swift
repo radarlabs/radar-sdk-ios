@@ -8,6 +8,7 @@
 
 import Foundation
 import CoreLocation
+import RadarSDK.Private
 
 @objc(RadarOfflineManager) class RadarOfflineManager: NSObject {
 
