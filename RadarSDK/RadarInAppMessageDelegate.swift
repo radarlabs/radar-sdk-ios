@@ -20,11 +20,7 @@ open class RadarInAppMessageDelegate : NSObject, RadarInAppMessageProtocol {
             return nil
         }
         do {
-            let (data, _) = if (url.starts(with: "http")) {
-                try await RadarApiHelper.request(method: "GET", url: url)
-            } else {
-                try await RadarApiHelper.radarRequest(method: "GET", url: "assets/\(url)")
-            }
+            let data = try await RadarAPIClient.shared.getAsset(url: url)
             return UIImage(data: data)
         } catch {
             RadarLogger.shared.debug("API request error")
