@@ -51,14 +51,13 @@ class RadarLogger : NSObject {
 
         let dateString = dateFormatter.string(from: Date())
         let batteryLevel = device.batteryLevel;
-        let message = if (includeDate && includeBattery) {
-            String(format: "%@ | at %@ | with %2.f%% battery", message, dateString, batteryLevel*100)
+        var message = message
+        if (includeDate && includeBattery) {
+            message = String(format: "%@ | at %@ | with %2.f%% battery", message, dateString, batteryLevel*100)
         } else if (includeDate) {
-            String(format: "%@ | at %@", message, dateString)
+            message = String(format: "%@ | at %@", message, dateString)
         } else if (includeBattery) {
-            String(format: "%@ | with %2.f%% battery", message, batteryLevel*100)
-        } else {
-            message
+            message = String(format: "%@ | with %2.f%% battery", message, batteryLevel*100)
         }
 
         // TODO: implement RadarLogBuffer

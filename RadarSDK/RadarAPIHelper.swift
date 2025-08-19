@@ -9,8 +9,9 @@
 import Foundation
 
 @available(iOS 13.0, *)
-class RadarApiHelper {
-    static func request(method: String, url: String, query: [String: String] = [:], headers: [String: String] = [:], body: [String: Any] = [:]) async throws -> (Data, HTTPURLResponse) {
+final
+class RadarApiHelper: Sendable {
+    func request(method: String, url: String, query: [String: String] = [:], headers: [String: String] = [:], body: [String: Any] = [:]) async throws -> (Data, HTTPURLResponse) {
 
         // transform URL
         // turn query into a string of format: "?key=value&key2=value2" or "" if there are no queries
@@ -44,9 +45,11 @@ class RadarApiHelper {
         return (data, httpResponse)
     }
 
-    static func radarRequest(method: String, url: String, query: [String: String] = [:], headers: [String: String] = [:], body: [String: Any] = [:]) async throws -> (Data, HTTPURLResponse) {
-        let publishableKey = UserDefaults.standard.string(forKey: "radar-publishableKey")!
-        let radarHost = UserDefaults.standard.string(forKey: "radar-host")!
+    func radarRequest(method: String, url: String, query: [String: String] = [:], headers: [String: String] = [:], body: [String: Any] = [:]) async throws -> (Data, HTTPURLResponse) {
+        guard let publishableKey = UserDefaults.standard.string(forKey: "radar-publishableKey"),
+              let radarHost = UserDefaults.standard.string(forKey: "radar-host") else {
+            throw URLError(.userAuthenticationRequired)
+        }
 
         var headers = headers
         headers["Authorization"] = publishableKey

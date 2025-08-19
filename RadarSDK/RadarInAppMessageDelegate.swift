@@ -20,11 +20,7 @@ open class RadarInAppMessageDelegate : NSObject, RadarInAppMessageProtocol {
             return nil
         }
         do {
-            let (data, _) = if (url.starts(with: "http")) {
-                try await RadarApiHelper.request(method: "GET", url: url)
-            } else {
-                try await RadarApiHelper.radarRequest(method: "GET", url: "assets/\(url)")
-            }
+            let data = try await RadarAPIClient.shared.getAsset(url: url)
             return UIImage(data: data)
         } catch {
             RadarLogger.shared.debug("API request error")
@@ -49,8 +45,9 @@ open class RadarInAppMessageDelegate : NSObject, RadarInAppMessageProtocol {
 
     open func onInAppMessageButtonClicked(_ message: RadarInAppMessage) {
         RadarInAppMessageManager.shared.logConversion(name: "in_app_message_clicked")
-        if let url = message.button?.url {
-            UIApplication.shared.open(URL(string: url)!)
+        if let urlString = message.button?.url,
+           let url = URL(string: urlString) {
+            UIApplication.shared.open(url)
         }
         RadarInAppMessageManager.shared.dismissInAppMessage()
     }
