@@ -6,7 +6,6 @@
 //
 
 @import CoreLocation;
-// @import RadarSDK;
 @import XCTest;
 #import "../RadarSDK/CLLocation+Radar.h"
 
