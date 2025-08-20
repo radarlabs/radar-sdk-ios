@@ -8,8 +8,7 @@
 import Foundation
 
 @available(iOS 13.0, *)
-final
-class RadarApiHelper: Sendable {
+final class RadarApiHelper: Sendable {
     func request(method: String, url: String, query: [String: String] = [:], headers: [String: String] = [:], body: [String: Any] = [:]) async throws -> (Data, HTTPURLResponse) {
 
         // transform URL
