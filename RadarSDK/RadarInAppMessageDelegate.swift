@@ -1,5 +1,5 @@
 //
-//  RadarIAMDelegate.swift
+//  RadarInAppMessageDelegate.swift
 //  RadarSDK
 //
 //  Copyright © 2025 Radar Labs, Inc. All rights reserved.

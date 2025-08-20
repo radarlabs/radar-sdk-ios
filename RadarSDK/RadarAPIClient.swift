@@ -2,7 +2,6 @@
 //  RadarAPIClient.swift
 //  RadarSDK
 //
-//  Created by ShiCheng Lu on 8/19/25.
 //  Copyright © 2025 Radar Labs, Inc. All rights reserved.
 //
 

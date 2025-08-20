@@ -2,7 +2,6 @@
 //  InAppMessageTest.swift
 //  RadarSDKTests
 //
-//  Created by ShiCheng Lu on 8/6/25.
 //  Copyright © 2025 Radar Labs, Inc. All rights reserved.
 //
 
