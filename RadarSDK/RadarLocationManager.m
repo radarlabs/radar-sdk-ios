@@ -213,13 +213,22 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         [[RadarReplayBuffer sharedInstance] flushReplaysWithCompletionHandler:nil completionHandler:nil];
     }
 
-    if (sdkConfiguration.useLocationMetadata) {
-        [self stopActivityAndMotionUpdates];
+    RadarTrackingOptions *trackingOptions = [RadarSettings trackingOptions];
+    if (trackingOptions.useMotion || trackingOptions.usePressure) {
+        [self.locationManager stopUpdatingHeading];
+        if (self.activityManager) {
+            if (trackingOptions.usePressure) {
+                [self.activityManager stopRelativeAltitudeUpdates];
+                [self.activityManager stopAbsoluteAltitudeUpdates];
+            }
+            if (trackingOptions.useMotion) {
+                [self.activityManager stopActivityUpdates];
+            }
+       }
     }
 
     // null out startTrackingAfter and stopTrackingAfter in local tracking options
     // so that subsequent trackOnce calls don't restart tracking
-    RadarTrackingOptions *trackingOptions = [RadarSettings trackingOptions];
     trackingOptions.startTrackingAfter = nil;
     trackingOptions.stopTrackingAfter = nil;
     [RadarSettings setTrackingOptions:trackingOptions];
@@ -337,11 +346,13 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 
             self.lowPowerLocationManager.allowsBackgroundLocationUpdates = [RadarUtils locationBackgroundMode];
             self.lowPowerLocationManager.pausesLocationUpdatesAutomatically = NO;
-            
-            if ([RadarSettings useLocationMetadata]) {
-                [self.locationManager startUpdatingHeading];
 
+                
+
+            if (options.useMotion) {
                 self.activityManager = [RadarActivityManager sharedInstance];
+                self.locationManager.headingFilter = 5;
+                [self.locationManager startUpdatingHeading];
                 [self.activityManager startActivityUpdatesWithHandler:^(CMMotionActivity *activity) {
                     if (activity) {
                         RadarActivityType activityType = RadarActivityTypeUnknown;
@@ -377,9 +388,31 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                         
                     }
                 }];
-
+                
             }
+            if (options.usePressure) {
+                self.activityManager = [RadarActivityManager sharedInstance];
+                
+                [self.activityManager startRelativeAltitudeWithHandler: ^(CMAltitudeData * _Nullable altitudeData) {
+                    NSMutableDictionary *currentState = [[RadarState lastRelativeAltitudeData] mutableCopy] ?: [NSMutableDictionary new];
+                    currentState[@"pressure"] = @(altitudeData.pressure.doubleValue *10); // convert to hPa
+                    currentState[@"relativeAltitude"] = @(altitudeData.relativeAltitude.doubleValue);
+                    currentState[@"relativeAltitudeTimestamp"] = @([[NSDate date] timeIntervalSince1970]);
+                    [RadarState setLastRelativeAltitudeData:currentState];
+                }];
 
+                if (@available(iOS 15.0, *)) {
+                    [self.activityManager startAbsoluteAltitudeWithHandler: ^(CMAbsoluteAltitudeData * _Nullable altitudeData) {
+                        NSMutableDictionary *currentState = [[RadarState lastRelativeAltitudeData] mutableCopy] ?: [NSMutableDictionary new];
+                        currentState[@"altitude"] = @(altitudeData.altitude);
+                        currentState[@"accuracy"] = @(altitudeData.accuracy);
+                        currentState[@"precision"] = @(altitudeData.precision);
+                        currentState[@"absoluteAltitudeTimestamp"] = @([[NSDate date] timeIntervalSince1970]);
+                        [RadarState setLastRelativeAltitudeData:currentState];
+                    }];
+                }
+            }
+        
             CLLocationAccuracy desiredAccuracy;
             switch (options.desiredAccuracy) {
             case RadarTrackingOptionsDesiredAccuracyHigh:
@@ -1139,14 +1172,6 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     [[RadarDelegateHolder sharedInstance] didFailWithStatus:RadarStatusErrorLocation];
 
     [self callCompletionHandlersWithStatus:RadarStatusErrorLocation location:nil];
-}
-
-- (void)stopActivityAndMotionUpdates {
-    [self.locationManager stopUpdatingHeading];
-
-    if (self.activityManager) {
-        [self.activityManager stopActivityUpdates];
-    }
 }
 
 - (void)locationManager:(CLLocationManager *)manager didUpdateHeading:(CLHeading *)newHeading {
