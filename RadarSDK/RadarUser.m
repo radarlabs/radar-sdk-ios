@@ -43,7 +43,7 @@
                                 trip:(RadarTrip *_Nullable)trip
                                debug:(BOOL)debug
                                fraud:(RadarFraud *_Nullable)fraud 
-                  barometricAltitude:(double)barometricAltitude {
+                            altitude:(double)altitude {
     self = [super init];
     if (self) {
         __id = _id;
@@ -69,7 +69,7 @@
         _trip = trip;
         _debug = debug;
         _fraud = fraud;
-        _barometricAltitude = barometricAltitude;
+        _altitude = altitude;
     }
     return self;
 }
@@ -104,7 +104,7 @@
     RadarTrip *trip;
     RadarFraud *fraud;
     BOOL debug = NO;
-    double barometricAltitude = NAN;
+    double altitude = NAN;
 
     id idObj = dict[@"_id"];
     if (idObj && [idObj isKindOfClass:[NSString class]]) {
@@ -296,10 +296,12 @@
 
     id barometricAltitudeObj = dict[@"barometricAltitude"];
     if (barometricAltitudeObj && [barometricAltitudeObj isKindOfClass:[NSNumber class]]) {
-        barometricAltitude = [((NSNumber *)barometricAltitudeObj) doubleValue];
-        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"barometricAltitude: %f", barometricAltitude]];
-    } else {
-        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"barometricAltitude: null"];
+        altitude = [((NSNumber *)barometricAltitudeObj) doubleValue];
+    }
+
+    id altitudeObj = dict[@"altitude"];
+    if (altitudeObj && [altitudeObj isKindOfClass:[NSNumber class]]) {
+        altitude = [((NSNumber *)altitudeObj) doubleValue];
     }
 
     if (_id && location) {
@@ -326,7 +328,7 @@
                                         trip:trip
                                        debug:debug
                                        fraud:fraud
-                          barometricAltitude:barometricAltitude];
+                                    altitude:altitude];
     }
 
     return nil;
@@ -387,8 +389,8 @@
     if (self.fraud) {
         [dict setValue:[self.fraud dictionaryValue] forKey:@"fraud"];
     }
-    if (!isnan(self.barometricAltitude)) {
-        [dict setValue:@(self.barometricAltitude) forKey:@"barometricAltitude"];
+    if (!isnan(self.altitude)) {
+        [dict setValue:@(self.altitude) forKey:@"altitude"];
     }
     return dict;
 }

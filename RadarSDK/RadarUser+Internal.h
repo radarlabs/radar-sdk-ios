@@ -35,7 +35,7 @@
                                 trip:(RadarTrip *_Nullable)trip
                                debug:(BOOL)debug
                                fraud:(RadarFraud *_Nullable)fraud
-                  barometricAltitude:(double)barometricAltitude;
+                            altitude:(double)altitude;
 - (instancetype _Nullable)initWithObject:(id _Nonnull)object;
 
 @end
