@@ -73,10 +73,12 @@ public class RadarInAppMessageManager: NSObject {
             delegate.createInAppMessageView(message,
                                             onDismiss: {
                 self.logConversion(name: "in_app_message_clicked")
+                self.dismissInAppMessage()
                 self.delegate.onInAppMessageDismissed(message)
             },
                                             onInAppMessageClicked: {
                 self.logConversion(name: "in_app_message_dismissed")
+                self.dismissInAppMessage()
                 self.delegate.onInAppMessageButtonClicked(message)
             }) { result in
                 continuation.resume(returning: result)
