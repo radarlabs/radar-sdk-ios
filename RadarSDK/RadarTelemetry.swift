@@ -62,6 +62,7 @@ public class Tracer: NSObject {
         return uuidString.lowercased()
     }()
     var spans = [String: Span]()
+    @objc public var globalAttributes = [String: String]()
     
     func getSpanId() -> String {
         let value = UInt64.random(in: 0...UInt64.max)
@@ -76,7 +77,7 @@ public class Tracer: NSObject {
             parent_id: parent?.span_id,
             start_time: Date(),
             end_time: Date(),
-            attributes: [:],
+            attributes: globalAttributes,
             events: []
         )
         spans[span_id] = span

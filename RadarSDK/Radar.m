@@ -215,10 +215,15 @@
 
 + (void)trackOnceWithDesiredAccuracy:(RadarTrackingOptionsDesiredAccuracy)desiredAccuracy beacons:(BOOL)beacons completionHandler:(RadarTrackCompletionHandler)completionHandler {
     Tracer* tracer = [[Tracer alloc] init];
-    Span* trackOnceTrace = [tracer start:@"traceOnce()"];
+    tracer.globalAttributes = @{
+        @"method": @"trackOnce",
+        @"deviceType": [RadarUtils deviceType],
+    };
+    
+    Span* trackOnceTrace = [tracer start:@"traceOnce"];
     Span* getLocationTrace = [tracer start:@"getLocation"];
     
-    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"trackOnce()"];
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"trackOnce"];
     [[RadarLocationManager sharedInstance]
      getLocationWithDesiredAccuracy:desiredAccuracy
      completionHandler:^(RadarStatus status, CLLocation *_Nullable location, BOOL stopped) {
