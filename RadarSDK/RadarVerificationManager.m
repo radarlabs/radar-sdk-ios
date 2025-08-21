@@ -77,7 +77,7 @@
 - (void)trackVerifiedWithBeacons:(BOOL)beacons desiredAccuracy:(RadarTrackingOptionsDesiredAccuracy)desiredAccuracy reason:(NSString *)reason transactionId:(NSString *)transactionId completionHandler:(RadarTrackVerifiedCompletionHandler)completionHandler {
     
     Tracer* tracer = [[Tracer alloc] init];
-    SpanContext* trackVerifiedSpan = [tracer start:@"trackVerified" parent:nil];
+    Span* trackVerifiedSpan = [tracer start:@"trackVerified" parent:nil];
     
     if (!reason) {
         reason = @"manual";
@@ -141,7 +141,7 @@
                                          RadarUser *_Nullable user, NSArray<RadarGeofence *> *_Nullable nearbyGeofences,
                                          RadarConfig *_Nullable config, RadarVerifiedLocationToken *_Nullable token) {
                         
-                        [tracer end:trackVerifiedSpan];
+                        [trackVerifiedSpan endWithStatus: status];
                         
                         
                         if (status == RadarStatusSuccess && config != nil) {

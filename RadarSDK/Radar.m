@@ -215,17 +215,18 @@
 
 + (void)trackOnceWithDesiredAccuracy:(RadarTrackingOptionsDesiredAccuracy)desiredAccuracy beacons:(BOOL)beacons completionHandler:(RadarTrackCompletionHandler)completionHandler {
     Tracer* tracer = [[Tracer alloc] init];
-    SpanContext* trackOnceTrace = [tracer start:@"traceOnce()"];
-    SpanContext* getLocationTrace = [tracer start:@"getLocation"];
+    Span* trackOnceTrace = [tracer start:@"traceOnce()"];
+    Span* getLocationTrace = [tracer start:@"getLocation"];
     
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"trackOnce()"];
     [[RadarLocationManager sharedInstance]
      getLocationWithDesiredAccuracy:desiredAccuracy
      completionHandler:^(RadarStatus status, CLLocation *_Nullable location, BOOL stopped) {
-        [tracer complete:getLocationTrace withStatus:status];
+        [getLocationTrace endWithStatus:status];
         
         if (status != RadarStatusSuccess) {
-            [tracer complete:trackOnceTrace withStatus:status];
+            [trackOnceTrace endWithStatus:status];
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeTelemetry message:[tracer toString]];
             
             if (completionHandler) {
                 [RadarUtils runOnMainThread:^{
@@ -237,7 +238,7 @@
         }
         
         void (^callTrackAPI)(NSArray<RadarBeacon *> *_Nullable) = ^(NSArray<RadarBeacon *> *_Nullable beacons) {
-            SpanContext* trackAPITrace = [tracer start:@"trackAPI"];
+            Span* trackAPITrace = [tracer start:@"trackAPI"];
             [[RadarAPIClient sharedInstance]
              trackWithLocation:location
              stopped:stopped
@@ -247,8 +248,9 @@
              beacons:beacons
              completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user,
                                  NSArray<RadarGeofence *> *_Nullable nearbyGeofences, RadarConfig *_Nullable config, RadarVerifiedLocationToken *_Nullable token) {
-                [tracer complete:trackAPITrace withStatus:status];
-                [tracer complete:trackOnceTrace withStatus:status];
+                [trackAPITrace endWithStatus:status];
+                [trackOnceTrace endWithStatus:status];
+                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeTelemetry message:[tracer toString]];
                 
                 if (status == RadarStatusSuccess) {
                     [[RadarLocationManager sharedInstance] replaceSyncedGeofences:nearbyGeofences];
@@ -267,7 +269,7 @@
         };
         
         if (beacons) {
-            SpanContext* searchBeaconsTrace = [tracer start:@"searchBeacons"];
+            Span* searchBeaconsTrace = [tracer start:@"searchBeacons"];
             
             [[RadarAPIClient sharedInstance]
              searchBeaconsNear:location
@@ -275,7 +277,7 @@
              limit:10
              completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarBeacon *> *_Nullable beacons,
                                  NSArray<NSString *> *_Nullable beaconUUIDs) {
-                [tracer complete:getLocationTrace withStatus:status];
+                [getLocationTrace endWithStatus:status];
                 
                 if (beaconUUIDs && beaconUUIDs.count) {
                     [[RadarLocationManager sharedInstance] replaceSyncedBeaconUUIDs:beaconUUIDs];
