@@ -28,6 +28,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
     var calibrationTextField: UITextField?
     var calibrationButton: UIButton?
     var currentCalibrationLabel: UILabel?
+    
+    // UI elements for publishable key input
+    var publishableKeyTextField: UITextField?
+    var publishableKeyButton: UIButton?
+    
+    // UI elements for host selection
+    var hostSegmentedControl: UISegmentedControl?
+    let hostOptions = [
+        "https://api.radar-staging.com",
+        "https://api-kenny.radar-staging.com",
+        //"https://api.radar.io",
+        "https://arriving-eagle-magnetic.ngrok-free.app"
+    ]
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { (_, _) in }
@@ -142,6 +155,36 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
     
     @objc func dismissKeyboard() {
         calibrationTextField?.resignFirstResponder()
+        publishableKeyTextField?.resignFirstResponder()
+    }
+    
+    @objc func setPublishableKey() {
+        guard let key = publishableKeyTextField?.text, !key.isEmpty else {
+            print("Please enter a valid publishable key")
+            return
+        }
+        
+        // Set the publishable key in NSUserDefaults
+        UserDefaults.standard.set(key, forKey: "radar-publishableKey")
+        
+        // Clear the text field
+        publishableKeyTextField?.text = ""
+        
+        // Show confirmation
+        print("Publishable key updated to: \(key)")
+    }
+    
+    @objc func hostChanged() {
+        guard let selectedIndex = hostSegmentedControl?.selectedSegmentIndex else { return }
+        
+        // Get the selected host
+        let selectedHost = hostOptions[selectedIndex]
+        
+        // Set the host in NSUserDefaults
+        UserDefaults.standard.set(selectedHost, forKey: "radar-host")
+        
+        // Show confirmation
+        print("API host updated to: \(selectedHost)")
     }
     
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
@@ -194,6 +237,47 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         calibrationButton?.layer.cornerRadius = 5
         calibrationButton?.addTarget(self, action: #selector(setCalibrationAltitude), for: .touchUpInside)
         
+        // Add publishable key input UI
+        let publishableKeyLabel = UILabel(frame: CGRect(x: 20, y: 240, width: window.frame.size.width - 40, height: 20))
+        publishableKeyLabel.text = "Change Publishable Key:"
+        publishableKeyLabel.textAlignment = .center
+        publishableKeyLabel.font = UIFont.systemFont(ofSize: 12)
+        publishableKeyLabel.textColor = .darkGray
+        
+        publishableKeyTextField = UITextField(frame: CGRect(x: 20, y: 265, width: window.frame.size.width - 40, height: 30))
+        publishableKeyTextField?.placeholder = "Enter publishable key"
+        publishableKeyTextField?.borderStyle = .roundedRect
+        publishableKeyTextField?.textAlignment = .center
+        
+        publishableKeyButton = UIButton(frame: CGRect(x: 20, y: 300, width: window.frame.size.width - 40, height: 30))
+        publishableKeyButton?.setTitle("Set Publishable Key", for: .normal)
+        publishableKeyButton?.setTitleColor(.white, for: .normal)
+        publishableKeyButton?.backgroundColor = .systemBlue
+        publishableKeyButton?.layer.cornerRadius = 5
+        publishableKeyButton?.addTarget(self, action: #selector(setPublishableKey), for: .touchUpInside)
+        
+        // Add host selection UI
+        let hostLabel = UILabel(frame: CGRect(x: 20, y: 340, width: window.frame.size.width - 40, height: 20))
+        hostLabel.text = "Select API Host:"
+        hostLabel.textAlignment = .center
+        hostLabel.font = UIFont.systemFont(ofSize: 12)
+        hostLabel.textColor = .darkGray
+        
+        hostSegmentedControl = UISegmentedControl(items: ["Staging", "Kenny", "Ngrok"])
+        hostSegmentedControl?.frame = CGRect(x: 20, y: 365, width: window.frame.size.width - 40, height: 30)
+        hostSegmentedControl?.selectedSegmentIndex = 0 // Default to production
+        hostSegmentedControl?.addTarget(self, action: #selector(hostChanged), for: .valueChanged)
+        
+        // Set initial selection based on current value
+        if let currentHost = UserDefaults.standard.string(forKey: "radar-host") {
+            switch currentHost {
+            case hostOptions[0]: hostSegmentedControl?.selectedSegmentIndex = 0
+            case hostOptions[1]: hostSegmentedControl?.selectedSegmentIndex = 1
+            case hostOptions[2]: hostSegmentedControl?.selectedSegmentIndex = 2
+            default: hostSegmentedControl?.selectedSegmentIndex = 0
+            }
+        }
+        
 
         
         // Add tap gesture to dismiss keyboard
@@ -201,7 +285,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         window.addGestureRecognizer(tapGesture)
         
         // Position scroll view for demo buttons
-        scrollView = UIScrollView(frame: CGRect(x: 0, y: 240, width: window.frame.size.width, height: window.frame.size.height * 0.35))
+        scrollView = UIScrollView(frame: CGRect(x: 0, y: 405, width: window.frame.size.width, height: window.frame.size.height * 0.35))
         
         // Create metadata section at the bottom
         let metadataY = scrollView!.frame.maxY + 10
@@ -235,6 +319,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         window.addSubview(currentCalibrationLabel!)
         window.addSubview(calibrationTextField!)
         window.addSubview(calibrationButton!)
+        window.addSubview(publishableKeyLabel)
+        window.addSubview(publishableKeyTextField!)
+        window.addSubview(publishableKeyButton!)
+        window.addSubview(hostLabel)
+        window.addSubview(hostSegmentedControl!)
         
         window.addSubview(scrollView!)
         
