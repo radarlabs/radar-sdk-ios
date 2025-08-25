@@ -30,13 +30,13 @@ import RadarSDK.Private
            radius = geometry.radius
        } else {
            // log error
-           RadarLogger.sharedInstance().log(level:RadarLogLevel.error, message:"error parsing geometry with no circular representation")
+           RadarLogger.shared.log(level:RadarLogLevel.error, message:"error parsing geometry with no circular representation")
            continue
        }
        if (isPointInsideCircle(center: center!.coordinate, radius: radius, point: location)) {
            userGeofences.append(geofence)
            //newGeofenceIds.append(geofence._id)
-           RadarLogger.sharedInstance().log(level: RadarLogLevel.debug, message: "Radar offline manager detected user inside geofence: " + geofence._id)
+           RadarLogger.shared.log(level: RadarLogLevel.debug, message: "Radar offline manager detected user inside geofence: " + geofence._id)
        }
 
    }
@@ -46,7 +46,7 @@ import RadarSDK.Private
 
     @objc public static func updateTrackingOptionsFromOfflineLocation(_ userGeofences: [RadarGeofence], completionHandler: @escaping (RadarConfig?) -> Void) {
         var newGeofenceTags = [String]()
-        let sdkConfig = RadarSettings.sdkConfiguration()
+        let sdkConfig = RadarSettings.sdkConfiguration
 
         for userGeofence in userGeofences {
             if (userGeofence.tag != nil) {
@@ -63,17 +63,17 @@ import RadarSDK.Private
 
         if inRampedUpGeofence {
             // ramp up
-            RadarLogger.sharedInstance().log(level: RadarLogLevel.debug, message: "Ramping up from Radar offline manager")
+            RadarLogger.shared.log(level: RadarLogLevel.debug, message: "Ramping up from Radar offline manager")
             newTrackingOptions = RadarRemoteTrackingOptions.getTrackingOptions(key: "inGeofence", remoteTrackingOptions: sdkConfig?.remoteTrackingOptions)
         } else {
             // ramp down if needed
             if let onTripOptions = RadarRemoteTrackingOptions.getTrackingOptions(key: "onTrip", remoteTrackingOptions: sdkConfig?.remoteTrackingOptions),
                 let _ = Radar.getTripOptions() {
                 newTrackingOptions = onTripOptions
-                RadarLogger.sharedInstance().log(level: RadarLogLevel.debug, message: "Ramping down from Radar offline manager to trip tracking options")
+                RadarLogger.shared.log(level: RadarLogLevel.debug, message: "Ramping down from Radar offline manager to trip tracking options")
             } else {
                 newTrackingOptions = RadarRemoteTrackingOptions.getTrackingOptions(key: "default", remoteTrackingOptions: sdkConfig?.remoteTrackingOptions)
-                RadarLogger.sharedInstance().log(level: RadarLogLevel.debug, message: "Ramping down from Radar offline manager to default tracking options")
+                RadarLogger.shared.log(level: RadarLogLevel.debug, message: "Ramping down from Radar offline manager to default tracking options")
             }
         }
         if (newTrackingOptions != nil) {
@@ -88,9 +88,9 @@ import RadarSDK.Private
 
     @objc public static func generateEventsFromOfflineLocations(_ location: CLLocation, userGeofences: [RadarGeofence], completionHandler: @escaping ([RadarEvent], RadarUser, CLLocation) -> Void) {
         let user = RadarState.radarUser()
-        RadarLogger.sharedInstance().log(level: RadarLogLevel.info, message: "Got this user: \(String(describing: user))")
+        RadarLogger.shared.log(level: RadarLogLevel.info, message: "Got this user: \(String(describing: user))")
         if (user == nil) {
-            RadarLogger.sharedInstance().log(level: RadarLogLevel.error, message: "error getting user from offline manager")
+            RadarLogger.shared.log(level: RadarLogLevel.error, message: "error getting user from offline manager")
             return completionHandler([], user!, location)
         }
 
@@ -104,7 +104,7 @@ import RadarSDK.Private
         var newUserGeofenceIds = [String]()
         for userGeofence in userGeofences {
             if (!previousUserGeofenceIds.contains(userGeofence._id)) {
-                RadarLogger.sharedInstance().log(level: RadarLogLevel.info, message: "Adding geofence entry event for: \(userGeofence._id)")
+                RadarLogger.shared.log(level: RadarLogLevel.info, message: "Adding geofence entry event for: \(userGeofence._id)")
                 // geofence entry
                 let eventDict: [String: Any] = [
                     "_id": userGeofence._id,
@@ -127,14 +127,14 @@ import RadarSDK.Private
                 if let event = RadarEvent(object: eventDict) {
                     events.append(event)
                 } else {
-                    RadarLogger.sharedInstance().log(level: RadarLogLevel.error, message: "error parsing event from offline manager")
+                    RadarLogger.shared.log(level: RadarLogLevel.error, message: "error parsing event from offline manager")
                 }
             }
             newUserGeofenceIds.append(userGeofence._id)
         }
         for previousGeofenceId in previousUserGeofenceIds {
             if (!newUserGeofenceIds.contains(previousGeofenceId)) {
-                RadarLogger.sharedInstance().log(level: RadarLogLevel.info, message: "Adding geofence exit event for: \(previousGeofenceId)")
+                RadarLogger.shared.log(level: RadarLogLevel.info, message: "Adding geofence exit event for: \(previousGeofenceId)")
                 let eventDict: [String: Any] = [
                     "_id": previousGeofenceId,
                     "createdAt": RadarUtils.isoDateFormatter.string(from: Date()),
@@ -157,7 +157,7 @@ import RadarSDK.Private
                 if let event = RadarEvent(object: eventDict) {
                     events.append(event)
                 } else {
-                    RadarLogger.sharedInstance().log(level: RadarLogLevel.error, message: "error parsing event from offline manager")
+                    RadarLogger.shared.log(level: RadarLogLevel.error, message: "error parsing event from offline manager")
                 }
             }
         }
@@ -197,7 +197,7 @@ import RadarSDK.Private
             completionHandler(events, newUser, location)
         } else {
             // error out
-            RadarLogger.sharedInstance().log(level: RadarLogLevel.error, message: "error parsing user from offline manager")
+            RadarLogger.shared.log(level: RadarLogLevel.error, message: "error parsing user from offline manager")
             completionHandler(events, user!, location)
         }
     }
