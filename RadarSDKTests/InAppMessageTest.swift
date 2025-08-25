@@ -20,10 +20,12 @@ class MockRadarInAppMessageDelegate : NSObject, RadarInAppMessageProtocol {
     }
 
     var onNewInAppMessageCounter = 0
-    var onNewInAppMessageReturn = RadarInAppMessageOperation.discard
-    func onNewInAppMessage(_ message: RadarSDK.RadarInAppMessage) -> RadarInAppMessageOperation {
+    var showInAppMessage = false
+    func onNewInAppMessage(_ message: RadarSDK.RadarInAppMessage) {
         onNewInAppMessageCounter += 1
-        return onNewInAppMessageReturn
+        if (showInAppMessage) {
+            Radar.showInAppMessage(message)
+        }
     }
 
     var onInAppMessageDismissedCounter = 0
@@ -105,7 +107,7 @@ actor InAppMessageTest {
         manager.setDelegate(mockDelegate)
         let mockWindow = MockWindow()
         manager.getKeyWindow = { return mockWindow }
-        mockDelegate.onNewInAppMessageReturn = .display
+        mockDelegate.showInAppMessage = true
 
         manager.onInAppMessageReceived(messages: [message!])
 
@@ -134,7 +136,7 @@ actor InAppMessageTest {
         let mockWindow = MockWindow()
         manager.getKeyWindow = { return mockWindow }
 
-        mockDelegate.onNewInAppMessageReturn = .discard
+        mockDelegate.showInAppMessage = false
 
         manager.onInAppMessageReceived(messages: [message!])
 
@@ -152,7 +154,7 @@ actor InAppMessageTest {
         let mockWindow = MockWindow()
         manager.getKeyWindow = { return mockWindow }
 
-        mockDelegate.onNewInAppMessageReturn = .display
+        mockDelegate.showInAppMessage = true
 
         manager.onInAppMessageReceived(messages: [message!])
         manager.onInAppMessageReceived(messages: [message!])
