@@ -9,6 +9,7 @@ import UIKit
 import UserNotifications
 import RadarSDK
 
+
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UNUserNotificationCenterDelegate, CLLocationManagerDelegate, RadarDelegate, RadarVerifiedDelegate {
 
@@ -30,12 +31,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         // Uncomment to enable automatic setup for notification conversions or deep linking
         //radarInitializeOptions.autoLogNotificationConversions = true
         //radarInitializeOptions.autoHandleNotificationDeepLinks = true
-        Radar.initialize(publishableKey: "prj_test_pk_0000000000000000000000000000000000000000", options: radarInitializeOptions )
+        Radar.initialize(publishableKey: "prj_live_pk_", options: radarInitializeOptions )
         Radar.setUserId("testUserId")
         Radar.setMetadata([ "foo": "bar" ])
         Radar.setDelegate(self)
         Radar.setVerifiedDelegate(self)
- 
+        
         return true
     }
 
@@ -107,6 +108,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         demoButton(text: "startTracking") {
             let options = RadarTrackingOptions.presetContinuous
             Radar.startTracking(trackingOptions: options)
+            
+            
         }
 
         demoButton(text: "getContext") {

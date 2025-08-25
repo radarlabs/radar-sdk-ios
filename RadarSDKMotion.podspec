@@ -11,5 +11,5 @@ Pod::Spec.new do |s|
   s.ios.deployment_target = '12.0'
   s.frameworks            = 'CoreMotion'
   s.requires_arc          = true
-  s.license               = { :type => 'Apache-2.0' } 
+  s.license               = { :type => 'Apache-2.0' }
 end

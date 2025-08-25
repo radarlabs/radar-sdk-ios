@@ -43,7 +43,7 @@
         _logLevel = [RadarLog levelFromString:(NSString *)logLevelObj];
     }
 
-    NSObject *startTrackingOnInitializeObj = dict[@"startTrackingOnInitialize"]; 
+    NSObject *startTrackingOnInitializeObj = dict[@"startTrackingOnInitialize"];
     if (startTrackingOnInitializeObj && [startTrackingOnInitializeObj isKindOfClass:[NSNumber class]]) {
         _startTrackingOnInitialize = [(NSNumber *)startTrackingOnInitializeObj boolValue];
     }
@@ -52,7 +52,7 @@
     if (trackOnceOnAppOpenObj && [trackOnceOnAppOpenObj isKindOfClass:[NSNumber class]]) {
         _trackOnceOnAppOpen = [(NSNumber *)trackOnceOnAppOpenObj boolValue];
     }
-    
+
     NSObject *usePersistenceObj = dict[@"usePersistence"];
     if (usePersistenceObj && [usePersistenceObj isKindOfClass:[NSNumber class]]) {
         _usePersistence = [(NSNumber *)usePersistenceObj boolValue];
@@ -67,7 +67,7 @@
     if (useLogPersistenceObj && [useLogPersistenceObj isKindOfClass:[NSNumber class]]) {
         _useLogPersistence = [(NSNumber *)useLogPersistenceObj boolValue];
     }
-    
+
     NSObject *useRadarModifiedBeaconObj = dict[@"useRadarModifiedBeacon"];
     if (useRadarModifiedBeaconObj && [useRadarModifiedBeaconObj isKindOfClass:[NSNumber class]]) {
         _useRadarModifiedBeacon = [(NSNumber *)useRadarModifiedBeaconObj boolValue];
@@ -87,10 +87,22 @@
     if (useNotificationDiffObj && [useNotificationDiffObj isKindOfClass:[NSNumber class]]) {
         _useNotificationDiff = [(NSNumber *)useNotificationDiffObj boolValue];
     }
-    
+
     NSObject *syncAfterSetUserObj = dict[@"syncAfterSetUser"];
     if (syncAfterSetUserObj && [syncAfterSetUserObj isKindOfClass:[NSNumber class]]) {
         _syncAfterSetUser = [(NSNumber *)syncAfterSetUserObj boolValue];
+    }
+
+    NSObject *useOfflineRTOUpdates = dict[@"useOfflineRTOUpdates"];
+    _useOfflineRTOUpdates = NO;
+    if (useOfflineRTOUpdates && [useOfflineRTOUpdates isKindOfClass:[NSNumber class]]) {
+        _useOfflineRTOUpdates = [(NSNumber *)useOfflineRTOUpdates boolValue];
+    }
+
+    NSObject *remoteTrackingOptionsObj = dict[@"remoteTrackingOptions"];
+    _remoteTrackingOptions = nil;
+    if (remoteTrackingOptionsObj && [remoteTrackingOptionsObj isKindOfClass:[NSArray class]]) {
+        _remoteTrackingOptions = [RadarRemoteTrackingOptions RemoteTrackingOptionsFromObject:remoteTrackingOptionsObj];
     }
 
     return self;
@@ -98,7 +110,7 @@
 
 - (NSDictionary *)dictionaryValue {
     NSMutableDictionary *dict = [NSMutableDictionary new];
-    
+
     dict[@"logLevel"] = [RadarLog stringForLogLevel:_logLevel];
     dict[@"startTrackingOnInitialize"] = @(_startTrackingOnInitialize);
     dict[@"trackOnceOnAppOpen"] = @(_trackOnceOnAppOpen);
@@ -107,15 +119,17 @@
     dict[@"useLogPersistence"] = @(_useLogPersistence);
     dict[@"useRadarModifiedBeacon"] = @(_useRadarModifiedBeacon);
     dict[@"useOpenedAppConversion"] = @(_useOpenedAppConversion);
+    dict[@"useOfflineRTOUpdates"] = @(_useOfflineRTOUpdates);
+    dict[@"remoteTrackingOptions"] = [RadarRemoteTrackingOptions arrayForRemoteTrackingOptions:_remoteTrackingOptions];
     dict[@"useForegroundLocationUpdatedAtMsDiff"] = @(_useForegroundLocationUpdatedAtMsDiff);
     dict[@"useNotificationDiff"] = @(_useNotificationDiff);
     dict[@"syncAfterSetUser"] = @(_syncAfterSetUser);
-    
+
     return dict;
 }
 
 + (void)updateSdkConfigurationFromServer {
-    [[RadarAPIClient sharedInstance] getConfigForUsage:@"sdkConfigUpdate" 
+    [[RadarAPIClient sharedInstance] getConfigForUsage:@"sdkConfigUpdate"
                                               verified:false
                                      completionHandler:^(RadarStatus status, RadarConfig *config) {
                                          if (status != RadarStatusSuccess || !config) {

@@ -27,8 +27,10 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol RadarDelegate;
 @protocol RadarVerifiedDelegate;
 @protocol RadarMotionProtocol;
+@protocol RadarInAppMessageProtocol;
 
 @class RadarTripOptions;
+@class RadarInAppMessage;
 
 #pragma mark - Enums
 
@@ -93,7 +95,9 @@ typedef NS_ENUM(NSInteger, RadarLocationSource) {
     /// Beacon exit
     RadarLocationSourceBeaconExit,
     /// Unknown
-    RadarLocationSourceUnknown
+    RadarLocationSourceUnknown,
+    /// Offline
+    RadarLocationSourceOffline
 };
 
 /**
@@ -555,19 +559,19 @@ typedef void (^_Nullable RadarLogConversionCompletionHandler)(RadarStatus status
 
 /**
  Starts tracking the user's location with device integrity information for location verification use cases.
- 
+
  @param interval The default interval in seconds between each location update.
  @param beacons A boolean indicating whether to range beacons.
 
  @warning Note that you must configure SSL pinning before calling this method.
- 
+
  @see https://radar.com/documentation/fraud
  */
 + (void)startTrackingVerifiedWithInterval:(NSTimeInterval)interval beacons:(BOOL)beacons NS_SWIFT_NAME(startTrackingVerified(interval:beacons:));
 
 /**
  Stops tracking the user's location with device integrity information for location verification use cases.
- 
+
  @see https://radar.com/documentation/fraud
  */
 + (void)stopTrackingVerified NS_SWIFT_NAME(stopTrackingVerified());
@@ -596,7 +600,7 @@ typedef void (^_Nullable RadarLogConversionCompletionHandler)(RadarStatus status
  Returns the user's last verified location token if still valid, or requests a fresh token if not.
 
  @warning Note that you must configure SSL pinning before calling this method.
- 
+
  @param beacons A boolean indicating whether to range beacons.
  @param desiredAccuracy The desired accuracy.
  @param completionHandler An optional completion handler.
@@ -614,7 +618,7 @@ typedef void (^_Nullable RadarLogConversionCompletionHandler)(RadarStatus status
 
 /**
  Optionally sets the user's expected country and state for jurisdiction checks.
- 
+
  @param countryCode The user's expected two-letter country code.
  @param stateCode The user's expected two-letter state code.
  */
@@ -762,7 +766,7 @@ typedef void (^_Nullable RadarLogConversionCompletionHandler)(RadarStatus status
 
 /**
  Logs a conversion with a notification. This should only be used to manually setup logging of notification conversions.
- @param response The response associated with user interaction with the notification. 
+ @param response The response associated with user interaction with the notification.
 
  @see https://radar.com/documentation/api#send-a-custom-event
  */
@@ -984,7 +988,7 @@ typedef void (^_Nullable RadarLogConversionCompletionHandler)(RadarStatus status
 
 /**
  Gets the device's current location, then searches for geofences near that location, sorted by distance.
- 
+
  @param completionHandler A completion handler.
 
  @see https://radar.com/documentation/api#search-geofences
@@ -1110,7 +1114,7 @@ typedef void (^_Nullable RadarLogConversionCompletionHandler)(RadarStatus status
 
  @see https://radar.com/documentation/api#forward-geocode
  */
-+ (void)geocodeAddress:(NSString *)query 
++ (void)geocodeAddress:(NSString *)query
                 layers:(NSArray<NSString *> *_Nullable)layers
              countries:(NSArray<NSString *> *_Nullable)countries
      completionHandler:(RadarGeocodeCompletionHandler)completionHandler NS_SWIFT_NAME(geocode(address:layers:countries:completionHandler:));
@@ -1330,6 +1334,20 @@ typedef void (^_Nullable RadarLogConversionCompletionHandler)(RadarStatus status
 + (void)nativeSetup:(RadarInitializeOptions *)options NS_SWIFT_NAME(nativeSetup(_:));
 
 + (void)openURLFromNotification:(UNNotification *)notification NS_SWIFT_NAME(openURLFromNotification(_:));
+
++ (void)setInAppMessageDelegate:(nullable id<RadarInAppMessageProtocol>)delegate NS_SWIFT_NAME(setInAppMessageDelegate(_:));
+
+/**
+ Load image convenience function available for use with custom in-app message views
+ */
++ (void) loadImage:(NSString*)url completionHandler:(void (^ _Nonnull)(UIImage * _Nullable))completionHandler NS_SWIFT_NAME(loadImage(_:completionHandler:));
+
+/**
+ This function should be internal, but it is exposed due to swift migration limitations. It should only be used by internal swift classes while RadarLogBuffer is still in Obj-C
+ */
++ (void)__writeToLogBufferWithLevel:(RadarLogLevel)level type:(RadarLogType)type message:(NSString *)message forcePersist:(BOOL)forcePersist
+    NS_SWIFT_NAME(__writeToLogBuffer(with:type:message:forcePersist:));
+
 
 + (void)requestMotionActivityPermission NS_SWIFT_NAME(requestMotionActivityPermission());
 @end
