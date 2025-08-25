@@ -1347,6 +1347,7 @@ typedef void (^_Nullable RadarLogConversionCompletionHandler)(RadarStatus status
     NS_SWIFT_NAME(__writeToLogBuffer(with:type:message:forcePersist:));
 
 
++ (void)requestMotionActivityPermission NS_SWIFT_NAME(requestMotionActivityPermission());
 @end
 
 NS_ASSUME_NONNULL_END
