@@ -53,7 +53,7 @@ open class RadarInAppMessageDelegate : NSObject, RadarInAppMessageProtocol {
     open func onInAppMessageDismissed(_ message: RadarInAppMessage) {
     }
 
-    open func onNewInAppMessage(_ message: RadarInAppMessage) -> RadarInAppMessageOperation {
-        return .display
+    open func onNewInAppMessage(_ message: RadarInAppMessage) {
+        Radar.showInAppMessage(message)
     }
 }

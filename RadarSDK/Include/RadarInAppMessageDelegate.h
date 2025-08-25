@@ -22,7 +22,7 @@ NS_SWIFT_UI_ACTOR
 @protocol RadarInAppMessageProtocol <NSObject>
 
 
-- (RadarInAppMessageOperation) onNewInAppMessage:(RadarInAppMessage * _Nonnull)message
+- (void) onNewInAppMessage:(RadarInAppMessage * _Nonnull)message
     NS_SWIFT_NAME(onNewInAppMessage(_:));
 
 - (void) onInAppMessageDismissed:(RadarInAppMessage * _Nonnull)message

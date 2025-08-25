@@ -35,8 +35,8 @@ RadarInAppMessageDelegate_Swift* radarIAMDelegate = nil;
     [radarIAMDelegate onInAppMessageDismissed:message];
 }
 
-- (RadarInAppMessageOperation)onNewInAppMessage:(RadarInAppMessage * _Nonnull)message {
-    return [radarIAMDelegate onNewInAppMessage:message];
+- (void)onNewInAppMessage:(RadarInAppMessage * _Nonnull)message {
+    [radarIAMDelegate onNewInAppMessage:message];
 }
 
 @end
