@@ -255,24 +255,11 @@
                          };
 
                          void (^performIndoorScanThenTrack)(NSArray<RadarBeacon *> *_Nullable) = ^(NSArray<RadarBeacon *> *_Nullable beacons) {
-                            RadarTrackingOptions *options = [Radar getTrackingOptions];
-                            Class RadarSDKIndoors = NSClassFromString(@"RadarSDKIndoors");
-                            
-                            if (options.useIndoorScan && ![RadarSettings isInSurveyMode] && RadarSDKIndoors) {
-                                [RadarSDKIndoors startIndoorSurvey:@""
-                                                        forLength:5
-                                                withKnownLocation:location
-                                                completionHandler:^(NSString *_Nullable indoorSurveyResult, CLLocation *_Nullable locationAtStartOfSurvey) {
-                                    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
-                                                       message:[NSString stringWithFormat:@"Indoor survey completed: %lu chars", (unsigned long)(indoorSurveyResult ? indoorSurveyResult.length : 0)]];
-                                    callTrackAPI(beacons, indoorSurveyResult);
-                                }];
-                            } else {
-                                if (options.useIndoorScan && ![RadarSettings isInSurveyMode] && !RadarSDKIndoors) {
-                                    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"RadarSDKIndoors not available, skipping indoor survey"];
-                                }
-                                callTrackAPI(beacons, nil);
-                            }
+                            [[RadarLocationManager sharedInstance] performIndoorSurveyIfPossible:location
+                                                                                          beacons:beacons
+                                                                                completionHandler:^(NSArray<RadarBeacon *> *_Nullable beacons, NSString *_Nullable indoorSurvey) {
+                                callTrackAPI(beacons, indoorSurvey);
+                            }];
                         };
 
                          if (beacons) {
@@ -324,24 +311,28 @@
 
 + (void)trackOnceWithLocation:(CLLocation *)location completionHandler:(RadarTrackCompletionHandler)completionHandler {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"trackOnce()"];
-    [[RadarAPIClient sharedInstance] trackWithLocation:location
-                                               stopped:NO
-                                            foreground:YES
-                                                source:RadarLocationSourceManualLocation
-                                              replayed:NO
-                                               beacons:nil
-                                          indoorSurvey:nil
-                                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user,
-                                                         NSArray<RadarGeofence *> *_Nullable nearbyGeofences, RadarConfig *_Nullable config, RadarVerifiedLocationToken *_Nullable token) {
-                                        if (status == RadarStatusSuccess && config != nil) {                                    
-                                            [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];                                            
-                                        }
-                                         if (completionHandler) {
-                                             [RadarUtils runOnMainThread:^{
-                                                 completionHandler(status, location, events, user);
-                                             }];
-                                         }
-                                     }];
+    [[RadarLocationManager sharedInstance] performIndoorSurveyIfPossible:location
+                                                                  beacons:nil
+                                                        completionHandler:^(NSArray<RadarBeacon *> *_Nullable beacons, NSString *_Nullable indoorSurvey) {
+        [[RadarAPIClient sharedInstance] trackWithLocation:location
+                                                   stopped:NO
+                                                foreground:YES
+                                                    source:RadarLocationSourceManualLocation
+                                                  replayed:NO
+                                                   beacons:beacons
+                                              indoorSurvey:indoorSurvey
+                                         completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user,
+                                                             NSArray<RadarGeofence *> *_Nullable nearbyGeofences, RadarConfig *_Nullable config, RadarVerifiedLocationToken *_Nullable token) {
+                                            if (status == RadarStatusSuccess && config != nil) {                                    
+                                                [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];                                            
+                                            }
+                                             if (completionHandler) {
+                                                 [RadarUtils runOnMainThread:^{
+                                                     completionHandler(status, location, events, user);
+                                                 }];
+                                             }
+                                         }];
+    }];
 }
 
 + (void)trackVerifiedWithCompletionHandler:(RadarTrackVerifiedCompletionHandler)completionHandler {

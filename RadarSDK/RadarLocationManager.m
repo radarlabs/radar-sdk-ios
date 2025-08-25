@@ -22,6 +22,7 @@
 #import "RadarReplayBuffer.h"
 #import "RadarActivityManager.h"
 #import "RadarNotificationHelper.h"
+#import "RadarIndoorsProtocol.h"
 
 @interface RadarLocationManager ()
 
@@ -862,6 +863,33 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     [self sendLocation:sendLocation stopped:stopped source:source replayed:replayed beacons:beacons];
 }
 
+- (void)performIndoorSurveyIfPossible:(CLLocation *)location 
+                               beacons:(NSArray<RadarBeacon *> *_Nullable)beacons
+                     completionHandler:(void (^)(NSArray<RadarBeacon *> *_Nullable, NSString *_Nullable))completionHandler {
+    RadarTrackingOptions *options = [Radar getTrackingOptions];
+    Class RadarSDKIndoors = NSClassFromString(@"RadarSDKIndoors");
+    
+    if (options.useIndoorScan && ![RadarSettings isInSurveyMode] && RadarSDKIndoors && [RadarUtils foreground]) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Starting indoor survey for automatic tracking"];
+        
+        [RadarSDKIndoors startIndoorSurvey:@""
+                                forLength:5
+                        withKnownLocation:location
+                        completionHandler:^(NSString *_Nullable indoorSurveyResult, CLLocation *_Nullable locationAtStartOfSurvey) {
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
+                               message:[NSString stringWithFormat:@"Indoor survey completed: %lu chars", (unsigned long)(indoorSurveyResult ? indoorSurveyResult.length : 0)]];
+            completionHandler(beacons, indoorSurveyResult);
+        }];
+    } else {
+        if (options.useIndoorScan && ![RadarSettings isInSurveyMode] && !RadarSDKIndoors) {
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"RadarSDKIndoors not available, skipping indoor survey"];
+        } else if (options.useIndoorScan && ![RadarSettings isInSurveyMode] && RadarSDKIndoors && ![RadarUtils foreground]) {
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"App in background, skipping indoor survey (Bluetooth not available)"];
+        }
+        completionHandler(beacons, nil);
+    }
+}
+
 - (void)sendLocation:(CLLocation *)location stopped:(BOOL)stopped source:(RadarLocationSource)source replayed:(BOOL)replayed beacons:(NSArray<RadarBeacon *> *_Nullable)beacons {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
                                        message:[NSString stringWithFormat:@"Sending location | source = %@; location = %@; stopped = %d; replayed = %d; beacons = %@",
@@ -873,19 +901,23 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     
     if ([RadarSettings useRadarModifiedBeacon]) {
         void (^callTrackAPI)(NSArray<RadarBeacon *> *_Nullable) = ^(NSArray<RadarBeacon *> *_Nullable beacons) {
-            [[RadarAPIClient sharedInstance] trackWithLocation:location
-                                                       stopped:stopped
-                                                    foreground:[RadarUtils foreground]
-                                                        source:source
-                                                      replayed:replayed
-                                                       beacons:beacons
-                                                  indoorSurvey:nil
-                                             completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user,
-                                                                 NSArray<RadarGeofence *> *_Nullable nearbyGeofences, RadarConfig *_Nullable config, RadarVerifiedLocationToken *_Nullable token) {
-                self.sending = NO;
-                
-                [self updateTrackingFromMeta:config.meta];
-                [self replaceSyncedGeofences:nearbyGeofences];
+            [self performIndoorSurveyIfPossible:location 
+                                        beacons:beacons 
+                              completionHandler:^(NSArray<RadarBeacon *> *_Nullable beacons, NSString *_Nullable indoorSurvey) {
+                [[RadarAPIClient sharedInstance] trackWithLocation:location
+                                                           stopped:stopped
+                                                        foreground:[RadarUtils foreground]
+                                                            source:source
+                                                          replayed:replayed
+                                                           beacons:beacons
+                                                      indoorSurvey:indoorSurvey
+                                                 completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user,
+                                                                     NSArray<RadarGeofence *> *_Nullable nearbyGeofences, RadarConfig *_Nullable config, RadarVerifiedLocationToken *_Nullable token) {
+                    self.sending = NO;
+                    
+                    [self updateTrackingFromMeta:config.meta];
+                    [self replaceSyncedGeofences:nearbyGeofences];
+                }];
             }];
         };
         
@@ -956,23 +988,27 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
             }
         }
 
-        [[RadarAPIClient sharedInstance] trackWithLocation:location
-                                                   stopped:stopped
-                                                foreground:[RadarUtils foreground]
-                                                    source:source
-                                                  replayed:replayed
-                                                   beacons:beacons
-                                              indoorSurvey:nil
-                                         completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user,
-                                                             NSArray<RadarGeofence *> *_Nullable nearbyGeofences, RadarConfig *_Nullable config, RadarVerifiedLocationToken *_Nullable token) {
-                                             self.sending = NO;
-                                             if (status != RadarStatusSuccess || !config) {
-                                                 return;
-                                             }
+        [self performIndoorSurveyIfPossible:location 
+                                    beacons:beacons 
+                          completionHandler:^(NSArray<RadarBeacon *> *_Nullable beacons, NSString *_Nullable indoorSurvey) {
+            [[RadarAPIClient sharedInstance] trackWithLocation:location
+                                                       stopped:stopped
+                                                    foreground:[RadarUtils foreground]
+                                                        source:source
+                                                      replayed:replayed
+                                                       beacons:beacons
+                                                  indoorSurvey:indoorSurvey
+                                             completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user,
+                                                                 NSArray<RadarGeofence *> *_Nullable nearbyGeofences, RadarConfig *_Nullable config, RadarVerifiedLocationToken *_Nullable token) {
+                                                 self.sending = NO;
+                                                 if (status != RadarStatusSuccess || !config) {
+                                                     return;
+                                                 }
 
-                                             [self updateTrackingFromMeta:config.meta];
-                                             [self replaceSyncedGeofences:nearbyGeofences];
-                                         }];
+                                                 [self updateTrackingFromMeta:config.meta];
+                                                 [self replaceSyncedGeofences:nearbyGeofences];
+                                             }];
+        }];
     }
 }
 
