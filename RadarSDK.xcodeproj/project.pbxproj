@@ -1039,7 +1039,6 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MODULEMAP_FILE = RadarSDK/Modules/module.modulemap;
 				PRODUCT_BUNDLE_IDENTIFIER = io.radar.sdk;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1073,7 +1072,6 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MODULEMAP_FILE = RadarSDK/Modules/module.modulemap;
 				PRODUCT_BUNDLE_IDENTIFIER = io.radar.sdk;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

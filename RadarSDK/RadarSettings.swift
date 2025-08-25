@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import RadarSDK.Private
 
 class RadarSettings {
     private static let kPublishableKey = "radar-publishableKey";
