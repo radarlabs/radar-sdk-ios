@@ -300,6 +300,7 @@ static NSString *const kUserTags = @"radar-userTags";
 }
 
 + (NSString *)host {
+    //return @"https://arriving-eagle-magnetic.ngrok-free.app";
     NSString *host = [[NSUserDefaults standardUserDefaults] stringForKey:kHost];
     return host ? host : kDefaultHost;
 }
