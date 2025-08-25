@@ -24,7 +24,9 @@ class MockRadarInAppMessageDelegate : NSObject, RadarInAppMessageProtocol {
     func onNewInAppMessage(_ message: RadarSDK.RadarInAppMessage) {
         onNewInAppMessageCounter += 1
         if (showInAppMessage) {
-            Radar.showInAppMessage(message)
+            Task {
+                await manager?.showInAppMessage(message)
+            }
         }
     }
 
