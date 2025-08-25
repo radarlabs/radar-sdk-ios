@@ -34,8 +34,8 @@
                               source:(RadarLocationSource)source
                                 trip:(RadarTrip *_Nullable)trip
                                debug:(BOOL)debug
-                               fraud:(RadarFraud *_Nullable)fraud NS_SWIFT_NAME(init(id:userId:deviceId:description:metadata:location:activityType:geofences:place:beacons:stopped:foreground:country:state:dma:postalCode:nearbyPlaceChains:segments:topChains:source:trip:debug:fraud:));
-                            altitude:(double)altitude;
+                               fraud:(RadarFraud *_Nullable)fraud
+                            altitude:(double)altitude NS_SWIFT_NAME(init(id:userId:deviceId:description:metadata:location:activityType:geofences:place:beacons:stopped:foreground:country:state:dma:postalCode:nearbyPlaceChains:segments:topChains:source:trip:debug:fraud:altitude:));
 - (instancetype _Nullable)initWithObject:(id _Nonnull)object;
 
 @end

@@ -151,7 +151,7 @@
 		96A5A11127AD9F7F007B960B /* RadarBeacon.h in Headers */ = {isa = PBXBuildFile; fileRef = 96A5A0F427AD9F7F007B960B /* RadarBeacon.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		96A5A11227AD9F7F007B960B /* Radar.h in Headers */ = {isa = PBXBuildFile; fileRef = 96A5A0F527AD9F7F007B960B /* Radar.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		96A5A11827ADA02F007B960B /* RadarLog.m in Sources */ = {isa = PBXBuildFile; fileRef = 96A5A11427ADA02E007B960B /* RadarLog.m */; };
-		96A5A11927ADA02F007B960B /* RadarLog.h in Headers */ = {isa = PBXBuildFile; fileRef = 96A5A11527ADA02E007B960B /* RadarLog.h */; };
+		96A5A11927ADA02F007B960B /* RadarLog.h in Headers */ = {isa = PBXBuildFile; fileRef = 96A5A11527ADA02E007B960B /* RadarLog.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		96A5A11A27ADA02F007B960B /* RadarLogBuffer.h in Headers */ = {isa = PBXBuildFile; fileRef = 96A5A11627ADA02E007B960B /* RadarLogBuffer.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		96A5A11B27ADA02F007B960B /* RadarDelegateHolder.h in Headers */ = {isa = PBXBuildFile; fileRef = 96A5A11727ADA02E007B960B /* RadarDelegateHolder.h */; };
 		96B465BC27D6732500D7119B /* CLLocation+RadarTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 96B465BB27D6732500D7119B /* CLLocation+RadarTests.m */; };
@@ -178,7 +178,7 @@
 		E698B6502C6112FA00084371 /* RadarMotionProtocol.h in Headers */ = {isa = PBXBuildFile; fileRef = E698B64F2C6112FA00084371 /* RadarMotionProtocol.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		E6B93B722C90E2B8003CB858 /* RadarInitializeOptions.h in Headers */ = {isa = PBXBuildFile; fileRef = E6B93B712C90E2B8003CB858 /* RadarInitializeOptions.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		E6B93B752C90E5B8003CB858 /* RadarInitializeOptions.m in Sources */ = {isa = PBXBuildFile; fileRef = E6B93B732C90E5B8003CB858 /* RadarInitializeOptions.m */; };
-		E6EEC56E2B20F41A00DD096B /* RadarFileStorage.h in Headers */ = {isa = PBXBuildFile; fileRef = E6EEC56D2B20F41A00DD096B /* RadarFileStorage.h */; };
+		E6EEC56E2B20F41A00DD096B /* RadarFileStorage.h in Headers */ = {isa = PBXBuildFile; fileRef = E6EEC56D2B20F41A00DD096B /* RadarFileStorage.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		E6EEC5702B20F45D00DD096B /* RadarFileStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = E6EEC56F2B20F45D00DD096B /* RadarFileStorage.m */; };
 		F64FF0D32E4D2B2400DF3926 /* RadarInAppMessageDelegate+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = F64FF0D22E4D2B1800DF3926 /* RadarInAppMessageDelegate+Internal.h */; };
 		F64FF0D52E4D2B4700DF3926 /* RadarInAppMessageDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = F64FF0D42E4D2B4700DF3926 /* RadarInAppMessageDelegate.m */; };

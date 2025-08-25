@@ -1432,6 +1432,7 @@
 
 + (void) __writeToLogBufferWithLevel:(RadarLogLevel)level type:(RadarLogType)type message:(NSString *)message forcePersist:(BOOL)forcePersist {
     [[RadarLogBuffer sharedInstance] write:level type:type message:message forcePersist:forcePersist];
+}
 
 + (void)requestMotionActivityPermission {
     [[RadarActivityManager sharedInstance] requestPermission];
