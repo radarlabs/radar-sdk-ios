@@ -100,7 +100,7 @@ public class RadarInAppMessageManager: NSObject {
 
     @objc public func onInAppMessageReceived(messages: [RadarInAppMessage]) {
         for message in messages {
-            if (delegate.onNewInAppMessage(message) == RadarInAppMessageOperation.show) {
+            if (delegate.onNewInAppMessage(message) == RadarInAppMessageOperation.display) {
                 Task {
                     await showInAppMessage(message)
                 }

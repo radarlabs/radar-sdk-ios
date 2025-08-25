@@ -54,6 +54,6 @@ open class RadarInAppMessageDelegate : NSObject, RadarInAppMessageProtocol {
     }
 
     open func onNewInAppMessage(_ message: RadarInAppMessage) -> RadarInAppMessageOperation {
-        return .show
+        return .display
     }
 }

@@ -14,8 +14,8 @@
 NS_ASSUME_NONNULL_BEGIN
 
 typedef NS_ENUM(NSInteger, RadarInAppMessageOperation) {
-    RadarInAppMessageShow,
-    RadarInAppMessageIgnore,
+    RadarInAppMessageDisplay,
+    RadarInAppMessageDiscard,
 };
 
 NS_SWIFT_UI_ACTOR
