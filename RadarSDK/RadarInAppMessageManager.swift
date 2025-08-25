@@ -25,17 +25,16 @@ public class RadarInAppMessageManager: NSObject {
         return UIApplication.shared.windows.first(where: { $0.isKeyWindow })
     }
 
-    func logConversion(name: String) {
+    func logConversion(name: String, withDuration: Bool = true) {
         guard let messageShownTime = messageShownTime,
               let message = currentMessage else {
             return
         }
 
-        let messageClickTime = Date()
-        let duration = messageClickTime.timeIntervalSince(messageShownTime)
-
         var metadata: [String: Any] = [:]
-        metadata["duration"] = duration
+        if (withDuration) {
+            metadata["duration"] = Date().timeIntervalSince(messageShownTime)
+        }
         metadata["campaignId"] = message.metadata["radar:campaignId"] as? String
         metadata["campaignName"] = message.metadata["radar:campaignName"] as? String
         metadata["geofenceId"] = message.metadata["radar:geofenceId"] as? String
@@ -95,6 +94,8 @@ public class RadarInAppMessageManager: NSObject {
         viewController.view.frame = UIScreen.main.bounds
         viewController.view.backgroundColor = UIColor.black.withAlphaComponent(0.5)
         keyWindow.addSubview(viewController.view)
+        
+        self.logConversion(name: "in_app_message_displayed", withDuration: false)
     }
 
     @objc public func onInAppMessageReceived(messages: [RadarInAppMessage]) {
