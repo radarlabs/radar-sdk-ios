@@ -33,7 +33,7 @@ public class RadarInAppMessageManager: NSObject {
 
         var metadata: [String: Any] = [:]
         if (withDuration) {
-            metadata["duration"] = Date().timeIntervalSince(messageShownTime)
+            metadata["displayDuration"] = Date().timeIntervalSince(messageShownTime)
         }
         metadata["campaignId"] = message.metadata["radar:campaignId"] as? String
         metadata["campaignName"] = message.metadata["radar:campaignName"] as? String

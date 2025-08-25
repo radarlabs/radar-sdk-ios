@@ -1424,7 +1424,7 @@
     }
 }
 
-+ (void) loadImage:(NSString*)url completionHandler:(void (^ _Nonnull)(UIImage * _Nullable))completionHandler {
++ (void)loadImage:(NSString*)url completionHandler:(void (^ _Nonnull)(UIImage * _Nullable))completionHandler {
     if (@available(iOS 13.0, *)) {
         return [RadarInAppMessageDelegate_Swift loadImage:url completionHandler:completionHandler];
     } else {
