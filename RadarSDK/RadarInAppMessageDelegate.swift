@@ -44,15 +44,13 @@ open class RadarInAppMessageDelegate : NSObject, RadarInAppMessageProtocol {
     }
 
     open func onInAppMessageButtonClicked(_ message: RadarInAppMessage) {
-        if let urlString = message.button?.url,
+        if let urlString = message.button?.deepLink,
            let url = URL(string: urlString) {
             UIApplication.shared.open(url)
         }
-        RadarInAppMessageManager.shared.dismissInAppMessage()
     }
 
     open func onInAppMessageDismissed(_ message: RadarInAppMessage) {
-        RadarInAppMessageManager.shared.dismissInAppMessage()
     }
 
     open func onNewInAppMessage(_ message: RadarInAppMessage) -> RadarInAppMessageOperation {

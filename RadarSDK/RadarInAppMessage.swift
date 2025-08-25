@@ -19,7 +19,7 @@ public final class RadarInAppMessage : NSObject, Sendable {
         public let text: String
         public let color: UIColor
         public let backgroundColor: UIColor
-        public let url: String?
+        public let deepLink: String?
     }
 
     public struct Image: Sendable {
@@ -101,10 +101,10 @@ extension RadarInAppMessage.Button {
               let backgroundColor = uiColorFromString(dict["backgroundColor"] ?? nil) else {
             return nil
         }
-        let url = dict["url"] ?? nil
+        let deepLink = dict["deepLink"] ?? nil
 
         return RadarInAppMessage.Button(
-            text: text, color: color, backgroundColor: backgroundColor, url: url
+            text: text, color: color, backgroundColor: backgroundColor, deepLink: deepLink
         )
     }
 }

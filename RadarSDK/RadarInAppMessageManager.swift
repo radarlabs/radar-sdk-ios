@@ -11,8 +11,7 @@ import SwiftUI
 @MainActor
 @available(iOS 13.0, *)
 @objc
-public
-class RadarInAppMessageManager: NSObject {
+public class RadarInAppMessageManager: NSObject {
     @objc
     public static let shared = RadarInAppMessageManager()
 
@@ -74,10 +73,12 @@ class RadarInAppMessageManager: NSObject {
             delegate.createInAppMessageView(message,
                                             onDismiss: {
                 self.logConversion(name: "in_app_message_clicked")
+                self.dismissInAppMessage()
                 self.delegate.onInAppMessageDismissed(message)
             },
                                             onInAppMessageClicked: {
                 self.logConversion(name: "in_app_message_dismissed")
+                self.dismissInAppMessage()
                 self.delegate.onInAppMessageButtonClicked(message)
             }) { result in
                 continuation.resume(returning: result)
