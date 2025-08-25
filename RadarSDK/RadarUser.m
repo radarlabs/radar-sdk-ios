@@ -16,6 +16,7 @@
 #import "RadarSegment+Internal.h"
 #import "RadarTrip+Internal.h"
 #import "RadarUser+Internal.h"
+#import "RadarLogger.h"
 
 @implementation RadarUser
 
@@ -41,7 +42,8 @@
                               source:(RadarLocationSource)source
                                 trip:(RadarTrip *_Nullable)trip
                                debug:(BOOL)debug
-                               fraud:(RadarFraud *_Nullable)fraud {
+                               fraud:(RadarFraud *_Nullable)fraud 
+                            altitude:(double)altitude {
     self = [super init];
     if (self) {
         __id = _id;
@@ -67,6 +69,7 @@
         _trip = trip;
         _debug = debug;
         _fraud = fraud;
+        _altitude = altitude;
     }
     return self;
 }
@@ -101,6 +104,7 @@
     RadarTrip *trip;
     RadarFraud *fraud;
     BOOL debug = NO;
+    double altitude = NAN;
 
     id idObj = dict[@"_id"];
     if (idObj && [idObj isKindOfClass:[NSString class]]) {
@@ -290,6 +294,16 @@
     id fraudObj = dict[@"fraud"];
     fraud = [[RadarFraud alloc] initWithObject:fraudObj];
 
+    id barometricAltitudeObj = dict[@"barometricAltitude"];
+    if (barometricAltitudeObj && [barometricAltitudeObj isKindOfClass:[NSNumber class]]) {
+        altitude = [((NSNumber *)barometricAltitudeObj) doubleValue];
+    }
+
+    id altitudeObj = dict[@"altitude"];
+    if (altitudeObj && [altitudeObj isKindOfClass:[NSNumber class]]) {
+        altitude = [((NSNumber *)altitudeObj) doubleValue];
+    }
+
     if (_id && location) {
         return [[RadarUser alloc] initWithId:_id
                                       userId:userId
@@ -313,7 +327,8 @@
                                       source:source
                                         trip:trip
                                        debug:debug
-                                       fraud:fraud];
+                                       fraud:fraud
+                                    altitude:altitude];
     }
 
     return nil;
@@ -374,6 +389,9 @@
     [dict setValue:@(self.debug) forKey:@"debug"];
     if (self.fraud) {
         [dict setValue:[self.fraud dictionaryValue] forKey:@"fraud"];
+    }
+    if (!isnan(self.altitude)) {
+        [dict setValue:@(self.altitude) forKey:@"altitude"];
     }
     return dict;
 }

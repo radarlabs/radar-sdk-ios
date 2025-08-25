@@ -5,13 +5,12 @@ name: Radar SDK iOS Release
 on:
   # Triggered when a new release is tagged in GitHub.
   release:
-    types: [ published ]
+    types: [published]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
 jobs:
-
   build:
     runs-on: macos-15
 

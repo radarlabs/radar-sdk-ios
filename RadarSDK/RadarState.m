@@ -26,10 +26,14 @@ static NSString *const kRegionIds = @"radar-regionIds";
 static NSString *const kBeaconIds = @"radar-beaconIds";
 static NSString *const kLastHeadingData = @"radar-lastHeadingData";
 static NSString *const kLastMotionActivityData = @"radar-lastMotionActivityData";
+static NSString *const kLastPressureData = @"radar-lastPressureData";
 static NSString *const kNotificationPermissionGranted = @"radar-notificationPermissionGranted";
 static NSString *const KNearbyGeofences = @"radar-nearbyGeofences";
 static NSString *const kRegisteredNotifications = @"radar-registeredNotifications";
 static NSString *const kRadarUser = @"radar-radarUser";
+static NSDictionary *_lastRelativeAltitudeDataInMemory = nil;
+static NSDate *_lastPressureBackupTime = nil;
+static NSTimeInterval const kBackupInterval = 2.0; // 2 seconds
 + (CLLocation *)lastLocation {
     NSDictionary *dict = [[NSUserDefaults standardUserDefaults] dictionaryForKey:kLastLocation];
     CLLocation *lastLocation = [RadarUtils locationForDictionary:dict];
@@ -186,6 +190,41 @@ static NSString *const kRadarUser = @"radar-radarUser";
     [[NSUserDefaults standardUserDefaults] setObject:lastMotionActivityData forKey:kLastMotionActivityData];
 }
 
++ (NSDictionary *)lastRelativeAltitudeData {
+    // If we have a valid in-memory value, check its timestamp
+    if (_lastRelativeAltitudeDataInMemory) {
+        NSTimeInterval timestamp = [_lastRelativeAltitudeDataInMemory[@"relativeAltitudeTimestamp"] doubleValue];
+        if (timestamp > 0 && [[NSDate date] timeIntervalSince1970] - timestamp <= 60) {
+            return _lastRelativeAltitudeDataInMemory;
+        }
+    }
+
+    // If in-memory value is invalid or too old, try to get from NSUserDefaults
+    NSDictionary *savedData = [[NSUserDefaults standardUserDefaults] dictionaryForKey:kLastPressureData];
+    if (savedData) {
+        NSTimeInterval timestamp = [savedData[@"relativeAltitudeTimestamp"] doubleValue];
+        if (timestamp > 0 && [[NSDate date] timeIntervalSince1970] - timestamp <= 60) {
+            // Update in-memory value if valid
+            _lastRelativeAltitudeDataInMemory = savedData;
+            return savedData;
+        }
+    }
+
+    return nil;
+}
+
++ (void)setLastRelativeAltitudeData:(NSDictionary *)lastPressureData {
+    // Update in-memory value
+    _lastRelativeAltitudeDataInMemory = lastPressureData;
+
+    // Check if we need to backup to disk
+    NSDate *now = [NSDate date];
+    if (!_lastPressureBackupTime || [now timeIntervalSinceDate:_lastPressureBackupTime] >= kBackupInterval) {
+        [[NSUserDefaults standardUserDefaults] setObject:lastPressureData forKey:kLastPressureData];
+        _lastPressureBackupTime = now;
+    }
+}
+
 + (void)setNotificationPermissionGranted:(BOOL)notificationPermissionGranted {
     [[NSUserDefaults standardUserDefaults] setBool:notificationPermissionGranted forKey:kNotificationPermissionGranted];
 }
@@ -203,7 +242,7 @@ static NSString *const kRadarUser = @"radar-radarUser";
     }
     [[NSUserDefaults standardUserDefaults] setObject:nearbyGeofencesArray forKey:KNearbyGeofences];
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"nearbyGeofencesArray in RadarState:%@", nearbyGeofencesArray]];
-    
+
 }
 
 + (NSArray<RadarGeofence *> *_Nullable)nearbyGeofences {

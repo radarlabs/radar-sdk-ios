@@ -387,8 +387,9 @@
     if (appBuild) {
         params[@"appBuild"] = appBuild;
     }
-    if (sdkConfiguration.useLocationMetadata) {
-        NSMutableDictionary *locationMetadata = [NSMutableDictionary new];
+
+    NSMutableDictionary *locationMetadata = [NSMutableDictionary new];
+    if (options.useMotion) {
         locationMetadata[@"motionActivityData"] = [RadarState lastMotionActivityData];
         locationMetadata[@"heading"] = [RadarState lastHeadingData];
         locationMetadata[@"speed"] = @(location.speed);
@@ -407,8 +408,15 @@
             locationMetadata[@"isProducedByAccessory"] = @([location.sourceInformation isProducedByAccessory]);
             locationMetadata[@"isSimulatedBySoftware"] = @([location.sourceInformation isSimulatedBySoftware]);
         }
-        locationMetadata[@"floor"] = @([location.floor level]);
+    }
 
+    if (options.usePressure) {
+        locationMetadata[@"altitude"] = @(location.altitude);
+        locationMetadata[@"floor"] = @([location.floor level]);
+        locationMetadata[@"pressureHPa"] = [RadarState lastRelativeAltitudeData];
+    }
+
+    if (options.usePressure || options.useMotion) {
         params[@"locationMetadata"] = locationMetadata;
     }
 
@@ -436,6 +444,7 @@
                                                             verified:verified
                                                         publishableKey:publishableKey
                                                 notificationsRemaining:notificationsDelivered
+                                                locationMetadata:locationMetadata
                                                     completionHandler:completionHandler];
         }];
     } else {
@@ -447,6 +456,7 @@
                                                            verified:verified
                                                      publishableKey:publishableKey
                                              notificationsRemaining:@[]
+                                             locationMetadata:locationMetadata
                                                   completionHandler:completionHandler];
     }
 
@@ -461,6 +471,7 @@
                         verified:(BOOL)verified
                 publishableKey:(NSString *)publishableKey
                 notificationsRemaining:(NSArray *)notificationsRemaining
+                locationMetadata:(NSDictionary *)locationMetadata
             completionHandler:(RadarTrackAPICompletionHandler)completionHandler {
 
     NSString *host = verified ? [RadarSettings verifiedHost] : [RadarSettings host];
@@ -555,6 +566,11 @@
 
                             id eventsObj = res[@"events"];
                             id userObj = res[@"user"];
+                            if ([userObj isKindOfClass:[NSDictionary class]]) {
+                                NSMutableDictionary *mutableUserObj = [userObj mutableCopy];
+                                mutableUserObj[@"metadata"] = locationMetadata;
+                                userObj = mutableUserObj;
+                            }
                             id nearbyGeofencesObj = res[@"nearbyGeofences"];
                             id inAppMessagesObj = res[@"inAppMessages"];
                             NSArray<RadarEvent *> *events = [RadarEvent eventsFromObject:eventsObj];
@@ -568,7 +584,7 @@
                                     [[RadarInAppMessageManager shared] onInAppMessageReceivedWithMessages:inAppMessages];
                                 }
                             }
-                                   
+
                             if (user) {
                                 BOOL inGeofences = user.geofences && user.geofences.count;
                                 BOOL atPlace = user.place != nil;

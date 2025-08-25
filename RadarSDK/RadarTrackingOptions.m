@@ -29,6 +29,8 @@ NSString *const kSyncGeofences = @"syncGeofences";
 NSString *const kUseVisits = @"useVisits";
 NSString *const kUseSignificantLocationChanges = @"useSignificantLocationChanges";
 NSString *const kBeacons = @"beacons";
+NSString *const kUseMotion = @"useMotion";
+NSString *const kUsePressure = @"usePressure";
 
 NSString *const kDesiredAccuracyHigh = @"high";
 NSString *const kDesiredAccuracyMedium = @"medium";
@@ -63,6 +65,8 @@ NSString *const kSyncNone = @"none";
     options.useVisits = NO;
     options.useSignificantLocationChanges = NO;
     options.beacons = NO;
+    options.useMotion = NO;
+    options.usePressure = NO;
     return options;
 }
 
@@ -87,6 +91,8 @@ NSString *const kSyncNone = @"none";
     options.useVisits = YES;
     options.useSignificantLocationChanges = YES;
     options.beacons = NO;
+    options.useMotion = NO;
+    options.usePressure = NO;
     return options;
 }
 
@@ -111,6 +117,8 @@ NSString *const kSyncNone = @"none";
     options.useVisits = YES;
     options.useSignificantLocationChanges = NO;
     options.beacons = NO;
+    options.useMotion = NO;
+    options.usePressure = NO;
     return options;
 }
 
@@ -250,6 +258,8 @@ NSString *const kSyncNone = @"none";
     options.useVisits = [dict[kUseVisits] boolValue];
     options.useSignificantLocationChanges = [dict[kUseSignificantLocationChanges] boolValue];
     options.beacons = [dict[kBeacons] boolValue];
+    options.useMotion = [dict[kUseMotion] boolValue];
+    options.usePressure = [dict[kUsePressure] boolValue];
     return options;
 }
 
@@ -282,6 +292,8 @@ NSString *const kSyncNone = @"none";
     dict[kUseVisits] = @(self.useVisits);
     dict[kUseSignificantLocationChanges] = @(self.useSignificantLocationChanges);
     dict[kBeacons] = @(self.beacons);
+    dict[kUseMotion] = @(self.useMotion);
+    dict[kUsePressure] = @(self.usePressure);
     return dict;
 }
 
@@ -310,7 +322,7 @@ NSString *const kSyncNone = @"none";
            self.syncLocations == options.syncLocations && self.replay == options.replay && self.showBlueBar == options.showBlueBar &&
            self.useStoppedGeofence == options.useStoppedGeofence && self.stoppedGeofenceRadius == options.stoppedGeofenceRadius &&
            self.useMovingGeofence == options.useMovingGeofence && self.movingGeofenceRadius == options.movingGeofenceRadius && self.syncGeofences == options.syncGeofences &&
-           self.useVisits == options.useVisits && self.useSignificantLocationChanges == options.useSignificantLocationChanges && self.beacons == options.beacons;
+           self.useVisits == options.useVisits && self.useSignificantLocationChanges == options.useSignificantLocationChanges && self.beacons == options.beacons && self.useMotion == options.useMotion && self.usePressure == options.usePressure;
 }
 
 @end
