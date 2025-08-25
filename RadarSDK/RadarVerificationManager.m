@@ -34,6 +34,8 @@
 #include <ifaddrs.h>
 #include <arpa/inet.h>
 
+#include "Radar-Swift.h"
+
 @interface RadarVerificationManager ()
 
 @property (assign, nonatomic) NSTimeInterval startedInterval;
@@ -73,6 +75,10 @@
 }
 
 - (void)trackVerifiedWithBeacons:(BOOL)beacons desiredAccuracy:(RadarTrackingOptionsDesiredAccuracy)desiredAccuracy reason:(NSString *)reason transactionId:(NSString *)transactionId completionHandler:(RadarTrackVerifiedCompletionHandler)completionHandler {
+    
+    Tracer* tracer = [[Tracer alloc] init];
+    Span* trackVerifiedSpan = [tracer start:@"trackVerified" parent:nil];
+    
     if (!reason) {
         reason = @"manual";
     }
@@ -134,6 +140,10 @@
                      completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events,
                                          RadarUser *_Nullable user, NSArray<RadarGeofence *> *_Nullable nearbyGeofences,
                                          RadarConfig *_Nullable config, RadarVerifiedLocationToken *_Nullable token) {
+                        
+                        [trackVerifiedSpan endWithStatus: status];
+                        
+                        
                         if (status == RadarStatusSuccess && config != nil) {
                             [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
                         }
