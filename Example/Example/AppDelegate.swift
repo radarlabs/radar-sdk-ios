@@ -19,10 +19,39 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
     var demoFunctions = Array<() -> Void>()
     
     // UI elements for displaying altitude and timestamp
-    var altitudeLabel: UILabel?
-    var timestampLabel: UILabel?
-    var metadataLabel: UILabel?
-    var metadataTextView: UITextView?
+    lazy var altitudeLabel: UILabel = {
+        let label = UILabel()
+        label.frame = CGRect(x: 20, y: 40, width: UIScreen.main.bounds.width - 40, height: 30)
+        label.text = "Altitude: -- meters"
+        return label
+    }()
+    
+    lazy var timestampLabel: UILabel = {
+        let label = UILabel()
+        label.frame = CGRect(x: 20, y: 70, width: UIScreen.main.bounds.width - 40, height: 30)
+        label.text = "Last Updated: --"
+        return label
+    }()
+    
+    lazy var metadataLabel: UILabel = {
+        let label = UILabel()
+        label.frame = CGRect(x: 20, y: 100, width: UIScreen.main.bounds.width - 40, height: 30)
+        label.text = "Metadata:"
+        return label
+    }()
+    
+    lazy var metadataTextView: UITextView = {
+        let textView = UITextView()
+        textView.frame = CGRect(x: 20, y: 130, width: UIScreen.main.bounds.width - 40, height: 100)
+        textView.layer.borderWidth = 1
+        textView.layer.borderColor = UIColor.lightGray.cgColor
+        textView.layer.cornerRadius = 5
+        textView.isEditable = false
+        textView.isScrollEnabled = true
+        textView.textContainerInset = UIEdgeInsets(top: 8, left: 8, bottom: 8, right: 8)
+        textView.text = "None"
+        return textView
+    }()
     
     // UI elements for calibration altitude input
     var calibrationTextField: UITextField?
@@ -90,26 +119,29 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
     }
     
     func updateAltitudeDisplay(user: RadarUser?, location: CLLocation?) {
-        DispatchQueue.main.async {
+        print("updateAltitudeDisplay")
+        DispatchQueue.main.async { [self] in
             if let user = user {
+                print("updateAltitudeDisplay user altitude: \(user.altitude)")
                 let altitude = user.altitude
                 let altitudeText = String(format: "Altitude: %.2f meters", altitude)
-                self.altitudeLabel?.text = altitudeText
+                altitudeLabel.text = altitudeText
                 
                 // Display metadata key-value pairs
                 if let metadata = user.metadata, !metadata.isEmpty {
                     let metadataText = metadata.map { "\($0.key): \($0.value)" }.joined(separator: "\n")
-                    self.metadataTextView?.text = metadataText
+                    metadataTextView.text = metadataText
                 } else {
-                    self.metadataTextView?.text = "None"
+                    metadataTextView.text = "None"
                 }
             } else if let location = location {
+                print("updateAltitudeDisplay location: \(location)")
                 let altitude = location.altitude
                 let altitudeText = String(format: "Altitude: %.2f meters", altitude)
-                self.altitudeLabel?.text = altitudeText
+                altitudeLabel.text = altitudeText
                 
                 // Clear metadata display when only location is available
-                self.metadataTextView?.text = "Location only"
+                metadataTextView.text = "Location only"
             }
             
             let timestamp = Date()
@@ -117,7 +149,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
             formatter.dateStyle = .medium
             formatter.timeStyle = .medium
             let timestampText = "Last Updated: \(formatter.string(from: timestamp))"
-            self.timestampLabel?.text = timestampText
+            timestampLabel.text = timestampText
         }
     }
     
@@ -141,7 +173,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         currentCalibrationLabel?.text = "Current: \(altitude) meters"
         
         // Update the metadata display to show the new value
-        metadataTextView?.text = "radar:calibrationAltitude: \(altitude)"
+        metadataTextView.text = "radar:calibrationAltitude: \(altitude)"
         
         // Clear the text field
         calibrationTextField?.text = ""
@@ -199,16 +231,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         
         // Create altitude and timestamp labels
         altitudeLabel = UILabel(frame: CGRect(x: 20, y: 50, width: window.frame.size.width - 40, height: 30))
-        altitudeLabel?.text = "Altitude: --"
-        altitudeLabel?.textAlignment = .center
-        altitudeLabel?.font = UIFont.systemFont(ofSize: 16, weight: .medium)
-        altitudeLabel?.textColor = .darkGray
+        altitudeLabel.text = "Altitude: --"
+        altitudeLabel.textAlignment = .center
+        altitudeLabel.font = UIFont.systemFont(ofSize: 16, weight: .medium)
+        altitudeLabel.textColor = .darkGray
         
         timestampLabel = UILabel(frame: CGRect(x: 20, y: 80, width: window.frame.size.width - 40, height: 30))
-        timestampLabel?.text = "Last Updated: Never"
-        timestampLabel?.textAlignment = .center
-        timestampLabel?.font = UIFont.systemFont(ofSize: 14)
-        timestampLabel?.textColor = .lightGray
+        timestampLabel.text = "Last Updated: Never"
+        timestampLabel.textAlignment = .center
+        timestampLabel.font = UIFont.systemFont(ofSize: 14)
+        timestampLabel.textColor = .lightGray
         
         // Create calibration altitude input UI
         let calibrationLabel = UILabel(frame: CGRect(x: 20, y: 110, width: window.frame.size.width - 40, height: 20))
@@ -293,28 +325,28 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         
         // Create metadata section header
         metadataLabel = UILabel(frame: CGRect(x: 20, y: metadataY, width: window.frame.size.width - 40, height: 20))
-        metadataLabel?.text = "Metadata:"
-        metadataLabel?.textAlignment = .left
-        metadataLabel?.font = UIFont.systemFont(ofSize: 14, weight: .medium)
-        metadataLabel?.textColor = .darkGray
+        metadataLabel.text = "Metadata:"
+        metadataLabel.textAlignment = .left
+        metadataLabel.font = UIFont.systemFont(ofSize: 14, weight: .medium)
+        metadataLabel.textColor = .darkGray
         
         // Create scrollable metadata text view
         metadataTextView = UITextView(frame: CGRect(x: 20, y: metadataY + 25, width: window.frame.size.width - 40, height: metadataHeight - 25))
-        metadataTextView?.text = "None"
-        metadataTextView?.font = UIFont.systemFont(ofSize: 12)
-        metadataTextView?.textColor = .darkGray
-        metadataTextView?.backgroundColor = UIColor(white: 0.95, alpha: 1.0)
-        metadataTextView?.layer.cornerRadius = 5
-        metadataTextView?.isEditable = false
-        metadataTextView?.isScrollEnabled = true
-        metadataTextView?.textContainerInset = UIEdgeInsets(top: 8, left: 8, bottom: 8, right: 8)
+        metadataTextView.text = "None"
+        metadataTextView.font = UIFont.systemFont(ofSize: 12)
+        metadataTextView.textColor = .darkGray
+        metadataTextView.backgroundColor = UIColor(white: 0.95, alpha: 1.0)
+        metadataTextView.layer.cornerRadius = 5
+        metadataTextView.isEditable = false
+        metadataTextView.isScrollEnabled = true
+        metadataTextView.textContainerInset = UIEdgeInsets(top: 8, left: 8, bottom: 8, right: 8)
         scrollView!.contentSize.height = 0
         scrollView!.contentSize.width = window.frame.size.width
 
-        window.addSubview(altitudeLabel!)
-        window.addSubview(timestampLabel!)
-        window.addSubview(metadataLabel!)
-        window.addSubview(metadataTextView!)
+        window.addSubview(altitudeLabel)
+        window.addSubview(timestampLabel)
+        window.addSubview(metadataLabel)
+        window.addSubview(metadataTextView)
         window.addSubview(calibrationLabel)
         window.addSubview(currentCalibrationLabel!)
         window.addSubview(calibrationTextField!)
@@ -347,7 +379,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
             // Reset the current calibration label
             self.currentCalibrationLabel?.text = "Current: Not set"
             // Reset the metadata display
-            self.metadataTextView?.text = "None"
+            self.metadataTextView.text = "None"
         }
 
         demoButton(text: "request motion activity permission") {
@@ -430,7 +462,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
     }
 
     func didUpdateLocation(_ location: CLLocation, user: RadarUser) {
+        print("RadarDelegate.didUpdateLocation called")
         let body = "\(user.stopped ? "Stopped at" : "Moved to") location (\(location.coordinate.latitude), \(location.coordinate.longitude)) with accuracy \(location.horizontalAccuracy) meters"
+        print(body)
         self.notify(body)
         self.updateAltitudeDisplay(user: user, location: location)
     }
@@ -438,7 +472,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
     func didUpdateClientLocation(_ location: CLLocation, stopped: Bool, source: RadarLocationSource) {
         let body = "\(stopped ? "Client stopped at" : "Client moved to") location (\(location.coordinate.latitude), \(location.coordinate.longitude)) with accuracy \(location.horizontalAccuracy) meters and source \(Utils.stringForRadarLocationSource(source))"
         self.notify(body)
-        self.updateAltitudeDisplay(user: nil, location: location)
     }
 
     func didFail(status: RadarStatus) {
