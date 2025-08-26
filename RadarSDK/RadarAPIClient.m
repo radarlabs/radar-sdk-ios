@@ -35,7 +35,9 @@
 #import "RadarVerificationManager.h"
 #import "RadarVerifiedLocationToken+Internal.h"
 #import "RadarNotificationHelper.h"
+#import "Radar-Swift.h"
 #import <os/log.h>
+#import "RadarOfflineManager.h"
 
 @implementation RadarAPIClient
 
@@ -228,6 +230,7 @@
     params[@"anonymous"] = @(anonymous);
     if (anonymous) {
         params[@"deviceId"] = @"anonymous";
+        // this can be updated by offline event detection, which feels correct, not going to address right now for simplicity
         params[@"geofenceIds"] = [RadarState geofenceIds];
         params[@"placeId"] = [RadarState placeId];
         params[@"regionIds"] = [RadarState regionIds];
@@ -302,7 +305,7 @@
             }
         }
     }
-    
+
     RadarTripOptions *tripOptions = Radar.getTripOptions;
 
     if (tripOptions) {
@@ -318,6 +321,9 @@
     RadarTrackingOptions *options = [Radar getTrackingOptions];
     if (options.syncGeofences) {
         params[@"nearbyGeofences"] = @(YES);
+        if (sdkConfiguration.useOfflineRTOUpdates) {
+            params[@"nearbyGeofencesLimit"] = @(100);
+        }
     }
     if (beacons) {
         params[@"beacons"] = [RadarBeacon arrayForBeacons:beacons];
@@ -381,7 +387,7 @@
     if (appBuild) {
         params[@"appBuild"] = appBuild;
     }
-    
+
     NSMutableDictionary *locationMetadata = [NSMutableDictionary new];
     if (options.useMotion) {
         locationMetadata[@"motionActivityData"] = [RadarState lastMotionActivityData];
@@ -413,7 +419,7 @@
     if (options.usePressure || options.useMotion) {
         params[@"locationMetadata"] = locationMetadata;
     }
-    
+
     params[@"fraudFailureReasons"] = fraudFailureReasons;
 
     if (anonymous) {
@@ -485,13 +491,25 @@
             if (status != RadarStatusSuccess) {
                 [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Failed to flush replays"]];
                 [[RadarDelegateHolder sharedInstance] didFailWithStatus:status];
+                if ([RadarSettings sdkConfiguration].useOfflineRTOUpdates) {
+                    NSArray<RadarGeofence *> *userGeofences = [RadarOfflineManager getUserGeofencesFromLocation:location];
+                    [RadarOfflineManager generateEventsFromOfflineLocations:location userGeofences:userGeofences completionHandler:^(NSArray<RadarEvent *> *events, RadarUser *user, CLLocation *location) {
+                        if (events && events.count) {
+                            [[RadarDelegateHolder sharedInstance] didReceiveEvents:events user:user];
+                        }
+
+                        [[RadarDelegateHolder sharedInstance] didUpdateLocation:location user:user];
+                    }];
+                    return [RadarOfflineManager updateTrackingOptionsFromOfflineLocation:userGeofences completionHandler:^(RadarConfig * _Nullable config) {
+                        return completionHandler(status, nil, nil, nil, nil, config, nil);
+                    }];
+                }
             } else {
                 [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Successfully flushed replays"]];
                 [RadarState setLastFailedStoppedLocation:nil];
                 [RadarSettings updateLastTrackedTime];
             }
-
-            completionHandler(status, nil, nil, nil, nil, nil, nil);
+            return completionHandler(status, nil, nil, nil, nil, nil, nil);
         }];
     } else {
         [self.apiHelper requestWithMethod:@"POST"
@@ -517,10 +535,28 @@
                                 }
 
                                 [[RadarDelegateHolder sharedInstance] didFailWithStatus:status];
+                                if ([RadarSettings sdkConfiguration].useOfflineRTOUpdates) {
+                                    NSArray<RadarGeofence *> *userGeofences = [RadarOfflineManager getUserGeofencesFromLocation:location];
+                                    [RadarOfflineManager generateEventsFromOfflineLocations:location userGeofences:userGeofences completionHandler:^(NSArray<RadarEvent *> *events, RadarUser *user, CLLocation *location) {
+                                        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"events from offline manager: %@", events]];
+                                        if (events && events.count) {
+                                            [[RadarDelegateHolder sharedInstance] didReceiveEvents:events user:user];
+                                        }
+                                        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"location from offline manager: %@", location]];
 
-                                return completionHandler(status, nil, nil, nil, nil, nil, nil);
+                                        [[RadarDelegateHolder sharedInstance] didUpdateLocation:location user:user];
+
+                                    }];
+
+                                    return [RadarOfflineManager updateTrackingOptionsFromOfflineLocation:userGeofences completionHandler:^(RadarConfig * _Nullable config) {
+                                        return completionHandler(status, nil, nil, nil, nil, config, nil);
+                                    }];
+                                } else {
+                                    return completionHandler(status, nil, nil, nil, nil, nil, nil);
+                                }
+
+
                             }
-
                             [[RadarReplayBuffer sharedInstance] clearBuffer];
                             [RadarState setLastFailedStoppedLocation:nil];
                             [Radar flushLogs];
@@ -536,10 +572,18 @@
                                 userObj = mutableUserObj;
                             }
                             id nearbyGeofencesObj = res[@"nearbyGeofences"];
+                            id inAppMessagesObj = res[@"inAppMessages"];
                             NSArray<RadarEvent *> *events = [RadarEvent eventsFromObject:eventsObj];
                             RadarUser *user = [[RadarUser alloc] initWithObject:userObj];
                             NSArray<RadarGeofence *> *nearbyGeofences = [RadarGeofence geofencesFromObject:nearbyGeofencesObj];
                             RadarVerifiedLocationToken *token = [[RadarVerifiedLocationToken alloc] initWithObject:res];
+
+                            if (@available(iOS 13.0, *)) {
+                                NSArray<RadarInAppMessage *> *inAppMessages = [RadarInAppMessage fromArray:inAppMessagesObj];
+                                if (inAppMessages) {
+                                    [[RadarInAppMessageManager shared] onInAppMessageReceivedWithMessages:inAppMessages];
+                                }
+                            }
 
                             if (user) {
                                 BOOL inGeofences = user.geofences && user.geofences.count;
@@ -603,10 +647,12 @@
                                 if (events.count) {
                                     [[RadarDelegateHolder sharedInstance] didReceiveEvents:events user:user];
                                 }
-                                
+
                                 if (token) {
                                     [[RadarDelegateHolder sharedInstance] didUpdateToken:token];
                                 }
+
+                                [RadarState setRadarUser:user];
 
                                 id nearbyBeaconRegionsObj = res[@"nearbyBeaconRegions"];
                                 if (nearbyBeaconRegionsObj && [nearbyBeaconRegionsObj isKindOfClass:[NSArray class]]) {
@@ -928,9 +974,9 @@
             [queryString appendFormat:@"&metadata[%@]=%@", key, metadata[key]];
         }
     }
-    
+
     [queryString appendFormat:@"&includeGeometry=%@", includeGeometry ? @"true" : @"false"];
-    
+
 
     NSString *host = [RadarSettings host];
     NSString *url = [NSString stringWithFormat:@"%@/v1/search/geofences?%@", host, queryString];
@@ -1187,7 +1233,7 @@
     }
 
     NSMutableString *queryString = [NSMutableString new];
-    if (!address.countryCode || !address.stateCode || !address.city || !address.postalCode || 
+    if (!address.countryCode || !address.stateCode || !address.city || !address.postalCode ||
         !((address.street && address.number) || address.addressLabel)) {
         if (completionHandler) {
             [RadarUtils runOnMainThread:^{
@@ -1258,7 +1304,7 @@
                     }];
 }
 
-- (void)geocodeAddress:(NSString *)query 
+- (void)geocodeAddress:(NSString *)query
                 layers:(NSArray<NSString *> *_Nullable)layers
              countries:(NSArray<NSString *> *_Nullable)countries
      completionHandler:(RadarGeocodeAPICompletionHandler)completionHandler {
@@ -1304,7 +1350,7 @@
                     }];
 }
 
-- (void)reverseGeocodeLocation:(CLLocation *)location 
+- (void)reverseGeocodeLocation:(CLLocation *)location
                         layers:(NSArray<NSString *> *_Nullable)layers
              completionHandler:(RadarGeocodeAPICompletionHandler)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
