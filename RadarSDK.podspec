@@ -13,5 +13,6 @@ Pod::Spec.new do |s|
   s.requires_arc          = true
   s.license               = { :type => 'Apache-2.0' }
   s.resource_bundles      = {'RadarSDK' => ['RadarSDK/PrivacyInfo.xcprivacy']}
+  s.pod_target_xcconfig   = { 'BUILD_LIBRARY_FOR_DISTRIBUTION' => 'YES', 'DEFINES_MODULE' => 'YES' }
   s.swift_version         = '6.0'
 end
