@@ -84,7 +84,6 @@
 		8227EF0C2CDAB69B00C47290 /* RadarRouteMode.m in Sources */ = {isa = PBXBuildFile; fileRef = 8227EF0B2CDAB69B00C47290 /* RadarRouteMode.m */; };
 		825732512B72BE1900DF8B88 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 825732502B72BE1900DF8B88 /* PrivacyInfo.xcprivacy */; };
 		825732522B72BE1900DF8B88 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 825732502B72BE1900DF8B88 /* PrivacyInfo.xcprivacy */; };
-		828D1A462E29599500663787 /* RadarTripOrder.m in Sources */ = {isa = PBXBuildFile; fileRef = 828D1A452E29599500663787 /* RadarTripOrder.m */; };
 		828D1A472E29599500663787 /* RadarTripOrder.m in Sources */ = {isa = PBXBuildFile; fileRef = 828D1A452E29599500663787 /* RadarTripOrder.m */; };
 		828D1A562E295FD400663787 /* RadarTripOrder.h in Headers */ = {isa = PBXBuildFile; fileRef = 828D1A552E295FD400663787 /* RadarTripOrder.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		82D04ABB29722ED20036619F /* RadarReplay.h in Headers */ = {isa = PBXBuildFile; fileRef = 82D04AB829722ED20036619F /* RadarReplay.h */; };
@@ -170,11 +169,9 @@
 		DE1E7644239724FD006F34A1 /* search_geofences.json in Resources */ = {isa = PBXBuildFile; fileRef = DE1E7643239724FD006F34A1 /* search_geofences.json */; };
 		E658DB072CB46277004E0F01 /* RadarOperatingHours.h in Headers */ = {isa = PBXBuildFile; fileRef = E658DB062CB46277004E0F01 /* RadarOperatingHours.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		E658DB092CB462AA004E0F01 /* RadarOperatingHour.m in Sources */ = {isa = PBXBuildFile; fileRef = E658DB082CB462AA004E0F01 /* RadarOperatingHour.m */; };
-		E658DB0A2CB462AA004E0F01 /* RadarOperatingHour.m in Sources */ = {isa = PBXBuildFile; fileRef = E658DB082CB462AA004E0F01 /* RadarOperatingHour.m */; };
 		E658DB0C2CB46B50004E0F01 /* RadarOperatingHours+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = E658DB0B2CB46B50004E0F01 /* RadarOperatingHours+Internal.h */; };
 		E698B6502C6112FA00084371 /* RadarMotionProtocol.h in Headers */ = {isa = PBXBuildFile; fileRef = E698B64F2C6112FA00084371 /* RadarMotionProtocol.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		E6B93B722C90E2B8003CB858 /* RadarInitializeOptions.h in Headers */ = {isa = PBXBuildFile; fileRef = E6B93B712C90E2B8003CB858 /* RadarInitializeOptions.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		E6B93B742C90E5B8003CB858 /* RadarInitializeOptions.m in Sources */ = {isa = PBXBuildFile; fileRef = E6B93B732C90E5B8003CB858 /* RadarInitializeOptions.m */; };
 		E6B93B752C90E5B8003CB858 /* RadarInitializeOptions.m in Sources */ = {isa = PBXBuildFile; fileRef = E6B93B732C90E5B8003CB858 /* RadarInitializeOptions.m */; };
 		E6EEC56E2B20F41A00DD096B /* RadarFileStorage.h in Headers */ = {isa = PBXBuildFile; fileRef = E6EEC56D2B20F41A00DD096B /* RadarFileStorage.h */; };
 		E6EEC5702B20F45D00DD096B /* RadarFileStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = E6EEC56F2B20F45D00DD096B /* RadarFileStorage.m */; };
@@ -979,11 +976,8 @@
 			files = (
 				DD8E2F7424018C17002D51AB /* RadarPermissionsHelperMock.m in Sources */,
 				DD8E2F7724018C25002D51AB /* RadarAPIHelperMock.m in Sources */,
-				E658DB0A2CB462AA004E0F01 /* RadarOperatingHour.m in Sources */,
 				96B465BC27D6732500D7119B /* CLLocation+RadarTests.m in Sources */,
-				E6B93B742C90E5B8003CB858 /* RadarInitializeOptions.m in Sources */,
 				DD103211237E0C47003DD408 /* RadarSDKTests.m in Sources */,
-				828D1A462E29599500663787 /* RadarTripOrder.m in Sources */,
 				DD8E2F7124018BF9002D51AB /* RadarTestUtils.m in Sources */,
 				F64FF0E32E4D2E1100DF3926 /* InAppMessageTest.swift in Sources */,
 				DD8E2F7D24018C54002D51AB /* CLVisitMock.m in Sources */,
