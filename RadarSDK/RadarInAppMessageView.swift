@@ -30,6 +30,7 @@ struct RadarIAMView: View {
                     // Title
                     Text(message.title.text)
                         .foregroundColor(Color(message.title.color))
+                        .frame(maxWidth: 310)
                         .font(Font.system(size: 32, weight: .bold))
 
                     // Body
