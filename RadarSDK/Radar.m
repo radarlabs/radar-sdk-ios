@@ -1363,6 +1363,10 @@
     return dict;
 }
 
++ (NSDictionary *)dictionaryForInAppMessage:(RadarInAppMessage *)message {
+    return [message toDictionary];
+}
+
 - (void)applicationWillEnterForeground {
     BOOL updated = [RadarSettings updateSessionId];
     if (updated) {
