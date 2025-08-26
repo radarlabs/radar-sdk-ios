@@ -30,7 +30,7 @@ open class RadarInAppMessageDelegate : NSObject, RadarInAppMessageProtocol {
     }
     
     /**
-     returns the view controller for the message to show, can be overwritten to display a custom view
+     Returns the view controller for the message to show, can be overwritten to display a custom view
      */
     open func createInAppMessageView(_ message: RadarInAppMessage, onDismiss: @escaping () -> Void, onInAppMessageClicked: @escaping () -> Void, completionHandler: @escaping (UIViewController) -> Void) {
         Task {
@@ -53,7 +53,7 @@ open class RadarInAppMessageDelegate : NSObject, RadarInAppMessageProtocol {
     open func onInAppMessageDismissed(_ message: RadarInAppMessage) {
     }
 
-    open func onNewInAppMessage(_ message: RadarInAppMessage) -> RadarInAppMessageOperation {
-        return .show
+    open func onNewInAppMessage(_ message: RadarInAppMessage) {
+        Radar.showInAppMessage(message)
     }
 }

@@ -5,11 +5,8 @@
 //  Copyright © 2025 Radar Labs, Inc. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
-
-#import "Radar-Swift.h"
-#import "UIKit/UIkit.h"
 #import "RadarInAppMessageDelegate.h"
+#import "Radar-Swift.h"
 
 @implementation RadarInAppMessageDelegate
 
@@ -38,8 +35,8 @@ RadarInAppMessageDelegate_Swift* radarIAMDelegate = nil;
     [radarIAMDelegate onInAppMessageDismissed:message];
 }
 
-- (RadarInAppMessageOperation)onNewInAppMessage:(RadarInAppMessage * _Nonnull)message {
-    return [radarIAMDelegate onNewInAppMessage:message];
+- (void)onNewInAppMessage:(RadarInAppMessage * _Nonnull)message {
+    [radarIAMDelegate onNewInAppMessage:message];
 }
 
 @end

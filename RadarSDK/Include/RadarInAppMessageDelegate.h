@@ -7,21 +7,22 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <UIKit/UIkit.h>
 
 @class RadarInAppMessage;
 
 NS_ASSUME_NONNULL_BEGIN
 
 typedef NS_ENUM(NSInteger, RadarInAppMessageOperation) {
-    RadarInAppMessageShow,
-    RadarInAppMessageIgnore,
+    RadarInAppMessageDisplay,
+    RadarInAppMessageDiscard,
 };
 
 NS_SWIFT_UI_ACTOR
 @protocol RadarInAppMessageProtocol <NSObject>
 
 
-- (RadarInAppMessageOperation) onNewInAppMessage:(RadarInAppMessage * _Nonnull)message
+- (void) onNewInAppMessage:(RadarInAppMessage * _Nonnull)message
     NS_SWIFT_NAME(onNewInAppMessage(_:));
 
 - (void) onInAppMessageDismissed:(RadarInAppMessage * _Nonnull)message

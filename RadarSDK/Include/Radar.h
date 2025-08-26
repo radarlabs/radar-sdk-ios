@@ -309,6 +309,7 @@ typedef void (^_Nonnull RadarRouteMatrixCompletionHandler)(RadarStatus status, R
  */
 typedef void (^_Nullable RadarLogConversionCompletionHandler)(RadarStatus status, RadarEvent *_Nullable event);
 
+
 /**
  The main class used to interact with the Radar SDK.
 
@@ -1336,6 +1337,8 @@ typedef void (^_Nullable RadarLogConversionCompletionHandler)(RadarStatus status
 + (void)openURLFromNotification:(UNNotification *)notification NS_SWIFT_NAME(openURLFromNotification(_:));
 
 + (void)setInAppMessageDelegate:(nullable id<RadarInAppMessageProtocol>)delegate NS_SWIFT_NAME(setInAppMessageDelegate(_:));
+
++ (void)showInAppMessage:(RadarInAppMessage *)message NS_SWIFT_NAME(showInAppMessage(_:));
 
 /**
  Load image convenience function available for use with custom in-app message views
