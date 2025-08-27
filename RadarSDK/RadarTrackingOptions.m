@@ -30,6 +30,8 @@ NSString *const kUseVisits = @"useVisits";
 NSString *const kUseSignificantLocationChanges = @"useSignificantLocationChanges";
 NSString *const kBeacons = @"beacons";
 NSString *const kUseIndoorScan = @"useIndoorScan";
+NSString *const kUseMotion = @"useMotion";
+NSString *const kUsePressure = @"usePressure";
 
 NSString *const kDesiredAccuracyHigh = @"high";
 NSString *const kDesiredAccuracyMedium = @"medium";
@@ -65,6 +67,8 @@ NSString *const kSyncNone = @"none";
     options.useSignificantLocationChanges = NO;
     options.beacons = NO;
     options.useIndoorScan = NO;
+    options.useMotion = NO;
+    options.usePressure = NO;
     return options;
 }
 
@@ -90,6 +94,8 @@ NSString *const kSyncNone = @"none";
     options.useSignificantLocationChanges = YES;
     options.beacons = NO;
     options.useIndoorScan = NO;
+    options.useMotion = NO;
+    options.usePressure = NO;
     return options;
 }
 
@@ -115,6 +121,8 @@ NSString *const kSyncNone = @"none";
     options.useSignificantLocationChanges = NO;
     options.beacons = NO;
     options.useIndoorScan = NO;
+    options.useMotion = NO;
+    options.usePressure = NO;
     return options;
 }
 
@@ -244,6 +252,8 @@ NSString *const kSyncNone = @"none";
     options.useSignificantLocationChanges = [dict[kUseSignificantLocationChanges] boolValue];
     options.beacons = [dict[kBeacons] boolValue];
     options.useIndoorScan = [dict[kUseIndoorScan] boolValue];
+    options.useMotion = [dict[kUseMotion] boolValue];
+    options.usePressure = [dict[kUsePressure] boolValue];
     return options;
 }
 
@@ -277,6 +287,8 @@ NSString *const kSyncNone = @"none";
     dict[kUseSignificantLocationChanges] = @(self.useSignificantLocationChanges);
     dict[kBeacons] = @(self.beacons);
     dict[kUseIndoorScan] = @(self.useIndoorScan);
+    dict[kUseMotion] = @(self.useMotion);
+    dict[kUsePressure] = @(self.usePressure);
     return dict;
 }
 
@@ -306,7 +318,7 @@ NSString *const kSyncNone = @"none";
            self.useStoppedGeofence == options.useStoppedGeofence && self.stoppedGeofenceRadius == options.stoppedGeofenceRadius &&
            self.useMovingGeofence == options.useMovingGeofence && self.movingGeofenceRadius == options.movingGeofenceRadius && self.syncGeofences == options.syncGeofences &&
            self.useVisits == options.useVisits && self.useSignificantLocationChanges == options.useSignificantLocationChanges && self.beacons == options.beacons &&
-           self.useIndoorScan == options.useIndoorScan;
+           self.useIndoorScan == options.useIndoorScan && self.useMotion == options.useMotion && self.usePressure == options.usePressure;
 }
 
 @end

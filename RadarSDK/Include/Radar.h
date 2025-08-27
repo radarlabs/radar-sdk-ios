@@ -1340,6 +1340,7 @@ typedef void (^_Nonnull RadarIndoorsScanCompletionHandler)(NSString *_Nullable r
 
 + (void)openURLFromNotification:(UNNotification *)notification NS_SWIFT_NAME(openURLFromNotification(_:));
 
++ (void)requestMotionActivityPermission NS_SWIFT_NAME(requestMotionActivityPermission());
 @end
 
 NS_ASSUME_NONNULL_END
