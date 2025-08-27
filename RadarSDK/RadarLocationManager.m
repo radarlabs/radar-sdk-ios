@@ -863,7 +863,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     [self sendLocation:sendLocation stopped:stopped source:source replayed:replayed beacons:beacons];
 }
 
-- (void)performIndoorScanIfPossible:(CLLocation *)location 
+- (void)performIndoorScanIfConfigured:(CLLocation *)location 
                                beacons:(NSArray<RadarBeacon *> *_Nullable)beacons
                      completionHandler:(void (^)(NSArray<RadarBeacon *> *_Nullable, NSString *_Nullable))completionHandler {
     RadarTrackingOptions *options = [Radar getTrackingOptions];
@@ -901,7 +901,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     
     if ([RadarSettings useRadarModifiedBeacon]) {
         void (^callTrackAPI)(NSArray<RadarBeacon *> *_Nullable) = ^(NSArray<RadarBeacon *> *_Nullable beacons) {
-            [self performIndoorScanIfPossible:location 
+            [self performIndoorScanIfConfigured:location 
                                         beacons:beacons 
                               completionHandler:^(NSArray<RadarBeacon *> *_Nullable beacons, NSString *_Nullable indoorScan) {
                 [[RadarAPIClient sharedInstance] trackWithLocation:location
@@ -988,7 +988,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
             }
         }
 
-        [self performIndoorScanIfPossible:location 
+        [self performIndoorScanIfConfigured:location 
                                     beacons:beacons 
                           completionHandler:^(NSArray<RadarBeacon *> *_Nullable beacons, NSString *_Nullable indoorScan) {
             [[RadarAPIClient sharedInstance] trackWithLocation:location

@@ -255,7 +255,7 @@
                          };
 
                          void (^performIndoorScanThenTrack)(NSArray<RadarBeacon *> *_Nullable) = ^(NSArray<RadarBeacon *> *_Nullable beacons) {
-                            [[RadarLocationManager sharedInstance] performIndoorScanIfPossible:location
+                            [[RadarLocationManager sharedInstance] performIndoorScanIfConfigured:location
                                                                                           beacons:beacons
                                                                                 completionHandler:^(NSArray<RadarBeacon *> *_Nullable beacons, NSString *_Nullable indoorScan) {
                                 callTrackAPI(beacons, indoorScan);
@@ -311,7 +311,7 @@
 
 + (void)trackOnceWithLocation:(CLLocation *)location completionHandler:(RadarTrackCompletionHandler)completionHandler {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"trackOnce()"];
-    [[RadarLocationManager sharedInstance] performIndoorScanIfPossible:location
+    [[RadarLocationManager sharedInstance] performIndoorScanIfConfigured:location
                                                                   beacons:nil
                                                         completionHandler:^(NSArray<RadarBeacon *> *_Nullable beacons, NSString *_Nullable indoorScan) {
         [[RadarAPIClient sharedInstance] trackWithLocation:location
