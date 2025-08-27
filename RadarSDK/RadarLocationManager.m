@@ -863,28 +863,28 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     [self sendLocation:sendLocation stopped:stopped source:source replayed:replayed beacons:beacons];
 }
 
-- (void)performIndoorSurveyIfPossible:(CLLocation *)location 
+- (void)performIndoorScanIfPossible:(CLLocation *)location 
                                beacons:(NSArray<RadarBeacon *> *_Nullable)beacons
                      completionHandler:(void (^)(NSArray<RadarBeacon *> *_Nullable, NSString *_Nullable))completionHandler {
     RadarTrackingOptions *options = [Radar getTrackingOptions];
     Class RadarSDKIndoors = NSClassFromString(@"RadarSDKIndoors");
     
     if (options.useIndoorScan && ![RadarSettings isInSurveyMode] && RadarSDKIndoors && [RadarUtils foreground]) {
-        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Starting indoor survey for automatic tracking"];
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Starting indoor scan"];
         
-        [RadarSDKIndoors startIndoorSurvey:@""
+        [RadarSDKIndoors startIndoorScan:@""
                                 forLength:5
                         withKnownLocation:location
-                        completionHandler:^(NSString *_Nullable indoorSurveyResult, CLLocation *_Nullable locationAtStartOfSurvey) {
+                        completionHandler:^(NSString *_Nullable indoorScanResult, CLLocation *_Nullable locationAtStartOfScan) {
             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
-                               message:[NSString stringWithFormat:@"Indoor survey completed: %lu chars", (unsigned long)(indoorSurveyResult ? indoorSurveyResult.length : 0)]];
-            completionHandler(beacons, indoorSurveyResult);
+                               message:[NSString stringWithFormat:@"Indoor scan completed: %lu chars", (unsigned long)(indoorScanResult ? indoorScanResult.length : 0)]];
+            completionHandler(beacons, indoorScanResult);
         }];
     } else {
         if (options.useIndoorScan && ![RadarSettings isInSurveyMode] && !RadarSDKIndoors) {
-            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"RadarSDKIndoors not available, skipping indoor survey"];
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"RadarSDKIndoors not available, skipping indoor scan"];
         } else if (options.useIndoorScan && ![RadarSettings isInSurveyMode] && RadarSDKIndoors && ![RadarUtils foreground]) {
-            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"App in background, skipping indoor survey (Bluetooth not available)"];
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"App in background, skipping indoor scan (Bluetooth not available)"];
         }
         completionHandler(beacons, nil);
     }
@@ -901,16 +901,16 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     
     if ([RadarSettings useRadarModifiedBeacon]) {
         void (^callTrackAPI)(NSArray<RadarBeacon *> *_Nullable) = ^(NSArray<RadarBeacon *> *_Nullable beacons) {
-            [self performIndoorSurveyIfPossible:location 
+            [self performIndoorScanIfPossible:location 
                                         beacons:beacons 
-                              completionHandler:^(NSArray<RadarBeacon *> *_Nullable beacons, NSString *_Nullable indoorSurvey) {
+                              completionHandler:^(NSArray<RadarBeacon *> *_Nullable beacons, NSString *_Nullable indoorScan) {
                 [[RadarAPIClient sharedInstance] trackWithLocation:location
                                                            stopped:stopped
                                                         foreground:[RadarUtils foreground]
                                                             source:source
                                                           replayed:replayed
                                                            beacons:beacons
-                                                      indoorSurvey:indoorSurvey
+                                                      indoorScan:indoorScan
                                                  completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user,
                                                                      NSArray<RadarGeofence *> *_Nullable nearbyGeofences, RadarConfig *_Nullable config, RadarVerifiedLocationToken *_Nullable token) {
                     self.sending = NO;
@@ -988,16 +988,16 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
             }
         }
 
-        [self performIndoorSurveyIfPossible:location 
+        [self performIndoorScanIfPossible:location 
                                     beacons:beacons 
-                          completionHandler:^(NSArray<RadarBeacon *> *_Nullable beacons, NSString *_Nullable indoorSurvey) {
+                          completionHandler:^(NSArray<RadarBeacon *> *_Nullable beacons, NSString *_Nullable indoorScan) {
             [[RadarAPIClient sharedInstance] trackWithLocation:location
                                                        stopped:stopped
                                                     foreground:[RadarUtils foreground]
                                                         source:source
                                                       replayed:replayed
                                                        beacons:beacons
-                                                  indoorSurvey:indoorSurvey
+                                                  indoorScan:indoorScan
                                              completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user,
                                                                  NSArray<RadarGeofence *> *_Nullable nearbyGeofences, RadarConfig *_Nullable config, RadarVerifiedLocationToken *_Nullable token) {
                                                  self.sending = NO;

@@ -306,7 +306,7 @@ typedef void (^_Nonnull RadarRouteMatrixCompletionHandler)(RadarStatus status, R
  */
 typedef void (^_Nullable RadarLogConversionCompletionHandler)(RadarStatus status, RadarEvent *_Nullable event);
 
-typedef void (^_Nonnull RadarIndoorsSurveyCompletionHandler)(NSString *_Nullable result, CLLocation *_Nullable locationAtStartOfSurvey);
+typedef void (^_Nonnull RadarIndoorsScanCompletionHandler)(NSString *_Nullable result, CLLocation *_Nullable locationAtStartOfScan);
 
 /**
  The main class used to interact with the Radar SDK.
@@ -1236,9 +1236,9 @@ typedef void (^_Nonnull RadarIndoorsSurveyCompletionHandler)(NSString *_Nullable
 
 #pragma mark - Indoors
 
-+ (void)startIndoorSurvey:(NSString *)geofenceId
-                forLength:(int)surveyLengthSeconds
-        completionHandler:(RadarIndoorsSurveyCompletionHandler)completionHandler;
++ (void)startIndoorScan:(NSString *)geofenceId
+                forLength:(int)scanLengthSeconds
+        completionHandler:(RadarIndoorsScanCompletionHandler)completionHandler;
 
 #pragma mark - Logging
 

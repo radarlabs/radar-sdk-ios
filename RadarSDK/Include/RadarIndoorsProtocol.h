@@ -13,10 +13,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol RadarIndoorsProtocol<NSObject>
 
-+ (void)startIndoorSurvey:(NSString *)geofenceId
-                forLength:(int)surveyLengthSeconds
++ (void)startIndoorScan:(NSString *)geofenceId
+                forLength:(int)scanLengthSeconds
         withKnownLocation:(CLLocation *_Nullable)knownLocation
-        completionHandler:(RadarIndoorsSurveyCompletionHandler)completionHandler;
+        completionHandler:(RadarIndoorsScanCompletionHandler)completionHandler;
 
 @end
 
