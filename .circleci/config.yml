@@ -2,7 +2,7 @@ version: 2
 jobs:
   build_and_test:
     macos:
-      xcode: 16.0
+      xcode: 16.4
     steps:
       - run:
           name: Configure Git to use PAT for submodules

@@ -27,9 +27,11 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol RadarDelegate;
 @protocol RadarVerifiedDelegate;
 @protocol RadarMotionProtocol;
+@protocol RadarInAppMessageProtocol;
 @protocol RadarIndoorsProtocol;
 
 @class RadarTripOptions;
+@class RadarInAppMessage;
 
 #pragma mark - Enums
 
@@ -1331,6 +1333,15 @@ typedef void (^_Nonnull RadarIndoorsScanCompletionHandler)(NSString *_Nullable r
  */
 + (NSDictionary *)dictionaryForLocation:(CLLocation *)location NS_SWIFT_NAME(dictionaryForLocation(_:));
 
+/**
+ Returns a dictionary for an in-app message.
+
+ @param message An in-app message.
+
+ @return A dictionary for the in-app message.
+ */
++ (NSDictionary *)dictionaryForInAppMessage:(RadarInAppMessage *)message NS_SWIFT_NAME(dictionaryForInAppMessage(_:));
+
 
 /**
  Performs optional setup for Radar SDK within the AppDelegate. This method only needs to be called if Radar is initalized in cross-platform code.
@@ -1340,7 +1351,24 @@ typedef void (^_Nonnull RadarIndoorsScanCompletionHandler)(NSString *_Nullable r
 
 + (void)openURLFromNotification:(UNNotification *)notification NS_SWIFT_NAME(openURLFromNotification(_:));
 
++ (void)setInAppMessageDelegate:(nullable id<RadarInAppMessageProtocol>)delegate NS_SWIFT_NAME(setInAppMessageDelegate(_:));
+
++ (void)showInAppMessage:(RadarInAppMessage *)message NS_SWIFT_NAME(showInAppMessage(_:));
+
+/**
+ Load image convenience function available for use with custom in-app message views
+ */
++ (void) loadImage:(NSString*)url completionHandler:(void (^ _Nonnull)(UIImage * _Nullable))completionHandler NS_SWIFT_NAME(loadImage(_:completionHandler:));
+
+/**
+ This function should be internal, but it is exposed due to swift migration limitations. It should only be used by internal swift classes while RadarLogBuffer is still in Obj-C
+ */
++ (void)__writeToLogBufferWithLevel:(RadarLogLevel)level type:(RadarLogType)type message:(NSString *)message forcePersist:(BOOL)forcePersist
+    NS_SWIFT_NAME(__writeToLogBuffer(with:type:message:forcePersist:));
+
+
 + (void)requestMotionActivityPermission NS_SWIFT_NAME(requestMotionActivityPermission());
+
 @end
 
 NS_ASSUME_NONNULL_END
