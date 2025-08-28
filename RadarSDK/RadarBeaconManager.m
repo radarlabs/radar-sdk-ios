@@ -358,7 +358,19 @@ static NSString *const kBeaconNotificationIdentifierPrefix = @"radar_beacon_noti
 - (void)locationManager:(CLLocationManager *)manager didRangeBeacons:(nonnull NSArray<CLBeacon *> *)beacons inRegion:(nonnull CLBeaconRegion *)region {
     for (CLBeacon *beacon in beacons) {
         [self.nearbyBeaconIdentifiers addObject:region.identifier];
-        [self.nearbyBeacons addObject:[RadarBeacon fromCLBeacon:beacon]];
+
+        RadarBeacon *newBeacon = [RadarBeacon fromCLBeacon:beacon];
+        RadarBeacon *existingBeacon = [self.nearbyBeacons member:newBeacon];
+        
+        if (existingBeacon) {
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"same beacon!"];
+            if (beacon.rssi != 0 && beacon.rssi != existingBeacon.rssi) {
+                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Overwriting stale RSSI: %ld", (long)existingBeacon.rssi]];
+                [existingBeacon setRssi:beacon.rssi];
+            }
+        } else {
+            [self.nearbyBeacons addObject:newBeacon];
+        }
 
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
                                            message:[NSString stringWithFormat:@"Ranged beacon with RSSI %ld | nearbyBeacons.count = %lu; region.identifier = %@; beacon.uuid = %@; beacon.major "

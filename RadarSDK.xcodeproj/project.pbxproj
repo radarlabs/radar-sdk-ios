@@ -193,6 +193,7 @@
 		F6F959802C3D7D9900BC30FE /* RadarTimeZone.h in Headers */ = {isa = PBXBuildFile; fileRef = F6F9597F2C3D7D9900BC30FE /* RadarTimeZone.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F6F959822C3D7EA200BC30FE /* RadarTimeZone+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = F6F959812C3D7EA200BC30FE /* RadarTimeZone+Internal.h */; };
 		F6F959842C3D7EDE00BC30FE /* RadarTimeZone.m in Sources */ = {isa = PBXBuildFile; fileRef = F6F959832C3D7EDE00BC30FE /* RadarTimeZone.m */; };
+		FE9417182E1C2964008ECBEB /* RadarIndoorsProtocol.h in Headers */ = {isa = PBXBuildFile; fileRef = FE9417172E1C2958008ECBEB /* RadarIndoorsProtocol.h */; settings = {ATTRIBUTES = (Public, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -386,6 +387,7 @@
 		F6F9597F2C3D7D9900BC30FE /* RadarTimeZone.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarTimeZone.h; sourceTree = "<group>"; };
 		F6F959812C3D7EA200BC30FE /* RadarTimeZone+Internal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "RadarTimeZone+Internal.h"; sourceTree = "<group>"; };
 		F6F959832C3D7EDE00BC30FE /* RadarTimeZone.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RadarTimeZone.m; sourceTree = "<group>"; };
+		FE9417172E1C2958008ECBEB /* RadarIndoorsProtocol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarIndoorsProtocol.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -420,6 +422,7 @@
 		96A5A0D827AD9F7F007B960B /* Include */ = {
 			isa = PBXGroup;
 			children = (
+				FE9417172E1C2958008ECBEB /* RadarIndoorsProtocol.h */,
 				828D1A552E295FD400663787 /* RadarTripOrder.h */,
 				96A5A0F527AD9F7F007B960B /* Radar.h */,
 				96A5A0ED27AD9F7F007B960B /* RadarAddress.h */,
@@ -707,6 +710,7 @@
 				96A5A10B27AD9F7F007B960B /* RadarTripOptions.h in Headers */,
 				E698B6502C6112FA00084371 /* RadarMotionProtocol.h in Headers */,
 				E658DB072CB46277004E0F01 /* RadarOperatingHours.h in Headers */,
+				FE9417182E1C2964008ECBEB /* RadarIndoorsProtocol.h in Headers */,
 				E658DB0C2CB46B50004E0F01 /* RadarOperatingHours+Internal.h in Headers */,
 				E6B93B722C90E2B8003CB858 /* RadarInitializeOptions.h in Headers */,
 				82F7FAEE2A65FE030055AA4B /* RadarVerificationManager.h in Headers */,
