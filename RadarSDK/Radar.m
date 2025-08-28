@@ -133,6 +133,7 @@
     if ([RadarSettings sdkConfiguration].syncAfterSetUser) {
         [Radar trackOnceWithCompletionHandler:nil];
     }
+    [RadarSharedSettings settings:userId forKey:RadarSharedSettings.UserId];
 }
 
 + (NSString *_Nullable)getUserId {
