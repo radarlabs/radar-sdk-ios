@@ -155,6 +155,11 @@ typedef NS_ENUM(NSInteger, RadarTrackingOptionsSyncLocations) {
 @property (nonatomic, assign) BOOL beacons;
 
 /**
+ Determines whether to use indoor scanning
+ */
+@property (nonatomic, assign) BOOL useIndoorScan;
+
+/**
  Determines whether to use the iOS motion activity service.
  */
 @property (nonatomic, assign) BOOL useMotion;

@@ -27,6 +27,7 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol RadarDelegate;
 @protocol RadarVerifiedDelegate;
 @protocol RadarMotionProtocol;
+@protocol RadarIndoorsProtocol;
 
 @class RadarTripOptions;
 
@@ -304,6 +305,8 @@ typedef void (^_Nonnull RadarRouteMatrixCompletionHandler)(RadarStatus status, R
  @see https://radar.com/documentation/api#send-a-custom-event
  */
 typedef void (^_Nullable RadarLogConversionCompletionHandler)(RadarStatus status, RadarEvent *_Nullable event);
+
+typedef void (^_Nonnull RadarIndoorsScanCompletionHandler)(NSString *_Nullable result, CLLocation *_Nullable locationAtStartOfScan);
 
 /**
  The main class used to interact with the Radar SDK.
@@ -1230,6 +1233,12 @@ typedef void (^_Nullable RadarLogConversionCompletionHandler)(RadarStatus status
                         mode:(RadarRouteMode)mode
                        units:(RadarRouteUnits)units
            completionHandler:(RadarRouteMatrixCompletionHandler)completionHandler NS_SWIFT_NAME(getMatrix(origins:destinations:mode:units:completionHandler:));
+
+#pragma mark - Indoors
+
++ (void)startIndoorScan:(NSString *)geofenceId
+                forLength:(int)scanLengthSeconds
+        completionHandler:(RadarIndoorsScanCompletionHandler)completionHandler;
 
 #pragma mark - Logging
 

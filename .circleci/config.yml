@@ -4,7 +4,16 @@ jobs:
     macos:
       xcode: 16.0
     steps:
+      - run:
+          name: Configure Git to use PAT for submodules
+          command: |
+            git config --global url."https://${SUBMODULESTOKEN}:x-oauth-basic@github.com/".insteadOf "https://github.com/"
       - checkout
+      - run:
+          name: Initialize and update submodules
+          command: |
+            git submodule init
+            git submodule update --recursive
       - run:
           name: List simulators
           command: xcrun simctl list
