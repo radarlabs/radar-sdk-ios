@@ -290,6 +290,8 @@
     } else {
         params[@"xPlatformType"] = @"Native";
     }
+    params[@"deviceToken"] = [RadarSettings getDeviceToken];
+    
     NSMutableArray<NSString *> *fraudFailureReasons = [NSMutableArray new];
     if (@available(iOS 15.0, *)) {
         CLLocationSourceInformation *sourceInformation = location.sourceInformation;

@@ -188,6 +188,53 @@ static dispatch_semaphore_t notificationSemaphore;
     }
 }
 
++ (void)swizzleApplicationDelegateMethod:(SEL) originalSelector
+                                 withNew:(SEL) swizzledSelector {
+    id<UIApplicationDelegate> delegate = UIApplication.sharedApplication.delegate;
+    if (!delegate) {
+        NSLog(@"Error: UIApplication delegate is nil");
+        return;
+    }
+    Class class = [delegate class];
+    
+    Method originalMethod = class_getInstanceMethod(class, originalSelector);
+    Method swizzledMethod = class_getInstanceMethod([self class], swizzledSelector);
+    
+    if (!swizzledMethod) {
+        NSLog(@"Error: Methods not found for swizzling.");
+        return;
+    }
+    
+    // since the delegate method is optional, if it is not implemented, add a empty implementation
+    // so calling the original from the swizzled method does not crash.
+    if (!originalMethod) {
+        SEL nullSelector = @selector(nullMethod);
+        Method nullMethod = class_getInstanceMethod([self class], nullSelector);
+        
+        if (!nullMethod) {
+            NSLog(@"Null method not found");
+            return;
+        }
+        
+        class_addMethod(class, originalSelector, method_getImplementation(nullMethod), method_getTypeEncoding(nullMethod));
+        originalMethod = class_getInstanceMethod(class, originalSelector);
+    }
+    
+    BOOL didAddMethod = class_addMethod(class, swizzledSelector, method_getImplementation(swizzledMethod), method_getTypeEncoding(swizzledMethod));
+    if (didAddMethod) {
+        swizzledMethod = class_getInstanceMethod(class, swizzledSelector);
+    }
+    method_exchangeImplementations(originalMethod, swizzledMethod);
+}
+
++ (void)swizzleApplicationDelegate {
+    [self swizzleApplicationDelegateMethod:@selector(application:didReceiveRemoteNotification:fetchCompletionHandler:)
+                                   withNew:@selector(swizzled_application:didReceiveRemoteNotification:fetchCompletionHandler:)];
+    
+    [self swizzleApplicationDelegateMethod:@selector(application:didRegisterForRemoteNotificationsWithDeviceToken:)
+                                   withNew:@selector(swizzled_application:didRegisterForRemoteNotificationsWithDeviceToken:)];
+}
+
 - (void)swizzled_userNotificationCenter:(UNUserNotificationCenter *)center
         didReceiveNotificationResponse:(UNNotificationResponse *)response
                  withCompletionHandler:(void (^)(void))completionHandler {
@@ -203,6 +250,42 @@ static dispatch_semaphore_t notificationSemaphore;
     // Call the original method (which is now swizzled)
     [self swizzled_userNotificationCenter:center didReceiveNotificationResponse:response withCompletionHandler:completionHandler];
 }
+
+- (void)nullMethod {
+    // do nothing
+}
+
+- (void)swizzled_application:(UIApplication *)application
+didReceiveRemoteNotification:(NSDictionary *)userInfo
+      fetchCompletionHandler:(void (^)(UIBackgroundFetchResult result))completionHandler {
+    
+    NSLog(@"Running swizzled application received remote notification method");
+    
+    
+    
+    // Call the original method (which is now swizzled)
+    [self swizzled_application:application didReceiveRemoteNotification:userInfo fetchCompletionHandler:completionHandler];
+}
+
+- (void)swizzled_application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
+    // save device token
+    if (deviceToken != nil){
+        const unsigned char* bytes = (const unsigned char*)[deviceToken bytes];
+        NSMutableString *hexString = [NSMutableString stringWithCapacity:[deviceToken length] * 2];
+        
+        for (NSUInteger i = 0; i < [deviceToken length]; ++i) {
+            [hexString appendFormat:@"%02x", bytes[i]];
+        }
+        [RadarSettings setDeviceToken:hexString];
+        
+        NSLog(@"Device token: %@", hexString);
+    } else {
+        NSLog(@"what the heck, no deviceToken");
+    }
+    
+    [self swizzled_application:application didRegisterForRemoteNotificationsWithDeviceToken:deviceToken];
+}
+
 
 + (void)openURLFromNotification:(UNNotification *)notification {
 

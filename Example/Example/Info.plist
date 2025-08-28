@@ -86,6 +86,7 @@
 	<array>
 		<string>fetch</string>
 		<string>location</string>
+		<string>processing</string>
 	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>Launch Screen.storyboard</string>

@@ -65,4 +65,13 @@ class RadarSettings {
     }
 
     // TODO: complete implementation for other radar settings
+    
+    static var userId: String? {
+        get {
+            UserDefaults(suiteName: "RadarSDK")?.string(forKey: kUserId)
+        }
+        set {
+            UserDefaults(suiteName: "RadarSDK")?.set(newValue, forKey: kUserId)
+        }
+    }
 }

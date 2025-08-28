@@ -50,6 +50,7 @@ static NSString *const kXPlatformSDKType = @"radar-xPlatformSDKType";
 static NSString *const kXPlatformSDKVersion = @"radar-xPlatformSDKVersion";
 static NSString *const kInitializeOptions = @"radar-initializeOptions";
 static NSString *const kUserTags = @"radar-userTags";
+static NSString *const kDeviceToken = @"radar-deviceToken";
 
 
 + (NSString *)publishableKey {
@@ -413,6 +414,14 @@ static NSString *const kUserTags = @"radar-userTags";
     } else {
         [[NSUserDefaults standardUserDefaults] removeObjectForKey:kUserTags];
     }
+}
+
++ (NSString *)getDeviceToken {
+    return [[NSUserDefaults standardUserDefaults] stringForKey:kDeviceToken];
+}
+
++ (void)setDeviceToken:(NSString*)deviceToken {
+    [[NSUserDefaults standardUserDefaults] setObject:deviceToken forKey:kDeviceToken];
 }
 
 @end

@@ -71,6 +71,8 @@ NS_ASSUME_NONNULL_BEGIN
 + (BOOL)useOpenedAppConversion;
 + (void)setInitializeOptions:(RadarInitializeOptions *)options;
 + (RadarInitializeOptions *)initializeOptions;
++ (NSString *_Nullable)getDeviceToken;
++ (void)setDeviceToken:(NSString*_Nullable)deviceToken;
 
 + (NSArray<NSString *> *_Nullable)tags;
 + (void)setTags:(NSArray<NSString *> *_Nullable)tags;

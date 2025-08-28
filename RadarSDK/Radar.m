@@ -50,6 +50,7 @@
     dispatch_once(&onceToken, ^{
         [RadarSettings setInitializeOptions:options];
         [RadarNotificationHelper swizzleNotificationCenterDelegate];
+        [RadarNotificationHelper swizzleApplicationDelegate];
     });
 }
 
