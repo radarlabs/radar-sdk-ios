@@ -43,6 +43,7 @@
                                        layer:(NSString *_Nullable)layer
                                     metadata:(NSDictionary *_Nullable)metadata
                                   confidence:(RadarAddressConfidence)confidence
-                                    timeZone:(RadarTimeZone *_Nullable)timeZone;
+                                    timeZone:(RadarTimeZone *_Nullable)timeZone
+                                  categories:(NSArray<NSString *> *_Nullable)categories;
 
 @end

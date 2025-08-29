@@ -158,6 +158,11 @@ The time zone information of the address.
  */
 @property (nullable, copy, nonatomic, readonly) RadarTimeZone *timeZone;
 
+/**
+The categories of the address.
+ */
+@property (nullable, copy, nonatomic, readonly) NSArray<NSString *> *categories;
+
 + (RadarAddress *_Nullable)addressFromObject:(id _Nonnull)object;
 + (NSArray<NSDictionary *> *_Nullable)arrayForAddresses:(NSArray<RadarAddress *> *_Nullable)addresses;
 - (NSDictionary *_Nonnull)dictionaryValue;
