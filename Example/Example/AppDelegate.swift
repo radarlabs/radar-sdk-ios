@@ -166,6 +166,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         guard let text = calibrationTextField?.text, !text.isEmpty else {
             // Show error for empty input
             print("Please enter a valid altitude value")
+            impactGenerator.notificationOccurred(.error)
             return
         }
         
