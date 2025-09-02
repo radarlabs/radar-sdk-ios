@@ -17,6 +17,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
     
     var scrollView: UIScrollView?
     var demoFunctions = Array<() -> Void>()
+    private let impactGenerator = UINotificationFeedbackGenerator() // Prepare the generator
     
     // UI elements for displaying altitude and timestamp
     lazy var altitudeLabel: UILabel = {
@@ -171,6 +172,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         guard let altitude = Double(text), altitude >= 0 else {
             // Show error for invalid number
             print("Please enter a valid positive number")
+            impactGenerator.notificationOccurred(.error)
             return
         }
         
@@ -191,32 +193,35 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         
         // Optional: Update the altitude display to show the new calibration
         // This will be reflected in future trackOnce calls
+        
+        impactGenerator.notificationOccurred(.success)
     }
     
     @objc func dismissKeyboard() {
         calibrationTextField?.resignFirstResponder()
         publishableKeyTextField?.resignFirstResponder()
+        userIdTextField?.resignFirstResponder()
     }
     
     @objc func setPublishableKey() {
         guard let key = publishableKeyTextField?.text, !key.isEmpty else {
             print("Please enter a valid publishable key")
+            impactGenerator.notificationOccurred(.error)
             return
         }
         
         // Set the publishable key in NSUserDefaults
         UserDefaults.standard.set(key, forKey: "radar-publishableKey")
         
-        // Clear the text field
-        publishableKeyTextField?.text = ""
-        
         // Show confirmation
         print("Publishable key updated to: \(key)")
+        impactGenerator.notificationOccurred(.success)
     }
     
     @objc func setUserId() {
         guard let userId = userIdTextField?.text, !userId.isEmpty else {
             print("Please enter a valid user ID")
+            impactGenerator.notificationOccurred(.error)
             return
         }
         
@@ -224,6 +229,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         userIdTextField?.placeholder = userId
         
         print("User ID updated to: \(userId)")
+        impactGenerator.notificationOccurred(.success)
     }
     
     @objc func hostChanged() {
