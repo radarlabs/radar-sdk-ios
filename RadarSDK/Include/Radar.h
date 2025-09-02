@@ -340,6 +340,10 @@ typedef void (^_Nullable RadarLogConversionCompletionHandler)(RadarStatus status
  */
 
 + (void)initializeWithPublishableKey:(NSString *_Nonnull)publishableKey options:(RadarInitializeOptions *_Nullable)options NS_SWIFT_NAME(initialize(publishableKey:options:));
+
++ (void)initializeWithAppGroup:(NSString *_Nonnull)appGroup;
+
+
 #pragma mark - Properties
 
 /**

@@ -119,6 +119,11 @@
     [self initializeWithPublishableKey:publishableKey options:nil];
 }
 
++ (void)initializeWithAppGroup:(NSString *)appGroup {
+    [RadarSettings setAppGroup:appGroup];
+    [RadarSettings publishableKey];
+}
+
 #pragma mark - Properties
 
 + (NSString *)sdkVersion {
@@ -130,11 +135,10 @@
 }
 
 + (void)setUserId:(NSString *)userId {
-    [RadarSettings setUserId:userId];
-    if ([RadarSettings sdkConfiguration].syncAfterSetUser) {
-        [Radar trackOnceWithCompletionHandler:nil];
-    }
-    [RadarSharedSettings settings:userId forKey:RadarSharedSettings.UserId];
+//    [RadarSettings setUserId:userId];
+//    if ([RadarSettings sdkConfiguration].syncAfterSetUser) {
+//        [Radar trackOnceWithCompletionHandler:nil];
+//    }
 }
 
 + (NSString *_Nullable)getUserId {
@@ -632,7 +636,7 @@
                                                  if (Radar.isTracking) {
                                                      [RadarSettings setPreviousTrackingOptions:[RadarSettings trackingOptions]];
                                                  } else {
-                                                     [RadarSettings removePreviousTrackingOptions];
+                                                     [RadarSettings setPreviousTrackingOptions:nil];
                                                  }
 
                                                  if (trackingOptions && trackingOptions.startTrackingAfter == nil) {

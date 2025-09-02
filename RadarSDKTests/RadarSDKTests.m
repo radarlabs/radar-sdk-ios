@@ -917,7 +917,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
 
     [RadarSettings removePreviousTrackingOptions];
-    [RadarSettings removeTrackingOptions];
+    [RadarSettings setTrackingOptions:nil];
     [RadarSettings setTracking:NO];
 
     RadarTripOptions *tripOptions = [[RadarTripOptions alloc] initWithExternalId:@"testTrip" destinationGeofenceTag:@"someTag" destinationGeofenceExternalId:@"someId"];

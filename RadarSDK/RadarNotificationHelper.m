@@ -159,40 +159,11 @@ static dispatch_semaphore_t notificationSemaphore;
     }
 }
 
-+ (void)swizzleNotificationCenterDelegate {
-    id<UNUserNotificationCenterDelegate> delegate = UNUserNotificationCenter.currentNotificationCenter.delegate;
++ (void)swizzleDelegate:(id)delegate
+                 method:(SEL) originalSelector
+                withNew:(SEL) swizzledSelector {
     if (!delegate) {
-        NSLog(@"Error: UNUserNotificationCenter delegate is nil.");
-        return;
-    }
-    Class class = [UNUserNotificationCenter.currentNotificationCenter.delegate class];
-    SEL originalSelector = @selector(userNotificationCenter:didReceiveNotificationResponse:withCompletionHandler:);
-    SEL swizzledSelector = @selector(swizzled_userNotificationCenter:didReceiveNotificationResponse:withCompletionHandler:);
-
-    Method originalMethod = class_getInstanceMethod(class, originalSelector);
-    Method swizzledMethod = class_getInstanceMethod([self class], swizzledSelector);
-
-    if (originalMethod && swizzledMethod) {
-        BOOL didAddMethod = class_addMethod(class,
-                                            swizzledSelector,
-                                            method_getImplementation(swizzledMethod),
-                                            method_getTypeEncoding(swizzledMethod));
-        if (didAddMethod) {
-            Method newSwizzledMethod = class_getInstanceMethod(class, swizzledSelector);
-            method_exchangeImplementations(originalMethod, newSwizzledMethod);
-        } else {
-            method_exchangeImplementations(originalMethod, swizzledMethod);
-        }
-    } else {
-        NSLog(@"Error: Methods not found for swizzling.");
-    }
-}
-
-+ (void)swizzleApplicationDelegateMethod:(SEL) originalSelector
-                                 withNew:(SEL) swizzledSelector {
-    id<UIApplicationDelegate> delegate = UIApplication.sharedApplication.delegate;
-    if (!delegate) {
-        NSLog(@"Error: UIApplication delegate is nil");
+        NSLog(@"Swizzle error: Delegate is nil");
         return;
     }
     Class class = [delegate class];
@@ -201,23 +172,14 @@ static dispatch_semaphore_t notificationSemaphore;
     Method swizzledMethod = class_getInstanceMethod([self class], swizzledSelector);
     
     if (!swizzledMethod) {
-        NSLog(@"Error: Methods not found for swizzling.");
+        NSLog(@"Swizzle error: Methods not found for swizzling.");
         return;
     }
     
-    // since the delegate method is optional, if it is not implemented, add a empty implementation
-    // so calling the original from the swizzled method does not crash.
+    // if there was no original implementation, we just set our method as the original
     if (!originalMethod) {
-        SEL nullSelector = @selector(nullMethod);
-        Method nullMethod = class_getInstanceMethod([self class], nullSelector);
-        
-        if (!nullMethod) {
-            NSLog(@"Null method not found");
-            return;
-        }
-        
-        class_addMethod(class, originalSelector, method_getImplementation(nullMethod), method_getTypeEncoding(nullMethod));
-        originalMethod = class_getInstanceMethod(class, originalSelector);
+        class_addMethod(class, originalSelector, method_getImplementation(swizzledMethod), method_getTypeEncoding(swizzledMethod));
+        return;
     }
     
     BOOL didAddMethod = class_addMethod(class, swizzledSelector, method_getImplementation(swizzledMethod), method_getTypeEncoding(swizzledMethod));
@@ -227,12 +189,24 @@ static dispatch_semaphore_t notificationSemaphore;
     method_exchangeImplementations(originalMethod, swizzledMethod);
 }
 
-+ (void)swizzleApplicationDelegate {
-    [self swizzleApplicationDelegateMethod:@selector(application:didReceiveRemoteNotification:fetchCompletionHandler:)
-                                   withNew:@selector(swizzled_application:didReceiveRemoteNotification:fetchCompletionHandler:)];
++ (void)swizzleNotificationCenterDelegate {
+    id<UNUserNotificationCenterDelegate> delegate = UNUserNotificationCenter.currentNotificationCenter.delegate;
     
-    [self swizzleApplicationDelegateMethod:@selector(application:didRegisterForRemoteNotificationsWithDeviceToken:)
-                                   withNew:@selector(swizzled_application:didRegisterForRemoteNotificationsWithDeviceToken:)];
+    [self swizzleDelegate:delegate
+                   method:@selector(userNotificationCenter:didReceiveNotificationResponse:withCompletionHandler:)
+                  withNew:@selector(swizzled_userNotificationCenter:didReceiveNotificationResponse:withCompletionHandler:)];
+}
+
++ (void)swizzleApplicationDelegate {
+    id<UIApplicationDelegate> applicationDelegate = UIApplication.sharedApplication.delegate;
+    
+    [self swizzleDelegate:applicationDelegate
+                   method:@selector(application:didReceiveRemoteNotification:fetchCompletionHandler:)
+                  withNew:@selector(swizzled_application:didReceiveRemoteNotification:fetchCompletionHandler:)];
+    
+    [self swizzleDelegate:applicationDelegate
+                   method:@selector(application:didRegisterForRemoteNotificationsWithDeviceToken:)
+                  withNew:@selector(swizzled_application:didRegisterForRemoteNotificationsWithDeviceToken:)];
 }
 
 - (void)swizzled_userNotificationCenter:(UNUserNotificationCenter *)center
@@ -248,11 +222,11 @@ static dispatch_semaphore_t notificationSemaphore;
     }
 
     // Call the original method (which is now swizzled)
-    [self swizzled_userNotificationCenter:center didReceiveNotificationResponse:response withCompletionHandler:completionHandler];
-}
-
-- (void)nullMethod {
-    // do nothing
+    if ([self respondsToSelector:@selector(swizzled_userNotificationCenter:didReceiveNotificationResponse:withCompletionHandler:)]) {
+        [self swizzled_userNotificationCenter:center didReceiveNotificationResponse:response withCompletionHandler:completionHandler];
+    } else {
+        completionHandler();
+    }
 }
 
 - (void)swizzled_application:(UIApplication *)application
@@ -261,10 +235,17 @@ didReceiveRemoteNotification:(NSDictionary *)userInfo
     
     NSLog(@"Running swizzled application received remote notification method");
     
+    [Radar trackOnceWithCompletionHandler:^(RadarStatus status, CLLocation* location, NSArray<RadarEvent*>* events, RadarUser* user) {
+        // we used up precious time, but it's probably fine...
+        
+        // Call the original method (which is now swizzled)
+        if ([self respondsToSelector:@selector(swizzled_application:didReceiveRemoteNotification:fetchCompletionHandler:)]) {
+            [self swizzled_application:application didReceiveRemoteNotification:userInfo fetchCompletionHandler:completionHandler];
+        } else {
+            completionHandler(UIBackgroundFetchResultNewData);
+        }
+    }];
     
-    
-    // Call the original method (which is now swizzled)
-    [self swizzled_application:application didReceiveRemoteNotification:userInfo fetchCompletionHandler:completionHandler];
 }
 
 - (void)swizzled_application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
@@ -276,14 +257,16 @@ didReceiveRemoteNotification:(NSDictionary *)userInfo
         for (NSUInteger i = 0; i < [deviceToken length]; ++i) {
             [hexString appendFormat:@"%02x", bytes[i]];
         }
-        [RadarSettings setDeviceToken:hexString];
+        [RadarSettings setPushNotificationToken:hexString];
         
         NSLog(@"Device token: %@", hexString);
     } else {
         NSLog(@"what the heck, no deviceToken");
     }
     
-    [self swizzled_application:application didRegisterForRemoteNotificationsWithDeviceToken:deviceToken];
+    if ([self respondsToSelector:@selector(swizzled_application:didRegisterForRemoteNotificationsWithDeviceToken:)]) {
+        [self swizzled_application:application didRegisterForRemoteNotificationsWithDeviceToken:deviceToken];
+    }
 }
 
 

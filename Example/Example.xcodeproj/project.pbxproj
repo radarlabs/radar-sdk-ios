@@ -17,6 +17,7 @@
 		E698B7502C627A1600084371 /* RadarSDKMotion.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = E698B7412C626AE600084371 /* RadarSDKMotion.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		F625D7F92C3337650024D1E7 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F625D7F82C3337650024D1E7 /* Launch Screen.storyboard */; };
 		F6513E792E60A5F600523472 /* LocationPushExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = F6513E722E60A5F600523472 /* LocationPushExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		F6513EAA2E60D14700523472 /* RadarSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0107AA77262200DA008AB52F /* RadarSDK.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -126,6 +127,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F6513EAA2E60D14700523472 /* RadarSDK.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

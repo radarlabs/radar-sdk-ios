@@ -290,7 +290,8 @@
     } else {
         params[@"xPlatformType"] = @"Native";
     }
-    params[@"deviceToken"] = [RadarSettings getDeviceToken];
+    params[@"pushNotificationToken"] = [RadarSettings pushNotificationToken];
+    params[@"locationExtensionToken"] = [RadarSettings locationExtensionToken];
     
     NSMutableArray<NSString *> *fraudFailureReasons = [NSMutableArray new];
     if (@available(iOS 15.0, *)) {

@@ -17,11 +17,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface RadarSettings : NSObject
 
++ (void)setAppGroup:(NSString*)appGroup;
 + (NSString *_Nullable)publishableKey;
 + (void)setPublishableKey:(NSString *)publishableKey;
 + (NSString *)installId;
-+ (BOOL)updateSessionId;
 + (NSString *)sessionId;
++ (BOOL)updateSessionId;
 + (NSString *_Nullable)_id;
 + (void)setId:(NSString *_Nullable)_id;
 + (NSString *_Nullable)userId;
@@ -37,14 +38,11 @@ NS_ASSUME_NONNULL_BEGIN
 + (BOOL)tracking;
 + (void)setTracking:(BOOL)tracking;
 + (RadarTrackingOptions *_Nullable)trackingOptions;
-+ (void)setTrackingOptions:(RadarTrackingOptions *_Nonnull)options;
-+ (void)removeTrackingOptions;
++ (void)setTrackingOptions:(RadarTrackingOptions *_Nullable)options;
 + (RadarTrackingOptions *_Nullable)previousTrackingOptions;
-+ (void)setPreviousTrackingOptions:(RadarTrackingOptions *_Nonnull)options;
-+ (void)removePreviousTrackingOptions;
++ (void)setPreviousTrackingOptions:(RadarTrackingOptions *_Nullable)options;
 + (RadarTrackingOptions *_Nullable)remoteTrackingOptions;
-+ (void)setRemoteTrackingOptions:(RadarTrackingOptions *_Nonnull)options;
-+ (void)removeRemoteTrackingOptions;
++ (void)setRemoteTrackingOptions:(RadarTrackingOptions *_Nullable)options;
 + (RadarTripOptions *_Nullable)tripOptions;
 + (void)setTripOptions:(RadarTripOptions *_Nullable)options;
 + (NSDictionary *)clientSdkConfiguration;
@@ -71,9 +69,10 @@ NS_ASSUME_NONNULL_BEGIN
 + (BOOL)useOpenedAppConversion;
 + (void)setInitializeOptions:(RadarInitializeOptions *)options;
 + (RadarInitializeOptions *)initializeOptions;
-+ (NSString *_Nullable)getDeviceToken;
-+ (void)setDeviceToken:(NSString*_Nullable)deviceToken;
-
++ (NSString *_Nullable)pushNotificationToken;
++ (void)setPushNotificationToken:(NSString*_Nullable)deviceToken;
++ (NSString *_Nullable)locationExtensionToken;
++ (void)setLocationExtensionToken:(NSString*_Nullable)deviceToken;
 + (NSArray<NSString *> *_Nullable)tags;
 + (void)setTags:(NSArray<NSString *> *_Nullable)tags;
 + (void)addTags:(NSArray<NSString *> *_Nonnull)tags;

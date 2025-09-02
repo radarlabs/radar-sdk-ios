@@ -503,7 +503,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                                                message:[NSString stringWithFormat:@"Setting remote tracking options | trackingOptions = %@", meta.trackingOptions]];
             [RadarSettings setRemoteTrackingOptions:[meta trackingOptions]];
         } else {
-            [RadarSettings removeRemoteTrackingOptions];
+            [RadarSettings setRemoteTrackingOptions:nil];
             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
                                                message:[NSString stringWithFormat:@"Removed remote tracking options | trackingOptions = %@", Radar.getTrackingOptions]];
         }
@@ -522,7 +522,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         [Radar stopTracking];
     }
 
-    [RadarSettings removePreviousTrackingOptions];
+    [RadarSettings setPreviousTrackingOptions:nil];
 }
 
 - (void)replaceBubbleGeofence:(CLLocation *)location radius:(int)radius {
@@ -593,6 +593,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 
                     region.notifyOnEntry = YES;
                     region.notifyOnExit = NO;
+                    
                     BOOL repeats = NO;
                     NSString *notificationRepeats = [geofence.metadata objectForKey:@"radar:notificationRepeats"];
                     if (notificationRepeats) {

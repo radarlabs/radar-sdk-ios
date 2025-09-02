@@ -34,7 +34,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         radarInitializeOptions.autoLogNotificationConversions = true
         radarInitializeOptions.autoHandleNotificationDeepLinks = true
         Radar.initialize(publishableKey: "prj_test_pk_", options: radarInitializeOptions )
-        Radar.setUserId("testUserId")
+        Radar.setUserId("silent-push-id-v2")
         Radar.setMetadata([ "foo": "bar" ])
         Radar.setDelegate(self)
         Radar.setVerifiedDelegate(self)
@@ -105,6 +105,41 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
 //                print("Track once: status = \(Radar.stringForStatus(status)); location = \(String(describing: location)); events = \(String(describing: events)); user = \(String(describing: user))")
 //            }
         }
+        
+        demoButton(text: "IAM") {
+            Radar.showInAppMessage(RadarInAppMessage.fromDictionary([
+                "title": [
+                    "text": "This is the titleakfjaklsjdflajsldfjalsdjflajsldkfjaslkfdjkalsjdfklajlkfdjklsjflajsd",
+                    "color": "#ff0000"
+                ],
+                "body": [
+                    "text": "This is a demo message.",
+                    "color": "#00ff00"
+                ],
+                "button": [
+                    "text": "Buy it",
+                    "color": "#0000ff",
+                    "backgroundColor": "#EB0083",
+                ],
+                "image": [
+                    "url": "https://images.pexels.com/photos/949587/pexels-photo-949587.jpeg",
+                    "name": "image.jpeg"
+                ],
+                "metadata": [
+                    "campainId": "1234"
+                ]
+            ])!)
+        }
+        demoButton(text: "get User Id") {
+            print(Radar.getUserId())
+        }
+        demoButton(text: "track once") {
+            print(Radar.trackOnce())
+        }
+
+//        demoButton(text: "request motion activity permission") {
+//            Radar.requestMotionActivityPermission()
+//        }
         
 //
 //        demoButton(text: "request motion activity permission") {

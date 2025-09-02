@@ -44,6 +44,10 @@ public final class RadarLogger : NSObject, Sendable {
     func info(_ message: String, type: RadarLogType = .none, includeDate: Bool = false, includeBattery: Bool = false, append: Bool = false) {
         log(level: .info, message: message, type: type, includeDate: includeDate, includeBattery: includeBattery, append: append)
     }
+    
+    func warning(_ message: String, type: RadarLogType = .none, includeDate: Bool = false, includeBattery: Bool = false, append: Bool = false) {
+        log(level: .warning, message: message, type: type, includeDate: includeDate, includeBattery: includeBattery, append: append)
+    }
 
     func log(level: RadarLogLevel, message: String, type: RadarLogType = .none, includeDate: Bool = false, includeBattery: Bool = false, append: Bool = false) {
         DispatchQueue.main.async {
