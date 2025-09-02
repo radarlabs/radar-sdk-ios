@@ -62,6 +62,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
     var publishableKeyTextField: UITextField?
     var publishableKeyButton: UIButton?
     
+    var userIdTextField: UITextField?
+    var userIdButton: UIButton?
+    
     // UI elements for host selection
     var hostSegmentedControl: UISegmentedControl?
     let hostOptions = [
@@ -83,8 +86,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         // Uncomment to enable automatic setup for notification conversions or deep linking
         //radarInitializeOptions.autoLogNotificationConversions = true
         //radarInitializeOptions.autoHandleNotificationDeepLinks = true
-        Radar.initialize(publishableKey: "", options: radarInitializeOptions )
-        Radar.setUserId("testUserId")
+        let publishableKey: String = UserDefaults.standard.string(forKey: "radar-publishableKey") ?? ""
+        Radar.initialize(publishableKey: publishableKey, options: radarInitializeOptions )
+        
+        if (Radar.getUserId() == nil) {
+            Radar.setUserId("testUserId")
+        }
+        
         // Radar.setMetadata([ "foo": "bar", "radar:calibrationAltitude": 40 ])
         Radar.setDelegate(self)
         Radar.setVerifiedDelegate(self)
@@ -206,6 +214,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         print("Publishable key updated to: \(key)")
     }
     
+    @objc func setUserId() {
+        guard let userId = userIdTextField?.text, !userId.isEmpty else {
+            print("Please enter a valid user ID")
+            return
+        }
+        
+        Radar.setUserId(userId)
+        userIdTextField?.placeholder = userId
+        
+        print("User ID updated to: \(userId)")
+    }
+    
     @objc func hostChanged() {
         guard let selectedIndex = hostSegmentedControl?.selectedSegmentIndex else { return }
         
@@ -288,15 +308,35 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         publishableKeyButton?.layer.cornerRadius = 5
         publishableKeyButton?.addTarget(self, action: #selector(setPublishableKey), for: .touchUpInside)
         
+        // Set user id input
+        let userIdLabel = UILabel(frame: CGRect(x: 20, y: 340, width: window.frame.size.width - 40, height: 20))
+        userIdLabel.text = "Change user ID:"
+        userIdLabel.textAlignment = .center
+        userIdLabel.font = UIFont.systemFont(ofSize: 12)
+        userIdLabel.textColor = .darkGray
+        
+        userIdTextField = UITextField(frame: CGRect(x: 20, y: 365, width: window.frame.size.width - 40, height: 30))
+        userIdTextField?.placeholder = Radar.getUserId()
+        userIdTextField?.borderStyle = .roundedRect
+        userIdTextField?.textAlignment = .center
+        
+        userIdButton = UIButton(frame: CGRect(x: 20, y: 400, width: window.frame.size.width - 40, height: 30))
+        userIdButton?.setTitle("Set User ID", for: .normal)
+        userIdButton?.setTitleColor(.white, for: .normal)
+        userIdButton?.backgroundColor = .systemBlue
+        userIdButton?.layer.cornerRadius = 5
+        userIdButton?.addTarget(self, action: #selector(setUserId), for: .touchUpInside)
+        
+        
         // Add host selection UI
-        let hostLabel = UILabel(frame: CGRect(x: 20, y: 340, width: window.frame.size.width - 40, height: 20))
+        let hostLabel = UILabel(frame: CGRect(x: 20, y: 440, width: window.frame.size.width - 40, height: 20))
         hostLabel.text = "Select API Host:"
         hostLabel.textAlignment = .center
         hostLabel.font = UIFont.systemFont(ofSize: 12)
         hostLabel.textColor = .darkGray
         
         hostSegmentedControl = UISegmentedControl(items: ["Staging", "Kenny", "Ngrok"])
-        hostSegmentedControl?.frame = CGRect(x: 20, y: 365, width: window.frame.size.width - 40, height: 30)
+        hostSegmentedControl?.frame = CGRect(x: 20, y: 465, width: window.frame.size.width - 40, height: 30)
         hostSegmentedControl?.selectedSegmentIndex = 0 // Default to production
         hostSegmentedControl?.addTarget(self, action: #selector(hostChanged), for: .valueChanged)
         
@@ -310,14 +350,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
             }
         }
         
-
-        
         // Add tap gesture to dismiss keyboard
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
         window.addGestureRecognizer(tapGesture)
         
         // Position scroll view for demo buttons
-        scrollView = UIScrollView(frame: CGRect(x: 0, y: 405, width: window.frame.size.width, height: window.frame.size.height * 0.35))
+        scrollView = UIScrollView(frame: CGRect(x: 0, y: 505, width: window.frame.size.width, height: window.frame.size.height * 0.15))
         
         // Create metadata section at the bottom
         let metadataY = scrollView!.frame.maxY + 10
@@ -354,6 +392,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         window.addSubview(publishableKeyLabel)
         window.addSubview(publishableKeyTextField!)
         window.addSubview(publishableKeyButton!)
+        window.addSubview(userIdLabel)
+        window.addSubview(userIdTextField!)
+        window.addSubview(userIdButton!)
         window.addSubview(hostLabel)
         window.addSubview(hostSegmentedControl!)
         
@@ -485,5 +526,4 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
     func didUpdateToken(_ token: RadarVerifiedLocationToken) {
         
     }
-    
 }
