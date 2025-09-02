@@ -17,7 +17,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
     
     var scrollView: UIScrollView?
     var demoFunctions = Array<() -> Void>()
-    private let impactGenerator = UINotificationFeedbackGenerator() // Prepare the generator
+    private let impactGenerator = UINotificationFeedbackGenerator() // haptic feedback on input error
+    private let impactGeneratorLight = UIImpactFeedbackGenerator(style: .light)
     
     // UI elements for displaying altitude and timestamp
     lazy var altitudeLabel: UILabel = {
@@ -213,6 +214,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         
         // Set the publishable key in NSUserDefaults
         UserDefaults.standard.set(key, forKey: "radar-publishableKey")
+        publishableKeyTextField?.placeholder = key
         
         // Show confirmation
         print("Publishable key updated to: \(key)")
@@ -304,7 +306,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         publishableKeyLabel.textColor = .darkGray
         
         publishableKeyTextField = UITextField(frame: CGRect(x: 20, y: 265, width: window.frame.size.width - 40, height: 30))
-        publishableKeyTextField?.placeholder = "Enter publishable key"
+        publishableKeyTextField?.placeholder = UserDefaults.standard.string(forKey: "radar-publishableKey") ?? "Enter publishable key"
         publishableKeyTextField?.borderStyle = .roundedRect
         publishableKeyTextField?.textAlignment = .center
         
@@ -423,6 +425,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         }
 
         demoButton(text: "clear metadata") {
+            self.impactGeneratorLight.impactOccurred()
             Radar.setMetadata([:])
             // Reset the current calibration label
             self.currentCalibrationLabel?.text = "Current: Not set"
@@ -431,10 +434,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         }
 
         demoButton(text: "request motion activity permission") {
+            self.impactGeneratorLight.impactOccurred()
             Radar.requestMotionActivityPermission()
         }
         
         demoButton(text: "TrackOnce") {
+            self.impactGeneratorLight.impactOccurred()
             Radar.trackOnce { (status, location, events, user) in
                 print("Track once: status = \(Radar.stringForStatus(status)); location = \(String(describing: location)); events = \(String(describing: events)); user = \(String(describing: user))")
                 self.updateAltitudeDisplay(user: user, location: location)
@@ -443,6 +448,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
 
 
         demoButton(text: "startTracking") {
+            self.impactGeneratorLight.impactOccurred()
             let options = RadarTrackingOptions.presetContinuous
             Radar.startTracking(trackingOptions: options)
         }
