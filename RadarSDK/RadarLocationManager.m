@@ -22,6 +22,7 @@
 #import "RadarReplayBuffer.h"
 #import "RadarActivityManager.h"
 #import "RadarNotificationHelper.h"
+#import "RadarOfflineManager.h"
 
 @interface RadarLocationManager ()
 
@@ -63,6 +64,7 @@ static NSString *const kBubbleGeofenceIdentifierPrefix = @"radar_bubble_";
 static NSString *const kSyncGeofenceIdentifierPrefix = @"radar_geofence_";
 static NSString *const kSyncBeaconIdentifierPrefix = @"radar_beacon_";
 static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
+static NSString *const kSyncedRegionIdentifierPrefix = @"radar_synced_";
 
 + (instancetype)sharedInstance {
     static dispatch_once_t once;
@@ -553,14 +555,70 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 - (void)replaceSyncedGeofences:(NSArray<RadarGeofence *> *)geofences {
     if (!geofences) {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Skipping replacing synced geofences"];
+        [RadarState setSyncedRegion:nil];
 
         return;
+    }
+
+    RadarTrackingOptions *options = [Radar getTrackingOptions];
+    if (options.syncLocations == RadarTrackingOptionsSyncRegions) {
+        CLLocation *lastKnownLocation = [RadarState lastLocation];
+        if (!lastKnownLocation) {
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Resetting stored distances: No lastKnownLocation available"];
+            [RadarState setSyncedRegion:nil];
+        } else if (geofences.count == 0) {
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Resetting stored distances: Received empty geofences array"];
+            [RadarState setSyncedRegion:nil];
+        } else {
+            CLLocationDistance maxDistance = -1;
+
+            for (RadarGeofence *geofence in geofences) {
+                RadarCoordinate *centerCoordinate = nil;
+                if ([geofence.geometry isKindOfClass:[RadarCircleGeometry class]]) {
+                    centerCoordinate = ((RadarCircleGeometry *)geofence.geometry).center;
+                } else if ([geofence.geometry isKindOfClass:[RadarPolygonGeometry class]]) {
+                    centerCoordinate = ((RadarPolygonGeometry *)geofence.geometry).center;
+                }
+
+                if (centerCoordinate) {
+                    CLLocation *geofenceCenterLocation = [[CLLocation alloc] initWithLatitude:centerCoordinate.coordinate.latitude longitude:centerCoordinate.coordinate.longitude];
+                    CLLocationDistance distance = [lastKnownLocation distanceFromLocation:geofenceCenterLocation];
+
+                    double geofenceRadius = 0;
+                    if ([geofence.geometry isKindOfClass:[RadarCircleGeometry class]]) {
+                        geofenceRadius = ((RadarCircleGeometry *)geofence.geometry).radius;
+                    } else if ([geofence.geometry isKindOfClass:[RadarPolygonGeometry class]]) {
+                        geofenceRadius = ((RadarPolygonGeometry *)geofence.geometry).radius;
+                    }
+
+                    CLLocationDistance adjustedDistance = distance - geofenceRadius - 70;
+                    CLLocationDistance finalDistance = MAX(0, adjustedDistance);
+
+                    maxDistance = MAX(maxDistance, finalDistance);
+                }
+            }
+
+            if (maxDistance != -1) {
+                CLRegion *syncedRegion = [[CLCircularRegion alloc] initWithCenter:lastKnownLocation.coordinate
+                                                                radius:maxDistance
+                                                                identifier:[NSString stringWithFormat:@"%@%@", kSyncedRegionIdentifierPrefix, [[NSUUID UUID] UUIDString]]];
+                [RadarState setSyncedRegion:syncedRegion];
+                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
+                                                message:[NSString stringWithFormat:@"Stored synced region | latitude = %f; longitude = %f; radius = %f; identifier = %@",
+                                                                                    lastKnownLocation.coordinate.latitude, lastKnownLocation.coordinate.longitude, maxDistance,
+                                                                                    syncedRegion.identifier]];
+            } else {
+                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Resetting synced region: No valid geofence centers found"];
+                [RadarState setSyncedRegion:nil];
+            }
+        }
+    } else {
+        [RadarState setSyncedRegion:nil];
     }
 
     [RadarState setNearbyGeofences:geofences];
     [self removeSyncedGeofences];
 
-    RadarTrackingOptions *options = [Radar getTrackingOptions];
     NSUInteger numGeofences = MIN(MIN(geofences.count,19), options.beacons ? 9 : 19);
     NSMutableArray *requests = [NSMutableArray array];
 
@@ -886,6 +944,15 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                                                                                   [RadarTrackingOptions stringForSyncLocations:options.syncLocations], canExit]];
 
             return;
+        }
+
+        // todo: add beacon check
+        if (options.syncLocations == RadarTrackingOptionsSyncRegions) {
+            if ([[RadarState syncedRegion] containsCoordinate:location.coordinate] && [[RadarState geofenceIds] count] == 0 && [[RadarOfflineManager getUserGeofencesFromLocation:location] count] == 0) {
+                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
+                                                   message:[NSString stringWithFormat:@"Skipping sync: in synced region with no geofences | sync = %@", [RadarTrackingOptions stringForSyncLocations:options.syncLocations]]];
+                return;
+            }
         }
     }
     [RadarState updateLastSentAt];

@@ -31,6 +31,8 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSTimeInterval)backgroundTimeRemaining;
 + (CLLocation *)locationForDictionary:(NSDictionary *_Nonnull)dict;
 + (NSDictionary *)dictionaryForLocation:(CLLocation *)location;
++ (CLRegion *)regionForDictionary:(NSDictionary *_Nonnull)dict;
++ (NSDictionary *)dictionaryForRegion:(CLRegion *)region;
 + (NSString *)dictionaryToJson:(NSDictionary *)dict;
 + (void)runOnMainThread:(dispatch_block_t)block;
 + (BOOL)isLive NS_SWIFT_NAME(isLive());

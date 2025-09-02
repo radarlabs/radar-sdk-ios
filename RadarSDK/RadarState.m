@@ -31,6 +31,7 @@ static NSString *const kNotificationPermissionGranted = @"radar-notificationPerm
 static NSString *const KNearbyGeofences = @"radar-nearbyGeofences";
 static NSString *const kRegisteredNotifications = @"radar-registeredNotifications";
 static NSString *const kRadarUser = @"radar-radarUser";
+static NSString *const kSyncedRegion = @"radar-syncedRegion";
 static NSDictionary *_lastRelativeAltitudeDataInMemory = nil;
 static NSDate *_lastPressureBackupTime = nil;
 static NSTimeInterval const kBackupInterval = 2.0; // 2 seconds
@@ -278,6 +279,18 @@ static NSTimeInterval const kBackupInterval = 2.0; // 2 seconds
     }
     [registeredNotifications addObject:notification];
     [RadarState setRegisteredNotifications:registeredNotifications];
+}
+
++ (CLRegion *)syncedRegion {
+    NSDictionary *dict = [[NSUserDefaults standardUserDefaults] dictionaryForKey:kSyncedRegion];
+    CLRegion *syncedRegion = [RadarUtils regionForDictionary:dict];
+
+    return syncedRegion;
+}
+
++ (void)setSyncedRegion:(CLRegion *)syncedRegion {
+    NSDictionary *dict = [RadarUtils dictionaryForRegion:syncedRegion];
+    [[NSUserDefaults standardUserDefaults] setObject:dict forKey:kSyncedRegion];
 }
 
 + (void)setRadarUser:(RadarUser *_Nullable)radarUser {
