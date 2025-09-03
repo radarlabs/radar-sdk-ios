@@ -286,10 +286,15 @@
 
     id categoriesObj = dict[@"categories"];
     if (categoriesObj && [categoriesObj isKindOfClass:[NSArray class]]) {
-        categories = (NSArray<NSString *> *)categoriesObj;
+        NSMutableArray<NSString *> *validCategories = [NSMutableArray array];
+        for (id category in (NSArray *)categoriesObj) {
+            if ([category isKindOfClass:[NSString class]]) {
+                [validCategories addObject:(NSString *)category];
+            }
+        }
+        categories = [validCategories copy];
     }
-
-
+    
     return [[RadarAddress alloc] initWithCoordinate:coordinate
                                    formattedAddress:formattedAddress
                                             country:country
