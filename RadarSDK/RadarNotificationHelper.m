@@ -16,6 +16,7 @@
 #import <BackgroundTasks/BackgroundTasks.h>
 #import "Radar+Internal.h"
 #import <objc/runtime.h>
+#import "RadarAPIClient.h"
 
 @implementation RadarNotificationHelper
 
@@ -233,19 +234,22 @@ static dispatch_semaphore_t notificationSemaphore;
 didReceiveRemoteNotification:(NSDictionary *)userInfo
       fetchCompletionHandler:(void (^)(UIBackgroundFetchResult result))completionHandler {
     
-    NSLog(@"Running swizzled application received remote notification method");
     
-    [Radar trackOnceWithCompletionHandler:^(RadarStatus status, CLLocation* location, NSArray<RadarEvent*>* events, RadarUser* user) {
-        // we used up precious time, but it's probably fine...
+    if ([@"radar:trackOnce" isEqual: userInfo[@"type"]]) {
+        NSLog(@"Running track once because type is trackOnce");
         
-        // Call the original method (which is now swizzled)
-        if ([self respondsToSelector:@selector(swizzled_application:didReceiveRemoteNotification:fetchCompletionHandler:)]) {
-            [self swizzled_application:application didReceiveRemoteNotification:userInfo fetchCompletionHandler:completionHandler];
-        } else {
-            completionHandler(UIBackgroundFetchResultNewData);
-        }
-    }];
-    
+        [Radar trackOnceWithCompletionHandler:^(RadarStatus status, CLLocation* location, NSArray<RadarEvent*>* events, RadarUser* user) {
+            // we used up precious time, but it's probably fine...
+            
+            NSLog(@"Track once complete");
+            // Call the original method (which is now swizzled)
+            if ([self respondsToSelector:@selector(swizzled_application:didReceiveRemoteNotification:fetchCompletionHandler:)]) {
+                [self swizzled_application:application didReceiveRemoteNotification:userInfo fetchCompletionHandler:completionHandler];
+            } else {
+                completionHandler(UIBackgroundFetchResultNewData);
+            }
+        }];
+    }
 }
 
 - (void)swizzled_application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {

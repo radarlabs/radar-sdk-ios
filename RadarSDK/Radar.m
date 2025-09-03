@@ -113,6 +113,10 @@
                                             [self flushLogs];
                                         }];
     }];
+    
+    if (options.pushNotification) {
+        [[UIApplication sharedApplication] registerForRemoteNotifications];
+    }
 
 }
 
@@ -143,7 +147,7 @@
 }
 
 + (NSString *_Nullable)getUserId {
-    return [RadarSettings getUserId];
+    return [RadarSettings userId];
 }
 
 + (void)setDescription:(NSString *)description {

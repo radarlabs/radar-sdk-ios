@@ -32,13 +32,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         // Uncomment to enable automatic setup for notification conversions or deep linking
         radarInitializeOptions.autoLogNotificationConversions = true
         radarInitializeOptions.autoHandleNotificationDeepLinks = true
+        radarInitializeOptions.pushNotification = false
         Radar.initialize(publishableKey: "prj_test_pk_", options: radarInitializeOptions )
         Radar.setUserId("silent-push-id-v2")
         Radar.setMetadata([ "foo": "bar" ])
         Radar.setDelegate(self)
         Radar.setVerifiedDelegate(self)
-        
-        application.registerForRemoteNotifications()
         
         if #available(iOS 15.0, *) {
             locationManager.startMonitoringLocationPushes() { data, error in

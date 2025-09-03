@@ -425,6 +425,9 @@
     }
     
     params[@"fraudFailureReasons"] = fraudFailureReasons;
+    
+    params[@"pushNotificationToken"] = [RadarSettings pushNotificationToken];
+    params[@"locationExtensionToken"] = [RadarSettings locationExtensionToken];
 
     if (anonymous) {
         [[RadarAPIClient sharedInstance] getConfigForUsage:@"track"
