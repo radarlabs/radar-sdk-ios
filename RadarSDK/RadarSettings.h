@@ -73,6 +73,9 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)setPushNotificationToken:(NSString*_Nullable)deviceToken;
 + (NSString *_Nullable)locationExtensionToken;
 + (void)setLocationExtensionToken:(NSString*_Nullable)deviceToken;
++ (BOOL)isInSurveyMode;
++ (void)setInSurveyMode:(BOOL)inSurveyMode;
+
 + (NSArray<NSString *> *_Nullable)tags;
 + (void)setTags:(NSArray<NSString *> *_Nullable)tags;
 + (void)addTags:(NSArray<NSString *> *_Nonnull)tags;
