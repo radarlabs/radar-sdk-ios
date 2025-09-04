@@ -70,6 +70,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
     // UI elements for host selection
     var hostSegmentedControl: UISegmentedControl?
     let hostOptions = [
+        "https://api.radar.io",
         "https://api.radar-staging.com",
         "https://api-kenny.radar-staging.com",
         //"https://api.radar.io",
@@ -344,7 +345,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         hostLabel.font = UIFont.systemFont(ofSize: 12)
         hostLabel.textColor = .darkGray
         
-        hostSegmentedControl = UISegmentedControl(items: ["Staging", "Kenny", "Ngrok"])
+        hostSegmentedControl = UISegmentedControl(items: ["Production", "Staging", "Kenny", "Ngrok"])
         hostSegmentedControl?.frame = CGRect(x: 20, y: 465, width: window.frame.size.width - 40, height: 30)
         hostSegmentedControl?.selectedSegmentIndex = 0 // Default to production
         hostSegmentedControl?.addTarget(self, action: #selector(hostChanged), for: .valueChanged)
@@ -355,6 +356,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
             case hostOptions[0]: hostSegmentedControl?.selectedSegmentIndex = 0
             case hostOptions[1]: hostSegmentedControl?.selectedSegmentIndex = 1
             case hostOptions[2]: hostSegmentedControl?.selectedSegmentIndex = 2
+            case hostOptions[3]: hostSegmentedControl?.selectedSegmentIndex = 3
             default: hostSegmentedControl?.selectedSegmentIndex = 0
             }
         }
