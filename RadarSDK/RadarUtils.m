@@ -100,6 +100,18 @@ static NSDateFormatter *_isoDateFormatter;
     return RadarConnectionTypeUnknown;
 }
 
++ (NSString *)networkTypeString {
+    RadarConnectionType type = [self networkType];
+    switch(type) {
+        case RadarConnectionTypeWiFi:
+            return @"wifi";
+        case RadarConnectionTypeCellular:
+            return @"cellular";
+        default:
+            return @"unknown";
+    }
+}
+
 + (NSDictionary *)appInfo {
     NSMutableDictionary *infoDictionary = [[[NSBundle mainBundle] infoDictionary] mutableCopy];
     [infoDictionary addEntriesFromDictionary: [[NSBundle mainBundle] localizedInfoDictionary]];
@@ -116,17 +128,6 @@ static NSDateFormatter *_isoDateFormatter;
     return @{};
 }
 
-+ (NSString *)networkTypeString {
-    RadarConnectionType type = [self networkType];
-    switch(type) {
-        case RadarConnectionTypeWiFi:
-            return @"wifi";
-        case RadarConnectionTypeCellular:
-            return @"cellular";
-        default:
-            return @"unknown";
-    }
-}
 
 + (BOOL)isSimulator {
 #if TARGET_OS_SIMULATOR
