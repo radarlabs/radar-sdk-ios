@@ -8,6 +8,8 @@
 #import <CoreLocation/CoreLocation.h>
 #import <UIKit/UIKit.h>
 #import <sys/utsname.h>
+#import <SystemConfiguration/SystemConfiguration.h>
+#import <CoreTelephony/CTTelephonyNetworkInfo.h>
 
 #import "RadarUtils.h"
 
@@ -62,6 +64,68 @@ static NSDateFormatter *_isoDateFormatter;
 
 + (NSString *)deviceMake {
     return @"Apple";
+}
+
++ (RadarConnectionType)networkType {
+    SCNetworkReachabilityRef reachability = SCNetworkReachabilityCreateWithName(kCFAllocatorDefault, "google.com");
+    if(!reachability) {
+        return RadarConnectionTypeUnknown;
+    }
+    
+    SCNetworkReachabilityFlags flags;
+    if(!SCNetworkReachabilityGetFlags(reachability, &flags)) {
+        CFRelease(reachability);
+        return RadarConnectionTypeUnknown;
+    }
+    
+    CFRelease(reachability);
+    
+    BOOL isReachable = (flags & kSCNetworkReachabilityFlagsReachable) != 0;
+    BOOL isWWAN = (flags & kSCNetworkReachabilityFlagsIsWWAN) !=0;
+    
+    if (isReachable) {
+        if (isWWAN) {
+            CTTelephonyNetworkInfo *networkInfo = [[CTTelephonyNetworkInfo alloc] init];
+            
+            NSDictionary *carrierTypes = networkInfo.serviceCurrentRadioAccessTechnology;
+            if (carrierTypes && carrierTypes.count > 0) {
+                return RadarConnectionTypeCellular;
+            } else {
+                return RadarConnectionTypeUnknown;
+            }
+        } else {
+            return RadarConnectionTypeWiFi;
+        }
+    }
+    return RadarConnectionTypeUnknown;
+}
+
++ (NSDictionary *)appInfo {
+    NSMutableDictionary *infoDictionary = [[[NSBundle mainBundle] infoDictionary] mutableCopy];
+    [infoDictionary addEntriesFromDictionary: [[NSBundle mainBundle] localizedInfoDictionary]];
+    
+    if (infoDictionary.count) {
+        return @{
+            @"name": infoDictionary[@"CFBundleDisplayName"] ?: @"",
+            @"version": infoDictionary[@"CFBundleShortVersionString"] ?: @"",
+            @"build": infoDictionary[@"CFBundleVersion"] ?: @"",
+            @"namespace": [[NSBundle mainBundle] bundleIdentifier] ?: @""
+            
+        };
+    }
+    return @{};
+}
+
++ (NSString *)networkTypeString {
+    RadarConnectionType type = [self networkType];
+    switch(type) {
+        case RadarConnectionTypeWiFi:
+            return @"wifi";
+        case RadarConnectionTypeCellular:
+            return @"cellular";
+        default:
+            return @"unknown";
+    }
 }
 
 + (BOOL)isSimulator {
