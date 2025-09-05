@@ -20,6 +20,10 @@ typedef void (^NotificationPermissionCheckCompletion)(BOOL granted);
 
 + (void)updateClientSideCampaignsWithPrefix:(NSString *)prefix notificationRequests:(NSArray<UNNotificationRequest *> *)requests;
 
++ (void)removeNotificationRequestsByIdentifiers:(NSArray<NSString*>*) identifiers;
+
++ (void)addOnPremiseNotificationRequests:(NSArray<UNNotificationRequest *> *)requests;
+
 + (void)checkNotificationPermissionsWithCompletionHandler:(nullable NotificationPermissionCheckCompletion)completionHandler;
 
 + (void)logConversionWithNotificationResponse:(UNNotificationResponse *)response;

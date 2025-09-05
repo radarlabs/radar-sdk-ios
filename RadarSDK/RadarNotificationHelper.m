@@ -248,7 +248,7 @@ static dispatch_semaphore_t notificationSemaphore;
 + (void)removePendingNotificationsWithPrefix:(NSString *)prefix completionHandler:(void (^)(void))completionHandler {
     UNUserNotificationCenter *notificationCenter = [UNUserNotificationCenter currentNotificationCenter];
     [notificationCenter getPendingNotificationRequestsWithCompletionHandler:^(NSArray<UNNotificationRequest *> *_Nonnull requests) {
-    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Found %lu pending notifications", (unsigned long)requests.count]];
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Found %lu pending notifications", (unsigned long)requests.count]];
         NSMutableArray *identifiersToRemove = [NSMutableArray new];
         NSMutableArray *userInfosToKeep = [NSMutableArray new];
         for (UNNotificationRequest *request in requests) {
@@ -260,14 +260,18 @@ static dispatch_semaphore_t notificationSemaphore;
         }
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Found %lu pending notifications to remove", (unsigned long)identifiersToRemove.count]];        
         [RadarState setRegisteredNotifications:userInfosToKeep];
-        if (identifiersToRemove.count > 0) {
-            [notificationCenter removePendingNotificationRequestsWithIdentifiers:identifiersToRemove];
-            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Removed pending notifications"];
-        }
+        [RadarNotificationHelper removeNotificationRequestsByIdentifiers:identifiersToRemove];
 
         completionHandler();
     }];
+}
 
++ (void)removeNotificationRequestsByIdentifiers:(NSArray<NSString*>*) identifiers {
+    UNUserNotificationCenter *notificationCenter = [UNUserNotificationCenter currentNotificationCenter];
+    if (identifiers.count > 0) {
+        [notificationCenter removePendingNotificationRequestsWithIdentifiers:identifiers];
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Removed pending notifications"];
+    }
 }
 
 + (void)addOnPremiseNotificationRequests:(NSArray<UNNotificationRequest *> *)requests {

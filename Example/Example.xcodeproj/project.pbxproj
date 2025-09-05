@@ -16,6 +16,7 @@
 		E698B7492C626B0600084371 /* RadarSDKMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E698B7412C626AE600084371 /* RadarSDKMotion.framework */; };
 		E698B7502C627A1600084371 /* RadarSDKMotion.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = E698B7412C626AE600084371 /* RadarSDKMotion.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		F625D7F92C3337650024D1E7 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F625D7F82C3337650024D1E7 /* Launch Screen.storyboard */; };
+		F6513F602E6B736200523472 /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6513F5F2E6B736200523472 /* MainView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -76,6 +77,7 @@
 		E632FA1C2CAC366C00E86C85 /* Example.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Example.entitlements; sourceTree = "<group>"; };
 		E698B7382C626AE600084371 /* RadarSDKMotion.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RadarSDKMotion.xcodeproj; path = ../../RadarSDKMotion/RadarSDKMotion.xcodeproj; sourceTree = "<group>"; };
 		F625D7F82C3337650024D1E7 /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
+		F6513F5F2E6B736200523472 /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -116,6 +118,7 @@
 				DD236D34230A006900EB88F9 /* Info.plist */,
 				DDB861D22385FC3E00770661 /* Default-568h@2x.png */,
 				DD236D26230A006700EB88F9 /* AppDelegate.swift */,
+				F6513F5F2E6B736200523472 /* MainView.swift */,
 				DD291168230D0AF900049D3A /* Utils.swift */,
 				DD236D2F230A006900EB88F9 /* Assets.xcassets */,
 				DD86FCF9239185F4003225F6 /* RadarSDK.xcodeproj */,
@@ -268,6 +271,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				DD236D27230A006700EB88F9 /* AppDelegate.swift in Sources */,
+				F6513F602E6B736200523472 /* MainView.swift in Sources */,
 				DD291169230D0AF900049D3A /* Utils.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

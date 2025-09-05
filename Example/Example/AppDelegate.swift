@@ -8,6 +8,7 @@
 import UIKit
 import UserNotifications
 import RadarSDK
+import SwiftUI
 
 
 @UIApplicationMain
@@ -18,6 +19,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
     
     var scrollView: UIScrollView?
     var demoFunctions = Array<() -> Void>()
+    
+    var useSwiftUI = true
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { (_, _) in }
@@ -28,10 +31,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         
         // Replace with a valid test publishable key
         let radarInitializeOptions = RadarInitializeOptions()
+        
+        UserDefaults.standard.set("https://api.radar-staging.com", forKey: "radar-host")
         // Uncomment to enable automatic setup for notification conversions or deep linking
         //radarInitializeOptions.autoLogNotificationConversions = true
         //radarInitializeOptions.autoHandleNotificationDeepLinks = true
-        Radar.initialize(publishableKey: "prj_test_pk_0000000000000000000000000000000000000000", options: radarInitializeOptions )
+        Radar.initialize(publishableKey: "prj_test_pk_", options: radarInitializeOptions )
         Radar.setUserId("testUserId")
         Radar.setMetadata([ "foo": "bar" ])
         Radar.setDelegate(self)
@@ -75,12 +80,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         let window = UIWindow(windowScene: windowScene)
         
         window.backgroundColor = .white
-        
-        scrollView = UIScrollView(frame: CGRect(x: 0, y: 100, width: window.frame.size.width, height: window.frame.size.height))
-        scrollView!.contentSize.height = 0
-        scrollView!.contentSize.width = window.frame.size.width
-        
-        window.addSubview(scrollView!)
+
+        if #available(iOS 15.0, *), useSwiftUI {
+            let controller = UIHostingController(rootView: MainView())
+            controller.view.frame = UIScreen.main.bounds
+            window.addSubview(controller.view)
+        } else {
+            scrollView = UIScrollView(frame: CGRect(x: 0, y: 100, width: window.frame.size.width, height: window.frame.size.height))
+            scrollView!.contentSize.height = 0
+            scrollView!.contentSize.width = window.frame.size.width
+            
+            window.addSubview(scrollView!)
+        }
         
         window.makeKeyAndVisible()
         
@@ -95,7 +106,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
                 print("Track once: status = \(Radar.stringForStatus(status)); location = \(String(describing: location)); events = \(String(describing: events)); user = \(String(describing: user))")
             }
         }
-        
         
         demoButton(text: "iam") {
             Radar.showInAppMessage(RadarInAppMessage.fromDictionary([
