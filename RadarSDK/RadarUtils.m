@@ -68,11 +68,13 @@ static NSDateFormatter *_isoDateFormatter;
 
 + (RadarConnectionType)networkType {
     SCNetworkReachabilityRef reachability = SCNetworkReachabilityCreateWithName(kCFAllocatorDefault, "google.com");
+    
     if(!reachability) {
         return RadarConnectionTypeUnknown;
     }
     
     SCNetworkReachabilityFlags flags;
+    
     if(!SCNetworkReachabilityGetFlags(reachability, &flags)) {
         CFRelease(reachability);
         return RadarConnectionTypeUnknown;
@@ -105,8 +107,25 @@ static NSDateFormatter *_isoDateFormatter;
     switch(type) {
         case RadarConnectionTypeWiFi:
             return @"wifi";
-        case RadarConnectionTypeCellular:
+        case RadarConnectionTypeCellular: {
+            CTTelephonyNetworkInfo *networkInfo = [[CTTelephonyNetworkInfo alloc] init];
+            
+            if (networkInfo.serviceCurrentRadioAccessTechnology) {
+                NSString *radioTech = networkInfo.serviceCurrentRadioAccessTechnology.allValues.firstObject;
+                
+                if ([radioTech isEqualToString: @"CTRadioAccessTechnologyNR"]) {
+                    return @"cellular-5g";
+                } else if ([radioTech isEqualToString: @"CTRadioAccessTechnologyLTE"]) {
+                    return @"cellular-lte";
+                } else if ([radioTech containsString: @"UMTS"] || [radioTech containsString:@"WCDMA"]) {
+                    return @"cellular-3g";
+                } else if ([radioTech containsString: @"GSM"] || [radioTech containsString:@"EDGE"]) {
+                    return @"cellular-2g";
+                }
+            }
+            
             return @"cellular";
+        }
         default:
             return @"unknown";
     }
@@ -122,7 +141,6 @@ static NSDateFormatter *_isoDateFormatter;
             @"version": infoDictionary[@"CFBundleShortVersionString"] ?: @"",
             @"build": infoDictionary[@"CFBundleVersion"] ?: @"",
             @"namespace": [[NSBundle mainBundle] bundleIdentifier] ?: @"",
-            
         };
     }
     return @{};
