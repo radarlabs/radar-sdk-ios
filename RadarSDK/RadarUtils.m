@@ -81,7 +81,7 @@ static NSDateFormatter *_isoDateFormatter;
     CFRelease(reachability);
     
     BOOL isReachable = (flags & kSCNetworkReachabilityFlagsReachable) != 0;
-    BOOL isWWAN = (flags & kSCNetworkReachabilityFlagsIsWWAN) !=0;
+    BOOL isWWAN = (flags & kSCNetworkReachabilityFlagsIsWWAN) != 0;
     
     if (isReachable) {
         if (isWWAN) {
@@ -121,7 +121,7 @@ static NSDateFormatter *_isoDateFormatter;
             @"name": infoDictionary[@"CFBundleDisplayName"] ?: @"",
             @"version": infoDictionary[@"CFBundleShortVersionString"] ?: @"",
             @"build": infoDictionary[@"CFBundleVersion"] ?: @"",
-            @"namespace": [[NSBundle mainBundle] bundleIdentifier] ?: @""
+            @"namespace": [[NSBundle mainBundle] bundleIdentifier] ?: @"",
             
         };
     }
