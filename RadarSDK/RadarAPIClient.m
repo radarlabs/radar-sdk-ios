@@ -444,7 +444,7 @@
                                                                 source:source
                                                             verified:verified
                                                         publishableKey:publishableKey
-                                                notificationsRemaining:notificationsDelivered
+                                                notificationsRemaining:notificationsRemaining
                                                 locationMetadata:locationMetadata
                                                     completionHandler:completionHandler];
         }];
