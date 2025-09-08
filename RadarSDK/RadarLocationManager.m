@@ -550,7 +550,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Removed bubble geofences"];
 }
 
-- (BOOL)region:(CLRegion*) a matches:(CLRegion*) b {
++ (BOOL)region:(CLRegion*) a isEqual:(CLRegion*) b {
     if (a == nil && b == nil) {
         return YES;
     }
@@ -560,6 +560,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     if (![a.identifier isEqual:b.identifier]) {
         return NO;
     }
+    // make sure both geofences are circular, other types we don't compare and default to assume not equal
     if (![a isKindOfClass:[CLCircularRegion class]]) {
         return NO;
     }
@@ -573,35 +574,6 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         circleA.radius != circleB.radius) {
         return NO;
     }
-    return YES;
-}
-
-- (BOOL)notification:(UNNotificationRequest*) a matches:(UNNotificationRequest*) b {
-    if (a == nil && b == nil) {
-        return YES;
-    }
-    if (a == nil || b == nil) {
-        return NO;
-    }
-    if (![a.identifier isEqualToString:b.identifier]) {
-        return NO;
-    }
-    if (![a.content.userInfo[@"campaignId"] isEqual:b.content.userInfo[@"campaignId"]]) {
-        return NO;
-    }
-    if (![a.content.userInfo[@"geofenceId"] isEqual:b.content.userInfo[@"geofenceId"]]) {
-        return NO;
-    }
-    if (![a.trigger isKindOfClass:[UNLocationNotificationTrigger class]] ||
-        ![b.trigger isKindOfClass:[UNLocationNotificationTrigger class]]) {
-        return NO;
-    }
-    UNLocationNotificationTrigger* aTrigger = (UNLocationNotificationTrigger*) a.trigger;
-    UNLocationNotificationTrigger* bTrigger = (UNLocationNotificationTrigger*) b.trigger;
-    if (![self region:aTrigger.region matches:bTrigger.region]) {
-        return NO;
-    }
-    
     return YES;
 }
 
@@ -686,17 +658,17 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     for (CLRegion *region in self.locationManager.monitoredRegions) {
         if ([region.identifier hasPrefix:kSyncGeofenceIdentifierPrefix]) {
             CLCircularRegion* geofenceRegion = geofenceRegionsByIdentifier[region.identifier];
-            if ([self region:geofenceRegion matches:region]) {
+            if ([RadarLocationManager region:geofenceRegion isEqual:region]) {
                 // same region is still in nearbyGeofences, we keep the region
                 [geofenceRegionsByIdentifier removeObjectForKey:region.identifier];
                 numKeptGeofences += 1;
             } else {
+                // the geofence changed, or no longer monitored, remove the existing monitored region
                 [self.locationManager stopMonitoringForRegion:region];
                 numRemovedGeofences += 1;
             }
         }
     }
-    
     
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
                                     message:[NSString stringWithFormat:@"Synced %lu geofences: removed %lu, kept %lu, added %lu",
@@ -710,51 +682,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                                                                             region.center.latitude, region.center.longitude, region.radius, region.identifier]];
     }
     
-    // Update notifications
-    // clean up notifications
-    NSMutableArray<NSDictionary*>* existingRegisteredNotifications = [[NSMutableArray alloc] init];
-    UNUserNotificationCenter* notificationCenter = [UNUserNotificationCenter currentNotificationCenter];
-    
-    [notificationCenter getPendingNotificationRequestsWithCompletionHandler:^(NSArray<UNNotificationRequest *> *_Nonnull requests) {
-        NSArray<NSDictionary*>* registeredNotifications = [RadarState registeredNotifications];
-        NSMutableArray<NSString*>* pendingNotificationsToRemove = [[NSMutableArray alloc] init];
-        
-        // For debug logging
-        NSInteger syncedNotificationCount = notificationsByIdentifier.count;
-        
-        // Remove notifications that are no longer in the nearby list
-        for (UNNotificationRequest* request in requests) {
-            NSString* identifier = request.identifier;
-            if ([identifier hasPrefix:kSyncGeofenceIdentifierPrefix]) {
-                // this is a Radar geofence notification
-                // it should be removed if it does not match the new notifications
-                UNNotificationRequest* newRequest = notificationsByIdentifier[identifier];
-                if ([self notification:request matches:newRequest]) {
-                    [notificationsByIdentifier removeObjectForKey:identifier];
-                    [existingRegisteredNotifications addObject:request.content.userInfo];
-                } else {
-                    [pendingNotificationsToRemove addObject:identifier];
-                }
-            }
-        }
-        // if new notification is has already been registered, but wasn't see in pending notifications, it means it was triggered during the track call
-        // so we should not add it back into notifications as the server is unaware of the trigger yet.
-        for (NSString* identifier in notificationsByIdentifier.allKeys) {
-            UNNotificationRequest* request = notificationsByIdentifier[identifier];
-            if ([registeredNotifications containsObject:request.content.userInfo]) {
-                [notificationsByIdentifier removeObjectForKey:identifier];
-            }
-        }
-        
-        [notificationCenter removePendingNotificationRequestsWithIdentifiers:pendingNotificationsToRemove];
-        // Add new notifications
-        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
-                                        message:[NSString stringWithFormat:@"Synced %lu notifications: removed %lu, kept %lu, added %lu",
-                                                 syncedNotificationCount, pendingNotificationsToRemove.count, existingRegisteredNotifications.count, notificationsByIdentifier.count]];
-        // set existing
-        [RadarState setRegisteredNotifications:existingRegisteredNotifications];
-        [RadarNotificationHelper addOnPremiseNotificationRequests:notificationsByIdentifier.allValues];
-    }];
+    [RadarNotificationHelper updateClientSideCampaignsWithPrefix:kSyncGeofenceIdentifierPrefix notificationRequests:notificationsByIdentifier];
 }
 
 - (void)removeSyncedGeofences {

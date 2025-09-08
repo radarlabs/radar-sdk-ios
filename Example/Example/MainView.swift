@@ -9,13 +9,18 @@
 import SwiftUI
 import RadarSDK
 
-@available(iOS 15.0, *)
 struct MainView: View {
     
     @State var monitoringRegions: [CLRegion] = [];
     @State var pendingNotifications: [String] = [];
     
-    let regionListFont = Font.system(size: 12).monospaced()
+    var regionListFont = {
+        if #available(iOS 15.0, *) {
+            Font.system(size: 12).monospaced()
+        } else {
+            Font.system(size: 12)
+        }
+    }()
     
     let timer = Timer.publish(every: 1.0, on: .main, in: .common).autoconnect()
     
@@ -54,13 +59,19 @@ struct MainView: View {
             }
         }
         
-    
         Button("trackOnce") {
             Radar.trackOnce()
         }
         
         Button("startTracking") {
             Radar.startTracking(trackingOptions: .presetResponsive)
+        }
+        
+        Button("startTrip") {
+            let tripOptions = RadarTripOptions(externalId: "300", destinationGeofenceTag: "store", destinationGeofenceExternalId: "123")
+            tripOptions.mode = .car
+            tripOptions.approachingThreshold = 9
+            Radar.startTrip(options: RadarTripOptions.init())
         }
         
         Text("").onReceive(timer) { _ in
