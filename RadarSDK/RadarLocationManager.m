@@ -557,7 +557,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     if (a == nil || b == nil) {
         return NO;
     }
-    if (![a.identifier isEqualToString:b.identifier]) {
+    if (![a.identifier isEqual:b.identifier]) {
         return NO;
     }
     if (![a isKindOfClass:[CLCircularRegion class]]) {
@@ -586,11 +586,10 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     if (![a.identifier isEqualToString:b.identifier]) {
         return NO;
     }
-    if (![a.content.userInfo[@"campaignId"] isEqualToString:b.content.userInfo[@"campaignId"]]) {
+    if (![a.content.userInfo[@"campaignId"] isEqual:b.content.userInfo[@"campaignId"]]) {
         return NO;
-        
     }
-    if (![a.content.userInfo[@"geofenceId"] isEqualToString:b.content.userInfo[@"geofenceId"]]) {
+    if (![a.content.userInfo[@"geofenceId"] isEqual:b.content.userInfo[@"geofenceId"]]) {
         return NO;
     }
     if (![a.trigger isKindOfClass:[UNLocationNotificationTrigger class]] ||
