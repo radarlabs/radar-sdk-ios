@@ -240,13 +240,13 @@ static NSTimeInterval const kBackupInterval = 2.0; // 2 seconds
 
 
 + (void)addRegisteredNotification:(NSDictionary *)notification {
-    NSMutableArray *registeredNotifications = [NSMutableArray new];
+    NSMutableSet *registeredNotifications = [NSMutableSet new];
     NSArray *notifications = [RadarState registeredNotifications];
     if (notifications) {
         [registeredNotifications addObjectsFromArray:notifications];
     }
     [registeredNotifications addObject:notification];
-    [RadarState setRegisteredNotifications:registeredNotifications];
+    [RadarState setRegisteredNotifications:registeredNotifications.allObjects];
 }
 
 @end

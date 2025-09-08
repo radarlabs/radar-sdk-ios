@@ -32,7 +32,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         // Replace with a valid test publishable key
         let radarInitializeOptions = RadarInitializeOptions()
         
-        UserDefaults.standard.set("https://api.radar-staging.com", forKey: "radar-host")
+        // custom host for testing
+        // UserDefaults.standard.set("https://api.radar.com", forKey: "radar-host")
         // Uncomment to enable automatic setup for notification conversions or deep linking
         //radarInitializeOptions.autoLogNotificationConversions = true
         //radarInitializeOptions.autoHandleNotificationDeepLinks = true
@@ -450,17 +451,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
     }
 
     func notify(_ body: String) {
-        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { (granted, error) in
-            if granted {
-                let content = UNMutableNotificationContent()
-                content.body = body
-                content.sound = UNNotificationSound.default
-                content.categoryIdentifier = "example"
-
-                let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: nil)
-                UNUserNotificationCenter.current().add(request, withCompletionHandler: { (_) in })
-            }
-        }
+//        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { (granted, error) in
+//            if granted {
+//                let content = UNMutableNotificationContent()
+//                content.body = body
+//                content.sound = UNNotificationSound.default
+//                content.categoryIdentifier = "example"
+//
+//                let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: nil)
+//                UNUserNotificationCenter.current().add(request, withCompletionHandler: { (_) in })
+//            }
+//        }
     }
 
     func didReceiveEvents(_ events: [RadarEvent], user: RadarUser?) {

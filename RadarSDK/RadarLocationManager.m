@@ -593,9 +593,13 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 
 - (BOOL)notification:(UNNotificationRequest*) a matches:(UNNotificationRequest*) b {
     if (a == nil && b == nil) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
+                                        message:[NSString stringWithFormat:@"A, B both null"]];
         return YES;
     }
     if (a == nil || b == nil) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
+                                        message:[NSString stringWithFormat:@"A or B is nil"]];
         return NO;
     }
     if (![a.identifier isEqualToString:b.identifier]) {
@@ -663,7 +667,6 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     
     NSMutableDictionary<NSString*, CLCircularRegion*>* geofenceRegionsByIdentifier = [[NSMutableDictionary alloc] init];
     NSMutableDictionary<NSString*, UNNotificationRequest*>* notificationsByIdentifier = [[NSMutableDictionary alloc] init];
-    NSMutableArray<NSDictionary*>* newRegisteredNotifications = [[NSMutableArray alloc] init];
     
     RadarTrackingOptions *options = [Radar getTrackingOptions];
     NSUInteger maxClientGeofence = MIN(geofences.count, options.beacons ? 9 : 19);
@@ -672,6 +675,11 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         NSString* message = [NSString stringWithFormat:@"Could not sync all nearby geofences, syncing %lu/%lu",
                          (unsigned long)maxClientGeofence, (unsigned long)geofences.count];
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:message];
+        
+        for (NSUInteger i = maxClientGeofence; i < geofences.count; ++i) {
+            NSString* message = [NSString stringWithFormat:@"Disgarding %@", geofences[i]._id];
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:message];
+        }
     }
     
     
@@ -700,7 +708,6 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                 
                 UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:identifier content:content trigger:trigger];
                 [notificationsByIdentifier setObject:request forKey:identifier];
-                [newRegisteredNotifications addObject:request.content.userInfo];
             }
         }
     }
@@ -742,11 +749,18 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     
     // Update notifications
     // clean up notifications
+    NSMutableArray<NSDictionary*>* existingRegisteredNotifications = [[NSMutableArray alloc] init];
     UNUserNotificationCenter* notificationCenter = [UNUserNotificationCenter currentNotificationCenter];
     [notificationCenter getPendingNotificationRequestsWithCompletionHandler:^(NSArray<UNNotificationRequest *> *_Nonnull requests) {
         
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
+                                        message:[NSString stringWithFormat:@"started with %lu notifications", notificationsByIdentifier.count]];
+        
         NSArray<NSDictionary*>* registeredNotifications = [RadarState registeredNotifications];
         NSMutableArray<NSString*>* pendingNotificationsToRemove = [[NSMutableArray alloc] init];
+        
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
+                                        message:[NSString stringWithFormat:@"Registered notifications contains %lu items, there are %lu pending notificaitons", registeredNotifications.count, requests.count]];
         
         // Remove notifications that are no longer in the nearby list
         for (UNNotificationRequest* request in requests) {
@@ -757,6 +771,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                 UNNotificationRequest* newRequest = notificationsByIdentifier[identifier];
                 if ([self notification:request matches:newRequest]) {
                     [notificationsByIdentifier removeObjectForKey:identifier];
+                    [existingRegisteredNotifications addObject:request.content.userInfo];
                     
                     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
                                                     message:[NSString stringWithFormat:@"Keeping existing notification; identifier = %@", identifier]];
@@ -788,8 +803,9 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         // Add new notifications
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
                                         message:[NSString stringWithFormat:@"adding %lu notifications", notificationsByIdentifier.count]];
+        // set existing
+        [RadarState setRegisteredNotifications:existingRegisteredNotifications];
         [RadarNotificationHelper addOnPremiseNotificationRequests:notificationsByIdentifier.allValues];
-        [RadarState setRegisteredNotifications:newRegisteredNotifications];
     }];
 }
 
