@@ -270,11 +270,12 @@ static dispatch_semaphore_t notificationSemaphore;
                  completionHandler:(void (^)(void))completionHandler {
     // Update notifications
     // clean up notifications
-    NSMutableArray<NSDictionary*>* existingRegisteredNotifications = [[NSMutableArray alloc] init];
     UNUserNotificationCenter* notificationCenter = [UNUserNotificationCenter currentNotificationCenter];
     
     [notificationCenter getPendingNotificationRequestsWithCompletionHandler:^(NSArray<UNNotificationRequest *> *_Nonnull requests) {
         NSArray<NSDictionary*>* registeredNotifications = [RadarState registeredNotifications];
+        
+        NSMutableArray<NSDictionary*>* existingRegisteredNotifications = [[NSMutableArray alloc] init];
         NSMutableArray<NSString*>* pendingNotificationsToRemove = [[NSMutableArray alloc] init];
         
         // For debug logging
@@ -295,6 +296,14 @@ static dispatch_semaphore_t notificationSemaphore;
                 }
             }
         }
+        
+        // save registered notifications that doesn't have the matching prefix
+        for (NSDictionary* registeredNotification in registeredNotifications) {
+            if (![registeredNotification[@"identifier"] hasPrefix:prefix]) {
+                [existingRegisteredNotifications addObject:registeredNotification];
+            }
+        }
+        
         // if new notification is has already been registered, but wasn't see in pending notifications, it means it was triggered during the track call
         // so we should not add it back into notifications as the server is unaware of the trigger yet.
         for (NSString* identifier in notificationsByIdentifier.allKeys) {
@@ -311,7 +320,7 @@ static dispatch_semaphore_t notificationSemaphore;
                                                  syncedNotificationCount, pendingNotificationsToRemove.count, existingRegisteredNotifications.count, notificationsByIdentifier.count]];
         // set existing
         [RadarState setRegisteredNotifications:existingRegisteredNotifications];
-        [RadarNotificationHelper addOnPremiseNotificationRequests:notificationsByIdentifier.allValues completionHandler:^(){}];
+        [RadarNotificationHelper addOnPremiseNotificationRequests:notificationsByIdentifier.allValues completionHandler:completionHandler];
     }];
 }
 

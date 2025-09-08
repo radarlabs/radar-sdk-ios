@@ -32,11 +32,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         // Replace with a valid test publishable key
         let radarInitializeOptions = RadarInitializeOptions()
         
-
         // Uncomment to enable automatic setup for notification conversions or deep linking
         //radarInitializeOptions.autoLogNotificationConversions = true
         //radarInitializeOptions.autoHandleNotificationDeepLinks = true
-        Radar.initialize(publishableKey: "prj_test_pk_", options: radarInitializeOptions )
+        Radar.initialize(publishableKey: "prj_test_pk", options: radarInitializeOptions )
         Radar.setUserId("testUserId")
         Radar.setMetadata([ "foo": "bar" ])
         Radar.setDelegate(self)
