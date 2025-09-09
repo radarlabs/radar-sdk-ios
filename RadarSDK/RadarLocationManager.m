@@ -626,16 +626,16 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         NSString *identifier = [NSString stringWithFormat:@"%@%@", kSyncGeofenceIdentifierPrefix, geofence._id];
         
         // new geofences
-//        CLCircularRegion* region = [self circularRegionFromGeofence:geofence];
-//        [geofenceRegionsByIdentifier setObject:[region copy] forKey:identifier];
+        CLCircularRegion* region = [self circularRegionFromGeofence:geofence];
+        [geofenceRegionsByIdentifier setObject:[region copy] forKey:identifier];
         
         // new notifications
         if (geofence.metadata != nil) {
             UNMutableNotificationContent *content = [RadarNotificationHelper extractContentFromMetadata:geofence.metadata identifier:identifier];
             if (content) {
-                
-                CLCircularRegion* region = [self circularRegionFromGeofence:geofence];
-                [geofenceRegionsByIdentifier setObject:[region copy] forKey:identifier];
+//                
+//                CLCircularRegion* region = [self circularRegionFromGeofence:geofence];
+//                [geofenceRegionsByIdentifier setObject:[region copy] forKey:identifier];
                 
                 region.notifyOnEntry = YES;
                 region.notifyOnExit = NO;
