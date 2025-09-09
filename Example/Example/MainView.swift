@@ -74,6 +74,11 @@ struct MainView: View {
             Radar.startTrip(options: RadarTripOptions.init())
         }
         
+        Button("refresh") {
+            getMonitoredRegions()
+            getPendingNotifications()
+        }
+        
         Text("").onReceive(timer) { _ in
             getMonitoredRegions()
             getPendingNotifications()

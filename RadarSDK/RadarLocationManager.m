@@ -626,13 +626,17 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         NSString *identifier = [NSString stringWithFormat:@"%@%@", kSyncGeofenceIdentifierPrefix, geofence._id];
         
         // new geofences
-        CLCircularRegion* region = [self circularRegionFromGeofence:geofence];
-        [geofenceRegionsByIdentifier setObject:[region copy] forKey:identifier];
+//        CLCircularRegion* region = [self circularRegionFromGeofence:geofence];
+//        [geofenceRegionsByIdentifier setObject:[region copy] forKey:identifier];
         
         // new notifications
         if (geofence.metadata != nil) {
             UNMutableNotificationContent *content = [RadarNotificationHelper extractContentFromMetadata:geofence.metadata identifier:identifier];
             if (content) {
+                
+                CLCircularRegion* region = [self circularRegionFromGeofence:geofence];
+                [geofenceRegionsByIdentifier setObject:[region copy] forKey:identifier];
+                
                 region.notifyOnEntry = YES;
                 region.notifyOnExit = NO;
                 NSString *notificationRepeats = [geofence.metadata objectForKey:@"radar:notificationRepeats"];
@@ -666,6 +670,8 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                 // the geofence changed, or no longer monitored, remove the existing monitored region
                 [self.locationManager stopMonitoringForRegion:region];
                 numRemovedGeofences += 1;
+                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
+                                                message:[NSString stringWithFormat:@"removed region %@", region]];
             }
         }
     }

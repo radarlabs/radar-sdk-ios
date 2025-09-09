@@ -32,6 +32,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         // Replace with a valid test publishable key
         let radarInitializeOptions = RadarInitializeOptions()
         
+        UserDefaults.standard.set("https://api.radar-staging.com", forKey: "radar-host")
         // Uncomment to enable automatic setup for notification conversions or deep linking
         //radarInitializeOptions.autoLogNotificationConversions = true
         //radarInitializeOptions.autoHandleNotificationDeepLinks = true
@@ -439,6 +440,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
     }
 
     func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+        print("will present notification!")
         completionHandler([.list, .banner, .sound])
     }
     
@@ -446,6 +448,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         // Uncomment for manual setup for notification conversions and URLs
         // Radar.logConversion(response: response)
         // Radar.openURLFromNotification(response.notification)
+        print("Received notification!")
     }
 
     func notify(_ body: String) {
