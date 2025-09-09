@@ -43,6 +43,33 @@ import CoreLocation
    return userGeofences
 }
 
+@objc public static func getBeaconsFromLocation(_ location: CLLocation) -> [RadarBeacon] {
+    let nearbyBeacons = RadarState.nearbyBeacons()
+    if (nearbyBeacons == nil) {
+        return []
+    }
+    var userBeacons = [RadarBeacon]()
+    for beacon in nearbyBeacons! {
+        if let geometry = beacon.geometry {
+            let beaconLocation = CLLocation(latitude: geometry.coordinate.latitude, longitude: geometry.coordinate.longitude)
+            let distance = location.distance(from: beaconLocation)
+            
+            // Bluetooth beacons typically have a range of 1-100 meters
+            // Using a reasonable range of 100 meters for offline detection
+            let beaconRange: Double = 100.0
+            
+            if (distance <= beaconRange) {
+                userBeacons.append(beacon)
+                RadarLogger.shared.log(level: RadarLogLevel.debug, message: "Radar offline manager detected user near beacon: " + (beacon._id ?? "unknown"))
+            }
+        } else {
+            RadarLogger.shared.log(level: RadarLogLevel.error, message: "error parsing beacon geometry for beacon: " + (beacon._id ?? "unknown"))
+        }
+    }
+    
+    return userBeacons
+}
+
     @objc public static func updateTrackingOptionsFromOfflineLocation(_ userGeofences: [RadarGeofence], completionHandler: @escaping (RadarConfig?) -> Void) {
         var newGeofenceTags = [String]()
         let sdkConfig = RadarSettings.sdkConfiguration

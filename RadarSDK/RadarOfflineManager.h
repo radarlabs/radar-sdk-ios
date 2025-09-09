@@ -11,12 +11,15 @@
 #import "RadarUtils.h"
 #import "RadarEvent+Internal.h"
 #import "RadarUser+Internal.h"
+#import "RadarBeacon.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface RadarOfflineManager : NSObject
 
 + (NSArray<RadarGeofence *> *)getUserGeofencesFromLocation:(CLLocation *)location;
+
++ (NSArray<RadarBeacon *> *)getBeaconsFromLocation:(CLLocation *)location;
 
 + (void)updateTrackingOptionsFromOfflineLocation:(NSArray<RadarGeofence *> *)userGeofences completionHandler:(void (^)(RadarConfig *))completionHandler;
 

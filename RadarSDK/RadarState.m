@@ -9,6 +9,7 @@
 #import "CLLocation+Radar.h"
 #import "RadarUtils.h"
 #import "RadarGeofence+Internal.h"
+#import "RadarBeacon+Internal.h"
 #import "RadarLogger.h"
 
 @implementation RadarState
@@ -29,6 +30,7 @@ static NSString *const kLastMotionActivityData = @"radar-lastMotionActivityData"
 static NSString *const kLastPressureData = @"radar-lastPressureData";
 static NSString *const kNotificationPermissionGranted = @"radar-notificationPermissionGranted";
 static NSString *const KNearbyGeofences = @"radar-nearbyGeofences";
+static NSString *const kNearbyBeacons = @"radar-nearbyBeacons";
 static NSString *const kRegisteredNotifications = @"radar-registeredNotifications";
 static NSString *const kRadarUser = @"radar-radarUser";
 static NSString *const kSyncedRegion = @"radar-syncedRegion";
@@ -259,6 +261,32 @@ static NSTimeInterval const kBackupInterval = 2.0; // 2 seconds
         }
     }
     return nearbyGeofences;
+}
+
++ (void)setNearbyBeacons:(NSArray<RadarBeacon *> *_Nullable)nearbyBeacons {
+    NSMutableArray *nearbyBeaconsArray = [NSMutableArray new];
+    NSMutableArray *nearbyBeaconsArrayIds = [NSMutableArray new];
+    for (RadarBeacon *beacon in nearbyBeacons) {
+        [nearbyBeaconsArray addObject:[beacon dictionaryValue]];
+        [nearbyBeaconsArrayIds addObject:beacon._id];
+    }
+    [[NSUserDefaults standardUserDefaults] setObject:nearbyBeaconsArray forKey:kNearbyBeacons];
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"nearbyBeaconsArray in RadarState:%@", nearbyBeaconsArray]];
+}
+
++ (NSArray<RadarBeacon *> *_Nullable)nearbyBeacons {
+    NSArray *nearbyBeaconsArray = [[NSUserDefaults standardUserDefaults] objectForKey:kNearbyBeacons];
+    if (!nearbyBeaconsArray) {
+        return nil;
+    }
+    NSMutableArray *nearbyBeacons = [NSMutableArray new];
+    for (NSDictionary *beaconDict in nearbyBeaconsArray) {
+        RadarBeacon *beacon = [[RadarBeacon alloc] initWithObject:beaconDict];
+        if (beacon) {
+            [nearbyBeacons addObject:beacon];
+        }
+    }
+    return nearbyBeacons;
 }
 
 + (NSArray<NSDictionary *> *_Nullable)registeredNotifications {
