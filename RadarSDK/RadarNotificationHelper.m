@@ -252,6 +252,7 @@ static dispatch_semaphore_t notificationSemaphore;
         NSMutableArray *identifiersToRemove = [NSMutableArray new];
         NSMutableArray *userInfosToKeep = [NSMutableArray new];
         for (UNNotificationRequest *request in requests) {
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Found pending notification | identifier = %@", request.identifier]];
             if ([request.identifier hasPrefix:prefix]) {
                 [identifiersToRemove addObject:request.identifier];
             } else {
