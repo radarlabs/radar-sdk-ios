@@ -947,7 +947,14 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                                                                      NSArray<RadarGeofence *> *_Nullable nearbyGeofences, RadarConfig *_Nullable config, RadarVerifiedLocationToken *_Nullable token) {
                     self.sending = NO;
                     
-                    [self updateTrackingFromMeta:config.meta];
+                    if (config) {
+                        [self updateTrackingFromMeta:config.meta];
+                    }
+
+                    if (status != RadarStatusSuccess || !config) {
+                        return;
+                    }
+                    
                     [self replaceSyncedGeofences:nearbyGeofences];
                 }];
             }];
@@ -1033,11 +1040,15 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                                              completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user,
                                                                  NSArray<RadarGeofence *> *_Nullable nearbyGeofences, RadarConfig *_Nullable config, RadarVerifiedLocationToken *_Nullable token) {
                                                  self.sending = NO;
+
+                                                 if (config) {
+                                                     [self updateTrackingFromMeta:config.meta];
+                                                 }
+
                                                  if (status != RadarStatusSuccess || !config) {
                                                      return;
                                                  }
 
-                                                 [self updateTrackingFromMeta:config.meta];
                                                  [self replaceSyncedGeofences:nearbyGeofences];
                                              }];
         }];

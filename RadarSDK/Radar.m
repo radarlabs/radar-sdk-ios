@@ -322,7 +322,7 @@
                                               indoorScan:indoorScan
                                          completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user,
                                                              NSArray<RadarGeofence *> *_Nullable nearbyGeofences, RadarConfig *_Nullable config, RadarVerifiedLocationToken *_Nullable token) {
-                                            if (status == RadarStatusSuccess && config != nil) {                                    
+                                            if (config) {                                    
                                                 [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];                                            
                                             }
                                              if (completionHandler) {
