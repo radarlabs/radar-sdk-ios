@@ -95,6 +95,32 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
                 print("Track once: status = \(Radar.stringForStatus(status)); location = \(String(describing: location)); events = \(String(describing: events)); user = \(String(describing: user))")
             }
         }
+        
+        
+        demoButton(text: "iam") {
+            Radar.showInAppMessage(RadarInAppMessage.fromDictionary([
+                "title": [
+                    "text": "This is the title",
+                    "color": "#ff0000"
+                ],
+                "body": [
+                    "text": "This is a demo message.",
+                    "color": "#00ff00"
+                ],
+                "button": [
+                    "text": "Buy it",
+                    "color": "#0000ff",
+                    "backgroundColor": "#EB0083",
+                ],
+                "image": [
+                    "url": "https://images.pexels.com/photos/949587/pexels-photo-949587.jpeg",
+                    "name": "image.jpeg"
+                ],
+                "metadata": [
+                    "campainId": "1234"
+                ]
+            ])!)
+        }
 
         demoButton(text: "request motion activity permission") {
             Radar.requestMotionActivityPermission()

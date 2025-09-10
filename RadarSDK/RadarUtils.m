@@ -8,6 +8,8 @@
 #import <CoreLocation/CoreLocation.h>
 #import <UIKit/UIKit.h>
 #import <sys/utsname.h>
+#import <SystemConfiguration/SystemConfiguration.h>
+#import <CoreTelephony/CTTelephonyNetworkInfo.h>
 
 #import "RadarUtils.h"
 
@@ -45,8 +47,7 @@ static NSDateFormatter *_isoDateFormatter;
 }
 
 + (NSString *)sdkVersion {
-    return @"3.23.0-beta.4";
-
+    return @"3.23.2";
 }
 
 + (NSString *)deviceId {
@@ -64,6 +65,87 @@ static NSDateFormatter *_isoDateFormatter;
 + (NSString *)deviceMake {
     return @"Apple";
 }
+
++ (RadarConnectionType)networkType {
+    SCNetworkReachabilityRef reachability = SCNetworkReachabilityCreateWithName(kCFAllocatorDefault, "google.com");
+    
+    if(!reachability) {
+        return RadarConnectionTypeUnknown;
+    }
+    
+    SCNetworkReachabilityFlags flags;
+    
+    if(!SCNetworkReachabilityGetFlags(reachability, &flags)) {
+        CFRelease(reachability);
+        return RadarConnectionTypeUnknown;
+    }
+    
+    CFRelease(reachability);
+    
+    BOOL isReachable = (flags & kSCNetworkReachabilityFlagsReachable) != 0;
+    BOOL isWWAN = (flags & kSCNetworkReachabilityFlagsIsWWAN) != 0;
+    
+    if (isReachable) {
+        if (isWWAN) {
+            CTTelephonyNetworkInfo *networkInfo = [[CTTelephonyNetworkInfo alloc] init];
+            
+            NSDictionary *carrierTypes = networkInfo.serviceCurrentRadioAccessTechnology;
+            if (carrierTypes && carrierTypes.count > 0) {
+                return RadarConnectionTypeCellular;
+            } else {
+                return RadarConnectionTypeUnknown;
+            }
+        } else {
+            return RadarConnectionTypeWiFi;
+        }
+    }
+    return RadarConnectionTypeUnknown;
+}
+
++ (NSString *)networkTypeString {
+    RadarConnectionType type = [self networkType];
+    switch(type) {
+        case RadarConnectionTypeWiFi:
+            return @"wifi";
+        case RadarConnectionTypeCellular: {
+            CTTelephonyNetworkInfo *networkInfo = [[CTTelephonyNetworkInfo alloc] init];
+            
+            if (networkInfo.serviceCurrentRadioAccessTechnology) {
+                NSString *radioTech = networkInfo.serviceCurrentRadioAccessTechnology.allValues.firstObject;
+                
+                if ([radioTech isEqualToString: @"CTRadioAccessTechnologyNR"]) {
+                    return @"cellular-5g";
+                } else if ([radioTech isEqualToString: @"CTRadioAccessTechnologyLTE"]) {
+                    return @"cellular-lte";
+                } else if ([radioTech containsString: @"UMTS"] || [radioTech containsString:@"WCDMA"]) {
+                    return @"cellular-3g";
+                } else if ([radioTech containsString: @"GSM"] || [radioTech containsString:@"EDGE"]) {
+                    return @"cellular-2g";
+                }
+            }
+            
+            return @"cellular";
+        }
+        default:
+            return @"unknown";
+    }
+}
+
++ (NSDictionary *)appInfo {
+    NSMutableDictionary *infoDictionary = [[[NSBundle mainBundle] infoDictionary] mutableCopy];
+    [infoDictionary addEntriesFromDictionary: [[NSBundle mainBundle] localizedInfoDictionary]];
+    
+    if (infoDictionary.count) {
+        return @{
+            @"name": infoDictionary[@"CFBundleDisplayName"] ?: @"",
+            @"version": infoDictionary[@"CFBundleShortVersionString"] ?: @"",
+            @"build": infoDictionary[@"CFBundleVersion"] ?: @"",
+            @"namespace": [[NSBundle mainBundle] bundleIdentifier] ?: @"",
+        };
+    }
+    return @{};
+}
+
 
 + (BOOL)isSimulator {
 #if TARGET_OS_SIMULATOR

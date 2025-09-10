@@ -63,6 +63,21 @@ public final class RadarInAppMessage : NSObject, Sendable {
         }
         return array.compactMap(RadarInAppMessage.fromDictionary);
     }
+    
+    public func toDictionary() -> [String: Sendable] {
+        var dict = [
+            "title": title.toDictionary(),
+            "body": body.toDictionary(),
+            "metadata": metadata,
+        ]
+        if let button = button {
+            dict["button"] = button.toDictionary()
+        }
+        if let image = image {
+            dict["image"] = image.toDictionary()
+        }
+        return dict
+    }
 }
 
 // constructors
@@ -78,6 +93,18 @@ func uiColorFromString(_ string: String?) -> UIColor? {
     return nil
 }
 
+func uiColorToString(_ color: UIColor) -> String {
+    var r: CGFloat = 0
+    var g: CGFloat = 0
+    var b: CGFloat = 0
+    var a: CGFloat = 0
+    color.getRed(&r, green: &g, blue: &b, alpha: &a)
+    let intR = Int(r * 0xff)
+    let intG = Int(g * 0xff)
+    let intB = Int(b * 0xff)
+    return String(format: "#%02x%02x%02x", intR, intG, intB)
+}
+
 extension RadarInAppMessage.Text {
     static func fromDictionary(dict: Any?) -> RadarInAppMessage.Text? {
         guard let dict = dict as? Dictionary<String, String>,
@@ -90,6 +117,13 @@ extension RadarInAppMessage.Text {
             text: text,
             color: color
         )
+    }
+    
+    func toDictionary() -> [String: String] {
+        return [
+            "text": text,
+            "color": uiColorToString(color)
+        ]
     }
 }
 
@@ -107,6 +141,18 @@ extension RadarInAppMessage.Button {
             text: text, color: color, backgroundColor: backgroundColor, deepLink: deepLink
         )
     }
+    
+    func toDictionary() -> [String: String] {
+        var dict = [
+            "text": text,
+            "color": uiColorToString(color),
+            "backgroundColor": uiColorToString(backgroundColor)
+        ]
+        if deepLink != nil {
+            dict["deepLink"] = deepLink
+        }
+        return dict
+    }
 }
 
 extension RadarInAppMessage.Image {
@@ -120,5 +166,12 @@ extension RadarInAppMessage.Image {
         return RadarInAppMessage.Image(
             name: name, url: url
         )
+    }
+    
+    func toDictionary() -> [String: String] {
+        return [
+            "name": name,
+            "url": url
+        ]
     }
 }

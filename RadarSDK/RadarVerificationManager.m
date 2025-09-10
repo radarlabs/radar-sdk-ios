@@ -122,6 +122,7 @@
                      source:RadarLocationSourceForegroundLocation
                      replayed:NO
                      beacons:beacons
+                     indoorScan:nil
                      verified:YES
                      attestationString:attestationString
                      keyId:keyId
@@ -135,7 +136,7 @@
                                          RadarUser *_Nullable user, NSArray<RadarGeofence *> *_Nullable nearbyGeofences,
                                          RadarConfig *_Nullable config, RadarVerifiedLocationToken *_Nullable token) {
                         if (status == RadarStatusSuccess && config != nil) {
-                            [[RadarLocationManager sharedInstance] updateTrackingFromConfig:config];
+                            [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
                         }
                         
                         if (token) {

@@ -46,6 +46,7 @@ static NSString *const kVerifiedHost = @"radar-verifiedHost";
 static NSString *const kDefaultVerifiedHost = @"https://api-verified.radar.io";
 static NSString *const kLastAppOpenTime = @"radar-lastAppOpenTime";
 static NSString *const kUserDebug = @"radar-userDebug";
+static NSString *const kInSurveyMode = @"radar-inSurveyMode";
 static NSString *const kXPlatformSDKType = @"radar-xPlatformSDKType";
 static NSString *const kXPlatformSDKVersion = @"radar-xPlatformSDKVersion";
 static NSString *const kInitializeOptions = @"radar-initializeOptions";
@@ -371,6 +372,15 @@ static NSString *const kUserTags = @"radar-userTags";
     }
     return [[RadarInitializeOptions alloc] initWithDict:dict];
 }
+
++ (BOOL)isInSurveyMode {
+    return [[NSUserDefaults standardUserDefaults] boolForKey:kInSurveyMode];
+}
+
++ (void)setInSurveyMode:(BOOL)inSurveyMode {
+    [[NSUserDefaults standardUserDefaults] setBool:inSurveyMode forKey:kInSurveyMode];
+}
+
 
 + (NSArray<NSString *> *_Nullable)tags {
     return [[NSUserDefaults standardUserDefaults] arrayForKey:kUserTags];

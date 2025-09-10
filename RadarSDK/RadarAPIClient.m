@@ -59,6 +59,9 @@
 }
 
 + (NSDictionary *)headersWithPublishableKey:(NSString *)publishableKey {
+    NSDictionary *appInfo = [RadarUtils appInfo];
+    NSString *appInfoJSON = [RadarUtils dictionaryToJson:appInfo];
+    
     NSMutableDictionary *headers = [@{
         @"Authorization": publishableKey,
         @"Content-Type": @"application/json",
@@ -69,6 +72,8 @@
         @"X-Radar-Device-Type": [RadarUtils deviceType],
         @"X-Radar-SDK-Version": [RadarUtils sdkVersion],
         @"X-Radar-Mobile-Origin": [[NSBundle mainBundle] bundleIdentifier],
+        @"X-Radar-Network-Type": [RadarUtils networkTypeString],
+        @"X-Radar-App-Info": appInfoJSON
     } mutableCopy];
     if ([RadarSettings xPlatform]) {
         [headers addEntriesFromDictionary:@{
@@ -185,6 +190,7 @@
                    source:(RadarLocationSource)source
                  replayed:(BOOL)replayed
                   beacons:(NSArray<RadarBeacon *> *_Nullable)beacons
+             indoorScan:(NSString *_Nullable)indoorScan
         completionHandler:(RadarTrackAPICompletionHandler _Nonnull)completionHandler {
     [self trackWithLocation:location
                     stopped:stopped
@@ -192,6 +198,7 @@
                      source:source
                    replayed:replayed
                     beacons:beacons
+               indoorScan:indoorScan
                    verified:NO
           attestationString:nil
                       keyId:nil
@@ -210,6 +217,7 @@
                    source:(RadarLocationSource)source
                  replayed:(BOOL)replayed
                   beacons:(NSArray<RadarBeacon *> *_Nullable)beacons
+             indoorScan:(NSString *_Nullable)indoorScan
                  verified:(BOOL)verified
         attestationString:(NSString *_Nullable)attestationString
                     keyId:(NSString *_Nullable)keyId
@@ -327,6 +335,9 @@
     }
     if (beacons) {
         params[@"beacons"] = [RadarBeacon arrayForBeacons:beacons];
+    }
+    if (indoorScan) {
+        params[@"indoorScan"] = indoorScan;
     }
     NSString *locationAuthorization = [RadarUtils locationAuthorization];
     if (locationAuthorization) {
@@ -584,7 +595,7 @@
                                     [[RadarInAppMessageManager shared] onInAppMessageReceivedWithMessages:inAppMessages];
                                 }
                             }
-
+                                   
                             if (user) {
                                 BOOL inGeofences = user.geofences && user.geofences.count;
                                 BOOL atPlace = user.place != nil;
