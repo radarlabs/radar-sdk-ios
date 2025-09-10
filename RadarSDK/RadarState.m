@@ -309,15 +309,15 @@ static NSTimeInterval const kBackupInterval = 2.0; // 2 seconds
     [RadarState setRegisteredNotifications:registeredNotifications];
 }
 
-+ (CLRegion *)syncedRegion {
++ (CLCircularRegion *)syncedRegion {
     NSDictionary *dict = [[NSUserDefaults standardUserDefaults] dictionaryForKey:kSyncedRegion];
-    CLRegion *syncedRegion = [RadarUtils regionForDictionary:dict];
+    CLCircularRegion *syncedRegion = [RadarUtils circularRegionForDictionary:dict];
 
     return syncedRegion;
 }
 
-+ (void)setSyncedRegion:(CLRegion *)syncedRegion {
-    NSDictionary *dict = [RadarUtils dictionaryForRegion:syncedRegion];
++ (void)setSyncedRegion:(CLCircularRegion *)syncedRegion {
+    NSDictionary *dict = [RadarUtils dictionaryForCircularRegion:syncedRegion];
     [[NSUserDefaults standardUserDefaults] setObject:dict forKey:kSyncedRegion];
 }
 

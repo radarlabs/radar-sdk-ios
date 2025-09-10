@@ -892,7 +892,7 @@ static NSString *const kSyncedRegionIdentifierPrefix = @"radar_synced_";
         }
 
         if (options.syncLocations == RadarTrackingOptionsSyncRegions) {
-            CLRegion *syncedRegion = [RadarState syncedRegion];
+            CLCircularRegion *syncedRegion = [RadarState syncedRegion];
             if (syncedRegion && [syncedRegion containsCoordinate:location.coordinate]) {
                 NSArray *geofenceIds = [RadarState geofenceIds];
                 if ((!geofenceIds || [geofenceIds count] == 0) && [[RadarOfflineManager getUserGeofencesFromLocation:location] count] == 0) {
@@ -1330,8 +1330,8 @@ static NSString *const kSyncedRegionIdentifierPrefix = @"radar_synced_";
             }
         }
 
-        if (maxDistance != -1) {
-            CLRegion *syncedRegion = [[CLCircularRegion alloc] initWithCenter:lastKnownLocation.coordinate
+        if (maxDistance > 0) {
+            CLCircularRegion *syncedRegion = [[CLCircularRegion alloc] initWithCenter:lastKnownLocation.coordinate
                                                             radius:maxDistance
                                                             identifier:[NSString stringWithFormat:@"%@%@", kSyncedRegionIdentifierPrefix, [[NSUUID UUID] UUIDString]]];
             [RadarState setSyncedRegion:syncedRegion];
@@ -1339,6 +1339,9 @@ static NSString *const kSyncedRegionIdentifierPrefix = @"radar_synced_";
                                             message:[NSString stringWithFormat:@"Stored synced region | latitude = %f; longitude = %f; radius = %f; identifier = %@",
                                                                                 lastKnownLocation.coordinate.latitude, lastKnownLocation.coordinate.longitude, maxDistance,
                                                                                 syncedRegion.identifier]];
+        } else if (maxDistance == 0) {
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Resetting synced region: Radius is 0"];
+            [RadarState setSyncedRegion:nil];
         } else {
             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Resetting synced region: No geofences or beacons available"];
             [RadarState setSyncedRegion:nil];

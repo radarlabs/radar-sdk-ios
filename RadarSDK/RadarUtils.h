@@ -37,8 +37,8 @@ typedef NS_ENUM(NSInteger, RadarConnectionType) {
 + (NSTimeInterval)backgroundTimeRemaining;
 + (CLLocation *)locationForDictionary:(NSDictionary *_Nonnull)dict;
 + (NSDictionary *)dictionaryForLocation:(CLLocation *)location;
-+ (CLRegion *)regionForDictionary:(NSDictionary *_Nonnull)dict;
-+ (NSDictionary *)dictionaryForRegion:(CLRegion *)region;
++ (CLCircularRegion *)circularRegionForDictionary:(NSDictionary *_Nonnull)dict;
++ (NSDictionary *)dictionaryForCircularRegion:(CLCircularRegion *)region;
 + (NSString *)dictionaryToJson:(NSDictionary *)dict;
 + (void)runOnMainThread:(dispatch_block_t)block;
 + (BOOL)isLive NS_SWIFT_NAME(isLive());
