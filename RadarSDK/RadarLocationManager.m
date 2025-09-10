@@ -626,7 +626,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 
 - (void)removeSyncedGeofences {
     for (CLRegion *region in self.locationManager.monitoredRegions) {
-        [RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Encountering monitored geofence | identifier = %@", region.identifier];
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Encountering monitored geofence | identifier = %@", region.identifier]];
         if ([region.identifier hasPrefix:kSyncGeofenceIdentifierPrefix]) {
             [self.locationManager stopMonitoringForRegion:region];
         }
