@@ -68,7 +68,8 @@
                                        layer:(NSString *_Nullable)layer
                                     metadata:(NSDictionary *_Nullable)metadata
                                   confidence:(RadarAddressConfidence)confidence
-                                    timeZone:(RadarTimeZone *_Nullable)timeZone {
+                                    timeZone:(RadarTimeZone *_Nullable)timeZone
+                                  categories:(NSArray<NSString *> *_Nullable)categories {
     self = [super init];
     if (self) {
         _coordinate = coordinate;
@@ -96,6 +97,7 @@
         _metadata = metadata;
         _confidence = confidence;
         _timeZone = timeZone;
+        _categories = categories;
     }
     return self;
 }
@@ -136,6 +138,7 @@
 
     RadarAddressConfidence confidence = RadarAddressConfidenceNone;
     RadarTimeZone *timeZone;
+    NSArray<NSString *> *categories;
 
     id latitudeObj = dict[@"latitude"];
     if (latitudeObj && [latitudeObj isKindOfClass:[NSNumber class]]) {
@@ -281,7 +284,17 @@
         timeZone = [[RadarTimeZone alloc] initWithObject:timeZoneObj];
     }
 
-
+    id categoriesObj = dict[@"categories"];
+    if (categoriesObj && [categoriesObj isKindOfClass:[NSArray class]]) {
+        NSMutableArray<NSString *> *validCategories = [NSMutableArray array];
+        for (id category in (NSArray *)categoriesObj) {
+            if ([category isKindOfClass:[NSString class]]) {
+                [validCategories addObject:(NSString *)category];
+            }
+        }
+        categories = [validCategories copy];
+    }
+    
     return [[RadarAddress alloc] initWithCoordinate:coordinate
                                    formattedAddress:formattedAddress
                                             country:country
@@ -306,7 +319,8 @@
                                               layer:layer
                                            metadata:metadata
                                          confidence:confidence
-                                           timeZone:timeZone];
+                                           timeZone:timeZone
+                                         categories:categories];
 }
 
 + (NSArray<NSDictionary *> *)arrayForAddresses:(NSArray<RadarAddress *> *)addresses {
@@ -377,6 +391,7 @@
     [dict setValue:self.metadata forKey:@"metadata"];
     [dict setValue:[RadarAddress stringForConfidence:self.confidence] forKey:@"confidence"];
     [dict setValue:[self.timeZone dictionaryValue] forKey:@"timeZone"];
+    [dict setValue:self.categories forKey:@"categories"];
     return dict;
 }
 

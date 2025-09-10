@@ -28,6 +28,7 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol RadarVerifiedDelegate;
 @protocol RadarMotionProtocol;
 @protocol RadarInAppMessageProtocol;
+@protocol RadarIndoorsProtocol;
 
 @class RadarTripOptions;
 @class RadarInAppMessage;
@@ -309,6 +310,7 @@ typedef void (^_Nonnull RadarRouteMatrixCompletionHandler)(RadarStatus status, R
  */
 typedef void (^_Nullable RadarLogConversionCompletionHandler)(RadarStatus status, RadarEvent *_Nullable event);
 
+typedef void (^_Nonnull RadarIndoorsScanCompletionHandler)(NSString *_Nullable result, CLLocation *_Nullable locationAtStartOfScan);
 
 /**
  The main class used to interact with the Radar SDK.
@@ -1236,6 +1238,12 @@ typedef void (^_Nullable RadarLogConversionCompletionHandler)(RadarStatus status
                        units:(RadarRouteUnits)units
            completionHandler:(RadarRouteMatrixCompletionHandler)completionHandler NS_SWIFT_NAME(getMatrix(origins:destinations:mode:units:completionHandler:));
 
+#pragma mark - Indoors
+
++ (void)startIndoorScan:(NSString *)geofenceId
+                forLength:(int)scanLengthSeconds
+        completionHandler:(RadarIndoorsScanCompletionHandler)completionHandler;
+
 #pragma mark - Logging
 
 /**
@@ -1327,6 +1335,15 @@ typedef void (^_Nullable RadarLogConversionCompletionHandler)(RadarStatus status
  */
 + (NSDictionary *)dictionaryForLocation:(CLLocation *)location NS_SWIFT_NAME(dictionaryForLocation(_:));
 
+/**
+ Returns a dictionary for an in-app message.
+
+ @param message An in-app message.
+
+ @return A dictionary for the in-app message.
+ */
++ (NSDictionary *)dictionaryForInAppMessage:(RadarInAppMessage *)message NS_SWIFT_NAME(dictionaryForInAppMessage(_:));
+
 
 /**
  Performs optional setup for Radar SDK within the AppDelegate. This method only needs to be called if Radar is initalized in cross-platform code.
@@ -1353,6 +1370,7 @@ typedef void (^_Nullable RadarLogConversionCompletionHandler)(RadarStatus status
 
 
 + (void)requestMotionActivityPermission NS_SWIFT_NAME(requestMotionActivityPermission());
+
 @end
 
 NS_ASSUME_NONNULL_END

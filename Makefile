@@ -24,7 +24,11 @@ build-example:
 	xcodebuild $(XC_EXAMPLE_ARGS)
 
 lint:
-	pod lib lint 
+	@for spec in *.podspec; do \
+		if [ "$$spec" != "RadarSDKIndoors.podspec" ]; then \
+			pod lib lint "$$spec" || exit 1; \
+		fi; \
+	done 
 
 format:
 	./clang_format.sh

@@ -71,6 +71,8 @@ NS_ASSUME_NONNULL_BEGIN
 + (BOOL)useOpenedAppConversion;
 + (void)setInitializeOptions:(RadarInitializeOptions *)options;
 + (RadarInitializeOptions *)initializeOptions;
++ (BOOL)isInSurveyMode;
++ (void)setInSurveyMode:(BOOL)inSurveyMode;
 
 + (NSArray<NSString *> *_Nullable)tags;
 + (void)setTags:(NSArray<NSString *> *_Nullable)tags;
