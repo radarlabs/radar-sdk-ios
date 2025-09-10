@@ -44,6 +44,7 @@ NSString *const kReplayAll = @"all";
 NSString *const kSyncAll = @"all";
 NSString *const kSyncStopsAndExits = @"stopsAndExits";
 NSString *const kSyncNone = @"none";
+NSString *const kSyncRegions = @"regions";
 
 + (RadarTrackingOptions *)presetContinuous {
     RadarTrackingOptions *options = [RadarTrackingOptions new];
@@ -189,6 +190,9 @@ NSString *const kSyncNone = @"none";
     case RadarTrackingOptionsSyncStopsAndExits:
         str = kSyncStopsAndExits;
         break;
+    case RadarTrackingOptionsSyncRegions:
+        str = kSyncRegions;
+        break;
     case RadarTrackingOptionsSyncAll:
     default:
         str = kSyncAll;
@@ -202,9 +206,22 @@ NSString *const kSyncNone = @"none";
         sync = RadarTrackingOptionsSyncStopsAndExits;
     } else if ([str isEqualToString:kSyncNone]) {
         sync = RadarTrackingOptionsSyncNone;
+    } else if ([str isEqualToString:kSyncRegions]) {
+        sync = RadarTrackingOptionsSyncRegions;
     }
     return sync;
 }
+
++ (RadarTrackingOptions *)trackingOptionsFromObject:(NSObject *)object {
+    if (!object || ![object isKindOfClass:[NSDictionary class]]) {
+        return nil;
+    }
+
+    NSDictionary *dict = (NSDictionary *)object;
+
+    return [RadarTrackingOptions trackingOptionsFromDictionary:dict];
+}
+
 
 + (RadarTrackingOptions *)trackingOptionsFromDictionary:(NSDictionary *)dict {
     if (!dict) {
