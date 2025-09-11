@@ -258,7 +258,7 @@ static dispatch_semaphore_t notificationSemaphore;
                 [userInfosToKeep addObject:request.content.userInfo];
             }
         }
-        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Found %lu pending notifications to remove", (unsigned long)identifiersToRemove.count]];        
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Found %lu pending notifications to remove: %@", (unsigned long)identifiersToRemove.count, [identifiersToRemove componentsJoinedByString:@", "]]];        
         [RadarState setRegisteredNotifications:userInfosToKeep];
         if (identifiersToRemove.count > 0) {
             [notificationCenter removePendingNotificationRequestsWithIdentifiers:identifiersToRemove];
