@@ -579,7 +579,6 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
             radius = geometry.radius;
         }
         if (center) {
-
             CLRegion *region = [[CLCircularRegion alloc] initWithCenter:center.coordinate radius:radius identifier:identifier];
             [self.locationManager startMonitoringForRegion:region];
             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
