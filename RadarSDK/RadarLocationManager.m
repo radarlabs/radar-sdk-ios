@@ -107,7 +107,6 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     return self;
 }
 
-
 - (void)callCompletionHandlersWithStatus:(RadarStatus)status location:(CLLocation *_Nullable)location {
     @synchronized(self) {
         if (!self.completionHandlers.count){
@@ -594,7 +593,6 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 
                     region.notifyOnEntry = YES;
                     region.notifyOnExit = NO;
-                    
                     BOOL repeats = NO;
                     NSString *notificationRepeats = [geofence.metadata objectForKey:@"radar:notificationRepeats"];
                     if (notificationRepeats) {
@@ -904,7 +902,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     RadarTrackingOptions *options = [Radar getTrackingOptions];
     Class RadarSDKIndoors = NSClassFromString(@"RadarSDKIndoors");
     
-    if (options.useIndoorScan && ![RadarSettings isInSurveyMode] && RadarSDKIndoors && [RadarUtils foreground]) {
+    if (options.useIndoorScan && ![RadarSettings inSurveyMode] && RadarSDKIndoors && [RadarUtils foreground]) {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Starting indoor scan"];
         
         [RadarSDKIndoors startIndoorScan:@""
@@ -916,9 +914,9 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
             completionHandler(beacons, indoorScanResult);
         }];
     } else {
-        if (options.useIndoorScan && ![RadarSettings isInSurveyMode] && !RadarSDKIndoors) {
+        if (options.useIndoorScan && ![RadarSettings inSurveyMode] && !RadarSDKIndoors) {
             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"RadarSDKIndoors not available, skipping indoor scan"];
-        } else if (options.useIndoorScan && ![RadarSettings isInSurveyMode] && RadarSDKIndoors && ![RadarUtils foreground]) {
+        } else if (options.useIndoorScan && ![RadarSettings inSurveyMode] && RadarSDKIndoors && ![RadarUtils foreground]) {
             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"App in background, skipping indoor scan (Bluetooth not available)"];
         }
         completionHandler(beacons, nil);

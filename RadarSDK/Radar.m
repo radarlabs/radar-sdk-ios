@@ -88,7 +88,7 @@
     }
 
     if ([[UIApplication sharedApplication] applicationState] != UIApplicationStateBackground) {
-        [RadarSettings updateSessionId];
+        [RadarSettingsDeprecated updateSessionId];
     }
 
     [[RadarLocationManager sharedInstance] updateTrackingFromInitialize];
@@ -1436,7 +1436,7 @@
 }
 
 - (void)applicationWillEnterForeground {
-    BOOL updated = [RadarSettings updateSessionId];
+    BOOL updated = [RadarSettingsDeprecated updateSessionId];
     if (updated) {
         [[RadarAPIClient sharedInstance] getConfigForUsage:@"resume"
                                                   verified:NO

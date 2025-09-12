@@ -19,9 +19,6 @@
 #import "RadarLogBuffer.h"
 #import "RadarUtils.h"
 
-@interface RadarSettingsDeprecated : RadarSettings
-@end
-
 @implementation RadarSettingsDeprecated
 
 static NSString *const kPublishableKey = @"radar-publishableKey";

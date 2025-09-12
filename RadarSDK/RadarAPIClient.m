@@ -430,9 +430,6 @@
     }
     
     params[@"fraudFailureReasons"] = fraudFailureReasons;
-    
-    params[@"pushNotificationToken"] = [RadarSettings pushNotificationToken];
-    params[@"locationExtensionToken"] = [RadarSettings locationExtensionToken];
 
     if (anonymous) {
         [[RadarAPIClient sharedInstance] getConfigForUsage:@"track"
@@ -698,7 +695,6 @@
 
     NSMutableDictionary *params = [NSMutableDictionary new];
     params[@"userId"] = RadarSettings.userId;
-    
     params[@"externalId"] = options.externalId;
 
     if (options.metadata) {

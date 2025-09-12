@@ -40,6 +40,7 @@ class RadarUserDefaults: NSObject {
         case UserTags = "radar-userTags"
         case PushNotificationToken = "radar-pushNotificationToken"
         case LocationExtensionToken = "radar-locationExtensionToken"
+        case InSurveyMode = "radar-inSurveyMode"
         
         // RadarState
         case LastLocation = "radar-lastLocation"
@@ -83,7 +84,7 @@ class RadarUserDefaults: NSObject {
     }
     
     public static func cloneToAppGroup() {
-        let appGroupDefaults = UserDefaults(suiteName: "")
+        let appGroupDefaults = UserDefaults(suiteName: appGroup)
         let userDefaults = UserDefaults.standard
         
         for key in Key.allCases {

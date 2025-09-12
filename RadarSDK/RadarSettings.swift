@@ -12,9 +12,8 @@ internal class RadarSettings: NSObject {
     
     static let DefaultHost = "https://api.radar.io"
     static let DefaultVerifiedHost = "https://api-verified.radar.io"
-
-    // TODO: complete implementation for SdkConfiguration
-    public static func setAppGroup(appGroup: String) {
+    
+    public static func setAppGroup(_ appGroup: String) {
         RadarUserDefaults.appGroup = appGroup
     }
     
@@ -39,6 +38,7 @@ internal class RadarSettings: NSObject {
         get { String(format: "%.f", RadarUserDefaults.double(forKey: .SessionId)) }
     }
     
+    // TODO: update called to this function to call this swift version, currently called objective-C version
     public static func updateSessionId() -> Bool {
         let timestampSeconds: Double = Date().timeIntervalSince1970
         var sessionIdSeconds: Double = RadarUserDefaults.double(forKey: .SessionId)
@@ -46,15 +46,15 @@ internal class RadarSettings: NSObject {
         let sdkConfiguration = RadarSettings.sdkConfiguration
         if (sdkConfiguration?.extendFlushReplays ?? false) {
             RadarLogger.shared.info("Flushing replays from updateSessionId()", type: .sdkCall)
-            // TODO:
+            // TODO: fix this call when it can be called from swift cleanly
             // [[RadarReplayBuffer sharedInstance] flushReplaysWithCompletionHandler:nil completionHandler:nil];
         }
         
         if timestampSeconds - sessionIdSeconds > 300 {
             sessionIdSeconds = timestampSeconds
             RadarUserDefaults.set(sessionIdSeconds, forKey: .SessionId)
-            // TODO:
-            // Radar.logOpenedAppConversion()
+            // TODO: fix this call when it can be called from swift cleanly
+            // [Radar logOpenedAppConversion]
             RadarLogger.shared.debug(String(format: "New session | sessionId = %@", RadarSettings.sessionId))
             return true
         }
@@ -256,6 +256,11 @@ internal class RadarSettings: NSObject {
         set { RadarUserDefaults.set(newValue?.dictionaryValue(), forKey: .InitializeOptions) }
     }
 
+    public static var inSurveyMode: Bool {
+        get { return RadarUserDefaults.bool(forKey: .InSurveyMode) }
+        set { RadarUserDefaults.set(newValue, forKey: .InSurveyMode) }
+    }
+    
     public static var tags: [String] {
         get { return RadarUserDefaults.array(forKey: .UserTags) as? [String] ?? [] }
         set { RadarUserDefaults.set(newValue, forKey: .UserTags) }
