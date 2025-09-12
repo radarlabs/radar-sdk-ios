@@ -140,10 +140,10 @@
 }
 
 + (void)setUserId:(NSString *)userId {
-//    [RadarSettings setUserId:userId];
-//    if ([RadarSettings sdkConfiguration].syncAfterSetUser) {
-//        [Radar trackOnceWithCompletionHandler:nil];
-//    }
+    [RadarSettings setUserId:userId];
+    if ([RadarSettings sdkConfiguration].syncAfterSetUser) {
+        [Radar trackOnceWithCompletionHandler:nil];
+    }
 }
 
 + (NSString *_Nullable)getUserId {

@@ -164,7 +164,6 @@ static dispatch_semaphore_t notificationSemaphore;
                  method:(SEL) originalSelector
                 withNew:(SEL) swizzledSelector {
     if (!delegate) {
-        NSLog(@"Swizzle error: Delegate is nil");
         return;
     }
     Class class = [delegate class];
@@ -173,7 +172,6 @@ static dispatch_semaphore_t notificationSemaphore;
     Method swizzledMethod = class_getInstanceMethod([self class], swizzledSelector);
     
     if (!swizzledMethod) {
-        NSLog(@"Swizzle error: Methods not found for swizzling.");
         return;
     }
     
@@ -234,14 +232,9 @@ static dispatch_semaphore_t notificationSemaphore;
 didReceiveRemoteNotification:(NSDictionary *)userInfo
       fetchCompletionHandler:(void (^)(UIBackgroundFetchResult result))completionHandler {
     
-    
     if ([@"radar:trackOnce" isEqual: userInfo[@"type"]]) {
-        NSLog(@"Running track once because type is trackOnce");
-        
         [Radar trackOnceWithCompletionHandler:^(RadarStatus status, CLLocation* location, NSArray<RadarEvent*>* events, RadarUser* user) {
             // we used up precious time, but it's probably fine...
-            
-            NSLog(@"Track once complete");
             // Call the original method (which is now swizzled)
             if ([self respondsToSelector:@selector(swizzled_application:didReceiveRemoteNotification:fetchCompletionHandler:)]) {
                 [self swizzled_application:application didReceiveRemoteNotification:userInfo fetchCompletionHandler:completionHandler];
@@ -262,10 +255,6 @@ didReceiveRemoteNotification:(NSDictionary *)userInfo
             [hexString appendFormat:@"%02x", bytes[i]];
         }
         [RadarSettings setPushNotificationToken:hexString];
-        
-        NSLog(@"Device token: %@", hexString);
-    } else {
-        NSLog(@"what the heck, no deviceToken");
     }
     
     if ([self respondsToSelector:@selector(swizzled_application:didRegisterForRemoteNotificationsWithDeviceToken:)]) {

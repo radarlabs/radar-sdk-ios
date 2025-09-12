@@ -58,6 +58,9 @@
 }
 
 + (NSDictionary *)headersWithPublishableKey:(NSString *)publishableKey {
+    NSDictionary *appInfo = [RadarUtils appInfo];
+    NSString *appInfoJSON = [RadarUtils dictionaryToJson:appInfo];
+    
     NSMutableDictionary *headers = [@{
         @"Authorization": publishableKey,
         @"Content-Type": @"application/json",
@@ -68,6 +71,8 @@
         @"X-Radar-Device-Type": [RadarUtils deviceType],
         @"X-Radar-SDK-Version": [RadarUtils sdkVersion],
         @"X-Radar-Mobile-Origin": [[NSBundle mainBundle] bundleIdentifier],
+        @"X-Radar-Network-Type": [RadarUtils networkTypeString],
+        @"X-Radar-App-Info": appInfoJSON
     } mutableCopy];
     if ([RadarSettings xPlatform]) {
         [headers addEntriesFromDictionary:@{
@@ -693,6 +698,7 @@
 
     NSMutableDictionary *params = [NSMutableDictionary new];
     params[@"userId"] = RadarSettings.userId;
+    
     params[@"externalId"] = options.externalId;
 
     if (options.metadata) {
