@@ -610,33 +610,22 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     NSMutableDictionary<NSString*, UNNotificationRequest*>* notificationsByIdentifier = [[NSMutableDictionary alloc] init];
     
     RadarTrackingOptions *options = [Radar getTrackingOptions];
-    NSUInteger maxClientGeofence = MIN(geofences.count, options.beacons ? 9 : 19);
+    NSUInteger maxRegions = options.beacons ? 9 : 19;
+    NSUInteger trackedRegions = 0;
     
-    if (maxClientGeofence < geofences.count) {
-        NSString* message = [NSString stringWithFormat:@"Syncing %lu/%lu nearby geofences",
-                         (unsigned long)maxClientGeofence, (unsigned long)geofences.count];
-        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:message];
-    } else {
-        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Syncing %lu nearby geofences", geofences.count]];
-    }
-    
-    
-    for (int i = 0; i < maxClientGeofence; ++i) {
+    for (int i = 0; i < geofences.count; ++i) {
+        
+        
         RadarGeofence* geofence = geofences[i];
         NSString *identifier = [NSString stringWithFormat:@"%@%@", kSyncGeofenceIdentifierPrefix, geofence._id];
         
         // new geofences
         CLCircularRegion* region = [self circularRegionFromGeofence:geofence];
-        [geofenceRegionsByIdentifier setObject:[region copy] forKey:identifier];
         
         // new notifications
-        if (geofence.metadata != nil) {
+        if (geofence.metadata != nil && trackedRegions < maxRegions) {
             UNMutableNotificationContent *content = [RadarNotificationHelper extractContentFromMetadata:geofence.metadata identifier:identifier];
             if (content) {
-//                
-//                CLCircularRegion* region = [self circularRegionFromGeofence:geofence];
-//                [geofenceRegionsByIdentifier setObject:[region copy] forKey:identifier];
-                
                 region.notifyOnEntry = YES;
                 region.notifyOnExit = NO;
                 NSString *notificationRepeats = [geofence.metadata objectForKey:@"radar:notificationRepeats"];
@@ -647,12 +636,28 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                                                             (geofence.metadata[@"radar:notificationRepeats"] ? @"repeat" : @"does not repeat")]];
 
                 UNLocationNotificationTrigger *trigger = [UNLocationNotificationTrigger triggerWithRegion:region repeats:repeats];
-                
                 UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:identifier content:content trigger:trigger];
+                
                 [notificationsByIdentifier setObject:request forKey:identifier];
+                trackedRegions += 1;
             }
         }
+        
+        // add geofence after notification, we want to prioritise notifications to trigger.
+        if (trackedRegions < maxRegions) {
+            [geofenceRegionsByIdentifier setObject:[region copy] forKey:identifier];
+            trackedRegions += 1;
+        }
     }
+    
+    if (geofenceRegionsByIdentifier.count < geofences.count) {
+        NSString* message = [NSString stringWithFormat:@"Syncing %lu/%lu nearby geofences",
+                         (unsigned long)maxRegions, (unsigned long)geofences.count];
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:message];
+    } else {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Syncing %lu nearby geofences", geofences.count]];
+    }
+    
     // For debug logging
     NSInteger numSyncedGeofences = geofenceRegionsByIdentifier.count;
     NSInteger numKeptGeofences = 0;
