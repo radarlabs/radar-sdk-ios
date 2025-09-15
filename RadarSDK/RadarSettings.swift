@@ -74,7 +74,8 @@ internal class RadarSettings: NSObject {
             if (oldUserId != nil && oldUserId != newValue) {
                 RadarSettings.id = nil
             }
-            RadarUserDefaults.set(newValue, forKey: .UserId) }
+            RadarUserDefaults.set(newValue, forKey: .UserId)
+        }
     }
 
     public static var description: String? {
