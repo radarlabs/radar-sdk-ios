@@ -613,9 +613,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     NSUInteger maxRegions = options.beacons ? 9 : 19;
     NSUInteger trackedRegions = 0;
     
-    for (int i = 0; i < geofences.count; ++i) {
-        
-        
+    for (int i = 0; i < geofences.count && trackedRegions < maxRegions; ++i) {
         RadarGeofence* geofence = geofences[i];
         NSString *identifier = [NSString stringWithFormat:@"%@%@", kSyncGeofenceIdentifierPrefix, geofence._id];
         
@@ -623,7 +621,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         CLCircularRegion* region = [self circularRegionFromGeofence:geofence];
         
         // new notifications
-        if (geofence.metadata != nil && trackedRegions < maxRegions) {
+        if (geofence.metadata != nil) {
             UNMutableNotificationContent *content = [RadarNotificationHelper extractContentFromMetadata:geofence.metadata identifier:identifier];
             if (content) {
                 region.notifyOnEntry = YES;
@@ -643,7 +641,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
             }
         }
         
-        // add geofence after notification, we want to prioritise notifications to trigger.
+        // add geofence after notification, we want to prioritise notifications to trigger if there is only one slot available.
         if (trackedRegions < maxRegions) {
             [geofenceRegionsByIdentifier setObject:[region copy] forKey:identifier];
             trackedRegions += 1;
