@@ -38,6 +38,8 @@ NS_ASSUME_NONNULL_BEGIN
                                beacons:(NSArray<RadarBeacon *> *_Nullable)beacons
                      completionHandler:(void (^)(NSArray<RadarBeacon *> *_Nullable, NSString *_Nullable))completionHandler;
 
++ (BOOL)region:(CLRegion*) a isEqual:(CLRegion*) b;
+
 /**
  If `[RadarSettings previousTrackingOptions]` is not `nil`, remove them and
  replace the `[RadarSettings trackingOptions]` with them, and restart tracking.
