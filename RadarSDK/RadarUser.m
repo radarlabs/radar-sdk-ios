@@ -43,7 +43,8 @@
                                 trip:(RadarTrip *_Nullable)trip
                                debug:(BOOL)debug
                                fraud:(RadarFraud *_Nullable)fraud 
-                            altitude:(double)altitude {
+                            altitude:(double)altitude
+               currentDwellGeofences:(nullable NSArray<RadarGeofence *> *)currentDwellGeofences {
     self = [super init];
     if (self) {
         __id = _id;
@@ -70,6 +71,7 @@
         _debug = debug;
         _fraud = fraud;
         _altitude = altitude;
+        _currentDwellGeofences = currentDwellGeofences;
     }
     return self;
 }
@@ -89,6 +91,7 @@
     CLLocation *location;
     RadarActivityType activityType = RadarActivityTypeUnknown;
     NSArray<RadarGeofence *> *geofences;
+    NSArray<RadarGeofence *> *currentDwellGeofences;
     RadarPlace *place;
     NSArray<RadarBeacon *> *beacons;
     BOOL stopped = NO;
@@ -193,6 +196,11 @@
     id geofencesObj = dict[@"geofences"];
     if (geofencesObj && [geofencesObj isKindOfClass:[NSArray class]]) {
         geofences = [RadarGeofence geofencesFromObject:geofencesObj];
+    }
+
+    id currentDwellGeofencesObj = dict[@"currentDwellGeofences"];
+    if (currentDwellGeofencesObj && [currentDwellGeofencesObj isKindOfClass:[NSArray class]]) {
+        currentDwellGeofences = [RadarGeofence geofencesFromObject:currentDwellGeofencesObj];
     }
 
     id placeObj = dict[@"place"];
@@ -328,7 +336,8 @@
                                         trip:trip
                                        debug:debug
                                        fraud:fraud
-                                    altitude:altitude];
+                                    altitude:altitude
+                       currentDwellGeofences:currentDwellGeofences];
     }
 
     return nil;
@@ -349,6 +358,8 @@
     [dict setValue:[Radar stringForActivityType:self.activityType] forKey:@"activityType"];
     NSArray *geofencesArr = [RadarGeofence arrayForGeofences:self.geofences];
     [dict setValue:geofencesArr forKey:@"geofences"];
+    NSArray *currentDwellGeofencesArr = [RadarGeofence arrayForGeofences:self.currentDwellGeofences];
+    [dict setValue:currentDwellGeofencesArr forKey:@"currentDwellGeofences"];
     if (self.place) {
         NSDictionary *placeDict = [self.place dictionaryValue];
         [dict setValue:placeDict forKey:@"place"];

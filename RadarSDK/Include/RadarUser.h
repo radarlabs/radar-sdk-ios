@@ -65,6 +65,8 @@ typedef NS_ENUM(NSInteger, RadarActivityType);
  */
 @property (nullable, copy, nonatomic, readonly) NSArray<RadarGeofence *> *geofences;
 
+@property (nullable, copy, nonatomic, readonly) NSArray<RadarGeofence *> *currentDwellGeofences;
+
 /**
  The user's current place. May be `nil` if the user is not at a place or if Places is not enabled.
 
