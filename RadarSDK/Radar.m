@@ -112,7 +112,6 @@
                                             [self flushLogs];
                                         }];
     }];
-
 }
 
 + (void)initializeWithPublishableKey:(NSString *)publishableKey {

@@ -523,8 +523,6 @@
 		DD236C772308797B00EB88F9 /* RadarSDK */ = {
 			isa = PBXGroup;
 			children = (
-				7E81E0AE2E54B34700CDDC21 /* RadarOfflineManager.swift */,
-				828D1A452E29599500663787 /* RadarTripOrder.m */,
 				825732502B72BE1900DF8B88 /* PrivacyInfo.xcprivacy */,
 				96A5A0D827AD9F7F007B960B /* Include */,
 				DD236C792308797B00EB88F9 /* Info.plist */,
@@ -565,6 +563,7 @@
 				F64FF0D22E4D2B1800DF3926 /* RadarInAppMessageDelegate+Internal.h */,
 				9683FD6127B36C26009EBB6B /* RadarMeta.h */,
 				E649476C2CBFFE480002C047 /* RadarOfflineManager.h */,
+				7E81E0AE2E54B34700CDDC21 /* RadarOfflineManager.swift */,
 				9683FD6227B36C26009EBB6B /* RadarMeta.m */,
 				F64FF0D42E4D2B4700DF3926 /* RadarInAppMessageDelegate.m */,
 				01DDC7C629FC387400C0D039 /* RadarNotificationHelper.h */,
@@ -586,6 +585,7 @@
 				DD236D0F2309B3FE00EB88F9 /* RadarState.m */,
 				DD236CEB2308821600EB88F9 /* RadarTrackingOptions.m */,
 				DD8CCDF7246872360011690D /* RadarTripOptions.m */,
+				828D1A452E29599500663787 /* RadarTripOrder.m */,
 				DD236D0323099B8400EB88F9 /* RadarUtils.h */,
 				DD236D0423099B8400EB88F9 /* RadarUtils.m */,
 				82F7FAEC2A65FE030055AA4B /* RadarVerificationManager.h */,
