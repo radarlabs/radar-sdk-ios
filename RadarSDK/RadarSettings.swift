@@ -198,7 +198,7 @@ internal class RadarSettings: NSObject {
             }
             return RadarLogLevel(rawValue: RadarUserDefaults.integer(forKey: .LogLevel)) ?? .none;
         }
-        set { RadarUserDefaults.set(newValue, forKey: .LogLevel) }
+        set { RadarUserDefaults.set(newValue.rawValue, forKey: .LogLevel) }
     }
 
     public static var beaconUUIDs: [String]? {

@@ -16,7 +16,6 @@
 #import <BackgroundTasks/BackgroundTasks.h>
 #import "Radar+Internal.h"
 #import <objc/runtime.h>
-#import "RadarAPIClient.h"
 
 @implementation RadarNotificationHelper
 
