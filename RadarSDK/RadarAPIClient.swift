@@ -23,5 +23,30 @@ public final class RadarAPIClient: Sendable {
         return data
     }
     
+    struct OfflineData {
+        let geofences: [RadarGeofence]
+        let sdkConfigurations: [RadarSdkConfiguration]
+        
+        var dictionary: [String: Any] {[
+                "geofences": geofences.map(RadarGeofence.dictionaryValue),
+                "sdkConfigurations": sdkConfigurations.map(RadarSdkConfiguration.dictionaryValue)
+        ]}
+    }
+    func getOfflineData() async throws -> OfflineData? {
+        let (data, _) = try await apiHelper.radarRequest(method: "GET", url: "offline-data")
+        
+        let json = try JSONSerialization.jsonObject(with: data, options: []) as! [String: Any]
+        
+        guard let bridge = RadarSwiftBridgeHolder.shared else {
+            // Radar is uninitialized
+            return nil
+        }
+        
+        let geofences = bridge.RadarGeofences(from: json["geofences"] ?? [])
+        let trackingOptions = RadarTrackingOptions.init(from: json["tracking_options"] as? [String: Any] ?? [:])
+        
+        return nil
+    }
+    
     // TODO: implement rest of RadarAPIClient
 }

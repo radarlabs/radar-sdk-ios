@@ -70,7 +70,7 @@ class RadarSettings {
     static var sdkConfiguration: RadarSdkConfiguration? {
         get {
             if let dict = UserDefaults.standard.dictionary(forKey: kSdkConfiguration) {
-                return RadarSdkConfiguration(dict: dict)
+                return RadarSdkConfiguration(from: dict)
             }
             return nil
         }

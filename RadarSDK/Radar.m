@@ -26,6 +26,7 @@
 #import "RadarInAppMessageDelegate.h"
 #import "Radar-Swift.h"
 #import "RadarIndoorsProtocol.h"
+#import "RadarSwiftBridge.h"
 
 @interface Radar ()
 
@@ -112,6 +113,8 @@
                                             [self flushLogs];
                                         }];
     }];
+    
+    [RadarSwiftBridgeHolder setShared:[[RadarSwiftBridgeImpl alloc] init]];
 }
 
 + (void)initializeWithPublishableKey:(NSString *)publishableKey {

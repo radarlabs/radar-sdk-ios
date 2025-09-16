@@ -10,8 +10,8 @@ import Foundation
 import CoreLocation
 
 @objc(RadarOfflineManager) @objcMembers
-class RadarOfflineManager: NSObject {
-    public static func getUserGeofencesFromLocation(_ location: CLLocation) -> [RadarGeofence] {
+public class RadarOfflineManager: NSObject {
+    static func getUserGeofencesFromLocation(_ location: CLLocation) -> [RadarGeofence] {
        let nearbyGeofences = RadarState.nearbyGeofences()
        if (nearbyGeofences == nil) {
            return []
@@ -43,7 +43,7 @@ class RadarOfflineManager: NSObject {
        return userGeofences
     }
 
-    public static func updateTrackingOptionsFromOfflineLocation(_ userGeofences: [RadarGeofence], completionHandler: @escaping (RadarConfig?) -> Void) {
+    static func updateTrackingOptionsFromOfflineLocation(_ userGeofences: [RadarGeofence], completionHandler: @escaping (RadarConfig?) -> Void) {
         var newGeofenceTags = [String]()
         let sdkConfig = RadarSettings.sdkConfiguration
 
@@ -52,45 +52,45 @@ class RadarOfflineManager: NSObject {
                 newGeofenceTags.append(userGeofence.tag!)
             }
         }
-        let rampUpGeofenceTagsOptional = RadarRemoteTrackingOptions.getGeofenceTags(key: "inGeofence", remoteTrackingOptions: sdkConfig?.remoteTrackingOptions)
-        var inRampedUpGeofence = false
-        if let rampUpGeofenceTags = rampUpGeofenceTagsOptional {
-            inRampedUpGeofence = !Set(rampUpGeofenceTags).isDisjoint(with: Set(newGeofenceTags))
-        }
-
-        var newTrackingOptions: RadarTrackingOptions? = nil
-
-        if inRampedUpGeofence {
-            // ramp up
-            RadarLogger.shared.log(level: RadarLogLevel.debug, message: "Ramping up from Radar offline manager")
-            newTrackingOptions = RadarRemoteTrackingOptions.getTrackingOptions(key: "inGeofence", remoteTrackingOptions: sdkConfig?.remoteTrackingOptions)
-        } else {
-            // ramp down if needed
-            if let onTripOptions = RadarRemoteTrackingOptions.getTrackingOptions(key: "onTrip", remoteTrackingOptions: sdkConfig?.remoteTrackingOptions),
-                let _ = Radar.getTripOptions() {
-                newTrackingOptions = onTripOptions
-                RadarLogger.shared.log(level: RadarLogLevel.debug, message: "Ramping down from Radar offline manager to trip tracking options")
-            } else {
-                newTrackingOptions = RadarRemoteTrackingOptions.getTrackingOptions(key: "default", remoteTrackingOptions: sdkConfig?.remoteTrackingOptions)
-                RadarLogger.shared.log(level: RadarLogLevel.debug, message: "Ramping down from Radar offline manager to default tracking options")
-            }
-        }
-        if (newTrackingOptions != nil) {
-            let metaDict: [String: Any] = ["trackingOptions": newTrackingOptions?.dictionaryValue() as Any]
-            let configDict: [String: Any] = ["meta": metaDict]
-            if let radarConfig = RadarConfig.fromDictionary(configDict) {
-                    return completionHandler(radarConfig)
-            }
-        }
+//        let rampUpGeofenceTagsOptional = RadarRemoteTrackingOptions.getGeofenceTags(key: "inGeofence", remoteTrackingOptions: sdkConfig?.remoteTrackingOptions)
+//        var inRampedUpGeofence = false
+//        if let rampUpGeofenceTags = rampUpGeofenceTagsOptional {
+//            inRampedUpGeofence = !Set(rampUpGeofenceTags).isDisjoint(with: Set(newGeofenceTags))
+//        }
+//
+//        var newTrackingOptions: RadarTrackingOptions? = nil
+//
+//        if inRampedUpGeofence {
+//            // ramp up
+//            RadarLogger.shared.log(level: RadarLogLevel.debug, message: "Ramping up from Radar offline manager")
+//            newTrackingOptions = RadarRemoteTrackingOptions.getTrackingOptions(key: "inGeofence", remoteTrackingOptions: sdkConfig?.remoteTrackingOptions)
+//        } else {
+//            // ramp down if needed
+//            if let onTripOptions = RadarRemoteTrackingOptions.getTrackingOptions(key: "onTrip", remoteTrackingOptions: sdkConfig?.remoteTrackingOptions),
+//                let _ = Radar.getTripOptions() {
+//                newTrackingOptions = onTripOptions
+//                RadarLogger.shared.log(level: RadarLogLevel.debug, message: "Ramping down from Radar offline manager to trip tracking options")
+//            } else {
+//                newTrackingOptions = RadarRemoteTrackingOptions.getTrackingOptions(key: "default", remoteTrackingOptions: sdkConfig?.remoteTrackingOptions)
+//                RadarLogger.shared.log(level: RadarLogLevel.debug, message: "Ramping down from Radar offline manager to default tracking options")
+//            }
+//        }
+//        if (newTrackingOptions != nil) {
+//            let metaDict: [String: Any] = ["trackingOptions": newTrackingOptions?.dictionaryValue() as Any]
+//            let configDict: [String: Any] = ["meta": metaDict]
+//            if let radarConfig = RadarConfig.fromDictionary(configDict) {
+//                    return completionHandler(radarConfig)
+//            }
+//        }
         return completionHandler(nil)
     }
 
-    public static func generateEventsFromOfflineLocations(_ location: CLLocation, userGeofences: [RadarGeofence], completionHandler: @escaping ([RadarEvent], RadarUser, CLLocation) -> Void) {
+    static func generateEventsFromOfflineLocations(_ location: CLLocation, userGeofences: [RadarGeofence]) -> ([RadarEvent], RadarUser, CLLocation) {
         let user = RadarState.radarUser()
         RadarLogger.shared.log(level: RadarLogLevel.info, message: "Got this user: \(String(describing: user))")
         if (user == nil) {
             RadarLogger.shared.log(level: RadarLogLevel.error, message: "error getting user from offline manager")
-            return completionHandler([], user!, location)
+            return ([], user!, location)
         }
 
         // generate geofence entry and exit events
@@ -192,12 +192,42 @@ class RadarOfflineManager: NSObject {
         RadarState.setGeofenceIds(newUserGeofenceIds)
 
         if let newUser = RadarUser(object: newUserDict) {
-            completionHandler(events, newUser, location)
+            return (events, newUser, location)
         } else {
             // error out
             RadarLogger.shared.log(level: RadarLogLevel.error, message: "error parsing user from offline manager")
-            completionHandler(events, user!, location)
+            return (events, user!, location)
         }
+    }
+    
+    public static func track(_ params: [String: Any]) -> [String: Any] {
+        
+        do {
+            guard let bridge = RadarSwiftBridgeHolder.shared else {
+                return [:]
+            }
+            
+            guard let offlineData = try RadarFileStorage.readJSON(at: "offlineData.json") as? [String: Any] else {
+                return [:]
+            }
+            
+            let geofences = bridge.RadarGeofences(from: offlineData["geofences"]!)
+            let trackingOptinos = bridge.RadarTrackingOptions(from: offlineData["trackingOptions"]!)
+            
+            // inside geofences
+            for
+                
+        } catch {
+            
+        }
+        
+        
+        
+        
+        
+        
+        
+        
     }
 
     private static func isPointInsideCircle(center: CLLocationCoordinate2D, radius: Double, point: CLLocation) -> Bool {

@@ -503,17 +503,18 @@
                 [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Failed to flush replays"]];
                 [[RadarDelegateHolder sharedInstance] didFailWithStatus:status];
                 if ([RadarSettings sdkConfiguration].useOfflineRTOUpdates) {
-                    NSArray<RadarGeofence *> *userGeofences = [RadarOfflineManager getUserGeofencesFromLocation:location];
-                    [RadarOfflineManager generateEventsFromOfflineLocations:location userGeofences:userGeofences completionHandler:^(NSArray<RadarEvent *> *events, RadarUser *user, CLLocation *location) {
-                        if (events && events.count) {
-                            [[RadarDelegateHolder sharedInstance] didReceiveEvents:events user:user];
-                        }
-
-                        [[RadarDelegateHolder sharedInstance] didUpdateLocation:location user:user];
-                    }];
-                    return [RadarOfflineManager updateTrackingOptionsFromOfflineLocation:userGeofences completionHandler:^(RadarConfig * _Nullable config) {
-                        return completionHandler(status, nil, nil, nil, nil, config, nil);
-                    }];
+//                    NSArray<RadarGeofence *> *userGeofences = [RadarOfflineManager getUserGeofencesFromLocation:location];
+//                    [RadarOfflineManager generateEventsFromOfflineLocations:location userGeofences:userGeofences completionHandler:^(NSArray<RadarEvent *> *events, RadarUser *user, CLLocation *location) {
+//                        if (events && events.count) {
+//                            [[RadarDelegateHolder sharedInstance] didReceiveEvents:events user:user];
+//                        }
+//
+//                        [[RadarDelegateHolder sharedInstance] didUpdateLocation:location user:user];
+//                    }];
+//                    return [RadarOfflineManager updateTrackingOptionsFromOfflineLocation:userGeofences completionHandler:^(RadarConfig * _Nullable config) {
+//                        return completionHandler(status, nil, nil, nil, nil, config, nil);
+//                    }];
+                    // we shouldn't be using the replay system with offline manager,
                 }
             } else {
                 [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Successfully flushed replays"]];
@@ -546,22 +547,25 @@
                                 }
 
                                 [[RadarDelegateHolder sharedInstance] didFailWithStatus:status];
-                                if ([RadarSettings sdkConfiguration].useOfflineRTOUpdates) {
-                                    NSArray<RadarGeofence *> *userGeofences = [RadarOfflineManager getUserGeofencesFromLocation:location];
-                                    [RadarOfflineManager generateEventsFromOfflineLocations:location userGeofences:userGeofences completionHandler:^(NSArray<RadarEvent *> *events, RadarUser *user, CLLocation *location) {
-                                        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"events from offline manager: %@", events]];
-                                        if (events && events.count) {
-                                            [[RadarDelegateHolder sharedInstance] didReceiveEvents:events user:user];
-                                        }
-                                        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"location from offline manager: %@", location]];
-
-                                        [[RadarDelegateHolder sharedInstance] didUpdateLocation:location user:user];
-
-                                    }];
-
-                                    return [RadarOfflineManager updateTrackingOptionsFromOfflineLocation:userGeofences completionHandler:^(RadarConfig * _Nullable config) {
-                                        return completionHandler(status, nil, nil, nil, nil, config, nil);
-                                    }];
+                                // if the network is down and we are configured to use client side tracking, then use that
+                                if ([RadarSettings sdkConfiguration].useOfflineRTOUpdates && status == RadarStatusErrorNetwork) {
+//                                    NSArray<RadarGeofence *> *userGeofences = [RadarOfflineManager getUserGeofencesFromLocation:location];
+//                                    [RadarOfflineManager generateEventsFromOfflineLocations:location userGeofences:userGeofences completionHandler:^(NSArray<RadarEvent *> *events, RadarUser *user, CLLocation *location) {
+//                                        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"events from offline manager: %@", events]];
+//                                        if (events && events.count) {
+//                                            [[RadarDelegateHolder sharedInstance] didReceiveEvents:events user:user];
+//                                        }
+//                                        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"location from offline manager: %@", location]];
+//
+//                                        [[RadarDelegateHolder sharedInstance] didUpdateLocation:location user:user];
+//
+//                                    }];
+//
+//                                    return [RadarOfflineManager updateTrackingOptionsFromOfflineLocation:userGeofences completionHandler:^(RadarConfig * _Nullable config) {
+//                                        return completionHandler(status, nil, nil, nil, nil, config, nil);
+//                                    }];
+//                                    
+                                    res = [RadarOfflineManager track:requestParams];
                                 } else {
                                     return completionHandler(status, nil, nil, nil, nil, nil, nil);
                                 }
