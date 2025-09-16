@@ -39,6 +39,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         radarInitializeOptions.pushNotification = true
 //        Radar.setUserId("silent-push-id-v2")
         Radar.initialize(publishableKey: "prj_test_pk_", options: radarInitializeOptions )
+        Radar.setAppGroup("group.waypoint.data")
         Radar.setMetadata([ "foo": "bar" ])
         Radar.setDelegate(self)
         Radar.setVerifiedDelegate(self)
@@ -47,6 +48,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
             locationManager.startMonitoringLocationPushes() { data, error in
                 print("Extension Token")
                 print(data?.map { String(format: "%02x", $0) }.joined() ?? "no token")
+                Radar.setLocationExtensionToken(data?.map { String(format: "%02x", $0) }.joined() ?? "no token")
             }
         }
         

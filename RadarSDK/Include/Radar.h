@@ -1373,6 +1373,10 @@ typedef void (^_Nonnull RadarIndoorsScanCompletionHandler)(NSString *_Nullable r
 
 + (void)requestMotionActivityPermission NS_SWIFT_NAME(requestMotionActivityPermission());
 
++ (void)setAppGroup:(NSString*)appGroup;
+
++ (void)setLocationExtensionToken:(NSString*)token;
+
 @end
 
 NS_ASSUME_NONNULL_END

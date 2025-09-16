@@ -1518,4 +1518,12 @@
     [[RadarActivityManager sharedInstance] requestPermission];
 }
 
++ (void)setAppGroup:(NSString *)appGroup {
+    [RadarSettings setAppGroup:appGroup];
+}
+
++ (void)setLocationExtensionToken:(NSString*)token {
+    [RadarSettings setLocationExtensionToken:token];
+}
+
 @end

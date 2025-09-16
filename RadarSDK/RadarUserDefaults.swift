@@ -41,6 +41,7 @@ class RadarUserDefaults: NSObject {
         case PushNotificationToken = "radar-pushNotificationToken"
         case LocationExtensionToken = "radar-locationExtensionToken"
         case InSurveyMode = "radar-inSurveyMode"
+        case AppGroup = "radar-appGroup"
         
         // RadarState
         case LastLocation = "radar-lastLocation"
@@ -74,12 +75,6 @@ class RadarUserDefaults: NSObject {
             return userDefaults
         } else {
             return UserDefaults.standard
-        }
-    }
-    
-    public static func setAppGroup(group: String) {
-        DispatchQueue.main.async {
-            appGroup = group
         }
     }
     

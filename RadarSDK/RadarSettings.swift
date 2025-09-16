@@ -15,6 +15,11 @@ internal class RadarSettings: NSObject {
     
     public static func setAppGroup(_ appGroup: String) {
         RadarUserDefaults.appGroup = appGroup
+        let previousAppGroup = RadarUserDefaults.string(forKey: .AppGroup)
+        if (previousAppGroup != appGroup) {
+            RadarUserDefaults.cloneToAppGroup()
+        }
+        RadarUserDefaults.set(appGroup, forKey: .AppGroup)
     }
     
     public static var publishableKey: String? {

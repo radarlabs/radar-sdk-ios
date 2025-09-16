@@ -155,13 +155,13 @@ struct MainView: View {
                 
                 StyledButton("getVerifiedLocationToken") {
                     Radar.getVerifiedLocationToken() { (status, token) in
-                        print("getVerifiedLocationToken: status = \(status); token = \(token?.dictionaryValue(), default: "None")")
+                        print("getVerifiedLocationToken: status = \(status); token = \(token?.dictionaryValue())")
                     }
                 }
 
                 StyledButton("trackVerified") {
                     Radar.trackVerified() { (status, token) in
-                        print("TrackVerified: status = \(status); token = \(token?.dictionaryValue(), default: "None")")
+                        print("TrackVerified: status = \(status); token = \(token?.dictionaryValue())")
                     }
                 }
                 
