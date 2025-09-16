@@ -13,13 +13,28 @@ internal class RadarSettings: NSObject {
     static let DefaultHost = "https://api.radar.io"
     static let DefaultVerifiedHost = "https://api-verified.radar.io"
     
-    public static func setAppGroup(_ appGroup: String) {
-        RadarUserDefaults.appGroup = appGroup
-        let previousAppGroup = RadarUserDefaults.string(forKey: .AppGroup)
-        if (previousAppGroup != appGroup) {
-            RadarUserDefaults.cloneToAppGroup()
+    public static func setAppGroup(_ appGroup: String?) {
+        // if no appGroup provided, RadarUserDefaults.appGroup should be set to nil, then UserDefaults.standard is used
+        guard let appGroup = appGroup else {
+            RadarUserDefaults.appGroup = nil
+            return
         }
+        
+        // the app group in UserDefaults.standard
+        let previousAppGroup = RadarUserDefaults.string(forKey: .AppGroup)
         RadarUserDefaults.set(appGroup, forKey: .AppGroup)
+        
+        // update the app group and clone if necessary
+        if (previousAppGroup != appGroup) {
+            RadarUserDefaults.cloneToAppGroup(appGroup: appGroup)
+        }
+        
+        // then set the UserDefaults suit
+        RadarUserDefaults.appGroup = appGroup
+    }
+    
+    public static func getAppGroup() -> String? {
+        return RadarUserDefaults.string(forKey: .AppGroup)
     }
     
     public static var publishableKey: String? {

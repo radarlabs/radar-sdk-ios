@@ -78,7 +78,7 @@ class RadarUserDefaults: NSObject {
         }
     }
     
-    public static func cloneToAppGroup() {
+    public static func cloneToAppGroup(appGroup: String) {
         let appGroupDefaults = UserDefaults(suiteName: appGroup)
         let userDefaults = UserDefaults.standard
         

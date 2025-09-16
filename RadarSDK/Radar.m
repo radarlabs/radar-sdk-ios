@@ -58,6 +58,8 @@
 + (void)initializeWithPublishableKey:(NSString *)publishableKey options:(RadarInitializeOptions *)options {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"initialize()"];
     
+    [RadarSettings setAppGroup:[RadarSettings getAppGroup]];
+    
     Class RadarSDKMotion = NSClassFromString(@"RadarSDKMotion");
     if (RadarSDKMotion) {
         id radarSDKMotion = [[RadarSDKMotion alloc] init];
@@ -117,7 +119,6 @@
     if (options.pushNotification) {
         [[UIApplication sharedApplication] registerForRemoteNotifications];
     }
-
 }
 
 + (void)initializeWithPublishableKey:(NSString *)publishableKey {
@@ -126,7 +127,7 @@
 
 + (void)initializeWithAppGroup:(NSString *)appGroup {
     [RadarSettings setAppGroup:appGroup];
-    [RadarSettings publishableKey];
+    [Radar initializeWithPublishableKey:[RadarSettings publishableKey]];
 }
 
 #pragma mark - Properties

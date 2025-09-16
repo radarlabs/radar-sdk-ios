@@ -18,6 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface RadarSettings : NSObject
 
 + (void)setAppGroup:(NSString*)appGroup;
++ (NSString * _Nullable)getAppGroup;
 + (NSString * _Nullable)publishableKey;
 + (void)setPublishableKey:(NSString *)publishableKey;
 + (NSString *)installId;
