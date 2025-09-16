@@ -410,7 +410,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     NSArray<NSString *> *tagsToRemove = @[@"tag1", @"tag2"];
     [Radar removeTags:tagsToRemove];
     
-    XCTAssertNil([Radar getTags]);
+    XCTAssertEqual([Radar getTags].count, 0);
 }
 
 - (void)test_Radar_setUserTags {
@@ -427,7 +427,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     
     // Then set to nil to clear all tags
     [Radar setTags:nil];
-    XCTAssertNil([Radar getTags]);
+    XCTAssertEqual([Radar getTags].count, 0);
 }
 
 - (void)test_Radar_setUserTags_replaces_existing {

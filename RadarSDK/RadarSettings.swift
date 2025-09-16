@@ -180,7 +180,14 @@ internal class RadarSettings: NSObject {
             }
             return nil
         }
-        set { RadarUserDefaults.set(newValue?.dictionaryValue(), forKey: .SdkConfiguration) }
+        set {
+            RadarUserDefaults.set(newValue?.dictionaryValue(), forKey: .SdkConfiguration)
+            
+            if let newValue = newValue {
+                logLevel = newValue.logLevel;
+            }
+            Radar.__updateLogBufferPersistantLog()
+        }
     }
 
     public static var logLevel: RadarLogLevel {

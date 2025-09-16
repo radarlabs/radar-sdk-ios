@@ -21,6 +21,7 @@
 #import "RadarUtils.h"
 #import "RadarVerificationManager.h"
 #import "RadarReplayBuffer.h"
+#import "RadarLogBuffer.h"
 #import "RadarNotificationHelper.h"
 #import "RadarTripOptions.h"
 #import "RadarIndoorsProtocol.h"
@@ -1513,6 +1514,9 @@
 
 + (void) __writeToLogBufferWithLevel:(RadarLogLevel)level type:(RadarLogType)type message:(NSString *)message forcePersist:(BOOL)forcePersist {
     [[RadarLogBuffer sharedInstance] write:level type:type message:message forcePersist:forcePersist];
+}
++ (void) __updateLogBufferPersistantLog {
+    [[RadarLogBuffer sharedInstance] updatePersistentLogFeatureFlag];
 }
 
 + (void)requestMotionActivityPermission {

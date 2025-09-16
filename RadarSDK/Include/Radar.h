@@ -1370,6 +1370,7 @@ typedef void (^_Nonnull RadarIndoorsScanCompletionHandler)(NSString *_Nullable r
 + (void)__writeToLogBufferWithLevel:(RadarLogLevel)level type:(RadarLogType)type message:(NSString *)message forcePersist:(BOOL)forcePersist
     NS_SWIFT_NAME(__writeToLogBuffer(with:type:message:forcePersist:));
 
++ (void)__updateLogBufferPersistantLog;
 
 + (void)requestMotionActivityPermission NS_SWIFT_NAME(requestMotionActivityPermission());
 
