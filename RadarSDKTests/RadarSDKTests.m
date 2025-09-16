@@ -887,7 +887,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 
     XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
 
-    [RadarSettings removePreviousTrackingOptions];
+    [RadarSettings setPreviousTrackingOptions:nil];
     RadarTrackingOptions *originalTrackingOptions = RadarTrackingOptions.presetEfficient;
     [Radar startTrackingWithOptions:originalTrackingOptions];
 
@@ -916,7 +916,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 
     XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
 
-    [RadarSettings removePreviousTrackingOptions];
+    [RadarSettings setPreviousTrackingOptions:nil];
     [RadarSettings setTrackingOptions:nil];
     [RadarSettings setTracking:NO];
 
