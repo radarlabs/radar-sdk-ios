@@ -30,7 +30,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)clearBuffer;
 
-- (void)updatePersistentLogFeatureFlag;
+- (void)setPersistentLogFeatureFlag:(BOOL)value;
 
 - (void)onFlush:(BOOL)success logs:(NSArray<RadarLog *> *)logs;
 

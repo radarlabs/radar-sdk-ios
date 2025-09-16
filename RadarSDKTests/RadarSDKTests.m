@@ -1644,8 +1644,16 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 }
 
 - (void)test_RadarReplayBuffer_writeAndRead {
-    RadarSdkConfiguration *sdkConfiguration = [RadarSettings sdkConfiguration];
-    sdkConfiguration.usePersistence = true;
+    RadarSdkConfiguration *sdkConfiguration = [[RadarSdkConfiguration alloc] initWithDict:@{
+        @"logLevel": @"warning",
+        @"startTrackingOnInitialize": @(NO),
+        @"trackOnceOnAppOpen": @(NO),
+        @"usePersistence": @(YES),
+        @"extendFlushReplays": @(NO),
+        @"useLogPersistence": @(NO),
+        @"useRadarModifiedBeacon": @(NO),
+        @"syncAfterSetUser": @(NO)
+    }];
     [RadarSettings setSdkConfiguration:sdkConfiguration];
     
     CLLocation *location = [[CLLocation alloc] initWithLatitude:0.1 longitude:0.1];

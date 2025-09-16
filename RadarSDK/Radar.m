@@ -26,6 +26,7 @@
 #import "RadarTripOptions.h"
 #import "RadarIndoorsProtocol.h"
 #import "RadarInAppMessageDelegate.h"
+#import "RadarSwiftBridge.h"
 #import "Radar-Swift.h"
 
 @interface Radar ()
@@ -60,6 +61,7 @@
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"initialize()"];
     
     [RadarSettings setAppGroup:[RadarSettings getAppGroup]];
+    [RadarSwift setBridge:[[RadarSwiftBridge alloc] init]];
     
     Class RadarSDKMotion = NSClassFromString(@"RadarSDKMotion");
     if (RadarSDKMotion) {
@@ -1510,13 +1512,6 @@
     } else {
         completionHandler(nil);
     }
-}
-
-+ (void) __writeToLogBufferWithLevel:(RadarLogLevel)level type:(RadarLogType)type message:(NSString *)message forcePersist:(BOOL)forcePersist {
-    [[RadarLogBuffer sharedInstance] write:level type:type message:message forcePersist:forcePersist];
-}
-+ (void) __updateLogBufferPersistantLog {
-    [[RadarLogBuffer sharedInstance] updatePersistentLogFeatureFlag];
 }
 
 + (void)requestMotionActivityPermission {

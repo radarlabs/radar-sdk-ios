@@ -1364,14 +1364,6 @@ typedef void (^_Nonnull RadarIndoorsScanCompletionHandler)(NSString *_Nullable r
  */
 + (void) loadImage:(NSString*)url completionHandler:(void (^ _Nonnull)(UIImage * _Nullable))completionHandler NS_SWIFT_NAME(loadImage(_:completionHandler:));
 
-/**
- This function should be internal, but it is exposed due to swift migration limitations. It should only be used by internal swift classes while RadarLogBuffer is still in Obj-C
- */
-+ (void)__writeToLogBufferWithLevel:(RadarLogLevel)level type:(RadarLogType)type message:(NSString *)message forcePersist:(BOOL)forcePersist
-    NS_SWIFT_NAME(__writeToLogBuffer(with:type:message:forcePersist:));
-
-+ (void)__updateLogBufferPersistantLog;
-
 + (void)requestMotionActivityPermission NS_SWIFT_NAME(requestMotionActivityPermission());
 
 + (void)setAppGroup:(NSString*)appGroup;

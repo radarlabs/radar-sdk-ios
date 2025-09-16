@@ -67,7 +67,7 @@ public final class RadarLogger : NSObject, Sendable {
             }
 
             // TODO: implement RadarLogBuffer
-            Radar.__writeToLogBuffer(with: level, type: type, message: message, forcePersist: append)
+            RadarSwift.bridge?.writeToLogBuffer(level: level, type: type, message: message, forcePersist: append)
             if (!append) {
                 let backgroundTime = UIApplication.shared.backgroundTimeRemaining >= .greatestFiniteMagnitude ? 180 : UIApplication.shared.backgroundTimeRemaining
                 let logMessage = "\(message) | backgroundTimeRemaining = \(backgroundTime)"
