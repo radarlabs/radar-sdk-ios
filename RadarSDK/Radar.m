@@ -1526,4 +1526,14 @@
     [RadarSettings setLocationExtensionToken:token];
 }
 
++ (void)didReceivePushNotificationPayload:(NSDictionary *)payload completionHandler:(void (^ _Nonnull)(void))completionHandler {
+    if ([payload[@"type"] isEqual:@"radar:trackOnce"]) {
+        [Radar trackOnceWithCompletionHandler:^(RadarStatus status, CLLocation * _Nullable location, NSArray<RadarEvent *> * _Nullable events, RadarUser * _Nullable user) {
+            completionHandler();
+        }];
+    } else {
+        completionHandler();
+    }
+}
+
 @end

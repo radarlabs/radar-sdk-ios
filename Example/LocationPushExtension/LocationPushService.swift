@@ -12,7 +12,7 @@ import RadarSDK
 class LocationPushService: NSObject, CLLocationPushServiceExtension {
     func didReceiveLocationPushPayload(_ payload: [String : Any], completion: @escaping () -> Void) {
         Radar.initialize(withAppGroup: "group.waypoint.data")
-        Radar.trackOnce() { status, location, events, user in
+        Radar.didReceivePushNotificationPayload(payload) {
             completion()
         }
     }
