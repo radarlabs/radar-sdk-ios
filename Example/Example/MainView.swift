@@ -68,6 +68,8 @@ struct MainView: View {
             }.tag(TabIdentifier.Debug)
 
             VStack {
+                // TODO: make buttons take params for some functions
+                
                 Button("trackOnce") {
                     Radar.trackOnce()
                 }
@@ -120,7 +122,7 @@ struct MainView: View {
                             "name": "image.jpeg"
                         ],
                         "metadata": [
-                            "campainId": "1234"
+                            "campaignId": "1234"
                         ]
                     ])!)
                 }
@@ -129,18 +131,6 @@ struct MainView: View {
                     Radar.requestMotionActivityPermission()
                 }
                 
-                Button("trackOnce") {
-                    Radar.trackOnce()
-                }
-
-
-                Button("startTracking") {
-                    let options = RadarTrackingOptions.presetContinuous
-                    Radar.startTracking(trackingOptions: options)
-                    
-                    
-                }
-
                 Button("getContext") {
                     Radar.getContext { (status, location, context) in
                         print("Context: status = \(Radar.stringForStatus(status)); location = \(String(describing: location)); context?.geofences = \(String(describing: context?.geofences)); context?.place = \(String(describing: context?.place)); context?.country = \(String(describing: context?.country))")
