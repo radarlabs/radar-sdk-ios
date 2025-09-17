@@ -19,7 +19,7 @@
 #import "RadarLogBuffer.h"
 #import "RadarUtils.h"
 
-@implementation RadarSettings
+@implementation RadarSettingsDeprecated
 
 static NSString *const kPublishableKey = @"radar-publishableKey";
 static NSString *const kInstallId = @"radar-installId";
@@ -167,12 +167,12 @@ static NSString *const kUserTags = @"radar-userTags";
 }
 
 + (void)setTrackingOptions:(RadarTrackingOptions *)options {
-    NSDictionary *optionsDict = [options dictionaryValue];
-    [[NSUserDefaults standardUserDefaults] setObject:optionsDict forKey:kTrackingOptions];
-}
-
-+ (void)removeTrackingOptions {
-    [[NSUserDefaults standardUserDefaults] removeObjectForKey:kTrackingOptions];
+    if (options == nil) {
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:kTrackingOptions];
+    } else {
+        NSDictionary *optionsDict = [options dictionaryValue];
+        [[NSUserDefaults standardUserDefaults] setObject:optionsDict forKey:kTrackingOptions];
+    }
 }
 
 + (RadarTrackingOptions *)previousTrackingOptions {
@@ -186,27 +186,26 @@ static NSString *const kUserTags = @"radar-userTags";
 }
 
 + (void)setPreviousTrackingOptions:(RadarTrackingOptions *)options {
-    NSDictionary *optionsDict = [options dictionaryValue];
-    [[NSUserDefaults standardUserDefaults] setObject:optionsDict forKey:kPreviousTrackingOptions];
+    if (options == nil) {
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:kPreviousTrackingOptions];
+    } else {
+        NSDictionary *optionsDict = [options dictionaryValue];
+        [[NSUserDefaults standardUserDefaults] setObject:optionsDict forKey:kPreviousTrackingOptions];
+    }
 }
-
-+ (void)removePreviousTrackingOptions {
-    [[NSUserDefaults standardUserDefaults] removeObjectForKey:kPreviousTrackingOptions];
-}
-
 + (RadarTrackingOptions *_Nullable)remoteTrackingOptions {
     NSDictionary *optionsDict = [[NSUserDefaults standardUserDefaults] dictionaryForKey:kRemoteTrackingOptions];
 
     return optionsDict ? [RadarTrackingOptions trackingOptionsFromDictionary:optionsDict] : nil;
 }
 
-+ (void)setRemoteTrackingOptions:(RadarTrackingOptions *_Nonnull)options {
-    NSDictionary *optionsDict = [options dictionaryValue];
-    [[NSUserDefaults standardUserDefaults] setObject:optionsDict forKey:kRemoteTrackingOptions];
-}
-
-+ (void)removeRemoteTrackingOptions {
-    [[NSUserDefaults standardUserDefaults] removeObjectForKey:kRemoteTrackingOptions];
++ (void)setRemoteTrackingOptions:(RadarTrackingOptions *)options {
+    if (options == nil) {
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:kRemoteTrackingOptions];
+    } else {
+        NSDictionary *optionsDict = [options dictionaryValue];
+        [[NSUserDefaults standardUserDefaults] setObject:optionsDict forKey:kRemoteTrackingOptions];
+    }
 }
 
 + (RadarTripOptions *)tripOptions {
