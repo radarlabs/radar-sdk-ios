@@ -1839,16 +1839,6 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     XCTAssertEqual(savedSdkConfiguration.trackOnceOnAppOpen, YES);
     XCTAssertEqual(savedSdkConfiguration.startTrackingOnInitialize, YES);
     XCTAssertTrue(savedSdkConfiguration.useOfflineRTOUpdates);
-    NSArray<RadarRemoteTrackingOptions *> * remoteTrackingOptions = savedSdkConfiguration.remoteTrackingOptions;
-    XCTAssertEqual(remoteTrackingOptions.count, 3);
-    XCTAssertTrue([remoteTrackingOptions[0].type isEqualToString:@"default"]);
-    XCTAssertTrue([remoteTrackingOptions[0].trackingOptions isEqual:RadarTrackingOptions.presetResponsive]);
-    XCTAssertTrue([remoteTrackingOptions[1].type isEqualToString:@"inGeofence"]);
-    XCTAssertTrue([remoteTrackingOptions[1].trackingOptions isEqual:RadarTrackingOptions.presetEfficient]);
-    XCTAssertTrue([remoteTrackingOptions[1].geofenceTags[0] isEqualToString:@"venue"]);
-    XCTAssertTrue([remoteTrackingOptions[2].type isEqualToString:@"onTrip"]);
-    XCTAssertTrue([remoteTrackingOptions[2].trackingOptions isEqual:RadarTrackingOptions.presetContinuous]);
-
 }
 
 @end
