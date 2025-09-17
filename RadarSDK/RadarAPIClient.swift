@@ -14,6 +14,7 @@ public final class RadarAPIClient: Sendable {
     
     let apiHelper = RadarApiHelper()
     
+    // MARK: - getAsset
     func getAsset(url: String) async throws -> Data {
         let (data, _) = if (url.starts(with: "http")) {
             try await apiHelper.request(method: "GET", url: url)
@@ -23,16 +24,16 @@ public final class RadarAPIClient: Sendable {
         return data
     }
     
+    // MARK: - getOfflineData
     struct OfflineData {
-        let geofences: [RadarGeofence]
-        let sdkConfigurations: [RadarSdkConfiguration]
-        
-        var dictionary: [String: Any] {[
-                "geofences": geofences.map(RadarGeofence.dictionaryValue),
-                "sdkConfigurations": sdkConfigurations.map(RadarSdkConfiguration.dictionaryValue)
-        ]}
+        let newGeofences: [RadarGeofence]
+        let removeGeofences: [String]
+        let defaultTrackingOptions: RadarTrackingOptions?
+        let onTripTrackingOptions: RadarTrackingOptions?
+        let inGeofenceTrackingOptions: RadarTrackingOptions?
+        let inGeofenceTrackingTags: [String]
     }
-    func getOfflineData() async throws -> OfflineData? {
+    func getOfflineData(geofenceIds: [String]) async throws -> OfflineData? {
         let (data, _) = try await apiHelper.radarRequest(method: "GET", url: "offline-data")
         
         let json = try JSONSerialization.jsonObject(with: data, options: []) as! [String: Any]
@@ -42,10 +43,21 @@ public final class RadarAPIClient: Sendable {
             return nil
         }
         
-        let geofences = bridge.RadarGeofences(from: json["geofences"] ?? [])
-        let trackingOptions = RadarTrackingOptions.init(from: json["tracking_options"] as? [String: Any] ?? [:])
+        let newGeofences = bridge.RadarGeofences(from: json["newGeofences"] ?? []) ?? []
+        let removeGeofences: [String] = (json["removeGeofences"] as? [String]) ?? []
+        let defaultTrackingOptions = RadarTrackingOptions.init(from: json["defaultTrackingOptions"] as? [String: Any] ?? [:])
+        let onTripTrackingOptions = RadarTrackingOptions.init(from: json["onTripTrackingOptions"] as? [String: Any] ?? [:])
+        let inGeofenceTrackingOptions = RadarTrackingOptions.init(from: json["inGeofenceTrackingOptions"] as? [String: Any] ?? [:])
+        let inGeofenceTrackingTags: [String] = (json["inGeofenceTrackingTags"] as? [String]) ?? []
         
-        return nil
+        return OfflineData(
+            newGeofences: newGeofences,
+            removeGeofences: removeGeofences,
+            defaultTrackingOptions: defaultTrackingOptions,
+            onTripTrackingOptions: onTripTrackingOptions,
+            inGeofenceTrackingOptions: inGeofenceTrackingOptions,
+            inGeofenceTrackingTags: inGeofenceTrackingTags
+        )
     }
     
     // TODO: implement rest of RadarAPIClient

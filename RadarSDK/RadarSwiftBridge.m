@@ -22,4 +22,8 @@
     return [RadarGeofence geofencesFromObject:object];
 }
 
+- (void)writeToLogBufferWithLevel:(RadarLogLevel)level type:(RadarLogType)type message:(NSString * _Nonnull)message forcePersist:(BOOL)forcePersist {
+    [[RadarLogBuffer sharedInstance] write:level type:type message:message forcePersist:forcePersist];
+}
+
 @end

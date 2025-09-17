@@ -12,6 +12,7 @@ import Foundation
 public protocol RadarSwiftBridge {
     func RadarEvents(from object: Any) -> [RadarEvent]?
     func RadarGeofences(from object: Any) -> [RadarGeofence]?
+    func writeToLogBuffer(level: RadarLogLevel, type: RadarLogType, message: String, forcePersist: Bool)
 }
 
 @objc @objcMembers

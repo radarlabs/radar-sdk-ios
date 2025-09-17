@@ -9,6 +9,18 @@
 import Foundation
 
 internal class RadarFileStorage {
+    static func path(for filename: String) -> String {
+        let appGroupValue: String? = "" // RadarSettings.appGroup
+        if let appGroup = appGroupValue, !appGroup.isEmpty {
+            // has appGroup set
+            let path = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: appGroup)!
+            return path.appendingPathComponent(filename).path
+        } else {
+            let path = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
+            return path.appendingPathComponent(filename).path
+        }
+    }
+    
     static func readFile(at path: String) throws -> Data {
         return try Data(contentsOf: URL(fileURLWithPath: path))
     }

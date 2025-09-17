@@ -8,11 +8,13 @@
 
 #import "RadarEvent+Internal.h"
 #import "RadarGeofence+Internal.h"
+#import "RadarLogBuffer.h"
 #import "RadarTrackingOptions.h"
 
 @protocol RadarSwiftBridge
 - (NSArray<RadarEvent *> * _Nullable)RadarEventsFrom:(id _Nonnull)object;
 - (NSArray<RadarGeofence *> * _Nullable)RadarGeofencesFrom:(id _Nonnull)object;
+- (void)writeToLogBufferWithLevel:(RadarLogLevel)level type:(RadarLogType)type message:(NSString * _Nonnull)message forcePersist:(BOOL)forcePersist;
 @end
 
 @interface RadarSwiftBridgeImpl: NSObject<RadarSwiftBridge>
