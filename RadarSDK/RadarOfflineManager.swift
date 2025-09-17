@@ -211,11 +211,43 @@ public class RadarOfflineManager: NSObject {
                 return [:]
             }
             
-            let geofences = bridge.RadarGeofences(from: offlineData["geofences"]!)
-            let trackingOptinos = bridge.RadarTrackingOptions(from: offlineData["trackingOptions"]!)
+            guard let geofences = bridge.RadarGeofences(from: offlineData["geofences"]!) else {
+                return [:]
+            }
             
-            // inside geofences
-            for
+            let trackingOptinos = RadarTrackingOptions(from: offlineData["trackingOptions"] as! [String: Any])
+            
+            guard let latitude = params["latitude"] as? Double, let longitude = params["longitude"] as? Double else {
+                return [:]
+            }
+            let location = CLLocation(latitude: latitude, longitude: longitude)
+            
+            let user = RadarState.radarUser()
+            let newUser: [String: Any] // the dictionary for the updated user
+            
+            // calculate geofences
+            let userGeofences = user?.geofences ?? []
+            var newUserGeofences = [RadarGeofence]()
+            for geofence in geofences {
+                guard let inside = withinGeofence(geofence: geofence, point: location) else {
+                    continue
+                }
+                if (inside) {
+                    
+                    if (!userGeofences.contains(geofence)) {
+                        // entry event
+                        
+                    }
+                    newUserGeofences.append(geofence)
+                } else { // outside
+                    
+                    if (userGeofences.contains(geofence)) {
+                        // exit event
+                        
+                    }
+                }
+                
+            }
                 
         } catch {
             
@@ -228,6 +260,22 @@ public class RadarOfflineManager: NSObject {
         
         
         
+    }
+    
+    private static func withinGeofence(geofence: RadarGeofence, point: CLLocation) -> Bool? {
+        var center: RadarCoordinate?
+        var radius: Double = 100
+
+        if let geometry = geofence.geometry as? RadarCircleGeometry {
+            center = geometry.center
+            radius = geometry.radius
+        } else if let geometry = geofence.geometry as? RadarPolygonGeometry {
+            center = geometry.center
+            radius = geometry.radius
+        } else {
+            return nil
+        }
+        return isPointInsideCircle(center: center!.coordinate, radius: radius, point: point)
     }
 
     private static func isPointInsideCircle(center: CLLocationCoordinate2D, radius: Double, point: CLLocation) -> Bool {
