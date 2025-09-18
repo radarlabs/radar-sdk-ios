@@ -9,16 +9,21 @@
 import Foundation
 
 internal class RadarFileStorage {
-    static func path(for filename: String) -> String {
+    static func path(for filename: String) -> URL {
         let appGroupValue: String? = "" // RadarSettings.appGroup
         if let appGroup = appGroupValue, !appGroup.isEmpty {
             // has appGroup set
             let path = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: appGroup)!
-            return path.appendingPathComponent(filename).path
+            return path.appendingPathComponent(filename)
         } else {
             let path = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
-            return path.appendingPathComponent(filename).path
+            return path.appendingPathComponent(filename)
         }
+    }
+    
+    static func createDirectory() throws {
+        let directory = self.path(for: "")
+        try FileManager.default.createDirectory(at:directory, withIntermediateDirectories: true)
     }
     
     static func readFile(at path: String) throws -> Data {
@@ -29,7 +34,7 @@ internal class RadarFileStorage {
         try data.write(to: URL(fileURLWithPath: path))
     }
     
-    static func readJSON(at path: String) throws -> Any {
+    static func readJSON(at path: String) throws -> Any? {
         let data = try readFile(at: path)
         return try JSONSerialization.jsonObject(with: data)
     }

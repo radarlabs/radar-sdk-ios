@@ -56,13 +56,14 @@ class RadarOfflineManager: NSObject {
     var inGeofenceTrackingOptions: RadarTrackingOptions?
     var inGeofenceTrackingTags = [String]()
     
-    func sync() async {
+    public func sync() async {
+        guard let bridge = RadarSwiftBridgeHolder.shared else {
+            return
+        }
+        let offlineDataPath = RadarFileStorage.path(for: "offlineData.json").path
+        var lastSyncTime: String = RadarUtils.isoDateFormatter.string(from: Date(timeIntervalSince1970: 0))
         do {
-            let offlineDataPath = RadarFileStorage.path(for: "offlineData.json")
             guard let offlineData = try RadarFileStorage.readJSON(at: offlineDataPath) as? [String: Any] else {
-                return
-            }
-            guard let bridge = RadarSwiftBridgeHolder.shared else {
                 return
             }
             guard let geofenceJSON = offlineData["geofences"] as? [[String: Any]] else {
@@ -80,9 +81,17 @@ class RadarOfflineManager: NSObject {
                 inGeofenceTrackingOptions = RadarTrackingOptions(from: options)
                 inGeofenceTrackingTags = options["tags"] as? [String] ?? []
             }
-            
+            if offlineData["lastSyncTime"] as? String != nil {
+                lastSyncTime = offlineData["lastSyncTime"] as! String
+            }
+        } catch {
+            print("Unable to load local json")
+        }
+        
+        do {
             // sync data with server, this can fail, in that case, local data is used
-            guard let syncResult = try await RadarAPIClient.shared.getOfflineData(geofenceIds: geofences.map(\._id)) else {
+            let now = Date()
+            guard let syncResult = try await RadarAPIClient.shared.getOfflineData(geofenceIds: geofences.map(\._id), lastSyncTime: lastSyncTime) else {
                 return
             }
             
@@ -95,15 +104,20 @@ class RadarOfflineManager: NSObject {
             inGeofenceTrackingTags = syncResult.inGeofenceTrackingTags
             
             let newData: [String: Any] = [
-                "geofences": geofences.map(RadarGeofence.dictionaryValue),
+                "geofences": geofences.map{ $0.dictionaryValue() },
                 "defaultTrackingOptions": defaultTrackingOptions?.dictionaryValue() ?? "",
                 "onTripTrackingOptions": onTripTrackingOptions?.dictionaryValue() ?? "",
                 "inGeofenceTrackingOptions": inGeofenceTrackingOptions?.dictionaryValue() ?? "",
-                "inGeofenceTrackingTags": inGeofenceTrackingTags
+                "inGeofenceTrackingTags": inGeofenceTrackingTags,
+                "lastSyncTime": RadarUtils.isoDateFormatter.string(from: now),
             ]
             
+            try RadarFileStorage.createDirectory()
             try RadarFileStorage.writeJSON(at: offlineDataPath, with: newData)
+            
+            print("Completed sync")
         } catch {
+            print("Unable to sync data \(error.localizedDescription)")
             RadarLogger.shared.warning("Unable to sync offline data")
         }
     }
@@ -131,9 +145,11 @@ class RadarOfflineManager: NSObject {
     }
 
     public func track(_ params: [String: Any]) -> [String: Any]? {
-        guard let bridge = RadarSwiftBridgeHolder.shared else {
-            return nil
-        }
+//        guard let bridge = RadarSwiftBridgeHolder.shared else {
+//            return nil
+//        }
+        
+        print("Tracked offline")
         
         guard let latitude = params["latitude"] as? Double, let longitude = params["longitude"] as? Double else {
             return nil
@@ -171,7 +187,7 @@ class RadarOfflineManager: NSObject {
         // User
         // set user fields
         var newUser: [AnyHashable: Any] = user.dictionaryValue() // the json value for the updated user
-        newUser["geofences"] = newUserGeofences.map(RadarGeofence.dictionaryValue)
+        newUser["geofences"] = newUserGeofences.map{ $0.dictionaryValue }
         newUser["location"] = [
             "coordinates": [location.coordinate.longitude, location.coordinate.latitude ]
         ]
@@ -189,14 +205,16 @@ class RadarOfflineManager: NSObject {
             trackingOptions = defaultTrackingOptions
         }
         
-        return [
+        let response: [String: Any] = [
             "user": newUser,
             "events": events,
             "meta": [
-                "trackingOptions": trackingOptions?.dictionaryValue,
-                "sdkConfiguration": RadarSettings.sdkConfiguration?.dictionaryValue,
+                "trackingOptions": trackingOptions?.dictionaryValue(),
+                "sdkConfiguration": RadarSettings.sdkConfiguration?.dictionaryValue(),
             ]
         ]
+        print(response)
+        return response
     }
     
     // check if the point is within the geofence, for V1 we only consider circular geometry

@@ -86,6 +86,16 @@ class RadarSettings {
             }
         }
     }
-
+    public static var installId: String {
+            get {
+                if let uuid = UserDefaults.standard.string(forKey: "radar-installId") {
+                    return uuid
+                } else {
+                    let uuid = UUID().uuidString
+                    UserDefaults.standard.set(uuid, forKey: "radar-installId")
+                    return uuid
+                }
+            }
+        }
     // TODO: complete implementation for other radar settings
 }

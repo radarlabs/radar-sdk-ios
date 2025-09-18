@@ -38,6 +38,15 @@
                logPayload:(BOOL)logPayload
           extendedTimeout:(BOOL)extendedTimeout
         completionHandler:(RadarAPICompletionHandler)completionHandler {
+    
+    // TEMP: block all track calls at network error to test clientside
+    NSLog(@"api: %@", url);
+    if ([url containsString:@"track"]) {
+        completionHandler(RadarStatusErrorNetwork, nil);
+        return;
+    }
+    
+    
     dispatch_async(self.queue, ^{
         if (sleep) {
             dispatch_semaphore_wait(self.semaphore, DISPATCH_TIME_FOREVER);

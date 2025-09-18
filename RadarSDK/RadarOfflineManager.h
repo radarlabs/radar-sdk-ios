@@ -22,7 +22,10 @@ NS_ASSUME_NONNULL_BEGIN
 //
 //+ (void)generateEventsFromOfflineLocations:(CLLocation *)location userGeofences:(NSArray<RadarGeofence *> *)userGeofences completionHandler:(void (^)(NSArray<RadarEvent *> *, RadarUser *, CLLocation *))completionHandler;
 
-+ (NSDictionary<NSString *, id> * _Nonnull)track:(NSDictionary<NSString *, id> * _Nonnull)params;
+
+- (void)syncWithCompletionHandler:(void (^ _Nonnull)(void))completionHandler;
+
+- (NSDictionary<NSString *, id> * _Nullable)track:(NSDictionary<NSString *, id> * _Nonnull)params;
 
 @end
 

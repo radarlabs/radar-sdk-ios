@@ -33,8 +33,18 @@ public final class RadarAPIClient: Sendable {
         let inGeofenceTrackingOptions: RadarTrackingOptions?
         let inGeofenceTrackingTags: [String]
     }
-    func getOfflineData(geofenceIds: [String]) async throws -> OfflineData? {
-        let (data, _) = try await apiHelper.radarRequest(method: "GET", url: "offline-data")
+    func getOfflineData(geofenceIds: [String], lastSyncTime: String) async throws -> OfflineData? {
+        let (data, _) = try await apiHelper.radarRequest(method: "POST", url: "offline-data", body: [
+            "geofenceIds": geofenceIds,
+            "location": [
+                "latitude": 40.7468831,
+                "longitude": -73.9934208,
+            ],
+            "radius": 50000,
+            "deviceType": "iOS",
+            "installId": RadarSettings.installId,
+            "lastSyncTime": lastSyncTime,
+        ])
         
         let json = try JSONSerialization.jsonObject(with: data, options: []) as! [String: Any]
         

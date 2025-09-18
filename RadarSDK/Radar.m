@@ -27,6 +27,7 @@
 #import "Radar-Swift.h"
 #import "RadarIndoorsProtocol.h"
 #import "RadarSwiftBridge.h"
+#import "RadarOfflineManager.h"
 
 @interface Radar ()
 
@@ -56,21 +57,23 @@
 }
 
 + (void)initializeWithPublishableKey:(NSString *)publishableKey options:(RadarInitializeOptions *)options {
+    [RadarSwiftBridgeHolder setShared:[[RadarSwiftBridgeImpl alloc] init]];
+    
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"initialize()"];
-
+    
     Class RadarSDKMotion = NSClassFromString(@"RadarSDKMotion");
     if (RadarSDKMotion) {
         id radarSDKMotion = [[RadarSDKMotion alloc] init];
         [RadarActivityManager sharedInstance].radarSDKMotion = radarSDKMotion;
     }
-
+    
     [[NSNotificationCenter defaultCenter] addObserver:[self sharedInstance]
                                              selector:@selector(applicationWillEnterForeground)
                                                  name:UIApplicationWillEnterForegroundNotification
                                                object:nil];
-
+    
     [RadarSettings setPublishableKey:publishableKey];
-
+    
     RadarSdkConfiguration *sdkConfiguration = [RadarSettings sdkConfiguration];
     // For most users not using these features, options be null and skipped,
     //  For X-platform users initializing Radar in the crossplatform layer, the options will also be null as nativeSetup would had been called ealier
@@ -82,40 +85,39 @@
             }
         }
     }
-
+    
     if (sdkConfiguration.usePersistence) {
         [[RadarReplayBuffer sharedInstance] loadReplaysFromPersistentStore];
     }
-
+    
     if ([[UIApplication sharedApplication] applicationState] != UIApplicationStateBackground) {
         [RadarSettings updateSessionId];
     }
-
+    
     [[RadarLocationManager sharedInstance] updateTrackingFromInitialize];
-
+    
     [RadarNotificationHelper checkNotificationPermissionsWithCompletionHandler:^(BOOL granted) {
         [[RadarAPIClient sharedInstance] getConfigForUsage:@"initialize"
                                                   verified:NO
                                          completionHandler:^(RadarStatus status, RadarConfig *config) {
-                                            if (status == RadarStatusSuccess && config) {
-                                                [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
-                                                [RadarSettings setSdkConfiguration:config.meta.sdkConfiguration];
-                                            }
-
-                                            RadarSdkConfiguration *sdkConfiguration = [RadarSettings sdkConfiguration];
-                                            if (sdkConfiguration.startTrackingOnInitialize && ![RadarSettings tracking]) {
-                                                [Radar startTrackingWithOptions:[RadarSettings trackingOptions]];
-                                            }
-                                            if (sdkConfiguration.trackOnceOnAppOpen) {
-                                                [Radar trackOnceWithDesiredAccuracy:RadarTrackingOptionsDesiredAccuracyMedium beacons:[Radar getTrackingOptions].beacons completionHandler:nil];
-                                            }
-
-                                            [self flushLogs];
-                                        }];
+            if (status == RadarStatusSuccess && config) {
+                [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
+                [RadarSettings setSdkConfiguration:config.meta.sdkConfiguration];
+            }
+            
+            RadarSdkConfiguration *sdkConfiguration = [RadarSettings sdkConfiguration];
+            if (sdkConfiguration.startTrackingOnInitialize && ![RadarSettings tracking]) {
+                [Radar startTrackingWithOptions:[RadarSettings trackingOptions]];
+            }
+            if (sdkConfiguration.trackOnceOnAppOpen) {
+                [Radar trackOnceWithDesiredAccuracy:RadarTrackingOptionsDesiredAccuracyMedium beacons:[Radar getTrackingOptions].beacons completionHandler:nil];
+            }
+            
+            [self flushLogs];
+        }];
     }];
-    
-    [RadarSwiftBridgeHolder setShared:[[RadarSwiftBridgeImpl alloc] init]];
 }
+    
 
 + (void)initializeWithPublishableKey:(NSString *)publishableKey {
     [self initializeWithPublishableKey:publishableKey options:nil];

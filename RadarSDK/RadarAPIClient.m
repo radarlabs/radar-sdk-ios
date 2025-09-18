@@ -54,6 +54,11 @@
     self = [super init];
     if (self) {
         _apiHelper = [RadarAPIHelper new];
+        _offlineManager = [[RadarOfflineManager alloc] init];
+        // sync data
+        [_offlineManager syncWithCompletionHandler:^{
+            // do nothing
+        }];
     }
     return self;
 }
@@ -329,9 +334,6 @@
     RadarTrackingOptions *options = [Radar getTrackingOptions];
     if (options.syncGeofences) {
         params[@"nearbyGeofences"] = @(YES);
-        if (sdkConfiguration.useOfflineRTOUpdates) {
-            params[@"nearbyGeofencesLimit"] = @(100);
-        }
     }
     if (beacons) {
         params[@"beacons"] = [RadarBeacon arrayForBeacons:beacons];
@@ -534,7 +536,7 @@
             
             BOOL shouldTrackOffline = ^() {
                 if (@available(iOS 13.0, *)) {
-                    if (status == RadarStatusErrorNetwork && [RadarSettings sdkConfiguration].useOfflineRTOUpdates) {
+                    if (status == RadarStatusErrorNetwork) {// TEMP: ignore setting for testing, always track on network failure } && [RadarSettings sdkConfiguration].useOfflineRTOUpdates) {
                         return YES;
                     }
                 }
@@ -546,7 +548,7 @@
                     // maybe fail with status
 //                    [[RadarDelegateHolder sharedInstance] didFailWithStatus:status];
                     
-                    res = [RadarOfflineManager track:params];
+                    res = [self->_offlineManager track:params];
                     if (res != nil) {
                         status = RadarStatusSuccess;
                     }
@@ -569,6 +571,7 @@
 
                 [[RadarDelegateHolder sharedInstance] didFailWithStatus:status];
                 completionHandler(status, nil, nil, nil, nil, nil, nil);
+                return;
             }
             [[RadarReplayBuffer sharedInstance] clearBuffer];
             [RadarState setLastFailedStoppedLocation:nil];
@@ -674,14 +677,15 @@
                 }
 
                 completionHandler(RadarStatusSuccess, res, events, user, nearbyGeofences, config, token);
+                return;
             } else {
                 [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"Setting %lu notifications remaining", (unsigned long)notificationsRemaining.count]];
                 [RadarState setRegisteredNotifications:notificationsRemaining];
             }
-
-            [[RadarDelegateHolder sharedInstance] didFailWithStatus:status];
-
-            completionHandler(RadarStatusErrorServer, nil, nil, nil, nil, nil, nil);
+//
+//            [[RadarDelegateHolder sharedInstance] didFailWithStatus:status];
+//
+//            completionHandler(RadarStatusErrorServer, nil, nil, nil, nil, nil, nil);
         }];
     }
 }

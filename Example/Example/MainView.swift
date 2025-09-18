@@ -15,6 +15,7 @@ struct MainView: View {
     enum TabIdentifier {
         case Map
         case Debug
+        case Custom
         case Tests
     }
     
@@ -42,6 +43,8 @@ struct MainView: View {
         }
     }
     
+    @State var content: [(Int, String)] = [(0, "HI")]
+    
     var body: some View {
         TabView(selection: $selectedTab) {
             if #available(iOS 17.0, *) {
@@ -63,15 +66,75 @@ struct MainView: View {
             
             VStack {
                 Text("logs/events will go here")
+                List(content, id:\.0) { item in
+                    if #available(iOS 15.0, *) {
+                        Text(item.1)
+                            .frame(height: 5)
+                            .listRowSeparator(.hidden)
+                    } else {
+                        // Fallback on earlier versions
+                    }
+                }.environment(\.defaultMinListRowHeight, 5)
+                .listStyle(PlainListStyle())
+                Button("update content") {
+                    do {
+                        let filename = "offlineData.json"
+                        let dir = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
+                        let path =  dir.appendingPathComponent(filename).path
+                        
+                        let data = try Data(contentsOf: URL(fileURLWithPath: path))
+                        let jsonObject = try JSONSerialization.jsonObject(with: data, options: [])
+                        let prettyPrintedData = try? JSONSerialization.data(withJSONObject: jsonObject, options: [.prettyPrinted])
+                        content = Array((String(data: prettyPrintedData!, encoding: .ascii) ?? "").split(separator: "\n").map(\.description).enumerated())
+                    } catch {
+                        print("Failed")
+                    }
+                }
+                
+                Button("Delete file") {
+                    do {
+                        let filename = "offlineData.json"
+                        let dir = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
+                        let path =  dir.appendingPathComponent(filename).path
+                        
+                        try FileManager.default.removeItem(atPath: path)
+                    } catch {
+                        print("Failed")
+                    }
+                }
             }.tabItem {
                 Text("Debug")
             }.tag(TabIdentifier.Debug)
 
             VStack {
+//                
+//                @State var arg = ""
+//                
+//                TextField("Custom arg", text: $arg)
+//                
+//                
+//                
+//                Button("") {
+//                    Radar.trackOnce()
+//                }
+//                
+//                
+//                
+            }.tabItem {
+                Text("Custom")
+            }.tag(TabIdentifier.Custom)
+            
+            
+            VStack {
                 // TODO: make buttons take params for some functions
+                @State var output = "Calloutput: "
+                
+                Text(output)
                 
                 Button("trackOnce") {
-                    Radar.trackOnce()
+                    Radar.trackOnce() { status, location, events, user in
+                        print(status, location, events, user)
+                    }
                 }
                 
                 Button("startTracking") {
