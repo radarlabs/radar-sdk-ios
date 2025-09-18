@@ -32,6 +32,7 @@ final class RadarApiHelper: Sendable {
 
         if (!body.isEmpty && (method == "POST" || method == "PUT" || method == "PATCH")) {
             request.httpBody = try JSONSerialization.data(withJSONObject: body, options: [])
+            request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         }
 
         let (data, response) = try await URLSession.shared.data(for: request)

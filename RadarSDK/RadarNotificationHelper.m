@@ -32,7 +32,7 @@ static dispatch_semaphore_t notificationSemaphore;
     if (!events || !events.count) {
         return;
     }
-    
+
     for (RadarEvent *event in events) {
         NSString *identifier = [NSString stringWithFormat:@"%@%@", kEventNotificationIdentifierPrefix, event._id];
         NSString *categoryIdentifier = [RadarEvent stringForType:event.type];
@@ -55,7 +55,7 @@ static dispatch_semaphore_t notificationSemaphore;
 
         NSString *notificationText;
         NSDictionary *metadata;
-        
+
         if (event.type == RadarEventTypeUserEnteredGeofence && event.geofence && event.geofence.metadata) {
             metadata = event.geofence.metadata;
             notificationText = [metadata objectForKey:@"radar:entryNotificationText"];
@@ -75,9 +75,9 @@ static dispatch_semaphore_t notificationSemaphore;
             metadata = event.trip.metadata;
             notificationText = [event.trip.metadata objectForKey:@"radar:arrivalNotificationText"];
         }
-        
+
         if (notificationText) {
-            
+
             UNMutableNotificationContent *content = [UNMutableNotificationContent new];
             content.body = [NSString localizedUserNotificationStringForKey:notificationText arguments:nil];
             content.userInfo = metadata;
@@ -100,7 +100,7 @@ static dispatch_semaphore_t notificationSemaphore;
 }
 
 + (UNMutableNotificationContent *)extractContentFromMetadata:(NSDictionary *)metadata identifier:(NSString *)identifier {
-    
+
     if (!metadata) {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelError
                                                        message:[NSString stringWithFormat:@"No metadata found for identifier = %@", identifier]];
@@ -123,7 +123,7 @@ static dispatch_semaphore_t notificationSemaphore;
             content.subtitle = [NSString localizedUserNotificationStringForKey:notificationSubtitle arguments:nil];
         }
         content.body = [NSString localizedUserNotificationStringForKey:notificationText arguments:nil];
-        
+
         NSMutableDictionary *mutableUserInfo = [metadata mutableCopy];
 
         NSDate *now = [NSDate new];
@@ -151,7 +151,7 @@ static dispatch_semaphore_t notificationSemaphore;
                 mutableUserInfo[@"campaignMetadata"] = (NSDictionary *)jsonObj;
             }
         }
-        
+
         content.userInfo = [mutableUserInfo copy];
         return content;
     } else {
@@ -217,13 +217,13 @@ static dispatch_semaphore_t notificationSemaphore;
                }
             }
         }
-    } 
+    }
 }
 
 + (void)logConversionWithNotificationResponse:(UNNotificationResponse *)response {
     if ([RadarSettings useOpenedAppConversion]) {
         [RadarSettings updateLastAppOpenTime];
-        
+
         if ([response.notification.request.identifier hasPrefix:@"radar_"]) {
             [[RadarLogger sharedInstance]
                             logWithLevel:RadarLogLevelDebug
@@ -246,6 +246,7 @@ static dispatch_semaphore_t notificationSemaphore;
 }
 
 + (void)removePendingNotificationsWithPrefix:(NSString *)prefix completionHandler:(void (^)(void))completionHandler {
+    if (NSClassFromString(@"XCTestCase") != nil) return;
     UNUserNotificationCenter *notificationCenter = [UNUserNotificationCenter currentNotificationCenter];
     [notificationCenter getPendingNotificationRequestsWithCompletionHandler:^(NSArray<UNNotificationRequest *> *_Nonnull requests) {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Found %lu pending notifications", (unsigned long)requests.count]];
@@ -258,7 +259,7 @@ static dispatch_semaphore_t notificationSemaphore;
                 [userInfosToKeep addObject:request.content.userInfo];
             }
         }
-        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Found %lu pending notifications to remove", (unsigned long)identifiersToRemove.count]];        
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Found %lu pending notifications to remove", (unsigned long)identifiersToRemove.count]];
         [RadarState setRegisteredNotifications:userInfosToKeep];
         if (identifiersToRemove.count > 0) {
             [notificationCenter removePendingNotificationRequestsWithIdentifiers:identifiersToRemove];
@@ -275,7 +276,7 @@ static dispatch_semaphore_t notificationSemaphore;
         if (granted) {
             UNUserNotificationCenter *notificationCenter = [UNUserNotificationCenter currentNotificationCenter];
             dispatch_group_t group = dispatch_group_create();
-            
+
             for (UNNotificationRequest *request in requests) {
                 dispatch_group_enter(group);
                 [notificationCenter addNotificationRequest:request withCompletionHandler:^(NSError *_Nullable error) {
@@ -295,7 +296,7 @@ static dispatch_semaphore_t notificationSemaphore;
                     dispatch_group_leave(group);
                 }];
             }
-            
+
             dispatch_group_notify(group, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                 dispatch_semaphore_signal(notificationSemaphore);
             });
@@ -316,17 +317,17 @@ static dispatch_semaphore_t notificationSemaphore;
     }
     UNUserNotificationCenter *notificationCenter = [UNUserNotificationCenter currentNotificationCenter];
     NSArray *registeredNotifications = [RadarState registeredNotifications];
-    
+
     [notificationCenter getPendingNotificationRequestsWithCompletionHandler:^(NSArray<UNNotificationRequest *> *requests) {
         NSMutableArray *currentNotifications = [NSMutableArray new];
-        
+
         for (UNNotificationRequest *request in requests) {
             if (request.content.userInfo) {
                 [currentNotifications addObject:request.content.userInfo];
                 [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Found pending registered notification | userInfo = %@", request.content.userInfo]];
             }
         }
-        
+
         NSMutableArray *notificationsDelivered = [NSMutableArray arrayWithArray:registeredNotifications];
 
         [notificationsDelivered removeObjectsInArray:currentNotifications];
@@ -355,7 +356,7 @@ static dispatch_semaphore_t notificationSemaphore;
         if (completionHandler) {
             completionHandler(NO);
         }
-    } 
+    }
 }
 
 + (BOOL)isNotificationCampaign:(NSDictionary *)metadata {

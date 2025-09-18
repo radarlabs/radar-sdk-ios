@@ -20,7 +20,7 @@
         }
         id sdkConfigurationObj = dict[@"sdkConfiguration"];
         if (sdkConfigurationObj && [sdkConfigurationObj isKindOfClass:[NSDictionary class]]) {
-            meta.sdkConfiguration = [[RadarSdkConfiguration alloc] initWithDict:sdkConfigurationObj];
+            meta.sdkConfiguration = [[RadarSdkConfiguration alloc] initFrom:sdkConfigurationObj];
         }
     }
 

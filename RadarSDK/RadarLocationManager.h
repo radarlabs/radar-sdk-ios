@@ -11,6 +11,7 @@
 #import "Radar.h"
 #import "RadarDelegate.h"
 #import "RadarMeta.h"
+#import "RadarConfig.h"
 #import "RadarPermissionsHelper.h"
 #import "RadarActivityManager.h"
 

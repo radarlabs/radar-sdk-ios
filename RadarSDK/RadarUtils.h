@@ -7,6 +7,7 @@
 
 #import <CoreLocation/CLLocation.h>
 #import <Foundation/Foundation.h>
+#import "RadarSettings.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -32,12 +33,13 @@ typedef NS_ENUM(NSInteger, RadarConnectionType) {
 + (BOOL)locationBackgroundMode;
 + (NSString *)locationAuthorization;
 + (NSString *)locationAccuracyAuthorization;
-+ (BOOL)foreground;
++ (BOOL)foreground NS_SWIFT_NAME(foreground());
 + (NSTimeInterval)backgroundTimeRemaining;
 + (CLLocation *)locationForDictionary:(NSDictionary *_Nonnull)dict;
 + (NSDictionary *)dictionaryForLocation:(CLLocation *)location;
 + (NSString *)dictionaryToJson:(NSDictionary *)dict;
 + (void)runOnMainThread:(dispatch_block_t)block;
++ (BOOL)isLive NS_SWIFT_NAME(isLive());
 
 + (RadarConnectionType)networkType;
 + (NSString *)networkTypeString;
