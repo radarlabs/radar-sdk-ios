@@ -8,6 +8,7 @@
 import UIKit
 import UserNotifications
 import RadarSDK
+import SwiftUI
 
 
 @UIApplicationMain
@@ -18,6 +19,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
     
     var scrollView: UIScrollView?
     var demoFunctions = Array<() -> Void>()
+    
+    var useSwiftUI = true
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { (_, _) in }
@@ -28,6 +31,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         
         // Replace with a valid test publishable key
         let radarInitializeOptions = RadarInitializeOptions()
+        
         // Uncomment to enable automatic setup for notification conversions or deep linking
         //radarInitializeOptions.autoLogNotificationConversions = true
         //radarInitializeOptions.autoHandleNotificationDeepLinks = true
@@ -75,12 +79,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         let window = UIWindow(windowScene: windowScene)
         
         window.backgroundColor = .white
-        
-        scrollView = UIScrollView(frame: CGRect(x: 0, y: 100, width: window.frame.size.width, height: window.frame.size.height))
-        scrollView!.contentSize.height = 0
-        scrollView!.contentSize.width = window.frame.size.width
-        
-        window.addSubview(scrollView!)
+
+        if (useSwiftUI) {
+            let controller = UIHostingController(rootView: MainView())
+            controller.view.frame = UIScreen.main.bounds
+            window.addSubview(controller.view)
+        } else {
+            scrollView = UIScrollView(frame: CGRect(x: 0, y: 100, width: window.frame.size.width, height: window.frame.size.height))
+            scrollView!.contentSize.height = 0
+            scrollView!.contentSize.width = window.frame.size.width
+            
+            window.addSubview(scrollView!)
+        }
         
         window.makeKeyAndVisible()
         
@@ -95,7 +105,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
                 print("Track once: status = \(Radar.stringForStatus(status)); location = \(String(describing: location)); events = \(String(describing: events)); user = \(String(describing: user))")
             }
         }
-        
         
         demoButton(text: "iam") {
             Radar.showInAppMessage(RadarInAppMessage.fromDictionary([
@@ -430,6 +439,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
     }
 
     func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+        print("will present notification!")
         completionHandler([.list, .banner, .sound])
     }
     
@@ -437,20 +447,21 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         // Uncomment for manual setup for notification conversions and URLs
         // Radar.logConversion(response: response)
         // Radar.openURLFromNotification(response.notification)
+        print("Received notification!")
     }
 
     func notify(_ body: String) {
-        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { (granted, error) in
-            if granted {
-                let content = UNMutableNotificationContent()
-                content.body = body
-                content.sound = UNNotificationSound.default
-                content.categoryIdentifier = "example"
-
-                let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: nil)
-                UNUserNotificationCenter.current().add(request, withCompletionHandler: { (_) in })
-            }
-        }
+//        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { (granted, error) in
+//            if granted {
+//                let content = UNMutableNotificationContent()
+//                content.body = body
+//                content.sound = UNNotificationSound.default
+//                content.categoryIdentifier = "example"
+//
+//                let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: nil)
+//                UNUserNotificationCenter.current().add(request, withCompletionHandler: { (_) in })
+//            }
+//        }
     }
 
     func didReceiveEvents(_ events: [RadarEvent], user: RadarUser?) {
