@@ -48,7 +48,7 @@ func newObjectId() -> String {
 
 @available(iOS 13.0, *)
 @objc(RadarOfflineManager) @objcMembers
-public class RadarOfflineManager: NSObject {
+class RadarOfflineManager: NSObject {
     
     var geofences = [RadarGeofence]()
     var defaultTrackingOptions: RadarTrackingOptions?

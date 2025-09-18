@@ -260,7 +260,7 @@ static NSString *const kUserTags = @"radar-userTags";
 
 + (RadarSdkConfiguration *_Nullable)sdkConfiguration {
     NSDictionary *sdkConfigurationDict = [[NSUserDefaults standardUserDefaults] dictionaryForKey:kSdkConfiguration];
-    return [[RadarSdkConfiguration alloc] initWithDict:sdkConfigurationDict];
+    return [[RadarSdkConfiguration alloc] initFrom:sdkConfigurationDict];
 }
 
 + (BOOL)isDebugBuild {

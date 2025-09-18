@@ -31,7 +31,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         // Uncomment to enable automatic setup for notification conversions or deep linking
         //radarInitializeOptions.autoLogNotificationConversions = true
         //radarInitializeOptions.autoHandleNotificationDeepLinks = true
-        Radar.initialize(publishableKey: "prj_test_pk_0000000000000000000000000000000000000000", options: radarInitializeOptions )
+        Radar.initialize(publishableKey: "prj_test_pk_", options: radarInitializeOptions )
         Radar.setUserId("testUserId")
         Radar.setMetadata([ "foo": "bar" ])
         Radar.setDelegate(self)
@@ -39,7 +39,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         
         return true
     }
-
     
     func application(_ app: UIApplication, open url: URL,
                      options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
@@ -440,17 +439,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
     }
 
     func notify(_ body: String) {
-        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { (granted, error) in
-            if granted {
-                let content = UNMutableNotificationContent()
-                content.body = body
-                content.sound = UNNotificationSound.default
-                content.categoryIdentifier = "example"
-
-                let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: nil)
-                UNUserNotificationCenter.current().add(request, withCompletionHandler: { (_) in })
-            }
-        }
+//        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { (granted, error) in
+//            if granted {
+//                let content = UNMutableNotificationContent()
+//                content.body = body
+//                content.sound = UNNotificationSound.default
+//                content.categoryIdentifier = "example"
+//
+//                let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: nil)
+//                UNUserNotificationCenter.current().add(request, withCompletionHandler: { (_) in })
+//            }
+//        }
     }
 
     func didReceiveEvents(_ events: [RadarEvent], user: RadarUser?) {

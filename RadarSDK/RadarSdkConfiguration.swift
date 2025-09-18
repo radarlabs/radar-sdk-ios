@@ -8,7 +8,8 @@
 
 import Foundation
 
-internal class RadarSdkConfiguration {
+@objc(RadarSdkConfiguration) @objcMembers
+internal class RadarSdkConfiguration: NSObject {
     let logLevel: RadarLogLevel
     let startTrackingOnInitialize: Bool
     let trackOnceOnAppOpen: Bool
@@ -20,6 +21,7 @@ internal class RadarSdkConfiguration {
     let useForegroundLocationUpdatedAtMsDiff: Bool
     let useNotificationDiff: Bool
     let syncAfterSetUser: Bool
+    let useOfflineRTOUpdates: Bool
 
     init?(from dict: [String: Any]?) {
         guard let dict = dict else {
@@ -37,6 +39,7 @@ internal class RadarSdkConfiguration {
         useForegroundLocationUpdatedAtMsDiff = (dict["useForegroundLocationUpdatedAtMsDiff"] as? Bool) ?? false
         useNotificationDiff = (dict["useNotificationDiff"] as? Bool) ?? false
         syncAfterSetUser = (dict["syncAfterSetUser"] as? Bool) ?? false
+        useOfflineRTOUpdates = (dict["useOfflineRTOUpdates"] as? Bool) ?? false
     }
 
     func dictionaryValue() -> [String: Any] {
@@ -53,6 +56,7 @@ internal class RadarSdkConfiguration {
         dict["useForegroundLocationUpdatedAtMsDiff"] = useForegroundLocationUpdatedAtMsDiff
         dict["useNotificationDiff"] = useNotificationDiff
         dict["syncAfterSetUser"] = syncAfterSetUser
+        dict["useOfflineRTOUpdates"] = useOfflineRTOUpdates
 
         return dict
     }

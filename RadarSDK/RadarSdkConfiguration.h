@@ -44,7 +44,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  Initializes a new RadarSdkConfiguration object with given value.
  */
-- (instancetype)initWithDict:(NSDictionary *_Nullable)dict;
+- (instancetype)initFrom:(NSDictionary *_Nullable)dict;
 
 /**
  Returns a dictionary representation of the object.
