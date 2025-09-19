@@ -36,7 +36,7 @@
                                debug:(BOOL)debug
                                fraud:(RadarFraud *_Nullable)fraud
                             altitude:(double)altitude
-               latestDwellGeofences:(nullable NSArray<RadarGeofence *> *)latestDwellGeofences;
+               latestGeofencesDwelled:(nullable NSArray<RadarGeofence *> *)latestGeofencesDwelled;
 - (instancetype _Nullable)initWithObject:(id _Nonnull)object;
 
 @end
