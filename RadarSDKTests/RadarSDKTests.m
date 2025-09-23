@@ -1669,7 +1669,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
         @"useLogPersistence": @(NO),
         @"useRadarModifiedBeacon": @(NO),
         @"syncAfterSetUser": @(NO),
-       @"delayedMotionUsage": @(YES),
+        @"delayedMotionUsage": @(YES),
     }];
 
     [RadarSettings setSdkConfiguration:sdkConfiguration];
