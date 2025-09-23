@@ -343,6 +343,10 @@ static NSString *const kUserTags = @"radar-userTags";
     return [[self sdkConfiguration] useRadarModifiedBeacon];
 }
 
++ (BOOL)delayedMotionUsage {
+    return [[self sdkConfiguration] delayedMotionUsage];
+}
+
 + (BOOL)xPlatform {
     return [[NSUserDefaults standardUserDefaults] stringForKey:kXPlatformSDKType] != nil &&
     [[NSUserDefaults standardUserDefaults] stringForKey:kXPlatformSDKVersion];
