@@ -38,6 +38,7 @@ typedef NS_ENUM(NSInteger, RadarConnectionType) {
 + (NSDictionary *)dictionaryForLocation:(CLLocation *)location;
 + (NSString *)dictionaryToJson:(NSDictionary *)dict;
 + (void)runOnMainThread:(dispatch_block_t)block;
++ (void)runOnSerialQueue:(dispatch_block_t)block;
 
 + (RadarConnectionType)networkType;
 + (NSString *)networkTypeString;

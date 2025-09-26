@@ -1183,7 +1183,7 @@
 }
 
 + (void)logResigningActive {
-    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug type:RadarLogTypeNone message:@"App resigning active" includeDate:YES includeBattery:YES];
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug type:RadarLogTypeNone message:@"App resigning active" includeDate:YES includeBattery:YES append:YES];
 }
 
 
@@ -1452,28 +1452,30 @@
 }
 
 + (void)sendLog:(RadarLogLevel)level type:(RadarLogType)type message:(NSString *_Nonnull)message {
-    [[RadarLogBuffer sharedInstance] write:level type:type message:message ];
+    [RadarUtils runOnSerialQueue:^{
+        [[RadarLogBuffer sharedInstance] write:level type:type message:message ];
+    }];
 }
 
 + (void)flushLogs {
-    NSArray<RadarLog *> *flushableLogs = [[RadarLogBuffer sharedInstance] flushableLogs]; 
-    NSUInteger pendingLogCount = [flushableLogs count];
-    if (pendingLogCount == 0) {
-        return;
-    }
+    [RadarUtils runOnSerialQueue:^{
+        NSArray<RadarLog *> *flushableLogs = [[RadarLogBuffer sharedInstance] flushableLogs]; 
+        NSUInteger pendingLogCount = [flushableLogs count];
+        if (pendingLogCount == 0) {
+            return;
+        }
 
-    RadarSyncLogsAPICompletionHandler onComplete = ^(RadarStatus status) {
-        [[RadarLogBuffer sharedInstance] onFlush:status == RadarStatusSuccess logs:flushableLogs];
-    };
+        RadarSyncLogsAPICompletionHandler onComplete = ^(RadarStatus status) {
+            [[RadarLogBuffer sharedInstance] onFlush:status == RadarStatusSuccess logs:flushableLogs];
+        };
 
-    [[RadarAPIClient sharedInstance] syncLogs:flushableLogs
-                            completionHandler:^(RadarStatus status) {
-                                if (onComplete) {
-                                    [RadarUtils runOnMainThread:^{
+        [[RadarAPIClient sharedInstance] syncLogs:flushableLogs
+                                completionHandler:^(RadarStatus status) {
+                                    if (onComplete) {
                                         onComplete(status);
-                                    }];
-                                }
-                            }];
+                                    }
+                                }];
+    }];
 }
 
 + (void)openURLFromNotification:(UNNotification *)notification {

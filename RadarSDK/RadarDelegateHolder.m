@@ -74,9 +74,11 @@
 }
 
 - (void)didLogMessage:(NSString *)message {
-    if (self.delegate) {
-        [self.delegate didLogMessage:message];
-    }
+    [RadarUtils runOnMainThread:^{
+        if (self.delegate) {
+            [self.delegate didLogMessage:message];
+        }
+    }];
 }
 
 - (void)didUpdateToken:(RadarVerifiedLocationToken *)token {

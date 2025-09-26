@@ -264,4 +264,20 @@ static NSDateFormatter *_isoDateFormatter;
     return;
 }
 
++ (void)runOnSerialQueue:(dispatch_block_t)block {
+    if (!block) {
+        return;
+    }
+
+    static dispatch_queue_t serialQueue;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        serialQueue = dispatch_queue_create("io.radar.serialQueue", DISPATCH_QUEUE_SERIAL);
+    });
+
+    dispatch_async(serialQueue, ^{
+        block();
+    });
+}
+
 @end
