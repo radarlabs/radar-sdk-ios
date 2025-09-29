@@ -51,6 +51,8 @@
  */
 @property (nullable, copy, nonatomic, readonly) RadarOperatingHours *operatingHours;
 
+@property (nonatomic, readonly) float altitude;
+
 + (NSArray<NSDictionary *> *_Nullable)arrayForGeofences:(NSArray<RadarGeofence *> *_Nullable)geofences;
 - (NSDictionary *_Nonnull)dictionaryValue;
 
