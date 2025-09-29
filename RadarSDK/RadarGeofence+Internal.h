@@ -18,7 +18,7 @@
                             metadata:(NSDictionary *_Nullable)metadata
                       operatingHours:(RadarOperatingHours *_Nullable)operatingHours
                             geometry:(RadarGeofenceGeometry *_Nonnull)geometry
-                            altitude:(NSNumber *_Nullable)altitude;
+                            altitude:(float)altitude;
 - (instancetype _Nullable)initWithObject:(id _Nonnull)object;
 
 @end
