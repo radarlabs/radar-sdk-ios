@@ -22,7 +22,6 @@ struct RadarIAMView: View {
                         .resizable()
                         .scaledToFill()
                         .frame(width: 350, height: 200)
-                        .aspectRatio(contentMode: .fill)
                         .clipped()
                 } else {
                     Spacer().frame(width: 350, height: 50)
