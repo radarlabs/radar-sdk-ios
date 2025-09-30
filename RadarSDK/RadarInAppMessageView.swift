@@ -19,9 +19,10 @@ struct RadarIAMView: View {
             VStack {
                 if let image = image {
                     Image(uiImage: image)
-                        .resizable(capInsets: .init())
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: 350, height: 200)
                         .aspectRatio(contentMode: .fill)
-                        .frame(maxWidth: 350, maxHeight: 200)
                         .clipped()
                 } else {
                     Spacer().frame(width: 350, height: 50)
@@ -30,15 +31,16 @@ struct RadarIAMView: View {
                     // Title
                     Text(message.title.text)
                         .foregroundColor(Color(message.title.color))
+                        .multilineTextAlignment(.center)
                         .frame(maxWidth: 310)
-                        .font(Font.system(size: 32, weight: .bold))
+                        .padding(.bottom, 3)
+                        .font(Font.system(size: 34, weight: .bold))
 
                     // Body
                     Text(message.body.text)
                         .foregroundColor(Color(message.body.color))
                         .multilineTextAlignment(.center)
                         .frame(maxWidth: 310)
-                        .padding(.top, 5)
                         .padding(.bottom, 15)
                         .font(Font.system(size: 17, weight: .regular))
 
@@ -57,14 +59,14 @@ struct RadarIAMView: View {
                     }
                 }.padding(.bottom, 20)
             }.background(Color.white).cornerRadius(20)
-
+            
             // Close button
             Button(action: {
                 onDismiss()
             }, label: {
                 ZStack {
                     Image(systemName: "circle.fill")
-                        .foregroundColor(Color.secondary)
+                        .foregroundColor(.gray.opacity(0.5))
                         .font(.system(size: 30))
                     Image(systemName: "xmark")
                         .foregroundColor(.white)
