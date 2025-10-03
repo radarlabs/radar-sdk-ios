@@ -38,6 +38,7 @@
 #import "Radar-Swift.h"
 #import <os/log.h>
 #import "RadarOfflineManager.h"
+#import "RadarSDKFraudProtocol.h"
 
 @implementation RadarAPIClient
 
@@ -300,18 +301,13 @@
     } else {
         params[@"xPlatformType"] = @"Native";
     }
-    NSMutableArray<NSString *> *fraudFailureReasons = [NSMutableArray new];
-    if (@available(iOS 15.0, *)) {
-        CLLocationSourceInformation *sourceInformation = location.sourceInformation;
-        if (sourceInformation) {
-            if (sourceInformation.isSimulatedBySoftware) {
-                params[@"mocked"] = @(YES);
-                [fraudFailureReasons addObject:@"fraud_mocked_from_mock_provider"];
-            }
-            if (sourceInformation.isProducedByAccessory) {
-                [fraudFailureReasons addObject:@"fraud_mocked_produced_by_accessory"];
-            }
-        }
+    
+    Class RadarSDKFraud = NSClassFromString(@"RadarSDKFraud");
+    if (RadarSDKFraud) {
+        NSString *fraudResults = [[RadarSDKFraud sharedInstance] detectFraudWithLocation:location];
+        params[@"fraudPayload"] = fraudResults;
+    } else {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Skipping fraud checks: RadarSDKFraud submodule not available"];
     }
 
     RadarTripOptions *tripOptions = Radar.getTripOptions;
@@ -360,11 +356,6 @@
         params[@"keyId"] = keyId;
         params[@"attestationError"] = attestationError;
         params[@"encrypted"] = @(encrypted);
-        BOOL jailbroken = [[RadarVerificationManager sharedInstance] isJailbroken];
-        params[@"compromised"] = @(jailbroken);
-        if (jailbroken) {
-            [fraudFailureReasons addObject:@"fraud_compromised_jailbroken"];
-        }
         if (expectedCountryCode) {
             params[@"expectedCountryCode"] = expectedCountryCode;
         }
@@ -377,12 +368,12 @@
         if (transactionId) {
             params[@"transactionId"] = transactionId;
         }
-        if (UIScreen.mainScreen.isCaptured) {
-            [fraudFailureReasons addObject:@"fraud_sharing_capturing_screen"];
-        }
-        NSString *kDeviceId = [[RadarVerificationManager sharedInstance] kDeviceId];
-        if (kDeviceId) {
-            params[@"kDeviceId"] = kDeviceId;
+        Class RadarSDKFraud = NSClassFromString(@"RadarSDKFraud");
+        if (RadarSDKFraud) {
+            NSString *kDeviceId = [[RadarSDKFraud sharedInstance] kDeviceId];
+            if (kDeviceId) {
+                params[@"kDeviceId"] = kDeviceId;
+            }
         }
     }
     params[@"appId"] = [[NSBundle mainBundle] bundleIdentifier];
@@ -430,8 +421,6 @@
     if (options.usePressure || options.useMotion) {
         params[@"locationMetadata"] = locationMetadata;
     }
-
-    params[@"fraudFailureReasons"] = fraudFailureReasons;
 
     if (anonymous) {
         [[RadarAPIClient sharedInstance] getConfigForUsage:@"track"
