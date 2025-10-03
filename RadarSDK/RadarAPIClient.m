@@ -395,7 +395,9 @@
     }
     
     NSMutableDictionary *locationMetadata = [NSMutableDictionary new];
-    if (options.useMotion) {
+    BOOL useMotion = options.useMotion && ([RadarState promptedForMotionUsage] || ![RadarSettings delayedMotionUsage]);
+    BOOL usePressure = options.usePressure && ([RadarState promptedForMotionUsage] || ![RadarSettings delayedMotionUsage]);
+    if (useMotion) {
         locationMetadata[@"motionActivityData"] = [RadarState lastMotionActivityData];
         locationMetadata[@"heading"] = [RadarState lastHeadingData];
         locationMetadata[@"speed"] = @(location.speed);
@@ -416,13 +418,13 @@
         }
     }
 
-    if (options.usePressure) {
+    if (usePressure) {
         locationMetadata[@"altitude"] = @(location.altitude);
         locationMetadata[@"floor"] = @([location.floor level]);
         locationMetadata[@"pressureHPa"] = [RadarState lastRelativeAltitudeData];
     }
 
-    if (options.usePressure || options.useMotion) {
+    if (usePressure || useMotion) {
         params[@"locationMetadata"] = locationMetadata;
     }
     

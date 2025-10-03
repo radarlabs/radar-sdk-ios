@@ -33,6 +33,7 @@
     _useForegroundLocationUpdatedAtMsDiff = NO;
     _useNotificationDiff = NO;
     _syncAfterSetUser = NO;
+    _delayedMotionUsage = NO;
 
     if (dict == nil) {
         return self;
@@ -93,6 +94,11 @@
         _syncAfterSetUser = [(NSNumber *)syncAfterSetUserObj boolValue];
     }
 
+    NSObject *delayedMotionUsageObj = dict[@"delayedMotionUsage"];
+    if (delayedMotionUsageObj && [delayedMotionUsageObj isKindOfClass:[NSNumber class]]) {
+        _delayedMotionUsage = [(NSNumber *)delayedMotionUsageObj boolValue];
+    }
+
     return self;
 }
 
@@ -110,7 +116,7 @@
     dict[@"useForegroundLocationUpdatedAtMsDiff"] = @(_useForegroundLocationUpdatedAtMsDiff);
     dict[@"useNotificationDiff"] = @(_useNotificationDiff);
     dict[@"syncAfterSetUser"] = @(_syncAfterSetUser);
-    
+    dict[@"delayedMotionUsage"] = @(_delayedMotionUsage);
     return dict;
 }
 
