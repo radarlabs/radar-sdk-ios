@@ -147,14 +147,6 @@ static NSDateFormatter *_isoDateFormatter;
 }
 
 
-+ (BOOL)isSimulator {
-#if TARGET_OS_SIMULATOR
-    return YES;
-#else
-    return NO;
-#endif
-}
-
 + (BOOL)locationBackgroundMode {
     NSArray *backgroundModes = [NSBundle mainBundle].infoDictionary[@"UIBackgroundModes"];
     return backgroundModes && [backgroundModes containsObject:@"location"];
