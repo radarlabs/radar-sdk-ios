@@ -28,8 +28,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         locationManager.delegate = self
         self.requestLocationPermissions()
         
-        UserDefaults.standard.set("https://shichengradar.ngrok.app", forKey: "radar-host")
-        
         // Replace with a valid test publishable key
         let radarInitializeOptions = RadarInitializeOptions()
         
@@ -37,9 +35,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         radarInitializeOptions.autoLogNotificationConversions = true
         radarInitializeOptions.autoHandleNotificationDeepLinks = true
         radarInitializeOptions.pushNotification = true
-//        Radar.setUserId("silent-push-id-v2")
-        Radar.initialize(publishableKey: "prj_live_pk_", options: radarInitializeOptions )
+        
         Radar.setAppGroup("group.waypoint.data")
+        Radar.initialize(publishableKey: "prj_live_pk_", options: radarInitializeOptions )
+        
         Radar.setMetadata([ "foo": "bar" ])
         Radar.setDelegate(self)
         Radar.setVerifiedDelegate(self)

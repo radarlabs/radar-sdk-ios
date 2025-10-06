@@ -1372,8 +1372,6 @@ typedef void (^_Nonnull RadarIndoorsScanCompletionHandler)(NSString *_Nullable r
 
 + (void)didReceivePushNotificationPayload:(NSDictionary*)payload completionHandler:(void (^ _Nonnull)(void))completionHandler;
 
-+ (void)replaceSyncedGeofence:(CLLocation*)location;
-
 @end
 
 NS_ASSUME_NONNULL_END
