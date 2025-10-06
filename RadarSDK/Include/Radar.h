@@ -1368,9 +1368,11 @@ typedef void (^_Nonnull RadarIndoorsScanCompletionHandler)(NSString *_Nullable r
 
 + (void)setAppGroup:(NSString*)appGroup;
 
-+ (void)setLocationExtensionToken:(NSString*)token;
++ (void)setLocationExtensionToken:(NSString*_Nullable)token;
 
 + (void)didReceivePushNotificationPayload:(NSDictionary*)payload completionHandler:(void (^ _Nonnull)(void))completionHandler;
+
++ (void)replaceSyncedGeofence:(CLLocation*)location;
 
 @end
 

@@ -42,21 +42,21 @@ struct MainView: View {
         }
     }
     
+    
     var body: some View {
         TabView(selection: $selectedTab) {
             if #available(iOS 17.0, *) {
-                Map {
+                Map(initialPosition: .userLocation(fallback: .automatic)) {
                     UserAnnotation()
-                    
                     ForEach(monitoringRegions, id:\.self) {region in
                         let color = region.identifier.contains("bubble") ? Color.blue : Color.orange
                         MapCircle(center: region.center, radius: region.radius)
                             .foregroundStyle(color.opacity(0.2))
-                            // style stroke (outline)
                             .stroke(color, lineWidth: 2)
-                            // optional: control overlay stacking level
                             
                     }
+                }.onAppear {
+                    
                 }.tabItem {
                     Text("Map")
                 }.tag(TabIdentifier.Map)

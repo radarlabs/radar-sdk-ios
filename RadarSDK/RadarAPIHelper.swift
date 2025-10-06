@@ -11,7 +11,7 @@ import Foundation
 final class RadarApiHelper: Sendable {
     init() {
         // initialize device info, required for Radar request headers
-        DispatchQueue.main.sync {
+        DispatchQueue.main.async {
             RadarUtils.initalize()
         }
     }
@@ -67,7 +67,7 @@ final class RadarApiHelper: Sendable {
         headers["X-Radar-Device-OS"] = RadarUtils.deviceOS
         headers["X-Radar-Mobile-Origin"] = Bundle.main.bundleIdentifier
 //        headers["X-Radar-Network-Type"] = RadarUtils.networkTypeString
-//        headers["X-Radar-App-Info"] =
+//        headers["X-Radar-App-Info"] = ???
 
         let url = "\(radarHost)/v1/\(url)"
 

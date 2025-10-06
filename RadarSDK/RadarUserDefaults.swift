@@ -90,6 +90,7 @@ class RadarUserDefaults: NSObject {
     
     public static func set(_ value: Any?, forKey key: Key) {
         userDefaults().set(value, forKey: key.rawValue)
+        userDefaults().synchronize()
     }
     
     public static func string(forKey key: Key) -> String? {
