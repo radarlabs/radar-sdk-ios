@@ -43,19 +43,17 @@ internal class RadarSettings: NSObject {
     }
     
     public static var installId: String {
-        get {
-            if let uuid = RadarUserDefaults.string(forKey: .InstallId) {
-                return uuid
-            } else {
-                let uuid = UUID().uuidString
-                RadarUserDefaults.set(uuid, forKey: .InstallId)
-                return uuid
-            }
+        if let uuid = RadarUserDefaults.string(forKey: .InstallId) {
+            return uuid
+        } else {
+            let uuid = UUID().uuidString
+            RadarUserDefaults.set(uuid, forKey: .InstallId)
+            return uuid
         }
     }
     
     public static var sessionId: String {
-        get { String(format: "%.f", RadarUserDefaults.double(forKey: .SessionId)) }
+        String(format: "%.f", RadarUserDefaults.double(forKey: .SessionId))
     }
     
     // TODO: update called to this function to call this swift version, currently called objective-C version
@@ -225,14 +223,12 @@ internal class RadarSettings: NSObject {
     }
     
     public static var lastTrackedTime: Date {
-        get {
-            let lastTrackedTime: Date? = RadarUserDefaults.object(forKey: .LastTrackedTime) as? Date
-            return lastTrackedTime ?? Date(timeIntervalSince1970: 0)
-        }
+        let lastTrackedTime: Date? = RadarUserDefaults.object(forKey: .LastTrackedTime) as? Date
+        return lastTrackedTime ?? Date(timeIntervalSince1970: 0)
     }
 
     public static var verifiedHost: String {
-        get { return RadarUserDefaults.string(forKey: .VerifiedHost) ?? DefaultVerifiedHost }
+        RadarUserDefaults.string(forKey: .VerifiedHost) ?? DefaultVerifiedHost
     }
     
     public static var userDebug: Bool {
@@ -250,30 +246,28 @@ internal class RadarSettings: NSObject {
     }
     
     public static var lastAppOpenTime: Date {
-        get {
-            let lastAppOpenTime: Date? = RadarUserDefaults.object(forKey: .LastAppOpenTime) as? Date
-            return lastAppOpenTime ?? Date(timeIntervalSince1970: 0)
-        }
+        let lastAppOpenTime: Date? = RadarUserDefaults.object(forKey: .LastAppOpenTime) as? Date
+        return lastAppOpenTime ?? Date(timeIntervalSince1970: 0)
     }
 
     public static var useRadarModifiedBeacon: Bool {
-        get { return sdkConfiguration?.useRadarModifiedBeacon ?? false }
+        sdkConfiguration?.useRadarModifiedBeacon ?? false
     }
     
     public static var xPlatform: Bool {
-        get { return xPlatformSDKType != nil && xPlatformSDKVersion != nil }
+        xPlatformSDKType != nil && xPlatformSDKVersion != nil
     }
     
     public static var xPlatformSDKType: String? {
-        get { return RadarUserDefaults.string(forKey: .XPlatformSDKType) }
+        RadarUserDefaults.string(forKey: .XPlatformSDKType)
     }
     
     public static var xPlatformSDKVersion: String? {
-        get { return RadarUserDefaults.string(forKey: .XPlatformSDKVersion) }
+        RadarUserDefaults.string(forKey: .XPlatformSDKVersion)
     }
     
     public static var useOpenedAppConversion: Bool {
-        get { return sdkConfiguration?.useOpenedAppConversion ?? true }
+        sdkConfiguration?.useOpenedAppConversion ?? true
     }
     
     public static var initializeOptions: RadarInitializeOptions? {

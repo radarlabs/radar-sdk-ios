@@ -21,6 +21,7 @@
 		F6513EAA2E60D14700523472 /* RadarSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0107AA77262200DA008AB52F /* RadarSDK.framework */; };
 		F6513F602E6B736200523472 /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6513F5F2E6B736200523472 /* MainView.swift */; };
 		F66DAD6A2E707F0700896773 /* waypoints.gpx in Sources */ = {isa = PBXBuildFile; fileRef = F66DAD642E707F0300896773 /* waypoints.gpx */; };
+		F6AC9DD82E8EB92400BFF6CF /* TestsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6AC9DD72E8EB92400BFF6CF /* TestsView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -103,6 +104,7 @@
 		F6513E722E60A5F600523472 /* LocationPushExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = LocationPushExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		F6513F5F2E6B736200523472 /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
 		F66DAD642E707F0300896773 /* waypoints.gpx */ = {isa = PBXFileReference; lastKnownFileType = text; path = waypoints.gpx; sourceTree = "<group>"; };
+		F6AC9DD72E8EB92400BFF6CF /* TestsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestsView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -168,6 +170,7 @@
 				DDB861D22385FC3E00770661 /* Default-568h@2x.png */,
 				DD236D26230A006700EB88F9 /* AppDelegate.swift */,
 				F6513F5F2E6B736200523472 /* MainView.swift */,
+				F6AC9DD72E8EB92400BFF6CF /* TestsView.swift */,
 				F63DDAD42E746BB0006991F5 /* StyledButton.swift */,
 				F66DAD642E707F0300896773 /* waypoints.gpx */,
 				DD291168230D0AF900049D3A /* Utils.swift */,
@@ -360,6 +363,7 @@
 				DD236D27230A006700EB88F9 /* AppDelegate.swift in Sources */,
 				F63DDAD52E746BB0006991F5 /* StyledButton.swift in Sources */,
 				F6513F602E6B736200523472 /* MainView.swift in Sources */,
+				F6AC9DD82E8EB92400BFF6CF /* TestsView.swift in Sources */,
 				DD291169230D0AF900049D3A /* Utils.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
