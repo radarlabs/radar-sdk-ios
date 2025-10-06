@@ -25,4 +25,5 @@ sed_inplace "s/MARKETING_VERSION = .+;/MARKETING_VERSION = $version;/" RadarSDK.
 sed_inplace "s/MARKETING_VERSION = .+;/MARKETING_VERSION = $version;/" RadarSDKMotion/RadarSDKMotion.xcodeproj/project.pbxproj
 sed_inplace "s/MARKETING_VERSION = .+;/MARKETING_VERSION = $version;/" RadarSDKIndoors/RadarSDKIndoors.xcodeproj/project.pbxproj
 
-sed_inplace "s/return @\"[0-9]+\.[0-9]+\.[0-9]+\";/return @\"$version_full\";/" RadarSDK/RadarUtils.m
+sed_inplace "s/return @\"[0-9]+\.[0-9]+\.[0-9]+\"; \/\/ SDK VERSION/return @\"$version_full\"; \/\/ SDK VERSION/" RadarSDK/RadarUtils.m
+sed_inplace "s/public static let sdkVersion: String = .*\"/public static let sdkVersion: String = \"$version_full\"/" RadarSDK/RadarUtils.swift

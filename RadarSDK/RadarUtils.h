@@ -13,8 +13,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 typedef NS_ENUM(NSInteger, RadarConnectionType) {
     RadarConnectionTypeUnknown,
-    RadarConnectionTypeWiFi,
-    RadarConnectionTypeCellular
+    RadarConnectionTypeWiFi NS_SWIFT_NAME(wifi),
+    RadarConnectionTypeCellular,
+    RadarConnectionTypeCellular2G,
+    RadarConnectionTypeCellular3G,
+    RadarConnectionTypeCellularLTE,
+    RadarConnectionTypeCellular5G,
 };
 
 @interface RadarUtils : NSObject

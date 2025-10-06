@@ -87,15 +87,16 @@ class RadarSettings {
         }
     }
     public static var installId: String {
-            get {
-                if let uuid = UserDefaults.standard.string(forKey: "radar-installId") {
-                    return uuid
-                } else {
-                    let uuid = UUID().uuidString
-                    UserDefaults.standard.set(uuid, forKey: "radar-installId")
-                    return uuid
-                }
-            }
+        if let uuid = UserDefaults.standard.string(forKey: "radar-installId") {
+            return uuid
+        } else {
+            let uuid = UUID().uuidString
+            UserDefaults.standard.set(uuid, forKey: "radar-installId")
+            return uuid
         }
+    }
+    public static var sessionId: String {
+        String(format: "%.f", UserDefaults.standard.double(forKey: "radar-sessionId"))
+    }
     // TODO: complete implementation for other radar settings
 }

@@ -7,6 +7,8 @@
 //
 
 import Foundation
+import SystemConfiguration
+import CoreTelephony
 
 class RadarUtils {
 
@@ -47,5 +49,85 @@ class RadarUtils {
             }
             return identifier
         }()
+    }
+    
+    public static func toJSONString(dict: [String: Any]) -> String {
+        if let data = try? JSONSerialization.data(withJSONObject: dict, options: []) {
+            return String(data: data, encoding: .utf8) ?? "{}"
+        } else {
+            return "{}"
+        }
+    }
+    
+    public static var networkType: RadarConnectionType {
+        guard let reachability = SCNetworkReachabilityCreateWithName(nil, "google.com") else {
+            return .unknown
+        }
+        var flags = SCNetworkReachabilityFlags()
+        if !SCNetworkReachabilityGetFlags(reachability, &flags) {
+            return .unknown
+        }
+        // Evaluate flags
+        if !flags.contains(.reachable) {
+            return .unknown
+        }
+        if !flags.contains(.isWWAN) {
+            return .wifi
+        }
+        // cellular type
+        // Check if current radio technology exists
+        guard let radioTech = CTTelephonyNetworkInfo().serviceCurrentRadioAccessTechnology?.values.first else {
+            return .unknown
+        }
+        
+        switch radioTech {
+        case CTRadioAccessTechnologyLTE:
+            return .cellularLTE;
+        case CTRadioAccessTechnologyWCDMA,
+             CTRadioAccessTechnologyHSDPA,
+             CTRadioAccessTechnologyHSUPA,
+             CTRadioAccessTechnologyCDMAEVDORev0,
+             CTRadioAccessTechnologyCDMAEVDORevA,
+             CTRadioAccessTechnologyCDMAEVDORevB,
+             CTRadioAccessTechnologyeHRPD:
+            return .cellular3G
+                
+        case CTRadioAccessTechnologyGPRS,
+             CTRadioAccessTechnologyEdge,
+             CTRadioAccessTechnologyCDMA1x:
+            return .cellular2G
+        default:
+            if #available(iOS 14.1, *) {
+                switch radioTech {
+                case CTRadioAccessTechnologyNR,
+                     CTRadioAccessTechnologyNRNSA:
+                    return .cellular5G;
+                default:
+                    return .cellular
+                }
+            }
+            return .cellular
+        }
+    }
+    
+    public static var networkTypeString: String {
+        switch(networkType) {
+        case .wifi:
+            return "wifi";
+        case .cellular:
+            return "cellular";
+        case .cellular2G:
+            return "cellular2G";
+        case .cellular3G:
+            return "cellular3G";
+        case .cellularLTE:
+            return "cellularLTE";
+        case .cellular5G:
+            return "cellular5G";
+        case .unknown:
+            return "unknown";
+        default:
+            return "unknown";
+        }
     }
 }
