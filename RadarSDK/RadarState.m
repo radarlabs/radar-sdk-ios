@@ -27,6 +27,7 @@ static NSString *const kLastMotionActivityData = @"radar-lastMotionActivityData"
 static NSString *const kLastPressureData = @"radar-lastPressureData";
 static NSString *const kNotificationPermissionGranted = @"radar-notificationPermissionGranted";
 static NSString *const kRegisteredNotifications = @"radar-registeredNotifications";
+static NSString *const kNearbyGeofences = @"radar-nearbyGeofences";
 static NSDictionary *_lastRelativeAltitudeDataInMemory = nil;
 static NSDate *_lastPressureBackupTime = nil;
 static NSTimeInterval const kBackupInterval = 2.0; // 2 seconds
@@ -247,6 +248,19 @@ static NSTimeInterval const kBackupInterval = 2.0; // 2 seconds
     }
     [registeredNotifications addObject:notification];
     [RadarState setRegisteredNotifications:registeredNotifications];
+}
+
++ (void)setNearbyGeofences:(NSArray<RadarGeofence*>*)geofences {
+    // use NSUserDefaults to store nearby geofences, since we only have 10, this should be ok
+    // in the future where we'll store more geofences for offline tracking, use a file instead.
+    // And maybe provide getNearbyGeofences with radius
+    NSArray* geofencesArray = [RadarGeofence arrayForGeofences:geofences];
+    [[NSUserDefaults standardUserDefaults] setObject:geofencesArray forKey:kNearbyGeofences];
+}
+
++ (NSArray<RadarGeofence*>*)getNearbyGeofences {
+    NSArray* geofencesArray = [[NSUserDefaults standardUserDefaults] arrayForKey:kNearbyGeofences];
+    return [RadarGeofence geofencesFromObject:geofencesArray];
 }
 
 @end

@@ -1369,6 +1369,8 @@ typedef void (^_Nonnull RadarIndoorsScanCompletionHandler)(NSString *_Nullable r
 
 + (void)requestMotionActivityPermission NS_SWIFT_NAME(requestMotionActivityPermission());
 
++ (NSArray<RadarGeofence*>* _Nullable)getNearbyGeofences NS_SWIFT_NAME(getNearbyGeofences());
+
 @end
 
 NS_ASSUME_NONNULL_END

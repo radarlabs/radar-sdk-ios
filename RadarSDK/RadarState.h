@@ -7,6 +7,7 @@
 
 #import <CoreLocation/CoreLocation.h>
 #import <Foundation/Foundation.h>
+#import <RadarSDK/RadarGeofence+Internal.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -45,6 +46,8 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)addRegisteredNotification:(NSDictionary *)registeredNotification;
 + (NSDictionary *)lastRelativeAltitudeData;
 + (void)setLastRelativeAltitudeData:(NSDictionary *_Nullable)lastRelativeAltitudeData;
++ (NSArray<RadarGeofence*>*)getNearbyGeofences;
++ (void)setNearbyGeofences:(NSArray<RadarGeofence*>*)geofences;
 
 @end
 

@@ -558,6 +558,8 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     }
 
     [self removeSyncedGeofences];
+    
+    [RadarState setNearbyGeofences:geofences];
 
     RadarTrackingOptions *options = [Radar getTrackingOptions];
     NSUInteger numGeofences = MIN(geofences.count, options.beacons ? 9 : 19);

@@ -1523,4 +1523,8 @@
     [[RadarActivityManager sharedInstance] requestPermission];
 }
 
++ (NSArray<RadarGeofence*>*)getNearbyGeofences {
+    return [RadarState getNearbyGeofences];
+}
+
 @end
