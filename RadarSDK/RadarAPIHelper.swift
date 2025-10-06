@@ -9,6 +9,13 @@ import Foundation
 
 @available(iOS 13.0, *)
 final class RadarApiHelper: Sendable {
+    init() {
+        // initialize device info, required for Radar request headers
+        DispatchQueue.main.async {
+            RadarUtils.initalize()
+        }
+    }
+    
     func request(method: String, url: String, query: [String: String] = [:], headers: [String: String] = [:], body: [String: Any] = [:]) async throws -> (Data, HTTPURLResponse) {
 
         // transform URL
@@ -52,6 +59,16 @@ final class RadarApiHelper: Sendable {
 
         var headers = headers
         headers["Authorization"] = publishableKey
+        headers["Content-Type"] = "application/json"
+        headers["X-Radar-Config"] = "true"
+        headers["X-Radar-SDK-Version"] = RadarUtils.sdkVersion
+        headers["X-Radar-Device-Type"] = RadarUtils.deviceType
+        headers["X-Radar-Device-Make"] = RadarUtils.deviceMake
+        headers["X-Radar-Device-Model"] = RadarUtils.deviceModel
+        headers["X-Radar-Device-OS"] = RadarUtils.deviceOS
+        headers["X-Radar-Mobile-Origin"] = Bundle.main.bundleIdentifier
+//        headers["X-Radar-Network-Type"] = RadarUtils.networkTypeString
+//        headers["X-Radar-App-Info"] = ???
 
         let url = "\(radarHost)/v1/\(url)"
 
