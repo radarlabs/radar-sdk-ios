@@ -45,8 +45,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         
         if #available(iOS 15.0, *) {
             locationManager.startMonitoringLocationPushes() { data, error in
-                print("Extension Token")
-                print(data?.map { String(format: "%02x", $0) }.joined() ?? "no token")
+                print("Extension Token", data?.map { String(format: "%02x", $0) }.joined() ?? "no token")
                 Radar.setLocationExtensionToken(data?.map { String(format: "%02x", $0) }.joined() ?? "no token")
             }
         }

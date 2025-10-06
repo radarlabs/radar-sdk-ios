@@ -1537,6 +1537,10 @@
     [RadarSettings setAppGroup:appGroup];
 }
 
++ (void)setPushNotificationToken:(NSString*)token {
+    [RadarSettings setPushNotificationToken:token];
+}
+
 + (void)setLocationExtensionToken:(NSString*)token {
     [RadarSettings setLocationExtensionToken:token];
 }

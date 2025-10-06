@@ -1368,6 +1368,8 @@ typedef void (^_Nonnull RadarIndoorsScanCompletionHandler)(NSString *_Nullable r
 
 + (void)setAppGroup:(NSString*)appGroup;
 
++ (void)setPushNotificationToken:(NSString*_Nullable)token;
+
 + (void)setLocationExtensionToken:(NSString*_Nullable)token;
 
 + (void)didReceivePushNotificationPayload:(NSDictionary*)payload completionHandler:(void (^ _Nonnull)(void))completionHandler;
