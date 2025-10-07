@@ -499,7 +499,15 @@
 
 + (void)setDelegate:(id<RadarDelegate>)delegate {
     [RadarDelegateHolder sharedInstance].delegate = delegate;
-    [RadarLogger_Swift setDelegate:delegate];
+    
+    // Ensure Swift @MainActor methods are called on main thread
+    if ([NSThread isMainThread]) {
+        [RadarLogger_Swift setDelegate:delegate];
+    } else {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [RadarLogger_Swift setDelegate:delegate];
+        });
+    }
 }
 
 + (void)setVerifiedDelegate:(id<RadarVerifiedDelegate>)verifiedDelegate {
@@ -1482,7 +1490,14 @@
 
 + (void)setInAppMessageDelegate:(id)delegate {
     if (@available(iOS 13.0, *)) {
-        [[RadarInAppMessageManager shared] setDelegate:delegate];
+        // Ensure Swift @MainActor methods are called on main thread
+        if ([NSThread isMainThread]) {
+            [[RadarInAppMessageManager shared] setDelegate:delegate];
+        } else {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [[RadarInAppMessageManager shared] setDelegate:delegate];
+            });
+        }
     }
 }
 
