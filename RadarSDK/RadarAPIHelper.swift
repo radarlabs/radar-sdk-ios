@@ -25,15 +25,30 @@ final class RadarApiHelper: Sendable {
     }
     
     internal enum HTTPError: Error {
-        case badResponse
-        case badRequest
-        case unauthorized
-        case paymentRequired
-        case forbidden
-        case notFound
-        case rateLimit
-        case server
-        case unknown
+        case badResponse(_: Data)
+        case badRequest(_: Data)
+        case unauthorized(_: Data)
+        case paymentRequired(_: Data)
+        case forbidden(_: Data)
+        case notFound(_: Data)
+        case rateLimit(_: Data)
+        case server(_: Data)
+        case unknown(_: Data)
+        
+        public var data: Data? {
+            switch self {
+            case .badResponse(let d),
+                 .badRequest(let d),
+                 .unauthorized(let d),
+                 .paymentRequired(let d),
+                 .forbidden(let d),
+                 .notFound(let d),
+                 .rateLimit(let d),
+                 .server(let d),
+                 .unknown(let d):
+                return d
+            }
+        }
     }
     
     func request(method: HTTPMethod, url: String, query: [String: String] = [:], headers: [String: String] = [:], body: [String: Any?] = [:]) async throws -> Data {
@@ -65,30 +80,28 @@ final class RadarApiHelper: Sendable {
         
         
         guard let httpResponse = response as? HTTPURLResponse else {
-            throw HTTPError.badResponse
+            throw HTTPError.badResponse(data)
         }
-        
-        RadarLogger.shared.debug("📍 Radar API response | \(method.rawValue.uppercased()) \(url)\(queryString) | \(httpResponse.statusCode) \(String(data: data, encoding: .utf8))")
         
         switch (httpResponse.statusCode) {
         case 200..<400:
             break // success
         case 400:
-            throw HTTPError.badRequest
+            throw HTTPError.badRequest(data)
         case 401:
-            throw HTTPError.unauthorized
+            throw HTTPError.unauthorized(data)
         case 402:
-            throw HTTPError.paymentRequired
+            throw HTTPError.paymentRequired(data)
         case 403:
-            throw HTTPError.forbidden
+            throw HTTPError.forbidden(data)
         case 404:
-            throw HTTPError.notFound
+            throw HTTPError.notFound(data)
         case 429:
-            throw HTTPError.rateLimit
+            throw HTTPError.rateLimit(data)
         case 500...599:
-            throw HTTPError.server
+            throw HTTPError.server(data)
         default:
-            throw HTTPError.unknown
+            throw HTTPError.unknown(data)
         }
         
         return data

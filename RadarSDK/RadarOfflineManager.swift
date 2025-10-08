@@ -48,7 +48,9 @@ func newObjectId() -> String {
 
 @available(iOS 13.0, *)
 @objc(RadarOfflineManager) @objcMembers
-class RadarOfflineManager: NSObject, @unchecked Sendable { // unchecked Sendable, all params are/must be modified in DispatchQueue.global(qos: .default)
+class RadarOfflineManager: NSObject, @unchecked Sendable { // unchecked Sendable, all params are/must be modified in DispatchQueue.global(qos: .default)\
+    static let SYNC_FREQUENCY_S = 60.0 * 60 * 4 // every 4 hours
+    
     var geofences = [RadarGeofence]()
     var defaultTrackingOptions: RadarTrackingOptions?
     var onTripTrackingOptions: RadarTrackingOptions?
@@ -88,12 +90,18 @@ class RadarOfflineManager: NSObject, @unchecked Sendable { // unchecked Sendable
         }
     }
     
-    internal func getOfflineDataRequest() -> [String: Any] {
+    internal func getOfflineDataRequest() -> [String: Any]? {
+        if (Date().timeIntervalSince(lastSyncTime) < RadarOfflineManager.SYNC_FREQUENCY_S) {
+            return nil
+        }
+        
+        guard let location = RadarState.lastLocation()?.coordinate else {
+            print("/config: No last known location")
+            return nil
+        }
+        
         return [
-            "location": [
-                "latitude": RadarState.lastLocation().coordinate.latitude,
-                "longitude": RadarState.lastLocation().coordinate.longitude,
-            ],
+            "location": "\(location.latitude),\(location.longitude)",
             "geofenceIds": geofences.map(\._id),
             "lastSyncTime": RadarUtils.isoDateFormatter.string(for: lastSyncTime) ?? "",
         ]

@@ -10,7 +10,6 @@ import UserNotifications
 import RadarSDK
 import SwiftUI
 
-
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UNUserNotificationCenterDelegate, CLLocationManagerDelegate, RadarDelegate, RadarVerifiedDelegate {
 

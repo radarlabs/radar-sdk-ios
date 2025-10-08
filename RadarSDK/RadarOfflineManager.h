@@ -11,6 +11,7 @@
 #import "RadarUtils.h"
 #import "RadarEvent+Internal.h"
 #import "RadarUser+Internal.h"
+#import "RadarAPIClientSwift.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -21,6 +22,8 @@ NS_ASSUME_NONNULL_BEGIN
 //+ (void)updateTrackingOptionsFromOfflineLocation:(NSArray<RadarGeofence *> *)userGeofences completionHandler:(void (^)(RadarConfig *))completionHandler;
 //
 //+ (void)generateEventsFromOfflineLocations:(CLLocation *)location userGeofences:(NSArray<RadarGeofence *> *)userGeofences completionHandler:(void (^)(NSArray<RadarEvent *> *, RadarUser *, CLLocation *))completionHandler;
+
+- (void)updateOfflineData:(RadarAPIClient_OfflineData*)offlineData;
 
 - (NSDictionary<NSString *, id> * _Nullable)track:(NSDictionary<NSString *, id> * _Nonnull)params;
 

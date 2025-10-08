@@ -75,12 +75,14 @@ final class RadarAPIClient: NSObject, Sendable {
                 "locationAccuracyAuthorization": RadarUtils.locationAccuracyAuthorization,
                 "usage": usage,
                 "clientSdkConfiguration": RadarSettings.clientSdkConfiguration,
-                "offlineDataRequest": offlineManager.getOfflineDataRequest()
+                "offlineDataRequest": offlineManager.getOfflineDataRequest() ?? ""
             ]
-            RadarLogger.shared.debug("📍 Radar API request | POST \(UserDefaults.standard.string(forKey: "radar-host") ?? "")/config")
+            RadarLogger.shared.debug("📍 Radar API request | POST \(UserDefaults.standard.string(forKey: "radar-host") ?? "")/config | \(body.toJSONString())")
             
             let data = try await apiHelper.radarRequest(method: .post, url: "config", body: body)
             let json = try JSONSerialization.jsonObject(with: data, options: []) as! [String: Any]
+            
+            RadarLogger.shared.debug("📍 Radar API response | POST \(UserDefaults.standard.string(forKey: "radar-host") ?? "")/config | \(json.toJSONString())")
             
             let newGeofences = bridge.RadarGeofences(from: json["newGeofences"] ?? []) ?? []
             let removeGeofences: [String] = (json["removeGeofences"] as? [String]) ?? []
@@ -99,8 +101,11 @@ final class RadarAPIClient: NSObject, Sendable {
             )
             return PostConfigResponse(status: .success, offlineData: offlineData)
         } catch let error as RadarApiHelper.HTTPError {
+            let dataString = String(data: error.data!, encoding: .utf8) ?? "<binary data>"
+            RadarLogger.shared.debug("📍 Radar API response | POST \(UserDefaults.standard.string(forKey: "radar-host") ?? "")/config | HTTPError: \(dataString)")
             return PostConfigResponse(status: apiHelper.HTTPErrorToRadarStatus(error))
         } catch { // JSON parse error
+            RadarLogger.shared.debug("📍 Radar API response | POST \(UserDefaults.standard.string(forKey: "radar-host") ?? "")/config | \(error.localizedDescription)")
             return PostConfigResponse(status: RadarStatus.errorUnknown)
         }
     }

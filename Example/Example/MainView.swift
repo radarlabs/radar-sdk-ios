@@ -43,12 +43,12 @@ struct MainView: View {
         }
     }
     
-    @State var content: [(Int, String)] = [(0, "HI")]
+    @State var content: [(Int, String)] = [(0, "Empty")]
     
     var body: some View {
         TabView(selection: $selectedTab) {
             if #available(iOS 17.0, *) {
-                Map {
+                Map(initialPosition: .userLocation(fallback: .automatic)) {
                     UserAnnotation()
                     
                     ForEach(monitoringRegions, id:\.self) {region in
@@ -87,7 +87,7 @@ struct MainView: View {
                         let prettyPrintedData = try? JSONSerialization.data(withJSONObject: jsonObject, options: [.prettyPrinted])
                         content = Array((String(data: prettyPrintedData!, encoding: .ascii) ?? "").split(separator: "\n").map(\.description).enumerated())
                     } catch {
-                        print("Failed")
+                        print("-- Failed --")
                     }
                 }
                 

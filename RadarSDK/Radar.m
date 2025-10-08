@@ -112,7 +112,7 @@ static RadarOfflineManager *_offlineManager = nil;
             if (response.status == RadarStatusSuccess) {
                 [[RadarLocationManager sharedInstance] updateTracking:response.remoteTrackingOptions];
                 [RadarSettings setSdkConfiguration:response.remoteSdkConfiguration];
-//                [[Radar.offlineManager up]]
+                [[Radar.offlineManager updateOfflineData:response.offlineData]];
             }
             
             RadarSdkConfiguration* sdkConfiguration = RadarSettings.sdkConfiguration;
