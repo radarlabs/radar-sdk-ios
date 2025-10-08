@@ -239,6 +239,10 @@ internal class RadarSettings: NSObject {
             RadarUserDefaults.set(newValue, forKey: .UserDebug)
         }
     }
+    
+    static var host: String {
+        return UserDefaults.standard.string(forKey: kHost) ?? kDefaultHost
+    }
 
     public static func updateLastAppOpenTime() {
         let timeStamp: Date = Date()
