@@ -1,5 +1,5 @@
 SDK ?= "iphonesimulator"
-DESTINATION ?= "platform=iOS Simulator,name=iPhone 16"
+DESTINATION ?= "platform=iOS Simulator,name=iPhone 16,OS=18.5"
 PROJECT := RadarSDK
 PROJECT_EXAMPLE := Example/Example
 SCHEME := XCFramework
@@ -19,6 +19,9 @@ build:
 
 test:
 	xcodebuild $(XC_TEST_ARGS) test
+
+test-swift:
+	xcodebuild $(XC_TEST_ARGS) test -only-testing:RadarSDKTests/InAppMessageTest
 
 build-example:
 	xcodebuild $(XC_EXAMPLE_ARGS)
@@ -40,7 +43,7 @@ build-pretty:
 	set -o pipefail && xcodebuild $(XC_ARGS) | xcpretty
 
 test-pretty:
-	set -o pipefail && xcodebuild test $(XC_TEST_ARGS) | xcpretty --report junit
+	set -o pipefail && xcodebuild test $(XC_TEST_ARGS) -skip-testing:RadarSDKTests/InAppMessageTest | xcpretty --report junit
 
 build-example-pretty:
 	set -o pipefail && xcodebuild $(XC_EXAMPLE_ARGS) | xcpretty
