@@ -83,7 +83,4 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-@interface RadarSettingsDeprecated : RadarSettings
-@end
-
 NS_ASSUME_NONNULL_END

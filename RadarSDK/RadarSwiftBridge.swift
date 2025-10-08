@@ -16,6 +16,8 @@ import Foundation
 protocol RadarSwiftBridgeProtocol {
     func writeToLogBuffer(level: RadarLogLevel, type: RadarLogType, message: String, forcePersist: Bool)
     func setLogBufferPersistantLog(_ value: Bool)
+    func flushReplays()
+    func logOpenedAppConversion()
 }
 
 @objc(RadarSwift) @objcMembers

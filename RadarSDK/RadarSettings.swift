@@ -56,7 +56,6 @@ internal class RadarSettings: NSObject {
         String(format: "%.f", RadarUserDefaults.double(forKey: .SessionId))
     }
     
-    // TODO: update called to this function to call this swift version, currently called objective-C version
     public static func updateSessionId() -> Bool {
         let timestampSeconds: Double = Date().timeIntervalSince1970
         var sessionIdSeconds: Double = RadarUserDefaults.double(forKey: .SessionId)
@@ -64,15 +63,15 @@ internal class RadarSettings: NSObject {
         let sdkConfiguration = RadarSettings.sdkConfiguration
         if (sdkConfiguration?.extendFlushReplays ?? false) {
             RadarLogger.shared.info("Flushing replays from updateSessionId()", type: .sdkCall)
-            // TODO: fix this call when it can be called from swift cleanly
-            // [[RadarReplayBuffer sharedInstance] flushReplaysWithCompletionHandler:nil completionHandler:nil];
+            // TODO: call swift RadarReplayBuffer when implemented
+            RadarSwift.bridge?.flushReplays()
         }
         
         if timestampSeconds - sessionIdSeconds > 300 {
             sessionIdSeconds = timestampSeconds
             RadarUserDefaults.set(sessionIdSeconds, forKey: .SessionId)
             // TODO: fix this call when it can be called from swift cleanly
-            // [Radar logOpenedAppConversion]
+            RadarSwift.bridge?.logOpenedAppConversion()
             RadarLogger.shared.debug(String(format: "New session | sessionId = %@", RadarSettings.sessionId))
             return true
         }
@@ -238,10 +237,6 @@ internal class RadarSettings: NSObject {
         set {
             RadarUserDefaults.set(newValue, forKey: .UserDebug)
         }
-    }
-    
-    static var host: String {
-        return UserDefaults.standard.string(forKey: kHost) ?? kDefaultHost
     }
 
     public static func updateLastAppOpenTime() {

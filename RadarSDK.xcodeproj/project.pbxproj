@@ -62,7 +62,6 @@
 		0107AB1A262201E2008AB52F /* RadarLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = DD236D67230A0D6700EB88F9 /* RadarLogger.m */; };
 		0107AB1D262201E5008AB52F /* RadarLocationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = DD236CF823088F8400EB88F9 /* RadarLocationManager.m */; };
 		0107AB20262201E9008AB52F /* RadarPermissionsHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = DD633EC6237C5B9C0026C91A /* RadarPermissionsHelper.m */; };
-		0107AB23262201EC008AB52F /* RadarSettings.m in Sources */ = {isa = PBXBuildFile; fileRef = DD236CFC230895D400EB88F9 /* RadarSettings.m */; };
 		0107AB26262201F0008AB52F /* RadarState.m in Sources */ = {isa = PBXBuildFile; fileRef = DD236D0F2309B3FE00EB88F9 /* RadarState.m */; };
 		0107AB29262201F4008AB52F /* RadarTrackingOptions.m in Sources */ = {isa = PBXBuildFile; fileRef = DD236CEB2308821600EB88F9 /* RadarTrackingOptions.m */; };
 		0107AB2C262201F7008AB52F /* RadarTripOptions.m in Sources */ = {isa = PBXBuildFile; fileRef = DD8CCDF7246872360011690D /* RadarTripOptions.m */; };
@@ -325,7 +324,6 @@
 		DD236CF723088F8400EB88F9 /* RadarLocationManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarLocationManager.h; sourceTree = "<group>"; };
 		DD236CF823088F8400EB88F9 /* RadarLocationManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RadarLocationManager.m; sourceTree = "<group>"; };
 		DD236CFB230895D400EB88F9 /* RadarSettings.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarSettings.h; sourceTree = "<group>"; };
-		DD236CFC230895D400EB88F9 /* RadarSettings.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RadarSettings.m; sourceTree = "<group>"; };
 		DD236D0323099B8400EB88F9 /* RadarUtils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarUtils.h; sourceTree = "<group>"; };
 		DD236D0423099B8400EB88F9 /* RadarUtils.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RadarUtils.m; sourceTree = "<group>"; };
 		DD236D0E2309B3FE00EB88F9 /* RadarState.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarState.h; sourceTree = "<group>"; };
@@ -575,7 +573,6 @@
 				F667F8282BFBF3D1001F2F67 /* RadarSdkConfiguration.h */,
 				F667F8262BFBF3C8001F2F67 /* RadarSdkConfiguration.m */,
 				DD236CFB230895D400EB88F9 /* RadarSettings.h */,
-				DD236CFC230895D400EB88F9 /* RadarSettings.m */,
 				F64FF0DE2E4D2C2A00DF3926 /* RadarSettings.swift */,
 				F6513E822E60C49200523472 /* RadarUserDefaults.swift */,
 				DD236D0E2309B3FE00EB88F9 /* RadarState.h */,
@@ -940,7 +937,6 @@
 				F686B7372E4D2AFC00D3D614 /* RadarAPIHelper.swift in Sources */,
 				0107AA9B26220153008AB52F /* RadarContext.m in Sources */,
 				F64FF0D52E4D2B4700DF3926 /* RadarInAppMessageDelegate.m in Sources */,
-				0107AB23262201EC008AB52F /* RadarSettings.m in Sources */,
 				0107AAAA26220165008AB52F /* RadarGeofenceGeometry.m in Sources */,
 				0107AAEC262201A6008AB52F /* RadarTrip.m in Sources */,
 				9679F4A327CD8DE200800797 /* CLLocation+Radar.m in Sources */,

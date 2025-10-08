@@ -14,6 +14,8 @@
 @protocol RadarSwiftBridgeProtocol
 - (void)writeToLogBufferWithLevel:(RadarLogLevel)level type:(RadarLogType)type message:(NSString * _Nonnull)message forcePersist:(BOOL)forcePersist;
 - (void)setLogBufferPersistantLog:(BOOL)value;
+- (void)flushReplays;
+- (void)logOpenedAppConversion;
 @end
 
 @interface RadarSwiftBridge: NSObject<RadarSwiftBridgeProtocol>
