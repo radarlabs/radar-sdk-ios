@@ -76,7 +76,7 @@ class RadarSettings {
         }
         set {
             if let config = newValue {
-                RadarLogger.shared.log(level: .debug, message: "Setting SDK configuration | sdkConfiguration = \(RadarUtils.dictionary(toJson: config.dictionaryValue()))")
+                RadarLogger.shared.log(level: .debug, message: "Setting SDK configuration | sdkConfiguration = \(config.dictionaryValue().toJSONString())")
                 RadarLogBuffer.sharedInstance().persistentLogFeatureFlag = config.useLogPersistence
                 logLevel = config.logLevel
                 UserDefaults.standard.set(config.dictionaryValue(), forKey: kSdkConfiguration)
@@ -97,6 +97,18 @@ class RadarSettings {
     }
     public static var sessionId: String {
         String(format: "%.f", UserDefaults.standard.double(forKey: "radar-sessionId"))
+    }
+    public static var publishableKey: String? {
+        get { return UserDefaults.standard.string(forKey: "radar-publishableKey") }
+        set { UserDefaults.standard.set(newValue, forKey: "radar-publishableKey") }
+    }
+    public static var clientSdkConfiguration: [String: Any] {
+        get { return UserDefaults.standard.dictionary(forKey: "radar-clientSdkConfiguration") ?? [:] }
+        set { UserDefaults.standard.set(newValue, forKey: "radar-clientSdkConfiguration") }
+    }
+    public static var id: String? {
+        get { return UserDefaults.standard.string(forKey: "radar-_id") }
+        set { UserDefaults.standard.set(newValue, forKey: "radar-_id") }
     }
     // TODO: complete implementation for other radar settings
 }

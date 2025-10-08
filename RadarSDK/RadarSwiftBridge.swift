@@ -9,13 +9,16 @@
 import Foundation
 
 @objc
-public protocol RadarSwiftBridge {
+internal protocol RadarSwiftBridge {
     func RadarEvents(from object: Any) -> [RadarEvent]?
     func RadarGeofences(from object: Any) -> [RadarGeofence]?
     func writeToLogBuffer(level: RadarLogLevel, type: RadarLogType, message: String, forcePersist: Bool)
+    
+    @available(iOS 13.0, *)
+    func RadarOfflineManager() -> RadarOfflineManager
 }
 
 @objc @objcMembers
-public class RadarSwiftBridgeHolder: NSObject {
+internal class RadarSwiftBridgeHolder: NSObject {
     nonisolated(unsafe) public static var shared: RadarSwiftBridge?
 }

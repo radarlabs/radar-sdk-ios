@@ -48,21 +48,20 @@ func newObjectId() -> String {
 
 @available(iOS 13.0, *)
 @objc(RadarOfflineManager) @objcMembers
-class RadarOfflineManager: NSObject {
-    
+class RadarOfflineManager: NSObject, @unchecked Sendable { // unchecked Sendable, all params are/must be modified in DispatchQueue.global(qos: .default)
     var geofences = [RadarGeofence]()
     var defaultTrackingOptions: RadarTrackingOptions?
     var onTripTrackingOptions: RadarTrackingOptions?
     var inGeofenceTrackingOptions: RadarTrackingOptions?
     var inGeofenceTrackingTags = [String]()
+    var lastSyncTime = Date(timeIntervalSince1970: 0)
     
-    public func sync() async {
+    override init() {
         guard let bridge = RadarSwiftBridgeHolder.shared else {
             return
         }
-        let offlineDataPath = RadarFileStorage.path(for: "offlineData.json").path
-        var lastSyncTime: String = RadarUtils.isoDateFormatter.string(from: Date(timeIntervalSince1970: 0))
         do {
+            let offlineDataPath = RadarFileStorage.path(for: "offlineData.json").path
             guard let offlineData = try RadarFileStorage.readJSON(at: offlineDataPath) as? [String: Any] else {
                 return
             }
@@ -81,55 +80,67 @@ class RadarOfflineManager: NSObject {
                 inGeofenceTrackingOptions = RadarTrackingOptions(from: options)
                 inGeofenceTrackingTags = options["tags"] as? [String] ?? []
             }
-            if offlineData["lastSyncTime"] as? String != nil {
-                lastSyncTime = offlineData["lastSyncTime"] as! String
+            if let lastSyncTimeString = offlineData["lastSyncTime"] as? String {
+                lastSyncTime = RadarUtils.isoDateFormatter.date(from: lastSyncTimeString) ?? Date(timeIntervalSince1970: 0)
             }
         } catch {
             print("Unable to load local json")
         }
-        
-        do {
-            // sync data with server, this can fail, in that case, local data is used
-            let now = Date()
-            guard let syncResult = try await RadarAPIClient.shared.getOfflineData(geofenceIds: geofences.map(\._id), lastSyncTime: lastSyncTime) else {
-                return
-            }
-            
-            geofences.removeAll(where: { syncResult.removeGeofences.contains($0._id) })
-            geofences.append(contentsOf: syncResult.newGeofences)
-            
-            defaultTrackingOptions = syncResult.defaultTrackingOptions
-            onTripTrackingOptions = syncResult.onTripTrackingOptions
-            inGeofenceTrackingOptions = syncResult.inGeofenceTrackingOptions
-            inGeofenceTrackingTags = syncResult.inGeofenceTrackingTags
-            
-            let newData: [String: Any] = [
-                "geofences": geofences.map{ $0.dictionaryValue() },
-                "defaultTrackingOptions": defaultTrackingOptions?.dictionaryValue() ?? "",
-                "onTripTrackingOptions": onTripTrackingOptions?.dictionaryValue() ?? "",
-                "inGeofenceTrackingOptions": inGeofenceTrackingOptions?.dictionaryValue() ?? "",
-                "inGeofenceTrackingTags": inGeofenceTrackingTags,
-                "lastSyncTime": RadarUtils.isoDateFormatter.string(from: now),
-            ]
-            
-            try RadarFileStorage.createDirectory()
-            try RadarFileStorage.writeJSON(at: offlineDataPath, with: newData)
-            
-            print("Completed sync")
-        } catch {
-            print("Unable to sync data \(error.localizedDescription)")
-            RadarLogger.shared.warning("Unable to sync offline data")
-        }
     }
-
+    
+    internal func getOfflineDataRequest() -> [String: Any] {
+        return [
+            "location": [
+                "latitude": RadarState.lastLocation().coordinate.latitude,
+                "longitude": RadarState.lastLocation().coordinate.longitude,
+            ],
+            "geofenceIds": geofences.map(\._id),
+            "lastSyncTime": lastSyncTime,
+        ]
+    }
+    
+    internal func updateOfflineData(result: RadarAPIClient.OfflineData, time: Date) {
+        // only modify the values in global default dispatch queue for concurrency
+        DispatchQueue.global(qos: .default).sync {
+            do {
+                let offlineDataPath = RadarFileStorage.path(for: "offlineData.json").path
+                geofences.removeAll(where: { result.removeGeofences.contains($0._id) })
+                geofences.append(contentsOf: result.newGeofences)
+                
+                defaultTrackingOptions = result.defaultTrackingOptions
+                onTripTrackingOptions = result.onTripTrackingOptions
+                inGeofenceTrackingOptions = result.inGeofenceTrackingOptions
+                inGeofenceTrackingTags = result.inGeofenceTrackingTags
+                
+                let newData: [String: Any] = [
+                    "geofences": geofences.map{ $0.dictionaryValue() },
+                    "defaultTrackingOptions": defaultTrackingOptions?.dictionaryValue() ?? "",
+                    "onTripTrackingOptions": onTripTrackingOptions?.dictionaryValue() ?? "",
+                    "inGeofenceTrackingOptions": inGeofenceTrackingOptions?.dictionaryValue() ?? "",
+                    "inGeofenceTrackingTags": inGeofenceTrackingTags,
+                    "lastSyncTime": RadarUtils.isoDateFormatter.string(from: time),
+                ]
+                
+                try RadarFileStorage.createDirectory()
+                try RadarFileStorage.writeJSON(at: offlineDataPath, with: newData)
+                
+                print("Completed sync")
+            } catch {
+                print("Unable to sync data \(error.localizedDescription)")
+                RadarLogger.shared.warning("Unable to sync offline data")
+            }
+        }
+        
+    }
+    
     func createGeofenceEvent(geofence: RadarGeofence, location: CLLocation, type: String) -> [String: Any] {
         let now = RadarUtils.isoDateFormatter.string(from: Date())
         return [
             "_id": newObjectId(), // ???
             "createdAt": now,
             "actualCreatedAt": now,
-            // figure out the import scope issue later
-            "live": RadarUtils.isLive(),
+            // figure out the import scope issue later ???
+            "live": RadarUtils.live,
             "type": type,
             "geofence": geofence.dictionaryValue(),
             "verification": RadarEventVerification.unverify.rawValue,

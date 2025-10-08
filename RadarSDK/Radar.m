@@ -5,7 +5,7 @@
 //  Copyright © 2019 Radar Labs, Inc. All rights reserved.
 //
 
-#import "Radar.h"
+#import "Radar+Internal.h"
 #include "RadarSdkConfiguration.h"
 
 #import "RadarAPIClient.h"
@@ -38,6 +38,15 @@
 @implementation Radar
 
 #pragma mark - Initialization
+
+static RadarOfflineManager *_offlineManager = nil;
+
++ (RadarOfflineManager *)offlineManager {
+    if (!_offlineManager) {
+        _offlineManager = [[RadarOfflineManager alloc] init];
+    }
+    return _offlineManager;
+}
 
 + (id)sharedInstance {
     static dispatch_once_t once;
@@ -97,6 +106,23 @@
     [[RadarLocationManager sharedInstance] updateTrackingFromInitialize];
     
     [RadarNotificationHelper checkNotificationPermissionsWithCompletionHandler:^(BOOL granted) {
+        
+        [RadarAPIClientSwift.shared postConfigWithUsage:@"initialize" completionHandler:^(RadarAPIClient_PostConfigResponse * _Nonnull response) {
+            if (response.status == RadarStatusSuccess) {
+                
+            }
+            
+            RadarSdkConfiguration* sdkConfiguration = RadarSettings.sdkConfiguration;
+            if (sdkConfiguration.startTrackingOnInitialize && !RadarSettings.tracking) {
+                [Radar startTrackingWithOptions:RadarSettings.trackingOptions];
+            }
+            if (sdkConfiguration.trackOnceOnAppOpen) {
+                RadarTrackingOptions *options = Radar.getTrackingOptions;
+                [Radar trackOnceWithDesiredAccuracy:options.desiredAccuracy beacons:options.beacons completionHandler:nil];
+            }
+            [self flushLogs];
+        }];
+        
         [[RadarAPIClient sharedInstance] getConfigForUsage:@"initialize"
                                                   verified:NO
                                          completionHandler:^(RadarStatus status, RadarConfig *config) {
@@ -116,6 +142,8 @@
             [self flushLogs];
         }];
     }];
+    
+    _offlineManager = [[RadarOfflineManager alloc] init];
 }
     
 

@@ -67,8 +67,6 @@ typedef void (^_Nonnull RadarSyncLogsAPICompletionHandler)(RadarStatus status);
 
 @property (nonnull, strong, nonatomic) RadarAPIHelper *apiHelper;
 
-@property (nonnull, strong, nonatomic) RadarOfflineManager *offlineManager;
-
 + (instancetype)sharedInstance;
 
 + (NSDictionary *)headersWithPublishableKey:(NSString *)publishableKey;

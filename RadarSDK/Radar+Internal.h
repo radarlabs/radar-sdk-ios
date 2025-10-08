@@ -7,8 +7,11 @@
 
 #import "Radar.h"
 #import <Foundation/Foundation.h>
+#import "RadarOfflineManager.h"
 
 @interface Radar ()
+
+@property (nonnull, strong, nonatomic, class, readonly) RadarOfflineManager* offlineManager;
 
 + (void)sendLog:(RadarLogLevel)level type:(RadarLogType)type message:(NSString *_Nonnull)message;
 

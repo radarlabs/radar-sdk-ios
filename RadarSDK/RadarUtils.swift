@@ -11,37 +11,36 @@ import SystemConfiguration
 import CoreTelephony
 
 class RadarUtils {
-
     public static let deviceMake: String = "Apple"
     public static let deviceType: String = "iOS"
     public static let sdkVersion: String = "3.23.2"
-
+    
     nonisolated(unsafe) public static var deviceOS: String = ""
     nonisolated(unsafe) public static var deviceModel: String = ""
-
+    
     public static var appInfo: [String: String] {
         get {
             let infoDict = Bundle.main.infoDictionary ?? [:]
             let localized = Bundle.main.localizedInfoDictionary ?? [:]
             let info = infoDict.merging(localized) { (_, new) in new }
             var appInfo = [String:String]()
-
+            
             appInfo["name"] = info["CFBundleDisplayName"] as? String
             appInfo["version"] = info["CFBundleShortVersionString"] as? String
             appInfo["build"] = info["CFBundleVersion"] as? String
             appInfo["namespace"] = Bundle.main.bundleIdentifier
-
+            
             return appInfo
         }
     }
-
+    
     @MainActor
     public static func initalize() {
         deviceOS = UIDevice.current.systemVersion
         deviceModel = {
             var systemInfo = utsname()
             uname(&systemInfo)
-
+            
             let identifier = withUnsafePointer(to: systemInfo.machine) { ptr -> String in
                 ptr.withMemoryRebound(to: CChar.self, capacity: 1) { cptr in
                     String(validatingCString: cptr) ?? ""
@@ -84,23 +83,23 @@ class RadarUtils {
         case CTRadioAccessTechnologyLTE:
             return .cellularLTE;
         case CTRadioAccessTechnologyWCDMA,
-             CTRadioAccessTechnologyHSDPA,
-             CTRadioAccessTechnologyHSUPA,
-             CTRadioAccessTechnologyCDMAEVDORev0,
-             CTRadioAccessTechnologyCDMAEVDORevA,
-             CTRadioAccessTechnologyCDMAEVDORevB,
-             CTRadioAccessTechnologyeHRPD:
+            CTRadioAccessTechnologyHSDPA,
+            CTRadioAccessTechnologyHSUPA,
+            CTRadioAccessTechnologyCDMAEVDORev0,
+            CTRadioAccessTechnologyCDMAEVDORevA,
+            CTRadioAccessTechnologyCDMAEVDORevB,
+        CTRadioAccessTechnologyeHRPD:
             return .cellular3G
-                
+            
         case CTRadioAccessTechnologyGPRS,
-             CTRadioAccessTechnologyEdge,
-             CTRadioAccessTechnologyCDMA1x:
+            CTRadioAccessTechnologyEdge,
+        CTRadioAccessTechnologyCDMA1x:
             return .cellular2G
         default:
             if #available(iOS 14.1, *) {
                 switch radioTech {
                 case CTRadioAccessTechnologyNR,
-                     CTRadioAccessTechnologyNRNSA:
+                CTRadioAccessTechnologyNRNSA:
                     return .cellular5G;
                 default:
                     return .cellular
@@ -128,6 +127,59 @@ class RadarUtils {
             return "unknown";
         default:
             return "unknown";
+        }
+    }
+    
+    public static let isoDateFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZZZZZ"
+        formatter.timeZone = TimeZone(secondsFromGMT: 0)
+        return formatter
+    }()
+    
+    public static var live: Bool {
+        RadarSettings.publishableKey?.contains("_live_") == true
+    }
+    
+    public static var locationAuthorization: String {
+        switch (CLLocationManager.authorizationStatus()) {
+        case .authorizedAlways:
+            return "GRANTED_BACKGROUND"
+        case .authorizedWhenInUse:
+            return "GRANTED_FOREGROUND"
+        case .denied:
+            return "DENIED"
+        case .restricted:
+            return "DENIED"
+        case .notDetermined:
+            return "NOT_DETERMINED"
+        default:
+            return "NOT_DETERMINED"
+        }
+        
+    }
+    
+    public static var locationAccuracyAuthorization: String {
+        if #available(iOS 14.0, *) {
+            switch (CLLocationManager().accuracyAuthorization) {
+            case .fullAccuracy:
+                return "FULL"
+            case .reducedAccuracy:
+                return "REDUCED"
+            default:
+                return "FULL"
+            }
+        }
+        return "FULL"
+    }
+}
+
+internal extension Dictionary {
+    func toJSONString() -> String {
+        if let data = try? JSONSerialization.data(withJSONObject: self, options: []) {
+            return String(data: data, encoding: .utf8) ?? "{}"
+        } else {
+            return "{}"
         }
     }
 }

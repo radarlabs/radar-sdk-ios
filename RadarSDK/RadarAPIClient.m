@@ -54,11 +54,6 @@
     self = [super init];
     if (self) {
         _apiHelper = [RadarAPIHelper new];
-        _offlineManager = [[RadarOfflineManager alloc] init];
-        // sync data
-        [_offlineManager syncWithCompletionHandler:^{
-            // do nothing
-        }];
     }
     return self;
 }
@@ -496,7 +491,7 @@
     NSArray<RadarReplay *> *replays = [[RadarReplayBuffer sharedInstance] flushableReplays];
     NSUInteger replayCount = replays.count;
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Checking replays in API client | replayCount = %lu", (unsigned long)replayCount]];
-
+    
     BOOL replaying = options.replay == RadarTrackingOptionsReplayAll && replayCount > 0 && !verified;
     if (replaying) {
         [[RadarReplayBuffer sharedInstance] flushReplaysWithCompletionHandler:params completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
@@ -548,7 +543,7 @@
                     // maybe fail with status
 //                    [[RadarDelegateHolder sharedInstance] didFailWithStatus:status];
                     
-                    res = [self->_offlineManager track:params];
+                    res = [Radar.offlineManager track:params];
                     if (res != nil) {
                         status = RadarStatusSuccess;
                     }
