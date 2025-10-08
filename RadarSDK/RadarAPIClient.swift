@@ -9,14 +9,14 @@ import Foundation
 
 @available(iOS 13.0, *)
 @objc(RadarAPIClientSwift) @objcMembers
-public final class RadarAPIClient: NSObject, Sendable {
+final class RadarAPIClient: NSObject, Sendable {
     
     public static let shared = RadarAPIClient()
     
     let apiHelper = RadarApiHelper()
     
     // MARK: - getAsset
-    public func getAsset(url: String) async throws -> Data {
+    func getAsset(url: String) async throws -> Data {
         let data = if (url.starts(with: "http")) {
             try await apiHelper.request(method: .get, url: url)
         } else {
@@ -27,13 +27,13 @@ public final class RadarAPIClient: NSObject, Sendable {
     
     // MARK: - getOfflineData
     @objc(RadarAPIClient_OfflineData) @objcMembers
-    public class OfflineData: NSObject {
-        public let newGeofences: [RadarGeofence]
-        public let removeGeofences: [String]
-        public let defaultTrackingOptions: RadarTrackingOptions?
-        public let onTripTrackingOptions: RadarTrackingOptions?
-        public let inGeofenceTrackingOptions: RadarTrackingOptions?
-        public let inGeofenceTrackingTags: [String]
+    class OfflineData: NSObject {
+        let newGeofences: [RadarGeofence]
+        let removeGeofences: [String]
+        let defaultTrackingOptions: RadarTrackingOptions?
+        let onTripTrackingOptions: RadarTrackingOptions?
+        let inGeofenceTrackingOptions: RadarTrackingOptions?
+        let inGeofenceTrackingTags: [String]
         
         init(newGeofences: [RadarGeofence], removeGeofences: [String], defaultTrackingOptions: RadarTrackingOptions?, onTripTrackingOptions: RadarTrackingOptions?, inGeofenceTrackingOptions: RadarTrackingOptions?, inGeofenceTrackingTags: [String]) {
             self.newGeofences = newGeofences
@@ -45,12 +45,12 @@ public final class RadarAPIClient: NSObject, Sendable {
         }
     }
     @objc(RadarAPIClient_PostConfigResponse) @objcMembers
-    public class PostConfigResponse: NSObject {
-        public let status: RadarStatus
-        public let remoteTrackingOptions: RadarTrackingOptions?
+    class PostConfigResponse: NSObject {
+        let status: RadarStatus
+        let remoteTrackingOptions: RadarTrackingOptions?
         let remoteSdkConfiguration: RadarSdkConfiguration?
-        public let verificationSettings: RadarConfig?
-        public let offlineData: OfflineData?
+        let verificationSettings: RadarConfig?
+        let offlineData: OfflineData?
         
         init(status: RadarStatus, remoteTrackingOptions: RadarTrackingOptions? = nil, remoteSdkConfiguration: RadarSdkConfiguration? = nil, verificationSettings: RadarConfig? = nil, offlineData: OfflineData? = nil) {
             self.status = status
@@ -60,14 +60,14 @@ public final class RadarAPIClient: NSObject, Sendable {
             self.offlineData = offlineData
         }
     }
-    public func postConfig(usage: String) async -> PostConfigResponse {
+    func postConfig(usage: String) async -> PostConfigResponse {
         guard let bridge = RadarSwiftBridgeHolder.shared else {
             return PostConfigResponse(status: .errorPublishableKey)
         }
         let offlineManager = bridge.RadarOfflineManager()
         
         do {
-            let data = try await apiHelper.radarRequest(method: .post, url: "config", body: [
+            let body: [String: Any?] = [
                 "installId": RadarSettings.installId,
                 "sessionId": RadarSettings.sessionId,
                 "id": RadarSettings.id,
@@ -76,7 +76,10 @@ public final class RadarAPIClient: NSObject, Sendable {
                 "usage": usage,
                 "clientSdkConfiguration": RadarSettings.clientSdkConfiguration,
                 "offlineDataRequest": offlineManager.getOfflineDataRequest()
-            ])
+            ]
+            RadarLogger.shared.debug("📍 Radar API request | POST \(UserDefaults.standard.string(forKey: "radar-host") ?? "")/config")
+            
+            let data = try await apiHelper.radarRequest(method: .post, url: "config", body: body)
             let json = try JSONSerialization.jsonObject(with: data, options: []) as! [String: Any]
             
             let newGeofences = bridge.RadarGeofences(from: json["newGeofences"] ?? []) ?? []

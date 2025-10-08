@@ -313,8 +313,17 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     [self updateTracking:nil fromInitialize:YES];
 }
 
-- (void)updateTracking:(CLLocation *)location {
-    [self updateTracking:location fromInitialize:NO];
+- (void)updateTracking:(RadarTrackingOptions *)trackingOptions {
+    if (trackingOptions) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
+                                           message:[NSString stringWithFormat:@"Setting remote tracking options | trackingOptions = %@", trackingOptions]];
+        [RadarSettings setRemoteTrackingOptions:trackingOptions];
+    } else {
+        [RadarSettings removeRemoteTrackingOptions];
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
+                                           message:[NSString stringWithFormat:@"Removed remote tracking options | trackingOptions = %@", Radar.getTrackingOptions]];
+    }
+    [self updateTrackingFromInitialize];
 }
 
 - (void)updateTracking:(CLLocation *)location fromInitialize:(BOOL)fromInitialize {
@@ -753,7 +762,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
                                            message:[NSString stringWithFormat:@"Skipping location: inaccurate | accuracy = %f", location.horizontalAccuracy]];
 
-        [self updateTracking:location];
+        [self updateTracking:location fromInitialize:NO];
 
         return;
     }
@@ -818,7 +827,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     [[RadarDelegateHolder sharedInstance] didUpdateClientLocation:location stopped:stopped source:source];
 
     if (source != RadarLocationSourceManualLocation) {
-        [self updateTracking:location];
+        [self updateTracking:location fromInitialize:NO];
     }
 
     [self callCompletionHandlersWithStatus:RadarStatusSuccess location:location];

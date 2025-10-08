@@ -63,9 +63,12 @@ final class RadarApiHelper: Sendable {
         
         let (data, response) = try await URLSession.shared.data(for: request)
         
+        
         guard let httpResponse = response as? HTTPURLResponse else {
             throw HTTPError.badResponse
         }
+        
+        RadarLogger.shared.debug("📍 Radar API response | \(method.rawValue.uppercased()) \(url)\(queryString) | \(httpResponse.statusCode) \(String(data: data, encoding: .utf8))")
         
         switch (httpResponse.statusCode) {
         case 200..<400:

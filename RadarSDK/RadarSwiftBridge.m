@@ -11,6 +11,7 @@
 #import "RadarSwiftBridge.h"
 #import "RadarEvent+Internal.h"
 #import "RadarGeofence+Internal.h"
+#import "Radar+Internal.h"
 
 @implementation RadarSwiftBridgeImpl
 
@@ -24,6 +25,10 @@
 
 - (void)writeToLogBufferWithLevel:(RadarLogLevel)level type:(RadarLogType)type message:(NSString * _Nonnull)message forcePersist:(BOOL)forcePersist {
     [[RadarLogBuffer sharedInstance] write:level type:type message:message forcePersist:forcePersist];
+}
+
+- (RadarOfflineManager* _Nullable)RadarOfflineManager {
+    return Radar.offlineManager;
 }
 
 @end

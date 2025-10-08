@@ -95,7 +95,7 @@ class RadarOfflineManager: NSObject, @unchecked Sendable { // unchecked Sendable
                 "longitude": RadarState.lastLocation().coordinate.longitude,
             ],
             "geofenceIds": geofences.map(\._id),
-            "lastSyncTime": lastSyncTime,
+            "lastSyncTime": RadarUtils.isoDateFormatter.string(for: lastSyncTime) ?? "",
         ]
     }
     

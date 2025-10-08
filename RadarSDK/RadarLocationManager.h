@@ -33,6 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)replaceSyncedBeacons:(NSArray<RadarBeacon *> *)beacons;
 - (void)replaceSyncedBeaconUUIDs:(NSArray<NSString *> *)uuids;
 - (void)updateTracking;
+- (void)updateTracking:(RadarTrackingOptions *)trackingOptions;
 - (void)updateTrackingFromMeta:(RadarMeta *_Nullable)meta;
 - (void)updateTrackingFromInitialize;
 - (void)performIndoorScanIfConfigured:(CLLocation *)location 
