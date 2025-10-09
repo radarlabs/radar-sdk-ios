@@ -53,6 +53,9 @@ class RadarSettings {
             }
             return RadarLogLevel(rawValue: UserDefaults.standard.integer(forKey: kLogLevel)) ?? .none;
         }
+        set {
+            UserDefaults.standard.set(newValue.rawValue, forKey: kLogLevel)
+        }
     }
 
     static var userDebug: Bool {
@@ -68,5 +71,35 @@ class RadarSettings {
         return UserDefaults.standard.string(forKey: kHost) ?? kDefaultHost
     }
 
+    static var sdkConfiguration: RadarSdkConfiguration? {
+        get {
+            if let dict = UserDefaults.standard.dictionary(forKey: kSdkConfiguration) {
+                return RadarSdkConfiguration(from: dict)
+            }
+            return nil
+        }
+        set {
+            if let config = newValue {
+                RadarLogger.shared.log(level: .debug, message: "Setting SDK configuration | sdkConfiguration = \(RadarUtils.dictionary(toJson: config.dictionaryValue()))")
+                RadarLogBuffer.sharedInstance().persistentLogFeatureFlag = config.useLogPersistence
+                logLevel = config.logLevel
+                UserDefaults.standard.set(config.dictionaryValue(), forKey: kSdkConfiguration)
+            } else {
+                RadarLogBuffer.sharedInstance().persistentLogFeatureFlag = false
+                UserDefaults.standard.removeObject(forKey: kSdkConfiguration)
+            }
+        }
+    }
+    public static var installId: String {
+            get {
+                if let uuid = UserDefaults.standard.string(forKey: "radar-installId") {
+                    return uuid
+                } else {
+                    let uuid = UUID().uuidString
+                    UserDefaults.standard.set(uuid, forKey: "radar-installId")
+                    return uuid
+                }
+            }
+        }
     // TODO: complete implementation for other radar settings
 }

@@ -131,7 +131,7 @@
             radius = [((NSNumber *)radiusObj) floatValue];
         }
 
-        if ([type isEqualToString:@"circle"]) {
+        if ([type isEqualToString:@"circle"] || [type isEqualToString:@"Circle"]) {
             geometry = [[RadarCircleGeometry alloc] initWithCenter:center radius:radius];
         } else if ([type isEqualToString:@"polygon"] || [type isEqualToString:@"Polygon"] || [type isEqualToString:@"isochrone"]) {
             NSMutableArray<RadarCoordinate *> *mutablePolygonCoordinates = [self getPolygonCoordinates:dict]; 

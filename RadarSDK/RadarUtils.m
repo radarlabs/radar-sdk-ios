@@ -244,7 +244,15 @@ static NSDateFormatter *_isoDateFormatter;
         return @"{}";
     } else {
         return [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-    } 
+    }
+}
+
++ (BOOL)isLive {
+    NSString *publishableKey = [RadarSettings publishableKey];
+    if (!publishableKey) {
+        return NO;
+    }
+    return [publishableKey hasPrefix:@"prj_live"];
 }
 
 #pragma mark - threading
