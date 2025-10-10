@@ -32,6 +32,8 @@ NSString *const kBeacons = @"beacons";
 NSString *const kUseIndoorScan = @"useIndoorScan";
 NSString *const kUseMotion = @"useMotion";
 NSString *const kUsePressure = @"usePressure";
+NSString *const kBatchInterval = @"batchInterval";
+NSString *const kBatchSize = @"batchSize";
 
 NSString *const kDesiredAccuracyHigh = @"high";
 NSString *const kDesiredAccuracyMedium = @"medium";
@@ -69,6 +71,8 @@ NSString *const kSyncNone = @"none";
     options.useIndoorScan = NO;
     options.useMotion = NO;
     options.usePressure = NO;
+    options.batchInterval = 0;
+    options.batchSize = 0;
     return options;
 }
 
@@ -96,6 +100,8 @@ NSString *const kSyncNone = @"none";
     options.useIndoorScan = NO;
     options.useMotion = NO;
     options.usePressure = NO;
+    options.batchInterval = 0;
+    options.batchSize = 0;
     return options;
 }
 
@@ -123,6 +129,8 @@ NSString *const kSyncNone = @"none";
     options.useIndoorScan = NO;
     options.useMotion = NO;
     options.usePressure = NO;
+    options.batchInterval = 0;
+    options.batchSize = 0;
     return options;
 }
 
@@ -254,6 +262,8 @@ NSString *const kSyncNone = @"none";
     options.useIndoorScan = [dict[kUseIndoorScan] boolValue];
     options.useMotion = [dict[kUseMotion] boolValue];
     options.usePressure = [dict[kUsePressure] boolValue];
+    options.batchInterval = [dict[kBatchInterval] intValue];
+    options.batchSize = [dict[kBatchSize] intValue];
     return options;
 }
 
@@ -289,6 +299,8 @@ NSString *const kSyncNone = @"none";
     dict[kUseIndoorScan] = @(self.useIndoorScan);
     dict[kUseMotion] = @(self.useMotion);
     dict[kUsePressure] = @(self.usePressure);
+    dict[kBatchInterval] = @(self.batchInterval);
+    dict[kBatchSize] = @(self.batchSize);
     return dict;
 }
 
@@ -318,7 +330,8 @@ NSString *const kSyncNone = @"none";
            self.useStoppedGeofence == options.useStoppedGeofence && self.stoppedGeofenceRadius == options.stoppedGeofenceRadius &&
            self.useMovingGeofence == options.useMovingGeofence && self.movingGeofenceRadius == options.movingGeofenceRadius && self.syncGeofences == options.syncGeofences &&
            self.useVisits == options.useVisits && self.useSignificantLocationChanges == options.useSignificantLocationChanges && self.beacons == options.beacons &&
-           self.useIndoorScan == options.useIndoorScan && self.useMotion == options.useMotion && self.usePressure == options.usePressure;
+           self.useIndoorScan == options.useIndoorScan && self.useMotion == options.useMotion && self.usePressure == options.usePressure &&
+    self.batchInterval == options.batchInterval && self.batchSize == options.batchSize;
 }
 
 @end
