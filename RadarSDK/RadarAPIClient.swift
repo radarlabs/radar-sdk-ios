@@ -84,22 +84,30 @@ final class RadarAPIClient: NSObject, Sendable {
             
             RadarLogger.shared.debug("📍 Radar API response | POST \(UserDefaults.standard.string(forKey: "radar-host") ?? "")/config | \(json.toJSONString())")
             
-            let newGeofences = bridge.RadarGeofences(from: json["newGeofences"] ?? []) ?? []
-            let removeGeofences: [String] = (json["removeGeofences"] as? [String]) ?? []
-            let defaultTrackingOptions = RadarTrackingOptions.init(from: json["defaultTrackingOptions"] as? [String: Any] ?? [:])
-            let onTripTrackingOptions = RadarTrackingOptions.init(from: json["onTripTrackingOptions"] as? [String: Any] ?? [:])
-            let inGeofenceTrackingOptions = RadarTrackingOptions.init(from: json["inGeofenceTrackingOptions"] as? [String: Any] ?? [:])
-            let inGeofenceTrackingTags: [String] = (json["inGeofenceTrackingTags"] as? [String]) ?? []
+            let trackingOptions = RadarTrackingOptions.init(from: json["trackingOptions"] as? [String: Any])
+            let sdkConfiguration = RadarSdkConfiguration.init(from: json["sdkConfiguration"] as? [String: Any])
+            let verificationSettings = RadarConfig.fromDictionary(json["verificationSettings"] as? [String: Any])
             
-            let offlineData = OfflineData(
-                newGeofences: newGeofences,
-                removeGeofences: removeGeofences,
-                defaultTrackingOptions: defaultTrackingOptions,
-                onTripTrackingOptions: onTripTrackingOptions,
-                inGeofenceTrackingOptions: inGeofenceTrackingOptions,
-                inGeofenceTrackingTags: inGeofenceTrackingTags
-            )
-            return PostConfigResponse(status: .success, offlineData: offlineData)
+            var offlineData: OfflineData? = nil
+            if let offlineDataJSON = json["offlineData"] as? [String: Any] {
+                let newGeofences = bridge.RadarGeofences(from: offlineDataJSON["newGeofences"] ?? []) ?? []
+                let removeGeofences: [String] = (offlineDataJSON["removeGeofences"] as? [String]) ?? []
+                let defaultTrackingOptions = RadarTrackingOptions.init(from: offlineDataJSON["defaultTrackingOptions"] as? [String: Any] ?? [:])
+                let onTripTrackingOptions = RadarTrackingOptions.init(from: offlineDataJSON["onTripTrackingOptions"] as? [String: Any] ?? [:])
+                let inGeofenceTrackingOptions = RadarTrackingOptions.init(from: offlineDataJSON["inGeofenceTrackingOptions"] as? [String: Any] ?? [:])
+                let inGeofenceTrackingTags: [String] = (offlineDataJSON["inGeofenceTrackingTags"] as? [String]) ?? []
+                
+                offlineData = OfflineData(
+                    newGeofences: newGeofences,
+                    removeGeofences: removeGeofences,
+                    defaultTrackingOptions: defaultTrackingOptions,
+                    onTripTrackingOptions: onTripTrackingOptions,
+                    inGeofenceTrackingOptions: inGeofenceTrackingOptions,
+                    inGeofenceTrackingTags: inGeofenceTrackingTags
+                )
+            }
+            
+            return PostConfigResponse(status: .success, remoteTrackingOptions: trackingOptions, remoteSdkConfiguration: sdkConfiguration, verificationSettings: verificationSettings, offlineData: offlineData)
         } catch let error as RadarApiHelper.HTTPError {
             let dataString = String(data: error.data!, encoding: .utf8) ?? "<binary data>"
             RadarLogger.shared.debug("📍 Radar API response | POST \(UserDefaults.standard.string(forKey: "radar-host") ?? "")/config | HTTPError: \(dataString)")

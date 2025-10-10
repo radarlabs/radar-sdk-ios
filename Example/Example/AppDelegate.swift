@@ -12,7 +12,7 @@ import SwiftUI
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UNUserNotificationCenterDelegate, CLLocationManagerDelegate, RadarDelegate, RadarVerifiedDelegate {
-
+    
     let locationManager = CLLocationManager()
     var window: UIWindow? // required for UIWindowSceneDelegate
     
@@ -38,8 +38,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         Radar.initialize(publishableKey: "prj_test_pk_", options: radarInitializeOptions )
         Radar.setUserId("testUserId")
         Radar.setMetadata([ "foo": "bar" ])
-        Radar.setDelegate(self)
-        Radar.setVerifiedDelegate(self)
+//        Radar.setDelegate(self)
+//        Radar.setVerifiedDelegate(self)
         
         return true
     }
@@ -464,6 +464,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
     }
 
     func didReceiveEvents(_ events: [RadarEvent], user: RadarUser?) {
+        
+        
         for event in events {
             notify(Utils.stringForRadarEvent(event))
         }

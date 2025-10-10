@@ -40,11 +40,10 @@
         completionHandler:(RadarAPICompletionHandler)completionHandler {
     
     // TEMP: block all track calls at network error to test clientside
-    NSLog(@"api: %@", url);
-    if ([url containsString:@"track"]) {
-        completionHandler(RadarStatusErrorNetwork, nil);
-        return;
-    }
+//    if ([url containsString:@"track"]) {
+//        completionHandler(RadarStatusErrorNetwork, nil);
+//        return;
+//    }
     
     
     dispatch_async(self.queue, ^{

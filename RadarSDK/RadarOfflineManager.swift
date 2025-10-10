@@ -48,7 +48,7 @@ func newObjectId() -> String {
 
 @available(iOS 13.0, *)
 @objc(RadarOfflineManager) @objcMembers
-class RadarOfflineManager: NSObject, @unchecked Sendable { // unchecked Sendable, all params are/must be modified in DispatchQueue.global(qos: .default)\
+internal class RadarOfflineManager: NSObject, @unchecked Sendable { // unchecked Sendable, all params are/must be modified in DispatchQueue.global(qos: .default)\
     static let SYNC_FREQUENCY_S = 60.0 * 60 * 4 // every 4 hours
     
     var geofences = [RadarGeofence]()
@@ -57,6 +57,15 @@ class RadarOfflineManager: NSObject, @unchecked Sendable { // unchecked Sendable
     var inGeofenceTrackingOptions: RadarTrackingOptions?
     var inGeofenceTrackingTags = [String]()
     var lastSyncTime = Date(timeIntervalSince1970: 0)
+    
+    struct Options {
+        var enabled: Bool = true
+        var updateRTO: Bool = true
+        var updateUser: Bool = true
+        var generateEvents: Bool = true
+    }
+    
+    var options = Options()
     
     override init() {
         guard let bridge = RadarSwiftBridgeHolder.shared else {
@@ -107,7 +116,9 @@ class RadarOfflineManager: NSObject, @unchecked Sendable { // unchecked Sendable
         ]
     }
     
-    internal func updateOfflineData(result: RadarAPIClient.OfflineData, time: Date) {
+    internal func updateOfflineData(result: RadarAPIClient.OfflineData?, time: Date) {
+        guard let result = result else { return }
+        
         // only modify the values in global default dispatch queue for concurrency
         DispatchQueue.global(qos: .default).sync {
             do {
@@ -152,7 +163,7 @@ class RadarOfflineManager: NSObject, @unchecked Sendable { // unchecked Sendable
             "type": type,
             "geofence": geofence.dictionaryValue(),
             "verification": RadarEventVerification.unverify.rawValue,
-            "confidence": RadarEventConfidence.low.rawValue, // ??? maybe use accuracy?
+            "confidence": RadarEventConfidence.low.rawValue, // not calculated
             "duration": 0,
             "location": [
                 "coordinates": [location.coordinate.longitude, location.coordinate.latitude],
@@ -167,6 +178,10 @@ class RadarOfflineManager: NSObject, @unchecked Sendable { // unchecked Sendable
 //        guard let bridge = RadarSwiftBridgeHolder.shared else {
 //            return nil
 //        }
+        if (options.enabled == false) {
+            print("Offline tracking is disabled")
+            return nil
+        }
         
         print("Tracked offline")
         
@@ -177,26 +192,28 @@ class RadarOfflineManager: NSObject, @unchecked Sendable { // unchecked Sendable
         
         guard let user = RadarState.radarUser() else {
             // no user associated, we can't perform any tracks offline
+            print("No user exist")
             return nil
         }
         
         // Events
         // calculate geofences within and generate events
         var events = [Any]()
-        let userGeofences = user.geofences ?? []
+        let userGeofences = (user.geofences ?? []).map { $0._id }
+        
         var newUserGeofences = [RadarGeofence]()
         for geofence in geofences {
             guard let inside = RadarOfflineManager.withinGeofence(geofence: geofence, point: location) else {
                 continue
             }
             if (inside) {
-                if (!userGeofences.contains(geofence)) {
+                newUserGeofences.append(geofence)
+                if (options.generateEvents && !userGeofences.contains(geofence._id)) {
                     // new geofence that the user is now inside, entry event
                     events.append(createGeofenceEvent(geofence: geofence, location: location, type: "user.entered_geofence"))
                 }
-                newUserGeofences.append(geofence)
             } else { // outside
-                if (userGeofences.contains(geofence)) {
+                if (options.generateEvents && userGeofences.contains(geofence._id)) {
                     // user was inside this geofence before, exit event
                     events.append(createGeofenceEvent(geofence: geofence, location: location, type: "user.exited_geofence"))
                 }
@@ -206,14 +223,16 @@ class RadarOfflineManager: NSObject, @unchecked Sendable { // unchecked Sendable
         // User
         // set user fields
         var newUser: [AnyHashable: Any] = user.dictionaryValue() // the json value for the updated user
-        newUser["geofences"] = newUserGeofences.map{ $0.dictionaryValue }
-        newUser["location"] = [
-            "coordinates": [location.coordinate.longitude, location.coordinate.latitude ]
-        ]
+        if (options.updateUser) {
+            newUser["geofences"] = newUserGeofences.map{ $0.dictionaryValue() }
+            newUser["location"] = [
+                "coordinates": [location.coordinate.longitude, location.coordinate.latitude ]
+            ]
+        }
         
         // RTO
-        // find which remote tracking options should be applied
         var trackingOptions: RadarTrackingOptions? = nil
+        // find which remote tracking options should be applied
         if (inGeofenceTrackingOptions != nil &&
             newUserGeofences.contains(where: { ($0.tag != nil) && inGeofenceTrackingTags.contains($0.tag!) })) {
             trackingOptions = inGeofenceTrackingOptions
@@ -224,15 +243,20 @@ class RadarOfflineManager: NSObject, @unchecked Sendable { // unchecked Sendable
             trackingOptions = defaultTrackingOptions
         }
         
-        let response: [String: Any] = [
+        var response: [String: Any] = [
             "user": newUser,
             "events": events,
-            "meta": [
+        ]
+        
+        if (options.updateRTO) {
+            response["meta"] = [
                 "trackingOptions": trackingOptions?.dictionaryValue(),
                 "sdkConfiguration": RadarSettings.sdkConfiguration?.dictionaryValue(),
             ]
-        ]
-        print(response)
+        }
+        
+        print(response.toJSONString(prettyPrinted: true))
+        
         return response
     }
     

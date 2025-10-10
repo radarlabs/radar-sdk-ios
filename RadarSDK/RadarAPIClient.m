@@ -482,6 +482,8 @@
                 locationMetadata:(NSDictionary *)locationMetadata
             completionHandler:(RadarTrackAPICompletionHandler)completionHandler {
 
+    NSLog(@"Tried to track");
+    
     NSString *host = verified ? [RadarSettings verifiedHost] : [RadarSettings host];
     NSString *url = [NSString stringWithFormat:@"%@/v1/track", host];
     url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
@@ -492,32 +494,138 @@
     NSUInteger replayCount = replays.count;
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Checking replays in API client | replayCount = %lu", (unsigned long)replayCount]];
     
+    void(^handleResponse)(RadarStatus, NSDictionary*) = ^(RadarStatus status, NSDictionary * res) {
+        RadarConfig *config = [RadarConfig fromDictionary:res];
+
+        id eventsObj = res[@"events"];
+        id userObj = res[@"user"];
+        if ([userObj isKindOfClass:[NSDictionary class]]) {
+            NSMutableDictionary *mutableUserObj = [userObj mutableCopy];
+            mutableUserObj[@"metadata"] = locationMetadata;
+            userObj = mutableUserObj;
+        }
+        id nearbyGeofencesObj = res[@"nearbyGeofences"];
+        id inAppMessagesObj = res[@"inAppMessages"];
+        NSArray<RadarEvent *> *events = [RadarEvent eventsFromObject:eventsObj];
+        RadarUser *user = [[RadarUser alloc] initWithObject:userObj];
+        NSArray<RadarGeofence *> *nearbyGeofences = [RadarGeofence geofencesFromObject:nearbyGeofencesObj];
+        RadarVerifiedLocationToken *token = [[RadarVerifiedLocationToken alloc] initWithObject:res];
+
+        if (@available(iOS 13.0, *)) {
+            NSArray<RadarInAppMessage *> *inAppMessages = [RadarInAppMessage fromArray:inAppMessagesObj];
+            if (inAppMessages) {
+                [[RadarInAppMessageManager shared] onInAppMessageReceivedWithMessages:inAppMessages];
+            }
+        }
+               
+        if (user) {
+            BOOL inGeofences = user.geofences && user.geofences.count;
+            BOOL atPlace = user.place != nil;
+            BOOL canExit = inGeofences || atPlace;
+            [RadarState setCanExit:canExit];
+
+            NSMutableArray *geofenceIds = [NSMutableArray new];
+            if (user.geofences) {
+                for (RadarGeofence *geofence in user.geofences) {
+                    [geofenceIds addObject:geofence._id];
+                }
+            }
+            [RadarState setGeofenceIds:geofenceIds];
+
+            NSString *placeId = nil;
+            if (user.place) {
+                placeId = user.place._id;
+            }
+            [RadarState setPlaceId:placeId];
+
+            NSMutableArray *regionIds = [NSMutableArray new];
+            if (user.country) {
+                [regionIds addObject:user.country._id];
+            }
+            if (user.state) {
+                [regionIds addObject:user.state._id];
+            }
+            if (user.dma) {
+                [regionIds addObject:user.dma._id];
+            }
+            if (user.postalCode) {
+                [regionIds addObject:user.postalCode._id];
+            }
+            [RadarState setRegionIds:regionIds];
+
+            NSMutableArray *beaconIds = [NSMutableArray new];
+            if (user.beacons) {
+                for (RadarBeacon *beacon in user.beacons) {
+                    [beaconIds addObject:beacon._id];
+                }
+            }
+            [RadarState setBeaconIds:beaconIds];
+        }
+
+        if (events && user) {
+            [RadarSettings setId:user._id];
+
+            // if user was on a trip that ended server-side, restore previous tracking options
+            if (!user.trip && [RadarSettings tripOptions]) {
+                [[RadarLocationManager sharedInstance] restartPreviousTrackingOptions];
+            [RadarSettings setTripOptions:nil];
+            }
+
+            [RadarSettings setUserDebug:user.debug];
+
+            if (location) {
+                [[RadarDelegateHolder sharedInstance] didUpdateLocation:location user:user];
+            }
+
+            if (events.count) {
+                [[RadarDelegateHolder sharedInstance] didReceiveEvents:events user:user];
+            }
+
+            if (token) {
+                [[RadarDelegateHolder sharedInstance] didUpdateToken:token];
+            }
+
+            [RadarState setRadarUser:user];
+
+            id nearbyBeaconRegionsObj = res[@"nearbyBeaconRegions"];
+            if (nearbyBeaconRegionsObj && [nearbyBeaconRegionsObj isKindOfClass:[NSArray class]]) {
+                NSArray<NSDictionary<NSString *, NSString *> *> *beaconRegions = (NSArray<NSDictionary<NSString *, NSString *> *> *)nearbyBeaconRegionsObj;
+                [[RadarBeaconManager sharedInstance] registerBeaconRegionNotificationsFromArray:beaconRegions];
+            }
+
+            completionHandler(RadarStatusSuccess, res, events, user, nearbyGeofences, config, token);
+            return;
+        } else {
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"Setting %lu notifications remaining", (unsigned long)notificationsRemaining.count]];
+            [RadarState setRegisteredNotifications:notificationsRemaining];
+        }
+
+        [[RadarDelegateHolder sharedInstance] didFailWithStatus:status];
+        completionHandler(RadarStatusErrorServer, nil, nil, nil, nil, nil, nil);
+    };
+    
     BOOL replaying = options.replay == RadarTrackingOptionsReplayAll && replayCount > 0 && !verified;
     if (replaying) {
         [[RadarReplayBuffer sharedInstance] flushReplaysWithCompletionHandler:params completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
             if (status != RadarStatusSuccess) {
                 [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Failed to flush replays"]];
                 [[RadarDelegateHolder sharedInstance] didFailWithStatus:status];
-                if ([RadarSettings sdkConfiguration].useOfflineRTOUpdates) {
-//                    NSArray<RadarGeofence *> *userGeofences = [RadarOfflineManager getUserGeofencesFromLocation:location];
-//                    [RadarOfflineManager generateEventsFromOfflineLocations:location userGeofences:userGeofences completionHandler:^(NSArray<RadarEvent *> *events, RadarUser *user, CLLocation *location) {
-//                        if (events && events.count) {
-//                            [[RadarDelegateHolder sharedInstance] didReceiveEvents:events user:user];
-//                        }
-//
-//                        [[RadarDelegateHolder sharedInstance] didUpdateLocation:location user:user];
-//                    }];
-//                    return [RadarOfflineManager updateTrackingOptionsFromOfflineLocation:userGeofences completionHandler:^(RadarConfig * _Nullable config) {
-//                        return completionHandler(status, nil, nil, nil, nil, config, nil);
-//                    }];
-                    // we shouldn't be using the replay system with offline manager,
-                }
             } else {
                 [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Successfully flushed replays"]];
                 [RadarState setLastFailedStoppedLocation:nil];
                 [RadarSettings updateLastTrackedTime];
             }
-            return completionHandler(status, nil, nil, nil, nil, nil, nil);
+            
+            // - if replay was unsuccessful, then we should track offline if enabled
+            // - if replay was successful, then the current track request is treated as an replayed track request, so perform the offline track anyway
+            // in both cases, we should perform an offline track and return its result if offline tracking is enabled
+            // the next request that is successful will return the replayed events with .metadata["replayed"] = true
+            if (true) { // TEMP: disable offlineRTOUpdates check && [RadarSettings sdkConfiguration].useOfflineRTOUpdates) {
+                NSDictionary* offlineTrackRes = [Radar.offlineManager track:params];
+                return handleResponse(RadarStatusSuccess, offlineTrackRes);
+            } else {
+                return completionHandler(status, nil, nil, nil, nil, nil, nil);
+            }
         }];
     } else {
         [self.apiHelper requestWithMethod:@"POST"
@@ -528,27 +636,6 @@
                             logPayload:YES
                         extendedTimeout:NO
                         completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
-            
-            BOOL shouldTrackOffline = ^() {
-                if (@available(iOS 13.0, *)) {
-                    if (status == RadarStatusErrorNetwork) {// TEMP: ignore setting for testing, always track on network failure } && [RadarSettings sdkConfiguration].useOfflineRTOUpdates) {
-                        return YES;
-                    }
-                }
-                return NO;
-            }();
-            
-            if (shouldTrackOffline) {
-                if (@available(iOS 13.0, *)) { // this will always be true since `shouldTrackOffline` will only return YES if 13.0 is available
-                    // maybe fail with status
-//                    [[RadarDelegateHolder sharedInstance] didFailWithStatus:status];
-                    
-                    res = [Radar.offlineManager track:params];
-                    if (res != nil) {
-                        status = RadarStatusSuccess;
-                    }
-                }
-            }
             
             if (status != RadarStatusSuccess || !res) {
                 if (options.replay == RadarTrackingOptionsReplayAll) {
@@ -563,124 +650,29 @@
                         !(source == RadarLocationSourceForegroundLocation || source == RadarLocationSourceManualLocation)) {
                     [RadarState setLastFailedStoppedLocation:location];
                 }
-
+                
+                // if should track offline
+                if (@available(iOS 13.0, *)) {
+                    if (status == RadarStatusErrorNetwork) {// TEMP: ignore setting for testing, always track on network failure } && [RadarSettings sdkConfiguration].useOfflineRTOUpdates) {
+                        NSDictionary* offlineTrackRes = [Radar.offlineManager track:params];
+                        
+                        return handleResponse(RadarStatusSuccess, offlineTrackRes);
+                    }
+                }
+                
+                // offline tracking also failed
                 [[RadarDelegateHolder sharedInstance] didFailWithStatus:status];
                 completionHandler(status, nil, nil, nil, nil, nil, nil);
                 return;
-            }
-            [[RadarReplayBuffer sharedInstance] clearBuffer];
-            [RadarState setLastFailedStoppedLocation:nil];
-            [Radar flushLogs];
-            [RadarSettings updateLastTrackedTime];
-
-            RadarConfig *config = [RadarConfig fromDictionary:res];
-
-            id eventsObj = res[@"events"];
-            id userObj = res[@"user"];
-            if ([userObj isKindOfClass:[NSDictionary class]]) {
-                NSMutableDictionary *mutableUserObj = [userObj mutableCopy];
-                mutableUserObj[@"metadata"] = locationMetadata;
-                userObj = mutableUserObj;
-            }
-            id nearbyGeofencesObj = res[@"nearbyGeofences"];
-            id inAppMessagesObj = res[@"inAppMessages"];
-            NSArray<RadarEvent *> *events = [RadarEvent eventsFromObject:eventsObj];
-            RadarUser *user = [[RadarUser alloc] initWithObject:userObj];
-            NSArray<RadarGeofence *> *nearbyGeofences = [RadarGeofence geofencesFromObject:nearbyGeofencesObj];
-            RadarVerifiedLocationToken *token = [[RadarVerifiedLocationToken alloc] initWithObject:res];
-
-            if (@available(iOS 13.0, *)) {
-                NSArray<RadarInAppMessage *> *inAppMessages = [RadarInAppMessage fromArray:inAppMessagesObj];
-                if (inAppMessages) {
-                    [[RadarInAppMessageManager shared] onInAppMessageReceivedWithMessages:inAppMessages];
-                }
-            }
-                   
-            if (user) {
-                BOOL inGeofences = user.geofences && user.geofences.count;
-                BOOL atPlace = user.place != nil;
-                BOOL canExit = inGeofences || atPlace;
-                [RadarState setCanExit:canExit];
-
-                NSMutableArray *geofenceIds = [NSMutableArray new];
-                if (user.geofences) {
-                    for (RadarGeofence *geofence in user.geofences) {
-                        [geofenceIds addObject:geofence._id];
-                    }
-                }
-                [RadarState setGeofenceIds:geofenceIds];
-
-                NSString *placeId = nil;
-                if (user.place) {
-                    placeId = user.place._id;
-                }
-                [RadarState setPlaceId:placeId];
-
-                NSMutableArray *regionIds = [NSMutableArray new];
-                if (user.country) {
-                    [regionIds addObject:user.country._id];
-                }
-                if (user.state) {
-                    [regionIds addObject:user.state._id];
-                }
-                if (user.dma) {
-                    [regionIds addObject:user.dma._id];
-                }
-                if (user.postalCode) {
-                    [regionIds addObject:user.postalCode._id];
-                }
-                [RadarState setRegionIds:regionIds];
-
-                NSMutableArray *beaconIds = [NSMutableArray new];
-                if (user.beacons) {
-                    for (RadarBeacon *beacon in user.beacons) {
-                        [beaconIds addObject:beacon._id];
-                    }
-                }
-                [RadarState setBeaconIds:beaconIds];
-            }
-
-            if (events && user) {
-                [RadarSettings setId:user._id];
-
-                // if user was on a trip that ended server-side, restore previous tracking options
-                if (!user.trip && [RadarSettings tripOptions]) {
-                    [[RadarLocationManager sharedInstance] restartPreviousTrackingOptions];
-                [RadarSettings setTripOptions:nil];
-                }
-
-                [RadarSettings setUserDebug:user.debug];
-
-                if (location) {
-                    [[RadarDelegateHolder sharedInstance] didUpdateLocation:location user:user];
-                }
-
-                if (events.count) {
-                    [[RadarDelegateHolder sharedInstance] didReceiveEvents:events user:user];
-                }
-
-                if (token) {
-                    [[RadarDelegateHolder sharedInstance] didUpdateToken:token];
-                }
-
-                [RadarState setRadarUser:user];
-
-                id nearbyBeaconRegionsObj = res[@"nearbyBeaconRegions"];
-                if (nearbyBeaconRegionsObj && [nearbyBeaconRegionsObj isKindOfClass:[NSArray class]]) {
-                    NSArray<NSDictionary<NSString *, NSString *> *> *beaconRegions = (NSArray<NSDictionary<NSString *, NSString *> *> *)nearbyBeaconRegionsObj;
-                    [[RadarBeaconManager sharedInstance] registerBeaconRegionNotificationsFromArray:beaconRegions];
-                }
-
-                completionHandler(RadarStatusSuccess, res, events, user, nearbyGeofences, config, token);
-                return;
             } else {
-                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"Setting %lu notifications remaining", (unsigned long)notificationsRemaining.count]];
-                [RadarState setRegisteredNotifications:notificationsRemaining];
+                // successfull call to the server
+                [[RadarReplayBuffer sharedInstance] clearBuffer];
+                [RadarState setLastFailedStoppedLocation:nil];
+                [Radar flushLogs];
+                [RadarSettings updateLastTrackedTime];
             }
-//
-//            [[RadarDelegateHolder sharedInstance] didFailWithStatus:status];
-//
-//            completionHandler(RadarStatusErrorServer, nil, nil, nil, nil, nil, nil);
+            
+            handleResponse(RadarStatusSuccess, res);
         }];
     }
 }

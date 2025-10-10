@@ -12,6 +12,12 @@ import RadarSDK
 
 struct MainView: View {
     
+    let radarDelegate = MyRadarDelegate()
+    
+    init() {
+        Radar.setDelegate(radarDelegate)
+    }
+    
     enum TabIdentifier {
         case Map
         case Debug
@@ -19,8 +25,9 @@ struct MainView: View {
         case Tests
     }
     
-    @State var monitoringRegions: [CLRegion] = [];
-    @State var pendingNotifications: [UNNotificationRequest] = [];
+    @State var monitoringRegions = [CLCircularRegion]();
+    @State var pendingNotifications = [UNNotificationRequest]();
+    @State var nearbyGeofences = [CLCircularRegion]()
     @State private var selectedTab: TabIdentifier = .Tests;
     
     var regionListFont = {
@@ -34,12 +41,35 @@ struct MainView: View {
     let timer = Timer.publish(every: 1.0, on: .main, in: .common).autoconnect()
     
     func getMonitoredRegions() {
-        monitoringRegions = Array(CLLocationManager().monitoredRegions)
+        monitoringRegions = Array(CLLocationManager().monitoredRegions) as? [CLCircularRegion] ?? []
     }
     
     func getPendingNotifications() {
         UNUserNotificationCenter.current().getPendingNotificationRequests { requests in
             pendingNotifications = requests
+        }
+    }
+    
+    func getNearbyGeofences() {
+        var path = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
+        path = path.appendingPathComponent("offlineData.json")
+        guard let data = try? Data(contentsOf: URL(fileURLWithPath: path.path)),
+              let json = try? JSONSerialization.jsonObject(with: data),
+              let arr = json as? [String: Any],
+              let geofencesJSON = arr["geofences"] as? [[String: Any]] else {
+            return
+        }
+        
+        nearbyGeofences = geofencesJSON.compactMap { geofence -> CLCircularRegion? in
+            guard let geometry = geofence["geometryCenter"] as? [String: Any],
+                  let coord = geometry["coordinates"] as? [Double],
+                  let radius = geofence["geometryRadius"] as? Double,
+                  let id = geofence["_id"] as? String else {
+                return nil
+            }
+            let center = CLLocationCoordinate2D(latitude: coord[1], longitude: coord[0])
+            
+            return CLCircularRegion.init(center:center, radius:radius, identifier:id)
         }
     }
     
@@ -51,8 +81,19 @@ struct MainView: View {
                 Map(initialPosition: .userLocation(fallback: .automatic)) {
                     UserAnnotation()
                     
+                    ForEach(nearbyGeofences, id:\.self) {region in
+                        let color = Color.green
+                        MapCircle(center: region.center, radius: region.radius)
+                            .foregroundStyle(color.opacity(0.2))
+                            .stroke(color, lineWidth: 2)
+                    }
+
                     ForEach(monitoringRegions, id:\.self) {region in
-    //                    MapCircle(center: region.center, radius: region.radius)
+                        let color = region.identifier.contains("bubble") ? Color.blue : Color.orange
+                        MapCircle(center: region.center, radius: region.radius)
+                            .foregroundStyle(color.opacity(0.2))
+                            .stroke(color, lineWidth: 2)
+
                     }
                 }.tabItem {
                     Text("Map")
@@ -66,6 +107,15 @@ struct MainView: View {
             
             VStack {
                 Text("logs/events will go here")
+                List(radarDelegate.events, id:\.self) { item in
+                    let type = RadarEvent.string(for: item.type) ?? "unknown-type"
+                    var description = ""
+                    if let geofence = item.geofence {
+                        description = geofence.externalId ?? ""
+                    }
+                    return Text("\(type): \(description)")
+                }
+                
                 List(content, id:\.0) { item in
                     if #available(iOS 15.0, *) {
                         Text(item.1)
@@ -148,6 +198,7 @@ struct MainView: View {
                 Button("refresh") {
                     getMonitoredRegions()
                     getPendingNotifications()
+                    getNearbyGeofences()
                 }
                 
                 Button("test notification") {
@@ -163,6 +214,7 @@ struct MainView: View {
                 Text("").onReceive(timer) { _ in
                     getMonitoredRegions()
                     getPendingNotifications()
+                    getNearbyGeofences()
                 }
                 
                 Button("iam") {

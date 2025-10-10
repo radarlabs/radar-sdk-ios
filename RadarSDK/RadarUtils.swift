@@ -175,8 +175,10 @@ class RadarUtils {
 }
 
 internal extension Dictionary {
-    func toJSONString() -> String {
-        if let data = try? JSONSerialization.data(withJSONObject: self, options: []) {
+    func toJSONString(prettyPrinted: Bool = false) -> String {
+        let options = prettyPrinted ? JSONSerialization.WritingOptions.prettyPrinted : []
+        
+        if let data = try? JSONSerialization.data(withJSONObject: self, options: options) {
             return String(data: data, encoding: .utf8) ?? "{}"
         } else {
             return "{}"

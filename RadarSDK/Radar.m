@@ -108,11 +108,13 @@ static RadarOfflineManager *_offlineManager = nil;
     
     [RadarNotificationHelper checkNotificationPermissionsWithCompletionHandler:^(BOOL granted) {
         
+        
+        NSDate* now = [[NSDate alloc] init];
         [RadarAPIClientSwift.shared postConfigWithUsage:@"initialize" completionHandler:^(RadarAPIClient_PostConfigResponse * _Nonnull response) {
             if (response.status == RadarStatusSuccess) {
                 [[RadarLocationManager sharedInstance] updateTracking:response.remoteTrackingOptions];
                 [RadarSettings setSdkConfiguration:response.remoteSdkConfiguration];
-                [[Radar.offlineManager updateOfflineData:response.offlineData]];
+                [Radar.offlineManager updateOfflineDataWithResult:response.offlineData time:now];
             }
             
             RadarSdkConfiguration* sdkConfiguration = RadarSettings.sdkConfiguration;
@@ -125,25 +127,6 @@ static RadarOfflineManager *_offlineManager = nil;
             }
             [self flushLogs];
         }];
-        
-//        [[RadarAPIClient sharedInstance] getConfigForUsage:@"initialize"
-//                                                  verified:NO
-//                                         completionHandler:^(RadarStatus status, RadarConfig *config) {
-//            if (status == RadarStatusSuccess && config) {
-//                [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
-//                [RadarSettings setSdkConfiguration:config.meta.sdkConfiguration];
-//            }
-//            
-//            RadarSdkConfiguration *sdkConfiguration = [RadarSettings sdkConfiguration];
-//            if (sdkConfiguration.startTrackingOnInitialize && ![RadarSettings tracking]) {
-//                [Radar startTrackingWithOptions:[RadarSettings trackingOptions]];
-//            }
-//            if (sdkConfiguration.trackOnceOnAppOpen) {
-//                [Radar trackOnceWithDesiredAccuracy:RadarTrackingOptionsDesiredAccuracyMedium beacons:[Radar getTrackingOptions].beacons completionHandler:nil];
-//            }
-//            
-//            [self flushLogs];
-//        }];
     }];
     
     _offlineManager = [[RadarOfflineManager alloc] init];
@@ -1472,10 +1455,12 @@ static RadarOfflineManager *_offlineManager = nil;
 //                                             [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
 //                                             [RadarSettings setSdkConfiguration:config.meta.sdkConfiguration];
 //                                         }];
+        NSDate* now = [[NSDate alloc] init];
         [[RadarAPIClientSwift shared] postConfigWithUsage:@"resume" completionHandler:^(RadarAPIClient_PostConfigResponse * _Nonnull response) {
             if (response.status == RadarStatusSuccess) {
                 [[RadarLocationManager sharedInstance] updateTracking:response.remoteTrackingOptions];
                 [RadarSettings setSdkConfiguration:response.remoteSdkConfiguration];
+                [Radar.offlineManager updateOfflineDataWithResult:response.offlineData time:now];
             }
         }];
     }
