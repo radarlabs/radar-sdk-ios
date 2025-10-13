@@ -13,7 +13,6 @@
 #import "RadarSettings.h"
 
 static const int MAX_BUFFER_SIZE = 120; // one hour of updates
-static const int MAX_BATCH_SIZE = 100;
 
 @implementation RadarReplayBuffer {
     NSMutableArray<RadarReplay *> *mutableReplayBuffer;
