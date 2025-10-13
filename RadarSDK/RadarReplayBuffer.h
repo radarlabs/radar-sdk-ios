@@ -37,7 +37,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)cancelBatchTimer;
 - (void)flushBatch;
 - (NSUInteger)batchCount;
-- (BOOL)hasBatchTimer;
 
 @end
 NS_ASSUME_NONNULL_END

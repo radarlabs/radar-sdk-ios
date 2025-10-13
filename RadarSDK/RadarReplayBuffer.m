@@ -274,12 +274,4 @@ static const int MAX_BATCH_SIZE = 100;
     return mutableReplayBuffer.count;
 }
 
-- (BOOL)hasBatchTimer {
-    __block BOOL hasTimer = NO;
-    dispatch_sync(dispatch_get_main_queue(), ^{
-        hasTimer = (self->batchFlushTimer != nil);
-    });
-    return hasTimer;
-}
-
 @end
