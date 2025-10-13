@@ -491,9 +491,7 @@
         if ([buffer shouldFlushBatchWithOptions:options]) {
             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
                                                message:@"Flushing batch: size limit reached"];
-            [buffer flushBatchWithCompletionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
-                //Completion handled by batch flush
-            }];
+            [buffer flushBatch];
         }
         
         completionHandler(RadarStatusSuccess, nil, nil, nil, nil, nil, nil);

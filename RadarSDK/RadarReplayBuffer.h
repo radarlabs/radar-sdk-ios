@@ -35,7 +35,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)shouldFlushBatchWithOptions:(RadarTrackingOptions *)options;
 - (void)scheduleBatchTimerWithInterval:(int)interval;
 - (void)cancelBatchTimer;
-- (void)flushBatchWithCompletionHandler:(RadarFlushReplaysCompletionHandler _Nullable)completionHandler;
+- (void)flushBatch;
 - (NSUInteger)batchCount;
 - (BOOL)hasBatchTimer;
 

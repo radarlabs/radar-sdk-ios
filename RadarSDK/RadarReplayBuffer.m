@@ -17,9 +17,7 @@ static const int MAX_BATCH_SIZE = 100;
 
 @implementation RadarReplayBuffer {
     NSMutableArray<RadarReplay *> *mutableReplayBuffer;
-    NSMutableArray<RadarReplay *> *mutableBatchBuffer;
     BOOL isFlushing;
-    BOOL isBatchFlushing;
     NSTimer *batchFlushTimer;
     NSDate *batchStartTime;
 }
@@ -28,9 +26,7 @@ static const int MAX_BATCH_SIZE = 100;
     self = [super init];
     if (self) {
         mutableReplayBuffer = [NSMutableArray<RadarReplay *> new];
-        mutableBatchBuffer = [NSMutableArray<RadarReplay *> new];
         isFlushing = NO;
-        isBatchFlushing = NO;
         batchFlushTimer = nil;
         batchStartTime = nil;
     }
@@ -195,57 +191,45 @@ static const int MAX_BATCH_SIZE = 100;
     [mutableReplayBuffer removeObjectsInRange:NSMakeRange(0, 1)];
 }
 
-#pragma mark - Batch Buffer Methods
+#pragma mark - Batch Methods
 
 - (void)addToBatch:(NSMutableDictionary *)params options:(RadarTrackingOptions *)options {
-    @synchronized (mutableBatchBuffer) {
-        BOOL wasEmpty = (mutableBatchBuffer.count == 0);
+    BOOL wasEmpty = (mutableReplayBuffer.count == 0);
+    
+    NSMutableDictionary *batchParams = [params mutableCopy];
+    batchParams[@"replayed"] = @(YES);
+    long nowMs = (long)([NSDate date].timeIntervalSince1970 * 1000);
+    batchParams[@"updatedAtMs"] = @(nowMs);
+    [batchParams removeObjectForKey:@"updatedAtMsDiff"];
+    
+    [self writeNewReplayToBuffer:batchParams];
+    
+    if (wasEmpty) {
+        batchStartTime = [NSDate date];
         
-        if (mutableBatchBuffer.count >= MAX_BATCH_SIZE) {
-            [[RadarLogger sharedInstance] logWithLevel: RadarLogLevelDebug
-                                               message:@"Batch has reached maximum size, dropping oldest"];
-            [mutableBatchBuffer removeObjectAtIndex:0];
+        if (options.batchInterval > 0) {
+            [self scheduleBatchTimerWithInterval:options.batchInterval];
         }
-        
-        NSMutableDictionary *batchParams = [params mutableCopy];
-        batchParams[@"replayed"] = @(YES);
-        long nowMs = (long)([NSDate date].timeIntervalSince1970 * 1000);
-        batchParams[@"updatedAtMs"] = @(nowMs);
-        [batchParams removeObjectForKey:@"updatedAtMsDiff"];
-        
-        RadarReplay *replay = [[RadarReplay alloc] initWithParams:batchParams];
-        [mutableBatchBuffer addObject:replay];
-        
-        if (wasEmpty) {
-            batchStartTime = [NSDate date];
-            
-            if (options.batchInterval > 0) {
-                [self scheduleBatchTimerWithInterval:options.batchInterval];
-            }
-        }
-        
-        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
-                                           message:[NSString stringWithFormat:@"Added to batch | size = %lu",
-                                                    (unsigned long)mutableBatchBuffer.count]];
-        
     }
+    
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
+                                       message:[NSString stringWithFormat:@"Added to batch | size = %lu",
+                                                (unsigned long)mutableReplayBuffer.count]];
 }
 
 - (BOOL)shouldFlushBatchWithOptions:(RadarTrackingOptions *)options {
-    @synchronized (mutableBatchBuffer) {
-        if (mutableBatchBuffer.count == 0) {
-            return NO;
-        }
-        
-        if (options.batchSize > 0 && mutableBatchBuffer.count >= options.batchSize) {
-            [[RadarLogger sharedInstance] logWithLevel: RadarLogLevelDebug
-                                               message: @"Batch size limit reached"];
-            
-            return YES;
-        }
-        
+    if (mutableReplayBuffer.count == 0) {
         return NO;
     }
+    
+    if (options.batchSize > 0 && mutableReplayBuffer.count >= options.batchSize) {
+        [[RadarLogger sharedInstance] logWithLevel: RadarLogLevelDebug
+                                           message: @"Batch size limit reached"];
+        
+        return YES;
+    }
+    
+    return NO;
 }
 
 - (void)scheduleBatchTimerWithInterval:(int)interval {
@@ -263,7 +247,8 @@ static const int MAX_BATCH_SIZE = 100;
                                                                   block:^(NSTimer *_Nonnull timer) {
             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
                                                message:@"Batch timer fired"];
-            [self flushBatchWithCompletionHandler:nil];
+            self->batchStartTime = nil;
+            [self flushReplaysWithCompletionHandler:nil completionHandler:nil];
         }];
     });
 }
@@ -279,69 +264,14 @@ static const int MAX_BATCH_SIZE = 100;
     });
 }
 
-- (void)flushBatchWithCompletionHandler:(RadarFlushReplaysCompletionHandler _Nullable)completionHandler {
-    if (isBatchFlushing) {
-        [[RadarLogger sharedInstance] logWithLevel: RadarLogLevelDebug
-                                           message: @"Already flushing batch"];
-        if(completionHandler) {
-            completionHandler(RadarStatusErrorServer, nil);
-        }
-        return;
-    }
-    
-    NSArray<RadarReplay *> *batchToFlush;
-    
-    @synchronized (mutableBatchBuffer) {
-        if (mutableBatchBuffer.count == 0) {
-            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
-                                               message:@"No items in batch to flush"];
-            if (completionHandler) {
-                completionHandler(RadarStatusSuccess, nil);
-            }
-            return;
-        }
-        
-        batchToFlush = [mutableBatchBuffer copy];
-        [mutableBatchBuffer removeAllObjects];
-        batchStartTime = nil;
-    }
+- (void)flushBatch {
     [self cancelBatchTimer];
-    
-    isBatchFlushing = YES;
-    
-    NSMutableArray *replaysRequestArray = [RadarReplay arrayForReplays:batchToFlush];
-    
-    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
-                                       message: [NSString stringWithFormat:@"Flushing batch | count = %lu",
-                                                 (unsigned long)[replaysRequestArray count]]];
-    [[RadarAPIClient sharedInstance] flushReplays:replaysRequestArray
-                                completionHandler:^(RadarStatus status, NSDictionary * _Nullable res) {
-        self->isBatchFlushing = NO;
-        
-        if (status == RadarStatusSuccess) {
-            [[RadarLogger sharedInstance] logWithLevel: RadarLogLevelDebug
-                                               message: @"Batch flushed successfully"];
-            [Radar flushLogs];
-        } else {
-            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
-                                               message:@"Failed to flush batch, re-adding to buffer"];
-            
-            @synchronized (self->mutableBatchBuffer) {
-                NSIndexSet *indexes = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, batchToFlush.count)];
-                [self->mutableBatchBuffer insertObjects:batchToFlush atIndexes:indexes];
-            }
-        }
-        
-        if (completionHandler) {
-            completionHandler(status, res);
-        }
-    }];
+    batchStartTime = nil;
+    [self flushReplaysWithCompletionHandler:nil completionHandler:nil];
 }
 
 - (NSUInteger)batchCount {
-    @synchronized (mutableBatchBuffer) {
-        return mutableBatchBuffer.count;
-    }
+    return mutableReplayBuffer.count;
 }
 
 - (BOOL)hasBatchTimer {
