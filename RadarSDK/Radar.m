@@ -61,6 +61,9 @@
     if (RadarSDKMotion) {
         id radarSDKMotion = [[RadarSDKMotion alloc] init];
         [RadarActivityManager sharedInstance].radarSDKMotion = radarSDKMotion;
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:@"RadarSDKMotion detected and initialized; Motion & Altimeter services available"];
+    } else {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelWarning message:@"RadarSDKMotion class not found; Motion/Pressure features disabled"];
     }
 
     [[NSNotificationCenter defaultCenter] addObserver:[self sharedInstance]

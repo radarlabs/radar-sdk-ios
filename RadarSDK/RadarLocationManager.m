@@ -394,22 +394,34 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
             if (options.usePressure) {
                 self.activityManager = [RadarActivityManager sharedInstance];
                 
+                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:@"usePressure enabled: starting relative altitude updates"];
                 [self.activityManager startRelativeAltitudeWithHandler: ^(CMAltitudeData * _Nullable altitudeData) {
+                    if (!altitudeData) {
+                        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelWarning message:@"Relative altitude callback received nil data"];
+                        return;
+                    }
                     NSMutableDictionary *currentState = [[RadarState lastRelativeAltitudeData] mutableCopy] ?: [NSMutableDictionary new];
                     currentState[@"pressure"] = @(altitudeData.pressure.doubleValue *10); // convert to hPa
                     currentState[@"relativeAltitude"] = @(altitudeData.relativeAltitude.doubleValue);
                     currentState[@"relativeAltitudeTimestamp"] = @([[NSDate date] timeIntervalSince1970]);
                     [RadarState setLastRelativeAltitudeData:currentState];
+                    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Stored relative altitude: pressure=%.1f hPa, relative=%.3f m", altitudeData.pressure.doubleValue * 10.0, altitudeData.relativeAltitude.doubleValue]];
                 }];
 
                 if (@available(iOS 15.0, *)) {
+                    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:@"usePressure enabled: starting absolute altitude updates (iOS 15+)"];
                     [self.activityManager startAbsoluteAltitudeWithHandler: ^(CMAbsoluteAltitudeData * _Nullable altitudeData) {
+                        if (!altitudeData) {
+                            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelWarning message:@"Absolute altitude callback received nil data"];
+                            return;
+                        }
                         NSMutableDictionary *currentState = [[RadarState lastRelativeAltitudeData] mutableCopy] ?: [NSMutableDictionary new];
                         currentState[@"altitude"] = @(altitudeData.altitude);
                         currentState[@"accuracy"] = @(altitudeData.accuracy);
                         currentState[@"precision"] = @(altitudeData.precision);
                         currentState[@"absoluteAltitudeTimestamp"] = @([[NSDate date] timeIntervalSince1970]);
                         [RadarState setLastRelativeAltitudeData:currentState];
+                        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Stored absolute altitude: altitude=%.3f m, accuracy=%.3f m, precision=%.3f m", altitudeData.altitude, altitudeData.accuracy, altitudeData.precision]];
                     }];
                 }
             }

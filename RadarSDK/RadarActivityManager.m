@@ -57,6 +57,7 @@
     }
 
     if (!self.isUpdatingAbsoluteAltitude && !self.isUpdatingActivity && !self.isUpdatingPressure) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:@"requestPermission: warming up CoreMotion sensors (activity, relative altitude, absolute altitude if available)"];
         [self.radarSDKMotion startActivityUpdatesToQueue:self.activityQueue withHandler:^(CMMotionActivity *activity) {
             [self.radarSDKMotion stopActivityUpdates];
         }];
@@ -111,18 +112,24 @@
         return;
     }
     if (self.isUpdatingPressure) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"startRelativeAltitudeWithHandler: already updating pressure; ignoring duplicate call"];
         return;
     }
     self.isUpdatingPressure = YES;
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:@"startRelativeAltitudeWithHandler: starting CMAltimeter relative updates"];
     [self.radarSDKMotion startRelativeAltitudeUpdatesToQueue:self.pressureQueue withHandler:^(CMAltitudeData *altitudeData, NSError *error) {
         if (error) {
             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelError message:[NSString stringWithFormat:@"startRelativeAltitudeWithHandler error: %@", error]];
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelWarning message:@"Ensure Motion & Fitness permissions are granted and device supports barometer (CMAltimeter)" ];
             return;
         }
         if (altitudeData) {
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Relative altitude sample: pressure=%.3f kPa (%.1f hPa), relative=%.3f m", altitudeData.pressure.doubleValue, altitudeData.pressure.doubleValue * 10.0, altitudeData.relativeAltitude.doubleValue]];
             dispatch_async(dispatch_get_main_queue(), ^{
                 handler(altitudeData);
             });
+        } else {
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelWarning message:@"Relative altitude handler invoked with nil altitudeData"];
         }
     }];
 }
@@ -143,15 +150,19 @@
         return;
     }
     self.isUpdatingAbsoluteAltitude = YES;
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:@"startAbsoluteAltitudeWithHandler: starting CMAltimeter absolute updates (iOS 15+)" ];
     [self.radarSDKMotion startAbsoluteAltitudeUpdatesToQueue:self.absoluteAltitudeQueue withHandler:^(CMAbsoluteAltitudeData *altitudeData, NSError *error) {
         if (error) {
             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelError message:[NSString stringWithFormat:@"startAbsoluteAltitudeUpdatesToQueue error: %@", error]];
             return;
         }
         if (altitudeData) {
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Absolute altitude sample: altitude=%.3f m, accuracy=%.3f m, precision=%.3f m", altitudeData.altitude, altitudeData.accuracy, altitudeData.precision]];
             dispatch_async(dispatch_get_main_queue(), ^{
                 handler(altitudeData);
             });
+        } else {
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelWarning message:@"Absolute altitude handler invoked with nil altitudeData"];
         }
     }];
 }
