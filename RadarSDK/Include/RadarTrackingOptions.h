@@ -170,12 +170,12 @@ typedef NS_ENUM(NSInteger, RadarTrackingOptionsSyncLocations) {
 @property (nonatomic, assign) BOOL usePressure;
 
 /**
- Determines the time interval between batch events
+ Determines the time interval between batch events.
  */
 @property (nonatomic, assign) int batchInterval;
 
 /**
- * Determines the size of each batch.
+ Determines the size of each batch.
  */
 @property (nonatomic, assign) int batchSize;
 
