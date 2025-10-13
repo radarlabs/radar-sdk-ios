@@ -478,7 +478,27 @@
                 publishableKey:(NSString *)publishableKey
                 notificationsRemaining:(NSArray *)notificationsRemaining
                 locationMetadata:(NSDictionary *)locationMetadata
-            completionHandler:(RadarTrackAPICompletionHandler)completionHandler {
+                 completionHandler:(RadarTrackAPICompletionHandler)completionHandler {
+    
+    BOOL batchingEnabled = (options.batchSize > 0 || options.batchInterval > 0);
+    
+    if (batchingEnabled && source != RadarLocationSourceManualLocation) {
+        NSMutableDictionary *batchParams = [params mutableCopy];
+        
+        RadarReplayBuffer *buffer = [RadarReplayBuffer sharedInstance];
+        [buffer addToBatch:batchParams options: options];
+        
+        if ([buffer shouldFlushBatchWithOptions:options]) {
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
+                                               message:@"Flushing batch: size limit reached"];
+            [buffer flushBatchWithCompletionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
+                //Completion handled by batch flush
+            }];
+        }
+        
+        completionHandler(RadarStatusSuccess, nil, nil, nil, nil, nil, nil);
+        return;
+    }
 
     NSString *host = verified ? [RadarSettings verifiedHost] : [RadarSettings host];
     NSString *url = [NSString stringWithFormat:@"%@/v1/track", host];
