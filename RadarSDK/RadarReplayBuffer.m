@@ -244,7 +244,7 @@ static const int MAX_BATCH_SIZE = 100;
             return YES;
         }
         
-        return  NO;
+        return NO;
     }
 }
 
@@ -326,7 +326,7 @@ static const int MAX_BATCH_SIZE = 100;
             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
                                                message:@"Failed to flush batch, re-adding to buffer"];
             
-            @synchronized (self-> mutableBatchBuffer) {
+            @synchronized (self->mutableBatchBuffer) {
                 NSIndexSet *indexes = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, batchToFlush.count)];
                 [self->mutableBatchBuffer insertObjects:batchToFlush atIndexes:indexes];
             }
