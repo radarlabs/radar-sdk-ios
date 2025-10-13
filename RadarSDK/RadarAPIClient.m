@@ -482,7 +482,7 @@
     
     BOOL batchingEnabled = (options.batchSize > 0 || options.batchInterval > 0);
     
-    if (batchingEnabled && source != RadarLocationSourceManualLocation) {
+    if (batchingEnabled && source != RadarLocationSourceManualLocation && source != RadarLocationSourceForegroundLocation) {
         NSMutableDictionary *batchParams = [params mutableCopy];
         
         RadarReplayBuffer *buffer = [RadarReplayBuffer sharedInstance];
