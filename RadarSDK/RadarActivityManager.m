@@ -118,6 +118,7 @@
     self.isUpdatingPressure = YES;
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:@"startRelativeAltitudeWithHandler: starting CMAltimeter relative updates"];
     [self.radarSDKMotion startRelativeAltitudeUpdatesToQueue:self.pressureQueue withHandler:^(CMAltitudeData *altitudeData, NSError *error) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Relative altitude callback invoked"];
         if (error) {
             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelError message:[NSString stringWithFormat:@"startRelativeAltitudeWithHandler error: %@", error]];
             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelWarning message:@"Ensure Motion & Fitness permissions are granted and device supports barometer (CMAltimeter)" ];
