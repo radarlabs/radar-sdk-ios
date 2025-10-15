@@ -410,7 +410,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     NSArray<NSString *> *tagsToRemove = @[@"tag1", @"tag2"];
     [Radar removeTags:tagsToRemove];
     
-    XCTAssertNil([Radar getTags]);
+    XCTAssertEqual([Radar getTags].count, 0);
 }
 
 - (void)test_Radar_setUserTags {
@@ -427,7 +427,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     
     // Then set to nil to clear all tags
     [Radar setTags:nil];
-    XCTAssertNil([Radar getTags]);
+    XCTAssertEqual([Radar getTags].count, 0);
 }
 
 - (void)test_Radar_setUserTags_replaces_existing {
@@ -887,7 +887,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 
     XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
 
-    [RadarSettings removePreviousTrackingOptions];
+    [RadarSettings setPreviousTrackingOptions:nil];
     RadarTrackingOptions *originalTrackingOptions = RadarTrackingOptions.presetEfficient;
     [Radar startTrackingWithOptions:originalTrackingOptions];
 
@@ -916,8 +916,8 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 
     XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
 
-    [RadarSettings removePreviousTrackingOptions];
-    [RadarSettings removeTrackingOptions];
+    [RadarSettings setPreviousTrackingOptions:nil];
+    [RadarSettings setTrackingOptions:nil];
     [RadarSettings setTracking:NO];
 
     RadarTripOptions *tripOptions = [[RadarTripOptions alloc] initWithExternalId:@"testTrip" destinationGeofenceTag:@"someTag" destinationGeofenceExternalId:@"someId"];
@@ -1644,8 +1644,16 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 }
 
 - (void)test_RadarReplayBuffer_writeAndRead {
-    RadarSdkConfiguration *sdkConfiguration = [RadarSettings sdkConfiguration];
-    sdkConfiguration.usePersistence = true;
+    RadarSdkConfiguration *sdkConfiguration = [[RadarSdkConfiguration alloc] initWithDict:@{
+        @"logLevel": @"warning",
+        @"startTrackingOnInitialize": @(NO),
+        @"trackOnceOnAppOpen": @(NO),
+        @"usePersistence": @(YES),
+        @"extendFlushReplays": @(NO),
+        @"useLogPersistence": @(NO),
+        @"useRadarModifiedBeacon": @(NO),
+        @"syncAfterSetUser": @(NO)
+    }];
     [RadarSettings setSdkConfiguration:sdkConfiguration];
     
     CLLocation *location = [[CLLocation alloc] initWithLatitude:0.1 longitude:0.1];

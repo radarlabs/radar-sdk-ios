@@ -25,6 +25,7 @@
     NSMutableDictionary *dict = [NSMutableDictionary new];
     dict[@"autoLogNotificationConversions"] = @(_autoLogNotificationConversions);
     dict[@"autoHandleNotificationDeepLinks"] = @(_autoHandleNotificationDeepLinks);
+    dict[@"pushNotification"] = @(_pushNotification);
     return dict;
 }
 
@@ -33,6 +34,7 @@
     if (self) {
         _autoLogNotificationConversions = [dict[@"autoLogNotificationConversions"] boolValue];
         _autoHandleNotificationDeepLinks = [dict[@"autoHandleNotificationDeepLinks"] boolValue];
+        _pushNotification = [dict[@"pushNotification"] boolValue];
     }
     return self;
 }
