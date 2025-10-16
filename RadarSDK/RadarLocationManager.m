@@ -389,7 +389,6 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                         
                     }
                 }];
-                
             }
             if (options.usePressure) {
                 self.activityManager = [RadarActivityManager sharedInstance];

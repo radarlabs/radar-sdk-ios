@@ -118,19 +118,21 @@
     self.isUpdatingPressure = YES;
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:@"startRelativeAltitudeWithHandler: starting CMAltimeter relative updates"];
     [self.radarSDKMotion startRelativeAltitudeUpdatesToQueue:self.pressureQueue withHandler:^(CMAltitudeData *altitudeData, NSError *error) {
-        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Relative altitude callback invoked"];
+        NSTimeInterval callbackTime = [[NSDate date] timeIntervalSince1970];
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Relative altitude callback invoked at %.3f", callbackTime]];
+        
         if (error) {
-            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelError message:[NSString stringWithFormat:@"startRelativeAltitudeWithHandler error: %@", error]];
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelError message:[NSString stringWithFormat:@"startRelativeAltitudeWithHandler error: %@ (domain: %@, code: %ld)", error.localizedDescription, error.domain, (long)error.code]];
             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelWarning message:@"Ensure Motion & Fitness permissions are granted and device supports barometer (CMAltimeter)" ];
             return;
         }
         if (altitudeData) {
-            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Relative altitude sample: pressure=%.3f kPa (%.1f hPa), relative=%.3f m", altitudeData.pressure.doubleValue, altitudeData.pressure.doubleValue * 10.0, altitudeData.relativeAltitude.doubleValue]];
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Relative altitude sample: pressure=%.3f kPa (%.1f hPa), relative=%.3f m, timestamp=%.3f", altitudeData.pressure.doubleValue, altitudeData.pressure.doubleValue * 10.0, altitudeData.relativeAltitude.doubleValue, callbackTime]];
             dispatch_async(dispatch_get_main_queue(), ^{
                 handler(altitudeData);
             });
         } else {
-            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelWarning message:@"Relative altitude handler invoked with nil altitudeData"];
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelWarning message:[NSString stringWithFormat:@"Relative altitude handler invoked with nil altitudeData at %.3f - this will cause altitude to be undefined", callbackTime]];
         }
     }];
 }
@@ -153,17 +155,20 @@
     self.isUpdatingAbsoluteAltitude = YES;
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:@"startAbsoluteAltitudeWithHandler: starting CMAltimeter absolute updates (iOS 15+)" ];
     [self.radarSDKMotion startAbsoluteAltitudeUpdatesToQueue:self.absoluteAltitudeQueue withHandler:^(CMAbsoluteAltitudeData *altitudeData, NSError *error) {
+        NSTimeInterval callbackTime = [[NSDate date] timeIntervalSince1970];
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Absolute altitude callback invoked at %.3f", callbackTime]];
+        
         if (error) {
-            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelError message:[NSString stringWithFormat:@"startAbsoluteAltitudeUpdatesToQueue error: %@", error]];
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelError message:[NSString stringWithFormat:@"startAbsoluteAltitudeUpdatesToQueue error: %@ (domain: %@, code: %ld)", error.localizedDescription, error.domain, (long)error.code]];
             return;
         }
         if (altitudeData) {
-            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Absolute altitude sample: altitude=%.3f m, accuracy=%.3f m, precision=%.3f m", altitudeData.altitude, altitudeData.accuracy, altitudeData.precision]];
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Absolute altitude sample: altitude=%.3f m, accuracy=%.3f m, precision=%.3f m, timestamp=%.3f", altitudeData.altitude, altitudeData.accuracy, altitudeData.precision, callbackTime]];
             dispatch_async(dispatch_get_main_queue(), ^{
                 handler(altitudeData);
             });
         } else {
-            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelWarning message:@"Absolute altitude handler invoked with nil altitudeData"];
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelWarning message:[NSString stringWithFormat:@"Absolute altitude handler invoked with nil altitudeData at %.3f - this will cause altitude to be undefined", callbackTime]];
         }
     }];
 }

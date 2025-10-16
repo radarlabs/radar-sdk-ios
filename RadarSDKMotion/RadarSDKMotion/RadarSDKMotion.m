@@ -42,12 +42,8 @@
 
 - (void)startRelativeAltitudeUpdatesToQueue:(NSOperationQueue *) queue
                                  withHandler:(CMAltitudeHandler) handler {
-    NSLog(@"RadarSDKMotion: startRelativeAltitudeUpdatesToQueue called");
     if([CMAltimeter isRelativeAltitudeAvailable]) {
-        NSLog(@"RadarSDKMotion: CMAltimeter.isRelativeAltitudeAvailable=true, starting altimeter updates");
         [self.altimeterManager startRelativeAltitudeUpdatesToQueue:queue withHandler:handler];
-    } else {
-        NSLog(@"RadarSDKMotion: CMAltimeter.isRelativeAltitudeAvailable=false, NOT starting altimeter updates");
     }
 }
 
@@ -57,12 +53,8 @@
 
 - (void)startAbsoluteAltitudeUpdatesToQueue:(NSOperationQueue *) queue
                                 withHandler:(CMAbsoluteAltitudeHandler) handler  API_AVAILABLE(ios(15.0)){
-    NSLog(@"RadarSDKMotion: startAbsoluteAltitudeUpdatesToQueue called");
     if([CMAltimeter isAbsoluteAltitudeAvailable]) {
-        NSLog(@"RadarSDKMotion: CMAltimeter.isAbsoluteAltitudeAvailable=true, starting altimeter updates");
         [self.altimeterManager startAbsoluteAltitudeUpdatesToQueue:queue withHandler:handler];
-    } else {
-        NSLog(@"RadarSDKMotion: CMAltimeter.isAbsoluteAltitudeAvailable=false, NOT starting altimeter updates");
     }
 }
 
