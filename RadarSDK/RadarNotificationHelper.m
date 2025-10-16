@@ -425,7 +425,7 @@ static dispatch_semaphore_t notificationSemaphore;
         [notificationsDelivered removeObjectsInArray:currentNotifications];
 
         if (completionHandler) {
-            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Setting %lu notifications remaining after re-registering", (unsigned long)notificationsDelivered.count]];
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Delivered %lu notifications", (unsigned long)notificationsDelivered.count]];
             completionHandler(notificationsDelivered, currentNotifications);
         }
     }];

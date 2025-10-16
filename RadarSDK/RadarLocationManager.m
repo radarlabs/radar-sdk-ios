@@ -103,6 +103,8 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         _firstPermissionCheck = YES;
 
         _firstPermissionCheck = NO;
+        
+        _locationManagerSwift = [[RadarLocationManagerSwift alloc] initWithLocationManager:_locationManager];
     }
     return self;
 }
@@ -605,6 +607,8 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         
         return;
     }
+    
+    return [_locationManagerSwift replaceMonitoredRegionsWithGeofences:geofences];
     
     NSMutableDictionary<NSString*, CLCircularRegion*>* geofenceRegionsByIdentifier = [[NSMutableDictionary alloc] init];
     NSMutableDictionary<NSString*, UNNotificationRequest*>* notificationsByIdentifier = [[NSMutableDictionary alloc] init];

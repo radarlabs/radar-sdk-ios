@@ -18,7 +18,7 @@ struct MainView: View {
         case Tests
     }
     
-    @State var monitoringRegions: [CLRegion] = [];
+    @State var monitoringRegions: [CLCircularRegion] = [];
     @State var pendingNotifications: [UNNotificationRequest] = [];
     @State private var selectedTab: TabIdentifier = .Tests;
     
@@ -33,7 +33,7 @@ struct MainView: View {
     let timer = Timer.publish(every: 1.0, on: .main, in: .common).autoconnect()
     
     func getMonitoredRegions() {
-        monitoringRegions = Array(CLLocationManager().monitoredRegions)
+        monitoringRegions = Array(CLLocationManager().monitoredRegions) as? [CLCircularRegion] ?? []
     }
     
     func getPendingNotifications() {
@@ -45,11 +45,26 @@ struct MainView: View {
     var body: some View {
         TabView(selection: $selectedTab) {
             if #available(iOS 17.0, *) {
-                Map {
+                Map(initialPosition: .userLocation(fallback: .automatic)) {
                     UserAnnotation()
                     
                     ForEach(monitoringRegions, id:\.self) {region in
-    //                    MapCircle(center: region.center, radius: region.radius)
+                        let color = region.identifier.contains("bubble") ? Color.blue : Color.orange
+                        MapCircle(center: region.center, radius: region.radius)
+                            .foregroundStyle(color.opacity(0.2))
+                            .stroke(color, lineWidth: 2)
+
+                    }
+                    
+                    ForEach(pendingNotifications, id:\.self) { notification in
+                        if let trigger = notification.trigger as? UNLocationNotificationTrigger,
+                           let region = trigger.region as? CLCircularRegion {
+                            let color = Color.green
+                            MapCircle(center: region.center, radius: region.radius)
+                                .foregroundStyle(color.opacity(0.2))
+                                .stroke(color, lineWidth: 2)
+                        }
+                        
                     }
                 }.tabItem {
                     Text("Map")
@@ -62,7 +77,7 @@ struct MainView: View {
             }
             
             VStack {
-                Text("Monitoring regions:")
+                Text("Monitoring regions: \(monitoringRegions.count)")
                 List(monitoringRegions, id: \.self) { region in
                     HStack {
                         Text(region.identifier).font(regionListFont)
@@ -73,7 +88,7 @@ struct MainView: View {
                     }
                 }
                 
-                Text("Pending notifications:")
+                Text("Pending notifications: \(pendingNotifications.count)")
                 List(pendingNotifications, id: \.self) { notification in
                     HStack {
                         Text(notification.identifier).font(regionListFont)
