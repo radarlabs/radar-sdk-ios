@@ -20,10 +20,6 @@ typedef void (^NotificationPermissionCheckCompletion)(BOOL granted);
 
 + (void)updateClientSideCampaignsWithPrefix:(NSString *)prefix notificationRequests:(NSArray<UNNotificationRequest *> *)requests;
 
-+ (void)removeNotificationRequestsByIdentifiers:(NSArray<NSString*>*) identifiers;
-
-+ (void)addOnPremiseNotificationRequests:(NSArray<UNNotificationRequest *> *)requests completionHandler:(void (^)(void))completionHandler;
-
 + (void)checkNotificationPermissionsWithCompletionHandler:(nullable NotificationPermissionCheckCompletion)completionHandler;
 
 + (void)logConversionWithNotificationResponse:(UNNotificationResponse *)response;
@@ -31,7 +27,6 @@ typedef void (^NotificationPermissionCheckCompletion)(BOOL granted);
 + (void)openURLFromNotification:(UNNotification *)notification;
 
 + (nullable UNMutableNotificationContent *)extractContentFromMetadata:(nullable NSDictionary *)metadata identifier:(nullable NSString *)identifier;
-
 
 + (void)getNotificationDiffWithCompletionHandler:(void (^)(NSArray *notificationsDelivered, NSArray *notificationsRemaining))completionHandler;
 @end
