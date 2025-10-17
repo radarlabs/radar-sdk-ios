@@ -18,7 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 @interface RadarLocationManagerSwift : NSObject
-- (void)replaceMonitoredRegionsWithGeofences:(NSArray<RadarGeofence *> * _Nonnull)geofences;
+- (void)replaceMonitoredRegionsWithGeofences:(NSArray<RadarGeofence *> * _Nonnull)geofences  API_AVAILABLE(ios(13.0));
 - (nonnull instancetype)initWithLocationManager:(CLLocationManager * _Nonnull)locationManager;
 @end
 

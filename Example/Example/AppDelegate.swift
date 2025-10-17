@@ -32,6 +32,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         // Replace with a valid test publishable key
         let radarInitializeOptions = RadarInitializeOptions()
         
+        // UserDefaults.standard.set("https://bailey-nonnebulous-nonaccidentally.ngrok-free.dev", forKey: "radar-host")
         // Uncomment to enable automatic setup for notification conversions or deep linking
         //radarInitializeOptions.autoLogNotificationConversions = true
         //radarInitializeOptions.autoHandleNotificationDeepLinks = true

@@ -16,7 +16,6 @@
 #import <BackgroundTasks/BackgroundTasks.h>
 #import "Radar+Internal.h"
 #import <objc/runtime.h>
-#import "RadarLocationManager.h"
 
 @implementation RadarNotificationHelper
 
@@ -236,100 +235,12 @@ static dispatch_semaphore_t notificationSemaphore;
     }
 }
 
-+ (BOOL)notification:(UNNotificationRequest*) a isEqual:(UNNotificationRequest*) b {
-    if (a == nil && b == nil) {
-        return YES;
-    }
-    if (a == nil || b == nil) {
-        return NO;
-    }
-    if (![a.identifier isEqual:b.identifier]) {
-        return NO;
-    }
-    if (![a.content.userInfo[@"campaignId"] isEqual:b.content.userInfo[@"campaignId"]]) {
-        return NO;
-    }
-    if (![a.content.userInfo[@"geofenceId"] isEqual:b.content.userInfo[@"geofenceId"]]) {
-        return NO;
-    }
-    if (![a.trigger isKindOfClass:[UNLocationNotificationTrigger class]] ||
-        ![b.trigger isKindOfClass:[UNLocationNotificationTrigger class]]) {
-        return NO;
-    }
-    UNLocationNotificationTrigger* aTrigger = (UNLocationNotificationTrigger*) a.trigger;
-    UNLocationNotificationTrigger* bTrigger = (UNLocationNotificationTrigger*) b.trigger;
-    if (![RadarLocationManager region:aTrigger.region isEqual:bTrigger.region]) {
-        return NO;
-    }
-    
-    return YES;
-}
-
-+ (void) updateClientSideCampaigns:(NSString *)prefix
-                     notifications:(NSMutableDictionary<NSString*, UNNotificationRequest*>*) notificationsByIdentifier
-                 completionHandler:(void (^)(void))completionHandler {
-    // Update notifications
-    // clean up notifications
-    UNUserNotificationCenter* notificationCenter = [UNUserNotificationCenter currentNotificationCenter];
-    
-    [notificationCenter getPendingNotificationRequestsWithCompletionHandler:^(NSArray<UNNotificationRequest *> *_Nonnull requests) {
-        NSArray<NSDictionary*>* registeredNotifications = [RadarState registeredNotifications];
-        
-        NSMutableArray<NSDictionary*>* existingRegisteredNotifications = [[NSMutableArray alloc] init];
-        NSMutableArray<NSString*>* pendingNotificationsToRemove = [[NSMutableArray alloc] init];
-        
-        // For debug logging
-        NSInteger syncedNotificationCount = notificationsByIdentifier.count;
-        
-        // Remove notifications that are no longer in the nearby list
-        for (UNNotificationRequest* request in requests) {
-            NSString* identifier = request.identifier;
-            if ([identifier hasPrefix:prefix]) {
-                // this is a Radar geofence notification
-                // it should be removed if it does not match the new notifications
-                UNNotificationRequest* newRequest = notificationsByIdentifier[identifier];
-                if ([RadarNotificationHelper notification:request isEqual:newRequest]) {
-                    [notificationsByIdentifier removeObjectForKey:identifier];
-                    [existingRegisteredNotifications addObject:request.content.userInfo];
-                } else {
-                    [pendingNotificationsToRemove addObject:identifier];
-                }
-            }
-        }
-        
-        // save registered notifications that doesn't have the matching prefix
-        for (NSDictionary* registeredNotification in registeredNotifications) {
-            if (![registeredNotification[@"identifier"] hasPrefix:prefix]) {
-                [existingRegisteredNotifications addObject:registeredNotification];
-            }
-        }
-        
-        // if new notification is has already been registered, but wasn't see in pending notifications, it means it was triggered during the track call
-        // so we should not add it back into notifications as the server is unaware of the trigger yet.
-        for (NSString* identifier in notificationsByIdentifier.allKeys) {
-            UNNotificationRequest* request = notificationsByIdentifier[identifier];
-            if ([registeredNotifications containsObject:request.content.userInfo]) {
-                [notificationsByIdentifier removeObjectForKey:identifier];
-            }
-        }
-        
-        [notificationCenter removePendingNotificationRequestsWithIdentifiers:pendingNotificationsToRemove];
-        // Add new notifications
-        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
-                                        message:[NSString stringWithFormat:@"Synced %lu notifications: removed %lu, kept %lu, added %lu",
-                                                 syncedNotificationCount, pendingNotificationsToRemove.count, existingRegisteredNotifications.count, notificationsByIdentifier.count]];
-        // set existing
-        [RadarState setRegisteredNotifications:existingRegisteredNotifications];
-        [RadarNotificationHelper addOnPremiseNotificationRequests:notificationsByIdentifier.allValues completionHandler:completionHandler];
-    }];
-}
-
 // IMPORTANT: All campaigns request must have the same identifier prefix or frequency capping will be wrong
-+ (void) updateClientSideCampaignsWithPrefix:(NSString *)prefix notificationRequests:(NSMutableDictionary<NSString*, UNNotificationRequest*>*)requests {
++ (void) updateClientSideCampaignsWithPrefix:(NSString *)prefix notificationRequests:(NSArray<UNNotificationRequest *> *)requests {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         dispatch_semaphore_wait(notificationSemaphore, DISPATCH_TIME_FOREVER);
-        [self updateClientSideCampaigns:prefix notifications:requests completionHandler:^{
-            dispatch_semaphore_signal(notificationSemaphore);
+        [self removePendingNotificationsWithPrefix:prefix completionHandler:^{
+            [self addOnPremiseNotificationRequests:requests];
         }];
     });
 }
@@ -337,7 +248,7 @@ static dispatch_semaphore_t notificationSemaphore;
 + (void)removePendingNotificationsWithPrefix:(NSString *)prefix completionHandler:(void (^)(void))completionHandler {
     UNUserNotificationCenter *notificationCenter = [UNUserNotificationCenter currentNotificationCenter];
     [notificationCenter getPendingNotificationRequestsWithCompletionHandler:^(NSArray<UNNotificationRequest *> *_Nonnull requests) {
-        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Found %lu pending notifications", (unsigned long)requests.count]];
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Found %lu pending notifications", (unsigned long)requests.count]];
         NSMutableArray *identifiersToRemove = [NSMutableArray new];
         NSMutableArray *userInfosToKeep = [NSMutableArray new];
         for (UNNotificationRequest *request in requests) {
@@ -349,21 +260,17 @@ static dispatch_semaphore_t notificationSemaphore;
         }
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Found %lu pending notifications to remove", (unsigned long)identifiersToRemove.count]];        
         [RadarState setRegisteredNotifications:userInfosToKeep];
-        [RadarNotificationHelper removeNotificationRequestsByIdentifiers:identifiersToRemove];
+        if (identifiersToRemove.count > 0) {
+            [notificationCenter removePendingNotificationRequestsWithIdentifiers:identifiersToRemove];
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Removed pending notifications"];
+        }
 
         completionHandler();
     }];
+
 }
 
-+ (void)removeNotificationRequestsByIdentifiers:(NSArray<NSString*>*) identifiers {
-    UNUserNotificationCenter *notificationCenter = [UNUserNotificationCenter currentNotificationCenter];
-    if (identifiers.count > 0) {
-        [notificationCenter removePendingNotificationRequestsWithIdentifiers:identifiers];
-        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Removed pending notifications"];
-    }
-}
-
-+ (void)addOnPremiseNotificationRequests:(NSArray<UNNotificationRequest *> *)requests completionHandler:(void (^)(void))completionHandler {
++ (void)addOnPremiseNotificationRequests:(NSArray<UNNotificationRequest *> *)requests {
     [RadarNotificationHelper checkNotificationPermissionsWithCompletionHandler:^(BOOL granted) {
         if (granted) {
             UNUserNotificationCenter *notificationCenter = [UNUserNotificationCenter currentNotificationCenter];
@@ -390,11 +297,11 @@ static dispatch_semaphore_t notificationSemaphore;
             }
             
             dispatch_group_notify(group, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                completionHandler();
+                dispatch_semaphore_signal(notificationSemaphore);
             });
         } else {
             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Notification permissions not granted. Skipping adding notifications."];
-            completionHandler();
+            dispatch_semaphore_signal(notificationSemaphore);
             return;
         }
     }];
@@ -425,7 +332,7 @@ static dispatch_semaphore_t notificationSemaphore;
         [notificationsDelivered removeObjectsInArray:currentNotifications];
 
         if (completionHandler) {
-            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Delivered %lu notifications", (unsigned long)notificationsDelivered.count]];
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Setting %lu notifications remaining after re-registering", (unsigned long)notificationsDelivered.count]];
             completionHandler(notificationsDelivered, currentNotifications);
         }
     }];

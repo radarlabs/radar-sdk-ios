@@ -14,10 +14,15 @@ struct NotificationRequest {
     let latitude: Double
     let longitude: Double
     let radius: Double
+    let title: String
+    let subtitle: String
+    let body: String
+    let url: String?
+    let metadata: [String: Sendable]?
 }
 
 extension NotificationRequest {
-    static func fromNotification(_ request: UNNotificationRequest?) -> NotificationRequest? {
+    static func from(_ request: UNNotificationRequest?) -> NotificationRequest? {
         guard let request else {
             return nil
         }
@@ -25,16 +30,49 @@ extension NotificationRequest {
               let region = trigger.region as? CLCircularRegion else {
             return nil
         }
+        let content = request.content
         return NotificationRequest(
             identifier: request.identifier,
             latitude: region.center.latitude,
             longitude: region.center.longitude,
-            radius: region.radius
+            radius: region.radius,
+            title: content.title,
+            subtitle: content.subtitle,
+            body: content.body,
+            url: content.userInfo["url"] as? String,
+            metadata: content.userInfo["metadata"] as? [String: Sendable]
         )
     }
     
-    static func toNotification() {
-        
+    func isEqual(to other: NotificationRequest?) -> Bool {
+        guard let other else {
+            return false
+        }
+        // compare metadata
+        if ((metadata == nil) != (other.metadata == nil)) {
+            return false
+        }
+        if let a = metadata,
+           let b = other.metadata {
+            if (a.count != b.count) {
+                return false
+            }
+            if (!a.allSatisfy { key, value in
+                // currently just check that the other key also exist
+                return b[key] != nil
+            }) {
+                return false
+            }
+        }
+        // compare other fields
+        return identifier == other.identifier
+            && latitude == other.latitude
+            && longitude == other.longitude
+            && radius == other.radius
+            && title == other.title
+            && subtitle == other.subtitle
+            && body == other.body
+            && url == other.url
     }
 }
 
@@ -129,19 +167,9 @@ class RadarLocationManager: NSObject {
                 a.radius == b.radius)
     }
     
-    func notificationEquals(_ a: NotificationRequest?, _ b: NotificationRequest?) -> Bool {
-        guard let a, let b else {
-            return (a == nil) && (b == nil)
-        }
-        
-        return a.identifier == b.identifier &&
-               a.latitude == b.latitude &&
-               a.longitude == b.longitude &&
-               a.radius == b.radius
-    }
-    
     /// remove all monitored regions and notifications that are not in this list, and remove them from the list
     func removeAllExcept(geofences: inout [String: CLCircularRegion], notifications: inout [String: UNNotificationRequest]) async {
+        var geofencesRemoved = 0
         // remove regions not in the regions list
         for region in locationManager.monitoredRegions {
             if !region.identifier.hasPrefix(geofencePrefix) {
@@ -152,13 +180,14 @@ class RadarLocationManager: NSObject {
                 geofences.removeValue(forKey: region.identifier)
             } else {
                 locationManager.stopMonitoring(for: region)
+                geofencesRemoved += 1
             }
         }
         // remove notifications not in the notifications list
         let requests = await withCheckedContinuation { cont in
             UNUserNotificationCenter.current().getPendingNotificationRequests { requests in
                 cont.resume(returning: requests.compactMap {
-                    return NotificationRequest.fromNotification($0)
+                    return NotificationRequest.from($0)
                 })
             }
         }
@@ -167,13 +196,15 @@ class RadarLocationManager: NSObject {
             if !request.identifier.hasPrefix(self.notificationPrefix) {
                 continue
             }
-            if notificationEquals(NotificationRequest.fromNotification(notifications[request.identifier]), request) {
+            if request.isEqual(to: NotificationRequest.from(notifications[request.identifier])) {
                 notifications.removeValue(forKey: request.identifier)
             } else {
                 notificationsToRemove.append(request.identifier)
             }
         }
         UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: notificationsToRemove)
+        
+        RadarLogger.shared.debug("GeofenceSync removed \(geofencesRemoved) geofence regions and \(notificationsToRemove.count) notifications")
     }
     
     /// add all geofences to monitored regions, add all notifications to pending notifications
@@ -200,6 +231,8 @@ class RadarLocationManager: NSObject {
                 RadarLogger.shared.log(level: .warning, message: "Failed to add notification: \(error)")
             }
         }
+        
+        RadarLogger.shared.debug("GeofenceSync added \(geofences.count) geofence regions and \(notifications.count) notifications")
     }
     
     public func replaceMonitoredRegions(geofences: [RadarGeofence]) {
@@ -244,8 +277,7 @@ class RadarLocationManager: NSObject {
             }
         }
         
-        
-        RadarLogger.shared.info("Syncing \(geofenceRegions.count) geofence regions and \(notifications.count) notifications")
+        RadarLogger.shared.debug("GeofenceSync with \(geofenceRegions.count) geofence regions and \(notifications.count) notifications")
         
         Task {
             await removeAllExcept(geofences: &geofenceRegions, notifications: &notifications)
