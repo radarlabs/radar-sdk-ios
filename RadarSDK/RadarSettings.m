@@ -18,6 +18,7 @@
 #import "RadarReplayBuffer.h"
 #import "RadarLogBuffer.h"
 #import "RadarUtils.h"
+#import "RadarLocationManager.h"
 
 @implementation RadarSettings
 
@@ -249,6 +250,16 @@ static NSString *const kUserTags = @"radar-userTags";
         message:[NSString stringWithFormat:@"Setting SDK configuration | sdkConfiguration = %@",
                             [RadarUtils dictionaryToJson:[sdkConfiguration dictionaryValue]]]];
     if (sdkConfiguration) {
+        
+        // clear existing geofences and notifications once if changing from old to new sync logic
+        RadarSdkConfiguration * old = RadarSettings.sdkConfiguration;
+        if (sdkConfiguration.useImprovedSyncLogic && (old == nil || !old.useImprovedSyncLogic)) {
+            if (@available(iOS 13.0, *)) {
+                NSArray<RadarGeofence*>* geofences = [[NSArray alloc] init];
+                [RadarLocationManagerSwift.shared replaceMonitoredRegionsWithGeofences:geofences];
+            }
+        }
+        
         [[RadarLogBuffer sharedInstance] setPersistentLogFeatureFlag:sdkConfiguration.useLogPersistence];
         [RadarSettings setLogLevel:sdkConfiguration.logLevel];
         [[NSUserDefaults standardUserDefaults] setObject:[sdkConfiguration dictionaryValue] forKey:kSdkConfiguration];

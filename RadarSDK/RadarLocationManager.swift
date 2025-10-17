@@ -110,7 +110,6 @@ class RadarLocationManager: NSObject {
     var locationManager: CLLocationManager?
     
     let geofencePrefix = "radar_geofence_"
-    let notificationPrefix = "radar_notification_"
     
     func region(for geofence: RadarGeofence, id: String) -> CLCircularRegion? {
         if let geometry = geofence.geometry as? RadarCircleGeometry {
@@ -196,9 +195,11 @@ class RadarLocationManager: NSObject {
         }
         
         var geofencesRemoved = 0
+        var nonRadarMonitoredRegions = [String]()
         // remove regions not in the regions list
         for region in locationManager.monitoredRegions {
             if !region.identifier.hasPrefix(geofencePrefix) {
+                nonRadarMonitoredRegions.append(region.identifier)
                 continue
             }
             //
@@ -219,7 +220,7 @@ class RadarLocationManager: NSObject {
         }
         var notificationsToRemove = [String]()
         for request in requests {
-            if !request.identifier.hasPrefix(self.notificationPrefix) {
+            if !request.identifier.hasPrefix(self.geofencePrefix) {
                 continue
             }
             if request.isEqual(to: notifications[request.identifier]) {
@@ -231,6 +232,9 @@ class RadarLocationManager: NSObject {
         UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: notificationsToRemove)
         
         RadarLogger.shared.debug("GeofenceSync removed \(geofencesRemoved) geofence regions and \(notificationsToRemove.count) notifications")
+        if (nonRadarMonitoredRegions.count > 0) {
+            RadarLogger.shared.debug("GeofenceSync found \(nonRadarMonitoredRegions.count) non-Radar monitored regions: \(nonRadarMonitoredRegions.joined(separator: ","))")
+        }
     }
     
     /// add all geofences to monitored regions, add all notifications to pending notifications
@@ -265,7 +269,9 @@ class RadarLocationManager: NSObject {
     }
     
     func replaceMonitoredRegions(geofences: [RadarGeofence]) {
-        guard let locationManager = self.locationManager else {
+        RadarLogger.shared.debug("Syncing with improved sync logic")
+        
+        guard self.locationManager != nil else {
             return
         }
         
@@ -278,12 +284,11 @@ class RadarLocationManager: NSObject {
         
         var regionCount = 0
         for geofence in geofences {
-            let geofenceIdentifier = "\(geofencePrefix)\(geofence._id)"
-            let notificationIdentifier = "\(notificationPrefix)\(geofence._id)"
+            let id = "\(geofencePrefix)\(geofence._id)"
             
             // notification (priority over geofence if there is only 1 slot left
-            if let request = request(for: geofence, id: notificationIdentifier) {
-                notifications[notificationIdentifier] = request
+            if let request = request(for: geofence, id: id) {
+                notifications[id] = request
                 regionCount += 1
             }
             
@@ -292,8 +297,8 @@ class RadarLocationManager: NSObject {
             }
             
             // geofence
-            if let region = region(for: geofence, id: geofenceIdentifier) {
-                geofenceRegions[geofenceIdentifier] = region
+            if let region = region(for: geofence, id: id) {
+                geofenceRegions[id] = region
                 regionCount += 1
             }
             

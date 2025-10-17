@@ -561,10 +561,12 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         return;
     }
     
-    if (@available(iOS 13.0, *)) {
-        if (true) { // some kind of flag to use new sync region
+    if ([RadarSettings sdkConfiguration].useImprovedSyncLogic) {
+        if (@available(iOS 13.0, *)) {
             return [RadarLocationManagerSwift.shared replaceMonitoredRegionsWithGeofences:geofences];
         }
+    } else {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Syncing with old sync logic"];
     }
 
     [self removeSyncedGeofences];
