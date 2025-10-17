@@ -111,7 +111,7 @@ static NSString *const kBeaconNotificationIdentifierPrefix = @"radar_beacon_noti
 }
 
 - (void)registerBeaconRegionNotificationsFromArray:(NSArray<NSDictionary<NSString *, NSString*> *> *_Nonnull)beaconArray {
-    NSMutableDictionary<NSString*, UNNotificationRequest *> *requests = [NSMutableDictionary new];
+    NSMutableArray<UNNotificationRequest *> *requests = [NSMutableArray new];
     for (NSDictionary<NSString *, NSString *> *beaconDict in beaconArray) {
         // Extract required and optional parameters
         NSString *uuid = beaconDict[@"uuid"];
@@ -163,7 +163,7 @@ static NSString *const kBeaconNotificationIdentifierPrefix = @"radar_beacon_noti
                                                                                     content:content 
                                                                                     trigger:trigger];
                 
-                [requests setObject:request forKey: notificationId];
+                [requests addObject:request];
             }
         }
     }

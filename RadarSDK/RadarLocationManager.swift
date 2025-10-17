@@ -11,9 +11,12 @@ import Foundation
 
 struct NotificationRequest {
     let identifier: String
+    // trigger
     let latitude: Double
     let longitude: Double
     let radius: Double
+    let repeats: Bool
+    // content
     let title: String
     let subtitle: String
     let body: String
@@ -36,12 +39,30 @@ extension NotificationRequest {
             latitude: region.center.latitude,
             longitude: region.center.longitude,
             radius: region.radius,
+            repeats: trigger.repeats,
             title: content.title,
             subtitle: content.subtitle,
             body: content.body,
             url: content.userInfo["url"] as? String,
             metadata: content.userInfo["metadata"] as? [String: Sendable]
         )
+    }
+    
+    func toRequest() -> UNNotificationRequest {
+        // content
+        let content = UNMutableNotificationContent()
+        content.title = title
+        content.subtitle = subtitle
+        content.body = body
+        
+        // trigger
+        let center = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
+        let region = CLCircularRegion(center: center, radius: radius, identifier: identifier)
+        let trigger = UNLocationNotificationTrigger(region: region, repeats: repeats)
+        
+        
+        let request = UNNotificationRequest(identifier: identifier, content: content, trigger: trigger)
+        return request
     }
     
     func isEqual(to other: NotificationRequest?) -> Bool {
