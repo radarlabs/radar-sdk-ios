@@ -105,7 +105,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         _firstPermissionCheck = NO;
         
         if (@available(iOS 13.0, *)) {
-            _locationManagerSwift = [[RadarLocationManagerSwift alloc] initWithLocationManager:_locationManager];
+            RadarLocationManagerSwift.shared.locationManager = _locationManager;
         }
     }
     return self;
@@ -562,7 +562,9 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     }
     
     if (@available(iOS 13.0, *)) {
-        return [_locationManagerSwift replaceMonitoredRegionsWithGeofences:geofences];
+        if (true) { // some kind of flag to use new sync region
+            return [RadarLocationManagerSwift.shared replaceMonitoredRegionsWithGeofences:geofences];
+        }
     }
 
     [self removeSyncedGeofences];

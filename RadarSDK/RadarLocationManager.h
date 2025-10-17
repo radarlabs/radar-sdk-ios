@@ -16,9 +16,13 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-
+API_AVAILABLE(ios(13.0))
 @interface RadarLocationManagerSwift : NSObject
-- (void)replaceMonitoredRegionsWithGeofences:(NSArray<RadarGeofence *> * _Nonnull)geofences  API_AVAILABLE(ios(13.0));
+
+@property (nonatomic, strong) CLLocationManager * _Nullable locationManager;
+
++ (RadarLocationManagerSwift * _Nonnull)shared;
+- (void)replaceMonitoredRegionsWithGeofences:(NSArray<RadarGeofence *> * _Nonnull)geofences;
 - (nonnull instancetype)initWithLocationManager:(CLLocationManager * _Nonnull)locationManager;
 @end
 
@@ -29,7 +33,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonnull, strong, nonatomic) CLLocationManager *lowPowerLocationManager;
 @property (nonnull, strong, nonatomic) RadarPermissionsHelper *permissionsHelper;
 @property (nullable, strong, nonatomic) RadarActivityManager *activityManager;
-@property (nonnull, strong, nonatomic) RadarLocationManagerSwift* locationManagerSwift;
 
 + (instancetype)sharedInstance;
 - (void)getLocationWithCompletionHandler:(RadarLocationCompletionHandler _Nullable)completionHandler;
@@ -45,8 +48,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)performIndoorScanIfConfigured:(CLLocation *)location 
                                beacons:(NSArray<RadarBeacon *> *_Nullable)beacons
                      completionHandler:(void (^)(NSArray<RadarBeacon *> *_Nullable, NSString *_Nullable))completionHandler;
-
-+ (BOOL)region:(CLRegion*) a isEqual:(CLRegion*) b;
 
 /**
  If `[RadarSettings previousTrackingOptions]` is not `nil`, remove them and

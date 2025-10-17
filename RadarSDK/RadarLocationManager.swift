@@ -20,8 +20,7 @@ struct NotificationRequest {
     let title: String
     let subtitle: String
     let body: String
-    let url: String?
-    let metadata: [String: Sendable]?
+    let userInfo: [String: Sendable]?
 }
 
 extension NotificationRequest {
@@ -43,8 +42,7 @@ extension NotificationRequest {
             title: content.title,
             subtitle: content.subtitle,
             body: content.body,
-            url: content.userInfo["url"] as? String,
-            metadata: content.userInfo["metadata"] as? [String: Sendable]
+            userInfo: content.userInfo as? [String: Sendable]
         )
     }
     
@@ -60,7 +58,7 @@ extension NotificationRequest {
         let region = CLCircularRegion(center: center, radius: radius, identifier: identifier)
         let trigger = UNLocationNotificationTrigger(region: region, repeats: repeats)
         
-        
+        // request
         let request = UNNotificationRequest(identifier: identifier, content: content, trigger: trigger)
         return request
     }
@@ -70,11 +68,11 @@ extension NotificationRequest {
             return false
         }
         // compare metadata
-        if ((metadata == nil) != (other.metadata == nil)) {
+        if ((userInfo == nil) != (other.userInfo == nil)) {
             return false
         }
-        if let a = metadata,
-           let b = other.metadata {
+        if let a = userInfo,
+           let b = other.userInfo {
             if (a.count != b.count) {
                 return false
             }
@@ -93,7 +91,6 @@ extension NotificationRequest {
             && title == other.title
             && subtitle == other.subtitle
             && body == other.body
-            && url == other.url
     }
 }
 
@@ -108,14 +105,12 @@ actor IOActor {
 @objc(RadarLocationManagerSwift) @objcMembers
 class RadarLocationManager: NSObject {
     
-    let locationManager: CLLocationManager
+    static let shared = RadarLocationManager()
+    
+    var locationManager: CLLocationManager?
     
     let geofencePrefix = "radar_geofence_"
     let notificationPrefix = "radar_notification_"
-    
-    public init(locationManager: CLLocationManager) {
-        self.locationManager = locationManager
-    }
     
     func region(for geofence: RadarGeofence, id: String) -> CLCircularRegion? {
         if let geometry = geofence.geometry as? RadarCircleGeometry {
@@ -127,8 +122,11 @@ class RadarLocationManager: NSObject {
         return nil
     }
     
-    func notificationContent(from metadata: [AnyHashable: Any]?, identifier: String) -> UNMutableNotificationContent? {
-        guard var metadata = metadata else {
+    func request(for geofence: RadarGeofence, id: String) -> NotificationRequest? {
+        guard let metadata = geofence.metadata else {
+            return nil
+        }
+        guard let region = region(for: geofence, id: id) else {
             return nil
         }
         guard let text = metadata["radar:notificationText"] as? String else {
@@ -138,36 +136,39 @@ class RadarLocationManager: NSObject {
               campaignType == "clientSide" || campaignType == "eventBased" else {
             return nil
         }
-        
-        let content = UNMutableNotificationContent()
-        if let title = metadata["radar:notificationTitle"] as? String {
-            content.title = NSString.localizedUserNotificationString(forKey: title, arguments: nil)
-        }
-        if let subtitle = metadata["radar:notificationSubtitle"] as? String {
-            content.subtitle = NSString.localizedUserNotificationString(forKey: subtitle, arguments: nil)
-        }
-        content.body = NSString.localizedUserNotificationString(forKey: text, arguments: nil)
-        
-        let now = Date()
-        metadata["registeredAt"] = now.timeIntervalSince1970
-        
-        if let notificationUrl = metadata["radar:notificationURL"] as? String {
-            metadata["url"] = notificationUrl
-        }
-        if let campaignId = metadata["radar:campaignId"] as? String {
-            metadata["campaignId"] = campaignId
-        }
-        metadata["identifier"] = identifier
-        if identifier.hasPrefix(geofencePrefix) {
-            metadata["geofenceId"] = identifier.replacingOccurrences(of: geofencePrefix, with: "")
-        }
-        if let campaignMetadataString = ["radar:campaignMetadata"] as? String,
+        // optional params
+        let title = (metadata["radar:notificationTitle"] as? String).map { str in
+            NSString.localizedUserNotificationString(forKey: str, arguments: nil)
+        } ?? ""
+        let subtitle = (metadata["radar:notificationSubtitle"] as? String).map { str in
+            NSString.localizedUserNotificationString(forKey: str, arguments: nil)
+        } ?? ""
+        let body = NSString.localizedUserNotificationString(forKey: text, arguments: nil)
+        // userInfo
+        var userInfo = [String: Sendable]()
+        userInfo["registeredAt"] = Date().timeIntervalSince1970
+        userInfo["url"] = metadata["radar:notificationURL"] as? String
+        userInfo["campaignId"] = metadata["radar:campaignId"] as? String
+        userInfo["identifier"] = id
+        userInfo["geofenceId"] = geofence._id
+        if let campaignMetadataString = metadata["radar:campaignMetadata"] as? String,
            let campaignMetadataData = campaignMetadataString.data(using: .utf8),
            let campaignMetadata = try? JSONSerialization.jsonObject(with: campaignMetadataData) {
-            metadata["campaignMetadata"] = campaignMetadata
+            userInfo["campaignMetadata"] = campaignMetadata as? [String: Sendable]
         }
-        content.userInfo = metadata
-        return content
+        // trigger
+        let repeats = geofence.metadata?["radar:notificationRepeats"] as? Bool ?? false
+        
+        return NotificationRequest(
+            identifier: id,
+            latitude: region.center.latitude,
+            longitude: region.center.longitude,
+            radius: region.radius,
+            repeats: repeats,
+            title: title,
+            subtitle: subtitle,
+            body: body,
+            userInfo: userInfo)
     }
     
     func regionEquals(_ regionA: CLRegion?, _ regionB: CLRegion?) -> Bool {
@@ -189,7 +190,11 @@ class RadarLocationManager: NSObject {
     }
     
     /// remove all monitored regions and notifications that are not in this list, and remove them from the list
-    func removeAllExcept(geofences: inout [String: CLCircularRegion], notifications: inout [String: UNNotificationRequest]) async {
+    func removeAllExcept(geofences: inout [String: CLCircularRegion], notifications: inout [String: NotificationRequest]) async {
+        guard let locationManager = self.locationManager else {
+            return
+        }
+        
         var geofencesRemoved = 0
         // remove regions not in the regions list
         for region in locationManager.monitoredRegions {
@@ -217,7 +222,7 @@ class RadarLocationManager: NSObject {
             if !request.identifier.hasPrefix(self.notificationPrefix) {
                 continue
             }
-            if request.isEqual(to: NotificationRequest.from(notifications[request.identifier])) {
+            if request.isEqual(to: notifications[request.identifier]) {
                 notifications.removeValue(forKey: request.identifier)
             } else {
                 notificationsToRemove.append(request.identifier)
@@ -230,7 +235,10 @@ class RadarLocationManager: NSObject {
     
     /// add all geofences to monitored regions, add all notifications to pending notifications
     /// maybe require notifications to be enabled in here
-    func add(geofences: [String: CLCircularRegion], notifications: [String: UNNotificationRequest]) async {
+    func add(geofences: [String: CLCircularRegion], notifications: [String: NotificationRequest]) async {
+        guard let locationManager = self.locationManager else {
+            return
+        }
         // add to geofences
         for geofence in geofences.values {
             locationManager.startMonitoring(for: geofence)
@@ -247,7 +255,7 @@ class RadarLocationManager: NSObject {
         }
         for notification in notifications.values {
             do {
-                try await notificationCenter.add(notification)
+                try await notificationCenter.add(notification.toRequest())
             } catch {
                 RadarLogger.shared.log(level: .warning, message: "Failed to add notification: \(error)")
             }
@@ -256,13 +264,17 @@ class RadarLocationManager: NSObject {
         RadarLogger.shared.debug("GeofenceSync added \(geofences.count) geofence regions and \(notifications.count) notifications")
     }
     
-    public func replaceMonitoredRegions(geofences: [RadarGeofence]) {
+    func replaceMonitoredRegions(geofences: [RadarGeofence]) {
+        guard let locationManager = self.locationManager else {
+            return
+        }
+        
         let limit = Radar.getTrackingOptions().beacons ? 9 : 19
         RadarLogger.shared.info("Syncing \(geofences.count) geofences with \(limit) allowed")
         
         // create the geofence and notification array, which includes already registered regions
         var geofenceRegions = [String: CLCircularRegion]()
-        var notifications = [String: UNNotificationRequest]()
+        var notifications = [String: NotificationRequest]()
         
         var regionCount = 0
         for geofence in geofences {
@@ -270,15 +282,7 @@ class RadarLocationManager: NSObject {
             let notificationIdentifier = "\(notificationPrefix)\(geofence._id)"
             
             // notification (priority over geofence if there is only 1 slot left
-            let notification = notificationContent(from: geofence.metadata, identifier: notificationIdentifier)
-            let notificationRegion = region(for: geofence, id: notificationIdentifier)
-            if let notification, let region = notificationRegion {
-                
-                let repeats = geofence.metadata?["radar:notificationRepeats"] as? Bool ?? false
-                
-                let trigger = UNLocationNotificationTrigger(region: region, repeats: repeats)
-                let request = UNNotificationRequest(identifier: notificationIdentifier, content: notification, trigger: trigger)
-                    
+            if let request = request(for: geofence, id: notificationIdentifier) {
                 notifications[notificationIdentifier] = request
                 regionCount += 1
             }
