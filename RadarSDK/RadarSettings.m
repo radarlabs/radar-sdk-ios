@@ -19,6 +19,7 @@
 #import "RadarLogBuffer.h"
 #import "RadarUtils.h"
 #import "RadarLocationManager.h"
+#import "RadarState.h"
 
 @implementation RadarSettings
 
@@ -255,8 +256,8 @@ static NSString *const kUserTags = @"radar-userTags";
         RadarSdkConfiguration * old = RadarSettings.sdkConfiguration;
         if (sdkConfiguration.useImprovedSyncLogic && (old == nil || !old.useImprovedSyncLogic)) {
             if (@available(iOS 13.0, *)) {
-                NSArray<RadarGeofence*>* geofences = [[NSArray alloc] init];
-                [RadarLocationManagerSwift.shared replaceMonitoredRegionsWithGeofences:geofences];
+                [RadarLocationManagerSwift.shared replaceMonitoredRegionsWithGeofences:[[NSArray alloc] init]];
+                [RadarState setRegisteredNotifications:[[NSArray alloc] init]];
             }
         }
         

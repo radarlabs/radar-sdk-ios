@@ -101,8 +101,10 @@ struct MainView: View {
             }.tabItem {
                 Text("Debug")
             }.tag(TabIdentifier.Debug)
-
+            
             VStack {
+                
+                
                 Button("trackOnce") {
                     Radar.trackOnce()
                 }

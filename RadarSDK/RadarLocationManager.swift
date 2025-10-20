@@ -20,7 +20,7 @@ struct NotificationRequest {
     let title: String
     let subtitle: String
     let body: String
-    let userInfo: [String: Sendable]?
+    let userInfo: [String: Sendable]
 }
 
 extension NotificationRequest {
@@ -42,7 +42,7 @@ extension NotificationRequest {
             title: content.title,
             subtitle: content.subtitle,
             body: content.body,
-            userInfo: content.userInfo as? [String: Sendable]
+            userInfo: content.userInfo as? [String: Sendable] ?? [:]
         )
     }
     
@@ -52,6 +52,7 @@ extension NotificationRequest {
         content.title = title
         content.subtitle = subtitle
         content.body = body
+        content.userInfo = userInfo
         
         // trigger
         let center = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
@@ -63,31 +64,62 @@ extension NotificationRequest {
         return request
     }
     
+    static func metadataEqual(_ a: [String: Sendable], _ b: [String: Sendable]) -> Bool {
+        if a.count != b.count {
+            return false
+        }
+        return a.allSatisfy { key, aValue in
+            guard let bValue = b[key] else {
+                return false
+            }
+            if let aValue = aValue as? String {
+                if aValue != (bValue as? String) {
+                    return false
+                }
+            }
+            if let aValue = aValue as? Double {
+                if aValue != (bValue as? Double) {
+                    return false
+                }
+            }
+            if let aValue = aValue as? Int {
+                if aValue != (bValue as? Int) {
+                    return false
+                }
+            }
+            if let aValue = aValue as? Bool {
+                if aValue != (bValue as? Bool) {
+                    return false
+                }
+            }
+            if let aValue = aValue as? [String: Sendable] {
+                let bValue = bValue as? [String: Sendable]
+                if bValue == nil || !metadataEqual(aValue, bValue!) {
+                    return false
+                }
+            }
+            return true
+        }
+    }
+    
     func isEqual(to other: NotificationRequest?) -> Bool {
         guard let other else {
             return false
         }
-        // compare metadata
-        if ((userInfo == nil) != (other.userInfo == nil)) {
+        // compare userInfo, (don't compare registeredAt)
+        var a = userInfo
+        a.removeValue(forKey: "registeredAt")
+        var b = other.userInfo
+        b.removeValue(forKey: "registeredAt")
+        if !NotificationRequest.metadataEqual(a, b) {
             return false
-        }
-        if let a = userInfo,
-           let b = other.userInfo {
-            if (a.count != b.count) {
-                return false
-            }
-            if (!a.allSatisfy { key, value in
-                // currently just check that the other key also exist
-                return b[key] != nil
-            }) {
-                return false
-            }
         }
         // compare other fields
         return identifier == other.identifier
             && latitude == other.latitude
             && longitude == other.longitude
             && radius == other.radius
+            && repeats == other.repeats
             && title == other.title
             && subtitle == other.subtitle
             && body == other.body
@@ -111,6 +143,7 @@ class RadarLocationManager: NSObject {
     
     let geofencePrefix = "radar_geofence_"
     
+    /// create a circular region from the geofence
     func region(for geofence: RadarGeofence, id: String) -> CLCircularRegion? {
         if let geometry = geofence.geometry as? RadarCircleGeometry {
             return CLCircularRegion(center: geometry.center.coordinate, radius: geometry.radius, identifier: id)
@@ -121,6 +154,7 @@ class RadarLocationManager: NSObject {
         return nil
     }
     
+    /// create a NotificationRequest object from the radar geofence if the geofence contains notification data NotificationRequest can be converted directly to UNNotificationRequest
     func request(for geofence: RadarGeofence, id: String) -> NotificationRequest? {
         guard let metadata = geofence.metadata else {
             return nil
@@ -150,13 +184,20 @@ class RadarLocationManager: NSObject {
         userInfo["campaignId"] = metadata["radar:campaignId"] as? String
         userInfo["identifier"] = id
         userInfo["geofenceId"] = geofence._id
+        
+        var campaignMetadata: [String: Sendable]? = nil
         if let campaignMetadataString = metadata["radar:campaignMetadata"] as? String,
-           let campaignMetadataData = campaignMetadataString.data(using: .utf8),
-           let campaignMetadata = try? JSONSerialization.jsonObject(with: campaignMetadataData) {
-            userInfo["campaignMetadata"] = campaignMetadata as? [String: Sendable]
+           let campaignMetadataData = campaignMetadataString.data(using: .utf8) {
+            campaignMetadata = try? JSONSerialization.jsonObject(with: campaignMetadataData) as? [String: Sendable]
+            if (campaignMetadata != nil) {
+                userInfo["campaignMetadata"] = campaignMetadata
+            }
         }
         // trigger
-        let repeats = geofence.metadata?["radar:notificationRepeats"] as? Bool ?? false
+        let geofenceMetadataRepeats = geofence.metadata?["radar:notificationRepeats"] as? Bool
+        let campaignMetadataRepeats = campaignMetadata?["radar:notificationRepeats"] as? Bool
+        // can be enabled in both geofence and campaign, geofence takes priority if set
+        let repeats = (geofenceMetadataRepeats != nil ? geofenceMetadataRepeats : campaignMetadataRepeats) ?? false
         
         return NotificationRequest(
             identifier: id,
@@ -194,12 +235,16 @@ class RadarLocationManager: NSObject {
             return
         }
         
-        var geofencesRemoved = 0
+        var geofencesRemoved = [String]()
         var nonRadarMonitoredRegions = [String]()
         // remove regions not in the regions list
         for region in locationManager.monitoredRegions {
-            if !region.identifier.hasPrefix(geofencePrefix) {
+            if !region.identifier.hasPrefix("radar_") {
                 nonRadarMonitoredRegions.append(region.identifier)
+                continue
+            }
+            
+            if !region.identifier.hasPrefix(geofencePrefix) {
                 continue
             }
             //
@@ -207,7 +252,7 @@ class RadarLocationManager: NSObject {
                 geofences.removeValue(forKey: region.identifier)
             } else {
                 locationManager.stopMonitoring(for: region)
-                geofencesRemoved += 1
+                geofencesRemoved.append(region.identifier)
             }
         }
         // remove notifications not in the notifications list
@@ -230,8 +275,12 @@ class RadarLocationManager: NSObject {
             }
         }
         UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: notificationsToRemove)
+        // remove from registered notifications
+        var registered = RadarState.registeredNotifications
+        registered.removeAll(where: { notificationsToRemove.contains($0["identifier"] as! String) })
+        RadarState.registeredNotifications = registered
         
-        RadarLogger.shared.debug("GeofenceSync removed \(geofencesRemoved) geofence regions and \(notificationsToRemove.count) notifications")
+        RadarLogger.shared.debug("GeofenceSync removed \(geofencesRemoved.count) geofence regions and \(notificationsToRemove.count) notifications | geofences: \(geofencesRemoved); notifications: \(notificationsToRemove)")
         if (nonRadarMonitoredRegions.count > 0) {
             RadarLogger.shared.debug("GeofenceSync found \(nonRadarMonitoredRegions.count) non-Radar monitored regions: \(nonRadarMonitoredRegions.joined(separator: ","))")
         }
@@ -257,26 +306,36 @@ class RadarLocationManager: NSObject {
         if (!authorized) {
             return
         }
+        var successfulNotificatons = [NotificationRequest]()
         for notification in notifications.values {
             do {
-                try await notificationCenter.add(notification.toRequest())
+                let request = notification.toRequest()
+                try await notificationCenter.add(request)
+                successfulNotificatons.append(notification)
+                RadarLogger.shared.debug("GeofenceSync notification added \(notification.identifier) with \((request.trigger?.repeats ?? false) ? "repeating" : "non-repeating"); userInfo: \(request.content.userInfo)")
             } catch {
-                RadarLogger.shared.log(level: .warning, message: "Failed to add notification: \(error)")
+                RadarLogger.shared.debug("GeofenceSync failed to add notification \(notification.identifier): \(error)")
             }
         }
         
-        RadarLogger.shared.debug("GeofenceSync added \(geofences.count) geofence regions and \(notifications.count) notifications")
+        var registered = RadarState.registeredNotifications
+        registered.append(contentsOf: successfulNotificatons.map(\.userInfo))
+        RadarState.registeredNotifications = registered
+        
+        let addedGeofencesIds = geofences.values.map(\.identifier)
+        let addedNotificationsIds = successfulNotificatons.map(\.identifier)
+        RadarLogger.shared.debug("GeofenceSync added \(geofences.count) geofence regions and \(notifications.count) notifications | geofences: \(addedGeofencesIds), notifications: \(addedNotificationsIds)")
     }
     
     func replaceMonitoredRegions(geofences: [RadarGeofence]) {
-        RadarLogger.shared.debug("Syncing with improved sync logic")
+        RadarLogger.shared.debug("GeofenceSync with improved sync logic")
         
         guard self.locationManager != nil else {
             return
         }
         
         let limit = Radar.getTrackingOptions().beacons ? 9 : 19
-        RadarLogger.shared.info("Syncing \(geofences.count) geofences with \(limit) allowed")
+        RadarLogger.shared.debug("GeofenceSync called with \(geofences.count) geofences with \(limit) allowed")
         
         // create the geofence and notification array, which includes already registered regions
         var geofenceRegions = [String: CLCircularRegion]()
@@ -307,7 +366,8 @@ class RadarLocationManager: NSObject {
             }
         }
         
-        RadarLogger.shared.debug("GeofenceSync with \(geofenceRegions.count) geofence regions and \(notifications.count) notifications")
+        let geofenceIds = geofenceRegions.keys.map { $0.dropFirst(geofencePrefix.count) }
+        RadarLogger.shared.debug("GeofenceSync with \(geofenceRegions.count) geofence regions and \(notifications.count) notifications | \(geofenceIds)")
         
         Task {
             await removeAllExcept(geofences: &geofenceRegions, notifications: &notifications)
