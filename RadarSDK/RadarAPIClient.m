@@ -420,6 +420,7 @@
         locationMetadata[@"altitude"] = @(location.altitude);
         locationMetadata[@"floor"] = @([location.floor level]);
         locationMetadata[@"pressureHPa"] = [RadarState lastRelativeAltitudeData];
+        params[@"motionAuthorizationStatus"] = [Radar stringForMotionAuthorizationStatus:[RadarState motionAuthorizationStatus]];
         NSDictionary *pressureDict = [RadarState lastRelativeAltitudeData];
         if (pressureDict) {
             NSNumber *pressure = pressureDict[@"pressure"];

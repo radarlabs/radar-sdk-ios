@@ -392,8 +392,9 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
             }
             if (options.usePressure) {
                 self.activityManager = [RadarActivityManager sharedInstance];
-                
-                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:@"usePressure enabled: starting relative altitude updates"];
+                CMAuthorizationStatus authStatus = [CMMotionActivityManager authorizationStatus];
+                [RadarState setMotionAuthorizationStatus:authStatus];
+                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"usePressure enabled: starting relative altitude updates, auth status: %@", [Radar stringForMotionAuthorizationStatus:authStatus]]];
                 [self.activityManager startRelativeAltitudeWithHandler: ^(CMAltitudeData * _Nullable altitudeData) {
                     if (!altitudeData) {
                         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelWarning message:@"Relative altitude callback received nil data"];
@@ -408,7 +409,9 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                 }];
 
                 if (@available(iOS 15.0, *)) {
-                    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:@"usePressure enabled: starting absolute altitude updates (iOS 15+)"];
+                    CMAuthorizationStatus authStatus = [CMMotionActivityManager authorizationStatus];
+                    [RadarState setMotionAuthorizationStatus:authStatus];
+                    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"usePressure enabled: starting absolute altitude updates (iOS 15+), auth status: %@", [Radar stringForMotionAuthorizationStatus:authStatus]]];
                     [self.activityManager startAbsoluteAltitudeWithHandler: ^(CMAbsoluteAltitudeData * _Nullable altitudeData) {
                         if (!altitudeData) {
                             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelWarning message:@"Absolute altitude callback received nil data"];

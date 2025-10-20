@@ -7,6 +7,7 @@
 
 #import "Radar.h"
 #include "RadarSdkConfiguration.h"
+#import <CoreMotion/CoreMotion.h>
 
 #import "RadarAPIClient.h"
 #import "RadarBeaconManager.h"
@@ -60,8 +61,10 @@
     Class RadarSDKMotion = NSClassFromString(@"RadarSDKMotion");
     if (RadarSDKMotion) {
         id radarSDKMotion = [[RadarSDKMotion alloc] init];
+        CMAuthorizationStatus authStatus = [CMMotionActivityManager authorizationStatus];
+
         [RadarActivityManager sharedInstance].radarSDKMotion = radarSDKMotion;
-        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:@"RadarSDKMotion detected and initialized; Motion & Altimeter services available"];
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"RadarSDKMotion detected and initialized; Motion & Altimeter services available, auth status: %@", [Radar stringForMotionAuthorizationStatus:authStatus]]];
     } else {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelWarning message:@"RadarSDKMotion class not found; Motion/Pressure features disabled"];
     }
@@ -1286,6 +1289,27 @@
         break;
     default:
         str = @"ERROR_UNKNOWN";
+    }
+    return str;
+}
+
++ (NSString *)stringForMotionAuthorizationStatus:(CMAuthorizationStatus)status {
+    NSString *str;
+    switch (status) {
+    case CMAuthorizationStatusNotDetermined:
+        str = @"notDetermined";
+        break;
+    case CMAuthorizationStatusRestricted:
+        str = @"restricted";
+        break;
+    case CMAuthorizationStatusDenied:
+        str = @"userDenied";
+        break;
+    case CMAuthorizationStatusAuthorized:
+        str = @"userGranted";
+        break;
+    default:
+        str = @"unknown";
     }
     return str;
 }
