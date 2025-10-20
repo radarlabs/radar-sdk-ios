@@ -11,6 +11,14 @@ import MapKit
 import RadarSDK
 
 struct MainView: View {
+    
+    @StateObject var radarDelegateState = RadarDelegateState()
+    let radarDelegate = MyRadarDelegate()
+    
+    init() {
+        Radar.setDelegate(radarDelegate)
+    }
+    
     enum TabIdentifier {
         case Map
         case Debug
@@ -103,7 +111,33 @@ struct MainView: View {
             }.tag(TabIdentifier.Debug)
             
             VStack {
-                Text("Logs/Events")
+                HStack {
+                    Text("Logs")
+                    Button("clear") {
+                        radarDelegateState.logs.removeAll()
+                    }
+                }
+                List(radarDelegateState.logs, id:\.0) { item in
+                    return Text("\(item.1)")
+                }
+                
+                HStack {
+                    Text("Events")
+                    Button("clear") {
+                        radarDelegateState.logs.removeAll()
+                    }
+                }
+                List(radarDelegateState.events, id:\.self) { item in
+                    let type = RadarEvent.string(for: item.type) ?? "unknown-type"
+                    var description = ""
+                    if let geofence = item.geofence {
+                        description = geofence.externalId ?? ""
+                    }
+                    return Text("\(type): \(description)")
+                }
+                
+            }.onAppear {
+                radarDelegate.state = radarDelegateState
             }.tabItem {
                 Text("Log")
             }.tag(TabIdentifier.Log)
