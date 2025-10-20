@@ -189,7 +189,7 @@ class RadarLocationManager: NSObject {
         if let campaignMetadataString = metadata["radar:campaignMetadata"] as? String,
            let campaignMetadataData = campaignMetadataString.data(using: .utf8) {
             campaignMetadata = try? JSONSerialization.jsonObject(with: campaignMetadataData) as? [String: Sendable]
-            if (campaignMetadata != nil) {
+            if campaignMetadata != nil {
                 userInfo["campaignMetadata"] = campaignMetadata
             }
         }
@@ -215,13 +215,13 @@ class RadarLocationManager: NSObject {
         guard let a = regionA as? CLCircularRegion,
               let b = regionB as? CLCircularRegion else {
             if (regionA == nil && regionB == nil) {
-                return true;
+                return true
             }
             return false
         }
         
         if (a.identifier != b.identifier) {
-            return false;
+            return false
         }
         
         return (a.center.latitude == b.center.latitude &&
@@ -277,11 +277,14 @@ class RadarLocationManager: NSObject {
         UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: notificationsToRemove)
         // remove from registered notifications
         var registered = RadarState.registeredNotifications
-        registered.removeAll(where: { notificationsToRemove.contains($0["identifier"] as! String) })
+        registered.removeAll(where: {
+            guard let identifier = $0["identifier"] as? String else { return false }
+            return notificationsToRemove.contains(identifier)
+        })
         RadarState.registeredNotifications = registered
         
         RadarLogger.shared.debug("GeofenceSync removed \(geofencesRemoved.count) geofence regions and \(notificationsToRemove.count) notifications | geofences: \(geofencesRemoved); notifications: \(notificationsToRemove)")
-        if (nonRadarMonitoredRegions.count > 0) {
+        if !nonRadarMonitoredRegions.isEmpty {
             RadarLogger.shared.debug("GeofenceSync found \(nonRadarMonitoredRegions.count) non-Radar monitored regions: \(nonRadarMonitoredRegions.joined(separator: ","))")
         }
     }
@@ -303,15 +306,15 @@ class RadarLocationManager: NSObject {
                 cont.resume(returning: settings.authorizationStatus == .authorized)
             }
         }
-        if (!authorized) {
+        if !authorized {
             return
         }
-        var successfulNotificatons = [NotificationRequest]()
+        var successfulNotifications = [NotificationRequest]()
         for notification in notifications.values {
             do {
                 let request = notification.toRequest()
                 try await notificationCenter.add(request)
-                successfulNotificatons.append(notification)
+                successfulNotifications.append(notification)
                 RadarLogger.shared.debug("GeofenceSync notification added \(notification.identifier) with \((request.trigger?.repeats ?? false) ? "repeating" : "non-repeating"); userInfo: \(request.content.userInfo)")
             } catch {
                 RadarLogger.shared.debug("GeofenceSync failed to add notification \(notification.identifier): \(error)")
@@ -319,11 +322,11 @@ class RadarLocationManager: NSObject {
         }
         
         var registered = RadarState.registeredNotifications
-        registered.append(contentsOf: successfulNotificatons.map(\.userInfo))
+        registered.append(contentsOf: successfulNotifications.map(\.userInfo))
         RadarState.registeredNotifications = registered
         
         let addedGeofencesIds = geofences.values.map(\.identifier)
-        let addedNotificationsIds = successfulNotificatons.map(\.identifier)
+        let addedNotificationsIds = successfulNotifications.map(\.identifier)
         RadarLogger.shared.debug("GeofenceSync added \(geofences.count) geofence regions and \(notifications.count) notifications | geofences: \(addedGeofencesIds), notifications: \(addedNotificationsIds)")
     }
     

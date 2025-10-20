@@ -195,7 +195,7 @@ struct MainView: View {
                             "name": "image.jpeg"
                         ],
                         "metadata": [
-                            "campainId": "1234"
+                            "campaignId": "1234"
                         ]
                     ])!)
                 }
