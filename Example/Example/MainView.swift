@@ -11,10 +11,10 @@ import MapKit
 import RadarSDK
 
 struct MainView: View {
-    
     enum TabIdentifier {
         case Map
         case Debug
+        case Log
         case Tests
     }
     
@@ -103,8 +103,12 @@ struct MainView: View {
             }.tag(TabIdentifier.Debug)
             
             VStack {
-                
-                
+                Text("Logs/Events")
+            }.tabItem {
+                Text("Log")
+            }.tag(TabIdentifier.Log)
+            
+            VStack {
                 Button("trackOnce") {
                     Radar.trackOnce()
                 }
