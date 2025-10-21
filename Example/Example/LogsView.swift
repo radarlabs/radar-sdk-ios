@@ -11,10 +11,6 @@ import RadarSDK
 struct LogsView: View {
     @StateObject var radarDelegateState = RadarDelegateState()
     let radarDelegate = MyRadarDelegate()
-
-    init() {
-        Radar.setDelegate(radarDelegate)
-    }
     
     var body: some View {
         VStack {
@@ -31,7 +27,7 @@ struct LogsView: View {
             HStack {
                 Text("Events")
                 Button("clear") {
-                    radarDelegateState.logs.removeAll()
+                    radarDelegateState.events.removeAll()
                 }
             }
             List(radarDelegateState.events, id:\.self) { item in
@@ -45,6 +41,7 @@ struct LogsView: View {
 
         }.onAppear {
             radarDelegate.state = radarDelegateState
+            Radar.setDelegate(radarDelegate)
         }
     }
 }

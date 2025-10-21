@@ -30,7 +30,7 @@ struct MapView: View {
                 monitoringRegions = Array(CLLocationManager().monitoredRegions) as? [CLCircularRegion] ?? []
             }
         } else {
-            // Map with SwiftUI is not available for iOS 17 or before
+            // Map with SwiftUI is not available before iOS 17
             Text("Map unavailable")
         }
     }
