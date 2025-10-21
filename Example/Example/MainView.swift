@@ -19,14 +19,6 @@ struct MainView: View {
     
     @State private var selectedTab: TabIdentifier = .Tests;
     
-    var regionListFont = {
-        if #available(iOS 15.0, *) {
-            Font.system(size: 12).monospaced()
-        } else {
-            Font.system(size: 12)
-        }
-    }()
-    
     var body: some View {
         TabView(selection: $selectedTab) {
             MapView().tabItem {
