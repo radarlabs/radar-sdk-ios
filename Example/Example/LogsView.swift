@@ -45,3 +45,7 @@ struct LogsView: View {
         }
     }
 }
+
+#Preview {
+    LogsView()
+}

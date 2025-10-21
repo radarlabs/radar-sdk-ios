@@ -41,16 +41,9 @@ struct MainView: View {
                 Text("Tests")
             }.tag(TabIdentifier.Tests)
         }
-        
-        
-        
     }
 }
 
 #Preview {
-    if #available(iOS 15.0, *) {
-        MainView()
-    } else {
-        // Fallback on earlier versions
-    }
+    MainView()
 }

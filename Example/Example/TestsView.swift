@@ -325,3 +325,7 @@ struct TestsView: View {
         }
     }
 }
+
+#Preview {
+    TestsView()
+}
