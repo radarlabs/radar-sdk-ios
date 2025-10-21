@@ -63,6 +63,10 @@ class RadarSettings {
             UserDefaults.standard.set(newValue, forKey: kUserDebug)
         }
     }
+    
+    static var host: String {
+        return UserDefaults.standard.string(forKey: kHost) ?? kDefaultHost
+    }
 
     // TODO: complete implementation for other radar settings
 }
