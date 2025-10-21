@@ -28,7 +28,6 @@ typedef NS_ENUM(NSInteger, RadarConnectionType) {
 + (NSString *)deviceId;
 + (NSString *)deviceType;
 + (NSString *)deviceMake;
-+ (BOOL)isSimulator;
 + (BOOL)locationBackgroundMode;
 + (NSString *)locationAuthorization;
 + (NSString *)locationAccuracyAuthorization;
