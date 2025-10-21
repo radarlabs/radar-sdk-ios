@@ -2,7 +2,6 @@
 //  MapView.swift
 //  Example
 //
-//  Created by ShiCheng Lu on 10/21/25.
 //  Copyright © 2025 Radar Labs, Inc. All rights reserved.
 //
 

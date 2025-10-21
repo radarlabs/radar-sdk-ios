@@ -2,7 +2,6 @@
 //  MainView.swift
 //  Example
 //
-//  Created by ShiCheng Lu on 9/5/25.
 //  Copyright © 2025 Radar Labs, Inc. All rights reserved.
 //
 
@@ -13,6 +12,7 @@ struct MainView: View {
     
     enum TabIdentifier {
         case Map
+        case Debug
         case Logs
         case Tests
     }
@@ -25,8 +25,12 @@ struct MainView: View {
                 Text("Map")
             }.tag(TabIdentifier.Map)
             
-            LogsView().tabItem {
+            DebugView().tabItem {
                 Text("Debug")
+            }.tag(TabIdentifier.Debug)
+            
+            LogsView().tabItem {
+                Text("Logs")
             }.tag(TabIdentifier.Logs)
 
             TestsView().tabItem {
