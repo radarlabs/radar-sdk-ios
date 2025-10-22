@@ -320,18 +320,15 @@ static dispatch_semaphore_t notificationSemaphore;
     [notificationCenter getPendingNotificationRequestsWithCompletionHandler:^(NSArray<UNNotificationRequest *> *requests) {
         NSMutableArray *currentNotifications = [NSMutableArray new];
         
-        
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"NotificationDiff processing difference between registered and pending notifications"]];
-        for (NSDictionary* n in registeredNotifications) {
-            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"NotificationDiff registered | userInfo = %@", n]];
-        }
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"NotificationDiff registered notifications list: %@", registeredNotifications]];
         
         for (UNNotificationRequest *request in requests) {
             if (request.content.userInfo) {
                 [currentNotifications addObject:request.content.userInfo];
-                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"NotificationDiff pending | userInfo = %@", request.content.userInfo]];
             }
         }
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"NotificationDiff active pending notifications list: %@", currentNotifications]];
         
         NSMutableArray *notificationsDelivered = [NSMutableArray arrayWithArray:registeredNotifications];
 
