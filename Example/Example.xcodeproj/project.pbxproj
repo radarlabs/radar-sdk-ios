@@ -77,7 +77,6 @@
 		DD236D34230A006900EB88F9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		DD291168230D0AF900049D3A /* Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
 		DD86FCF9239185F4003225F6 /* RadarSDK.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RadarSDK.xcodeproj; path = ../RadarSDK.xcodeproj; sourceTree = SOURCE_ROOT; };
-		DD86FD0B23918B3C003225F6 /* Example-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Example-Bridging-Header.h"; sourceTree = "<group>"; };
 		DDB861D22385FC3E00770661 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
 		E632FA1C2CAC366C00E86C85 /* Example.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Example.entitlements; sourceTree = "<group>"; };
 		E698B7382C626AE600084371 /* RadarSDKMotion.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RadarSDKMotion.xcodeproj; path = ../../RadarSDKMotion/RadarSDKMotion.xcodeproj; sourceTree = "<group>"; };
@@ -124,7 +123,6 @@
 			isa = PBXGroup;
 			children = (
 				E632FA1C2CAC366C00E86C85 /* Example.entitlements */,
-				DD86FD0B23918B3C003225F6 /* Example-Bridging-Header.h */,
 				DD236D34230A006900EB88F9 /* Info.plist */,
 				DDB861D22385FC3E00770661 /* Default-568h@2x.png */,
 				DD236D26230A006700EB88F9 /* AppDelegate.swift */,

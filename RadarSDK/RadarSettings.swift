@@ -53,6 +53,9 @@ class RadarSettings {
             }
             return RadarLogLevel(rawValue: UserDefaults.standard.integer(forKey: kLogLevel)) ?? .none;
         }
+        set {
+            UserDefaults.standard.set(newValue.rawValue, forKey: kLogLevel)
+        }
     }
 
     static var userDebug: Bool {
@@ -66,6 +69,26 @@ class RadarSettings {
     
     static var host: String {
         return UserDefaults.standard.string(forKey: kHost) ?? kDefaultHost
+    }
+
+    static var sdkConfiguration: RadarSdkConfiguration? {
+        get {
+            if let dict = UserDefaults.standard.dictionary(forKey: kSdkConfiguration) {
+                return RadarSdkConfiguration(dict: dict)
+            }
+            return nil
+        }
+        set {
+            if let config = newValue {
+                RadarLogger.shared.log(level: .debug, message: "Setting SDK configuration | sdkConfiguration = \(RadarUtils.dictionary(toJson: config.dictionaryValue()))")
+                RadarLogBuffer.sharedInstance().persistentLogFeatureFlag = config.useLogPersistence
+                logLevel = config.logLevel
+                UserDefaults.standard.set(config.dictionaryValue(), forKey: kSdkConfiguration)
+            } else {
+                RadarLogBuffer.sharedInstance().persistentLogFeatureFlag = false
+                UserDefaults.standard.removeObject(forKey: kSdkConfiguration)
+            }
+        }
     }
 
     // TODO: complete implementation for other radar settings

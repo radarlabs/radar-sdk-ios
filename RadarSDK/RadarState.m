@@ -8,6 +8,9 @@
 #import "RadarState.h"
 #import "CLLocation+Radar.h"
 #import "RadarUtils.h"
+#import "RadarGeofence+Internal.h"
+#import "RadarBeacon+Internal.h"
+#import "RadarLogger.h"
 
 @implementation RadarState
 
@@ -26,7 +29,11 @@ static NSString *const kLastHeadingData = @"radar-lastHeadingData";
 static NSString *const kLastMotionActivityData = @"radar-lastMotionActivityData";
 static NSString *const kLastPressureData = @"radar-lastPressureData";
 static NSString *const kNotificationPermissionGranted = @"radar-notificationPermissionGranted";
+static NSString *const KNearbyGeofences = @"radar-nearbyGeofences";
+static NSString *const kNearbyBeacons = @"radar-nearbyBeacons";
 static NSString *const kRegisteredNotifications = @"radar-registeredNotifications";
+static NSString *const kRadarUser = @"radar-radarUser";
+static NSString *const kSyncedRegion = @"radar-syncedRegion";
 static NSDictionary *_lastRelativeAltitudeDataInMemory = nil;
 static NSDate *_lastPressureBackupTime = nil;
 static NSTimeInterval const kBackupInterval = 2.0; // 2 seconds
@@ -194,7 +201,7 @@ static NSTimeInterval const kBackupInterval = 2.0; // 2 seconds
             return _lastRelativeAltitudeDataInMemory;
         }
     }
-    
+
     // If in-memory value is invalid or too old, try to get from NSUserDefaults
     NSDictionary *savedData = [[NSUserDefaults standardUserDefaults] dictionaryForKey:kLastPressureData];
     if (savedData) {
@@ -205,14 +212,14 @@ static NSTimeInterval const kBackupInterval = 2.0; // 2 seconds
             return savedData;
         }
     }
-    
+
     return nil;
 }
 
 + (void)setLastRelativeAltitudeData:(NSDictionary *)lastPressureData {
     // Update in-memory value
     _lastRelativeAltitudeDataInMemory = lastPressureData;
-    
+
     // Check if we need to backup to disk
     NSDate *now = [NSDate date];
     if (!_lastPressureBackupTime || [now timeIntervalSinceDate:_lastPressureBackupTime] >= kBackupInterval) {
@@ -227,6 +234,59 @@ static NSTimeInterval const kBackupInterval = 2.0; // 2 seconds
 
 + (BOOL)notificationPermissionGranted {
     return [[NSUserDefaults standardUserDefaults] boolForKey:kNotificationPermissionGranted];
+}
+
++ (void)setNearbyGeofences:(NSArray<RadarGeofence *> *_Nullable)nearbyGeofences {
+    NSMutableArray *nearbyGeofencesArray = [NSMutableArray new];
+    NSMutableArray *nearbyGeofencesArrayIds = [NSMutableArray new];
+    for (RadarGeofence *geofence in nearbyGeofences) {
+        [nearbyGeofencesArray addObject:[geofence dictionaryValue]];
+        [nearbyGeofencesArrayIds addObject:geofence._id];
+    }
+    [[NSUserDefaults standardUserDefaults] setObject:nearbyGeofencesArray forKey:KNearbyGeofences];
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"nearbyGeofencesArray in RadarState:%@", nearbyGeofencesArray]];
+
+}
+
++ (NSArray<RadarGeofence *> *_Nullable)nearbyGeofences {
+    NSArray *nearbyGeofencesArray = [[NSUserDefaults standardUserDefaults] objectForKey:KNearbyGeofences];
+    if (!nearbyGeofencesArray) {
+        return nil;
+    }
+    NSMutableArray *nearbyGeofences = [NSMutableArray new];
+    for (NSDictionary *geofenceDict in nearbyGeofencesArray) {
+        RadarGeofence *geofence = [[RadarGeofence alloc] initWithObject:geofenceDict];
+        if (geofence) {
+            [nearbyGeofences addObject:geofence];
+        }
+    }
+    return nearbyGeofences;
+}
+
++ (void)setNearbyBeacons:(NSArray<RadarBeacon *> *_Nullable)nearbyBeacons {
+    NSMutableArray *nearbyBeaconsArray = [NSMutableArray new];
+    NSMutableArray *nearbyBeaconsArrayIds = [NSMutableArray new];
+    for (RadarBeacon *beacon in nearbyBeacons) {
+        [nearbyBeaconsArray addObject:[beacon dictionaryValue]];
+        [nearbyBeaconsArrayIds addObject:beacon._id];
+    }
+    [[NSUserDefaults standardUserDefaults] setObject:nearbyBeaconsArray forKey:kNearbyBeacons];
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"nearbyBeaconsArray in RadarState:%@", nearbyBeaconsArray]];
+}
+
++ (NSArray<RadarBeacon *> *_Nullable)nearbyBeacons {
+    NSArray *nearbyBeaconsArray = [[NSUserDefaults standardUserDefaults] objectForKey:kNearbyBeacons];
+    if (!nearbyBeaconsArray) {
+        return nil;
+    }
+    NSMutableArray *nearbyBeacons = [NSMutableArray new];
+    for (NSDictionary *beaconDict in nearbyBeaconsArray) {
+        RadarBeacon *beacon = [[RadarBeacon alloc] initWithObject:beaconDict];
+        if (beacon) {
+            [nearbyBeacons addObject:beacon];
+        }
+    }
+    return nearbyBeacons;
 }
 
 + (NSArray<NSDictionary *> *_Nullable)registeredNotifications {
@@ -248,5 +308,28 @@ static NSTimeInterval const kBackupInterval = 2.0; // 2 seconds
     [registeredNotifications addObject:notification];
     [RadarState setRegisteredNotifications:registeredNotifications];
 }
+
++ (CLCircularRegion *)syncedRegion {
+    NSDictionary *dict = [[NSUserDefaults standardUserDefaults] dictionaryForKey:kSyncedRegion];
+    CLCircularRegion *syncedRegion = [RadarUtils circularRegionForDictionary:dict];
+
+    return syncedRegion;
+}
+
++ (void)setSyncedRegion:(CLCircularRegion *)syncedRegion {
+    NSDictionary *dict = [RadarUtils dictionaryForCircularRegion:syncedRegion];
+    [[NSUserDefaults standardUserDefaults] setObject:dict forKey:kSyncedRegion];
+}
+
++ (void)setRadarUser:(RadarUser *_Nullable)radarUser {
+    NSDictionary *radarUserDict = [radarUser dictionaryValue];
+    [[NSUserDefaults standardUserDefaults] setObject:radarUserDict forKey:kRadarUser];
+}
+
++ (RadarUser *_Nullable)radarUser {
+    NSDictionary *radarUserDict = [[NSUserDefaults standardUserDefaults] objectForKey:kRadarUser];
+    return [[RadarUser alloc] initWithObject:radarUserDict];
+}
+
 
 @end
