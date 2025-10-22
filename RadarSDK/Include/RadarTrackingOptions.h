@@ -170,6 +170,16 @@ typedef NS_ENUM(NSInteger, RadarTrackingOptionsSyncLocations) {
 @property (nonatomic, assign) BOOL usePressure;
 
 /**
+ Determines the time interval between batch events.
+ */
+@property (nonatomic, assign) int batchInterval;
+
+/**
+ Determines the size of each batch.
+ */
+@property (nonatomic, assign) int batchSize;
+
+/**
  Updates about every 30 seconds while moving or stopped. Moderate battery usage. Shows the flashing blue status bar during tracking.
  @see https://developer.apple.com/documentation/corelocation/cllocationmanager/2923541-showsbackgroundlocationindicator
  */
