@@ -2,7 +2,6 @@
 //  MyRadarDelegate.swift
 //  Example
 //
-//  Created by ShiCheng Lu on 10/20/25.
 //  Copyright © 2025 Radar Labs, Inc. All rights reserved.
 //
 
@@ -27,15 +26,15 @@ class MyRadarDelegate: NSObject, RadarDelegate, ObservableObject {
         state?.lastTrackedLocation = location
         state?.user = user
     }
-    
+
     func didUpdateClientLocation(_ location: CLLocation, stopped: Bool, source: RadarLocationSource) {
-        
+
     }
-    
+
     func didFail(status: RadarStatus) {
-        
+
     }
-    
+
     func didLog(message: String) {
         state?.logs.append((state?.logs.count ?? 0, message))
     }
