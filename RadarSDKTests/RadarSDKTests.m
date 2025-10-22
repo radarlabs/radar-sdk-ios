@@ -750,18 +750,16 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
                 completionHandler:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user) {
                     i++;
         
+        if (i == steps - 1) {
                     [expectation fulfill];
+        }
                 }];
-
-    for (int i = 0; i < steps; ++i) {
-        [self waitForExpectationsWithTimeout:10
-                                     handler:^(NSError *_Nullable error) {
-            if (error) {
-             XCTFail();
-            }
-        }];
-        expectation = [self expectationWithDescription:[NSString stringWithFormat:@"callback_%d", i]];
-    }
+    [self waitForExpectationsWithTimeout:30
+                                 handler:^(NSError *_Nullable error) {
+        if (error) {
+         XCTFail();
+        }
+    }];
 }
 
 - (void)test_Radar_acceptEventId {

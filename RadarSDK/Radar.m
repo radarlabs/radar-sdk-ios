@@ -448,7 +448,6 @@
                                                                     timestamp:[NSDate new]];
                 BOOL stopped = (i == 0) || (i == coordinates.count - 1);
                 NSLog(@"MockTracking start %i", i);
-                dispatch_semaphore_t sem = dispatch_semaphore_create(0);
                 [[RadarAPIClient sharedInstance]
                     trackWithLocation:location
                               stopped:stopped
@@ -465,11 +464,7 @@
                             completionHandler(status, location, events, user);
                         }];
                     }
-                    dispatch_semaphore_signal(sem);
                 }];
-                
-                // wait up to 5 seconds for trackWithLocation to complete
-                dispatch_semaphore_wait(sem, NSEC_PER_SEC * 5);
                 
                 // since the queue is serial, sleeping here create a delay between completing the previous track and the start of the next track
                 // delay is applied between the completion of previous track and the start of next track
