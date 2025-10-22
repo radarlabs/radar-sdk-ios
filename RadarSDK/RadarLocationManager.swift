@@ -57,6 +57,7 @@ extension NotificationRequest {
         // trigger
         let center = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
         let region = CLCircularRegion(center: center, radius: radius, identifier: identifier)
+        region.notifyOnExit = false
         let trigger = UNLocationNotificationTrigger(region: region, repeats: repeats)
         
         // request
