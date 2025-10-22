@@ -377,7 +377,8 @@ class RadarLocationManager: NSObject {
         }
         
         let geofenceIds = geofenceRegions.keys.map { $0.dropFirst(geofencePrefix.count) }
-        RadarLogger.shared.debug("GeofenceSync with \(geofenceRegions.count) geofence regions and \(notifications.count) notifications | \(geofenceIds)")
+        RadarLogger.shared.debug("GeofenceSync using \(geofenceRegions.count) geofences: \(geofenceIds)")
+        RadarLogger.shared.debug("GeofenceSync using \(notifications.count) notifications: \(notifications.values)")
         
         Task {
             await removeAllExcept(geofences: &geofenceRegions, notifications: &notifications)
