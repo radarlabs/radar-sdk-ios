@@ -740,7 +740,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     int steps = 20;
     __block int i = 0;
 
-    XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
+    XCTestExpectation *expectation = [self expectationWithDescription:@"callback_0"];
 
     [Radar mockTrackingWithOrigin:origin
                       destination:destination
@@ -749,18 +749,19 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
                          interval:1
                 completionHandler:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user) {
                     i++;
-
-                    if (i == steps - 1) {
-                        [expectation fulfill];
-                    }
+        
+                    [expectation fulfill];
                 }];
 
-    [self waitForExpectationsWithTimeout:30
-                                 handler:^(NSError *_Nullable error) {
-                                     if (error) {
-                                         XCTFail();
-                                     }
-                                 }];
+    for (int i = 0; i < steps; ++i) {
+        [self waitForExpectationsWithTimeout:10
+                                     handler:^(NSError *_Nullable error) {
+            if (error) {
+             XCTFail();
+            }
+        }];
+        expectation = [self expectationWithDescription:[NSString stringWithFormat:@"callback_%d", i]];
+    }
 }
 
 - (void)test_Radar_acceptEventId {
