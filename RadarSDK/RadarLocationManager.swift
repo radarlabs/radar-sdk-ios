@@ -360,8 +360,14 @@ class RadarLocationManager: NSObject {
             
             // geofence
             if let region = region(for: geofence, id: id) {
-                geofenceRegions[id] = region
-                regionCount += 1
+                if (geofence.metadata?["radar:syncNotificationOnly"] as? Bool ?? false) != true {
+                    geofenceRegions[id] = region
+                    regionCount += 1
+                } else {
+                    RadarLogger.shared.debug("GeofenceSync skipped monitoring for geofence \(geofence._id) due to marked as notification only")
+                }
+            } else {
+                RadarLogger.shared.debug("GeofenceSync skipped monitoring for geofence \(geofence._id) due to invalid region definition")
             }
             
             if regionCount >= limit {

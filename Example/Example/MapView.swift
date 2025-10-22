@@ -11,23 +11,29 @@ import MapKit
 
 struct MapView: View {
     
-    @State var monitoringRegions: [CLCircularRegion] = [];
-    let timer = Timer.publish(every: 1.0, on: .main, in: .common).autoconnect()
+    @StateObject var state: ViewState
     
     var body: some View {
         if #available(iOS 17.0, *) {
             Map(initialPosition: .userLocation(fallback: .automatic)) {
                 UserAnnotation()
                 
-                ForEach(monitoringRegions, id:\.self) {region in
+                ForEach(state.monitoringRegions, id:\.self) {region in
                     let color = region.identifier.contains("bubble") ? Color.blue : Color.orange
                     MapCircle(center: region.center, radius: region.radius)
                         .foregroundStyle(color.opacity(0.2))
                         .stroke(color, lineWidth: 2)
                     
                 }
-            }.onReceive(timer) { _ in
-                monitoringRegions = Array(CLLocationManager().monitoredRegions) as? [CLCircularRegion] ?? []
+                ForEach(state.pendingNotifications, id:\.self) {request in
+                    if let trigger = request.trigger as? UNLocationNotificationTrigger,
+                       let region = trigger.region as? CLCircularRegion {
+                        let color = Color.green
+                        MapCircle(center: region.center, radius: region.radius)
+                            .foregroundStyle(color.opacity(0.2))
+                            .stroke(color, lineWidth: 2)
+                    }
+                }
             }
         } else {
             // Map with SwiftUI is not available before iOS 17
@@ -37,5 +43,5 @@ struct MapView: View {
 }
 
 #Preview {
-    MapView()
+    MapView(state: ViewState())
 }

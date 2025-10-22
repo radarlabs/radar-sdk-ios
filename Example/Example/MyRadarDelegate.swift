@@ -7,15 +7,8 @@
 
 import RadarSDK
 
-class RadarDelegateState: ObservableObject {
-    @Published var logs: [(Int, String)] = []
-    @Published var events: [RadarEvent] = []
-    @Published var user: RadarUser? = nil
-    @Published var lastTrackedLocation: CLLocation? = nil
-}
-
 class MyRadarDelegate: NSObject, RadarDelegate, ObservableObject {
-    var state: RadarDelegateState? = nil
+    var state: ViewState? = nil
     
     func didReceiveEvents(_ events: [RadarEvent], user: RadarUser?) {
         state?.events.append(contentsOf: events)
