@@ -448,7 +448,7 @@
                                                                  verticalAccuracy:-1
                                                                         timestamp:[NSDate new]];
                     BOOL stopped = (i == 0) || (i == coordinates.count - 1);
-
+                    NSLog(@"MockTracking %i", i);
                     [[RadarAPIClient sharedInstance]
                         trackWithLocation:location
                                   stopped:stopped
