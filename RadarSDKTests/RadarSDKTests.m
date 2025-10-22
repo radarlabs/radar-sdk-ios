@@ -21,6 +21,7 @@
 #import "RadarTripOptions.h"
 #import "RadarFileStorage.h"
 #import "RadarReplayBuffer.h"
+#import <os/log.h>
 
 @interface RadarSDKTests : XCTestCase
 
