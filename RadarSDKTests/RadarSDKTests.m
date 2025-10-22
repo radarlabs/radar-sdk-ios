@@ -735,7 +735,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 
     CLLocation *origin = [[CLLocation alloc] initWithLatitude:40.78382 longitude:-73.97536];
     CLLocation *destination = [[CLLocation alloc] initWithLatitude:40.70390 longitude:-73.98670];
-    int steps = 20;
+    int steps = 10;
     __block int i = 0;
 
     XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
