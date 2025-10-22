@@ -526,6 +526,9 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 
         [expectation fulfill];
     }];
+    
+    // simulate a location timeout without waiting for 20 seconds
+    [[RadarLocationManager sharedInstance] callCompletionHandlersWithStatus:RadarStatusErrorLocation location:nil];
 
     [self waitForExpectationsWithTimeout:30
                                  handler:^(NSError *_Nullable error) {
@@ -591,6 +594,9 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 
         [expectation fulfill];
     }];
+    
+    // simulate a location timeout without waiting for 20 seconds
+    [[RadarLocationManager sharedInstance] callCompletionHandlersWithStatus:RadarStatusErrorLocation location:nil];
 
     [self waitForExpectationsWithTimeout:30
                                  handler:^(NSError *_Nullable error) {
@@ -970,7 +976,10 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
         [expectation fulfill];
     }];
 
-    [self waitForExpectationsWithTimeout:60
+    // simulate a location timeout without waiting for 20 seconds
+    [[RadarLocationManager sharedInstance] callCompletionHandlersWithStatus:RadarStatusErrorLocation location:nil];
+    
+    [self waitForExpectationsWithTimeout:30
                                  handler:^(NSError *_Nullable error) {
                                      if (error) {
                                          XCTFail();
@@ -1077,7 +1086,10 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 
                     [expectation fulfill];
                 }];
-
+    
+    // simulate a location timeout without waiting for 20 seconds
+    [[RadarLocationManager sharedInstance] callCompletionHandlersWithStatus:RadarStatusErrorLocation location:nil];
+    
     [self waitForExpectationsWithTimeout:30
                                  handler:^(NSError *_Nullable error) {
                                      if (error) {
@@ -1236,7 +1248,10 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 
                        [expectation fulfill];
                    }];
-
+    
+    // simulate a location timeout without waiting for 20 seconds
+    [[RadarLocationManager sharedInstance] callCompletionHandlersWithStatus:RadarStatusErrorLocation location:nil];
+    
     [self waitForExpectationsWithTimeout:30
                                  handler:^(NSError *_Nullable error) {
                                      if (error) {
@@ -1390,6 +1405,9 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 
         [expectation fulfill];
     }];
+    
+    // simulate a location timeout without waiting for 20 seconds
+    [[RadarLocationManager sharedInstance] callCompletionHandlersWithStatus:RadarStatusErrorLocation location:nil];
 
     [self waitForExpectationsWithTimeout:30
                                  handler:^(NSError *_Nullable error) {
