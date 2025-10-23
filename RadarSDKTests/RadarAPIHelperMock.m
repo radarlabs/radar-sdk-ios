@@ -53,7 +53,6 @@
         status = self.mockStatus;
     }
     
-    NSLog(@"responding to %@ with %i", url, (int)status);
     completionHandler(status, response);
 }
 

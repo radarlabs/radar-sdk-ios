@@ -756,14 +756,14 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
                             steps:steps
                          interval:1
                 completionHandler:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user) {
-        NSLog(@"mock tracking complete received %i", i);
                     i++;
-
+                    // make a log here so that it doesn't look like the test is failing, this test takes a total of at least 20 seconds, could be more based on intermediate step times
+                    NSLog(@"test_Radar_mockTracking completed step %i", i);
                     if (i == steps - 1) { // last step, complete test
                         [expectation fulfill];
                     } else {
                         // set a timer for when the next completion hander must be completed, which will increment i and allow this callback to pass
-                        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, expire_timeout), dispatch_get_main_queue(), ^{
+                        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, expire_timeout), timer, ^{
                             expired_count++;
                             if (i < expired_count) {
                                 XCTFail(@"Did not receive next mock tracking in time, tracked %i times", i);
@@ -772,7 +772,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
                         });
                     }
                 }];
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, expire_timeout), dispatch_get_main_queue(), ^{
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, expire_timeout), timer, ^{
         expired_count++;
         if (i < expired_count) {
             XCTFail(@"Did not receive next mock tracking in time, tracked %i times", i);

@@ -445,7 +445,6 @@
                                                              verticalAccuracy:-1
                                                                     timestamp:[NSDate new]];
                 BOOL stopped = (i == 0) || (i == coordinates.count - 1);
-                NSLog(@"mock track %i", i);
                 [[RadarAPIClient sharedInstance]
                     trackWithLocation:location
                               stopped:stopped
@@ -456,8 +455,6 @@
                          indoorScan:nil
                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user,
                                         NSArray<RadarGeofence *> *_Nullable nearbyGeofences, RadarConfig *_Nullable config, RadarVerifiedLocationToken *_Nullable token) {
-                    
-                    NSLog(@"mock track complete %i", i);
                     if (completionHandler) {
                         [RadarUtils runOnMainThread:^{
                             completionHandler(status, location, events, user);
@@ -1460,7 +1457,6 @@
 }
 
 + (void)flushLogs {
-    NSLog(@"flush logs");
     NSArray<RadarLog *> *flushableLogs = [[RadarLogBuffer sharedInstance] flushableLogs];
     NSUInteger pendingLogCount = [flushableLogs count];
     if (pendingLogCount == 0) {
@@ -1471,13 +1467,10 @@
         [[RadarLogBuffer sharedInstance] onFlush:status == RadarStatusSuccess logs:flushableLogs];
     };
     
-NSLog(@"flush logs done getting logs");
     [[RadarAPIClient sharedInstance] syncLogs:flushableLogs
                             completionHandler:^(RadarStatus status) {
                                 if (onComplete) {
-                                    NSLog(@"flush logs calling complete");
                                     [RadarUtils runOnMainThread:^{
-                                        NSLog(@"flush logs running on main");
                                         onComplete(status);
                                     }];
                                 }

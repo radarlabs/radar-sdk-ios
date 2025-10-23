@@ -227,9 +227,6 @@
                    reason:(NSString * _Nullable)reason
             transactionId:(NSString * _Nullable)transactionId
         completionHandler:(RadarTrackAPICompletionHandler _Nonnull)completionHandler {
-    
-    NSLog(@"call track with location");
-    
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
         return completionHandler(RadarStatusErrorPublishableKey, nil, nil, nil, nil, nil, nil);
@@ -440,13 +437,10 @@
     }
 
     if (sdkConfiguration.useNotificationDiff) {
-        
-        NSLog(@"notification diff track");
         [RadarNotificationHelper getNotificationDiffWithCompletionHandler:^(NSArray *notificationsDelivered, NSArray *notificationsRemaining) {
             if (notificationsDelivered) {
                 params[@"notificationDiff"] = notificationsDelivered;
             }
-            NSLog(@"really starting api call");
 
             [[RadarAPIClient sharedInstance] makeTrackRequestWithParams:params
                                                                 options:options
@@ -460,7 +454,6 @@
                                                     completionHandler:completionHandler];
         }];
     } else {
-        NSLog(@"really starting api call");
         [[RadarAPIClient sharedInstance] makeTrackRequestWithParams:params
                                                             options:options
                                                             stopped:stopped
@@ -499,8 +492,6 @@
     NSMutableDictionary *requestParams = [params mutableCopy];
 
     BOOL replaying = options.replay == RadarTrackingOptionsReplayAll && replayCount > 0 && !verified;
-    
-    NSLog(@"make track request replaying %i", replaying);
     if (replaying) {
         [[RadarReplayBuffer sharedInstance] flushReplaysWithCompletionHandler:params completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
             if (status != RadarStatusSuccess) {
@@ -515,8 +506,6 @@
             completionHandler(status, nil, nil, nil, nil, nil, nil);
         }];
     } else {
-        
-        NSLog(@"make track request making http request");
         [self.apiHelper requestWithMethod:@"POST"
                                     url:url
                                 headers:headers
@@ -525,8 +514,6 @@
                             logPayload:YES
                         extendedTimeout:NO
                         completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
-            
-            NSLog(@"make track request http complete %i", status);
                             if (status != RadarStatusSuccess || !res) {
                                 if (options.replay == RadarTrackingOptionsReplayAll) {
                                     // create a copy of params that we can use to write to the buffer in case of request failure
@@ -543,19 +530,13 @@
 
                                 [[RadarDelegateHolder sharedInstance] didFailWithStatus:status];
                                 
-                                NSLog(@"make track request http failed, calling completion");
                                 return completionHandler(status, nil, nil, nil, nil, nil, nil);
                             }
             
-NSLog(@"a1");
                             [[RadarReplayBuffer sharedInstance] clearBuffer];
-            NSLog(@"a2");
                             [RadarState setLastFailedStoppedLocation:nil];
-            NSLog(@"a3");
                             [Radar flushLogs];
-            NSLog(@"a4");
                             [RadarSettings updateLastTrackedTime];
-            NSLog(@"a");
 
                             RadarConfig *config = [RadarConfig fromDictionary:res];
 
@@ -653,7 +634,6 @@ NSLog(@"a1");
                                     [[RadarBeaconManager sharedInstance] registerBeaconRegionNotificationsFromArray:beaconRegions];
                                 }
                                 
-                                NSLog(@"make track request http successful, calling completion");
                                 return completionHandler(RadarStatusSuccess, res, events, user, nearbyGeofences, config, token);
                             } else {
                                 [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"Setting %lu notifications remaining", (unsigned long)notificationsRemaining.count]];
@@ -662,7 +642,6 @@ NSLog(@"a1");
 
                             [[RadarDelegateHolder sharedInstance] didFailWithStatus:status];
             
-            NSLog(@"make track request http successful, no data, calling completion");
                             completionHandler(RadarStatusErrorServer, nil, nil, nil, nil, nil, nil);
                         }];
     }
