@@ -546,10 +546,14 @@
                                 NSLog(@"make track request http failed, calling completion");
                                 return completionHandler(status, nil, nil, nil, nil, nil, nil);
                             }
-
+            
+NSLog(@"a1");
                             [[RadarReplayBuffer sharedInstance] clearBuffer];
+            NSLog(@"a2");
                             [RadarState setLastFailedStoppedLocation:nil];
+            NSLog(@"a3");
                             [Radar flushLogs];
+            NSLog(@"a4");
                             [RadarSettings updateLastTrackedTime];
             NSLog(@"a");
 
@@ -575,7 +579,6 @@
                                     [[RadarInAppMessageManager shared] onInAppMessageReceivedWithMessages:inAppMessages];
                                 }
                             }
-            NSLog(@"b");
                                    
                             if (user) {
                                 BOOL inGeofences = user.geofences && user.geofences.count;
@@ -621,7 +624,6 @@
                                 [RadarState setBeaconIds:beaconIds];
                             }
             
-NSLog(@"c");
                             if (events && user) {
                                 [RadarSettings setId:user._id];
 

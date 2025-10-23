@@ -753,9 +753,8 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
                             steps:steps
                          interval:1
                 completionHandler:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user) {
+        NSLog(@"mock tracking complete received %i", i);
                     i++;
-        
-                    NSLog(@"mock tracking complete received %i", i);
 
                     if (i == steps - 1) { // last step, complete test
                         [expectation fulfill];
