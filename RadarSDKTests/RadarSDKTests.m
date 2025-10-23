@@ -761,7 +761,6 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
                     } else {
                         // set a timer for when the next completion hander must be completed, which will increment i and allow this callback to pass
                         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, expire_timeout), dispatch_get_main_queue(), ^{
-                            NSLog(@"MockTracking timer %d %d", expired_count, i);
                             expired_count++;
                             if (i < expired_count) {
                                 XCTFail(@"Did not receive next mock tracking in time, tracked %i times", i);
