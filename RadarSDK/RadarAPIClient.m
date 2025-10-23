@@ -526,7 +526,7 @@
                         extendedTimeout:NO
                         completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
             
-            NSLog(@"make track request http complete");
+            NSLog(@"make track request http complete %i", status);
                             if (status != RadarStatusSuccess || !res) {
                                 if (options.replay == RadarTrackingOptionsReplayAll) {
                                     // create a copy of params that we can use to write to the buffer in case of request failure

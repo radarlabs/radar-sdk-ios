@@ -733,7 +733,10 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusNotDetermined;
     self.apiHelperMock.mockStatus = RadarStatusSuccess;
     self.apiHelperMock.mockResponse = [RadarTestUtils jsonDictionaryFromResource:@"route_distance"];
-    [self.apiHelperMock setMockResponse:[RadarTestUtils jsonDictionaryFromResource:@"track"] forMethod:@"https://api.radar.io/v1/track"];
+    
+    // purposefully fail the track call here so the mockTracking does not try to flush logs
+    // completionHandlers should all still work as expected, the happy path behaviour is tested in test_Radar_trackOnce
+    [self.apiHelperMock setMockStatus:RadarStatusErrorUnknown forMethod:@"https://api.radar.io/v1/track"];
 
     CLLocation *origin = [[CLLocation alloc] initWithLatitude:40.78382 longitude:-73.97536];
     CLLocation *destination = [[CLLocation alloc] initWithLatitude:40.70390 longitude:-73.98670];

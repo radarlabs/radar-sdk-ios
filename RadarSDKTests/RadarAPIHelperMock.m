@@ -10,6 +10,7 @@
 @interface RadarAPIHelperMock ()
 
 @property (nonnull, strong, nonatomic) NSMutableDictionary *mockResponses;
+@property (nonnull, strong, nonatomic) NSMutableDictionary *mockStatuses;
 
 @end
 
@@ -20,6 +21,7 @@
 
     if (self) {
         self.mockResponses = [NSMutableDictionary new];
+        self.mockStatuses = [NSMutableDictionary new];
     }
 
     return self;
@@ -39,16 +41,32 @@
     self.lastHeaders = headers;
     self.lastParams = params;
     
-    NSDictionary *mockResponseForUrl = self.mockResponses[url];
-
-    if (mockResponseForUrl) {
-        completionHandler(self.mockStatus, mockResponseForUrl);
-    } else {
-        completionHandler(self.mockStatus, self.mockResponse);
+    NSDictionary *response = self.mockResponses[url];
+    if (response == nil) {
+        response = self.mockResponse;
     }
+    
+    RadarStatus status;
+    if (self.mockStatuses[url]) {
+        status = (RadarStatus)[self.mockStatuses[url] integerValue];
+    } else {
+        status = self.mockStatus;
+    }
+    
+    NSLog(@"responding to %@ with %i", url, (int)status);
+    completionHandler(status, response);
 }
 
 - (void)setMockResponse:(NSDictionary *)response forMethod:(NSString *)urlString {
+    self.mockResponses[urlString] = response;
+}
+
+- (void)setMockStatus:(RadarStatus)mockStatus forMethod:(NSString *)urlString {
+    self.mockStatuses[urlString] = @(mockStatus);
+}
+
+- (void)setMockStatus:(RadarStatus)mockStatus response:(NSDictionary*)response forMethod:(NSString *)urlString {
+    self.mockStatuses[urlString] = @(mockStatus);
     self.mockResponses[urlString] = response;
 }
 
