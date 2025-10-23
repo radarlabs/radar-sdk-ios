@@ -734,8 +734,10 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     self.apiHelperMock.mockStatus = RadarStatusSuccess;
     self.apiHelperMock.mockResponse = [RadarTestUtils jsonDictionaryFromResource:@"route_distance"];
     
-    // purposefully fail the track call here so the mockTracking does not try to flush logs
-    // completionHandlers should all still work as expected, the happy path behaviour is tested in test_Radar_trackOnce
+    // purposefully fail the track call here so the mockTracking does not try to flush logs (almost instant to up to 10-20 seconds)
+    // to skip this step of flush logs, we are returning an error on track so it calls the completion hander without log flushing
+    // the happy path behaviour is tested in test_Radar_trackOnce
+    // TODO: in the future, it would be good to have log buffer mocked, so we can just pretend to have flushed logs instead of taking the short path in the completion handler
     [self.apiHelperMock setMockStatus:RadarStatusErrorUnknown forMethod:@"https://api.radar.io/v1/track"];
 
     CLLocation *origin = [[CLLocation alloc] initWithLatitude:40.78382 longitude:-73.97536];
