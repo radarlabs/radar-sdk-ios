@@ -227,6 +227,9 @@
                    reason:(NSString * _Nullable)reason
             transactionId:(NSString * _Nullable)transactionId
         completionHandler:(RadarTrackAPICompletionHandler _Nonnull)completionHandler {
+    
+    NSLog(@"call track with location");
+    
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
         return completionHandler(RadarStatusErrorPublishableKey, nil, nil, nil, nil, nil, nil);
@@ -437,10 +440,13 @@
     }
 
     if (sdkConfiguration.useNotificationDiff) {
+        
+        NSLog(@"notification diff track");
         [RadarNotificationHelper getNotificationDiffWithCompletionHandler:^(NSArray *notificationsDelivered, NSArray *notificationsRemaining) {
             if (notificationsDelivered) {
                 params[@"notificationDiff"] = notificationsDelivered;
             }
+            NSLog(@"really starting api call");
 
             [[RadarAPIClient sharedInstance] makeTrackRequestWithParams:params
                                                                 options:options
@@ -454,6 +460,7 @@
                                                     completionHandler:completionHandler];
         }];
     } else {
+        NSLog(@"really starting api call");
         [[RadarAPIClient sharedInstance] makeTrackRequestWithParams:params
                                                             options:options
                                                             stopped:stopped

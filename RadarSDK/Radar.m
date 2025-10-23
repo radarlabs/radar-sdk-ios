@@ -435,9 +435,7 @@
         } else if (intervalLimit > 60) {
             intervalLimit = 60;
         }
-
         dispatch_queue_t mockTrackingQueue = dispatch_queue_create("radar.mockTrackingQueue", DISPATCH_QUEUE_SERIAL);
-        
         for (int i = 0; i < coordinates.count; ++i) {
             dispatch_async(mockTrackingQueue, ^{
                 RadarCoordinate *coordinate = coordinates[i];
@@ -447,6 +445,7 @@
                                                              verticalAccuracy:-1
                                                                     timestamp:[NSDate new]];
                 BOOL stopped = (i == 0) || (i == coordinates.count - 1);
+                NSLog(@"mock track %i", i);
                 [[RadarAPIClient sharedInstance]
                     trackWithLocation:location
                               stopped:stopped
@@ -457,6 +456,8 @@
                          indoorScan:nil
                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user,
                                         NSArray<RadarGeofence *> *_Nullable nearbyGeofences, RadarConfig *_Nullable config, RadarVerifiedLocationToken *_Nullable token) {
+                    
+                    NSLog(@"mock track complete %i", i);
                     if (completionHandler) {
                         [RadarUtils runOnMainThread:^{
                             completionHandler(status, location, events, user);
