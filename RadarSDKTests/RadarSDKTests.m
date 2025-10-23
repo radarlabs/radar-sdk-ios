@@ -739,9 +739,14 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     CLLocation *destination = [[CLLocation alloc] initWithLatitude:40.70390 longitude:-73.98670];
     int steps = 20;
     __block int i = 0;
+    __block int expired_count = 0;
 
-    XCTestExpectation *expectation = [self expectationWithDescription:@"callback_0"];
-
+    dispatch_queue_t timer = dispatch_queue_create("mockTrackingTimer", DISPATCH_QUEUE_SERIAL);
+    int64_t expire_timeout = (int64_t)(5.0 * NSEC_PER_SEC);
+    
+    self.continueAfterFailure = false;
+    
+    XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
     [Radar mockTrackingWithOrigin:origin
                       destination:destination
                              mode:RadarRouteModeCar
@@ -750,11 +755,28 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
                 completionHandler:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user) {
                     i++;
         
-        if (i == steps - 1) {
-                    [expectation fulfill];
-        }
+
+                    if (i == steps - 1) { // last step, complete test
+                        [expectation fulfill];
+                    } else {
+                        // set a timer for when the next completion hander must be completed, which will increment i and allow this callback to pass
+                        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, expire_timeout), dispatch_get_main_queue(), ^{
+                            NSLog(@"MockTracking timer %d %d", expired_count, i);
+                            expired_count++;
+                            if (i < expired_count) {
+                                XCTFail(@"Did not receive next mock tracking in time, tracked %i times", i);
+                                
+                            }
+                        });
+                    }
                 }];
-    [self waitForExpectationsWithTimeout:30
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, expire_timeout), dispatch_get_main_queue(), ^{
+        expired_count++;
+        if (i < expired_count) {
+            XCTFail(@"Did not receive next mock tracking in time, tracked %i times", i);
+        }
+    });
+    [self waitForExpectationsWithTimeout:(expire_timeout * 20)
                                  handler:^(NSError *_Nullable error) {
         if (error) {
          XCTFail();
