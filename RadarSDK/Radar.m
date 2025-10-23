@@ -1460,20 +1460,24 @@
 }
 
 + (void)flushLogs {
-    NSArray<RadarLog *> *flushableLogs = [[RadarLogBuffer sharedInstance] flushableLogs]; 
+    NSLog(@"flush logs");
+    NSArray<RadarLog *> *flushableLogs = [[RadarLogBuffer sharedInstance] flushableLogs];
     NSUInteger pendingLogCount = [flushableLogs count];
     if (pendingLogCount == 0) {
         return;
     }
-
+    
     RadarSyncLogsAPICompletionHandler onComplete = ^(RadarStatus status) {
         [[RadarLogBuffer sharedInstance] onFlush:status == RadarStatusSuccess logs:flushableLogs];
     };
-
+    
+NSLog(@"flush logs done getting logs");
     [[RadarAPIClient sharedInstance] syncLogs:flushableLogs
                             completionHandler:^(RadarStatus status) {
                                 if (onComplete) {
+                                    NSLog(@"flush logs calling complete");
                                     [RadarUtils runOnMainThread:^{
+                                        NSLog(@"flush logs running on main");
                                         onComplete(status);
                                     }];
                                 }
