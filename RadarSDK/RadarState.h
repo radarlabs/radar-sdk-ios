@@ -6,6 +6,7 @@
 //
 
 #import <CoreLocation/CoreLocation.h>
+#import <CoreMotion/CoreMotion.h>
 #import <Foundation/Foundation.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -40,6 +41,8 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)setLastMotionActivityData:(NSDictionary *_Nullable)lastMotionActivityData;
 + (void)setNotificationPermissionGranted:(BOOL)granted;
 + (BOOL)notificationPermissionGranted;
++ (void)setMotionAuthorizationStatus:(CMAuthorizationStatus)status;
++ (CMAuthorizationStatus)motionAuthorizationStatus;
 + (NSArray<NSDictionary *> *_Nullable)registeredNotifications;
 + (void)setRegisteredNotifications:(NSArray<NSDictionary *> *_Nullable)registeredNotifications;
 + (void)addRegisteredNotification:(NSDictionary *)registeredNotification;
