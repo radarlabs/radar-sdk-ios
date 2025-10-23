@@ -437,10 +437,13 @@
     }
 
     if (sdkConfiguration.useNotificationDiff) {
+        
+        NSLog(@"notification diff track");
         [RadarNotificationHelper getNotificationDiffWithCompletionHandler:^(NSArray *notificationsDelivered, NSArray *notificationsRemaining) {
             if (notificationsDelivered) {
                 params[@"notificationDiff"] = notificationsDelivered;
             }
+            NSLog(@"really starting api call");
 
             [[RadarAPIClient sharedInstance] makeTrackRequestWithParams:params
                                                                 options:options
@@ -454,6 +457,7 @@
                                                     completionHandler:completionHandler];
         }];
     } else {
+        NSLog(@"really starting api call");
         [[RadarAPIClient sharedInstance] makeTrackRequestWithParams:params
                                                             options:options
                                                             stopped:stopped
