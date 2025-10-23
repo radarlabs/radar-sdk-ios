@@ -551,6 +551,7 @@
                             [RadarState setLastFailedStoppedLocation:nil];
                             [Radar flushLogs];
                             [RadarSettings updateLastTrackedTime];
+            NSLog(@"a");
 
                             RadarConfig *config = [RadarConfig fromDictionary:res];
 
@@ -574,6 +575,7 @@
                                     [[RadarInAppMessageManager shared] onInAppMessageReceivedWithMessages:inAppMessages];
                                 }
                             }
+            NSLog(@"b");
                                    
                             if (user) {
                                 BOOL inGeofences = user.geofences && user.geofences.count;
@@ -618,7 +620,8 @@
                                 }
                                 [RadarState setBeaconIds:beaconIds];
                             }
-
+            
+NSLog(@"c");
                             if (events && user) {
                                 [RadarSettings setId:user._id];
 
