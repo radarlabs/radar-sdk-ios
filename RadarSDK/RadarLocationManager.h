@@ -16,6 +16,17 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+API_AVAILABLE(ios(13.0))
+@interface RadarLocationManagerSwift : NSObject
+
+@property (nonatomic, strong) CLLocationManager * _Nullable locationManager;
+
++ (RadarLocationManagerSwift * _Nonnull)shared;
+- (void)replaceMonitoredRegionsWithGeofences:(NSArray<RadarGeofence *> * _Nonnull)geofences;
+- (nonnull instancetype)initWithLocationManager:(CLLocationManager * _Nonnull)locationManager;
+@end
+
+
 @interface RadarLocationManager : NSObject<CLLocationManagerDelegate>
 
 @property (nonnull, strong, nonatomic) CLLocationManager *locationManager;

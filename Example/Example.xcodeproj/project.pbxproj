@@ -19,6 +19,7 @@
 		F61886C12EA7DB440072E87C /* MyRadarDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F61886C02EA7DB3F0072E87C /* MyRadarDelegate.swift */; };
 		F61886C32EA7DB5F0072E87C /* LogsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F61886C22EA7DB5C0072E87C /* LogsView.swift */; };
 		F61886C52EA7DC820072E87C /* MapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F61886C42EA7DC800072E87C /* MapView.swift */; };
+		F61886E92EA91CF60072E87C /* DebugView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F61886E82EA91CF60072E87C /* DebugView.swift */; };
 		F625D7F92C3337650024D1E7 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F625D7F82C3337650024D1E7 /* Launch Screen.storyboard */; };
 		F6513F602E6B736200523472 /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6513F5F2E6B736200523472 /* MainView.swift */; };
 		F66DAD6A2E707F0700896773 /* waypoints.gpx in Sources */ = {isa = PBXBuildFile; fileRef = F66DAD642E707F0300896773 /* waypoints.gpx */; };
@@ -85,6 +86,7 @@
 		F61886C02EA7DB3F0072E87C /* MyRadarDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyRadarDelegate.swift; sourceTree = "<group>"; };
 		F61886C22EA7DB5C0072E87C /* LogsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogsView.swift; sourceTree = "<group>"; };
 		F61886C42EA7DC800072E87C /* MapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapView.swift; sourceTree = "<group>"; };
+		F61886E82EA91CF60072E87C /* DebugView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugView.swift; sourceTree = "<group>"; };
 		F625D7F82C3337650024D1E7 /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
 		F6513F5F2E6B736200523472 /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
 		F66DAD642E707F0300896773 /* waypoints.gpx */ = {isa = PBXFileReference; lastKnownFileType = text; path = waypoints.gpx; sourceTree = "<group>"; };
@@ -132,6 +134,7 @@
 				F61886C42EA7DC800072E87C /* MapView.swift */,
 				F61886C02EA7DB3F0072E87C /* MyRadarDelegate.swift */,
 				F61886B92EA7DB180072E87C /* TestsView.swift */,
+				F61886E82EA91CF60072E87C /* DebugView.swift */,
 				F61886C22EA7DB5C0072E87C /* LogsView.swift */,
 				F66DAD642E707F0300896773 /* waypoints.gpx */,
 				DD291168230D0AF900049D3A /* Utils.swift */,
@@ -288,6 +291,7 @@
 				F66DAD6A2E707F0700896773 /* waypoints.gpx in Sources */,
 				F61886C52EA7DC820072E87C /* MapView.swift in Sources */,
 				DD236D27230A006700EB88F9 /* AppDelegate.swift in Sources */,
+				F61886E92EA91CF60072E87C /* DebugView.swift in Sources */,
 				F6513F602E6B736200523472 /* MainView.swift in Sources */,
 				F61886C32EA7DB5F0072E87C /* LogsView.swift in Sources */,
 				F61886C12EA7DB440072E87C /* MyRadarDelegate.swift in Sources */,
@@ -350,7 +354,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -405,7 +409,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;

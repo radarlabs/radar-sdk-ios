@@ -33,6 +33,7 @@
     _useForegroundLocationUpdatedAtMsDiff = NO;
     _useNotificationDiff = NO;
     _syncAfterSetUser = NO;
+    _useImprovedSyncLogic = NO;
 
     if (dict == nil) {
         return self;
@@ -92,6 +93,11 @@
     if (syncAfterSetUserObj && [syncAfterSetUserObj isKindOfClass:[NSNumber class]]) {
         _syncAfterSetUser = [(NSNumber *)syncAfterSetUserObj boolValue];
     }
+    
+    NSObject *useImprovedSyncLogicObj = dict[@"useImprovedSyncLogic"];
+    if (useImprovedSyncLogicObj && [useImprovedSyncLogicObj isKindOfClass:[NSNumber class]]) {
+        _useImprovedSyncLogic = [(NSNumber *)useImprovedSyncLogicObj boolValue];
+    }
 
     return self;
 }
@@ -110,6 +116,7 @@
     dict[@"useForegroundLocationUpdatedAtMsDiff"] = @(_useForegroundLocationUpdatedAtMsDiff);
     dict[@"useNotificationDiff"] = @(_useNotificationDiff);
     dict[@"syncAfterSetUser"] = @(_syncAfterSetUser);
+    dict[@"useImprovedSyncLogic"] = @(_useImprovedSyncLogic);
     
     return dict;
 }

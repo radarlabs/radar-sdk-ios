@@ -320,19 +320,22 @@ static dispatch_semaphore_t notificationSemaphore;
     [notificationCenter getPendingNotificationRequestsWithCompletionHandler:^(NSArray<UNNotificationRequest *> *requests) {
         NSMutableArray *currentNotifications = [NSMutableArray new];
         
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"NotificationDiff processing difference between registered and pending notifications"]];
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"NotificationDiff registered notifications list: %@", registeredNotifications]];
+        
         for (UNNotificationRequest *request in requests) {
             if (request.content.userInfo) {
                 [currentNotifications addObject:request.content.userInfo];
-                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Found pending registered notification | userInfo = %@", request.content.userInfo]];
             }
         }
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"NotificationDiff active pending notifications list: %@", currentNotifications]];
         
         NSMutableArray *notificationsDelivered = [NSMutableArray arrayWithArray:registeredNotifications];
 
         [notificationsDelivered removeObjectsInArray:currentNotifications];
 
         if (completionHandler) {
-            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Setting %lu notifications remaining after re-registering", (unsigned long)notificationsDelivered.count]];
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"NotificationDiff Delivered %lu notifications, %lu remaining", (unsigned long)notificationsDelivered.count, (unsigned long)currentNotifications.count]];
             completionHandler(notificationsDelivered, currentNotifications);
         }
     }];
