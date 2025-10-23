@@ -449,7 +449,6 @@
                                                                         timestamp:[NSDate new]];
                     BOOL stopped = (i == 0) || (i == coordinates.count - 1);
 
-                    NSLog(@"Before track %i", i);
                     [[RadarAPIClient sharedInstance]
                         trackWithLocation:location
                                   stopped:stopped
@@ -460,8 +459,6 @@
                              indoorScan:nil
                         completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user,
                                             NSArray<RadarGeofence *> *_Nullable nearbyGeofences, RadarConfig *_Nullable config, RadarVerifiedLocationToken *_Nullable token) {
-                        
-                            NSLog(@"Completed track %i", i);
                             if (completionHandler) {
                                 [RadarUtils runOnMainThread:^{
                                     completionHandler(status, location, events, user);
