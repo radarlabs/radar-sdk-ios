@@ -404,70 +404,77 @@
                         units:RadarRouteUnitsMetric
                geometryPoints:steps
             completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, RadarRoutes *_Nullable routes) {
-        NSArray<RadarCoordinate *> *coordinates;
-        if (routes) {
-            if (mode == RadarRouteModeFoot && routes.foot && routes.foot.geometry) {
-                coordinates = routes.foot.geometry.coordinates;
-            } else if (mode == RadarRouteModeBike && routes.bike && routes.bike.geometry) {
-                coordinates = routes.bike.geometry.coordinates;
-            } else if (mode == RadarRouteModeCar && routes.car && routes.car.geometry) {
-                coordinates = routes.car.geometry.coordinates;
-            } else if (mode == RadarRouteModeTruck && routes.truck && routes.truck.geometry) {
-                coordinates = routes.truck.geometry.coordinates;
-            } else if (mode == RadarRouteModeMotorbike && routes.motorbike && routes.motorbike.geometry) {
-                coordinates = routes.motorbike.geometry.coordinates;
-            }
-        }
+                NSArray<RadarCoordinate *> *coordinates;
+                if (routes) {
+                    if (mode == RadarRouteModeFoot && routes.foot && routes.foot.geometry) {
+                        coordinates = routes.foot.geometry.coordinates;
+                    } else if (mode == RadarRouteModeBike && routes.bike && routes.bike.geometry) {
+                        coordinates = routes.bike.geometry.coordinates;
+                    } else if (mode == RadarRouteModeCar && routes.car && routes.car.geometry) {
+                        coordinates = routes.car.geometry.coordinates;
+                    } else if (mode == RadarRouteModeTruck && routes.truck && routes.truck.geometry) {
+                        coordinates = routes.truck.geometry.coordinates;
+                    } else if (mode == RadarRouteModeMotorbike && routes.motorbike && routes.motorbike.geometry) {
+                        coordinates = routes.motorbike.geometry.coordinates;
+                    }
+                }
 
-        if (!coordinates) {
-            if (completionHandler) {
-                [RadarUtils runOnMainThread:^{
-                    completionHandler(status, nil, nil, nil);
-                }];
-            }
-
-            return;
-        }
-
-        NSTimeInterval intervalLimit = interval;
-        if (intervalLimit < 1) {
-            intervalLimit = 1;
-        } else if (intervalLimit > 60) {
-            intervalLimit = 60;
-        }
-        dispatch_queue_t mockTrackingQueue = dispatch_queue_create("radar.mockTrackingQueue", DISPATCH_QUEUE_SERIAL);
-        for (int i = 0; i < coordinates.count; ++i) {
-            dispatch_async(mockTrackingQueue, ^{
-                RadarCoordinate *coordinate = coordinates[i];
-                CLLocation *location = [[CLLocation alloc] initWithCoordinate:coordinate.coordinate
-                                                                     altitude:-1
-                                                           horizontalAccuracy:5
-                                                             verticalAccuracy:-1
-                                                                    timestamp:[NSDate new]];
-                BOOL stopped = (i == 0) || (i == coordinates.count - 1);
-                [[RadarAPIClient sharedInstance]
-                    trackWithLocation:location
-                              stopped:stopped
-                           foreground:NO
-                               source:RadarLocationSourceMockLocation
-                             replayed:NO
-                              beacons:nil
-                         indoorScan:nil
-                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user,
-                                        NSArray<RadarGeofence *> *_Nullable nearbyGeofences, RadarConfig *_Nullable config, RadarVerifiedLocationToken *_Nullable token) {
+                if (!coordinates) {
                     if (completionHandler) {
                         [RadarUtils runOnMainThread:^{
-                            completionHandler(status, location, events, user);
+                            completionHandler(status, nil, nil, nil);
                         }];
                     }
-                }];
-                
-                // since the queue is serial, sleeping here create a delay between completing the previous track and the start of the next track
-                // delay is applied between the completion of previous track and the start of next track
-                sleep(intervalLimit);
-            });
-        }
-    }];
+
+                    return;
+                }
+
+                NSTimeInterval intervalLimit = interval;
+                if (intervalLimit < 1) {
+                    intervalLimit = 1;
+                } else if (intervalLimit > 60) {
+                    intervalLimit = 60;
+                }
+
+                __block int i = 0;
+                __block void (^track)(void);
+                __block __weak void (^weakTrack)(void);
+                track = ^{
+                    weakTrack = track;
+                    RadarCoordinate *coordinate = coordinates[i];
+                    CLLocation *location = [[CLLocation alloc] initWithCoordinate:coordinate.coordinate
+                                                                         altitude:-1
+                                                               horizontalAccuracy:5
+                                                                 verticalAccuracy:-1
+                                                                        timestamp:[NSDate new]];
+                    BOOL stopped = (i == 0) || (i == coordinates.count - 1);
+
+                    [[RadarAPIClient sharedInstance]
+                        trackWithLocation:location
+                                  stopped:stopped
+                               foreground:NO
+                                   source:RadarLocationSourceMockLocation
+                                 replayed:NO
+                                  beacons:nil
+                             indoorScan:nil
+                        completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user,
+                                            NSArray<RadarGeofence *> *_Nullable nearbyGeofences, RadarConfig *_Nullable config, RadarVerifiedLocationToken *_Nullable token) {
+                            if (completionHandler) {
+                                [RadarUtils runOnMainThread:^{
+                                    completionHandler(status, location, events, user);
+                                }];
+                            }
+
+                            if (i < coordinates.count - 1) {
+                                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(intervalLimit * NSEC_PER_SEC)), dispatch_get_main_queue(), weakTrack);
+                            }
+
+                            i++;
+                        }];
+                };
+
+                track();
+            }];
 }
 
 + (void)stopTracking {
@@ -1457,16 +1464,16 @@
 }
 
 + (void)flushLogs {
-    NSArray<RadarLog *> *flushableLogs = [[RadarLogBuffer sharedInstance] flushableLogs];
+    NSArray<RadarLog *> *flushableLogs = [[RadarLogBuffer sharedInstance] flushableLogs]; 
     NSUInteger pendingLogCount = [flushableLogs count];
     if (pendingLogCount == 0) {
         return;
     }
-    
+
     RadarSyncLogsAPICompletionHandler onComplete = ^(RadarStatus status) {
         [[RadarLogBuffer sharedInstance] onFlush:status == RadarStatusSuccess logs:flushableLogs];
     };
-    
+
     [[RadarAPIClient sharedInstance] syncLogs:flushableLogs
                             completionHandler:^(RadarStatus status) {
                                 if (onComplete) {
