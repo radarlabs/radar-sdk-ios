@@ -21,6 +21,7 @@
 #import "RadarTripOptions.h"
 #import "RadarFileStorage.h"
 #import "RadarReplayBuffer.h"
+#import <os/log.h>
 
 @interface RadarSDKTests : XCTestCase
 
@@ -526,6 +527,9 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 
         [expectation fulfill];
     }];
+    
+    // simulate a location timeout without waiting for 20 seconds
+    [[RadarLocationManager sharedInstance] callCompletionHandlersWithStatus:RadarStatusErrorLocation location:nil];
 
     [self waitForExpectationsWithTimeout:30
                                  handler:^(NSError *_Nullable error) {
@@ -591,6 +595,9 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 
         [expectation fulfill];
     }];
+    
+    // simulate a location timeout without waiting for 20 seconds
+    [[RadarLocationManager sharedInstance] callCompletionHandlersWithStatus:RadarStatusErrorLocation location:nil];
 
     [self waitForExpectationsWithTimeout:30
                                  handler:^(NSError *_Nullable error) {
@@ -726,14 +733,25 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusNotDetermined;
     self.apiHelperMock.mockStatus = RadarStatusSuccess;
     self.apiHelperMock.mockResponse = [RadarTestUtils jsonDictionaryFromResource:@"route_distance"];
+    
+    // purposefully fail the track call here so the mockTracking does not try to flush logs (almost instant to up to 10-20 seconds)
+    // to skip this step of flush logs, we are returning an error on track so it calls the completion hander without log flushing
+    // the happy path behaviour is tested in test_Radar_trackOnce
+    // TODO: in the future, it would be good to have log buffer mocked, so we can just pretend to have flushed logs instead of taking the short path in the completion handler
+    [self.apiHelperMock setMockStatus:RadarStatusErrorUnknown forMethod:@"https://api.radar.io/v1/track"];
 
     CLLocation *origin = [[CLLocation alloc] initWithLatitude:40.78382 longitude:-73.97536];
     CLLocation *destination = [[CLLocation alloc] initWithLatitude:40.70390 longitude:-73.98670];
     int steps = 20;
     __block int i = 0;
+    __block int expired_count = 0;
 
+    dispatch_queue_t timer = dispatch_queue_create("mockTrackingTimer", DISPATCH_QUEUE_SERIAL);
+    int64_t expire_timeout = (int64_t)(10.0 * NSEC_PER_SEC);
+    
+    self.continueAfterFailure = false;
+    
     XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
-
     [Radar mockTrackingWithOrigin:origin
                       destination:destination
                              mode:RadarRouteModeCar
@@ -741,18 +759,33 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
                          interval:1
                 completionHandler:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user) {
                     i++;
-
-                    if (i == steps - 1) {
+                    // make a log here so that it doesn't look like the test is failing, this test takes a total of at least 20 seconds, could be more based on intermediate step times
+                    NSLog(@"test_Radar_mockTracking completed step %i", i);
+                    if (i == steps - 1) { // last step, complete test
                         [expectation fulfill];
+                    } else {
+                        // set a timer for when the next completion hander must be completed, which will increment i and allow this callback to pass
+                        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, expire_timeout), timer, ^{
+                            expired_count++;
+                            if (i < expired_count) {
+                                XCTFail(@"Did not receive next mock tracking in time, tracked %i times", i);
+                                
+                            }
+                        });
                     }
                 }];
-
-    [self waitForExpectationsWithTimeout:30
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, expire_timeout), timer, ^{
+        expired_count++;
+        if (i < expired_count) {
+            XCTFail(@"Did not receive next mock tracking in time, tracked %i times", i);
+        }
+    });
+    [self waitForExpectationsWithTimeout:(expire_timeout * 20)
                                  handler:^(NSError *_Nullable error) {
-                                     if (error) {
-                                         XCTFail();
-                                     }
-                                 }];
+        if (error) {
+         XCTFail();
+        }
+    }];
 }
 
 - (void)test_Radar_acceptEventId {
@@ -970,7 +1003,10 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
         [expectation fulfill];
     }];
 
-    [self waitForExpectationsWithTimeout:60
+    // simulate a location timeout without waiting for 20 seconds
+    [[RadarLocationManager sharedInstance] callCompletionHandlersWithStatus:RadarStatusErrorLocation location:nil];
+    
+    [self waitForExpectationsWithTimeout:30
                                  handler:^(NSError *_Nullable error) {
                                      if (error) {
                                          XCTFail();
@@ -1077,7 +1113,10 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 
                     [expectation fulfill];
                 }];
-
+    
+    // simulate a location timeout without waiting for 20 seconds
+    [[RadarLocationManager sharedInstance] callCompletionHandlersWithStatus:RadarStatusErrorLocation location:nil];
+    
     [self waitForExpectationsWithTimeout:30
                                  handler:^(NSError *_Nullable error) {
                                      if (error) {
@@ -1236,7 +1275,10 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 
                        [expectation fulfill];
                    }];
-
+    
+    // simulate a location timeout without waiting for 20 seconds
+    [[RadarLocationManager sharedInstance] callCompletionHandlersWithStatus:RadarStatusErrorLocation location:nil];
+    
     [self waitForExpectationsWithTimeout:30
                                  handler:^(NSError *_Nullable error) {
                                      if (error) {
@@ -1390,6 +1432,9 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 
         [expectation fulfill];
     }];
+    
+    // simulate a location timeout without waiting for 20 seconds
+    [[RadarLocationManager sharedInstance] callCompletionHandlersWithStatus:RadarStatusErrorLocation location:nil];
 
     [self waitForExpectationsWithTimeout:30
                                  handler:^(NSError *_Nullable error) {

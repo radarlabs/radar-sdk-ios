@@ -70,8 +70,11 @@
             [Radar sendLog:level type:type message:message];
 
             NSString *log = [NSString stringWithFormat:@"%@ | backgroundTimeRemaining = %g", message, [RadarUtils backgroundTimeRemaining]];
-
-            os_log(OS_LOG_DEFAULT, "%@", log);
+            
+            // don't output the log to console in testing
+            if (NSClassFromString(@"XCTestCase") == nil) {
+                os_log(OS_LOG_DEFAULT, "%@", log);
+            }
 
             [[RadarDelegateHolder sharedInstance] didLogMessage:log];
         });
