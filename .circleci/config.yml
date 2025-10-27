@@ -26,6 +26,9 @@ jobs:
           name: Test
           command: make clean test-pretty
       - run:
+          name: Test Swift
+          command: make clean test-swift
+      - run:
           name: Docs
           command: make docs
       - run:

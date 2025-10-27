@@ -23,6 +23,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, nullable) NSDictionary *lastParams;
 
 - (void)setMockResponse:(NSDictionary *)response forMethod:(NSString *)urlString;
+- (void)setMockStatus:(RadarStatus)mockStatus forMethod:(NSString *)urlString;
+- (void)setMockStatus:(RadarStatus)mockStatus response:(NSDictionary*)response forMethod:(NSString *)urlString;
 
 @end
 

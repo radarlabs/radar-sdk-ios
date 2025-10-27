@@ -529,10 +529,10 @@
                                 }
 
                                 [[RadarDelegateHolder sharedInstance] didFailWithStatus:status];
-
+                                
                                 return completionHandler(status, nil, nil, nil, nil, nil, nil);
                             }
-
+            
                             [[RadarReplayBuffer sharedInstance] clearBuffer];
                             [RadarState setLastFailedStoppedLocation:nil];
                             [Radar flushLogs];
@@ -604,7 +604,7 @@
                                 }
                                 [RadarState setBeaconIds:beaconIds];
                             }
-
+            
                             if (events && user) {
                                 [RadarSettings setId:user._id];
 
@@ -633,7 +633,7 @@
                                     NSArray<NSDictionary<NSString *, NSString *> *> *beaconRegions = (NSArray<NSDictionary<NSString *, NSString *> *> *)nearbyBeaconRegionsObj;
                                     [[RadarBeaconManager sharedInstance] registerBeaconRegionNotificationsFromArray:beaconRegions];
                                 }
-
+                                
                                 return completionHandler(RadarStatusSuccess, res, events, user, nearbyGeofences, config, token);
                             } else {
                                 [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"Setting %lu notifications remaining", (unsigned long)notificationsRemaining.count]];
@@ -641,7 +641,7 @@
                             }
 
                             [[RadarDelegateHolder sharedInstance] didFailWithStatus:status];
-
+            
                             completionHandler(RadarStatusErrorServer, nil, nil, nil, nil, nil, nil);
                         }];
     }
