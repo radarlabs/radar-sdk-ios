@@ -316,7 +316,6 @@ class RadarLocationManager: NSObject {
                 let request = notification.toRequest()
                 try await notificationCenter.add(request)
                 successfulNotifications.append(notification)
-                RadarLogger.shared.debug("GeofenceSync notification added \(notification.identifier) with \((request.trigger?.repeats ?? false) ? "repeating" : "non-repeating"); userInfo: \(request.content.userInfo)")
             } catch {
                 RadarLogger.shared.debug("GeofenceSync failed to add notification \(notification.identifier): \(error)")
             }
@@ -326,15 +325,14 @@ class RadarLocationManager: NSObject {
         registered.append(contentsOf: successfulNotifications.map(\.userInfo))
         RadarState.registeredNotifications = registered
         
-        let addedGeofencesIds = geofences.values.map(\.identifier)
-        let addedNotificationsIds = successfulNotifications.map(\.identifier)
-        RadarLogger.shared.debug("GeofenceSync added \(geofences.count) geofence regions and \(notifications.count) notifications | geofences: \(addedGeofencesIds), notifications: \(addedNotificationsIds)")
+        RadarLogger.shared.debug("GeofenceSync added \(geofences.count) geofence regions and \(notifications.count) notifications | \n geofences: \(geofences.values) \n notifications: \(successfulNotifications)")
     }
     
     func replaceMonitoredRegions(geofences: [RadarGeofence]) {
         RadarLogger.shared.debug("GeofenceSync with improved sync logic")
         
         guard self.locationManager != nil else {
+            RadarLogger.shared.debug("GeofenceSync skipping sync: RadarLocationManager has no CLLocationManager")
             return
         }
         
@@ -344,6 +342,8 @@ class RadarLocationManager: NSObject {
         // create the geofence and notification array, which includes already registered regions
         var geofenceRegions = [String: CLCircularRegion]()
         var notifications = [String: NotificationRequest]()
+        
+        var skipped = [String: String]()
         
         var regionCount = 0
         for geofence in geofences {
@@ -365,10 +365,10 @@ class RadarLocationManager: NSObject {
                     geofenceRegions[id] = region
                     regionCount += 1
                 } else {
-                    RadarLogger.shared.debug("GeofenceSync skipped monitoring for geofence \(geofence._id) due to marked as notification only")
+                    skipped[geofence._id] = "marked as notification only"
                 }
             } else {
-                RadarLogger.shared.debug("GeofenceSync skipped monitoring for geofence \(geofence._id) due to invalid region definition")
+                skipped[geofence._id] = "invalid region definition"
             }
             
             if regionCount >= limit {
@@ -376,9 +376,11 @@ class RadarLocationManager: NSObject {
             }
         }
         
-        let geofenceIds = geofenceRegions.keys.map { $0.dropFirst(geofencePrefix.count) }
-        RadarLogger.shared.debug("GeofenceSync using \(geofenceRegions.count) geofences: \(geofenceIds)")
-        RadarLogger.shared.debug("GeofenceSync using \(notifications.count) notifications: \(notifications.values)")
+        RadarLogger.shared.debug("GeofenceSync syncing \(geofenceRegions.count) geofences: \(geofenceRegions)")
+        if (!skipped.isEmpty) {
+            RadarLogger.shared.debug("GeofenceSync skipped \(skipped.count) geofences: \(skipped)")
+        }
+        RadarLogger.shared.debug("GeofenceSync syncing \(notifications.count) notifications: \(notifications.values)")
         
         Task {
             await removeAllExcept(geofences: &geofenceRegions, notifications: &notifications)
