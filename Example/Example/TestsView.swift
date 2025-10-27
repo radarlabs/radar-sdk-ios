@@ -2,7 +2,6 @@
 //  TestsView.swift
 //  Example
 //
-//  Created by ShiCheng Lu on 10/2/25.
 //  Copyright © 2025 Radar Labs, Inc. All rights reserved.
 //
 

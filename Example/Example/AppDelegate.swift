@@ -37,7 +37,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         radarInitializeOptions.pushNotification = true
         
         Radar.setAppGroup("group.waypoint.data")
-        Radar.initialize(publishableKey: "prj_live_pk_", options: radarInitializeOptions )
+        Radar.initialize(publishableKey: "prj_test_pk_0000000000000000000000000000000000000000", options: radarInitializeOptions )
         
         Radar.setMetadata([ "foo": "bar" ])
         Radar.setDelegate(self)
@@ -185,13 +185,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         print(response)
     }
     
-    // this function is called ONLY for silent-pushs
+    // this function is called ONLY for silent-pushes
     func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any]) async -> UIBackgroundFetchResult {
         print(userInfo)
-        
-        let url = URL(string: "https://webhook.site/151ee0ed-2d30-49a4-8060-ab72e0ba9b47")!
-        let task = URLSession.shared.dataTask(with: url) { (_, _, _) in }
-        task.resume()
         
         return .newData
     }
