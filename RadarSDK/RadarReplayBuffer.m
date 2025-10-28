@@ -17,6 +17,8 @@ static const int MAX_BUFFER_SIZE = 120; // one hour of updates
 @implementation RadarReplayBuffer {
     NSMutableArray<RadarReplay *> *mutableReplayBuffer;
     BOOL isFlushing;
+    NSTimer *batchFlushTimer;
+    NSDate *batchStartTime;
 }
 
 - (instancetype)init {
@@ -24,6 +26,8 @@ static const int MAX_BUFFER_SIZE = 120; // one hour of updates
     if (self) {
         mutableReplayBuffer = [NSMutableArray<RadarReplay *> new];
         isFlushing = NO;
+        batchFlushTimer = nil;
+        batchStartTime = nil;
     }
     return self;
 }
@@ -36,6 +40,8 @@ static const int MAX_BUFFER_SIZE = 120; // one hour of updates
     });
     return sharedInstance;
 }
+
+#pragma mark - Replay Buffer Methods
 
 - (void)writeNewReplayToBuffer:(NSMutableDictionary *)replayParams {
     NSUInteger replayBufferLength = [mutableReplayBuffer count];
@@ -182,6 +188,89 @@ static const int MAX_BUFFER_SIZE = 120; // one hour of updates
 
 - (void)dropOldestReplay {
     [mutableReplayBuffer removeObjectsInRange:NSMakeRange(0, 1)];
+}
+
+#pragma mark - Batch Methods
+
+- (void)addToBatch:(NSMutableDictionary *)params options:(RadarTrackingOptions *)options {
+    BOOL wasEmpty = (mutableReplayBuffer.count == 0);
+    
+    NSMutableDictionary *batchParams = [params mutableCopy];
+    batchParams[@"replayed"] = @(YES);
+    long nowMs = (long)([NSDate date].timeIntervalSince1970 * 1000);
+    batchParams[@"updatedAtMs"] = @(nowMs);
+    [batchParams removeObjectForKey:@"updatedAtMsDiff"];
+    
+    [self writeNewReplayToBuffer:batchParams];
+    
+    if (wasEmpty) {
+        batchStartTime = [NSDate date];
+        
+        if (options.batchInterval > 0) {
+            [self scheduleBatchTimerWithInterval:options.batchInterval];
+        }
+    }
+    
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
+                                       message:[NSString stringWithFormat:@"Added to batch | size = %lu",
+                                                (unsigned long)mutableReplayBuffer.count]];
+}
+
+- (BOOL)shouldFlushBatchWithOptions:(RadarTrackingOptions *)options {
+    if (mutableReplayBuffer.count == 0) {
+        return NO;
+    }
+    
+    if (options.batchSize > 0 && mutableReplayBuffer.count >= options.batchSize) {
+        [[RadarLogger sharedInstance] logWithLevel: RadarLogLevelDebug
+                                           message: @"Batch size limit reached"];
+        
+        return YES;
+    }
+    
+    return NO;
+}
+
+- (void)scheduleBatchTimerWithInterval:(int)interval {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if (self->batchFlushTimer) {
+            [self->batchFlushTimer invalidate];
+            self->batchFlushTimer = nil;
+        }
+        
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
+                                           message:[NSString stringWithFormat:@"Scheduling batch timer | interval = %d", interval]];
+        
+        self->batchFlushTimer = [NSTimer scheduledTimerWithTimeInterval:interval
+                                                                repeats:NO
+                                                                  block:^(NSTimer *_Nonnull timer) {
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
+                                               message:@"Batch timer fired"];
+            self->batchStartTime = nil;
+            [self flushReplaysWithCompletionHandler:nil completionHandler:nil];
+        }];
+    });
+}
+
+- (void)cancelBatchTimer {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if (self->batchFlushTimer) {
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
+                                               message:@"Canceling batch timer"];
+            [self->batchFlushTimer invalidate];
+            self->batchFlushTimer = nil;
+        }
+    });
+}
+
+- (void)flushBatch {
+    [self cancelBatchTimer];
+    batchStartTime = nil;
+    [self flushReplaysWithCompletionHandler:nil completionHandler:nil];
+}
+
+- (NSUInteger)batchCount {
+    return mutableReplayBuffer.count;
 }
 
 @end

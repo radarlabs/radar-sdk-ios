@@ -31,5 +31,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)loadReplaysFromPersistentStore;
 
+- (void)addToBatch:(NSMutableDictionary *)params options:(RadarTrackingOptions *)options;
+- (BOOL)shouldFlushBatchWithOptions:(RadarTrackingOptions *)options;
+- (void)scheduleBatchTimerWithInterval:(int)interval;
+- (void)cancelBatchTimer;
+- (void)flushBatch;
+- (NSUInteger)batchCount;
+
 @end
 NS_ASSUME_NONNULL_END

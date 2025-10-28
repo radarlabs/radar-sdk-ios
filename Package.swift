@@ -1,7 +1,7 @@
 // swift-tools-version:5.3
 import PackageDescription
 
-let version = "3.23.4"
+let version = "3.24.2-beta.1"
 
 let package = Package(
     name: "RadarSDK",
