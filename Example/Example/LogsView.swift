@@ -9,28 +9,27 @@ import SwiftUI
 import RadarSDK
 
 struct LogsView: View {
-    @StateObject var radarDelegateState = RadarDelegateState()
-    let radarDelegate = MyRadarDelegate()
+    @StateObject var state: ViewState
     
     var body: some View {
         VStack {
             HStack {
                 Text("Logs")
                 Button("clear") {
-                    radarDelegateState.logs.removeAll()
+                    state.logs.removeAll()
                 }
             }
-            List(radarDelegateState.logs, id:\.0) { item in
+            List(state.logs, id:\.0) { item in
                 return Text("\(item.1)")
             }
 
             HStack {
                 Text("Events")
                 Button("clear") {
-                    radarDelegateState.events.removeAll()
+                    state.events.removeAll()
                 }
             }
-            List(radarDelegateState.events, id:\.self) { item in
+            List(state.events, id:\.self) { item in
                 let type = RadarEvent.string(for: item.type) ?? "unknown-type"
                 var description = ""
                 if let geofence = item.geofence {
@@ -39,13 +38,10 @@ struct LogsView: View {
                 return Text("\(type): \(description)")
             }
 
-        }.onAppear {
-            radarDelegate.state = radarDelegateState
-            Radar.setDelegate(radarDelegate)
         }
     }
 }
 
 #Preview {
-    LogsView()
+    LogsView(state: ViewState())
 }

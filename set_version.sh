@@ -23,6 +23,9 @@ sed_inplace "s/let version = \"(.+)\"/let version = \"$version_full\"/" Package.
 
 sed_inplace "s/MARKETING_VERSION = .+;/MARKETING_VERSION = $version;/" RadarSDK.xcodeproj/project.pbxproj
 sed_inplace "s/MARKETING_VERSION = .+;/MARKETING_VERSION = $version;/" RadarSDKMotion/RadarSDKMotion.xcodeproj/project.pbxproj
+
+if [ -d "RadarSDKIndoors/RadarSDKIndoors.xcodeproj/" ]; then
 sed_inplace "s/MARKETING_VERSION = .+;/MARKETING_VERSION = $version;/" RadarSDKIndoors/RadarSDKIndoors.xcodeproj/project.pbxproj
+fi
 
 sed_inplace "s/return @\"[0-9]+\.[0-9]+\.[0-9]+\";/return @\"$version_full\";/" RadarSDK/RadarUtils.m

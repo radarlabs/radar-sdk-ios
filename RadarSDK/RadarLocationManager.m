@@ -103,6 +103,10 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         _firstPermissionCheck = YES;
 
         _firstPermissionCheck = NO;
+        
+        if (@available(iOS 13.0, *)) {
+            RadarLocationManagerSwift.shared.locationManager = _locationManager;
+        }
     }
     return self;
 }
@@ -555,6 +559,14 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Skipping replacing synced geofences"];
 
         return;
+    }
+    
+    if ([RadarSettings sdkConfiguration].useImprovedSyncLogic) {
+        if (@available(iOS 13.0, *)) {
+            return [RadarLocationManagerSwift.shared replaceMonitoredRegionsWithGeofences:geofences];
+        }
+    } else {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Syncing with old sync logic"];
     }
 
     [self removeSyncedGeofences];
