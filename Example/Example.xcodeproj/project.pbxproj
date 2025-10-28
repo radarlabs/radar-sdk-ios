@@ -20,10 +20,10 @@
 		F61886C32EA7DB5F0072E87C /* LogsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F61886C22EA7DB5C0072E87C /* LogsView.swift */; };
 		F61886C52EA7DC820072E87C /* MapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F61886C42EA7DC800072E87C /* MapView.swift */; };
 		F61886CF2EA800830072E87C /* DebugView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F61886CE2EA800830072E87C /* DebugView.swift */; };
-		F61886D62EA800DB0072E87C /* RadarML.swift in Sources */ = {isa = PBXBuildFile; fileRef = F61886D52EA800DB0072E87C /* RadarML.swift */; };
-		F625D7F92C3337650024D1E7 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F625D7F82C3337650024D1E7 /* Launch Screen.storyboard */; };
 		F6513F602E6B736200523472 /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6513F5F2E6B736200523472 /* MainView.swift */; };
 		F66DAD6A2E707F0700896773 /* waypoints.gpx in Sources */ = {isa = PBXBuildFile; fileRef = F66DAD642E707F0300896773 /* waypoints.gpx */; };
+		F68F408E2EB1310A0004EE07 /* RadarSDKIndoors.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F68F40892EB1309A0004EE07 /* RadarSDKIndoors.framework */; };
+		F68F408F2EB1310A0004EE07 /* RadarSDKIndoors.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F68F40892EB1309A0004EE07 /* RadarSDKIndoors.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -55,6 +55,20 @@
 			remoteGlobalIDString = E698B6712C6167A800084371;
 			remoteInfo = RadarSDKMotionTests;
 		};
+		F68F40882EB1309A0004EE07 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F68F40742EB130840004EE07 /* RadarSDKIndoors.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = FE9414F72E0DE3E6008ECBEB;
+			remoteInfo = RadarSDKIndoors;
+		};
+		F68F408A2EB1309A0004EE07 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F68F40742EB130840004EE07 /* RadarSDKIndoors.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = FE9415002E0DE3E6008ECBEB;
+			remoteInfo = RadarSDKIndoorsTests;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -64,6 +78,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				F68F408F2EB1310A0004EE07 /* RadarSDKIndoors.framework in Embed Frameworks */,
 				013D7AF326D327C400574AD5 /* RadarSDK.framework in Embed Frameworks */,
 				E698B7502C627A1600084371 /* RadarSDKMotion.framework in Embed Frameworks */,
 			);
@@ -88,10 +103,9 @@
 		F61886C22EA7DB5C0072E87C /* LogsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogsView.swift; sourceTree = "<group>"; };
 		F61886C42EA7DC800072E87C /* MapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapView.swift; sourceTree = "<group>"; };
 		F61886CE2EA800830072E87C /* DebugView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugView.swift; sourceTree = "<group>"; };
-		F61886D52EA800DB0072E87C /* RadarML.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarML.swift; sourceTree = "<group>"; };
-		F625D7F82C3337650024D1E7 /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
 		F6513F5F2E6B736200523472 /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
 		F66DAD642E707F0300896773 /* waypoints.gpx */ = {isa = PBXFileReference; lastKnownFileType = text; path = waypoints.gpx; sourceTree = "<group>"; };
+		F68F40742EB130840004EE07 /* RadarSDKIndoors.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RadarSDKIndoors.xcodeproj; path = ../RadarSDKIndoors/RadarSDKIndoors.xcodeproj; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -99,6 +113,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F68F408E2EB1310A0004EE07 /* RadarSDKIndoors.framework in Frameworks */,
 				013D7AF226D327C400574AD5 /* RadarSDK.framework in Frameworks */,
 				E698B7492C626B0600084371 /* RadarSDKMotion.framework in Frameworks */,
 			);
@@ -137,14 +152,13 @@
 				F61886C02EA7DB3F0072E87C /* MyRadarDelegate.swift */,
 				F61886B92EA7DB180072E87C /* TestsView.swift */,
 				F61886CE2EA800830072E87C /* DebugView.swift */,
-				F61886D52EA800DB0072E87C /* RadarML.swift */,
 				F61886C22EA7DB5C0072E87C /* LogsView.swift */,
 				F66DAD642E707F0300896773 /* waypoints.gpx */,
 				DD291168230D0AF900049D3A /* Utils.swift */,
 				DD236D2F230A006900EB88F9 /* Assets.xcassets */,
+				F68F40742EB130840004EE07 /* RadarSDKIndoors.xcodeproj */,
 				DD86FCF9239185F4003225F6 /* RadarSDK.xcodeproj */,
 				E698B7382C626AE600084371 /* RadarSDKMotion.xcodeproj */,
-				F625D7F82C3337650024D1E7 /* Launch Screen.storyboard */,
 			);
 			path = Example;
 			sourceTree = "<group>";
@@ -170,6 +184,15 @@
 			children = (
 				E698B7412C626AE600084371 /* RadarSDKMotion.framework */,
 				E698B7432C626AE600084371 /* RadarSDKMotionTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		F68F407B2EB130990004EE07 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				F68F40892EB1309A0004EE07 /* RadarSDKIndoors.framework */,
+				F68F408B2EB1309A0004EE07 /* RadarSDKIndoorsTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -231,6 +254,10 @@
 					ProjectRef = DD86FCF9239185F4003225F6 /* RadarSDK.xcodeproj */;
 				},
 				{
+					ProductGroup = F68F407B2EB130990004EE07 /* Products */;
+					ProjectRef = F68F40742EB130840004EE07 /* RadarSDKIndoors.xcodeproj */;
+				},
+				{
 					ProductGroup = E698B7392C626AE600084371 /* Products */;
 					ProjectRef = E698B7382C626AE600084371 /* RadarSDKMotion.xcodeproj */;
 				},
@@ -271,6 +298,20 @@
 			remoteRef = E698B7422C626AE600084371 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
+		F68F40892EB1309A0004EE07 /* RadarSDKIndoors.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = RadarSDKIndoors.framework;
+			remoteRef = F68F40882EB1309A0004EE07 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F68F408B2EB1309A0004EE07 /* RadarSDKIndoorsTests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = RadarSDKIndoorsTests.xctest;
+			remoteRef = F68F408A2EB1309A0004EE07 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 /* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
@@ -278,7 +319,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F625D7F92C3337650024D1E7 /* Launch Screen.storyboard in Resources */,
 				DD236D30230A006900EB88F9 /* Assets.xcassets in Resources */,
 				DDB861D32385FC3E00770661 /* Default-568h@2x.png in Resources */,
 			);
@@ -300,7 +340,6 @@
 				F61886C12EA7DB440072E87C /* MyRadarDelegate.swift in Sources */,
 				DD291169230D0AF900049D3A /* Utils.swift in Sources */,
 				F61886BF2EA7DB1D0072E87C /* TestsView.swift in Sources */,
-				F61886D62EA800DB0072E87C /* RadarML.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

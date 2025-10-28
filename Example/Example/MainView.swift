@@ -33,9 +33,9 @@ struct MainView: View {
                 Text("Logs")
             }.tag(TabIdentifier.Logs)
 
-            TestsView().tabItem {
-                Text("Tests")
-            }.tag(TabIdentifier.Tests)
+//            TestsView().tabItem {
+//                Text("Tests")
+//            }.tag(TabIdentifier.Tests)
         }
     }
 }

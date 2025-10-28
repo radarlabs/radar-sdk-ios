@@ -7,6 +7,7 @@
 
 import SwiftUI
 import CoreML
+import RadarSDKIndoors
 
 struct DebugView: View {
     
@@ -21,8 +22,21 @@ struct DebugView: View {
                         "petwid": MLFeatureValue(double: 2.0),
                     ]
                     let provider = try MLDictionaryFeatureProvider(dictionary: features)
-                    let result = await RadarML.shared.predict(name: "Flower", features: provider)
-                    print(result)
+//                    let result = await RadarML.shared.predict(name: "Flower", features: provider)
+                    print(provider)
+                }
+            }
+            
+            
+            Button("start") {
+                Task {
+                    await RadarSDKIndoors.start()
+                }
+            }
+            
+            Button("stop") {
+                Task {
+                    await RadarSDKIndoors.stop()
                 }
             }
         }
