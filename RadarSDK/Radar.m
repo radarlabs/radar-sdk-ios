@@ -1297,19 +1297,19 @@
     NSString *str;
     switch (status) {
     case CMAuthorizationStatusNotDetermined:
-        str = @"notDetermined";
+        str = @"NOT_DETERMINED";
         break;
     case CMAuthorizationStatusRestricted:
-        str = @"restricted";
+        str = @"RESTRICTED";
         break;
     case CMAuthorizationStatusDenied:
-        str = @"userDenied";
+        str = @"USER_DENIED";
         break;
     case CMAuthorizationStatusAuthorized:
-        str = @"userGranted";
+        str = @"USER_GRANTED";
         break;
     default:
-        str = @"unknown";
+        str = @"UNKNOWN";
     }
     return str;
 }
