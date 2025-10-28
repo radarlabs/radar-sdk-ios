@@ -64,7 +64,7 @@
         CMAuthorizationStatus authStatus = [CMMotionActivityManager authorizationStatus];
 
         [RadarActivityManager sharedInstance].radarSDKMotion = radarSDKMotion;
-        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"RadarSDKMotion detected and initialized; Motion & Altimeter services available, auth status: %@", [Radar stringForMotionAuthorizationStatus:authStatus]]];
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"RadarSDKMotion detected and initialized; Motion & Altimeter services available, auth status: %@", [Radar stringForMotionAuthorization:authStatus]]];
     } else {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelWarning message:@"RadarSDKMotion class not found; Motion/Pressure features disabled"];
     }
@@ -1293,7 +1293,7 @@
     return str;
 }
 
-+ (NSString *)stringForMotionAuthorizationStatus:(CMAuthorizationStatus)status {
++ (NSString *)stringForMotionAuthorization:(CMAuthorizationStatus)status {
     NSString *str;
     switch (status) {
     case CMAuthorizationStatusNotDetermined:

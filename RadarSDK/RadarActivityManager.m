@@ -120,7 +120,7 @@
     [self.radarSDKMotion startRelativeAltitudeUpdatesToQueue:self.pressureQueue withHandler:^(CMAltitudeData *altitudeData, NSError *error) {
         NSTimeInterval callbackTime = [[NSDate date] timeIntervalSince1970];
         CMAuthorizationStatus authStatus = [CMMotionActivityManager authorizationStatus];
-        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Relative altitude callback invoked at %.3f, Motion & Fitness auth status: %@", callbackTime, [Radar stringForMotionAuthorizationStatus:authStatus]]];
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Relative altitude callback invoked at %.3f, Motion & Fitness auth status: %@", callbackTime, [Radar stringForMotionAuthorization:authStatus]]];
         
         if (error) {
             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelError message:[NSString stringWithFormat:@"startRelativeAltitudeWithHandler error: %@ (domain: %@, code: %ld)", error.localizedDescription, error.domain, (long)error.code]];
@@ -158,7 +158,7 @@
     [self.radarSDKMotion startAbsoluteAltitudeUpdatesToQueue:self.absoluteAltitudeQueue withHandler:^(CMAbsoluteAltitudeData *altitudeData, NSError *error) {
         NSTimeInterval callbackTime = [[NSDate date] timeIntervalSince1970];
         CMAuthorizationStatus authStatus = [CMMotionActivityManager authorizationStatus];
-        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Absolute altitude callback invoked at %.3f, Motion & Fitness auth status: %@", callbackTime, [Radar stringForMotionAuthorizationStatus:authStatus]]];
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Absolute altitude callback invoked at %.3f, Motion & Fitness auth status: %@", callbackTime, [Radar stringForMotionAuthorization:authStatus]]];
         
         if (error) {
             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelError message:[NSString stringWithFormat:@"startAbsoluteAltitudeUpdatesToQueue error: %@ (domain: %@, code: %ld)", error.localizedDescription, error.domain, (long)error.code]];

@@ -1288,7 +1288,7 @@ typedef void (^_Nonnull RadarIndoorsScanCompletionHandler)(NSString *_Nullable r
 
  @return A string for the authorization status value.
  */
-+ (NSString *)stringForMotionAuthorizationStatus:(CMAuthorizationStatus)status NS_SWIFT_NAME(stringForMotionAuthorizationStatus(_:));
++ (NSString *)stringForMotionAuthorization:(CMAuthorizationStatus)status NS_SWIFT_NAME(stringForMotionAuthorization(_:));
 
 /**
  Returns a string for address validation status value.
