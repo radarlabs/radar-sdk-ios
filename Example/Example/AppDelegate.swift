@@ -35,9 +35,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         // Uncomment to enable automatic setup for notification conversions or deep linking
         //radarInitializeOptions.autoLogNotificationConversions = true
         //radarInitializeOptions.autoHandleNotificationDeepLinks = true
-        Radar.setLogLevel(RadarLogLevel.none)
-        Radar.initialize(publishableKey: "", options: radarInitializeOptions )
-        Radar.setUserId("testUserId")
+//        Radar.setLogLevel(RadarLogLevel.none)
+//        Radar.initialize(publishableKey: "prj_live_pk_", options: radarInitializeOptions )
+//        Radar.setUserId("testUserId")
         return true
     }
 

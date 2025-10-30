@@ -59,6 +59,10 @@
 			</dict>
 		</dict>
 	</dict>
+	<key>NSBluetoothAlwaysUsageDescription</key>
+	<string>Uses bluetooth</string>
+	<key>NSBluetoothWhileInUseUsageDescription</key>
+	<string>Uses bluetooth</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>Your background location usage description goes here.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
@@ -86,6 +90,15 @@
 	<array>
 		<string>fetch</string>
 		<string>location</string>
+		<string>bluetooth-central</string>
+		<string>bluetooth-peripheral</string>
+		<string>nearby-interaction</string>
+		<string>voip</string>
+		<string>remote-notification</string>
+		<string>push-to-talk</string>
+		<string>external-accessory</string>
+		<string>processing</string>
+		<string>audio</string>
 	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>Launch Screen.storyboard</string>

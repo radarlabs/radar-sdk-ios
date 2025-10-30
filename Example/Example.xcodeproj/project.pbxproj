@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 70;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -24,6 +24,10 @@
 		F66DAD6A2E707F0700896773 /* waypoints.gpx in Sources */ = {isa = PBXBuildFile; fileRef = F66DAD642E707F0300896773 /* waypoints.gpx */; };
 		F68F408E2EB1310A0004EE07 /* RadarSDKIndoors.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F68F40892EB1309A0004EE07 /* RadarSDKIndoors.framework */; };
 		F68F408F2EB1310A0004EE07 /* RadarSDKIndoors.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F68F40892EB1309A0004EE07 /* RadarSDKIndoors.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		F68F40A52EB2A5480004EE07 /* MapLibre in Frameworks */ = {isa = PBXBuildFile; productRef = F68F40A42EB2A5480004EE07 /* MapLibre */; };
+		F68F40AA2EB2AA220004EE07 /* MapLibreSwiftDSL in Frameworks */ = {isa = PBXBuildFile; productRef = F68F40A92EB2AA220004EE07 /* MapLibreSwiftDSL */; };
+		F68F40AC2EB2AA220004EE07 /* MapLibreSwiftMacros in Frameworks */ = {isa = PBXBuildFile; productRef = F68F40AB2EB2AA220004EE07 /* MapLibreSwiftMacros */; };
+		F68F40AE2EB2AA220004EE07 /* MapLibreSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = F68F40AD2EB2AA220004EE07 /* MapLibreSwiftUI */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -108,14 +112,22 @@
 		F68F40742EB130840004EE07 /* RadarSDKIndoors.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RadarSDKIndoors.xcodeproj; path = ../RadarSDKIndoors/RadarSDKIndoors.xcodeproj; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		F68F40B12EB2AFD10004EE07 /* MapLibreSwiftExtension */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = MapLibreSwiftExtension; sourceTree = "<group>"; };
+/* End PBXFileSystemSynchronizedRootGroup section */
+
 /* Begin PBXFrameworksBuildPhase section */
 		DD236D20230A006700EB88F9 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F68F40A52EB2A5480004EE07 /* MapLibre in Frameworks */,
+				F68F40AA2EB2AA220004EE07 /* MapLibreSwiftDSL in Frameworks */,
 				F68F408E2EB1310A0004EE07 /* RadarSDKIndoors.framework in Frameworks */,
+				F68F40AC2EB2AA220004EE07 /* MapLibreSwiftMacros in Frameworks */,
 				013D7AF226D327C400574AD5 /* RadarSDK.framework in Frameworks */,
 				E698B7492C626B0600084371 /* RadarSDKMotion.framework in Frameworks */,
+				F68F40AE2EB2AA220004EE07 /* MapLibreSwiftUI in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -150,6 +162,7 @@
 				F6513F5F2E6B736200523472 /* MainView.swift */,
 				F61886C42EA7DC800072E87C /* MapView.swift */,
 				F61886C02EA7DB3F0072E87C /* MyRadarDelegate.swift */,
+				F68F40B12EB2AFD10004EE07 /* MapLibreSwiftExtension */,
 				F61886B92EA7DB180072E87C /* TestsView.swift */,
 				F61886CE2EA800830072E87C /* DebugView.swift */,
 				F61886C22EA7DB5C0072E87C /* LogsView.swift */,
@@ -213,8 +226,15 @@
 			);
 			dependencies = (
 			);
+			fileSystemSynchronizedGroups = (
+				F68F40B12EB2AFD10004EE07 /* MapLibreSwiftExtension */,
+			);
 			name = Example;
 			packageProductDependencies = (
+				F68F40A42EB2A5480004EE07 /* MapLibre */,
+				F68F40A92EB2AA220004EE07 /* MapLibreSwiftDSL */,
+				F68F40AB2EB2AA220004EE07 /* MapLibreSwiftMacros */,
+				F68F40AD2EB2AA220004EE07 /* MapLibreSwiftUI */,
 			);
 			productName = Example;
 			productReference = DD236D23230A006700EB88F9 /* Example.app */;
@@ -245,6 +265,8 @@
 			);
 			mainGroup = DD236D1A230A006700EB88F9;
 			packageReferences = (
+				F68F40A32EB2A5480004EE07 /* XCRemoteSwiftPackageReference "maplibre-gl-native-distribution" */,
+				F68F40A82EB2AA220004EE07 /* XCRemoteSwiftPackageReference "swiftui-dsl" */,
 			);
 			productRefGroup = DD236D24230A006700EB88F9 /* Products */;
 			projectDirPath = "";
@@ -478,7 +500,7 @@
 				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/RadarSDK";
 				INFOPLIST_FILE = Example/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Example;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -508,7 +530,7 @@
 				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/RadarSDK";
 				INFOPLIST_FILE = Example/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Example;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -544,6 +566,48 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		F68F40A32EB2A5480004EE07 /* XCRemoteSwiftPackageReference "maplibre-gl-native-distribution" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/maplibre/maplibre-gl-native-distribution";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 6.19.3;
+			};
+		};
+		F68F40A82EB2AA220004EE07 /* XCRemoteSwiftPackageReference "swiftui-dsl" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/maplibre/swiftui-dsl";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		F68F40A42EB2A5480004EE07 /* MapLibre */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F68F40A32EB2A5480004EE07 /* XCRemoteSwiftPackageReference "maplibre-gl-native-distribution" */;
+			productName = MapLibre;
+		};
+		F68F40A92EB2AA220004EE07 /* MapLibreSwiftDSL */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F68F40A82EB2AA220004EE07 /* XCRemoteSwiftPackageReference "swiftui-dsl" */;
+			productName = MapLibreSwiftDSL;
+		};
+		F68F40AB2EB2AA220004EE07 /* MapLibreSwiftMacros */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F68F40A82EB2AA220004EE07 /* XCRemoteSwiftPackageReference "swiftui-dsl" */;
+			productName = MapLibreSwiftMacros;
+		};
+		F68F40AD2EB2AA220004EE07 /* MapLibreSwiftUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F68F40A82EB2AA220004EE07 /* XCRemoteSwiftPackageReference "swiftui-dsl" */;
+			productName = MapLibreSwiftUI;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = DD236D1B230A006700EB88F9 /* Project object */;
 }
