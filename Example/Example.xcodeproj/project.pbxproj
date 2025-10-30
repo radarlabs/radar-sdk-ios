@@ -21,6 +21,8 @@
 		F61886C52EA7DC820072E87C /* MapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F61886C42EA7DC800072E87C /* MapView.swift */; };
 		F61886CF2EA800830072E87C /* DebugView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F61886CE2EA800830072E87C /* DebugView.swift */; };
 		F6513F602E6B736200523472 /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6513F5F2E6B736200523472 /* MainView.swift */; };
+		F65B4C2F2EB3B72B00434EF1 /* site.swift in Sources */ = {isa = PBXBuildFile; fileRef = F65B4C272EB3B72A00434EF1 /* site.swift */; };
+		F65B4C312EB3B7F900434EF1 /* RadarSite.swift in Sources */ = {isa = PBXBuildFile; fileRef = F65B4C302EB3B7F500434EF1 /* RadarSite.swift */; };
 		F66DAD6A2E707F0700896773 /* waypoints.gpx in Sources */ = {isa = PBXBuildFile; fileRef = F66DAD642E707F0300896773 /* waypoints.gpx */; };
 		F68F408E2EB1310A0004EE07 /* RadarSDKIndoors.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F68F40892EB1309A0004EE07 /* RadarSDKIndoors.framework */; };
 		F68F408F2EB1310A0004EE07 /* RadarSDKIndoors.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F68F40892EB1309A0004EE07 /* RadarSDKIndoors.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -108,6 +110,8 @@
 		F61886C42EA7DC800072E87C /* MapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapView.swift; sourceTree = "<group>"; };
 		F61886CE2EA800830072E87C /* DebugView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugView.swift; sourceTree = "<group>"; };
 		F6513F5F2E6B736200523472 /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
+		F65B4C272EB3B72A00434EF1 /* site.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = site.swift; sourceTree = "<group>"; };
+		F65B4C302EB3B7F500434EF1 /* RadarSite.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarSite.swift; sourceTree = "<group>"; };
 		F66DAD642E707F0300896773 /* waypoints.gpx */ = {isa = PBXFileReference; lastKnownFileType = text; path = waypoints.gpx; sourceTree = "<group>"; };
 		F68F40742EB130840004EE07 /* RadarSDKIndoors.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RadarSDKIndoors.xcodeproj; path = ../RadarSDKIndoors/RadarSDKIndoors.xcodeproj; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
@@ -165,6 +169,8 @@
 				F68F40B12EB2AFD10004EE07 /* MapLibreSwiftExtension */,
 				F61886B92EA7DB180072E87C /* TestsView.swift */,
 				F61886CE2EA800830072E87C /* DebugView.swift */,
+				F65B4C302EB3B7F500434EF1 /* RadarSite.swift */,
+				F65B4C272EB3B72A00434EF1 /* site.swift */,
 				F61886C22EA7DB5C0072E87C /* LogsView.swift */,
 				F66DAD642E707F0300896773 /* waypoints.gpx */,
 				DD291168230D0AF900049D3A /* Utils.swift */,
@@ -353,6 +359,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F65B4C312EB3B7F900434EF1 /* RadarSite.swift in Sources */,
 				F66DAD6A2E707F0700896773 /* waypoints.gpx in Sources */,
 				F61886C52EA7DC820072E87C /* MapView.swift in Sources */,
 				DD236D27230A006700EB88F9 /* AppDelegate.swift in Sources */,
@@ -361,6 +368,7 @@
 				F61886C32EA7DB5F0072E87C /* LogsView.swift in Sources */,
 				F61886C12EA7DB440072E87C /* MyRadarDelegate.swift in Sources */,
 				DD291169230D0AF900049D3A /* Utils.swift in Sources */,
+				F65B4C2F2EB3B72B00434EF1 /* site.swift in Sources */,
 				F61886BF2EA7DB1D0072E87C /* TestsView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

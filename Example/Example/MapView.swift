@@ -8,38 +8,28 @@
 import SwiftUI
 import MapLibre
 
+struct GestureContext {
+    var point: CGPoint
+    var coordinate: CLLocationCoordinate2D
+    var mapView: MLNMapView
+}
 
 // delegate for map interactions
 // https://maplibre.org/maplibre-native/ios/latest/documentation/maplibre/mlnmapviewdelegate
-class Coordinator: NSObject, MLNMapViewDelegate {
-    var parent: MapView
+class MapViewDelegate: NSObject, MLNMapViewDelegate {
+    var parent: MyMapView
     var isMapLoaded = false
     
-    init(_ parent: MapView) {
+    init(_ parent: MyMapView) {
         self.parent = parent
     }
     
     // handle map and style loaded
     func mapView(_ mapView: MLNMapView, didFinishLoading style: MLNStyle) {
         self.isMapLoaded = true
-        
-        let coordinates = Quad(
-            [40.739176403770000, -73.98506837398742],
-            [40.738102592955016, -73.98586187468311],
-            [40.737476360708260, -73.98438576909109],
-            [40.738550165730345, -73.98359224656258]
-        )
-        let imageSource = MLNImageSource(
-            identifier: "overlay‑src",
-            coordinateQuad: coordinates,
-            url: URL(string: "https://upload.wikimedia.org/wikipedia/commons/b/b6/Image_created_with_a_mobile_phone.png")!
-        )
-        style.addSource(imageSource)
-        let rasterLayer = MLNRasterStyleLayer(identifier: "overlay‑layer", source: imageSource)
-        rasterLayer.rasterOpacity = NSExpression(forConstantValue: 0.5)
-        style.addLayer(rasterLayer)
-        
+        parent.onStyleLoaded?(style)
     }
+
     func mapViewDidFinishLoadingMap(_ mapView: MLNMapView) {
         self.isMapLoaded = true
     }
@@ -85,7 +75,6 @@ class Coordinator: NSObject, MLNMapViewDelegate {
 
     // handle map tap - create new marker at tap location
     @objc func handleMapTap(sender: UITapGestureRecognizer) {
-        
         guard let mapView = sender.view as? MLNMapView else { return }
 
         // convert tap location to geographic coordinate
@@ -94,30 +83,32 @@ class Coordinator: NSObject, MLNMapViewDelegate {
         print("Map tapped at coordinate: \(tapCoordinate.latitude), \(tapCoordinate.longitude)")
         
         if isMapLoaded {
-            // increment marker count
-            parent.onTap?(tapCoordinate)
+            parent.onTap?(GestureContext(point: tapPoint, coordinate: tapCoordinate, mapView: mapView))
         } else {
             print("Map is not loaded yet")
         }
     }
 }
 
-struct MapView: UIViewRepresentable {
+struct MyMapView: UIViewRepresentable {
     
-    var onTap: ((CLLocationCoordinate2D) -> Void)? = nil
+    var withRadar: String
+    var onTap: ((GestureContext) -> Void)? = nil
+    var onStyleLoaded: ((MLNStyle) -> Void)? = nil
 
-    func makeCoordinator() -> Coordinator {
-        Coordinator(self)
+    func makeCoordinator() -> MapViewDelegate {
+        MapViewDelegate(self)
     }
     
     func makeUIView(context: Context) -> MLNMapView {
         let style = "radar-default-v1"
-        let publishableKey = "prj_test_pk_c0ebf059d9895f428fac2295dbe83568507938e3"
-        let styleURL = URL(string: "https://api.radar.io/maps/styles/\(style)?publishableKey=\(publishableKey)")
+        let publishableKey = withRadar
+        let styleURL = URL(string: "https://api.radar-staging.com/maps/styles/\(style)?publishableKey=\(publishableKey)")
         
         // set up radar request header, required for the mobile restrictions setting.
         let sessionConfig = URLSessionConfiguration.default
         sessionConfig.httpAdditionalHeaders = ["X-Radar-Mobile-Origin": Bundle.main.bundleIdentifier ?? ""]
+        sessionConfig.httpAdditionalHeaders?["Authorization"] = publishableKey
         MLNNetworkConfiguration.sharedManager.sessionConfiguration = sessionConfig
         
         // create new map view
@@ -130,7 +121,7 @@ struct MapView: UIViewRepresentable {
         mapView.setCenter(CLLocationCoordinate2D(latitude: 40.7342, longitude: -73.9911), zoomLevel: 11, animated: false)
 
         // set min and max zoom levels
-        mapView.maximumZoomLevel = 20
+        mapView.maximumZoomLevel = 25
         mapView.minimumZoomLevel = 7
         mapView.allowsTilting = false
         
@@ -161,8 +152,20 @@ struct MapView: UIViewRepresentable {
     func updateUIView(_ uiView: MLNMapView, context: Context) {
         // Update the map view if needed
     }
+    
+    func onTapMapGesture(_ onTap: @escaping (GestureContext) -> Void) -> MyMapView {
+        var copy = self
+        copy.onTap = onTap
+        return copy
+    }
+    
+    func onStyleLoaded(_ onStyleLoaded: @escaping (MLNStyle) -> Void) -> MyMapView {
+        var copy = self
+        copy.onStyleLoaded = onStyleLoaded
+        return copy
+    }
 }
 
 #Preview {
-    MapView()
+    MyMapView(withRadar: "prj_test_pk_c0ebf059d9895f428fac2295dbe83568507938e3")
 }
