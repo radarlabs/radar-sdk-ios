@@ -58,10 +58,7 @@ struct DebugView: View {
                     guard let site else {
                         return
                     }
-                    guard case .polygon(let coords) = site.floorplan.geometry else {
-                        print("geometry is not polygon")
-                        return
-                    }
+                    let coords = site.floorplan.geometry.coordinates
                     let coordinates = Quad(
                         coords[0][0].reversed(),
                         coords[0][3].reversed(),
@@ -139,14 +136,7 @@ struct DebugView: View {
                 
                 Button("get") {
                     Task {
-                        let features: [String: MLFeatureValue] = [
-                            "seplen": MLFeatureValue(double: 6.5),
-                            "sepwid": MLFeatureValue(double: 3.0),
-                            "petlen": MLFeatureValue(double: 5.2),
-                            "petwid": MLFeatureValue(double: 2.0),
-                        ]
-                        let provider = try MLDictionaryFeatureProvider(dictionary: features)
-                        print(provider)
+                        await RadarSDKIndoors.getLocation()
                     }
                 }
                 

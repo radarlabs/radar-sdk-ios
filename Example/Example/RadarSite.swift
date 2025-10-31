@@ -45,26 +45,39 @@ enum GeoJSONGeometry: Codable {
     }
 }
 
-struct RadarFloorplanCalibration: Codable {
+@objc protocol GeoJSON {
+    var type: String { get }
+}
+
+@objc public class GeoJSONPoint: NSObject, GeoJSON, Codable {
+    let coordinates: [Double]
+    var type: String = "Point"
+}
+
+@objc public class GeoJSONPolygon: NSObject, GeoJSON, Codable {
+    let coordinates: [[[Double]]]
+    var type: String = "Polygon"
+}
+
+@objc public class RadarFloorplanCalibration: NSObject, Codable {
     let imageSize: [String: Int]
 }
 
-struct RadarFloorplan: Codable {
+@objc public class RadarFloorplan: NSObject, Codable {
     let path: String
     let mimeType: String
-    let geometry: GeoJSONGeometry
+    let geometry: GeoJSONPolygon
     let calibration: RadarFloorplanCalibration
 }
 
-struct RadarSite: Codable {
-    
+@objc public class RadarSite: NSObject, Codable {
     let id: String
     let createdAt: Date
     let updatedAt: Date
     let project: String
     let live: Bool
-    let description: String
-    let geometry: GeoJSONGeometry
+    let _description: String
+    let geometry: GeoJSONPoint
     //let geofences: [RadarGeofence]
     //let beacons: [RadarBeacon]
     let floorplan: RadarFloorplan
@@ -75,12 +88,11 @@ struct RadarSite: Codable {
         case updatedAt
         case project
         case live
-        case description
+        case _description = "description"
         case geometry
         case floorplan
     }
 }
-
 
 struct RadarSiteResponse: Codable {
     let site: RadarSite

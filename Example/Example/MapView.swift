@@ -93,8 +93,8 @@ class MapViewDelegate: NSObject, MLNMapViewDelegate {
 struct MyMapView: UIViewRepresentable {
     
     var withRadar: String
-    var onTap: ((GestureContext) -> Void)? = nil
     var onStyleLoaded: ((MLNStyle) -> Void)? = nil
+    var onTap: ((GestureContext) -> Void)? = nil
 
     func makeCoordinator() -> MapViewDelegate {
         MapViewDelegate(self)
