@@ -13,6 +13,23 @@ import MapLibreSwiftUI
 import MapLibreSwiftDSL
 import MapLibre
 
+extension RadarSite {
+    func toXY(coords: CLLocationCoordinate2D) -> (Double, Double) {
+        let rel_lat = coords.latitude - geometry.coordinates[1]
+        let rel_lng = coords.longitude - geometry.coordinates[0]
+        
+        return (rel_lat * 111132, rel_lng * cos(geometry.coordinates[1] * .pi / 180.0) * 111320)
+    }
+    
+    func fromXY(xy: (Double, Double)) -> CLLocationCoordinate2D {
+        let (x, y) = xy
+        let rel_lat = x / 111132.0
+        let rel_lng = y / (cos(geometry.coordinates[1] * .pi / 180.0) * 111320.0)
+        
+        return CLLocationCoordinate2D(latitude: rel_lat + geometry.coordinates[1], longitude: rel_lng + geometry.coordinates[0])
+    }
+}
+
 
 extension MapView where T == MLNMapViewController {
     init(withRadar publishableKey: String) {
@@ -57,6 +74,21 @@ struct DebugView: View {
         }
     }()
     
+    @State
+    var mapStyle: MLNStyle? = nil
+    
+    func updatePredictedLocation() {
+        Task {
+            if let pred = (await RadarSDKIndoors.getLocation()) {
+                if let source = mapStyle?.source(withIdentifier: "pred-src"),
+                   let pointSource = source as? MLNShapeSource,
+                   let coordinate = site?.fromXY(xy: pred) {
+                    pointSource.shape = MLNPointFeature(coordinate: coordinate)
+                }
+            }
+        }
+    }
+    
     var body: some View {
         VStack(spacing: 10) {
             MyMapView(withRadar: "prj_test_pk_3508428416f485c5f54d8e8bb1f616ee405b1995")
@@ -64,6 +96,7 @@ struct DebugView: View {
                     guard let site else {
                         return
                     }
+                    mapStyle = style
                     let coords = site.floorplan.geometry.coordinates
                     let coordinates = MLNCoordinateQuad(
                         topLeft:     CLLocationCoordinate2D(latitude: coords[0][0][1], longitude: coords[0][0][0]),
@@ -86,6 +119,13 @@ struct DebugView: View {
                     pointsLayer.circleRadius = NSExpression(forConstantValue: 5)
                     pointsLayer.circleColor = NSExpression(forConstantValue: UIColor.red)
                     style.addLayer(pointsLayer)
+                    
+                    let predSource = MLNShapeSource(identifier: "pred-src", shape: MLNPointFeature(coordinate: CLLocationCoordinate2D()))
+                    style.addSource(predSource)
+                    let predLayer = MLNCircleStyleLayer(identifier: "pred-layer", source: predSource)
+                    predLayer.circleRadius = NSExpression(forConstantValue: 5)
+                    predLayer.circleColor = NSExpression(forConstantValue: UIColor.blue)
+                    style.addLayer(predLayer)
                 }
                 .onTapMapGesture { value in
                     tapCoordinates = value.coordinate
@@ -104,7 +144,9 @@ struct DebugView: View {
                     holding = false
                     
                     print("Stopped survey")
-                    RadarSDKIndoors.onRangedBeacon {}
+                    RadarSDKIndoors.onRangedBeacon {
+                        updatePredictedLocation()
+                    }
                 }) {
                     Text("Survey")
                         .font(.title)
@@ -122,21 +164,29 @@ struct DebugView: View {
                             if coordinates.latitude == 0 && coordinates.longitude == 0 {
                                 return
                             }
-                            let location = CLLocation(latitude: coordinates.latitude, longitude: coordinates.longitude)
+                            guard let xy = site?.toXY(coords: coordinates) else {
+                                return
+                            }
                             Task {
-                                success = await RadarSDKIndoors.setLocation(location)
+                                success = await RadarSDKIndoors.setLocation(xy)
                                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                                     success = false
                                 }
                             }
+                            updatePredictedLocation()
                         }
                     }
                 )
             }.onAppear {
                 RadarSDKIndoors.nothing()
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                    Task {
-                        await RadarSDKIndoors.start()
+                Task {
+                    await RadarSDKIndoors.start()
+                    
+                    // get a location first, so that we load the model
+                    if let pred = (await RadarSDKIndoors.getLocation()) {
+                    }
+                    RadarSDKIndoors.onRangedBeacon {
+                        updatePredictedLocation()
                     }
                 }
             }

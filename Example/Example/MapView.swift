@@ -122,7 +122,7 @@ struct MyMapView: UIViewRepresentable {
 
         // set min and max zoom levels
         mapView.maximumZoomLevel = 25
-        mapView.minimumZoomLevel = 7
+        mapView.minimumZoomLevel = 1
         mapView.allowsTilting = false
         
         // setup map tap listener
