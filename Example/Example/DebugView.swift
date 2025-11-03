@@ -36,6 +36,12 @@ struct DebugView: View {
     @State
     var image: UIImage? = nil
     
+    @State
+    var holding = false
+    
+    @State
+    var success = false
+    
     let site: RadarSite? = {
         do {
             let dateFormatter = DateFormatter()
@@ -59,11 +65,11 @@ struct DebugView: View {
                         return
                     }
                     let coords = site.floorplan.geometry.coordinates
-                    let coordinates = Quad(
-                        coords[0][0].reversed(),
-                        coords[0][3].reversed(),
-                        coords[0][2].reversed(),
-                        coords[0][1].reversed(),
+                    let coordinates = MLNCoordinateQuad(
+                        topLeft:     CLLocationCoordinate2D(latitude: coords[0][0][1], longitude: coords[0][0][0]),
+                        bottomLeft:  CLLocationCoordinate2D(latitude: coords[0][3][1], longitude: coords[0][3][0]),
+                        bottomRight: CLLocationCoordinate2D(latitude: coords[0][2][1], longitude: coords[0][2][0]),
+                        topRight:    CLLocationCoordinate2D(latitude: coords[0][1][1], longitude: coords[0][1][0]),
                     )
                     let imageSource = MLNImageSource(
                         identifier: "overlay‑src",
@@ -89,77 +95,46 @@ struct DebugView: View {
                     }
                 }
             
-//            MapView(styleURL: styleURL).onStyleLoaded { style in
-//                
-//            }
-//
-//                // Define a data source.
-//                // It will be automatically if a layer references it.
-////                let polylineSource = ShapeSource(identifier: "polyline") {
-////                    MLNPolylineFeature(coordinates: )
-////                }
-//                let tappedPoint = ShapeSource(identifier: "tapped-point") {
-//                    MLNPointFeature(coordinate: tapCoordinates)
-//                }
-//
-//                CircleStyleLayer(identifier: "tapped-point", source: tappedPoint)
-//                    .color(.red)
-//
-//
-//                let indoorMap = ImageSource(identifier: "radar-indoors-layer", coordinateQuad: Quad(
-//                    [40.739176403770000, -73.98506837398742],
-//                    [40.738102592955016, -73.98586187468311],
-//                    [40.737476360708260, -73.98438576909109],
-//                    [40.738550165730345, -73.98359224656258]
-//                )) {
-//                    ImageData.url(URL("https://upload.wikimedia.org/wikipedia/commons/b/b6/Image_created_with_a_mobile_phone.png")!)
-//                }
-//
-//                RasterStyleLayer(identifier: "radar-indoors-layer", source: indoorMap)
-//
-//            }.onTapMapGesture { value in
-//                tapCoordinates = value.coordinate
-//            }
-            
             HStack(spacing: 20) {
-                Button("set") {
-                    let coordinates = tapCoordinates
-                    if coordinates.latitude == 0 && coordinates.longitude == 0 {
-                        print("coordinate not set")
-                        return
-                    }
-                    let location = CLLocation(latitude: coordinates.latitude, longitude: coordinates.longitude)
-                    Task {
-                        await RadarSDKIndoors.setLocation(location)
-                    }
-                }
+                Circle()
+                    .fill((success && holding) ? Color.green : Color.gray)
+                    .frame(width: 20, height: 20)
                 
-                Button("get") {
-                    Task {
-                        await RadarSDKIndoors.getLocation()
-                    }
-                }
-                
-                Button("site") {
-                    Task {
-                        do {
-                            let dateFormatter = DateFormatter()
-                            dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
-                            
-//                            let encoder = JSONEncoder()
-//                            encoder.dateEncodingStrategy = .formatted(dateFormatter)
-//                            
-//                            let x = try encoder.encode(GeoJSONGeometry.point([1, 2]))
-//                            print(String(data: x, encoding: .utf8))
-//                            
-                            let decoder = JSONDecoder()
-                            decoder.dateDecodingStrategy = .formatted(dateFormatter)
-                            
-                            let y = try decoder.decode(RadarSiteResponse.self, from: Data(siteString.utf8))
-                            print(y)
-                        } catch {
-                            print(error)
+                Button(action: {
+                    holding = false
+                    success = false
+                    
+                    print("Stopped survey")
+                    RadarSDKIndoors.onRangedBeacon {}
+                }) {
+                    Text("Survey")
+                        .font(.title)
+                        .foregroundColor(.white)
+                        .frame(width: 100, height: 100) // Set a large size
+                        .background(Color.red)
+                        .clipShape(Circle()) // Make it round
+                }.simultaneousGesture(
+                    LongPressGesture(minimumDuration: 0.1).onChanged { _ in
+                        holding = true
+                        // set it up so that every time beacon is ranged, we send up the data (if we are holding the button)
+                        print("Started survey")
+                        RadarSDKIndoors.onRangedBeacon {
+                            let coordinates = tapCoordinates
+                            if coordinates.latitude == 0 && coordinates.longitude == 0 {
+                                return
+                            }
+                            let location = CLLocation(latitude: coordinates.latitude, longitude: coordinates.longitude)
+                            Task {
+                                success = await RadarSDKIndoors.setLocation(location)
+                            }
                         }
+                    }
+                )
+            }.onAppear {
+                RadarSDKIndoors.nothing()
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    Task {
+                        await RadarSDKIndoors.start()
                     }
                 }
             }

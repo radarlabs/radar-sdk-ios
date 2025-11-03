@@ -118,7 +118,7 @@ struct MyMapView: UIViewRepresentable {
         mapView.logoView.isHidden = true
         mapView.isRotateEnabled = false
 
-        mapView.setCenter(CLLocationCoordinate2D(latitude: 40.7342, longitude: -73.9911), zoomLevel: 11, animated: false)
+        mapView.setCenter(CLLocationCoordinate2D(latitude: 40.73840359056395, longitude: -73.99118515629965), zoomLevel: 18, animated: false)
 
         // set min and max zoom levels
         mapView.maximumZoomLevel = 25

@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 70;
+	objectVersion = 54;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -116,10 +116,6 @@
 		F68F40742EB130840004EE07 /* RadarSDKIndoors.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RadarSDKIndoors.xcodeproj; path = ../RadarSDKIndoors/RadarSDKIndoors.xcodeproj; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
-/* Begin PBXFileSystemSynchronizedRootGroup section */
-		F68F40B12EB2AFD10004EE07 /* MapLibreSwiftExtension */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = MapLibreSwiftExtension; sourceTree = "<group>"; };
-/* End PBXFileSystemSynchronizedRootGroup section */
-
 /* Begin PBXFrameworksBuildPhase section */
 		DD236D20230A006700EB88F9 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
@@ -166,7 +162,6 @@
 				F6513F5F2E6B736200523472 /* MainView.swift */,
 				F61886C42EA7DC800072E87C /* MapView.swift */,
 				F61886C02EA7DB3F0072E87C /* MyRadarDelegate.swift */,
-				F68F40B12EB2AFD10004EE07 /* MapLibreSwiftExtension */,
 				F61886B92EA7DB180072E87C /* TestsView.swift */,
 				F61886CE2EA800830072E87C /* DebugView.swift */,
 				F65B4C302EB3B7F500434EF1 /* RadarSite.swift */,
@@ -231,9 +226,6 @@
 			buildRules = (
 			);
 			dependencies = (
-			);
-			fileSystemSynchronizedGroups = (
-				F68F40B12EB2AFD10004EE07 /* MapLibreSwiftExtension */,
 			);
 			name = Example;
 			packageProductDependencies = (
