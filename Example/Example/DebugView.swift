@@ -102,7 +102,6 @@ struct DebugView: View {
                 
                 Button(action: {
                     holding = false
-                    success = false
                     
                     print("Stopped survey")
                     RadarSDKIndoors.onRangedBeacon {}
@@ -126,6 +125,9 @@ struct DebugView: View {
                             let location = CLLocation(latitude: coordinates.latitude, longitude: coordinates.longitude)
                             Task {
                                 success = await RadarSDKIndoors.setLocation(location)
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                                    success = false
+                                }
                             }
                         }
                     }
@@ -138,28 +140,6 @@ struct DebugView: View {
                     }
                 }
             }
-            HStack(spacing: 20) {
-                Button("init") {
-                    RadarSDKIndoors.nothing()
-                }
-                
-                Button("start") {
-                    let locationManager = CLLocationManager()
-                    locationManager.monitoredRegions.forEach {
-                        locationManager.stopMonitoring(for: $0)
-                    }
-                    Task {
-                        await RadarSDKIndoors.start()
-                    }
-                }
-                
-                Button("stop") {
-                    Task {
-                        await RadarSDKIndoors.stop()
-                    }
-                }
-            }
-            Spacer()
         }
     }
 }
