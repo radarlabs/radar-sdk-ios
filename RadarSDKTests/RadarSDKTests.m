@@ -623,6 +623,9 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
         XCTAssertEqual(status, RadarStatusSuccess);
         XCTAssertEqualObjects(self.locationManagerMock.mockLocation, location);
         AssertEventsOk(events);
+        // first event has an altitude attached, check it's parsed properly
+        XCTAssertNotEqual(events.firstObject.location.altitude, -1);
+        XCTAssertEqual(events.lastObject.location.altitude, -1);
         AssertUserOk(user);
 
         [expectation fulfill];

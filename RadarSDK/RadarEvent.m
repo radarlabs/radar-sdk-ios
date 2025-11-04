@@ -299,7 +299,7 @@
         float altitude = -1;
         if (locationCoordinatesArr.count == 3) {
             id locationCoordinatesAltitudeObj = locationCoordinatesArr[2];
-            if (!locationCoordinatesAltitudeObj && [locationCoordinatesAltitudeObj isKindOfClass:[NSNumber class]]) {
+            if (locationCoordinatesAltitudeObj && [locationCoordinatesAltitudeObj isKindOfClass:[NSNumber class]]) {
                 altitude = [(NSNumber *)locationCoordinatesAltitudeObj floatValue];
             }
         }

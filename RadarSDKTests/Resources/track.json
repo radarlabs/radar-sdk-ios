@@ -187,7 +187,8 @@
             "type": "Point",
             "coordinates": [
                -73.975365,
-               40.783825
+               40.783825,
+               420.69,
             ]
          },
          "locationAccuracy": 5,
@@ -263,7 +264,8 @@
             "type": "Point",
             "coordinates": [
                -73.975365,
-               40.783825
+               40.783825,
+               8848.9
             ]
          },
          "locationAccuracy": 5,
