@@ -63,6 +63,8 @@
 	<string>Uses bluetooth</string>
 	<key>NSBluetoothWhileInUseUsageDescription</key>
 	<string>Uses bluetooth</string>
+	<key>NSCameraUsageDescription</key>
+	<string></string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>Your background location usage description goes here.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>

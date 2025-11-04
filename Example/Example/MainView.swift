@@ -17,7 +17,7 @@ struct MainView: View {
         case Tests
     }
     
-    @State private var selectedTab: TabIdentifier = .Tests;
+    @State private var selectedTab: TabIdentifier = .Debug;
     
     var body: some View {
         TabView(selection: $selectedTab) {
@@ -32,7 +32,6 @@ struct MainView: View {
             LogsView().tabItem {
                 Text("Logs")
             }.tag(TabIdentifier.Logs)
-
 //            TestsView().tabItem {
 //                Text("Tests")
 //            }.tag(TabIdentifier.Tests)
