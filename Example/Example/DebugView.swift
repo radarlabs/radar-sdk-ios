@@ -191,10 +191,11 @@ struct DebugView: View {
                        let pointSource = source as? MLNShapeSource {
                         pointSource.shape = MLNPointFeature(coordinate: value.coordinate)
                     }
-                }
+                }.frame(height: 400)
             
-            HStack(spacing: 20) {
+            HStack {
                 ARViewContainer(viewModel: viewModel).frame(width: 200)
+                Spacer()
                 VStack {
                     let xyz = viewModel.transform.columns.3
                     Text(String(format: "%.1f, %.1f, %.1f", xyz.x, xyz.y, xyz.z))
@@ -218,9 +219,9 @@ struct DebugView: View {
                         Text("Calibrate")
                             .font(.title)
                             .foregroundColor(.white)
-                            .frame(width: 100, height: 100) // Set a large size
+                            .frame(width: 100, height: 100)
                             .background(Color.yellow)
-                            .clipShape(Circle()) // Make it round
+                            .clipShape(Circle())
                     }
                     
                     Button(action: {
@@ -229,11 +230,11 @@ struct DebugView: View {
                         Text(surveying ? "Stop" : "Start")
                             .font(.title)
                             .foregroundColor(.white)
-                            .frame(width: 100, height: 100) // Set a large size
+                            .frame(width: 100, height: 100)
                             .background(surveying ? Color.red : Color.green)
-                            .clipShape(Circle()) // Make it round
+                            .clipShape(Circle())
                     }
-                }
+                }.frame(width: 200)
             }.onAppear {
                 RadarSDKIndoors.nothing()
                 Task {

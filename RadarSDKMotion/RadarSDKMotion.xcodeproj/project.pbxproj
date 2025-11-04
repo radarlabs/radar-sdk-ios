@@ -20,20 +20,6 @@
 			remoteGlobalIDString = E698B6662C6167A800084371;
 			remoteInfo = RadarMotion;
 		};
-		F68F407F2EB1309A0004EE07 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = F68F40652EB11B260004EE07 /* RadarSDKIndoors.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = FE9414F72E0DE3E6008ECBEB;
-			remoteInfo = RadarSDKIndoors;
-		};
-		F68F40812EB1309A0004EE07 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = F68F40652EB11B260004EE07 /* RadarSDKIndoors.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = FE9415002E0DE3E6008ECBEB;
-			remoteInfo = RadarSDKIndoorsTests;
-		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -54,7 +40,6 @@
 		E698B66A2C6167A800084371 /* RadarSDKMotion.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarSDKMotion.h; sourceTree = "<group>"; };
 		E698B6712C6167A800084371 /* RadarSDKMotionTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RadarSDKMotionTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		E698B6BA2C616C5D00084371 /* RadarSDKMotion.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RadarSDKMotion.m; sourceTree = "<group>"; };
-		F68F40652EB11B260004EE07 /* RadarSDKIndoors.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RadarSDKIndoors.xcodeproj; path = ../RadarSDKIndoors/RadarSDKIndoors.xcodeproj; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -79,7 +64,6 @@
 		E698B65D2C6167A800084371 = {
 			isa = PBXGroup;
 			children = (
-				F68F40652EB11B260004EE07 /* RadarSDKIndoors.xcodeproj */,
 				E698B6692C6167A800084371 /* RadarSDKMotion */,
 				E698B6682C6167A800084371 /* Products */,
 				E698B6B22C616BCC00084371 /* Frameworks */,
@@ -117,15 +101,6 @@
 				E698B66A2C6167A800084371 /* RadarSDKMotion.h */,
 			);
 			path = Include;
-			sourceTree = "<group>";
-		};
-		F68F40792EB130990004EE07 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				F68F40802EB1309A0004EE07 /* RadarSDKIndoors.framework */,
-				F68F40822EB1309A0004EE07 /* RadarSDKIndoorsTests.xctest */,
-			);
-			name = Products;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -207,12 +182,6 @@
 			mainGroup = E698B65D2C6167A800084371;
 			productRefGroup = E698B6682C6167A800084371 /* Products */;
 			projectDirPath = "";
-			projectReferences = (
-				{
-					ProductGroup = F68F40792EB130990004EE07 /* Products */;
-					ProjectRef = F68F40652EB11B260004EE07 /* RadarSDKIndoors.xcodeproj */;
-				},
-			);
 			projectRoot = "";
 			targets = (
 				E698B6662C6167A800084371 /* RadarSDKMotion */,
@@ -220,23 +189,6 @@
 			);
 		};
 /* End PBXProject section */
-
-/* Begin PBXReferenceProxy section */
-		F68F40802EB1309A0004EE07 /* RadarSDKIndoors.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = RadarSDKIndoors.framework;
-			remoteRef = F68F407F2EB1309A0004EE07 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		F68F40822EB1309A0004EE07 /* RadarSDKIndoorsTests.xctest */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.cfbundle;
-			path = RadarSDKIndoorsTests.xctest;
-			remoteRef = F68F40812EB1309A0004EE07 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		E698B6652C6167A800084371 /* Resources */ = {
