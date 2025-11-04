@@ -7,6 +7,7 @@
 
 #import <CoreLocation/CoreLocation.h>
 #import <Foundation/Foundation.h>
+#import "../RadarSDK/RadarLocationManager.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -21,4 +22,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
+// expose callCompletionHandlersWithStatus, so we can simulate a timeout
+@interface RadarLocationManager ()
+- (void)callCompletionHandlersWithStatus:(RadarStatus)status location:(CLLocation *_Nullable)location;
+@end
 NS_ASSUME_NONNULL_END
