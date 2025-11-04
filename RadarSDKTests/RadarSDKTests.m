@@ -627,6 +627,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
         XCTAssertNotEqual(events.firstObject.location.altitude, -1);
         XCTAssertEqual(events.lastObject.location.altitude, -1);
         AssertUserOk(user);
+        XCTAssertNotEqual(user.location.altitude, -1);
 
         [expectation fulfill];
     }];
