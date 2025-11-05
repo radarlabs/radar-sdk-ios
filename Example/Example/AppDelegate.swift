@@ -30,7 +30,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         self.requestLocationPermissions()
         
         // Replace with a valid test publishable key
-        let radarInitializeOptions = RadarInitializeOptions()
+//        let radarInitializeOptions = RadarInitializeOptions()
+        
+        
         
         // Uncomment to enable automatic setup for notification conversions or deep linking
         //radarInitializeOptions.autoLogNotificationConversions = true

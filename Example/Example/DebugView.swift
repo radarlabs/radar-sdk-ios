@@ -53,14 +53,14 @@ extension DebugViewModel: CLLocationManagerDelegate {
 }
 
 extension RadarSite {
-    func toXY(coords: CLLocationCoordinate2D) -> (Double, Double) {
+    func toXY(_ coords: CLLocationCoordinate2D) -> (Double, Double) {
         let rel_lat = coords.latitude - geometry.coordinates[1]
         let rel_lng = coords.longitude - geometry.coordinates[0]
         
         return (rel_lng * cos(geometry.coordinates[1] * .pi / 180.0) * 111320, rel_lat * 111132)
     }
     
-    func fromXY(xy: (Double, Double)) -> CLLocationCoordinate2D {
+    func fromXY(_ xy: (Double, Double)) -> CLLocationCoordinate2D {
         let (x, y) = xy
         let rel_lat = y / 111132.0
         let rel_lng = x / (cos(geometry.coordinates[1] * .pi / 180.0) * 111320.0)
@@ -140,7 +140,7 @@ struct DebugView: View {
             if let pred = (await RadarSDKIndoors.getLocation()) {
                 if let source = mapStyle?.source(withIdentifier: "pred-src"),
                    let pointSource = source as? MLNShapeSource,
-                   let coordinate = site?.fromXY(xy: pred) {
+                   let coordinate = site?.fromXY(pred) {
                     pointSource.shape = MLNPointFeature(coordinate: coordinate)
                 }
             }
@@ -214,6 +214,11 @@ struct DebugView: View {
                 }
                 Spacer()
                 VStack {
+                    if let coords = tapCoordinates,
+                       let xy = site?.toXY(coords) {
+                        Text(String(format: "%.1f, %.1f", xy.0, xy.1))
+                    }
+                    
                     let xyz = viewModel.transform.columns.3
                     Text(String(format: "%.1f, %.1f, %.1f", xyz.x, xyz.y, xyz.z))
                     
@@ -229,14 +234,14 @@ struct DebugView: View {
                     Button(action: {
                         viewModel.resetTracking()
                         if let coords = tapCoordinates,
-                           let calib = site?.toXY(coords: coords) {
+                           let calib = site?.toXY(coords) {
                             calibration = calib
                         }
                     }) {
                         Text("Calibrate")
                             .font(.title)
                             .foregroundColor(.white)
-                            .frame(width: 100, height: 100)
+                            .frame(width: 80, height: 80)
                             .background(Color.yellow)
                             .clipShape(Circle())
                     }
@@ -247,9 +252,17 @@ struct DebugView: View {
                         Text(surveying ? "Stop" : "Start")
                             .font(.title)
                             .foregroundColor(.white)
-                            .frame(width: 100, height: 100)
+                            .frame(width: 80, height: 80)
                             .background(surveying ? Color.red : Color.green)
                             .clipShape(Circle())
+                    }
+                    Button(action: {
+                        Task {
+                            await RadarSDKIndoors.reDownloadModel()
+                        }
+                    }) {
+                        Text("Re-download model")
+                            .foregroundColor(.white)
                     }
                 }.frame(width: 200)
             }.onAppear {
@@ -275,7 +288,7 @@ struct DebugView: View {
                             calibration.0 + cos_rotation * x - sin_rotation * y,
                             calibration.1 + sin_rotation * x + cos_rotation * y
                         )
-                        if let coordinate = site?.fromXY(xy: xy) {
+                        if let coordinate = site?.fromXY(xy) {
                             pointSource.shape = MLNPointFeature(coordinate: coordinate)
                         }
                     }
