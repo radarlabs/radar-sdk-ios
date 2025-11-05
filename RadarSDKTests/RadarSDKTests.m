@@ -285,6 +285,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 
 - (void)setUp {
     [super setUp];
+    XCTAssertFalse([Radar isInitialized]);
     [Radar initializeWithPublishableKey:kPublishableKey];
     [RadarSettings setLogLevel:RadarLogLevelDebug];
 
@@ -318,6 +319,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 
 - (void)test_Radar_initialize {
     XCTAssertEqualObjects(kPublishableKey, [RadarSettings publishableKey]);
+    XCTAssertTrue([Radar isInitialized]);
 }
 
 - (void)test_Radar_setUserId {

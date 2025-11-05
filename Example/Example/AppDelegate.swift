@@ -47,7 +47,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
     
     func application(_ app: UIApplication, open url: URL,
                      options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
-        // Handle opening via standard URL               
+        // Handle opening via standard URL
         return true
     }
     
@@ -95,8 +95,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         window.makeKeyAndVisible()
         
         self.window = window
-        
-        Radar.isInitialized
         
         if UIApplication.shared.applicationState != .background {
             Radar.getLocation { (status, location, stopped) in
