@@ -105,6 +105,9 @@ struct DebugView: View {
     var calibration: (Double, Double) = (0, 0)
     
     @State
+    var rotation: Double = 0
+    
+    @State
     var surveying = false
     
     @StateObject private var viewModel = DebugViewModel()
@@ -118,7 +121,14 @@ struct DebugView: View {
         // send data to server if surveying
         Task {
             if (surveying) {
-                let xy = (calibration.0 + Double(viewModel.transform.columns.3.x), calibration.1 - Double(viewModel.transform.columns.3.z))
+                let x = Double(viewModel.transform.columns.3.x)
+                let y = -Double(viewModel.transform.columns.3.z)
+                let sin_rotation = sin(rotation)
+                let cos_rotation = cos(rotation)
+                let xy = (
+                    calibration.0 + cos_rotation * x - sin_rotation * y,
+                    calibration.1 + sin_rotation * x + cos_rotation * y
+                )
                 success = await RadarSDKIndoors.setLocation(xy)
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                     success = false
@@ -196,6 +206,13 @@ struct DebugView: View {
             HStack {
                 ARViewContainer(viewModel: viewModel).frame(width: 200)
                 Spacer()
+                GeometryReader { geo in
+                    Slider(value: $rotation, in: -Double.pi...Double.pi)
+                        .rotationEffect(.degrees(90), anchor: .topLeading)
+                        .frame(width: geo.size.height)
+                        .offset(x: 30)
+                }
+                Spacer()
                 VStack {
                     let xyz = viewModel.transform.columns.3
                     Text(String(format: "%.1f, %.1f, %.1f", xyz.x, xyz.y, xyz.z))
@@ -241,17 +258,26 @@ struct DebugView: View {
                     await RadarSDKIndoors.start()
                     
                     // get a location first, so that we load the model
-                    if let pred = (await RadarSDKIndoors.getLocation()) {
-                    }
-                    RadarSDKIndoors.onRangedBeacon {
-                        onRangedBeacon()
+                    if (await RadarSDKIndoors.getLocation()) != nil {
+                        RadarSDKIndoors.onRangedBeacon {
+                            onRangedBeacon()
+                        }
                     }
                 }
                 viewModel.updated = {
                     if let source = mapStyle?.source(withIdentifier: "ar-src"),
-                       let pointSource = source as? MLNShapeSource,
-                       let coordinate = site?.fromXY(xy: (calibration.0 + Double(viewModel.transform.columns.3.x), calibration.1 - Double(viewModel.transform.columns.3.z))) {
-                        pointSource.shape = MLNPointFeature(coordinate: coordinate)
+                       let pointSource = source as? MLNShapeSource {
+                        let x = Double(viewModel.transform.columns.3.x)
+                        let y = -Double(viewModel.transform.columns.3.z)
+                        let sin_rotation = sin(rotation)
+                        let cos_rotation = cos(rotation)
+                        let xy = (
+                            calibration.0 + cos_rotation * x - sin_rotation * y,
+                            calibration.1 + sin_rotation * x + cos_rotation * y
+                        )
+                        if let coordinate = site?.fromXY(xy: xy) {
+                            pointSource.shape = MLNPointFeature(coordinate: coordinate)
+                        }
                     }
                 }
             }

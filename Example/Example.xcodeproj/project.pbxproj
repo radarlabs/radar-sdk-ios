@@ -25,12 +25,12 @@
 		F65B4C312EB3B7F900434EF1 /* RadarSite.swift in Sources */ = {isa = PBXBuildFile; fileRef = F65B4C302EB3B7F500434EF1 /* RadarSite.swift */; };
 		F65B4C452EB9379300434EF1 /* AR.swift in Sources */ = {isa = PBXBuildFile; fileRef = F65B4C442EB9379000434EF1 /* AR.swift */; };
 		F66DAD6A2E707F0700896773 /* waypoints.gpx in Sources */ = {isa = PBXBuildFile; fileRef = F66DAD642E707F0300896773 /* waypoints.gpx */; };
-		F68F408E2EB1310A0004EE07 /* RadarSDKIndoors.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F68F40892EB1309A0004EE07 /* RadarSDKIndoors.framework */; };
-		F68F408F2EB1310A0004EE07 /* RadarSDKIndoors.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F68F40892EB1309A0004EE07 /* RadarSDKIndoors.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		F68F40A52EB2A5480004EE07 /* MapLibre in Frameworks */ = {isa = PBXBuildFile; productRef = F68F40A42EB2A5480004EE07 /* MapLibre */; };
 		F68F40AA2EB2AA220004EE07 /* MapLibreSwiftDSL in Frameworks */ = {isa = PBXBuildFile; productRef = F68F40A92EB2AA220004EE07 /* MapLibreSwiftDSL */; };
 		F68F40AC2EB2AA220004EE07 /* MapLibreSwiftMacros in Frameworks */ = {isa = PBXBuildFile; productRef = F68F40AB2EB2AA220004EE07 /* MapLibreSwiftMacros */; };
 		F68F40AE2EB2AA220004EE07 /* MapLibreSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = F68F40AD2EB2AA220004EE07 /* MapLibreSwiftUI */; };
+		F6BF82762EBA90BB00143AD9 /* RadarSDKIndoors.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F6BF82752EBA90BB00143AD9 /* RadarSDKIndoors.framework */; };
+		F6BF82772EBA90BB00143AD9 /* RadarSDKIndoors.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F6BF82752EBA90BB00143AD9 /* RadarSDKIndoors.framework */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -62,14 +62,14 @@
 			remoteGlobalIDString = E698B6712C6167A800084371;
 			remoteInfo = RadarSDKMotionTests;
 		};
-		F68F40882EB1309A0004EE07 /* PBXContainerItemProxy */ = {
+		F6BF827C2EBA90E300143AD9 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = F68F40742EB130840004EE07 /* RadarSDKIndoors.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = FE9414F72E0DE3E6008ECBEB;
 			remoteInfo = RadarSDKIndoors;
 		};
-		F68F408A2EB1309A0004EE07 /* PBXContainerItemProxy */ = {
+		F6BF827E2EBA90E300143AD9 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = F68F40742EB130840004EE07 /* RadarSDKIndoors.xcodeproj */;
 			proxyType = 2;
@@ -85,7 +85,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				F68F408F2EB1310A0004EE07 /* RadarSDKIndoors.framework in Embed Frameworks */,
+				F6BF82772EBA90BB00143AD9 /* RadarSDKIndoors.framework in Embed Frameworks */,
 				013D7AF326D327C400574AD5 /* RadarSDK.framework in Embed Frameworks */,
 				E698B7502C627A1600084371 /* RadarSDKMotion.framework in Embed Frameworks */,
 			);
@@ -116,6 +116,7 @@
 		F65B4C442EB9379000434EF1 /* AR.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AR.swift; sourceTree = "<group>"; };
 		F66DAD642E707F0300896773 /* waypoints.gpx */ = {isa = PBXFileReference; lastKnownFileType = text; path = waypoints.gpx; sourceTree = "<group>"; };
 		F68F40742EB130840004EE07 /* RadarSDKIndoors.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RadarSDKIndoors.xcodeproj; path = ../RadarSDKIndoors/RadarSDKIndoors.xcodeproj; sourceTree = SOURCE_ROOT; };
+		F6BF82752EBA90BB00143AD9 /* RadarSDKIndoors.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = RadarSDKIndoors.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -125,8 +126,8 @@
 			files = (
 				F68F40A52EB2A5480004EE07 /* MapLibre in Frameworks */,
 				F68F40AA2EB2AA220004EE07 /* MapLibreSwiftDSL in Frameworks */,
-				F68F408E2EB1310A0004EE07 /* RadarSDKIndoors.framework in Frameworks */,
 				F68F40AC2EB2AA220004EE07 /* MapLibreSwiftMacros in Frameworks */,
+				F6BF82762EBA90BB00143AD9 /* RadarSDKIndoors.framework in Frameworks */,
 				013D7AF226D327C400574AD5 /* RadarSDK.framework in Frameworks */,
 				E698B7492C626B0600084371 /* RadarSDKMotion.framework in Frameworks */,
 				F68F40AE2EB2AA220004EE07 /* MapLibreSwiftUI in Frameworks */,
@@ -192,6 +193,7 @@
 		DD86FD03239185FB003225F6 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				F6BF82752EBA90BB00143AD9 /* RadarSDKIndoors.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -205,11 +207,11 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		F68F407B2EB130990004EE07 /* Products */ = {
+		F6BF82782EBA90E300143AD9 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				F68F40892EB1309A0004EE07 /* RadarSDKIndoors.framework */,
-				F68F408B2EB1309A0004EE07 /* RadarSDKIndoorsTests.xctest */,
+				F6BF827D2EBA90E300143AD9 /* RadarSDKIndoors.framework */,
+				F6BF827F2EBA90E300143AD9 /* RadarSDKIndoorsTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -277,7 +279,7 @@
 					ProjectRef = DD86FCF9239185F4003225F6 /* RadarSDK.xcodeproj */;
 				},
 				{
-					ProductGroup = F68F407B2EB130990004EE07 /* Products */;
+					ProductGroup = F6BF82782EBA90E300143AD9 /* Products */;
 					ProjectRef = F68F40742EB130840004EE07 /* RadarSDKIndoors.xcodeproj */;
 				},
 				{
@@ -321,18 +323,18 @@
 			remoteRef = E698B7422C626AE600084371 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		F68F40892EB1309A0004EE07 /* RadarSDKIndoors.framework */ = {
+		F6BF827D2EBA90E300143AD9 /* RadarSDKIndoors.framework */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.framework;
 			path = RadarSDKIndoors.framework;
-			remoteRef = F68F40882EB1309A0004EE07 /* PBXContainerItemProxy */;
+			remoteRef = F6BF827C2EBA90E300143AD9 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		F68F408B2EB1309A0004EE07 /* RadarSDKIndoorsTests.xctest */ = {
+		F6BF827F2EBA90E300143AD9 /* RadarSDKIndoorsTests.xctest */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.cfbundle;
 			path = RadarSDKIndoorsTests.xctest;
-			remoteRef = F68F408A2EB1309A0004EE07 /* PBXContainerItemProxy */;
+			remoteRef = F6BF827E2EBA90E300143AD9 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
