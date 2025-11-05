@@ -283,6 +283,10 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     AssertRouteOk(routes.car);
 }
 
++ (void)setUp {
+    XCTAssertFalse([Radar isInitialized]);
+}
+
 - (void)setUp {
     [super setUp];
     [Radar initializeWithPublishableKey:kPublishableKey];
@@ -318,6 +322,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 
 - (void)test_Radar_initialize {
     XCTAssertEqualObjects(kPublishableKey, [RadarSettings publishableKey]);
+    XCTAssertTrue([Radar isInitialized]);
 }
 
 - (void)test_Radar_setUserId {

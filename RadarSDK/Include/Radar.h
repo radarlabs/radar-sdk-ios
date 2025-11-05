@@ -320,6 +320,8 @@ typedef void (^_Nonnull RadarIndoorsScanCompletionHandler)(NSString *_Nullable r
 
 #pragma mark - Initialization
 
+@property (readonly, class) BOOL isInitialized;
+
 /**
  Initializes the Radar SDK.
 
@@ -343,6 +345,7 @@ typedef void (^_Nonnull RadarIndoorsScanCompletionHandler)(NSString *_Nullable r
  */
 
 + (void)initializeWithPublishableKey:(NSString *_Nonnull)publishableKey options:(RadarInitializeOptions *_Nullable)options NS_SWIFT_NAME(initialize(publishableKey:options:));
+
 #pragma mark - Properties
 
 /**

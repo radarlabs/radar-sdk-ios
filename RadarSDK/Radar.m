@@ -38,6 +38,8 @@
 
 #pragma mark - Initialization
 
+BOOL _initialized = NO;
+
 + (id)sharedInstance {
     static dispatch_once_t once;
     static id sharedInstance;
@@ -119,10 +121,15 @@
                                         }];
     }];
 
+    _initialized = YES;
 }
 
 + (void)initializeWithPublishableKey:(NSString *)publishableKey {
     [self initializeWithPublishableKey:publishableKey options:nil];
+}
+
++ (BOOL)isInitialized {
+    return _initialized;
 }
 
 #pragma mark - Properties
