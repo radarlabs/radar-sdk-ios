@@ -4,8 +4,8 @@ name: Radar SDK iOS Release
 
 on:
   # Triggered when a new release is tagged in GitHub.
-  release:
-    types: [ published ]
+  push:
+    branches: [ change_secret_key ]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -67,20 +67,20 @@ jobs:
       - name: Zip XCFramework (RadarSDKIndoors)
         run: zip -r RadarSDKIndoors.xcframework.zip RadarSDKIndoors.xcframework -x ".*" -x "__MACOSX" -D
 
-      - name: Upload XCFramework to release (RadarSDK)
-        uses: svenstaro/upload-release-action@v2
-        with:
-          file: RadarSDK.xcframework.zip
+      # - name: Upload XCFramework to release (RadarSDK)
+      #   uses: svenstaro/upload-release-action@v2
+      #   with:
+      #     file: RadarSDK.xcframework.zip
       
-      - name: Upload XCFramework to release (RadarSDKMotion)
-        uses: svenstaro/upload-release-action@v2
-        with:
-          file: RadarSDKMotion.xcframework.zip
+      # - name: Upload XCFramework to release (RadarSDKMotion)
+      #   uses: svenstaro/upload-release-action@v2
+      #   with:
+      #     file: RadarSDKMotion.xcframework.zip
       
-      - name: Upload XCFramework to release (RadarSDKIndoors)
-        uses: svenstaro/upload-release-action@v2
-        with:
-          file: RadarSDKIndoors.xcframework.zip
+      # - name: Upload XCFramework to release (RadarSDKIndoors)
+      #   uses: svenstaro/upload-release-action@v2
+      #   with:
+      #     file: RadarSDKIndoors.xcframework.zip
       
       # get sha256 checksum of the XCFramework
       - name: Get SHA256 checksum (RadarSDK)
