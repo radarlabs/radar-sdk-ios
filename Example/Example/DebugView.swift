@@ -112,7 +112,7 @@ struct DebugView: View {
     
     @StateObject private var viewModel = DebugViewModel()
     
-    func onRangedBeacon() {
+    func onRangedBeacon(beacons: [CLBeacon]) {
         ranged = true
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
             ranged = false
@@ -129,7 +129,7 @@ struct DebugView: View {
                     calibration.0 + cos_rotation * x - sin_rotation * y,
                     calibration.1 + sin_rotation * x + cos_rotation * y
                 )
-                success = await RadarSDKIndoors.setLocation(xy)
+                success = await RadarSDKIndoors.setLocation(xy, beacons)
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                     success = false
                 }
@@ -272,9 +272,7 @@ struct DebugView: View {
                     
                     // get a location first, so that we load the model
                     if (await RadarSDKIndoors.getLocation()) != nil {
-                        RadarSDKIndoors.onRangedBeacon {
-                            onRangedBeacon()
-                        }
+                        RadarSDKIndoors.onRangedBeacon(onRangedBeacon)
                     }
                 }
                 viewModel.updated = {
