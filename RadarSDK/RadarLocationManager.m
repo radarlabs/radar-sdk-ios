@@ -350,7 +350,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 
                 
 
-            if (options.useMotion) {
+            if (options.useMotion && ([RadarState promptedForMotionUsage] || ![RadarSettings delayedMotionUsage])) {
                 self.activityManager = [RadarActivityManager sharedInstance];
                 self.locationManager.headingFilter = 5;
                 [self.locationManager startUpdatingHeading];
@@ -390,7 +390,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                     }
                 }];
             }
-            if (options.usePressure) {
+            if (options.usePressure && ([RadarState promptedForMotionUsage] || ![RadarSettings delayedMotionUsage])) {
                 self.activityManager = [RadarActivityManager sharedInstance];
                 CMAuthorizationStatus authStatus = [CMMotionActivityManager authorizationStatus];
                 [RadarState setMotionAuthorization:authStatus];

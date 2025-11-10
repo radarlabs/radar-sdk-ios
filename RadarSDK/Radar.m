@@ -1554,6 +1554,12 @@ BOOL _initialized = NO;
 }
 
 + (void)requestMotionActivityPermission {
+    if ([RadarState promptedForMotionUsage]) {
+        return;
+    }
+    if ([RadarSettings delayedMotionUsage]) {
+        [RadarState setPromptedForMotionUsage:YES];
+    }
     [[RadarActivityManager sharedInstance] requestPermission];
 }
 

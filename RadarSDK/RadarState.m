@@ -29,6 +29,7 @@ static NSString *const kLastPressureData = @"radar-lastPressureData";
 static NSString *const kNotificationPermissionGranted = @"radar-notificationPermissionGranted";
 static NSString *const kMotionAuthorization = @"radar-motionAuthorization";
 static NSString *const kRegisteredNotifications = @"radar-registeredNotifications";
+static NSString *const kPromptedForMotionUsage = @"radar-promptedForMotionUsage";
 static NSDictionary *_lastRelativeAltitudeDataInMemory = nil;
 static NSDate *_lastPressureBackupTime = nil;
 static NSTimeInterval const kBackupInterval = 2.0; // 2 seconds
@@ -279,6 +280,14 @@ static NSTimeInterval const kBackupInterval = 2.0; // 2 seconds
     }
     [registeredNotifications addObject:notification];
     [RadarState setRegisteredNotifications:registeredNotifications];
+}
+
++ (void)setPromptedForMotionUsage:(BOOL)promptedForMotionUsage {
+    [[NSUserDefaults standardUserDefaults] setBool:promptedForMotionUsage forKey:kPromptedForMotionUsage];
+}
+
++ (BOOL)promptedForMotionUsage {
+    return [[NSUserDefaults standardUserDefaults] boolForKey:kPromptedForMotionUsage];
 }
 
 @end
