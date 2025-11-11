@@ -37,6 +37,7 @@
 #import "RadarNotificationHelper.h"
 #import "Radar-Swift.h"
 #import <os/log.h>
+#import "RadarSDKFraudProtocol.h"
 
 @implementation RadarAPIClient
 
@@ -199,10 +200,7 @@
                     beacons:beacons
                indoorScan:indoorScan
                    verified:NO
-          attestationString:nil
-                      keyId:nil
-           attestationError:nil
-                  encrypted:NO
+              fraudPayload:nil
         expectedCountryCode:nil
           expectedStateCode:nil
                      reason:nil
@@ -218,10 +216,7 @@
                   beacons:(NSArray<RadarBeacon *> *_Nullable)beacons
              indoorScan:(NSString *_Nullable)indoorScan
                  verified:(BOOL)verified
-        attestationString:(NSString *_Nullable)attestationString
-                    keyId:(NSString *_Nullable)keyId
-         attestationError:(NSString *_Nullable)attestationError
-                encrypted:(BOOL)encrypted
+            fraudPayload:(NSString *_Nullable)fraudPayload
       expectedCountryCode:(NSString * _Nullable)expectedCountryCode
         expectedStateCode:(NSString * _Nullable)expectedStateCode
                    reason:(NSString * _Nullable)reason
@@ -298,20 +293,7 @@
     } else {
         params[@"xPlatformType"] = @"Native";
     }
-    NSMutableArray<NSString *> *fraudFailureReasons = [NSMutableArray new];
-    if (@available(iOS 15.0, *)) {
-        CLLocationSourceInformation *sourceInformation = location.sourceInformation;
-        if (sourceInformation) {
-            if (sourceInformation.isSimulatedBySoftware) {
-                params[@"mocked"] = @(YES);
-                [fraudFailureReasons addObject:@"fraud_mocked_from_mock_provider"];
-            }
-            if (sourceInformation.isProducedByAccessory) {
-                [fraudFailureReasons addObject:@"fraud_mocked_produced_by_accessory"];
-            }
-        }
-    }
-    
+
     RadarTripOptions *tripOptions = Radar.getTripOptions;
 
     if (tripOptions) {
@@ -351,15 +333,6 @@
 
     params[@"verified"] = @(verified);
     if (verified) {
-        params[@"attestationString"] = attestationString;
-        params[@"keyId"] = keyId;
-        params[@"attestationError"] = attestationError;
-        params[@"encrypted"] = @(encrypted);
-        BOOL jailbroken = [[RadarVerificationManager sharedInstance] isJailbroken];
-        params[@"compromised"] = @(jailbroken);
-        if (jailbroken) {
-            [fraudFailureReasons addObject:@"fraud_compromised_jailbroken"];
-        }
         if (expectedCountryCode) {
             params[@"expectedCountryCode"] = expectedCountryCode;
         }
@@ -372,14 +345,11 @@
         if (transactionId) {
             params[@"transactionId"] = transactionId;
         }
-        if (UIScreen.mainScreen.isCaptured) {
-            [fraudFailureReasons addObject:@"fraud_sharing_capturing_screen"];
-        }
-        NSString *kDeviceId = [[RadarVerificationManager sharedInstance] kDeviceId];
-        if (kDeviceId) {
-            params[@"kDeviceId"] = kDeviceId;
+        if (fraudPayload) {
+            params[@"fraudPayload"] = fraudPayload;
         }
     }
+
     params[@"appId"] = [[NSBundle mainBundle] bundleIdentifier];
     NSString *appName = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleName"];
     if (appName) {
@@ -434,15 +404,13 @@
     if (options.usePressure || options.useMotion) {
         params[@"locationMetadata"] = locationMetadata;
     }
-    
-    params[@"fraudFailureReasons"] = fraudFailureReasons;
 
     if (anonymous) {
         [[RadarAPIClient sharedInstance] getConfigForUsage:@"track"
-                                                  verified:verified
-                                         completionHandler:^(RadarStatus status, RadarConfig *_Nullable config){
+                                                verified:verified
+                                        completionHandler:^(RadarStatus status, RadarConfig *_Nullable config){
 
-                                         }];
+                                        }];
     }
 
     if (sdkConfiguration.useNotificationDiff) {
@@ -466,16 +434,14 @@
         [[RadarAPIClient sharedInstance] makeTrackRequestWithParams:params
                                                             options:options
                                                             stopped:stopped
-                                                           location:location
-                                                             source:source
-                                                           verified:verified
-                                                     publishableKey:publishableKey
-                                             notificationsRemaining:@[]
-                                             locationMetadata:locationMetadata
-                                                  completionHandler:completionHandler];
+                                                        location:location
+                                                            source:source
+                                                        verified:verified
+                                                    publishableKey:publishableKey
+                                            notificationsRemaining:@[]
+                                            locationMetadata:locationMetadata
+                                                completionHandler:completionHandler];
     }
-
-
 }
 
 - (void)makeTrackRequestWithParams:(NSDictionary *)params
