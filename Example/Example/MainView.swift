@@ -21,9 +21,9 @@ struct MainView: View {
     
     var body: some View {
         TabView(selection: $selectedTab) {
-//            MapView().tabItem {
-//                Text("Map")
-//            }.tag(TabIdentifier.Map)
+            MyMapView(withRadar: "prj_test_pk_3508428416f485c5f54d8e8bb1f616ee405b1995").tabItem {
+                Text("Map")
+            }.tag(TabIdentifier.Map)
             
             DebugView().tabItem {
                 Text("Debug")

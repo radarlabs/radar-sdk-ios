@@ -272,8 +272,8 @@ struct DebugView: View {
                     
                     // get a location first, so that we load the model
                     if (await RadarSDKIndoors.getLocation()) != nil {
-                        RadarSDKIndoors.onRangedBeacon(onRangedBeacon)
                     }
+                    RadarSDKIndoors.onRangedBeacon(onRangedBeacon)
                 }
                 viewModel.updated = {
                     if let source = mapStyle?.source(withIdentifier: "ar-src"),

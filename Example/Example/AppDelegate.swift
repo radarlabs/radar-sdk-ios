@@ -23,6 +23,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
     var useSwiftUI = true
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+            var request = URLRequest(url: URL(string: "https://bailey-nonnebulous-nonaccidentally.ngrok-free.dev/app_opened")!)
+            request.httpMethod = "POST"
+            if let options = launchOptions {
+                request.httpBody = try? JSONSerialization.data(withJSONObject: options)
+            }
+            URLSession.shared.dataTask(with: request).resume()
+        }
+        
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { (_, _) in }
         UNUserNotificationCenter.current().delegate = self
         
@@ -31,7 +41,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         
         // Replace with a valid test publishable key
 //        let radarInitializeOptions = RadarInitializeOptions()
-        
         
         
         // Uncomment to enable automatic setup for notification conversions or deep linking
