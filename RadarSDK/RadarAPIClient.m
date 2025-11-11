@@ -200,10 +200,7 @@
                     beacons:beacons
                indoorScan:indoorScan
                    verified:NO
-          attestationString:nil
-                      keyId:nil
-           attestationError:nil
-                  encrypted:NO
+              fraudPayload:nil
         expectedCountryCode:nil
           expectedStateCode:nil
                      reason:nil
@@ -219,10 +216,7 @@
                   beacons:(NSArray<RadarBeacon *> *_Nullable)beacons
              indoorScan:(NSString *_Nullable)indoorScan
                  verified:(BOOL)verified
-        attestationString:(NSString *_Nullable)attestationString
-                    keyId:(NSString *_Nullable)keyId
-         attestationError:(NSString *_Nullable)attestationError
-                encrypted:(BOOL)encrypted
+            fraudPayload:(NSString *_Nullable)fraudPayload
       expectedCountryCode:(NSString * _Nullable)expectedCountryCode
         expectedStateCode:(NSString * _Nullable)expectedStateCode
                    reason:(NSString * _Nullable)reason
@@ -299,15 +293,7 @@
     } else {
         params[@"xPlatformType"] = @"Native";
     }
-    
-    Class RadarSDKFraud = NSClassFromString(@"RadarSDKFraud");
-    if (RadarSDKFraud) {
-        NSString *fraudResults = [[RadarSDKFraud sharedInstance] detectFraudWithLocation:location];
-        params[@"fraudPayload"] = fraudResults;
-    } else {
-        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Skipping fraud checks: RadarSDKFraud submodule not available"];
-    }
-    
+
     RadarTripOptions *tripOptions = Radar.getTripOptions;
 
     if (tripOptions) {
@@ -347,10 +333,6 @@
 
     params[@"verified"] = @(verified);
     if (verified) {
-        params[@"attestationString"] = attestationString;
-        params[@"keyId"] = keyId;
-        params[@"attestationError"] = attestationError;
-        params[@"encrypted"] = @(encrypted);
         if (expectedCountryCode) {
             params[@"expectedCountryCode"] = expectedCountryCode;
         }
@@ -363,14 +345,11 @@
         if (transactionId) {
             params[@"transactionId"] = transactionId;
         }
-        Class RadarSDKFraud = NSClassFromString(@"RadarSDKFraud");
-        if (RadarSDKFraud) {
-            NSString *kDeviceId = [[RadarSDKFraud sharedInstance] kDeviceId];
-            if (kDeviceId) {
-                params[@"kDeviceId"] = kDeviceId;
-            }
+        if (fraudPayload) {
+            params[@"fraudPayload"] = fraudPayload;
         }
     }
+
     params[@"appId"] = [[NSBundle mainBundle] bundleIdentifier];
     NSString *appName = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleName"];
     if (appName) {
@@ -419,10 +398,10 @@
 
     if (anonymous) {
         [[RadarAPIClient sharedInstance] getConfigForUsage:@"track"
-                                                  verified:verified
-                                         completionHandler:^(RadarStatus status, RadarConfig *_Nullable config){
+                                                verified:verified
+                                        completionHandler:^(RadarStatus status, RadarConfig *_Nullable config){
 
-                                         }];
+                                        }];
     }
 
     if (sdkConfiguration.useNotificationDiff) {
@@ -446,16 +425,14 @@
         [[RadarAPIClient sharedInstance] makeTrackRequestWithParams:params
                                                             options:options
                                                             stopped:stopped
-                                                           location:location
-                                                             source:source
-                                                           verified:verified
-                                                     publishableKey:publishableKey
-                                             notificationsRemaining:@[]
-                                             locationMetadata:locationMetadata
-                                                  completionHandler:completionHandler];
+                                                        location:location
+                                                            source:source
+                                                        verified:verified
+                                                    publishableKey:publishableKey
+                                            notificationsRemaining:@[]
+                                            locationMetadata:locationMetadata
+                                                completionHandler:completionHandler];
     }
-
-
 }
 
 - (void)makeTrackRequestWithParams:(NSDictionary *)params

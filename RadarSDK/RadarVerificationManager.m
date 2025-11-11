@@ -109,53 +109,61 @@
                 return;
             }
             
-            [[RadarSDKFraud sharedInstance] getAttestationWithNonce:config.nonce
-                        completionHandler:^(NSString *_Nullable attestationString, NSString *_Nullable keyId, NSString *_Nullable attestationError) {
+            
+            [[RadarSDKFraud sharedInstance] getFraudPayloadWithLocation:location nonce:config.nonce completionHandler:^(RadarStatus status, NSString *_Nullable fraudPayload) {
+                if (status != RadarStatusSuccess) {
+                    [RadarUtils runOnMainThread:^{
+                        [[RadarDelegateHolder sharedInstance] didFailWithStatus:status];
+                        
+                        if (completionHandler) {
+                            completionHandler(status, nil);
+                        }
+                    }];
+                    return;
+                }
+                
                 void (^callTrackAPI)(NSArray<RadarBeacon *> *_Nullable) = ^(NSArray<RadarBeacon *> *_Nullable beacons) {
-                    [[RadarAPIClient sharedInstance]
-                     trackWithLocation:location
-                     stopped:RadarState.stopped
-                     foreground:[RadarUtils foreground]
-                     source:RadarLocationSourceForegroundLocation
-                     replayed:NO
-                     beacons:beacons
-                     indoorScan:nil
-                     verified:YES
-                     attestationString:attestationString
-                     keyId:keyId
-                     attestationError:attestationError
-                     encrypted:NO
-                     expectedCountryCode:self.expectedCountryCode
-                     expectedStateCode:self.expectedStateCode
-                     reason:reason
-                     transactionId:transactionId
-                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events,
-                                         RadarUser *_Nullable user, NSArray<RadarGeofence *> *_Nullable nearbyGeofences,
-                                         RadarConfig *_Nullable config, RadarVerifiedLocationToken *_Nullable token) {
-                        if (status == RadarStatusSuccess && config != nil) {
-                            [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
+                [[RadarAPIClient sharedInstance]
+                 trackWithLocation:location
+                 stopped:RadarState.stopped
+                 foreground:[RadarUtils foreground]
+                 source:RadarLocationSourceForegroundLocation
+                 replayed:NO
+                 beacons:beacons
+                 indoorScan:nil
+                 verified:YES
+                 fraudPayload:fraudPayload
+                 expectedCountryCode:self.expectedCountryCode
+                 expectedStateCode:self.expectedStateCode
+                 reason:reason
+                 transactionId:transactionId
+                 completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events,
+                                     RadarUser *_Nullable user, NSArray<RadarGeofence *> *_Nullable nearbyGeofences,
+                                     RadarConfig *_Nullable config, RadarVerifiedLocationToken *_Nullable token) {
+                    if (status == RadarStatusSuccess && config != nil) {
+                        [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
+                    }
+                    
+                    if (token) {
+                        self.lastToken = token;
+                        self.lastTokenSystemUptime = [NSProcessInfo processInfo].systemUptime;
+                        self.lastTokenBeacons = lastTokenBeacons;
+                    }
+                    
+                    [RadarUtils runOnMainThread:^{
+                        if (status != RadarStatusSuccess) {
+                            [[RadarDelegateHolder sharedInstance] didFailWithStatus:status];
                         }
                         
-                        if (token) {
-                            self.lastToken = token;
-                            self.lastTokenSystemUptime = [NSProcessInfo processInfo].systemUptime;
-                            self.lastTokenBeacons = lastTokenBeacons;
+                        if (completionHandler) {
+                            completionHandler(status, token);
                         }
-                        
-                        [RadarUtils runOnMainThread:^{
-                            if (status != RadarStatusSuccess) {
-                                [[RadarDelegateHolder sharedInstance] didFailWithStatus:status];
-                            }
-                            
-                            if (completionHandler) {
-                                completionHandler(status, token);
-                            }
                         }];
                     }];
                 };
-                
-                if (beacons) {
-                    [[RadarAPIClient sharedInstance]
+            
+            if (beacons) {
+                [[RadarAPIClient sharedInstance]
                      searchBeaconsNear:location
                      radius:1000
                      limit:10
