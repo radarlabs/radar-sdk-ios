@@ -17,6 +17,7 @@
     if (self) {
         _autoLogNotificationConversions = NO;
         _autoHandleNotificationDeepLinks = NO;
+        _silentPush = NO;
     }
     return self;
 }
