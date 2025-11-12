@@ -119,7 +119,7 @@
                                         }];
     }];
     
-    if (options.pushNotification) {
+    if (options.silentPush) {
         [[UIApplication sharedApplication] registerForRemoteNotifications];
     }
 }
