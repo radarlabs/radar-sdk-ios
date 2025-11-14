@@ -276,7 +276,6 @@ didReceiveRemoteNotification:(NSDictionary *)userInfo
     }
 }
 
-
 + (void)openURLFromNotification:(UNNotification *)notification {
 
     if ([notification.request.identifier hasPrefix:@"radar_"]) {
