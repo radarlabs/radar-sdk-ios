@@ -6,8 +6,6 @@
 //
 
 import Foundation
-
-#if canImport(SwiftUI)
 import SwiftUI
 
 @MainActor
@@ -110,25 +108,3 @@ public class RadarInAppMessageManager: NSObject {
         self.delegate = delegate
     }
 }
-
-#else
-
-// SwiftUI is not available, provide stub functions that does nothing
-@MainActor
-@available(iOS 13.0, *)
-@objc
-public class RadarInAppMessageManager: NSObject {
-    @objc
-    public static let shared = RadarInAppMessageManager()
-
-    @objc public func showInAppMessage(_ message: RadarInAppMessage) async {
-    }
-
-    @objc public func onInAppMessageReceived(messages: [RadarInAppMessage]) {
-    }
-
-    @objc public func setDelegate(_ delegate: RadarInAppMessageProtocol) {
-    }
-}
-
-#endif

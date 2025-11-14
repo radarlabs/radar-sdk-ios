@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftUI
 
 @objc @objcMembers
 public final class RadarInAppMessage : NSObject, Sendable {
