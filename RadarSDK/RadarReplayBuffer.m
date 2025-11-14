@@ -70,8 +70,6 @@ static const int MAX_BUFFER_SIZE = 120; // one hour of updates
         } else {
             [[NSUserDefaults standardUserDefaults] setObject:replaysData forKey:@"radar-replays"];
         }
-    } else {
-        NSLog(@"REPLAY BUFFER NOT ON!!!");
     }
 }
 
