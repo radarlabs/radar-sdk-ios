@@ -22,11 +22,13 @@
 #import "RadarUtils.h"
 #import "RadarVerificationManager.h"
 #import "RadarReplayBuffer.h"
+#import "RadarLogBuffer.h"
 #import "RadarNotificationHelper.h"
 #import "RadarTripOptions.h"
-#import "RadarInAppMessageDelegate.h"
-#import "Radar-Swift.h"
 #import "RadarIndoorsProtocol.h"
+#import "RadarInAppMessageDelegate.h"
+#import "RadarSwiftBridge.h"
+#import "Radar-Swift.h"
 
 @interface Radar ()
 
@@ -54,10 +56,14 @@ BOOL _initialized = NO;
     dispatch_once(&onceToken, ^{
         [RadarSettings setInitializeOptions:options];
         [RadarNotificationHelper swizzleNotificationCenterDelegate];
+        [RadarNotificationHelper swizzleApplicationDelegate];
     });
 }
 
 + (void)initializeWithPublishableKey:(NSString *)publishableKey options:(RadarInitializeOptions *)options {
+    [RadarSwift setBridge:[[RadarSwiftBridge alloc] init]];
+    [RadarSettings setAppGroup:[RadarSettings getAppGroup]];
+    
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"initialize()"];
     
     Class RadarSDKMotion = NSClassFromString(@"RadarSDKMotion");
@@ -120,12 +126,21 @@ BOOL _initialized = NO;
                                             [self flushLogs];
                                         }];
     }];
+    
+    if (options.silentPush) {
+        [[UIApplication sharedApplication] registerForRemoteNotifications];
+    }
 
     _initialized = YES;
 }
 
 + (void)initializeWithPublishableKey:(NSString *)publishableKey {
     [self initializeWithPublishableKey:publishableKey options:nil];
+}
+
++ (void)initializeWithAppGroup:(NSString *)appGroup {
+    [RadarSettings setAppGroup:appGroup];
+    [Radar initializeWithPublishableKey:[RadarSettings publishableKey]];
 }
 
 + (BOOL)isInitialized {
@@ -667,7 +682,7 @@ BOOL _initialized = NO;
                                                  if (Radar.isTracking) {
                                                      [RadarSettings setPreviousTrackingOptions:[RadarSettings trackingOptions]];
                                                  } else {
-                                                     [RadarSettings removePreviousTrackingOptions];
+                                                     [RadarSettings setPreviousTrackingOptions:nil];
                                                  }
 
                                                  if (trackingOptions && trackingOptions.startTrackingAfter == nil) {
@@ -1549,12 +1564,30 @@ BOOL _initialized = NO;
     }
 }
 
-+ (void) __writeToLogBufferWithLevel:(RadarLogLevel)level type:(RadarLogType)type message:(NSString *)message forcePersist:(BOOL)forcePersist {
-    [[RadarLogBuffer sharedInstance] write:level type:type message:message forcePersist:forcePersist];
-}
-
 + (void)requestMotionActivityPermission {
     [[RadarActivityManager sharedInstance] requestPermission];
+}
+
++ (void)setAppGroup:(NSString *)appGroup {
+    [RadarSettings setAppGroup:appGroup];
+}
+
++ (void)setPushNotificationToken:(NSString*)token {
+    [RadarSettings setPushNotificationToken:token];
+}
+
++ (void)setLocationExtensionToken:(NSString*)token {
+    [RadarSettings setLocationExtensionToken:token];
+}
+
++ (void)didReceivePushNotificationPayload:(NSDictionary *)payload completionHandler:(void (^ _Nonnull)(void))completionHandler {
+    if ([payload[@"type"] isEqual:@"radar:trackOnce"]) {
+        [Radar trackOnceWithCompletionHandler:^(RadarStatus status, CLLocation * _Nullable location, NSArray<RadarEvent *> * _Nullable events, RadarUser * _Nullable user) {
+            completionHandler();
+        }];
+    } else {
+        completionHandler();
+    }
 }
 
 @end

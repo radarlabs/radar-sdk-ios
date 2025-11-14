@@ -44,6 +44,10 @@ public final class RadarLogger : NSObject, Sendable {
     func info(_ message: String, type: RadarLogType = .none, includeDate: Bool = false, includeBattery: Bool = false, append: Bool = false) {
         log(level: .info, message: message, type: type, includeDate: includeDate, includeBattery: includeBattery, append: append)
     }
+    
+    func warning(_ message: String, type: RadarLogType = .none, includeDate: Bool = false, includeBattery: Bool = false, append: Bool = false) {
+        log(level: .warning, message: message, type: type, includeDate: includeDate, includeBattery: includeBattery, append: append)
+    }
 
     func log(level: RadarLogLevel, message: String, type: RadarLogType = .none, includeDate: Bool = false, includeBattery: Bool = false, append: Bool = false) {
         DispatchQueue.main.async {
@@ -63,7 +67,7 @@ public final class RadarLogger : NSObject, Sendable {
             }
 
             // TODO: implement RadarLogBuffer
-            Radar.__writeToLogBuffer(with: level, type: type, message: message, forcePersist: append)
+            RadarSwift.bridge?.writeToLogBuffer(level: level, type: type, message: message, forcePersist: append)
             if (!append) {
                 let backgroundTime = UIApplication.shared.backgroundTimeRemaining >= .greatestFiniteMagnitude ? 180 : UIApplication.shared.backgroundTimeRemaining
                 let logMessage = "\(message) | backgroundTimeRemaining = \(backgroundTime)"

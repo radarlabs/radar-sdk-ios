@@ -26,7 +26,8 @@ static int fileCounter = 0;
 - (instancetype)init {
     self = [super init];
     if (self) {
-        _persistentLogFeatureFlag = [RadarSettings sdkConfiguration].useLogPersistence;
+        RadarSdkConfiguration* sdkConfiguration = [RadarSettings sdkConfiguration];
+        _persistentLogFeatureFlag = sdkConfiguration != nil ? sdkConfiguration.useLogPersistence : NO;
         logBuffer = [NSMutableArray<RadarLog *> new];
         
         NSString *documentsDirectory = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES).firstObject;
@@ -41,8 +42,8 @@ static int fileCounter = 0;
     return self;
 }
 
-- (void)setPersistentLogFeatureFlag:(BOOL)persistentLogFeatureFlag {
-    _persistentLogFeatureFlag = persistentLogFeatureFlag;
+- (void)setPersistentLogFeatureFlag:(BOOL)value {
+    _persistentLogFeatureFlag = value;
 }
 
 + (instancetype)sharedInstance {
