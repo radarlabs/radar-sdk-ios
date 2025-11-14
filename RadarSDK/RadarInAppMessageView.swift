@@ -5,6 +5,8 @@
 //  Copyright © 2025 Radar Labs, Inc. All rights reserved.
 //
 
+
+#if canImport(SwiftUI)
 import SwiftUI
 
 @available(iOS 13.0, *)
@@ -107,3 +109,4 @@ struct RadarIAMView: View {
         )
     }
 }
+#endif

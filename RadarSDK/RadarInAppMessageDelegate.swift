@@ -6,7 +6,11 @@
 //
 
 import Foundation
+
+
+#if canImport(SwiftUI)
 import SwiftUI
+#endif
 
 @available(iOS 13.0, *)
 @objc(RadarInAppMessageDelegate_Swift)
@@ -34,12 +38,17 @@ open class RadarInAppMessageDelegate : NSObject, RadarInAppMessageProtocol {
      */
     open func createInAppMessageView(_ message: RadarInAppMessage, onDismiss: @escaping () -> Void, onInAppMessageClicked: @escaping () -> Void, completionHandler: @escaping (UIViewController) -> Void) {
         Task {
+#if canImport(SwiftUI)
             var image: UIImage? = nil
             if let imageUrl = message.image?.url {
                 image = await RadarInAppMessageDelegate.loadImage(imageUrl)
             }
             let viewController = UIHostingController(rootView: RadarIAMView(message: message, image: image, onDismiss: onDismiss, onInAppMessageClicked: onInAppMessageClicked))
             completionHandler(viewController)
+#else
+            let viewController = UIViewController()
+            completionHandler(viewController)
+#endif
         }
     }
 
@@ -57,3 +66,4 @@ open class RadarInAppMessageDelegate : NSObject, RadarInAppMessageProtocol {
         Radar.showInAppMessage(message)
     }
 }
+
