@@ -6,6 +6,7 @@
 //
 
 #import <CoreLocation/CoreLocation.h>
+#import <CoreMotion/CoreMotion.h>
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 #import <UserNotifications/UserNotifications.h>
@@ -319,6 +320,8 @@ typedef void (^_Nonnull RadarIndoorsScanCompletionHandler)(NSString *_Nullable r
 
 #pragma mark - Initialization
 
+@property (readonly, class) BOOL isInitialized;
+
 /**
  Initializes the Radar SDK.
 
@@ -344,7 +347,6 @@ typedef void (^_Nonnull RadarIndoorsScanCompletionHandler)(NSString *_Nullable r
 + (void)initializeWithPublishableKey:(NSString *_Nonnull)publishableKey options:(RadarInitializeOptions *_Nullable)options NS_SWIFT_NAME(initialize(publishableKey:options:));
 
 + (void)initializeWithAppGroup:(NSString *_Nonnull)appGroup;
-
 
 #pragma mark - Properties
 
@@ -1283,6 +1285,15 @@ typedef void (^_Nonnull RadarIndoorsScanCompletionHandler)(NSString *_Nullable r
  @return A display string for the status value.
  */
 + (NSString *)stringForStatus:(RadarStatus)status NS_SWIFT_NAME(stringForStatus(_:));
+
+/**
+ Returns a string for Motion & Fitness authorization status value.
+
+ @param status A Core Motion authorization status value.
+
+ @return A string for the authorization status value.
+ */
++ (NSString *)stringForMotionAuthorization:(CMAuthorizationStatus)status NS_SWIFT_NAME(stringForMotionAuthorization(_:));
 
 /**
  Returns a string for address validation status value.

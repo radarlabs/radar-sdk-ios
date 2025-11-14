@@ -18,7 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
  @see https://radar.com/documentation/fraud
  */
 @protocol RadarVerifiedDelegate<NSObject>
-
+@optional
 /**
  Tells the delegate that the current user's verified location was updated. Verify the token server-side using your secret key.
 

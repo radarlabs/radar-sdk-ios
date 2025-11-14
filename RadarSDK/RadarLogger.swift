@@ -74,7 +74,7 @@ public final class RadarLogger : NSObject, Sendable {
                 if #available(iOS 14.0, *) {
                     RadarLogger.logger.log("\(logMessage)")
                 }
-                self.delegate?.didLog(message: logMessage)
+                self.delegate?.didLog?(message: logMessage)
             }
         }
     }

@@ -280,33 +280,42 @@
         }
 
         NSArray *locationCoordinatesArr = (NSArray *)locationCoordinatesObj;
-        if (locationCoordinatesArr.count != 2) {
+        // must be [longitude, latitude] or [longitude, latitude, altitude]
+        if (locationCoordinatesArr.count != 2 && locationCoordinatesArr.count != 3) {
             return nil;
         }
 
+        // check latitude and longitude exist and are numbers
         id locationCoordinatesLongitudeObj = locationCoordinatesArr[0];
         id locationCoordinatesLatitudeObj = locationCoordinatesArr[1];
         if (!locationCoordinatesLongitudeObj || !locationCoordinatesLatitudeObj || ![locationCoordinatesLongitudeObj isKindOfClass:[NSNumber class]] ||
             ![locationCoordinatesLatitudeObj isKindOfClass:[NSNumber class]]) {
             return nil;
         }
+        float longitude = [(NSNumber *)locationCoordinatesLongitudeObj floatValue];
+        float latitude = [(NSNumber *)locationCoordinatesLatitudeObj floatValue];
+        
+        // optional altitude value
+        float altitude = -1;
+        if (locationCoordinatesArr.count == 3) {
+            id locationCoordinatesAltitudeObj = locationCoordinatesArr[2];
+            if (locationCoordinatesAltitudeObj && [locationCoordinatesAltitudeObj isKindOfClass:[NSNumber class]]) {
+                altitude = [(NSNumber *)locationCoordinatesAltitudeObj floatValue];
+            }
+        }
 
-        NSNumber *locationCoordinatesLongitudeNumber = (NSNumber *)locationCoordinatesLongitudeObj;
-        NSNumber *locationCoordinatesLatitudeNumber = (NSNumber *)locationCoordinatesLatitudeObj;
-
-        float locationCoordinatesLongitudeFloat = [locationCoordinatesLongitudeNumber floatValue];
-        float locationCoordinatesLatitudeFloat = [locationCoordinatesLatitudeNumber floatValue];
-
+        // optional location accuracy value
+        float horizontalAccuracy = -1;
         id locationAccuracyObj = dict[@"locationAccuracy"];
         if (locationAccuracyObj && [locationAccuracyObj isKindOfClass:[NSNumber class]]) {
-            NSNumber *locationAccuracyNumber = (NSNumber *)locationAccuracyObj;
-
-            location = [[CLLocation alloc] initWithCoordinate:CLLocationCoordinate2DMake(locationCoordinatesLatitudeFloat, locationCoordinatesLongitudeFloat)
-                                                     altitude:-1
-                                           horizontalAccuracy:[locationAccuracyNumber floatValue]
-                                             verticalAccuracy:-1
-                                                    timestamp:(createdAt ? createdAt : [NSDate date])];
+            horizontalAccuracy = [(NSNumber *)locationAccuracyObj floatValue];
         }
+        
+        location = [[CLLocation alloc] initWithCoordinate:CLLocationCoordinate2DMake(latitude, longitude)
+                                                 altitude:altitude
+                                       horizontalAccuracy:horizontalAccuracy
+                                         verticalAccuracy:-1
+                                                timestamp:(createdAt ?: [NSDate date])];
     }
 
     id replayedObj = dict[@"replayed"];

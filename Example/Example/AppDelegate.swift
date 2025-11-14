@@ -55,7 +55,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
     
     func application(_ app: UIApplication, open url: URL,
                      options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
-        // Handle opening via standard URL               
+        // Handle opening via standard URL
         return true
     }
     
@@ -194,33 +194,4 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
 
     func notify(_ body: String) {
     }
-
-    func didReceiveEvents(_ events: [RadarEvent], user: RadarUser?) {
-        for event in events {
-            notify(Utils.stringForRadarEvent(event))
-        }
-    }
-
-    func didUpdateLocation(_ location: CLLocation, user: RadarUser) {
-        let body = "\(user.stopped ? "Stopped at" : "Moved to") location (\(location.coordinate.latitude), \(location.coordinate.longitude)) with accuracy \(location.horizontalAccuracy) meters"
-        self.notify(body)
-    }
-
-    func didUpdateClientLocation(_ location: CLLocation, stopped: Bool, source: RadarLocationSource) {
-        let body = "\(stopped ? "Client stopped at" : "Client moved to") location (\(location.coordinate.latitude), \(location.coordinate.longitude)) with accuracy \(location.horizontalAccuracy) meters and source \(Utils.stringForRadarLocationSource(source))"
-        self.notify(body)
-    }
-
-    func didFail(status: RadarStatus) {
-        self.notify(Radar.stringForStatus(status))
-    }
-
-    func didLog(message: String) {
-        self.notify(message)
-    }
-
-    func didUpdateToken(_ token: RadarVerifiedLocationToken) {
-        
-    }
-    
 }
