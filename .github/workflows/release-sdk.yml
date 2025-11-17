@@ -85,15 +85,15 @@ jobs:
       # get sha256 checksum of the XCFramework
       - name: Get SHA256 checksum (RadarSDK)
         id: checksum_radarsdk
-        run: echo "::set-output name=checksum::$(shasum -a 256 RadarSDK.xcframework.zip | cut -d ' ' -f 1)"
+        run: echo "{checksum}={$(shasum -a 256 RadarSDK.xcframework.zip | cut -d ' ' -f 1)}" >> $GITHUB_OUTPUT
       
       - name: Get SHA256 checksum (RadarSDKMotion)
         id: checksum_radarsdkmotion
-        run: echo "::set-output name=checksum::$(shasum -a 256 RadarSDKMotion.xcframework.zip | cut -d ' ' -f 1)"
+        run: echo "{checksum}={$(shasum -a 256 RadarSDKMotion.xcframework.zip | cut -d ' ' -f 1)}" >> $GITHUB_OUTPUT
 
       - name: Get SHA256 checksum (RadarSDKIndoors)
         id: checksum_radarsdkindoors
-        run: echo "::set-output name=checksum::$(shasum -a 256 RadarSDKIndoors.xcframework.zip | cut -d ' ' -f 1)"
+        run: echo "{checksum}={$(shasum -a 256 RadarSDKIndoors.xcframework.zip | cut -d ' ' -f 1)}" >> $GITHUB_OUTPUT
 
       - name: Repository Dispatch
         if: ${{ !github.event.release.prerelease }}
