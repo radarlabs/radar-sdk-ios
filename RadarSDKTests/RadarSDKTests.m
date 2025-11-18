@@ -129,8 +129,6 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     XCTAssertEqual(trip.status, RadarTripStatusStarted);
 }
 
-}
-
 #define AssertUserOk(user) [self assertUserOk:user]
 - (void)assertUserOk:(RadarUser *)user {
     XCTAssertNotNil(user);
