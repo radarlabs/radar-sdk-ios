@@ -230,13 +230,13 @@ static dispatch_semaphore_t notificationSemaphore;
 - (void)swizzled_application:(UIApplication *)application
 didReceiveRemoteNotification:(NSDictionary *)userInfo
       fetchCompletionHandler:(void (^)(UIBackgroundFetchResult result))completionHandler {
-    // dispatch group so that
+    // dispatch group so that Radar.didReceivePushNotificationPayload and any swizzled delegate method runs at the same time.
     dispatch_group_t group = dispatch_group_create();
     __block UIBackgroundFetchResult finalResult = UIBackgroundFetchResultNewData;
     
     RadarInitializeOptions *options = [RadarSettings initializeOptions];
     
-    // Process the remote notification if silentPush is enabled by rad
+    // Process the remote notification if silentPush is enabled.
     if (options.silentPush) {
         dispatch_group_enter(group);
         [Radar didReceivePushNotificationPayload:userInfo completionHandler:^() {
