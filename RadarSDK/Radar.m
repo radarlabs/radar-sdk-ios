@@ -55,8 +55,12 @@ BOOL _initialized = NO;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         [RadarSettings setInitializeOptions:options];
-        [RadarNotificationHelper swizzleNotificationCenterDelegate];
-        [RadarNotificationHelper swizzleApplicationDelegate];
+        if (options.autoLogNotificationConversions || options.autoHandleNotificationDeepLinks) {
+            [RadarNotificationHelper swizzleNotificationCenterDelegate];
+        }
+        if (options.silentPush) {
+            [RadarNotificationHelper swizzleApplicationDelegate];
+        }
     });
 }
 
@@ -88,11 +92,8 @@ BOOL _initialized = NO;
     // For most users not using these features, options be null and skipped,
     //  For X-platform users initializing Radar in the crossplatform layer, the options will also be null as nativeSetup would had been called ealier 
     if (options) {
-        [RadarSettings setInitializeOptions:options];
         if (NSClassFromString(@"XCTestCase") == nil) {
-            if (options.autoLogNotificationConversions || options.autoHandleNotificationDeepLinks) {
-                [Radar nativeSetup: options];
-            }
+            [Radar nativeSetup:options];
         }
     }
 
