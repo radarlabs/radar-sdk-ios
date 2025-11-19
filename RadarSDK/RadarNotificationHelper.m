@@ -230,19 +230,18 @@ static dispatch_semaphore_t notificationSemaphore;
 - (void)swizzled_application:(UIApplication *)application
 didReceiveRemoteNotification:(NSDictionary *)userInfo
       fetchCompletionHandler:(void (^)(UIBackgroundFetchResult result))completionHandler {
-    
+    // dispatch group so that Radar.didReceivePushNotificationPayload and any swizzled delegate method runs at the same time.
     dispatch_group_t group = dispatch_group_create();
-    
     __block UIBackgroundFetchResult finalResult = UIBackgroundFetchResultNewData;
     
-    // Process the remote notification
-    if ([userInfo[@"type"] isEqual: @"radar:trackOnce"]) {
+    RadarInitializeOptions *options = [RadarSettings initializeOptions];
+    
+    // Process the remote notification if silentPush is enabled.
+    if (options.silentPush) {
         dispatch_group_enter(group);
-        [Radar trackOnceWithCompletionHandler:^(RadarStatus status, CLLocation* location, NSArray<RadarEvent*>* events, RadarUser* user) {
+        [Radar didReceivePushNotificationPayload:userInfo completionHandler:^() {
             dispatch_group_leave(group);
         }];
-    } else {
-        finalResult = UIBackgroundFetchResultNoData;
     }
     
     // Call the original method and use its result if available, otherwise we fallback to the finalResult's initial value above
