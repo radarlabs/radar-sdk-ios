@@ -16,6 +16,7 @@
 #import "RadarSegment+Internal.h"
 #import "RadarTrip+Internal.h"
 #import "RadarUser+Internal.h"
+#import "RadarLogger.h"
 
 @implementation RadarUser
 
@@ -41,7 +42,8 @@
                               source:(RadarLocationSource)source
                                 trip:(RadarTrip *_Nullable)trip
                                debug:(BOOL)debug
-                               fraud:(RadarFraud *_Nullable)fraud {
+                               fraud:(RadarFraud *_Nullable)fraud 
+                            altitude:(double)altitude {
     self = [super init];
     if (self) {
         __id = _id;
@@ -67,6 +69,7 @@
         _trip = trip;
         _debug = debug;
         _fraud = fraud;
+        _altitude = altitude;
     }
     return self;
 }
@@ -101,6 +104,7 @@
     RadarTrip *trip;
     RadarFraud *fraud;
     BOOL debug = NO;
+    double altitude = NAN;
 
     id idObj = dict[@"_id"];
     if (idObj && [idObj isKindOfClass:[NSString class]]) {
@@ -137,33 +141,41 @@
         }
 
         NSArray *locationCoordinatesArr = (NSArray *)locationCoordinatesObj;
-        if (locationCoordinatesArr.count != 2) {
+        if (locationCoordinatesArr.count != 2 && locationCoordinatesArr.count != 3) {
             return nil;
         }
 
+        // check latitude and longitude exist and are numbers
         id locationCoordinatesLongitudeObj = locationCoordinatesArr[0];
         id locationCoordinatesLatitudeObj = locationCoordinatesArr[1];
         if (!locationCoordinatesLongitudeObj || !locationCoordinatesLatitudeObj || ![locationCoordinatesLongitudeObj isKindOfClass:[NSNumber class]] ||
             ![locationCoordinatesLatitudeObj isKindOfClass:[NSNumber class]]) {
             return nil;
         }
+        float longitude = [(NSNumber *)locationCoordinatesLongitudeObj floatValue];
+        float latitude = [(NSNumber *)locationCoordinatesLatitudeObj floatValue];
+        
+        // optional altitude value
+        float altitude = -1;
+        if (locationCoordinatesArr.count == 3) {
+            id locationCoordinatesAltitudeObj = locationCoordinatesArr[2];
+            if (locationCoordinatesAltitudeObj && [locationCoordinatesAltitudeObj isKindOfClass:[NSNumber class]]) {
+                altitude = [(NSNumber *)locationCoordinatesAltitudeObj floatValue];
+            }
+        }
 
-        NSNumber *locationCoordinatesLongitudeNumber = (NSNumber *)locationCoordinatesLongitudeObj;
-        NSNumber *locationCoordinatesLatitudeNumber = (NSNumber *)locationCoordinatesLatitudeObj;
-
-        float locationCoordinatesLongitudeFloat = [locationCoordinatesLongitudeNumber floatValue];
-        float locationCoordinatesLatitudeFloat = [locationCoordinatesLatitudeNumber floatValue];
-
+        // optional location accuracy value
+        float horizontalAccuracy = -1;
         id locationAccuracyObj = dict[@"locationAccuracy"];
         if (locationAccuracyObj && [locationAccuracyObj isKindOfClass:[NSNumber class]]) {
-            NSNumber *locationAccuracyNumber = (NSNumber *)locationAccuracyObj;
-
-            location = [[CLLocation alloc] initWithCoordinate:CLLocationCoordinate2DMake(locationCoordinatesLatitudeFloat, locationCoordinatesLongitudeFloat)
-                                                     altitude:-1
-                                           horizontalAccuracy:[locationAccuracyNumber floatValue]
-                                             verticalAccuracy:-1
-                                                    timestamp:[NSDate date]];
+            horizontalAccuracy = [(NSNumber *)locationAccuracyObj floatValue];
         }
+        
+        location = [[CLLocation alloc] initWithCoordinate:CLLocationCoordinate2DMake(latitude, longitude)
+                                                 altitude:altitude
+                                       horizontalAccuracy:horizontalAccuracy
+                                         verticalAccuracy:-1
+                                                timestamp:[NSDate date]];
     }
 
     id activityTypeObj = dict[@"activityType"];
@@ -290,6 +302,16 @@
     id fraudObj = dict[@"fraud"];
     fraud = [[RadarFraud alloc] initWithObject:fraudObj];
 
+    id barometricAltitudeObj = dict[@"barometricAltitude"];
+    if (barometricAltitudeObj && [barometricAltitudeObj isKindOfClass:[NSNumber class]]) {
+        altitude = [((NSNumber *)barometricAltitudeObj) doubleValue];
+    }
+
+    id altitudeObj = dict[@"altitude"];
+    if (altitudeObj && [altitudeObj isKindOfClass:[NSNumber class]]) {
+        altitude = [((NSNumber *)altitudeObj) doubleValue];
+    }
+
     if (_id && location) {
         return [[RadarUser alloc] initWithId:_id
                                       userId:userId
@@ -313,7 +335,8 @@
                                       source:source
                                         trip:trip
                                        debug:debug
-                                       fraud:fraud];
+                                       fraud:fraud
+                                    altitude:altitude];
     }
 
     return nil;
@@ -373,6 +396,9 @@
     [dict setValue:@(self.debug) forKey:@"debug"];
     if (self.fraud) {
         [dict setValue:[self.fraud dictionaryValue] forKey:@"fraud"];
+    }
+    if (!isnan(self.altitude)) {
+        [dict setValue:@(self.altitude) forKey:@"altitude"];
     }
     return dict;
 }

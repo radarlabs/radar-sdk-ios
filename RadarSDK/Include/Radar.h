@@ -6,6 +6,7 @@
 //
 
 #import <CoreLocation/CoreLocation.h>
+#import <CoreMotion/CoreMotion.h>
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 #import <UserNotifications/UserNotifications.h>
@@ -27,8 +28,11 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol RadarDelegate;
 @protocol RadarVerifiedDelegate;
 @protocol RadarMotionProtocol;
+@protocol RadarInAppMessageProtocol;
+@protocol RadarIndoorsProtocol;
 
 @class RadarTripOptions;
+@class RadarInAppMessage;
 
 #pragma mark - Enums
 
@@ -305,6 +309,8 @@ typedef void (^_Nonnull RadarRouteMatrixCompletionHandler)(RadarStatus status, R
  */
 typedef void (^_Nullable RadarLogConversionCompletionHandler)(RadarStatus status, RadarEvent *_Nullable event);
 
+typedef void (^_Nonnull RadarIndoorsScanCompletionHandler)(NSString *_Nullable result, CLLocation *_Nullable locationAtStartOfScan);
+
 /**
  The main class used to interact with the Radar SDK.
 
@@ -313,6 +319,8 @@ typedef void (^_Nullable RadarLogConversionCompletionHandler)(RadarStatus status
 @interface Radar : NSObject
 
 #pragma mark - Initialization
+
+@property (readonly, class) BOOL isInitialized;
 
 /**
  Initializes the Radar SDK.
@@ -337,6 +345,9 @@ typedef void (^_Nullable RadarLogConversionCompletionHandler)(RadarStatus status
  */
 
 + (void)initializeWithPublishableKey:(NSString *_Nonnull)publishableKey options:(RadarInitializeOptions *_Nullable)options NS_SWIFT_NAME(initialize(publishableKey:options:));
+
++ (void)initializeWithAppGroup:(NSString *_Nonnull)appGroup;
+
 #pragma mark - Properties
 
 /**
@@ -400,6 +411,48 @@ typedef void (^_Nullable RadarLogConversionCompletionHandler)(RadarStatus status
  @see https://radar.com/documentation/sdk/ios#identify-user
  */
 + (NSDictionary *_Nullable)getMetadata;
+
+/**
+ Returns the current `tags`.
+
+ @return The current `tags`.
+ */
++ (NSArray<NSString *> *_Nullable)getTags;
+
+/**
+ Sets tags, replacing any existing tags.
+
+ @param tags An array of tags. If `nil`, all tags will be cleared.
+ */
++ (void)setTags:(NSArray<NSString *> *_Nullable)tags;
+
+/**
+ Adds tags to the existing set.
+
+ @param tags An array of tags to add.
+ */
++ (void)addTags:(NSArray<NSString *> *_Nonnull)tags;
+
+/**
+ Removes tags from the existing set.
+
+ @param tags An array of tags to remove.
+ */
++ (void)removeTags:(NSArray<NSString *> *_Nonnull)tags;
+
+/**
+ Sets an optional product name, displayed in the dashboard and reports.
+
+ @param product A product name. If `nil`, the previous `product` will be cleared.
+ */
++ (void)setProduct:(NSString *_Nullable)product;
+
+/**
+ Returns the current `product`.
+
+ @return The current `product`.
+ */
++ (NSString *_Nullable)getProduct;
 
 /**
  Enables anonymous tracking for privacy reasons. Avoids creating user records on the server and avoids sending any stable device IDs, user IDs, and user metadata
@@ -489,11 +542,27 @@ typedef void (^_Nullable RadarLogConversionCompletionHandler)(RadarStatus status
  @warning Note that you must configure SSL pinning before calling this method.
 
  @param beacons A boolean indicating whether to range beacons.
+ @param desiredAccuracy The desired accuracy.
  @param completionHandler An optional completion handler.
 
  @see https://radar.com/documentation/fraud
  */
-+ (void)trackVerifiedWithBeacons:(BOOL)beacons completionHandler:(RadarTrackVerifiedCompletionHandler _Nullable)completionHandler NS_SWIFT_NAME(trackVerified(beacons:completionHandler:));
++ (void)trackVerifiedWithBeacons:(BOOL)beacons desiredAccuracy:(RadarTrackingOptionsDesiredAccuracy)desiredAccuracy completionHandler:(RadarTrackVerifiedCompletionHandler _Nullable)completionHandler NS_SWIFT_NAME(trackVerified(beacons:desiredAccuracy:completionHandler:));
+
+/**
+ Tracks the user's location with device integrity information for location verification use cases.
+
+ @warning Note that you must configure SSL pinning before calling this method.
+
+ @param beacons A boolean indicating whether to range beacons.
+ @param desiredAccuracy The desired accuracy.
+ @param reason An optional reason, displayed in the dashboard and reports.
+ @param transactionId An optional transaction ID, displayed in the dashboard and reports.
+ @param completionHandler An optional completion handler.
+
+ @see https://radar.com/documentation/fraud
+ */
++ (void)trackVerifiedWithBeacons:(BOOL)beacons desiredAccuracy:(RadarTrackingOptionsDesiredAccuracy)desiredAccuracy reason:(NSString *_Nullable)reason transactionId:(NSString *_Nullable)transactionId completionHandler:(RadarTrackVerifiedCompletionHandler _Nullable)completionHandler NS_SWIFT_NAME(trackVerified(beacons:desiredAccuracy:reason:transactionId:completionHandler:));
 
 /**
  Starts tracking the user's location with device integrity information for location verification use cases.
@@ -502,13 +571,26 @@ typedef void (^_Nullable RadarLogConversionCompletionHandler)(RadarStatus status
  @param beacons A boolean indicating whether to range beacons.
 
  @warning Note that you must configure SSL pinning before calling this method.
+ 
+ @see https://radar.com/documentation/fraud
  */
 + (void)startTrackingVerifiedWithInterval:(NSTimeInterval)interval beacons:(BOOL)beacons NS_SWIFT_NAME(startTrackingVerified(interval:beacons:));
 
 /**
  Stops tracking the user's location with device integrity information for location verification use cases.
+ 
+ @see https://radar.com/documentation/fraud
  */
 + (void)stopTrackingVerified NS_SWIFT_NAME(stopTrackingVerified());
+
+/**
+ Returns a boolean indicating whether verified tracking has been started.
+
+ @return A boolean indicating whether verified tracking has been started.
+
+ @see https://radar.com/documentation/sdk/fraud
+ */
++ (BOOL)isTrackingVerified;
 
 /**
  Returns the user's last verified location token if still valid, or requests a fresh token if not.
@@ -520,6 +602,26 @@ typedef void (^_Nullable RadarLogConversionCompletionHandler)(RadarStatus status
  @see https://radar.com/documentation/fraud
  */
 + (void)getVerifiedLocationToken:(RadarTrackVerifiedCompletionHandler _Nullable)completionHandler NS_SWIFT_NAME(getVerifiedLocationToken(completionHandler:));
+
+/**
+ Returns the user's last verified location token if still valid, or requests a fresh token if not.
+
+ @warning Note that you must configure SSL pinning before calling this method.
+ 
+ @param beacons A boolean indicating whether to range beacons.
+ @param desiredAccuracy The desired accuracy.
+ @param completionHandler An optional completion handler.
+
+ @see https://radar.com/documentation/fraud
+ */
++ (void)getVerifiedLocationTokenWithBeacons:(BOOL)beacons desiredAccuracy:(RadarTrackingOptionsDesiredAccuracy)desiredAccuracy completionHandler:(RadarTrackVerifiedCompletionHandler _Nullable)completionHandler NS_SWIFT_NAME(getVerifiedLocationToken(beacons:desiredAccuracy:completionHandler:));
+
+/**
+ Clears the user's last verified location token.
+
+ @see https://radar.com/documentation/fraud
+ */
++ (void)clearVerifiedLocationToken;
 
 /**
  Optionally sets the user's expected country and state for jurisdiction checks.
@@ -801,6 +903,7 @@ typedef void (^_Nullable RadarLogConversionCompletionHandler)(RadarStatus status
  @param categories An array of categories to filter. See https://radar.com/documentation/places/categories
  @param groups An array of groups to filter. See https://radar.com/documentation/places/groups
  @param limit The max number of places to return. A number between 1 and 100.
+ @param countryCodes An array of country codes to filter. See https://radar.com/documentation/regions/countries
  @param completionHandler A completion handler.
 
  @see https://radar.com/documentation/api#search-places
@@ -809,8 +912,9 @@ typedef void (^_Nullable RadarLogConversionCompletionHandler)(RadarStatus status
                         chains:(NSArray<NSString *> *_Nullable)chains
                     categories:(NSArray<NSString *> *_Nullable)categories
                         groups:(NSArray<NSString *> *_Nullable)groups
+                 countryCodes:(NSArray<NSString *> *_Nullable)countryCodes
                          limit:(int)limit
-             completionHandler:(RadarSearchPlacesCompletionHandler)completionHandler NS_SWIFT_NAME(searchPlaces(radius:chains:categories:groups:limit:completionHandler:));
+             completionHandler:(RadarSearchPlacesCompletionHandler)completionHandler NS_SWIFT_NAME(searchPlaces(radius:chains:categories:groups:countryCodes:limit:completionHandler:));
 
 /**
  Gets the device's current location, then searches for places near that location, sorted by distance.
@@ -822,6 +926,7 @@ typedef void (^_Nullable RadarLogConversionCompletionHandler)(RadarStatus status
  @param chainMetadata Optional chain metadata filters. Keys and values must be strings. See https://radar.com/documentation/places#metadata.
  @param categories An array of categories to filter. See https://radar.com/documentation/places/categories
  @param groups An array of groups to filter. See https://radar.com/documentation/places/groups
+ @param countryCodes An array of country codes to filter. See https://radar.com/documentation/regions/countries
  @param limit The max number of places to return. A number between 1 and 100.
  @param completionHandler A completion handler.
 
@@ -832,8 +937,9 @@ typedef void (^_Nullable RadarLogConversionCompletionHandler)(RadarStatus status
                  chainMetadata:(NSDictionary<NSString *, NSString *> *_Nullable)chainMetadata
                     categories:(NSArray<NSString *> *_Nullable)categories
                         groups:(NSArray<NSString *> *_Nullable)groups
+                  countryCodes:(NSArray<NSString *> *_Nullable)countryCodes
                          limit:(int)limit
-             completionHandler:(RadarSearchPlacesCompletionHandler)completionHandler NS_SWIFT_NAME(searchPlaces(radius:chains:chainMetadata:categories:groups:limit:completionHandler:));
+             completionHandler:(RadarSearchPlacesCompletionHandler)completionHandler NS_SWIFT_NAME(searchPlaces(radius:chains:chainMetadata:categories:groups:countryCodes:limit:completionHandler:));
 
 /**
  Searches for places near a location, sorted by distance.
@@ -845,6 +951,7 @@ typedef void (^_Nullable RadarLogConversionCompletionHandler)(RadarStatus status
  @param chains An array of chain slugs to filter. See https://radar.com/documentation/places/chains
  @param categories An array of categories to filter. See https://radar.com/documentation/places/categories
  @param groups An array of groups to filter. See https://radar.com/documentation/places/groups
+ @param countryCodes An array of country codes to filter. See https://radar.com/documentation/regions/countries
  @param limit The max number of places to return. A number between 1 and 100.
  @param completionHandler A completion handler.
 
@@ -855,8 +962,9 @@ typedef void (^_Nullable RadarLogConversionCompletionHandler)(RadarStatus status
                   chains:(NSArray<NSString *> *_Nullable)chains
               categories:(NSArray<NSString *> *_Nullable)categories
                   groups:(NSArray<NSString *> *_Nullable)groups
+             countryCodes:(NSArray<NSString *> *_Nullable)countryCodes
                    limit:(int)limit
-       completionHandler:(RadarSearchPlacesCompletionHandler)completionHandler NS_SWIFT_NAME(searchPlaces(near:radius:chains:categories:groups:limit:completionHandler:));
+       completionHandler:(RadarSearchPlacesCompletionHandler)completionHandler NS_SWIFT_NAME(searchPlaces(near:radius:chains:categories:groups:countryCodes:limit:completionHandler:));
 
 /**
  Searches for places near a location, sorted by distance.
@@ -869,6 +977,7 @@ typedef void (^_Nullable RadarLogConversionCompletionHandler)(RadarStatus status
  @param chainMetadata Optional chain metadata filters. Keys and values must be strings. See https://radar.com/documentation/places#metadata.
  @param categories An array of categories to filter. See https://radar.com/documentation/places/categories
  @param groups An array of groups to filter. See https://radar.com/documentation/places/groups
+ @param countryCodes An array of country codes to filter. See https://radar.com/documentation/regions/countries
  @param limit The max number of places to return. A number between 1 and 100.
  @param completionHandler A completion handler.
 
@@ -880,8 +989,9 @@ typedef void (^_Nullable RadarLogConversionCompletionHandler)(RadarStatus status
            chainMetadata:(NSDictionary<NSString *, NSString *> *_Nullable)chainMetadata
               categories:(NSArray<NSString *> *_Nullable)categories
                   groups:(NSArray<NSString *> *_Nullable)groups
+            countryCodes:(NSArray<NSString *> *_Nullable)countryCodes
                    limit:(int)limit
-       completionHandler:(RadarSearchPlacesCompletionHandler)completionHandler NS_SWIFT_NAME(searchPlaces(near:radius:chains:chainMetadata:categories:groups:limit:completionHandler:));
+       completionHandler:(RadarSearchPlacesCompletionHandler)completionHandler NS_SWIFT_NAME(searchPlaces(near:radius:chains:chainMetadata:categories:groups:countryCodes:limit:completionHandler:));
 
 /**
  Gets the device's current location, then searches for geofences near that location, sorted by distance.
@@ -1132,6 +1242,12 @@ typedef void (^_Nullable RadarLogConversionCompletionHandler)(RadarStatus status
                        units:(RadarRouteUnits)units
            completionHandler:(RadarRouteMatrixCompletionHandler)completionHandler NS_SWIFT_NAME(getMatrix(origins:destinations:mode:units:completionHandler:));
 
+#pragma mark - Indoors
+
++ (void)startIndoorScan:(NSString *)geofenceId
+                forLength:(int)scanLengthSeconds
+        completionHandler:(RadarIndoorsScanCompletionHandler)completionHandler;
+
 #pragma mark - Logging
 
 /**
@@ -1169,6 +1285,15 @@ typedef void (^_Nullable RadarLogConversionCompletionHandler)(RadarStatus status
  @return A display string for the status value.
  */
 + (NSString *)stringForStatus:(RadarStatus)status NS_SWIFT_NAME(stringForStatus(_:));
+
+/**
+ Returns a string for Motion & Fitness authorization status value.
+
+ @param status A Core Motion authorization status value.
+
+ @return A string for the authorization status value.
+ */
++ (NSString *)stringForMotionAuthorization:(CMAuthorizationStatus)status NS_SWIFT_NAME(stringForMotionAuthorization(_:));
 
 /**
  Returns a string for address validation status value.
@@ -1223,6 +1348,15 @@ typedef void (^_Nullable RadarLogConversionCompletionHandler)(RadarStatus status
  */
 + (NSDictionary *)dictionaryForLocation:(CLLocation *)location NS_SWIFT_NAME(dictionaryForLocation(_:));
 
+/**
+ Returns a dictionary for an in-app message.
+
+ @param message An in-app message.
+
+ @return A dictionary for the in-app message.
+ */
++ (NSDictionary *)dictionaryForInAppMessage:(RadarInAppMessage *)message NS_SWIFT_NAME(dictionaryForInAppMessage(_:));
+
 
 /**
  Performs optional setup for Radar SDK within the AppDelegate. This method only needs to be called if Radar is initalized in cross-platform code.
@@ -1231,6 +1365,25 @@ typedef void (^_Nullable RadarLogConversionCompletionHandler)(RadarStatus status
 + (void)nativeSetup:(RadarInitializeOptions *)options NS_SWIFT_NAME(nativeSetup(_:));
 
 + (void)openURLFromNotification:(UNNotification *)notification NS_SWIFT_NAME(openURLFromNotification(_:));
+
++ (void)setInAppMessageDelegate:(nullable id<RadarInAppMessageProtocol>)delegate NS_SWIFT_NAME(setInAppMessageDelegate(_:));
+
++ (void)showInAppMessage:(RadarInAppMessage *)message NS_SWIFT_NAME(showInAppMessage(_:));
+
+/**
+ Load image convenience function available for use with custom in-app message views
+ */
++ (void) loadImage:(NSString*)url completionHandler:(void (^ _Nonnull)(UIImage * _Nullable))completionHandler NS_SWIFT_NAME(loadImage(_:completionHandler:));
+
++ (void)requestMotionActivityPermission NS_SWIFT_NAME(requestMotionActivityPermission());
+
++ (void)setAppGroup:(NSString*)appGroup;
+
++ (void)setPushNotificationToken:(NSString*_Nullable)token;
+
++ (void)setLocationExtensionToken:(NSString*_Nullable)token;
+
++ (void)didReceivePushNotificationPayload:(NSDictionary*)payload completionHandler:(void (^ _Nonnull)(void))completionHandler;
 
 @end
 

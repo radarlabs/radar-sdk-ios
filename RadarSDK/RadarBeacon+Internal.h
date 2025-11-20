@@ -30,4 +30,6 @@
 
 + (RadarBeacon *_Nonnull)fromCLBeacon:(CLBeacon *_Nonnull)beacon;
 
+- (void)setRssi:(NSInteger)rssi;
+
 @end

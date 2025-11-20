@@ -21,70 +21,76 @@
         return nil;
     }
 
-    NSObject *logLevelObj = dict[@"logLevel"];
+    // Set default values
     _logLevel = RadarLogLevelInfo;
+    _startTrackingOnInitialize = NO;
+    _trackOnceOnAppOpen = NO;
+    _usePersistence = NO;
+    _extendFlushReplays = NO;
+    _useLogPersistence = NO;
+    _useRadarModifiedBeacon = NO;
+    _useOpenedAppConversion = NO;
+    _useForegroundLocationUpdatedAtMsDiff = NO;
+    _useNotificationDiff = NO;
+    _syncAfterSetUser = NO;
+
+    if (dict == nil) {
+        return self;
+    }
+
+    NSObject *logLevelObj = dict[@"logLevel"];
     if (logLevelObj && [logLevelObj isKindOfClass:[NSString class]]) {
         _logLevel = [RadarLog levelFromString:(NSString *)logLevelObj];
     }
 
     NSObject *startTrackingOnInitializeObj = dict[@"startTrackingOnInitialize"]; 
-    _startTrackingOnInitialize = NO;
     if (startTrackingOnInitializeObj && [startTrackingOnInitializeObj isKindOfClass:[NSNumber class]]) {
         _startTrackingOnInitialize = [(NSNumber *)startTrackingOnInitializeObj boolValue];
     }
 
     NSObject *trackOnceOnAppOpenObj = dict[@"trackOnceOnAppOpen"];
-    _trackOnceOnAppOpen = NO;
     if (trackOnceOnAppOpenObj && [trackOnceOnAppOpenObj isKindOfClass:[NSNumber class]]) {
         _trackOnceOnAppOpen = [(NSNumber *)trackOnceOnAppOpenObj boolValue];
     }
     
     NSObject *usePersistenceObj = dict[@"usePersistence"];
-    _usePersistence = NO;
     if (usePersistenceObj && [usePersistenceObj isKindOfClass:[NSNumber class]]) {
         _usePersistence = [(NSNumber *)usePersistenceObj boolValue];
     }
 
     NSObject *extendFlushReplaysObj = dict[@"extendFlushReplays"];
-    _extendFlushReplays = NO;
     if (extendFlushReplaysObj && [extendFlushReplaysObj isKindOfClass:[NSNumber class]]) {
         _extendFlushReplays = [(NSNumber *)extendFlushReplaysObj boolValue];
     }
 
     NSObject *useLogPersistenceObj = dict[@"useLogPersistence"];
-    _useLogPersistence = NO;
     if (useLogPersistenceObj && [useLogPersistenceObj isKindOfClass:[NSNumber class]]) {
         _useLogPersistence = [(NSNumber *)useLogPersistenceObj boolValue];
     }
     
     NSObject *useRadarModifiedBeaconObj = dict[@"useRadarModifiedBeacon"];
-    _useRadarModifiedBeacon = NO;
     if (useRadarModifiedBeaconObj && [useRadarModifiedBeaconObj isKindOfClass:[NSNumber class]]) {
         _useRadarModifiedBeacon = [(NSNumber *)useRadarModifiedBeaconObj boolValue];
     }
 
-    NSObject *useLocationMetadataObj = dict[@"useLocationMetadata"];
-    _useLocationMetadata = NO;
-    if (useLocationMetadataObj && [useLocationMetadataObj isKindOfClass:[NSNumber class]]) {
-        _useLocationMetadata = [(NSNumber *)useLocationMetadataObj boolValue];
-    }
-
     NSObject *useOpenedAppConversionObj = dict[@"useOpenedAppConversion"];
-    _useOpenedAppConversion = NO;
     if (useOpenedAppConversionObj && [useOpenedAppConversionObj isKindOfClass:[NSNumber class]]) {
         _useOpenedAppConversion = [(NSNumber *)useOpenedAppConversionObj boolValue];
     }
 
     NSObject *useForegroundLocationUpdatedAtMsDiffObj = dict[@"foregroundLocationUseUpdatedAtMsDiff"];
-    _useForegroundLocationUpdatedAtMsDiff = NO;
     if (useForegroundLocationUpdatedAtMsDiffObj && [useForegroundLocationUpdatedAtMsDiffObj isKindOfClass:[NSNumber class]]) {
         _useForegroundLocationUpdatedAtMsDiff = [(NSNumber *)useForegroundLocationUpdatedAtMsDiffObj boolValue];
     }
 
     NSObject *useNotificationDiffObj = dict[@"useNotificationDiff"];
-    _useNotificationDiff = NO;
     if (useNotificationDiffObj && [useNotificationDiffObj isKindOfClass:[NSNumber class]]) {
         _useNotificationDiff = [(NSNumber *)useNotificationDiffObj boolValue];
+    }
+    
+    NSObject *syncAfterSetUserObj = dict[@"syncAfterSetUser"];
+    if (syncAfterSetUserObj && [syncAfterSetUserObj isKindOfClass:[NSNumber class]]) {
+        _syncAfterSetUser = [(NSNumber *)syncAfterSetUserObj boolValue];
     }
 
     return self;
@@ -100,10 +106,10 @@
     dict[@"extendFlushReplays"] = @(_extendFlushReplays);
     dict[@"useLogPersistence"] = @(_useLogPersistence);
     dict[@"useRadarModifiedBeacon"] = @(_useRadarModifiedBeacon);
-    dict[@"useLocationMetadata"] = @(_useLocationMetadata);
     dict[@"useOpenedAppConversion"] = @(_useOpenedAppConversion);
     dict[@"useForegroundLocationUpdatedAtMsDiff"] = @(_useForegroundLocationUpdatedAtMsDiff);
     dict[@"useNotificationDiff"] = @(_useNotificationDiff);
+    dict[@"syncAfterSetUser"] = @(_syncAfterSetUser);
     
     return dict;
 }

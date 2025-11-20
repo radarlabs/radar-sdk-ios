@@ -27,7 +27,7 @@
         return;
     }
 
-    if (self.delegate) {
+    if (self.delegate && [self.delegate respondsToSelector:@selector(didReceiveEvents:user:)]) {
         [self.delegate didReceiveEvents:events user:user];
     }
     
@@ -45,7 +45,7 @@
         return;
     }
 
-    if (self.delegate) {
+    if (self.delegate && [self.delegate respondsToSelector:@selector(didUpdateLocation:user:)]) {
         [self.delegate didUpdateLocation:location user:user];
     }
 
@@ -60,13 +60,13 @@
         return;
     }
 
-    if (self.delegate) {
+    if (self.delegate && [self.delegate respondsToSelector:@selector(didUpdateClientLocation:stopped:source:)]) {
         [self.delegate didUpdateClientLocation:location stopped:stopped source:source];
     }
 }
 
 - (void)didFailWithStatus:(RadarStatus)status {
-    if (self.delegate) {
+    if (self.delegate && [self.delegate respondsToSelector:@selector(didFailWithStatus:)]) {
         [self.delegate didFailWithStatus:status];
     }
 
@@ -74,13 +74,13 @@
 }
 
 - (void)didLogMessage:(NSString *)message {
-    if (self.delegate) {
+    if (self.delegate && [self.delegate respondsToSelector:@selector(didLogMessage:)]) {
         [self.delegate didLogMessage:message];
     }
 }
 
 - (void)didUpdateToken:(RadarVerifiedLocationToken *)token {
-    if (self.verifiedDelegate) {
+    if (self.verifiedDelegate && [self.verifiedDelegate respondsToSelector:@selector(didUpdateToken:)]) {
         [self.verifiedDelegate didUpdateToken:token];
     }
 

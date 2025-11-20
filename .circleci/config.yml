@@ -2,9 +2,18 @@ version: 2
 jobs:
   build_and_test:
     macos:
-      xcode: 16.0
+      xcode: 16.4
     steps:
+      - run:
+          name: Configure Git to use PAT for submodules
+          command: |
+            git config --global url."https://${SUBMODULESTOKEN}:x-oauth-basic@github.com/".insteadOf "https://github.com/"
       - checkout
+      - run:
+          name: Initialize and update submodules
+          command: |
+            git submodule init
+            git submodule update --recursive
       - run:
           name: List simulators
           command: xcrun simctl list
@@ -17,6 +26,9 @@ jobs:
           name: Test
           command: make clean test-pretty
       - run:
+          name: Test Swift
+          command: make clean test-swift
+      - run:
           name: Docs
           command: make docs
       - run:
@@ -26,7 +38,7 @@ jobs:
           name: Build example
           command: make build-example-pretty
     # The resource_class feature allows configuring CPU and RAM resources for each job. Different resource classes are available for different executors. https://circleci.com/docs/2.0/configuration-reference/#resourceclass
-    resource_class: macos.m1.medium.gen1
+    resource_class: m4pro.medium
 workflows:
   version: 2
   build_and_test:
