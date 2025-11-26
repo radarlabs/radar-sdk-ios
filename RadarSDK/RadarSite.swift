@@ -6,7 +6,6 @@
 //  Copyright © 2025 Radar Labs, Inc. All rights reserved.
 //
 import Foundation
-import RadarSDK
 
 @objc protocol GeoJSON {
     var type: String { get }

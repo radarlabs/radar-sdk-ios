@@ -170,11 +170,6 @@ struct DebugView: View {
             ranged = false
         }
         
-//        print("Accels")
-//        print(acceleration.reduce(0, +))
-//        print(acceleration_xyz.reduce(CMAcceleration(x: 0, y: 0, z: 0), { (a, b) in a.add(b) } ).magnitude())
-        
-        
         acceleration.removeAll(keepingCapacity: true)
         acceleration_xyz.removeAll(keepingCapacity: true)
         
