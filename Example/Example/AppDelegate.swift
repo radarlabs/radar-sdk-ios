@@ -24,40 +24,36 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
     let motionManager = CMMotionManager()
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-            var request = URLRequest(url: URL(string: "https://bailey-nonnebulous-nonaccidentally.ngrok-free.dev/app_opened")!)
-            request.httpMethod = "POST"
-            if let options = launchOptions {
-                request.httpBody = try? JSONSerialization.data(withJSONObject: options)
-            }
-            URLSession.shared.dataTask(with: request).resume()
-        }
-        
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { (_, _) in }
         UNUserNotificationCenter.current().delegate = self
         
         locationManager.delegate = self
         self.requestLocationPermissions()
         
-        
-        // Replace with a valid test publishable key
-//        let radarInitializeOptions = RadarInitializeOptions()
-        
-        
         // Uncomment to enable automatic setup for notification conversions or deep linking
-        //radarInitializeOptions.autoLogNotificationConversions = true
-        //radarInitializeOptions.autoHandleNotificationDeepLinks = true
-//        Radar.setLogLevel(RadarLogLevel.none)
-//        Radar.initialize(publishableKey: "prj_live_pk_", options: radarInitializeOptions )
-//        Radar.setUserId("testUserId")
+        var radarInitializeOptions = RadarInitializeOptions()
+        radarInitializeOptions.autoLogNotificationConversions = true
+        radarInitializeOptions.autoHandleNotificationDeepLinks = true
+        radarInitializeOptions.silentPush = true
+        
+        Radar.setAppGroup("group.waypoint.data")
+        Radar.initialize(publishableKey: "prj_test_pk_0000000000000000000000000000000000000000", options: radarInitializeOptions )
+        
+        Radar.setMetadata([ "foo": "bar" ])
+        
+        if #available(iOS 15.0, *) {
+            locationManager.startMonitoringLocationPushes() { data, error in
+                print("Extension Token", data?.map { String(format: "%02x", $0) }.joined() ?? "no token")
+                Radar.setLocationExtensionToken(data?.map { String(format: "%02x", $0) }.joined() ?? "no token")
+            }
+        }
+        
         return true
     }
-
     
     func application(_ app: UIApplication, open url: URL,
                      options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
-        // Handle opening via standard URL               
+        // Handle opening via standard URL
         return true
     }
     
@@ -66,38 +62,30 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         // If using a storyboard, the `window` property will automatically be initialized and attached to the scene.
         // This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
         guard let windowScene = (scene as? UIWindowScene) else { return }
-
+        
         let window = UIWindow(windowScene: windowScene)
         
         window.backgroundColor = .white
-
-        if (useSwiftUI) {
-            let controller = UIHostingController(rootView: MainView())
-            controller.view.frame = UIScreen.main.bounds
-            window.addSubview(controller.view)
-        } else {
-            scrollView = UIScrollView(frame: CGRect(x: 0, y: 100, width: window.frame.size.width, height: window.frame.size.height))
-            scrollView!.contentSize.height = 0
-            scrollView!.contentSize.width = window.frame.size.width
-            
-            window.addSubview(scrollView!)
-        }
+        
+        let controller = UIHostingController(rootView: MainView())
+        controller.view.frame = UIScreen.main.bounds
+        window.addSubview(controller.view)
         
         window.makeKeyAndVisible()
         
         self.window = window
         
         if UIApplication.shared.applicationState != .background {
-            Radar.getLocation { (status, location, stopped) in
-                print("Location: status = \(Radar.stringForStatus(status)); location = \(String(describing: location))")
-            }
-
-            Radar.trackOnce { (status, location, events, user) in
-                print("Track once: status = \(Radar.stringForStatus(status)); location = \(String(describing: location)); events = \(String(describing: events)); user = \(String(describing: user))")
-            }
+            //            Radar.getLocation { (status, location, stopped) in
+            //                print("Location: status = \(Radar.stringForStatus(status)); location = \(String(describing: location))")
+            //            }
+            //
+            //            Radar.trackOnce { (status, location, events, user) in
+            //                print("Track once: status = \(Radar.stringForStatus(status)); location = \(String(describing: location)); events = \(String(describing: events)); user = \(String(describing: user))")
+            //            }
         }
     }
-
+        
     func requestLocationPermissions() {
         var status: CLAuthorizationStatus = .notDetermined
         if #available(iOS 14.0, *) {
@@ -134,6 +122,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         // Uncomment for manual setup for notification conversions and URLs
         // Radar.logConversion(response: response)
         // Radar.openURLFromNotification(response.notification)
-        print("Received notification!")
+        print(response)
+    }
+    
+    // this function is called ONLY for silent-pushes
+    func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any]) async -> UIBackgroundFetchResult {
+        print(userInfo)
+        
+        return .newData
     }
 }

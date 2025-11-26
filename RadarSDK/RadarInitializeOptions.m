@@ -17,6 +17,7 @@
     if (self) {
         _autoLogNotificationConversions = NO;
         _autoHandleNotificationDeepLinks = NO;
+        _silentPush = NO;
     }
     return self;
 }
@@ -25,6 +26,7 @@
     NSMutableDictionary *dict = [NSMutableDictionary new];
     dict[@"autoLogNotificationConversions"] = @(_autoLogNotificationConversions);
     dict[@"autoHandleNotificationDeepLinks"] = @(_autoHandleNotificationDeepLinks);
+    dict[@"silentPush"] = @(_silentPush);
     return dict;
 }
 
@@ -33,6 +35,7 @@
     if (self) {
         _autoLogNotificationConversions = [dict[@"autoLogNotificationConversions"] boolValue];
         _autoHandleNotificationDeepLinks = [dict[@"autoHandleNotificationDeepLinks"] boolValue];
+        _silentPush = [dict[@"silentPush"] boolValue];
     }
     return self;
 }

@@ -159,33 +159,52 @@ static dispatch_semaphore_t notificationSemaphore;
     }
 }
 
-+ (void)swizzleNotificationCenterDelegate {
-    id<UNUserNotificationCenterDelegate> delegate = UNUserNotificationCenter.currentNotificationCenter.delegate;
++ (void)swizzleDelegate:(id)delegate
+                 method:(SEL) originalSelector
+                withNew:(SEL) swizzledSelector {
     if (!delegate) {
-        NSLog(@"Error: UNUserNotificationCenter delegate is nil.");
         return;
     }
-    Class class = [UNUserNotificationCenter.currentNotificationCenter.delegate class];
-    SEL originalSelector = @selector(userNotificationCenter:didReceiveNotificationResponse:withCompletionHandler:);
-    SEL swizzledSelector = @selector(swizzled_userNotificationCenter:didReceiveNotificationResponse:withCompletionHandler:);
-
+    Class class = [delegate class];
+    
     Method originalMethod = class_getInstanceMethod(class, originalSelector);
     Method swizzledMethod = class_getInstanceMethod([self class], swizzledSelector);
-
-    if (originalMethod && swizzledMethod) {
-        BOOL didAddMethod = class_addMethod(class,
-                                            swizzledSelector,
-                                            method_getImplementation(swizzledMethod),
-                                            method_getTypeEncoding(swizzledMethod));
-        if (didAddMethod) {
-            Method newSwizzledMethod = class_getInstanceMethod(class, swizzledSelector);
-            method_exchangeImplementations(originalMethod, newSwizzledMethod);
-        } else {
-            method_exchangeImplementations(originalMethod, swizzledMethod);
-        }
-    } else {
-        NSLog(@"Error: Methods not found for swizzling.");
+    
+    if (!swizzledMethod) {
+        return;
     }
+    
+    // if there was no original implementation, we just set our method as the original
+    if (!originalMethod) {
+        class_addMethod(class, originalSelector, method_getImplementation(swizzledMethod), method_getTypeEncoding(swizzledMethod));
+        return;
+    }
+    
+    BOOL didAddMethod = class_addMethod(class, swizzledSelector, method_getImplementation(swizzledMethod), method_getTypeEncoding(swizzledMethod));
+    if (didAddMethod) {
+        swizzledMethod = class_getInstanceMethod(class, swizzledSelector);
+    }
+    method_exchangeImplementations(originalMethod, swizzledMethod);
+}
+
++ (void)swizzleNotificationCenterDelegate {
+    id<UNUserNotificationCenterDelegate> delegate = UNUserNotificationCenter.currentNotificationCenter.delegate;
+    
+    [self swizzleDelegate:delegate
+                   method:@selector(userNotificationCenter:didReceiveNotificationResponse:withCompletionHandler:)
+                  withNew:@selector(swizzled_userNotificationCenter:didReceiveNotificationResponse:withCompletionHandler:)];
+}
+
++ (void)swizzleApplicationDelegate {
+    id<UIApplicationDelegate> applicationDelegate = UIApplication.sharedApplication.delegate;
+    
+    [self swizzleDelegate:applicationDelegate
+                   method:@selector(application:didReceiveRemoteNotification:fetchCompletionHandler:)
+                  withNew:@selector(swizzled_application:didReceiveRemoteNotification:fetchCompletionHandler:)];
+    
+    [self swizzleDelegate:applicationDelegate
+                   method:@selector(application:didRegisterForRemoteNotificationsWithDeviceToken:)
+                  withNew:@selector(swizzled_application:didRegisterForRemoteNotificationsWithDeviceToken:)];
 }
 
 - (void)swizzled_userNotificationCenter:(UNUserNotificationCenter *)center
@@ -201,7 +220,59 @@ static dispatch_semaphore_t notificationSemaphore;
     }
 
     // Call the original method (which is now swizzled)
-    [self swizzled_userNotificationCenter:center didReceiveNotificationResponse:response withCompletionHandler:completionHandler];
+    if ([self respondsToSelector:@selector(swizzled_userNotificationCenter:didReceiveNotificationResponse:withCompletionHandler:)]) {
+        [self swizzled_userNotificationCenter:center didReceiveNotificationResponse:response withCompletionHandler:completionHandler];
+    } else {
+        completionHandler();
+    }
+}
+
+- (void)swizzled_application:(UIApplication *)application
+didReceiveRemoteNotification:(NSDictionary *)userInfo
+      fetchCompletionHandler:(void (^)(UIBackgroundFetchResult result))completionHandler {
+    // dispatch group so that Radar.didReceivePushNotificationPayload and any swizzled delegate method runs at the same time.
+    dispatch_group_t group = dispatch_group_create();
+    __block UIBackgroundFetchResult finalResult = UIBackgroundFetchResultNewData;
+    
+    RadarInitializeOptions *options = [RadarSettings initializeOptions];
+    
+    // Process the remote notification if silentPush is enabled.
+    if (options.silentPush) {
+        dispatch_group_enter(group);
+        [Radar didReceivePushNotificationPayload:userInfo completionHandler:^() {
+            dispatch_group_leave(group);
+        }];
+    }
+    
+    // Call the original method and use its result if available, otherwise we fallback to the finalResult's initial value above
+    if ([self respondsToSelector:@selector(swizzled_application:didReceiveRemoteNotification:fetchCompletionHandler:)]) {
+        dispatch_group_enter(group);
+        [self swizzled_application:application didReceiveRemoteNotification:userInfo fetchCompletionHandler:^(UIBackgroundFetchResult result) {
+            finalResult = result;
+            dispatch_group_leave(group);
+        }];
+    }
+    
+    dispatch_group_notify(group, dispatch_get_main_queue(), ^{
+        completionHandler(finalResult);
+    });
+}
+
+- (void)swizzled_application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
+    // save device token
+    if (deviceToken != nil){
+        const unsigned char* bytes = (const unsigned char*)[deviceToken bytes];
+        NSMutableString *hexString = [NSMutableString stringWithCapacity:[deviceToken length] * 2];
+        
+        for (NSUInteger i = 0; i < [deviceToken length]; ++i) {
+            [hexString appendFormat:@"%02x", bytes[i]];
+        }
+        [RadarSettings setPushNotificationToken:hexString];
+    }
+    
+    if ([self respondsToSelector:@selector(swizzled_application:didRegisterForRemoteNotificationsWithDeviceToken:)]) {
+        [self swizzled_application:application didRegisterForRemoteNotificationsWithDeviceToken:deviceToken];
+    }
 }
 
 + (void)openURLFromNotification:(UNNotification *)notification {

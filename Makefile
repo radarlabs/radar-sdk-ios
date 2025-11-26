@@ -1,5 +1,5 @@
 SDK ?= "iphonesimulator"
-DESTINATION ?= "platform=iOS Simulator,name=iPhone 16"
+DESTINATION ?= "platform=iOS Simulator,name=iPhone 16,OS=18.5"
 PROJECT := RadarSDK
 PROJECT_EXAMPLE := Example/Example
 SCHEME := XCFramework
@@ -19,6 +19,9 @@ build:
 
 test:
 	xcodebuild $(XC_TEST_ARGS) test
+
+test-swift:
+	xcodebuild $(XC_TEST_ARGS) test -only-testing:RadarSDKTests/InAppMessageTest
 
 build-example:
 	xcodebuild $(XC_EXAMPLE_ARGS)

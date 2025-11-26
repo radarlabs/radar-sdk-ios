@@ -7,6 +7,7 @@
 
 #import "Radar.h"
 #include "RadarSdkConfiguration.h"
+#import <CoreMotion/CoreMotion.h>
 
 #import "RadarAPIClient.h"
 #import "RadarBeaconManager.h"
@@ -21,11 +22,13 @@
 #import "RadarUtils.h"
 #import "RadarVerificationManager.h"
 #import "RadarReplayBuffer.h"
+#import "RadarLogBuffer.h"
 #import "RadarNotificationHelper.h"
 #import "RadarTripOptions.h"
-#import "RadarInAppMessageDelegate.h"
-#import "Radar-Swift.h"
 #import "RadarIndoorsProtocol.h"
+#import "RadarInAppMessageDelegate.h"
+#import "RadarSwiftBridge.h"
+#import "Radar-Swift.h"
 
 @interface Radar ()
 
@@ -36,6 +39,8 @@
 @implementation Radar
 
 #pragma mark - Initialization
+
+BOOL _initialized = NO;
 
 + (id)sharedInstance {
     static dispatch_once_t once;
@@ -50,17 +55,30 @@
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         [RadarSettings setInitializeOptions:options];
-        [RadarNotificationHelper swizzleNotificationCenterDelegate];
+        if (options.autoLogNotificationConversions || options.autoHandleNotificationDeepLinks) {
+            [RadarNotificationHelper swizzleNotificationCenterDelegate];
+        }
+        if (options.silentPush) {
+            [RadarNotificationHelper swizzleApplicationDelegate];
+        }
     });
 }
 
 + (void)initializeWithPublishableKey:(NSString *)publishableKey options:(RadarInitializeOptions *)options {
+    [RadarSwift setBridge:[[RadarSwiftBridge alloc] init]];
+    [RadarSettings setAppGroup:[RadarSettings getAppGroup]];
+    
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"initialize()"];
     
     Class RadarSDKMotion = NSClassFromString(@"RadarSDKMotion");
     if (RadarSDKMotion) {
         id radarSDKMotion = [[RadarSDKMotion alloc] init];
+        CMAuthorizationStatus authStatus = [CMMotionActivityManager authorizationStatus];
+
         [RadarActivityManager sharedInstance].radarSDKMotion = radarSDKMotion;
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"RadarSDKMotion detected and initialized; Motion & Altimeter services available, auth status: %@", [Radar stringForMotionAuthorization:authStatus]]];
+    } else {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelWarning message:@"RadarSDKMotion class not found; Motion/Pressure features disabled"];
     }
 
     [[NSNotificationCenter defaultCenter] addObserver:[self sharedInstance]
@@ -74,11 +92,8 @@
     // For most users not using these features, options be null and skipped,
     //  For X-platform users initializing Radar in the crossplatform layer, the options will also be null as nativeSetup would had been called ealier 
     if (options) {
-        [RadarSettings setInitializeOptions:options];
         if (NSClassFromString(@"XCTestCase") == nil) {
-            if (options.autoLogNotificationConversions || options.autoHandleNotificationDeepLinks) {
-                [Radar nativeSetup: options];
-            }
+            [Radar nativeSetup:options];
         }
     }
 
@@ -112,11 +127,25 @@
                                             [self flushLogs];
                                         }];
     }];
+    
+    if (options.silentPush) {
+        [[UIApplication sharedApplication] registerForRemoteNotifications];
+    }
 
+    _initialized = YES;
 }
 
 + (void)initializeWithPublishableKey:(NSString *)publishableKey {
     [self initializeWithPublishableKey:publishableKey options:nil];
+}
+
++ (void)initializeWithAppGroup:(NSString *)appGroup {
+    [RadarSettings setAppGroup:appGroup];
+    [Radar initializeWithPublishableKey:[RadarSettings publishableKey]];
+}
+
++ (BOOL)isInitialized {
+    return _initialized;
 }
 
 #pragma mark - Properties
@@ -654,7 +683,7 @@
                                                  if (Radar.isTracking) {
                                                      [RadarSettings setPreviousTrackingOptions:[RadarSettings trackingOptions]];
                                                  } else {
-                                                     [RadarSettings removePreviousTrackingOptions];
+                                                     [RadarSettings setPreviousTrackingOptions:nil];
                                                  }
 
                                                  if (trackingOptions && trackingOptions.startTrackingAfter == nil) {
@@ -1287,6 +1316,27 @@
     return str;
 }
 
++ (NSString *)stringForMotionAuthorization:(CMAuthorizationStatus)status {
+    NSString *str;
+    switch (status) {
+    case CMAuthorizationStatusNotDetermined:
+        str = @"NOT_DETERMINED";
+        break;
+    case CMAuthorizationStatusRestricted:
+        str = @"RESTRICTED";
+        break;
+    case CMAuthorizationStatusDenied:
+        str = @"USER_DENIED";
+        break;
+    case CMAuthorizationStatusAuthorized:
+        str = @"USER_GRANTED";
+        break;
+    default:
+        str = @"UNKNOWN";
+    }
+    return str;
+}
+
 + (NSString *)stringForVerificationStatus:(RadarAddressVerificationStatus)status {
     NSString *str;
     switch (status) {
@@ -1515,12 +1565,30 @@
     }
 }
 
-+ (void) __writeToLogBufferWithLevel:(RadarLogLevel)level type:(RadarLogType)type message:(NSString *)message forcePersist:(BOOL)forcePersist {
-    [[RadarLogBuffer sharedInstance] write:level type:type message:message forcePersist:forcePersist];
-}
-
 + (void)requestMotionActivityPermission {
     [[RadarActivityManager sharedInstance] requestPermission];
+}
+
++ (void)setAppGroup:(NSString *)appGroup {
+    [RadarSettings setAppGroup:appGroup];
+}
+
++ (void)setPushNotificationToken:(NSString*)token {
+    [RadarSettings setPushNotificationToken:token];
+}
+
++ (void)setLocationExtensionToken:(NSString*)token {
+    [RadarSettings setLocationExtensionToken:token];
+}
+
++ (void)didReceivePushNotificationPayload:(NSDictionary *)payload completionHandler:(void (^ _Nonnull)(void))completionHandler {
+    if ([payload[@"type"] isEqual:@"radar:trackOnce"]) {
+        [Radar trackOnceWithCompletionHandler:^(RadarStatus status, CLLocation * _Nullable location, NSArray<RadarEvent *> * _Nullable events, RadarUser * _Nullable user) {
+            completionHandler();
+        }];
+    } else {
+        completionHandler();
+    }
 }
 
 @end
