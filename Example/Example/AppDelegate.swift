@@ -10,7 +10,6 @@ import UserNotifications
 import RadarSDK
 import SwiftUI
 
-
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UNUserNotificationCenterDelegate, CLLocationManagerDelegate {
 
@@ -21,6 +20,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
     var demoFunctions = Array<() -> Void>()
     
     var useSwiftUI = true
+    
+    let motionManager = CMMotionManager()
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         
@@ -38,6 +39,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         
         locationManager.delegate = self
         self.requestLocationPermissions()
+        
         
         // Replace with a valid test publishable key
 //        let radarInitializeOptions = RadarInitializeOptions()
