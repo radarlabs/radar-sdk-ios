@@ -21,6 +21,7 @@
 #import "RadarDelegateHolder.h"
 #import "RadarLocationManager.h"
 #import "RadarLogger.h"
+#import "RadarSettings.h"
 #import "RadarState.h"
 #import "RadarUtils.h"
 
@@ -112,8 +113,9 @@
                 return;
             }
             
-            [self getAttestationWithNonce:config.nonce
-                        completionHandler:^(NSString *_Nullable attestationString, NSString *_Nullable keyId, NSString *_Nullable attestationError) {
+            // Always use assertion
+            [self getAssertionWithChallenge:config.challenge
+                    completionHandler:^(NSString *_Nullable assertionString, NSString *_Nullable keyId, NSString *_Nullable attestationError) {
                 void (^callTrackAPI)(NSArray<RadarBeacon *> *_Nullable) = ^(NSArray<RadarBeacon *> *_Nullable beacons) {
                     [[RadarAPIClient sharedInstance]
                      trackWithLocation:location
@@ -124,7 +126,7 @@
                      beacons:beacons
                      indoorScan:nil
                      verified:YES
-                     attestationString:attestationString
+                     assertionString:assertionString
                      keyId:keyId
                      attestationError:attestationError
                      encrypted:NO
@@ -355,7 +357,7 @@
     self.expectedStateCode = stateCode;
 }
 
-- (void)getAttestationWithNonce:(NSString *)nonce completionHandler:(RadarVerificationCompletionHandler)completionHandler {
+- (void)getAttestationWithChallenge:(NSString *)challenge completionHandler:(RadarVerificationCompletionHandler)completionHandler {
     if (@available(iOS 14.0, *)) {
         DCAppAttestService *service = [DCAppAttestService sharedService];
 
@@ -365,12 +367,13 @@
             return;
         }
 
-        if (!nonce) {
-            completionHandler(nil, nil, @"Missing nonce");
+        if (!challenge) {
+            completionHandler(nil, nil, @"Missing challenge");
 
             return;
         }
 
+        // Generate new key and attestation (first-time)
         [service generateKeyWithCompletionHandler:^(NSString *_Nullable keyId, NSError *_Nullable error) {
             if (error) {
                 completionHandler(nil, nil, error.localizedDescription);
@@ -378,21 +381,122 @@
                 return;
             }
 
-            NSData *clientData = [nonce dataUsingEncoding:NSUTF8StringEncoding];
+            NSData *clientData = [challenge dataUsingEncoding:NSUTF8StringEncoding];
             NSMutableData *clientDataHash = [NSMutableData dataWithLength:CC_SHA256_DIGEST_LENGTH];
             CC_SHA256([clientData bytes], (CC_LONG)[clientData length], [clientDataHash mutableBytes]);
 
             [service attestKey:keyId
                    clientDataHash:clientDataHash
                 completionHandler:^(NSData *_Nullable attestationObject, NSError *_Nullable error) {
-                    NSString *assertionString = [attestationObject base64EncodedStringWithOptions:0];
+                    if (error) {
+                        completionHandler(nil, nil, error.localizedDescription);
+                        return;
+                    }
+                
+                    // Store the keyId for future use
+                    [self storeAppAttestKeyId:keyId];
 
-                    completionHandler(assertionString, keyId, nil);
+                    NSString *attestationString = [attestationObject base64EncodedStringWithOptions:0];
+
+                    completionHandler(attestationString, keyId, nil);
                 }];
         }];
     } else {
         completionHandler(nil, nil, @"OS unsupported");
     }
+}
+
+- (void)getAssertionWithChallenge:(NSString *)challenge completionHandler:(RadarVerificationCompletionHandler)completionHandler {
+    if (@available(iOS 14.0, *)) {
+        DCAppAttestService *service = [DCAppAttestService sharedService];
+
+        if (!service.isSupported) {
+            completionHandler(nil, nil, @"Service unsupported");
+
+            return;
+        }
+
+        if (!challenge) {
+            completionHandler(nil, nil, @"Missing challenge");
+
+            return;
+        }
+
+        // Get existing keyId for assertion
+        NSString *existingKeyId = [self appAttestKeyId];
+        
+        if (!existingKeyId) {
+            // No key exists, perform attestation first
+            [self performAttestationWithChallenge:challenge
+                                completionHandler:^(RadarStatus status, BOOL result, NSString *_Nullable keyId, NSString *_Nullable message, NSString *_Nullable newChallenge) {
+                if (status != RadarStatusSuccess || !result || !newChallenge) {
+                    completionHandler(nil, nil, message ?: @"Attestation failed");
+                    return;
+                }
+                
+                // Use the new challenge to continue with assertion flow
+                [self getAssertionWithChallenge:newChallenge completionHandler:completionHandler];
+            }];
+            return;
+        }
+
+        // Use assertion for subsequent requests
+        NSData *clientData = [challenge dataUsingEncoding:NSUTF8StringEncoding];
+        NSMutableData *clientDataHash = [NSMutableData dataWithLength:CC_SHA256_DIGEST_LENGTH];
+        CC_SHA256([clientData bytes], (CC_LONG)[clientData length], [clientDataHash mutableBytes]);
+
+        [service generateAssertion:existingKeyId
+                   clientDataHash:clientDataHash
+                completionHandler:^(NSData *_Nullable assertionObject, NSError *_Nullable error) {
+            if (error) {
+                completionHandler(nil, nil, error.localizedDescription);
+            } else {
+                NSString *assertionString = [assertionObject base64EncodedStringWithOptions:0];
+                completionHandler(assertionString, existingKeyId, nil);
+            }
+        }];
+    } else {
+        completionHandler(nil, nil, @"OS unsupported");
+    }
+}
+
+- (void)performAttestationWithChallenge:(NSString *)challenge completionHandler:(void (^)(RadarStatus status, BOOL result, NSString *_Nullable keyId, NSString *_Nullable message, NSString *_Nullable newChallenge))completionHandler {
+    if (!challenge) {
+        [RadarUtils runOnMainThread:^{
+            if (completionHandler) {
+                completionHandler(RadarStatusErrorBadRequest, NO, nil, @"Missing challenge", nil);
+            }
+        }];
+        return;
+    }
+
+    [self getAttestationWithChallenge:challenge
+            completionHandler:^(NSString *_Nullable attestationString, NSString *_Nullable keyId, NSString *_Nullable attestationError) {
+        if (attestationError || !attestationString || !keyId) {
+            [RadarUtils runOnMainThread:^{
+                if (completionHandler) {
+                    completionHandler(RadarStatusErrorServer, NO, nil, attestationError, nil);
+                }
+            }];
+            return;
+        }
+
+        NSString *installId = [RadarSettings installId];
+        NSString *deviceId = [self kDeviceId];
+
+        [[RadarAPIClient sharedInstance]
+         attestWithAttestationString:attestationString
+         keyId:keyId
+         installId:installId
+         deviceId:deviceId
+         completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, BOOL result, NSString *_Nullable keyIdResponse, NSString *_Nullable message, NSString *_Nullable challenge) {
+            [RadarUtils runOnMainThread:^{
+                if (completionHandler) {
+                    completionHandler(status, result, keyIdResponse, message, challenge);
+                }
+            }];
+        }];
+    }];
 }
 
 // inspired by https://github.com/securing/IOSSecuritySuite
@@ -698,6 +802,113 @@
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Error accessing keychain | exception = %@", exception]];
         
         return nil;
+    }
+}
+
+- (NSString *)appAttestKeyId {
+    NSString *key = @"com.radar.appAttestKeyId";
+    NSString *service = @"com.radar";
+
+    @try {
+        NSDictionary *query = @{
+            (__bridge id)kSecClass: (__bridge id)kSecClassGenericPassword,
+            (__bridge id)kSecAttrService: service,
+            (__bridge id)kSecAttrAccount: key,
+            (__bridge id)kSecReturnData: @YES,
+            (__bridge id)kSecAttrSynchronizable: @NO
+        };
+
+        CFTypeRef result = NULL;
+        OSStatus status = SecItemCopyMatching((__bridge CFDictionaryRef)query, &result);
+        if (status == errSecSuccess && result) {
+            NSData *data = (__bridge_transfer NSData *)result;
+            NSString *appAttestKeyId = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+            if (appAttestKeyId.length > 0) {
+                return appAttestKeyId;
+            }
+        } else if (status != errSecItemNotFound) {
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Error reading appAttestKeyId from keychain | status = %d", (int)status]];
+        }
+
+        return nil;
+    } @catch (NSException *exception) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Error accessing keychain for appAttestKeyId | exception = %@", exception]];
+        
+        return nil;
+    }
+}
+
+- (BOOL)storeAppAttestKeyId:(NSString *)keyId {
+    if (!keyId || keyId.length == 0) {
+        return NO;
+    }
+
+    NSString *key = @"com.radar.appAttestKeyId";
+    NSString *service = @"com.radar";
+
+    @try {
+        // First, try to update existing item
+        NSDictionary *query = @{
+            (__bridge id)kSecClass: (__bridge id)kSecClassGenericPassword,
+            (__bridge id)kSecAttrService: service,
+            (__bridge id)kSecAttrAccount: key,
+        };
+
+        NSData *data = [keyId dataUsingEncoding:NSUTF8StringEncoding];
+        NSDictionary *attributes = @{
+            (__bridge id)kSecValueData: data,
+            (__bridge id)kSecAttrAccessible: (__bridge id)kSecAttrAccessibleAfterFirstUnlock,
+            (__bridge id)kSecAttrSynchronizable: @NO
+        };
+
+        OSStatus status = SecItemUpdate((__bridge CFDictionaryRef)query, (__bridge CFDictionaryRef)attributes);
+        if (status == errSecSuccess) {
+            return YES;
+        } else if (status == errSecItemNotFound) {
+            // Item doesn't exist, create it
+            NSMutableDictionary *addAttributes = [NSMutableDictionary dictionaryWithDictionary:attributes];
+            [addAttributes setObject:(__bridge id)kSecClassGenericPassword forKey:(__bridge id)kSecClass];
+            [addAttributes setObject:service forKey:(__bridge id)kSecAttrService];
+            [addAttributes setObject:key forKey:(__bridge id)kSecAttrAccount];
+
+            OSStatus addStatus = SecItemAdd((__bridge CFDictionaryRef)addAttributes, NULL);
+            if (addStatus == errSecSuccess) {
+                return YES;
+            } else {
+                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Error saving appAttestKeyId to keychain | addStatus = %d", (int)addStatus]];
+                return NO;
+            }
+        } else {
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Error updating appAttestKeyId in keychain | status = %d", (int)status]];
+            return NO;
+        }
+    } @catch (NSException *exception) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Error accessing keychain for appAttestKeyId | exception = %@", exception]];
+        return NO;
+    }
+}
+
+- (BOOL)clearAppAttestKeyId {
+    NSString *key = @"com.radar.appAttestKeyId";
+    NSString *service = @"com.radar";
+
+    @try {
+        NSDictionary *query = @{
+            (__bridge id)kSecClass: (__bridge id)kSecClassGenericPassword,
+            (__bridge id)kSecAttrService: service,
+            (__bridge id)kSecAttrAccount: key,
+        };
+
+        OSStatus status = SecItemDelete((__bridge CFDictionaryRef)query);
+        if (status == errSecSuccess) {
+            return YES;
+        } else {
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Error clearing appAttestKeyId from keychain | status = %d", (int)status]];
+            return NO;
+        }
+    } @catch (NSException *exception) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Error accessing keychain for appAttestKeyId | exception = %@", exception]];
+        return NO;
     }
 }
 
