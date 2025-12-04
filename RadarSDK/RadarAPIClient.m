@@ -1711,4 +1711,46 @@ completionHandler:(RadarSendEventAPICompletionHandler _Nonnull)completionHandler
                     }];
 }
 
+- (void)getAttestChallengeWithInstallId:(NSString *)installId forAttest:(BOOL)forAttest completionHandler:(void (^)(RadarStatus status, NSString *_Nullable challenge))completionHandler {
+    NSString *publishableKey = [RadarSettings publishableKey];
+    if (!publishableKey) {
+        return completionHandler(RadarStatusErrorPublishableKey, nil);
+    }
+
+    NSString *host = [RadarSettings verifiedHost];
+    NSMutableString *queryString = [NSMutableString new];
+    [queryString appendFormat:@"installId=%@", installId];
+    if (forAttest) {
+        [queryString appendFormat:@"&forAttest=true"];
+    }
+    NSString *url = [NSString stringWithFormat:@"%@/v1/attest?%@", host, queryString];
+    url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
+
+    NSDictionary *headers = [RadarAPIClient headersWithPublishableKey:publishableKey];
+
+    [self.apiHelper requestWithMethod:@"GET"
+                                  url:url
+                              headers:headers
+                               params:nil
+                                sleep:NO
+                           logPayload:YES
+                      extendedTimeout:NO
+                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
+                        if (status != RadarStatusSuccess || !res) {
+                            return completionHandler(status, nil);
+                        }
+
+                        id challengeObj = res[@"challenge"];
+                        NSString *challenge = nil;
+                        if ([challengeObj isKindOfClass:[NSString class]]) {
+                            challenge = (NSString *)challengeObj;
+                        } else if ([challengeObj isKindOfClass:[NSNull class]]) {
+                            // Rate limited - challenge is null
+                            challenge = nil;
+                        }
+
+                        return completionHandler(status, challenge);
+                    }];
+}
+
 @end

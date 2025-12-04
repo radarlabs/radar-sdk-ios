@@ -180,6 +180,8 @@ completionHandler:(RadarSendEventAPICompletionHandler _Nonnull)completionHandler
 
 - (void)attestWithAttestationString:(NSString *)attestationString keyId:(NSString *)keyId installId:(NSString *)installId deviceId:(NSString *_Nullable)deviceId completionHandler:(RadarAttestAPICompletionHandler _Nonnull)completionHandler;
 
+- (void)getAttestChallengeWithInstallId:(NSString *)installId forAttest:(BOOL)forAttest completionHandler:(void (^)(RadarStatus status, NSString *_Nullable challenge))completionHandler;
+
 @end
 
 NS_ASSUME_NONNULL_END
