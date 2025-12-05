@@ -12,6 +12,8 @@ import CoreLocation
 import MapLibre
 import ARKit
 import CoreMotion
+import Combine
+import Gzip
 
 class DebugViewModel: NSObject, ObservableObject {
     @Published var transform = simd_float4x4()
@@ -70,20 +72,10 @@ extension RadarSite {
     }
 }
 
-extension CMAcceleration {
-    func magnitude() -> Double {
-        return (self.x * self.x + self.y * self.y + self.z * self.z).squareRoot()
-    }
-    
-    func add(_ other: CMAcceleration) -> CMAcceleration {
-        return CMAcceleration(x: self.x + other.x, y: self.y + other.y, z: self.z + other.z)
-    }
-}
-
 func circleFor(site: RadarSite, x: Double, y: Double, r: Double) -> [CLLocationCoordinate2D] {
     var coordinates: [CLLocationCoordinate2D] = []
-    for i in 0...32 {
-        let angle = 2.0 * Double.pi * Double(i) / 32.0
+    for i in 0...8 {
+        let angle = 2.0 * Double.pi * Double(i) / 8.0
         let dx = r * cos(angle)
         let dy = r * sin(angle)
 
@@ -93,13 +85,25 @@ func circleFor(site: RadarSite, x: Double, y: Double, r: Double) -> [CLLocationC
     return coordinates
 }
 
+let dateFormatter: DateFormatter = {
+    let formatter = DateFormatter()
+    formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS"
+    return formatter
+}()
 
-
+extension CLBeacon {
+    @available(iOS 13.0, *)
+    func toDictionary() -> [String: Any] {
+        [
+            "uuid": uuid.uuidString,
+            "major": major,
+            "minor": minor,
+            "rssi": rssi
+        ]
+    }
+}
 
 struct DebugView: View {
-    
-    @State
-    var tapCoordinates: CLLocationCoordinate2D? = nil
     
     @State
     var image: UIImage? = nil
@@ -139,12 +143,6 @@ struct DebugView: View {
     
     @StateObject private var viewModel = DebugViewModel()
     
-    @State
-    var prevMeasurement = [String: Int]()
-    
-    @State
-    var fillCount = [String: Int]()
-    
     @AppStorage("radar-prediction-average-window") var predictionAverageWindow: Int = 1
     @AppStorage("radar-measurement-drop-filter") var measurementDropFilter: Int = 0
     @AppStorage("radar-calibration-mode") var calibrationMode: Bool = false
@@ -152,104 +150,52 @@ struct DebugView: View {
     @AppStorage("radar-raw-prediction") var rawPrediction: Bool = false
     @AppStorage("radar-prediction-confidence") var predictionConfidence: Bool = false
 
-    @State
-    var predictionHistory = [(Double, Double)]()
+    let scanner = RadarIndoorScan()
+    let model = RadarBeaconRSSIModel()
     
     @State
-    var acceleration = [Double]()
+    var collectedData: [SurveyData] = []
     @State
-    var acceleration_xyz = [CMAcceleration]()
+    var collectedBeaconList = Set<String>()
     
-    let motionManager = CMMotionManager()
+    @State
+    var tapCoord = CLLocationCoordinate2D(latitude: 0, longitude: 0)
+    @State
+    var arCoord = CLLocationCoordinate2D(latitude: 0, longitude: 0)
+    @State
+    var predCoord = CLLocationCoordinate2D(latitude: 0, longitude: 0)
+    @State
+    var rawPredCoord = CLLocationCoordinate2D(latitude: 0, longitude: 0)
+    @State
+    var displayPredCoord = CLLocationCoordinate2D(latitude: 0, longitude: 0)
     
-    let kalman = KalmanFilter()
-    
-    func onRangedBeacon(beacons: [CLBeacon]) {
-        ranged = true
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-            ranged = false
+    func updatePoints(style: MLNStyle?) {
+        if let source = style?.source(withIdentifier: "points-src"),
+           let shape = source as? MLNShapeSource {
+            shape.shape = MLNShapeCollectionFeature(shapes: [
+                MLNPointFeature(coordinate: tapCoord) { f in
+                    f.attributes["color"] = "#00FF00"
+                },
+                MLNPointFeature(coordinate: arCoord) { f in
+                    f.attributes["color"] = "#FF00FF"
+                },
+//                MLNPointFeature(coordinate: predCoord) { f in
+//                    f.attributes["color"] = "#00FFFF"
+//                },
+                MLNPointFeature(coordinate: displayPredCoord) { f in
+                    f.attributes["color"] = "#0000FF"
+                },
+//                MLNPointFeature(coordinate: rawPredCoord) { f in
+//                    f.attributes["color"] = "#FF0000"
+//                },
+            ])
         }
-        
-        acceleration.removeAll(keepingCapacity: true)
-        acceleration_xyz.removeAll(keepingCapacity: true)
-        
-        // send data to server if surveying
-        Task {
-            if (surveying) {
-                let x = Double(viewModel.transform.columns.3.x)
-                let y = -Double(viewModel.transform.columns.3.z)
-                let sin_rotation = sin(rotation)
-                let cos_rotation = cos(rotation)
-                let xy = (
-                    calibration.0 + cos_rotation * x - sin_rotation * y,
-                    calibration.1 + sin_rotation * x + cos_rotation * y
-                )
-                success = await RadarSDKIndoors.setLocation(xy, beacons)
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                    success = false
-                }
-            }
-        }
-        // update prediction
-        Task {
-            let rssi = beacons.reduce(into: [String: Int]()) { result, beacon in
-                let name = "_\(beacon.major)_\(beacon.minor)"
-                var beaconRssi = beacon.rssi
-                if beaconRssi == 0 && prevMeasurement[name, default: 0] != 0 && fillCount[name, default: 0] < measurementDropFilter {
-                    beaconRssi = prevMeasurement[name, default: 0]
-                    fillCount[name, default: 0] += 1
-                } else {
-                    fillCount[name, default: 0] = 0
-                }
-                result[name] = beaconRssi
-            }
-            prevMeasurement = rssi
-            if let pred = (await RadarSDKIndoors.getLocation(rssi: rssi)) {
-                
-                var xy = (pred.0, pred.1)
-                if (kalmanFilter) {
-                    let kalmanPred = kalman.predict()
-                    xy = (kalmanPred.x, kalmanPred.y)
-                    kalman.update(z: simd_double2(pred.0, pred.1))
-                    
-                    if let source = mapStyle?.source(withIdentifier: "pred-conf-src"),
-                       let shape = source as? MLNShapeSource {
-                        let error = kalman.error_radius()
-                        if (predictionConfidence) {
-                            shape.shape = MLNPolygon(coordinates: circleFor(site: site!, x: xy.0, y: xy.1, r: error), count: 32)
-                        } else {
-                            // send shape to 0,0 so we don't see it anymore
-                            shape.shape = MLNPointFeature(coordinate: CLLocationCoordinate2D())
-                        }
-                    }
-                    
-                    if let source = mapStyle?.source(withIdentifier: "raw-pred-src"),
-                       let pointSource = source as? MLNShapeSource,
-                       let coordinate = site?.fromXY(pred) {
-                        pointSource.shape = MLNPointFeature(coordinate: rawPrediction ? coordinate : CLLocationCoordinate2D())
-                    }
-                } else {
-                    predictionHistory.append(pred)
-                    if (predictionHistory.count > predictionAverageWindow) {
-                        predictionHistory.removeFirst()
-                    }
-                    let predSum = predictionHistory.reduce((0, 0)) { (result, pred) in
-                        return (result.0 + pred.0, result.1 + pred.1)
-                    }
-                    xy = (predSum.0 / Double(predictionHistory.count), predSum.1 / Double(predictionHistory.count))
-                }
-                
-                if let source = mapStyle?.source(withIdentifier: "pred-src"),
-                   let pointSource = source as? MLNShapeSource,
-                   let coordinate = site?.fromXY(xy) {
-                    pointSource.shape = MLNPointFeature(coordinate: coordinate)
-                }
-            }
-        }
-        
     }
     
     let locationManager = CLLocationManager()
+    
+    @State var lastUpdatedAt = Date.distantPast;
+    @State var timer: AnyCancellable? = nil
     
     var body: some View {
         VStack(spacing: 10) {
@@ -278,44 +224,19 @@ struct DebugView: View {
                     let pointsSource = MLNShapeSource(identifier: "points-src", shape: MLNPointFeature(coordinate: CLLocationCoordinate2D()))
                     style.addSource(pointsSource)
                     let pointsLayer = MLNCircleStyleLayer(identifier: "points-layer", source: pointsSource)
-                    pointsLayer.circleRadius = NSExpression(forConstantValue: 5)
-                    pointsLayer.circleColor = NSExpression(forConstantValue: UIColor.yellow)
+//                    pointsLayer.circleRadius = NSExpression(forConstantValue: 5)
+                    pointsLayer.circleColor = NSExpression(forKeyPath: "color")
                     style.addLayer(pointsLayer)
                     
-                    let arSource = MLNShapeSource(identifier: "ar-src", shape: MLNPointFeature(coordinate: CLLocationCoordinate2D()))
-                    style.addSource(arSource)
-                    let arLayer = MLNCircleStyleLayer(identifier: "ar-layer", source: arSource)
-                    arLayer.circleRadius = NSExpression(forConstantValue: 5)
-                    arLayer.circleColor = NSExpression(forConstantValue: UIColor.red)
-                    style.addLayer(arLayer)
-                    
-                    let predConfSource = MLNShapeSource(identifier: "pred-conf-src", shape: MLNPointFeature(coordinate: CLLocationCoordinate2D()))
-                    style.addSource(predConfSource)
-                    let predConfLayer = MLNFillStyleLayer(identifier: "pred-conf-layer", source: predConfSource)
-                    predConfLayer.fillColor = NSExpression(forConstantValue: UIColor.green)
-                    style.addLayer(predConfLayer)
-                    
-                    let predSource = MLNShapeSource(identifier: "pred-src", shape: MLNPointFeature(coordinate: CLLocationCoordinate2D()))
-                    style.addSource(predSource)
-                    let predLayer = MLNCircleStyleLayer(identifier: "pred-layer", source: predSource)
-                    predLayer.circleRadius = NSExpression(forConstantValue: 5)
-                    predLayer.circleColor = NSExpression(forConstantValue: UIColor.blue)
-                    style.addLayer(predLayer)
-                    
-                    let rawPredSource = MLNShapeSource(identifier: "raw-pred-src", shape: MLNPointFeature(coordinate: CLLocationCoordinate2D()))
-                    style.addSource(rawPredSource)
-                    let rawPredLayer = MLNCircleStyleLayer(identifier: "raw-pred-layer", source: rawPredSource)
-                    rawPredLayer.circleRadius = NSExpression(forConstantValue: 5)
-                    rawPredLayer.circleColor = NSExpression(forConstantValue: UIColor.red)
-                    style.addLayer(rawPredLayer)
-                    
+                    let coverageSource = MLNShapeSource(identifier: "coverage-src", shape: MLNMultiPolygonFeature(polygons: []))
+                    style.addSource(coverageSource)
+                    let coverageLayer = MLNFillStyleLayer(identifier: "coverage-layer", source: coverageSource)
+                    coverageLayer.fillOpacity = NSExpression(forConstantValue: 0.3)
+                    style.addLayer(coverageLayer)
                 }
                 .onTapMapGesture { value in
-                    tapCoordinates = value.coordinate
-                    if let source = value.mapView.style?.source(withIdentifier: "points-src"),
-                       let pointSource = source as? MLNShapeSource {
-                        pointSource.shape = MLNPointFeature(coordinate: value.coordinate)
-                    }
+                    tapCoord = value.coordinate
+                    updatePoints(style: value.mapView.style)
                 }.frame(height: calibrationMode ? 400 : 1000)
             
             if (calibrationMode) {
@@ -330,8 +251,7 @@ struct DebugView: View {
                     }
                     Spacer()
                     VStack {
-                        if let coords = tapCoordinates,
-                           let xy = site?.toXY(coords) {
+                        if let xy = site?.toXY(tapCoord) {
                             Text(String(format: "%.1f, %.1f", xy.0, xy.1))
                         }
                         
@@ -347,73 +267,128 @@ struct DebugView: View {
                                 .frame(width: 20, height: 20)
                         }
                         
-                        Button(action: {
-                            viewModel.resetTracking()
-                            if let coords = tapCoordinates,
-                               let calib = site?.toXY(coords) {
-                                calibration = calib
+                        HStack {
+                            Button(action: {
+                                viewModel.resetTracking()
+                                if let calib = site?.toXY(tapCoord) {
+                                    calibration = calib
+                                }
+                            }) {
+                                Text("Calibrate")
+                                    .font(.title)
+                                    .foregroundColor(.white)
+                                    .frame(width: 80, height: 80)
+                                    .background(Color.yellow)
+                                    .clipShape(Circle())
                             }
-                        }) {
-                            Text("Calibrate")
-                                .font(.title)
-                                .foregroundColor(.white)
-                                .frame(width: 80, height: 80)
-                                .background(Color.yellow)
-                                .clipShape(Circle())
+                            
+                            Button(action: {
+                                surveying = !surveying
+                            }) {
+                                Text(surveying ? "Stop" : "Start")
+                                    .font(.title)
+                                    .foregroundColor(.white)
+                                    .frame(width: 80, height: 80)
+                                    .background(surveying ? Color.red : Color.green)
+                                    .clipShape(Circle())
+                            }
+                        }
+                        HStack {
+                            Button(action: {
+                                // convert collected data into csv
+                                let beacons = collectedBeaconList.sorted()
+                                print(beacons)
+                                
+                            }) {
+                                Text("Send data")
+                                    .font(.title)
+                                    .foregroundColor(.white)
+                                    .frame(width: 80, height: 80)
+                                    .background(Color.green)
+                                    .clipShape(Circle())
+                            }
+                            
+                            Button(action: {
+    //                            await RadarSDKIndoors.reDownloadModel()
+                            }) {
+                                Text("Get Model")
+                                    .font(.title)
+                                    .foregroundColor(.white)
+                                    .frame(width: 80, height: 80)
+                                    .background(Color.blue)
+                                    .clipShape(Circle())
+                            }
+                            
                         }
                         
-                        Button(action: {
-                            surveying = !surveying
-                        }) {
-                            Text(surveying ? "Stop" : "Start")
-                                .font(.title)
-                                .foregroundColor(.white)
-                                .frame(width: 80, height: 80)
-                                .background(surveying ? Color.red : Color.green)
-                                .clipShape(Circle())
-                        }
-                        Button(action: {
-                            Task {
-                                await RadarSDKIndoors.reDownloadModel()
-                            }
-                        }) {
-                            Text("Re-download model")
-                                .foregroundColor(.white)
-                        }
                     }.frame(width: 200)
                 }
             }
         }.onAppear {
-            
-            motionManager.startDeviceMotionUpdates(to: .main) { (motion, error) in
-                guard let motion else { return }
-                acceleration.append(motion.userAcceleration.magnitude())
-                acceleration_xyz.append(motion.userAcceleration)
-            }
-            
-            RadarSDKIndoors.nothing()
+            let request = URLRequest(url: URL(string: "https://bailey-nonnebulous-nonaccidentally.ngrok-free.dev/model/rssi")!)
             Task {
-                await RadarSDKIndoors.start()
+//                await model.start(request: request)
+//                model.onLocationUpdate = { (x, y, rawX, rawY) in
+//                    if let coord = site?.fromXY((x, y)) {
+//                        predCoord = coord
+//                    }
+//                    if let coord = site?.fromXY((rawX, rawY)) {
+//                        rawPredCoord = coord
+//                    }
+//                    lastUpdatedAt = Date.now
+//                }
                 
-                // get a location first, so that we load the model
-                //                    if (await RadarSDKIndoors.getLocation()) != nil {
-                //                    }
-                RadarSDKIndoors.onRangedBeacon(onRangedBeacon)
+                scanner.update = {
+                    guard let location = site?.toXY(arCoord),
+                          let date = dateFormatter.string(for: Date.now) else {
+                        return;
+                    }
+                    
+                    var rssi = [String: Double]()
+                    scanner.beacons.forEach { beacon in
+                        let id = "\(beacon.major)_\(beacon.minor)"
+                        rssi[id] = Double(beacon.rssi)
+                        collectedBeaconList.insert(id)
+                    }
+                    let data = SurveyData(
+                        timestamp: date,
+                        x: location.0,
+                        y: location.1,
+                        rssi: rssi
+                    )
+                    
+                    scanner.beacons.removeAll(keepingCapacity: true)
+                    collectedData.append(data)
+                    
+                    if let source = mapStyle?.source(withIdentifier: "coverage-src"),
+                       let shape = source as? MLNShapeSource {
+                        let polygons = collectedData.compactMap { data in
+                            let coords = circleFor(site: site!, x: data.x, y: data.y, r: 0.5)
+                            return MLNPolygonFeature(coordinates: coords, count: UInt(coords.count))
+                        }
+                        shape.shape = MLNShapeCollectionFeature(shapes: polygons)
+                    }
+                }
+                scanner.start()
+                
+                // update 20 times a second
+                timer = Timer.publish(every: 0.05, on: .main, in: .common)
+                    .autoconnect()
+                    .sink { _ in
+                    // how long remains to next update, we are updating once a second
+                        let timeToNextUpdate = max(1 - Date.now.timeIntervalSince(lastUpdatedAt), 0)
+                        let lerp = timeToNextUpdate == 0 ? 1 : (0.05 / timeToNextUpdate)
+                        let latitude = displayPredCoord.latitude * (1 - lerp) + predCoord.latitude * lerp
+                        let longitude = displayPredCoord.longitude * (1 - lerp) + predCoord.longitude * lerp
+                        displayPredCoord = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
+                }
             }
+            
             viewModel.updated = {
                 if !calibrationMode {
-                    if let source = mapStyle?.source(withIdentifier: "ar-src"),
-                       let pointSource = source as? MLNShapeSource {
-                        pointSource.shape = MLNPointFeature(coordinate: CLLocationCoordinate2D(latitude: 0, longitude: 0))
-                    }
-                    if let source = mapStyle?.source(withIdentifier: "points-src"),
-                       let pointSource = source as? MLNShapeSource {
-                        pointSource.shape = MLNPointFeature(coordinate: CLLocationCoordinate2D(latitude: 0, longitude: 0))
-                    }
-                    return;
-                }
-                if let source = mapStyle?.source(withIdentifier: "ar-src"),
-                   let pointSource = source as? MLNShapeSource {
+                    tapCoord = CLLocationCoordinate2D(latitude: 0, longitude: 0)
+                    arCoord = CLLocationCoordinate2D(latitude: 0, longitude: 0)
+                } else {
                     let x = Double(viewModel.transform.columns.3.x)
                     let y = -Double(viewModel.transform.columns.3.z)
                     let sin_rotation = sin(rotation)
@@ -423,9 +398,10 @@ struct DebugView: View {
                         calibration.1 + sin_rotation * x + cos_rotation * y
                     )
                     if let coordinate = site?.fromXY(xy) {
-                        pointSource.shape = MLNPointFeature(coordinate: coordinate)
+                        arCoord = coordinate
                     }
                 }
+                updatePoints(style: mapStyle)
             }
         }
     }

@@ -7,7 +7,7 @@
 //
 import Foundation
 import RadarSDK
-
+//
 @objc protocol GeoJSON {
     var type: String { get }
 }

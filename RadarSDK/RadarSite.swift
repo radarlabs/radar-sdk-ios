@@ -7,20 +7,6 @@
 //
 import Foundation
 
-@objc protocol GeoJSON {
-    var type: String { get }
-}
-
-@objc public class GeoJSONPoint: NSObject, GeoJSON, Codable {
-    let coordinates: [Double]
-    var type: String = "Point"
-}
-
-@objc public class GeoJSONPolygon: NSObject, GeoJSON, Codable {
-    let coordinates: [[[Double]]]
-    var type: String = "Polygon"
-}
-
 @objc public class RadarFloorplanCalibration: NSObject, Codable {
     let imageSize: [String: Int]
 }
@@ -28,7 +14,7 @@ import Foundation
 @objc public class RadarFloorplan: NSObject, Codable {
     let path: String
     let mimeType: String
-    let geometry: GeoJSONPolygon
+    let geometry: GeoJSON
     let calibration: RadarFloorplanCalibration
 }
 
@@ -39,9 +25,9 @@ import Foundation
     let project: String
     let live: Bool
     let _description: String
-    let geometry: GeoJSONPoint
-    //let geofences: [RadarGeofence]
-    //let beacons: [RadarBeacon]
+    let geometry: GeoJSON
+//    let geofences: [RadarGeofence]
+    let beacons: [RadarBeacon]
     let floorplan: RadarFloorplan
     
     enum CodingKeys: String, CodingKey {
@@ -52,6 +38,7 @@ import Foundation
         case live
         case _description = "description"
         case geometry
+        case beacons
         case floorplan
     }
 }
