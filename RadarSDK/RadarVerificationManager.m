@@ -431,9 +431,9 @@
 }
 
 - (void)getAssertionWithCompletionHandler:(RadarVerificationCompletionHandler)completionHandler {
-    NSString *installId = [RadarSettings installId];
-    if (!installId) {
-        completionHandler(nil, nil, @"Missing installId");
+    NSString *userId = [RadarSettings userId];
+    if (!userId) {
+        completionHandler(nil, nil, @"Missing userId.");
         return;
     }
 
@@ -443,7 +443,7 @@
     BOOL forAttest = (existingKeyId == nil);
 
     [[RadarAPIClient sharedInstance]
-     getAttestChallengeWithInstallId:installId
+     getAttestChallengeWithUserId:userId
      forAttest:forAttest
      completionHandler:^(RadarStatus status, NSString *_Nullable challenge) {
         if (status != RadarStatusSuccess) {
@@ -498,14 +498,21 @@
             return;
         }
 
-        NSString *installId = [RadarSettings installId];
-        NSString *deviceId = [self kDeviceId];
+        NSString *userId = [RadarSettings userId];
+
+        if (!userId) {
+            [RadarUtils runOnMainThread:^{
+                if (completionHandler) {
+                    completionHandler(RadarStatusErrorBadRequest, NO, nil, @"Missing userId.", nil);
+                }
+            }];
+            return;
+        }
 
         [[RadarAPIClient sharedInstance]
          attestWithAttestationString:attestationString
          keyId:keyId
-         installId:installId
-         deviceId:deviceId
+         userId:userId
          completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, BOOL result, NSString *_Nullable keyIdResponse, NSString *_Nullable message, NSString *_Nullable challenge) {
             [RadarUtils runOnMainThread:^{
                 if (completionHandler) {

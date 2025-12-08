@@ -1650,7 +1650,7 @@ completionHandler:(RadarSendEventAPICompletionHandler _Nonnull)completionHandler
                     }];
 }
 
-- (void)attestWithAttestationString:(NSString *)attestationString keyId:(NSString *)keyId installId:(NSString *)installId deviceId:(NSString *_Nullable)deviceId completionHandler:(RadarAttestAPICompletionHandler)completionHandler {
+- (void)attestWithAttestationString:(NSString *)attestationString keyId:(NSString *)keyId userId:(NSString *)userId completionHandler:(RadarAttestAPICompletionHandler)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
         return completionHandler(RadarStatusErrorPublishableKey, nil, NO, nil, nil, nil);
@@ -1665,11 +1665,8 @@ completionHandler:(RadarSendEventAPICompletionHandler _Nonnull)completionHandler
     NSMutableDictionary *params = [NSMutableDictionary new];
     params[@"attestationString"] = attestationString;
     params[@"keyId"] = keyId;
-    params[@"installId"] = installId;
+    params[@"userId"] = userId;
     params[@"deviceType"] = [RadarUtils deviceType];
-    if (deviceId) {
-        params[@"deviceId"] = deviceId;
-    }
 
     [self.apiHelper requestWithMethod:@"POST"
                                   url:url
@@ -1711,7 +1708,7 @@ completionHandler:(RadarSendEventAPICompletionHandler _Nonnull)completionHandler
                     }];
 }
 
-- (void)getAttestChallengeWithInstallId:(NSString *)installId forAttest:(BOOL)forAttest completionHandler:(void (^)(RadarStatus status, NSString *_Nullable challenge))completionHandler {
+- (void)getAttestChallengeWithUserId:(NSString *)userId forAttest:(BOOL)forAttest completionHandler:(void (^)(RadarStatus status, NSString *_Nullable challenge))completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
         return completionHandler(RadarStatusErrorPublishableKey, nil);
@@ -1719,7 +1716,7 @@ completionHandler:(RadarSendEventAPICompletionHandler _Nonnull)completionHandler
 
     NSString *host = [RadarSettings verifiedHost];
     NSMutableString *queryString = [NSMutableString new];
-    [queryString appendFormat:@"installId=%@", installId];
+    [queryString appendFormat:@"userId=%@", userId];
     if (forAttest) {
         [queryString appendFormat:@"&forAttest=true"];
     }

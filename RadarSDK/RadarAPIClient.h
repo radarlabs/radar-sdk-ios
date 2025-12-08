@@ -178,9 +178,9 @@ completionHandler:(RadarSendEventAPICompletionHandler _Nonnull)completionHandler
 
 - (void)syncLogs:(NSArray<RadarLog *> *)logs completionHandler:(RadarSyncLogsAPICompletionHandler _Nonnull)completionHandler;
 
-- (void)attestWithAttestationString:(NSString *)attestationString keyId:(NSString *)keyId installId:(NSString *)installId deviceId:(NSString *_Nullable)deviceId completionHandler:(RadarAttestAPICompletionHandler _Nonnull)completionHandler;
+- (void)attestWithAttestationString:(NSString *)attestationString keyId:(NSString *)keyId userId:(NSString *)userId completionHandler:(RadarAttestAPICompletionHandler _Nonnull)completionHandler;
 
-- (void)getAttestChallengeWithInstallId:(NSString *)installId forAttest:(BOOL)forAttest completionHandler:(void (^)(RadarStatus status, NSString *_Nullable challenge))completionHandler;
+- (void)getAttestChallengeWithUserId:(NSString *)userId forAttest:(BOOL)forAttest completionHandler:(void (^)(RadarStatus status, NSString *_Nullable challenge))completionHandler;
 
 @end
 
