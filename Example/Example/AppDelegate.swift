@@ -9,6 +9,7 @@ import UIKit
 import UserNotifications
 import RadarSDK
 import SwiftUI
+import ActivityKit
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UNUserNotificationCenterDelegate, CLLocationManagerDelegate, RadarDelegate, RadarVerifiedDelegate {
@@ -37,8 +38,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         radarInitializeOptions.silentPush = true
         
         Radar.setAppGroup("group.waypoint.data")
-        Radar.initialize(publishableKey: "prj_test_pk_0000000000000000000000000000000000000000", options: radarInitializeOptions )
-        
+        Radar.initialize(publishableKey: "prj_test_pk_334f0868955f89d29a244748c17a5dc36053b711", options: radarInitializeOptions )
         Radar.setMetadata([ "foo": "bar" ])
         Radar.setDelegate(self)
         Radar.setVerifiedDelegate(self)
@@ -193,5 +193,55 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
     }
 
     func notify(_ body: String) {
+    }
+    
+    // MARK: - RadarDelegate Methods
+    func didReceiveEvents(_ events: [RadarEvent], user: RadarUser?) {
+        if #available(iOS 16.2, *) {
+            for event in events {
+                if event.type == .userStoppedTrip {
+                    TripLiveActivityManager.shared.endActivity(status: "completed")
+                }
+            }
+        }
+    }
+    
+    func didUpdateLocation(_ location: CLLocation, user: RadarUser) {
+        if #available(iOS 16.2, *) {
+            if user.trip != nil {
+                handleTripLiveActivity(user: user)
+            }
+        }
+    }
+    
+    // MARK: - Live Activity Handling
+    @available(iOS 16.2, *)
+    private func handleTripLiveActivity(user: RadarUser?) {
+        guard let trip = user?.trip else {
+            TripLiveActivityManager.shared.endActivity(status: "completed")
+            return
+        }
+        
+        let hasActivity = TripLiveActivityManager.shared.hasActiveActivity
+        
+        switch trip.status {
+        case .started, .approaching, .arrived:
+            if !hasActivity {
+                TripLiveActivityManager.shared.startActivity(trip: trip)
+            } else {
+                // If trip is "started" but we already have an activity, show as "in_progress"
+                let statusOverride = (trip.status == .started) ? "in_progress" : nil
+                TripLiveActivityManager.shared.updateActivity(trip: trip, statusOverride: statusOverride)
+            }
+            
+        case .completed:
+            TripLiveActivityManager.shared.endActivity(status: "completed")
+        case .canceled:
+            TripLiveActivityManager.shared.endActivity(status: "canceled")
+        case .expired:
+            TripLiveActivityManager.shared.endActivity(status: "expired")
+        default:
+            break
+        }
     }
 }
