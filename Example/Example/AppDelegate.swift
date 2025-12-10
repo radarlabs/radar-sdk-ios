@@ -31,13 +31,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         self.requestLocationPermissions()
         
         // Uncomment to enable automatic setup for notification conversions or deep linking
-        var radarInitializeOptions = RadarInitializeOptions()
+        let radarInitializeOptions = RadarInitializeOptions()
         radarInitializeOptions.autoLogNotificationConversions = true
         radarInitializeOptions.autoHandleNotificationDeepLinks = true
         radarInitializeOptions.silentPush = true
         
-        Radar.setAppGroup("group.waypoint.data")
-        Radar.initialize(publishableKey: "prj_test_pk_0000000000000000000000000000000000000000", options: radarInitializeOptions )
+//        Radar.setAppGroup("group.waypoint.data")
+        UserDefaults.standard.set("https://bailey-nonnebulous-nonaccidentally.ngrok-free.dev", forKey: "radar-host")
+        
+        
+        Radar.initialize(publishableKey: "", options: radarInitializeOptions )
         
         Radar.setMetadata([ "foo": "bar" ])
         

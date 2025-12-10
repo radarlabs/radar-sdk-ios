@@ -30,4 +30,19 @@
     [Radar logOpenedAppConversion];
 }
 
+- (void)invokeWithTarget:(NSObject * _Nonnull)target selector:(SEL _Nonnull)selector args:(NSArray * _Nonnull)args {
+    NSMethodSignature *signature = [target methodSignatureForSelector:selector];
+    NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:signature];
+    invocation.target = target;
+    invocation.selector = selector;
+
+    // Note: Objective-C method arguments start at index 2 (0 = self, 1 = _cmd).
+    for (int i = 0; i < args.count; ++i) {
+        id arg = args[i];
+        [invocation setArgument:&arg atIndex:i + 2];
+    }
+
+    [invocation invoke];
+}
+
 @end

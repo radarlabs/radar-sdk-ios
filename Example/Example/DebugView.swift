@@ -295,16 +295,40 @@ struct DebugView: View {
                         }
                         HStack {
                             Button(action: {
+                                if collectedData.isEmpty {
+                                    return
+                                }
+                                
                                 // convert collected data into csv
                                 let beacons = collectedBeaconList.sorted()
-                                print(beacons)
+                                // header
+                                var csv = (["timestamp", "x", "y"] + beacons).joined(separator: ",") + "\n"
+                                for data in collectedData {
+                                    csv.append("\(data.timestamp),\(data.x),\(data.y),")
+                                    csv.append(beacons.map { "\(data.rssi[$0] ?? 0)" }.joined(separator: ","))
+                                    csv.append("\n")
+                                }
                                 
+                                guard let data = csv.data(using: .utf8) else {
+                                    print("invalid conversion to Data")
+                                    return
+                                }
+                                guard let compressed = try? data.gzipped(level: .bestCompression) else {
+                                    print("unable to compress")
+                                    return
+                                }
+                                Task {
+                                    await SurveyApi.createSurvey(data: compressed)
+                                }
+                                
+                                collectedBeaconList.removeAll()
+                                collectedData.removeAll()
                             }) {
                                 Text("Send data")
                                     .font(.title)
                                     .foregroundColor(.white)
                                     .frame(width: 80, height: 80)
-                                    .background(Color.green)
+                                    .background(collectedData.isEmpty ? Color.gray : Color.green)
                                     .clipShape(Circle())
                             }
                             
@@ -344,10 +368,10 @@ struct DebugView: View {
                         return;
                     }
                     
-                    var rssi = [String: Double]()
+                    var rssi = [String: Int]()
                     scanner.beacons.forEach { beacon in
                         let id = "\(beacon.major)_\(beacon.minor)"
-                        rssi[id] = Double(beacon.rssi)
+                        rssi[id] = beacon.rssi
                         collectedBeaconList.insert(id)
                     }
                     let data = SurveyData(
@@ -358,7 +382,9 @@ struct DebugView: View {
                     )
                     
                     scanner.beacons.removeAll(keepingCapacity: true)
-                    collectedData.append(data)
+                    if surveying {
+                        collectedData.append(data)
+                    }
                     
                     if let source = mapStyle?.source(withIdentifier: "coverage-src"),
                        let shape = source as? MLNShapeSource {

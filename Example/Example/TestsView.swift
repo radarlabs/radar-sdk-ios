@@ -49,7 +49,7 @@ struct TestsView: View {
                         "backgroundColor": "#EB0083",
                     ],
                     "image": [
-                        "url": "https://images.pexels.com/photos/949587/pexels-photo-949587.jpeg",
+                        "url": "campaigns/69179d8414fb87c672b54cc9/Active.png",
                         "name": "image.jpeg"
                     ],
                     "metadata": [

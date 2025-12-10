@@ -22,6 +22,5 @@ public final class RadarAPIClient: Sendable {
         }
         return data
     }
-    
     // TODO: implement rest of RadarAPIClient
 }

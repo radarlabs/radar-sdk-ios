@@ -274,7 +274,9 @@ BOOL _initialized = NO;
                                          if (config != nil) {
                                              [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
                                          }
-                                         
+                                         if (@available(iOS 13.0, *)) {
+                                             [[RadarIndoors shared] updateTrackingWithUser:user completionHandler:^{}];
+                                         }
                                      }
 
                                      if (completionHandler) {

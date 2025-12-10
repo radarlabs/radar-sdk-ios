@@ -66,7 +66,16 @@ class RadarUserDefaults: NSObject {
     nonisolated(unsafe)
     static var appGroup: String? = nil
     
+    // if RadarUserDefaults is initialized, should be set once then readonly
+    nonisolated(unsafe)
+    static var initialized: Bool = false
+    
     public static func userDefaults() -> UserDefaults {
+        if (!initialized) {
+            appGroup = UserDefaults.standard.string(forKey: Key.AppGroup.rawValue)
+            initialized = true
+        }
+        
         if (appGroup != nil) {
             guard let userDefaults = UserDefaults(suiteName: appGroup) else {
                 RadarLogger.shared.warning("user default suite not found")

@@ -22,7 +22,7 @@ struct MainView: View {
     
     var body: some View {
         TabView(selection: $selectedTab) {
-            MyMapView(withRadar: "prj_test_pk_3508428416f485c5f54d8e8bb1f616ee405b1995").tabItem {
+            MyMapView(withRadar: "").tabItem {
                 Text("Map")
             }.tag(TabIdentifier.Map)
             
@@ -38,9 +38,9 @@ struct MainView: View {
                 Text("Settings")
             }.tag(TabIdentifier.Settings)
             
-//            TestsView().tabItem {
-//                Text("Tests")
-//            }.tag(TabIdentifier.Tests)
+            TestsView().tabItem {
+                Text("Tests")
+            }.tag(TabIdentifier.Tests)
         }
     }
 }

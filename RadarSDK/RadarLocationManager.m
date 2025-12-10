@@ -23,6 +23,7 @@
 #import "RadarActivityManager.h"
 #import "RadarNotificationHelper.h"
 #import "RadarIndoorsProtocol.h"
+#import "RadarIndoors.h"
 
 @interface RadarLocationManager ()
 
@@ -964,6 +965,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                     
                     [self updateTrackingFromMeta:config.meta];
                     [self replaceSyncedGeofences:nearbyGeofences];
+                    [[RadarIndoors shared] updateTrackingWithUser:user completionHandler:^{}];
                 }];
             }];
         };
@@ -1054,6 +1056,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 
                                                  [self updateTrackingFromMeta:config.meta];
                                                  [self replaceSyncedGeofences:nearbyGeofences];
+                                                 [[RadarIndoors shared] updateTrackingWithUser:user completionHandler:^{}];
                                              }];
         }];
     }
