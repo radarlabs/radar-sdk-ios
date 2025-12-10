@@ -9,7 +9,6 @@
 import Foundation
 
 enum TripFormatters {
-    
     static func formatDuration(_ duration: Double?, compact: Bool = false) -> String {
         guard let duration = duration else { return "Unknown" }
         

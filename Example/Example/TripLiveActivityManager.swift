@@ -103,9 +103,9 @@ final class TripLiveActivityManager {
         return TripActivityExtensionAttributes.ContentState(
             name: trip.externalId ?? trip._id,
             tripId: trip._id,
-            status: statusOverride ?? trip.status.stringValue,
+            status: statusOverride ?? Radar.stringForTripStatus(trip.status),
             etaDuration: Double(trip.etaDuration),
-            mode: trip.mode.stringValue,
+            mode: Radar.stringForMode(trip.mode),
             destinationAddress: destinationAddress
         )
     }
@@ -125,35 +125,6 @@ final class TripLiveActivityManager {
                 let address = addresses?.first?.formattedAddress?.truncatedAtFirstComma
                 continuation.resume(returning: address)
             }
-        }
-    }
-}
-
-// MARK: - RadarTripStatus Extension
-extension RadarTripStatus {
-    var stringValue: String {
-        switch self {
-        case .started: return "started"
-        case .approaching: return "approaching"
-        case .arrived: return "arrived"
-        case .expired: return "expired"
-        case .completed: return "completed"
-        case .canceled: return "canceled"
-        default: return "unknown"
-        }
-    }
-}
-
-// MARK: - RadarRouteMode Extension
-extension RadarRouteMode {
-    var stringValue: String {
-        switch self {
-        case .car: return "car"
-        case .bike: return "bike"
-        case .foot: return "foot"
-        case .truck: return "truck"
-        case .motorbike: return "motorbike"
-        default: return "car"
         }
     }
 }

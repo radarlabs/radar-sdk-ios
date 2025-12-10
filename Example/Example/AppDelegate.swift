@@ -195,8 +195,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
     func notify(_ body: String) {
     }
     
-    // MARK: - RadarDelegate Methods
+    // MARK: - RadarDelegate Methods (for Live Activity)
+    // These delegate methods are optional and only needed if you want to update a Live Activity based on trip events and location updates.
     func didReceiveEvents(_ events: [RadarEvent], user: RadarUser?) {
+        // End the Live Activity when the user stops a trip
         if #available(iOS 16.2, *) {
             for event in events {
                 if event.type == .userStoppedTrip {
@@ -207,6 +209,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
     }
     
     func didUpdateLocation(_ location: CLLocation, user: RadarUser) {
+        // Update the Live Activity with the latest trip progress
         if #available(iOS 16.2, *) {
             if user.trip != nil {
                 handleTripLiveActivity(user: user)

@@ -59,6 +59,7 @@ struct LockScreenView: View {
     }
     
     // MARK: - Status
+    
     private var statusText: some View {
         let step = TripFormatters.mapStatusToStep(context.state.status)
         return Text(TripFormatters.statusMessage(for: step))
