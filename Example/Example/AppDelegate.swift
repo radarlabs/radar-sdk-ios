@@ -37,7 +37,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         radarInitializeOptions.silentPush = true
         
         Radar.setAppGroup("group.waypoint.data")
-        Radar.initialize(publishableKey: "prj_test_pk_0000000000000000000000000000000000000000", options: radarInitializeOptions )
+        Radar.initialize(publishableKey: "prj_test_pk_48fd267085ce3b848dd489ef6988f876f9685b0e", options: radarInitializeOptions )
+        Radar.setUserId("andrew downing")
         
         Radar.setMetadata([ "foo": "bar" ])
         Radar.setDelegate(self)
@@ -104,46 +105,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         
         self.window = window
         
-        if UIApplication.shared.applicationState != .background {
-            //            Radar.getLocation { (status, location, stopped) in
-            //                print("Location: status = \(Radar.stringForStatus(status)); location = \(String(describing: location))")
-            //            }
-            //
-            //            Radar.trackOnce { (status, location, events, user) in
-            //                print("Track once: status = \(Radar.stringForStatus(status)); location = \(String(describing: location)); events = \(String(describing: events)); user = \(String(describing: user))")
-            //            }
-        }
-        
-        demoButton(text: "IAM") {
-            Radar.showInAppMessage(RadarInAppMessage.fromDictionary([
-                "title": [
-                    "text": "This is the titleakfjaklsjdflajsldfjalsdjflajsldkfjaslkfdjkalsjdfklajlkfdjklsjflajsd",
-                    "color": "#ff0000"
-                ],
-                "body": [
-                    "text": "This is a demo message.",
-                    "color": "#00ff00"
-                ],
-                "button": [
-                    "text": "Buy it",
-                    "color": "#0000ff",
-                    "backgroundColor": "#EB0083",
-                ],
-                "image": [
-                    "url": "https://images.pexels.com/photos/949587/pexels-photo-949587.jpeg",
-                    "name": "image.jpeg"
-                ],
-                "metadata": [
-                    "campainId": "1234"
-                ]
-            ])!)
-        }
-        demoButton(text: "get User Id") {
-            print(Radar.getUserId())
-        }
-        demoButton(text: "track once") {
-            print(Radar.trackOnce())
-        }
     }
         
     func requestLocationPermissions() {
