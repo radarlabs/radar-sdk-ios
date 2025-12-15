@@ -118,7 +118,7 @@ public class RadarIndoors: NSObject {
                 do {
                     let data = try await RadarAPIClient.shared.getAsset(url: "models/\(modelId)/rssi_lstm.mlmodel")
                     let temporaryDirectoryURL = URL(fileURLWithPath: NSTemporaryDirectory(), isDirectory: true)
-                    let fileURL = temporaryDirectoryURL.appendingPathComponent(UUID().uuidString)
+                    let fileURL = temporaryDirectoryURL.appendingPathComponent(UUID().uuidString + ".mlmodel")
 
                     try data.write(to: fileURL)
                     result = fileURL
@@ -134,7 +134,7 @@ public class RadarIndoors: NSObject {
             semaphore.wait() // Blocks the current thread
             return result
         }
-        await sdk.useModel(model: modelId, getModelData:getModelData)
+        await sdk.useModel(model: modelId + ".mlmodel", getModelData:getModelData)
         await sdk.start()
     }
     

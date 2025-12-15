@@ -37,7 +37,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         radarInitializeOptions.silentPush = true
         
 //        Radar.setAppGroup("group.waypoint.data")
-        UserDefaults.standard.set("https://bailey-nonnebulous-nonaccidentally.ngrok-free.dev", forKey: "radar-host")
+        UserDefaults.standard.set("https://api-shicheng.radar-staging.com", forKey: "radar-host")
         
         
         Radar.initialize(publishableKey: "", options: radarInitializeOptions )
