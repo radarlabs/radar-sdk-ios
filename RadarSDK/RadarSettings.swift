@@ -14,34 +14,36 @@ internal class RadarSettings: NSObject {
     static let DefaultVerifiedHost = "https://api-verified.radar.io"
     
     public static func setAppGroup(_ appGroup: String?) {
-        // no change in app group
-        if RadarUserDefaults.string(forKey: .AppGroup) == appGroup {
-            return
-        }
-        
-        let prevUserDefaults = RadarUserDefaults.userDefaults
-        // if new user defaults cannot be created, default to .standard, if appGroup = nil, this also reference the standard user default
-        let newUserDefaults = UserDefaults(suiteName: appGroup) ?? .standard
-        
-        // if newUserDefaults[AppGroup] is already equal to the appGroup, we're already cloned the UserDefaults,
-        // so we just start using the new user defaults. This is for initializing with an app group.
-        if newUserDefaults.string(forKey: RadarUserDefaults.Key.AppGroup.rawValue) == appGroup {
-            UserDefaults.standard.set(appGroup, forKey: RadarUserDefaults.Key.AppGroup.rawValue)
+        // this call needs to by synchronised to prevent race conditions in checking / updating the app group
+        DispatchQueue.main.sync {
+            // no change in app group
+            if RadarUserDefaults.string(forKey: .AppGroup) == appGroup {
+                return
+            }
+            
+            let prevUserDefaults = RadarUserDefaults.userDefaults
+            // if new user defaults cannot be created, default to .standard, if appGroup = nil, this also reference the standard user default
+            let newUserDefaults = UserDefaults(suiteName: appGroup) ?? .standard
+            
+            // if newUserDefaults[AppGroup] is already equal to the appGroup, we're already cloned the UserDefaults,
+            // so we just start using the new user defaults. This is for initializing with an app group.
+            if newUserDefaults.string(forKey: RadarUserDefaults.Key.AppGroup.rawValue) == appGroup {
+                UserDefaults.standard.set(appGroup, forKey: RadarUserDefaults.Key.AppGroup.rawValue)
+                RadarUserDefaults.userDefaults = newUserDefaults
+                return
+            }
+            
+            RadarUserDefaults.clone(from: prevUserDefaults, to: newUserDefaults)
+            
+            // set AppGroup to nil, so next time we switch from another app group to the current, it'll detect it's new and clone
+            RadarUserDefaults.set(nil, forKey: .AppGroup)
             RadarUserDefaults.userDefaults = newUserDefaults
-            return
+            
+            // set AppGroup in default keys so we can initialize to the correct app group
+            UserDefaults.standard.set(appGroup, forKey: RadarUserDefaults.Key.AppGroup.rawValue)
+            // and set appGroup in new user defaults to signify initialized
+            RadarUserDefaults.set(appGroup, forKey: .AppGroup)
         }
-        
-        RadarUserDefaults.clone(from: prevUserDefaults, to: newUserDefaults)
-        print("Cloned")
-        
-        // set AppGroup to nil, so next time we switch from another app group to the current, it'll detect it's new and clone
-        RadarUserDefaults.set(nil, forKey: .AppGroup)
-        RadarUserDefaults.userDefaults = newUserDefaults
-        
-        // set AppGroup in default keys so we can initialize to the correct app group
-        UserDefaults.standard.set(appGroup, forKey: RadarUserDefaults.Key.AppGroup.rawValue)
-        // and set appGroup in new user defaults to signify initialized
-        RadarUserDefaults.set(appGroup, forKey: .AppGroup)
     }
     
     public static func getAppGroup() -> String? {
