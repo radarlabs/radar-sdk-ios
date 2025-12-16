@@ -22,7 +22,7 @@ internal class RadarSettings: NSObject {
             }
             
             let prevUserDefaults = RadarUserDefaults.userDefaults
-            // if new user defaults cannot be created, default to .standard, if appGroup = nil, this also reference the standard user default
+            // if new user defaults cannot be created, default to .standard, UserDefaults(suiteName: nil) also references the standard user default
             let newUserDefaults = UserDefaults(suiteName: appGroup) ?? .standard
             
             // if newUserDefaults[AppGroup] is already equal to the appGroup, we're already cloned the UserDefaults,
