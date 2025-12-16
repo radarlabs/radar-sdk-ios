@@ -36,6 +36,7 @@
 #import "RadarVerifiedLocationToken+Internal.h"
 #import "RadarNotificationHelper.h"
 #import "Radar-Swift.h"
+#import "RadarPing.h"
 #import <os/log.h>
 
 @implementation RadarAPIClient
@@ -360,6 +361,9 @@
         params[@"encrypted"] = @(encrypted);
         BOOL jailbroken = [[RadarVerificationManager sharedInstance] isJailbroken];
         params[@"compromised"] = @(jailbroken);
+        if (@available(iOS 13.0, *)) {
+            params[@"pingLatency"] = [[RadarPing shared] pingBlocking];
+        }
         if (jailbroken) {
             [fraudFailureReasons addObject:@"fraud_compromised_jailbroken"];
         }

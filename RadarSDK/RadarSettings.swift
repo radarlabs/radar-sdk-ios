@@ -8,7 +8,7 @@
 import Foundation
 
 @objc(RadarSettings) @objcMembers
-public class RadarSettings: NSObject {
+internal class RadarSettings: NSObject {
     
     static let DefaultHost = "https://api.radar.io"
     static let DefaultVerifiedHost = "https://api-verified.radar.io"

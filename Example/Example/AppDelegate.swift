@@ -36,12 +36,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         radarInitializeOptions.autoLogNotificationConversions = true
         radarInitializeOptions.autoHandleNotificationDeepLinks = true
         radarInitializeOptions.silentPush = true
-        
+
+        UserDefaults.standard.set("https://api-josh.radar-staging.com", forKey: "radar-host")
+
         Radar.setAppGroup("group.waypoint.data")
         Radar.initialize(publishableKey: "prj_test_pk_0000000000000000000000000000000000000000", options: radarInitializeOptions )
         Radar.setMetadata([ "foo": "bar" ])
+        Radar.setUserId("JoshL");
         Radar.setDelegate(self)
         Radar.setVerifiedDelegate(self)
+        
+        
         
         if #available(iOS 15.0, *) {
             locationManager.startMonitoringLocationPushes() { data, error in

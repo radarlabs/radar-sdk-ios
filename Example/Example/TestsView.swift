@@ -12,12 +12,6 @@ struct TestsView: View {
     var body: some View {
         ScrollView {
             StyledButton("trackOnce") {
-                Task {
-                    
-                }
-            }
-            
-            StyledButton("trackOnce") {
                 Radar.trackOnce()
             }
             
