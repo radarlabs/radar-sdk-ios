@@ -37,15 +37,11 @@ class RadarSDKIndoors {
         }
     }
     
-    func getLocation() async -> (x: Double, y: Double)? {
+    func getLocation() async -> CLLocation? {
         guard let bridge = RadarSwift.bridge, let instance else { return nil }
         return await withCheckedContinuation { continuation in
-            let completion: @convention(block) ([Double]?) -> Void = { result in
-                if let result {
-                    continuation.resume(returning: (result[0], result[1]))
-                } else {
-                    continuation.resume(returning: nil)
-                }
+            let completion: @convention(block) (CLLocation?) -> Void = { result in
+                continuation.resume(returning: result)
             }
             instance.perform(NSSelectorFromString("getLocationWithCompletionHandler:"), with:completion)
         }
@@ -96,19 +92,21 @@ public class RadarIndoors: NSObject {
             if currentModelId != nil {
                 await sdk.stop()
             }
+            return
         }
         print("RadarIndoors updateTracking found RadarSDKIndoors")
         if user.geofences?.contains(where: { $0.activeIndoorModelId != nil && ($0.activeIndoorModelId == currentModelId) }) == true {
             print("model already in use")
             return
         }
-        print("using model")
         guard let modelId = user.geofences?.first(where: { $0.activeIndoorModelId != nil })?.activeIndoorModelId else {
             // no model id in current geofences
             print("no model id")
             return
         }
         
+        // this is a function that retrieves the data of the mlmodel from the server synchronously
+        // which will be called if the model cannot be found in the local cache
         let getModelData: @Sendable @convention(block) () -> URL? = { @Sendable in
             print("useModel getData callback called")
             let semaphore = DispatchSemaphore(value: 0)
@@ -134,18 +132,14 @@ public class RadarIndoors: NSObject {
             semaphore.wait() // Blocks the current thread
             return result
         }
-        await sdk.useModel(model: modelId + ".mlmodel", getModelData:getModelData)
+        await sdk.useModel(model: "\(modelId).mlmodel", getModelData:getModelData)
         await sdk.start()
     }
     
-    public func getLocation() async -> CLLocationCoordinate2D? {
+    public func getLocation() async -> CLLocation? {
         guard let sdk else {
-            print("RadarIndoors class is nil")
             return nil
         }
-        guard let xy = await sdk.getLocation() else {
-            return nil
-        }
-        return CLLocationCoordinate2D(latitude: xy.0, longitude: xy.1)
+        return await sdk.getLocation()
     }
 }
