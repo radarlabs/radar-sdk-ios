@@ -441,7 +441,7 @@
         params[@"longitude"] = @(indoorLocation.coordinate.longitude);
     }
 
-    if (options.usePressure || options.useMotion) {
+    if (locationMetadata.count > 0) {
         params[@"locationMetadata"] = locationMetadata;
     }
     

@@ -37,10 +37,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         radarInitializeOptions.silentPush = true
         
 //        Radar.setAppGroup("group.waypoint.data")
-        UserDefaults.standard.set("https://api-shicheng.radar-staging.com", forKey: "radar-host")
         
         
-        Radar.initialize(publishableKey: "", options: radarInitializeOptions )
+        Radar.initialize(publishableKey: "prj_test_pk_", options: radarInitializeOptions )
         
         Radar.setMetadata([ "foo": "bar" ])
         

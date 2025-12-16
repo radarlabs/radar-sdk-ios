@@ -151,7 +151,7 @@ struct DebugView: View {
     @AppStorage("radar-prediction-confidence") var predictionConfidence: Bool = false
 
     let scanner = RadarIndoorScan()
-    let model = RadarBeaconRSSIModel()
+//    let model = RadarBeaconRSSIModel()
     
     @State
     var collectedData: [SurveyData] = []
@@ -349,7 +349,7 @@ struct DebugView: View {
                 }
             }
         }.onAppear {
-            let request = URLRequest(url: URL(string: "https://bailey-nonnebulous-nonaccidentally.ngrok-free.dev/model/rssi")!)
+//            let request = URLRequest(url: URL(string: "https://bailey-nonnebulous-nonaccidentally.ngrok-free.dev/model/rssi")!)
             Task {
 //                await model.start(request: request)
 //                model.onLocationUpdate = { (x, y, rawX, rawY) in

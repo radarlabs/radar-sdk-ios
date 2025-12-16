@@ -93,8 +93,8 @@ extension URLSession {
 
 class SurveyApi {
     static func createSurvey(data: Data) async {
-        let radarHost = "https://bailey-nonnebulous-nonaccidentally.ngrok-free.dev"
-        let publishableKey = "prj_test_pk_3508428416f485c5f54d8e8bb1f616ee405b1995"
+        let radarHost = "https://api.radar.io"
+        let publishableKey = "prj_test_pk_"
         let description = "Office Survey 1"
         let geofenceId = "69331ab62e3b06c78468cf3c"
         let surveyor = "ShiCheng"

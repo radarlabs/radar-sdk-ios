@@ -71,7 +71,7 @@ class RadarSDKIndoors {
 @RadarIndoorsActor
 @available(iOS 13.0, *)
 @objc(RadarIndoors) @objcMembers
-public class RadarIndoors: NSObject {
+internal class RadarIndoors: NSObject {
     public static let shared = RadarIndoors()
     
     var currentModelId: String? = nil
@@ -87,7 +87,7 @@ public class RadarIndoors: NSObject {
             print("RadarIndoors class is nil")
             return
         }
-        if !RadarSettings.trackingOptions.useIndoorScan {
+        if !Radar.getTrackingOptions().useIndoorScan {
             // stop indoor updates if it's on
             if currentModelId != nil {
                 await sdk.stop()
