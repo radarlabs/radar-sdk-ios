@@ -13,7 +13,24 @@ internal final class RadarPing: NSObject, Sendable {
     public static let shared = RadarPing()
     
     // ping servers    
-    let urls = "https://dynamodb.us-east-1.amazonaws.com/ping,https://dynamodb.us-east-2.amazonaws.com/ping,https://dynamodb.us-west-1.amazonaws.com/ping,https://dynamodb.us-west-2.amazonaws.com/ping,https://dynamodb.ca-central-1.amazonaws.com/ping,https://dynamodb.ca-west-1.amazonaws.com/ping,https://dynamodb.eu-west-1.amazonaws.com/ping,https://dynamodb.eu-west-2.amazonaws.com/ping,https://dynamodb.eu-west-3.amazonaws.com/ping,https://dynamodb.eu-central-1.amazonaws.com/ping,https://dynamodb.eu-central-2.amazonaws.com/ping,https://dynamodb.eu-south-1.amazonaws.com/ping,https://dynamodb.eu-south-2.amazonaws.com/ping,https://dynamodb.eu-north-1.amazonaws.com/ping,https://dynamodb.il-central-1.amazonaws.com/ping,https://dynamodb.me-south-1.amazonaws.com/ping".split(separator: ",")
+    let urls = [
+        "https://dynamodb.us-east-1.amazonaws.com/ping",
+        "https://dynamodb.us-east-2.amazonaws.com/ping",
+        "https://dynamodb.us-west-1.amazonaws.com/ping",
+        "https://dynamodb.us-west-2.amazonaws.com/ping",
+        "https://dynamodb.ca-central-1.amazonaws.com/ping",
+        "https://dynamodb.ca-west-1.amazonaws.com/ping",
+        "https://dynamodb.eu-west-1.amazonaws.com/ping",
+        "https://dynamodb.eu-west-2.amazonaws.com/ping",
+        "https://dynamodb.eu-west-3.amazonaws.com/ping",
+        "https://dynamodb.eu-central-1.amazonaws.com/ping",
+        "https://dynamodb.eu-central-2.amazonaws.com/ping",
+        "https://dynamodb.eu-south-1.amazonaws.com/ping",
+        "https://dynamodb.eu-south-2.amazonaws.com/ping",
+        "https://dynamodb.eu-north-1.amazonaws.com/ping",
+        "https://dynamodb.il-central-1.amazonaws.com/ping",
+        "https://dynamodb.me-south-1.amazonaws.com/ping"
+    ]
 
     public func ping() async -> [String: Int] {
         let delays: [String: Int] = await withTaskGroup(of: (String, Double).self) { group in
