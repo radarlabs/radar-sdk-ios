@@ -30,7 +30,11 @@ struct TestsView: View {
                 let dest = legs[currentLegIndex]
                 let tripOptions = RadarTripOptions(externalId: tripExternalId, destinationGeofenceTag: dest.tag, destinationGeofenceExternalId: dest.externalId)
                 tripOptions.mode = .car
-                Radar.startTrip(options: tripOptions)
+                Radar.startTrip(options: tripOptions) { status, trip, events in
+                    if status == .success {
+                        Radar.trackOnce()
+                    }
+                }
             }
 
             StyledButton("startTrip with start tracking false") {
@@ -89,6 +93,31 @@ struct TestsView: View {
                         print("Failed to complete current leg: \(Radar.stringForStatus(status))")
                     }
                 }
+            }
+
+            StyledButton("Start Trip to Store") {
+                let tripOptions = RadarTripOptions(
+                    externalId: "start-tracking-test1",
+                    destinationGeofenceTag: "store",
+                    destinationGeofenceExternalId: "0001"
+                )
+                tripOptions.mode = .car
+                
+                Radar.startTrip(options: tripOptions) { status, trip, events in
+                    print("🏪 Store trip started: status = \(Radar.stringForStatus(status))")
+                    if let trip = trip {
+                        print("   Trip ID: \(trip._id)")
+                        print("   External ID: \(trip.externalId ?? "none")")
+                        print("   Status: \(Radar.stringForTripStatus(trip.status))")
+                    }
+                    if status == .success {
+                        Radar.trackOnce()
+                    }
+                }
+            }
+
+            StyledButton("trackOnce") {
+                Radar.trackOnce()
             }
 
             StyledButton("completeTrip") {

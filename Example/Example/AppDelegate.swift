@@ -36,13 +36,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         radarInitializeOptions.autoHandleNotificationDeepLinks = true
         radarInitializeOptions.silentPush = true
         
-        Radar.setAppGroup("group.waypoint.data")
-        Radar.initialize(publishableKey: "prj_test_pk_48fd267085ce3b848dd489ef6988f876f9685b0e", options: radarInitializeOptions )
-        Radar.setUserId("andrew downing")
+        // Radar.setAppGroup("group.waypoint.data")  // Commented out - requires paid Apple Developer account
+        Radar.initialize(publishableKey: "prj_test_pk_435338f1a7d92f705e338d6a27835a82b75b766f", options: radarInitializeOptions )
+        Radar.setUserId("andrew downing+personal")
         
         Radar.setMetadata([ "foo": "bar" ])
         Radar.setDelegate(self)
         Radar.setVerifiedDelegate(self)
+        
+        // Start tracking with responsive preset
+        Radar.startTracking(trackingOptions: RadarTrackingOptions.presetResponsive)
         
         if #available(iOS 15.0, *) {
             locationManager.startMonitoringLocationPushes() { data, error in
