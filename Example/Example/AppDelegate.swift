@@ -28,6 +28,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         
         locationManager.delegate = self
         self.requestLocationPermissions()
+        Radar.setAppGroup("group.waypoint.data")
+        // Set the host manually before initialization
+        UserDefaults.standard.set("https://api.radar.io", forKey: "radar-host")
+        Radar.setUserId("liam")
         
         // Replace with a valid test publishable key
         let radarInitializeOptions = RadarInitializeOptions()
@@ -37,14 +41,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         radarInitializeOptions.autoHandleNotificationDeepLinks = true
         radarInitializeOptions.silentPush = true
         
-        Radar.setAppGroup("group.waypoint.data")
-        Radar.initialize(publishableKey: "prj_test_pk_0000000000000000000000000000000000000000", options: radarInitializeOptions )
+        // Radar.setAppGroup("group.waypoint.data")
+        Radar.initialize(publishableKey: "prj_test_pk_435338f1a7d92f705e338d6a27835a82b75b766f", options: radarInitializeOptions )
         Radar.setMetadata([ "foo": "bar" ])
         Radar.setDelegate(self)
         Radar.setVerifiedDelegate(self)
         
         // Start tracking with responsive preset
-        Radar.startTracking(trackingOptions: RadarTrackingOptions.presetResponsive)
+        // Radar.startTracking(trackingOptions: RadarTrackingOptions.presetResponsive)
         
         if #available(iOS 15.0, *) {
             locationManager.startMonitoringLocationPushes() { data, error in

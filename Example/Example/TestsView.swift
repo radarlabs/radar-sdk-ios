@@ -110,9 +110,9 @@ struct TestsView: View {
                         print("   External ID: \(trip.externalId ?? "none")")
                         print("   Status: \(Radar.stringForTripStatus(trip.status))")
                     }
-                    if status == .success {
-                        Radar.trackOnce()
-                    }
+                    // if status == .success {
+                    //     Radar.trackOnce()
+                    // }
                 }
             }
 
