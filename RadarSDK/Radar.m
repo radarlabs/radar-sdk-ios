@@ -742,7 +742,7 @@ BOOL _initialized = NO;
                                                  [[RadarLocationManager sharedInstance] restartPreviousTrackingOptions];
 
                                                  // flush location update to generate events
-                                                 [[RadarLocationManager sharedInstance] getLocationWithCompletionHandler:nil];
+                                                 [Radar trackOnceWithCompletionHandler:nil];
                                              }
 
                                              if (completionHandler) {
@@ -770,7 +770,7 @@ BOOL _initialized = NO;
                                                  [[RadarLocationManager sharedInstance] restartPreviousTrackingOptions];
 
                                                  // flush location update to generate events
-                                                 [[RadarLocationManager sharedInstance] getLocationWithCompletionHandler:nil];
+                                                 [Radar trackOnceWithCompletionHandler:nil];
                                              }
 
                                              if (completionHandler) {
