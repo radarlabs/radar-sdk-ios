@@ -694,7 +694,7 @@ BOOL _initialized = NO;
                                                  }
 
                                                  // flush location update to generate events
-                                                 [[RadarLocationManager sharedInstance] getLocationWithCompletionHandler:nil];
+                                                 [Radar trackOnceWithCompletionHandler:nil];
                                              }
 
                                              if (completionHandler) {
