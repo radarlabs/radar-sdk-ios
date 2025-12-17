@@ -680,7 +680,7 @@ BOOL _initialized = NO;
                                                  [RadarSettings setTripOptions:tripOptions];
 
                                                  if (Radar.isTracking) {
-                                                     [RadarSettings setPreviousTrackingOptions:[Radar getTrackingOptions]];
+                                                     [RadarSettings setPreviousTrackingOptions:[RadarSettings trackingOptions]];
                                                  } else {
                                                      [RadarSettings setPreviousTrackingOptions:nil];
                                                  }
