@@ -117,7 +117,7 @@ BOOL _initialized = NO;
                                          
                                             RadarSdkConfiguration *sdkConfiguration = [RadarSettings sdkConfiguration];
                                             if (sdkConfiguration.startTrackingOnInitialize && ![RadarSettings tracking]) {
-                                                [Radar startTrackingWithOptions:[RadarSettings trackingOptions]];
+                                                [Radar startTrackingWithOptions:[Radar getTrackingOptions]];
                                             }
                                             if (sdkConfiguration.trackOnceOnAppOpen) {
                                                 [Radar trackOnceWithDesiredAccuracy:RadarTrackingOptionsDesiredAccuracyMedium beacons:[Radar getTrackingOptions].beacons completionHandler:nil];
@@ -680,7 +680,7 @@ BOOL _initialized = NO;
                                                  [RadarSettings setTripOptions:tripOptions];
 
                                                  if (Radar.isTracking) {
-                                                     [RadarSettings setPreviousTrackingOptions:[RadarSettings trackingOptions]];
+                                                     [RadarSettings setPreviousTrackingOptions:[Radar getTrackingOptions]];
                                                  } else {
                                                      [RadarSettings setPreviousTrackingOptions:nil];
                                                  }
