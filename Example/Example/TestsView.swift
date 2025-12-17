@@ -97,7 +97,7 @@ struct TestsView: View {
 
             StyledButton("Start Trip to Store") {
                 let tripOptions = RadarTripOptions(
-                    externalId: "start-tracking-test1",
+                    externalId: UUID().uuidString,
                     destinationGeofenceTag: "store",
                     destinationGeofenceExternalId: "0001"
                 )
