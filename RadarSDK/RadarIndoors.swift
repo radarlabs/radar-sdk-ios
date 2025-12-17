@@ -33,7 +33,7 @@ class RadarSDKIndoors {
             let completion: @convention(block) () -> Void = {
                 continuation.resume()
             }
-            bridge.invoke(target:instance, selector:NSSelectorFromString("useModelWithModel:getModelData:completionHandler:"), args: [model, getModelData, completion])
+            bridge.invoke(target:instance, selector:NSSelectorFromString("useModelWithName:getModelData:completionHandler:"), args: [model, getModelData, completion])
         }
     }
     
@@ -104,7 +104,7 @@ internal class RadarIndoors: NSObject {
             print("no model id")
             return
         }
-        
+        currentModelId = modelId
         // this is a function that retrieves the data of the mlmodel from the server synchronously
         // which will be called if the model cannot be found in the local cache
         let getModelData: @Sendable @convention(block) () -> URL? = { @Sendable in

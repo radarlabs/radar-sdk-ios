@@ -215,7 +215,7 @@ struct DebugView: View {
                     let imageSource = MLNImageSource(
                         identifier: "overlay‑src",
                         coordinateQuad: coordinates,
-                        url: URL(string: "https://api-shicheng.radar-staging.com/api/v1/assets/\(site.floorplan.path)")!
+                        url: URL(string: "https://api.radar-staging.com/api/v1/assets/\(site.floorplan.path)")!
                     )
                     style.addSource(imageSource)
                     let rasterLayer = MLNRasterStyleLayer(identifier: "overlay‑layer", source: imageSource)
@@ -362,46 +362,46 @@ struct DebugView: View {
 //                    lastUpdatedAt = Date.now
 //                }
                 
-                scanner.update = {
-                    guard let location = site?.toXY(arCoord),
-                          let date = dateFormatter.string(for: Date.now) else {
-                        return;
-                    }
-                    
-                    var rssi = [String: Int]()
-                    scanner.beacons.forEach { beacon in
-                        let id = "\(beacon.major)_\(beacon.minor)"
-                        rssi[id] = beacon.rssi
-                        collectedBeaconList.insert(id)
-                    }
-                    let data = SurveyData(
-                        timestamp: date,
-                        x: location.0,
-                        y: location.1,
-                        rssi: rssi
-                    )
-                    
-                    scanner.beacons.removeAll(keepingCapacity: true)
-                    if surveying {
-                        collectedData.append(data)
-                    }
-                    
-                    if let source = mapStyle?.source(withIdentifier: "coverage-src"),
-                       let shape = source as? MLNShapeSource {
-                        let polygons = collectedData.compactMap { data in
-                            let coords = circleFor(site: site!, x: data.x, y: data.y, r: 0.5)
-                            return MLNPolygonFeature(coordinates: coords, count: UInt(coords.count))
-                        }
-                        shape.shape = MLNShapeCollectionFeature(shapes: polygons)
-                    }
-                }
-                scanner.start()
+//                scanner.update = {
+//                    guard let location = site?.toXY(arCoord),
+//                          let date = dateFormatter.string(for: Date.now) else {
+//                        return;
+//                    }
+//                    
+//                    var rssi = [String: Int]()
+//                    scanner.beacons.forEach { beacon in
+//                        let id = "\(beacon.major)_\(beacon.minor)"
+//                        rssi[id] = beacon.rssi
+//                        collectedBeaconList.insert(id)
+//                    }
+//                    let data = SurveyData(
+//                        timestamp: date,
+//                        x: location.0,
+//                        y: location.1,
+//                        rssi: rssi
+//                    )
+//                    
+//                    scanner.beacons.removeAll(keepingCapacity: true)
+//                    if surveying {
+//                        collectedData.append(data)
+//                    }
+//                    
+//                    if let source = mapStyle?.source(withIdentifier: "coverage-src"),
+//                       let shape = source as? MLNShapeSource {
+//                        let polygons = collectedData.compactMap { data in
+//                            let coords = circleFor(site: site!, x: data.x, y: data.y, r: 0.5)
+//                            return MLNPolygonFeature(coordinates: coords, count: UInt(coords.count))
+//                        }
+//                        shape.shape = MLNShapeCollectionFeature(shapes: polygons)
+//                    }
+//                }
+//                scanner.start()
                 
                 // update 20 times a second
                 timer = Timer.publish(every: 0.05, on: .main, in: .common)
                     .autoconnect()
                     .sink { _ in
-                    // how long remains to next update, we are updating once a second
+                    // linear interpolation based on time to next location (1s)
                         let timeToNextUpdate = max(1 - Date.now.timeIntervalSince(lastUpdatedAt), 0)
                         let lerp = timeToNextUpdate == 0 ? 1 : (0.05 / timeToNextUpdate)
                         let latitude = displayPredCoord.latitude * (1 - lerp) + predCoord.latitude * lerp
