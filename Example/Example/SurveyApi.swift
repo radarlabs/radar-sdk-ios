@@ -93,8 +93,10 @@ extension URLSession {
 
 class SurveyApi {
     static func createSurvey(data: Data) async {
-        let radarHost = "https://api.radar.io"
-        let publishableKey = "prj_test_pk_"
+        let suite = UserDefaults.standard.string(forKey: "radar-appGroup")
+        
+        let radarHost = UserDefaults(suiteName: suite)?.string(forKey: "radar-host") ?? "https://api.radar.io"
+        let publishableKey = UserDefaults(suiteName: suite)?.string(forKey: "publishable-key") ?? ""
         let description = "Office Survey 1"
         let geofenceId = "69331ab62e3b06c78468cf3c"
         let surveyor = "ShiCheng"

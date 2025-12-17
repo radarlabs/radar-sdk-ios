@@ -284,6 +284,11 @@ struct DebugView: View {
                             
                             Button(action: {
                                 surveying = !surveying
+                                if surveying {
+                                    scanner.start()
+                                } else {
+                                    scanner.stop()
+                                }
                             }) {
                                 Text(surveying ? "Stop" : "Start")
                                     .font(.title)
@@ -349,53 +354,39 @@ struct DebugView: View {
                 }
             }
         }.onAppear {
-//            let request = URLRequest(url: URL(string: "https://bailey-nonnebulous-nonaccidentally.ngrok-free.dev/model/rssi")!)
             Task {
-//                await model.start(request: request)
-//                model.onLocationUpdate = { (x, y, rawX, rawY) in
-//                    if let coord = site?.fromXY((x, y)) {
-//                        predCoord = coord
-//                    }
-//                    if let coord = site?.fromXY((rawX, rawY)) {
-//                        rawPredCoord = coord
-//                    }
-//                    lastUpdatedAt = Date.now
-//                }
-                
-//                scanner.update = {
-//                    guard let location = site?.toXY(arCoord),
-//                          let date = dateFormatter.string(for: Date.now) else {
-//                        return;
-//                    }
-//                    
-//                    var rssi = [String: Int]()
-//                    scanner.beacons.forEach { beacon in
-//                        let id = "\(beacon.major)_\(beacon.minor)"
-//                        rssi[id] = beacon.rssi
-//                        collectedBeaconList.insert(id)
-//                    }
-//                    let data = SurveyData(
-//                        timestamp: date,
-//                        x: location.0,
-//                        y: location.1,
-//                        rssi: rssi
-//                    )
-//                    
-//                    scanner.beacons.removeAll(keepingCapacity: true)
-//                    if surveying {
-//                        collectedData.append(data)
-//                    }
-//                    
-//                    if let source = mapStyle?.source(withIdentifier: "coverage-src"),
-//                       let shape = source as? MLNShapeSource {
-//                        let polygons = collectedData.compactMap { data in
-//                            let coords = circleFor(site: site!, x: data.x, y: data.y, r: 0.5)
-//                            return MLNPolygonFeature(coordinates: coords, count: UInt(coords.count))
-//                        }
-//                        shape.shape = MLNShapeCollectionFeature(shapes: polygons)
-//                    }
-//                }
-//                scanner.start()
+                scanner.update = { beacons in
+                    guard let location = site?.toXY(arCoord),
+                          let date = dateFormatter.string(for: Date.now) else {
+                        return;
+                    }
+                    
+                    var rssi = [String: Int]()
+                    beacons.forEach { beacon in
+                        let id = "\(beacon.major)_\(beacon.minor)"
+                        rssi[id] = beacon.rssi
+                        collectedBeaconList.insert(id)
+                    }
+                    let data = SurveyData(
+                        timestamp: date,
+                        x: location.0,
+                        y: location.1,
+                        rssi: rssi
+                    )
+                    
+                    if surveying {
+                        collectedData.append(data)
+                    }
+                    
+                    if let source = mapStyle?.source(withIdentifier: "coverage-src"),
+                       let shape = source as? MLNShapeSource {
+                        let polygons = collectedData.compactMap { data in
+                            let coords = circleFor(site: site!, x: data.x, y: data.y, r: 0.5)
+                            return MLNPolygonFeature(coordinates: coords, count: UInt(coords.count))
+                        }
+                        shape.shape = MLNShapeCollectionFeature(shapes: polygons)
+                    }
+                }
                 
                 // update 20 times a second
                 timer = Timer.publish(every: 0.05, on: .main, in: .common)
