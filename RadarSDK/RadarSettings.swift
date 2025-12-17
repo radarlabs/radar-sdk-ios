@@ -15,7 +15,7 @@ internal class RadarSettings: NSObject {
     
     public static func setAppGroup(_ appGroup: String?) {
         // this call needs to by synchronised to prevent race conditions in checking / updating the app group
-        DispatchQueue.main.async {
+        let updateAppGroup = {
             // no change in app group
             if RadarUserDefaults.string(forKey: .AppGroup) == appGroup {
                 return
@@ -43,6 +43,14 @@ internal class RadarSettings: NSObject {
             UserDefaults.standard.set(appGroup, forKey: RadarUserDefaults.Key.AppGroup.rawValue)
             // and set appGroup in new user defaults to signify initialized
             RadarUserDefaults.set(appGroup, forKey: .AppGroup)
+        }
+        
+        if Thread.isMainThread {
+            updateAppGroup()
+        } else {
+            DispatchQueue.main.sync {
+                updateAppGroup()
+            }
         }
     }
     
