@@ -82,9 +82,11 @@ internal class RadarIndoors: NSObject {
     let sdk = RadarSDKIndoors()
     
     public func updateTracking(user: RadarUser) async {
-        print("RadarIndoors updateTracking called")
         guard let sdk else {
-            print("RadarIndoors class is nil")
+            if Radar.getTrackingOptions().useIndoorScan {
+                // if using indoor scan, we're expecting the IndoorSDK to be available, so log a warning if it's not available
+                RadarLogger.shared.warning("RadarIndoors class is nil")
+            }
             return
         }
         if !Radar.getTrackingOptions().useIndoorScan {
@@ -94,21 +96,20 @@ internal class RadarIndoors: NSObject {
             }
             return
         }
-        print("RadarIndoors updateTracking found RadarSDKIndoors")
         if user.geofences?.contains(where: { $0.activeIndoorModelId != nil && ($0.activeIndoorModelId == currentModelId) }) == true {
-            print("model already in use")
+            RadarLogger.shared.debug("model already in use")
             return
         }
         guard let modelId = user.geofences?.first(where: { $0.activeIndoorModelId != nil })?.activeIndoorModelId else {
             // no model id in current geofences
-            print("no model id")
+            RadarLogger.shared.debug("found no model id in current geofences")
             return
         }
         currentModelId = modelId
         // this is a function that retrieves the data of the mlmodel from the server synchronously
         // which will be called if the model cannot be found in the local cache
         let getModelData: @Sendable @convention(block) () -> URL? = { @Sendable in
-            print("useModel getData callback called")
+            RadarLogger.shared.debug("useModel getData callback called")
             let semaphore = DispatchSemaphore(value: 0)
             var result: URL?
 
@@ -123,7 +124,7 @@ internal class RadarIndoors: NSObject {
                     semaphore.signal()
                 } catch {
                     // TODO: log an error
-                    print("Failed to get data for model")
+                    RadarLogger.shared.debug("Failed to get data for model")
                     result = nil
                     semaphore.signal()
                 }

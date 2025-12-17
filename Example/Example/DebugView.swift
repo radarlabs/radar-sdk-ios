@@ -150,7 +150,10 @@ struct DebugView: View {
     @AppStorage("radar-raw-prediction") var rawPrediction: Bool = false
     @AppStorage("radar-prediction-confidence") var predictionConfidence: Bool = false
 
-    let scanner = RadarIndoorScan()
+    let scanner = RadarIndoorScan(uuids: [
+        "f7826da6-4fa2-4e98-8024-bc5b71e0893e",
+        "e655298d-8d31-4937-b4b0-e147f026315d",
+    ])
 //    let model = RadarBeaconRSSIModel()
     
     @State
