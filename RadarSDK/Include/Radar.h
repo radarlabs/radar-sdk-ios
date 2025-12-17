@@ -1377,7 +1377,7 @@ typedef void (^_Nonnull RadarIndoorsScanCompletionHandler)(NSString *_Nullable r
 
 + (void)requestMotionActivityPermission NS_SWIFT_NAME(requestMotionActivityPermission());
 
-+ (void)setAppGroup:(NSString*)appGroup;
++ (void)setAppGroup:(NSString*_Nullable)appGroup;
 
 + (void)setPushNotificationToken:(NSString*_Nullable)token;
 

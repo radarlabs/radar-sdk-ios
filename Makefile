@@ -43,10 +43,10 @@ build-pretty:
 	set -o pipefail && xcodebuild $(XC_ARGS) | xcpretty
 
 test-pretty:
-	set -o pipefail && xcodebuild $(XC_TEST_ARGS) test -skip-testing:RadarSDKTests/InAppMessageTest | xcpretty --report junit
+	set -o pipefail && xcodebuild $(XC_TEST_ARGS) test -skip-testing:RadarSDKTests/InAppMessageTest -skip-testing:RadarSDKTests/RadarSettingsTest | xcpretty --report junit
 
 test-swift:
-	xcodebuild $(XC_TEST_ARGS) test -only-testing:RadarSDKTests/InAppMessageTest
+	xcodebuild $(XC_TEST_ARGS) test -only-testing:RadarSDKTests/InAppMessageTest -only-testing:RadarSDKTests/RadarSettingsTest
 
 build-example-pretty:
 	set -o pipefail && xcodebuild $(XC_EXAMPLE_ARGS) | xcpretty
