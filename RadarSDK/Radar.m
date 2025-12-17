@@ -66,7 +66,6 @@ BOOL _initialized = NO;
 
 + (void)initializeWithPublishableKey:(NSString *)publishableKey options:(RadarInitializeOptions *)options {
     [RadarSwift setBridge:[[RadarSwiftBridge alloc] init]];
-    [RadarSettings setAppGroup:[RadarSettings getAppGroup]];
     
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"initialize()"];
     
