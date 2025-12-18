@@ -31,7 +31,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         Radar.setAppGroup("group.waypoint.data")
         // Set the host manually before initialization
         UserDefaults.standard.set("https://api.radar.io", forKey: "radar-host")
-        Radar.setUserId("liam")
+        // User ID will be set from TestsView
         
         // Replace with a valid test publishable key
         let radarInitializeOptions = RadarInitializeOptions()
