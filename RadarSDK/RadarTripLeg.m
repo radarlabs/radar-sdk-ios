@@ -32,6 +32,9 @@ static NSString *const kGeofence = @"geofence";
 static NSString *const kArrivalRadius = @"arrivalRadius";
 static NSString *const kStopDuration = @"stopDuration";
 static NSString *const kMetadata = @"metadata";
+static NSString *const kEta = @"eta";
+static NSString *const kDuration = @"duration";
+static NSString *const kDistance = @"distance";
 
 #pragma mark - Status String Conversion
 
@@ -85,6 +88,8 @@ static NSString *const kMetadata = @"metadata";
         _hasCoordinates = NO;
         _coordinates = kCLLocationCoordinate2DInvalid;
         _status = RadarTripLegStatusUnknown;
+        _etaDuration = 0;
+        _etaDistance = 0;
     }
     return self;
 }
@@ -171,6 +176,20 @@ static NSString *const kMetadata = @"metadata";
     id updatedAtObj = dict[kUpdatedAt];
     if (updatedAtObj && [updatedAtObj isKindOfClass:[NSString class]]) {
         leg->_updatedAt = [RadarUtils.isoDateFormatter dateFromString:(NSString *)updatedAtObj];
+    }
+    
+    // Parse ETA object
+    id etaObj = dict[kEta];
+    if (etaObj && [etaObj isKindOfClass:[NSDictionary class]]) {
+        NSDictionary *eta = (NSDictionary *)etaObj;
+        id durationObj = eta[kDuration];
+        if (durationObj && [durationObj isKindOfClass:[NSNumber class]]) {
+            leg->_etaDuration = [(NSNumber *)durationObj floatValue];
+        }
+        id distanceObj = eta[kDistance];
+        if (distanceObj && [distanceObj isKindOfClass:[NSNumber class]]) {
+            leg->_etaDistance = [(NSNumber *)distanceObj floatValue];
+        }
     }
     
     // Handle nested destination object structure
@@ -349,6 +368,18 @@ static NSString *const kMetadata = @"metadata";
     
     if (self.metadata) {
         dict[kMetadata] = self.metadata;
+    }
+    
+    // Include ETA if present (from server response)
+    if (self.etaDuration > 0 || self.etaDistance > 0) {
+        NSMutableDictionary *eta = [NSMutableDictionary new];
+        if (self.etaDuration > 0) {
+            eta[kDuration] = @(self.etaDuration);
+        }
+        if (self.etaDistance > 0) {
+            eta[kDistance] = @(self.etaDistance);
+        }
+        dict[kEta] = eta;
     }
     
     return dict;
