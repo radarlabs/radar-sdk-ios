@@ -263,7 +263,8 @@ struct TestsView: View {
             }
             
             StyledButton("startTrip with tracking options") {
-                let tripOptions = RadarTripOptions(externalId: "301", destinationGeofenceTag: "store", destinationGeofenceExternalId: "123", scheduledArrivalAt: nil, startTracking: false)
+                let uniqueTripId = "trip_\(Int(Date().timeIntervalSince1970))"
+                let tripOptions = RadarTripOptions(externalId: uniqueTripId, destinationGeofenceTag: "trip_activity", destinationGeofenceExternalId: "trip12345", scheduledArrivalAt: nil, startTracking: false)
                 tripOptions.mode = .car
                 tripOptions.approachingThreshold = 9
                 let trackingOptions = RadarTrackingOptions.presetContinuous

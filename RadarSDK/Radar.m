@@ -66,7 +66,6 @@ BOOL _initialized = NO;
 
 + (void)initializeWithPublishableKey:(NSString *)publishableKey options:(RadarInitializeOptions *)options {
     [RadarSwift setBridge:[[RadarSwiftBridge alloc] init]];
-    [RadarSettings setAppGroup:[RadarSettings getAppGroup]];
     
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"initialize()"];
     
@@ -118,7 +117,7 @@ BOOL _initialized = NO;
                                          
                                             RadarSdkConfiguration *sdkConfiguration = [RadarSettings sdkConfiguration];
                                             if (sdkConfiguration.startTrackingOnInitialize && ![RadarSettings tracking]) {
-                                                [Radar startTrackingWithOptions:[RadarSettings trackingOptions]];
+                                                [Radar startTrackingWithOptions:[Radar getTrackingOptions]];
                                             }
                                             if (sdkConfiguration.trackOnceOnAppOpen) {
                                                 [Radar trackOnceWithDesiredAccuracy:RadarTrackingOptionsDesiredAccuracyMedium beacons:[Radar getTrackingOptions].beacons completionHandler:nil];
@@ -695,7 +694,7 @@ BOOL _initialized = NO;
                                                  }
 
                                                  // flush location update to generate events
-                                                 [[RadarLocationManager sharedInstance] getLocationWithCompletionHandler:nil];
+                                                 [Radar trackOnceWithCompletionHandler:nil];
                                              }
 
                                              if (completionHandler) {
@@ -743,7 +742,7 @@ BOOL _initialized = NO;
                                                  [[RadarLocationManager sharedInstance] restartPreviousTrackingOptions];
 
                                                  // flush location update to generate events
-                                                 [[RadarLocationManager sharedInstance] getLocationWithCompletionHandler:nil];
+                                                 [Radar trackOnceWithCompletionHandler:nil];
                                              }
 
                                              if (completionHandler) {
@@ -771,7 +770,7 @@ BOOL _initialized = NO;
                                                  [[RadarLocationManager sharedInstance] restartPreviousTrackingOptions];
 
                                                  // flush location update to generate events
-                                                 [[RadarLocationManager sharedInstance] getLocationWithCompletionHandler:nil];
+                                                 [Radar trackOnceWithCompletionHandler:nil];
                                              }
 
                                              if (completionHandler) {
