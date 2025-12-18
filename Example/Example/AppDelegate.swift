@@ -23,6 +23,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
     var useSwiftUI = true
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        UserDefaults(suiteName:"group.waypoint.data")?.set("http://127.0.0.1:8081", forKey: "radar-host")
+        UserDefaults(suiteName:"group.waypoint.data")?.set("http://127.0.0.1:8081", forKey: "radar-verifiedHost")
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { (_, _) in }
         UNUserNotificationCenter.current().delegate = self
         
@@ -37,10 +39,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         radarInitializeOptions.autoHandleNotificationDeepLinks = true
         radarInitializeOptions.silentPush = true
 
-        UserDefaults.standard.set("https://api-josh.radar-staging.com", forKey: "radar-host")
 
         Radar.setAppGroup("group.waypoint.data")
         Radar.initialize(publishableKey: "prj_test_pk_0000000000000000000000000000000000000000", options: radarInitializeOptions )
+        Radar.setLogLevel(.error)
+//        Radar.initialize(publishableKey: "prj_test_pk_0000000000000000000000000000000000000000", options: radarInitializeOptions )
         Radar.setMetadata([ "foo": "bar" ])
         Radar.setUserId("JoshL");
         Radar.setDelegate(self)

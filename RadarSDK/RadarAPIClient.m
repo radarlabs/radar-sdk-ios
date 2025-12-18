@@ -362,7 +362,7 @@
         BOOL jailbroken = [[RadarVerificationManager sharedInstance] isJailbroken];
         params[@"compromised"] = @(jailbroken);
         if (@available(iOS 13.0, *)) {
-            params[@"pingLatency"] = [[RadarPing shared] pingBlocking];
+            params[@"pingLatency"] = [[RadarPing shared] pingBlockingWithLocation:location];
         }
         if (jailbroken) {
             [fraudFailureReasons addObject:@"fraud_compromised_jailbroken"];
