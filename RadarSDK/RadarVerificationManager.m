@@ -95,8 +95,7 @@
             return;
         }
         
-        // Get assertion using the new challenge endpoint
-        [self getAssertionWithCompletionHandler:^(NSString *_Nullable assertionString, NSString *_Nullable keyId, NSString *_Nullable attestationError) {
+        [self getChallengeWithCompletionHandler:^(NSString *_Nullable challenge, NSString *_Nullable keyId, NSString *_Nullable error) {
             void (^callTrackAPI)(NSArray<RadarBeacon *> *_Nullable) = ^(NSArray<RadarBeacon *> *_Nullable beacons) {
                 [[RadarAPIClient sharedInstance]
                     trackWithLocation:location
@@ -107,9 +106,8 @@
                     beacons:beacons
                     indoorScan:nil
                     verified:YES
-                    assertionString:assertionString
                     keyId:keyId
-                    attestationError:attestationError
+                    challenge:challenge
                     encrypted:NO
                     expectedCountryCode:self.expectedCountryCode
                     expectedStateCode:self.expectedStateCode
@@ -386,7 +384,7 @@
     }
 }
 
-- (void)getAssertionWithChallenge:(NSString *)challenge completionHandler:(RadarVerificationCompletionHandler)completionHandler {
+- (void)getAssertionWithBodyData:(NSData *)bodyData completionHandler:(RadarVerificationCompletionHandler)completionHandler {
     if (@available(iOS 14.0, *)) {
         DCAppAttestService *service = [DCAppAttestService sharedService];
 
@@ -396,8 +394,8 @@
             return;
         }
 
-        if (!challenge) {
-            completionHandler(nil, nil, @"Missing challenge");
+        if (!bodyData || bodyData.length == 0) {
+            completionHandler(nil, nil, @"Invalid bodyData");
 
             return;
         }
@@ -410,13 +408,12 @@
             return;
         }
 
-        // Use assertion for subsequent requests
-        NSData *clientData = [challenge dataUsingEncoding:NSUTF8StringEncoding];
-        NSMutableData *clientDataHash = [NSMutableData dataWithLength:CC_SHA256_DIGEST_LENGTH];
-        CC_SHA256([clientData bytes], (CC_LONG)[clientData length], [clientDataHash mutableBytes]);
-
+        // Hash the body data with SHA256 (challenge is inside the body)
+        NSMutableData *bodyHash = [NSMutableData dataWithLength:CC_SHA256_DIGEST_LENGTH];
+        CC_SHA256([bodyData bytes], (CC_LONG)[bodyData length], [bodyHash mutableBytes]);
+        
         [service generateAssertion:existingKeyId
-                   clientDataHash:clientDataHash
+                   clientDataHash:bodyHash
                 completionHandler:^(NSData *_Nullable assertionObject, NSError *_Nullable error) {
             if (error) {
                 completionHandler(nil, nil, error.localizedDescription);
@@ -430,21 +427,37 @@
     }
 }
 
-- (void)getAssertionWithCompletionHandler:(RadarVerificationCompletionHandler)completionHandler {
+- (void)getChallengeWithCompletionHandler:(RadarVerificationCompletionHandler)completionHandler {
     NSString *userId = [RadarSettings userId];
     if (!userId) {
         completionHandler(nil, nil, @"Missing userId.");
         return;
     }
 
-    // Check if key exists - if not, this is for attestation (throttle)
-    // If key exists, this is for assertion (no throttle)
+    // Check if key exists
     NSString *existingKeyId = [self appAttestKeyId];
-    BOOL forAttest = (existingKeyId == nil);
 
+    if (existingKeyId) {
+        // Key exists, simply get a challenge
+        [[RadarAPIClient sharedInstance]
+         getAttestChallengeWithUserId:userId
+         forAttest:NO
+         completionHandler:^(RadarStatus status, NSString *_Nullable challenge) {
+            if (status != RadarStatusSuccess) {
+                completionHandler(nil, nil, @"Failed to get challenge");
+                return;
+            }
+
+            // Return the challenge
+            completionHandler(challenge, existingKeyId, nil);
+        }];
+        return;
+    }
+
+    // No key exists, get challenge for attest, then perform attestation and return challenge from attest body
     [[RadarAPIClient sharedInstance]
      getAttestChallengeWithUserId:userId
-     forAttest:forAttest
+     forAttest:YES
      completionHandler:^(RadarStatus status, NSString *_Nullable challenge) {
         if (status != RadarStatusSuccess) {
             completionHandler(nil, nil, @"Failed to get challenge");
@@ -452,28 +465,27 @@
         }
 
         if (!challenge) {
-            // Rate limited - challenge is null, short-circuit the flow
+            // Rate limited - challenge is null
             completionHandler(nil, nil, @"Rate limited");
             return;
         }
 
-        if (!existingKeyId) {
-            // No key exists, perform attestation first
-            [self performAttestationWithChallenge:challenge
-                                completionHandler:^(RadarStatus status, BOOL result, NSString *_Nullable keyId, NSString *_Nullable message, NSString *_Nullable newChallenge) {
-                if (status != RadarStatusSuccess || !result || !newChallenge) {
-                    completionHandler(nil, nil, message ?: @"Attestation failed");
-                    return;
-                }
-                
-                // Use the new challenge to continue with assertion flow
-                [self getAssertionWithChallenge:newChallenge completionHandler:completionHandler];
-            }];
-            return;
-        }
-
-        // Key exists, use the challenge to get assertion
-        [self getAssertionWithChallenge:challenge completionHandler:completionHandler];
+        // Perform attestation with the challenge
+        [self performAttestationWithChallenge:challenge
+                            completionHandler:^(RadarStatus status, BOOL result, NSString *_Nullable keyId, NSString *_Nullable message, NSString *_Nullable newChallenge) {
+            if (status != RadarStatusSuccess || !result) {
+                completionHandler(nil, nil, message ?: @"Attestation failed");
+                return;
+            }
+            
+            // Return the challenge from the attest body
+            if (!newChallenge) {
+                completionHandler(nil, nil, @"No challenge in attest response");
+                return;
+            }
+            
+            completionHandler(newChallenge, keyId, nil);
+        }];
     }];
 }
 

@@ -199,9 +199,8 @@
                     beacons:beacons
                indoorScan:indoorScan
                    verified:NO
-            assertionString:nil
-                      keyId:nil
-           attestationError:nil
+                     keyId:nil
+                   challenge:nil
                   encrypted:NO
         expectedCountryCode:nil
           expectedStateCode:nil
@@ -218,9 +217,8 @@
                   beacons:(NSArray<RadarBeacon *> *_Nullable)beacons
              indoorScan:(NSString *_Nullable)indoorScan
                  verified:(BOOL)verified
-          assertionString:(NSString *_Nullable)assertionString
-                    keyId:(NSString *_Nullable)keyId
-         attestationError:(NSString *_Nullable)attestationError
+                   keyId:(NSString *_Nullable)keyId
+                 challenge:(NSString *_Nullable)challenge
                 encrypted:(BOOL)encrypted
       expectedCountryCode:(NSString * _Nullable)expectedCountryCode
         expectedStateCode:(NSString * _Nullable)expectedStateCode
@@ -354,11 +352,6 @@
 
     params[@"verified"] = @(verified);
     if (verified) {
-        if (assertionString) {
-            params[@"assertionString"] = assertionString;
-        }
-        params[@"keyId"] = keyId;
-        params[@"attestationError"] = attestationError;
         params[@"encrypted"] = @(encrypted);
         BOOL jailbroken = [[RadarVerificationManager sharedInstance] isJailbroken];
         params[@"compromised"] = @(jailbroken);
@@ -383,6 +376,12 @@
         NSString *kDeviceId = [[RadarVerificationManager sharedInstance] kDeviceId];
         if (kDeviceId) {
             params[@"kDeviceId"] = kDeviceId;
+        }
+        if (keyId) {
+            params[@"keyId"] = keyId;
+        }
+        if (challenge) {
+            params[@"challenge"] = challenge;
         }
     }
     params[@"appId"] = [[NSBundle mainBundle] bundleIdentifier];

@@ -91,9 +91,8 @@ typedef void (^_Nonnull RadarAttestAPICompletionHandler)(RadarStatus status, NSD
                   beacons:(NSArray<RadarBeacon *> *_Nullable)beacons
              indoorScan:(NSString *_Nullable)indoorScan
                  verified:(BOOL)verified
-          assertionString:(NSString *_Nullable)assertionString
-                    keyId:(NSString *_Nullable)keyId
-         attestationError:(NSString *_Nullable)attestationError
+                     keyId:(NSString *_Nullable)keyId
+                 challenge:(NSString *_Nullable)challenge
                 encrypted:(BOOL)encrypted
       expectedCountryCode:(NSString *_Nullable)expectedCountryCode
         expectedStateCode:(NSString *_Nullable)expectedStateCode
