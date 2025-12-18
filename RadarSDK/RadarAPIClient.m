@@ -621,8 +621,12 @@
                             if (events && user) {
                                 [RadarSettings setId:user._id];
 
-                                // if user was on a trip that ended server-side, restore previous tracking options
-                                if (!user.trip && [RadarSettings tripOptions]) {
+                                // Update local trip state from server response
+                                if (user.trip) {
+                                    // Update local trip with latest state (ETAs, leg statuses, etc.)
+                                    [RadarSettings setTrip:user.trip];
+                                } else if ([RadarSettings tripOptions]) {
+                                    // Trip ended server-side - restore previous tracking options
                                     [[RadarLocationManager sharedInstance] restartPreviousTrackingOptions];
                                     [RadarSettings setTripOptions:nil];
                                     [RadarSettings setTrip:nil];

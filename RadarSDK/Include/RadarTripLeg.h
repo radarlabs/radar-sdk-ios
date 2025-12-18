@@ -62,6 +62,16 @@ typedef NS_ENUM(NSInteger, RadarTripLegStatus) {
  */
 @property (nullable, nonatomic, copy, readonly) NSDate *updatedAt;
 
+/**
+ The ETA duration in minutes to this leg's destination. Set from server response.
+ */
+@property (nonatomic, assign, readonly) float etaDuration;
+
+/**
+ The ETA distance in meters to this leg's destination. Set from server response.
+ */
+@property (nonatomic, assign, readonly) float etaDistance;
+
 #pragma mark - Geofence Destination Properties
 
 /**
