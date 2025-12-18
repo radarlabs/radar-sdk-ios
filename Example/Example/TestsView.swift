@@ -191,44 +191,30 @@ struct TestsView: View {
     }
     
     private func completeCurrentLeg() {
-        guard let trip = Radar.getTrip() else {
+        guard Radar.getTrip() != nil else {
             statusMessage = "❌ No active trip found"
             return
         }
         
-        guard let legs = trip.legs, !legs.isEmpty else {
-            statusMessage = "❌ No legs found in trip"
-            return
-        }
+        statusMessage = "Completing current leg..."
         
-        // Find the current leg (first non-completed leg, or use currentLegId)
-        let currentLeg: RadarTripLeg?
-        if let currentLegId = trip.currentLegId {
-            currentLeg = legs.first { $0._id == currentLegId }
-        } else {
-            // Fallback: find first leg that isn't completed
-            currentLeg = legs.first { $0.status != .completed && $0.status != .canceled }
-        }
-        
-        guard let leg = currentLeg, let legId = leg._id else {
-            statusMessage = "ℹ️ No more legs to complete"
-            return
-        }
-        
-        statusMessage = "Completing leg \(legId)..."
-        
-        Radar.updateTripLeg(
-            tripId: trip._id,
-            legId: legId,
-            status: .completed
-        ) { status, updatedTrip, updatedLeg, events in
+        // Use the new convenience function - no need to manually get tripId or legId!
+        Radar.updateCurrentTripLeg(status: .completed) { status, updatedTrip, updatedLeg, events in
             if status == .success {
-                statusMessage = "✅ Leg completed!"
-                if let updatedTrip = updatedTrip {
-                    updateTripInfo(updatedTrip)
+                // Check if this completed the entire trip
+                if let trip = updatedTrip, trip.status == .completed {
+                    statusMessage = "🎉 Final leg completed - Trip finished!"
+                    tripInfo = "Trip completed at \(Date())"
+                } else {
+                    statusMessage = "✅ Leg completed!"
+                    if let updatedTrip = updatedTrip {
+                        updateTripInfo(updatedTrip)
+                    }
                 }
+                
                 if let events = events, !events.isEmpty {
-                    statusMessage += "\n📬 Generated \(events.count) event(s)"
+                    let eventTypes = events.map { Radar.stringForEventType($0.type) }.joined(separator: ", ")
+                    statusMessage += "\n📬 Events: \(eventTypes)"
                 }
             } else {
                 statusMessage = "❌ Failed to complete leg: \(Radar.stringForStatus(status))"
@@ -241,11 +227,17 @@ struct TestsView: View {
         Trip: \(trip.externalId ?? trip._id)
         Status: \(Radar.stringForTripStatus(trip.status))
         Current Leg: \(trip.currentLegId ?? "none")
-        
         """
         
+        // Show trip-level ETA (to final destination)
+        if trip.etaDuration > 0 || trip.etaDistance > 0 {
+            info += "\n🏁 Final ETA: \(formatEta(duration: trip.etaDuration, distance: trip.etaDistance))"
+        }
+        
+        info += "\n"
+        
         if let legs = trip.legs {
-            info += "Legs (\(legs.count)):\n"
+            info += "\nLegs (\(legs.count)):\n"
             for (index, leg) in legs.enumerated() {
                 let statusEmoji: String
                 switch leg.status {
@@ -263,19 +255,49 @@ struct TestsView: View {
                 if let tag = leg.destinationGeofenceTag, let extId = leg.destinationGeofenceExternalId {
                     destination = "\(tag)/\(extId)"
                 } else if let address = leg.address {
-                    destination = address.prefix(30) + "..."
+                    destination = String(address.prefix(25)) + "..."
                 } else if leg.hasCoordinates {
-                    destination = "(\(leg.coordinates.latitude), \(leg.coordinates.longitude))"
+                    destination = "(\(String(format: "%.4f", leg.coordinates.latitude)), \(String(format: "%.4f", leg.coordinates.longitude)))"
                 } else {
                     destination = "unknown"
                 }
                 
                 let isCurrent = leg._id == trip.currentLegId ? " 👈" : ""
                 info += "  \(index + 1). \(statusEmoji) \(destination)\(isCurrent)\n"
+                
+                // Show leg ETA if available
+                if leg.etaDuration > 0 || leg.etaDistance > 0 {
+                    info += "      ⏱️ \(formatEta(duration: leg.etaDuration, distance: leg.etaDistance))\n"
+                }
             }
         }
         
         tripInfo = info
+    }
+    
+    private func formatEta(duration: Float, distance: Float) -> String {
+        var parts: [String] = []
+        
+        if duration > 0 {
+            if duration >= 60 {
+                let hours = Int(duration) / 60
+                let mins = Int(duration) % 60
+                parts.append("\(hours)h \(mins)m")
+            } else {
+                parts.append("\(Int(duration)) min")
+            }
+        }
+        
+        if distance > 0 {
+            if distance >= 1000 {
+                let km = distance / 1000
+                parts.append(String(format: "%.1f km", km))
+            } else {
+                parts.append("\(Int(distance)) m")
+            }
+        }
+        
+        return parts.isEmpty ? "N/A" : parts.joined(separator: " / ")
     }
 }
 
