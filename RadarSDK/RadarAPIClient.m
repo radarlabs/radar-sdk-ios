@@ -624,7 +624,8 @@
                                 // if user was on a trip that ended server-side, restore previous tracking options
                                 if (!user.trip && [RadarSettings tripOptions]) {
                                     [[RadarLocationManager sharedInstance] restartPreviousTrackingOptions];
-                                [RadarSettings setTripOptions:nil];
+                                    [RadarSettings setTripOptions:nil];
+                                    [RadarSettings setTrip:nil];
                                 }
 
                                 [RadarSettings setUserDebug:user.debug];
@@ -832,6 +833,55 @@
                         }
 
                         completionHandler(RadarStatusSuccess, trip, events);
+                    }];
+}
+
+- (void)updateTripLegWithTripId:(NSString *_Nonnull)tripId
+                          legId:(NSString *_Nonnull)legId
+                         status:(RadarTripLegStatus)status
+              completionHandler:(RadarTripLegAPICompletionHandler _Nonnull)completionHandler {
+    NSString *publishableKey = [RadarSettings publishableKey];
+    if (!publishableKey) {
+        return completionHandler(RadarStatusErrorPublishableKey, nil, nil, nil);
+    }
+    
+    if (!tripId || !legId) {
+        return completionHandler(RadarStatusErrorBadRequest, nil, nil, nil);
+    }
+    
+    NSMutableDictionary *params = [NSMutableDictionary new];
+    params[@"status"] = [RadarTripLeg stringForStatus:status];
+    
+    NSString *host = [RadarSettings host];
+    NSString *url = [NSString stringWithFormat:@"%@/v1/trips/%@/legs/%@", host, tripId, legId];
+    url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
+    
+    NSDictionary *headers = [RadarAPIClient headersWithPublishableKey:publishableKey];
+    
+    [self.apiHelper requestWithMethod:@"PATCH"
+                                  url:url
+                              headers:headers
+                               params:params
+                                sleep:NO
+                           logPayload:YES
+                      extendedTimeout:NO
+                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
+                        if (status != RadarStatusSuccess || !res) {
+                            return completionHandler(status, nil, nil, nil);
+                        }
+                        
+                        id tripObj = res[@"trip"];
+                        id legObj = res[@"leg"];
+                        id eventsObj = res[@"events"];
+                        RadarTrip *trip = [[RadarTrip alloc] initWithObject:tripObj];
+                        RadarTripLeg *leg = [RadarTripLeg legFromDictionary:legObj];
+                        NSArray<RadarEvent *> *events = [RadarEvent eventsFromObject:eventsObj];
+                        
+                        if (events && events.count) {
+                            [[RadarDelegateHolder sharedInstance] didReceiveEvents:events user:nil];
+                        }
+                        
+                        completionHandler(RadarStatusSuccess, trip, leg, events);
                     }];
 }
 

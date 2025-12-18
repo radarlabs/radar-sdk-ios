@@ -11,11 +11,56 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
+ The status values for trip legs.
+ */
+typedef NS_ENUM(NSInteger, RadarTripLegStatus) {
+    /// Unknown
+    RadarTripLegStatusUnknown NS_SWIFT_NAME(unknown),
+    /// Pending
+    RadarTripLegStatusPending NS_SWIFT_NAME(pending),
+    /// Started
+    RadarTripLegStatusStarted NS_SWIFT_NAME(started),
+    /// Approaching
+    RadarTripLegStatusApproaching NS_SWIFT_NAME(approaching),
+    /// Arrived
+    RadarTripLegStatusArrived NS_SWIFT_NAME(arrived),
+    /// Completed
+    RadarTripLegStatusCompleted NS_SWIFT_NAME(completed),
+    /// Canceled
+    RadarTripLegStatusCanceled NS_SWIFT_NAME(canceled),
+    /// Expired
+    RadarTripLegStatusExpired NS_SWIFT_NAME(expired)
+};
+
+/**
  Represents a leg of a multi-destination trip.
 
  @see https://radar.com/documentation/trip-tracking
  */
 @interface RadarTripLeg : NSObject
+
+#pragma mark - Response Properties (populated from server response)
+
+/**
+ The Radar ID of the leg. Set from server response.
+ Use this when calling updateTripLeg.
+ */
+@property (nullable, nonatomic, copy, readonly) NSString *_id;
+
+/**
+ The status of the leg. Set from server response.
+ */
+@property (nonatomic, assign, readonly) RadarTripLegStatus status;
+
+/**
+ The date when the leg was created. Set from server response.
+ */
+@property (nullable, nonatomic, copy, readonly) NSDate *createdAt;
+
+/**
+ The date when the leg was last updated. Set from server response.
+ */
+@property (nullable, nonatomic, copy, readonly) NSDate *updatedAt;
 
 #pragma mark - Geofence Destination Properties
 
@@ -167,6 +212,24 @@ NS_ASSUME_NONNULL_BEGIN
  @return An array of dictionary representations.
  */
 + (NSArray<NSDictionary *> *_Nullable)arrayForLegs:(NSArray<RadarTripLeg *> *_Nullable)legs;
+
+/**
+ Returns the string representation of a trip leg status.
+ 
+ @param status The trip leg status.
+ 
+ @return The string representation.
+ */
++ (NSString *)stringForStatus:(RadarTripLegStatus)status;
+
+/**
+ Returns the trip leg status for a string representation.
+ 
+ @param string The string representation.
+ 
+ @return The trip leg status.
+ */
++ (RadarTripLegStatus)statusForString:(NSString *)string;
 
 @end
 
