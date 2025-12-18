@@ -30,6 +30,7 @@
 #import "RadarState.h"
 #import "RadarTrip+Internal.h"
 #import "RadarTripOptions.h"
+#import "RadarTripLeg.h"
 #import "RadarUser+Internal.h"
 #import "RadarUtils.h"
 #import "RadarVerificationManager.h"
@@ -726,6 +727,10 @@
 
     if (options.approachingThreshold > 0) {
         params[@"approachingThreshold"] = [NSString stringWithFormat:@"%d", options.approachingThreshold];
+    }
+    
+    if (options.legs && options.legs.count > 0) {
+        params[@"legs"] = [RadarTripLeg arrayForLegs:options.legs];
     }
 
     NSString *host = [RadarSettings host];
