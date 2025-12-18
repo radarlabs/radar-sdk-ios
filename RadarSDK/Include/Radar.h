@@ -905,6 +905,31 @@ typedef void (^_Nonnull RadarIndoorsScanCompletionHandler)(NSString *_Nullable r
                          status:(RadarTripLegStatus)status
               completionHandler:(RadarTripLegCompletionHandler _Nullable)completionHandler NS_SWIFT_NAME(updateTripLeg(tripId:legId:status:completionHandler:));
 
+/**
+ Updates a trip leg status for multi-destination trips, using the current trip's ID.
+
+ @param legId The Radar ID of the leg (from RadarTripLeg._id).
+ @param status The new status for the leg.
+ @param completionHandler An optional completion handler.
+
+ @see https://radar.com/documentation/trip-tracking
+ */
++ (void)updateTripLegWithLegId:(NSString *_Nonnull)legId
+                        status:(RadarTripLegStatus)status
+             completionHandler:(RadarTripLegCompletionHandler _Nullable)completionHandler NS_SWIFT_NAME(updateTripLeg(legId:status:completionHandler:));
+
+/**
+ Updates the current trip leg status for multi-destination trips.
+ Uses the current trip's ID and currentLegId automatically.
+
+ @param status The new status for the current leg.
+ @param completionHandler An optional completion handler.
+
+ @see https://radar.com/documentation/trip-tracking
+ */
++ (void)updateCurrentTripLegWithStatus:(RadarTripLegStatus)status
+                     completionHandler:(RadarTripLegCompletionHandler _Nullable)completionHandler NS_SWIFT_NAME(updateCurrentTripLeg(status:completionHandler:));
+
 #pragma mark - Context
 
 /**

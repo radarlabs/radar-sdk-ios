@@ -803,7 +803,21 @@ BOOL _initialized = NO;
                                                       status:status
                                            completionHandler:^(RadarStatus status, RadarTrip *trip, RadarTripLeg *leg, NSArray<RadarEvent *> *events) {
                                                if (status == RadarStatusSuccess && trip) {
-                                                   [RadarSettings setTrip:trip];
+                                                   // Check if completing this leg also completed the trip
+                                                   if (trip.status == RadarTripStatusCompleted) {
+                                                       // Trip is complete - clear state like completeTrip does
+                                                       [RadarSettings setTripOptions:nil];
+                                                       [RadarSettings setTrip:nil];
+                                                       
+                                                       // return to previous tracking options after trip
+                                                       [[RadarLocationManager sharedInstance] restartPreviousTrackingOptions];
+                                                       
+                                                       // flush location update to generate events
+                                                       [Radar trackOnceWithCompletionHandler:nil];
+                                                   } else {
+                                                       // Trip still in progress - update stored trip
+                                                       [RadarSettings setTrip:trip];
+                                                   }
                                                }
                                                
                                                if (completionHandler) {
@@ -812,6 +826,49 @@ BOOL _initialized = NO;
                                                    }];
                                                }
                                            }];
+}
+
++ (void)updateTripLegWithLegId:(NSString *)legId
+                        status:(RadarTripLegStatus)status
+             completionHandler:(RadarTripLegCompletionHandler)completionHandler {
+    RadarTrip *trip = [RadarSettings trip];
+    if (!trip) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelWarning type:RadarLogTypeSDKCall message:@"updateTripLeg() called with no active trip"];
+        if (completionHandler) {
+            [RadarUtils runOnMainThread:^{
+                completionHandler(RadarStatusErrorBadRequest, nil, nil, nil);
+            }];
+        }
+        return;
+    }
+    
+    [self updateTripLegWithTripId:trip._id legId:legId status:status completionHandler:completionHandler];
+}
+
++ (void)updateCurrentTripLegWithStatus:(RadarTripLegStatus)status
+                     completionHandler:(RadarTripLegCompletionHandler)completionHandler {
+    RadarTrip *trip = [RadarSettings trip];
+    if (!trip) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelWarning type:RadarLogTypeSDKCall message:@"updateCurrentTripLeg() called with no active trip"];
+        if (completionHandler) {
+            [RadarUtils runOnMainThread:^{
+                completionHandler(RadarStatusErrorBadRequest, nil, nil, nil);
+            }];
+        }
+        return;
+    }
+    
+    if (!trip.currentLegId) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelWarning type:RadarLogTypeSDKCall message:@"updateCurrentTripLeg() called but trip has no current leg"];
+        if (completionHandler) {
+            [RadarUtils runOnMainThread:^{
+                completionHandler(RadarStatusErrorBadRequest, nil, nil, nil);
+            }];
+        }
+        return;
+    }
+    
+    [self updateTripLegWithTripId:trip._id legId:trip.currentLegId status:status completionHandler:completionHandler];
 }
 
 #pragma mark - Context
