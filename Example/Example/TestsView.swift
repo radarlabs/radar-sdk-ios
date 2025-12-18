@@ -108,6 +108,10 @@ struct TestsView: View {
                                 if let loc = location {
                                     statusMessage += "\n📍 \(loc.coordinate.latitude), \(loc.coordinate.longitude)"
                                 }
+                                // Refresh trip info from the updated state
+                                if let trip = Radar.getTrip() {
+                                    updateTripInfo(trip)
+                                }
                             }
                         }
                         
@@ -125,6 +129,10 @@ struct TestsView: View {
                                 statusMessage = "Mock track: \(Radar.stringForStatus(status))"
                                 if let events = events, !events.isEmpty {
                                     statusMessage += "\n📬 \(events.count) event(s)"
+                                }
+                                // Refresh trip info from the updated state
+                                if let trip = Radar.getTrip() {
+                                    updateTripInfo(trip)
                                 }
                             }
                         }
@@ -163,7 +171,7 @@ struct TestsView: View {
             destinationGeofenceTag: nil,
             destinationGeofenceExternalId: nil
         )
-        tripOptions.mode = .car
+        tripOptions.mode = .foot
         tripOptions.legs = [leg1, leg2, leg3]
         
         // Start the trip
@@ -188,6 +196,17 @@ struct TestsView: View {
         
         statusMessage = "📋 Current trip state:"
         updateTripInfo(trip)
+        
+        // Debug: print raw ETA values
+        print("=== Trip Debug ===")
+        print("Trip ID: \(trip._id)")
+        print("Trip ETA - duration: \(trip.etaDuration), distance: \(trip.etaDistance)")
+        if let legs = trip.legs {
+            for (i, leg) in legs.enumerated() {
+                print("Leg \(i) - ETA duration: \(leg.etaDuration), distance: \(leg.etaDistance), status: \(RadarTripLeg.string(for: leg.status))")
+            }
+        }
+        print("==================")
     }
     
     private func completeCurrentLeg() {
@@ -213,7 +232,7 @@ struct TestsView: View {
                 }
                 
                 if let events = events, !events.isEmpty {
-                    let eventTypes = events.map { Radar.stringForEventType($0.type) }.joined(separator: ", ")
+                    let eventTypes = events.map { RadarEvent.string(for: $0.type) ?? "unknown" }.joined(separator: ", ")
                     statusMessage += "\n📬 Events: \(eventTypes)"
                 }
             } else {
