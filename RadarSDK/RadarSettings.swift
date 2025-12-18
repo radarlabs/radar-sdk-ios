@@ -186,7 +186,7 @@ internal class RadarSettings: NSObject {
         set { RadarUserDefaults.set(newValue?.dictionaryValue(), forKey: .TripOptions) }
     }
     
-    @objc public static var trip: RadarTrip? {
+    public static var trip: RadarTrip? {
         get {
             if let dict = RadarUserDefaults.dictionary(forKey: .Trip) {
                 return RadarTrip(object: dict)
