@@ -15,5 +15,4 @@
 
 - (NSDictionary<NSString *, id> * _Nonnull)toDictionary;
 
-- (nonnull instancetype)init;
 @end

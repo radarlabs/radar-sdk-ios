@@ -24,6 +24,7 @@
 		F63DDAD52E746BB0006991F5 /* StyledButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = F63DDAD42E746BB0006991F5 /* StyledButton.swift */; };
 		F6513E792E60A5F600523472 /* LocationPushExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = F6513E722E60A5F600523472 /* LocationPushExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		F6513F602E6B736200523472 /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6513F5F2E6B736200523472 /* MainView.swift */; };
+		F65F793E2EF458E600399E84 /* MyIAMDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F65F79382EF458E000399E84 /* MyIAMDelegate.swift */; };
 		F66DAD6A2E707F0700896773 /* waypoints.gpx in Sources */ = {isa = PBXBuildFile; fileRef = F66DAD642E707F0300896773 /* waypoints.gpx */; };
 		F6BF841E2EC78AAF00143AD9 /* RadarSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0107AA77262200DA008AB52F /* RadarSDK.framework */; };
 		F6BF841F2EC78AAF00143AD9 /* RadarSDK.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 0107AA77262200DA008AB52F /* RadarSDK.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -124,6 +125,7 @@
 		F63DDAD42E746BB0006991F5 /* StyledButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StyledButton.swift; sourceTree = "<group>"; };
 		F6513E722E60A5F600523472 /* LocationPushExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = LocationPushExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		F6513F5F2E6B736200523472 /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
+		F65F79382EF458E000399E84 /* MyIAMDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyIAMDelegate.swift; sourceTree = "<group>"; };
 		F66DAD642E707F0300896773 /* waypoints.gpx */ = {isa = PBXFileReference; lastKnownFileType = text; path = waypoints.gpx; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -193,6 +195,7 @@
 				F61886C42EA7DC800072E87C /* MapView.swift */,
 				F63DDAD42E746BB0006991F5 /* StyledButton.swift */,
 				F61886C02EA7DB3F0072E87C /* MyRadarDelegate.swift */,
+				F65F79382EF458E000399E84 /* MyIAMDelegate.swift */,
 				F61886B92EA7DB180072E87C /* TestsView.swift */,
 				F61887162EAFC1E80072E87C /* Test.mm */,
 				F61886C22EA7DB5C0072E87C /* LogsView.swift */,
@@ -393,6 +396,7 @@
 				F6513F602E6B736200523472 /* MainView.swift in Sources */,
 				F61886C32EA7DB5F0072E87C /* LogsView.swift in Sources */,
 				F61886C12EA7DB440072E87C /* MyRadarDelegate.swift in Sources */,
+				F65F793E2EF458E600399E84 /* MyIAMDelegate.swift in Sources */,
 				DD291169230D0AF900049D3A /* Utils.swift in Sources */,
 				F61886BF2EA7DB1D0072E87C /* TestsView.swift in Sources */,
 			);
