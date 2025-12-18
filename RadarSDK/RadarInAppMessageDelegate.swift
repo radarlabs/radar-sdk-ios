@@ -16,16 +16,14 @@ open class RadarInAppMessageDelegate : NSObject, RadarInAppMessageProtocol {
 
     @available(iOS 13.0, *)
     public static func loadImage(_ url: String) async -> UIImage? {
-        print("LOADING IMAGE: \(url)")
         if (url.isEmpty) {
             return nil
         }
         do {
             let data = try await RadarAPIClient.shared.getAsset(url: url)
-            print("LOADING IMAGE:  \(String(data: data, encoding: .utf8)) \(UIImage(data: data))")
             return UIImage(data: data)
         } catch {
-            RadarLogger.shared.debug("API request error")
+            RadarLogger.shared.debug("API request error, failed to load IAM image for \(url)")
             // error in API request or converting to image
             return nil
         }
