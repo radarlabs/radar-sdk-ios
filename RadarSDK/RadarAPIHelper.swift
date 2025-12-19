@@ -44,8 +44,12 @@ final class RadarApiHelper: Sendable {
     }
 
     func radarRequest(method: String, url: String, query: [String: String] = [:], headers: [String: String] = [:], body: [String: Any] = [:]) async throws -> (Data, HTTPURLResponse) {
+        guard let publishableKey = RadarSettings.publishableKey else {
+            throw URLError(.userAuthenticationRequired)
+        }
+        
         var headers = headers
-        headers["Authorization"] = RadarSettings.publishableKey
+        headers["Authorization"] = publishableKey
         // TODO: add additional mobile headers when RadarUtils is in swift
         /*
         @"Content-Type": @"application/json",
