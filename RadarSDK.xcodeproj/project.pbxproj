@@ -186,7 +186,6 @@
 		F6513E832E60C49200523472 /* RadarUserDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6513E822E60C49200523472 /* RadarUserDefaults.swift */; };
 		F65AF72C2C10B242002BA009 /* get_config_response.json in Resources */ = {isa = PBXBuildFile; fileRef = F65AF72B2C10B242002BA009 /* get_config_response.json */; };
 		F65F79372EF4560B00399E84 /* RadarInAppMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = F65F79362EF4560400399E84 /* RadarInAppMessage.m */; };
-		F662FF642EF5A079005D2D29 /* RadarSDK-Bridging-Header.h in Headers */ = {isa = PBXBuildFile; fileRef = F662FF632EF5A06F005D2D29 /* RadarSDK-Bridging-Header.h */; };
 		F667F8292BFBF3D1001F2F67 /* RadarSdkConfiguration.h in Headers */ = {isa = PBXBuildFile; fileRef = F667F8282BFBF3D1001F2F67 /* RadarSdkConfiguration.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F686B72D2E4D27EB00D3D614 /* RadarInAppMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F686B72C2E4D27EB00D3D614 /* RadarInAppMessage.swift */; };
 		F686B7312E4D29C400D3D614 /* RadarInAppMessageDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = F686B7302E4D29C400D3D614 /* RadarInAppMessageDelegate.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -386,7 +385,6 @@
 		F6513E822E60C49200523472 /* RadarUserDefaults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarUserDefaults.swift; sourceTree = "<group>"; };
 		F65AF72B2C10B242002BA009 /* get_config_response.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = get_config_response.json; sourceTree = "<group>"; };
 		F65F79362EF4560400399E84 /* RadarInAppMessage.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RadarInAppMessage.m; sourceTree = "<group>"; };
-		F662FF632EF5A06F005D2D29 /* RadarSDK-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "RadarSDK-Bridging-Header.h"; sourceTree = "<group>"; };
 		F667F8262BFBF3C8001F2F67 /* RadarSdkConfiguration.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RadarSdkConfiguration.m; sourceTree = "<group>"; };
 		F667F8282BFBF3D1001F2F67 /* RadarSdkConfiguration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RadarSdkConfiguration.h; sourceTree = "<group>"; };
 		F686B72C2E4D27EB00D3D614 /* RadarInAppMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarInAppMessage.swift; sourceTree = "<group>"; };
@@ -528,7 +526,6 @@
 			isa = PBXGroup;
 			children = (
 				828D1A452E29599500663787 /* RadarTripOrder.m */,
-				F662FF632EF5A06F005D2D29 /* RadarSDK-Bridging-Header.h */,
 				825732502B72BE1900DF8B88 /* PrivacyInfo.xcprivacy */,
 				96A5A0D827AD9F7F007B960B /* Include */,
 				DD236C792308797B00EB88F9 /* Info.plist */,
@@ -709,7 +706,6 @@
 				96A5A10D27AD9F7F007B960B /* RadarPolygonGeometry.h in Headers */,
 				96A5A0D627AD9F41007B960B /* RadarRouteMatrix+Internal.h in Headers */,
 				96A5A0FA27AD9F7F007B960B /* RadarRouteMatrix.h in Headers */,
-				F662FF642EF5A079005D2D29 /* RadarSDK-Bridging-Header.h in Headers */,
 				96A5A0CC27AD9F41007B960B /* RadarUser+Internal.h in Headers */,
 				96A5A10327AD9F7F007B960B /* RadarGeofence.h in Headers */,
 				0107AA222622005B008AB52F /* RadarState.h in Headers */,
@@ -1041,6 +1037,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
+				MACH_O_TYPE = mh_dylib;
 				PRODUCT_BUNDLE_IDENTIFIER = io.radar.sdk;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1074,6 +1071,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
+				MACH_O_TYPE = mh_dylib;
 				PRODUCT_BUNDLE_IDENTIFIER = io.radar.sdk;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
