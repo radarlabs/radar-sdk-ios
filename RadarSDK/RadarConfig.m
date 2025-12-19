@@ -21,9 +21,9 @@
             config.meta = [RadarMeta fromDictionary:metaObj];
         }
 
-        id nonceObj = dict[@"nonce"];
-        if (nonceObj && [nonceObj isKindOfClass:[NSString class]]) {
-            config.nonce = (NSString *)nonceObj;
+        id challengeObj = dict[@"nonce"];
+        if (challengeObj && [challengeObj isKindOfClass:[NSString class]]) {
+            config.challenge = (NSString *)challengeObj;
         }
     }
 

@@ -13,7 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface RadarConfig : NSObject
 
 @property (nullable, strong, nonatomic) RadarMeta *meta;
-@property (nullable, copy, nonatomic) NSString *nonce;
+@property (nullable, copy, nonatomic) NSString *challenge;
 
 + (RadarConfig *_Nullable)fromDictionary:(NSDictionary *_Nullable)dict;
 
