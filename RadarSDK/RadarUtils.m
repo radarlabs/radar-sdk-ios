@@ -13,7 +13,7 @@
 
 #import "RadarUtils.h"
 
-@implementation RadarUtils
+@implementation RadarUtilsDeprecated
 
 static NSDateFormatter *_isoDateFormatter;
 

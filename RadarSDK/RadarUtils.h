@@ -46,4 +46,7 @@ typedef NS_ENUM(NSInteger, RadarConnectionType) {
 
 @end
 
+@interface RadarUtilsDeprecated : RadarUtils
+@end
+
 NS_ASSUME_NONNULL_END
