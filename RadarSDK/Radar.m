@@ -175,6 +175,10 @@ BOOL _initialized = NO;
     return [RadarSettings publishableKey];
 }
 
++ (void)setPublishableKey:(NSString *)key {
+    return [RadarSettings setPublishableKey:key];
+}
+
 + (void)setUserId:(NSString *)userId {
     [RadarSettings setUserId:userId];
     if ([RadarSettings sdkConfiguration].syncAfterSetUser) {
