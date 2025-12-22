@@ -355,6 +355,12 @@ typedef void (^_Nonnull RadarIndoorsScanCompletionHandler)(NSString *_Nullable r
  */
 @property (readonly, class) NSString *sdkVersion;
 
+
+/**
+ Sets the publishable key without initializing. Primarily used for ephemeral API keys.
+ */
++ (void)setPublishableKey:(NSString *_Nonnull)key;
+
 /**
  Identifies the user.
 
