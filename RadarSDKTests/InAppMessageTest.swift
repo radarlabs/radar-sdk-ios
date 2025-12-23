@@ -65,7 +65,7 @@ class MockWindow : UIWindow {
 
 @Suite
 actor InAppMessageTest {
-
+    @MainActor
     let message = RadarInAppMessage.fromDictionary([
         "title": [
             "text": "This is the title",
@@ -90,7 +90,10 @@ actor InAppMessageTest {
     ])
 
     @Test("In app message construction")
+    @MainActor
     func InAppMessageTestConstruction() throws {
+        let message = message as? RadarInAppMessage_Swift
+        
         #expect(message != nil)
         #expect(message!.title.text == "This is the title")
         #expect(message!.title.color == UIColor(red: 1, green: 0, blue: 0, alpha: 1))
@@ -105,6 +108,7 @@ actor InAppMessageTest {
     }
     
     @Test("In app message to dictionary")
+    @MainActor
     func InAppMessageTestToDictionary() throws {
         let dict = message?.toDictionary()
         #expect(dict != nil)

@@ -9,7 +9,7 @@ import SwiftUI
 
 @available(iOS 13.0, *)
 struct RadarIAMView: View {
-    var message: RadarInAppMessage
+    var message: RadarInAppMessage_Swift
     var image: UIImage?
     var onDismiss: (() -> Void)
     var onInAppMessageClicked: (() -> Void)
@@ -100,7 +100,7 @@ struct RadarIAMView: View {
                     "url": "https://images.pexels.com/photos/949587/pexels-photo-949587.jpeg",
                     "name": "image.jpeg"
                 ]
-        ])!,
+        ]) as! RadarInAppMessage_Swift,
 //             image: UIImage(named: "background"),
              onDismiss: { print("Dismissed") },
              onInAppMessageClicked: { print("Button tapped") }

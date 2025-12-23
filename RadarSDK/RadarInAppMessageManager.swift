@@ -19,7 +19,7 @@ public class RadarInAppMessageManager: NSObject {
     public var view: UIView?
 
     var messageShownTime: Date?
-    var currentMessage: RadarInAppMessage?
+    var currentMessage: RadarInAppMessage_Swift?
 
     internal var getKeyWindow: () -> UIWindow? = {
         return UIApplication.shared.windows.first(where: { $0.isKeyWindow })
@@ -56,6 +56,9 @@ public class RadarInAppMessageManager: NSObject {
     }
 
     @objc public func showInAppMessage(_ message: RadarInAppMessage) async {
+        guard let message = message as? RadarInAppMessage_Swift else {
+            return
+        }
         // check before getting the view that there is no existing IAM shown
         if (view != nil) {
             RadarLogger.shared.debug("Existing in-app message view, new in-app message ignored")

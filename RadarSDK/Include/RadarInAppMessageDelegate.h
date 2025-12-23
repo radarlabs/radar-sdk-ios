@@ -8,8 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import <UIKit/UIkit.h>
-
-@class RadarInAppMessage;
+#import "RadarInAppMessage.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -39,8 +38,10 @@ NS_SWIFT_UI_ACTOR
 
 @end
 
-// This is the default implementation class for Objective-C, override specific methods of this class
-NS_SWIFT_NAME(RadarInAppMessageDelegate_ObjC)
+// This is the default implementation class
+// you can override specific methods of this class instead of having to implement every method
+// of the protocol
+NS_SWIFT_NAME(RadarInAppMessageDelegate)
 API_AVAILABLE(ios(13.0))
 NS_SWIFT_UI_ACTOR
 @interface RadarInAppMessageDelegate : NSObject <RadarInAppMessageProtocol>
