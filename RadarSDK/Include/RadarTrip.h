@@ -7,6 +7,7 @@
 
 #import "RadarCoordinate.h"
 #import "RadarRouteMode.h"
+#import "RadarTripLeg.h"
 #import "RadarTripOrder.h"
 #import <Foundation/Foundation.h>
 
@@ -92,6 +93,26 @@ typedef NS_ENUM(NSInteger, RadarTripStatus) {
  */
 @property (nullable, copy, nonatomic, readonly) NSArray<RadarTripOrder *> *orders;
 
+/**
+ For multi-destination trips, the array of trip legs.
+ Each leg contains destination info, status, and metadata.
+ Use leg._id when calling updateTripLeg.
+ */
+@property (nullable, copy, nonatomic, readonly) NSArray<RadarTripLeg *> *legs;
+
+/**
+ For multi-destination trips, the ID of the current active leg.
+ */
+@property (nullable, copy, nonatomic, readonly) NSString *currentLegId;
+
 - (NSDictionary *_Nonnull)dictionaryValue;
+
+/**
+ Initializes a RadarTrip from a dictionary representation.
+ 
+ @param object A dictionary containing trip data.
+ @return An initialized RadarTrip, or nil if the dictionary is invalid.
+ */
+- (instancetype _Nullable)initWithObject:(id _Nonnull)object;
 
 @end

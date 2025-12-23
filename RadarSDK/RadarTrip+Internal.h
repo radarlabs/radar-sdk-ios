@@ -6,6 +6,7 @@
 //
 
 #import "RadarTrip.h"
+#import "RadarTripLeg.h"
 #import <Foundation/Foundation.h>
 
 @interface RadarTrip ()
@@ -20,7 +21,9 @@
                          etaDistance:(float)etaDistance
                          etaDuration:(float)etaDuration
                               status:(RadarTripStatus)status
-                              orders:(NSArray<RadarTripOrder *> *_Nullable)orders;
+                              orders:(NSArray<RadarTripOrder *> *_Nullable)orders
+                                legs:(NSArray<RadarTripLeg *> *_Nullable)legs
+                        currentLegId:(NSString *_Nullable)currentLegId;
 
 - (instancetype _Nullable)initWithObject:(id _Nonnull)object;
 
