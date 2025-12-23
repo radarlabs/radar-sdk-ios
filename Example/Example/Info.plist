@@ -2,10 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>NSSupportsLiveActivities</key>
-	<true/>
-	<key>NSSupportsLiveActivitiesFrequentUpdates</key>
-	<true/>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleExecutable</key>
@@ -69,6 +65,10 @@
 	<string>Your foreground location usage description goes here.</string>
 	<key>NSMotionUsageDescription</key>
 	<string>Your motion usage description goes here.</string>
+	<key>NSSupportsLiveActivities</key>
+	<true/>
+	<key>NSSupportsLiveActivitiesFrequentUpdates</key>
+	<true/>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

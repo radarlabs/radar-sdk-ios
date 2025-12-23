@@ -151,19 +151,29 @@ struct TestsView: View {
     private func startMultiLegTrip() {
         statusMessage = "Starting multi-leg trip..."
         
-        // Leg 1: Address destination
-        let leg1 = RadarTripLeg(address: "32 Gramercy Park South, New York, NY 10003")
+        // Leg 1: Geofence destination
+        let leg1 = RadarTripLeg(destinationGeofenceTag: "bike", destinationGeofenceExternalId: "stop1")
         leg1.metadata = ["stopNumber": "1", "type": "delivery"]
-        leg1.stopDuration = 5
+        leg1.stopDuration = 10
         
-        // Leg 2: Geofence destination (Union Square)
-        let leg2 = RadarTripLeg(destinationGeofenceTag: "nyc", destinationGeofenceExternalId: "usq")
-        leg2.metadata = ["stopNumber": "2", "type": "pickup"]
-        leg2.stopDuration = 3
+        // Leg 2: Geofence destination 
+        let leg2 = RadarTripLeg(destinationGeofenceTag: "bike", destinationGeofenceExternalId: "stop2")
+        leg2.metadata = ["stopNumber": "2", "type": "delivery"]
+        leg2.stopDuration = 10
         
-        // Leg 3: Geofence destination (HQ - final destination)
-        let leg3 = RadarTripLeg(destinationGeofenceTag: "nyc", destinationGeofenceExternalId: "hq")
-        leg3.metadata = ["stopNumber": "3", "type": "return-to-base"]
+        // Leg 3: Geofence destination
+        let leg3 = RadarTripLeg(destinationGeofenceTag: "bike", destinationGeofenceExternalId: "stop3")
+        leg3.metadata = ["stopNumber": "3", "type": "delivery"]
+        leg3.stopDuration = 10
+        
+        // Leg 4: Geofence destination
+        let leg4 = RadarTripLeg(destinationGeofenceTag: "bike", destinationGeofenceExternalId: "stop4")
+        leg4.metadata = ["stopNumber": "4", "type": "delivery"]
+        leg4.stopDuration = 10
+        
+        // Leg 5: Geofence destination (return)
+        let leg5 = RadarTripLeg(destinationGeofenceTag: "return", destinationGeofenceExternalId: "house")
+        leg5.metadata = ["stopNumber": "5", "type": "return"]
         
         // Create trip options with all legs
         let tripOptions = RadarTripOptions(
@@ -171,8 +181,8 @@ struct TestsView: View {
             destinationGeofenceTag: nil,
             destinationGeofenceExternalId: nil
         )
-        tripOptions.mode = .foot
-        tripOptions.legs = [leg1, leg2, leg3]
+        tripOptions.mode = .bike
+        tripOptions.legs = [leg1, leg2, leg3, leg4, leg5]
         
         // Start the trip
         Radar.startTrip(options: tripOptions) { status, trip, events in
@@ -237,7 +247,7 @@ struct TestsView: View {
                 }
             } else {
                 statusMessage = "❌ Failed to complete leg: \(Radar.stringForStatus(status))"
-            }
+            }   
         }
     }
     
