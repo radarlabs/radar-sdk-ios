@@ -35,7 +35,7 @@ open class RadarInAppMessageDelegate : NSObject, RadarInAppMessageProtocol {
     open func createInAppMessageView(_ message: RadarInAppMessage, onDismiss: @escaping () -> Void, onInAppMessageClicked: @escaping () -> Void, completionHandler: @escaping (UIViewController) -> Void) {
         Task {
             guard let message = message as? RadarInAppMessage_Swift else {
-                // message is not a RadarInAppMessageSwift instance
+                RadarLogger.shared.debug("RadarInAppMessage is not a RadarInAppMessage_Swift instance")
                 return
             }
             
@@ -50,7 +50,7 @@ open class RadarInAppMessageDelegate : NSObject, RadarInAppMessageProtocol {
 
     open func onInAppMessageButtonClicked(_ message: RadarInAppMessage) {
         guard let message = message as? RadarInAppMessage_Swift else {
-            // message is not a RadarInAppMessageSwift instance
+            RadarLogger.shared.debug("RadarInAppMessage is not a RadarInAppMessage_Swift instance")
             return
         }
         if let urlString = message.button?.deepLink,
