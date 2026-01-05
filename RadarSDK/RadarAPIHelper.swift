@@ -33,7 +33,7 @@ final class RadarApiHelper: Sendable {
         if (!body.isEmpty && (method == "POST" || method == "PUT" || method == "PATCH")) {
             request.httpBody = try JSONSerialization.data(withJSONObject: body, options: [])
         }
-
+        
         let (data, response) = try await URLSession.shared.data(for: request)
 
         guard let httpResponse = response as? HTTPURLResponse else {
