@@ -84,6 +84,7 @@
             break;
         default:
             str = @"UNKNOWN";
+            break;
     }
     return str;
 }
