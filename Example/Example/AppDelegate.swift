@@ -29,16 +29,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         
         locationManager.delegate = self
         self.requestLocationPermissions()
+        Radar.setAppGroup(nil)
+        
+        UserDefaults.standard.setValue("https://api-shicheng.radar-staging.com", forKey: "radar-host")
         
         // Uncomment to enable automatic setup for notification conversions or deep linking
         let radarInitializeOptions = RadarInitializeOptions()
         radarInitializeOptions.autoLogNotificationConversions = true
         radarInitializeOptions.autoHandleNotificationDeepLinks = true
         radarInitializeOptions.silentPush = true
-        
-//        Radar.setAppGroup("group.waypoint.data")
-        
-        
         Radar.initialize(publishableKey: "prj_test_pk_", options: radarInitializeOptions )
         
         Radar.setMetadata([ "foo": "bar" ])

@@ -96,6 +96,8 @@ typedef NS_ENUM(NSInteger, RadarLocationSource) {
     RadarLocationSourceBeaconEnter,
     /// Beacon exit
     RadarLocationSourceBeaconExit,
+    /// Location from RadarSDKIndoors
+    RadarLocationSourceIndoors,
     /// Unknown
     RadarLocationSourceUnknown
 };
@@ -1377,7 +1379,7 @@ typedef void (^_Nonnull RadarIndoorsScanCompletionHandler)(NSString *_Nullable r
 
 + (void)requestMotionActivityPermission NS_SWIFT_NAME(requestMotionActivityPermission());
 
-+ (void)setAppGroup:(NSString*)appGroup;
++ (void)setAppGroup:(NSString*_Nullable)appGroup;
 
 + (void)setPushNotificationToken:(NSString*_Nullable)token;
 

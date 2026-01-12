@@ -120,9 +120,10 @@ struct MyMapView: UIViewRepresentable {
     }
     
     func makeUIView(context: Context) -> MLNMapView {
+        let host = UserDefaults.standard.string(forKey: "radar-host") ?? "https://api.radar.io"
         let style = "radar-default-v1"
         let publishableKey = withRadar
-        let styleURL = URL(string: "https://api.radar-staging.com/maps/styles/\(style)?publishableKey=\(publishableKey)")
+        let styleURL = URL(string: "\(host)/maps/styles/\(style)?publishableKey=\(publishableKey)")
         
         // set up radar request header, required for the mobile restrictions setting.
         let sessionConfig = URLSessionConfiguration.default

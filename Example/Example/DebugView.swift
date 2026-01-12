@@ -14,6 +14,7 @@ import ARKit
 import CoreMotion
 import Combine
 import Gzip
+import RadarSDK
 
 class DebugViewModel: NSObject, ObservableObject {
     @Published var transform = simd_float4x4()
@@ -105,6 +106,8 @@ extension CLBeacon {
 
 struct DebugView: View {
     
+    let radarDelegateState: RadarDelegateState
+    
     @State
     var image: UIImage? = nil
     
@@ -168,7 +171,7 @@ struct DebugView: View {
     @State
     var predCoord = CLLocationCoordinate2D(latitude: 0, longitude: 0)
     @State
-    var rawPredCoord = CLLocationCoordinate2D(latitude: 0, longitude: 0)
+    var lastPredCoord = CLLocationCoordinate2D(latitude: 0, longitude: 0)
     @State
     var displayPredCoord = CLLocationCoordinate2D(latitude: 0, longitude: 0)
     
@@ -182,15 +185,15 @@ struct DebugView: View {
                 MLNPointFeature(coordinate: arCoord) { f in
                     f.attributes["color"] = "#FF00FF"
                 },
-//                MLNPointFeature(coordinate: predCoord) { f in
-//                    f.attributes["color"] = "#00FFFF"
-//                },
+                MLNPointFeature(coordinate: predCoord) { f in
+                    f.attributes["color"] = "#00FFFF"
+                },
                 MLNPointFeature(coordinate: displayPredCoord) { f in
                     f.attributes["color"] = "#0000FF"
                 },
-//                MLNPointFeature(coordinate: rawPredCoord) { f in
-//                    f.attributes["color"] = "#FF0000"
-//                },
+                MLNPointFeature(coordinate: lastPredCoord) { f in
+                    f.attributes["color"] = "#FF0000"
+                },
             ])
         }
     }
@@ -202,7 +205,8 @@ struct DebugView: View {
     
     var body: some View {
         VStack(spacing: 10) {
-            MyMapView(withRadar: "prj_test_pk_3508428416f485c5f54d8e8bb1f616ee405b1995")
+            let key = UserDefaults.standard.string(forKey: "radar-publishableKey")
+            MyMapView(withRadar: key)
                 .onStyleLoaded { style in
                     guard let site else {
                         return
@@ -339,18 +343,6 @@ struct DebugView: View {
                                     .background(collectedData.isEmpty ? Color.gray : Color.green)
                                     .clipShape(Circle())
                             }
-                            
-                            Button(action: {
-    //                            await RadarSDKIndoors.reDownloadModel()
-                            }) {
-                                Text("Get Model")
-                                    .font(.title)
-                                    .foregroundColor(.white)
-                                    .frame(width: 80, height: 80)
-                                    .background(Color.blue)
-                                    .clipShape(Circle())
-                            }
-                            
                         }
                         
                     }.frame(width: 200)
@@ -396,11 +388,19 @@ struct DebugView: View {
                     .autoconnect()
                     .sink { _ in
                     // linear interpolation based on time to next location (1s)
-                        let timeToNextUpdate = max(1 - Date.now.timeIntervalSince(lastUpdatedAt), 0)
-                        let lerp = timeToNextUpdate == 0 ? 1 : (0.05 / timeToNextUpdate)
-                        let latitude = displayPredCoord.latitude * (1 - lerp) + predCoord.latitude * lerp
-                        let longitude = displayPredCoord.longitude * (1 - lerp) + predCoord.longitude * lerp
+                        let now = Date.now
+                        let timeToNextUpdate = max(1 - now.timeIntervalSince(lastUpdatedAt), 0)
+                        let lerp = min(timeToNextUpdate, 1)
+                        let latitude = lastPredCoord.latitude * lerp + predCoord.latitude * (1 - lerp)
+                        let longitude = lastPredCoord.longitude * lerp + predCoord.longitude * (1 - lerp)
                         displayPredCoord = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
+                        
+                        let coord = radarDelegateState.clientLocation?.coordinate
+                        if coord != nil && coord != predCoord {
+                            lastPredCoord = predCoord
+                            predCoord = coord!
+                            lastUpdatedAt = now
+                        }
                 }
             }
             
@@ -428,5 +428,11 @@ struct DebugView: View {
 }
 
 #Preview {
-    DebugView()
+    let radarDelegateState = RadarDelegateState()
+    let radarDelegate = MyRadarDelegate()
+    
+    DebugView(radarDelegateState: radarDelegateState).onAppear {
+        radarDelegate.state = radarDelegateState
+        Radar.setDelegate(radarDelegate)
+    }
 }

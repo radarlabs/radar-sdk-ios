@@ -7,6 +7,7 @@
 //
 
 import SwiftUI
+import RadarSDKIndoors
 
 struct SettingsView: View {
     
@@ -50,10 +51,19 @@ struct SettingsView: View {
             Toggle(isOn: $predictionConfidence) {
                 Text("Prediction confidence")
             }
+            
+            
+            Button(action: {
+                Task { // delete everything in RadarML folders
+                    await RadarSDKIndoors().deleteAllModels()
+                }
+            }) {
+                Text("delete all models")
+            }
         }
     }
 }
 
 #Preview {
-    DebugView()
+    SettingsView()
 }

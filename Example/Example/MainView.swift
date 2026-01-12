@@ -20,17 +20,20 @@ struct MainView: View {
     
     @State private var selectedTab: TabIdentifier = .Debug;
     
+    @StateObject var radarDelegateState = RadarDelegateState()
+    let radarDelegate = MyRadarDelegate()
+    
     var body: some View {
         TabView(selection: $selectedTab) {
             MyMapView(withRadar: "").tabItem {
                 Text("Map")
             }.tag(TabIdentifier.Map)
             
-            DebugView().tabItem {
+            DebugView(radarDelegateState: radarDelegateState).tabItem {
                 Text("Debug")
             }.tag(TabIdentifier.Debug)
             
-            LogsView().tabItem {
+            LogsView(radarDelegateState: radarDelegateState).tabItem {
                 Text("Logs")
             }.tag(TabIdentifier.Logs)
             
@@ -41,6 +44,9 @@ struct MainView: View {
             TestsView().tabItem {
                 Text("Tests")
             }.tag(TabIdentifier.Tests)
+        }.onAppear {
+            radarDelegate.state = radarDelegateState
+            Radar.setDelegate(radarDelegate)
         }
     }
 }

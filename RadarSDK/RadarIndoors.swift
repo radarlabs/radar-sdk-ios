@@ -33,8 +33,11 @@ class RadarSDKIndoors {
             let completion: @convention(block) () -> Void = {
                 continuation.resume()
             }
-            bridge.invoke(target:instance, selector:NSSelectorFromString("useModelWithName:getModelData:completionHandler:"), args: [model, getModelData, completion])
+            let selector = NSSelectorFromString("useModelWithName:getModelData:completionHandler:")
+            bridge.invoke(target:instance, selector:selector, args: [model, getModelData, completion])
         }
+        
+        
     }
     
     func getLocation() async -> CLLocation? {
@@ -43,7 +46,8 @@ class RadarSDKIndoors {
             let completion: @convention(block) (CLLocation?) -> Void = { result in
                 continuation.resume(returning: result)
             }
-            instance.perform(NSSelectorFromString("getLocationWithCompletionHandler:"), with:completion)
+            let selector = NSSelectorFromString("getLocationWithCompletionHandler:")
+            bridge.invoke(target:instance, selector:selector, args: [completion])
         }
     }
     
@@ -53,7 +57,8 @@ class RadarSDKIndoors {
             let completion: @convention(block) () -> Void = {
                 continuation.resume()
             }
-            instance.perform(NSSelectorFromString("startWithCompletionHandler:"), with:completion)
+            let selector = NSSelectorFromString("startWithCompletionHandler:")
+            bridge.invoke(target: instance, selector: selector, args: [completion])
         }
     }
     
@@ -63,8 +68,15 @@ class RadarSDKIndoors {
             let completion: @convention(block) () -> Void = {
                 continuation.resume()
             }
-            instance.perform(NSSelectorFromString("stopWithCompletionHandler:"), with:completion)
+            let selector = NSSelectorFromString("stopWithCompletionHandler:")
+            bridge.invoke(target: instance, selector: selector, args: [completion])
         }
+    }
+    
+    public func setOnLocationUpdate(_ block: @convention(block) @escaping @Sendable (CLLocation) -> Void) {
+        guard let bridge = RadarSwift.bridge, let instance else { return }
+        let selector = NSSelectorFromString("setOnLocationUpdate:")
+        bridge.invoke(target: instance, selector: selector, args: [block])
     }
 }
 
@@ -80,6 +92,13 @@ internal class RadarIndoors: NSObject {
      RadarSDKIndoors calls
      */
     let sdk = RadarSDKIndoors()
+    
+    let onLocationUpdate: @Sendable @convention(block) (CLLocation) -> Void = { location in
+        Task {
+            await RadarDelegateHolder.didUpdateClientLocation(location: location, stopped: false, source: .indoors)
+            print("updated location")
+        }
+    }
     
     public func updateTracking(user: RadarUser) async {
         guard let sdk else {
@@ -134,7 +153,10 @@ internal class RadarIndoors: NSObject {
             return result
         }
         await sdk.useModel(model: "\(modelId).mlmodel", getModelData:getModelData)
+        sdk.setOnLocationUpdate(onLocationUpdate)
         await sdk.start()
+        
+        
     }
     
     public func getLocation() async -> CLLocation? {

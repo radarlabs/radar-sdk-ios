@@ -12,6 +12,7 @@ class RadarDelegateState: ObservableObject {
     @Published var events: [RadarEvent] = []
     @Published var user: RadarUser? = nil
     @Published var lastTrackedLocation: CLLocation? = nil
+    @Published var clientLocation: CLLocation? = nil
 }
 
 class MyRadarDelegate: NSObject, RadarDelegate, ObservableObject {
@@ -28,7 +29,11 @@ class MyRadarDelegate: NSObject, RadarDelegate, ObservableObject {
     }
 
     func didUpdateClientLocation(_ location: CLLocation, stopped: Bool, source: RadarLocationSource) {
-
+        if source == .indoors {
+            DispatchQueue.main.async {
+                self.state?.clientLocation = location
+            }
+        }
     }
 
     func didFail(status: RadarStatus) {
@@ -36,6 +41,8 @@ class MyRadarDelegate: NSObject, RadarDelegate, ObservableObject {
     }
 
     func didLog(message: String) {
-        state?.logs.append((state?.logs.count ?? 0, message))
+        if let state {
+            state.logs.append((state.logs.count, message))
+        }
     }
 }

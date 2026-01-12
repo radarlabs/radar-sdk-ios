@@ -528,8 +528,11 @@ BOOL _initialized = NO;
 + (void)setDelegate:(id<RadarDelegate>)delegate {
     [RadarDelegateHolder sharedInstance].delegate = delegate;
     
-    // Ensure Swift @MainActor methods are called on main thread
+    if (@available(iOS 13.0, *)) {
+        [RadarDelegateHolder_Swift setDelegate:delegate];
+    }
     if ([NSThread isMainThread]) {
+        
         [RadarLogger_Swift setDelegate:delegate];
     } else {
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -1568,7 +1571,7 @@ BOOL _initialized = NO;
     [[RadarActivityManager sharedInstance] requestPermission];
 }
 
-+ (void)setAppGroup:(NSString *)appGroup {
++ (void)setAppGroup:(NSString * _Nullable)appGroup {
     [RadarSettings setAppGroup:appGroup];
 }
 
