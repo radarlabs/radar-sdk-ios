@@ -99,7 +99,7 @@ jobs:
         if: ${{ !github.event.release.prerelease }}
         uses: peter-evans/repository-dispatch@v3
         with:
-          token: ${{ secrets.SPM_REPO_KEY }}
+          token: ${{ secrets.SUBMODULESTOKEN }}
           repository: radarlabs/radar-sdk-ios-spm
           event-type: update-xcframework
           client-payload: '{"release": "${{ github.event.release.tag_name }}", "checksum": "${{ steps.checksum_radarsdk.outputs.checksum }}", "url": "${{ github.event.release.html_url }}", "checksum_motion": "${{ steps.checksum_radarsdkmotion.outputs.checksum }}", "checksum_indoors": "${{ steps.checksum_radarsdkindoors.outputs.checksum }}"}'

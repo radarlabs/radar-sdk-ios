@@ -6,6 +6,7 @@
 //
 
 #import <CoreLocation/CoreLocation.h>
+#import <CoreMotion/CoreMotion.h>
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 #import <UserNotifications/UserNotifications.h>
@@ -319,6 +320,8 @@ typedef void (^_Nonnull RadarIndoorsScanCompletionHandler)(NSString *_Nullable r
 
 #pragma mark - Initialization
 
+@property (readonly, class) BOOL isInitialized;
+
 /**
  Initializes the Radar SDK.
 
@@ -342,6 +345,9 @@ typedef void (^_Nonnull RadarIndoorsScanCompletionHandler)(NSString *_Nullable r
  */
 
 + (void)initializeWithPublishableKey:(NSString *_Nonnull)publishableKey options:(RadarInitializeOptions *_Nullable)options NS_SWIFT_NAME(initialize(publishableKey:options:));
+
++ (void)initializeWithAppGroup:(NSString *_Nonnull)appGroup;
+
 #pragma mark - Properties
 
 /**
@@ -1281,6 +1287,15 @@ typedef void (^_Nonnull RadarIndoorsScanCompletionHandler)(NSString *_Nullable r
 + (NSString *)stringForStatus:(RadarStatus)status NS_SWIFT_NAME(stringForStatus(_:));
 
 /**
+ Returns a string for Motion & Fitness authorization status value.
+
+ @param status A Core Motion authorization status value.
+
+ @return A string for the authorization status value.
+ */
++ (NSString *)stringForMotionAuthorization:(CMAuthorizationStatus)status NS_SWIFT_NAME(stringForMotionAuthorization(_:));
+
+/**
  Returns a string for address validation status value.
 
  @param verificationStatus An address verification status value.
@@ -1360,14 +1375,15 @@ typedef void (^_Nonnull RadarIndoorsScanCompletionHandler)(NSString *_Nullable r
  */
 + (void) loadImage:(NSString*)url completionHandler:(void (^ _Nonnull)(UIImage * _Nullable))completionHandler NS_SWIFT_NAME(loadImage(_:completionHandler:));
 
-/**
- This function should be internal, but it is exposed due to swift migration limitations. It should only be used by internal swift classes while RadarLogBuffer is still in Obj-C
- */
-+ (void)__writeToLogBufferWithLevel:(RadarLogLevel)level type:(RadarLogType)type message:(NSString *)message forcePersist:(BOOL)forcePersist
-    NS_SWIFT_NAME(__writeToLogBuffer(with:type:message:forcePersist:));
-
-
 + (void)requestMotionActivityPermission NS_SWIFT_NAME(requestMotionActivityPermission());
+
++ (void)setAppGroup:(NSString*_Nullable)appGroup;
+
++ (void)setPushNotificationToken:(NSString*_Nullable)token;
+
++ (void)setLocationExtensionToken:(NSString*_Nullable)token;
+
++ (void)didReceivePushNotificationPayload:(NSDictionary*)payload completionHandler:(void (^ _Nonnull)(void))completionHandler;
 
 @end
 

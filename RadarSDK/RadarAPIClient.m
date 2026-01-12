@@ -35,9 +35,14 @@
 #import "RadarVerificationManager.h"
 #import "RadarVerifiedLocationToken+Internal.h"
 #import "RadarNotificationHelper.h"
-#import "Radar-Swift.h"
 #import <os/log.h>
 #import "RadarSDKFraudProtocol.h"
+
+#if __has_include(<RadarSDK/RadarSDK-Swift.h>)
+#import <RadarSDK/RadarSDK-Swift.h>
+#elif __has_include("RadarSDK-Swift.h")
+#import "RadarSDK-Swift.h"
+#endif
 
 @implementation RadarAPIClient
 
@@ -293,7 +298,23 @@
     } else {
         params[@"xPlatformType"] = @"Native";
     }
-
+    params[@"pushNotificationToken"] = [RadarSettings pushNotificationToken];
+    params[@"locationExtensionToken"] = [RadarSettings locationExtensionToken];
+    
+    NSMutableArray<NSString *> *fraudFailureReasons = [NSMutableArray new];
+    if (@available(iOS 15.0, *)) {
+        CLLocationSourceInformation *sourceInformation = location.sourceInformation;
+        if (sourceInformation) {
+            if (sourceInformation.isSimulatedBySoftware) {
+                params[@"mocked"] = @(YES);
+                [fraudFailureReasons addObject:@"fraud_mocked_from_mock_provider"];
+            }
+            if (sourceInformation.isProducedByAccessory) {
+                [fraudFailureReasons addObject:@"fraud_mocked_produced_by_accessory"];
+            }
+        }
+    }
+    
     RadarTripOptions *tripOptions = Radar.getTripOptions;
 
     if (tripOptions) {
@@ -390,6 +411,15 @@
         locationMetadata[@"altitude"] = @(location.altitude);
         locationMetadata[@"floor"] = @([location.floor level]);
         locationMetadata[@"pressureHPa"] = [RadarState lastRelativeAltitudeData];
+        params[@"motionAuthorization"] = [Radar stringForMotionAuthorization:[RadarState motionAuthorization]];
+        NSDictionary *pressureDict = [RadarState lastRelativeAltitudeData];
+        if (pressureDict) {
+            NSNumber *pressure = pressureDict[@"pressure"];
+            NSNumber *relAlt = pressureDict[@"relativeAltitude"];
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Including pressure metadata: pressure=%@ hPa, relative=%@ m", pressure, relAlt]];
+        } else {
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelWarning message:@"usePressure enabled but no recent pressure data available; sending without pressureHPa"];
+        }
     }
 
     if (options.usePressure || options.useMotion) {
@@ -495,10 +525,10 @@
                                 }
 
                                 [[RadarDelegateHolder sharedInstance] didFailWithStatus:status];
-
+                                
                                 return completionHandler(status, nil, nil, nil, nil, nil, nil);
                             }
-
+            
                             [[RadarReplayBuffer sharedInstance] clearBuffer];
                             [RadarState setLastFailedStoppedLocation:nil];
                             [Radar flushLogs];
@@ -570,7 +600,7 @@
                                 }
                                 [RadarState setBeaconIds:beaconIds];
                             }
-
+            
                             if (events && user) {
                                 [RadarSettings setId:user._id];
 
@@ -599,7 +629,7 @@
                                     NSArray<NSDictionary<NSString *, NSString *> *> *beaconRegions = (NSArray<NSDictionary<NSString *, NSString *> *> *)nearbyBeaconRegionsObj;
                                     [[RadarBeaconManager sharedInstance] registerBeaconRegionNotificationsFromArray:beaconRegions];
                                 }
-
+                                
                                 return completionHandler(RadarStatusSuccess, res, events, user, nearbyGeofences, config, token);
                             } else {
                                 [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"Setting %lu notifications remaining", (unsigned long)notificationsRemaining.count]];
@@ -607,7 +637,7 @@
                             }
 
                             [[RadarDelegateHolder sharedInstance] didFailWithStatus:status];
-
+            
                             completionHandler(RadarStatusErrorServer, nil, nil, nil, nil, nil, nil);
                         }];
     }

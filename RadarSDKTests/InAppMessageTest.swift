@@ -65,7 +65,7 @@ class MockWindow : UIWindow {
 
 @Suite
 actor InAppMessageTest {
-
+    @MainActor
     let message = RadarInAppMessage.fromDictionary([
         "title": [
             "text": "This is the title",
@@ -85,12 +85,15 @@ actor InAppMessageTest {
             "name": "image.jpeg"
         ],
         "metadata": [
-            "campainId": "1234"
+            "campaignId": "1234"
         ]
     ])
 
     @Test("In app message construction")
+    @MainActor
     func InAppMessageTestConstruction() throws {
+        let message = message as? RadarInAppMessage_Swift
+        
         #expect(message != nil)
         #expect(message!.title.text == "This is the title")
         #expect(message!.title.color == UIColor(red: 1, green: 0, blue: 0, alpha: 1))
@@ -101,38 +104,39 @@ actor InAppMessageTest {
         #expect(message!.button?.backgroundColor == UIColor(red: 0xeb/255, green: 0x00/255, blue: 0x83/255, alpha: 1))
         #expect(message!.image?.name == "image.jpeg")
         #expect(message!.image?.url == "https://images.pexels.com/photos/949587/pexels-photo-949587.jpeg")
-        #expect(message!.metadata["campainId"] as? String == "1234")
+        #expect(message!.metadata["campaignId"] as? String == "1234")
     }
     
     @Test("In app message to dictionary")
+    @MainActor
     func InAppMessageTestToDictionary() throws {
-//        let dict = message?.toDictionary()
-//        #expect(dict != nil)
-//        
-//        let title = dict!["title"] as? [String: String]
-//        #expect(title != nil)
-//        #expect(title!["text"] == "This is the title")
-//        #expect(title!["color"] == "#ff0000")
-//        
-//        let body = dict!["body"] as? [String: String]
-//        #expect(body != nil)
-//        #expect(body!["text"] == "This is a demo message.")
-//        #expect(body!["color"] == "#00ff00")
-//        
-//        let button = dict!["button"] as? [String: String]
-//        #expect(button != nil)
-//        #expect(button!["text"] == "Buy it")
-//        #expect(button!["color"] == "#0000ff")
-//        #expect(button!["backgroundColor"] == "#EB0083")
-//        
-//        let image = dict!["image"] as? [String: String]
-//        #expect(image != nil)
-//        #expect(image!["url"] == "https://images.pexels.com/photos/949587/pexels-photo-949587.jpeg")
-//        #expect(image!["name"] == "image.jpeg")
-//        
-//        let metadata = dict!["metadata"] as? [String: Any]
-//        #expect(metadata != nil)
-//        #expect(metadata!["campainId"] as? String == "1234")
+        let dict = message?.toDictionary()
+        #expect(dict != nil)
+        
+        let title = dict!["title"] as? [String: String]
+        #expect(title != nil)
+        #expect(title!["text"] == "This is the title")
+        #expect(title!["color"] == "#ff0000")
+        
+        let body = dict!["body"] as? [String: String]
+        #expect(body != nil)
+        #expect(body!["text"] == "This is a demo message.")
+        #expect(body!["color"] == "#00ff00")
+        
+        let button = dict!["button"] as? [String: String]
+        #expect(button != nil)
+        #expect(button!["text"] == "Buy it")
+        #expect(button!["color"] == "#0000ff")
+        #expect(button!["backgroundColor"] == "#eb0083")
+        
+        let image = dict!["image"] as? [String: String]
+        #expect(image != nil)
+        #expect(image!["url"] == "https://images.pexels.com/photos/949587/pexels-photo-949587.jpeg")
+        #expect(image!["name"] == "image.jpeg")
+        
+        let metadata = dict!["metadata"] as? [String: Any]
+        #expect(metadata != nil)
+        #expect(metadata!["campaignId"] as? String == "1234")
     }
     
 

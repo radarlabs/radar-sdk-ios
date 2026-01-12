@@ -389,27 +389,41 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                         
                     }
                 }];
-                
             }
             if (options.usePressure) {
                 self.activityManager = [RadarActivityManager sharedInstance];
-                
+                CMAuthorizationStatus authStatus = [CMMotionActivityManager authorizationStatus];
+                [RadarState setMotionAuthorization:authStatus];
+                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"usePressure enabled: starting relative altitude updates, auth status: %@", [Radar stringForMotionAuthorization:authStatus]]];
                 [self.activityManager startRelativeAltitudeWithHandler: ^(CMAltitudeData * _Nullable altitudeData) {
+                    if (!altitudeData) {
+                        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelWarning message:@"Relative altitude callback received nil data"];
+                        return;
+                    }
                     NSMutableDictionary *currentState = [[RadarState lastRelativeAltitudeData] mutableCopy] ?: [NSMutableDictionary new];
                     currentState[@"pressure"] = @(altitudeData.pressure.doubleValue *10); // convert to hPa
                     currentState[@"relativeAltitude"] = @(altitudeData.relativeAltitude.doubleValue);
                     currentState[@"relativeAltitudeTimestamp"] = @([[NSDate date] timeIntervalSince1970]);
                     [RadarState setLastRelativeAltitudeData:currentState];
+                    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Stored relative altitude: pressure=%.1f hPa, relative=%.3f m", altitudeData.pressure.doubleValue * 10.0, altitudeData.relativeAltitude.doubleValue]];
                 }];
 
                 if (@available(iOS 15.0, *)) {
+                    CMAuthorizationStatus authStatus = [CMMotionActivityManager authorizationStatus];
+                    [RadarState setMotionAuthorization:authStatus];
+                    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"usePressure enabled: starting absolute altitude updates (iOS 15+), auth status: %@", [Radar stringForMotionAuthorization:authStatus]]];
                     [self.activityManager startAbsoluteAltitudeWithHandler: ^(CMAbsoluteAltitudeData * _Nullable altitudeData) {
+                        if (!altitudeData) {
+                            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelWarning message:@"Absolute altitude callback received nil data"];
+                            return;
+                        }
                         NSMutableDictionary *currentState = [[RadarState lastRelativeAltitudeData] mutableCopy] ?: [NSMutableDictionary new];
                         currentState[@"altitude"] = @(altitudeData.altitude);
                         currentState[@"accuracy"] = @(altitudeData.accuracy);
                         currentState[@"precision"] = @(altitudeData.precision);
                         currentState[@"absoluteAltitudeTimestamp"] = @([[NSDate date] timeIntervalSince1970]);
                         [RadarState setLastRelativeAltitudeData:currentState];
+                        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Stored absolute altitude: altitude=%.3f m, accuracy=%.3f m, precision=%.3f m", altitudeData.altitude, altitudeData.accuracy, altitudeData.precision]];
                     }];
                 }
             }
@@ -503,7 +517,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                                                message:[NSString stringWithFormat:@"Setting remote tracking options | trackingOptions = %@", meta.trackingOptions]];
             [RadarSettings setRemoteTrackingOptions:[meta trackingOptions]];
         } else {
-            [RadarSettings removeRemoteTrackingOptions];
+            [RadarSettings setRemoteTrackingOptions:nil];
             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
                                                message:[NSString stringWithFormat:@"Removed remote tracking options | trackingOptions = %@", Radar.getTrackingOptions]];
         }
@@ -522,7 +536,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         [Radar stopTracking];
     }
 
-    [RadarSettings removePreviousTrackingOptions];
+    [RadarSettings setPreviousTrackingOptions:nil];
 }
 
 - (void)replaceBubbleGeofence:(CLLocation *)location radius:(int)radius {
@@ -902,7 +916,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     RadarTrackingOptions *options = [Radar getTrackingOptions];
     Class RadarSDKIndoors = NSClassFromString(@"RadarSDKIndoors");
     
-    if (options.useIndoorScan && ![RadarSettings isInSurveyMode] && RadarSDKIndoors && [RadarUtils foreground]) {
+    if (options.useIndoorScan && ![RadarSettings inSurveyMode] && RadarSDKIndoors && [RadarUtils foreground]) {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Starting indoor scan"];
         
         [RadarSDKIndoors startIndoorScan:@""
@@ -914,9 +928,9 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
             completionHandler(beacons, indoorScanResult);
         }];
     } else {
-        if (options.useIndoorScan && ![RadarSettings isInSurveyMode] && !RadarSDKIndoors) {
+        if (options.useIndoorScan && ![RadarSettings inSurveyMode] && !RadarSDKIndoors) {
             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"RadarSDKIndoors not available, skipping indoor scan"];
-        } else if (options.useIndoorScan && ![RadarSettings isInSurveyMode] && RadarSDKIndoors && ![RadarUtils foreground]) {
+        } else if (options.useIndoorScan && ![RadarSettings inSurveyMode] && RadarSDKIndoors && ![RadarUtils foreground]) {
             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"App in background, skipping indoor scan (Bluetooth not available)"];
         }
         completionHandler(beacons, nil);
