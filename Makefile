@@ -28,7 +28,7 @@ build-example:
 
 lint:
 	@for spec in *.podspec; do \
-		if [ "$$spec" != "RadarSDKIndoors.podspec" ]; then \
+		if [ "$$spec" != "RadarSDKIndoors.podspec" ] && [ "$$spec" != "RadarSDKFraud.podspec" ]; then \
 			pod lib lint "$$spec" || exit 1; \
 		fi; \
 	done 

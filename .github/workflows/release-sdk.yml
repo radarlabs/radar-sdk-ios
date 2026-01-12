@@ -48,6 +48,12 @@ jobs:
 
       - name: Build archive for iPhone device (RadarSDKIndoors)
         run: cd RadarSDKIndoors && xcodebuild archive -scheme RadarSDKIndoors -archivePath "../RadarSDKIndoors-iphoneos.xcarchive" -sdk iphoneos SKIP_INSTALL=NO CODE_SIGN_IDENTITY= CODE_SIGNING_REQUIRED=NO
+
+      - name: Build archive for iPhone simulator (RadarSDKFraud)
+        run: cd RadarSDKFraud && xcodebuild archive -scheme RadarSDKFraud -archivePath "../RadarSDKFraud-iphonesimulator.xcarchive" -sdk iphonesimulator SKIP_INSTALL=NO CODE_SIGN_IDENTITY= CODE_SIGNING_REQUIRED=NO
+
+      - name: Build archive for iPhone device (RadarSDKFraud)
+        run: cd RadarSDKFraud && xcodebuild archive -scheme RadarSDKFraud -archivePath "../RadarSDKFraud-iphoneos.xcarchive" -sdk iphoneos SKIP_INSTALL=NO CODE_SIGN_IDENTITY= CODE_SIGNING_REQUIRED=NO
       
       - name: Build XCFramework (RadarSDK)
         run: xcodebuild -create-xcframework -framework RadarSDK-iphonesimulator.xcarchive/Products/Library/Frameworks/RadarSDK.framework -debug-symbols "$(pwd -P)"/RadarSDK-iphonesimulator.xcarchive/dSYMs/RadarSDK.framework.dSYM -framework RadarSDK-iphoneos.xcarchive/Products/Library/Frameworks/RadarSDK.framework -debug-symbols "$(pwd -P)"/RadarSDK-iphoneos.xcarchive/dSYMs/RadarSDK.framework.dSYM -output RadarSDK.xcframework
@@ -57,6 +63,9 @@ jobs:
       
       - name: Build XCFramework (RadarSDKIndoors)
         run: xcodebuild -create-xcframework -framework RadarSDKIndoors-iphonesimulator.xcarchive/Products/Library/Frameworks/RadarSDKIndoors.framework -debug-symbols "$(pwd -P)"/RadarSDKIndoors-iphonesimulator.xcarchive/dSYMs/RadarSDKIndoors.framework.dSYM -framework RadarSDKIndoors-iphoneos.xcarchive/Products/Library/Frameworks/RadarSDKIndoors.framework -debug-symbols "$(pwd -P)"/RadarSDKIndoors-iphoneos.xcarchive/dSYMs/RadarSDKIndoors.framework.dSYM -output RadarSDKIndoors.xcframework
+      
+      - name: Build XCFramework (RadarSDKFraud)
+        run: xcodebuild -create-xcframework -framework RadarSDKFraud-iphonesimulator.xcarchive/Products/Library/Frameworks/RadarSDKFraud.framework -debug-symbols "$(pwd -P)"/RadarSDKFraud-iphonesimulator.xcarchive/dSYMs/RadarSDKFraud.framework.dSYM -framework RadarSDKFraud-iphoneos.xcarchive/Products/Library/Frameworks/RadarSDKFraud.framework -debug-symbols "$(pwd -P)"/RadarSDKFraud-iphoneos.xcarchive/dSYMs/RadarSDKFraud.framework.dSYM -output RadarSDKFraud.xcframework
 
       - name: Zip XCFramework (RadarSDK)
         run: zip -r RadarSDK.xcframework.zip RadarSDK.xcframework -x ".*" -x "__MACOSX" -D
@@ -66,6 +75,9 @@ jobs:
 
       - name: Zip XCFramework (RadarSDKIndoors)
         run: zip -r RadarSDKIndoors.xcframework.zip RadarSDKIndoors.xcframework -x ".*" -x "__MACOSX" -D
+
+      - name: Zip XCFramework (RadarSDKFraud)
+        run: zip -r RadarSDKFraud.xcframework.zip RadarSDKFraud.xcframework -x ".*" -x "__MACOSX" -D
 
       - name: Upload XCFramework to release (RadarSDK)
         uses: svenstaro/upload-release-action@v2
@@ -82,6 +94,11 @@ jobs:
         with:
           file: RadarSDKIndoors.xcframework.zip
       
+      - name: Upload XCFramework to release (RadarSDKFraud)
+        uses: svenstaro/upload-release-action@v2
+        with:
+          file: RadarSDKFraud.xcframework.zip
+      
       # get sha256 checksum of the XCFramework
       - name: Get SHA256 checksum (RadarSDK)
         id: checksum_radarsdk
@@ -95,6 +112,10 @@ jobs:
         id: checksum_radarsdkindoors
         run: echo "::set-output name=checksum::$(shasum -a 256 RadarSDKIndoors.xcframework.zip | cut -d ' ' -f 1)"
 
+      - name: Get SHA256 checksum (RadarSDKFraud)
+        id: checksum_radarsdkfraud
+        run: echo "::set-output name=checksum::$(shasum -a 256 RadarSDKFraud.xcframework.zip | cut -d ' ' -f 1)"
+
       - name: Repository Dispatch
         if: ${{ !github.event.release.prerelease }}
         uses: peter-evans/repository-dispatch@v3
@@ -102,7 +123,7 @@ jobs:
           token: ${{ secrets.SUBMODULESTOKEN }}
           repository: radarlabs/radar-sdk-ios-spm
           event-type: update-xcframework
-          client-payload: '{"release": "${{ github.event.release.tag_name }}", "checksum": "${{ steps.checksum_radarsdk.outputs.checksum }}", "url": "${{ github.event.release.html_url }}", "checksum_motion": "${{ steps.checksum_radarsdkmotion.outputs.checksum }}", "checksum_indoors": "${{ steps.checksum_radarsdkindoors.outputs.checksum }}"}'
+          client-payload: '{"release": "${{ github.event.release.tag_name }}", "checksum": "${{ steps.checksum_radarsdk.outputs.checksum }}", "url": "${{ github.event.release.html_url }}", "checksum_motion": "${{ steps.checksum_radarsdkmotion.outputs.checksum }}", "checksum_indoors": "${{ steps.checksum_radarsdkindoors.outputs.checksum }}", "checksum_fraud": "${{ steps.checksum_radarsdkfraud.outputs.checksum }}"}'
 
       - name: Check versions is not duplicate
         run: |
@@ -115,6 +136,9 @@ jobs:
           VERSION=$(pod ipc spec RadarSDKIndoors.podspec | jq -r .version)
           ! pod trunk info RadarSDKIndoors | grep -q $VERSION
           echo "RadarSDKIndoors version is OK"
+          VERSION=$(pod ipc spec RadarSDKFraud.podspec | jq -r .version)
+          ! pod trunk info RadarSDKFraud | grep -q $VERSION
+          echo "RadarSDKFraud version is OK"
 
       - name: Deploy to Cocoapods
         run: |
@@ -123,8 +147,10 @@ jobs:
           pod lib lint --allow-warnings RadarSDK.podspec
           pod lib lint --allow-warnings RadarSDKMotion.podspec
           pod lib lint --allow-warnings RadarSDKIndoors.podspec
+          pod lib lint --allow-warnings RadarSDKFraud.podspec
           pod trunk push --allow-warnings RadarSDK.podspec
           pod trunk push --allow-warnings RadarSDKMotion.podspec
           pod trunk push --allow-warnings RadarSDKIndoors.podspec
+          pod trunk push --allow-warnings RadarSDKFraud.podspec
         env:
           COCOAPODS_TRUNK_TOKEN: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}
