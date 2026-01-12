@@ -7,8 +7,6 @@
 
 #import "Radar.h"
 #include "RadarSdkConfiguration.h"
-#import <CoreMotion/CoreMotion.h>
-
 #import "RadarAPIClient.h"
 #import "RadarBeaconManager.h"
 #import "RadarConfig.h"
@@ -77,10 +75,12 @@ BOOL _initialized = NO;
     Class RadarSDKMotion = NSClassFromString(@"RadarSDKMotion");
     if (RadarSDKMotion) {
         id radarSDKMotion = [[RadarSDKMotion alloc] init];
-        CMAuthorizationStatus authStatus = [CMMotionActivityManager authorizationStatus];
 
+        NSString *authStatus = [Radar stringForMotionAuthorizationStatus];
+        [RadarState setMotionAuthorizationString:authStatus];
+        
         [RadarActivityManager sharedInstance].radarSDKMotion = radarSDKMotion;
-        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"RadarSDKMotion detected and initialized; Motion & Altimeter services available, auth status: %@", [Radar stringForMotionAuthorization:authStatus]]];
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"RadarSDKMotion detected and initialized; Motion & Altimeter services available, auth status: %@", authStatus]];
     } else {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelWarning message:@"RadarSDKMotion class not found; Motion/Pressure features disabled"];
     }
@@ -1320,25 +1320,16 @@ BOOL _initialized = NO;
     return str;
 }
 
-+ (NSString *)stringForMotionAuthorization:(CMAuthorizationStatus)status {
-    NSString *str;
-    switch (status) {
-    case CMAuthorizationStatusNotDetermined:
-        str = @"NOT_DETERMINED";
-        break;
-    case CMAuthorizationStatusRestricted:
-        str = @"RESTRICTED";
-        break;
-    case CMAuthorizationStatusDenied:
-        str = @"USER_DENIED";
-        break;
-    case CMAuthorizationStatusAuthorized:
-        str = @"USER_GRANTED";
-        break;
-    default:
-        str = @"UNKNOWN";
++ (NSString *)stringForMotionAuthorizationStatus {
+    Class RadarSDKMotionClass = NSClassFromString(@"RadarSDKMotion");
+    SEL selector = NSSelectorFromString(@"stringForMotionAuthorization");
+    
+    if (RadarSDKMotionClass && [RadarSDKMotionClass respondsToSelector:selector]) {
+        IMP imp = [RadarSDKMotionClass methodForSelector:selector];
+        NSString *(*func)(id, SEL) = (void *)imp;
+        return func(RadarSDKMotionClass, selector);
     }
-    return str;
+    return @"NOT_AVAILABLE";
 }
 
 + (NSString *)stringForVerificationStatus:(RadarAddressVerificationStatus)status {

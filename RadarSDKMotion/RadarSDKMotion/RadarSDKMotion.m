@@ -66,5 +66,26 @@
     }
 }
 
++ (NSString *)stringForMotionAuthorization {
+    CMAuthorizationStatus status = [CMMotionActivityManager authorizationStatus];
+    NSString *str;
+    switch (status) {
+        case CMAuthorizationStatusNotDetermined:
+            str = @"NOT_DETERMINED";
+            break;
+        case CMAuthorizationStatusRestricted:
+            str = @"RESTRICTED";
+            break;
+        case CMAuthorizationStatusDenied:
+            str = @"USER_DENIED";
+            break;
+        case CMAuthorizationStatusAuthorized:
+            str = @"USER_GRANTED";
+            break;
+        default:
+            str = @"UNKNOWN";
+    }
+    return str;
+}
 
 @end

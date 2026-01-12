@@ -18,6 +18,8 @@
                                 withHandler:(CMAbsoluteAltitudeHandler) handler API_AVAILABLE(ios(15.0));
 - (void)stopAbsoluteAltitudeUpdates;
 
++ (NSString *)stringForMotionAuthorization;
+
 @end
 
 

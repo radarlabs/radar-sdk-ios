@@ -253,12 +253,12 @@ static NSTimeInterval const kBackupInterval = 2.0; // 2 seconds
     return [[NSUserDefaults standardUserDefaults] boolForKey:kNotificationPermissionGranted];
 }
 
-+ (void)setMotionAuthorization:(CMAuthorizationStatus)status {
-    [[NSUserDefaults standardUserDefaults] setInteger:status forKey:kMotionAuthorization];
++ (void)setMotionAuthorizationString:(NSString *)status {
+    [[NSUserDefaults standardUserDefaults] setObject:status forKey:kMotionAuthorization];
 }
 
-+ (CMAuthorizationStatus)motionAuthorization {
-    return [[NSUserDefaults standardUserDefaults] integerForKey:kMotionAuthorization];
++ (NSString *)motionAuthorizationString {
+    return [[NSUserDefaults standardUserDefaults] stringForKey:kMotionAuthorization];
 }
 
 + (NSArray<NSDictionary *> *_Nullable)registeredNotifications {
