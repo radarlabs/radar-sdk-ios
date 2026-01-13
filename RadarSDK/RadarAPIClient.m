@@ -439,7 +439,7 @@
     if (options.useIndoorScan && indoorLocation) {
         locationMetadata[@"indoorMLLatitude"] = @(indoorLocation.coordinate.latitude);
         locationMetadata[@"indoorMLLongitude"] = @(indoorLocation.coordinate.longitude);
-        locationMetadata[@"deviceLatitude"] = params[@"latitde"];
+        locationMetadata[@"deviceLatitude"] = params[@"latitude"];
         locationMetadata[@"deviceLongitude"] = params[@"longitude"];
         // replace params with the ml model result
         params[@"latitude"] = @(indoorLocation.coordinate.latitude);
