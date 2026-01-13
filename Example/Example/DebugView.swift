@@ -73,10 +73,10 @@ extension RadarSite {
     }
 }
 
-func circleFor(site: RadarSite, x: Double, y: Double, r: Double) -> [CLLocationCoordinate2D] {
+func circleFor(site: RadarSite, x: Double, y: Double, r: Double, c: Int = 8) -> [CLLocationCoordinate2D] {
     var coordinates: [CLLocationCoordinate2D] = []
-    for i in 0...8 {
-        let angle = 2.0 * Double.pi * Double(i) / 8.0
+    for i in 0...c {
+        let angle = 2.0 * Double.pi * Double(i) / Double(c)
         let dx = r * cos(angle)
         let dy = r * sin(angle)
 
