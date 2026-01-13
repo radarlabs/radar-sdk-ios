@@ -1,0 +1,81 @@
+name: Create Linear Issues from GitHub Issues
+
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  create-linear-ticket:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create Linear Issue
+        uses: actions/github-script@v7
+        env:
+          LINEAR_API_KEY: ${{ secrets.LINEAR_API_KEY }}
+          LINEAR_TEAM_ID: ${{ secrets.LINEAR_TEAM_ID }}
+        with:
+          script: |
+            const https = require('https');
+            
+            const linearQuery = `
+              mutation IssueCreate($teamId: String!, $title: String!, $description: String!) {
+                issueCreate(input: {
+                  teamId: $teamId,
+                  title: $title,
+                  description: $description
+                }) {
+                  success
+                  issue {
+                    id
+                    identifier
+                    url
+                  }
+                }
+              }
+            `;
+
+            const variables = {
+              teamId: process.env.LINEAR_TEAM_ID,
+              title: context.payload.issue.title,
+              description: `${context.payload.issue.body}\n\nOriginal GitHub Issue: ${context.payload.issue.html_url}`
+            };
+
+            const postData = JSON.stringify({
+              query: linearQuery,
+              variables: variables
+            });
+
+            const options = {
+              hostname: 'api.linear.app',
+              path: '/graphql',
+              method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': process.env.LINEAR_API_KEY,
+              'Content-Length': Buffer.byteLength(postData)
+              }
+            };
+
+            const makeRequest = () => {
+              return new Promise((resolve, reject) => {
+                const req = https.request(options, (res) => {
+                  let data = '';
+                  res.on('data', (chunk) => { data += chunk; });
+                  res.on('end', () => resolve(JSON.parse(data)));
+                });
+                req.on('error', reject);
+                req.write(postData);
+                req.end();
+              });
+            };
+
+            const data = await makeRequest();
+
+            if (data.data?.issueCreate?.success) {
+              const linearIssue = data.data.issueCreate.issue;
+              console.log(`Linear issue created: ${linearIssue.identifier}`);
+              console.log(`Linear issue URL: ${linearIssue.url}`);
+            } else {
+              console.error('Linear API response:', JSON.stringify(data, null, 2));
+              throw new Error('Failed to create Linear issue');
+            }

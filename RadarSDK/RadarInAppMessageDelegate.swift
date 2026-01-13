@@ -23,7 +23,7 @@ open class RadarInAppMessageDelegate : NSObject, RadarInAppMessageProtocol {
             let data = try await RadarAPIClient.shared.getAsset(url: url)
             return UIImage(data: data)
         } catch {
-            RadarLogger.shared.debug("API request error")
+            RadarLogger.shared.debug("API request error, failed to load IAM image for \(url)")
             // error in API request or converting to image
             return nil
         }
@@ -34,6 +34,11 @@ open class RadarInAppMessageDelegate : NSObject, RadarInAppMessageProtocol {
      */
     open func createInAppMessageView(_ message: RadarInAppMessage, onDismiss: @escaping () -> Void, onInAppMessageClicked: @escaping () -> Void, completionHandler: @escaping (UIViewController) -> Void) {
         Task {
+            guard let message = message as? RadarInAppMessage_Swift else {
+                RadarLogger.shared.debug("RadarInAppMessage is not a RadarInAppMessage_Swift instance")
+                return
+            }
+            
             var image: UIImage? = nil
             if let imageUrl = message.image?.url {
                 image = await RadarInAppMessageDelegate.loadImage(imageUrl)
@@ -44,6 +49,10 @@ open class RadarInAppMessageDelegate : NSObject, RadarInAppMessageProtocol {
     }
 
     open func onInAppMessageButtonClicked(_ message: RadarInAppMessage) {
+        guard let message = message as? RadarInAppMessage_Swift else {
+            RadarLogger.shared.debug("RadarInAppMessage is not a RadarInAppMessage_Swift instance")
+            return
+        }
         if let urlString = message.button?.deepLink,
            let url = URL(string: urlString) {
             UIApplication.shared.open(url)

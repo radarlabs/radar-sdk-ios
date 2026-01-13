@@ -7,32 +7,32 @@
 
 import Foundation
 
-@objc @objcMembers
-public final class RadarInAppMessage : NSObject, Sendable {
+@objc(RadarInAppMessage_Swift) @objcMembers
+public final class RadarInAppMessage_Swift : RadarInAppMessage {
     public struct Text: Sendable {
-        public let text: String
-        public let color: UIColor
+        public var text: String
+        public var color: UIColor
     }
 
     public struct Button: Sendable {
-        public let text: String
-        public let color: UIColor
-        public let backgroundColor: UIColor
-        public let deepLink: String?
+        public var text: String
+        public var color: UIColor
+        public var backgroundColor: UIColor
+        public var deepLink: String?
     }
 
     public struct Image: Sendable {
-        public let name: String
-        public let url: String
+        public var name: String
+        public var url: String
     }
 
-    public let title: Text
-    public let body: Text
-    public let button: Button?
-    public let image: Image?
-    public let metadata: [String: Sendable]
+    public var title: Text
+    public var body: Text
+    public var button: Button?
+    public var image: Image?
+    public var metadata: [String: Sendable]
 
-    init(title: Text, body: Text, button: Button?, image: Image?, metadata: [String: Sendable]) {
+    public init(title: Text, body: Text, button: Button?, image: Image?, metadata: [String: Sendable]) {
         self.title = title
         self.body = body
         self.button = button
@@ -40,7 +40,7 @@ public final class RadarInAppMessage : NSObject, Sendable {
         self.metadata = metadata
     }
 
-    public static func fromDictionary(_ dict: [String: Any]) -> RadarInAppMessage? {
+    public static override func fromDictionary(_ dict: [String: Any]) -> RadarInAppMessage? {
         // required fields
         guard let title = Text.fromDictionary(dict: dict["title"]),
               let body = Text.fromDictionary(dict: dict["body"]) else {
@@ -51,19 +51,19 @@ public final class RadarInAppMessage : NSObject, Sendable {
         let image = Image.fromDictionary(dict: dict["image"])
         let metadata = dict["metadata"] as? [String: Sendable] ?? [:]
 
-        return RadarInAppMessage(
+        return RadarInAppMessage_Swift(
             title: title, body: body, button: button, image: image, metadata: metadata
         )
     }
 
-    public static func fromArray(_ array: Any) -> [RadarInAppMessage] {
+    public static override func fromArray(_ array: Any) -> [RadarInAppMessage] {
         guard let array = array as? [[String: Any]] else {
             return [];
         }
-        return array.compactMap(RadarInAppMessage.fromDictionary);
+        return array.compactMap(RadarInAppMessage_Swift.fromDictionary);
     }
     
-    public func toDictionary() -> [String: Sendable] {
+    public override func toDictionary() -> [String: Any] {
         var dict = [
             "title": title.toDictionary(),
             "body": body.toDictionary(),
@@ -77,19 +77,28 @@ public final class RadarInAppMessage : NSObject, Sendable {
         }
         return dict
     }
+    
+    public static func toDictionary(_ message: RadarInAppMessage) -> [String: Any] {
+        guard let message = message as? RadarInAppMessage_Swift else {
+            return [:]
+        }
+        return message.toDictionary()
+    }
 }
 
 // constructors
 func uiColorFromString(_ string: String?) -> UIColor? {
-    if let colorString = string,
-       let colorValue = Int(colorString.dropFirst(), radix: 16) {
-        return UIColor(
-            red: CGFloat((colorValue >> 16) & 0xff) / 0xff,
-            green: CGFloat((colorValue >> 8) & 0xff) / 0xff,
-            blue: CGFloat((colorValue >> 0) & 0xff) / 0xff,
-            alpha: 1.0)
+    guard var colorString = string else { return nil }
+    if colorString.hasPrefix("#") {
+        colorString.removeFirst()
     }
-    return nil
+    guard let colorValue = Int(colorString, radix: 16) else { return nil }
+    return UIColor(
+        red: CGFloat((colorValue >> 16) & 0xff) / 0xff,
+        green: CGFloat((colorValue >> 8) & 0xff) / 0xff,
+        blue: CGFloat(colorValue & 0xff) / 0xff,
+        alpha: 1.0
+    )
 }
 
 func uiColorToString(_ color: UIColor) -> String {
@@ -104,15 +113,15 @@ func uiColorToString(_ color: UIColor) -> String {
     return String(format: "#%02x%02x%02x", intR, intG, intB)
 }
 
-extension RadarInAppMessage.Text {
-    static func fromDictionary(dict: Any?) -> RadarInAppMessage.Text? {
+extension RadarInAppMessage_Swift.Text {
+    static func fromDictionary(dict: Any?) -> RadarInAppMessage_Swift.Text? {
         guard let dict = dict as? Dictionary<String, String>,
               let text = dict["text"],
               let color = uiColorFromString(dict["color"]) else {
             return nil
         }
 
-        return RadarInAppMessage.Text(
+        return RadarInAppMessage_Swift.Text(
             text: text,
             color: color
         )
@@ -126,8 +135,8 @@ extension RadarInAppMessage.Text {
     }
 }
 
-extension RadarInAppMessage.Button {
-    static func fromDictionary(dict: Any?) -> RadarInAppMessage.Button? {
+extension RadarInAppMessage_Swift.Button {
+    static func fromDictionary(dict: Any?) -> RadarInAppMessage_Swift.Button? {
         guard let dict = dict as? Dictionary<String, String?>,
               let text = dict["text"] ?? nil,
               let color = uiColorFromString(dict["color"] ?? nil),
@@ -136,7 +145,7 @@ extension RadarInAppMessage.Button {
         }
         let deepLink = dict["deepLink"] ?? nil
 
-        return RadarInAppMessage.Button(
+        return RadarInAppMessage_Swift.Button(
             text: text, color: color, backgroundColor: backgroundColor, deepLink: deepLink
         )
     }
@@ -154,15 +163,15 @@ extension RadarInAppMessage.Button {
     }
 }
 
-extension RadarInAppMessage.Image {
-    static func fromDictionary(dict: Any?) -> RadarInAppMessage.Image? {
+extension RadarInAppMessage_Swift.Image {
+    static func fromDictionary(dict: Any?) -> RadarInAppMessage_Swift.Image? {
         guard let dict = dict as? Dictionary<String, String>,
               let name = dict["name"],
               let url = dict["url"] else {
             return nil
         }
 
-        return RadarInAppMessage.Image(
+        return RadarInAppMessage_Swift.Image(
             name: name, url: url
         )
     }
@@ -174,3 +183,4 @@ extension RadarInAppMessage.Image {
         ]
     }
 }
+
