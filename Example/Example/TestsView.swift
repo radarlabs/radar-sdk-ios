@@ -49,7 +49,7 @@ struct TestsView: View {
                         "backgroundColor": "#EB0083",
                     ],
                     "image": [
-                        "url": "https://images.pexels.com/photos/949587/pexels-photo-949587.jpeg",
+                        "url": "campaigns/69179d8414fb87c672b54cc9/Active.png",
                         "name": "image.jpeg"
                     ],
                     "metadata": [
@@ -90,13 +90,13 @@ struct TestsView: View {
             
             StyledButton("getVerifiedLocationToken") {
                 Radar.getVerifiedLocationToken() { (status, token) in
-                    print("getVerifiedLocationToken: status = \(status); token = \(token?.dictionaryValue())")
+                    print("getVerifiedLocationToken: status = \(status); token = \(String(describing: token?.dictionaryValue()))")
                 }
             }
             
             StyledButton("trackVerified") {
                 Radar.trackVerified() { (status, token) in
-                    print("TrackVerified: status = \(status); token = \(token?.dictionaryValue())")
+                    print("TrackVerified: status = \(status); token = \(String(describing: token?.dictionaryValue()))")
                 }
             }
             

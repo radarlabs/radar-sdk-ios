@@ -9,8 +9,8 @@ import SwiftUI
 import RadarSDK
 
 struct LogsView: View {
-    @StateObject var radarDelegateState = RadarDelegateState()
-    let radarDelegate = MyRadarDelegate()
+    
+    let radarDelegateState: RadarDelegateState
     
     var body: some View {
         VStack {
@@ -39,13 +39,16 @@ struct LogsView: View {
                 return Text("\(type): \(description)")
             }
 
-        }.onAppear {
-            radarDelegate.state = radarDelegateState
-            Radar.setDelegate(radarDelegate)
         }
     }
 }
 
 #Preview {
-    LogsView()
+    let radarDelegateState = RadarDelegateState()
+    let radarDelegate = MyRadarDelegate()
+    
+    LogsView(radarDelegateState: radarDelegateState).onAppear {
+        radarDelegate.state = radarDelegateState
+        Radar.setDelegate(radarDelegate)
+    }
 }

@@ -122,7 +122,7 @@
                      source:RadarLocationSourceForegroundLocation
                      replayed:NO
                      beacons:beacons
-                     indoorScan:nil
+                     indoorLocation:nil
                      verified:YES
                      attestationString:attestationString
                      keyId:keyId

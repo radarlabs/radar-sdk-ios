@@ -12,7 +12,7 @@ import SwiftUI
 import ActivityKit
 
 @UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UNUserNotificationCenterDelegate, CLLocationManagerDelegate, RadarDelegate, RadarVerifiedDelegate {
+class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UNUserNotificationCenterDelegate, CLLocationManagerDelegate {
 
     let locationManager = CLLocationManager()
     var window: UIWindow? // required for UIWindowSceneDelegate
@@ -21,6 +21,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
     var demoFunctions = Array<() -> Void>()
     
     var useSwiftUI = true
+    
+    let motionManager = CMMotionManager()
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { (_, _) in }
@@ -28,20 +30,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         
         locationManager.delegate = self
         self.requestLocationPermissions()
+        Radar.setAppGroup(nil)
         
-        // Replace with a valid test publishable key
-        let radarInitializeOptions = RadarInitializeOptions()
+        UserDefaults.standard.setValue("https://api-shicheng.radar-staging.com", forKey: "radar-host")
         
         // Uncomment to enable automatic setup for notification conversions or deep linking
+        let radarInitializeOptions = RadarInitializeOptions()
         radarInitializeOptions.autoLogNotificationConversions = true
         radarInitializeOptions.autoHandleNotificationDeepLinks = true
         radarInitializeOptions.silentPush = true
         
-        Radar.setAppGroup("group.waypoint.data")
+        Radar.setAppGroup(nil)
         Radar.initialize(publishableKey: "prj_test_pk_0000000000000000000000000000000000000000", options: radarInitializeOptions )
         Radar.setMetadata([ "foo": "bar" ])
-        Radar.setDelegate(self)
-        Radar.setVerifiedDelegate(self)
         Radar.setInAppMessageDelegate(MyIAMDelegate())
         
         if #available(iOS 15.0, *) {
@@ -60,25 +61,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         return true
     }
     
-    func demoButton(text: String, function: @escaping () -> Void) {
-        guard let scrollView = self.scrollView else { return }
-        
-        let buttonHeight = 30
-        scrollView.contentSize.height += CGFloat(buttonHeight)
-        
-        let buttonFrame = CGRect(x: 0, y: demoFunctions.count * buttonHeight, width: Int(scrollView.frame.width), height: buttonHeight)
-        let button = UIButton(frame: buttonFrame, primaryAction:UIAction(handler:{ _ in
-            function()
-        }))
-        button.setTitleColor(.black, for: .normal)
-        button.setTitleColor(.lightGray, for: .highlighted)
-        button.setTitle(text, for: .normal)
-        
-        demoFunctions.append(function)
-        
-        scrollView.addSubview(button)
-    }
-    
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         // Use this method to optionally configure and attach the UIWindow `window` to the provided UIWindowScene `scene`.
         // If using a storyboard, the `window` property will automatically be initialized and attached to the scene.
@@ -89,17 +71,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         
         window.backgroundColor = .white
         
-        if (useSwiftUI) {
-            let controller = UIHostingController(rootView: MainView())
-            controller.view.frame = UIScreen.main.bounds
-            window.addSubview(controller.view)
-        } else {
-            scrollView = UIScrollView(frame: CGRect(x: 0, y: 100, width: window.frame.size.width, height: window.frame.size.height))
-            scrollView!.contentSize.height = 0
-            scrollView!.contentSize.width = window.frame.size.width
-            
-            window.addSubview(scrollView!)
-        }
+        let controller = UIHostingController(rootView: MainView())
+        controller.view.frame = UIScreen.main.bounds
+        window.addSubview(controller.view)
         
         window.makeKeyAndVisible()
         
@@ -113,37 +87,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
             //            Radar.trackOnce { (status, location, events, user) in
             //                print("Track once: status = \(Radar.stringForStatus(status)); location = \(String(describing: location)); events = \(String(describing: events)); user = \(String(describing: user))")
             //            }
-        }
-        
-        demoButton(text: "IAM") {
-            Radar.showInAppMessage(RadarInAppMessage.fromDictionary([
-                "title": [
-                    "text": "This is the titleakfjaklsjdflajsldfjalsdjflajsldkfjaslkfdjkalsjdfklajlkfdjklsjflajsd",
-                    "color": "#ff0000"
-                ],
-                "body": [
-                    "text": "This is a demo message.",
-                    "color": "#00ff00"
-                ],
-                "button": [
-                    "text": "Buy it",
-                    "color": "#0000ff",
-                    "backgroundColor": "#EB0083",
-                ],
-                "image": [
-                    "url": "https://images.pexels.com/photos/949587/pexels-photo-949587.jpeg",
-                    "name": "image.jpeg"
-                ],
-                "metadata": [
-                    "campainId": "1234"
-                ]
-            ])!)
-        }
-        demoButton(text: "get User Id") {
-            print(Radar.getUserId())
-        }
-        demoButton(text: "track once") {
-            print(Radar.trackOnce())
         }
     }
         

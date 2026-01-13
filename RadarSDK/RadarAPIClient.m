@@ -194,7 +194,7 @@
                    source:(RadarLocationSource)source
                  replayed:(BOOL)replayed
                   beacons:(NSArray<RadarBeacon *> *_Nullable)beacons
-             indoorScan:(NSString *_Nullable)indoorScan
+           indoorLocation:(CLLocation *_Nullable)indoorLocation
         completionHandler:(RadarTrackAPICompletionHandler _Nonnull)completionHandler {
     [self trackWithLocation:location
                     stopped:stopped
@@ -202,7 +202,7 @@
                      source:source
                    replayed:replayed
                     beacons:beacons
-               indoorScan:indoorScan
+             indoorLocation:indoorLocation
                    verified:NO
           attestationString:nil
                       keyId:nil
@@ -221,7 +221,7 @@
                    source:(RadarLocationSource)source
                  replayed:(BOOL)replayed
                   beacons:(NSArray<RadarBeacon *> *_Nullable)beacons
-             indoorScan:(NSString *_Nullable)indoorScan
+           indoorLocation:(CLLocation *_Nullable)indoorLocation
                  verified:(BOOL)verified
         attestationString:(NSString *_Nullable)attestationString
                     keyId:(NSString *_Nullable)keyId
@@ -339,9 +339,6 @@
     if (beacons) {
         params[@"beacons"] = [RadarBeacon arrayForBeacons:beacons];
     }
-    if (indoorScan) {
-        params[@"indoorScan"] = indoorScan;
-    }
     NSString *locationAuthorization = [RadarUtils locationAuthorization];
     if (locationAuthorization) {
         params[@"locationAuthorization"] = locationAuthorization;
@@ -438,8 +435,18 @@
             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelWarning message:@"usePressure enabled but no recent pressure data available; sending without pressureHPa"];
         }
     }
+    
+    if (options.useIndoorScan && indoorLocation) {
+        locationMetadata[@"indoorMLLatitude"] = @(indoorLocation.coordinate.latitude);
+        locationMetadata[@"indoorMLLongitude"] = @(indoorLocation.coordinate.longitude);
+        locationMetadata[@"deviceLatitude"] = params[@"latitude"];
+        locationMetadata[@"deviceLongitude"] = params[@"longitude"];
+        // replace params with the ml model result
+        params[@"latitude"] = @(indoorLocation.coordinate.latitude);
+        params[@"longitude"] = @(indoorLocation.coordinate.longitude);
+    }
 
-    if (options.usePressure || options.useMotion) {
+    if (locationMetadata.count > 0) {
         params[@"locationMetadata"] = locationMetadata;
     }
     

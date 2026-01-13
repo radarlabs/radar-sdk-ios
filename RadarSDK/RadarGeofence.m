@@ -37,8 +37,9 @@
                                  tag:(NSString *)tag
                           externalId:(NSString *_Nullable)externalId
                             metadata:(NSDictionary *_Nullable)metadata
-                      operatingHours: (RadarOperatingHours *_Nullable) operatingHours
-                            geometry:(RadarGeofenceGeometry *_Nonnull)geometry {
+                      operatingHours:(RadarOperatingHours *_Nullable) operatingHours
+                            geometry:(RadarGeofenceGeometry *_Nonnull)geometry
+                 activeIndoorModelId:(NSString *_Nullable)activeIndoorModelId {
     self = [super init];
     if (self) {
         __id = _id;
@@ -48,6 +49,7 @@
         _metadata = metadata;
         _operatingHours = operatingHours;
         _geometry = geometry;
+        _activeIndoorModelId = activeIndoorModelId;
     }
     return self;
 }
@@ -66,6 +68,7 @@
     NSDictionary *metadata;
     RadarOperatingHours *operatingHours;
     RadarGeofenceGeometry *geometry;
+    NSString *activeIndoorModelId;
 
     id idObj = dict[@"_id"];
     if (idObj && [idObj isKindOfClass:[NSString class]]) {
@@ -138,8 +141,13 @@
             geometry = [[RadarPolygonGeometry alloc] initWithCoordinates:mutablePolygonCoordinates center:center radius:radius];   
         }
     }
+    
+    id activeIndoorModelIdObj = dict[@"activeIndoorModelId"];
+    if (activeIndoorModelIdObj && [activeIndoorModelIdObj isKindOfClass:[NSString class]]) {
+        activeIndoorModelId = (NSString *)activeIndoorModelIdObj;
+    }
 
-    return [[RadarGeofence alloc] initWithId:_id description:description tag:tag externalId:externalId metadata:metadata operatingHours:operatingHours geometry:geometry];
+    return [[RadarGeofence alloc] initWithId:_id description:description tag:tag externalId:externalId metadata:metadata operatingHours:operatingHours geometry:geometry activeIndoorModelId:activeIndoorModelId];
 }
 
 - (NSMutableArray<RadarCoordinate *> *)getPolygonCoordinates:(NSDictionary *)dict {

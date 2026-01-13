@@ -96,6 +96,8 @@ typedef NS_ENUM(NSInteger, RadarLocationSource) {
     RadarLocationSourceBeaconEnter,
     /// Beacon exit
     RadarLocationSourceBeaconExit,
+    /// Location from RadarSDKIndoors
+    RadarLocationSourceIndoors,
     /// Unknown
     RadarLocationSourceUnknown
 };

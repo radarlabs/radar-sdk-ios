@@ -23,6 +23,7 @@
 #import "RadarActivityManager.h"
 #import "RadarNotificationHelper.h"
 #import "RadarIndoorsProtocol.h"
+#import "RadarIndoors.h"
 
 @interface RadarLocationManager ()
 
@@ -948,22 +949,21 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     
     if ([RadarSettings useRadarModifiedBeacon]) {
         void (^callTrackAPI)(NSArray<RadarBeacon *> *_Nullable) = ^(NSArray<RadarBeacon *> *_Nullable beacons) {
-            [self performIndoorScanIfConfigured:location 
-                                        beacons:beacons 
-                              completionHandler:^(NSArray<RadarBeacon *> *_Nullable beacons, NSString *_Nullable indoorScan) {
+            [[RadarIndoors shared] getLocationWithCompletionHandler:^(CLLocation *_Nullable indoorLocation) {
                 [[RadarAPIClient sharedInstance] trackWithLocation:location
                                                            stopped:stopped
                                                         foreground:[RadarUtils foreground]
                                                             source:source
                                                           replayed:replayed
                                                            beacons:beacons
-                                                      indoorScan:indoorScan
+                                                    indoorLocation:indoorLocation
                                                  completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user,
                                                                      NSArray<RadarGeofence *> *_Nullable nearbyGeofences, RadarConfig *_Nullable config, RadarVerifiedLocationToken *_Nullable token) {
                     self.sending = NO;
                     
                     [self updateTrackingFromMeta:config.meta];
                     [self replaceSyncedGeofences:nearbyGeofences];
+                    [[RadarIndoors shared] updateTrackingWithUser:user completionHandler:^{}];
                 }];
             }];
         };
@@ -1035,16 +1035,14 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
             }
         }
 
-        [self performIndoorScanIfConfigured:location 
-                                    beacons:beacons 
-                          completionHandler:^(NSArray<RadarBeacon *> *_Nullable beacons, NSString *_Nullable indoorScan) {
+        [[RadarIndoors shared] getLocationWithCompletionHandler:^(CLLocation *_Nullable indoorLocation) {
             [[RadarAPIClient sharedInstance] trackWithLocation:location
                                                        stopped:stopped
                                                     foreground:[RadarUtils foreground]
                                                         source:source
                                                       replayed:replayed
                                                        beacons:beacons
-                                                  indoorScan:indoorScan
+                                                indoorLocation:indoorLocation
                                              completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user,
                                                                  NSArray<RadarGeofence *> *_Nullable nearbyGeofences, RadarConfig *_Nullable config, RadarVerifiedLocationToken *_Nullable token) {
                                                  self.sending = NO;
@@ -1054,6 +1052,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 
                                                  [self updateTrackingFromMeta:config.meta];
                                                  [self replaceSyncedGeofences:nearbyGeofences];
+                                                 [[RadarIndoors shared] updateTrackingWithUser:user completionHandler:^{}];
                                              }];
         }];
     }
