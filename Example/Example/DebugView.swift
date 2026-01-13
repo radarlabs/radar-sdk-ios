@@ -185,15 +185,15 @@ struct DebugView: View {
                 MLNPointFeature(coordinate: arCoord) { f in
                     f.attributes["color"] = "#FF00FF"
                 },
-                MLNPointFeature(coordinate: predCoord) { f in
-                    f.attributes["color"] = "#00FFFF"
-                },
                 MLNPointFeature(coordinate: displayPredCoord) { f in
                     f.attributes["color"] = "#0000FF"
                 },
-                MLNPointFeature(coordinate: lastPredCoord) { f in
-                    f.attributes["color"] = "#FF0000"
-                },
+//                MLNPointFeature(coordinate: predCoord) { f in
+//                    f.attributes["color"] = "#00FFFF"
+//                },
+//                MLNPointFeature(coordinate: lastPredCoord) { f in
+//                    f.attributes["color"] = "#FF0000"
+//                },
             ])
         }
     }

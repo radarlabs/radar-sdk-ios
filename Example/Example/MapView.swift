@@ -7,25 +7,8 @@
 
 import SwiftUI
 import MapLibre
-
-
-
 import MapLibreSwiftUI
 import MapLibreSwiftDSL
-extension MapView where T == MLNMapViewController {
-    init(withRadar publishableKey: String) {
-        let style = "radar-default-v1"
-        let styleURL = URL(string: "https://api.radar.io/maps/styles/\(style)?publishableKey=\(publishableKey)")!
-        
-        let sessionConfig = URLSessionConfiguration.default
-        sessionConfig.httpAdditionalHeaders = ["X-Radar-Mobile-Origin": Bundle.main.bundleIdentifier ?? ""]
-        sessionConfig.httpAdditionalHeaders?["Authorization"] = publishableKey
-        MLNNetworkConfiguration.sharedManager.sessionConfiguration = sessionConfig
-        
-        self.init(styleURL: styleURL)
-    }
-}
-
 
 struct GestureContext {
     var point: CGPoint
@@ -187,5 +170,5 @@ struct MyMapView: UIViewRepresentable {
 }
 
 #Preview {
-    MyMapView(withRadar: "prj_test_pk_c0ebf059d9895f428fac2295dbe83568507938e3")
+    MyMapView(withRadar: "prj_test_pk_0000000000000000000000000000000000000000")
 }
