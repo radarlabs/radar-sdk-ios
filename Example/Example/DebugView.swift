@@ -205,8 +205,7 @@ struct DebugView: View {
     
     var body: some View {
         VStack(spacing: 10) {
-            let key = UserDefaults.standard.string(forKey: "radar-publishableKey")
-            MyMapView(withRadar: key)
+            MyMapView(withRadar: "prj_test_pk_0000000000000000000000000000000000000000")
                 .onStyleLoaded { style in
                     guard let site else {
                         return
