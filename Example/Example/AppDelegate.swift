@@ -9,6 +9,7 @@ import UIKit
 import UserNotifications
 import RadarSDK
 import SwiftUI
+import ActivityKit
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UNUserNotificationCenterDelegate, CLLocationManagerDelegate {
@@ -38,9 +39,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         radarInitializeOptions.autoLogNotificationConversions = true
         radarInitializeOptions.autoHandleNotificationDeepLinks = true
         radarInitializeOptions.silentPush = true
-        Radar.initialize(publishableKey: "prj_test_pk_", options: radarInitializeOptions )
         
+        Radar.setAppGroup("group.waypoint.data")
+        Radar.initialize(publishableKey: "prj_test_pk_0000000000000000000000000000000000000000", options: radarInitializeOptions )
         Radar.setMetadata([ "foo": "bar" ])
+        Radar.setDelegate(self)
+        Radar.setVerifiedDelegate(self)
+        Radar.setInAppMessageDelegate(MyIAMDelegate())
         
         if #available(iOS 15.0, *) {
             locationManager.startMonitoringLocationPushes() { data, error in
@@ -131,5 +136,61 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         print(userInfo)
         
         return .newData
+    }
+
+    func notify(_ body: String) {
+    }
+    
+    // MARK: - RadarDelegate Methods (for Live Activity)
+    // These delegate methods are optional and only needed if you want to update a Live Activity based on trip events and location updates.
+    func didReceiveEvents(_ events: [RadarEvent], user: RadarUser?) {
+        // End the Live Activity when the user stops a trip
+        if #available(iOS 16.2, *) {
+            for event in events {
+                if event.type == .userStoppedTrip {
+                    TripLiveActivityManager.shared.endActivity(status: "completed")
+                }
+            }
+        }
+    }
+    
+    func didUpdateLocation(_ location: CLLocation, user: RadarUser) {
+        // Update the Live Activity with the latest trip progress
+        if #available(iOS 16.2, *) {
+            if user.trip != nil {
+                handleTripLiveActivity(user: user)
+            }
+        }
+    }
+    
+    // MARK: - Live Activity Handling
+    @available(iOS 16.2, *)
+    private func handleTripLiveActivity(user: RadarUser?) {
+        guard let trip = user?.trip else {
+            TripLiveActivityManager.shared.endActivity(status: "completed")
+            return
+        }
+        
+        let hasActivity = TripLiveActivityManager.shared.hasActiveActivity
+        
+        switch trip.status {
+        case .started, .approaching, .arrived:
+            if !hasActivity {
+                TripLiveActivityManager.shared.startActivity(trip: trip)
+            } else {
+                // If trip is "started" but we already have an activity, show as "in_progress"
+                let statusOverride = (trip.status == .started) ? "in_progress" : nil
+                TripLiveActivityManager.shared.updateActivity(trip: trip, statusOverride: statusOverride)
+            }
+            
+        case .completed:
+            TripLiveActivityManager.shared.endActivity(status: "completed")
+        case .canceled:
+            TripLiveActivityManager.shared.endActivity(status: "canceled")
+        case .expired:
+            TripLiveActivityManager.shared.endActivity(status: "expired")
+        default:
+            break
+        }
     }
 }

@@ -37,6 +37,7 @@ final class RadarApiHelper: Sendable {
     
     func request(method: String, url: String, query: [String: String] = [:], headers: [String: String] = [:], body: [String: Any] = [:]) async throws -> (Data, HTTPURLResponse) {
         let request = try requestFor(method: method, url: url, query: query, headers: headers, body: body)
+        
         let (data, response) = try await URLSession.shared.data(for: request)
 
         guard let httpResponse = response as? HTTPURLResponse else {
@@ -47,12 +48,25 @@ final class RadarApiHelper: Sendable {
     }
 
     func radarRequest(method: String, url: String, query: [String: String] = [:], headers: [String: String] = [:], body: [String: Any] = [:]) async throws -> (Data, HTTPURLResponse) {
-        guard let publishableKey = UserDefaults.standard.string(forKey: "radar-publishableKey") else {
+        guard let publishableKey = RadarSettings.publishableKey else {
             throw URLError(.userAuthenticationRequired)
         }
-
+        
         var headers = headers
         headers["Authorization"] = publishableKey
+        // TODO: add additional mobile headers when RadarUtils is in swift
+        /*
+        @"Content-Type": @"application/json",
+        @"X-Radar-Config": @"true",
+        @"X-Radar-Device-Make": [RadarUtils deviceMake],
+        @"X-Radar-Device-Model": [RadarUtils deviceModel],
+        @"X-Radar-Device-OS": [RadarUtils deviceOS],
+        @"X-Radar-Device-Type": [RadarUtils deviceType],
+        @"X-Radar-SDK-Version": [RadarUtils sdkVersion],
+        @"X-Radar-Mobile-Origin": [[NSBundle mainBundle] bundleIdentifier],
+        @"X-Radar-Network-Type": [RadarUtils networkTypeString],
+        @"X-Radar-App-Info": appInfoJSON
+         */
 
         let url = "\(RadarSettings.host)/v1/\(url)"
 

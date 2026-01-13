@@ -9,8 +9,12 @@
 /* Begin PBXBuildFile section */
 		013D7AF226D327C400574AD5 /* RadarSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0107AA77262200DA008AB52F /* RadarSDK.framework */; settings = {ATTRIBUTES = (Required, ); }; };
 		013D7AF326D327C400574AD5 /* RadarSDK.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 0107AA77262200DA008AB52F /* RadarSDK.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		BA51987C2ED10AEA004A3B35 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BA51987B2ED10AEA004A3B35 /* WidgetKit.framework */; };
+		BA51987E2ED10AEA004A3B35 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BA51987D2ED10AEA004A3B35 /* SwiftUI.framework */; };
+		BA51988D2ED10AEB004A3B35 /* TripActivityExtensionExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = BA51987A2ED10AEA004A3B35 /* TripActivityExtensionExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		BA5198932EDE0F06004A3B35 /* TripLiveActivityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA5198922EDE0F06004A3B35 /* TripLiveActivityManager.swift */; };
+		BA5198C92EDE3B8C004A3B35 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BA5198C82EDE3B8C004A3B35 /* Assets.xcassets */; };
 		DD236D27230A006700EB88F9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD236D26230A006700EB88F9 /* AppDelegate.swift */; };
-		DD236D30230A006900EB88F9 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DD236D2F230A006900EB88F9 /* Assets.xcassets */; };
 		DD291169230D0AF900049D3A /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD291168230D0AF900049D3A /* Utils.swift */; };
 		DDB861D32385FC3E00770661 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DDB861D22385FC3E00770661 /* Default-568h@2x.png */; };
 		E698B7492C626B0600084371 /* RadarSDKMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E698B7412C626AE600084371 /* RadarSDKMotion.framework */; };
@@ -26,6 +30,7 @@
 		F65B4C2F2EB3B72B00434EF1 /* site.swift in Sources */ = {isa = PBXBuildFile; fileRef = F65B4C272EB3B72A00434EF1 /* site.swift */; };
 		F65B4C312EB3B7F900434EF1 /* RadarSite.swift in Sources */ = {isa = PBXBuildFile; fileRef = F65B4C302EB3B7F500434EF1 /* RadarSite.swift */; };
 		F65B4C452EB9379300434EF1 /* AR.swift in Sources */ = {isa = PBXBuildFile; fileRef = F65B4C442EB9379000434EF1 /* AR.swift */; };
+		F65F793E2EF458E600399E84 /* MyIAMDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F65F79382EF458E000399E84 /* MyIAMDelegate.swift */; };
 		F66DAD6A2E707F0700896773 /* waypoints.gpx in Sources */ = {isa = PBXBuildFile; fileRef = F66DAD642E707F0300896773 /* waypoints.gpx */; };
 		F68CD9782ED0B7D4007E64CE /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F68CD9702ED0B7CF007E64CE /* SettingsView.swift */; };
 		F68CD97A2ED0BE80007E64CE /* SplitView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F68CD9792ED0BE7C007E64CE /* SplitView.swift */; };
@@ -48,6 +53,13 @@
 			proxyType = 2;
 			remoteGlobalIDString = 0107A9E82621FFB9008AB52F;
 			remoteInfo = RadarSDK;
+		};
+		BA51988B2ED10AEB004A3B35 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = DD236D1B230A006700EB88F9 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = BA5198792ED10AEA004A3B35;
+			remoteInfo = TripActivityExtensionExtension;
 		};
 		DD55C3BB2395D25600C34B40 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -113,6 +125,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
+				BA51988D2ED10AEB004A3B35 /* TripActivityExtensionExtension.appex in Embed Foundation Extensions */,
 				F6513E792E60A5F600523472 /* LocationPushExtension.appex in Embed Foundation Extensions */,
 			);
 			name = "Embed Foundation Extensions";
@@ -132,9 +145,13 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		BA51987A2ED10AEA004A3B35 /* TripActivityExtensionExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = TripActivityExtensionExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		BA51987B2ED10AEA004A3B35 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
+		BA51987D2ED10AEA004A3B35 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
+		BA5198922EDE0F06004A3B35 /* TripLiveActivityManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TripLiveActivityManager.swift; sourceTree = "<group>"; };
+		BA5198C82EDE3B8C004A3B35 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		DD236D23230A006700EB88F9 /* Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DD236D26230A006700EB88F9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		DD236D2F230A006900EB88F9 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		DD236D34230A006900EB88F9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		DD291168230D0AF900049D3A /* Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
 		DD86FCF9239185F4003225F6 /* RadarSDK.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RadarSDK.xcodeproj; path = ../RadarSDK.xcodeproj; sourceTree = SOURCE_ROOT; };
@@ -152,6 +169,7 @@
 		F65B4C272EB3B72A00434EF1 /* site.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = site.swift; sourceTree = "<group>"; };
 		F65B4C302EB3B7F500434EF1 /* RadarSite.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarSite.swift; sourceTree = "<group>"; };
 		F65B4C442EB9379000434EF1 /* AR.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AR.swift; sourceTree = "<group>"; };
+		F65F79382EF458E000399E84 /* MyIAMDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyIAMDelegate.swift; sourceTree = "<group>"; };
 		F66DAD642E707F0300896773 /* waypoints.gpx */ = {isa = PBXFileReference; lastKnownFileType = text; path = waypoints.gpx; sourceTree = "<group>"; };
 		F68CD9702ED0B7CF007E64CE /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		F68CD9792ED0BE7C007E64CE /* SplitView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplitView.swift; sourceTree = "<group>"; };
@@ -162,6 +180,27 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		BA51988E2ED10AEB004A3B35 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = BA5198792ED10AEA004A3B35 /* TripActivityExtensionExtension */;
+		};
+		BA5198982EDE1106004A3B35 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				"Extensions/UIColor+Hex.swift",
+				Helpers/TripColors.swift,
+				Helpers/TripFormatters.swift,
+				TripActivityExtensionLiveActivity.swift,
+				Views/LockScreenView.swift,
+				Views/ModeImageView.swift,
+				Views/ProgressBar.swift,
+				Views/RadarArrowImage.swift,
+			);
+			target = DD236D22230A006700EB88F9 /* Example */;
+		};
 		F6513E7A2E60A5F600523472 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
@@ -172,10 +211,20 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		BA51987F2ED10AEA004A3B35 /* TripActivityExtension */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (BA5198982EDE1106004A3B35 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, BA51988E2ED10AEB004A3B35 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = TripActivityExtension; sourceTree = "<group>"; };
 		F6513E732E60A5F600523472 /* LocationPushExtension */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (F6513E7A2E60A5F600523472 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = LocationPushExtension; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		BA5198772ED10AEA004A3B35 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BA51987E2ED10AEA004A3B35 /* SwiftUI.framework in Frameworks */,
+				BA51987C2ED10AEA004A3B35 /* WidgetKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		DD236D20230A006700EB88F9 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -207,6 +256,7 @@
 			children = (
 				DD236D25230A006700EB88F9 /* Example */,
 				F6513E732E60A5F600523472 /* LocationPushExtension */,
+				BA51987F2ED10AEA004A3B35 /* TripActivityExtension */,
 				DD236D24230A006700EB88F9 /* Products */,
 				DD86FD03239185FB003225F6 /* Frameworks */,
 			);
@@ -217,6 +267,7 @@
 			children = (
 				DD236D23230A006700EB88F9 /* Example.app */,
 				F6513E722E60A5F600523472 /* LocationPushExtension.appex */,
+				BA51987A2ED10AEA004A3B35 /* TripActivityExtensionExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -225,6 +276,7 @@
 			isa = PBXGroup;
 			children = (
 				F6ED7C412EE3638100D3E6E6 /* Example-Bridging-Header.h */,
+				BA5198C82EDE3B8C004A3B35 /* Assets.xcassets */,
 				E632FA1C2CAC366C00E86C85 /* Example.entitlements */,
 				DD236D34230A006900EB88F9 /* Info.plist */,
 				DDB861D22385FC3E00770661 /* Default-568h@2x.png */,
@@ -232,6 +284,12 @@
 				F6513F5F2E6B736200523472 /* MainView.swift */,
 				F61886C42EA7DC800072E87C /* MapView.swift */,
 				F61886CE2EA800830072E87C /* DebugView.swift */,
+				F63DDAD42E746BB0006991F5 /* StyledButton.swift */,
+				F61886C02EA7DB3F0072E87C /* MyRadarDelegate.swift */,
+				F65F79382EF458E000399E84 /* MyIAMDelegate.swift */,
+				BA5198922EDE0F06004A3B35 /* TripLiveActivityManager.swift */,
+				F61886B92EA7DB180072E87C /* TestsView.swift */,
+				F61887162EAFC1E80072E87C /* Test.mm */,
 				F61886C22EA7DB5C0072E87C /* LogsView.swift */,
 				F68CD9702ED0B7CF007E64CE /* SettingsView.swift */,
 				F61886B92EA7DB180072E87C /* TestsView.swift */,
@@ -265,6 +323,8 @@
 			isa = PBXGroup;
 			children = (
 				F6BF82752EBA90BB00143AD9 /* RadarSDKIndoors.framework */,
+				BA51987B2ED10AEA004A3B35 /* WidgetKit.framework */,
+				BA51987D2ED10AEA004A3B35 /* SwiftUI.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -290,6 +350,28 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		BA5198792ED10AEA004A3B35 /* TripActivityExtensionExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = BA51988F2ED10AEB004A3B35 /* Build configuration list for PBXNativeTarget "TripActivityExtensionExtension" */;
+			buildPhases = (
+				BA5198762ED10AEA004A3B35 /* Sources */,
+				BA5198772ED10AEA004A3B35 /* Frameworks */,
+				BA5198782ED10AEA004A3B35 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				BA51987F2ED10AEA004A3B35 /* TripActivityExtension */,
+			);
+			name = TripActivityExtensionExtension;
+			packageProductDependencies = (
+			);
+			productName = TripActivityExtensionExtension;
+			productReference = BA51987A2ED10AEA004A3B35 /* TripActivityExtensionExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 		DD236D22230A006700EB88F9 /* Example */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = DD236D37230A006900EB88F9 /* Build configuration list for PBXNativeTarget "Example" */;
@@ -304,6 +386,7 @@
 			);
 			dependencies = (
 				F6513E782E60A5F600523472 /* PBXTargetDependency */,
+				BA51988C2ED10AEB004A3B35 /* PBXTargetDependency */,
 			);
 			name = Example;
 			packageProductDependencies = (
@@ -350,6 +433,9 @@
 				LastUpgradeCheck = 1320;
 				ORGANIZATIONNAME = "Radar Labs, Inc.";
 				TargetAttributes = {
+					BA5198792ED10AEA004A3B35 = {
+						CreatedOnToolsVersion = 16.4;
+					};
 					DD236D22230A006700EB88F9 = {
 						CreatedOnToolsVersion = 11.0;
 						LastSwiftMigration = 2600;
@@ -393,6 +479,7 @@
 			targets = (
 				DD236D22230A006700EB88F9 /* Example */,
 				F6513E712E60A5F600523472 /* LocationPushExtension */,
+				BA5198792ED10AEA004A3B35 /* TripActivityExtensionExtension */,
 			);
 		};
 /* End PBXProject section */
@@ -443,11 +530,19 @@
 /* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
+		BA5198782ED10AEA004A3B35 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		DD236D21230A006700EB88F9 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DD236D30230A006900EB88F9 /* Assets.xcassets in Resources */,
+				F625D7F92C3337650024D1E7 /* Launch Screen.storyboard in Resources */,
+				BA5198C92EDE3B8C004A3B35 /* Assets.xcassets in Resources */,
 				DDB861D32385FC3E00770661 /* Default-568h@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -462,6 +557,13 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		BA5198762ED10AEA004A3B35 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		DD236D1F230A006700EB88F9 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -473,11 +575,14 @@
 				F65B4C452EB9379300434EF1 /* AR.swift in Sources */,
 				F63DDAD52E746BB0006991F5 /* StyledButton.swift in Sources */,
 				F61886C52EA7DC820072E87C /* MapView.swift in Sources */,
+				BA5198932EDE0F06004A3B35 /* TripLiveActivityManager.swift in Sources */,
+				F618871C2EAFC1EE0072E87C /* Test.mm in Sources */,
 				DD236D27230A006700EB88F9 /* AppDelegate.swift in Sources */,
 				F61886CF2EA800830072E87C /* DebugView.swift in Sources */,
 				F6513F602E6B736200523472 /* MainView.swift in Sources */,
 				F61886C32EA7DB5F0072E87C /* LogsView.swift in Sources */,
 				F61886C12EA7DB440072E87C /* MyRadarDelegate.swift in Sources */,
+				F65F793E2EF458E600399E84 /* MyIAMDelegate.swift in Sources */,
 				DD291169230D0AF900049D3A /* Utils.swift in Sources */,
 				F65B4C2F2EB3B72B00434EF1 /* site.swift in Sources */,
 				F61886BF2EA7DB1D0072E87C /* TestsView.swift in Sources */,
@@ -495,6 +600,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		BA51988C2ED10AEB004A3B35 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = BA5198792ED10AEA004A3B35 /* TripActivityExtensionExtension */;
+			targetProxy = BA51988B2ED10AEB004A3B35 /* PBXContainerItemProxy */;
+		};
 		F6513E782E60A5F600523472 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = F6513E712E60A5F600523472 /* LocationPushExtension */;
@@ -503,6 +613,75 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		BA5198902ED10AEB004A3B35 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 96GHH65B9D;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = TripActivityExtension/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = TripActivityExtension;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2025 Radar Labs, Inc. All rights reserved.";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = io.radar.iosexample.TripActivityExtension;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		BA5198912ED10AEB004A3B35 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 96GHH65B9D;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = TripActivityExtension/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = TripActivityExtension;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2025 Radar Labs, Inc. All rights reserved.";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = io.radar.iosexample.TripActivityExtension;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 		DD236D35230A006900EB88F9 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -754,6 +933,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		BA51988F2ED10AEB004A3B35 /* Build configuration list for PBXNativeTarget "TripActivityExtensionExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BA5198902ED10AEB004A3B35 /* Debug */,
+				BA5198912ED10AEB004A3B35 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		DD236D1E230A006700EB88F9 /* Build configuration list for PBXProject "Example" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
