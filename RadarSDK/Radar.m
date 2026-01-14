@@ -1323,15 +1323,13 @@ BOOL _initialized = NO;
 
 + (NSString *)stringForMotionAuthorizationStatus {
     Class RadarSDKMotionClass = NSClassFromString(@"RadarSDKMotion");
-    SEL selector = NSSelectorFromString(@"stringForMotionAuthorization");
     
-    if (RadarSDKMotionClass && [RadarSDKMotionClass respondsToSelector:selector]) {
-        IMP imp = [RadarSDKMotionClass methodForSelector:selector];
-        NSString *(*func)(id, SEL) = (void *)imp;
-        return func(RadarSDKMotionClass, selector);
+    if (RadarSDKMotionClass && [RadarSDKMotionClass respondsToSelector:@selector(stringForMotionAuthorization)]) {
+        return [RadarSDKMotionClass stringForMotionAuthorization];
     }
     return @"NOT_AVAILABLE";
 }
+
 
 + (NSString *)stringForVerificationStatus:(RadarAddressVerificationStatus)status {
     NSString *str;
