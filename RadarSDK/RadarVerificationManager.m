@@ -466,7 +466,7 @@
 
         if (!challenge) {
             // Rate limited - challenge is null
-            completionHandler(nil, nil, @"Rate limited");
+            completionHandler(nil, nil, nil);
             return;
         }
 
