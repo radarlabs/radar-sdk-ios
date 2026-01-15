@@ -230,6 +230,23 @@ static NSDateFormatter *_isoDateFormatter;
     return dict;
 }
 
++ (CLCircularRegion *)circularRegionForDictionary:(NSDictionary *)dict {
+    CLLocationCoordinate2D coordinate = CLLocationCoordinate2DMake([dict[@"latitude"] doubleValue], [dict[@"longitude"] doubleValue]);
+    CLCircularRegion *location = [[CLCircularRegion alloc] initWithCenter:coordinate
+                                                           radius:[dict[@"radius"] doubleValue]
+                                                       identifier:dict[@"identifier"]];
+    return location;
+}
+
++ (NSDictionary *)dictionaryForCircularRegion:(CLCircularRegion *)region {
+    NSMutableDictionary *dict = [NSMutableDictionary new];
+    dict[@"latitude"] = @(region.center.latitude);
+    dict[@"longitude"] = @(region.center.longitude);
+    dict[@"radius"] = @(region.radius);
+    dict[@"identifier"] = region.identifier;
+    return dict;
+}
+
 + (NSString *)dictionaryToJson:(NSDictionary *)dict {
     if (!dict) {
         return @"{}";
@@ -246,6 +263,15 @@ static NSDateFormatter *_isoDateFormatter;
         return [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
     } 
 }
+
++ (BOOL)isLive {
+    NSString *publishableKey = [RadarSettings publishableKey];
+    if (!publishableKey) {
+        return NO;
+    }
+    return [publishableKey hasPrefix:@"prj_live"];
+}
+
 
 #pragma mark - threading
 
