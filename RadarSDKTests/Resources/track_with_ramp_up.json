@@ -1,14 +1,34 @@
 {
    "meta": {
-      "code": 200
+      "code": 200,
+      "trackingOptions": {
+         "desiredStoppedUpdateInterval": 0,
+         "desiredMovingUpdateInterval": 0,
+         "desiredSyncInterval": 0,
+         "desiredAccuracy": "medium",
+         "stopDuration": 0,
+         "stopDistance": 0,
+         "replay": "stops",
+         "useStoppedGeofence": false,
+         "showBlueBar": false,
+         "startTrackingAfter": null,
+         "stopTrackingAfter": null,
+         "stoppedGeofenceRadius": 0,
+         "useMovingGeofence": false,
+         "movingGeofenceRadius": 0,
+         "syncGeofences": true,
+         "useVisits": true,
+         "useSignificantLocationChanges": false,
+         "beacons": false,
+         "sync": "all"
+       }
    },
    "user": {
       "location": {
          "type": "Point",
          "coordinates": [
             -73.975365,
-            40.783825,
-            8848.9
+            40.783825
          ]
       },
       "live": false,
@@ -188,8 +208,7 @@
             "type": "Point",
             "coordinates": [
                -73.975365,
-               40.783825,
-               8848.9
+               40.783825
             ]
          },
          "locationAccuracy": 5,
@@ -1154,4 +1173,3 @@
       }
    ]
 }
-

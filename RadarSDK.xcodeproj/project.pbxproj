@@ -158,6 +158,7 @@
 		BA78A1052F194D0C0058ECD4 /* RadarOfflineManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA78A1042F194D020058ECD4 /* RadarOfflineManager.swift */; };
 		BA78A1072F194DD10058ECD4 /* RadarRemoteTrackingOptions.h in Headers */ = {isa = PBXBuildFile; fileRef = BA78A1062F194DC80058ECD4 /* RadarRemoteTrackingOptions.h */; };
 		BA78A1092F194E170058ECD4 /* RadarRemoteTrackingOptions.m in Sources */ = {isa = PBXBuildFile; fileRef = BA78A1082F194E110058ECD4 /* RadarRemoteTrackingOptions.m */; };
+		BA78A10B2F19676E0058ECD4 /* track_with_ramp_up.json in Resources */ = {isa = PBXBuildFile; fileRef = BA78A10A2F1967630058ECD4 /* track_with_ramp_up.json */; };
 		DD103211237E0C47003DD408 /* RadarSDKTests.m in Sources */ = {isa = PBXBuildFile; fileRef = DD103210237E0C47003DD408 /* RadarSDKTests.m */; };
 		DD103215237F1795003DD408 /* track.json in Resources */ = {isa = PBXBuildFile; fileRef = DD103214237F1795003DD408 /* track.json */; };
 		DD4D4D2523E648D000D36C1D /* search_autocomplete.json in Resources */ = {isa = PBXBuildFile; fileRef = DD4D4D2423E648D000D36C1D /* search_autocomplete.json */; };
@@ -311,6 +312,7 @@
 		BA78A1042F194D020058ECD4 /* RadarOfflineManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarOfflineManager.swift; sourceTree = "<group>"; };
 		BA78A1062F194DC80058ECD4 /* RadarRemoteTrackingOptions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarRemoteTrackingOptions.h; sourceTree = "<group>"; };
 		BA78A1082F194E110058ECD4 /* RadarRemoteTrackingOptions.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RadarRemoteTrackingOptions.m; sourceTree = "<group>"; };
+		BA78A10A2F1967630058ECD4 /* track_with_ramp_up.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = track_with_ramp_up.json; sourceTree = "<group>"; };
 		DD103210237E0C47003DD408 /* RadarSDKTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RadarSDKTests.m; sourceTree = "<group>"; };
 		DD103214237F1795003DD408 /* track.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = track.json; sourceTree = "<group>"; };
 		DD14FD4B23CE783500E80AC8 /* RadarSegment.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RadarSegment.m; sourceTree = "<group>"; };
@@ -486,6 +488,7 @@
 		DD103213237F1778003DD408 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				BA78A10A2F1967630058ECD4 /* track_with_ramp_up.json */,
 				53B3B26A23EE41B400080818 /* context.json */,
 				F65AF72B2C10B242002BA009 /* get_config_response.json */,
 				966D885F288F7404008C0D00 /* conversion_event.json */,
@@ -905,6 +908,7 @@
 				825732512B72BE1900DF8B88 /* PrivacyInfo.xcprivacy in Resources */,
 				96A0AC2728A4066D00B41D40 /* search_places_chain_metadata.json in Resources */,
 				53B3B26B23EE41B400080818 /* context.json in Resources */,
+				BA78A10B2F19676E0058ECD4 /* track_with_ramp_up.json in Resources */,
 				78D8CE3C23AD78A1009E91F5 /* geocode.json in Resources */,
 				DE1E7644239724FD006F34A1 /* search_geofences.json in Resources */,
 				968C839928A6D8350030103E /* conversion_event_nil_event.json in Resources */,

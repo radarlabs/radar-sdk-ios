@@ -317,6 +317,7 @@ didReceiveRemoteNotification:(NSDictionary *)userInfo
 }
 
 + (void)removePendingNotificationsWithPrefix:(NSString *)prefix completionHandler:(void (^)(void))completionHandler {
+    if (NSClassFromString(@"XCTestCase") != nil) return;
     UNUserNotificationCenter *notificationCenter = [UNUserNotificationCenter currentNotificationCenter];
     [notificationCenter getPendingNotificationRequestsWithCompletionHandler:^(NSArray<UNNotificationRequest *> *_Nonnull requests) {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Found %lu pending notifications", (unsigned long)requests.count]];
