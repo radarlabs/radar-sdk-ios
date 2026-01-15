@@ -325,6 +325,34 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     XCTAssertTrue([Radar isInitialized]);
 }
 
+- (void)test_Radar_initialize_throwsExceptionForSecretKey {
+    NSString *secretKey = @"prj_test_sk_0000000000000000000000000000000000000000";
+    
+    XCTAssertThrows([Radar initializeWithPublishableKey:secretKey options:nil], 
+                    @"Should throw exception when secret key is used");
+}
+
+- (void)test_Radar_initialize_throwsCorrectExceptionTypeForSecretKey {
+    NSString *secretKey = @"prj_test_sk_0000000000000000000000000000000000000000";
+    
+    @try {
+        [Radar initializeWithPublishableKey:secretKey options:nil];
+        XCTFail(@"Expected NSInvalidArgumentException to be thrown");
+    } @catch (NSException *exception) {
+        XCTAssertEqualObjects(exception.name, NSInvalidArgumentException, 
+                             @"Exception should be NSInvalidArgumentException");
+        XCTAssertTrue([exception.reason containsString:@"Secret keys are not allowed"], 
+                     @"Exception reason should mention secret keys are not allowed");
+    }
+}
+
+- (void)test_Radar_initialize_acceptsValidPublishableKey {
+    NSString *validKey = @"prj_test_pk_0000000000000000000000000000000000000000";
+    
+    XCTAssertNoThrow([Radar initializeWithPublishableKey:validKey options:nil], 
+                     @"Should not throw exception for valid publishable key");
+}
+
 - (void)test_Radar_setUserId {
     NSString *userId = @"userId";
     [Radar setUserId:userId];
