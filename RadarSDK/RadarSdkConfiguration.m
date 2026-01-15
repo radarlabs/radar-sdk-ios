@@ -119,6 +119,8 @@
     dict[@"useLogPersistence"] = @(_useLogPersistence);
     dict[@"useRadarModifiedBeacon"] = @(_useRadarModifiedBeacon);
     dict[@"useOpenedAppConversion"] = @(_useOpenedAppConversion);
+    dict[@"useOfflineRTOUpdates"] = @(_useOfflineRTOUpdates);
+    dict[@"remoteTrackingOptions"] = [RadarRemoteTrackingOptions arrayForRemoteTrackingOptions:_remoteTrackingOptions];
     dict[@"useForegroundLocationUpdatedAtMsDiff"] = @(_useForegroundLocationUpdatedAtMsDiff);
     dict[@"useNotificationDiff"] = @(_useNotificationDiff);
     dict[@"syncAfterSetUser"] = @(_syncAfterSetUser);
