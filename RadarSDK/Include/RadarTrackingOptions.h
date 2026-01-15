@@ -43,7 +43,9 @@ typedef NS_ENUM(NSInteger, RadarTrackingOptionsSyncLocations) {
     /// Syncs only stops and exits to the server
     RadarTrackingOptionsSyncStopsAndExits,
     /// Syncs no location updates to the server
-    RadarTrackingOptionsSyncNone
+    RadarTrackingOptionsSyncNone,
+    /// Syncs less outside of geofences or beacons
+    RadarTrackingOptionsSyncRegions
 };
 
 /**
@@ -197,6 +199,7 @@ typedef NS_ENUM(NSInteger, RadarTrackingOptionsSyncLocations) {
 + (NSString *)stringForSyncLocations:(RadarTrackingOptionsSyncLocations)syncLocations;
 + (RadarTrackingOptionsSyncLocations)syncLocationsForString:(NSString *)str;
 + (RadarTrackingOptions *_Nullable)trackingOptionsFromDictionary:(NSDictionary *_Nonnull)dictionary;
++ (RadarTrackingOptions *_Nullable)trackingOptionsFromObject:(NSObject *_Nonnull)object;
 - (NSDictionary *)dictionaryValue;
 
 @end
