@@ -558,10 +558,20 @@
                             RadarConfig *config = [RadarConfig fromDictionary:res];
 
                             id eventsObj = res[@"events"];
+                            id locationMetadataObj = res[@"locationMetadata"];
                             id userObj = res[@"user"];
                             if ([userObj isKindOfClass:[NSDictionary class]]) {
                                 NSMutableDictionary *mutableUserObj = [userObj mutableCopy];
-                                mutableUserObj[@"metadata"] = locationMetadata;
+                                if (locationMetadataObj && [locationMetadataObj isKindOfClass:[NSDictionary class]]) {
+                                    NSMutableDictionary *mutableLocationMetadata = [locationMetadata mutableCopy];
+                                    for (NSString *key in locationMetadataObj) {
+                                        mutableLocationMetadata[key] = locationMetadataObj[key];
+                                    }
+                                    mutableUserObj[@"metadata"] =  mutableLocationMetadata;
+                                } else {
+                                    mutableUserObj[@"metadata"] = locationMetadata;
+                                }
+                                
                                 userObj = mutableUserObj;
                             }
                             id nearbyGeofencesObj = res[@"nearbyGeofences"];

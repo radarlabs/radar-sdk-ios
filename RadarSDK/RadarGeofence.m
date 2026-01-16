@@ -38,7 +38,8 @@
                           externalId:(NSString *_Nullable)externalId
                             metadata:(NSDictionary *_Nullable)metadata
                       operatingHours: (RadarOperatingHours *_Nullable) operatingHours
-                            geometry:(RadarGeofenceGeometry *_Nonnull)geometry {
+                            geometry:(RadarGeofenceGeometry *_Nonnull)geometry
+                            altitude:(float)altitude {
     self = [super init];
     if (self) {
         __id = _id;
@@ -48,6 +49,7 @@
         _metadata = metadata;
         _operatingHours = operatingHours;
         _geometry = geometry;
+        _altitude = altitude;
     }
     return self;
 }
@@ -66,6 +68,7 @@
     NSDictionary *metadata;
     RadarOperatingHours *operatingHours;
     RadarGeofenceGeometry *geometry;
+    float altitude = 0.0;
 
     id idObj = dict[@"_id"];
     if (idObj && [idObj isKindOfClass:[NSString class]]) {
@@ -139,7 +142,12 @@
         }
     }
 
-    return [[RadarGeofence alloc] initWithId:_id description:description tag:tag externalId:externalId metadata:metadata operatingHours:operatingHours geometry:geometry];
+    id altitudeObj = dict[@"altitude"];
+    if (altitudeObj && [altitudeObj isKindOfClass:[NSNumber class]]) {
+        altitude = [((NSNumber *)altitudeObj) floatValue];
+    }
+
+    return [[RadarGeofence alloc] initWithId:_id description:description tag:tag externalId:externalId metadata:metadata operatingHours:operatingHours geometry:geometry altitude:altitude];
 }
 
 - (NSMutableArray<RadarCoordinate *> *)getPolygonCoordinates:(NSDictionary *)dict {
@@ -238,6 +246,9 @@
             [dict setValue:@[[RadarGeofence arrayForGeometryCoordinates:polygonGeometry._coordinates]] forKey:@"coordinates"];
         }
         [dict setValue:@"Polygon" forKey:@"type"];
+    }
+    if (self.altitude) {
+        [dict setValue:@(self.altitude) forKey:@"altitude"];
     }
 
     return dict;
