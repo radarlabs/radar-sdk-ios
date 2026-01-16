@@ -20,10 +20,6 @@ let package = Package(
         .library(
             name: "RadarSDKIndoors",
             targets: ["RadarSDKIndoors"]
-        ),
-        .library(
-            name: "RadarSDKFraud",
-            targets: ["RadarSDKFraud"]
         )
     ],
     dependencies: [],
@@ -50,10 +46,6 @@ let package = Package(
         .binaryTarget(
             name: "RadarSDKIndoors",
             url: "https://github.com/radarlabs/radar-sdk-ios/releases/download/\(version)/RadarSDKIndoors.xcframework.zip"
-        ),
-        .binaryTarget(
-            name: "RadarSDKFraud",
-            url: "https://github.com/radarlabs/radar-sdk-ios/releases/download/\(version)/RadarSDKFraud.xcframework.zip"
         )
     ]
 )
