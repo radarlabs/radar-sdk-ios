@@ -8,6 +8,9 @@
 #import <CoreLocation/CoreLocation.h>
 #import <CoreMotion/CoreMotion.h>
 #import <Foundation/Foundation.h>
+#import "RadarGeofence+Internal.h"
+#import "RadarBeacon+Internal.h"
+#import "RadarPlace+Internal.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -48,6 +51,14 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)addRegisteredNotification:(NSDictionary *)registeredNotification;
 + (NSDictionary *)lastRelativeAltitudeData;
 + (void)setLastRelativeAltitudeData:(NSDictionary *_Nullable)lastRelativeAltitudeData;
++ (NSArray<RadarGeofence *> *_Nullable)nearbyGeofences;
++ (void)setNearbyGeofences:(NSArray<RadarGeofence *> *_Nullable)nearbyGeofences;
++ (NSArray<RadarBeacon *> *_Nullable)nearbyBeacons;
++ (void)setNearbyBeacons:(NSArray<RadarBeacon *> *_Nullable)nearbyBeacons;
++ (NSArray<RadarPlace *> *_Nullable)nearbyPlaces;
++ (void)setNearbyPlaces:(NSArray<RadarPlace *> *_Nullable)nearbyPlaces;
++ (CLCircularRegion *_Nullable)syncedRegion;
++ (void)setSyncedRegion:(CLCircularRegion *_Nullable)syncedRegion;
 
 @end
 

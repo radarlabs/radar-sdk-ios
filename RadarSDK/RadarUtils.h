@@ -5,7 +5,7 @@
 //  Copyright © 2019 Radar Labs, Inc. All rights reserved.
 //
 
-#import <CoreLocation/CLLocation.h>
+#import <CoreLocation/CoreLocation.h>
 #import <Foundation/Foundation.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -33,6 +33,8 @@ typedef NS_ENUM(NSInteger, RadarConnectionType) {
 + (NSString *)locationAuthorization;
 + (NSString *)locationAccuracyAuthorization;
 + (BOOL)foreground;
++ (CLCircularRegion *)circularRegionForDictionary:(NSDictionary *_Nonnull)dict;
++ (NSDictionary *)dictionaryForCircularRegion:(CLCircularRegion *)region;
 + (NSTimeInterval)backgroundTimeRemaining;
 + (CLLocation *)locationForDictionary:(NSDictionary *_Nonnull)dict;
 + (NSDictionary *)dictionaryForLocation:(CLLocation *)location;

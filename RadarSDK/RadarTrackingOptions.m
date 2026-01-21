@@ -32,6 +32,9 @@ NSString *const kBeacons = @"beacons";
 NSString *const kUseIndoorScan = @"useIndoorScan";
 NSString *const kUseMotion = @"useMotion";
 NSString *const kUsePressure = @"usePressure";
+NSString *const kSyncOnGeofenceEvents = @"syncOnGeofenceEvents";
+NSString *const kSyncOnPlaceEvents = @"syncOnPlaceEvents";
+NSString *const kSyncOnBeaconEvents = @"syncOnBeaconEvents";
 
 NSString *const kDesiredAccuracyHigh = @"high";
 NSString *const kDesiredAccuracyMedium = @"medium";
@@ -69,6 +72,9 @@ NSString *const kSyncNone = @"none";
     options.useIndoorScan = NO;
     options.useMotion = NO;
     options.usePressure = NO;
+    options.syncOnGeofenceEvents = NO;
+    options.syncOnPlaceEvents = NO;
+    options.syncOnBeaconEvents = NO;
     return options;
 }
 
@@ -96,6 +102,9 @@ NSString *const kSyncNone = @"none";
     options.useIndoorScan = NO;
     options.useMotion = NO;
     options.usePressure = NO;
+    options.syncOnGeofenceEvents = NO;
+    options.syncOnPlaceEvents = NO;
+    options.syncOnBeaconEvents = NO;
     return options;
 }
 
@@ -123,6 +132,9 @@ NSString *const kSyncNone = @"none";
     options.useIndoorScan = NO;
     options.useMotion = NO;
     options.usePressure = NO;
+    options.syncOnGeofenceEvents = NO;
+    options.syncOnPlaceEvents = NO;
+    options.syncOnBeaconEvents = NO;
     return options;
 }
 
@@ -254,6 +266,9 @@ NSString *const kSyncNone = @"none";
     options.useIndoorScan = [dict[kUseIndoorScan] boolValue];
     options.useMotion = [dict[kUseMotion] boolValue];
     options.usePressure = [dict[kUsePressure] boolValue];
+    options.syncOnGeofenceEvents = [dict[kSyncOnGeofenceEvents] boolValue];
+    options.syncOnPlaceEvents = [dict[kSyncOnPlaceEvents] boolValue];
+    options.syncOnBeaconEvents = [dict[kSyncOnBeaconEvents] boolValue];
     return options;
 }
 
@@ -289,6 +304,9 @@ NSString *const kSyncNone = @"none";
     dict[kUseIndoorScan] = @(self.useIndoorScan);
     dict[kUseMotion] = @(self.useMotion);
     dict[kUsePressure] = @(self.usePressure);
+    dict[kSyncOnGeofenceEvents] = @(self.syncOnGeofenceEvents);
+    dict[kSyncOnPlaceEvents] = @(self.syncOnPlaceEvents);
+    dict[kSyncOnBeaconEvents] = @(self.syncOnBeaconEvents);
     return dict;
 }
 
@@ -318,7 +336,7 @@ NSString *const kSyncNone = @"none";
            self.useStoppedGeofence == options.useStoppedGeofence && self.stoppedGeofenceRadius == options.stoppedGeofenceRadius &&
            self.useMovingGeofence == options.useMovingGeofence && self.movingGeofenceRadius == options.movingGeofenceRadius && self.syncGeofences == options.syncGeofences &&
            self.useVisits == options.useVisits && self.useSignificantLocationChanges == options.useSignificantLocationChanges && self.beacons == options.beacons &&
-           self.useIndoorScan == options.useIndoorScan && self.useMotion == options.useMotion && self.usePressure == options.usePressure;
+    self.useIndoorScan == options.useIndoorScan && self.useMotion == options.useMotion && self.usePressure == options.usePressure && self.syncOnGeofenceEvents == options.syncOnGeofenceEvents && self.syncOnPlaceEvents == options.syncOnPlaceEvents && self.syncOnBeaconEvents == options.syncOnBeaconEvents;
 }
 
 @end

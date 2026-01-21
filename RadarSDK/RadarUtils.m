@@ -230,6 +230,23 @@ static NSDateFormatter *_isoDateFormatter;
     return dict;
 }
 
++ (CLCircularRegion *)circularRegionForDictionary:(NSDictionary *)dict {
+    CLLocationCoordinate2D coordinate = CLLocationCoordinate2DMake([dict[@"latitude"] doubleValue], [dict[@"longitude"] doubleValue]);
+    CLCircularRegion *region = [[CLCircularRegion alloc] initWithCenter:coordinate radius:[dict[@"radius"] doubleValue] identifier:dict[@"identifier"]];
+    
+    return region;
+}
+
++ (NSDictionary *)dictionaryForCircularRegion:(CLCircularRegion *)region {
+    NSMutableDictionary *dict = [NSMutableDictionary new];
+    dict[@"latitude"] = @(region.center.latitude);
+    dict[@"longitude"] = @(region.center.longitude);
+    dict[@"radius"] = @(region.radius);
+    dict[@"identifier"] = region.identifier;
+    
+    return dict;
+}
+
 + (NSString *)dictionaryToJson:(NSDictionary *)dict {
     if (!dict) {
         return @"{}";
