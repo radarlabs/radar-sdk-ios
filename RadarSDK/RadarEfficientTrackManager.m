@@ -17,7 +17,6 @@
 @implementation RadarEfficientTrackManager
 
 static const double kPlaceDetectionRadius = 100.0;
-static const double kBeaconDetectionRadius = 100.0;
 
 + (BOOL)shouldTrackLocation:(CLLocation *)location options:(RadarTrackingOptions *)options {
     CLCircularRegion *syncedRegion = [RadarState syncedRegion];
@@ -28,7 +27,7 @@ static const double kBeaconDetectionRadius = 100.0;
     }
     
     if ([self isOutsideSyncedRegion:location]) {
-        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"EfficientTrack: no synced region, should track"];
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"EfficientTrack: Outside synced region, should track"];
         
         return YES;
     }

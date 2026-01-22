@@ -980,32 +980,7 @@ static NSString *const kSyncedRegionIdentifierPrefix = @"radar_synced_";
                     
                     [self updateTrackingFromMeta:config.meta];
                     [self replaceSyncedGeofences:nearbyGeofences];
-                    
-                    NSArray *nearbyPlacesArray = [res objectForKey:@"nearbyPlaces"];
-                    if (nearbyPlacesArray && [nearbyPlacesArray isKindOfClass:[NSArray class]]) {
-                        NSMutableArray<RadarPlace *> *places = [NSMutableArray array];
-                        for (NSDictionary *placeDict in nearbyPlacesArray) {
-                            RadarPlace *place = [[RadarPlace alloc] initWithObject:placeDict];
-                            if (place) {
-                                [places addObject:place];
-                            }
-                        }
-                        [RadarState setNearbyPlaces:places];
-                    }
-                    
-                    NSArray *nearbyBeaconsArray = [res objectForKey:@"nearbyBeacons"];
-                    if (nearbyBeaconsArray && [nearbyBeaconsArray isKindOfClass:[NSArray class]]) {
-                        NSMutableArray<RadarBeacon *> *beaconsFromResponse = [NSMutableArray array];
-                        for (NSDictionary *beaconDict in nearbyBeaconsArray) {
-                            RadarBeacon *beacon = [[RadarBeacon alloc] initWithObject:beaconDict];
-                            if (beacon) {
-                                [beaconsFromResponse addObject:beacon];
-                            }
-                        }
-                        [RadarState setNearbyBeacons:beaconsFromResponse];
-                    }
-                    
-                    [self updateSyncedRegion];
+                    [self cacheNearbyEntitiesFromResponse:res];
                 }];
             }];
         };
@@ -1096,32 +1071,7 @@ static NSString *const kSyncedRegionIdentifierPrefix = @"radar_synced_";
                 
                 [self updateTrackingFromMeta:config.meta];
                 [self replaceSyncedGeofences:nearbyGeofences];
-                
-                NSArray *nearbyPlacesArray = [res objectForKey:@"nearbyPlaces"];
-                if (nearbyPlacesArray && [nearbyPlacesArray isKindOfClass:[NSArray class]]) {
-                    NSMutableArray<RadarPlace *> *places = [NSMutableArray array];
-                    for (NSDictionary *placeDict in nearbyPlacesArray) {
-                        RadarPlace *place = [[RadarPlace alloc] initWithObject:placeDict];
-                        if (place) {
-                            [places addObject:place];
-                        }
-                    }
-                    [RadarState setNearbyPlaces:places];
-                }
-                
-                NSArray *nearbyBeaconsArray = [res objectForKey:@"nearbyBeacons"];
-                if (nearbyBeaconsArray && [nearbyBeaconsArray isKindOfClass:[NSArray class]]) {
-                    NSMutableArray<RadarBeacon *> *beaconsFromResponse = [NSMutableArray array];
-                    for (NSDictionary *beaconDict in nearbyBeaconsArray) {
-                        RadarBeacon *beacon = [[RadarBeacon alloc] initWithObject:beaconDict];
-                        if (beacon) {
-                            [beaconsFromResponse addObject:beacon];
-                        }
-                    }
-                    [RadarState setNearbyBeacons:beaconsFromResponse];
-                }
-                
-                [self updateSyncedRegion];
+                [self cacheNearbyEntitiesFromResponse:res];
             }];
         }];
     }
@@ -1415,6 +1365,36 @@ static NSString *const kSyncedRegionIdentifierPrefix = @"radar_synced_";
             [RadarState setSyncedRegion:nil];
         }
     }
+}
+
+- (void)cacheNearbyEntitiesFromResponse:(NSDictionary *)res {
+    // Cache nearby places
+    NSArray *nearbyPlacesArray = [res objectForKey:@"nearbyPlaces"];
+    NSMutableArray<RadarPlace *> *places = [NSMutableArray array];
+    if (nearbyPlacesArray && [nearbyPlacesArray isKindOfClass:[NSArray class]]) {
+        for (NSDictionary *placeDict in nearbyPlacesArray) {
+            RadarPlace *place = [[RadarPlace alloc] initWithObject:placeDict];
+            if (place) {
+                [places addObject:place];
+            }
+        }
+    }
+    [RadarState setNearbyPlaces:places];
+    
+    // Cache nearby beacons
+    NSArray *nearbyBeaconsArray = [res objectForKey:@"nearbyBeacons"];
+    NSMutableArray<RadarBeacon *> *beacons = [NSMutableArray array];
+    if (nearbyBeaconsArray && [nearbyBeaconsArray isKindOfClass:[NSArray class]]) {
+        for (NSDictionary *beaconDict in nearbyBeaconsArray) {
+            RadarBeacon *beacon = [[RadarBeacon alloc] initWithObject:beaconDict];
+            if (beacon) {
+                [beacons addObject:beacon];
+            }
+        }
+    }
+    [RadarState setNearbyBeacons:beacons];
+    
+    [self updateSyncedRegion];
 }
 
 @end
