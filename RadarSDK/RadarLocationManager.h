@@ -37,7 +37,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)performIndoorScanIfConfigured:(CLLocation *)location 
                                beacons:(NSArray<RadarBeacon *> *_Nullable)beacons
                      completionHandler:(void (^)(NSArray<RadarBeacon *> *_Nullable, NSString *_Nullable))completionHandler;
-
+- (void)updateSyncedRegion;
 /**
  If `[RadarSettings previousTrackingOptions]` is not `nil`, remove them and
  replace the `[RadarSettings trackingOptions]` with them, and restart tracking.
