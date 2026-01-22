@@ -32,7 +32,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)setLastFailedStoppedLocation:(CLLocation *_Nullable)lastFailedStoppedLocation;
 + (NSArray<NSString *> *)geofenceIds;
 + (void)setGeofenceIds:(NSArray<NSString *> *_Nullable)geofenceIds;
-+ (NSArray<NSString *> *)placeId;
++ (NSString *_Nullable)placeId;
 + (void)setPlaceId:(NSString *_Nullable)placeId;
 + (NSArray<NSString *> *)regionIds;
 + (void)setRegionIds:(NSArray<NSString *> *_Nullable)regionIds;

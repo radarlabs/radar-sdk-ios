@@ -1321,7 +1321,7 @@ static NSString *const kSyncedRegionIdentifierPrefix = @"radar_synced_";
     }
 }
 
-+ (void)updateSyncRegion {
+- (void)updateSyncedRegion {
     RadarTrackingOptions *options = [Radar getTrackingOptions];
     BOOL efficientTrackingEnabled = options.syncOnGeofenceEvents || options.syncOnPlaceEvents || options.syncOnBeaconEvents;
     
@@ -1376,7 +1376,7 @@ static NSString *const kSyncedRegionIdentifierPrefix = @"radar_synced_";
                     CLLocationDistance distance = [lastKnownLocation distanceFromLocation:placeLocation];
                     
                     CLLocationDistance adjustedDistance = distance - 100;
-                    CLLocationDistance finalDistance = MAX(9, adjustedDistance);
+                    CLLocationDistance finalDistance = MAX(0, adjustedDistance);
                     
                     maxDistance = MAX(maxDistance, finalDistance);
                 }

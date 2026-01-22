@@ -336,6 +336,7 @@ static NSTimeInterval const kBackupInterval = 2.0; // 2 seconds
 + (void)setNearbyBeacons:(NSArray<RadarBeacon *> *_Nullable)nearbyBeacons {
     if (!nearbyBeacons) {
         [[NSUserDefaults standardUserDefaults] removeObjectForKey:kNearbyBeacons];
+        return;
     }
     NSMutableArray<NSDictionary *> *beaconDicts = [NSMutableArray array];
     for (RadarBeacon *beacon in nearbyBeacons) {

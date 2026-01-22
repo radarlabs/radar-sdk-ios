@@ -205,7 +205,7 @@ static const double kBeaconDetectionRadius = 100.0;
 }
 
 + (BOOL)hasPlacesStateChanged:(CLLocation *)location {
-    NSArray<NSString *> *lastKnownPlaceIds = [RadarState placeId];
+    NSString *lastKnownPlaceId = [RadarState placeId];
     NSArray<RadarPlace *> *currentPlaces = [self getPlacesForLocation:location];
     
     NSMutableSet<NSString *> *currentPlaceIds = [NSMutableSet set];
@@ -215,22 +215,17 @@ static const double kBeaconDetectionRadius = 100.0;
         }
     }
     
-    NSSet<NSString *> *lastKnownSet = lastKnownPlaceIds ? [NSSet setWithArray:lastKnownPlaceIds] : [NSSet set];
+    BOOL wasInPlace = (lastKnownPlaceId != nil && lastKnownPlaceId.length > 0);
+    BOOL isInPlace = [currentPlaceIds containsObject:lastKnownPlaceId];
     
-    for (NSString *currentId in currentPlaceIds) {
-        if (![lastKnownSet containsObject:currentId]) {
-            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
-                                               message:[NSString stringWithFormat:@"EfficientTrack: Detected place entry: %@", currentId]];
-            return YES;
-        }
+    // Entry: now in a place that isn't the last known one
+    if (currentPlaceIds.count > 0 && !isInPlace) {
+        return YES;
     }
     
-    for (NSString *lastKnownId in lastKnownPlaceIds) {
-        if (![currentPlaceIds containsObject:lastKnownId]) {
-            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
-                                               message:[NSString stringWithFormat:@"EfficientTrack: Detected place exit: %@", lastKnownId]];
-            return YES;
-        }
+    // Exit: was in a place but no longer in any place (or different place)
+    if (wasInPlace && ![currentPlaceIds containsObject:lastKnownPlaceId]) {
+        return YES;
     }
     
     return NO;
