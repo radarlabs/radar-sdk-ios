@@ -50,20 +50,17 @@ final class RadarApiHelper: Sendable {
         
         var headers = headers
         headers["Authorization"] = publishableKey
-        // TODO: add additional mobile headers when RadarUtils is in swift
-        /*
-        @"Content-Type": @"application/json",
-        @"X-Radar-Config": @"true",
-        @"X-Radar-Device-Make": [RadarUtils deviceMake],
-        @"X-Radar-Device-Model": [RadarUtils deviceModel],
-        @"X-Radar-Device-OS": [RadarUtils deviceOS],
-        @"X-Radar-Device-Type": [RadarUtils deviceType],
-        @"X-Radar-SDK-Version": [RadarUtils sdkVersion],
-        @"X-Radar-Mobile-Origin": [[NSBundle mainBundle] bundleIdentifier],
-        @"X-Radar-Network-Type": [RadarUtils networkTypeString],
-        @"X-Radar-App-Info": appInfoJSON
-         */
-
+        headers["Content-Type"] = "application/json"
+        headers["X-Radar-Config"] = "true"
+        headers["X-Radar-Device-Make"] = RadarUtils.deviceMake
+        headers["X-Radar-Device-Model"] = RadarUtils.deviceModel
+        headers["X-Radar-Device-OS"] = await RadarUtils.deviceOS
+        headers["X-Radar-Device-Type"] = RadarUtils.deviceType
+        headers["x-Radar-SDK-Version"] = RadarUtils.sdkVersion
+        headers["X-Radar-Mobile-Origin"] = Bundle.main.bundleIdentifier
+        headers["X-Radar-Network-Type"] = RadarUtils.networkType.rawValue
+        headers["X-Radar-App-Info"] = RadarUtils.dictToJson(RadarUtils.appInfo)
+        
         let url = "\(RadarSettings.host)/v1/\(url)"
 
         let (data, response) = try await request(method: method, url: url, query: query, headers: headers, body: body)

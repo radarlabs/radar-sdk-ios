@@ -13,10 +13,14 @@ import CoreTelephony
 
 let SDK_VERSION = "3.25.0"
 
-enum RadarConnectionType: Int {
-    case unknown
-    case wifi
-    case cellular
+enum RadarConnectionType: String {
+    case unknown = "unknown"
+    case wifi = "wifi"
+    case cellular5g = "cellular-5g"
+    case cellularLte = "cellular-lte"
+    case cellular3g = "cellular-3g"
+    case cellular2g = "cellular-2g"
+    case cellular = "cellular"
 }
 
 @objc(RadarUtils) @objcMembers
@@ -39,6 +43,8 @@ class RadarUtils: NSObject {
                 return await MainActor.run(resultType: String.self) {
                     UIDevice.current.systemName
                 }
+            } else {
+                return ""
             }
         }
     }
@@ -82,7 +88,32 @@ class RadarUtils: NSObject {
                 return .unknown
             }
             
+            let networkInfo = CTTelephonyNetworkInfo()
+            if let technology = networkInfo.serviceCurrentRadioAccessTechnology?.values.first {
+                if technology == "CTRadioAccessTechnologyNR" {
+                    return .cellular5g
+                } else if technology == "CTRadioAccessTechnologyLTE" {
+                    return .cellularLte
+                } else if technology.contains("UMTS") || technology.contains("WCDMA") {
+                    return .cellular3g
+                } else if technology.contains("GSM") || technology.contains("EDGE") {
+                    return .cellular2g
+                }
+            }
             return .cellular
+        }
+    }
+    static var appInfo: [String: String] {
+        get {
+            var info = Bundle.main.infoDictionary ?? [:]
+            info.merge(Bundle.main.localizedInfoDictionary ?? [:]) { (_, new) in new }
+            
+            return info.isEmpty ? [:] : [
+                "name": info["CFBundleDisplayName"] as? String ?? "",
+                "version": info["CFBundleShortVersionString"] as? String ?? "",
+                "build": info["CFBundleVersion"] as? String ?? "",
+                "namespace": Bundle.main.bundleIdentifier ?? ""
+            ]
         }
     }
     
