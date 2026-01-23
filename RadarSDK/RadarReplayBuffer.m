@@ -42,8 +42,7 @@ static const int DEFAULT_MAX_BUFFER_SIZE = 120; // one hour of updates
     RadarSdkConfiguration *sdkConfiguration = [RadarSettings sdkConfiguration];
     int maxBufferSize = sdkConfiguration.maxReplayBufferSize > 0 ? sdkConfiguration.maxReplayBufferSize : DEFAULT_MAX_BUFFER_SIZE;
 
-    NSUInteger replayBufferLength = [mutableReplayBuffer count];
-    if (replayBufferLength >= maxBufferSize) {
+    while ([mutableReplayBuffer count] >= maxBufferSize) {
         [self dropOldestReplay];
     }
 
