@@ -1289,7 +1289,7 @@ static NSString *const kSyncedRegionIdentifierPrefix = @"radar_synced_";
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Resetting synced region: No lastKnownLocation available"];
         [RadarState setSyncedRegion:nil];
     } else {
-        CLLocationDistance maxDistance = -1;
+        CLLocationDistance minDistance = DBL_MAX;
         
         if (geofences) {
             for (RadarGeofence *geofence in geofences) {
@@ -1314,7 +1314,7 @@ static NSString *const kSyncedRegionIdentifierPrefix = @"radar_synced_";
                     CLLocationDistance adjustedDistance = distance - geofenceRadius - 70;
                     CLLocationDistance finalDistance = MAX(0, adjustedDistance);
                     
-                    maxDistance = MAX(maxDistance, finalDistance);
+                    minDistance = MIN(minDistance, finalDistance);
                 }
             }
         }
@@ -1328,7 +1328,7 @@ static NSString *const kSyncedRegionIdentifierPrefix = @"radar_synced_";
                     CLLocationDistance adjustedDistance = distance - 100;
                     CLLocationDistance finalDistance = MAX(0, adjustedDistance);
                     
-                    maxDistance = MAX(maxDistance, finalDistance);
+                    minDistance = MIN(minDistance, finalDistance);
                 }
             }
         }
@@ -1342,22 +1342,22 @@ static NSString *const kSyncedRegionIdentifierPrefix = @"radar_synced_";
                     CLLocationDistance adjustedDistance = distance - 100;
                     CLLocationDistance finalDistance = MAX(0, adjustedDistance);
                     
-                    maxDistance = MAX(maxDistance, finalDistance);
+                    minDistance = MIN(minDistance, finalDistance);
                 }
             }
         }
         
-        if (maxDistance > 0) {
+        if (minDistance > 0) {
             CLCircularRegion *syncedRegion = [[CLCircularRegion alloc] initWithCenter:lastKnownLocation.coordinate
-                                                                               radius:maxDistance
+                                                                               radius:minDistance
                                                                            identifier:[NSString stringWithFormat:@"%@%@", kSyncedRegionIdentifierPrefix, [[NSUUID UUID] UUIDString]]];
             [RadarState setSyncedRegion:syncedRegion];
             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
                                                message:[NSString stringWithFormat:@"Stored synced region | latitude = %f; longitude = %f; radius = %f; identifier = %@",
-                                                        lastKnownLocation.coordinate.latitude, lastKnownLocation.coordinate.longitude, maxDistance,
+                                                        lastKnownLocation.coordinate.latitude, lastKnownLocation.coordinate.longitude, minDistance,
                                                         syncedRegion.identifier]];
             
-        } else if (maxDistance == 0) {
+        } else if (minDistance == 0) {
             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Resetting synced region: Radius is 0"];
             [RadarState setSyncedRegion:nil];
         } else {

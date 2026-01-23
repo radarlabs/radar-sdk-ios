@@ -1823,8 +1823,12 @@ static double const kTestLatitude = 40.78382;
 static double const kTestLongitude = -73.97536;
 // ~50m north
 static double const kTestLatitudeNearby = 40.78427;
+// ~120m north
+static double kTestLatitudeMid = 40.78490;
 // ~200m north
 static double const kTestLatitudeFar = 40.78562;
+// ~400m north
+static double kTestLatitudeVeryFar = 40.78742;
 
 - (void)test_EfficientTrack_shouldTrack_noSyncedRegion {
     [self clearEfficientTrackingState];
@@ -2160,4 +2164,105 @@ static double const kTestLatitudeFar = 40.78562;
     XCTAssertFalse(inside);
 }
 
+- (void)test_EfficientTrack_multipleGeofences_usesNearestBoundary {
+    [self clearEfficientTrackingState];
+
+    RadarGeofence *geofenceA = [self createTestGeofenceWithId:@"geofenceA" latitude:kTestLatitudeFar longitude:kTestLongitude radius:50];
+
+    RadarGeofence *geofenceB = [self createTestGeofenceWithId:@"geofenceB" latitude:kTestLatitudeVeryFar longitude:kTestLongitude radius:100];
+    [RadarState setNearbyGeofences:@[geofenceA, geofenceB]];
+    
+    [RadarState setGeofenceIds:@[]];
+    
+    CLLocation *userLocation = [[CLLocation alloc] initWithLatitude:kTestLatitude longitude:kTestLongitude];
+    [RadarState setLastLocation:userLocation];
+    
+    
+    RadarTrackingOptions *options = [RadarTrackingOptions new];
+    options.syncOnGeofenceEvents = YES;
+    [Radar startTrackingWithOptions:options];
+        
+    [[RadarLocationManager sharedInstance] updateSyncedRegion];
+    
+    CLCircularRegion *syncedRegion = [RadarState syncedRegion];
+    
+    XCTAssertNotNil(syncedRegion);
+    XCTAssertLessThan(syncedRegion.radius, 100);
+}
+
+- (void)test_EfficientTrack_mixedEntities_usesNearestBoundary {
+    [self clearEfficientTrackingState];
+    
+    RadarGeofence *geofence = [self createTestGeofenceWithId:@"geofence1" latitude:kTestLatitudeVeryFar longitude:kTestLongitude radius:50];
+    RadarPlace *place = [self createTestPlaceWithId:@"place1" latitude:kTestLatitudeFar longitude:kTestLongitude];
+    RadarBeacon *beacon = [self createTestBeaconWithId:@"beacon1" latitude:kTestLatitudeMid longitude:kTestLongitude];
+    
+    [RadarState setNearbyGeofences:@[geofence]];
+    [RadarState setNearbyPlaces:@[place]];
+    [RadarState setNearbyBeacons:@[beacon]];
+    [RadarState setGeofenceIds:@[]];
+    [RadarState setPlaceId:nil];
+    [RadarState setBeaconIds:@[]];
+    
+    CLLocation *userLocation = [[CLLocation alloc] initWithLatitude:kTestLatitude longitude:kTestLongitude];
+    [RadarState setLastLocation:userLocation];
+    
+    RadarTrackingOptions *options = [RadarTrackingOptions new];
+    options.syncOnGeofenceEvents = YES;
+    [Radar startTrackingWithOptions:options];
+    
+    [[RadarLocationManager sharedInstance] updateSyncedRegion];
+    
+    CLCircularRegion *syncedRegion = [RadarState syncedRegion];
+    
+    XCTAssertNotNil(syncedRegion);
+    XCTAssertLessThan(syncedRegion.radius, 50);
+}
+
+- (void)test_EfficientTrack_multipleGeofences_shouldTrackWhenCrossingNearestBoundary {
+    [self clearEfficientTrackingState];
+    
+    // Setup: Two geofences at different distances
+    // Geofence A: user will be inside after moving
+    // Geofence B: user will still be outside
+    
+    RadarGeofence *geofenceA = [self createTestGeofenceWithId:@"geofenceA" latitude:kTestLatitudeNearby longitude:kTestLongitude radius:100];
+    RadarGeofence *geofenceB = [self createTestGeofenceWithId:@"geofenceB" latitude:kTestLatitudeFar longitude:kTestLongitude radius:50];
+    [RadarState setNearbyGeofences:@[geofenceA, geofenceB]];
+    
+    // User was not in any geofence
+    [RadarState setGeofenceIds:@[]];
+    
+    // User moves to kTestLatitudeNearby (inside geofenceA, outside geofenceB)
+    CLLocation *newLocation = [[CLLocation alloc] initWithLatitude:kTestLatitudeNearby longitude:kTestLongitude];
+
+    RadarTrackingOptions *options = [RadarTrackingOptions new];
+    options.syncOnGeofenceEvents = YES;
+    
+    // Should detect geofence entry for geofenceA
+    BOOL shouldTrack = [RadarEfficientTrackManager shouldTrackLocation:newLocation options:options];
+    XCTAssertTrue(shouldTrack);
+}
+
+- (void)test_EfficientTrack_multipleGeofences_detectsCorrectGeofences {
+    [self clearEfficientTrackingState];
+    
+    // Create 3 geofences: user will be inside 2 of them
+    RadarGeofence *geofenceA = [self createTestGeofenceWithId:@"geofenceA" latitude:kTestLatitude longitude:kTestLongitude radius:100];
+    RadarGeofence *geofenceB = [self createTestGeofenceWithId:@"geofenceB" latitude:kTestLatitudeNearby longitude:kTestLongitude radius:100];
+    RadarGeofence *geofenceC = [self createTestGeofenceWithId:@"geofenceC" latitude:kTestLatitudeFar longitude:kTestLongitude radius:50];
+    
+    [RadarState setNearbyGeofences:@[geofenceA, geofenceB, geofenceC]];
+    
+    CLLocation *location = [[CLLocation alloc] initWithLatitude:kTestLatitude longitude:kTestLongitude];
+
+    NSArray<RadarGeofence *> *detectedGeofences = [RadarEfficientTrackManager getGeofencesForLocation:location];
+    
+    XCTAssertEqual(detectedGeofences.count, 2);
+    
+    NSSet *detectedIds = [NSSet setWithArray:[detectedGeofences valueForKey:@"_id"]];
+    XCTAssertTrue([detectedIds containsObject:@"geofenceA"]);
+    XCTAssertTrue([detectedIds containsObject:@"geofenceB"]);
+    XCTAssertFalse([detectedIds containsObject:@"geofenceC"]);
+}
 @end
