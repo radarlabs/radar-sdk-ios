@@ -47,7 +47,7 @@ class RadarUtils: NSObject {
     }
     
     static let country = Locale.current.regionCode
-    static let timeZoneOffset = TimeZone.current.secondsFromGMT()
+    static let timeZoneOffset = NSNumber(value: TimeZone.current.secondsFromGMT())
     static let sdkVersion = SDK_VERSION
     
     @available(iOS 13.0, *)
@@ -220,6 +220,13 @@ class RadarUtils: NSObject {
             return CLLocation(latitude: 0, longitude: 0)
         }
     }
+    
+    static let isoDateFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
+        formatter.timeZone = TimeZone(secondsFromGMT: 0)
+        return formatter
+    }()
 }
 
 internal extension CLLocation {
