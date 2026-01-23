@@ -44,7 +44,7 @@
         params[@"id"] = [RadarSettings _id];
         params[@"installId"] = [RadarSettings installId];
         params[@"userId"] = [RadarSettings userId];
-        params[@"deviceId"] = [RadarUtils deviceId];
+        params[@"deviceId"] = [RadarUtilsDeprecated deviceId];
         params[@"description"] = [RadarSettings __description];
         params[@"metadata"] = [RadarSettings metadata];
         NSString *sessionId = [RadarSettings sessionId];
@@ -82,7 +82,7 @@
     params[@"deviceMake"] = [RadarUtils deviceMake];
     params[@"sdkVersion"] = [RadarUtils sdkVersion];
     params[@"deviceModel"] = [RadarUtils deviceModel];
-    params[@"deviceOS"] = [RadarUtils deviceOS];
+    params[@"deviceOS"] = [RadarUtilsDeprecated deviceOS];
     params[@"country"] = [RadarUtils country];
     params[@"timeZoneOffset"] = [RadarUtils timeZoneOffset];
     params[@"source"] = [Radar stringForLocationSource:source];

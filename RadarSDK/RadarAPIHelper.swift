@@ -59,7 +59,7 @@ final class RadarApiHelper: Sendable {
         headers["x-Radar-SDK-Version"] = RadarUtils.sdkVersion
         headers["X-Radar-Mobile-Origin"] = Bundle.main.bundleIdentifier
         headers["X-Radar-Network-Type"] = RadarUtils.networkType.rawValue
-        headers["X-Radar-App-Info"] = RadarUtils.dictToJson(RadarUtils.appInfo)
+        headers["X-Radar-App-Info"] = RadarUtils.dictionaryToJson(RadarUtils.appInfo)
         
         let url = "\(RadarSettings.host)/v1/\(url)"
 

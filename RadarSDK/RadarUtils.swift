@@ -37,27 +37,24 @@ class RadarUtils: NSObject {
         return identifier
     }()
     
+    @available(iOS 13.0, *)
     static var deviceOS: String {
         get async {
-            if #available(iOS 13.0, *) {
-                return await MainActor.run(resultType: String.self) {
-                    UIDevice.current.systemName
-                }
-            } else {
-                return ""
+            return await MainActor.run(resultType: String.self) {
+                UIDevice.current.systemName
             }
         }
     }
     
     static let country = Locale.current.regionCode
-    static let timezoneOffset = TimeZone.current.secondsFromGMT()
+    static let timeZoneOffset = TimeZone.current.secondsFromGMT()
     static let sdkVersion = SDK_VERSION
+    
+    @available(iOS 13.0, *)
     static var deviceId: String? {
         get async {
-            if #available(iOS 13.0, *) {
-                return await MainActor.run(resultType: String?.self) {
-                    UIDevice.current.identifierForVendor?.uuidString
-                }
+            return await MainActor.run(resultType: String?.self) {
+                UIDevice.current.identifierForVendor?.uuidString
             }
         }
     }
@@ -65,44 +62,47 @@ class RadarUtils: NSObject {
     static let deviceType: String = "iOS"
     static let deviceMake: String = "Apple"
     static var networkType: RadarConnectionType {
-        get {
-            guard let reachability = SCNetworkReachabilityCreateWithName(nil, "google.com") else {
-                return .unknown
-            }
-            var flags: SCNetworkReachabilityFlags = []
-            SCNetworkReachabilityGetFlags(reachability, &flags)
-
-            // 3. Determine connectivity from the flags
-            let isReachable = flags.contains(.reachable)
-            if !isReachable {
-                return .unknown
-            }
-            
-            let isWWAN = flags.contains(.isWWAN)
-            if !isWWAN {
-                return .wifi
-            }
-            
-            guard let carrierTypes = CTTelephonyNetworkInfo().serviceCurrentRadioAccessTechnology,
-               carrierTypes.count == 0 else {
-                return .unknown
-            }
-            
-            let networkInfo = CTTelephonyNetworkInfo()
-            if let technology = networkInfo.serviceCurrentRadioAccessTechnology?.values.first {
-                if technology == "CTRadioAccessTechnologyNR" {
-                    return .cellular5g
-                } else if technology == "CTRadioAccessTechnologyLTE" {
-                    return .cellularLte
-                } else if technology.contains("UMTS") || technology.contains("WCDMA") {
-                    return .cellular3g
-                } else if technology.contains("GSM") || technology.contains("EDGE") {
-                    return .cellular2g
-                }
-            }
-            return .cellular
+        guard let reachability = SCNetworkReachabilityCreateWithName(nil, "google.com") else {
+            return .unknown
         }
+        var flags: SCNetworkReachabilityFlags = []
+        SCNetworkReachabilityGetFlags(reachability, &flags)
+
+        // 3. Determine connectivity from the flags
+        let isReachable = flags.contains(.reachable)
+        if !isReachable {
+            return .unknown
+        }
+        
+        let isWWAN = flags.contains(.isWWAN)
+        if !isWWAN {
+            return .wifi
+        }
+        
+        guard let carrierTypes = CTTelephonyNetworkInfo().serviceCurrentRadioAccessTechnology,
+           carrierTypes.count == 0 else {
+            return .unknown
+        }
+        
+        let networkInfo = CTTelephonyNetworkInfo()
+        if let technology = networkInfo.serviceCurrentRadioAccessTechnology?.values.first {
+            if technology == "CTRadioAccessTechnologyNR" {
+                return .cellular5g
+            } else if technology == "CTRadioAccessTechnologyLTE" {
+                return .cellularLte
+            } else if technology.contains("UMTS") || technology.contains("WCDMA") {
+                return .cellular3g
+            } else if technology.contains("GSM") || technology.contains("EDGE") {
+                return .cellular2g
+            }
+        }
+        return .cellular
     }
+    @available(*, deprecated, renamed: "networkType.rawValue")
+    static var networkTypeString: String {
+        return networkType.rawValue
+    }
+    
     static var appInfo: [String: String] {
         get {
             var info = Bundle.main.infoDictionary ?? [:]
@@ -123,7 +123,7 @@ class RadarUtils: NSObject {
     static let isSimulator: Bool = false
 #endif
     
-    static let locationBackgorundMode: Bool = {
+    static let locationBackgroundMode: Bool = {
         guard let info = Bundle.main.infoDictionary,
             let backgroundModes = info["UIBackgroundModes"] as? [String] else {
             return false
@@ -132,29 +132,26 @@ class RadarUtils: NSObject {
     }()
     
     static var locationAuthorization: String {
-        get {
-            let status: CLAuthorizationStatus
-            if #available(iOS 14.0, *) {
-                let locationManager = CLLocationManager()
-                status = locationManager.authorizationStatus
-            } else {
-                status = CLLocationManager.authorizationStatus()
-            }
-            switch status {
-            case .authorizedWhenInUse:
-                return "GRANTED_FOREGROUND";
-            case .authorizedAlways:
-                return "GRANTED_BACKGROUND";
-            case .denied:
-                return "DENIED";
-            case .restricted:
-                return "DENIED";
-            case .notDetermined:
-                return "NOT_DETERMINED";
-            @unknown default:
-                return "NOT_DETERMINED";
-            }
-            
+        let status: CLAuthorizationStatus
+        if #available(iOS 14.0, *) {
+            let locationManager = CLLocationManager()
+            status = locationManager.authorizationStatus
+        } else {
+            status = CLLocationManager.authorizationStatus()
+        }
+        switch status {
+        case .authorizedWhenInUse:
+            return "GRANTED_FOREGROUND";
+        case .authorizedAlways:
+            return "GRANTED_BACKGROUND";
+        case .denied:
+            return "DENIED";
+        case .restricted:
+            return "DENIED";
+        case .notDetermined:
+            return "NOT_DETERMINED";
+        @unknown default:
+            return "NOT_DETERMINED";
         }
     }
     
@@ -177,28 +174,26 @@ class RadarUtils: NSObject {
         }
     }
     
+    @available(iOS 13.0, *)
     static var foreground: Bool {
         get async {
-            if #available(iOS 13.0, *) {
-                return await MainActor.run(resultType: Bool.self) {
-                    UIApplication.shared.applicationState != .background
-                }
+            return await MainActor.run(resultType: Bool.self) {
+                UIApplication.shared.applicationState != .background
             }
         }
     }
     
+    @available(iOS 13.0, *)
     static var backgroundTimeRemaining: TimeInterval {
         get async {
-            if #available(iOS 13.0, *) {
-                return await MainActor.run(resultType: TimeInterval.self) {
-                    max(180, UIApplication.shared.backgroundTimeRemaining)
-                }
+            return await MainActor.run(resultType: TimeInterval.self) {
+                max(180, UIApplication.shared.backgroundTimeRemaining)
             }
         }
     }
     
-    static func dictToJson(_ dict: [String: Any]?) -> String {
-        guard let dict else { return "{}" }
+    static func dictionaryToJson(_ dict: [String: Any]?) -> String {
+        guard let dict = dict else { return "{}" }
         
         do {
             let data = try JSONSerialization.data(withJSONObject: dict)
@@ -211,6 +206,18 @@ class RadarUtils: NSObject {
             // failed to json serialize
             RadarLogger.shared.warning("RadarUtils.dictToJson failed: \(error.localizedDescription)")
             return "{}"
+        }
+    }
+    
+    static func dictionaryForLocation(_ location: CLLocation) -> [String: Any] {
+        return location.toDict()
+    }
+    static func locationForDictionary(_ dict: [String: Any]?) -> CLLocation {
+        print("locationForDictionary", dict)
+        if let dict {
+            return CLLocation.from(dict: dict)
+        } else {
+            return CLLocation(latitude: 0, longitude: 0)
         }
     }
 }
@@ -229,6 +236,7 @@ internal extension CLLocation {
                 dict["mocked"] = (sourceInformation.isSimulatedBySoftware || sourceInformation.isProducedByAccessory)
             }
         }
+        return dict
     }
     
     static func from(dict: [String: Any]) -> CLLocation {
@@ -245,12 +253,3 @@ internal extension CLLocation {
     }
 }
 
-+ (CLLocation *)locationForDictionary:(NSDictionary *_Nonnull)dict;
-+ (NSDictionary *)dictionaryForLocation:(CLLocation *)location;
-+ (NSString *)dictionaryToJson:(NSDictionary *)dict;
-+ (void)runOnMainThread:(dispatch_block_t)block;
-
-+ (RadarConnectionType)networkType;
-+ (NSString *)networkTypeString;
-
-+ (NSDictionary *)appInfo;
