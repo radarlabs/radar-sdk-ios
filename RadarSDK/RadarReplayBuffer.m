@@ -11,8 +11,9 @@
 #import "RadarReplay.h"
 #import "RadarLogger.h"
 #import "RadarSettings.h"
+#import "RadarSdkConfiguration.h"
 
-static const int MAX_BUFFER_SIZE = 120; // one hour of updates
+static const int DEFAULT_MAX_BUFFER_SIZE = 120; // one hour of updates
 
 @implementation RadarReplayBuffer {
     NSMutableArray<RadarReplay *> *mutableReplayBuffer;
@@ -38,16 +39,17 @@ static const int MAX_BUFFER_SIZE = 120; // one hour of updates
 }
 
 - (void)writeNewReplayToBuffer:(NSMutableDictionary *)replayParams {
+    RadarSdkConfiguration *sdkConfiguration = [RadarSettings sdkConfiguration];
+    int maxBufferSize = sdkConfiguration.maxReplayBufferSize > 0 ? sdkConfiguration.maxReplayBufferSize : DEFAULT_MAX_BUFFER_SIZE;
+
     NSUInteger replayBufferLength = [mutableReplayBuffer count];
-    if (replayBufferLength >= MAX_BUFFER_SIZE) {
+    if (replayBufferLength >= maxBufferSize) {
         [self dropOldestReplay];
     }
-    
+
     // add new replay to buffer
     RadarReplay *radarReplay = [[RadarReplay alloc] initWithParams:replayParams];
     [mutableReplayBuffer addObject:radarReplay];
-
-    RadarSdkConfiguration *sdkConfiguration = [RadarSettings sdkConfiguration];
     if (sdkConfiguration.usePersistence) {
         NSData *replaysData;
         NSError *error;

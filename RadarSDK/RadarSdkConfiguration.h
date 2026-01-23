@@ -39,6 +39,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, assign) BOOL syncAfterSetUser;
 
+@property (nonatomic, assign) int maxReplayBufferSize;
+
 /**
  Initializes a new RadarSdkConfiguration object with given value.
  */
