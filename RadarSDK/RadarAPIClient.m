@@ -445,6 +445,12 @@
     
     params[@"fraudFailureReasons"] = fraudFailureReasons;
 
+    // Include stored altitudeAdjustments from previous track responses
+    NSArray<NSDictionary *> *altitudeAdjustments = [RadarState altitudeAdjustments];
+    if (altitudeAdjustments && altitudeAdjustments.count > 0) {
+        params[@"altitudeAdjustments"] = altitudeAdjustments;
+    }
+
     if (anonymous) {
         [[RadarAPIClient sharedInstance] getConfigForUsage:@"track"
                                                   verified:verified
@@ -563,6 +569,13 @@
                                 NSMutableDictionary *mutableUserObj = [userObj mutableCopy];
                                 mutableUserObj[@"metadata"] = locationMetadata;
                                 userObj = mutableUserObj;
+                                
+                                // Extract and store altitudeAdjustments from user object
+                                id altitudeAdjustmentsObj = mutableUserObj[@"altitudeAdjustments"];
+                                if ([altitudeAdjustmentsObj isKindOfClass:[NSArray class]]) {
+                                    [RadarState setAltitudeAdjustments:(NSArray *)altitudeAdjustmentsObj];
+                                    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Stored %lu altitude adjustments from track response", (unsigned long)[(NSArray *)altitudeAdjustmentsObj count]]];
+                                }
                             }
                             id nearbyGeofencesObj = res[@"nearbyGeofences"];
                             id inAppMessagesObj = res[@"inAppMessages"];

@@ -48,6 +48,8 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)addRegisteredNotification:(NSDictionary *)registeredNotification;
 + (NSDictionary *)lastRelativeAltitudeData;
 + (void)setLastRelativeAltitudeData:(NSDictionary *_Nullable)lastRelativeAltitudeData;
++ (NSArray<NSDictionary *> *_Nullable)altitudeAdjustments;
++ (void)setAltitudeAdjustments:(NSArray<NSDictionary *> *_Nullable)altitudeAdjustments;
 
 @end
 
