@@ -204,7 +204,7 @@ class RadarUtils: NSObject {
             return string
         } catch {
             // failed to json serialize
-            RadarLogger.shared.warning("RadarUtils.dictToJson failed: \(error.localizedDescription)")
+            RadarLogger.shared.warning("RadarUtils.dictionaryToJson failed: \(error.localizedDescription)")
             return "{}"
         }
     }
@@ -212,8 +212,8 @@ class RadarUtils: NSObject {
     static func dictionaryForLocation(_ location: CLLocation) -> [String: Any] {
         return location.toDict()
     }
+    
     static func locationForDictionary(_ dict: [String: Any]?) -> CLLocation {
-        print("locationForDictionary", dict)
         if let dict {
             return CLLocation.from(dict: dict)
         } else {
