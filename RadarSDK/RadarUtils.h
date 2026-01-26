@@ -46,6 +46,7 @@ typedef NS_ENUM(NSInteger, RadarConnectionType) {
 
 @end
 
+__attribute__((deprecated("Use RadarUtils for swift implementation instead, except synchronous deviceOS, deviceId, foreground, backgroundTimeRemaining, and runOnMainThread")));
 @interface RadarUtilsDeprecated : RadarUtils
 @end
 

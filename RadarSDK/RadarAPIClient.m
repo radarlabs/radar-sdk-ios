@@ -64,7 +64,7 @@
 
 + (NSDictionary *)headersWithPublishableKey:(NSString *)publishableKey {
     NSDictionary *appInfo = [RadarUtils appInfo];
-    NSString *appInfoJSON = [RadarUtilsDeprecated dictionaryToJson:appInfo];
+    NSString *appInfoJSON = [RadarUtils dictionaryToJson:appInfo];
     
     NSMutableDictionary *headers = [@{
         @"Authorization": publishableKey,
@@ -122,7 +122,7 @@
         [queryString appendFormat:@"&usage=%@", usage];
     }
     [queryString appendFormat:@"&verified=%@", verified ? @"true" : @"false"];
-    [queryString appendFormat:@"&clientSdkConfiguration=%@", [RadarUtilsDeprecated dictionaryToJson:[RadarSettings clientSdkConfiguration]]];
+    [queryString appendFormat:@"&clientSdkConfiguration=%@", [RadarUtils dictionaryToJson:[RadarSettings clientSdkConfiguration]]];
 
     NSString *host = verified ? [RadarSettings verifiedHost] : [RadarSettings host];
     NSString *url = [NSString stringWithFormat:@"%@/v1/config?%@", host, queryString];
