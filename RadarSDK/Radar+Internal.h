@@ -24,4 +24,6 @@
 + (void)logOpenedAppConversionWithNotification:(UNNotificationRequest *_Nonnull)request 
                               conversionSource:(NSString *_Nullable)conversionSource;
 
++ (NSString *_Nonnull)stringForMotionAuthorizationStatus;
+
 @end
