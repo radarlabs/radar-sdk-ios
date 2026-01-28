@@ -18,7 +18,7 @@ typedef void (^RadarFraudPayloadCallback)(RadarStatus status, NSString *_Nullabl
 
 + (instancetype)sharedInstance;
 
-- (void)getFraudPayloadWithLocation:(CLLocation *_Nullable)location nonce:(NSString *_Nonnull)nonce completionHandler:(RadarFraudPayloadCallback)completionHandler;
+- (void)getFraudPayloadWithOptions:(NSDictionary<NSString *, id> *)options completionHandler:(RadarFraudPayloadCallback)completionHandler;
 
 - (void)startIPMonitoringWithCallback:(RadarIPChangeCallback)callback;
 

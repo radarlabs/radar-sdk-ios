@@ -110,7 +110,14 @@
             }
             
             
-            [[RadarSDKFraud sharedInstance] getFraudPayloadWithLocation:location nonce:config.nonce completionHandler:^(RadarStatus status, NSString *_Nullable fraudPayload) {
+            NSMutableDictionary *options = [NSMutableDictionary dictionary];
+            if (location) {
+                options[@"location"] = location;
+            }
+            if (config.nonce) {
+                options[@"nonce"] = config.nonce;
+            }
+            [[RadarSDKFraud sharedInstance] getFraudPayloadWithOptions:options completionHandler:^(RadarStatus status, NSString *_Nullable fraudPayload) {
                 if (status != RadarStatusSuccess) {
                     [RadarUtils runOnMainThread:^{
                         [[RadarDelegateHolder sharedInstance] didFailWithStatus:status];
