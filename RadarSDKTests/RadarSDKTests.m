@@ -13,7 +13,6 @@
 #import "../RadarSDK/RadarLocationManager.h"
 #import "../RadarSDK/RadarSettings.h"
 #import "../RadarSDK/RadarLogBuffer.h"
-#import "../RadarSDK/RadarEfficientTrackManager.h"
 #import "../RadarSDK/RadarState.h"
 #import "../RadarSDK/RadarGeofence+Internal.h"
 #import "../RadarSDK/RadarCircleGeometry+Internal.h"
@@ -29,6 +28,12 @@
 #import "RadarFileStorage.h"
 #import "RadarReplayBuffer.h"
 #import <os/log.h>
+
+#if __has_include(<RadarSDK/RadarSDK-Swift.h>)
+#import <RadarSDK/RadarSDK-Swift.h>
+#elif __has_include("RadarSDK-Swift.h")
+#import "RadarSDK-Swift.h"
+#endif
 
 @interface RadarSDKTests : XCTestCase
 
@@ -1838,7 +1843,7 @@ static double kTestLatitudeVeryFar = 40.78742;
     options.syncOnBeaconEvents = YES;
     
     // No synced region means we should always track
-    BOOL shouldTrack = [RadarEfficientTrackManager shouldTrackLocation:location options:options];
+    BOOL shouldTrack = [RadarEfficientTrackManager shouldTrackWithLocation:location options:options];
     XCTAssertTrue(shouldTrack);
 }
 
@@ -1855,7 +1860,7 @@ static double kTestLatitudeVeryFar = 40.78742;
     RadarTrackingOptions *options = [RadarTrackingOptions new];
     options.syncOnGeofenceEvents = YES;
     
-    BOOL shouldTrack = [RadarEfficientTrackManager shouldTrackLocation:location options:options];
+    BOOL shouldTrack = [RadarEfficientTrackManager shouldTrackWithLocation:location options:options];
     XCTAssertTrue(shouldTrack);
 }
 
@@ -1874,7 +1879,7 @@ static double kTestLatitudeVeryFar = 40.78742;
     RadarTrackingOptions *options = [RadarTrackingOptions new];
     options.syncOnGeofenceEvents = YES;
     
-    BOOL shouldTrack = [RadarEfficientTrackManager shouldTrackLocation:location options:options];
+    BOOL shouldTrack = [RadarEfficientTrackManager shouldTrackWithLocation:location options:options];
     XCTAssertTrue(shouldTrack);
 }
 
@@ -1895,7 +1900,7 @@ static double kTestLatitudeVeryFar = 40.78742;
     
     options.syncOnGeofenceEvents = YES;
     
-    BOOL shouldTrack = [RadarEfficientTrackManager shouldTrackLocation:location options:options];
+    BOOL shouldTrack = [RadarEfficientTrackManager shouldTrackWithLocation:location options:options];
     XCTAssertTrue(shouldTrack);
 }
 
@@ -1915,7 +1920,7 @@ static double kTestLatitudeVeryFar = 40.78742;
     RadarTrackingOptions *options = [RadarTrackingOptions new];
     options.syncOnGeofenceEvents = YES;
     
-    BOOL shouldTrack = [RadarEfficientTrackManager shouldTrackLocation:location options:options];
+    BOOL shouldTrack = [RadarEfficientTrackManager shouldTrackWithLocation:location options:options];
     XCTAssertFalse(shouldTrack);
 }
 
@@ -1936,7 +1941,7 @@ static double kTestLatitudeVeryFar = 40.78742;
     options.syncOnPlaceEvents = NO;
     options.syncOnBeaconEvents = NO;
     
-    BOOL shouldTrack = [RadarEfficientTrackManager shouldTrackLocation:location options:options];
+    BOOL shouldTrack = [RadarEfficientTrackManager shouldTrackWithLocation:location options:options];
     XCTAssertFalse(shouldTrack);
 }
 
@@ -1948,7 +1953,7 @@ static double kTestLatitudeVeryFar = 40.78742;
     
     CLLocation *location = [[CLLocation alloc] initWithLatitude:kTestLatitude longitude:kTestLongitude];
     
-    NSArray<RadarGeofence *> *geofences = [RadarEfficientTrackManager getGeofencesForLocation:location];
+    NSArray<RadarGeofence *> *geofences = [RadarEfficientTrackManager getGeofencesFor:location];
     XCTAssertEqual(geofences.count, 1);
     XCTAssertEqualObjects(geofences.firstObject._id, @"geofence1");
 }
@@ -1961,7 +1966,7 @@ static double kTestLatitudeVeryFar = 40.78742;
     
     CLLocation *location = [[CLLocation alloc] initWithLatitude:kTestLatitude longitude:kTestLongitude];
 
-    NSArray<RadarGeofence *> *geofences = [RadarEfficientTrackManager getGeofencesForLocation:location];
+    NSArray<RadarGeofence *> *geofences = [RadarEfficientTrackManager getGeofencesFor:location];
     XCTAssertEqual(geofences.count, 0);
 }
 
@@ -1970,7 +1975,7 @@ static double kTestLatitudeVeryFar = 40.78742;
     
     CLLocation *location = [[CLLocation alloc] initWithLatitude:kTestLatitude longitude:kTestLongitude];
 
-    NSArray<RadarGeofence *> *geofences = [RadarEfficientTrackManager getGeofencesForLocation:location];
+    NSArray<RadarGeofence *> *geofences = [RadarEfficientTrackManager getGeofencesFor:location];
     XCTAssertEqual(geofences.count, 0);
 }
 
@@ -1983,7 +1988,7 @@ static double kTestLatitudeVeryFar = 40.78742;
     
     CLLocation *location = [[CLLocation alloc] initWithLatitude:kTestLatitude longitude:kTestLongitude];
     
-    BOOL changed = [RadarEfficientTrackManager hasGeofenceStateChanged:location];
+    BOOL changed = [RadarEfficientTrackManager hasGeofenceStateChangedWithLocation:location];
     XCTAssertTrue(changed);
 }
 
@@ -1996,7 +2001,7 @@ static double kTestLatitudeVeryFar = 40.78742;
     
     CLLocation *location = [[CLLocation alloc] initWithLatitude:kTestLatitude longitude:kTestLongitude];
     
-    BOOL changed = [RadarEfficientTrackManager hasGeofenceStateChanged:location];
+    BOOL changed = [RadarEfficientTrackManager hasGeofenceStateChangedWithLocation:location];
     XCTAssertTrue(changed);
 }
 
@@ -2009,7 +2014,7 @@ static double kTestLatitudeVeryFar = 40.78742;
     
     CLLocation *location = [[CLLocation alloc] initWithLatitude:kTestLatitude longitude:kTestLongitude];
     
-    BOOL changed = [RadarEfficientTrackManager hasGeofenceStateChanged:location];
+    BOOL changed = [RadarEfficientTrackManager hasGeofenceStateChangedWithLocation:location];
     XCTAssertFalse(changed);
 }
 
@@ -2021,7 +2026,7 @@ static double kTestLatitudeVeryFar = 40.78742;
     
     CLLocation *location = [[CLLocation alloc] initWithLatitude:kTestLatitude longitude:kTestLongitude];
 
-    NSArray<RadarBeacon *> *beacons = [RadarEfficientTrackManager getBeaconsForLocation:location];
+    NSArray<RadarBeacon *> *beacons = [RadarEfficientTrackManager getBeaconsFor:location];
     XCTAssertEqual(beacons.count, 1);
     XCTAssertEqualObjects(beacons.firstObject._id, @"beacon1");
 }
@@ -2034,7 +2039,7 @@ static double kTestLatitudeVeryFar = 40.78742;
     
     CLLocation *location = [[CLLocation alloc] initWithLatitude:kTestLatitude longitude:kTestLongitude];
 
-    NSArray<RadarBeacon *> *beacons = [RadarEfficientTrackManager getBeaconsForLocation:location];
+    NSArray<RadarBeacon *> *beacons = [RadarEfficientTrackManager getBeaconsFor:location];
     XCTAssertEqual(beacons.count, 0);
 }
 
@@ -2047,7 +2052,7 @@ static double kTestLatitudeVeryFar = 40.78742;
     
     CLLocation *location = [[CLLocation alloc] initWithLatitude:kTestLatitude longitude:kTestLongitude];
     
-    BOOL changed = [RadarEfficientTrackManager hasBeaconStateChanged:location];
+    BOOL changed = [RadarEfficientTrackManager hasBeaconStateChangedWithLocation:location];
     XCTAssertTrue(changed);
 }
 
@@ -2060,7 +2065,7 @@ static double kTestLatitudeVeryFar = 40.78742;
     
     CLLocation *location = [[CLLocation alloc] initWithLatitude:kTestLatitude longitude:kTestLongitude];
 
-    BOOL changed = [RadarEfficientTrackManager hasBeaconStateChanged:location];
+    BOOL changed = [RadarEfficientTrackManager hasBeaconStateChangedWithLocation:location];
     XCTAssertTrue(changed);
 }
 
@@ -2072,7 +2077,7 @@ static double kTestLatitudeVeryFar = 40.78742;
     
     CLLocation *location = [[CLLocation alloc] initWithLatitude:kTestLatitude longitude:kTestLongitude];
 
-    NSArray<RadarPlace *> *places = [RadarEfficientTrackManager getPlacesForLocation:location];
+    NSArray<RadarPlace *> *places = [RadarEfficientTrackManager getPlacesFor:location];
     XCTAssertEqual(places.count, 1);
     XCTAssertEqualObjects(places.firstObject._id, @"place1");
 }
@@ -2085,7 +2090,7 @@ static double kTestLatitudeVeryFar = 40.78742;
     
     CLLocation *location = [[CLLocation alloc] initWithLatitude:kTestLatitude longitude:kTestLongitude];
 
-    NSArray<RadarPlace *> *places = [RadarEfficientTrackManager getPlacesForLocation:location];
+    NSArray<RadarPlace *> *places = [RadarEfficientTrackManager getPlacesFor:location];
     XCTAssertEqual(places.count, 0);
 }
 
@@ -2098,7 +2103,7 @@ static double kTestLatitudeVeryFar = 40.78742;
     
     CLLocation *location = [[CLLocation alloc] initWithLatitude:kTestLatitude longitude:kTestLongitude];
 
-    BOOL changed = [RadarEfficientTrackManager hasPlacesStateChanged:location];
+    BOOL changed = [RadarEfficientTrackManager hasPlaceStateChangedWithLocation:location];
     XCTAssertTrue(changed);
 }
 
@@ -2111,7 +2116,7 @@ static double kTestLatitudeVeryFar = 40.78742;
     
     CLLocation *location = [[CLLocation alloc] initWithLatitude:kTestLatitude longitude:kTestLongitude];
     
-    BOOL changed = [RadarEfficientTrackManager hasPlacesStateChanged:location];
+    BOOL changed = [RadarEfficientTrackManager hasPlaceStateChangedWithLocation:location];
     XCTAssertTrue(changed);
 }
 
@@ -2120,7 +2125,7 @@ static double kTestLatitudeVeryFar = 40.78742;
     
     CLLocation *location = [[CLLocation alloc] initWithLatitude:kTestLatitude longitude:kTestLongitude];
 
-    BOOL outside = [RadarEfficientTrackManager isOutsideSyncedRegion:location];
+    BOOL outside = [RadarEfficientTrackManager isOutsideSyncedRegionWithLocation:location];
     XCTAssertTrue(outside);
 }
 
@@ -2132,7 +2137,7 @@ static double kTestLatitudeVeryFar = 40.78742;
     
     CLLocation *location = [[CLLocation alloc] initWithLatitude:kTestLatitude longitude:kTestLongitude];
 
-    BOOL outside = [RadarEfficientTrackManager isOutsideSyncedRegion:location];
+    BOOL outside = [RadarEfficientTrackManager isOutsideSyncedRegionWithLocation:location];
     XCTAssertFalse(outside);
 }
 
@@ -2144,7 +2149,7 @@ static double kTestLatitudeVeryFar = 40.78742;
     
     CLLocation *location = [[CLLocation alloc] initWithLatitude:kTestLatitudeFar longitude:kTestLongitude];
     
-    BOOL outside = [RadarEfficientTrackManager isOutsideSyncedRegion:location];
+    BOOL outside = [RadarEfficientTrackManager isOutsideSyncedRegionWithLocation:location];
     XCTAssertTrue(outside);
 }
 
@@ -2152,7 +2157,7 @@ static double kTestLatitudeVeryFar = 40.78742;
     CLLocation *point = [[CLLocation alloc] initWithLatitude:kTestLatitude longitude:kTestLongitude];
     CLLocationCoordinate2D center = CLLocationCoordinate2DMake(kTestLatitude, kTestLongitude);
     
-    BOOL inside = [RadarEfficientTrackManager isPoint:point insideCircleCenter:center radius:100];
+    BOOL inside = [RadarEfficientTrackManager isPoint:point insideCircleWithCenter:center radius:100];
     XCTAssertTrue(inside);
 }
 
@@ -2160,7 +2165,7 @@ static double kTestLatitudeVeryFar = 40.78742;
     CLLocation *point = [[CLLocation alloc] initWithLatitude:kTestLatitudeFar longitude:kTestLongitude];
     CLLocationCoordinate2D center = CLLocationCoordinate2DMake(kTestLatitude, kTestLongitude);
     
-    BOOL inside = [RadarEfficientTrackManager isPoint:point insideCircleCenter:center radius:100];
+    BOOL inside = [RadarEfficientTrackManager isPoint:point insideCircleWithCenter:center radius:100];
     XCTAssertFalse(inside);
 }
 
@@ -2240,7 +2245,7 @@ static double kTestLatitudeVeryFar = 40.78742;
     options.syncOnGeofenceEvents = YES;
     
     // Should detect geofence entry for geofenceA
-    BOOL shouldTrack = [RadarEfficientTrackManager shouldTrackLocation:newLocation options:options];
+    BOOL shouldTrack = [RadarEfficientTrackManager shouldTrackWithLocation:newLocation options:options];
     XCTAssertTrue(shouldTrack);
 }
 
@@ -2256,7 +2261,7 @@ static double kTestLatitudeVeryFar = 40.78742;
     
     CLLocation *location = [[CLLocation alloc] initWithLatitude:kTestLatitude longitude:kTestLongitude];
 
-    NSArray<RadarGeofence *> *detectedGeofences = [RadarEfficientTrackManager getGeofencesForLocation:location];
+    NSArray<RadarGeofence *> *detectedGeofences = [RadarEfficientTrackManager getGeofencesFor:location];
     
     XCTAssertEqual(detectedGeofences.count, 2);
     

@@ -23,9 +23,14 @@
 #import "RadarActivityManager.h"
 #import "RadarNotificationHelper.h"
 #import "RadarIndoorsProtocol.h"
-#import "RadarEfficientTrackManager.h"
 #import "RadarPlace+Internal.h"
 #import "RadarBeacon+Internal.h"
+
+#if __has_include(<RadarSDK/RadarSDK-Swift.h>)
+#import <RadarSDK/RadarSDK-Swift.h>
+#elif __has_include("RadarSDK-Swift.h")
+#import "RadarSDK-Swift.h"
+#endif
 
 @interface RadarLocationManager ()
 
@@ -910,7 +915,7 @@ static NSString *const kSyncedRegionIdentifierPrefix = @"radar_synced_";
         BOOL efficientTrackingEnabled = options.syncOnGeofenceEvents || options.syncOnPlaceEvents || options.syncOnBeaconEvents;
         
         if (efficientTrackingEnabled) {
-            if (![RadarEfficientTrackManager shouldTrackLocation:location options:options]) {
+            if (![RadarEfficientTrackManager shouldTrackWithLocation:location options:options]) {
                 [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
                                                    message:@"Skipping sync: efficient tracking - no state change detected"];
                 return;

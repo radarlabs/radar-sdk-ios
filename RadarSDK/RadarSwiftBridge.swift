@@ -18,6 +18,14 @@ protocol RadarSwiftBridgeProtocol {
     func setLogBufferPersistantLog(_ value: Bool)
     func flushReplays()
     func logOpenedAppConversion()
+    func syncedRegion() -> CLCircularRegion?
+    func geofenceIds() -> [String]?
+    func beaconIds() -> [String]?
+    func placeId() -> String?
+    func nearbyGeofences() -> [RadarGeofence]?
+    func nearbyBeacons() -> [RadarBeacon]?
+    func nearbyPlaces() -> [RadarPlace]?
+    func getTripOptions() -> RadarTripOptions?
 }
 
 @objc(RadarSwift) @objcMembers
