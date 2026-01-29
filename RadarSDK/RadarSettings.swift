@@ -8,7 +8,7 @@
 import Foundation
 
 @objc(RadarSettings) @objcMembers
-internal class RadarSettings: NSObject {
+public class RadarSettings: NSObject {
     
     static let DefaultHost = "https://api.radar.io"
     static let DefaultVerifiedHost = "https://api-verified.radar.io"
@@ -52,6 +52,10 @@ internal class RadarSettings: NSObject {
                 updateAppGroup()
             }
         }
+    }
+    
+    public func logCampaignConversion(name: String?, metadata: [String: Any], campaign: String?) {
+        
     }
     
     public static func getAppGroup() -> String? {

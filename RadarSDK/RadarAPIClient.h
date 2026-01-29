@@ -172,6 +172,7 @@ typedef void (^_Nonnull RadarSyncLogsAPICompletionHandler)(RadarStatus status);
 
 - (void)sendEvent:(NSString *)type
      withMetadata:(NSDictionary *_Nullable)metadata
+     withCampaign:(NSString *_Nullable)campaign
 completionHandler:(RadarSendEventAPICompletionHandler _Nonnull)completionHandler;
 
 - (void)syncLogs:(NSArray<RadarLog *> *)logs completionHandler:(RadarSyncLogsAPICompletionHandler _Nonnull)completionHandler;

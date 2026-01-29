@@ -18,6 +18,7 @@ protocol RadarSwiftBridgeProtocol {
     func setLogBufferPersistantLog(_ value: Bool)
     func flushReplays()
     func logOpenedAppConversion()
+    func logCampaignConversion(name: String, metadata: [String: Any], campaign: String?)
 }
 
 @objc(RadarSwift) @objcMembers

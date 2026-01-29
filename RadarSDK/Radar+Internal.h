@@ -21,6 +21,11 @@
                      conversionSource:(NSString *_Nullable)conversionSource 
                        deliveredAfter:(NSDate *_Nullable)deliveredAfter;
 
++ (void)sendLogConversionRequestWithName:(NSString * _Nonnull) name
+                                metadata:(NSDictionary * _Nullable) metadata
+                                campaign:(NSString*_Nullable)campaign
+                       completionHandler:(RadarLogConversionCompletionHandler) completionHandler;
+
 + (void)logOpenedAppConversionWithNotification:(UNNotificationRequest *_Nonnull)request 
                               conversionSource:(NSString *_Nullable)conversionSource;
 

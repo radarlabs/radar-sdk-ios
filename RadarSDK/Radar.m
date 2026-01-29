@@ -560,8 +560,9 @@ BOOL _initialized = NO;
 
 + (void)sendLogConversionRequestWithName:(NSString * _Nonnull) name
                                 metadata:(NSDictionary * _Nullable) metadata
+                                campaign:(NSString *_Nullable)campaign
                        completionHandler:(RadarLogConversionCompletionHandler) completionHandler {
-    [[RadarAPIClient sharedInstance] sendEvent:name withMetadata:metadata completionHandler:^(RadarStatus status, NSDictionary * _Nullable res, RadarEvent * _Nullable event) {
+    [[RadarAPIClient sharedInstance] sendEvent:name withMetadata:metadata withCampaign:campaign completionHandler:^(RadarStatus status, NSDictionary * _Nullable res, RadarEvent * _Nullable event) {
         if (status != RadarStatusSuccess) {
             if (completionHandler) {
                 [RadarUtils runOnMainThread:^{
@@ -593,7 +594,7 @@ BOOL _initialized = NO;
         if (lastAppOpenTimeInterval > 2) {
             [RadarSettings updateLastAppOpenTime];
             // metadata not needed as app is not opened by notification.
-            [self sendLogConversionRequestWithName:@"opened_app" metadata:nil completionHandler:^(RadarStatus status, RadarEvent * _Nullable event) {
+            [self sendLogConversionRequestWithName:@"opened_app" metadata:nil campaign:nil completionHandler:^(RadarStatus status, RadarEvent * _Nullable event) {
                 NSString *message = [NSString stringWithFormat:@"Conversion name = %@: status = %@; event = %@", event.conversionName, [Radar stringForStatus:status], event];
                 [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:message];
             }];
@@ -615,13 +616,13 @@ BOOL _initialized = NO;
 
     CLAuthorizationStatus authorizationStatus = [[RadarLocationManager sharedInstance].permissionsHelper locationAuthorizationStatus];
     if (!(authorizationStatus == kCLAuthorizationStatusAuthorizedWhenInUse || authorizationStatus == kCLAuthorizationStatusAuthorizedAlways) || isLastTrackRecent) {
-        [self sendLogConversionRequestWithName:name metadata:metadata completionHandler:completionHandler];
+        [self sendLogConversionRequestWithName:name metadata:metadata campaign:nil completionHandler:completionHandler];
         
         return;
     }
     
     [self trackOnceWithCompletionHandler:^(RadarStatus status, CLLocation * _Nullable location, NSArray<RadarEvent *> * _Nullable events, RadarUser * _Nullable user) {
-        [self sendLogConversionRequestWithName:name metadata:metadata completionHandler:completionHandler];
+        [self sendLogConversionRequestWithName:name metadata:metadata campaign:nil completionHandler:completionHandler];
     }];
 }
 
@@ -647,12 +648,13 @@ BOOL _initialized = NO;
                        deliveredAfter:(NSDate *)deliveredAfter {
     
     NSMutableDictionary *metadata = [[NSMutableDictionary alloc] initWithDictionary:request.content.userInfo];
-
+    
     if (conversionSource) {
         [metadata setValue:conversionSource forKey:@"conversionSource"];
     }
+    NSString* campaign = metadata[@"campaignId"];
     
-    [self sendLogConversionRequestWithName:eventName metadata:metadata completionHandler:^(RadarStatus status, RadarEvent * _Nullable event) {
+    [self sendLogConversionRequestWithName:eventName metadata:metadata campaign:campaign completionHandler:^(RadarStatus status, RadarEvent * _Nullable event) {
         NSString *message = [NSString stringWithFormat:@"Conversion name = %@: status = %@; event = %@", event.conversionName, [Radar stringForStatus:status], event];
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:message];
     }];
