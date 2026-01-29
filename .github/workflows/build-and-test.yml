@@ -21,6 +21,9 @@ jobs:
       - name: Use Xcode 16.4
         run: sudo xcode-select -switch /Applications/Xcode_16.4.app
 
+      - name: List simulators
+        run: xcrun simctl list devices
+
       - name: Build and Analyze
         env:
           scheme: RadarSDK
