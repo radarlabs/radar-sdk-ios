@@ -6,7 +6,6 @@
 //
 
 #import <CoreLocation/CoreLocation.h>
-#import <CoreMotion/CoreMotion.h>
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 #import <UserNotifications/UserNotifications.h>
@@ -1285,15 +1284,6 @@ typedef void (^_Nonnull RadarIndoorsScanCompletionHandler)(NSString *_Nullable r
  @return A display string for the status value.
  */
 + (NSString *)stringForStatus:(RadarStatus)status NS_SWIFT_NAME(stringForStatus(_:));
-
-/**
- Returns a string for Motion & Fitness authorization status value.
-
- @param status A Core Motion authorization status value.
-
- @return A string for the authorization status value.
- */
-+ (NSString *)stringForMotionAuthorization:(CMAuthorizationStatus)status NS_SWIFT_NAME(stringForMotionAuthorization(_:));
 
 /**
  Returns a string for address validation status value.
