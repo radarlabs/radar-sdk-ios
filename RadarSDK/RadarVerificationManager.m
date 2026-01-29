@@ -701,4 +701,35 @@
     }
 }
 
+- (BOOL)isUsingProxy {
+    CFDictionaryRef proxyRef = CFNetworkCopySystemProxySettings();
+    if (proxyRef) {
+        NSDictionary *proxy = CFBridgingRelease(proxyRef);
+
+        NSNumber *httpOn  = proxy[@"HTTPEnable"];
+        NSNumber *httpsOn = proxy[@"HTTPSEnable"];
+        NSNumber *socksOn = proxy[@"SOCKSEnable"];
+
+        if (httpOn.boolValue || httpsOn.boolValue || socksOn.boolValue) {
+            return YES;
+        }
+    }
+
+    struct ifaddrs *ifaddr = NULL;
+    if (getifaddrs(&ifaddr) == 0 && ifaddr) {
+        for (struct ifaddrs *cur = ifaddr; cur != NULL; cur = cur->ifa_next) {
+            if (!cur->ifa_name) continue;
+            NSString *name = [NSString stringWithUTF8String:cur->ifa_name];
+            if ([name hasPrefix:@"utun"] ||
+                [name hasPrefix:@"ipsec"] ||
+                [name hasPrefix:@"ppp"]) {
+                return YES;
+            }
+        }
+        freeifaddrs(ifaddr);
+    }
+
+    return NO;
+}
+
 @end
