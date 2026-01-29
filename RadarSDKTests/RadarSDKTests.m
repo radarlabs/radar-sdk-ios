@@ -2185,7 +2185,8 @@ static double kTestLatitudeVeryFar = 40.78742;
     
     RadarTrackingOptions *options = [RadarTrackingOptions new];
     options.syncOnGeofenceEvents = YES;
-    [Radar startTrackingWithOptions:options];
+    [RadarSettings setTrackingOptions:options]; 
+    [RadarSettings setTracking:YES];
         
     [[RadarLocationManager sharedInstance] updateSyncedRegion];
     
@@ -2214,7 +2215,8 @@ static double kTestLatitudeVeryFar = 40.78742;
     
     RadarTrackingOptions *options = [RadarTrackingOptions new];
     options.syncOnGeofenceEvents = YES;
-    [Radar startTrackingWithOptions:options];
+    [RadarSettings setTrackingOptions:options];
+    [RadarSettings setTracking:YES];
     
     [[RadarLocationManager sharedInstance] updateSyncedRegion];
     
