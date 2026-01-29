@@ -72,17 +72,19 @@ public class RadarInAppMessageManager: NSObject {
         }
 
         let viewController = await withCheckedContinuation { continuation in
-            delegate.createInAppMessageView(message,
-                                            onDismiss: {
-                self.logConversion(name: "campaign.in_app_message_dismissed")
-                self.dismissInAppMessage()
-                self.delegate.onInAppMessageDismissed(message)
-            },
-                                            onInAppMessageClicked: {
-                self.logConversion(name: "campaign.in_app_message_clicked")
-                self.dismissInAppMessage()
-                self.delegate.onInAppMessageButtonClicked(message)
-            }) { result in
+            delegate.createInAppMessageView(
+                message,
+                onDismiss: {
+                    self.logConversion(name: "campaign.in_app_message_dismissed")
+                    self.dismissInAppMessage()
+                    self.delegate.onInAppMessageDismissed(message)
+                },
+                onInAppMessageClicked: {
+                    self.logConversion(name: "campaign.in_app_message_clicked")
+                    self.dismissInAppMessage()
+                    self.delegate.onInAppMessageButtonClicked(message)
+                }
+            ) { result in
                 continuation.resume(returning: result)
             }
         }
