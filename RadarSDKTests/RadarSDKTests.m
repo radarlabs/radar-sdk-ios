@@ -328,6 +328,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     [RadarState setGeofenceIds:nil];
     [RadarState setBeaconIds:nil];
     [RadarState setPlaceId:nil];
+    [RadarSettings setRemoteTrackingOptions:nil];
 }
 
 + (void)setUp {
@@ -2185,7 +2186,7 @@ static double kTestLatitudeVeryFar = 40.78742;
     
     RadarTrackingOptions *options = [RadarTrackingOptions new];
     options.syncOnGeofenceEvents = YES;
-    [RadarSettings setTrackingOptions:options]; 
+    [RadarSettings setTrackingOptions:options];
     [RadarSettings setTracking:YES];
         
     [[RadarLocationManager sharedInstance] updateSyncedRegion];
