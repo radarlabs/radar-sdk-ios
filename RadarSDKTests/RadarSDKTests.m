@@ -2174,68 +2174,62 @@ static double kTestLatitudeVeryFar = 40.78742;
     [self clearEfficientTrackingState];
 
     RadarGeofence *geofenceA = [self createTestGeofenceWithId:@"geofenceA" latitude:kTestLatitudeFar longitude:kTestLongitude radius:50];
-
     RadarGeofence *geofenceB = [self createTestGeofenceWithId:@"geofenceB" latitude:kTestLatitudeVeryFar longitude:kTestLongitude radius:100];
     [RadarState setNearbyGeofences:@[geofenceA, geofenceB]];
-    
+
     [RadarState setGeofenceIds:@[]];
-    
-    CLLocation *userLocation = [[CLLocation alloc] initWithLatitude:kTestLatitude longitude:kTestLongitude];
+
+    CLLocation *userLocation = [[CLLocation alloc] initWithCoordinate:CLLocationCoordinate2DMake(kTestLatitude, kTestLongitude)
+                                                             altitude:0
+                                                   horizontalAccuracy:10
+                                                     verticalAccuracy:10
+                                                            timestamp:[NSDate date]];
     [RadarState setLastLocation:userLocation];
-    
-    
+
     RadarTrackingOptions *options = [RadarTrackingOptions new];
     options.syncOnGeofenceEvents = YES;
     [RadarSettings setTrackingOptions:options];
     [RadarSettings setTracking:YES];
-        
-    RadarTrackingOptions *fetchedOptions = [Radar getTrackingOptions];
 
     [[RadarLocationManager sharedInstance] updateSyncedRegion];
 
     CLCircularRegion *syncedRegion = [RadarState syncedRegion];
 
-    XCTAssertNotNil(syncedRegion, @"syncedRegion is nil! syncOnGeofenceEvents=%d, lastLocation=%@, nearbyGeofences count=%lu",
-                    fetchedOptions.syncOnGeofenceEvents,
-                    [RadarState lastLocation],
-                    (unsigned long)[[RadarState nearbyGeofences] count]);
+    XCTAssertNotNil(syncedRegion);
     XCTAssertLessThan(syncedRegion.radius, 100);
 }
 
 - (void)test_EfficientTrack_mixedEntities_usesNearestBoundary {
     [self clearEfficientTrackingState];
-    
+
     RadarGeofence *geofence = [self createTestGeofenceWithId:@"geofence1" latitude:kTestLatitudeVeryFar longitude:kTestLongitude radius:50];
     RadarPlace *place = [self createTestPlaceWithId:@"place1" latitude:kTestLatitudeFar longitude:kTestLongitude];
     RadarBeacon *beacon = [self createTestBeaconWithId:@"beacon1" latitude:kTestLatitudeMid longitude:kTestLongitude];
-    
+
     [RadarState setNearbyGeofences:@[geofence]];
     [RadarState setNearbyPlaces:@[place]];
     [RadarState setNearbyBeacons:@[beacon]];
     [RadarState setGeofenceIds:@[]];
     [RadarState setPlaceId:nil];
     [RadarState setBeaconIds:@[]];
-    
-    CLLocation *userLocation = [[CLLocation alloc] initWithLatitude:kTestLatitude longitude:kTestLongitude];
+
+    CLLocation *userLocation = [[CLLocation alloc] initWithCoordinate:CLLocationCoordinate2DMake(kTestLatitude, kTestLongitude)
+                                                             altitude:0
+                                                   horizontalAccuracy:10
+                                                     verticalAccuracy:10
+                                                            timestamp:[NSDate date]];
     [RadarState setLastLocation:userLocation];
-    
+
     RadarTrackingOptions *options = [RadarTrackingOptions new];
     options.syncOnGeofenceEvents = YES;
     [RadarSettings setTrackingOptions:options];
     [RadarSettings setTracking:YES];
-    
-    RadarTrackingOptions *fetchedOptions = [Radar getTrackingOptions];
 
     [[RadarLocationManager sharedInstance] updateSyncedRegion];
 
     CLCircularRegion *syncedRegion = [RadarState syncedRegion];
 
-    XCTAssertNotNil(syncedRegion, @"syncedRegion is nil! syncOnGeofenceEvents=%d, lastLocation=%@, nearbyGeofences count=%lu, nearbyPlaces count=%lu, nearbyBeacons count=%lu",
-                    fetchedOptions.syncOnGeofenceEvents,
-                    [RadarState lastLocation],
-                    (unsigned long)[[RadarState nearbyGeofences] count],
-                    (unsigned long)[[RadarState nearbyPlaces] count],
-                    (unsigned long)[[RadarState nearbyBeacons] count]);
+    XCTAssertNotNil(syncedRegion);
     XCTAssertLessThan(syncedRegion.radius, 50);
 }
 
