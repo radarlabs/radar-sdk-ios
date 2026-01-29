@@ -21,6 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)startAbsoluteAltitudeUpdatesToQueue:(NSOperationQueue *) queue
                                  withHandler:(CMAltitudeHandler) handler;
 - (void)stopAbsoluteAltitudeUpdates;
++ (NSString *)stringForMotionAuthorization;
 
 @end
 
