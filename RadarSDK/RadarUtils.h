@@ -21,23 +21,19 @@ typedef NS_ENUM(NSInteger, RadarConnectionType) {
 @property (class, nonatomic, assign, readonly) NSDateFormatter *isoDateFormatter;
 
 + (NSString *)deviceModel;
-+ (NSString *)deviceOS;
+
 + (NSString *)country;
 + (NSNumber *)timeZoneOffset;
 + (NSString *)sdkVersion;
-+ (NSString *)deviceId;
 + (NSString *)deviceType;
 + (NSString *)deviceMake;
 + (BOOL)isSimulator;
 + (BOOL)locationBackgroundMode;
 + (NSString *)locationAuthorization;
 + (NSString *)locationAccuracyAuthorization;
-+ (BOOL)foreground;
-+ (NSTimeInterval)backgroundTimeRemaining;
 + (CLLocation *)locationForDictionary:(NSDictionary *_Nonnull)dict;
 + (NSDictionary *)dictionaryForLocation:(CLLocation *)location;
 + (NSString *)dictionaryToJson:(NSDictionary *)dict;
-+ (void)runOnMainThread:(dispatch_block_t)block;
 
 + (RadarConnectionType)networkType;
 + (NSString *)networkTypeString;
@@ -46,8 +42,16 @@ typedef NS_ENUM(NSInteger, RadarConnectionType) {
 
 @end
 
-__attribute__((deprecated("Use RadarUtils for swift implementation instead, except synchronous deviceOS, deviceId, foreground, backgroundTimeRemaining, and runOnMainThread")));
+__attribute__((deprecated("Use RadarUtils for swift implementation instead, except deviceOS, deviceId, foreground, backgroundTimeRemaining, and runOnMainThread calls from Objective-C")));
 @interface RadarUtilsDeprecated : RadarUtils
+
+// These functions are async in swift, use [RadarUtilsDeprecated ...] to call them in Objective C
++ (NSString *)deviceOS;
++ (NSString *)deviceId;
++ (void)runOnMainThread:(dispatch_block_t)block;
++ (BOOL)foreground;
++ (NSTimeInterval)backgroundTimeRemaining;
+
 @end
 
 NS_ASSUME_NONNULL_END

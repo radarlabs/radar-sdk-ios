@@ -236,7 +236,7 @@ BOOL _initialized = NO;
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"getLocation()"];
     [[RadarLocationManager sharedInstance] getLocationWithDesiredAccuracy:desiredAccuracy
                                                         completionHandler:^(RadarStatus status, CLLocation *_Nullable location, BOOL stopped) {
-                                                            [RadarUtilsDeprecated runOnMainThread:^{
+                                                            [RadarUtils runOnMainThread:^{
                                                                 completionHandler(status, location, stopped);
                                                             }];
                                                         }];
