@@ -13,6 +13,12 @@
 #import "../RadarSDK/RadarLocationManager.h"
 #import "../RadarSDK/RadarSettings.h"
 #import "../RadarSDK/RadarLogBuffer.h"
+#import "../RadarSDK/RadarState.h"
+#import "../RadarSDK/RadarGeofence+Internal.h"
+#import "../RadarSDK/RadarCircleGeometry+Internal.h"
+#import "../RadarSDK/RadarCoordinate+Internal.h"
+#import "../RadarSDK/RadarBeacon+Internal.h"
+#import "../RadarSDK/RadarPlace+Internal.h"
 #import "CLLocationManagerMock.h"
 #import "CLVisitMock.h"
 #import "RadarAPIHelperMock.h"
@@ -22,6 +28,12 @@
 #import "RadarFileStorage.h"
 #import "RadarReplayBuffer.h"
 #import <os/log.h>
+
+#if __has_include(<RadarSDK/RadarSDK-Swift.h>)
+#import <RadarSDK/RadarSDK-Swift.h>
+#elif __has_include("RadarSDK-Swift.h")
+#import "RadarSDK-Swift.h"
+#endif
 
 @interface RadarSDKTests : XCTestCase
 
@@ -281,6 +293,42 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     AssertRouteOk(routes.foot);
     AssertRouteOk(routes.bike);
     AssertRouteOk(routes.car);
+}
+
+#pragma mark - EfficientTrackManager Test Helpers
+
+- (RadarGeofence *)createTestGeofenceWithId:(NSString *)identifier
+                                   latitude:(double)lat
+                                  longitude:(double)lng
+                                     radius:(double)radius {
+    RadarCoordinate *center = [[RadarCoordinate alloc] initWithCoordinate:CLLocationCoordinate2DMake(lat, lng)];
+    RadarCircleGeometry *geometry = [[RadarCircleGeometry alloc] initWithCenter:center radius:radius];
+    return [[RadarGeofence alloc] initWithId:identifier description:@"Test Geofence" tag:@"test" externalId:identifier metadata:nil operatingHours:nil geometry:geometry];
+}
+
+- (RadarBeacon *)createTestBeaconWithId:(NSString *)identifier
+                               latitude:(double)lat
+                              longitude:(double)lng {
+    RadarCoordinate *geometry = [[RadarCoordinate alloc] initWithCoordinate:CLLocationCoordinate2DMake(lat, lng)];
+    return [[RadarBeacon alloc] initWithId:identifier description:@"Test Beacon" tag:@"test" externalId:identifier uuid:@"test-uuid" major:@"1" minor:@"1" metadata:nil geometry:geometry];
+}
+
+- (RadarPlace *)createTestPlaceWithId:(NSString *)identifier
+                             latitude:(double)lat
+                            longitude:(double)lng {
+    RadarCoordinate *location = [[RadarCoordinate alloc] initWithCoordinate:CLLocationCoordinate2DMake(lat, lng)];
+    return [[RadarPlace alloc] initWithId:identifier name:@"Test Place" categories:@[@"test"] chain:nil location:location group:@"test" metadata:nil address:nil];
+}
+
+- (void)clearEfficientTrackingState {
+    [RadarState setNearbyGeofences:nil];
+    [RadarState setNearbyBeacons:nil];
+    [RadarState setNearbyPlaces:nil];
+    [RadarState setSyncedRegion:nil];
+    [RadarState setGeofenceIds:nil];
+    [RadarState setBeaconIds:nil];
+    [RadarState setPlaceId:nil];
+    [RadarSettings setRemoteTrackingOptions:nil];
 }
 
 + (void)setUp {
@@ -1774,4 +1822,461 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     XCTAssertEqual(savedSdkConfiguration.startTrackingOnInitialize, YES);
 }
 
+#pragma mark - EfficientTrackManager Tests
+
+// Test coordinates (Central Park, NYC area)
+static double const kTestLatitude = 40.78382;
+static double const kTestLongitude = -73.97536;
+// ~50m north
+static double const kTestLatitudeNearby = 40.78427;
+// ~120m north
+static double kTestLatitudeMid = 40.78490;
+// ~200m north
+static double const kTestLatitudeFar = 40.78562;
+// ~400m north
+static double kTestLatitudeVeryFar = 40.78742;
+
+- (void)test_EfficientTrack_shouldTrack_noSyncedRegion {
+    [self clearEfficientTrackingState];
+    
+    CLLocation *location = [[CLLocation alloc] initWithLatitude:kTestLatitude longitude:kTestLongitude];
+    RadarTrackingOptions *options = [RadarTrackingOptions new];
+    options.syncOnBeaconEvents = YES;
+    
+    // No synced region means we should always track
+    BOOL shouldTrack = [RadarEfficientTrackManager shouldTrackWithLocation:location options:options];
+    XCTAssertTrue(shouldTrack);
+}
+
+- (void)test_EfficientTrack_shouldTrack_outsideSyncedRegion {
+    [self clearEfficientTrackingState];
+    
+    // Set synced region at base location with 100m radius
+    CLCircularRegion *syncedRegion = [[CLCircularRegion alloc] initWithCenter:CLLocationCoordinate2DMake(kTestLatitude, kTestLongitude) radius:100 identifier:@"synced"];
+    
+    [RadarState setSyncedRegion:syncedRegion];
+    
+    // User is 200m away (outside synced region)
+    CLLocation *location = [[CLLocation alloc] initWithLatitude:kTestLatitudeFar longitude:kTestLongitude];
+    RadarTrackingOptions *options = [RadarTrackingOptions new];
+    options.syncOnGeofenceEvents = YES;
+    
+    BOOL shouldTrack = [RadarEfficientTrackManager shouldTrackWithLocation:location options:options];
+    XCTAssertTrue(shouldTrack);
+}
+
+- (void)test_EfficientTrack_shouldTrack_geofenceEntry {
+    [self clearEfficientTrackingState];
+    
+    CLCircularRegion *syncedRegion = [[CLCircularRegion alloc] initWithCenter:CLLocationCoordinate2DMake(kTestLatitude, kTestLongitude) radius:500 identifier:@"synced"];
+    [RadarState setSyncedRegion:syncedRegion];
+    
+    RadarGeofence *geofence = [self createTestGeofenceWithId:@"geofence1" latitude:kTestLatitude longitude:kTestLongitude radius:100];
+    [RadarState setNearbyGeofences:@[geofence]];
+    
+    [RadarState setGeofenceIds:@[]];
+    
+    CLLocation *location = [[CLLocation alloc] initWithLatitude:kTestLatitude longitude:kTestLongitude];
+    RadarTrackingOptions *options = [RadarTrackingOptions new];
+    options.syncOnGeofenceEvents = YES;
+    
+    BOOL shouldTrack = [RadarEfficientTrackManager shouldTrackWithLocation:location options:options];
+    XCTAssertTrue(shouldTrack);
+}
+
+- (void)test_EfficientTrack_shouldTrack_geofenceExit {
+    [self clearEfficientTrackingState];
+    
+    CLCircularRegion *syncedRegion = [[CLCircularRegion alloc] initWithCenter:CLLocationCoordinate2DMake(kTestLatitude, kTestLongitude) radius:500 identifier:@"synced"];
+    
+    [RadarState setSyncedRegion:syncedRegion];
+    
+    RadarGeofence *geofence = [self createTestGeofenceWithId:@"geofence1" latitude:kTestLatitudeFar longitude:kTestLongitude radius:50];
+    [RadarState setNearbyGeofences:@[geofence]];
+    
+    [RadarState setGeofenceIds:@[@"geofence1"]];
+    
+    CLLocation *location = [[CLLocation alloc] initWithLatitude:kTestLatitude longitude:kTestLongitude];
+    RadarTrackingOptions *options = [RadarTrackingOptions new];
+    
+    options.syncOnGeofenceEvents = YES;
+    
+    BOOL shouldTrack = [RadarEfficientTrackManager shouldTrackWithLocation:location options:options];
+    XCTAssertTrue(shouldTrack);
+}
+
+- (void)test_EfficientTrack_shouldNotTrack_noStateChange {
+    [self clearEfficientTrackingState];
+    
+    CLCircularRegion *syncedRegion = [[CLCircularRegion alloc] initWithCenter:CLLocationCoordinate2DMake(kTestLatitude, kTestLongitude) radius:500 identifier:@"synced"];
+    
+    [RadarState setSyncedRegion:syncedRegion];
+    
+    RadarGeofence *geofence = [self createTestGeofenceWithId:@"geofence1" latitude:kTestLatitude longitude:kTestLongitude radius:100];
+    [RadarState setNearbyGeofences:@[geofence]];
+    
+    [RadarState setGeofenceIds:@[@"geofence1"]];
+    
+    CLLocation *location = [[CLLocation alloc] initWithLatitude:kTestLatitude longitude:kTestLongitude];
+    RadarTrackingOptions *options = [RadarTrackingOptions new];
+    options.syncOnGeofenceEvents = YES;
+    
+    BOOL shouldTrack = [RadarEfficientTrackManager shouldTrackWithLocation:location options:options];
+    XCTAssertFalse(shouldTrack);
+}
+
+- (void)test_EfficientTrack_shouldNotTrack_flagDisabled {
+    [self clearEfficientTrackingState];
+    
+    CLCircularRegion *syncedRegion = [[CLCircularRegion alloc] initWithCenter:CLLocationCoordinate2DMake(kTestLatitude, kTestLongitude) radius:500 identifier:@"synced"];
+    
+    [RadarState setSyncedRegion:syncedRegion];
+    
+    RadarGeofence *geofence = [self createTestGeofenceWithId:@"geofence1" latitude:kTestLatitude longitude:kTestLongitude radius:100];
+    [RadarState setNearbyGeofences:@[geofence]];
+    [RadarState setGeofenceIds:@[]];
+    
+    CLLocation *location = [[CLLocation alloc] initWithLatitude:kTestLatitude longitude:kTestLongitude];
+    RadarTrackingOptions *options = [RadarTrackingOptions new];
+    options.syncOnGeofenceEvents = NO;
+    options.syncOnPlaceEvents = NO;
+    options.syncOnBeaconEvents = NO;
+    
+    BOOL shouldTrack = [RadarEfficientTrackManager shouldTrackWithLocation:location options:options];
+    XCTAssertFalse(shouldTrack);
+}
+
+- (void)test_EfficientTrack_getGeofences_insideCircle {
+    [self clearEfficientTrackingState];
+    
+    RadarGeofence *geofence = [self createTestGeofenceWithId:@"geofence1" latitude:kTestLatitude longitude:kTestLongitude radius:100];
+    [RadarState setNearbyGeofences:@[geofence]];
+    
+    CLLocation *location = [[CLLocation alloc] initWithLatitude:kTestLatitude longitude:kTestLongitude];
+    
+    NSArray<RadarGeofence *> *geofences = [RadarEfficientTrackManager getGeofencesFor:location];
+    XCTAssertEqual(geofences.count, 1);
+    XCTAssertEqualObjects(geofences.firstObject._id, @"geofence1");
+}
+
+- (void)test_EfficientTrack_getGeofences_outsideCircle {
+    [self clearEfficientTrackingState];
+    
+    RadarGeofence *geofence = [self createTestGeofenceWithId:@"geofence1" latitude:kTestLatitudeFar longitude:kTestLongitude radius:50];
+    [RadarState setNearbyGeofences:@[geofence]];
+    
+    CLLocation *location = [[CLLocation alloc] initWithLatitude:kTestLatitude longitude:kTestLongitude];
+
+    NSArray<RadarGeofence *> *geofences = [RadarEfficientTrackManager getGeofencesFor:location];
+    XCTAssertEqual(geofences.count, 0);
+}
+
+- (void)test_EfficientTrack_getGeofences_noNearbyGeofences {
+    [self clearEfficientTrackingState];
+    
+    CLLocation *location = [[CLLocation alloc] initWithLatitude:kTestLatitude longitude:kTestLongitude];
+
+    NSArray<RadarGeofence *> *geofences = [RadarEfficientTrackManager getGeofencesFor:location];
+    XCTAssertEqual(geofences.count, 0);
+}
+
+- (void)test_EfficientTrack_geofenceStateChanged_entry {
+    [self clearEfficientTrackingState];
+    
+    RadarGeofence *geofence = [self createTestGeofenceWithId:@"geofence1" latitude:kTestLatitude longitude:kTestLongitude radius:100];
+    [RadarState setNearbyGeofences:@[geofence]];
+    [RadarState setGeofenceIds:@[]];
+    
+    CLLocation *location = [[CLLocation alloc] initWithLatitude:kTestLatitude longitude:kTestLongitude];
+    
+    BOOL changed = [RadarEfficientTrackManager hasGeofenceStateChangedWithLocation:location];
+    XCTAssertTrue(changed);
+}
+
+- (void)test_EfficientTrack_geofenceStateChanged_exit {
+    [self clearEfficientTrackingState];
+    
+    RadarGeofence *geofence = [self createTestGeofenceWithId:@"geofence1" latitude:kTestLatitudeFar longitude:kTestLongitude radius:50];
+    [RadarState setNearbyGeofences:@[geofence]];
+    [RadarState setGeofenceIds:@[@"geofence1"]];
+    
+    CLLocation *location = [[CLLocation alloc] initWithLatitude:kTestLatitude longitude:kTestLongitude];
+    
+    BOOL changed = [RadarEfficientTrackManager hasGeofenceStateChangedWithLocation:location];
+    XCTAssertTrue(changed);
+}
+
+- (void)test_EfficientTrack_geofenceStateChanged_noChange {
+    [self clearEfficientTrackingState];
+    
+    RadarGeofence *geofence = [self createTestGeofenceWithId:@"geofence1" latitude:kTestLatitude longitude:kTestLongitude radius:100];
+    [RadarState setNearbyGeofences:@[geofence]];
+    [RadarState setGeofenceIds:@[@"geofence1"]];
+    
+    CLLocation *location = [[CLLocation alloc] initWithLatitude:kTestLatitude longitude:kTestLongitude];
+    
+    BOOL changed = [RadarEfficientTrackManager hasGeofenceStateChangedWithLocation:location];
+    XCTAssertFalse(changed);
+}
+
+- (void)test_EfficientTrack_getBeacons_withinRange {
+    [self clearEfficientTrackingState];
+    
+    RadarBeacon *beacon = [self createTestBeaconWithId:@"beacon1" latitude:kTestLatitude longitude:kTestLongitude];
+    [RadarState setNearbyBeacons:@[beacon]];
+    
+    CLLocation *location = [[CLLocation alloc] initWithLatitude:kTestLatitude longitude:kTestLongitude];
+
+    NSArray<RadarBeacon *> *beacons = [RadarEfficientTrackManager getBeaconsFor:location];
+    XCTAssertEqual(beacons.count, 1);
+    XCTAssertEqualObjects(beacons.firstObject._id, @"beacon1");
+}
+
+- (void)test_EfficientTrack_getBeacons_outsideRange {
+    [self clearEfficientTrackingState];
+    
+    RadarBeacon *beacon = [self createTestBeaconWithId:@"beacon1" latitude:kTestLatitudeFar longitude:kTestLongitude];
+    [RadarState setNearbyBeacons:@[beacon]];
+    
+    CLLocation *location = [[CLLocation alloc] initWithLatitude:kTestLatitude longitude:kTestLongitude];
+
+    NSArray<RadarBeacon *> *beacons = [RadarEfficientTrackManager getBeaconsFor:location];
+    XCTAssertEqual(beacons.count, 0);
+}
+
+- (void)test_EfficientTrack_beaconStateChanged_entry {
+    [self clearEfficientTrackingState];
+    
+    RadarBeacon *beacon = [self createTestBeaconWithId:@"beacon1" latitude:kTestLatitude longitude:kTestLongitude];
+    [RadarState setNearbyBeacons:@[beacon]];
+    [RadarState setBeaconIds:@[]];  // Was not near any beacon
+    
+    CLLocation *location = [[CLLocation alloc] initWithLatitude:kTestLatitude longitude:kTestLongitude];
+    
+    BOOL changed = [RadarEfficientTrackManager hasBeaconStateChangedWithLocation:location];
+    XCTAssertTrue(changed);
+}
+
+- (void)test_EfficientTrack_beaconStateChanged_exit {
+    [self clearEfficientTrackingState];
+    
+    RadarBeacon *beacon = [self createTestBeaconWithId:@"beacon1" latitude:kTestLatitudeFar longitude:kTestLongitude];
+    [RadarState setNearbyBeacons:@[beacon]];
+    [RadarState setBeaconIds:@[@"beacon1"]];
+    
+    CLLocation *location = [[CLLocation alloc] initWithLatitude:kTestLatitude longitude:kTestLongitude];
+
+    BOOL changed = [RadarEfficientTrackManager hasBeaconStateChangedWithLocation:location];
+    XCTAssertTrue(changed);
+}
+
+- (void)test_EfficientTrack_getPlaces_withinRadius {
+    [self clearEfficientTrackingState];
+    
+    RadarPlace *place = [self createTestPlaceWithId:@"place1" latitude:kTestLatitude longitude:kTestLongitude];
+    [RadarState setNearbyPlaces:@[place]];
+    
+    CLLocation *location = [[CLLocation alloc] initWithLatitude:kTestLatitude longitude:kTestLongitude];
+
+    NSArray<RadarPlace *> *places = [RadarEfficientTrackManager getPlacesFor:location];
+    XCTAssertEqual(places.count, 1);
+    XCTAssertEqualObjects(places.firstObject._id, @"place1");
+}
+
+- (void)test_EfficientTrack_getPlaces_outsideRadius {
+    [self clearEfficientTrackingState];
+    
+    RadarPlace *place = [self createTestPlaceWithId:@"place1" latitude:kTestLatitudeFar longitude:kTestLongitude];
+    [RadarState setNearbyPlaces:@[place]];
+    
+    CLLocation *location = [[CLLocation alloc] initWithLatitude:kTestLatitude longitude:kTestLongitude];
+
+    NSArray<RadarPlace *> *places = [RadarEfficientTrackManager getPlacesFor:location];
+    XCTAssertEqual(places.count, 0);
+}
+
+- (void)test_EfficientTrack_placeStateChanged_entry {
+    [self clearEfficientTrackingState];
+    
+    RadarPlace *place = [self createTestPlaceWithId:@"place1" latitude:kTestLatitude longitude:kTestLongitude];
+    [RadarState setNearbyPlaces:@[place]];
+    [RadarState setPlaceId:nil];
+    
+    CLLocation *location = [[CLLocation alloc] initWithLatitude:kTestLatitude longitude:kTestLongitude];
+
+    BOOL changed = [RadarEfficientTrackManager hasPlaceStateChangedWithLocation:location];
+    XCTAssertTrue(changed);
+}
+
+- (void)test_EfficientTrack_placeStateChanged_exit {
+    [self clearEfficientTrackingState];
+    
+    RadarPlace *place = [self createTestPlaceWithId:@"place1" latitude:kTestLatitudeFar longitude:kTestLongitude];
+    [RadarState setNearbyPlaces:@[place]];
+    [RadarState setPlaceId:@"place1"];
+    
+    CLLocation *location = [[CLLocation alloc] initWithLatitude:kTestLatitude longitude:kTestLongitude];
+    
+    BOOL changed = [RadarEfficientTrackManager hasPlaceStateChangedWithLocation:location];
+    XCTAssertTrue(changed);
+}
+
+- (void)test_EfficientTrack_isOutsideSyncedRegion_nil {
+    [self clearEfficientTrackingState];
+    
+    CLLocation *location = [[CLLocation alloc] initWithLatitude:kTestLatitude longitude:kTestLongitude];
+
+    BOOL outside = [RadarEfficientTrackManager isOutsideSyncedRegionWithLocation:location];
+    XCTAssertTrue(outside);
+}
+
+- (void)test_EfficientTrack_isOutsideSyncedRegion_inside {
+    [self clearEfficientTrackingState];
+    
+    CLCircularRegion *syncedRegion = [[CLCircularRegion alloc] initWithCenter:CLLocationCoordinate2DMake(kTestLatitude, kTestLongitude) radius:100 identifier:@"synced"];
+    [RadarState setSyncedRegion:syncedRegion];
+    
+    CLLocation *location = [[CLLocation alloc] initWithLatitude:kTestLatitude longitude:kTestLongitude];
+
+    BOOL outside = [RadarEfficientTrackManager isOutsideSyncedRegionWithLocation:location];
+    XCTAssertFalse(outside);
+}
+
+- (void)test_EfficientTrack_isOutsideSyncedRegion_outside {
+    [self clearEfficientTrackingState];
+    
+    CLCircularRegion *syncedRegion = [[CLCircularRegion alloc] initWithCenter:CLLocationCoordinate2DMake(kTestLatitude, kTestLongitude) radius:100 identifier:@"synced"];
+    [RadarState setSyncedRegion:syncedRegion];
+    
+    CLLocation *location = [[CLLocation alloc] initWithLatitude:kTestLatitudeFar longitude:kTestLongitude];
+    
+    BOOL outside = [RadarEfficientTrackManager isOutsideSyncedRegionWithLocation:location];
+    XCTAssertTrue(outside);
+}
+
+- (void)test_EfficientTrack_isPointInsideCircle_inside {
+    CLLocation *point = [[CLLocation alloc] initWithLatitude:kTestLatitude longitude:kTestLongitude];
+    CLLocationCoordinate2D center = CLLocationCoordinate2DMake(kTestLatitude, kTestLongitude);
+    
+    BOOL inside = [RadarEfficientTrackManager isPoint:point insideCircleWithCenter:center radius:100];
+    XCTAssertTrue(inside);
+}
+
+- (void)test_EfficientTrack_isPointInsideCircle_outside {
+    CLLocation *point = [[CLLocation alloc] initWithLatitude:kTestLatitudeFar longitude:kTestLongitude];
+    CLLocationCoordinate2D center = CLLocationCoordinate2DMake(kTestLatitude, kTestLongitude);
+    
+    BOOL inside = [RadarEfficientTrackManager isPoint:point insideCircleWithCenter:center radius:100];
+    XCTAssertFalse(inside);
+}
+
+- (void)test_EfficientTrack_multipleGeofences_usesNearestBoundary {
+    [self clearEfficientTrackingState];
+
+    RadarGeofence *geofenceA = [self createTestGeofenceWithId:@"geofenceA" latitude:kTestLatitudeFar longitude:kTestLongitude radius:50];
+    RadarGeofence *geofenceB = [self createTestGeofenceWithId:@"geofenceB" latitude:kTestLatitudeVeryFar longitude:kTestLongitude radius:100];
+    [RadarState setNearbyGeofences:@[geofenceA, geofenceB]];
+
+    [RadarState setGeofenceIds:@[]];
+
+    CLLocation *userLocation = [[CLLocation alloc] initWithCoordinate:CLLocationCoordinate2DMake(kTestLatitude, kTestLongitude)
+                                                             altitude:0
+                                                   horizontalAccuracy:10
+                                                     verticalAccuracy:10
+                                                            timestamp:[NSDate date]];
+    [RadarState setLastLocation:userLocation];
+
+    RadarTrackingOptions *options = [RadarTrackingOptions new];
+    options.syncOnGeofenceEvents = YES;
+    [RadarSettings setTrackingOptions:options];
+    [RadarSettings setTracking:YES];
+
+    [[RadarLocationManager sharedInstance] updateSyncedRegion];
+
+    CLCircularRegion *syncedRegion = [RadarState syncedRegion];
+
+    XCTAssertNotNil(syncedRegion);
+    XCTAssertLessThan(syncedRegion.radius, 100);
+}
+
+- (void)test_EfficientTrack_mixedEntities_usesNearestBoundary {
+    [self clearEfficientTrackingState];
+
+    RadarGeofence *geofence = [self createTestGeofenceWithId:@"geofence1" latitude:kTestLatitudeVeryFar longitude:kTestLongitude radius:50];
+    RadarPlace *place = [self createTestPlaceWithId:@"place1" latitude:kTestLatitudeFar longitude:kTestLongitude];
+    RadarBeacon *beacon = [self createTestBeaconWithId:@"beacon1" latitude:kTestLatitudeMid longitude:kTestLongitude];
+
+    [RadarState setNearbyGeofences:@[geofence]];
+    [RadarState setNearbyPlaces:@[place]];
+    [RadarState setNearbyBeacons:@[beacon]];
+    [RadarState setGeofenceIds:@[]];
+    [RadarState setPlaceId:nil];
+    [RadarState setBeaconIds:@[]];
+
+    CLLocation *userLocation = [[CLLocation alloc] initWithCoordinate:CLLocationCoordinate2DMake(kTestLatitude, kTestLongitude)
+                                                             altitude:0
+                                                   horizontalAccuracy:10
+                                                     verticalAccuracy:10
+                                                            timestamp:[NSDate date]];
+    [RadarState setLastLocation:userLocation];
+
+    RadarTrackingOptions *options = [RadarTrackingOptions new];
+    options.syncOnGeofenceEvents = YES;
+    [RadarSettings setTrackingOptions:options];
+    [RadarSettings setTracking:YES];
+
+    [[RadarLocationManager sharedInstance] updateSyncedRegion];
+
+    CLCircularRegion *syncedRegion = [RadarState syncedRegion];
+
+    XCTAssertNotNil(syncedRegion);
+    XCTAssertLessThan(syncedRegion.radius, 50);
+}
+
+- (void)test_EfficientTrack_multipleGeofences_shouldTrackWhenCrossingNearestBoundary {
+    [self clearEfficientTrackingState];
+    
+    // Setup: Two geofences at different distances
+    // Geofence A: user will be inside after moving
+    // Geofence B: user will still be outside
+    
+    RadarGeofence *geofenceA = [self createTestGeofenceWithId:@"geofenceA" latitude:kTestLatitudeNearby longitude:kTestLongitude radius:100];
+    RadarGeofence *geofenceB = [self createTestGeofenceWithId:@"geofenceB" latitude:kTestLatitudeFar longitude:kTestLongitude radius:50];
+    [RadarState setNearbyGeofences:@[geofenceA, geofenceB]];
+    
+    // User was not in any geofence
+    [RadarState setGeofenceIds:@[]];
+    
+    // User moves to kTestLatitudeNearby (inside geofenceA, outside geofenceB)
+    CLLocation *newLocation = [[CLLocation alloc] initWithLatitude:kTestLatitudeNearby longitude:kTestLongitude];
+
+    RadarTrackingOptions *options = [RadarTrackingOptions new];
+    options.syncOnGeofenceEvents = YES;
+    
+    // Should detect geofence entry for geofenceA
+    BOOL shouldTrack = [RadarEfficientTrackManager shouldTrackWithLocation:newLocation options:options];
+    XCTAssertTrue(shouldTrack);
+}
+
+- (void)test_EfficientTrack_multipleGeofences_detectsCorrectGeofences {
+    [self clearEfficientTrackingState];
+    
+    // Create 3 geofences: user will be inside 2 of them
+    RadarGeofence *geofenceA = [self createTestGeofenceWithId:@"geofenceA" latitude:kTestLatitude longitude:kTestLongitude radius:100];
+    RadarGeofence *geofenceB = [self createTestGeofenceWithId:@"geofenceB" latitude:kTestLatitudeNearby longitude:kTestLongitude radius:100];
+    RadarGeofence *geofenceC = [self createTestGeofenceWithId:@"geofenceC" latitude:kTestLatitudeFar longitude:kTestLongitude radius:50];
+    
+    [RadarState setNearbyGeofences:@[geofenceA, geofenceB, geofenceC]];
+    
+    CLLocation *location = [[CLLocation alloc] initWithLatitude:kTestLatitude longitude:kTestLongitude];
+
+    NSArray<RadarGeofence *> *detectedGeofences = [RadarEfficientTrackManager getGeofencesFor:location];
+    
+    XCTAssertEqual(detectedGeofences.count, 2);
+    
+    NSSet *detectedIds = [NSSet setWithArray:[detectedGeofences valueForKey:@"_id"]];
+    XCTAssertTrue([detectedIds containsObject:@"geofenceA"]);
+    XCTAssertTrue([detectedIds containsObject:@"geofenceB"]);
+    XCTAssertFalse([detectedIds containsObject:@"geofenceC"]);
+}
 @end

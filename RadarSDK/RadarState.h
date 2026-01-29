@@ -7,6 +7,9 @@
 
 #import <CoreLocation/CoreLocation.h>
 #import <Foundation/Foundation.h>
+#import "RadarGeofence+Internal.h"
+#import "RadarBeacon+Internal.h"
+#import "RadarPlace+Internal.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -28,7 +31,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)setLastFailedStoppedLocation:(CLLocation *_Nullable)lastFailedStoppedLocation;
 + (NSArray<NSString *> *)geofenceIds;
 + (void)setGeofenceIds:(NSArray<NSString *> *_Nullable)geofenceIds;
-+ (NSArray<NSString *> *)placeId;
++ (NSString *_Nullable)placeId;
 + (void)setPlaceId:(NSString *_Nullable)placeId;
 + (NSArray<NSString *> *)regionIds;
 + (void)setRegionIds:(NSArray<NSString *> *_Nullable)regionIds;
@@ -47,6 +50,14 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)addRegisteredNotification:(NSDictionary *)registeredNotification;
 + (NSDictionary *)lastRelativeAltitudeData;
 + (void)setLastRelativeAltitudeData:(NSDictionary *_Nullable)lastRelativeAltitudeData;
++ (NSArray<RadarGeofence *> *_Nullable)nearbyGeofences;
++ (void)setNearbyGeofences:(NSArray<RadarGeofence *> *_Nullable)nearbyGeofences;
++ (NSArray<RadarBeacon *> *_Nullable)nearbyBeacons;
++ (void)setNearbyBeacons:(NSArray<RadarBeacon *> *_Nullable)nearbyBeacons;
++ (NSArray<RadarPlace *> *_Nullable)nearbyPlaces;
++ (void)setNearbyPlaces:(NSArray<RadarPlace *> *_Nullable)nearbyPlaces;
++ (CLCircularRegion *_Nullable)syncedRegion;
++ (void)setSyncedRegion:(CLCircularRegion *_Nullable)syncedRegion;
 
 @end
 

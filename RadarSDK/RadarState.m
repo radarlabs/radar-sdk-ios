@@ -6,6 +6,9 @@
 //
 
 #import "RadarState.h"
+#import "RadarGeofence+Internal.h"
+#import "RadarBeacon+Internal.h"
+#import "RadarPlace+Internal.h"
 #import "CLLocation+Radar.h"
 #import "RadarUtils.h"
 #import "RadarLogger.h"
@@ -29,6 +32,10 @@ static NSString *const kLastPressureData = @"radar-lastPressureData";
 static NSString *const kNotificationPermissionGranted = @"radar-notificationPermissionGranted";
 static NSString *const kMotionAuthorization = @"radar-motionAuthorization";
 static NSString *const kRegisteredNotifications = @"radar-registeredNotifications";
+static NSString *const kNearbyGeofences = @"radar-nearbyGeofences";
+static NSString *const kNearbyBeacons = @"radar-nearbyBeacons";
+static NSString *const kNearbyPlaces = @"radar-nearbyPlaces";
+static NSString *const kSyncedRegion = @"radar-syncedRegion";
 static NSDictionary *_lastRelativeAltitudeDataInMemory = nil;
 static NSDate *_lastPressureBackupTime = nil;
 static NSTimeInterval const kBackupInterval = 2.0; // 2 seconds
@@ -281,4 +288,107 @@ static NSTimeInterval const kBackupInterval = 2.0; // 2 seconds
     [RadarState setRegisteredNotifications:registeredNotifications];
 }
 
++ (NSArray<RadarGeofence *> *_Nullable)nearbyGeofences {
+    NSArray *geofenceDicts = [[NSUserDefaults standardUserDefaults] arrayForKey:kNearbyGeofences];
+    if (!geofenceDicts) {
+        return nil;
+    }
+    
+    NSMutableArray<RadarGeofence *> *geofences = [NSMutableArray array];
+    for (NSDictionary *dict in geofenceDicts) {
+        RadarGeofence *geofence = [[RadarGeofence alloc] initWithObject:dict];
+        if (geofence) {
+            [geofences addObject:geofence];
+        }
+    }
+    return geofences;
+}
+
++ (void)setNearbyGeofences:(NSArray<RadarGeofence *> *_Nullable)nearbyGeofences {
+    if (!nearbyGeofences) {
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:kNearbyGeofences];
+        return;
+    }
+    
+    NSMutableArray<NSDictionary *> *geofenceDicts = [NSMutableArray array];
+    for (RadarGeofence *geofence in nearbyGeofences) {
+        [geofenceDicts addObject:[geofence dictionaryValue]];
+    }
+    [[NSUserDefaults standardUserDefaults] setObject:geofenceDicts forKey:kNearbyGeofences];
+}
+
++ (NSArray<RadarBeacon *> *_Nullable)nearbyBeacons {
+    NSArray *beaconDicts = [[NSUserDefaults standardUserDefaults] arrayForKey:kNearbyBeacons];
+    if(!beaconDicts) {
+        return nil;
+    }
+    
+    NSMutableArray<RadarBeacon *> *beacons = [NSMutableArray array];
+    for (NSDictionary *dict in beaconDicts) {
+        RadarBeacon *beacon = [[RadarBeacon alloc] initWithObject:dict];
+        if (beacon) {
+            [beacons addObject:beacon];
+        }
+    }
+    return beacons;
+}
+
++ (void)setNearbyBeacons:(NSArray<RadarBeacon *> *_Nullable)nearbyBeacons {
+    if (!nearbyBeacons) {
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:kNearbyBeacons];
+        return;
+    }
+    NSMutableArray<NSDictionary *> *beaconDicts = [NSMutableArray array];
+    for (RadarBeacon *beacon in nearbyBeacons) {
+        [beaconDicts addObject:[beacon dictionaryValue]];
+    }
+    [[NSUserDefaults standardUserDefaults] setObject:beaconDicts forKey:kNearbyBeacons];
+}
+
++ (NSArray<RadarPlace *> *_Nullable)nearbyPlaces {
+    NSArray *placeDicts = [[NSUserDefaults standardUserDefaults] arrayForKey:kNearbyPlaces];
+    if (!placeDicts) {
+        return nil;
+    }
+    
+    NSMutableArray<RadarPlace *> *places = [NSMutableArray array];
+    for (NSDictionary *dict in placeDicts) {
+        RadarPlace *place = [[RadarPlace alloc] initWithObject:dict];
+        if (place) {
+            [places addObject:place];
+        }
+    }
+    return places;
+}
+
++ (void)setNearbyPlaces:(NSArray<RadarPlace *> *_Nullable)nearbyPlaces {
+    if (!nearbyPlaces) {
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:kNearbyPlaces];
+        return;
+    }
+    
+    NSMutableArray<NSDictionary *> *placesDicts = [NSMutableArray array];
+    for (RadarPlace *place in nearbyPlaces) {
+        [placesDicts addObject:[place dictionaryValue]];
+    }
+    [[NSUserDefaults standardUserDefaults] setObject:placesDicts forKey:kNearbyPlaces];
+}
+
++ (CLCircularRegion *_Nullable)syncedRegion {
+    NSDictionary *dict = [[NSUserDefaults standardUserDefaults] dictionaryForKey:kSyncedRegion];
+    if (!dict) {
+        return nil;
+    }
+    return [RadarUtils circularRegionForDictionary:dict];
+}
+
++ (void)setSyncedRegion:(CLCircularRegion *_Nullable)syncedRegion {
+    if (!syncedRegion) {
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:kSyncedRegion];
+        return;
+    }
+    
+    NSDictionary *dict = [RadarUtils dictionaryForCircularRegion:syncedRegion];
+    [[NSUserDefaults standardUserDefaults] setObject:dict forKey:kSyncedRegion];
+}
 @end

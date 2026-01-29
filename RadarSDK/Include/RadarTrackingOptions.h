@@ -105,6 +105,21 @@ typedef NS_ENUM(NSInteger, RadarTrackingOptionsSyncLocations) {
 @property (nonatomic, assign) RadarTrackingOptionsSyncLocations syncLocations;
 
 /**
+ If YES, enables efficient tracking that only syncs on geofence entry/exit. Default NO.
+ */
+@property (nonatomic, assign) BOOL syncOnGeofenceEvents;
+
+/**
+ If YES, enables efficient tracking that only syncs on place entry/exit. Default NO.
+ */
+@property (nonatomic, assign) BOOL syncOnPlaceEvents;
+
+/**
+ If YES, enables efficient tracking that only syncs on beacon entry/exit. Default NO.
+ */
+@property (nonatomic, assign) BOOL syncOnBeaconEvents;
+
+/**
  Determines whether the flashing blue status bar is shown when tracking.
  @see https://developer.apple.com/documentation/corelocation/cllocationmanager/2923541-showsbackgroundlocationindicator
  */
