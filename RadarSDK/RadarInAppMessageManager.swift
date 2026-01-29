@@ -74,12 +74,12 @@ public class RadarInAppMessageManager: NSObject {
         let viewController = await withCheckedContinuation { continuation in
             delegate.createInAppMessageView(message,
                                             onDismiss: {
-                self.logConversion(name: "in_app_message_clicked")
+                self.logConversion(name: "campaign.in_app_message_dismissed")
                 self.dismissInAppMessage()
                 self.delegate.onInAppMessageDismissed(message)
             },
                                             onInAppMessageClicked: {
-                self.logConversion(name: "in_app_message_dismissed")
+                self.logConversion(name: "campaign.in_app_message_clicked")
                 self.dismissInAppMessage()
                 self.delegate.onInAppMessageButtonClicked(message)
             }) { result in
@@ -98,7 +98,7 @@ public class RadarInAppMessageManager: NSObject {
         viewController.view.backgroundColor = UIColor.black.withAlphaComponent(0.5)
         keyWindow.addSubview(viewController.view)
         
-        self.logConversion(name: "in_app_message_displayed", withDuration: false)
+        self.logConversion(name: "campaign.in_app_message_displayed", withDuration: false)
     }
 
     @objc public func onInAppMessageReceived(messages: [RadarInAppMessage]) {
