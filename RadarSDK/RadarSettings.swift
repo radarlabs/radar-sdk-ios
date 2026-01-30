@@ -54,10 +54,6 @@ internal class RadarSettings: NSObject {
         }
     }
     
-    public func logCampaignConversion(name: String?, metadata: [String: Any], campaign: String?) {
-        
-    }
-    
     public static func getAppGroup() -> String? {
         return RadarUserDefaults.string(forKey: .AppGroup)
     }
