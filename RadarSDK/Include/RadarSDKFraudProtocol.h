@@ -11,7 +11,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-typedef void (^RadarIPChangeCallback)(NSString *reason);
 typedef void (^RadarFraudPayloadCallback)(RadarStatus status, NSString *_Nullable payload);
 
 @protocol RadarSDKFraudProtocol<NSObject>
@@ -19,10 +18,6 @@ typedef void (^RadarFraudPayloadCallback)(RadarStatus status, NSString *_Nullabl
 + (instancetype)sharedInstance;
 
 - (void)getFraudPayloadWithOptions:(NSDictionary<NSString *, id> *)options completionHandler:(RadarFraudPayloadCallback)completionHandler;
-
-- (void)startIPMonitoringWithCallback:(RadarIPChangeCallback)callback;
-
-- (void)stopIPMonitoring;
 
 @end
 

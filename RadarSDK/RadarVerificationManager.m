@@ -21,13 +21,19 @@
 #import "RadarUtils.h"
 #import "RadarSDKFraudProtocol.h"
 
+#include <ifaddrs.h>
+#include <arpa/inet.h>
+
 @interface RadarVerificationManager ()
 
 @property (assign, nonatomic) NSTimeInterval startedInterval;
 @property (assign, nonatomic) BOOL startedBeacons;
+@property (strong, nonatomic) NSTimer *intervalTimer;
+@property (nonatomic, retain) nw_path_monitor_t monitor;
 @property (strong, nonatomic) RadarVerifiedLocationToken *lastToken;
 @property (assign, nonatomic) NSTimeInterval lastTokenSystemUptime;
 @property (assign, nonatomic) BOOL lastTokenBeacons;
+@property (strong, nonatomic) NSString *lastIPs;
 @property (copy, nonatomic) NSString *expectedCountryCode;
 @property (copy, nonatomic) NSString *expectedStateCode;
 
@@ -276,9 +282,7 @@
     self.startedInterval = interval;
     self.startedBeacons = beacons;
     
-    [[RadarSDKFraud sharedInstance] startIPMonitoringWithCallback:^(NSString *reason) {
-        [self callTrackVerifiedWithReason:reason];
-    }];
+    [self startIPMonitoring];
     
     if ([self isLastTokenValid]) {
         [self scheduleNextIntervalWithLastToken];
@@ -296,8 +300,7 @@
     
     self.started = NO;
     
-    // Stop IP monitoring in RadarSDKFraud
-    [[RadarSDKFraud sharedInstance] stopIPMonitoring];
+    [self stopIPMonitoring];
     
     [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(intervalFired) object:nil];
 }
@@ -346,5 +349,68 @@
     self.expectedStateCode = stateCode;
 }
 
+- (void)startIPMonitoring {
+    if (!_monitor) {
+        _monitor = nw_path_monitor_create();
+        
+        nw_path_monitor_set_queue(_monitor, dispatch_get_main_queue());
+        
+        nw_path_monitor_set_update_handler(_monitor, ^(nw_path_t path) {
+            if (nw_path_get_status(path) == nw_path_status_satisfied) {
+                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Network connected"];
+            } else {
+                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Network disconnected"];
+            }
+            
+            NSString *ips = [self getIPs];
+            BOOL changed = NO;
+            
+            if (!self.lastIPs) {
+                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"First time getting IPs | ips = %@", ips]];
+                changed = NO;
+            } else if (!ips || [ips isEqualToString:@"error"]) {
+                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Error getting IPs | ips = %@", ips]];
+                changed = YES;
+            } else if (![ips isEqualToString:self.lastIPs]) {
+                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"IPs changed | ips = %@; lastIPs = %@", ips, self.lastIPs]];
+                changed = YES;
+            } else {
+                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"IPs unchanged"];
+            }
+            self.lastIPs = ips;
+            
+            if (changed) {
+                [self callTrackVerifiedWithReason:@"ip_change"];
+            }
+        });
+        nw_path_monitor_start(_monitor);
+    }
+}
+
+- (void)stopIPMonitoring {
+    if (_monitor) {
+        nw_path_monitor_cancel(_monitor);
+    }
+}
+
+- (NSString *)getIPs {
+    NSMutableArray<NSString *> *ips = [NSMutableArray new];
+    struct ifaddrs *interfaces = NULL;
+    struct ifaddrs *temp_addr = NULL;
+    int success = 0;
+    success = getifaddrs(&interfaces);
+    if (success == 0) {
+        temp_addr = interfaces;
+        while(temp_addr != NULL) {
+            if(temp_addr->ifa_addr->sa_family == AF_INET) {
+                NSString *ip = [NSString stringWithUTF8String:inet_ntoa(((struct sockaddr_in *)temp_addr->ifa_addr)->sin_addr)];
+                [ips addObject:ip];
+            }
+            temp_addr = temp_addr->ifa_next;
+        }
+    }
+    freeifaddrs(interfaces);
+    return (ips.count > 0) ? [ips componentsJoinedByString:@","] : @"error";
+}
 
 @end
