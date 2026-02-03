@@ -72,7 +72,7 @@
         @"X-Radar-Config": @"true",
         @"X-Radar-Device-Make": [RadarUtils deviceMake],
         @"X-Radar-Device-Model": [RadarUtils deviceModel],
-        @"X-Radar-Device-OS": [RadarUtils deviceOS],
+        @"X-Radar-Device-OS": [RadarUtilsDeprecated deviceOS],
         @"X-Radar-Device-Type": [RadarUtils deviceType],
         @"X-Radar-SDK-Version": [RadarUtils sdkVersion],
         @"X-Radar-Mobile-Origin": [[NSBundle mainBundle] bundleIdentifier],
@@ -250,7 +250,7 @@
         params[@"id"] = [RadarSettings _id];
         params[@"installId"] = [RadarSettings installId];
         params[@"userId"] = [RadarSettings userId];
-        params[@"deviceId"] = [RadarUtils deviceId];
+        params[@"deviceId"] = [RadarUtilsDeprecated deviceId];
         params[@"description"] = [RadarSettings __description];
         params[@"metadata"] = [RadarSettings metadata];
         NSArray<NSString *> *userTags = [RadarSettings tags];
@@ -293,7 +293,7 @@
     params[@"deviceMake"] = [RadarUtils deviceMake];
     params[@"sdkVersion"] = [RadarUtils sdkVersion];
     params[@"deviceModel"] = [RadarUtils deviceModel];
-    params[@"deviceOS"] = [RadarUtils deviceOS];
+    params[@"deviceOS"] = [RadarUtilsDeprecated deviceOS];
     params[@"country"] = [RadarUtils country];
     params[@"timeZoneOffset"] = [RadarUtils timeZoneOffset];
     params[@"source"] = [Radar stringForLocationSource:source];
@@ -526,6 +526,7 @@
             completionHandler(status, nil, nil, nil, nil, nil, nil);
         }];
     } else {
+        NSLog(@"%@", params);
         [self.apiHelper requestWithMethod:@"POST"
                                     url:url
                                 headers:headers
@@ -1230,7 +1231,7 @@
     if (!address.countryCode || !address.stateCode || !address.city || !address.postalCode || 
         !((address.street && address.number) || address.addressLabel)) {
         if (completionHandler) {
-            [RadarUtils runOnMainThread:^{
+            [RadarUtilsDeprecated runOnMainThread:^{
                 completionHandler(RadarStatusErrorBadRequest, nil, nil, RadarAddressVerificationStatusNone);
             }];
         }
@@ -1287,7 +1288,7 @@
                             RadarAddressVerificationStatus verificationStatus = [RadarAddress addressVerificationStatusForString:result[@"verificationStatus"]];
 
                             if (completionHandler) {
-                                [RadarUtils runOnMainThread:^{
+                                [RadarUtilsDeprecated runOnMainThread:^{
                                     completionHandler(RadarStatusSuccess, res, address, verificationStatus);
                                 }];
                                 return;
@@ -1586,7 +1587,7 @@ completionHandler:(RadarSendEventAPICompletionHandler _Nonnull)completionHandler
     params[@"id"] = [RadarSettings _id];
     params[@"installId"] = [RadarSettings installId];
     params[@"userId"] = [RadarSettings userId];
-    params[@"deviceId"] = [RadarUtils deviceId];
+    params[@"deviceId"] = [RadarUtilsDeprecated deviceId];
 
     params[@"type"] = conversionName;
     params[@"metadata"] = metadata;
@@ -1638,7 +1639,7 @@ completionHandler:(RadarSendEventAPICompletionHandler _Nonnull)completionHandler
 
     params[@"id"] = [RadarSettings _id];
     params[@"installId"] = [RadarSettings installId];
-    params[@"deviceId"] = [RadarUtils deviceId];
+    params[@"deviceId"] = [RadarUtilsDeprecated deviceId];
     NSString *sessionId = [RadarSettings sessionId];
     if (sessionId) {
         params[@"sessionId"] = sessionId;
