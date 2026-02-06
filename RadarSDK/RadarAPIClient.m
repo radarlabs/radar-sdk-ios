@@ -206,6 +206,7 @@
                indoorScan:indoorScan
                    verified:NO
               fraudPayload:nil
+         fraudKeyVersion:0
         expectedCountryCode:nil
           expectedStateCode:nil
                      reason:nil
@@ -222,6 +223,7 @@
              indoorScan:(NSString *_Nullable)indoorScan
                  verified:(BOOL)verified
             fraudPayload:(NSString *_Nullable)fraudPayload
+         fraudKeyVersion:(NSInteger)fraudKeyVersion
       expectedCountryCode:(NSString * _Nullable)expectedCountryCode
         expectedStateCode:(NSString * _Nullable)expectedStateCode
                    reason:(NSString * _Nullable)reason
@@ -368,6 +370,7 @@
         }
         if (fraudPayload) {
             params[@"fraudPayload"] = fraudPayload;
+            params[@"fraudKeyVersion"] = @(fraudKeyVersion);
         }
     }
 

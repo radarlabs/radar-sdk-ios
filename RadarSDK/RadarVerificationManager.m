@@ -123,7 +123,7 @@
             if (config.nonce) {
                 options[@"nonce"] = config.nonce;
             }
-            [[RadarSDKFraud sharedInstance] getFraudPayloadWithOptions:options completionHandler:^(RadarStatus status, NSString *_Nullable fraudPayload) {
+            [[RadarSDKFraud sharedInstance] getFraudPayloadWithOptions:options completionHandler:^(RadarStatus status, NSString *_Nullable fraudPayload, NSInteger fraudKeyVersion) {
                 if (status != RadarStatusSuccess) {
                     [RadarUtils runOnMainThread:^{
                         [[RadarDelegateHolder sharedInstance] didFailWithStatus:status];
@@ -146,6 +146,7 @@
                  indoorScan:nil
                  verified:YES
                  fraudPayload:fraudPayload
+                 fraudKeyVersion:fraudKeyVersion
                  expectedCountryCode:self.expectedCountryCode
                  expectedStateCode:self.expectedStateCode
                  reason:reason
