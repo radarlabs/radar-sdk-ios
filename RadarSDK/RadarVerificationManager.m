@@ -34,8 +34,6 @@
 #include <ifaddrs.h>
 #include <arpa/inet.h>
 
-#include "Radar-Swift.h"
-
 @interface RadarVerificationManager ()
 
 @property (assign, nonatomic) NSTimeInterval startedInterval;
@@ -128,6 +126,7 @@
                      source:RadarLocationSourceForegroundLocation
                      replayed:NO
                      beacons:beacons
+                     indoorScan:nil
                      verified:YES
                      attestationString:attestationString
                      keyId:keyId

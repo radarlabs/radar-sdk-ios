@@ -10,6 +10,12 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+typedef NS_ENUM(NSInteger, RadarConnectionType) {
+    RadarConnectionTypeUnknown,
+    RadarConnectionTypeWiFi,
+    RadarConnectionTypeCellular
+};
+
 @interface RadarUtils : NSObject
 
 @property (class, nonatomic, assign, readonly) NSDateFormatter *isoDateFormatter;
@@ -32,6 +38,11 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSDictionary *)dictionaryForLocation:(CLLocation *)location;
 + (NSString *)dictionaryToJson:(NSDictionary *)dict;
 + (void)runOnMainThread:(dispatch_block_t)block;
+
++ (RadarConnectionType)networkType;
++ (NSString *)networkTypeString;
+
++ (NSDictionary *)appInfo;
 
 @end
 

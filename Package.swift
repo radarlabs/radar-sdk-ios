@@ -1,5 +1,7 @@
-// swift-tools-version:5.3
+// swift-tools-version:5.9
 import PackageDescription
+
+let version = "3.25.0"
 
 let package = Package(
     name: "RadarSDK",
@@ -14,6 +16,10 @@ let package = Package(
         .library(
             name: "RadarSDKMotion",
             targets: ["RadarSDKMotion"]
+        ),
+        .library(
+            name: "RadarSDKIndoors",
+            targets: ["RadarSDKIndoors"]
         )
     ],
     dependencies: [],
@@ -36,6 +42,10 @@ let package = Package(
             cSettings: [
                 .headerSearchPath(".")
             ] 
+        ),
+        .binaryTarget(
+            name: "RadarSDKIndoors",
+            url: "https://github.com/radarlabs/radar-sdk-ios/releases/download/\(version)/RadarSDKIndoors.xcframework.zip"
         )
     ]
 )

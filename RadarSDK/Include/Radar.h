@@ -28,6 +28,11 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol RadarVerifiedDelegate;
 @protocol RadarMotionProtocol;
 @protocol RadarInAppMessageProtocol;
+<<<<<<< HEAD
+||||||| 4cc3a5b2
+=======
+@protocol RadarIndoorsProtocol;
+>>>>>>> master
 
 @class RadarTripOptions;
 @class RadarInAppMessage;
@@ -309,6 +314,8 @@ typedef void (^_Nonnull RadarRouteMatrixCompletionHandler)(RadarStatus status, R
  */
 typedef void (^_Nullable RadarLogConversionCompletionHandler)(RadarStatus status, RadarEvent *_Nullable event);
 
+typedef void (^_Nonnull RadarIndoorsScanCompletionHandler)(NSString *_Nullable result, CLLocation *_Nullable locationAtStartOfScan);
+
 /**
  The main class used to interact with the Radar SDK.
 
@@ -317,6 +324,8 @@ typedef void (^_Nullable RadarLogConversionCompletionHandler)(RadarStatus status
 @interface Radar : NSObject
 
 #pragma mark - Initialization
+
+@property (readonly, class) BOOL isInitialized;
 
 /**
  Initializes the Radar SDK.
@@ -341,6 +350,9 @@ typedef void (^_Nullable RadarLogConversionCompletionHandler)(RadarStatus status
  */
 
 + (void)initializeWithPublishableKey:(NSString *_Nonnull)publishableKey options:(RadarInitializeOptions *_Nullable)options NS_SWIFT_NAME(initialize(publishableKey:options:));
+
++ (void)initializeWithAppGroup:(NSString *_Nonnull)appGroup;
+
 #pragma mark - Properties
 
 /**
@@ -1235,6 +1247,12 @@ typedef void (^_Nullable RadarLogConversionCompletionHandler)(RadarStatus status
                        units:(RadarRouteUnits)units
            completionHandler:(RadarRouteMatrixCompletionHandler)completionHandler NS_SWIFT_NAME(getMatrix(origins:destinations:mode:units:completionHandler:));
 
+#pragma mark - Indoors
+
++ (void)startIndoorScan:(NSString *)geofenceId
+                forLength:(int)scanLengthSeconds
+        completionHandler:(RadarIndoorsScanCompletionHandler)completionHandler;
+
 #pragma mark - Logging
 
 /**
@@ -1326,6 +1344,15 @@ typedef void (^_Nullable RadarLogConversionCompletionHandler)(RadarStatus status
  */
 + (NSDictionary *)dictionaryForLocation:(CLLocation *)location NS_SWIFT_NAME(dictionaryForLocation(_:));
 
+/**
+ Returns a dictionary for an in-app message.
+
+ @param message An in-app message.
+
+ @return A dictionary for the in-app message.
+ */
++ (NSDictionary *)dictionaryForInAppMessage:(RadarInAppMessage *)message NS_SWIFT_NAME(dictionaryForInAppMessage(_:));
+
 
 /**
  Performs optional setup for Radar SDK within the AppDelegate. This method only needs to be called if Radar is initalized in cross-platform code.
@@ -1337,6 +1364,7 @@ typedef void (^_Nullable RadarLogConversionCompletionHandler)(RadarStatus status
 
 + (void)setInAppMessageDelegate:(nullable id<RadarInAppMessageProtocol>)delegate NS_SWIFT_NAME(setInAppMessageDelegate(_:));
 
+<<<<<<< HEAD
 /**
  Load image convenience function available for use with custom in-app message views
  */
@@ -1348,6 +1376,25 @@ typedef void (^_Nullable RadarLogConversionCompletionHandler)(RadarStatus status
 + (void)__writeToLogBufferWithLevel:(RadarLogLevel)level type:(RadarLogType)type message:(NSString *)message forcePersist:(BOOL)forcePersist
     NS_SWIFT_NAME(__writeToLogBuffer(with:type:message:forcePersist:));
 
+||||||| 4cc3a5b2
+=======
++ (void)showInAppMessage:(RadarInAppMessage *)message NS_SWIFT_NAME(showInAppMessage(_:));
+
+/**
+ Load image convenience function available for use with custom in-app message views
+ */
++ (void) loadImage:(NSString*)url completionHandler:(void (^ _Nonnull)(UIImage * _Nullable))completionHandler NS_SWIFT_NAME(loadImage(_:completionHandler:));
+
++ (void)requestMotionActivityPermission NS_SWIFT_NAME(requestMotionActivityPermission());
+
++ (void)setAppGroup:(NSString*_Nullable)appGroup;
+
++ (void)setPushNotificationToken:(NSString*_Nullable)token;
+
++ (void)setLocationExtensionToken:(NSString*_Nullable)token;
+
++ (void)didReceivePushNotificationPayload:(NSDictionary*)payload completionHandler:(void (^ _Nonnull)(void))completionHandler;
+>>>>>>> master
 
 @end
 

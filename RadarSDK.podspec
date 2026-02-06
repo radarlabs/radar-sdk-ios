@@ -1,6 +1,12 @@
 Pod::Spec.new do |s|
   s.name                  = 'RadarSDK'
+<<<<<<< HEAD
   s.version               = '3.23.0-beta.2'
+||||||| 4cc3a5b2
+  s.version               = '3.22.0'
+=======
+  s.version               = '3.25.2'
+>>>>>>> master
   s.summary               = 'iOS SDK for Radar, the leading geofencing and location tracking platform'
   s.homepage              = 'https://radar.com'
   s.author                = { 'Radar Labs, Inc.' => 'support@radar.com' }
@@ -13,5 +19,10 @@ Pod::Spec.new do |s|
   s.requires_arc          = true
   s.license               = { :type => 'Apache-2.0' }
   s.resource_bundles      = {'RadarSDK' => ['RadarSDK/PrivacyInfo.xcprivacy']}
+<<<<<<< HEAD
+||||||| 4cc3a5b2
+=======
+  s.pod_target_xcconfig   = { 'DEFINES_MODULE' => 'YES' }
+>>>>>>> master
   s.swift_version         = '6.0'
 end

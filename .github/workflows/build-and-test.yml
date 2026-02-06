@@ -14,6 +14,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+        with:
+          submodules: recursive
+          token: ${{ secrets.SUBMODULESTOKEN }}
 
       - name: Use Xcode 16.4
         run: sudo xcode-select -switch /Applications/Xcode_16.4.app
@@ -28,8 +31,8 @@ jobs:
         env:
           scheme: RadarSDK
         run: |
-          xcodebuild test -scheme RadarSDK -workspace Example/Example.xcodeproj/project.xcworkspace -destination 'platform=iOS Simulator,name=iPhone 16 Pro,OS=latest' -skip-testing:RadarSDKTests/InAppMessageTest | xcpretty && exit ${PIPESTATUS[0]}
+          xcodebuild test -scheme RadarSDK -workspace Example/Example.xcodeproj/project.xcworkspace -destination 'platform=iOS Simulator,name=iPhone 16 Pro,OS=latest' -skip-testing:RadarSDKTests/InAppMessageTest -skip-testing:RadarSDKTests/RadarSettingsTest | xcpretty && exit ${PIPESTATUS[0]}
         
       - name: Test swift 
         run: |
-          xcodebuild test -scheme RadarSDK -workspace Example/Example.xcodeproj/project.xcworkspace -destination 'platform=iOS Simulator,name=iPhone 16 Pro,OS=latest' -only-testing:RadarSDKTests/InAppMessageTest
+          xcodebuild test -scheme RadarSDK -workspace Example/Example.xcodeproj/project.xcworkspace -destination 'platform=iOS Simulator,name=iPhone 16 Pro,OS=latest' -only-testing:RadarSDKTests/InAppMessageTest -only-testing:RadarSDKTests/RadarSettingsTest

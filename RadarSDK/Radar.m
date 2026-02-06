@@ -7,7 +7,6 @@
 
 #import "Radar.h"
 #include "RadarSdkConfiguration.h"
-
 #import "RadarAPIClient.h"
 #import "RadarBeaconManager.h"
 #import "RadarConfig.h"
@@ -21,10 +20,18 @@
 #import "RadarUtils.h"
 #import "RadarVerificationManager.h"
 #import "RadarReplayBuffer.h"
+#import "RadarLogBuffer.h"
 #import "RadarNotificationHelper.h"
 #import "RadarTripOptions.h"
+#import "RadarIndoorsProtocol.h"
 #import "RadarInAppMessageDelegate.h"
-#import "Radar-Swift.h"
+#import "RadarSwiftBridge.h"
+
+#if __has_include(<RadarSDK/RadarSDK-Swift.h>)
+#import <RadarSDK/RadarSDK-Swift.h>
+#elif __has_include("RadarSDK-Swift.h")
+#import "RadarSDK-Swift.h"
+#endif
 
 @interface Radar ()
 
@@ -35,6 +42,8 @@
 @implementation Radar
 
 #pragma mark - Initialization
+
+BOOL _initialized = NO;
 
 + (id)sharedInstance {
     static dispatch_once_t once;
@@ -49,17 +58,32 @@
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         [RadarSettings setInitializeOptions:options];
-        [RadarNotificationHelper swizzleNotificationCenterDelegate];
+        if (options.autoLogNotificationConversions || options.autoHandleNotificationDeepLinks) {
+            [RadarNotificationHelper swizzleNotificationCenterDelegate];
+        }
+        if (options.silentPush) {
+            [RadarNotificationHelper swizzleApplicationDelegate];
+        }
     });
 }
 
 + (void)initializeWithPublishableKey:(NSString *)publishableKey options:(RadarInitializeOptions *)options {
+    [RadarSwift setBridge:[[RadarSwiftBridge alloc] init]];
+    
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"initialize()"];
     
     Class RadarSDKMotion = NSClassFromString(@"RadarSDKMotion");
     if (RadarSDKMotion) {
         id radarSDKMotion = [[RadarSDKMotion alloc] init];
+
+        NSString *authStatus = [Radar stringForMotionAuthorizationStatus];
+        [RadarState setMotionAuthorizationString:authStatus];
+        
         [RadarActivityManager sharedInstance].radarSDKMotion = radarSDKMotion;
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"RadarSDKMotion detected and initialized; Motion & Altimeter services available, auth status: %@", authStatus]];
+    } else {
+        [RadarState setMotionAuthorizationString:@"NOT_AVAILABLE"];
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelWarning message:@"RadarSDKMotion class not found; Motion/Pressure features disabled"];
     }
     
     [[NSNotificationCenter defaultCenter] addObserver:[self sharedInstance]
@@ -73,11 +97,8 @@
     // For most users not using these features, options be null and skipped,
     //  For X-platform users initializing Radar in the crossplatform layer, the options will also be null as nativeSetup would had been called ealier
     if (options) {
-        [RadarSettings setInitializeOptions:options];
         if (NSClassFromString(@"XCTestCase") == nil) {
-            if (options.autoLogNotificationConversions || options.autoHandleNotificationDeepLinks) {
-                [Radar nativeSetup: options];
-            }
+            [Radar nativeSetup:options];
         }
     }
     
@@ -95,6 +116,7 @@
         [[RadarAPIClient sharedInstance] getConfigForUsage:@"initialize"
                                                   verified:NO
                                          completionHandler:^(RadarStatus status, RadarConfig *config) {
+<<<<<<< HEAD
             if (status == RadarStatusSuccess && config) {
                 [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
                 [RadarSettings setSdkConfiguration:config.meta.sdkConfiguration];
@@ -110,12 +132,64 @@
             
             [self flushLogs];
         }];
+||||||| 4cc3a5b2
+                                            if (status == RadarStatusSuccess && config) {
+                                                [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
+                                                [RadarSettings setSdkConfiguration:config.meta.sdkConfiguration];
+                                            }
+                                         
+                                            RadarSdkConfiguration *sdkConfiguration = [RadarSettings sdkConfiguration];
+                                            if (sdkConfiguration.startTrackingOnInitialize && ![RadarSettings tracking]) {
+                                                [Radar startTrackingWithOptions:[RadarSettings trackingOptions]];
+                                            }
+                                            if (sdkConfiguration.trackOnceOnAppOpen) {
+                                                [Radar trackOnceWithDesiredAccuracy:RadarTrackingOptionsDesiredAccuracyMedium beacons:[Radar getTrackingOptions].beacons completionHandler:nil];
+                                            }
+
+                                            [self flushLogs];
+                                        }];
+=======
+                                            if (status == RadarStatusSuccess && config) {
+                                                [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
+                                                [RadarSettings setSdkConfiguration:config.meta.sdkConfiguration];
+                                            }
+                                         
+                                            RadarSdkConfiguration *sdkConfiguration = [RadarSettings sdkConfiguration];
+                                            if (sdkConfiguration.startTrackingOnInitialize && ![RadarSettings tracking]) {
+                                                [Radar startTrackingWithOptions:[Radar getTrackingOptions]];
+                                            }
+                                            if (sdkConfiguration.trackOnceOnAppOpen) {
+                                                [Radar trackOnceWithDesiredAccuracy:RadarTrackingOptionsDesiredAccuracyMedium beacons:[Radar getTrackingOptions].beacons completionHandler:nil];
+                                            }
+
+                                            [self flushLogs];
+                                        }];
+>>>>>>> master
     }];
     
+<<<<<<< HEAD
+||||||| 4cc3a5b2
+
+=======
+    if (options.silentPush) {
+        [[UIApplication sharedApplication] registerForRemoteNotifications];
+    }
+
+    _initialized = YES;
+>>>>>>> master
 }
 
 + (void)initializeWithPublishableKey:(NSString *)publishableKey {
     [self initializeWithPublishableKey:publishableKey options:nil];
+}
+
++ (void)initializeWithAppGroup:(NSString *)appGroup {
+    [RadarSettings setAppGroup:appGroup];
+    [Radar initializeWithPublishableKey:[RadarSettings publishableKey]];
+}
+
++ (BOOL)isInitialized {
+    return _initialized;
 }
 
 #pragma mark - Properties
@@ -225,6 +299,7 @@
     
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"trackOnce"];
     [[RadarLocationManager sharedInstance]
+<<<<<<< HEAD
      getLocationWithDesiredAccuracy:desiredAccuracy
      completionHandler:^(RadarStatus status, CLLocation *_Nullable location, BOOL stopped) {
         [getLocationTrace endWithStatus:status];
@@ -322,10 +397,189 @@
             callTrackAPI(nil);
         }
     }];
+||||||| 4cc3a5b2
+        getLocationWithDesiredAccuracy:desiredAccuracy
+                     completionHandler:^(RadarStatus status, CLLocation *_Nullable location, BOOL stopped) {
+                         if (status != RadarStatusSuccess) {
+                             if (completionHandler) {
+                                 [RadarUtils runOnMainThread:^{
+                                     completionHandler(status, nil, nil, nil);
+                                 }];
+                             }
+
+                             return;
+                         }
+
+                         void (^callTrackAPI)(NSArray<RadarBeacon *> *_Nullable) = ^(NSArray<RadarBeacon *> *_Nullable beacons) {
+                             [[RadarAPIClient sharedInstance]
+                                 trackWithLocation:location
+                                           stopped:stopped
+                                        foreground:YES
+                                            source:RadarLocationSourceForegroundLocation
+                                          replayed:NO
+                                           beacons:beacons
+                                 completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user,
+                                                     NSArray<RadarGeofence *> *_Nullable nearbyGeofences, RadarConfig *_Nullable config, RadarVerifiedLocationToken *_Nullable token) {
+                                     if (status == RadarStatusSuccess) {
+                                         [[RadarLocationManager sharedInstance] replaceSyncedGeofences:nearbyGeofences];
+                                         if (config != nil) {
+                                             [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
+                                         }
+                                         
+                                     }
+
+                                     if (completionHandler) {
+                                         [RadarUtils runOnMainThread:^{
+                                             completionHandler(status, location, events, user);
+                                         }];
+                                     }
+                                 }];
+                         };
+
+                         if (beacons) {
+                             [[RadarAPIClient sharedInstance]
+                                 searchBeaconsNear:location
+                                            radius:1000
+                                             limit:10
+                                 completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarBeacon *> *_Nullable beacons,
+                                                     NSArray<NSString *> *_Nullable beaconUUIDs) {
+                                     if (beaconUUIDs && beaconUUIDs.count) {
+                                         [[RadarLocationManager sharedInstance] replaceSyncedBeaconUUIDs:beaconUUIDs];
+
+                                         [RadarUtils runOnMainThread:^{
+                                             [[RadarBeaconManager sharedInstance] rangeBeaconUUIDs:beaconUUIDs
+                                                                                 completionHandler:^(RadarStatus status, NSArray<RadarBeacon *> *_Nullable beacons) {
+                                                                                     if (status != RadarStatusSuccess || !beacons) {
+                                                                                         callTrackAPI(nil);
+
+                                                                                         return;
+                                                                                     }
+
+                                                                                     callTrackAPI(beacons);
+                                                                                 }];
+                                         }];
+                                     } else if (beacons && beacons.count) {
+                                         [[RadarLocationManager sharedInstance] replaceSyncedBeacons:beacons];
+
+                                         [RadarUtils runOnMainThread:^{
+                                             [[RadarBeaconManager sharedInstance] rangeBeacons:beacons
+                                                                             completionHandler:^(RadarStatus status, NSArray<RadarBeacon *> *_Nullable beacons) {
+                                                                                 if (status != RadarStatusSuccess || !beacons) {
+                                                                                     callTrackAPI(nil);
+
+                                                                                     return;
+                                                                                 }
+
+                                                                                 callTrackAPI(beacons);
+                                                                             }];
+                                         }];
+                                     } else {
+                                         callTrackAPI(@[]);
+                                     }
+                                 }];
+                         } else {
+                             callTrackAPI(nil);
+                         }
+                     }];
+=======
+        getLocationWithDesiredAccuracy:desiredAccuracy
+                     completionHandler:^(RadarStatus status, CLLocation *_Nullable location, BOOL stopped) {
+                         if (status != RadarStatusSuccess) {
+                             if (completionHandler) {
+                                 [RadarUtils runOnMainThread:^{
+                                     completionHandler(status, nil, nil, nil);
+                                 }];
+                             }
+
+                             return;
+                         }
+
+                         void (^callTrackAPI)(NSArray<RadarBeacon *> *_Nullable, NSString *_Nullable) = ^(NSArray<RadarBeacon *> *_Nullable beacons, NSString *_Nullable indoorScan) {
+                             [[RadarAPIClient sharedInstance]
+                                 trackWithLocation:location
+                                           stopped:stopped
+                                        foreground:YES
+                                            source:RadarLocationSourceForegroundLocation
+                                          replayed:NO
+                                           beacons:beacons
+                                      indoorScan:indoorScan
+                                 completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user,
+                                                     NSArray<RadarGeofence *> *_Nullable nearbyGeofences, RadarConfig *_Nullable config, RadarVerifiedLocationToken *_Nullable token) {
+                                     if (status == RadarStatusSuccess) {
+                                         [[RadarLocationManager sharedInstance] replaceSyncedGeofences:nearbyGeofences];
+                                         if (config != nil) {
+                                             [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
+                                         }
+                                         
+                                     }
+
+                                     if (completionHandler) {
+                                         [RadarUtils runOnMainThread:^{
+                                             completionHandler(status, location, events, user);
+                                         }];
+                                     }
+                                 }];
+                         };
+
+                         void (^performIndoorScanThenTrack)(NSArray<RadarBeacon *> *_Nullable) = ^(NSArray<RadarBeacon *> *_Nullable beacons) {
+                            [[RadarLocationManager sharedInstance] performIndoorScanIfConfigured:location
+                                                                                          beacons:beacons
+                                                                                completionHandler:^(NSArray<RadarBeacon *> *_Nullable beacons, NSString *_Nullable indoorScan) {
+                                callTrackAPI(beacons, indoorScan);
+                            }];
+                        };
+
+                         if (beacons) {
+                             [[RadarAPIClient sharedInstance]
+                                 searchBeaconsNear:location
+                                            radius:1000
+                                             limit:10
+                                 completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarBeacon *> *_Nullable beacons,
+                                                     NSArray<NSString *> *_Nullable beaconUUIDs) {
+                                     if (beaconUUIDs && beaconUUIDs.count) {
+                                         [[RadarLocationManager sharedInstance] replaceSyncedBeaconUUIDs:beaconUUIDs];
+
+                                         [RadarUtils runOnMainThread:^{
+                                             [[RadarBeaconManager sharedInstance] rangeBeaconUUIDs:beaconUUIDs
+                                                                                 completionHandler:^(RadarStatus status, NSArray<RadarBeacon *> *_Nullable beacons) {
+                                                                                     if (status != RadarStatusSuccess || !beacons) {
+                                                                                         performIndoorScanThenTrack(nil);
+
+                                                                                         return;
+                                                                                     }
+
+                                                                                     performIndoorScanThenTrack(beacons);
+                                                                                 }];
+                                         }];
+                                     } else if (beacons && beacons.count) {
+                                         [[RadarLocationManager sharedInstance] replaceSyncedBeacons:beacons];
+
+                                         [RadarUtils runOnMainThread:^{
+                                             [[RadarBeaconManager sharedInstance] rangeBeacons:beacons
+                                                                             completionHandler:^(RadarStatus status, NSArray<RadarBeacon *> *_Nullable beacons) {
+                                                                                 if (status != RadarStatusSuccess || !beacons) {
+                                                                                     performIndoorScanThenTrack(nil);
+
+                                                                                     return;
+                                                                                 }
+
+                                                                                 performIndoorScanThenTrack(beacons);
+                                                                             }];
+                                         }];
+                                     } else {
+                                         performIndoorScanThenTrack(@[]);
+                                     }
+                                 }];
+                         } else {
+                             performIndoorScanThenTrack(nil);
+                         }
+                     }];
+>>>>>>> master
 }
 
 + (void)trackOnceWithLocation:(CLLocation *)location completionHandler:(RadarTrackCompletionHandler)completionHandler {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"trackOnce()"];
+<<<<<<< HEAD
     [[RadarAPIClient sharedInstance] trackWithLocation:location
                                                stopped:NO
                                             foreground:YES
@@ -342,6 +596,47 @@
                 completionHandler(status, location, events, user);
             }];
         }
+||||||| 4cc3a5b2
+    [[RadarAPIClient sharedInstance] trackWithLocation:location
+                                               stopped:NO
+                                            foreground:YES
+                                                source:RadarLocationSourceManualLocation
+                                              replayed:NO
+                                               beacons:nil
+                                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user,
+                                                         NSArray<RadarGeofence *> *_Nullable nearbyGeofences, RadarConfig *_Nullable config, RadarVerifiedLocationToken *_Nullable token) {
+                                        if (status == RadarStatusSuccess && config != nil) {                                    
+                                            [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];                                            
+                                        }
+                                         if (completionHandler) {
+                                             [RadarUtils runOnMainThread:^{
+                                                 completionHandler(status, location, events, user);
+                                             }];
+                                         }
+                                     }];
+=======
+    [[RadarLocationManager sharedInstance] performIndoorScanIfConfigured:location
+                                                                  beacons:nil
+                                                        completionHandler:^(NSArray<RadarBeacon *> *_Nullable beacons, NSString *_Nullable indoorScan) {
+        [[RadarAPIClient sharedInstance] trackWithLocation:location
+                                                   stopped:NO
+                                                foreground:YES
+                                                    source:RadarLocationSourceManualLocation
+                                                  replayed:NO
+                                                   beacons:beacons
+                                              indoorScan:indoorScan
+                                         completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user,
+                                                             NSArray<RadarGeofence *> *_Nullable nearbyGeofences, RadarConfig *_Nullable config, RadarVerifiedLocationToken *_Nullable token) {
+                                            if (status == RadarStatusSuccess && config != nil) {                                    
+                                                [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];                                            
+                                            }
+                                             if (completionHandler) {
+                                                 [RadarUtils runOnMainThread:^{
+                                                     completionHandler(status, location, events, user);
+                                                 }];
+                                             }
+                                         }];
+>>>>>>> master
     }];
 }
 
@@ -475,8 +770,103 @@
                 if (i < coordinates.count - 1) {
                     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(intervalLimit * NSEC_PER_SEC)), dispatch_get_main_queue(), weakTrack);
                 }
+<<<<<<< HEAD
                 
                 i++;
+||||||| 4cc3a5b2
+
+                NSTimeInterval intervalLimit = interval;
+                if (intervalLimit < 1) {
+                    intervalLimit = 1;
+                } else if (intervalLimit > 60) {
+                    intervalLimit = 60;
+                }
+
+                __block int i = 0;
+                __block void (^track)(void);
+                __block __weak void (^weakTrack)(void);
+                track = ^{
+                    weakTrack = track;
+                    RadarCoordinate *coordinate = coordinates[i];
+                    CLLocation *location = [[CLLocation alloc] initWithCoordinate:coordinate.coordinate
+                                                                         altitude:-1
+                                                               horizontalAccuracy:5
+                                                                 verticalAccuracy:-1
+                                                                        timestamp:[NSDate new]];
+                    BOOL stopped = (i == 0) || (i == coordinates.count - 1);
+
+                    [[RadarAPIClient sharedInstance]
+                        trackWithLocation:location
+                                  stopped:stopped
+                               foreground:NO
+                                   source:RadarLocationSourceMockLocation
+                                 replayed:NO
+                                  beacons:nil
+                        completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user,
+                                            NSArray<RadarGeofence *> *_Nullable nearbyGeofences, RadarConfig *_Nullable config, RadarVerifiedLocationToken *_Nullable token) {
+                            if (completionHandler) {
+                                [RadarUtils runOnMainThread:^{
+                                    completionHandler(status, location, events, user);
+                                }];
+                            }
+
+                            if (i < coordinates.count - 1) {
+                                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(intervalLimit * NSEC_PER_SEC)), dispatch_get_main_queue(), weakTrack);
+                            }
+
+                            i++;
+                        }];
+                };
+
+                track();
+=======
+
+                NSTimeInterval intervalLimit = interval;
+                if (intervalLimit < 1) {
+                    intervalLimit = 1;
+                } else if (intervalLimit > 60) {
+                    intervalLimit = 60;
+                }
+
+                __block int i = 0;
+                __block void (^track)(void);
+                __block __weak void (^weakTrack)(void);
+                track = ^{
+                    weakTrack = track;
+                    RadarCoordinate *coordinate = coordinates[i];
+                    CLLocation *location = [[CLLocation alloc] initWithCoordinate:coordinate.coordinate
+                                                                         altitude:-1
+                                                               horizontalAccuracy:5
+                                                                 verticalAccuracy:-1
+                                                                        timestamp:[NSDate new]];
+                    BOOL stopped = (i == 0) || (i == coordinates.count - 1);
+
+                    [[RadarAPIClient sharedInstance]
+                        trackWithLocation:location
+                                  stopped:stopped
+                               foreground:NO
+                                   source:RadarLocationSourceMockLocation
+                                 replayed:NO
+                                  beacons:nil
+                             indoorScan:nil
+                        completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user,
+                                            NSArray<RadarGeofence *> *_Nullable nearbyGeofences, RadarConfig *_Nullable config, RadarVerifiedLocationToken *_Nullable token) {
+                            if (completionHandler) {
+                                [RadarUtils runOnMainThread:^{
+                                    completionHandler(status, location, events, user);
+                                }];
+                            }
+
+                            if (i < coordinates.count - 1) {
+                                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(intervalLimit * NSEC_PER_SEC)), dispatch_get_main_queue(), weakTrack);
+                            }
+
+                            i++;
+                        }];
+                };
+
+                track();
+>>>>>>> master
             }];
         };
         
@@ -506,7 +896,20 @@
 
 + (void)setDelegate:(id<RadarDelegate>)delegate {
     [RadarDelegateHolder sharedInstance].delegate = delegate;
+<<<<<<< HEAD
     [RadarLogger_Swift setDelegate:delegate];
+||||||| 4cc3a5b2
+=======
+    
+    // Ensure Swift @MainActor methods are called on main thread
+    if ([NSThread isMainThread]) {
+        [RadarLogger_Swift setDelegate:delegate];
+    } else {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [RadarLogger_Swift setDelegate:delegate];
+        });
+    }
+>>>>>>> master
 }
 
 + (void)setVerifiedDelegate:(id<RadarVerifiedDelegate>)verifiedDelegate {
@@ -525,8 +928,9 @@
 
 + (void)sendLogConversionRequestWithName:(NSString * _Nonnull) name
                                 metadata:(NSDictionary * _Nullable) metadata
+                                campaign:(NSString *_Nullable)campaign
                        completionHandler:(RadarLogConversionCompletionHandler) completionHandler {
-    [[RadarAPIClient sharedInstance] sendEvent:name withMetadata:metadata completionHandler:^(RadarStatus status, NSDictionary * _Nullable res, RadarEvent * _Nullable event) {
+    [[RadarAPIClient sharedInstance] sendEvent:name withMetadata:metadata withCampaign:campaign completionHandler:^(RadarStatus status, NSDictionary * _Nullable res, RadarEvent * _Nullable event) {
         if (status != RadarStatusSuccess) {
             if (completionHandler) {
                 [RadarUtils runOnMainThread:^{
@@ -558,7 +962,7 @@
         if (lastAppOpenTimeInterval > 2) {
             [RadarSettings updateLastAppOpenTime];
             // metadata not needed as app is not opened by notification.
-            [self sendLogConversionRequestWithName:@"opened_app" metadata:nil completionHandler:^(RadarStatus status, RadarEvent * _Nullable event) {
+            [self sendLogConversionRequestWithName:@"opened_app" metadata:nil campaign:nil completionHandler:^(RadarStatus status, RadarEvent * _Nullable event) {
                 NSString *message = [NSString stringWithFormat:@"Conversion name = %@: status = %@; event = %@", event.conversionName, [Radar stringForStatus:status], event];
                 [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:message];
             }];
@@ -580,13 +984,13 @@
     
     CLAuthorizationStatus authorizationStatus = [[RadarLocationManager sharedInstance].permissionsHelper locationAuthorizationStatus];
     if (!(authorizationStatus == kCLAuthorizationStatusAuthorizedWhenInUse || authorizationStatus == kCLAuthorizationStatusAuthorizedAlways) || isLastTrackRecent) {
-        [self sendLogConversionRequestWithName:name metadata:metadata completionHandler:completionHandler];
+        [self sendLogConversionRequestWithName:name metadata:metadata campaign:nil completionHandler:completionHandler];
         
         return;
     }
     
     [self trackOnceWithCompletionHandler:^(RadarStatus status, CLLocation * _Nullable location, NSArray<RadarEvent *> * _Nullable events, RadarUser * _Nullable user) {
-        [self sendLogConversionRequestWithName:name metadata:metadata completionHandler:completionHandler];
+        [self sendLogConversionRequestWithName:name metadata:metadata campaign:nil completionHandler:completionHandler];
     }];
 }
 
@@ -616,8 +1020,9 @@
     if (conversionSource) {
         [metadata setValue:conversionSource forKey:@"conversionSource"];
     }
+    NSString* campaign = metadata[@"campaignId"];
     
-    [self sendLogConversionRequestWithName:eventName metadata:metadata completionHandler:^(RadarStatus status, RadarEvent * _Nullable event) {
+    [self sendLogConversionRequestWithName:eventName metadata:metadata campaign:campaign completionHandler:^(RadarStatus status, RadarEvent * _Nullable event) {
         NSString *message = [NSString stringWithFormat:@"Conversion name = %@: status = %@; event = %@", event.conversionName, [Radar stringForStatus:status], event];
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:message];
     }];
@@ -647,6 +1052,7 @@
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"startTrip()"];
     [[RadarAPIClient sharedInstance] createTripWithOptions:tripOptions
                                          completionHandler:^(RadarStatus status, RadarTrip *trip, NSArray<RadarEvent *> *events) {
+<<<<<<< HEAD
         if (status == RadarStatusSuccess) {
             [RadarSettings setTripOptions:tripOptions];
             
@@ -674,6 +1080,63 @@
             }];
         }
     }];
+||||||| 4cc3a5b2
+                                             if (status == RadarStatusSuccess) {
+                                                 [RadarSettings setTripOptions:tripOptions];
+
+                                                 if (Radar.isTracking) {
+                                                     [RadarSettings setPreviousTrackingOptions:[RadarSettings trackingOptions]];
+                                                 } else {
+                                                     [RadarSettings removePreviousTrackingOptions];
+                                                 }
+
+                                                 if (trackingOptions && trackingOptions.startTrackingAfter == nil) {
+                                                     [self startTrackingWithOptions:trackingOptions];
+                                                 } else if (trackingOptions) {
+                                                     [RadarSettings setTrackingOptions:trackingOptions];
+                                                 } else if (!Radar.isTracking && tripOptions && tripOptions.startTracking) {
+                                                     [self startTrackingWithOptions:[RadarSettings remoteTrackingOptions] ?: [RadarSettings trackingOptions]];
+                                                 }
+
+                                                 // flush location update to generate events
+                                                 [[RadarLocationManager sharedInstance] getLocationWithCompletionHandler:nil];
+                                             }
+
+                                             if (completionHandler) {
+                                                 [RadarUtils runOnMainThread:^{
+                                                     completionHandler(status, trip, events);
+                                                 }];
+                                             }
+                                         }];
+=======
+                                             if (status == RadarStatusSuccess) {
+                                                 [RadarSettings setTripOptions:tripOptions];
+
+                                                 if (Radar.isTracking) {
+                                                     [RadarSettings setPreviousTrackingOptions:[RadarSettings trackingOptions]];
+                                                 } else {
+                                                     [RadarSettings setPreviousTrackingOptions:nil];
+                                                 }
+
+                                                 if (trackingOptions && trackingOptions.startTrackingAfter == nil) {
+                                                     [self startTrackingWithOptions:trackingOptions];
+                                                 } else if (trackingOptions) {
+                                                     [RadarSettings setTrackingOptions:trackingOptions];
+                                                 } else if (!Radar.isTracking && tripOptions && tripOptions.startTracking) {
+                                                     [self startTrackingWithOptions:[RadarSettings remoteTrackingOptions] ?: [RadarSettings trackingOptions]];
+                                                 }
+
+                                                 // flush location update to generate events
+                                                 [Radar trackOnceWithCompletionHandler:nil];
+                                             }
+
+                                             if (completionHandler) {
+                                                 [RadarUtils runOnMainThread:^{
+                                                     completionHandler(status, trip, events);
+                                                 }];
+                                             }
+                                         }];
+>>>>>>> master
 }
 
 + (void)updateTripWithOptions:(RadarTripOptions *)options status:(RadarTripStatus)status completionHandler:(RadarTripCompletionHandler)completionHandler {
@@ -706,6 +1169,7 @@
     [[RadarAPIClient sharedInstance] updateTripWithOptions:options
                                                     status:RadarTripStatusCompleted
                                          completionHandler:^(RadarStatus status, RadarTrip *trip, NSArray<RadarEvent *> *events) {
+<<<<<<< HEAD
         if (status == RadarStatusSuccess || status == RadarStatusErrorNotFound) {
             [RadarSettings setTripOptions:nil];
             
@@ -722,6 +1186,41 @@
             }];
         }
     }];
+||||||| 4cc3a5b2
+                                             if (status == RadarStatusSuccess || status == RadarStatusErrorNotFound) {
+                                                 [RadarSettings setTripOptions:nil];
+
+                                                 // return to previous tracking options after trip
+                                                 [[RadarLocationManager sharedInstance] restartPreviousTrackingOptions];
+
+                                                 // flush location update to generate events
+                                                 [[RadarLocationManager sharedInstance] getLocationWithCompletionHandler:nil];
+                                             }
+
+                                             if (completionHandler) {
+                                                 [RadarUtils runOnMainThread:^{
+                                                     completionHandler(status, trip, events);
+                                                 }];
+                                             }
+                                         }];
+=======
+                                             if (status == RadarStatusSuccess || status == RadarStatusErrorNotFound) {
+                                                 [RadarSettings setTripOptions:nil];
+
+                                                 // return to previous tracking options after trip
+                                                 [[RadarLocationManager sharedInstance] restartPreviousTrackingOptions];
+
+                                                 // flush location update to generate events
+                                                 [Radar trackOnceWithCompletionHandler:nil];
+                                             }
+
+                                             if (completionHandler) {
+                                                 [RadarUtils runOnMainThread:^{
+                                                     completionHandler(status, trip, events);
+                                                 }];
+                                             }
+                                         }];
+>>>>>>> master
 }
 
 + (void)cancelTrip {
@@ -734,6 +1233,7 @@
     [[RadarAPIClient sharedInstance] updateTripWithOptions:options
                                                     status:RadarTripStatusCanceled
                                          completionHandler:^(RadarStatus status, RadarTrip *trip, NSArray<RadarEvent *> *events) {
+<<<<<<< HEAD
         if (status == RadarStatusSuccess || status == RadarStatusErrorNotFound) {
             [RadarSettings setTripOptions:nil];
             
@@ -750,6 +1250,41 @@
             }];
         }
     }];
+||||||| 4cc3a5b2
+                                             if (status == RadarStatusSuccess || status == RadarStatusErrorNotFound) {
+                                                 [RadarSettings setTripOptions:nil];
+
+                                                 // return to previous tracking options after trip
+                                                 [[RadarLocationManager sharedInstance] restartPreviousTrackingOptions];
+
+                                                 // flush location update to generate events
+                                                 [[RadarLocationManager sharedInstance] getLocationWithCompletionHandler:nil];
+                                             }
+
+                                             if (completionHandler) {
+                                                 [RadarUtils runOnMainThread:^{
+                                                     completionHandler(status, trip, events);
+                                                 }];
+                                             }
+                                         }];
+=======
+                                             if (status == RadarStatusSuccess || status == RadarStatusErrorNotFound) {
+                                                 [RadarSettings setTripOptions:nil];
+
+                                                 // return to previous tracking options after trip
+                                                 [[RadarLocationManager sharedInstance] restartPreviousTrackingOptions];
+
+                                                 // flush location update to generate events
+                                                 [Radar trackOnceWithCompletionHandler:nil];
+                                             }
+
+                                             if (completionHandler) {
+                                                 [RadarUtils runOnMainThread:^{
+                                                     completionHandler(status, trip, events);
+                                                 }];
+                                             }
+                                         }];
+>>>>>>> master
 }
 
 #pragma mark - Context
@@ -1194,6 +1729,48 @@
 }
 
 
+#pragma mark - Indoors
+
++ (void)startIndoorScan:(NSString *)geofenceId
+                forLength:(int)scanLengthSeconds
+        completionHandler:(RadarIndoorsScanCompletionHandler)completionHandler {
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"startIndoorScan()"];
+    
+    [RadarSettings setInSurveyMode:YES];
+    
+    Class RadarSDKIndoors = NSClassFromString(@"RadarSDKIndoors");
+    if (RadarSDKIndoors) {
+        // get location from the SDK using trackOnce
+        [Radar trackOnceWithDesiredAccuracy:RadarTrackingOptionsDesiredAccuracyHigh
+                                    beacons:NO
+                          completionHandler:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user) {
+            if (status != RadarStatusSuccess || !location) {
+                [RadarSettings setInSurveyMode:NO];
+                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelError type:RadarLogTypeSDKCall message:[NSString stringWithFormat:@"Failed to get location for indoor scan: %d", (int)status]];
+                if (completionHandler) {
+                    completionHandler([NSString stringWithFormat:@"ERROR: Failed to get location for indoor scan: %d", (int)status], nil);
+                }
+                return;
+            }
+            
+            [RadarSDKIndoors startIndoorScan:geofenceId
+                                    forLength:scanLengthSeconds
+                            withKnownLocation:location
+                            completionHandler:^(NSString *_Nullable indoorScanResult, CLLocation *_Nullable locationAtStartOfScan) {
+                                [RadarSettings setInSurveyMode:NO];
+                                if (completionHandler) {
+                                    completionHandler(indoorScanResult, locationAtStartOfScan);
+                                }
+                            }];
+        }];
+    } else {
+        [RadarSettings setInSurveyMode:NO];
+        if (completionHandler) {
+            completionHandler(@"ERROR: RadarSDKIndoors submodule not available", nil);
+        }
+    }
+}
+
 #pragma mark - Helpers
 
 + (NSString *)stringForStatus:(RadarStatus)status {
@@ -1243,6 +1820,16 @@
     }
     return str;
 }
+
++ (NSString *)stringForMotionAuthorizationStatus {
+    Class RadarSDKMotionClass = NSClassFromString(@"RadarSDKMotion");
+    
+    if (RadarSDKMotionClass && [RadarSDKMotionClass respondsToSelector:@selector(stringForMotionAuthorization)]) {
+        return [RadarSDKMotionClass stringForMotionAuthorization];
+    }
+    return @"NOT_AVAILABLE";
+}
+
 
 + (NSString *)stringForVerificationStatus:(RadarAddressVerificationStatus)status {
     NSString *str;
@@ -1386,6 +1973,10 @@
     return dict;
 }
 
++ (NSDictionary *)dictionaryForInAppMessage:(RadarInAppMessage *)message {
+    return [message toDictionary];
+}
+
 - (void)applicationWillEnterForeground {
     BOOL updated = [RadarSettings updateSessionId];
     if (updated) {
@@ -1443,6 +2034,7 @@
 
 + (void)setInAppMessageDelegate:(id)delegate {
     if (@available(iOS 13.0, *)) {
+<<<<<<< HEAD
         [[RadarInAppMessageManager shared] setDelegate:delegate];
     }
 }
@@ -1457,6 +2049,58 @@
 
 + (void) __writeToLogBufferWithLevel:(RadarLogLevel)level type:(RadarLogType)type message:(NSString *)message forcePersist:(BOOL)forcePersist {
     [[RadarLogBuffer sharedInstance] write:level type:type message:message forcePersist:forcePersist];
+||||||| 4cc3a5b2
+=======
+        // Ensure Swift @MainActor methods are called on main thread
+        if ([NSThread isMainThread]) {
+            [[RadarInAppMessageManager shared] setDelegate:delegate];
+        } else {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [[RadarInAppMessageManager shared] setDelegate:delegate];
+            });
+        }
+    }
+}
+
++ (void)showInAppMessage:(RadarInAppMessage *)message  {
+    if (@available(iOS 13.0, *)) {
+        [[RadarInAppMessageManager shared] showInAppMessage:message completionHandler:^(){}];
+    }
+}
+
++ (void)loadImage:(NSString*)url completionHandler:(void (^ _Nonnull)(UIImage * _Nullable))completionHandler {
+    if (@available(iOS 13.0, *)) {
+        return [RadarInAppMessageDelegate_Swift loadImage:url completionHandler:completionHandler];
+    } else {
+        completionHandler(nil);
+    }
+}
+
++ (void)requestMotionActivityPermission {
+    [[RadarActivityManager sharedInstance] requestPermission];
+}
+
++ (void)setAppGroup:(NSString *)appGroup {
+    [RadarSettings setAppGroup:appGroup];
+}
+
++ (void)setPushNotificationToken:(NSString*)token {
+    [RadarSettings setPushNotificationToken:token];
+}
+
++ (void)setLocationExtensionToken:(NSString*)token {
+    [RadarSettings setLocationExtensionToken:token];
+}
+
++ (void)didReceivePushNotificationPayload:(NSDictionary *)payload completionHandler:(void (^ _Nonnull)(void))completionHandler {
+    if ([payload[@"type"] isEqual:@"radar:trackOnce"]) {
+        [Radar trackOnceWithCompletionHandler:^(RadarStatus status, CLLocation * _Nullable location, NSArray<RadarEvent *> * _Nullable events, RadarUser * _Nullable user) {
+            completionHandler();
+        }];
+    } else {
+        completionHandler();
+    }
+>>>>>>> master
 }
 
 @end

@@ -33,6 +33,7 @@ final class RadarApiHelper: Sendable {
         if (!body.isEmpty && (method == "POST" || method == "PUT" || method == "PATCH")) {
             request.httpBody = try JSONSerialization.data(withJSONObject: body, options: [])
         }
+<<<<<<< HEAD
 
         let (data, response) = try await URLSession.shared.data(for: request)
 
@@ -53,6 +54,41 @@ final class RadarApiHelper: Sendable {
         headers["Authorization"] = publishableKey
 
         let url = "\(radarHost)/v1/\(url)"
+||||||| 4cc3a5b2
+=======
+        
+        let (data, response) = try await URLSession.shared.data(for: request)
+
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw URLError(.badServerResponse)
+        }
+
+        return (data, httpResponse)
+    }
+
+    func radarRequest(method: String, url: String, query: [String: String] = [:], headers: [String: String] = [:], body: [String: Any] = [:]) async throws -> (Data, HTTPURLResponse) {
+        guard let publishableKey = RadarSettings.publishableKey else {
+            throw URLError(.userAuthenticationRequired)
+        }
+        
+        var headers = headers
+        headers["Authorization"] = publishableKey
+        // TODO: add additional mobile headers when RadarUtils is in swift
+        /*
+        @"Content-Type": @"application/json",
+        @"X-Radar-Config": @"true",
+        @"X-Radar-Device-Make": [RadarUtils deviceMake],
+        @"X-Radar-Device-Model": [RadarUtils deviceModel],
+        @"X-Radar-Device-OS": [RadarUtils deviceOS],
+        @"X-Radar-Device-Type": [RadarUtils deviceType],
+        @"X-Radar-SDK-Version": [RadarUtils sdkVersion],
+        @"X-Radar-Mobile-Origin": [[NSBundle mainBundle] bundleIdentifier],
+        @"X-Radar-Network-Type": [RadarUtils networkTypeString],
+        @"X-Radar-App-Info": appInfoJSON
+         */
+
+        let url = "\(RadarSettings.host)/v1/\(url)"
+>>>>>>> master
 
         let (data, response) = try await request(method: method, url: url, query: query, headers: headers, body: body)
 

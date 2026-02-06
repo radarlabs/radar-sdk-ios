@@ -2,7 +2,6 @@
     "meta": {
         "code": 200,
         "featureSettings": {
-            "useLocationMetadata": false,
             "useRadarKVStore": true,
             "useRadarModifiedBeacon": true,
             "radarLowPowerManagerDesiredAccuracy": 3000,

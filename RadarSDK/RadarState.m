@@ -8,6 +8,7 @@
 #import "RadarState.h"
 #import "CLLocation+Radar.h"
 #import "RadarUtils.h"
+#import "RadarLogger.h"
 
 @implementation RadarState
 
@@ -24,9 +25,13 @@ static NSString *const kRegionIds = @"radar-regionIds";
 static NSString *const kBeaconIds = @"radar-beaconIds";
 static NSString *const kLastHeadingData = @"radar-lastHeadingData";
 static NSString *const kLastMotionActivityData = @"radar-lastMotionActivityData";
+static NSString *const kLastPressureData = @"radar-lastPressureData";
 static NSString *const kNotificationPermissionGranted = @"radar-notificationPermissionGranted";
+static NSString *const kMotionAuthorization = @"radar-motionAuthorization";
 static NSString *const kRegisteredNotifications = @"radar-registeredNotifications";
-
+static NSDictionary *_lastRelativeAltitudeDataInMemory = nil;
+static NSDate *_lastPressureBackupTime = nil;
+static NSTimeInterval const kBackupInterval = 2.0; // 2 seconds
 + (CLLocation *)lastLocation {
     NSDictionary *dict = [[NSUserDefaults standardUserDefaults] dictionaryForKey:kLastLocation];
     CLLocation *lastLocation = [RadarUtils locationForDictionary:dict];
@@ -183,12 +188,77 @@ static NSString *const kRegisteredNotifications = @"radar-registeredNotification
     [[NSUserDefaults standardUserDefaults] setObject:lastMotionActivityData forKey:kLastMotionActivityData];
 }
 
++ (NSDictionary *)lastRelativeAltitudeData {
+    NSTimeInterval currentTime = [[NSDate date] timeIntervalSince1970];
+    
+    // If we have a valid in-memory value, check its timestamp
+    if (_lastRelativeAltitudeDataInMemory) {
+        NSTimeInterval timestamp = [_lastRelativeAltitudeDataInMemory[@"relativeAltitudeTimestamp"] doubleValue];
+        NSTimeInterval age = currentTime - timestamp;
+        if (timestamp > 0 && age <= 60) {
+            return _lastRelativeAltitudeDataInMemory;
+        } else if (timestamp > 0) {
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelWarning message:[NSString stringWithFormat:@"In-memory altitude data is stale (age: %.1f seconds) - will try persisted data", age]];
+        }
+    }
+    
+    // If in-memory value is invalid or too old, try to get from NSUserDefaults
+    NSDictionary *savedData = [[NSUserDefaults standardUserDefaults] dictionaryForKey:kLastPressureData];
+    if (savedData) {
+        NSTimeInterval timestamp = [savedData[@"relativeAltitudeTimestamp"] doubleValue];
+        NSTimeInterval age = currentTime - timestamp;
+        if (timestamp > 0 && age <= 60) {
+            // Update in-memory value if valid
+            _lastRelativeAltitudeDataInMemory = savedData;
+            return savedData;
+        } else if (timestamp > 0) {
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelWarning message:[NSString stringWithFormat:@"Persisted altitude data is also stale (age: %.1f seconds) - returning nil, altitude will be undefined", age]];
+        }
+    } else {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelWarning message:@"No persisted altitude data found - altitude will be undefined"];
+    }
+    
+    return nil;
+}
+
++ (void)setLastRelativeAltitudeData:(NSDictionary *)lastPressureData {
+    if (lastPressureData) {
+        NSTimeInterval timestamp = [lastPressureData[@"relativeAltitudeTimestamp"] doubleValue];
+        NSNumber *pressure = lastPressureData[@"pressure"];
+        NSNumber *relativeAlt = lastPressureData[@"relativeAltitude"];
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Storing new altitude data: timestamp=%.3f, pressure=%@ hPa, relative=%@ m", timestamp, pressure, relativeAlt]];
+    } else {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Clearing altitude data (nil passed)"];
+    }
+    
+    // Update in-memory value
+    _lastRelativeAltitudeDataInMemory = lastPressureData;
+    
+    // Check if we need to backup to disk
+    NSDate *now = [NSDate date];
+    if (!_lastPressureBackupTime || [now timeIntervalSinceDate:_lastPressureBackupTime] >= kBackupInterval) {
+        [[NSUserDefaults standardUserDefaults] setObject:lastPressureData forKey:kLastPressureData];
+        _lastPressureBackupTime = now;
+        if (lastPressureData) {
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Backed up altitude data to disk"];
+        }
+    }
+}
+
 + (void)setNotificationPermissionGranted:(BOOL)notificationPermissionGranted {
     [[NSUserDefaults standardUserDefaults] setBool:notificationPermissionGranted forKey:kNotificationPermissionGranted];
 }
 
 + (BOOL)notificationPermissionGranted {
     return [[NSUserDefaults standardUserDefaults] boolForKey:kNotificationPermissionGranted];
+}
+
++ (void)setMotionAuthorizationString:(NSString *)status {
+    [[NSUserDefaults standardUserDefaults] setObject:status forKey:kMotionAuthorization];
+}
+
++ (NSString *)motionAuthorizationString {
+    return [[NSUserDefaults standardUserDefaults] stringForKey:kMotionAuthorization];
 }
 
 + (NSArray<NSDictionary *> *_Nullable)registeredNotifications {
@@ -210,4 +280,5 @@ static NSString *const kRegisteredNotifications = @"radar-registeredNotification
     [registeredNotifications addObject:notification];
     [RadarState setRegisteredNotifications:registeredNotifications];
 }
+
 @end
