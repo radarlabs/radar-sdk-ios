@@ -33,29 +33,6 @@ final class RadarApiHelper: Sendable {
         if (!body.isEmpty && (method == "POST" || method == "PUT" || method == "PATCH")) {
             request.httpBody = try JSONSerialization.data(withJSONObject: body, options: [])
         }
-<<<<<<< HEAD
-
-        let (data, response) = try await URLSession.shared.data(for: request)
-
-        guard let httpResponse = response as? HTTPURLResponse else {
-            throw URLError(.badServerResponse)
-        }
-
-        return (data, httpResponse)
-    }
-
-    func radarRequest(method: String, url: String, query: [String: String] = [:], headers: [String: String] = [:], body: [String: Any] = [:]) async throws -> (Data, HTTPURLResponse) {
-        guard let publishableKey = UserDefaults.standard.string(forKey: "radar-publishableKey"),
-              let radarHost = UserDefaults.standard.string(forKey: "radar-host") else {
-            throw URLError(.userAuthenticationRequired)
-        }
-
-        var headers = headers
-        headers["Authorization"] = publishableKey
-
-        let url = "\(radarHost)/v1/\(url)"
-||||||| 4cc3a5b2
-=======
         
         let (data, response) = try await URLSession.shared.data(for: request)
 
@@ -88,7 +65,6 @@ final class RadarApiHelper: Sendable {
          */
 
         let url = "\(RadarSettings.host)/v1/\(url)"
->>>>>>> master
 
         let (data, response) = try await request(method: method, url: url, query: query, headers: headers, body: body)
 

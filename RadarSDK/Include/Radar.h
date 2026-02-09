@@ -28,11 +28,7 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol RadarVerifiedDelegate;
 @protocol RadarMotionProtocol;
 @protocol RadarInAppMessageProtocol;
-<<<<<<< HEAD
-||||||| 4cc3a5b2
-=======
 @protocol RadarIndoorsProtocol;
->>>>>>> master
 
 @class RadarTripOptions;
 @class RadarInAppMessage;
@@ -1364,20 +1360,6 @@ typedef void (^_Nonnull RadarIndoorsScanCompletionHandler)(NSString *_Nullable r
 
 + (void)setInAppMessageDelegate:(nullable id<RadarInAppMessageProtocol>)delegate NS_SWIFT_NAME(setInAppMessageDelegate(_:));
 
-<<<<<<< HEAD
-/**
- Load image convenience function available for use with custom in-app message views
- */
-+ (void) loadImage:(NSString*)url completionHandler:(void (^ _Nonnull)(UIImage * _Nullable))completionHandler NS_SWIFT_NAME(loadImage(_:completionHandler:));
-
-/**
- This function should be internal, but it is exposed due to swift migration limitations. It should only be used by internal swift classes while RadarLogBuffer is still in Obj-C
- */
-+ (void)__writeToLogBufferWithLevel:(RadarLogLevel)level type:(RadarLogType)type message:(NSString *)message forcePersist:(BOOL)forcePersist
-    NS_SWIFT_NAME(__writeToLogBuffer(with:type:message:forcePersist:));
-
-||||||| 4cc3a5b2
-=======
 + (void)showInAppMessage:(RadarInAppMessage *)message NS_SWIFT_NAME(showInAppMessage(_:));
 
 /**
@@ -1394,7 +1376,6 @@ typedef void (^_Nonnull RadarIndoorsScanCompletionHandler)(NSString *_Nullable r
 + (void)setLocationExtensionToken:(NSString*_Nullable)token;
 
 + (void)didReceivePushNotificationPayload:(NSDictionary*)payload completionHandler:(void (^ _Nonnull)(void))completionHandler;
->>>>>>> master
 
 @end
 

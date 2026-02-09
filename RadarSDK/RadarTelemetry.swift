@@ -2,66 +2,59 @@
 //  RadarTelemetry.swift
 //  RadarSDK
 //
+//  following closely to https://opentelemetry.io/docs/specs/otel/trace/api/ as much as possible while keeping implementation simple
 //  Copyright © 2025 Radar Labs, Inc. All rights reserved.
 //
 
 import Foundation
 
-@objc @objcMembers
-public class SpanContext : NSObject, Codable {
-    let trace_id: String
-    let span_id: String
-    
-    init(trace_id: String, span_id: String) {
-        self.trace_id = trace_id
-        self.span_id = span_id
-    }
+struct Context {
+    // the span id stack
+    var spanIds = [String]()
 }
 
-@objc @objcMembers
-public class Span: NSObject, Codable {
+@objc(Span) @objcMembers
+public class Span: NSObject {
     let name: String
-    let context: SpanContext
-    let parent_id: String?
-    let start_time: Date
-    var end_time: Date
-    // limit these to [String: String] for now
-    var attributes: [String: String]
-    var events: [[String: String]]
+    let spanId: String
+    let parentSpanId: String?
+    let startTime: Date
+    var endTime: Date?
     
-    init(name: String, context: SpanContext, parent_id: String?, start_time: Date, end_time: Date, attributes: [String: String], events: [[String: String]]) {
+    init(name: String, spanId: String, parentSpanId: String?) {
         self.name = name
-        self.context = context
-        self.parent_id = parent_id
-        self.start_time = start_time
-        self.end_time = end_time
-        self.attributes = attributes
-        self.events = events
-    }
-}
-
-@objc
-extension Span {
-    public func end() {
-        end_time = Date()
+        self.spanId = spanId
+        self.parentSpanId = parentSpanId
+        self.startTime = Date()
     }
     
-    public func endWithStatus(_ status: RadarStatus) {
-        attributes["status"] = Radar.stringForStatus(status)
-        end()
+    func end() {
+        self.endTime = Date()
     }
 }
-
 
 @objc(Tracer) @objcMembers
 public class Tracer: NSObject {
     
-    let trace_id = {
+    let name: String
+    var context: Context
+    
+    init(name: String) {
+        self.name = name
+        
+        self.context = Context()
+        
+        super.init()
+    }
+    
+    public var enabled = false
+    
+    let traceId = {
         var uuidString = UUID().uuidString
         uuidString.removeAll(where: { $0 == "-" })
         return uuidString.lowercased()
     }()
-    var spans = [String: Span]()
+    var spans = [Span]()
     @objc public var globalAttributes = [String: String]()
     
     func getSpanId() -> String {
@@ -69,18 +62,13 @@ public class Tracer: NSObject {
         return String(format:"%02lx", value)
     }
     
-    public func start(_ name: String, parent: SpanContext?) -> Span {
-        let span_id = getSpanId()
+    public func start(_ name: String, parent: String?) -> Span {
         let span = Span(
             name: name,
-            context: SpanContext(trace_id: trace_id, span_id: span_id),
-            parent_id: parent?.span_id,
-            start_time: Date(),
-            end_time: Date(),
-            attributes: globalAttributes,
-            events: []
+            spanId: getSpanId(),
+            parentSpanId: parent,
         )
-        spans[span_id] = span
+        spans.append(span)
         return span
     }
     // this function is separate without using default function to provide an interface without the parent argument for Obj-C
@@ -88,12 +76,20 @@ public class Tracer: NSObject {
         return start(name, parent: nil)
     }
     
-    public func with(_ name: String, parent: SpanContext? = nil, _ block: (_: Span) -> Void) {
+    public func with(_ name: String, parent: String? = nil, _ block: (_: Span) -> Void) {
         let span = start(name)
         block(span)
         span.end()
     }
     
+    @available(iOS 13.0, *)
+    public func with(_ name: String, parent: String? = nil, _ block: (_: Span) async -> Void) async {
+        let span = start(name)
+        await block(span)
+        span.end()
+    }
+    
+    @available(iOS 13.0, *)
     public func toString() -> String {
         let encoder = JSONEncoder()
         
@@ -105,7 +101,10 @@ public class Tracer: NSObject {
         encoder.dateEncodingStrategy = .formatted(formatter)
         
         do {
-            let data = try encoder.encode(Array(spans.values))
+            let data = try encoder.encode(spans.map { span in
+                Otel.Span(traceId: traceId, spanId: span.spanId, traceState: "trace-state-ok", parentSpanId: span.parentSpanId, flags: 0, name: span.name, kind: .CLIENT, startTimeUnixNano: UInt64(span.startTime.timeIntervalSince1970 * 1_000_000_000), endTimeUnixNano: UInt64(span.endTime!.timeIntervalSince1970 * 1_000_000_000), attributes: [], droppedAttributesCount: 0, events: [], droppedEventsCount: 0, links: [], droppedLinksCount: nil, status: Otel.Status(message: "OK", code: .OK)
+                )
+            } )
             if let jsonString = String(data: data, encoding: .utf8) {
                 return jsonString
             }
@@ -115,3 +114,28 @@ public class Tracer: NSObject {
         return ""
     }
 }
+
+@objc @objcMembers
+public class TraceProvider: NSObject {
+    
+    let shared: TraceProvider = TraceProvider()
+    
+    var tracers = [String: Tracer]()
+    
+    func getTracer(name: String?, version: String?) -> Tracer {
+        if (name == nil) {
+            print("Invalid tracer name")
+        }
+        let name = name ?? ""
+        if let tracer = tracers[name] {
+            return tracer
+        } else {
+            let tracer = Tracer(name: name)
+            tracers[name] = tracer
+            return tracer
+        }
+    }
+}
+
+
+

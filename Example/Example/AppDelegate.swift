@@ -28,7 +28,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         UNUserNotificationCenter.current().delegate = self
         
         locationManager.delegate = self
-        self.requestLocationPermissions()
         
         // Replace with a valid test publishable key
         let radarInitializeOptions = RadarInitializeOptions()
@@ -42,7 +41,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         Radar.initialize(publishableKey: "prj_test_pk_0000000000000000000000000000000000000000", options: radarInitializeOptions )
         Radar.setMetadata([ "foo": "bar" ])
         Radar.setDelegate(self)
-        Radar.setVerifiedDelegate(self)
+        Radar.setVerifiedDelegate(self)s
         Radar.setInAppMessageDelegate(MyIAMDelegate())
         
         if #available(iOS 15.0, *) {
@@ -114,44 +113,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
             //            Radar.trackOnce { (status, location, events, user) in
             //                print("Track once: status = \(Radar.stringForStatus(status)); location = \(String(describing: location)); events = \(String(describing: events)); user = \(String(describing: user))")
             //            }
-        }
-        
-        demoButton(text: "IAM") {
-            Radar.showInAppMessage(RadarInAppMessage.fromDictionary([
-                "title": [
-                    "text": "This is the titleakfjaklsjdflajsldfjalsdjflajsldkfjaslkfdjkalsjdfklajlkfdjklsjflajsd",
-                    "color": "#ff0000"
-                ],
-                "body": [
-                    "text": "This is a demo message.",
-                    "color": "#00ff00"
-                ],
-                "button": [
-                    "text": "Buy it",
-                    "color": "#0000ff",
-                    "backgroundColor": "#EB0083",
-                ],
-                "image": [
-                    "url": "https://images.pexels.com/photos/949587/pexels-photo-949587.jpeg",
-                    "name": "image.jpeg"
-                ],
-                "metadata": [
-                    "campainId": "1234"
-                ]
-            ])!)
-        }
-
-
-        demoButton(text: "startTracking") {
-            let options = RadarTrackingOptions.presetContinuous
-            Radar.startTracking(trackingOptions: options)
-            
-            
-        demoButton(text: "get User Id") {
-            print(Radar.getUserId())
-        }
-        demoButton(text: "track once") {
-            print(Radar.trackOnce())
         }
     }
         
@@ -228,7 +189,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
     
     // MARK: - Live Activity Handling
     @available(iOS 16.2, *)
-    private func handleTripLiveActivity(user: RadarUser?) {
+    func handleTripLiveActivity(user: RadarUser?) {
         guard let trip = user?.trip else {
             TripLiveActivityManager.shared.endActivity(status: "completed")
             return
