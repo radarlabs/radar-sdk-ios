@@ -11,7 +11,6 @@ import Foundation
 import Testing
 @testable
 import RadarSDK
-import SwiftUI
 
 // run tests in series because we want to test UserDefaults.standard, which is a shared instance
 @Suite(.serialized)

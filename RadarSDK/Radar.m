@@ -85,33 +85,33 @@ BOOL _initialized = NO;
         [RadarState setMotionAuthorizationString:@"NOT_AVAILABLE"];
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelWarning message:@"RadarSDKMotion class not found; Motion/Pressure features disabled"];
     }
-
+    
     [[NSNotificationCenter defaultCenter] addObserver:[self sharedInstance]
                                              selector:@selector(applicationWillEnterForeground)
                                                  name:UIApplicationWillEnterForegroundNotification
                                                object:nil];
     
     [RadarSettings setPublishableKey:publishableKey];
-
+    
     RadarSdkConfiguration *sdkConfiguration = [RadarSettings sdkConfiguration];
     // For most users not using these features, options be null and skipped,
-    //  For X-platform users initializing Radar in the crossplatform layer, the options will also be null as nativeSetup would had been called ealier 
+    //  For X-platform users initializing Radar in the crossplatform layer, the options will also be null as nativeSetup would had been called ealier
     if (options) {
         if (NSClassFromString(@"XCTestCase") == nil) {
             [Radar nativeSetup:options];
         }
     }
-
+    
     if (sdkConfiguration.usePersistence) {
         [[RadarReplayBuffer sharedInstance] loadReplaysFromPersistentStore];
     }
-
+    
     if ([[UIApplication sharedApplication] applicationState] != UIApplicationStateBackground) {
         [RadarSettings updateSessionId];
     }
-
+    
     [[RadarLocationManager sharedInstance] updateTrackingFromInitialize];
-
+    
     [RadarNotificationHelper checkNotificationPermissionsWithCompletionHandler:^(BOOL granted) {
         [[RadarAPIClient sharedInstance] getConfigForUsage:@"initialize"
                                                   verified:NO
@@ -236,10 +236,10 @@ BOOL _initialized = NO;
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"getLocation()"];
     [[RadarLocationManager sharedInstance] getLocationWithDesiredAccuracy:desiredAccuracy
                                                         completionHandler:^(RadarStatus status, CLLocation *_Nullable location, BOOL stopped) {
-                                                            [RadarUtils runOnMainThread:^{
-                                                                completionHandler(status, location, stopped);
-                                                            }];
-                                                        }];
+        [RadarUtils runOnMainThread:^{
+            completionHandler(status, location, stopped);
+        }];
+    }];
 }
 
 #pragma mark - Tracking
@@ -249,7 +249,16 @@ BOOL _initialized = NO;
 }
 
 + (void)trackOnceWithDesiredAccuracy:(RadarTrackingOptionsDesiredAccuracy)desiredAccuracy beacons:(BOOL)beacons completionHandler:(RadarTrackCompletionHandler)completionHandler {
-    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"trackOnce()"];
+//    Tracer* tracer = [[Tracer alloc] init];
+//    tracer.globalAttributes = @{
+//        @"method": @"trackOnce",
+//        @"deviceType": [RadarUtils deviceType],
+//    };
+    
+//    Span* trackOnceTrace = [tracer start:@"traceOnce"];
+//    Span* getLocationTrace = [tracer start:@"getLocation"];
+    
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"trackOnce"];
     [[RadarLocationManager sharedInstance]
         getLocationWithDesiredAccuracy:desiredAccuracy
                      completionHandler:^(RadarStatus status, CLLocation *_Nullable location, BOOL stopped) {
@@ -421,7 +430,7 @@ BOOL _initialized = NO;
 
 + (void)startTrackingWithOptions:(RadarTrackingOptions *)options {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"startTracking()"];
-
+    
     [[RadarLocationManager sharedInstance] startTrackingWithOptions:options];
 }
 
@@ -432,35 +441,75 @@ BOOL _initialized = NO;
                       interval:(NSTimeInterval)interval
              completionHandler:(RadarTrackCompletionHandler _Nullable)completionHandler {
     [[RadarAPIClient sharedInstance]
-        getDistanceFromOrigin:origin
-                  destination:destination
-                        modes:mode
-                        units:RadarRouteUnitsMetric
-               geometryPoints:steps
-            completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, RadarRoutes *_Nullable routes) {
-                NSArray<RadarCoordinate *> *coordinates;
-                if (routes) {
-                    if (mode == RadarRouteModeFoot && routes.foot && routes.foot.geometry) {
-                        coordinates = routes.foot.geometry.coordinates;
-                    } else if (mode == RadarRouteModeBike && routes.bike && routes.bike.geometry) {
-                        coordinates = routes.bike.geometry.coordinates;
-                    } else if (mode == RadarRouteModeCar && routes.car && routes.car.geometry) {
-                        coordinates = routes.car.geometry.coordinates;
-                    } else if (mode == RadarRouteModeTruck && routes.truck && routes.truck.geometry) {
-                        coordinates = routes.truck.geometry.coordinates;
-                    } else if (mode == RadarRouteModeMotorbike && routes.motorbike && routes.motorbike.geometry) {
-                        coordinates = routes.motorbike.geometry.coordinates;
-                    }
+     getDistanceFromOrigin:origin
+     destination:destination
+     modes:mode
+     units:RadarRouteUnitsMetric
+     geometryPoints:steps
+     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, RadarRoutes *_Nullable routes) {
+        NSArray<RadarCoordinate *> *coordinates;
+        if (routes) {
+            if (mode == RadarRouteModeFoot && routes.foot && routes.foot.geometry) {
+                coordinates = routes.foot.geometry.coordinates;
+            } else if (mode == RadarRouteModeBike && routes.bike && routes.bike.geometry) {
+                coordinates = routes.bike.geometry.coordinates;
+            } else if (mode == RadarRouteModeCar && routes.car && routes.car.geometry) {
+                coordinates = routes.car.geometry.coordinates;
+            } else if (mode == RadarRouteModeTruck && routes.truck && routes.truck.geometry) {
+                coordinates = routes.truck.geometry.coordinates;
+            } else if (mode == RadarRouteModeMotorbike && routes.motorbike && routes.motorbike.geometry) {
+                coordinates = routes.motorbike.geometry.coordinates;
+            }
+        }
+        
+        if (!coordinates) {
+            if (completionHandler) {
+                [RadarUtils runOnMainThread:^{
+                    completionHandler(status, nil, nil, nil);
+                }];
+            }
+            
+            return;
+        }
+        
+        NSTimeInterval intervalLimit = interval;
+        if (intervalLimit < 1) {
+            intervalLimit = 1;
+        } else if (intervalLimit > 60) {
+            intervalLimit = 60;
+        }
+        
+        __block int i = 0;
+        __block void (^track)(void);
+        __block __weak void (^weakTrack)(void);
+        track = ^{
+            weakTrack = track;
+            RadarCoordinate *coordinate = coordinates[i];
+            CLLocation *location = [[CLLocation alloc] initWithCoordinate:coordinate.coordinate
+                                                                 altitude:-1
+                                                       horizontalAccuracy:5
+                                                         verticalAccuracy:-1
+                                                                timestamp:[NSDate new]];
+            BOOL stopped = (i == 0) || (i == coordinates.count - 1);
+            
+            [[RadarAPIClient sharedInstance]
+             trackWithLocation:location
+             stopped:stopped
+             foreground:NO
+             source:RadarLocationSourceMockLocation
+             replayed:NO
+             beacons:nil
+             indoorScan:nil
+             completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user,
+                                 NSArray<RadarGeofence *> *_Nullable nearbyGeofences, RadarConfig *_Nullable config, RadarVerifiedLocationToken *_Nullable token) {
+                if (completionHandler) {
+                    [RadarUtils runOnMainThread:^{
+                        completionHandler(status, location, events, user);
+                    }];
                 }
-
-                if (!coordinates) {
-                    if (completionHandler) {
-                        [RadarUtils runOnMainThread:^{
-                            completionHandler(status, nil, nil, nil);
-                        }];
-                    }
-
-                    return;
+                
+                if (i < coordinates.count - 1) {
+                    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(intervalLimit * NSEC_PER_SEC)), dispatch_get_main_queue(), weakTrack);
                 }
 
                 NSTimeInterval intervalLimit = interval;
@@ -509,6 +558,10 @@ BOOL _initialized = NO;
 
                 track();
             }];
+        };
+        
+        track();
+    }];
 }
 
 + (void)stopTracking {
@@ -569,7 +622,7 @@ BOOL _initialized = NO;
                     completionHandler(status, nil);
                 }];
             }
-
+            
             return;
         }
         
@@ -602,7 +655,7 @@ BOOL _initialized = NO;
     });
 }
 
-+ (void)logOpenedAppConversionWithNotification:(UNNotificationRequest *)request 
++ (void)logOpenedAppConversionWithNotification:(UNNotificationRequest *)request
                               conversionSource:(NSString *_Nullable)conversionSource {
     [self logConversionWithNotification:request eventName:@"opened_app" conversionSource:conversionSource deliveredAfter:nil];
 }
@@ -613,7 +666,7 @@ BOOL _initialized = NO;
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"logConversion()"];
     NSTimeInterval lastTrackedTimeInterval = [[NSDate date] timeIntervalSinceDate:[RadarSettings lastTrackedTime]];
     BOOL isLastTrackRecent = lastTrackedTimeInterval < 60;
-
+    
     CLAuthorizationStatus authorizationStatus = [[RadarLocationManager sharedInstance].permissionsHelper locationAuthorizationStatus];
     if (!(authorizationStatus == kCLAuthorizationStatusAuthorizedWhenInUse || authorizationStatus == kCLAuthorizationStatusAuthorizedAlways) || isLastTrackRecent) {
         [self sendLogConversionRequestWithName:name metadata:metadata campaign:nil completionHandler:completionHandler];
@@ -718,19 +771,19 @@ BOOL _initialized = NO;
     [[RadarAPIClient sharedInstance] updateTripWithOptions:options
                                                     status:status
                                          completionHandler:^(RadarStatus status, RadarTrip *trip, NSArray<RadarEvent *> *events) {
-                                             if (status == RadarStatusSuccess) {
-                                                 [RadarSettings setTripOptions:options];
-
-                                                 // flush location update to generate events
-                                                 [[RadarLocationManager sharedInstance] getLocationWithCompletionHandler:nil];
-                                             }
-
-                                             if (completionHandler) {
-                                                 [RadarUtils runOnMainThread:^{
-                                                     completionHandler(status, trip, events);
-                                                 }];
-                                             }
-                                         }];
+        if (status == RadarStatusSuccess) {
+            [RadarSettings setTripOptions:options];
+            
+            // flush location update to generate events
+            [[RadarLocationManager sharedInstance] getLocationWithCompletionHandler:nil];
+        }
+        
+        if (completionHandler) {
+            [RadarUtils runOnMainThread:^{
+                completionHandler(status, trip, events);
+            }];
+        }
+    }];
 }
 
 + (void)completeTrip {
@@ -800,18 +853,18 @@ BOOL _initialized = NO;
                     completionHandler(status, nil, nil);
                 }];
             }
-
+            
             return;
         }
-
+        
         [[RadarAPIClient sharedInstance] getContextForLocation:location
                                              completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, RadarContext *_Nullable context) {
-                                                 if (completionHandler) {
-                                                     [RadarUtils runOnMainThread:^{
-                                                         completionHandler(status, location, context);
-                                                     }];
-                                                 }
-                                             }];
+            if (completionHandler) {
+                [RadarUtils runOnMainThread:^{
+                    completionHandler(status, location, context);
+                }];
+            }
+        }];
     }];
 }
 
@@ -819,12 +872,12 @@ BOOL _initialized = NO;
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"getContext()"];
     [[RadarAPIClient sharedInstance] getContextForLocation:location
                                          completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, RadarContext *_Nullable context) {
-                                             if (completionHandler) {
-                                                 [RadarUtils runOnMainThread:^{
-                                                     completionHandler(status, location, context);
-                                                 }];
-                                             }
-                                         }];
+        if (completionHandler) {
+            [RadarUtils runOnMainThread:^{
+                completionHandler(status, location, context);
+            }];
+        }
+    }];
 }
 
 #pragma mark - Search
@@ -855,10 +908,10 @@ BOOL _initialized = NO;
                     completionHandler(status, nil, nil);
                 }];
             }
-
+            
             return;
         }
-
+        
         [[RadarAPIClient sharedInstance] searchPlacesNear:location
                                                    radius:radius
                                                    chains:chains
@@ -868,12 +921,12 @@ BOOL _initialized = NO;
                                              countryCodes:countryCodes
                                                     limit:limit
                                         completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarPlace *> *_Nullable places) {
-                                            if (completionHandler) {
-                                                [RadarUtils runOnMainThread:^{
-                                                    completionHandler(status, location, places);
-                                                }];
-                                            }
-                                        }];
+            if (completionHandler) {
+                [RadarUtils runOnMainThread:^{
+                    completionHandler(status, location, places);
+                }];
+            }
+        }];
     }];
 }
 
@@ -907,10 +960,10 @@ BOOL _initialized = NO;
                                          countryCodes:countryCodes
                                                 limit:limit
                                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarPlace *> *_Nullable places) {
-                                        [RadarUtils runOnMainThread:^{
-                                            completionHandler(status, near, places);
-                                        }];
-                                    }];
+        [RadarUtils runOnMainThread:^{
+            completionHandler(status, near, places);
+        }];
+    }];
 }
 
 + (void)searchGeofences:(RadarSearchGeofencesCompletionHandler)completionHandler {
@@ -934,7 +987,7 @@ BOOL _initialized = NO;
                     }];
                 }
                 return;
-            }           
+            }
             [[RadarAPIClient sharedInstance] searchGeofencesNear:location
                                                           radius:radius
                                                             tags:tags
@@ -942,27 +995,27 @@ BOOL _initialized = NO;
                                                            limit:limit
                                                  includeGeometry:includeGeometry
                                                completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarGeofence *> *_Nullable geofences) {
-                                                if (completionHandler) {
-                                                    [RadarUtils runOnMainThread:^{
-                                                        completionHandler(status, location, geofences);
-                                                    }];
-                                                }
-                                              }];
-        }];    
+                if (completionHandler) {
+                    [RadarUtils runOnMainThread:^{
+                        completionHandler(status, location, geofences);
+                    }];
+                }
+            }];
+        }];
     } else {
         [[RadarAPIClient sharedInstance] searchGeofencesNear:near
-                                                     radius:radius
-                                                       tags:tags
-                                                   metadata:metadata
-                                                      limit:limit
-                                            includeGeometry:includeGeometry
-                                          completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarGeofence *> *_Nullable geofences) {
-                                            if (completionHandler) {
-                                                [RadarUtils runOnMainThread:^{
-                                                    completionHandler(status, near, geofences);
-                                                }];
-                                            }
-                                       }];
+                                                      radius:radius
+                                                        tags:tags
+                                                    metadata:metadata
+                                                       limit:limit
+                                             includeGeometry:includeGeometry
+                                           completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarGeofence *> *_Nullable geofences) {
+            if (completionHandler) {
+                [RadarUtils runOnMainThread:^{
+                    completionHandler(status, near, geofences);
+                }];
+            }
+        }];
     }
 }
 
@@ -980,12 +1033,12 @@ BOOL _initialized = NO;
                                                country:country
                                               mailable:NO
                                      completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarAddress *> *_Nullable addresses) {
-                                         if (completionHandler) {
-                                             [RadarUtils runOnMainThread:^{
-                                                 completionHandler(status, addresses);
-                                             }];
-                                         }
-                                     }];
+        if (completionHandler) {
+            [RadarUtils runOnMainThread:^{
+                completionHandler(status, addresses);
+            }];
+        }
+    }];
 }
 
 + (void)autocompleteQuery:(NSString *_Nonnull)query
@@ -1002,12 +1055,12 @@ BOOL _initialized = NO;
                                                country:country
                                               mailable:mailable
                                      completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarAddress *> *_Nullable addresses) {
-                                         if (completionHandler) {
-                                             [RadarUtils runOnMainThread:^{
-                                                 completionHandler(status, addresses);
-                                             }];
-                                         }
-                                     }];
+        if (completionHandler) {
+            [RadarUtils runOnMainThread:^{
+                completionHandler(status, addresses);
+            }];
+        }
+    }];
 }
 
 + (void)autocompleteQuery:(NSString *_Nonnull)query
@@ -1023,12 +1076,12 @@ BOOL _initialized = NO;
                                                  limit:limit
                                                country:country
                                      completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarAddress *> *_Nullable addresses) {
-                                         if (completionHandler) {
-                                             [RadarUtils runOnMainThread:^{
-                                                 completionHandler(status, addresses);
-                                             }];
-                                         }
-                                     }];
+        if (completionHandler) {
+            [RadarUtils runOnMainThread:^{
+                completionHandler(status, addresses);
+            }];
+        }
+    }];
 }
 
 + (void)autocompleteQuery:(NSString *_Nonnull)query near:(CLLocation *_Nullable)near limit:(int)limit completionHandler:(RadarGeocodeCompletionHandler)completionHandler {
@@ -1039,17 +1092,17 @@ BOOL _initialized = NO;
                                                  limit:limit
                                                country:nil
                                      completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarAddress *> *_Nullable addresses) {
-                                         if (completionHandler) {
-                                             [RadarUtils runOnMainThread:^{
-                                                 completionHandler(status, addresses);
-                                             }];
-                                         }
-                                     }];
+        if (completionHandler) {
+            [RadarUtils runOnMainThread:^{
+                completionHandler(status, addresses);
+            }];
+        }
+    }];
 }
 
 #pragma mark - Geocoding
 
-+ (void)geocodeAddress:(NSString *)query 
++ (void)geocodeAddress:(NSString *)query
                 layers:(NSArray<NSString *> *_Nullable)layers
              countries:(NSArray<NSString *> *_Nullable)countries
      completionHandler:(RadarGeocodeCompletionHandler)completionHandler {
@@ -1058,10 +1111,10 @@ BOOL _initialized = NO;
                                              layers:layers
                                           countries:countries
                                   completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarAddress *> *_Nullable addresses) {
-                                      [RadarUtils runOnMainThread:^{
-                                          completionHandler(status, addresses);
-                                      }];
-                                  }];
+        [RadarUtils runOnMainThread:^{
+            completionHandler(status, addresses);
+        }];
+    }];
 }
 
 + (void)geocodeAddress:(NSString *)query completionHandler:(RadarGeocodeCompletionHandler)completionHandler {
@@ -1081,7 +1134,7 @@ BOOL _initialized = NO;
                     completionHandler(status, nil);
                 }];
             }
-
+            
             return;
         }
         [Radar reverseGeocodeLocation:location layers:layers completionHandler:completionHandler];
@@ -1099,13 +1152,13 @@ BOOL _initialized = NO;
     [[RadarAPIClient sharedInstance] reverseGeocodeLocation:location
                                                      layers:layers
                                           completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarAddress *> *_Nullable addresses) {
-                                              if (completionHandler) {
-                                                  [RadarUtils runOnMainThread:^{
-                                                      completionHandler(status, addresses);
-                                                  }];
-                                              }
-                                          }];
-
+        if (completionHandler) {
+            [RadarUtils runOnMainThread:^{
+                completionHandler(status, addresses);
+            }];
+        }
+    }];
+    
 }
 
 + (void)ipGeocodeWithCompletionHandler:(RadarIPGeocodeCompletionHandler)completionHandler {
@@ -1121,11 +1174,11 @@ BOOL _initialized = NO;
 
 + (void)validateAddress:(RadarAddress *_Nonnull)address completionHandler:(RadarValidateAddressCompletionHandler)completionHandler {
     [[RadarAPIClient sharedInstance] validateAddress:address
-                                  completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, RadarAddress *_Nullable address, RadarAddressVerificationStatus verificationStatus) {
-                                      [RadarUtils runOnMainThread:^{
-                                          completionHandler(status, address, verificationStatus);
-                                      }];
-                                  }];
+                                   completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, RadarAddress *_Nullable address, RadarAddressVerificationStatus verificationStatus) {
+        [RadarUtils runOnMainThread:^{
+            completionHandler(status, address, verificationStatus);
+        }];
+    }];
 }
 
 #pragma mark - Distance
@@ -1142,22 +1195,22 @@ BOOL _initialized = NO;
                     completionHandler(status, nil);
                 }];
             }
-
+            
             return;
         }
-
+        
         [[RadarAPIClient sharedInstance] getDistanceFromOrigin:location
                                                    destination:destination
                                                          modes:modes
                                                          units:units
                                                 geometryPoints:-1
                                              completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, RadarRoutes *_Nullable routes) {
-                                                 if (completionHandler) {
-                                                     [RadarUtils runOnMainThread:^{
-                                                         completionHandler(status, routes);
-                                                     }];
-                                                 }
-                                             }];
+            if (completionHandler) {
+                [RadarUtils runOnMainThread:^{
+                    completionHandler(status, routes);
+                }];
+            }
+        }];
     }];
 }
 
@@ -1173,12 +1226,12 @@ BOOL _initialized = NO;
                                                      units:units
                                             geometryPoints:-1
                                          completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, RadarRoutes *_Nullable routes) {
-                                             if (completionHandler) {
-                                                 [RadarUtils runOnMainThread:^{
-                                                     completionHandler(status, routes);
-                                                 }];
-                                             }
-                                         }];
+        if (completionHandler) {
+            [RadarUtils runOnMainThread:^{
+                completionHandler(status, routes);
+            }];
+        }
+    }];
 }
 
 + (void)getMatrixFromOrigins:(NSArray<CLLocation *> *_Nonnull)origins
@@ -1192,12 +1245,12 @@ BOOL _initialized = NO;
                                                      mode:mode
                                                     units:units
                                         completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, RadarRouteMatrix *_Nullable matrix) {
-                                            if (completionHandler) {
-                                                [RadarUtils runOnMainThread:^{
-                                                    completionHandler(status, matrix);
-                                                }];
-                                            }
-                                        }];
+        if (completionHandler) {
+            [RadarUtils runOnMainThread:^{
+                completionHandler(status, matrix);
+            }];
+        }
+    }];
 }
 
 #pragma mark - Logging
@@ -1217,7 +1270,7 @@ BOOL _initialized = NO;
     [RadarSdkConfiguration updateSdkConfigurationFromServer];
 }
 
-+ (void)logTermination { 
++ (void)logTermination {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug type:RadarLogTypeNone message:@"App terminating" includeDate:YES includeBattery:YES append:YES];
 }
 
@@ -1278,47 +1331,47 @@ BOOL _initialized = NO;
 + (NSString *)stringForStatus:(RadarStatus)status {
     NSString *str;
     switch (status) {
-    case RadarStatusSuccess:
-        str = @"SUCCESS";
-        break;
-    case RadarStatusErrorPublishableKey:
-        str = @"ERROR_PUBLISHABLE_KEY";
-        break;
-    case RadarStatusErrorPermissions:
-        str = @"ERROR_PERMISSIONS";
-        break;
-    case RadarStatusErrorLocation:
-        str = @"ERROR_LOCATION";
-        break;
-    case RadarStatusErrorBluetooth:
-        str = @"ERROR_BLUETOOTH";
-        break;
-    case RadarStatusErrorNetwork:
-        str = @"ERROR_NETWORK";
-        break;
-    case RadarStatusErrorBadRequest:
-        str = @"ERROR_BAD_REQUEST";
-        break;
-    case RadarStatusErrorUnauthorized:
-        str = @"ERROR_UNAUTHORIZED";
-        break;
-    case RadarStatusErrorPaymentRequired:
-        str = @"ERROR_PAYMENT_REQUIRED";
-        break;
-    case RadarStatusErrorForbidden:
-        str = @"ERROR_FORBIDDEN";
-        break;
-    case RadarStatusErrorNotFound:
-        str = @"ERROR_NOT_FOUND";
-        break;
-    case RadarStatusErrorRateLimit:
-        str = @"ERROR_RATE_LIMIT";
-        break;
-    case RadarStatusErrorServer:
-        str = @"ERROR_SERVER";
-        break;
-    default:
-        str = @"ERROR_UNKNOWN";
+        case RadarStatusSuccess:
+            str = @"SUCCESS";
+            break;
+        case RadarStatusErrorPublishableKey:
+            str = @"ERROR_PUBLISHABLE_KEY";
+            break;
+        case RadarStatusErrorPermissions:
+            str = @"ERROR_PERMISSIONS";
+            break;
+        case RadarStatusErrorLocation:
+            str = @"ERROR_LOCATION";
+            break;
+        case RadarStatusErrorBluetooth:
+            str = @"ERROR_BLUETOOTH";
+            break;
+        case RadarStatusErrorNetwork:
+            str = @"ERROR_NETWORK";
+            break;
+        case RadarStatusErrorBadRequest:
+            str = @"ERROR_BAD_REQUEST";
+            break;
+        case RadarStatusErrorUnauthorized:
+            str = @"ERROR_UNAUTHORIZED";
+            break;
+        case RadarStatusErrorPaymentRequired:
+            str = @"ERROR_PAYMENT_REQUIRED";
+            break;
+        case RadarStatusErrorForbidden:
+            str = @"ERROR_FORBIDDEN";
+            break;
+        case RadarStatusErrorNotFound:
+            str = @"ERROR_NOT_FOUND";
+            break;
+        case RadarStatusErrorRateLimit:
+            str = @"ERROR_RATE_LIMIT";
+            break;
+        case RadarStatusErrorServer:
+            str = @"ERROR_SERVER";
+            break;
+        default:
+            str = @"ERROR_UNKNOWN";
     }
     return str;
 }
@@ -1336,20 +1389,20 @@ BOOL _initialized = NO;
 + (NSString *)stringForVerificationStatus:(RadarAddressVerificationStatus)status {
     NSString *str;
     switch (status) {
-    case RadarAddressVerificationStatusVerified:
-        str = @"VERIFIED";
-        break;
-    case RadarAddressVerificationStatusPartiallyVerified:
-        str = @"PARTIALLY_VERIFIED";
-        break;
-    case RadarAddressVerificationStatusAmbiguous:
-        str = @"AMBIGUOUS";
-        break;
-    case RadarAddressVerificationStatusUnverified:
-        str = @"UNVERIFIED";
-        break;
-    default:
-        str = @"UNKNOWN";
+        case RadarAddressVerificationStatusVerified:
+            str = @"VERIFIED";
+            break;
+        case RadarAddressVerificationStatusPartiallyVerified:
+            str = @"PARTIALLY_VERIFIED";
+            break;
+        case RadarAddressVerificationStatusAmbiguous:
+            str = @"AMBIGUOUS";
+            break;
+        case RadarAddressVerificationStatusUnverified:
+            str = @"UNVERIFIED";
+            break;
+        default:
+            str = @"UNKNOWN";
     }
     return str;
 }
@@ -1357,24 +1410,24 @@ BOOL _initialized = NO;
 + (NSString *)stringForActivityType:(RadarActivityType)type {
     NSString *str;
     switch (type) {
-    case RadarActivityTypeUnknown:
-        str = @"unknown";
-        break;
-    case RadarActivityTypeStationary:
-        str = @"stationary";
-        break;
-    case RadarActivityTypeFoot:
-        str = @"foot";
-        break;
-    case RadarActivityTypeRun:
-        str = @"run";
-        break;
-    case RadarActivityTypeBike:
-        str = @"bike";
-        break;
-    case RadarActivityTypeCar:
-        str = @"car";
-        break;
+        case RadarActivityTypeUnknown:
+            str = @"unknown";
+            break;
+        case RadarActivityTypeStationary:
+            str = @"stationary";
+            break;
+        case RadarActivityTypeFoot:
+            str = @"foot";
+            break;
+        case RadarActivityTypeRun:
+            str = @"run";
+            break;
+        case RadarActivityTypeBike:
+            str = @"bike";
+            break;
+        case RadarActivityTypeCar:
+            str = @"car";
+            break;
     }
     return str;
 }
@@ -1382,38 +1435,38 @@ BOOL _initialized = NO;
 + (NSString *)stringForLocationSource:(RadarLocationSource)source {
     NSString *str;
     switch (source) {
-    case RadarLocationSourceForegroundLocation:
-        str = @"FOREGROUND_LOCATION";
-        break;
-    case RadarLocationSourceBackgroundLocation:
-        str = @"BACKGROUND_LOCATION";
-        break;
-    case RadarLocationSourceManualLocation:
-        str = @"MANUAL_LOCATION";
-        break;
-    case RadarLocationSourceVisitArrival:
-        str = @"VISIT_ARRIVAL";
-        break;
-    case RadarLocationSourceVisitDeparture:
-        str = @"VISIT_DEPARTURE";
-        break;
-    case RadarLocationSourceGeofenceEnter:
-        str = @"GEOFENCE_ENTER";
-        break;
-    case RadarLocationSourceGeofenceExit:
-        str = @"GEOFENCE_EXIT";
-        break;
-    case RadarLocationSourceMockLocation:
-        str = @"MOCK_LOCATION";
-        break;
-    case RadarLocationSourceBeaconEnter:
-        str = @"BEACON_ENTER";
-        break;
-    case RadarLocationSourceBeaconExit:
-        str = @"BEACON_EXIT";
-        break;
-    case RadarLocationSourceUnknown:
-        str = @"UNKNOWN";
+        case RadarLocationSourceForegroundLocation:
+            str = @"FOREGROUND_LOCATION";
+            break;
+        case RadarLocationSourceBackgroundLocation:
+            str = @"BACKGROUND_LOCATION";
+            break;
+        case RadarLocationSourceManualLocation:
+            str = @"MANUAL_LOCATION";
+            break;
+        case RadarLocationSourceVisitArrival:
+            str = @"VISIT_ARRIVAL";
+            break;
+        case RadarLocationSourceVisitDeparture:
+            str = @"VISIT_DEPARTURE";
+            break;
+        case RadarLocationSourceGeofenceEnter:
+            str = @"GEOFENCE_ENTER";
+            break;
+        case RadarLocationSourceGeofenceExit:
+            str = @"GEOFENCE_EXIT";
+            break;
+        case RadarLocationSourceMockLocation:
+            str = @"MOCK_LOCATION";
+            break;
+        case RadarLocationSourceBeaconEnter:
+            str = @"BEACON_ENTER";
+            break;
+        case RadarLocationSourceBeaconExit:
+            str = @"BEACON_EXIT";
+            break;
+        case RadarLocationSourceUnknown:
+            str = @"UNKNOWN";
     }
     return str;
 }
@@ -1425,26 +1478,26 @@ BOOL _initialized = NO;
 + (NSString *)stringForTripStatus:(RadarTripStatus)status {
     NSString *str;
     switch (status) {
-    case RadarTripStatusStarted:
-        str = @"started";
-        break;
-    case RadarTripStatusApproaching:
-        str = @"approaching";
-        break;
-    case RadarTripStatusArrived:
-        str = @"arrived";
-        break;
-    case RadarTripStatusExpired:
-        str = @"expired";
-        break;
-    case RadarTripStatusCompleted:
-        str = @"completed";
-        break;
-    case RadarTripStatusCanceled:
-        str = @"canceled";
-        break;
-    default:
-        str = @"unknown";
+        case RadarTripStatusStarted:
+            str = @"started";
+            break;
+        case RadarTripStatusApproaching:
+            str = @"approaching";
+            break;
+        case RadarTripStatusArrived:
+            str = @"arrived";
+            break;
+        case RadarTripStatusExpired:
+            str = @"expired";
+            break;
+        case RadarTripStatusCompleted:
+            str = @"completed";
+            break;
+        case RadarTripStatusCanceled:
+            str = @"canceled";
+            break;
+        default:
+            str = @"unknown";
     }
     return str;
 }
@@ -1485,16 +1538,16 @@ BOOL _initialized = NO;
         [[RadarAPIClient sharedInstance] getConfigForUsage:@"resume"
                                                   verified:NO
                                          completionHandler:^(RadarStatus status, RadarConfig *_Nullable config) {
-                                             if (status != RadarStatusSuccess || !config) {
-                                                return;
-                                             }
-                                             [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
-                                             [RadarSettings setSdkConfiguration:config.meta.sdkConfiguration];
-                                         }];
+            if (status != RadarStatusSuccess || !config) {
+                return;
+            }
+            [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
+            [RadarSettings setSdkConfiguration:config.meta.sdkConfiguration];
+        }];
     }
     
     [Radar logOpenedAppConversion];
-
+    
     RadarSdkConfiguration *sdkConfiguration = [RadarSettings sdkConfiguration];
     if (sdkConfiguration.trackOnceOnAppOpen) {
         [Radar trackOnceWithDesiredAccuracy:RadarTrackingOptionsDesiredAccuracyMedium beacons: [Radar getTrackingOptions].beacons completionHandler:nil];
@@ -1510,24 +1563,24 @@ BOOL _initialized = NO;
 }
 
 + (void)flushLogs {
-    NSArray<RadarLog *> *flushableLogs = [[RadarLogBuffer sharedInstance] flushableLogs]; 
+    NSArray<RadarLog *> *flushableLogs = [[RadarLogBuffer sharedInstance] flushableLogs];
     NSUInteger pendingLogCount = [flushableLogs count];
     if (pendingLogCount == 0) {
         return;
     }
-
+    
     RadarSyncLogsAPICompletionHandler onComplete = ^(RadarStatus status) {
         [[RadarLogBuffer sharedInstance] onFlush:status == RadarStatusSuccess logs:flushableLogs];
     };
-
+    
     [[RadarAPIClient sharedInstance] syncLogs:flushableLogs
                             completionHandler:^(RadarStatus status) {
-                                if (onComplete) {
-                                    [RadarUtils runOnMainThread:^{
-                                        onComplete(status);
-                                    }];
-                                }
-                            }];
+        if (onComplete) {
+            [RadarUtils runOnMainThread:^{
+                onComplete(status);
+            }];
+        }
+    }];
 }
 
 + (void)openURLFromNotification:(UNNotification *)notification {

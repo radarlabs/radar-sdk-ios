@@ -41,5 +41,4 @@ FOUNDATION_EXPORT const unsigned char RadarSDKVersionString[];
 #import "RadarSdkConfiguration.h"
 #import "RadarInAppMessage.h"
 #import "RadarInAppMessageDelegate.h"
-#import "Radar-Swift.h"
 #import "RadarIndoorsProtocol.h"
