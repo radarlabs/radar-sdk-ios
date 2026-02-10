@@ -90,7 +90,8 @@ typedef void (^_Nonnull RadarSyncLogsAPICompletionHandler)(RadarStatus status);
              indoorScan:(NSString *_Nullable)indoorScan
                  verified:(BOOL)verified
             fraudPayload:(NSString *_Nullable)fraudPayload
-         fraudKeyVersion:(NSInteger)fraudKeyVersion
+         // -- payload encryption --
+         // fraudKeyVersion:(NSInteger)fraudKeyVersion
       expectedCountryCode:(NSString *_Nullable)expectedCountryCode
         expectedStateCode:(NSString *_Nullable)expectedStateCode
                    reason:(NSString *_Nullable)reason

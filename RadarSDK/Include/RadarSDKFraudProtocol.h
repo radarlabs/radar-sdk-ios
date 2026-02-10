@@ -11,7 +11,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-typedef void (^RadarFraudPayloadCallback)(RadarStatus status, NSString *_Nullable payload, NSInteger fraudKeyVersion);
+typedef void (^RadarFraudPayloadCallback)(NSDictionary<NSString *, id> *_Nullable result);
 
 @protocol RadarSDKFraudProtocol<NSObject>
 

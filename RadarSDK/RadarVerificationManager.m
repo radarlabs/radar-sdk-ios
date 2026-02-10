@@ -123,17 +123,34 @@
             if (config.nonce) {
                 options[@"nonce"] = config.nonce;
             }
-            [[RadarSDKFraud sharedInstance] getFraudPayloadWithOptions:options completionHandler:^(RadarStatus status, NSString *_Nullable fraudPayload, NSInteger fraudKeyVersion) {
-                if (status != RadarStatusSuccess) {
+            [[RadarSDKFraud sharedInstance] getFraudPayloadWithOptions:options completionHandler:^(NSDictionary<NSString *, id> *_Nullable result) {
+                if (!result) {
                     [RadarUtils runOnMainThread:^{
-                        [[RadarDelegateHolder sharedInstance] didFailWithStatus:status];
+                        [[RadarDelegateHolder sharedInstance] didFailWithStatus:RadarStatusErrorUnknown];
                         
                         if (completionHandler) {
-                            completionHandler(status, nil);
+                            completionHandler(RadarStatusErrorUnknown, nil);
                         }
                     }];
                     return;
                 }
+                
+                NSString *error = result[@"error"];
+                if (error) {
+                    [RadarUtils runOnMainThread:^{
+                        [[RadarDelegateHolder sharedInstance] didFailWithStatus:RadarStatusErrorUnknown];
+                        
+                        if (completionHandler) {
+                            completionHandler(RadarStatusErrorUnknown, nil);
+                        }
+                    }];
+                    return;
+                }
+                
+                NSString *fraudPayload = result[@"payload"];
+                // -- payload encryption --
+                // NSNumber *keyVersionNumber = result[@"keyVersion"];
+                // NSInteger fraudKeyVersion = keyVersionNumber ? [keyVersionNumber integerValue] : 0;
                 
                 void (^callTrackAPI)(NSArray<RadarBeacon *> *_Nullable) = ^(NSArray<RadarBeacon *> *_Nullable beacons) {
                 [[RadarAPIClient sharedInstance]
@@ -146,7 +163,8 @@
                  indoorScan:nil
                  verified:YES
                  fraudPayload:fraudPayload
-                 fraudKeyVersion:fraudKeyVersion
+                 // -- payload encryption --
+                 // fraudKeyVersion:fraudKeyVersion
                  expectedCountryCode:self.expectedCountryCode
                  expectedStateCode:self.expectedStateCode
                  reason:reason
