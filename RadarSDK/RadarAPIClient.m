@@ -204,9 +204,8 @@
                     beacons:beacons
                indoorScan:indoorScan
                    verified:NO
-          attestationString:nil
-                      keyId:nil
-           attestationError:nil
+                     keyId:nil
+                   challenge:nil
                   encrypted:NO
         expectedCountryCode:nil
           expectedStateCode:nil
@@ -223,9 +222,8 @@
                   beacons:(NSArray<RadarBeacon *> *_Nullable)beacons
              indoorScan:(NSString *_Nullable)indoorScan
                  verified:(BOOL)verified
-        attestationString:(NSString *_Nullable)attestationString
-                    keyId:(NSString *_Nullable)keyId
-         attestationError:(NSString *_Nullable)attestationError
+                   keyId:(NSString *_Nullable)keyId
+                 challenge:(NSString *_Nullable)challenge
                 encrypted:(BOOL)encrypted
       expectedCountryCode:(NSString * _Nullable)expectedCountryCode
         expectedStateCode:(NSString * _Nullable)expectedStateCode
@@ -359,9 +357,6 @@
 
     params[@"verified"] = @(verified);
     if (verified) {
-        params[@"attestationString"] = attestationString;
-        params[@"keyId"] = keyId;
-        params[@"attestationError"] = attestationError;
         params[@"encrypted"] = @(encrypted);
         BOOL jailbroken = [[RadarVerificationManager sharedInstance] isJailbroken];
         params[@"compromised"] = @(jailbroken);
@@ -386,6 +381,12 @@
         NSString *kDeviceId = [[RadarVerificationManager sharedInstance] kDeviceId];
         if (kDeviceId) {
             params[@"kDeviceId"] = kDeviceId;
+        }
+        if (keyId) {
+            params[@"keyId"] = keyId;
+        }
+        if (challenge) {
+            params[@"challenge"] = challenge;
         }
     }
     params[@"appId"] = [[NSBundle mainBundle] bundleIdentifier];
@@ -1655,6 +1656,106 @@ completionHandler:(RadarSendEventAPICompletionHandler _Nonnull)completionHandler
                       extendedTimeout:NO
                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
                         return completionHandler(status);
+                    }];
+}
+
+- (void)attestWithAttestationString:(NSString *)attestationString keyId:(NSString *)keyId userId:(NSString *)userId completionHandler:(RadarAttestAPICompletionHandler)completionHandler {
+    NSString *publishableKey = [RadarSettings publishableKey];
+    if (!publishableKey) {
+        return completionHandler(RadarStatusErrorPublishableKey, nil, NO, nil, nil, nil);
+    }
+
+    NSString *host = [RadarSettings verifiedHost];
+    NSString *url = [NSString stringWithFormat:@"%@/v1/attest", host];
+    url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
+
+    NSDictionary *headers = [RadarAPIClient headersWithPublishableKey:publishableKey];
+
+    NSMutableDictionary *params = [NSMutableDictionary new];
+    params[@"attestationString"] = attestationString;
+    params[@"keyId"] = keyId;
+    params[@"userId"] = userId;
+    params[@"deviceType"] = [RadarUtils deviceType];
+
+    [self.apiHelper requestWithMethod:@"POST"
+                                  url:url
+                              headers:headers
+                               params:params
+                                sleep:NO
+                           logPayload:YES
+                      extendedTimeout:NO
+                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
+                        if (status != RadarStatusSuccess || !res) {
+                            return completionHandler(status, res, NO, nil, nil, nil);
+                        }
+
+                        id resultObj = res[@"result"];
+                        BOOL result = NO;
+                        if ([resultObj isKindOfClass:[NSNumber class]]) {
+                            result = [(NSNumber *)resultObj boolValue];
+                        }
+
+                        id keyIdObj = res[@"keyId"];
+                        NSString *keyIdResponse = nil;
+                        if ([keyIdObj isKindOfClass:[NSString class]]) {
+                            keyIdResponse = (NSString *)keyIdObj;
+                        }
+
+                        id messageObj = res[@"message"];
+                        NSString *message = nil;
+                        if ([messageObj isKindOfClass:[NSString class]]) {
+                            message = (NSString *)messageObj;
+                        }
+
+                        id challengeObj = res[@"challenge"];
+                        NSString *challenge = nil;
+                        if ([challengeObj isKindOfClass:[NSString class]]) {
+                            challenge = (NSString *)challengeObj;
+                        }
+
+                        return completionHandler(status, res, result, keyIdResponse, message, challenge);
+                    }];
+}
+
+- (void)getAttestChallengeWithUserId:(NSString *)userId forAttest:(BOOL)forAttest completionHandler:(void (^)(RadarStatus status, NSString *_Nullable challenge))completionHandler {
+    NSString *publishableKey = [RadarSettings publishableKey];
+    if (!publishableKey) {
+        return completionHandler(RadarStatusErrorPublishableKey, nil);
+    }
+
+    NSString *host = [RadarSettings verifiedHost];
+    NSMutableString *queryString = [NSMutableString new];
+    [queryString appendFormat:@"userId=%@", userId];
+    if (forAttest) {
+        [queryString appendFormat:@"&forAttest=true"];
+    }
+    NSString *url = [NSString stringWithFormat:@"%@/v1/attest?%@", host, queryString];
+    url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
+
+    NSDictionary *headers = [RadarAPIClient headersWithPublishableKey:publishableKey];
+
+    [self.apiHelper requestWithMethod:@"GET"
+                                  url:url
+                              headers:headers
+                               params:nil
+                                sleep:NO
+                           logPayload:YES
+                      extendedTimeout:NO
+                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
+                        if (status != RadarStatusSuccess || !res) {
+                            return completionHandler(status, nil);
+                        }
+
+                        id challengeObj = res[@"challenge"];
+                        NSString *challenge = nil;
+                        if ([challengeObj isKindOfClass:[NSString class]]) {
+                            challenge = (NSString *)challengeObj;
+                        } else if ([challengeObj isKindOfClass:[NSNull class]]) {
+                            // Rate limited - challenge is null
+                            challenge = nil;
+                        }
+
+                        return completionHandler(status, challenge);
                     }];
 }
 

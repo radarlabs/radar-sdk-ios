@@ -62,6 +62,8 @@ typedef void (^_Nonnull RadarSendEventAPICompletionHandler)(RadarStatus status, 
 
 typedef void (^_Nonnull RadarSyncLogsAPICompletionHandler)(RadarStatus status);
 
+typedef void (^_Nonnull RadarAttestAPICompletionHandler)(RadarStatus status, NSDictionary *_Nullable res, BOOL result, NSString *_Nullable keyId, NSString *_Nullable message, NSString *_Nullable challenge);
+
 @interface RadarAPIClient : NSObject
 
 @property (nonnull, strong, nonatomic) RadarAPIHelper *apiHelper;
@@ -89,9 +91,8 @@ typedef void (^_Nonnull RadarSyncLogsAPICompletionHandler)(RadarStatus status);
                   beacons:(NSArray<RadarBeacon *> *_Nullable)beacons
              indoorScan:(NSString *_Nullable)indoorScan
                  verified:(BOOL)verified
-        attestationString:(NSString *_Nullable)attestationString
-                    keyId:(NSString *_Nullable)keyId
-         attestationError:(NSString *_Nullable)attestationError
+                     keyId:(NSString *_Nullable)keyId
+                 challenge:(NSString *_Nullable)challenge
                 encrypted:(BOOL)encrypted
       expectedCountryCode:(NSString *_Nullable)expectedCountryCode
         expectedStateCode:(NSString *_Nullable)expectedStateCode
@@ -176,6 +177,10 @@ typedef void (^_Nonnull RadarSyncLogsAPICompletionHandler)(RadarStatus status);
 completionHandler:(RadarSendEventAPICompletionHandler _Nonnull)completionHandler;
 
 - (void)syncLogs:(NSArray<RadarLog *> *)logs completionHandler:(RadarSyncLogsAPICompletionHandler _Nonnull)completionHandler;
+
+- (void)attestWithAttestationString:(NSString *)attestationString keyId:(NSString *)keyId userId:(NSString *)userId completionHandler:(RadarAttestAPICompletionHandler _Nonnull)completionHandler;
+
+- (void)getAttestChallengeWithUserId:(NSString *)userId forAttest:(BOOL)forAttest completionHandler:(void (^)(RadarStatus status, NSString *_Nullable challenge))completionHandler;
 
 @end
 

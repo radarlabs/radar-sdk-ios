@@ -24,9 +24,11 @@ typedef void (^_Nullable RadarVerificationCompletionHandler)(NSString *_Nullable
 - (void)getVerifiedLocationTokenWithBeacons:(BOOL)beacons desiredAccuracy:(RadarTrackingOptionsDesiredAccuracy)desiredAccuracy completionHandler:(RadarTrackVerifiedCompletionHandler _Nullable)completionHandler;
 - (void)clearVerifiedLocationToken;
 - (void)setExpectedJurisdictionWithCountryCode:(NSString *)countryCode stateCode:(NSString *)stateCode;
-- (void)getAttestationWithNonce:(NSString *)nonce completionHandler:(RadarVerificationCompletionHandler)completionHandler;
+- (void)getAssertionWithBodyData:(NSData *)bodyData completionHandler:(RadarVerificationCompletionHandler)completionHandler;
 - (BOOL)isJailbroken;
 - (NSString *_Nullable)kDeviceId;
+- (NSString *_Nullable)appAttestKeyId;
+- (BOOL)clearAppAttestKeyId; // for debug
 
 @end
 

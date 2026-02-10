@@ -10,6 +10,7 @@
 #import "RadarLogger.h"
 #import "RadarSettings.h"
 #import "RadarUtils.h"
+#import "RadarVerificationManager.h"
 
 @interface RadarAPIHelper ()
 
@@ -46,16 +47,13 @@
         NSMutableURLRequest *req = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:url]];
         req.HTTPMethod = method;
 
-        NSString * paramJsonStr = [RadarUtils dictionaryToJson:params];
-        NSString * headersJsonStr = [RadarUtils dictionaryToJson:headers];
-
         if (logPayload) {
             [[RadarLogger sharedInstance]
                 logWithLevel:RadarLogLevelDebug
-                     message:[NSString stringWithFormat:@"📍 Radar API request | method = %@; url = %@; headers = %@; params = %@", method, url, headersJsonStr, paramJsonStr]];
+                     message:[NSString stringWithFormat:@"📍 Radar API request | method = %@; url = %@; headers = %@; params = %@", method, url, [RadarUtils dictionaryToJson:headers], [RadarUtils dictionaryToJson:params]]];
         } else {
             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
-                                               message:[NSString stringWithFormat:@"📍 Radar API request | method = %@; url = %@; headers = %@", method, url, headersJsonStr]];
+                                               message:[NSString stringWithFormat:@"📍 Radar API request | method = %@; url = %@; headers = %@", method, url, [RadarUtils dictionaryToJson:headers]]];
         }
 
         @try {
@@ -99,6 +97,44 @@
                 }
             }
 
+            // Get assertion for verification
+            NSData *bodyData = req.HTTPBody;
+            if (bodyData && bodyData.length > 0) {
+                // Check if challenge exists in params
+                NSString *challenge = nil;
+                if (params) {
+                    id challengeObj = params[@"challenge"];
+                    if ([challengeObj isKindOfClass:[NSString class]]) {
+                        challenge = (NSString *)challengeObj;
+                    }
+                }
+                
+                // Only proceed if challenge exists
+                if (challenge) {
+                    // Get assertion with body data
+                    dispatch_group_t assertionGroup = dispatch_group_create();
+                    __block NSString *assertionString = nil;
+                    
+                    dispatch_group_enter(assertionGroup);
+                    [[RadarVerificationManager sharedInstance] getAssertionWithBodyData:bodyData completionHandler:^(NSString *_Nullable assertion, NSString *_Nullable assertionKeyId, NSString *_Nullable assertionError) {
+                        if (assertionError || !assertion) {
+                            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"Failed to get assertion | error = %@", assertionError ?: @"unknown"]];
+                        } else {
+                            assertionString = assertion;
+                        }
+                        dispatch_group_leave(assertionGroup);
+                    }];
+                    
+                    // Wait for assertion (with timeout)
+                    dispatch_time_t timeout = dispatch_time(DISPATCH_TIME_NOW, 5 * NSEC_PER_SEC);
+                    if (dispatch_group_wait(assertionGroup, timeout) == 0 && assertionString) {
+                        [req addValue:assertionString forHTTPHeaderField:@"X-Radar-Assertion"];
+                        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Added assertion header to request"];
+                    } else {
+                        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Failed to get assertion in time, proceeding without assertion header"];
+                    }
+                }
+            }
 
             NSURLSessionConfiguration *configuration;
             if (extendedTimeout) {
