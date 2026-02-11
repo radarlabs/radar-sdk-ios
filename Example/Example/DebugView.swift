@@ -154,8 +154,8 @@ struct DebugView: View {
     @AppStorage("radar-prediction-confidence") var predictionConfidence: Bool = false
 
     let scanner = RadarIndoorScan(uuids: [
-        "f7826da6-4fa2-4e98-8024-bc5b71e0893e",
-        "e655298d-8d31-4937-b4b0-e147f026315d",
+        "160C2FE2-0FA8-4A03-B31B-D772318C12F5",
+        "DEB7A751-58E9-470C-B02F-E0A0E0CB131D",
     ])
 //    let model = RadarBeaconRSSIModel()
     
@@ -205,7 +205,7 @@ struct DebugView: View {
     
     var body: some View {
         VStack(spacing: 10) {
-            MyMapView(withRadar: "prj_test_pk_0000000000000000000000000000000000000000")
+            MyMapView(withRadar: "prj_test_pk_cb81bb9205567e2c454f14ae17db6290bcd2e27e")
                 .onStyleLoaded { style in
                     guard let site else {
                         return

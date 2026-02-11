@@ -32,7 +32,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         self.requestLocationPermissions()
         Radar.setAppGroup(nil)
         
-        UserDefaults.standard.setValue("https://api-shicheng.radar-staging.com", forKey: "radar-host")
+        UserDefaults.standard.setValue("https://api.radar-staging.com", forKey: "radar-host")
         
         // Uncomment to enable automatic setup for notification conversions or deep linking
         let radarInitializeOptions = RadarInitializeOptions()
@@ -41,8 +41,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         radarInitializeOptions.silentPush = true
         
         Radar.setAppGroup(nil)
-        Radar.initialize(publishableKey: "prj_test_pk_0000000000000000000000000000000000000000", options: radarInitializeOptions )
-        Radar.setMetadata([ "foo": "bar" ])
+        Radar.initialize(publishableKey: "prj_test_pk_cb81bb9205567e2c454f14ae17db6290bcd2e27e", options: radarInitializeOptions )
         Radar.setInAppMessageDelegate(MyIAMDelegate())
         
         if #available(iOS 15.0, *) {
