@@ -1560,6 +1560,7 @@
 
 - (void)sendEvent:(NSString *)conversionName
      withMetadata:(NSDictionary *_Nullable)metadata
+     withCampaign:(NSString *_Nullable)campaign
 completionHandler:(RadarSendEventAPICompletionHandler _Nonnull)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
@@ -1574,6 +1575,7 @@ completionHandler:(RadarSendEventAPICompletionHandler _Nonnull)completionHandler
 
     params[@"type"] = conversionName;
     params[@"metadata"] = metadata;
+    params[@"campaign"] = campaign;
 
     NSString *host = [RadarSettings host];
     NSString *url = [NSString stringWithFormat:@"%@/v1/events", host];
