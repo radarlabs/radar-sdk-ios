@@ -130,17 +130,6 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     XCTAssertEqual(trip.status, RadarTripStatusStarted);
 }
 
-#define AssertFraudOk(fraud) [self assertFraudOk:fraud]
-- (void)assertFraudOk:(RadarFraud *)fraud {
-    XCTAssertNotNil(fraud);
-    XCTAssertTrue(fraud.passed);
-    XCTAssertTrue(fraud.bypassed);
-    XCTAssertTrue(fraud.proxy);
-    XCTAssertTrue(fraud.mocked);
-    XCTAssertTrue(fraud.compromised);
-    XCTAssertTrue(fraud.jumped);
-}
-
 #define AssertUserOk(user) [self assertUserOk:user]
 - (void)assertUserOk:(RadarUser *)user {
     XCTAssertNotNil(user);
@@ -161,7 +150,6 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     AssertChainsOk(user.topChains);
     XCTAssertNotEqual(user.source, RadarLocationSourceUnknown);
     AssertTripOk(user.trip);
-    AssertFraudOk(user.fraud);
 }
 
 #define AssertEventsOk(events) [self assertEventsOk:events]

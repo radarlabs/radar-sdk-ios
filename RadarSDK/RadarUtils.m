@@ -47,7 +47,7 @@ static NSDateFormatter *_isoDateFormatter;
 }
 
 + (NSString *)sdkVersion {
-    return @"3.25.2"; // SDK VERSION
+    return @"3.26.0-beta.1"; // SDK VERSION
 }
 
 + (NSString *)deviceId {
@@ -146,14 +146,6 @@ static NSDateFormatter *_isoDateFormatter;
     return @{};
 }
 
-
-+ (BOOL)isSimulator {
-#if TARGET_OS_SIMULATOR
-    return YES;
-#else
-    return NO;
-#endif
-}
 
 + (BOOL)locationBackgroundMode {
     NSArray *backgroundModes = [NSBundle mainBundle].infoDictionary[@"UIBackgroundModes"];
