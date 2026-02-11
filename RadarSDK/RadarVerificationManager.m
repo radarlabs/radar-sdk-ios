@@ -69,6 +69,16 @@
     
     BOOL lastTokenBeacons = beacons;
     
+    // Capture foreground state on main thread before entering background thread context
+    __block BOOL foreground = NO;
+    if ([NSThread isMainThread]) {
+        foreground = [RadarUtils foreground];
+    } else {
+        dispatch_sync(dispatch_get_main_queue(), ^{
+            foreground = [RadarUtils foreground];
+        });
+    }
+    
     [[RadarAPIClient sharedInstance]
      getConfigForUsage:@"verify"
      verified:YES
@@ -156,7 +166,7 @@
                 [[RadarAPIClient sharedInstance]
                  trackWithLocation:location
                  stopped:RadarState.stopped
-                 foreground:[RadarUtils foreground]
+                 foreground:foreground
                  source:RadarLocationSourceForegroundLocation
                  replayed:NO
                  beacons:beacons
