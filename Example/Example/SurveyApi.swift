@@ -90,7 +90,6 @@ extension URLSession {
     }
 }
 
-
 class SurveyApi {
     static func createSurvey(data: Data) async {
         let suite = UserDefaults.standard.string(forKey: "radar-appGroup")
@@ -104,6 +103,7 @@ class SurveyApi {
         // create the survey record on server
         var uploadUrl: String? = nil
         var surveyId: String? = nil
+        var uploadParams: [String: Any]? = nil
         do {
             let urlString = "\(radarHost)/v1/indoor/surveys"
             guard let url = URL(string: urlString) else {
@@ -131,6 +131,7 @@ class SurveyApi {
             guard let json = try JSONSerialization.jsonObject(with: data) as? [String: Any] else {
                 return print("Failed to json serialize response")
             }
+            print("Survey created")
             print(json)
             uploadUrl = json["uploadUrl"] as? String
             surveyId = (json["indoorSurvey"] as? [String: Any])?["_id"] as? String
@@ -155,23 +156,37 @@ class SurveyApi {
             
             let (data, _) = try await URLSession.shared.data(for: request)
             
-            print(data)
             guard let json = try JSONSerialization.jsonObject(with: data) as? [String: Any] else {
                 return print("Failed to json serialize response")
             }
+            print("Upload url")
             print(json)
+            uploadParams = json
         } catch {
             print("SurveyService: Error getting asset upload url")
         }
         
         // upload to s3 via presigned url
         do {
-            guard let urlString = uploadUrl,
+            guard let urlString = uploadParams?["url"] as? String,
+                  let pathString = uploadParams?["path"] as? String,
                   let url = URL(string: urlString) else {
                 print("did no receive valid upload url: \(uploadUrl)")
                 return
             }
-            var request = MultipartFormDataRequest(url: url)
+            let request = MultipartFormDataRequest(url: url)
+            guard let params = uploadParams?["fields"] as? [String: String] else {
+                print("Param is not a dict")
+                return
+            }
+            for key in ["Content-Type", "Policy", "X-Amz-Algorithm", "X-Amz-Credential", "X-Amz-Date", "X-Amz-Security-Token", "X-Amz-Signature", "bucket"] {
+                guard let value = params[key] else {
+                    print("Missing \(key)")
+                    return
+                }
+                request.addTextField(named: key, value: value)
+            }
+            request.addTextField(named: "key", value: pathString)
             request.addDataField(named: "file", data: data, mimeType: "application/octet-stream")
             
             URLSession.shared.dataTask(with: request) { data, response, error in
@@ -186,6 +201,9 @@ class SurveyApi {
                     } else {
                         // The upload completed, but the server returned an error status code.
                         print("Server error: Status code \(httpResponse.statusCode)")
+                        if let data = data {
+                            print("Server error: \(String(data: data, encoding: .utf8))")
+                        }
                     }
                 } else {
                     // An unexpected scenario, potentially a non-HTTP response.
@@ -195,32 +213,32 @@ class SurveyApi {
         }
         
         // update status to completed
-        do {
-            guard let surveyId,
-                  let url = URL(string: "\(radarHost)/v1/indoor/surveys/\(surveyId)") else {
-                return
-            }
-            print("requesting update at \(url.absoluteURL)")
-            var request = URLRequest(url: url)
-            
-            request.httpMethod = "PATCH"
-            request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-            request.setValue("application/json", forHTTPHeaderField: "Accept")
-            request.setValue(publishableKey, forHTTPHeaderField: "Authorization")
-            
-            let body: [String: Any] = [
-                "status": "completed"
-            ]
-            request.httpBody = try? JSONSerialization.data(withJSONObject: body, options: [])
-            
-            let (data, _) = try await URLSession.shared.data(for: request)
-            guard let json = try JSONSerialization.jsonObject(with: data) as? [String: Any] else {
-                return print("failed to json serialize response")
-            }
-            print(json)
-        } catch {
-            print("SurveyService: Update failed: \(error.localizedDescription)")
-        }
+//        do {
+//            guard let surveyId,
+//                  let url = URL(string: "\(radarHost)/v1/indoor/surveys/\(surveyId)") else {
+//                return
+//            }
+//            print("requesting update at \(url.absoluteURL)")
+//            var request = URLRequest(url: url)
+//            
+//            request.httpMethod = "PATCH"
+//            request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+//            request.setValue("application/json", forHTTPHeaderField: "Accept")
+//            request.setValue(publishableKey, forHTTPHeaderField: "Authorization")
+//            
+//            let body: [String: Any] = [
+//                "status": "completed"
+//            ]
+//            request.httpBody = try? JSONSerialization.data(withJSONObject: body, options: [])
+//            
+//            let (data, _) = try await URLSession.shared.data(for: request)
+//            guard let json = try JSONSerialization.jsonObject(with: data) as? [String: Any] else {
+//                return print("failed to json serialize response")
+//            }
+//            print(json)
+//        } catch {
+//            print("SurveyService: Update failed: \(error.localizedDescription)")
+//        }
         
     }
 }
