@@ -106,7 +106,7 @@ extension CLBeacon {
 
 struct DebugView: View {
     
-    let radarDelegateState: RadarDelegateState
+    @ObservedObject var radarDelegateState: RadarDelegateState
     
     @State
     var image: UIImage? = nil
@@ -300,8 +300,10 @@ struct DebugView: View {
                             Button(action: {
                                 surveying = !surveying
                                 if surveying {
+                                    radarDelegateState.indoorLogs.append("start scanning")
                                     scanner.start()
                                 } else {
+                                    radarDelegateState.indoorLogs.append("stop scanning")
                                     scanner.stop()
                                 }
                             }) {
@@ -316,8 +318,10 @@ struct DebugView: View {
                         HStack {
                             Button(action: {
                                 if collectedData.isEmpty {
+                                    radarDelegateState.indoorLogs.append("no data collected")
                                     return
                                 }
+                                radarDelegateState.indoorLogs.append("sending \(collectedData.count) points of data with \(collectedBeaconList.count) beacons")
                                 
                                 // convert collected data into csv
                                 let beacons = collectedBeaconList.sorted()
@@ -359,6 +363,7 @@ struct DebugView: View {
         }.onAppear {
             Task {
                 scanner.update = { beacons in
+                    radarDelegateState.indoorLogs.append("ranged with \(beacons.count) beacons")
                     guard let location = site?.toXY(arCoord),
                           let date = dateFormatter.string(for: Date.now) else {
                         return;
