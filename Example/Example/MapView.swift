@@ -96,6 +96,7 @@ struct MyMapView: UIViewRepresentable {
     
     var withRadar: String
     var onStyleLoaded: ((MLNStyle) -> Void)? = nil
+    var onLoaded: ((MLNMapView) -> Void)? = nil
     var onTap: ((GestureContext) -> Void)? = nil
 
     func makeCoordinator() -> MapViewDelegate {
@@ -149,6 +150,8 @@ struct MyMapView: UIViewRepresentable {
         // setup map delegate
         mapView.delegate = context.coordinator
         
+        onLoaded?(mapView)
+        
         return mapView
     }
     
@@ -165,6 +168,12 @@ struct MyMapView: UIViewRepresentable {
     func onStyleLoaded(_ onStyleLoaded: @escaping (MLNStyle) -> Void) -> MyMapView {
         var copy = self
         copy.onStyleLoaded = onStyleLoaded
+        return copy
+    }
+    
+    func onLoaded(_ onLoaded: @escaping (MLNMapView) -> Void) -> MyMapView {
+        var copy = self
+        copy.onLoaded = onLoaded
         return copy
     }
 }

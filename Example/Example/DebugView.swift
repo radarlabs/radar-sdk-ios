@@ -206,6 +206,15 @@ struct DebugView: View {
     var body: some View {
         VStack(spacing: 10) {
             MyMapView(withRadar: "prj_test_pk_cb81bb9205567e2c454f14ae17db6290bcd2e27e")
+                .onLoaded { mapView in
+                    if let center = site?.fromXY((0, 0)) {
+                        mapView.setCenter(
+                            CLLocationCoordinate2D(
+                                latitude: center.latitude,
+                                longitude: center.longitude
+                            ), zoomLevel: 15, animated: false)
+                    }
+                }
                 .onStyleLoaded { style in
                     guard let site else {
                         return
