@@ -213,32 +213,31 @@ class SurveyApi {
         }
         
         // update status to completed
-//        do {
-//            guard let surveyId,
-//                  let url = URL(string: "\(radarHost)/v1/indoor/surveys/\(surveyId)") else {
-//                return
-//            }
-//            print("requesting update at \(url.absoluteURL)")
-//            var request = URLRequest(url: url)
-//            
-//            request.httpMethod = "PATCH"
-//            request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-//            request.setValue("application/json", forHTTPHeaderField: "Accept")
-//            request.setValue(publishableKey, forHTTPHeaderField: "Authorization")
-//            
-//            let body: [String: Any] = [
-//                "status": "completed"
-//            ]
-//            request.httpBody = try? JSONSerialization.data(withJSONObject: body, options: [])
-//            
-//            let (data, _) = try await URLSession.shared.data(for: request)
-//            guard let json = try JSONSerialization.jsonObject(with: data) as? [String: Any] else {
-//                return print("failed to json serialize response")
-//            }
-//            print(json)
-//        } catch {
-//            print("SurveyService: Update failed: \(error.localizedDescription)")
-//        }
-        
+        do {
+            guard let surveyId,
+                  let url = URL(string: "\(radarHost)/v1/indoor/surveys/\(surveyId)") else {
+                return
+            }
+            print("requesting update at \(url.absoluteURL)")
+            var request = URLRequest(url: url)
+            
+            request.httpMethod = "PATCH"
+            request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+            request.setValue("application/json", forHTTPHeaderField: "Accept")
+            request.setValue(publishableKey, forHTTPHeaderField: "Authorization")
+            
+            let body: [String: Any] = [
+                "status": "completed"
+            ]
+            request.httpBody = try? JSONSerialization.data(withJSONObject: body, options: [])
+            
+            let (data, _) = try await URLSession.shared.data(for: request)
+            guard let json = try JSONSerialization.jsonObject(with: data) as? [String: Any] else {
+                return print("failed to json serialize response")
+            }
+            print(json)
+        } catch {
+            print("SurveyService: Update failed: \(error.localizedDescription)")
+        }
     }
 }
