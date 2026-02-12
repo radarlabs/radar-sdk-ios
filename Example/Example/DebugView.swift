@@ -317,11 +317,11 @@ struct DebugView: View {
                         }
                         HStack {
                             Button(action: {
-                                if collectedData.isEmpty {
-                                    radarDelegateState.indoorLogs.append("no data collected")
-                                    return
-                                }
-                                radarDelegateState.indoorLogs.append("sending \(collectedData.count) points of data with \(collectedBeaconList.count) beacons")
+//                                if collectedData.isEmpty {
+//                                    radarDelegateState.indoorLogs.append("Send data: no data collected")
+//                                    return
+//                                }
+                                radarDelegateState.indoorLogs.append("Send data: \(collectedData.count) points of data with \(collectedBeaconList.count) beacons")
                                 
                                 // convert collected data into csv
                                 let beacons = collectedBeaconList.sorted()

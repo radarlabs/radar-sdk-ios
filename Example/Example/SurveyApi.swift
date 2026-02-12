@@ -96,7 +96,7 @@ class SurveyApi {
         let suite = UserDefaults.standard.string(forKey: "radar-appGroup")
         
         let radarHost = UserDefaults(suiteName: suite)?.string(forKey: "radar-host") ?? "https://api.radar-staging.com"
-        let publishableKey = UserDefaults(suiteName: suite)?.string(forKey: "publishable-key") ?? ""
+        let publishableKey = UserDefaults(suiteName: suite)?.string(forKey: "radar-publishableKey") ?? ""
         let description = "ORD survey"
         let geofenceId = "698cfb5b8b6de165a76b0c9a"
         let surveyor = "Arek"
