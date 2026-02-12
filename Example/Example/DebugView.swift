@@ -317,10 +317,10 @@ struct DebugView: View {
                         }
                         HStack {
                             Button(action: {
-//                                if collectedData.isEmpty {
-//                                    radarDelegateState.indoorLogs.append("Send data: no data collected")
-//                                    return
-//                                }
+                                if collectedData.isEmpty {
+                                    radarDelegateState.indoorLogs.append("Send data: no data collected")
+                                    return
+                                }
                                 radarDelegateState.indoorLogs.append("Send data: \(collectedData.count) points of data with \(collectedBeaconList.count) beacons")
                                 
                                 // convert collected data into csv
@@ -342,7 +342,8 @@ struct DebugView: View {
                                     return
                                 }
                                 Task {
-                                    await SurveyApi.createSurvey(data: compressed)
+                                    let status = await SurveyApi.createSurvey(data: compressed)
+                                    radarDelegateState.indoorLogs.append("createSurvey: \(status)")
                                 }
                                 
                                 collectedBeaconList.removeAll()
