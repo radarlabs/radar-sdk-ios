@@ -40,6 +40,14 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) BOOL syncAfterSetUser;
 
 /**
+ The maximum number of replays to buffer before flushing.
+
+ Valid values are in the range 1–120. Values outside this range are ignored.
+ The default value is 120 if not explicitly configured.
+ */
+@property (nonatomic, assign) int maxReplayBufferSize;
+
+/**
  Initializes a new RadarSdkConfiguration object with given value.
  */
 - (instancetype)initWithDict:(NSDictionary *_Nullable)dict;

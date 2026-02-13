@@ -33,6 +33,7 @@
     _useForegroundLocationUpdatedAtMsDiff = NO;
     _useNotificationDiff = NO;
     _syncAfterSetUser = NO;
+    _maxReplayBufferSize = 120;
 
     if (dict == nil) {
         return self;
@@ -93,6 +94,14 @@
         _syncAfterSetUser = [(NSNumber *)syncAfterSetUserObj boolValue];
     }
 
+    NSObject *maxReplayBufferSizeObj = dict[@"maxReplayBufferSize"];
+    if (maxReplayBufferSizeObj && [maxReplayBufferSizeObj isKindOfClass:[NSNumber class]]) {
+        int maxReplayBufferSize = [(NSNumber *)maxReplayBufferSizeObj intValue];
+        if (maxReplayBufferSize > 0 && maxReplayBufferSize <= 120) {
+            _maxReplayBufferSize = maxReplayBufferSize;
+        }
+    }
+
     return self;
 }
 
@@ -110,7 +119,8 @@
     dict[@"useForegroundLocationUpdatedAtMsDiff"] = @(_useForegroundLocationUpdatedAtMsDiff);
     dict[@"useNotificationDiff"] = @(_useNotificationDiff);
     dict[@"syncAfterSetUser"] = @(_syncAfterSetUser);
-    
+    dict[@"maxReplayBufferSize"] = @(_maxReplayBufferSize);
+
     return dict;
 }
 
