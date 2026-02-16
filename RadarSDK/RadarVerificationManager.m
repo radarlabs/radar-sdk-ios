@@ -158,10 +158,6 @@
                 
                 NSString *fraudPayload = result[@"payload"];
                 
-                // -- payload encryption --
-                // NSNumber *keyVersionNumber = result[@"keyVersion"];
-                // NSInteger fraudKeyVersion = keyVersionNumber ? [keyVersionNumber integerValue] : 0;
-                
                 void (^callTrackAPI)(NSArray<RadarBeacon *> *_Nullable) = ^(NSArray<RadarBeacon *> *_Nullable beacons) {
                 [[RadarAPIClient sharedInstance]
                  trackWithLocation:location
