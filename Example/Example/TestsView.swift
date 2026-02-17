@@ -8,13 +8,9 @@
 import SwiftUI
 import RadarSDK
 
-struct TestsView: View {
+    
     var body: some View {
         ScrollView {
-            StyledButton("trackOnce") {
-                Radar.trackOnce()
-            }
-            
             StyledButton("startTracking") {
                 Radar.startTracking(trackingOptions: .presetResponsive)
             }
