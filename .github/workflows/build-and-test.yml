@@ -48,16 +48,21 @@ jobs:
 
       - name: Build and Analyze
         env:
+          SIMULATOR_ID: ${{ env.SIMULATOR_ID }}
           scheme: RadarSDK
         run: |
           xcodebuild clean build analyze -scheme RadarSDK -workspace Example/Example.xcodeproj/project.xcworkspace -destination 'platform=iOS Simulator,id=${SIMULATOR_ID}' | xcpretty && exit ${PIPESTATUS[0]}
 
       - name: Test
         env:
+          SIMULATOR_ID: ${{ env.SIMULATOR_ID }}
           scheme: RadarSDK
         run: |
           xcodebuild test -scheme RadarSDK -workspace Example/Example.xcodeproj/project.xcworkspace -destination 'platform=iOS Simulator,id=${SIMULATOR_ID}' -skip-testing:RadarSDKTests/InAppMessageTest -skip-testing:RadarSDKTests/RadarSettingsTest | xcpretty && exit ${PIPESTATUS[0]}
         
       - name: Test swift 
+        env:
+          SIMULATOR_ID: ${{ env.SIMULATOR_ID }}
+          scheme: RadarSDK
         run: |
           xcodebuild test -scheme RadarSDK -workspace Example/Example.xcodeproj/project.xcworkspace -destination 'platform=iOS Simulator,id=${SIMULATOR_ID}' -only-testing:RadarSDKTests/InAppMessageTest -only-testing:RadarSDKTests/RadarSettingsTest
