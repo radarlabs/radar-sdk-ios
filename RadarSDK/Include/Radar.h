@@ -63,6 +63,8 @@ typedef NS_ENUM(NSInteger, RadarStatus) {
     RadarStatusErrorForbidden,
     /// Not found
     RadarStatusErrorNotFound,
+    /// Missing plugin
+    RadarStatusErrorPlugin,
     /// Too many requests (rate limit exceeded)
     RadarStatusErrorRateLimit,
     /// Internal server error

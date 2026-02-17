@@ -206,8 +206,6 @@
                indoorScan:indoorScan
                    verified:NO
               fraudPayload:nil
-         // -- payload encryption --
-         // fraudKeyVersion:0
         expectedCountryCode:nil
           expectedStateCode:nil
                      reason:nil
@@ -224,8 +222,6 @@
              indoorScan:(NSString *_Nullable)indoorScan
                  verified:(BOOL)verified
             fraudPayload:(NSString *_Nullable)fraudPayload
-         // -- payload encryption --
-         // fraudKeyVersion:(NSInteger)fraudKeyVersion
       expectedCountryCode:(NSString * _Nullable)expectedCountryCode
         expectedStateCode:(NSString * _Nullable)expectedStateCode
                    reason:(NSString * _Nullable)reason
@@ -305,20 +301,6 @@
     params[@"pushNotificationToken"] = [RadarSettings pushNotificationToken];
     params[@"locationExtensionToken"] = [RadarSettings locationExtensionToken];
     
-    NSMutableArray<NSString *> *fraudFailureReasons = [NSMutableArray new];
-    if (@available(iOS 15.0, *)) {
-        CLLocationSourceInformation *sourceInformation = location.sourceInformation;
-        if (sourceInformation) {
-            if (sourceInformation.isSimulatedBySoftware) {
-                params[@"mocked"] = @(YES);
-                [fraudFailureReasons addObject:@"fraud_mocked_from_mock_provider"];
-            }
-            if (sourceInformation.isProducedByAccessory) {
-                [fraudFailureReasons addObject:@"fraud_mocked_produced_by_accessory"];
-            }
-        }
-    }
-    
     RadarTripOptions *tripOptions = Radar.getTripOptions;
 
     if (tripOptions) {
@@ -372,8 +354,6 @@
         }
         if (fraudPayload) {
             params[@"fraudPayload"] = fraudPayload;
-            // -- payload encryption --
-            // params[@"fraudKeyVersion"] = @(fraudKeyVersion);
         }
     }
 
