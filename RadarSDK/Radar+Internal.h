@@ -6,9 +6,13 @@
 //
 
 #import "Radar.h"
+#import "RadarLocationProviding.h"
+#import "RadarAPIClient.h"
 #import <Foundation/Foundation.h>
 
 @interface Radar ()
+
++ (id<RadarLocationProviding>)locationProvider;
 
 + (void)sendLog:(RadarLogLevel)level type:(RadarLogType)type message:(NSString *_Nonnull)message;
 
@@ -30,5 +34,21 @@
                               conversionSource:(NSString *_Nullable)conversionSource;
 
 + (NSString *_Nonnull)stringForMotionAuthorizationStatus;
+
+// API client wrappers for Swift interop (Swift RadarAPIClient shadows ObjC RadarAPIClient)
++ (void)apiTrackWithLocation:(CLLocation *_Nonnull)location
+                     stopped:(BOOL)stopped
+                  foreground:(BOOL)foreground
+                      source:(RadarLocationSource)source
+                    replayed:(BOOL)replayed
+                     beacons:(NSArray<RadarBeacon *> *_Nullable)beacons
+                  indoorScan:(NSString *_Nullable)indoorScan
+           completionHandler:(RadarTrackAPICompletionHandler _Nonnull)completionHandler;
+
++ (void)apiSearchBeaconsNear:(CLLocation *_Nonnull)near
+                      radius:(int)radius
+                       limit:(int)limit
+           completionHandler:(RadarSearchBeaconsAPICompletionHandler _Nonnull)completionHandler
+           NS_SWIFT_NAME(apiSearchBeacons(near:radius:limit:completionHandler:));
 
 @end
