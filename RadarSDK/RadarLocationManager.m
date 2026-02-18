@@ -912,10 +912,10 @@ static NSString *const kSyncedRegionIdentifierPrefix = @"radar_synced_";
             return;
         }
         
-        BOOL efficientTrackingEnabled = options.syncOnGeofenceEvents || options.syncOnPlaceEvents || options.syncOnBeaconEvents;
-        
+        BOOL efficientTrackingEnabled = (options.syncLocations & (RadarTrackingOptionsSyncOnGeofenceEvents | RadarTrackingOptionsSyncOnPlaceEvents | RadarTrackingOptionsSyncOnBeaconEvents)) != 0;
+
         if (efficientTrackingEnabled) {
-            if (![RadarEfficientTrackManager shouldTrackWithLocation:location options:options]) {
+            if (![RadarSyncManager shouldTrackWithLocation:location options:options]) {
                 [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
                                                    message:@"Skipping sync: efficient tracking - no state change detected"];
                 return;
@@ -1278,8 +1278,8 @@ static NSString *const kSyncedRegionIdentifierPrefix = @"radar_synced_";
 
 - (void)updateSyncedRegion {
     RadarTrackingOptions *options = [Radar getTrackingOptions];
-    BOOL efficientTrackingEnabled = options.syncOnGeofenceEvents || options.syncOnPlaceEvents || options.syncOnBeaconEvents;
-    
+    BOOL efficientTrackingEnabled = (options.syncLocations & (RadarTrackingOptionsSyncOnGeofenceEvents | RadarTrackingOptionsSyncOnPlaceEvents | RadarTrackingOptionsSyncOnBeaconEvents)) != 0;
+
     if (!efficientTrackingEnabled) {
         [RadarState setSyncedRegion:nil];
         return;

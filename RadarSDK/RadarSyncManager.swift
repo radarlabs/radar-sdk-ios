@@ -1,5 +1,5 @@
 //
-//  RadarEfficientTrackManager.swift
+//  RadarSyncManager.swift
 //  RadarSDK
 //
 //  Created by Alan Charles on 1/29/26.
@@ -9,44 +9,44 @@
 import Foundation
 import CoreLocation
 
-@objc(RadarEfficientTrackManager)
-public final class RadarEfficientTrackManager: NSObject {
+@objc(RadarSyncManager)
+public final class RadarSyncManager: NSObject {
     
     private static let placeDetectionRadius: Double = 100.0
     private static let beaconRange: Double = 100.0
     
     @objc public static func shouldTrack(location: CLLocation, options: RadarTrackingOptions) -> Bool {
         guard RadarSwift.bridge?.syncedRegion() != nil else {
-            RadarLogger.shared.debug("EfficientTrack: No synced region, should track")
+            RadarLogger.shared.debug("SyncManager: No synced region, should track")
             return true
         }
         
         if isOutsideSyncedRegion(location: location) {
-            RadarLogger.shared.debug("EfficientTrack: Outside synced region, should track")
+            RadarLogger.shared.debug("SyncManager: Outside synced region, should track")
             return true
         }
         
         if Radar.getTripOptions() != nil {
-            RadarLogger.shared.debug("EfficientTrack: On active trip, should always track")
+            RadarLogger.shared.debug("SyncManager: On active trip, should always track")
             return true
         }
         
-        if options.syncOnGeofenceEvents && hasGeofenceStateChanged(location: location) {
-            RadarLogger.shared.debug("EfficientTrack: Geofence state changed, should track")
+        if options.syncLocations.contains(.onGeofenceEvents) && hasGeofenceStateChanged(location: location) {
+            RadarLogger.shared.debug("SyncManager: Geofence state changed, should track")
             return true
         }
         
-        if options.syncOnPlaceEvents && hasPlaceStateChanged(location: location) {
-            RadarLogger.shared.debug("EfficientTrack: Places state changed, should track")
+        if options.syncLocations.contains(.onPlaceEvents) && hasPlaceStateChanged(location: location) {
+            RadarLogger.shared.debug("SyncManager: Places state changed, should track")
             return true
         }
         
-        if options.syncOnBeaconEvents && hasBeaconStateChanged(location: location) {
-            RadarLogger.shared.debug("EfficientTrack: Beacon state changed, should track")
+        if options.syncLocations.contains(.onBeaconEvents) && hasBeaconStateChanged(location: location) {
+            RadarLogger.shared.debug("SyncManager: Beacon state changed, should track")
             return true
         }
         
-        RadarLogger.shared.debug("EfficientTrack: No state change detected, skipping track")
+        RadarLogger.shared.debug("SyncManager: No state change detected, skipping track")
         return false
     }
     
@@ -68,7 +68,7 @@ public final class RadarEfficientTrackManager: NSObject {
                 center = polygonGeometry.center
                 radius = polygonGeometry.radius
             } else {
-                RadarLogger.shared.debug("EfficientTrack: Skipping geofence with unsupported geometry")
+                RadarLogger.shared.debug("SyncManager: Skipping geofence with unsupported geometry")
                 continue
             }
             
@@ -132,7 +132,7 @@ public final class RadarEfficientTrackManager: NSObject {
         // entries
         for currentId in currentGeofenceIds {
             if !lastKnownSet.contains(currentId) {
-                RadarLogger.shared.debug("EfficientTrack: Detected geofence entry: \(currentId)")
+                RadarLogger.shared.debug("SyncManager: Detected geofence entry: \(currentId)")
                 return true
             }
         }
@@ -140,7 +140,7 @@ public final class RadarEfficientTrackManager: NSObject {
         // exits
         for lastKnownId in lastKnownGeofenceIds {
             if !currentGeofenceIds.contains(lastKnownId) {
-                RadarLogger.shared.debug("EfficientTrack: Detected geofence exit: \(lastKnownId)")
+                RadarLogger.shared.debug("SyncManager: Detected geofence exit: \(lastKnownId)")
                 return true
             }
         }
@@ -157,14 +157,14 @@ public final class RadarEfficientTrackManager: NSObject {
         
         for currentId in currentBeaconIds {
             if !lastKnownSet.contains(currentId) {
-                RadarLogger.shared.debug("EfficientTrack: Detected beacon entry: \(currentId)")
+                RadarLogger.shared.debug("SyncManager: Detected beacon entry: \(currentId)")
                 return true
             }
         }
         
         for lastKnownId in lastKNownBeaconIds {
             if !currentBeaconIds.contains(lastKnownId) {
-                RadarLogger.shared.debug("EfficientTrack: Detected beacon exit: \(lastKnownId)")
+                RadarLogger.shared.debug("SyncManager: Detected beacon exit: \(lastKnownId)")
                 return true
             }
         }

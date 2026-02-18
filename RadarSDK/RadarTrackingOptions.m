@@ -32,9 +32,6 @@ NSString *const kBeacons = @"beacons";
 NSString *const kUseIndoorScan = @"useIndoorScan";
 NSString *const kUseMotion = @"useMotion";
 NSString *const kUsePressure = @"usePressure";
-NSString *const kSyncOnGeofenceEvents = @"syncOnGeofenceEvents";
-NSString *const kSyncOnPlaceEvents = @"syncOnPlaceEvents";
-NSString *const kSyncOnBeaconEvents = @"syncOnBeaconEvents";
 
 NSString *const kDesiredAccuracyHigh = @"high";
 NSString *const kDesiredAccuracyMedium = @"medium";
@@ -47,6 +44,9 @@ NSString *const kReplayAll = @"all";
 NSString *const kSyncAll = @"all";
 NSString *const kSyncStopsAndExits = @"stopsAndExits";
 NSString *const kSyncNone = @"none";
+NSString *const kSyncOnGeofenceEvents = @"syncOnGeofenceEvents";
+NSString *const kSyncOnPlaceEvents = @"syncOnPlaceEvents";
+NSString *const kSyncOnBeaconEvents = @"syncOnBeaconEvents";
 
 + (RadarTrackingOptions *)presetContinuous {
     RadarTrackingOptions *options = [RadarTrackingOptions new];
@@ -72,9 +72,6 @@ NSString *const kSyncNone = @"none";
     options.useIndoorScan = NO;
     options.useMotion = NO;
     options.usePressure = NO;
-    options.syncOnGeofenceEvents = NO;
-    options.syncOnPlaceEvents = NO;
-    options.syncOnBeaconEvents = NO;
     return options;
 }
 
@@ -102,9 +99,6 @@ NSString *const kSyncNone = @"none";
     options.useIndoorScan = NO;
     options.useMotion = NO;
     options.usePressure = NO;
-    options.syncOnGeofenceEvents = NO;
-    options.syncOnPlaceEvents = NO;
-    options.syncOnBeaconEvents = NO;
     return options;
 }
 
@@ -132,9 +126,6 @@ NSString *const kSyncNone = @"none";
     options.useIndoorScan = NO;
     options.useMotion = NO;
     options.usePressure = NO;
-    options.syncOnGeofenceEvents = NO;
-    options.syncOnPlaceEvents = NO;
-    options.syncOnBeaconEvents = NO;
     return options;
 }
 
@@ -193,29 +184,57 @@ NSString *const kSyncNone = @"none";
 }
 
 + (NSString *)stringForSyncLocations:(RadarTrackingOptionsSyncLocations)sync {
-    NSString *str;
-    switch (sync) {
-    case RadarTrackingOptionsSyncNone:
-        str = kSyncNone;
-        break;
-    case RadarTrackingOptionsSyncStopsAndExits:
-        str = kSyncStopsAndExits;
-        break;
-    case RadarTrackingOptionsSyncAll:
-    default:
-        str = kSyncAll;
+    if (sync == RadarTrackingOptionsSyncNone) {
+        return kSyncNone;
     }
-    return str;
+
+    NSMutableArray *parts = [NSMutableArray new];
+    if (sync & RadarTrackingOptionsSyncAll) {
+        [parts addObject:kSyncAll];
+    }
+    if (sync & RadarTrackingOptionsSyncStopsAndExits) {
+        [parts addObject:kSyncStopsAndExits];
+    }
+    if (sync & RadarTrackingOptionsSyncOnGeofenceEvents) {
+        [parts addObject:kSyncOnGeofenceEvents];
+    }
+    if (sync & RadarTrackingOptionsSyncOnPlaceEvents) {
+        [parts addObject:kSyncOnPlaceEvents];
+    }
+    if (sync & RadarTrackingOptionsSyncOnBeaconEvents) {
+        [parts addObject:kSyncOnBeaconEvents];
+    }
+
+    return parts.count > 0 ? [parts componentsJoinedByString:@","] : kSyncAll;
 }
 
 + (RadarTrackingOptionsSyncLocations)syncLocationsForString:(NSString *)str {
-    RadarTrackingOptionsSyncLocations sync = RadarTrackingOptionsSyncAll;
-    if ([str isEqualToString:kSyncStopsAndExits]) {
-        sync = RadarTrackingOptionsSyncStopsAndExits;
-    } else if ([str isEqualToString:kSyncNone]) {
-        sync = RadarTrackingOptionsSyncNone;
+    if (!str || str.length == 0) {
+        return RadarTrackingOptionsSyncAll;
     }
-    return sync;
+
+    NSArray *parts = [str componentsSeparatedByString:@","];
+    RadarTrackingOptionsSyncLocations sync = RadarTrackingOptionsSyncNone;
+
+    for (NSString *part in parts) {
+        NSString *trimmed = [part stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+        if ([trimmed isEqualToString:kSyncAll]) {
+            sync |= RadarTrackingOptionsSyncAll;
+        } else if ([trimmed isEqualToString:kSyncStopsAndExits]) {
+            sync |= RadarTrackingOptionsSyncStopsAndExits;
+        } else if ([trimmed isEqualToString:kSyncNone]) {
+            // noop, already 0
+        } else if ([trimmed isEqualToString:kSyncOnGeofenceEvents]) {
+            sync |= RadarTrackingOptionsSyncOnGeofenceEvents;
+        } else if ([trimmed isEqualToString:kSyncOnPlaceEvents]) {
+            sync |= RadarTrackingOptionsSyncOnPlaceEvents;
+        } else if ([trimmed isEqualToString:kSyncOnBeaconEvents]) {
+            sync |= RadarTrackingOptionsSyncOnBeaconEvents;
+        }
+    }
+
+    // Default to SyncAll if nothing recognized
+    return sync == RadarTrackingOptionsSyncNone && ![str isEqualToString:kSyncNone] ? RadarTrackingOptionsSyncAll : sync;
 }
 
 + (RadarTrackingOptions *)trackingOptionsFromDictionary:(NSDictionary *)dict {
@@ -253,6 +272,15 @@ NSString *const kSyncNone = @"none";
         }
     }
     options.syncLocations = [RadarTrackingOptions syncLocationsForString:dict[kSync]];
+    if ([dict[kSyncOnGeofenceEvents] boolValue]) {
+        options.syncLocations |= RadarTrackingOptionsSyncOnGeofenceEvents;
+    }
+    if ([dict[kSyncOnPlaceEvents] boolValue]) {
+        options.syncLocations |= RadarTrackingOptionsSyncOnPlaceEvents;
+    }
+    if ([dict[kSyncOnBeaconEvents] boolValue]) {
+        options.syncLocations |= RadarTrackingOptionsSyncOnBeaconEvents;
+    }
     options.replay = [RadarTrackingOptions replayForString:dict[kReplay]];
     options.showBlueBar = [dict[kShowBlueBar] boolValue];
     options.useStoppedGeofence = [dict[kUseStoppedGeofence] boolValue];
@@ -266,9 +294,6 @@ NSString *const kSyncNone = @"none";
     options.useIndoorScan = [dict[kUseIndoorScan] boolValue];
     options.useMotion = [dict[kUseMotion] boolValue];
     options.usePressure = [dict[kUsePressure] boolValue];
-    options.syncOnGeofenceEvents = [dict[kSyncOnGeofenceEvents] boolValue];
-    options.syncOnPlaceEvents = [dict[kSyncOnPlaceEvents] boolValue];
-    options.syncOnBeaconEvents = [dict[kSyncOnBeaconEvents] boolValue];
     return options;
 }
 
@@ -304,9 +329,6 @@ NSString *const kSyncNone = @"none";
     dict[kUseIndoorScan] = @(self.useIndoorScan);
     dict[kUseMotion] = @(self.useMotion);
     dict[kUsePressure] = @(self.usePressure);
-    dict[kSyncOnGeofenceEvents] = @(self.syncOnGeofenceEvents);
-    dict[kSyncOnPlaceEvents] = @(self.syncOnPlaceEvents);
-    dict[kSyncOnBeaconEvents] = @(self.syncOnBeaconEvents);
     return dict;
 }
 
@@ -336,7 +358,7 @@ NSString *const kSyncNone = @"none";
     self.useStoppedGeofence == options.useStoppedGeofence && self.stoppedGeofenceRadius == options.stoppedGeofenceRadius &&
     self.useMovingGeofence == options.useMovingGeofence && self.movingGeofenceRadius == options.movingGeofenceRadius && self.syncGeofences == options.syncGeofences &&
     self.useVisits == options.useVisits && self.useSignificantLocationChanges == options.useSignificantLocationChanges && self.beacons == options.beacons &&
-    self.useIndoorScan == options.useIndoorScan && self.useMotion == options.useMotion && self.usePressure == options.usePressure && self.syncOnGeofenceEvents == options.syncOnGeofenceEvents && self.syncOnPlaceEvents == options.syncOnPlaceEvents && self.syncOnBeaconEvents == options.syncOnBeaconEvents;
+    self.useIndoorScan == options.useIndoorScan && self.useMotion == options.useMotion && self.usePressure == options.usePressure;
 }
 
 @end

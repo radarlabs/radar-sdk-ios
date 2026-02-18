@@ -35,15 +35,21 @@ typedef NS_ENUM(NSInteger, RadarTrackingOptionsReplay) {
 };
 
 /**
- The sync options for location updates.
+ The sync options for location updates. Can be combined using bitwise OR.
  */
-typedef NS_ENUM(NSInteger, RadarTrackingOptionsSyncLocations) {
-    /// Syncs all location updates to the server
-    RadarTrackingOptionsSyncAll,
-    /// Syncs only stops and exits to the server
-    RadarTrackingOptionsSyncStopsAndExits,
+typedef NS_OPTIONS(NSInteger, RadarTrackingOptionsSyncLocations) {
     /// Syncs no location updates to the server
-    RadarTrackingOptionsSyncNone
+    RadarTrackingOptionsSyncNone = 0,
+    /// Syncs all location updates to the server
+    RadarTrackingOptionsSyncAll = 1 << 0,
+    /// Syncs only stops and exits to the server
+    RadarTrackingOptionsSyncStopsAndExits = 1 << 1,
+    /// Syncs only on geofence entry/exit
+    RadarTrackingOptionsSyncOnGeofenceEvents = 1 << 2,
+    /// Syncs only on place entry/exit
+    RadarTrackingOptionsSyncOnPlaceEvents = 1 << 3,
+    /// Syncs only on beacon entry/exit
+    RadarTrackingOptionsSyncOnBeaconEvents = 1 << 4,
 };
 
 /**
@@ -103,21 +109,6 @@ typedef NS_ENUM(NSInteger, RadarTrackingOptionsSyncLocations) {
  Determines which location updates to sync to the server.
  */
 @property (nonatomic, assign) RadarTrackingOptionsSyncLocations syncLocations;
-
-/**
- If YES, enables efficient tracking that only syncs on geofence entry/exit. Default NO.
- */
-@property (nonatomic, assign) BOOL syncOnGeofenceEvents;
-
-/**
- If YES, enables efficient tracking that only syncs on place entry/exit. Default NO.
- */
-@property (nonatomic, assign) BOOL syncOnPlaceEvents;
-
-/**
- If YES, enables efficient tracking that only syncs on beacon entry/exit. Default NO.
- */
-@property (nonatomic, assign) BOOL syncOnBeaconEvents;
 
 /**
  Determines whether the flashing blue status bar is shown when tracking.
