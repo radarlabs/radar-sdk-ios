@@ -12,19 +12,19 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface RadarState : NSObject
 
-+ (CLLocation *)lastLocation;
++ (CLLocation *_Nullable)lastLocation;
 + (void)setLastLocation:(CLLocation *_Nullable)lastLocation;
-+ (CLLocation *)lastMovedLocation;
++ (CLLocation *_Nullable)lastMovedLocation;
 + (void)setLastMovedLocation:(CLLocation *_Nullable)lastMovedLocation;
-+ (NSDate *)lastMovedAt;
++ (NSDate *_Nullable)lastMovedAt;
 + (void)setLastMovedAt:(NSDate *)lastMovedAt;
 + (BOOL)stopped;
 + (void)setStopped:(BOOL)stopped;
 + (void)updateLastSentAt;
-+ (NSDate *)lastSentAt;
++ (NSDate *_Nullable)lastSentAt;
 + (BOOL)canExit;
 + (void)setCanExit:(BOOL)canExit;
-+ (CLLocation *)lastFailedStoppedLocation;
++ (CLLocation *_Nullable)lastFailedStoppedLocation;
 + (void)setLastFailedStoppedLocation:(CLLocation *_Nullable)lastFailedStoppedLocation;
 + (NSArray<NSString *> *)geofenceIds;
 + (void)setGeofenceIds:(NSArray<NSString *> *_Nullable)geofenceIds;
