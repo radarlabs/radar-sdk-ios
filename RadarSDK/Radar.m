@@ -1311,6 +1311,9 @@ BOOL _initialized = NO;
     case RadarStatusErrorNotFound:
         str = @"ERROR_NOT_FOUND";
         break;
+    case RadarStatusErrorPlugin:
+        str = @"ERROR_PLUGIN";
+        break;
     case RadarStatusErrorRateLimit:
         str = @"ERROR_RATE_LIMIT";
         break;

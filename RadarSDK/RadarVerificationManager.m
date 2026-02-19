@@ -115,11 +115,10 @@
             Class RadarSDKFraud = NSClassFromString(@"RadarSDKFraud");
             if (!RadarSDKFraud) {
                 [RadarUtils runOnMainThread:^{
-                    [[RadarDelegateHolder sharedInstance] didFailWithStatus:RadarStatusErrorUnknown];
+                    [[RadarDelegateHolder sharedInstance] didFailWithStatus:RadarStatusErrorPlugin];
                     
                     if (completionHandler) {
-                        // todo: add a new error type for missing modules?
-                        completionHandler(RadarStatusErrorUnknown, nil);
+                        completionHandler(RadarStatusErrorPlugin, nil);
                     }
                 }];
                 return;
@@ -158,9 +157,6 @@
                 }
                 
                 NSString *fraudPayload = result[@"payload"];
-                // -- payload encryption --
-                // NSNumber *keyVersionNumber = result[@"keyVersion"];
-                // NSInteger fraudKeyVersion = keyVersionNumber ? [keyVersionNumber integerValue] : 0;
                 
                 void (^callTrackAPI)(NSArray<RadarBeacon *> *_Nullable) = ^(NSArray<RadarBeacon *> *_Nullable beacons) {
                 [[RadarAPIClient sharedInstance]
