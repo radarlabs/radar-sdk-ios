@@ -58,8 +58,21 @@ class MockRadarInAppMessageDelegate : NSObject, RadarInAppMessageProtocol {
 
 class MockWindow : UIWindow {
     var addSubviewCounter = 0
+    var continuation: CheckedContinuation<Void, Never>?
     override func addSubview(_ view: UIView) {
         addSubviewCounter += 1
+        continuation?.resume()
+        continuation = nil
+    }
+    
+    func waitForSubviewAddition() async {
+        if (addSubviewCounter > 0) {
+            return
+        }
+        await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
+            // Store the continuation and wait for `addSubview(_:)` to call `resume()`
+            self.continuation = continuation
+        }
     }
 }
 
@@ -153,8 +166,7 @@ actor InAppMessageTest {
 
         manager.onInAppMessageReceived(messages: [message!])
 
-        // wait 50ms for async task onInAppMessageReceived to complete
-        try await Task.sleep(nanoseconds: 100_000_000)
+        await mockWindow.waitForSubviewAddition()
 
         #expect(mockDelegate.onNewInAppMessageCounter == 1)
         #expect(mockDelegate.createInAppMessageViewCounter == 1)
@@ -183,11 +195,11 @@ actor InAppMessageTest {
         manager.onInAppMessageReceived(messages: [message!])
         manager.onInAppMessageReceived(messages: [message!])
 
-        try await Task.sleep(nanoseconds: 100_000_000)
+        await mockWindow.waitForSubviewAddition()
 
         #expect(mockDelegate.onNewInAppMessageCounter == 2)
         // 2 views could be created since creating the view is async
-        #expect(mockDelegate.createInAppMessageViewCounter == 2)
+        #expect(mockDelegate.createInAppMessageViewCounter == 1 || mockDelegate.createInAppMessageViewCounter == 2)
         // but only 1 should be shown
         #expect(mockWindow.addSubviewCounter == 1)
 
