@@ -10,6 +10,7 @@
 #import "RadarLogger.h"
 #import "RadarSettings.h"
 #import "RadarUtils.h"
+#import "RadarSDKFraudProtocol.h"
 
 @interface RadarAPIHelper ()
 
@@ -37,6 +38,19 @@
                     sleep:(BOOL)sleep
                logPayload:(BOOL)logPayload
           extendedTimeout:(BOOL)extendedTimeout
+        completionHandler:(RadarAPICompletionHandler)completionHandler {
+    [self requestWithMethod:method url:url headers:headers params:params sleep:sleep logPayload:logPayload extendedTimeout:extendedTimeout verified:NO fraudOptions:nil completionHandler:completionHandler];
+}
+
+- (void)requestWithMethod:(NSString *)method
+                      url:(NSString *)url
+                  headers:(NSDictionary *)headers
+                   params:(NSDictionary *)params
+                    sleep:(BOOL)sleep
+               logPayload:(BOOL)logPayload
+          extendedTimeout:(BOOL)extendedTimeout
+                 verified:(BOOL)verified
+             fraudOptions:(NSDictionary<NSString *, id> *)fraudOptions
         completionHandler:(RadarAPICompletionHandler)completionHandler {
     dispatch_async(self.queue, ^{
         if (sleep) {
@@ -98,8 +112,9 @@
                     [req setHTTPBody:[NSJSONSerialization dataWithJSONObject:params options:0 error:NULL]];
                 }
             }
-
-
+            
+            NSDate *requestStart = [NSDate date];
+            
             NSURLSessionConfiguration *configuration;
             if (extendedTimeout) {
                 configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
@@ -111,10 +126,9 @@
                 configuration.timeoutIntervalForRequest = 10;
                 configuration.timeoutIntervalForResource = 10;
             }
-
-            NSDate *requestStart = [NSDate date];
-
-            void (^dataTaskCompletionHandler)(NSData *data, NSURLResponse *response, NSError *error) = ^(NSData *data, NSURLResponse *response, NSError *error) {
+            
+            // Nested function to handle response parsing
+            void (^handleResponse)(NSData *data, NSURLResponse *response, NSError *error) = ^(NSData *data, NSURLResponse *response, NSError *error) {
                 // calculate request latencies, multiplying by -1 because timeIntervalSinceNow returns a negative value
                 NSTimeInterval latency = [requestStart timeIntervalSinceNow] * -1;
 
@@ -177,13 +191,13 @@
                         NSArray *replays = [params objectForKey:@"replays"];
                         [[RadarLogger sharedInstance]
                             logWithLevel:RadarLogLevelDebug
-                                 message:[NSString stringWithFormat:@"📍 Radar API response | method = %@; url = %@; statusCode = %ld; latency = %f; replays = %lu; res = %@",
-                                                                    method, url, (long)statusCode, latency, (unsigned long)replays.count, resJsonStr]];
+                             message:[NSString stringWithFormat:@"📍 Radar API response | method = %@; url = %@; statusCode = %ld; latency = %f; replays = %lu; res = %@",
+                                                                method, url, (long)statusCode, latency, (unsigned long)replays.count, resJsonStr]];
                     } else {
                         [[RadarLogger sharedInstance]
                             logWithLevel:RadarLogLevelDebug
-                                 message:[NSString stringWithFormat:@"📍 Radar API response | method = %@; url = %@; statusCode = %ld; latency = %f; res = %@", method, url,
-                                                                    (long)statusCode, latency, resJsonStr]];
+                             message:[NSString stringWithFormat:@"📍 Radar API response | method = %@; url = %@; statusCode = %ld; latency = %f; res = %@", method, url,
+                                                                (long)statusCode, latency, resJsonStr]];
                     }
                 }
 
@@ -195,6 +209,32 @@
                     [NSThread sleepForTimeInterval:1];
                     dispatch_semaphore_signal(self.semaphore);
                 }
+            };
+            
+            // Check if verified and fraudOptions provided - pass to fraud SDK
+            if (verified && fraudOptions) {
+                Class RadarSDKFraud = NSClassFromString(@"RadarSDKFraud");
+                if (RadarSDKFraud) {
+                    id<RadarSDKFraudProtocol> fraudInstance = [RadarSDKFraud sharedInstance];
+                    if (fraudInstance) {
+                        // Add request and sessionConfiguration to options
+                        NSMutableDictionary<NSString *, id> *optionsWithRequest = [fraudOptions mutableCopy];
+                        optionsWithRequest[@"request"] = req;
+                        optionsWithRequest[@"sessionConfiguration"] = configuration;
+                        
+                        [fraudInstance trackVerifiedWithOptions:optionsWithRequest completionHandler:^(NSDictionary<NSString *, id> * _Nullable result) {
+                            NSData *data = result[@"data"];
+                            NSHTTPURLResponse *response = result[@"response"];
+                            NSError *error = result[@"error"];
+                            handleResponse(data, response, error);
+                        }];
+                        return;
+                    }
+                }
+            }
+
+            void (^dataTaskCompletionHandler)(NSData *data, NSURLResponse *response, NSError *error) = ^(NSData *data, NSURLResponse *response, NSError *error) {
+                handleResponse(data, response, error);
             };
 
             NSURLSessionDataTask *task = [[NSURLSession sessionWithConfiguration:configuration] dataTaskWithRequest:req completionHandler:dataTaskCompletionHandler];

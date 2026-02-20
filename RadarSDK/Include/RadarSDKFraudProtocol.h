@@ -11,13 +11,13 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-typedef void (^RadarFraudPayloadCallback)(NSDictionary<NSString *, id> *_Nullable result);
+typedef void (^RadarFraudTrackVerifiedCallback)(NSDictionary<NSString *, id> *_Nullable result);
 
 @protocol RadarSDKFraudProtocol<NSObject>
 
 + (instancetype)sharedInstance;
 
-- (void)getFraudPayloadWithOptions:(NSDictionary<NSString *, id> *)options completionHandler:(RadarFraudPayloadCallback)completionHandler;
+- (void)trackVerifiedWithOptions:(NSDictionary<NSString *, id> *)options completionHandler:(RadarFraudTrackVerifiedCallback)completionHandler;
 
 @end
 
