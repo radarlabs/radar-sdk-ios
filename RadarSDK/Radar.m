@@ -811,9 +811,9 @@ BOOL _initialized = NO;
                                                       status:status
                                            completionHandler:^(RadarStatus status, RadarTrip *trip, RadarTripLeg *leg, NSArray<RadarEvent *> *events) {
         if (status == RadarStatusSuccess && trip) {
-            // Check if completing this leg also completed the trip
-            if (trip.status == RadarTripStatusCompleted) {
-                // Trip is complete - clear state like completeTrip does
+            // Check if updating this leg also completed or canceled the trip
+            if (trip.status == RadarTripStatusCompleted || trip.status == RadarTripStatusCanceled) {
+                // Trip is finished - clear state like completeTrip/cancelTrip does
                 [RadarSettings setTripOptions:nil];
                 [RadarSettings setTrip:nil];
                 
