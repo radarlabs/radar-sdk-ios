@@ -107,12 +107,4 @@ typedef NS_ENUM(NSInteger, RadarTripStatus) {
 
 - (NSDictionary *_Nonnull)dictionaryValue;
 
-/**
- Initializes a RadarTrip from a dictionary representation.
- 
- @param object A dictionary containing trip data.
- @return An initialized RadarTrip, or nil if the dictionary is invalid.
- */
-- (instancetype _Nullable)initWithObject:(id _Nonnull)object;
-
 @end
