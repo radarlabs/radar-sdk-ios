@@ -29,6 +29,7 @@ class RadarUserDefaults: NSObject {
         case ClientSdkConfiguration = "radar-clientSdkConfiguration"
         case SdkConfiguration = "radar-sdkConfiguration"
         case TripOptions = "radar-tripOptions"
+        case Trip = "radar-trip"
         case LogLevel = "radar-logLevel"
         case BeaconUUIDs = "radar-beaconUUIDs"
         case Host = "radar-host"
