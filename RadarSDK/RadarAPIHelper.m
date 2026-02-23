@@ -217,10 +217,9 @@
                 if (RadarSDKFraud) {
                     id<RadarSDKFraudProtocol> fraudInstance = [RadarSDKFraud sharedInstance];
                     if (fraudInstance) {
-                        // Add request and sessionConfiguration to options
+                        // Add request to options (fraud SDK uses its own session with SSL pinning)
                         NSMutableDictionary<NSString *, id> *optionsWithRequest = [fraudOptions mutableCopy];
                         optionsWithRequest[@"request"] = req;
-                        optionsWithRequest[@"sessionConfiguration"] = configuration;
                         
                         [fraudInstance trackVerifiedWithOptions:optionsWithRequest completionHandler:^(NSDictionary<NSString *, id> * _Nullable result) {
                             NSData *data = result[@"data"];
