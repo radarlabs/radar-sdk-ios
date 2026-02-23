@@ -107,4 +107,6 @@ typedef NS_ENUM(NSInteger, RadarTripStatus) {
 
 - (NSDictionary *_Nonnull)dictionaryValue;
 
+- (instancetype _Nullable)initWithObject:(id _Nonnull)object;
+
 @end
