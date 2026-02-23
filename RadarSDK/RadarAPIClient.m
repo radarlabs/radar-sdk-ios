@@ -862,6 +862,52 @@
                     }];
 }
 
+- (void)reorderTripLegsWithTripId:(NSString *_Nonnull)tripId
+                           legIds:(NSArray<NSString *> *_Nonnull)legIds
+                completionHandler:(RadarTripAPICompletionHandler _Nonnull)completionHandler {
+    NSString *publishableKey = [RadarSettings publishableKey];
+    if (!publishableKey) {
+        return completionHandler(RadarStatusErrorPublishableKey, nil, nil);
+    }
+
+    if (!tripId || !legIds || legIds.count == 0) {
+        return completionHandler(RadarStatusErrorBadRequest, nil, nil);
+    }
+
+    NSMutableDictionary *params = [NSMutableDictionary new];
+    params[@"legs"] = legIds;
+
+    NSString *host = [RadarSettings host];
+    NSString *url = [NSString stringWithFormat:@"%@/v1/trips/%@/legs", host, tripId];
+    url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
+
+    NSDictionary *headers = [RadarAPIClient headersWithPublishableKey:publishableKey];
+
+    [self.apiHelper requestWithMethod:@"PUT"
+                                  url:url
+                              headers:headers
+                               params:params
+                                sleep:NO
+                           logPayload:YES
+                      extendedTimeout:NO
+                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
+                        if (status != RadarStatusSuccess || !res) {
+                            return completionHandler(status, nil, nil);
+                        }
+
+                        id tripObj = res[@"trip"];
+                        id eventsObj = res[@"events"];
+                        RadarTrip *trip = [[RadarTrip alloc] initWithObject:tripObj];
+                        NSArray<RadarEvent *> *events = [RadarEvent eventsFromObject:eventsObj];
+
+                        if (events && events.count) {
+                            [[RadarDelegateHolder sharedInstance] didReceiveEvents:events user:nil];
+                        }
+
+                        completionHandler(RadarStatusSuccess, trip, events);
+                    }];
+}
+
 - (void)getContextForLocation:(CLLocation *_Nonnull)location completionHandler:(RadarContextAPICompletionHandler _Nonnull)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {

@@ -879,6 +879,44 @@ BOOL _initialized = NO;
     [self updateTripLegWithTripId:trip._id legId:trip.currentLegId status:status completionHandler:completionHandler];
 }
 
++ (void)reorderTripLegsWithTripId:(NSString *)tripId
+                           legIds:(NSArray<NSString *> *)legIds
+                completionHandler:(RadarTripCompletionHandler)completionHandler {
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo
+                                          type:RadarLogTypeSDKCall
+                                       message:[NSString stringWithFormat:@"reorderTripLegs(tripId=%@, legIds=%@)", tripId, legIds]];
+
+    [[RadarAPIClient sharedInstance] reorderTripLegsWithTripId:tripId
+                                                       legIds:legIds
+                                            completionHandler:^(RadarStatus status, RadarTrip *trip, NSArray<RadarEvent *> *events) {
+        if (status == RadarStatusSuccess && trip) {
+            [RadarSettings setTrip:trip];
+        }
+
+        if (completionHandler) {
+            [RadarUtils runOnMainThread:^{
+                completionHandler(status, trip, events);
+            }];
+        }
+    }];
+}
+
++ (void)reorderTripLegsWithLegIds:(NSArray<NSString *> *)legIds
+                completionHandler:(RadarTripCompletionHandler)completionHandler {
+    RadarTrip *trip = [RadarSettings trip];
+    if (!trip) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelWarning type:RadarLogTypeSDKCall message:@"reorderTripLegs() called with no active trip"];
+        if (completionHandler) {
+            [RadarUtils runOnMainThread:^{
+                completionHandler(RadarStatusErrorBadRequest, nil, nil);
+            }];
+        }
+        return;
+    }
+
+    [self reorderTripLegsWithTripId:trip._id legIds:legIds completionHandler:completionHandler];
+}
+
 #pragma mark - Context
 
 + (void)getContextWithCompletionHandler:(RadarContextCompletionHandler)completionHandler {

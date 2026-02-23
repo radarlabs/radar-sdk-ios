@@ -931,6 +931,30 @@ typedef void (^_Nonnull RadarIndoorsScanCompletionHandler)(NSString *_Nullable r
 + (void)updateCurrentTripLegWithStatus:(RadarTripLegStatus)status
                      completionHandler:(RadarTripLegCompletionHandler _Nullable)completionHandler NS_SWIFT_NAME(updateCurrentTripLeg(status:completionHandler:));
 
+/**
+ Reorders the legs of a multi-destination trip.
+
+ @param tripId The Radar ID of the trip (from RadarTrip._id).
+ @param legIds An array of leg IDs in the desired new order.
+ @param completionHandler An optional completion handler.
+
+ @see https://radar.com/documentation/trip-tracking
+ */
++ (void)reorderTripLegsWithTripId:(NSString *_Nonnull)tripId
+                           legIds:(NSArray<NSString *> *_Nonnull)legIds
+                completionHandler:(RadarTripCompletionHandler _Nullable)completionHandler NS_SWIFT_NAME(reorderTripLegs(tripId:legIds:completionHandler:));
+
+/**
+ Reorders the legs of the current multi-destination trip.
+
+ @param legIds An array of leg IDs in the desired new order.
+ @param completionHandler An optional completion handler.
+
+ @see https://radar.com/documentation/trip-tracking
+ */
++ (void)reorderTripLegsWithLegIds:(NSArray<NSString *> *_Nonnull)legIds
+                completionHandler:(RadarTripCompletionHandler _Nullable)completionHandler NS_SWIFT_NAME(reorderTripLegs(legIds:completionHandler:));
+
 #pragma mark - Context
 
 /**

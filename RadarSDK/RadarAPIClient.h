@@ -114,6 +114,10 @@ typedef void (^_Nonnull RadarSyncLogsAPICompletionHandler)(RadarStatus status);
                          status:(RadarTripLegStatus)status
               completionHandler:(RadarTripLegAPICompletionHandler _Nonnull)completionHandler;
 
+- (void)reorderTripLegsWithTripId:(NSString *_Nonnull)tripId
+                           legIds:(NSArray<NSString *> *_Nonnull)legIds
+                completionHandler:(RadarTripAPICompletionHandler _Nonnull)completionHandler;
+
 - (void)getContextForLocation:(CLLocation *_Nonnull)location completionHandler:(RadarContextAPICompletionHandler _Nonnull)completionHandler;
 
 - (void)searchPlacesNear:(CLLocation *_Nonnull)near
