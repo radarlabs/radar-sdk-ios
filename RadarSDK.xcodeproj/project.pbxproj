@@ -155,7 +155,7 @@
 		96A5A11B27ADA02F007B960B /* RadarDelegateHolder.h in Headers */ = {isa = PBXBuildFile; fileRef = 96A5A11727ADA02E007B960B /* RadarDelegateHolder.h */; };
 		96B465BC27D6732500D7119B /* CLLocation+RadarTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 96B465BB27D6732500D7119B /* CLLocation+RadarTests.m */; };
 		96FC90F7277379C1000757DF /* RadarFraud.m in Sources */ = {isa = PBXBuildFile; fileRef = 96FC90F6277379C1000757DF /* RadarFraud.m */; };
-		BA46C1662F4CF3F200031891 /* RadarTripLeg.h in Headers */ = {isa = PBXBuildFile; fileRef = BA46C1652F4CF3E900031891 /* RadarTripLeg.h */; };
+		BA46C1662F4CF3F200031891 /* RadarTripLeg.h in Headers */ = {isa = PBXBuildFile; fileRef = BA46C1652F4CF3E900031891 /* RadarTripLeg.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		BA46C1682F4CF46600031891 /* RadarTripLeg.m in Sources */ = {isa = PBXBuildFile; fileRef = BA46C1672F4CF45600031891 /* RadarTripLeg.m */; };
 		DD103211237E0C47003DD408 /* RadarSDKTests.m in Sources */ = {isa = PBXBuildFile; fileRef = DD103210237E0C47003DD408 /* RadarSDKTests.m */; };
 		DD103215237F1795003DD408 /* track.json in Resources */ = {isa = PBXBuildFile; fileRef = DD103214237F1795003DD408 /* track.json */; };
