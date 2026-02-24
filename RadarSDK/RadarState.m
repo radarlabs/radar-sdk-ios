@@ -283,11 +283,11 @@ static NSTimeInterval const kBackupInterval = 2.0; // 2 seconds
 }
 
 + (NSArray<NSDictionary *> *_Nullable)altitudeAdjustments {
-    return [[NSUserDefaults standardUserDefaults] arrayForKey:kAltitudeAdjustments];
+    return [[NSUserDefaults standardUserDefaults] valueForKey:kAltitudeAdjustments];
 }
 
 + (void)setAltitudeAdjustments:(NSArray<NSDictionary *> *_Nullable)altitudeAdjustments {
-    [[NSUserDefaults standardUserDefaults] setObject:altitudeAdjustments forKey:kAltitudeAdjustments];
+    [[NSUserDefaults standardUserDefaults] setValue:altitudeAdjustments forKey:kAltitudeAdjustments];
 }
 
 @end
