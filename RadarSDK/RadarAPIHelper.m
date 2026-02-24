@@ -200,7 +200,7 @@
             };
 
             NSURLSessionDataTask *task = [session dataTaskWithRequest:req completionHandler:dataTaskCompletionHandler];
-            
+
             [task resume];
         } @catch (NSException *exception) {
             return completionHandler(RadarStatusErrorBadRequest, nil);
