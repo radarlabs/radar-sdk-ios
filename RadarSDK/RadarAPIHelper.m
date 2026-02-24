@@ -16,6 +16,8 @@
 @property (strong, nonatomic) dispatch_queue_t queue;
 @property (strong, nonatomic) dispatch_semaphore_t semaphore;
 @property (assign, nonatomic) BOOL wait;
+@property (strong, nonatomic) NSURLSession *standardSession;
+@property (strong, nonatomic) NSURLSession *extendedTimeoutSession;
 
 @end
 
@@ -26,6 +28,16 @@
     if (self) {
         _queue = dispatch_queue_create("io.radar.api", DISPATCH_QUEUE_SERIAL);
         _semaphore = dispatch_semaphore_create(1);
+        
+        NSURLSessionConfiguration *standardConfig = [NSURLSessionConfiguration ephemeralSessionConfiguration];
+        standardConfig.timeoutIntervalForRequest = 10;
+        standardConfig.timeoutIntervalForResource = 10;
+        _standardSession = [NSURLSession sessionWithConfiguration:standardConfig];
+        
+        NSURLSessionConfiguration *extendedConfig = [NSURLSessionConfiguration defaultSessionConfiguration];
+        extendedConfig.timeoutIntervalForRequest = 25;
+        extendedConfig.timeoutIntervalForResource = 25;
+        _extendedTimeoutSession = [NSURLSession sessionWithConfiguration:extendedConfig];
     }
     return self;
 }
@@ -100,17 +112,7 @@
             }
 
 
-            NSURLSessionConfiguration *configuration;
-            if (extendedTimeout) {
-                configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
-                configuration.timeoutIntervalForRequest = 25;
-                configuration.timeoutIntervalForResource = 25;
-            } else {
-                // avoid SSL or credential caching
-                configuration = [NSURLSessionConfiguration ephemeralSessionConfiguration];
-                configuration.timeoutIntervalForRequest = 10;
-                configuration.timeoutIntervalForResource = 10;
-            }
+            NSURLSession *session = extendedTimeout ? self.extendedTimeoutSession : self.standardSession;
 
             NSDate *requestStart = [NSDate date];
 
@@ -197,8 +199,8 @@
                 }
             };
 
-            NSURLSessionDataTask *task = [[NSURLSession sessionWithConfiguration:configuration] dataTaskWithRequest:req completionHandler:dataTaskCompletionHandler];
-
+            NSURLSessionDataTask *task = [session dataTaskWithRequest:req completionHandler:dataTaskCompletionHandler];
+            
             [task resume];
         } @catch (NSException *exception) {
             return completionHandler(RadarStatusErrorBadRequest, nil);
