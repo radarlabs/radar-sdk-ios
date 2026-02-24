@@ -12,6 +12,7 @@
 #import "../RadarSDK/RadarAPIHelper.h"
 #import "../RadarSDK/RadarLocationManager.h"
 #import "../RadarSDK/RadarSettings.h"
+#import "../RadarSDK/RadarState.h"
 #import "../RadarSDK/RadarLogBuffer.h"
 #import "CLLocationManagerMock.h"
 #import "CLVisitMock.h"
@@ -312,6 +313,8 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     if (existingTags && existingTags.count > 0) {
         [Radar removeTags:existingTags];
     }
+    
+    [RadarState setAltitudeAdjustments:nil];
 }
 
 - (void)tearDown {
@@ -499,6 +502,113 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
                                          XCTFail();
                                      }
                                  }];
+}
+
+- (void)test_Radar_altitudeAdjustments_stored_from_track_response {
+    NSArray<NSDictionary *> *expectedAdjustments = @[
+        @{@"geofenceId": @"abc123", @"altitude": @(100.5), @"confidence": @(3)},
+        @{@"geofenceId": @"def456", @"altitude": @(200.0), @"confidence": @(2)}
+    ];
+
+    NSMutableDictionary *trackResponse = [[RadarTestUtils jsonDictionaryFromResource:@"track"] mutableCopy];
+    NSMutableDictionary *userObj = [trackResponse[@"user"] mutableCopy];
+    userObj[@"altitudeAdjustments"] = expectedAdjustments;
+    trackResponse[@"user"] = userObj;
+
+    self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusAuthorizedWhenInUse;
+    self.locationManagerMock.mockLocation = [[CLLocation alloc] initWithCoordinate:CLLocationCoordinate2DMake(40.78382, -73.97536)
+                                                                          altitude:-1
+                                                                horizontalAccuracy:65
+                                                                  verticalAccuracy:-1
+                                                                         timestamp:[NSDate new]];
+    self.apiHelperMock.mockStatus = RadarStatusSuccess;
+    self.apiHelperMock.mockResponse = trackResponse;
+
+    XCTestExpectation *expectation = [self expectationWithDescription:@"trackOnce stores altitude adjustments"];
+
+    [Radar trackOnceWithCompletionHandler:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user) {
+        XCTAssertEqual(status, RadarStatusSuccess);
+
+        NSArray<NSDictionary *> *stored = [RadarState altitudeAdjustments];
+        XCTAssertNotNil(stored);
+        XCTAssertEqual(stored.count, 2);
+        XCTAssertEqualObjects(stored[0][@"geofenceId"], @"abc123");
+        XCTAssertEqualObjects(stored[0][@"altitude"], @(100.5));
+        XCTAssertEqualObjects(stored[1][@"geofenceId"], @"def456");
+        XCTAssertEqualObjects(stored[1][@"altitude"], @(200.0));
+
+        [expectation fulfill];
+    }];
+
+    [self waitForExpectationsWithTimeout:30
+                                 handler:^(NSError *_Nullable error) {
+                                     if (error) {
+                                         XCTFail();
+                                     }
+                                 }];
+}
+
+- (void)test_Radar_altitudeAdjustments_included_in_track_request {
+    NSArray<NSDictionary *> *adjustments = @[
+        @{@"geofenceId": @"abc123", @"altitude": @(100.5), @"confidence": @(3)},
+        @{@"geofenceId": @"def456", @"altitude": @(200.0), @"confidence": @(2)}
+    ];
+    [RadarState setAltitudeAdjustments:adjustments];
+
+    self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusAuthorizedWhenInUse;
+    self.locationManagerMock.mockLocation = [[CLLocation alloc] initWithCoordinate:CLLocationCoordinate2DMake(40.78382, -73.97536)
+                                                                          altitude:-1
+                                                                horizontalAccuracy:65
+                                                                  verticalAccuracy:-1
+                                                                         timestamp:[NSDate new]];
+    self.apiHelperMock.mockStatus = RadarStatusSuccess;
+    self.apiHelperMock.mockResponse = [RadarTestUtils jsonDictionaryFromResource:@"track"];
+
+    XCTestExpectation *expectation = [self expectationWithDescription:@"trackOnce includes altitude adjustments"];
+
+    [Radar trackOnceWithCompletionHandler:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user) {
+        XCTAssertEqual(status, RadarStatusSuccess);
+
+        XCTAssertNotNil(self.apiHelperMock.lastParams);
+        XCTAssertTrue([self.apiHelperMock.lastUrl containsString:@"/v1/track"]);
+
+        NSArray<NSDictionary *> *apiAdjustments = self.apiHelperMock.lastParams[@"altitudeAdjustments"];
+        XCTAssertNotNil(apiAdjustments);
+        XCTAssertEqual(apiAdjustments.count, 2);
+        XCTAssertEqualObjects(apiAdjustments[0][@"geofenceId"], @"abc123");
+        XCTAssertEqualObjects(apiAdjustments[1][@"geofenceId"], @"def456");
+
+        [expectation fulfill];
+    }];
+
+    [self waitForExpectationsWithTimeout:30
+                                 handler:^(NSError *_Nullable error) {
+                                     if (error) {
+                                         XCTFail();
+                                     }
+                                 }];
+}
+
+- (void)test_Radar_altitudeAdjustments_persist_across_sessions {
+    NSArray<NSDictionary *> *adjustments = @[
+        @{@"geofenceId": @"abc123", @"altitude": @(100.5), @"confidence": @(3)},
+        @{@"geofenceId": @"def456", @"altitude": @(200.0), @"confidence": @(2)}
+    ];
+
+    [RadarState setAltitudeAdjustments:adjustments];
+
+    NSArray<NSDictionary *> *stored = [RadarState altitudeAdjustments];
+    XCTAssertNotNil(stored);
+    XCTAssertEqual(stored.count, 2);
+    XCTAssertEqualObjects(stored[0][@"geofenceId"], @"abc123");
+    XCTAssertEqualObjects(stored[0][@"altitude"], @(100.5));
+    XCTAssertEqualObjects(stored[0][@"confidence"], @(3));
+    XCTAssertEqualObjects(stored[1][@"geofenceId"], @"def456");
+    XCTAssertEqualObjects(stored[1][@"altitude"], @(200.0));
+    XCTAssertEqualObjects(stored[1][@"confidence"], @(2));
+
+    [RadarState setAltitudeAdjustments:nil];
+    XCTAssertNil([RadarState altitudeAdjustments]);
 }
 
 - (void)test_Radar_getLocation_errorPermissions {
