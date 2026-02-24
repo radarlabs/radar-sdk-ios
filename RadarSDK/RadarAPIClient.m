@@ -575,6 +575,8 @@
                                 if ([altitudeAdjustmentsObj isKindOfClass:[NSArray class]]) {
                                     [RadarState setAltitudeAdjustments:(NSArray *)altitudeAdjustmentsObj];
                                     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Stored %lu altitude adjustments from track response", (unsigned long)[(NSArray *)altitudeAdjustmentsObj count]]];
+                                } else {
+                                    [RadarState setAltitudeAdjustments:nil];
                                 }
                             }
                             id nearbyGeofencesObj = res[@"nearbyGeofences"];

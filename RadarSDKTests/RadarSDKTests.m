@@ -611,6 +611,36 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     XCTAssertNil([RadarState altitudeAdjustments]);
 }
 
+- (void)test_Radar_altitudeAdjustments_cleared_when_not_in_track_response {
+    [RadarState setAltitudeAdjustments:@[@{@"geofenceId": @"stale", @"altitude": @(50.0)}]];
+    XCTAssertNotNil([RadarState altitudeAdjustments]);
+
+    self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusAuthorizedWhenInUse;
+    self.locationManagerMock.mockLocation = [[CLLocation alloc] initWithCoordinate:CLLocationCoordinate2DMake(40.78382, -73.97536)
+                                                                          altitude:-1
+                                                                horizontalAccuracy:65
+                                                                  verticalAccuracy:-1
+                                                                         timestamp:[NSDate new]];
+    self.apiHelperMock.mockStatus = RadarStatusSuccess;
+    self.apiHelperMock.mockResponse = [RadarTestUtils jsonDictionaryFromResource:@"track"];
+
+    XCTestExpectation *expectation = [self expectationWithDescription:@"trackOnce clears stale altitude adjustments"];
+
+    [Radar trackOnceWithCompletionHandler:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user) {
+        XCTAssertEqual(status, RadarStatusSuccess);
+        XCTAssertNil([RadarState altitudeAdjustments]);
+
+        [expectation fulfill];
+    }];
+
+    [self waitForExpectationsWithTimeout:30
+                                 handler:^(NSError *_Nullable error) {
+                                     if (error) {
+                                         XCTFail();
+                                     }
+                                 }];
+}
+
 - (void)test_Radar_getLocation_errorPermissions {
     self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusNotDetermined;
     self.locationManagerMock.mockLocation = nil;
