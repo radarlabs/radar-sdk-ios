@@ -36,6 +36,7 @@
 #import "RadarVerifiedLocationToken+Internal.h"
 #import "RadarNotificationHelper.h"
 #import <os/log.h>
+#import "RadarSDKFraudProtocol.h"
 
 #if __has_include(<RadarSDK/RadarSDK-Swift.h>)
 #import <RadarSDK/RadarSDK-Swift.h>
@@ -204,10 +205,7 @@
                     beacons:beacons
                indoorScan:indoorScan
                    verified:NO
-          attestationString:nil
-                      keyId:nil
-           attestationError:nil
-                  encrypted:NO
+              fraudPayload:nil
         expectedCountryCode:nil
           expectedStateCode:nil
                      reason:nil
@@ -223,10 +221,7 @@
                   beacons:(NSArray<RadarBeacon *> *_Nullable)beacons
              indoorScan:(NSString *_Nullable)indoorScan
                  verified:(BOOL)verified
-        attestationString:(NSString *_Nullable)attestationString
-                    keyId:(NSString *_Nullable)keyId
-         attestationError:(NSString *_Nullable)attestationError
-                encrypted:(BOOL)encrypted
+            fraudPayload:(NSString *_Nullable)fraudPayload
       expectedCountryCode:(NSString * _Nullable)expectedCountryCode
         expectedStateCode:(NSString * _Nullable)expectedStateCode
                    reason:(NSString * _Nullable)reason
@@ -306,20 +301,6 @@
     params[@"pushNotificationToken"] = [RadarSettings pushNotificationToken];
     params[@"locationExtensionToken"] = [RadarSettings locationExtensionToken];
     
-    NSMutableArray<NSString *> *fraudFailureReasons = [NSMutableArray new];
-    if (@available(iOS 15.0, *)) {
-        CLLocationSourceInformation *sourceInformation = location.sourceInformation;
-        if (sourceInformation) {
-            if (sourceInformation.isSimulatedBySoftware) {
-                params[@"mocked"] = @(YES);
-                [fraudFailureReasons addObject:@"fraud_mocked_from_mock_provider"];
-            }
-            if (sourceInformation.isProducedByAccessory) {
-                [fraudFailureReasons addObject:@"fraud_mocked_produced_by_accessory"];
-            }
-        }
-    }
-    
     RadarTripOptions *tripOptions = Radar.getTripOptions;
 
     if (tripOptions) {
@@ -359,15 +340,6 @@
 
     params[@"verified"] = @(verified);
     if (verified) {
-        params[@"attestationString"] = attestationString;
-        params[@"keyId"] = keyId;
-        params[@"attestationError"] = attestationError;
-        params[@"encrypted"] = @(encrypted);
-        BOOL jailbroken = [[RadarVerificationManager sharedInstance] isJailbroken];
-        params[@"compromised"] = @(jailbroken);
-        if (jailbroken) {
-            [fraudFailureReasons addObject:@"fraud_compromised_jailbroken"];
-        }
         if (expectedCountryCode) {
             params[@"expectedCountryCode"] = expectedCountryCode;
         }
@@ -380,14 +352,11 @@
         if (transactionId) {
             params[@"transactionId"] = transactionId;
         }
-        if (UIScreen.mainScreen.isCaptured) {
-            [fraudFailureReasons addObject:@"fraud_sharing_capturing_screen"];
-        }
-        NSString *kDeviceId = [[RadarVerificationManager sharedInstance] kDeviceId];
-        if (kDeviceId) {
-            params[@"kDeviceId"] = kDeviceId;
+        if (fraudPayload) {
+            params[@"fraudPayload"] = fraudPayload;
         }
     }
+
     params[@"appId"] = [[NSBundle mainBundle] bundleIdentifier];
     NSString *appName = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleName"];
     if (appName) {
@@ -428,7 +397,10 @@
         locationMetadata[@"altitude"] = @(location.altitude);
         locationMetadata[@"floor"] = @([location.floor level]);
         locationMetadata[@"pressureHPa"] = [RadarState lastRelativeAltitudeData];
-        params[@"motionAuthorization"] = [Radar stringForMotionAuthorization:[RadarState motionAuthorization]];
+        NSString *motionAuth = [RadarState motionAuthorizationString];
+        if (motionAuth) {
+            params[@"motionAuthorization"] = motionAuth;
+        }
         NSDictionary *pressureDict = [RadarState lastRelativeAltitudeData];
         if (pressureDict) {
             NSNumber *pressure = pressureDict[@"pressure"];
@@ -442,8 +414,6 @@
     if (options.usePressure || options.useMotion) {
         params[@"locationMetadata"] = locationMetadata;
     }
-    
-    params[@"fraudFailureReasons"] = fraudFailureReasons;
 
     // Include stored altitudeAdjustments from previous track responses
     NSArray<NSDictionary *> *altitudeAdjustments = [RadarState altitudeAdjustments];
@@ -453,10 +423,10 @@
 
     if (anonymous) {
         [[RadarAPIClient sharedInstance] getConfigForUsage:@"track"
-                                                  verified:verified
-                                         completionHandler:^(RadarStatus status, RadarConfig *_Nullable config){
+                                                verified:verified
+                                        completionHandler:^(RadarStatus status, RadarConfig *_Nullable config){
 
-                                         }];
+                                        }];
     }
 
     if (sdkConfiguration.useNotificationDiff) {
@@ -480,16 +450,14 @@
         [[RadarAPIClient sharedInstance] makeTrackRequestWithParams:params
                                                             options:options
                                                             stopped:stopped
-                                                           location:location
-                                                             source:source
-                                                           verified:verified
-                                                     publishableKey:publishableKey
-                                             notificationsRemaining:@[]
-                                             locationMetadata:locationMetadata
-                                                  completionHandler:completionHandler];
+                                                        location:location
+                                                            source:source
+                                                        verified:verified
+                                                    publishableKey:publishableKey
+                                            notificationsRemaining:@[]
+                                            locationMetadata:locationMetadata
+                                                completionHandler:completionHandler];
     }
-
-
 }
 
 - (void)makeTrackRequestWithParams:(NSDictionary *)params
@@ -1587,6 +1555,7 @@
 
 - (void)sendEvent:(NSString *)conversionName
      withMetadata:(NSDictionary *_Nullable)metadata
+     withCampaign:(NSString *_Nullable)campaign
 completionHandler:(RadarSendEventAPICompletionHandler _Nonnull)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
@@ -1601,6 +1570,7 @@ completionHandler:(RadarSendEventAPICompletionHandler _Nonnull)completionHandler
 
     params[@"type"] = conversionName;
     params[@"metadata"] = metadata;
+    params[@"campaign"] = campaign;
 
     NSString *host = [RadarSettings host];
     NSString *url = [NSString stringWithFormat:@"%@/v1/events", host];

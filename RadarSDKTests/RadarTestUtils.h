@@ -13,7 +13,6 @@
 #import "RadarState.h"
 #import "RadarUtils.h"
 #import "RadarTripOptions.h"
-#import "RadarVerificationManager.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
