@@ -89,9 +89,7 @@ typedef void (^_Nonnull RadarSyncLogsAPICompletionHandler)(RadarStatus status);
                   beacons:(NSArray<RadarBeacon *> *_Nullable)beacons
              indoorScan:(NSString *_Nullable)indoorScan
                  verified:(BOOL)verified
-            fraudPayload:(NSString *_Nullable)fraudPayload
-         // -- payload encryption --
-         // fraudKeyVersion:(NSInteger)fraudKeyVersion
+            fraudOptions:(NSDictionary<NSString *, id> *_Nullable)fraudOptions
       expectedCountryCode:(NSString *_Nullable)expectedCountryCode
         expectedStateCode:(NSString *_Nullable)expectedStateCode
                    reason:(NSString *_Nullable)reason
