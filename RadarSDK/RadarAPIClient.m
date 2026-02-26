@@ -537,7 +537,7 @@
                             if ([userObj isKindOfClass:[NSDictionary class]]) {
                                 NSMutableDictionary *mutableUserObj = [userObj mutableCopy];
                                 if (locationMetadataObj && [locationMetadataObj isKindOfClass:[NSDictionary class]]) {
-                                    mutableUserObj[@"locationMetadata"] = locationMetadataObj;
+                                    mutableUserObj[@"metadata"] = locationMetadataObj;
                                 } else {
                                     mutableUserObj[@"metadata"] = locationMetadata;
                                 }
