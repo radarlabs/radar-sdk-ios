@@ -13,10 +13,11 @@
 #import "RadarMeta.h"
 #import "RadarPermissionsHelper.h"
 #import "RadarActivityManager.h"
+#import "RadarLocationProviding.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface RadarLocationManager : NSObject<CLLocationManagerDelegate>
+@interface RadarLocationManager : NSObject<CLLocationManagerDelegate, RadarLocationProviding>
 
 @property (nonnull, strong, nonatomic) CLLocationManager *locationManager;
 @property (nonnull, strong, nonatomic) CLLocationManager *lowPowerLocationManager;
