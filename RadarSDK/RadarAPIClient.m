@@ -533,9 +533,14 @@
 
                             id eventsObj = res[@"events"];
                             id userObj = res[@"user"];
+                            id locationMetadataObj = res[@"locationMetadata"];
                             if ([userObj isKindOfClass:[NSDictionary class]]) {
                                 NSMutableDictionary *mutableUserObj = [userObj mutableCopy];
-                                mutableUserObj[@"metadata"] = locationMetadata;
+                                if (locationMetadataObj && [locationMetadataObj isKindOfClass:[NSDictionary class]]) {
+                                    mutableUserObj[@"locationMetadata"] = locationMetadataObj;
+                                } else {
+                                    mutableUserObj[@"metadata"] = locationMetadata;
+                                }
                                 userObj = mutableUserObj;
                                 
                                 // Extract and store altitudeAdjustments from user object
