@@ -402,60 +402,73 @@ static NSString *const kDistance = @"distance";
     if (!object) {
         return NO;
     }
-    
+
     if (self == object) {
         return YES;
     }
-    
+
     if (![object isKindOfClass:[RadarTripLeg class]]) {
         return NO;
     }
-    
+
     RadarTripLeg *other = (RadarTripLeg *)object;
-    
-    // Compare _id (if both have IDs, compare them; otherwise skip)
-    BOOL idEqual = (!self._id && !other._id) ||
-                   (self._id && other._id && [self._id isEqualToString:other._id]);
-    
-    // Compare geofence tag
-    BOOL geofenceTagEqual = (!self.destinationGeofenceTag && !other.destinationGeofenceTag) ||
-                            (self.destinationGeofenceTag && other.destinationGeofenceTag &&
-                             [self.destinationGeofenceTag isEqualToString:other.destinationGeofenceTag]);
-    
-    // Compare geofence external ID
-    BOOL geofenceExternalIdEqual = (!self.destinationGeofenceExternalId && !other.destinationGeofenceExternalId) ||
-                                   (self.destinationGeofenceExternalId && other.destinationGeofenceExternalId &&
-                                    [self.destinationGeofenceExternalId isEqualToString:other.destinationGeofenceExternalId]);
-    
-    // Compare geofence ID
-    BOOL geofenceIdEqual = (!self.destinationGeofenceId && !other.destinationGeofenceId) ||
-                           (self.destinationGeofenceId && other.destinationGeofenceId &&
-                            [self.destinationGeofenceId isEqualToString:other.destinationGeofenceId]);
-    
-    // Compare address
-    BOOL addressEqual = (!self.address && !other.address) ||
-                        (self.address && other.address && [self.address isEqualToString:other.address]);
-    
-    // Compare coordinates
-    BOOL coordinatesEqual = (self.hasCoordinates == other.hasCoordinates) &&
-                            (!self.hasCoordinates ||
-                             (self.coordinates.latitude == other.coordinates.latitude &&
-                              self.coordinates.longitude == other.coordinates.longitude));
-    
-    // Compare metadata
-    BOOL metadataEqual = (!self.metadata && !other.metadata) ||
-                         (self.metadata && other.metadata && [self.metadata isEqualToDictionary:other.metadata]);
-    
-    return idEqual &&
-           geofenceTagEqual &&
-           geofenceExternalIdEqual &&
-           geofenceIdEqual &&
-           addressEqual &&
-           coordinatesEqual &&
-           self.arrivalRadius == other.arrivalRadius &&
-           self.stopDuration == other.stopDuration &&
-           self.status == other.status &&
-           metadataEqual;
+
+    if (!((!self._id && !other._id) ||
+          (self._id && other._id && [self._id isEqualToString:other._id]))) {
+        return NO;
+    }
+
+    if (!((!self.destinationGeofenceTag && !other.destinationGeofenceTag) ||
+          (self.destinationGeofenceTag && other.destinationGeofenceTag &&
+           [self.destinationGeofenceTag isEqualToString:other.destinationGeofenceTag]))) {
+        return NO;
+    }
+
+    if (!((!self.destinationGeofenceExternalId && !other.destinationGeofenceExternalId) ||
+          (self.destinationGeofenceExternalId && other.destinationGeofenceExternalId &&
+           [self.destinationGeofenceExternalId isEqualToString:other.destinationGeofenceExternalId]))) {
+        return NO;
+    }
+
+    if (!((!self.destinationGeofenceId && !other.destinationGeofenceId) ||
+          (self.destinationGeofenceId && other.destinationGeofenceId &&
+           [self.destinationGeofenceId isEqualToString:other.destinationGeofenceId]))) {
+        return NO;
+    }
+
+    if (!((!self.address && !other.address) ||
+          (self.address && other.address && [self.address isEqualToString:other.address]))) {
+        return NO;
+    }
+
+    if (self.hasCoordinates != other.hasCoordinates) {
+        return NO;
+    }
+
+    if (self.hasCoordinates &&
+        (self.coordinates.latitude != other.coordinates.latitude ||
+         self.coordinates.longitude != other.coordinates.longitude)) {
+        return NO;
+    }
+
+    if (self.arrivalRadius != other.arrivalRadius) {
+        return NO;
+    }
+
+    if (self.stopDuration != other.stopDuration) {
+        return NO;
+    }
+
+    if (self.status != other.status) {
+        return NO;
+    }
+
+    if (!((!self.metadata && !other.metadata) ||
+          (self.metadata && other.metadata && [self.metadata isEqualToDictionary:other.metadata]))) {
+        return NO;
+    }
+
+    return YES;
 }
 
 @end

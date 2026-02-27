@@ -147,9 +147,7 @@ static NSString *const kLegs = @"legs";
 
     RadarTripOptions *options = (RadarTripOptions *)object;
     
-    BOOL legsEqual = (!self.legs && !options.legs) ||
-                     (self.legs != nil && options.legs != nil &&
-                      self.legs.count == options.legs.count && [self.legs isEqualToArray:options.legs]);
+    BOOL legsEqual = (!self.legs && !options.legs) || [self.legs isEqual:options.legs];
 
     return [self.externalId isEqualToString:options.externalId] &&
            ((!self.metadata && !options.metadata) || (self.metadata != nil && options.metadata != nil && [self.metadata isEqualToDictionary:options.metadata])) &&

@@ -21,6 +21,7 @@
 #import "RadarVerifiedLocationToken.h"
 #import "RadarUser.h"
 #import "RadarInitializeOptions.h"
+#import "RadarTripLeg.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -228,8 +229,6 @@ typedef void (^_Nullable RadarTrackVerifiedCompletionHandler)(RadarStatus status
  @see https://radar.com/documentation/sdk/ios
  */
 typedef void (^_Nullable RadarTripCompletionHandler)(RadarStatus status, RadarTrip *_Nullable trip, NSArray<RadarEvent *> *_Nullable events);
-
-@class RadarTripLeg;
 
 /**
  Called when a trip leg update succeeds, fails, or times out.
