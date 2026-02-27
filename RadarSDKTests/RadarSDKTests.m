@@ -22,6 +22,8 @@
 #import "RadarTripOptions.h"
 #import "RadarFileStorage.h"
 #import "RadarReplayBuffer.h"
+#import "../RadarSDK/RadarTrip+Internal.h"
+#import "../RadarSDK/Include/RadarTripLeg.h"
 #import <os/log.h>
 
 @interface RadarSDKTests : XCTestCase
@@ -1106,6 +1108,325 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     [Radar completeTrip];
     XCTAssertNil([RadarSettings previousTrackingOptions]);
     XCTAssertFalse(Radar.isTracking);
+}
+
+#pragma  mark - Trip Leg Integration Tests
+
+- (NSDictionary *)tripWithLegsResponseDict {
+    return [RadarTestUtils jsonDictionaryFromResource:@"trip_with_legs"];
+}
+
+- (void)test_RadarTrip_initWithObject_parsesLegsAndCurrentLeg {
+    NSDictionary *response = [self tripWithLegsResponseDict];
+    NSDictionary *tripDict = response[@"trip"];
+    RadarTrip *trip = [[RadarTrip alloc] initWithObject:tripDict];
+    
+    XCTAssertNotNil(trip);
+    XCTAssertEqualObjects(trip._id, @"trip_abc123");
+    XCTAssertEqualObjects(trip.currentLegId, @"leg_001");
+    XCTAssertNotNil(trip.legs);
+    XCTAssertEqual(trip.legs.count, 2);
+    
+    RadarTripLeg *leg1 = trip.legs[0];
+    XCTAssertEqualObjects(leg1._id, @"leg_001");
+    XCTAssertEqual(leg1.status, RadarTripLegStatusStarted);
+    XCTAssertEqualObjects(leg1.destinationGeofenceTag, @"store");
+    
+    RadarTripLeg *leg2 = trip.legs[1];
+    XCTAssertEqualObjects(leg2._id, @"leg_002");
+    XCTAssertEqual(leg2.status, RadarTripLegStatusPending);
+    XCTAssertEqualObjects(leg2.destinationGeofenceTag, @"warehouse");
+}
+
+- (void)test_RadarTrip_dictionaryValue_includesLegsAndCurrentLeg {
+    NSDictionary *response = [self tripWithLegsResponseDict];
+    NSDictionary *tripDict = response[@"trip"];
+    RadarTrip *trip = [[RadarTrip alloc] initWithObject:tripDict];
+
+    NSDictionary *dict = [trip dictionaryValue];
+    XCTAssertNotNil(dict[@"legs"]);
+    XCTAssertEqual([dict[@"legs"] count], 2);
+    XCTAssertEqualObjects(dict[@"currentLeg"], @"leg_001");
+}
+
+- (void)test_RadarTripOptions_legsSerializationRoundTrip {
+    RadarTripOptions *options = [[RadarTripOptions alloc] initWithExternalId:@"trip-1"
+                                                      destinationGeofenceTag:@"store"
+                                               destinationGeofenceExternalId:@"store-1"];
+    RadarTripLeg *leg = [[RadarTripLeg alloc] initWithDestinationGeofenceTag:@"warehouse"
+                                              destinationGeofenceExternalId:@"wh-1"];
+    leg.stopDuration = 10;
+    options.legs = @[leg];
+
+    NSDictionary *dict = [options dictionaryValue];
+    XCTAssertNotNil(dict[@"legs"]);
+
+    RadarTripOptions *restored = [RadarTripOptions tripOptionsFromDictionary:dict];
+    XCTAssertNotNil(restored.legs);
+    XCTAssertEqual(restored.legs.count, 1);
+    XCTAssertEqualObjects(restored.legs[0].destinationGeofenceTag, @"warehouse");
+}
+
+- (void)test_RadarTripOptions_isEqual_accountsForLegs {
+    RadarTripOptions *options1 = [[RadarTripOptions alloc] initWithExternalId:@"trip-1"
+                                                       destinationGeofenceTag:@"store"
+                                                destinationGeofenceExternalId:@"store-1"];
+    RadarTripOptions *options2 = [[RadarTripOptions alloc] initWithExternalId:@"trip-1"
+                                                       destinationGeofenceTag:@"store"
+                                                destinationGeofenceExternalId:@"store-1"];
+
+    RadarTripLeg *leg = [[RadarTripLeg alloc] initWithAddress:@"123 St"];
+    options1.legs = @[leg];
+
+    XCTAssertFalse([options1 isEqual:options2]);
+
+    options2.legs = @[leg];
+    XCTAssertTrue([options1 isEqual:options2]);
+}
+
+- (void)test_Radar_getTrip_returnsNilWhenNoTrip {
+    [RadarSettings setTrip:nil];
+    XCTAssertNil([Radar getTrip]);
+}
+
+- (void)test_Radar_getTrip_returnsStoredTrip {
+    NSDictionary *response = [self tripWithLegsResponseDict];
+    RadarTrip *trip = [[RadarTrip alloc] initWithObject:response[@"trip"]];
+    [RadarSettings setTrip:trip];
+
+    RadarTrip *retrieved = [Radar getTrip];
+    XCTAssertNotNil(retrieved);
+    XCTAssertEqualObjects(retrieved._id, @"trip_abc123");
+    XCTAssertEqual(retrieved.legs.count, 2);
+    XCTAssertEqualObjects(retrieved.currentLegId, @"leg_001");
+
+    [RadarSettings setTrip:nil];
+}
+
+- (void)test_Radar_startTrip_storesTrip {
+    self.apiHelperMock.mockStatus = RadarStatusSuccess;
+    self.apiHelperMock.mockResponse = [self tripWithLegsResponseDict];
+
+    RadarTripOptions *options = [[RadarTripOptions alloc] initWithExternalId:@"order-456"
+                                                      destinationGeofenceTag:@"store"
+                                               destinationGeofenceExternalId:@"store-1"];
+    XCTestExpectation *exp = [self expectationWithDescription:@"startTrip stores trip"];
+
+    [Radar startTripWithOptions:options completionHandler:^(RadarStatus status, RadarTrip *trip, NSArray<RadarEvent *> *events) {
+        XCTAssertEqual(status, RadarStatusSuccess);
+        [exp fulfill];
+    }];
+
+    [self waitForExpectations:@[exp] timeout:10.0];
+
+    RadarTrip *storedTrip = [RadarSettings trip];
+    XCTAssertNotNil(storedTrip);
+    XCTAssertEqualObjects(storedTrip._id, @"trip_abc123");
+
+    [RadarSettings setTrip:nil];
+    [RadarSettings setTripOptions:nil];
+}
+
+- (void)test_Radar_completeTrip_clearsTrip {
+    NSDictionary *response = [self tripWithLegsResponseDict];
+    RadarTrip *trip = [[RadarTrip alloc] initWithObject:response[@"trip"]];
+    [RadarSettings setTrip:trip];
+    [RadarSettings setTripOptions:[[RadarTripOptions alloc] initWithExternalId:@"order-456"
+                                                        destinationGeofenceTag:@"store"
+                                                 destinationGeofenceExternalId:@"store-1"]];
+
+    self.apiHelperMock.mockStatus = RadarStatusSuccess;
+    self.apiHelperMock.mockResponse = [self tripWithLegsResponseDict];
+
+    XCTestExpectation *exp = [self expectationWithDescription:@"completeTrip clears trip"];
+
+    [Radar completeTripWithCompletionHandler:^(RadarStatus status, RadarTrip *trip, NSArray<RadarEvent *> *events) {
+        [exp fulfill];
+    }];
+
+    [self waitForExpectations:@[exp] timeout:10.0];
+
+    XCTAssertNil([RadarSettings trip]);
+    XCTAssertNil([RadarSettings tripOptions]);
+}
+
+- (void)test_Radar_cancelTrip_clearsTrip {
+    NSDictionary *response = [self tripWithLegsResponseDict];
+    RadarTrip *trip = [[RadarTrip alloc] initWithObject:response[@"trip"]];
+    [RadarSettings setTrip:trip];
+    [RadarSettings setTripOptions:[[RadarTripOptions alloc] initWithExternalId:@"order-456"
+                                                        destinationGeofenceTag:@"store"
+                                                 destinationGeofenceExternalId:@"store-1"]];
+
+    self.apiHelperMock.mockStatus = RadarStatusSuccess;
+    self.apiHelperMock.mockResponse = [self tripWithLegsResponseDict];
+
+    XCTestExpectation *exp = [self expectationWithDescription:@"cancelTrip clears trip"];
+
+    [Radar cancelTripWithCompletionHandler:^(RadarStatus status, RadarTrip *trip, NSArray<RadarEvent *> *events) {
+        [exp fulfill];
+    }];
+
+    [self waitForExpectations:@[exp] timeout:10.0];
+
+    XCTAssertNil([RadarSettings trip]);
+    XCTAssertNil([RadarSettings tripOptions]);
+}
+
+- (void)test_Radar_updateTripLeg_success {
+    self.apiHelperMock.mockStatus = RadarStatusSuccess;
+    self.apiHelperMock.mockResponse = [self tripWithLegsResponseDict];
+
+    NSDictionary *response = [self tripWithLegsResponseDict];
+    RadarTrip *trip = [[RadarTrip alloc] initWithObject:response[@"trip"]];
+    [RadarSettings setTrip:trip];
+
+    XCTestExpectation *exp = [self expectationWithDescription:@"updateTripLeg success"];
+
+    [Radar updateTripLegWithTripId:@"trip_abc123"
+                             legId:@"leg_001"
+                            status:RadarTripLegStatusCompleted
+                 completionHandler:^(RadarStatus status, RadarTrip *trip, RadarTripLeg *leg, NSArray<RadarEvent *> *events) {
+        XCTAssertEqual(status, RadarStatusSuccess);
+        XCTAssertNotNil(trip);
+        XCTAssertNotNil(leg);
+        XCTAssertEqualObjects(trip._id, @"trip_abc123");
+        XCTAssertEqualObjects(leg._id, @"leg_001");
+        [exp fulfill];
+    }];
+
+    [self waitForExpectations:@[exp] timeout:10.0];
+
+    XCTAssertNotNil([RadarSettings trip]);
+
+    [RadarSettings setTrip:nil];
+}
+
+- (void)test_Radar_updateTripLeg_verifiesRequestParams {
+    self.apiHelperMock.mockStatus = RadarStatusSuccess;
+    self.apiHelperMock.mockResponse = [self tripWithLegsResponseDict];
+
+    XCTestExpectation *exp = [self expectationWithDescription:@"updateTripLeg params"];
+
+    [Radar updateTripLegWithTripId:@"trip_abc123"
+                             legId:@"leg_001"
+                            status:RadarTripLegStatusCompleted
+                 completionHandler:^(RadarStatus status, RadarTrip *trip, RadarTripLeg *leg, NSArray<RadarEvent *> *events) {
+        [exp fulfill];
+    }];
+
+    [self waitForExpectations:@[exp] timeout:10.0];
+
+    XCTAssertEqualObjects(self.apiHelperMock.lastMethod, @"PATCH");
+    XCTAssertTrue([self.apiHelperMock.lastUrl containsString:@"/v1/trips/trip_abc123/legs/leg_001"]);
+    XCTAssertEqualObjects(self.apiHelperMock.lastParams[@"status"], @"completed");
+}
+
+- (void)test_Radar_updateTripLegWithLegId_noActiveTrip {
+    [RadarSettings setTrip:nil];
+
+    XCTestExpectation *exp = [self expectationWithDescription:@"no active trip"];
+
+    [Radar updateTripLegWithLegId:@"leg_001"
+                           status:RadarTripLegStatusCompleted
+                completionHandler:^(RadarStatus status, RadarTrip *trip, RadarTripLeg *leg, NSArray<RadarEvent *> *events) {
+        XCTAssertEqual(status, RadarStatusErrorBadRequest);
+        XCTAssertNil(trip);
+        XCTAssertNil(leg);
+        [exp fulfill];
+    }];
+
+    [self waitForExpectations:@[exp] timeout:10.0];
+}
+
+- (void)test_Radar_updateCurrentTripLeg_noCurrentLeg {
+    NSDictionary *tripDict = @{
+        @"_id": @"trip_abc123",
+        @"externalId": @"order-456",
+        @"metadata": @{},
+        @"mode": @"car",
+        @"destinationGeofenceTag": @"store",
+        @"destinationGeofenceExternalId": @"store-1",
+        @"destinationLocation": @{
+            @"type": @"Point",
+            @"coordinates": @[@(-73.975365), @(40.783825)]
+        },
+        @"eta": @{@"distance": @(1000), @"duration": @(5)},
+        @"status": @"started"
+    };
+    RadarTrip *trip = [[RadarTrip alloc] initWithObject:tripDict];
+    [RadarSettings setTrip:trip];
+
+    XCTAssertNil(trip.currentLegId);
+
+    XCTestExpectation *exp = [self expectationWithDescription:@"no current leg"];
+
+    [Radar updateCurrentTripLegWithStatus:RadarTripLegStatusCompleted
+                        completionHandler:^(RadarStatus status, RadarTrip *trip, RadarTripLeg *leg, NSArray<RadarEvent *> *events) {
+        XCTAssertEqual(status, RadarStatusErrorBadRequest);
+        [exp fulfill];
+    }];
+
+    [self waitForExpectations:@[exp] timeout:10.0];
+
+    [RadarSettings setTrip:nil];
+}
+
+- (void)test_Radar_reorderTripLegs_success {
+    self.apiHelperMock.mockStatus = RadarStatusSuccess;
+    self.apiHelperMock.mockResponse = [self tripWithLegsResponseDict];
+
+    XCTestExpectation *exp = [self expectationWithDescription:@"reorderTripLegs"];
+
+    [Radar reorderTripLegsWithTripId:@"trip_abc123"
+                              legIds:@[@"leg_002", @"leg_001"]
+                   completionHandler:^(RadarStatus status, RadarTrip *trip, NSArray<RadarEvent *> *events) {
+        XCTAssertEqual(status, RadarStatusSuccess);
+        XCTAssertNotNil(trip);
+        XCTAssertEqualObjects(trip._id, @"trip_abc123");
+        [exp fulfill];
+    }];
+
+    [self waitForExpectations:@[exp] timeout:10.0];
+
+    XCTAssertEqualObjects(self.apiHelperMock.lastMethod, @"PUT");
+    XCTAssertTrue([self.apiHelperMock.lastUrl containsString:@"/v1/trips/trip_abc123/legs"]);
+    NSArray *sentLegIds = self.apiHelperMock.lastParams[@"legs"];
+    XCTAssertEqualObjects(sentLegIds[0], @"leg_002");
+    XCTAssertEqualObjects(sentLegIds[1], @"leg_001");
+}
+
+- (void)test_Radar_reorderTripLegsWithLegIds_noActiveTrip {
+    [RadarSettings setTrip:nil];
+
+    XCTestExpectation *exp = [self expectationWithDescription:@"no active trip reorder"];
+
+    [Radar reorderTripLegsWithLegIds:@[@"leg_001", @"leg_002"]
+                   completionHandler:^(RadarStatus status, RadarTrip *trip, NSArray<RadarEvent *> *events) {
+        XCTAssertEqual(status, RadarStatusErrorBadRequest);
+        XCTAssertNil(trip);
+        [exp fulfill];
+    }];
+
+    [self waitForExpectations:@[exp] timeout:10.0];
+}
+
+- (void)test_RadarSettings_tripPersistence {
+    [RadarSettings setTrip:nil];
+    XCTAssertNil([RadarSettings trip]);
+
+    NSDictionary *response = [self tripWithLegsResponseDict];
+    RadarTrip *trip = [[RadarTrip alloc] initWithObject:response[@"trip"]];
+    [RadarSettings setTrip:trip];
+
+    RadarTrip *retrieved = [RadarSettings trip];
+    XCTAssertNotNil(retrieved);
+    XCTAssertEqualObjects(retrieved._id, @"trip_abc123");
+    XCTAssertEqual(retrieved.legs.count, 2);
+    XCTAssertEqualObjects(retrieved.currentLegId, @"leg_001");
+
+    [RadarSettings setTrip:nil];
+    XCTAssertNil([RadarSettings trip]);
 }
 
 - (void)test_Radar_getContext_errorPermissions {
