@@ -138,7 +138,7 @@
                 NSTimeInterval latency = [requestStart timeIntervalSinceNow] * -1;
 
                 if (error) {
-                    BOOL isLostConnection = (error.domain == NSURLErrorDomain &&
+                    BOOL isLostConnection = ([error.domain isEqualToString:NSURLErrorDomain] &&
                                              error.code == NSURLErrorNetworkConnectionLost);
 
                     if (isLostConnection && !isRetry) {
@@ -245,6 +245,9 @@
             NSURLSessionDataTask *task = [session dataTaskWithRequest:req completionHandler:dataTaskCompletionHandler];
             [task resume];
         } @catch (NSException *exception) {
+            if (sleep) {
+                dispatch_semaphore_signal(self.semaphore);
+            }
             return completionHandler(RadarStatusErrorBadRequest, nil);
         }
     });
