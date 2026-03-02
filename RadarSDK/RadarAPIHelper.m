@@ -147,7 +147,7 @@
         @try {
             // Check if verified and fraudOptions provided - pass to fraud SDK early to skip request setup
             if (verified && fraudOptions) {
-                Class RadarSDKFraud = NSClassFromString(@"RadarSDKFraud.Main");
+                Class RadarSDKFraud = NSClassFromString(@"RadarSDKFraud");
                 if (RadarSDKFraud) {
                     id<RadarSDKFraudProtocol> fraudInstance = [RadarSDKFraud sharedInstance];
                     if (fraudInstance) {

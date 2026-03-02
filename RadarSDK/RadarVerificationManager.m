@@ -64,7 +64,7 @@
 
 - (void)trackVerifiedWithBeacons:(BOOL)beacons desiredAccuracy:(RadarTrackingOptionsDesiredAccuracy)desiredAccuracy reason:(NSString *)reason transactionId:(NSString *)transactionId completionHandler:(RadarTrackVerifiedCompletionHandler)completionHandler {
     // Check for fraud SDK at the very start (before any async operations)
-    Class RadarSDKFraud = NSClassFromString(@"RadarSDKFraud.Main");
+    Class RadarSDKFraud = NSClassFromString(@"RadarSDKFraud");
     if (!RadarSDKFraud) {
         [RadarUtils runOnMainThread:^{
             [[RadarDelegateHolder sharedInstance] didFailWithStatus:RadarStatusErrorPlugin];
@@ -280,7 +280,7 @@
 }
 
 - (void)startTrackingVerifiedWithInterval:(NSTimeInterval)interval beacons:(BOOL)beacons {
-    Class RadarSDKFraud = NSClassFromString(@"RadarSDKFraud.Main");
+    Class RadarSDKFraud = NSClassFromString(@"RadarSDKFraud");
     if (!RadarSDKFraud) {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Skipping startTrackingVerified: RadarFraudSDK submodule not available"];
         return;
@@ -302,7 +302,7 @@
 }
 
 - (void)stopTrackingVerified {
-    Class RadarSDKFraud = NSClassFromString(@"RadarSDKFraud.Main");
+    Class RadarSDKFraud = NSClassFromString(@"RadarSDKFraud");
     if (!RadarSDKFraud) {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Skipping stopTrackingVerified: RadarFraudSDK submodule not available"];
         return;
