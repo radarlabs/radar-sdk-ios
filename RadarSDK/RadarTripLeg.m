@@ -18,6 +18,7 @@ static NSString *const kStatus = @"status";
 static NSString *const kCreatedAt = @"createdAt";
 static NSString *const kUpdatedAt = @"updatedAt";
 static NSString *const kDestination = @"destination";
+static NSString *const kType = @"type";
 static NSString *const kDestinationGeofenceTag = @"destinationGeofenceTag";
 static NSString *const kDestinationGeofenceExternalId = @"destinationGeofenceExternalId";
 static NSString *const kDestinationGeofenceId = @"destinationGeofenceId";
@@ -78,6 +79,32 @@ static NSString *const kDistance = @"distance";
     return RadarTripLegStatusUnknown;
 }
 
+#pragma mark - Destination Type String Conversion
+
++ (NSString *)stringForDestinationType:(RadarTripLegDestinationType)destinationType {
+    switch (destinationType) {
+        case RadarTripLegDestinationTypeGeofence:
+            return @"geofence";
+        case RadarTripLegDestinationTypeAddress:
+            return @"address";
+        case RadarTripLegDestinationTypeCoordinates:
+            return @"coordinates";
+        default:
+            return @"unknown";
+    }
+}
+
++ (RadarTripLegDestinationType)destinationTypeForString:(NSString *)string {
+    if ([string isEqualToString:@"geofence"]) {
+        return RadarTripLegDestinationTypeGeofence;
+    } else if ([string isEqualToString:@"address"]) {
+        return RadarTripLegDestinationTypeAddress;
+    } else if ([string isEqualToString:@"coordinates"]) {
+        return RadarTripLegDestinationTypeCoordinates;
+    }
+    return RadarTripLegDestinationTypeUnknown;
+}
+
 #pragma mark - Initializers
 
 - (instancetype)init {
@@ -88,6 +115,7 @@ static NSString *const kDistance = @"distance";
         _hasCoordinates = NO;
         _coordinates = kCLLocationCoordinate2DInvalid;
         _status = RadarTripLegStatusUnknown;
+        _destinationType = RadarTripLegDestinationTypeUnknown;
         _etaDuration = 0;
         _etaDistance = 0;
     }
@@ -100,6 +128,7 @@ static NSString *const kDistance = @"distance";
     if (self) {
         _destinationGeofenceTag = destinationGeofenceTag;
         _destinationGeofenceExternalId = destinationGeofenceExternalId;
+        _destinationType = RadarTripLegDestinationTypeGeofence;
     }
     return self;
 }
@@ -108,6 +137,7 @@ static NSString *const kDistance = @"distance";
     self = [self init];
     if (self) {
         _destinationGeofenceId = destinationGeofenceId;
+        _destinationType = RadarTripLegDestinationTypeGeofence;
     }
     return self;
 }
@@ -116,6 +146,7 @@ static NSString *const kDistance = @"distance";
     self = [self init];
     if (self) {
         _address = address;
+        _destinationType = RadarTripLegDestinationTypeAddress;
     }
     return self;
 }
@@ -123,27 +154,22 @@ static NSString *const kDistance = @"distance";
 - (instancetype)initWithCoordinates:(CLLocationCoordinate2D)coordinates {
     self = [self init];
     if (self) {
-        [self setDestinationCoordinates:coordinates];
+        _coordinates = coordinates;
+        _hasCoordinates = CLLocationCoordinate2DIsValid(coordinates);
+        _destinationType = RadarTripLegDestinationTypeCoordinates;
     }
     return self;
 }
 
-- (instancetype)initWithCoordinates:(CLLocationCoordinate2D)coordinates
-                      arrivalRadius:(NSInteger)arrivalRadius {
-    self = [self initWithCoordinates:coordinates];
-    if (self) {
-        _arrivalRadius = arrivalRadius;
-    }
-    return self;
-}
-
-#pragma mark - Coordinate Accessors
+#pragma mark - Computed Properties
 
 - (BOOL)hasCoordinates {
     return _hasCoordinates;
 }
 
-- (void)setDestinationCoordinates:(CLLocationCoordinate2D)coordinates {
+#pragma mark - Coordinate Setter
+
+- (void)setCoordinates:(CLLocationCoordinate2D)coordinates {
     _coordinates = coordinates;
     _hasCoordinates = CLLocationCoordinate2DIsValid(coordinates);
 }
@@ -154,30 +180,30 @@ static NSString *const kDistance = @"distance";
     if (!dict || ![dict isKindOfClass:[NSDictionary class]]) {
         return nil;
     }
-    
+
     RadarTripLeg *leg = [[RadarTripLeg alloc] init];
-    
+
     // Parse response fields (_id, status, createdAt, updatedAt)
     id idObj = dict[kId];
     if (idObj && [idObj isKindOfClass:[NSString class]]) {
         leg->__id = (NSString *)idObj;
     }
-    
+
     id statusObj = dict[kStatus];
     if (statusObj && [statusObj isKindOfClass:[NSString class]]) {
         leg->_status = [RadarTripLeg statusForString:(NSString *)statusObj];
     }
-    
+
     id createdAtObj = dict[kCreatedAt];
     if (createdAtObj && [createdAtObj isKindOfClass:[NSString class]]) {
         leg->_createdAt = [RadarUtils.isoDateFormatter dateFromString:(NSString *)createdAtObj];
     }
-    
+
     id updatedAtObj = dict[kUpdatedAt];
     if (updatedAtObj && [updatedAtObj isKindOfClass:[NSString class]]) {
         leg->_updatedAt = [RadarUtils.isoDateFormatter dateFromString:(NSString *)updatedAtObj];
     }
-    
+
     // Parse ETA object
     id etaObj = dict[kEta];
     if (etaObj && [etaObj isKindOfClass:[NSDictionary class]]) {
@@ -191,39 +217,56 @@ static NSString *const kDistance = @"distance";
             leg->_etaDistance = [(NSNumber *)distanceObj floatValue];
         }
     }
-    
-    // Handle nested destination object structure
+
+    // Handle destination object
     id destinationObj = dict[kDestination];
     if (destinationObj && [destinationObj isKindOfClass:[NSDictionary class]]) {
         NSDictionary *destination = (NSDictionary *)destinationObj;
-        
-        // Check for server response format with source.data structure
+
+        // Read destination type if present (server response format)
+        id typeObj = destination[kType];
+        if (typeObj && [typeObj isKindOfClass:[NSString class]]) {
+            leg->_destinationType = [RadarTripLeg destinationTypeForString:(NSString *)typeObj];
+        }
+
+        // Server response format: type-driven parsing of source
         id sourceObj = destination[kSource];
         if (sourceObj && [sourceObj isKindOfClass:[NSDictionary class]]) {
             NSDictionary *source = (NSDictionary *)sourceObj;
-            
-            // Get geofence ID from source.geofence
-            id geofenceObj = source[kGeofence];
-            if (geofenceObj && [geofenceObj isKindOfClass:[NSString class]]) {
-                leg.destinationGeofenceId = (NSString *)geofenceObj;
-            }
-            
-            // Get tag and externalId from source.data
             id dataObj = source[kData];
-            if (dataObj && [dataObj isKindOfClass:[NSDictionary class]]) {
-                NSDictionary *data = (NSDictionary *)dataObj;
-                id tagObj = data[kTag];
-                if (tagObj && [tagObj isKindOfClass:[NSString class]]) {
-                    leg.destinationGeofenceTag = (NSString *)tagObj;
+
+            switch (leg->_destinationType) {
+                case RadarTripLegDestinationTypeGeofence: {
+                    id geofenceObj = source[kGeofence];
+                    if (geofenceObj && [geofenceObj isKindOfClass:[NSString class]]) {
+                        leg.destinationGeofenceId = (NSString *)geofenceObj;
+                    }
+                    if (dataObj && [dataObj isKindOfClass:[NSDictionary class]]) {
+                        NSDictionary *data = (NSDictionary *)dataObj;
+                        id tagObj = data[kTag];
+                        if (tagObj && [tagObj isKindOfClass:[NSString class]]) {
+                            leg.destinationGeofenceTag = (NSString *)tagObj;
+                        }
+                        id externalIdObj = data[kExternalId];
+                        if (externalIdObj && [externalIdObj isKindOfClass:[NSString class]]) {
+                            leg.destinationGeofenceExternalId = (NSString *)externalIdObj;
+                        }
+                    }
+                    break;
                 }
-                id externalIdObj = data[kExternalId];
-                if (externalIdObj && [externalIdObj isKindOfClass:[NSString class]]) {
-                    leg.destinationGeofenceExternalId = (NSString *)externalIdObj;
+                case RadarTripLegDestinationTypeAddress: {
+                    if (dataObj && [dataObj isKindOfClass:[NSString class]]) {
+                        leg.address = (NSString *)dataObj;
+                    }
+                    break;
                 }
+                case RadarTripLegDestinationTypeCoordinates:
+                    // source.data is [lat, lng] which is redundant with location (GeoJSON), parsed below
+                case RadarTripLegDestinationTypeUnknown:
+                    break;
             }
         } else {
-            // Request format: direct fields in destination
-            // Geofence by tag + externalId
+            // Request format: flat fields in destination
             id tagObj = destination[kDestinationGeofenceTag];
             if (tagObj && [tagObj isKindOfClass:[NSString class]]) {
                 leg.destinationGeofenceTag = (NSString *)tagObj;
@@ -232,32 +275,26 @@ static NSString *const kDistance = @"distance";
             if (externalIdObj && [externalIdObj isKindOfClass:[NSString class]]) {
                 leg.destinationGeofenceExternalId = (NSString *)externalIdObj;
             }
-            
-            // Geofence by ID
             id geofenceIdObj = destination[kDestinationGeofenceId];
             if (geofenceIdObj && [geofenceIdObj isKindOfClass:[NSString class]]) {
                 leg.destinationGeofenceId = (NSString *)geofenceIdObj;
             }
-            
-            // Request format: coordinates directly in destination
+            id addressObj = destination[kAddress];
+            if (addressObj && [addressObj isKindOfClass:[NSString class]]) {
+                leg.address = (NSString *)addressObj;
+            }
             id coordinatesObj = destination[kCoordinates];
             if (coordinatesObj && [coordinatesObj isKindOfClass:[NSArray class]]) {
                 NSArray *coordArray = (NSArray *)coordinatesObj;
                 if (coordArray.count >= 2) {
                     double lng = [coordArray[0] doubleValue];
                     double lat = [coordArray[1] doubleValue];
-                    [leg setDestinationCoordinates:CLLocationCoordinate2DMake(lat, lng)];
+                    leg.coordinates = CLLocationCoordinate2DMake(lat, lng);
                 }
             }
         }
-        
-        // Address
-        id addressObj = destination[kAddress];
-        if (addressObj && [addressObj isKindOfClass:[NSString class]]) {
-            leg.address = (NSString *)addressObj;
-        }
-        
-        // Response format: location.coordinates (GeoJSON)
+
+        // GeoJSON location (present in all server response types)
         id locationObj = destination[kLocation];
         if (locationObj && [locationObj isKindOfClass:[NSDictionary class]]) {
             NSDictionary *location = (NSDictionary *)locationObj;
@@ -267,32 +304,39 @@ static NSString *const kDistance = @"distance";
                 if (coordArray.count >= 2) {
                     double lng = [coordArray[0] doubleValue];
                     double lat = [coordArray[1] doubleValue];
-                    [leg setDestinationCoordinates:CLLocationCoordinate2DMake(lat, lng)];
+                    leg.coordinates = CLLocationCoordinate2DMake(lat, lng);
                 }
             }
         }
-        
+
         // Arrival radius
         id arrivalRadiusObj = destination[kArrivalRadius];
         if (arrivalRadiusObj && [arrivalRadiusObj isKindOfClass:[NSNumber class]]) {
             leg.arrivalRadius = [(NSNumber *)arrivalRadiusObj integerValue];
         }
-    } else {
-        // Also support flat structure for flexibility
-        leg.destinationGeofenceTag = dict[kDestinationGeofenceTag];
-        leg.destinationGeofenceExternalId = dict[kDestinationGeofenceExternalId];
+
+        // Infer destination type if not explicitly provided (request format round-trip)
+        if (leg->_destinationType == RadarTripLegDestinationTypeUnknown) {
+            if ((leg.destinationGeofenceTag && leg.destinationGeofenceExternalId) || leg.destinationGeofenceId) {
+                leg->_destinationType = RadarTripLegDestinationTypeGeofence;
+            } else if (leg.address) {
+                leg->_destinationType = RadarTripLegDestinationTypeAddress;
+            } else if (leg.hasCoordinates) {
+                leg->_destinationType = RadarTripLegDestinationTypeCoordinates;
+            }
+        }
     }
-    
+
     id stopDurationObj = dict[kStopDuration];
     if (stopDurationObj && [stopDurationObj isKindOfClass:[NSNumber class]]) {
         leg.stopDuration = [(NSNumber *)stopDurationObj integerValue];
     }
-    
+
     id metadataObj = dict[kMetadata];
     if (metadataObj && [metadataObj isKindOfClass:[NSDictionary class]]) {
         leg.metadata = (NSDictionary *)metadataObj;
     }
-    
+
     return leg;
 }
 
@@ -300,7 +344,7 @@ static NSString *const kDistance = @"distance";
     if (!array || ![array isKindOfClass:[NSArray class]]) {
         return nil;
     }
-    
+
     NSMutableArray<RadarTripLeg *> *legs = [NSMutableArray new];
     for (id obj in array) {
         RadarTripLeg *leg = [RadarTripLeg legFromDictionary:obj];
@@ -308,13 +352,13 @@ static NSString *const kDistance = @"distance";
             [legs addObject:leg];
         }
     }
-    
+
     return legs.count > 0 ? [legs copy] : nil;
 }
 
 - (NSDictionary *)dictionaryValue {
     NSMutableDictionary *dict = [NSMutableDictionary new];
-    
+
     // Include response fields if present
     if (self._id) {
         dict[kId] = self._id;
@@ -328,10 +372,10 @@ static NSString *const kDistance = @"distance";
     if (self.updatedAt) {
         dict[kUpdatedAt] = [RadarUtils.isoDateFormatter stringFromDate:self.updatedAt];
     }
-    
-    // Create nested destination structure to match API format
+
+    // Create nested destination structure to match API request format
     NSMutableDictionary *destination = [NSMutableDictionary new];
-    
+
     // Geofence by tag + externalId
     if (self.destinationGeofenceTag) {
         destination[kDestinationGeofenceTag] = self.destinationGeofenceTag;
@@ -339,17 +383,17 @@ static NSString *const kDistance = @"distance";
     if (self.destinationGeofenceExternalId) {
         destination[kDestinationGeofenceExternalId] = self.destinationGeofenceExternalId;
     }
-    
+
     // Geofence by ID
     if (self.destinationGeofenceId) {
         destination[kDestinationGeofenceId] = self.destinationGeofenceId;
     }
-    
+
     // Address
     if (self.address) {
         destination[kAddress] = self.address;
     }
-    
+
     // Coordinates [lng, lat]
     if (self.hasCoordinates) {
         destination[kCoordinates] = @[@(self.coordinates.longitude), @(self.coordinates.latitude)];
@@ -357,19 +401,19 @@ static NSString *const kDistance = @"distance";
             destination[kArrivalRadius] = @(self.arrivalRadius);
         }
     }
-    
+
     if (destination.count > 0) {
         dict[kDestination] = destination;
     }
-    
+
     if (self.stopDuration > 0) {
         dict[kStopDuration] = @(self.stopDuration);
     }
-    
+
     if (self.metadata) {
         dict[kMetadata] = self.metadata;
     }
-    
+
     // Include ETA if present (from server response)
     if (self.etaDuration > 0 || self.etaDistance > 0) {
         NSMutableDictionary *eta = [NSMutableDictionary new];
@@ -381,7 +425,7 @@ static NSString *const kDistance = @"distance";
         }
         dict[kEta] = eta;
     }
-    
+
     return dict;
 }
 
@@ -389,12 +433,12 @@ static NSString *const kDistance = @"distance";
     if (!legs || legs.count == 0) {
         return nil;
     }
-    
+
     NSMutableArray<NSDictionary *> *array = [NSMutableArray new];
     for (RadarTripLeg *leg in legs) {
         [array addObject:[leg dictionaryValue]];
     }
-    
+
     return [array copy];
 }
 
@@ -413,31 +457,19 @@ static NSString *const kDistance = @"distance";
 
     RadarTripLeg *other = (RadarTripLeg *)object;
 
-    if (!((!self._id && !other._id) ||
-          (self._id && other._id && [self._id isEqualToString:other._id]))) {
+    if (self.destinationType != other.destinationType) {
         return NO;
     }
 
-    if (!((!self.destinationGeofenceTag && !other.destinationGeofenceTag) ||
-          (self.destinationGeofenceTag && other.destinationGeofenceTag &&
-           [self.destinationGeofenceTag isEqualToString:other.destinationGeofenceTag]))) {
+    if (self.status != other.status) {
         return NO;
     }
 
-    if (!((!self.destinationGeofenceExternalId && !other.destinationGeofenceExternalId) ||
-          (self.destinationGeofenceExternalId && other.destinationGeofenceExternalId &&
-           [self.destinationGeofenceExternalId isEqualToString:other.destinationGeofenceExternalId]))) {
+    if (self.stopDuration != other.stopDuration) {
         return NO;
     }
 
-    if (!((!self.destinationGeofenceId && !other.destinationGeofenceId) ||
-          (self.destinationGeofenceId && other.destinationGeofenceId &&
-           [self.destinationGeofenceId isEqualToString:other.destinationGeofenceId]))) {
-        return NO;
-    }
-
-    if (!((!self.address && !other.address) ||
-          (self.address && other.address && [self.address isEqualToString:other.address]))) {
+    if (self.arrivalRadius != other.arrivalRadius) {
         return NO;
     }
 
@@ -451,24 +483,35 @@ static NSString *const kDistance = @"distance";
         return NO;
     }
 
-    if (self.arrivalRadius != other.arrivalRadius) {
+    // Compare nullable string properties
+    if (![self isNullableString:self._id equalTo:other._id]) {
+        return NO;
+    }
+    if (![self isNullableString:self.destinationGeofenceTag equalTo:other.destinationGeofenceTag]) {
+        return NO;
+    }
+    if (![self isNullableString:self.destinationGeofenceExternalId equalTo:other.destinationGeofenceExternalId]) {
+        return NO;
+    }
+    if (![self isNullableString:self.destinationGeofenceId equalTo:other.destinationGeofenceId]) {
+        return NO;
+    }
+    if (![self isNullableString:self.address equalTo:other.address]) {
         return NO;
     }
 
-    if (self.stopDuration != other.stopDuration) {
-        return NO;
-    }
-
-    if (self.status != other.status) {
-        return NO;
-    }
-
-    if (!((!self.metadata && !other.metadata) ||
-          (self.metadata && other.metadata && [self.metadata isEqualToDictionary:other.metadata]))) {
+    if (self.metadata != other.metadata && ![self.metadata isEqualToDictionary:other.metadata]) {
         return NO;
     }
 
     return YES;
+}
+
+- (BOOL)isNullableString:(NSString *_Nullable)a equalTo:(NSString *_Nullable)b {
+    if (!a && !b) {
+        return YES;
+    }
+    return [a isEqualToString:b];
 }
 
 @end

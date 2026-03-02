@@ -29,6 +29,7 @@
     XCTAssertNil(leg.updatedAt);
     XCTAssertFalse(leg.hasCoordinates);
     XCTAssertEqual(leg.status, RadarTripLegStatusUnknown);
+    XCTAssertEqual(leg.destinationType, RadarTripLegDestinationTypeUnknown);
     XCTAssertEqual(leg.etaDuration, 0);
     XCTAssertEqual(leg.etaDistance, 0);
     XCTAssertEqual(leg.stopDuration, 0);
@@ -39,14 +40,13 @@
 
 - (void)test_initWithGeofenceTagAndExternalId {
     RadarTripLeg *leg = [[RadarTripLeg alloc] initWithDestinationGeofenceTag:@"store"
-                                              destinationGeofenceExternalId:@"store-1"];
+                                                       destinationGeofenceExternalId:@"store-1"];
     XCTAssertEqualObjects(leg.destinationGeofenceTag, @"store");
     XCTAssertEqualObjects(leg.destinationGeofenceExternalId, @"store-1");
     XCTAssertNil(leg.destinationGeofenceId);
     XCTAssertFalse(leg.hasCoordinates);
     XCTAssertEqual(leg.status, RadarTripLegStatusUnknown);
 }
-
 
 - (void)test_initWithGeofenceId {
     RadarTripLeg *leg = [[RadarTripLeg alloc] initWithDestinationGeofenceId:@"geofence_abc"];
@@ -65,20 +65,128 @@
 
 - (void)test_initWithCoordinates {
     CLLocationCoordinate2D coord = CLLocationCoordinate2DMake(40.783825, -73.975365);
-    RadarTripLeg *leg = [[RadarTripLeg alloc] initWithCoordinates: coord];
+    RadarTripLeg *leg = [[RadarTripLeg alloc] initWithCoordinates:coord];
     XCTAssertTrue(leg.hasCoordinates);
     XCTAssertEqual(leg.coordinates.latitude, 40.783825);
     XCTAssertEqual(leg.coordinates.longitude, -73.975365);
     XCTAssertEqual(leg.arrivalRadius, 0);
 }
 
-- (void)test_initWithCoordinatesAndArrivalRadius {
+- (void)test_initWithCoordinates_setArrivalRadiusAfter {
     CLLocationCoordinate2D coord = CLLocationCoordinate2DMake(40.783825, -73.975365);
-    RadarTripLeg *leg = [[RadarTripLeg alloc] initWithCoordinates:coord arrivalRadius:150];
+    RadarTripLeg *leg = [[RadarTripLeg alloc] initWithCoordinates:coord];
+    leg.arrivalRadius = 150;
     XCTAssertTrue(leg.hasCoordinates);
     XCTAssertEqual(leg.coordinates.latitude, 40.783825);
     XCTAssertEqual(leg.coordinates.longitude, -73.975365);
     XCTAssertEqual(leg.arrivalRadius, 150);
+}
+
+#pragma mark - Destination Type Inference
+
+- (void)test_destinationType_geofenceTag {
+    RadarTripLeg *leg = [[RadarTripLeg alloc] initWithDestinationGeofenceTag:@"store" destinationGeofenceExternalId:@"s1"];
+    XCTAssertEqual(leg.destinationType, RadarTripLegDestinationTypeGeofence);
+}
+
+- (void)test_destinationType_geofenceId {
+    RadarTripLeg *leg = [[RadarTripLeg alloc] initWithDestinationGeofenceId:@"abc"];
+    XCTAssertEqual(leg.destinationType, RadarTripLegDestinationTypeGeofence);
+}
+
+- (void)test_destinationType_address {
+    RadarTripLeg *leg = [[RadarTripLeg alloc] initWithAddress:@"123 Main St"];
+    XCTAssertEqual(leg.destinationType, RadarTripLegDestinationTypeAddress);
+}
+
+- (void)test_destinationType_coordinates {
+    CLLocationCoordinate2D coord = CLLocationCoordinate2DMake(40.0, -74.0);
+    RadarTripLeg *leg = [[RadarTripLeg alloc] initWithCoordinates:coord];
+    XCTAssertEqual(leg.destinationType, RadarTripLegDestinationTypeCoordinates);
+}
+
+- (void)test_destinationType_unknown {
+    RadarTripLeg *leg = [[RadarTripLeg alloc] init];
+    XCTAssertEqual(leg.destinationType, RadarTripLegDestinationTypeUnknown);
+}
+
+- (void)test_destinationType_geofenceTakesPriorityOverAddress {
+    // Server responses for geofence destinations also populate address/coordinates.
+    // Geofence should take priority.
+    RadarTripLeg *leg = [[RadarTripLeg alloc] initWithDestinationGeofenceTag:@"store" destinationGeofenceExternalId:@"s1"];
+    leg.address = @"123 Main St";
+    leg.coordinates = CLLocationCoordinate2DMake(40.0, -74.0);
+    XCTAssertEqual(leg.destinationType, RadarTripLegDestinationTypeGeofence);
+}
+
+- (void)test_destinationType_addressTakesPriorityOverCoordinates {
+    RadarTripLeg *leg = [[RadarTripLeg alloc] initWithAddress:@"123 Main St"];
+    leg.coordinates = CLLocationCoordinate2DMake(40.0, -74.0);
+    XCTAssertEqual(leg.destinationType, RadarTripLegDestinationTypeAddress);
+}
+
+#pragma mark - Destination Type From Server Response
+
+- (void)test_destinationType_fromServerResponse_geofence {
+    NSDictionary *dict = @{
+        @"destination": @{
+            @"type": @"geofence",
+            @"source": @{
+                @"geofence": @"gf_1",
+                @"data": @{@"tag": @"store", @"externalId": @"s1"}
+            },
+            @"address": @"123 Main St",
+            @"location": @{@"coordinates": @[@(-74.0), @(40.0)]}
+        }
+    };
+    RadarTripLeg *leg = [RadarTripLeg legFromDictionary:dict];
+    XCTAssertEqual(leg.destinationType, RadarTripLegDestinationTypeGeofence);
+}
+
+- (void)test_destinationType_fromServerResponse_address {
+    NSDictionary *dict = @{
+        @"destination": @{
+            @"type": @"address",
+            @"source": @{@"data": @"456 Oak Ave"},
+            @"location": @{@"coordinates": @[@(-74.0), @(40.0)]},
+            @"arrivalRadius": @(25)
+        }
+    };
+    RadarTripLeg *leg = [RadarTripLeg legFromDictionary:dict];
+    XCTAssertEqual(leg.destinationType, RadarTripLegDestinationTypeAddress);
+    XCTAssertEqualObjects(leg.address, @"456 Oak Ave");
+    XCTAssertTrue(leg.hasCoordinates);
+    XCTAssertEqual(leg.arrivalRadius, 25);
+}
+
+- (void)test_destinationType_fromServerResponse_coordinates {
+    NSDictionary *dict = @{
+        @"destination": @{
+            @"type": @"coordinates",
+            @"location": @{@"coordinates": @[@(-74.0), @(40.0)]},
+            @"arrivalRadius": @(100)
+        }
+    };
+    RadarTripLeg *leg = [RadarTripLeg legFromDictionary:dict];
+    XCTAssertEqual(leg.destinationType, RadarTripLegDestinationTypeCoordinates);
+}
+
+#pragma mark - Destination Type String Conversion
+
+- (void)test_stringForDestinationType {
+    XCTAssertEqualObjects([RadarTripLeg stringForDestinationType:RadarTripLegDestinationTypeUnknown], @"unknown");
+    XCTAssertEqualObjects([RadarTripLeg stringForDestinationType:RadarTripLegDestinationTypeGeofence], @"geofence");
+    XCTAssertEqualObjects([RadarTripLeg stringForDestinationType:RadarTripLegDestinationTypeAddress], @"address");
+    XCTAssertEqualObjects([RadarTripLeg stringForDestinationType:RadarTripLegDestinationTypeCoordinates], @"coordinates");
+}
+
+- (void)test_destinationTypeForString {
+    XCTAssertEqual([RadarTripLeg destinationTypeForString:@"geofence"], RadarTripLegDestinationTypeGeofence);
+    XCTAssertEqual([RadarTripLeg destinationTypeForString:@"address"], RadarTripLegDestinationTypeAddress);
+    XCTAssertEqual([RadarTripLeg destinationTypeForString:@"coordinates"], RadarTripLegDestinationTypeCoordinates);
+    XCTAssertEqual([RadarTripLeg destinationTypeForString:@"unknown"], RadarTripLegDestinationTypeUnknown);
+    XCTAssertEqual([RadarTripLeg destinationTypeForString:@"invalid_garbage"], RadarTripLegDestinationTypeUnknown);
+    XCTAssertEqual([RadarTripLeg destinationTypeForString:@""], RadarTripLegDestinationTypeUnknown);
 }
 
 #pragma mark - Status String Conversion
@@ -147,7 +255,7 @@
     RadarTripLeg *leg = [RadarTripLeg legFromDictionary:dict];
     XCTAssertNotNil(leg);
     XCTAssertTrue(leg.hasCoordinates);
-    XCTAssertEqualWithAccuracy(leg.coordinates.latitude,40.783825, 0.0001);
+    XCTAssertEqualWithAccuracy(leg.coordinates.latitude, 40.783825, 0.0001);
     XCTAssertEqualWithAccuracy(leg.coordinates.longitude, -73.975365, 0.0001);
     XCTAssertEqual(leg.arrivalRadius, 200);
 }
@@ -155,7 +263,7 @@
 - (void)test_legFromDictionary_requestFormat_address {
     NSDictionary *dict = @{
         @"destination": @{
-                @"address": @"456 Oak Ave"
+            @"address": @"456 Oak Ave"
         }
     };
     RadarTripLeg *leg = [RadarTripLeg legFromDictionary:dict];
@@ -165,7 +273,7 @@
 
 #pragma mark - legFromDictionary: (Response Format)
 
-- (void)test_legFromDictionary_responseFormat {
+- (void)test_legFromDictionary_responseFormat_geofence {
     NSDictionary *dict = @{
         @"_id": @"leg_001",
         @"status": @"started",
@@ -176,6 +284,7 @@
             @"distance": @(2000.0)
         },
         @"destination": @{
+            @"type": @"geofence",
             @"source": @{
                 @"geofence": @"geofence_aaa",
                 @"data": @{
@@ -185,8 +294,7 @@
             },
             @"location": @{
                 @"coordinates": @[@(-73.975365), @(40.783825)]
-            },
-            @"address": @"123 Main St"
+            }
         },
         @"stopDuration": @(10),
         @"metadata": @{@"package": @"small"}
@@ -195,6 +303,7 @@
     XCTAssertNotNil(leg);
     XCTAssertEqualObjects(leg._id, @"leg_001");
     XCTAssertEqual(leg.status, RadarTripLegStatusStarted);
+    XCTAssertEqual(leg.destinationType, RadarTripLegDestinationTypeGeofence);
     XCTAssertNotNil(leg.createdAt);
     XCTAssertNotNil(leg.updatedAt);
     XCTAssertEqual(leg.etaDuration, 5.0);
@@ -205,9 +314,52 @@
     XCTAssertTrue(leg.hasCoordinates);
     XCTAssertEqualWithAccuracy(leg.coordinates.latitude, 40.783825, 0.0001);
     XCTAssertEqualWithAccuracy(leg.coordinates.longitude, -73.975365, 0.0001);
-    XCTAssertEqualObjects(leg.address, @"123 Main St");
     XCTAssertEqual(leg.stopDuration, 10);
     XCTAssertEqualObjects(leg.metadata[@"package"], @"small");
+}
+
+- (void)test_legFromDictionary_responseFormat_address {
+    NSDictionary *dict = @{
+        @"_id": @"leg_002",
+        @"status": @"pending",
+        @"destination": @{
+            @"type": @"address",
+            @"source": @{@"data": @"401 Broadway, New York, NY"},
+            @"location": @{
+                @"coordinates": @[@(-73.9851), @(40.7589)]
+            },
+            @"arrivalRadius": @(25)
+        }
+    };
+    RadarTripLeg *leg = [RadarTripLeg legFromDictionary:dict];
+    XCTAssertNotNil(leg);
+    XCTAssertEqual(leg.destinationType, RadarTripLegDestinationTypeAddress);
+    XCTAssertEqualObjects(leg.address, @"401 Broadway, New York, NY");
+    XCTAssertTrue(leg.hasCoordinates);
+    XCTAssertEqualWithAccuracy(leg.coordinates.latitude, 40.7589, 0.0001);
+    XCTAssertEqual(leg.arrivalRadius, 25);
+}
+
+- (void)test_legFromDictionary_responseFormat_coordinates {
+    NSDictionary *dict = @{
+        @"_id": @"leg_003",
+        @"status": @"pending",
+        @"destination": @{
+            @"type": @"coordinates",
+            @"source": @{@"data": @[@(40.7484), @(-73.9857)]},
+            @"location": @{
+                @"coordinates": @[@(-73.9857), @(40.7484)]
+            },
+            @"arrivalRadius": @(100)
+        }
+    };
+    RadarTripLeg *leg = [RadarTripLeg legFromDictionary:dict];
+    XCTAssertNotNil(leg);
+    XCTAssertEqual(leg.destinationType, RadarTripLegDestinationTypeCoordinates);
+    XCTAssertTrue(leg.hasCoordinates);
+    XCTAssertEqualWithAccuracy(leg.coordinates.latitude, 40.7484, 0.0001);
+    XCTAssertEqualWithAccuracy(leg.coordinates.longitude, -73.9857, 0.0001);
+    XCTAssertEqual(leg.arrivalRadius, 100);
 }
 
 #pragma mark - legFromDictionary: (Invalid Input)
@@ -224,10 +376,10 @@
 
 - (void)test_dictionaryValue_geofenceLeg {
     RadarTripLeg *leg = [[RadarTripLeg alloc] initWithDestinationGeofenceTag:@"store" destinationGeofenceExternalId:@"store-1"];
-    
+
     leg.stopDuration = 10;
     leg.metadata = @{@"key": @"value"};
-    
+
     NSDictionary *dict = [leg dictionaryValue];
     NSDictionary *dest = dict[@"destination"];
     XCTAssertNotNil(dest);
@@ -241,8 +393,9 @@
 
 - (void)test_dictionaryValue_coordinateLeg {
     CLLocationCoordinate2D coord = CLLocationCoordinate2DMake(40.783825, -73.975365);
-    RadarTripLeg *leg = [[RadarTripLeg alloc] initWithCoordinates:coord arrivalRadius:200];
-    
+    RadarTripLeg *leg = [[RadarTripLeg alloc] initWithCoordinates:coord];
+    leg.arrivalRadius = 200;
+
     NSDictionary *dict = [leg dictionaryValue];
     NSDictionary *dest = dict[@"destination"];
     XCTAssertNotNil(dest);
@@ -258,10 +411,12 @@
         @"status": @"arrived",
         @"eta": @{@"duration": @(3.5), @"distance": @(1200.0)},
         @"destination": @{
+            @"type": @"geofence",
             @"source": @{
                 @"geofence": @"gf_1",
                 @"data": @{@"tag": @"t", @"externalId": @"e"}
-            }
+            },
+            @"location": @{@"coordinates": @[@(-74.0), @(40.0)]}
         }
     };
     RadarTripLeg *leg = [RadarTripLeg legFromDictionary:responseDict];
@@ -293,8 +448,7 @@
 }
 
 - (void)test_arrayForLegs {
-    RadarTripLeg *leg1 = [[RadarTripLeg alloc] initWithDestinationGeofenceTag:@"a"
-                                               destinationGeofenceExternalId:@"1"];
+    RadarTripLeg *leg1 = [[RadarTripLeg alloc] initWithDestinationGeofenceTag:@"a" destinationGeofenceExternalId:@"1"];
     RadarTripLeg *leg2 = [[RadarTripLeg alloc] initWithAddress:@"456 St"];
     NSArray<NSDictionary *> *array = [RadarTripLeg arrayForLegs:@[leg1, leg2]];
     XCTAssertNotNil(array);
@@ -309,11 +463,10 @@
 #pragma mark - Round-Trip Serialization
 
 - (void)test_roundTrip_geofenceLeg {
-    RadarTripLeg *original = [[RadarTripLeg alloc] initWithDestinationGeofenceTag:@"store"
-                                                   destinationGeofenceExternalId:@"store-1"];
+    RadarTripLeg *original = [[RadarTripLeg alloc] initWithDestinationGeofenceTag:@"store" destinationGeofenceExternalId:@"store-1"];
     original.stopDuration = 15;
     original.metadata = @{@"key": @"value"};
-    
+
     NSDictionary *dict = [original dictionaryValue];
     RadarTripLeg *restored = [RadarTripLeg legFromDictionary:dict];
     XCTAssertTrue([original isEqual:restored]);
@@ -321,9 +474,10 @@
 
 - (void)test_roundTrip_coordinateLeg {
     CLLocationCoordinate2D coord = CLLocationCoordinate2DMake(40.783825, -73.975365);
-    RadarTripLeg *original = [[RadarTripLeg alloc] initWithCoordinates:coord arrivalRadius:100];
+    RadarTripLeg *original = [[RadarTripLeg alloc] initWithCoordinates:coord];
+    original.arrivalRadius = 100;
     original.stopDuration = 5;
-    
+
     NSDictionary *dict = [original dictionaryValue];
     RadarTripLeg *restored = [RadarTripLeg legFromDictionary:dict];
     XCTAssertTrue([original isEqual:restored]);
@@ -332,13 +486,11 @@
 #pragma mark - isEqual
 
 - (void)test_isEqual_sameLeg {
-    RadarTripLeg *leg1 = [[RadarTripLeg alloc] initWithDestinationGeofenceTag:@"store"
-                                               destinationGeofenceExternalId:@"store-1"];
+    RadarTripLeg *leg1 = [[RadarTripLeg alloc] initWithDestinationGeofenceTag:@"store" destinationGeofenceExternalId:@"store-1"];
     leg1.stopDuration = 10;
     leg1.metadata = @{@"k": @"v"};
 
-    RadarTripLeg *leg2 = [[RadarTripLeg alloc] initWithDestinationGeofenceTag:@"store"
-                                               destinationGeofenceExternalId:@"store-1"];
+    RadarTripLeg *leg2 = [[RadarTripLeg alloc] initWithDestinationGeofenceTag:@"store" destinationGeofenceExternalId:@"store-1"];
     leg2.stopDuration = 10;
     leg2.metadata = @{@"k": @"v"};
 
@@ -346,10 +498,14 @@
 }
 
 - (void)test_isEqual_differentTag {
-    RadarTripLeg *leg1 = [[RadarTripLeg alloc] initWithDestinationGeofenceTag:@"store"
-                                               destinationGeofenceExternalId:@"store-1"];
-    RadarTripLeg *leg2 = [[RadarTripLeg alloc] initWithDestinationGeofenceTag:@"warehouse"
-                                               destinationGeofenceExternalId:@"store-1"];
+    RadarTripLeg *leg1 = [[RadarTripLeg alloc] initWithDestinationGeofenceTag:@"store" destinationGeofenceExternalId:@"store-1"];
+    RadarTripLeg *leg2 = [[RadarTripLeg alloc] initWithDestinationGeofenceTag:@"warehouse" destinationGeofenceExternalId:@"store-1"];
+    XCTAssertFalse([leg1 isEqual:leg2]);
+}
+
+- (void)test_isEqual_differentDestinationType {
+    RadarTripLeg *leg1 = [[RadarTripLeg alloc] initWithAddress:@"123 St"];
+    RadarTripLeg *leg2 = [[RadarTripLeg alloc] initWithCoordinates:CLLocationCoordinate2DMake(40.0, -74.0)];
     XCTAssertFalse([leg1 isEqual:leg2]);
 }
 
@@ -374,18 +530,18 @@
 
 #pragma mark - Coordinate Handling
 
-- (void)test_setDestinationCoordinates_valid {
+- (void)test_setCoordinates_valid {
     RadarTripLeg *leg = [[RadarTripLeg alloc] init];
     XCTAssertFalse(leg.hasCoordinates);
-    [leg setDestinationCoordinates:CLLocationCoordinate2DMake(40.0, -74.0)];
+    leg.coordinates = CLLocationCoordinate2DMake(40.0, -74.0);
     XCTAssertTrue(leg.hasCoordinates);
     XCTAssertEqual(leg.coordinates.latitude, 40.0);
     XCTAssertEqual(leg.coordinates.longitude, -74.0);
 }
- 
-- (void)test_setDestinationCoordinates_invalid {
+
+- (void)test_setCoordinates_invalid {
     RadarTripLeg *leg = [[RadarTripLeg alloc] init];
-    [leg setDestinationCoordinates:kCLLocationCoordinate2DInvalid];
+    leg.coordinates = kCLLocationCoordinate2DInvalid;
     XCTAssertFalse(leg.hasCoordinates);
 }
 

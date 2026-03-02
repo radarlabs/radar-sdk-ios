@@ -34,6 +34,20 @@ typedef NS_ENUM(NSInteger, RadarTripLegStatus) {
 };
 
 /**
+ The destination type values for trip legs.
+ */
+typedef NS_ENUM(NSInteger, RadarTripLegDestinationType) {
+    /// Unknown
+    RadarTripLegDestinationTypeUnknown NS_SWIFT_NAME(unknown),
+    /// Geofence
+    RadarTripLegDestinationTypeGeofence NS_SWIFT_NAME(geofence),
+    /// Address
+    RadarTripLegDestinationTypeAddress NS_SWIFT_NAME(address),
+    /// Coordinates
+    RadarTripLegDestinationTypeCoordinates NS_SWIFT_NAME(coordinates)
+};
+
+/**
  Represents a leg of a multi-destination trip.
 
  @see https://radar.com/documentation/trip-tracking
@@ -52,6 +66,13 @@ typedef NS_ENUM(NSInteger, RadarTripLegStatus) {
  The status of the leg. Set from server response.
  */
 @property (nonatomic, assign, readonly) RadarTripLegStatus status;
+
+/**
+ The destination type for this leg.
+ When parsed from a server response, reflects the server's `destination.type`.
+ Otherwise, inferred from which properties are set (geofence > address > coordinates).
+ */
+@property (nonatomic, assign, readonly) RadarTripLegDestinationType destinationType;
 
 /**
  The date when the leg was created. Set from server response.
@@ -136,10 +157,10 @@ typedef NS_ENUM(NSInteger, RadarTripLegStatus) {
 
 /**
  Initializes a RadarTripLeg with the specified destination geofence tag and external ID.
- 
+
  @param destinationGeofenceTag The tag of the destination geofence.
  @param destinationGeofenceExternalId The external ID of the destination geofence.
- 
+
  @return A new RadarTripLeg instance.
  */
 - (instancetype)initWithDestinationGeofenceTag:(NSString *_Nullable)destinationGeofenceTag
@@ -147,100 +168,100 @@ typedef NS_ENUM(NSInteger, RadarTripLegStatus) {
 
 /**
  Initializes a RadarTripLeg with the specified destination geofence ID.
- 
+
  @param destinationGeofenceId The Radar ID of the destination geofence.
- 
+
  @return A new RadarTripLeg instance.
  */
 - (instancetype)initWithDestinationGeofenceId:(NSString *_Nonnull)destinationGeofenceId;
 
 /**
  Initializes a RadarTripLeg with the specified address.
- 
+
  @param address The address string for the destination.
- 
+
  @return A new RadarTripLeg instance.
  */
 - (instancetype)initWithAddress:(NSString *_Nonnull)address;
 
 /**
  Initializes a RadarTripLeg with the specified coordinates.
- 
+
  @param coordinates The coordinates for the destination.
- 
+
  @return A new RadarTripLeg instance.
  */
 - (instancetype)initWithCoordinates:(CLLocationCoordinate2D)coordinates;
 
 /**
- Initializes a RadarTripLeg with the specified coordinates and arrival radius.
- 
- @param coordinates The coordinates for the destination.
- @param arrivalRadius The arrival radius in meters.
- 
- @return A new RadarTripLeg instance.
- */
-- (instancetype)initWithCoordinates:(CLLocationCoordinate2D)coordinates
-                      arrivalRadius:(NSInteger)arrivalRadius;
-
-/**
- Sets the coordinates for this leg's destination.
- 
- @param coordinates The coordinates for the destination.
- */
-- (void)setDestinationCoordinates:(CLLocationCoordinate2D)coordinates;
-
-/**
  Creates a RadarTripLeg from a dictionary representation.
- 
+
  @param dict The dictionary containing leg data.
- 
+
  @return A new RadarTripLeg instance, or nil if the dictionary is invalid.
  */
 + (RadarTripLeg *_Nullable)legFromDictionary:(NSDictionary *_Nullable)dict;
 
 /**
  Creates an array of RadarTripLeg objects from an array of dictionaries.
- 
+
  @param array The array of dictionaries containing leg data.
- 
+
  @return An array of RadarTripLeg instances, or nil if the array is invalid.
  */
 + (NSArray<RadarTripLeg *> *_Nullable)legsFromArray:(NSArray *_Nullable)array;
 
 /**
  Converts the leg to a dictionary representation for API serialization.
- 
+
  @return A dictionary representation of the leg.
  */
 - (NSDictionary *)dictionaryValue;
 
 /**
  Converts an array of legs to an array of dictionaries.
- 
+
  @param legs The array of RadarTripLeg instances.
- 
+
  @return An array of dictionary representations.
  */
 + (NSArray<NSDictionary *> *_Nullable)arrayForLegs:(NSArray<RadarTripLeg *> *_Nullable)legs;
 
 /**
  Returns the string representation of a trip leg status.
- 
+
  @param status The trip leg status.
- 
+
  @return The string representation.
  */
 + (NSString *)stringForStatus:(RadarTripLegStatus)status;
 
 /**
  Returns the trip leg status for a string representation.
- 
+
  @param string The string representation.
- 
+
  @return The trip leg status.
  */
 + (RadarTripLegStatus)statusForString:(NSString *)string;
+
+/**
+ Returns the string representation of a trip leg destination type.
+
+ @param destinationType The trip leg destination type.
+
+ @return The string representation.
+ */
++ (NSString *)stringForDestinationType:(RadarTripLegDestinationType)destinationType;
+
+/**
+ Returns the trip leg destination type for a string representation.
+
+ @param string The string representation.
+
+ @return The trip leg destination type.
+ */
++ (RadarTripLegDestinationType)destinationTypeForString:(NSString *)string;
 
 @end
 
