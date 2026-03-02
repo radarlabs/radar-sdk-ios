@@ -78,8 +78,8 @@
         NSMutableURLRequest *req = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:url]];
         req.HTTPMethod = method;
 
-        NSString *paramJsonStr = [RadarUtils dictionaryToJson:params];
-        NSString *headersJsonStr = [RadarUtils dictionaryToJson:headers];
+        NSString * paramJsonStr = [RadarUtils dictionaryToJson:params];
+        NSString * headersJsonStr = [RadarUtils dictionaryToJson:headers];
 
         if (logPayload) {
             [[RadarLogger sharedInstance]
@@ -216,7 +216,7 @@
                     }
 
                     res = (NSDictionary *)resObj;
-                    NSString *resJsonStr = [RadarUtils dictionaryToJson:res];
+                    NSString * resJsonStr = [RadarUtils dictionaryToJson:res];
 
                     if (params && [params objectForKey:@"replays"]) {
                         NSArray *replays = [params objectForKey:@"replays"];
