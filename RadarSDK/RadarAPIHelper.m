@@ -248,7 +248,11 @@
             if (sleep) {
                 dispatch_semaphore_signal(self.semaphore);
             }
-            return completionHandler(RadarStatusErrorBadRequest, nil);
+            if (completionHandler) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    completionHandler(RadarStatusErrorBadRequest, nil);
+                });
+            }
         }
     });
 }
