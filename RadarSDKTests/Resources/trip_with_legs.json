@@ -32,6 +32,7 @@
           "distance": 2000.0
         },
         "destination": {
+          "type": "geofence",
           "source": {
             "geofence": "geofence_aaa",
             "data": {
@@ -41,8 +42,7 @@
           },
           "location": {
             "coordinates": [-73.975365, 40.783825]
-          },
-          "address": "123 Main St"
+          }
         },
         "stopDuration": 10,
         "metadata": {
@@ -59,6 +59,7 @@
           "distance": 5000.0
         },
         "destination": {
+          "type": "geofence",
           "source": {
             "geofence": "geofence_bbb",
             "data": {
@@ -87,6 +88,7 @@
       "distance": 0
     },
     "destination": {
+      "type": "geofence",
       "source": {
         "geofence": "geofence_aaa",
         "data": {
@@ -96,8 +98,7 @@
       },
       "location": {
         "coordinates": [-73.975365, 40.783825]
-      },
-      "address": "123 Main St"
+      }
     },
     "stopDuration": 10,
     "metadata": {

@@ -262,6 +262,7 @@ static NSString *const kDistance = @"distance";
                 }
                 case RadarTripLegDestinationTypeCoordinates:
                     // source.data is [lat, lng] which is redundant with location (GeoJSON), parsed below
+                    break;
                 case RadarTripLegDestinationTypeUnknown:
                     break;
             }
