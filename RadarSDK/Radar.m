@@ -26,6 +26,8 @@
 #import "RadarIndoorsProtocol.h"
 #import "RadarInAppMessageDelegate.h"
 #import "RadarSwiftBridge.h"
+#import "RadarSDKFraudProtocol.h"
+#import <os/log.h>
 
 #if __has_include(<RadarSDK/RadarSDK-Swift.h>)
 #import <RadarSDK/RadarSDK-Swift.h>
@@ -40,6 +42,7 @@
 @end
 
 @implementation Radar
+
 
 #pragma mark - Initialization
 
@@ -116,21 +119,28 @@ BOOL _initialized = NO;
         [[RadarAPIClient sharedInstance] getConfigForUsage:@"initialize"
                                                   verified:NO
                                          completionHandler:^(RadarStatus status, RadarConfig *config) {
-                                            if (status == RadarStatusSuccess && config) {
-                                                [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
-                                                [RadarSettings setSdkConfiguration:config.meta.sdkConfiguration];
-                                            }
-                                         
-                                            RadarSdkConfiguration *sdkConfiguration = [RadarSettings sdkConfiguration];
-                                            if (sdkConfiguration.startTrackingOnInitialize && ![RadarSettings tracking]) {
-                                                [Radar startTrackingWithOptions:[Radar getTrackingOptions]];
-                                            }
-                                            if (sdkConfiguration.trackOnceOnAppOpen) {
-                                                [Radar trackOnceWithDesiredAccuracy:RadarTrackingOptionsDesiredAccuracyMedium beacons:[Radar getTrackingOptions].beacons completionHandler:nil];
-                                            }
+            if (status == RadarStatusSuccess && config) {
+                [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
+                [RadarSettings setSdkConfiguration:config.meta.sdkConfiguration];
+            }
 
-                                            [self flushLogs];
-                                        }];
+            RadarSdkConfiguration *sdkConfiguration = [RadarSettings sdkConfiguration];
+            if (sdkConfiguration.startTrackingOnInitialize && ![RadarSettings tracking]) {
+                [Radar startTrackingWithOptions:[Radar getTrackingOptions]];
+            }
+            if (sdkConfiguration.trackOnceOnAppOpen) {
+                [Radar trackOnceWithDesiredAccuracy:RadarTrackingOptionsDesiredAccuracyMedium beacons:[Radar getTrackingOptions].beacons completionHandler:nil];
+            }
+            if (config.meta.pingServerConfiguration) {
+                Class RadarSDKFraud = NSClassFromString(@"RadarSDKFraud");
+                if (RadarSDKFraud != nil) {
+                    [RadarSDKFraud start:config.meta.pingServerConfiguration];
+                }
+            }
+            os_log(OS_LOG_DEFAULT, "WORO HERJLVKDJS");
+
+            [self flushLogs];
+        }];
     }];
     
     if (options.silentPush) {
