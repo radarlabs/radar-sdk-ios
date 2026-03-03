@@ -3,8 +3,11 @@
 //  RadarSDK
 //
 //  following closely to https://opentelemetry.io/docs/specs/otel/trace/api/ as much as possible while keeping implementation simple
+//
 //  Copyright © 2025 Radar Labs, Inc. All rights reserved.
 //
+
+// TODO! important, these should all be internal so we don't pollute the public namespace
 
 import Foundation
 
@@ -28,13 +31,13 @@ public class Span: NSObject {
         self.startTime = Date()
     }
     
-    func end() {
+    public func end() {
         self.endTime = Date()
     }
 }
 
 @objc(Tracer) @objcMembers
-public class Tracer: NSObject {
+public final class Tracer: NSObject {
     
     let name: String
     var context: Context
@@ -101,8 +104,11 @@ public class Tracer: NSObject {
         encoder.dateEncodingStrategy = .formatted(formatter)
         
         do {
-            let data = try encoder.encode(spans.map { span in
-                Otel.Span(traceId: traceId, spanId: span.spanId, traceState: "trace-state-ok", parentSpanId: span.parentSpanId, flags: 0, name: span.name, kind: .CLIENT, startTimeUnixNano: UInt64(span.startTime.timeIntervalSince1970 * 1_000_000_000), endTimeUnixNano: UInt64(span.endTime!.timeIntervalSince1970 * 1_000_000_000), attributes: [], droppedAttributesCount: 0, events: [], droppedEventsCount: 0, links: [], droppedLinksCount: nil, status: Otel.Status(message: "OK", code: .OK)
+            let data = try encoder.encode(spans.compactMap { span -> Otel.Span? in
+                guard let endTime = span.endTime else {
+                    return nil
+                }
+                return Otel.Span(traceId: traceId, spanId: span.spanId, traceState: "trace-state-ok", parentSpanId: span.parentSpanId, flags: 0, name: span.name, kind: .CLIENT, startTimeUnixNano: UInt64(span.startTime.timeIntervalSince1970 * 1_000_000_000), endTimeUnixNano: UInt64(endTime.timeIntervalSince1970 * 1_000_000_000), attributes: [], droppedAttributesCount: 0, events: [], droppedEventsCount: 0, links: [], droppedLinksCount: nil, status: Otel.Status(message: "OK", code: .OK)
                 )
             } )
             if let jsonString = String(data: data, encoding: .utf8) {
@@ -113,16 +119,24 @@ public class Tracer: NSObject {
         }
         return ""
     }
+    
+    public func send() {
+        if #available(iOS 13.0, *) {
+            print()
+            print(toString())
+        }
+    }
 }
 
-@objc @objcMembers
-public class TraceProvider: NSObject {
+@objc(TraceProvider) @objcMembers
+public final class TraceProvider: NSObject {
     
-    let shared: TraceProvider = TraceProvider()
+    @MainActor
+    public static let shared: TraceProvider = TraceProvider()
     
     var tracers = [String: Tracer]()
     
-    func getTracer(name: String?, version: String?) -> Tracer {
+    public func getTracer(name: String?, version: String?) -> Tracer {
         if (name == nil) {
             print("Invalid tracer name")
         }
@@ -138,4 +152,34 @@ public class TraceProvider: NSObject {
 }
 
 
+struct MeterConfig {
+    let meterScope: Otel.InstrumentationScope
+}
+typealias MeterConfigurator = (Otel.InstrumentationScope) -> MeterConfig
 
+@objc(Meter) @objcMembers
+public final class Meter: NSObject {
+    
+}
+
+@objc(MeterProvider) @objcMembers
+public final class MeterProvider: NSObject {
+    
+    @MainActor
+    public static let shared: MeterProvider = MeterProvider()
+    
+    var meters = [String: Otel.Metric]()
+    
+    public func getMeter(name: String?) -> Meter {
+        if (name == nil) {
+            print("Invalid meter name")
+        }
+        
+    }
+}
+
+@objc(RadarTelemetry) @objcMembers
+public final class RadarTelemetry: NSObject {
+    
+    
+}

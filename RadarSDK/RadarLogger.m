@@ -73,7 +73,7 @@
             
             // don't output the log to console in testing
             if (NSClassFromString(@"XCTestCase") == nil) {
-                os_log(OS_LOG_DEFAULT, "%@", log);
+//                os_log(OS_LOG_DEFAULT, "%@", log);
             }
 
             [[RadarDelegateHolder sharedInstance] didLogMessage:log];

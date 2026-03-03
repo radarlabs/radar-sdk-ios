@@ -249,14 +249,9 @@ BOOL _initialized = NO;
 }
 
 + (void)trackOnceWithDesiredAccuracy:(RadarTrackingOptionsDesiredAccuracy)desiredAccuracy beacons:(BOOL)beacons completionHandler:(RadarTrackCompletionHandler)completionHandler {
-//    Tracer* tracer = [[Tracer alloc] init];
-//    tracer.globalAttributes = @{
-//        @"method": @"trackOnce",
-//        @"deviceType": [RadarUtils deviceType],
-//    };
-    
-//    Span* trackOnceTrace = [tracer start:@"traceOnce"];
-//    Span* getLocationTrace = [tracer start:@"getLocation"];
+    // this should be once for the entire SDK.
+    Tracer* tracer = [[TraceProvider shared] getTracerWithName:@"RadarSDK" version:nil];
+    Span* span = [tracer start:@"trackOnce" parent:nil];
     
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"trackOnce"];
     [[RadarLocationManager sharedInstance]
@@ -268,7 +263,10 @@ BOOL _initialized = NO;
                                      completionHandler(status, nil, nil, nil);
                                  }];
                              }
-
+                             
+                             [span end];
+                             [tracer send];
+                             
                              return;
                          }
 
@@ -290,7 +288,9 @@ BOOL _initialized = NO;
                                          }
                                          
                                      }
-
+                                 
+                                     [span end];
+                                     [tracer send];
                                      if (completionHandler) {
                                          [RadarUtils runOnMainThread:^{
                                              completionHandler(status, location, events, user);

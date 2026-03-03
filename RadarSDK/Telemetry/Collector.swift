@@ -19,4 +19,17 @@ extension Otel {
             let errorMessage: String
         }
     }
+    
+    struct ExportMetricsServiceRequest: Codable {
+        let resourceMetrics: [ResourceMetrics]
+    }
+    
+    struct ExportMetricsServiceResponse: Codable {
+        let partialSuccess: ExportMetricsPartialSuccess?
+        
+        struct ExportMetricsPartialSuccess: Codable {
+            let rejectedDataPoints: Int
+            let errorMessage: String
+        }
+    }
 }
