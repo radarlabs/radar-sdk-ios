@@ -80,7 +80,7 @@ class RadarUtils: NSObject {
         }
         
         guard let carrierTypes = CTTelephonyNetworkInfo().serviceCurrentRadioAccessTechnology,
-           carrierTypes.count == 0 else {
+              !carrierTypes.isEmpty else {
             return .unknown
         }
         
@@ -215,7 +215,7 @@ class RadarUtils: NSObject {
     
     static func locationForDictionary(_ dict: [String: Any]?) -> CLLocation {
         if let dict {
-            return CLLocation.from(dict: dict)
+            return CLLocation.from(dict: dict) ?? CLLocation(latitude: 0, longitude: 0)
         } else {
             return CLLocation(latitude: 0, longitude: 0)
         }
@@ -246,12 +246,14 @@ internal extension CLLocation {
         return dict
     }
     
-    static func from(dict: [String: Any]) -> CLLocation {
-        let latitude = dict["latitude"] as! CLLocationDegrees
-        let longitude = dict["longitude"] as! CLLocationDegrees
-        let horizontalAccuracy = dict["horizontalAccuracy"] as! CLLocationAccuracy
-        let verticalAccuracy = dict["verticalAccuracy"] as! CLLocationAccuracy
-        let timestamp = dict["timestamp"] as! Date
+    static func from(dict: [String: Any]) -> CLLocation? {
+        guard let latitude = dict["latitude"] as? CLLocationDegrees,
+              let longitude = dict["longitude"] as? CLLocationDegrees else {
+            return nil
+        }
+        let horizontalAccuracy = dict["horizontalAccuracy"] as? CLLocationAccuracy ?? 0
+        let verticalAccuracy = dict["verticalAccuracy"] as? CLLocationAccuracy ?? 0
+        let timestamp = dict["timestamp"] as? Date ?? Date()
         
         let coordinate = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
         let location = CLLocation(coordinate: coordinate, altitude: 0, horizontalAccuracy: horizontalAccuracy, verticalAccuracy: verticalAccuracy, timestamp: timestamp)
