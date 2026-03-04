@@ -2,7 +2,6 @@
 //  Meter.swift
 //  RadarSDK
 //
-//  Created by ShiCheng Lu on 2/26/26.
 //  Copyright © 2026 Radar Labs, Inc. All rights reserved.
 //
 
@@ -66,7 +65,7 @@ extension Otel {
     }
     
     struct NumberDataPoint: Codable {
-        let attributes: KeyValue
+        let attributes: [KeyValue]
         let startTimeUnixNano: UInt64
         let timeUnixNano: UInt64
         // oneof
@@ -78,7 +77,7 @@ extension Otel {
     }
     
     struct HistogramDataPoint: Codable {
-        let attributes: KeyValue
+        let attributes: [KeyValue]
         let startTimeUnixNano: UInt64
         let timeUnixNano: UInt64
         let count: UInt64
@@ -92,7 +91,7 @@ extension Otel {
     }
     
     struct ExponentialHistogramDataPoint: Codable {
-        let attributes: KeyValue
+        let attributes: [KeyValue]
         let startTimeUnixNano: UInt64
         let timeUnixNano: UInt64
         let count: UInt64
@@ -113,7 +112,7 @@ extension Otel {
     }
     
     struct SummaryDataPoint: Codable {
-        let attributes: KeyValue
+        let attributes: [KeyValue]
         let startTimeUnixNano: UInt64
         let timeUnixNano: UInt64
         let count: UInt64
