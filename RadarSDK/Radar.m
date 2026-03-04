@@ -829,7 +829,7 @@ BOOL _initialized = NO;
         }
         
         if (completionHandler) {
-            [RadarUtils runOnMainThread:^{
+            [RadarUtilsDeprecated runOnMainThread:^{
                 completionHandler(status, trip, leg, events);
             }];
         }
@@ -843,7 +843,7 @@ BOOL _initialized = NO;
     if (!trip) {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelWarning type:RadarLogTypeSDKCall message:@"updateTripLeg() called with no active trip"];
         if (completionHandler) {
-            [RadarUtils runOnMainThread:^{
+            [RadarUtilsDeprecated runOnMainThread:^{
                 completionHandler(RadarStatusErrorBadRequest, nil, nil, nil);
             }];
         }
@@ -859,7 +859,7 @@ BOOL _initialized = NO;
     if (!trip) {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelWarning type:RadarLogTypeSDKCall message:@"updateCurrentTripLeg() called with no active trip"];
         if (completionHandler) {
-            [RadarUtils runOnMainThread:^{
+            [RadarUtilsDeprecated runOnMainThread:^{
                 completionHandler(RadarStatusErrorBadRequest, nil, nil, nil);
             }];
         }
@@ -869,7 +869,7 @@ BOOL _initialized = NO;
     if (!trip.currentLegId) {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelWarning type:RadarLogTypeSDKCall message:@"updateCurrentTripLeg() called but trip has no current leg"];
         if (completionHandler) {
-            [RadarUtils runOnMainThread:^{
+            [RadarUtilsDeprecated runOnMainThread:^{
                 completionHandler(RadarStatusErrorBadRequest, nil, nil, nil);
             }];
         }
@@ -894,7 +894,7 @@ BOOL _initialized = NO;
         }
 
         if (completionHandler) {
-            [RadarUtils runOnMainThread:^{
+            [RadarUtilsDeprecated runOnMainThread:^{
                 completionHandler(status, trip, events);
             }];
         }
@@ -907,7 +907,7 @@ BOOL _initialized = NO;
     if (!trip) {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelWarning type:RadarLogTypeSDKCall message:@"reorderTripLegs() called with no active trip"];
         if (completionHandler) {
-            [RadarUtils runOnMainThread:^{
+            [RadarUtilsDeprecated runOnMainThread:^{
                 completionHandler(RadarStatusErrorBadRequest, nil, nil);
             }];
         }
