@@ -25,6 +25,7 @@
 #import "RadarTripOptions.h"
 #import "RadarIndoorsProtocol.h"
 #import "RadarInAppMessageDelegate.h"
+#import "RadarSDKFraudProtocol.h"
 #import "RadarSwiftBridge.h"
 
 #if __has_include(<RadarSDK/RadarSDK-Swift.h>)
@@ -84,6 +85,13 @@ BOOL _initialized = NO;
     } else {
         [RadarState setMotionAuthorizationString:@"NOT_AVAILABLE"];
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelWarning message:@"RadarSDKMotion class not found; Motion/Pressure features disabled"];
+    }
+
+    Class RadarSDKFraud = NSClassFromString(@"RadarSDKFraud");
+    if (RadarSDKFraud) {
+        id<RadarSDKFraudProtocol> radarSDKFraud = [RadarSDKFraud sharedInstance];
+        [radarSDKFraud initializeWithOptions:@{}];
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"RadarSDKFraud detected and initialized"];
     }
 
     [[NSNotificationCenter defaultCenter] addObserver:[self sharedInstance]
