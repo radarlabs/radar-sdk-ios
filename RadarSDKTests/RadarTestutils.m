@@ -147,11 +147,6 @@
         params[@"keyId"] = keyId;
         params[@"attestationError"] = attestationError;
         params[@"encrypted"] = @(encrypted);
-        BOOL jailbroken = [[RadarVerificationManager sharedInstance] isJailbroken];
-        params[@"compromised"] = @(jailbroken);
-        if (jailbroken) {
-            [fraudFailureReasons addObject:@"fraud_compromised_jailbroken"];
-        }
         if (expectedCountryCode) {
             params[@"expectedCountryCode"] = expectedCountryCode;
         }
