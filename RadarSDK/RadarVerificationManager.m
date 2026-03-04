@@ -72,10 +72,10 @@
     // Capture foreground state on main thread before entering background thread context
     __block BOOL foreground = NO;
     if ([NSThread isMainThread]) {
-        foreground = [RadarUtils foreground];
+        foreground = [RadarUtilsDeprecated foreground];
     } else {
         dispatch_sync(dispatch_get_main_queue(), ^{
-            foreground = [RadarUtils foreground];
+            foreground = [RadarUtilsDeprecated foreground];
         });
     }
     
