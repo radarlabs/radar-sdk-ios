@@ -20,6 +20,7 @@
 #import "RadarRoutes.h"
 #import "RadarUser.h"
 #import "RadarVerifiedLocationToken.h"
+#import "RadarTripLeg.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -34,6 +35,8 @@ typedef void (^_Nonnull RadarTrackAPICompletionHandler)(RadarStatus status,
 typedef void (^_Nonnull RadarFlushReplaysAPICompletionHandler)(RadarStatus status, NSDictionary *_Nullable res);
 
 typedef void (^_Nonnull RadarTripAPICompletionHandler)(RadarStatus status, RadarTrip *_Nullable trip, NSArray<RadarEvent *> *_Nullable events);
+
+typedef void (^_Nonnull RadarTripLegAPICompletionHandler)(RadarStatus status, RadarTrip *_Nullable trip, RadarTripLeg *_Nullable leg, NSArray<RadarEvent *> *_Nullable events);
 
 typedef void (^_Nonnull RadarContextAPICompletionHandler)(RadarStatus status, NSDictionary *_Nullable res, RadarContext *_Nullable context);
 
@@ -105,6 +108,15 @@ typedef void (^_Nonnull RadarSyncLogsAPICompletionHandler)(RadarStatus status);
 - (void)createTripWithOptions:(RadarTripOptions *_Nullable)options completionHandler:(RadarTripAPICompletionHandler _Nonnull)completionHandler;
 
 - (void)updateTripWithOptions:(RadarTripOptions *_Nullable)options status:(RadarTripStatus)status completionHandler:(RadarTripAPICompletionHandler _Nonnull)completionHandler;
+
+- (void)updateTripLegWithTripId:(NSString *_Nonnull)tripId
+                          legId:(NSString *_Nonnull)legId
+                         status:(RadarTripLegStatus)status
+              completionHandler:(RadarTripLegAPICompletionHandler _Nonnull)completionHandler;
+
+- (void)reorderTripLegsWithTripId:(NSString *_Nonnull)tripId
+                           legIds:(NSArray<NSString *> *_Nonnull)legIds
+                completionHandler:(RadarTripAPICompletionHandler _Nonnull)completionHandler;
 
 - (void)getContextForLocation:(CLLocation *_Nonnull)location completionHandler:(RadarContextAPICompletionHandler _Nonnull)completionHandler;
 
