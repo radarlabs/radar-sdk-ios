@@ -526,7 +526,6 @@
             completionHandler(status, nil, nil, nil, nil, nil, nil);
         }];
     } else {
-        NSLog(@"%@", params);
         [self.apiHelper requestWithMethod:@"POST"
                                     url:url
                                 headers:headers

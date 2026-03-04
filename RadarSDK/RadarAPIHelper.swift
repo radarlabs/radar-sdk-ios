@@ -56,7 +56,7 @@ final class RadarApiHelper: Sendable {
         headers["X-Radar-Device-Model"] = RadarUtils.deviceModel
         headers["X-Radar-Device-OS"] = await RadarUtils.deviceOS
         headers["X-Radar-Device-Type"] = RadarUtils.deviceType
-        headers["x-Radar-SDK-Version"] = RadarUtils.sdkVersion
+        headers["X-Radar-SDK-Version"] = RadarUtils.sdkVersion
         headers["X-Radar-Mobile-Origin"] = Bundle.main.bundleIdentifier
         headers["X-Radar-Network-Type"] = RadarUtils.networkType.rawValue
         headers["X-Radar-App-Info"] = RadarUtils.dictionaryToJson(RadarUtils.appInfo)
