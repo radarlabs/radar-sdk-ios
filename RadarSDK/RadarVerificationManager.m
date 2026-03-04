@@ -114,7 +114,7 @@
             
             Class RadarSDKFraud = NSClassFromString(@"RadarSDKFraud");
             if (!RadarSDKFraud) {
-                [RadarUtils runOnMainThread:^{
+                [RadarUtilsDeprecated runOnMainThread:^{
                     [[RadarDelegateHolder sharedInstance] didFailWithStatus:RadarStatusErrorPlugin];
                     
                     if (completionHandler) {
@@ -134,7 +134,7 @@
             }
             [[RadarSDKFraud sharedInstance] getFraudPayloadWithOptions:options completionHandler:^(NSDictionary<NSString *, id> *_Nullable result) {
                 if (!result) {
-                    [RadarUtils runOnMainThread:^{
+                    [RadarUtilsDeprecated runOnMainThread:^{
                         [[RadarDelegateHolder sharedInstance] didFailWithStatus:RadarStatusErrorUnknown];
                         
                         if (completionHandler) {
@@ -146,7 +146,7 @@
                 
                 NSString *error = result[@"error"];
                 if (error) {
-                    [RadarUtils runOnMainThread:^{
+                    [RadarUtilsDeprecated runOnMainThread:^{
                         [[RadarDelegateHolder sharedInstance] didFailWithStatus:RadarStatusErrorUnknown];
                         
                         if (completionHandler) {
