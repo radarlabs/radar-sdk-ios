@@ -16,9 +16,8 @@
 @property (strong, nonatomic) dispatch_queue_t queue;
 @property (strong, nonatomic) dispatch_semaphore_t semaphore;
 @property (assign, nonatomic) BOOL wait;
-
-@property (strong, nonatomic) NSURLSession* defaultSession;
-@property (strong, nonatomic) NSURLSession* ephemeralSession;
+@property (strong, nonatomic) NSURLSession *standardSession;
+@property (strong, nonatomic) NSURLSession *extendedTimeoutSession;
 
 @end
 
@@ -29,22 +28,17 @@
     if (self) {
         _queue = dispatch_queue_create("io.radar.api", DISPATCH_QUEUE_SERIAL);
         _semaphore = dispatch_semaphore_create(1);
+        
+        NSURLSessionConfiguration *standardConfig = [NSURLSessionConfiguration ephemeralSessionConfiguration];
+        standardConfig.timeoutIntervalForRequest = 10;
+        standardConfig.timeoutIntervalForResource = 10;
+        _standardSession = [NSURLSession sessionWithConfiguration:standardConfig];
+        
+        NSURLSessionConfiguration *extendedConfig = [NSURLSessionConfiguration defaultSessionConfiguration];
+        extendedConfig.timeoutIntervalForRequest = 25;
+        extendedConfig.timeoutIntervalForResource = 25;
+        _extendedTimeoutSession = [NSURLSession sessionWithConfiguration:extendedConfig];
     }
-    if (_defaultSession == nil) {
-        NSURLSessionConfiguration *configuration;
-        configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
-        configuration.timeoutIntervalForRequest = 25;
-        configuration.timeoutIntervalForResource = 25;
-        _defaultSession = [NSURLSession sessionWithConfiguration:configuration];
-    }
-    if (_ephemeralSession == nil) {
-        NSURLSessionConfiguration *configuration;
-        configuration = [NSURLSessionConfiguration ephemeralSessionConfiguration];
-        configuration.timeoutIntervalForRequest = 10;
-        configuration.timeoutIntervalForResource = 10;
-        _ephemeralSession = [NSURLSession sessionWithConfiguration:configuration];
-    }
-    
     return self;
 }
 
@@ -118,12 +112,7 @@
             }
 
 
-            NSURLSession *session;
-            if (extendedTimeout) {
-                session = self->_defaultSession;
-            } else {
-                session = self->_ephemeralSession;
-            }
+            NSURLSession *session = extendedTimeout ? self.extendedTimeoutSession : self.standardSession;
 
             NSDate *requestStart = [NSDate date];
 
