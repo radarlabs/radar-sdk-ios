@@ -7,8 +7,6 @@
 
 #import "Radar.h"
 #include "RadarSdkConfiguration.h"
-#import <CoreMotion/CoreMotion.h>
-
 #import "RadarAPIClient.h"
 #import "RadarBeaconManager.h"
 #import "RadarConfig.h"
@@ -78,11 +76,14 @@ BOOL _initialized = NO;
     Class RadarSDKMotion = NSClassFromString(@"RadarSDKMotion");
     if (RadarSDKMotion) {
         id radarSDKMotion = [[RadarSDKMotion alloc] init];
-        CMAuthorizationStatus authStatus = [CMMotionActivityManager authorizationStatus];
 
+        NSString *authStatus = [Radar stringForMotionAuthorizationStatus];
+        [RadarState setMotionAuthorizationString:authStatus];
+        
         [RadarActivityManager sharedInstance].radarSDKMotion = radarSDKMotion;
-        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"RadarSDKMotion detected and initialized; Motion & Altimeter services available, auth status: %@", [Radar stringForMotionAuthorization:authStatus]]];
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"RadarSDKMotion detected and initialized; Motion & Altimeter services available, auth status: %@", authStatus]];
     } else {
+        [RadarState setMotionAuthorizationString:@"NOT_AVAILABLE"];
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelWarning message:@"RadarSDKMotion class not found; Motion/Pressure features disabled"];
     }
 
@@ -561,8 +562,9 @@ BOOL _initialized = NO;
 
 + (void)sendLogConversionRequestWithName:(NSString * _Nonnull) name
                                 metadata:(NSDictionary * _Nullable) metadata
+                                campaign:(NSString *_Nullable)campaign
                        completionHandler:(RadarLogConversionCompletionHandler) completionHandler {
-    [[RadarAPIClient sharedInstance] sendEvent:name withMetadata:metadata completionHandler:^(RadarStatus status, NSDictionary * _Nullable res, RadarEvent * _Nullable event) {
+    [[RadarAPIClient sharedInstance] sendEvent:name withMetadata:metadata withCampaign:campaign completionHandler:^(RadarStatus status, NSDictionary * _Nullable res, RadarEvent * _Nullable event) {
         if (status != RadarStatusSuccess) {
             if (completionHandler) {
                 [RadarUtils runOnMainThread:^{
@@ -594,7 +596,7 @@ BOOL _initialized = NO;
         if (lastAppOpenTimeInterval > 2) {
             [RadarSettings updateLastAppOpenTime];
             // metadata not needed as app is not opened by notification.
-            [self sendLogConversionRequestWithName:@"opened_app" metadata:nil completionHandler:^(RadarStatus status, RadarEvent * _Nullable event) {
+            [self sendLogConversionRequestWithName:@"opened_app" metadata:nil campaign:nil completionHandler:^(RadarStatus status, RadarEvent * _Nullable event) {
                 NSString *message = [NSString stringWithFormat:@"Conversion name = %@: status = %@; event = %@", event.conversionName, [Radar stringForStatus:status], event];
                 [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:message];
             }];
@@ -616,13 +618,13 @@ BOOL _initialized = NO;
 
     CLAuthorizationStatus authorizationStatus = [[RadarLocationManager sharedInstance].permissionsHelper locationAuthorizationStatus];
     if (!(authorizationStatus == kCLAuthorizationStatusAuthorizedWhenInUse || authorizationStatus == kCLAuthorizationStatusAuthorizedAlways) || isLastTrackRecent) {
-        [self sendLogConversionRequestWithName:name metadata:metadata completionHandler:completionHandler];
+        [self sendLogConversionRequestWithName:name metadata:metadata campaign:nil completionHandler:completionHandler];
         
         return;
     }
     
     [self trackOnceWithCompletionHandler:^(RadarStatus status, CLLocation * _Nullable location, NSArray<RadarEvent *> * _Nullable events, RadarUser * _Nullable user) {
-        [self sendLogConversionRequestWithName:name metadata:metadata completionHandler:completionHandler];
+        [self sendLogConversionRequestWithName:name metadata:metadata campaign:nil completionHandler:completionHandler];
     }];
 }
 
@@ -648,12 +650,13 @@ BOOL _initialized = NO;
                        deliveredAfter:(NSDate *)deliveredAfter {
     
     NSMutableDictionary *metadata = [[NSMutableDictionary alloc] initWithDictionary:request.content.userInfo];
-
+    
     if (conversionSource) {
         [metadata setValue:conversionSource forKey:@"conversionSource"];
     }
+    NSString* campaign = metadata[@"campaignId"];
     
-    [self sendLogConversionRequestWithName:eventName metadata:metadata completionHandler:^(RadarStatus status, RadarEvent * _Nullable event) {
+    [self sendLogConversionRequestWithName:eventName metadata:metadata campaign:campaign completionHandler:^(RadarStatus status, RadarEvent * _Nullable event) {
         NSString *message = [NSString stringWithFormat:@"Conversion name = %@: status = %@; event = %@", event.conversionName, [Radar stringForStatus:status], event];
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:message];
     }];
@@ -667,6 +670,10 @@ BOOL _initialized = NO;
 
 + (RadarTripOptions *)getTripOptions {
     return [RadarSettings tripOptions];
+}
+
++ (RadarTrip *)getTrip {
+    return [RadarSettings trip];
 }
 
 + (void)startTripWithOptions:(RadarTripOptions *)options {
@@ -685,7 +692,8 @@ BOOL _initialized = NO;
                                          completionHandler:^(RadarStatus status, RadarTrip *trip, NSArray<RadarEvent *> *events) {
                                              if (status == RadarStatusSuccess) {
                                                  [RadarSettings setTripOptions:tripOptions];
-
+                                                 [RadarSettings setTrip:trip];
+                                                 
                                                  if (Radar.isTracking) {
                                                      [RadarSettings setPreviousTrackingOptions:[RadarSettings trackingOptions]];
                                                  } else {
@@ -719,6 +727,7 @@ BOOL _initialized = NO;
                                          completionHandler:^(RadarStatus status, RadarTrip *trip, NSArray<RadarEvent *> *events) {
                                              if (status == RadarStatusSuccess) {
                                                  [RadarSettings setTripOptions:options];
+                                                 [RadarSettings setTrip:trip];
 
                                                  // flush location update to generate events
                                                  [[RadarLocationManager sharedInstance] getLocationWithCompletionHandler:nil];
@@ -744,6 +753,7 @@ BOOL _initialized = NO;
                                          completionHandler:^(RadarStatus status, RadarTrip *trip, NSArray<RadarEvent *> *events) {
                                              if (status == RadarStatusSuccess || status == RadarStatusErrorNotFound) {
                                                  [RadarSettings setTripOptions:nil];
+                                                 [RadarSettings setTrip:nil];
 
                                                  // return to previous tracking options after trip
                                                  [[RadarLocationManager sharedInstance] restartPreviousTrackingOptions];
@@ -772,6 +782,7 @@ BOOL _initialized = NO;
                                          completionHandler:^(RadarStatus status, RadarTrip *trip, NSArray<RadarEvent *> *events) {
                                              if (status == RadarStatusSuccess || status == RadarStatusErrorNotFound) {
                                                  [RadarSettings setTripOptions:nil];
+                                                 [RadarSettings setTrip:nil];
 
                                                  // return to previous tracking options after trip
                                                  [[RadarLocationManager sharedInstance] restartPreviousTrackingOptions];
@@ -786,6 +797,126 @@ BOOL _initialized = NO;
                                                  }];
                                              }
                                          }];
+}
+
++ (void)updateTripLegWithTripId:(NSString *)tripId
+                          legId:(NSString *)legId
+                         status:(RadarTripLegStatus)status
+              completionHandler:(RadarTripLegCompletionHandler)completionHandler {
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo
+                                          type:RadarLogTypeSDKCall
+                                       message:[NSString stringWithFormat:@"updateTripLeg(tripId=%@, legId=%@, status=%@)",
+                                                tripId, legId, [RadarTripLeg stringForStatus:status]]];
+    
+    [[RadarAPIClient sharedInstance] updateTripLegWithTripId:tripId
+                                                       legId:legId
+                                                      status:status
+                                           completionHandler:^(RadarStatus status, RadarTrip *trip, RadarTripLeg *leg, NSArray<RadarEvent *> *events) {
+        if (status == RadarStatusSuccess && trip) {
+            // Check if updating this leg also completed or canceled the trip
+            if (trip.status == RadarTripStatusCompleted || trip.status == RadarTripStatusCanceled) {
+                // Trip is finished - clear state like completeTrip/cancelTrip does
+                [RadarSettings setTripOptions:nil];
+                [RadarSettings setTrip:nil];
+                
+                // return to previous tracking options after trip
+                [[RadarLocationManager sharedInstance] restartPreviousTrackingOptions];
+                
+                // flush location update to generate events
+                [Radar trackOnceWithCompletionHandler:nil];
+            } else {
+                // Trip still in progress - update stored trip
+                [RadarSettings setTrip:trip];
+            }
+        }
+        
+        if (completionHandler) {
+            [RadarUtils runOnMainThread:^{
+                completionHandler(status, trip, leg, events);
+            }];
+        }
+    }];
+}
+
++ (void)updateTripLegWithLegId:(NSString *)legId
+                        status:(RadarTripLegStatus)status
+             completionHandler:(RadarTripLegCompletionHandler)completionHandler {
+    RadarTrip *trip = [RadarSettings trip];
+    if (!trip) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelWarning type:RadarLogTypeSDKCall message:@"updateTripLeg() called with no active trip"];
+        if (completionHandler) {
+            [RadarUtils runOnMainThread:^{
+                completionHandler(RadarStatusErrorBadRequest, nil, nil, nil);
+            }];
+        }
+        return;
+    }
+    
+    [self updateTripLegWithTripId:trip._id legId:legId status:status completionHandler:completionHandler];
+}
+
++ (void)updateCurrentTripLegWithStatus:(RadarTripLegStatus)status
+                     completionHandler:(RadarTripLegCompletionHandler)completionHandler {
+    RadarTrip *trip = [RadarSettings trip];
+    if (!trip) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelWarning type:RadarLogTypeSDKCall message:@"updateCurrentTripLeg() called with no active trip"];
+        if (completionHandler) {
+            [RadarUtils runOnMainThread:^{
+                completionHandler(RadarStatusErrorBadRequest, nil, nil, nil);
+            }];
+        }
+        return;
+    }
+    
+    if (!trip.currentLegId) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelWarning type:RadarLogTypeSDKCall message:@"updateCurrentTripLeg() called but trip has no current leg"];
+        if (completionHandler) {
+            [RadarUtils runOnMainThread:^{
+                completionHandler(RadarStatusErrorBadRequest, nil, nil, nil);
+            }];
+        }
+        return;
+    }
+    
+    [self updateTripLegWithTripId:trip._id legId:trip.currentLegId status:status completionHandler:completionHandler];
+}
+
++ (void)reorderTripLegsWithTripId:(NSString *)tripId
+                           legIds:(NSArray<NSString *> *)legIds
+                completionHandler:(RadarTripCompletionHandler)completionHandler {
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo
+                                          type:RadarLogTypeSDKCall
+                                       message:[NSString stringWithFormat:@"reorderTripLegs(tripId=%@, legIds=%@)", tripId, legIds]];
+
+    [[RadarAPIClient sharedInstance] reorderTripLegsWithTripId:tripId
+                                                       legIds:legIds
+                                            completionHandler:^(RadarStatus status, RadarTrip *trip, NSArray<RadarEvent *> *events) {
+        if (status == RadarStatusSuccess && trip) {
+            [RadarSettings setTrip:trip];
+        }
+
+        if (completionHandler) {
+            [RadarUtils runOnMainThread:^{
+                completionHandler(status, trip, events);
+            }];
+        }
+    }];
+}
+
++ (void)reorderTripLegsWithLegIds:(NSArray<NSString *> *)legIds
+                completionHandler:(RadarTripCompletionHandler)completionHandler {
+    RadarTrip *trip = [RadarSettings trip];
+    if (!trip) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelWarning type:RadarLogTypeSDKCall message:@"reorderTripLegs() called with no active trip"];
+        if (completionHandler) {
+            [RadarUtils runOnMainThread:^{
+                completionHandler(RadarStatusErrorBadRequest, nil, nil);
+            }];
+        }
+        return;
+    }
+
+    [self reorderTripLegsWithTripId:trip._id legIds:legIds completionHandler:completionHandler];
 }
 
 #pragma mark - Context
@@ -1310,6 +1441,9 @@ BOOL _initialized = NO;
     case RadarStatusErrorNotFound:
         str = @"ERROR_NOT_FOUND";
         break;
+    case RadarStatusErrorPlugin:
+        str = @"ERROR_PLUGIN";
+        break;
     case RadarStatusErrorRateLimit:
         str = @"ERROR_RATE_LIMIT";
         break;
@@ -1322,26 +1456,15 @@ BOOL _initialized = NO;
     return str;
 }
 
-+ (NSString *)stringForMotionAuthorization:(CMAuthorizationStatus)status {
-    NSString *str;
-    switch (status) {
-    case CMAuthorizationStatusNotDetermined:
-        str = @"NOT_DETERMINED";
-        break;
-    case CMAuthorizationStatusRestricted:
-        str = @"RESTRICTED";
-        break;
-    case CMAuthorizationStatusDenied:
-        str = @"USER_DENIED";
-        break;
-    case CMAuthorizationStatusAuthorized:
-        str = @"USER_GRANTED";
-        break;
-    default:
-        str = @"UNKNOWN";
++ (NSString *)stringForMotionAuthorizationStatus {
+    Class RadarSDKMotionClass = NSClassFromString(@"RadarSDKMotion");
+    
+    if (RadarSDKMotionClass && [RadarSDKMotionClass respondsToSelector:@selector(stringForMotionAuthorization)]) {
+        return [RadarSDKMotionClass stringForMotionAuthorization];
     }
-    return str;
+    return @"NOT_AVAILABLE";
 }
+
 
 + (NSString *)stringForVerificationStatus:(RadarAddressVerificationStatus)status {
     NSString *str;

@@ -21,18 +21,48 @@ jobs:
       - name: Use Xcode 16.4
         run: sudo xcode-select -switch /Applications/Xcode_16.4.app
 
+      - name: Pick an available iPhone simulator
+        id: pick_sim
+        run: |
+          # Get a UDID for a valid iPhone simulator only (exclude iPads, Apple Watch, tvOS, etc)
+          SIM_ID=$(xcrun simctl list devices --json \
+            | jq -r '
+                .devices
+                | to_entries
+                # Filter keys for iOS runtimes only (ignore tvOS/watchOS)
+                | map(select(.key | startswith("com.apple.CoreSimulator.SimRuntime.iOS")))
+                | .[]
+                .value[]
+                # Only devices available AND name contains "iPhone"
+                | select(.isAvailable == true and (.name | test("iPhone")))
+                .udid
+            ' | head -n 1)
+
+          if [ -z "$SIM_ID" ]; then
+            echo "No available iPhone simulator found"
+            exit 1
+          fi
+
+          echo "SIMULATOR_ID=$SIM_ID" >> $GITHUB_ENV
+          echo "Picked iPhone simulator UDID: $SIM_ID"
+
       - name: Build and Analyze
         env:
+          SIMULATOR_ID: ${{ env.SIMULATOR_ID }}
           scheme: RadarSDK
         run: |
-          xcodebuild clean build analyze -scheme RadarSDK -workspace Example/Example.xcodeproj/project.xcworkspace -destination 'platform=iOS Simulator,name=iPhone 16 Pro,OS=latest' | xcpretty && exit ${PIPESTATUS[0]}
+          xcodebuild clean build analyze -scheme RadarSDK -workspace Example/Example.xcodeproj/project.xcworkspace -destination "platform=iOS Simulator,id=${SIMULATOR_ID}" | xcpretty && exit ${PIPESTATUS[0]}
 
       - name: Test
         env:
+          SIMULATOR_ID: ${{ env.SIMULATOR_ID }}
           scheme: RadarSDK
         run: |
-          xcodebuild test -scheme RadarSDK -workspace Example/Example.xcodeproj/project.xcworkspace -destination 'platform=iOS Simulator,name=iPhone 16 Pro,OS=latest' -skip-testing:RadarSDKTests/InAppMessageTest -skip-testing:RadarSDKTests/RadarSettingsTest | xcpretty && exit ${PIPESTATUS[0]}
+          xcodebuild test -scheme RadarSDK -workspace Example/Example.xcodeproj/project.xcworkspace -destination "platform=iOS Simulator,id=${SIMULATOR_ID}" -skip-testing:RadarSDKTests/InAppMessageTest -skip-testing:RadarSDKTests/RadarSettingsTest | xcpretty && exit ${PIPESTATUS[0]}
         
       - name: Test swift 
+        env:
+          SIMULATOR_ID: ${{ env.SIMULATOR_ID }}
+          scheme: RadarSDK
         run: |
-          xcodebuild test -scheme RadarSDK -workspace Example/Example.xcodeproj/project.xcworkspace -destination 'platform=iOS Simulator,name=iPhone 16 Pro,OS=latest' -only-testing:RadarSDKTests/InAppMessageTest -only-testing:RadarSDKTests/RadarSettingsTest
+          xcodebuild test -scheme RadarSDK -workspace Example/Example.xcodeproj/project.xcworkspace -destination "platform=iOS Simulator,id=${SIMULATOR_ID}" -only-testing:RadarSDKTests/InAppMessageTest -only-testing:RadarSDKTests/RadarSettingsTest

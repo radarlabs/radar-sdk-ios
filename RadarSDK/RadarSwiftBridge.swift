@@ -19,6 +19,7 @@ public protocol RadarSwiftBridgeProtocol {
     func flushReplays()
     func logOpenedAppConversion()
     func invoke(target: NSObject, selector: Selector, args: [Any])
+    func logCampaignConversion(name: String, metadata: [String: Any], campaign: String?)
 }
 
 @objc(RadarSwift) @objcMembers

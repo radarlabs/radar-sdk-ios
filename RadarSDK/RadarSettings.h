@@ -12,6 +12,7 @@
 #import "RadarTrackingOptions.h"
 #import "RadarSdkConfiguration.h"
 #import "RadarInitializeOptions.h"
+#import "RadarTrip.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -46,6 +47,8 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)setRemoteTrackingOptions:(RadarTrackingOptions * _Nullable)options;
 + (RadarTripOptions * _Nullable)tripOptions;
 + (void)setTripOptions:(RadarTripOptions * _Nullable)options;
++ (RadarTrip * _Nullable)trip;
++ (void)setTrip:(RadarTrip * _Nullable)trip;
 + (NSDictionary *)clientSdkConfiguration;
 + (void) setClientSdkConfiguration:(NSDictionary *)sdkConfiguration;
 + (RadarSdkConfiguration * _Nullable)sdkConfiguration;

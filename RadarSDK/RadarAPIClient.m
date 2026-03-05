@@ -30,12 +30,14 @@
 #import "RadarState.h"
 #import "RadarTrip+Internal.h"
 #import "RadarTripOptions.h"
+#import "RadarTripLeg.h"
 #import "RadarUser+Internal.h"
 #import "RadarUtils.h"
 #import "RadarVerificationManager.h"
 #import "RadarVerifiedLocationToken+Internal.h"
 #import "RadarNotificationHelper.h"
 #import <os/log.h>
+#import "RadarSDKFraudProtocol.h"
 
 #if __has_include(<RadarSDK/RadarSDK-Swift.h>)
 #import <RadarSDK/RadarSDK-Swift.h>
@@ -204,10 +206,7 @@
                     beacons:beacons
              indoorLocation:indoorLocation
                    verified:NO
-          attestationString:nil
-                      keyId:nil
-           attestationError:nil
-                  encrypted:NO
+              fraudPayload:nil
         expectedCountryCode:nil
           expectedStateCode:nil
                      reason:nil
@@ -223,10 +222,7 @@
                   beacons:(NSArray<RadarBeacon *> *_Nullable)beacons
            indoorLocation:(CLLocation *_Nullable)indoorLocation
                  verified:(BOOL)verified
-        attestationString:(NSString *_Nullable)attestationString
-                    keyId:(NSString *_Nullable)keyId
-         attestationError:(NSString *_Nullable)attestationError
-                encrypted:(BOOL)encrypted
+            fraudPayload:(NSString *_Nullable)fraudPayload
       expectedCountryCode:(NSString * _Nullable)expectedCountryCode
         expectedStateCode:(NSString * _Nullable)expectedStateCode
                    reason:(NSString * _Nullable)reason
@@ -306,20 +302,6 @@
     params[@"pushNotificationToken"] = [RadarSettings pushNotificationToken];
     params[@"locationExtensionToken"] = [RadarSettings locationExtensionToken];
     
-    NSMutableArray<NSString *> *fraudFailureReasons = [NSMutableArray new];
-    if (@available(iOS 15.0, *)) {
-        CLLocationSourceInformation *sourceInformation = location.sourceInformation;
-        if (sourceInformation) {
-            if (sourceInformation.isSimulatedBySoftware) {
-                params[@"mocked"] = @(YES);
-                [fraudFailureReasons addObject:@"fraud_mocked_from_mock_provider"];
-            }
-            if (sourceInformation.isProducedByAccessory) {
-                [fraudFailureReasons addObject:@"fraud_mocked_produced_by_accessory"];
-            }
-        }
-    }
-    
     RadarTripOptions *tripOptions = Radar.getTripOptions;
 
     if (tripOptions) {
@@ -356,15 +338,6 @@
 
     params[@"verified"] = @(verified);
     if (verified) {
-        params[@"attestationString"] = attestationString;
-        params[@"keyId"] = keyId;
-        params[@"attestationError"] = attestationError;
-        params[@"encrypted"] = @(encrypted);
-        BOOL jailbroken = [[RadarVerificationManager sharedInstance] isJailbroken];
-        params[@"compromised"] = @(jailbroken);
-        if (jailbroken) {
-            [fraudFailureReasons addObject:@"fraud_compromised_jailbroken"];
-        }
         if (expectedCountryCode) {
             params[@"expectedCountryCode"] = expectedCountryCode;
         }
@@ -377,14 +350,11 @@
         if (transactionId) {
             params[@"transactionId"] = transactionId;
         }
-        if (UIScreen.mainScreen.isCaptured) {
-            [fraudFailureReasons addObject:@"fraud_sharing_capturing_screen"];
-        }
-        NSString *kDeviceId = [[RadarVerificationManager sharedInstance] kDeviceId];
-        if (kDeviceId) {
-            params[@"kDeviceId"] = kDeviceId;
+        if (fraudPayload) {
+            params[@"fraudPayload"] = fraudPayload;
         }
     }
+
     params[@"appId"] = [[NSBundle mainBundle] bundleIdentifier];
     NSString *appName = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleName"];
     if (appName) {
@@ -425,7 +395,10 @@
         locationMetadata[@"altitude"] = @(location.altitude);
         locationMetadata[@"floor"] = @([location.floor level]);
         locationMetadata[@"pressureHPa"] = [RadarState lastRelativeAltitudeData];
-        params[@"motionAuthorization"] = [Radar stringForMotionAuthorization:[RadarState motionAuthorization]];
+        NSString *motionAuth = [RadarState motionAuthorizationString];
+        if (motionAuth) {
+            params[@"motionAuthorization"] = motionAuth;
+        }
         NSDictionary *pressureDict = [RadarState lastRelativeAltitudeData];
         if (pressureDict) {
             NSNumber *pressure = pressureDict[@"pressure"];
@@ -449,15 +422,19 @@
     if (locationMetadata.count > 0) {
         params[@"locationMetadata"] = locationMetadata;
     }
-    
-    params[@"fraudFailureReasons"] = fraudFailureReasons;
+
+    // Include stored altitudeAdjustments from previous track responses
+    NSArray<NSDictionary *> *altitudeAdjustments = [RadarState altitudeAdjustments];
+    if (altitudeAdjustments && altitudeAdjustments.count > 0) {
+        params[@"altitudeAdjustments"] = altitudeAdjustments;
+    }
 
     if (anonymous) {
         [[RadarAPIClient sharedInstance] getConfigForUsage:@"track"
-                                                  verified:verified
-                                         completionHandler:^(RadarStatus status, RadarConfig *_Nullable config){
+                                                verified:verified
+                                        completionHandler:^(RadarStatus status, RadarConfig *_Nullable config){
 
-                                         }];
+                                        }];
     }
 
     if (sdkConfiguration.useNotificationDiff) {
@@ -481,16 +458,14 @@
         [[RadarAPIClient sharedInstance] makeTrackRequestWithParams:params
                                                             options:options
                                                             stopped:stopped
-                                                           location:location
-                                                             source:source
-                                                           verified:verified
-                                                     publishableKey:publishableKey
-                                             notificationsRemaining:@[]
-                                             locationMetadata:locationMetadata
-                                                  completionHandler:completionHandler];
+                                                        location:location
+                                                            source:source
+                                                        verified:verified
+                                                    publishableKey:publishableKey
+                                            notificationsRemaining:@[]
+                                            locationMetadata:locationMetadata
+                                                completionHandler:completionHandler];
     }
-
-
 }
 
 - (void)makeTrackRequestWithParams:(NSDictionary *)params
@@ -570,6 +545,15 @@
                                 NSMutableDictionary *mutableUserObj = [userObj mutableCopy];
                                 mutableUserObj[@"metadata"] = locationMetadata;
                                 userObj = mutableUserObj;
+                                
+                                // Extract and store altitudeAdjustments from user object
+                                id altitudeAdjustmentsObj = mutableUserObj[@"altitudeAdjustments"];
+                                if ([altitudeAdjustmentsObj isKindOfClass:[NSArray class]]) {
+                                    [RadarState setAltitudeAdjustments:(NSArray *)altitudeAdjustmentsObj];
+                                    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Stored %lu altitude adjustments from track response", (unsigned long)[(NSArray *)altitudeAdjustmentsObj count]]];
+                                } else {
+                                    [RadarState setAltitudeAdjustments:nil];
+                                }
                             }
                             id nearbyGeofencesObj = res[@"nearbyGeofences"];
                             id inAppMessagesObj = res[@"inAppMessages"];
@@ -632,10 +616,15 @@
                             if (events && user) {
                                 [RadarSettings setId:user._id];
 
-                                // if user was on a trip that ended server-side, restore previous tracking options
-                                if (!user.trip && [RadarSettings tripOptions]) {
+                                // Update local trip state from server response
+                                if (user.trip) {
+                                    // Update local trip with latest state (ETAs, leg statuses, etc.)
+                                    [RadarSettings setTrip:user.trip];
+                                } else if ([RadarSettings tripOptions]) {
+                                    // Trip ended server-side - restore previous tracking options
                                     [[RadarLocationManager sharedInstance] restartPreviousTrackingOptions];
-                                [RadarSettings setTripOptions:nil];
+                                    [RadarSettings setTripOptions:nil];
+                                    [RadarSettings setTrip:nil];
                                 }
 
                                 [RadarSettings setUserDebug:user.debug];
@@ -740,6 +729,10 @@
         params[@"approachingThreshold"] = [NSString stringWithFormat:@"%d", options.approachingThreshold];
     }
 
+    if (options.legs && options.legs.count > 0) {
+        params[@"legs"] = [RadarTripLeg arrayForLegs:options.legs];
+    }
+    
     NSString *host = [RadarSettings host];
     NSString *url = [NSString stringWithFormat:@"%@/v1/trips", host];
     url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
@@ -818,6 +811,101 @@
     NSDictionary *headers = [RadarAPIClient headersWithPublishableKey:publishableKey];
 
     [self.apiHelper requestWithMethod:@"PATCH"
+                                  url:url
+                              headers:headers
+                               params:params
+                                sleep:NO
+                           logPayload:YES
+                      extendedTimeout:NO
+                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
+                        if (status != RadarStatusSuccess || !res) {
+                            return completionHandler(status, nil, nil);
+                        }
+
+                        id tripObj = res[@"trip"];
+                        id eventsObj = res[@"events"];
+                        RadarTrip *trip = [[RadarTrip alloc] initWithObject:tripObj];
+                        NSArray<RadarEvent *> *events = [RadarEvent eventsFromObject:eventsObj];
+
+                        if (events && events.count) {
+                            [[RadarDelegateHolder sharedInstance] didReceiveEvents:events user:nil];
+                        }
+
+                        completionHandler(RadarStatusSuccess, trip, events);
+                    }];
+}
+
+- (void)updateTripLegWithTripId:(NSString *_Nonnull)tripId
+                          legId:(NSString *_Nonnull)legId
+                         status:(RadarTripLegStatus)status
+              completionHandler:(RadarTripLegAPICompletionHandler _Nonnull)completionHandler {
+    NSString *publishableKey = [RadarSettings publishableKey];
+    if (!publishableKey) {
+        return completionHandler(RadarStatusErrorPublishableKey, nil, nil, nil);
+    }
+    
+    if (!tripId || !legId) {
+        return completionHandler(RadarStatusErrorBadRequest, nil, nil, nil);
+    }
+    
+    NSMutableDictionary *params = [NSMutableDictionary new];
+    params[@"status"] = [RadarTripLeg stringForStatus:status];
+    
+    NSString *host = [RadarSettings host];
+    NSString *url = [NSString stringWithFormat:@"%@/v1/trips/%@/legs/%@", host, tripId, legId];
+    url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
+    
+    NSDictionary *headers = [RadarAPIClient headersWithPublishableKey:publishableKey];
+    
+    [self.apiHelper requestWithMethod:@"PATCH"
+                                  url:url
+                              headers:headers
+                               params:params
+                                sleep:NO
+                           logPayload:YES
+                      extendedTimeout:NO
+                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
+                        if (status != RadarStatusSuccess || !res) {
+                            return completionHandler(status, nil, nil, nil);
+                        }
+                        
+                        id tripObj = res[@"trip"];
+                        id legObj = res[@"leg"];
+                        id eventsObj = res[@"events"];
+                        RadarTrip *trip = [[RadarTrip alloc] initWithObject:tripObj];
+                        RadarTripLeg *leg = [RadarTripLeg legFromDictionary:legObj];
+                        NSArray<RadarEvent *> *events = [RadarEvent eventsFromObject:eventsObj];
+                        
+                        if (events && events.count) {
+                            [[RadarDelegateHolder sharedInstance] didReceiveEvents:events user:nil];
+                        }
+                        
+                        completionHandler(RadarStatusSuccess, trip, leg, events);
+                    }];
+}
+
+- (void)reorderTripLegsWithTripId:(NSString *_Nonnull)tripId
+                           legIds:(NSArray<NSString *> *_Nonnull)legIds
+                completionHandler:(RadarTripAPICompletionHandler _Nonnull)completionHandler {
+    NSString *publishableKey = [RadarSettings publishableKey];
+    if (!publishableKey) {
+        return completionHandler(RadarStatusErrorPublishableKey, nil, nil);
+    }
+
+    if (!tripId || !legIds || legIds.count == 0) {
+        return completionHandler(RadarStatusErrorBadRequest, nil, nil);
+    }
+
+    NSMutableDictionary *params = [NSMutableDictionary new];
+    params[@"legs"] = legIds;
+
+    NSString *host = [RadarSettings host];
+    NSString *url = [NSString stringWithFormat:@"%@/v1/trips/%@/legs", host, tripId];
+    url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
+
+    NSDictionary *headers = [RadarAPIClient headersWithPublishableKey:publishableKey];
+
+    [self.apiHelper requestWithMethod:@"PUT"
                                   url:url
                               headers:headers
                                params:params
@@ -1579,6 +1667,7 @@
 
 - (void)sendEvent:(NSString *)conversionName
      withMetadata:(NSDictionary *_Nullable)metadata
+     withCampaign:(NSString *_Nullable)campaign
 completionHandler:(RadarSendEventAPICompletionHandler _Nonnull)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
@@ -1593,6 +1682,7 @@ completionHandler:(RadarSendEventAPICompletionHandler _Nonnull)completionHandler
 
     params[@"type"] = conversionName;
     params[@"metadata"] = metadata;
+    params[@"campaign"] = campaign;
 
     NSString *host = [RadarSettings host];
     NSString *url = [NSString stringWithFormat:@"%@/v1/events", host];
