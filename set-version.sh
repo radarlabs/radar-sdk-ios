@@ -26,3 +26,4 @@ sed_inplace "s/MARKETING_VERSION = .+;/MARKETING_VERSION = $version;/" RadarSDKM
 sed_inplace "s/MARKETING_VERSION = .+;/MARKETING_VERSION = $version;/" RadarSDKIndoors/RadarSDKIndoors.xcodeproj/project.pbxproj
 
 sed_inplace "s/return @\"[0-9]+\.[0-9]+\.[0-9]+\"; \/\/ SDK VERSION/return @\"$version_full\"; \/\/ SDK VERSION/" RadarSDK/RadarUtils.m
+sed_inplace "s/let SDK_VERSION = \"[0-9]+\.[0-9]+\.[0-9]+\"/let SDK_VERSION = \"$version_full\"/" RadarSDK/RadarUtils.swift

@@ -11,7 +11,7 @@ import UIKit
 import SystemConfiguration
 import CoreTelephony
 
-let SDK_VERSION = "3.25.0"
+let SDK_VERSION = "3.27.0"
 
 enum RadarConnectionType: String {
     case unknown = "unknown"
