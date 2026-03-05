@@ -63,6 +63,16 @@
 }
 
 - (void)trackVerifiedWithBeacons:(BOOL)beacons desiredAccuracy:(RadarTrackingOptionsDesiredAccuracy)desiredAccuracy reason:(NSString *)reason transactionId:(NSString *)transactionId completionHandler:(RadarTrackVerifiedCompletionHandler)completionHandler {
+    if (@available(iOS 13.0, *)) {
+    } else {
+        // if iOS 13 is not available, we can't call RadarSDKFraud
+        if (completionHandler) {
+            completionHandler(RadarStatusErrorPlugin, nil);
+        }
+        return;
+    }
+    
+    
     if (!reason) {
         reason = @"manual";
     }
