@@ -96,9 +96,9 @@ class SurveyApi {
         let suite = UserDefaults.standard.string(forKey: "radar-appGroup")
         
         let radarHost = UserDefaults(suiteName: suite)?.string(forKey: "radar-host") ?? "https://api.radar.io"
-        let publishableKey = UserDefaults(suiteName: suite)?.string(forKey: "publishable-key") ?? ""
+        let publishableKey = UserDefaults(suiteName: suite)?.string(forKey: "radar-publishableKey") ?? ""
         let description = "Office Survey 1"
-        let geofenceId = "69331ab62e3b06c78468cf3c"
+        let geofenceId = "69a9df58accfc20568739f59"
         let surveyor = "ShiCheng"
         
         // create the survey record on server
@@ -186,6 +186,9 @@ class SurveyApi {
                     } else {
                         // The upload completed, but the server returned an error status code.
                         print("Server error: Status code \(httpResponse.statusCode)")
+                        if let data {
+                            print(String(data: data, encoding: .utf8))
+                        }
                     }
                 } else {
                     // An unexpected scenario, potentially a non-HTTP response.

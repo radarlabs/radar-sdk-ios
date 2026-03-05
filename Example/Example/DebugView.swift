@@ -205,7 +205,7 @@ struct DebugView: View {
     
     var body: some View {
         VStack(spacing: 10) {
-            MyMapView(withRadar: "prj_test_pk_0000000000000000000000000000000000000000")
+            MyMapView(withRadar: "prj_test_pk_c0ebf059d9895f428fac2295dbe83568507938e3")
                 .onStyleLoaded { style in
                     guard let site else {
                         return
@@ -221,7 +221,7 @@ struct DebugView: View {
                     let imageSource = MLNImageSource(
                         identifier: "overlay‑src",
                         coordinateQuad: coordinates,
-                        url: URL(string: "https://api.radar-staging.com/api/v1/assets/\(site.floorplan.path)")!
+                        url: URL(string: "https://api.radar.io/api/v1/assets/\(site.floorplan.path)")!
                     )
                     style.addSource(imageSource)
                     let rasterLayer = MLNRasterStyleLayer(identifier: "overlay‑layer", source: imageSource)
@@ -307,6 +307,7 @@ struct DebugView: View {
                         HStack {
                             Button(action: {
                                 if collectedData.isEmpty {
+                                    print("No data")
                                     return
                                 }
                                 

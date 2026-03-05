@@ -9,77 +9,122 @@
 let siteString = """
 {
     "meta": {
-        "code": 200,
-        "buildInfo": {
-            "branchName": "shicheng/sites-floorplan-upload",
-            "sha": "3cbb4d8a4281bc9e5aa01045914ca921c7b42adc",
-            "date": "2025-10-30T18:46:46.938Z"
-        }
+        "code": 200
     },
     "site": {
-        "_id": "6903b9c005b29017743c2abe",
-        "createdAt": "2025-10-30T19:17:20.659Z",
-        "updatedAt": "2025-10-30T19:17:20.659Z",
-        "project": "6862db1b39ce329dacc255a6",
+        "_id": "69a9df58accfc20568739f5d",
+        "createdAt": "2026-03-05T19:54:00.866Z",
+        "updatedAt": "2026-03-05T19:54:00.866Z",
+        "project": "686d58e39c7af99e6bf5625a",
         "live": false,
-        "description": "office",
+        "description": "radar",
         "geometry": {
             "type": "Point",
             "coordinates": [
-                -73.99118515629965,
-                40.73840359056395
+                -73.99110139105636,
+                40.738360388235904
             ]
         },
-        "geofences": [],
+        "geofences": [
+            {
+                "_id": "69a9df58accfc20568739f59",
+                "createdAt": "2026-03-05T19:54:00.849Z",
+                "updatedAt": "2026-03-05T19:54:00.848Z",
+                "live": false,
+                "description": "radar",
+                "tag": "radar",
+                "externalId": "radar",
+                "type": "polygon",
+                "geometryCenter": {
+                    "type": "Point",
+                    "coordinates": [
+                        -73.99115930982342,
+                        40.73847003253795
+                    ]
+                },
+                "geometryRadius": 35,
+                "disallowedPrecedingTagSubstrings": [],
+                "geometry": {
+                    "type": "Polygon",
+                    "coordinates": [
+                        [
+                            [
+                                -73.99157421573746,
+                                40.73852006229186
+                            ],
+                            [
+                                -73.99088055907035,
+                                40.738237842946894
+                            ],
+                            [
+                                -73.99074197511881,
+                                40.73842725035377
+                            ],
+                            [
+                                -73.99144048936702,
+                                40.738694974559245
+                            ],
+                            [
+                                -73.99157421573746,
+                                40.73852006229186
+                            ]
+                        ]
+                    ]
+                },
+                "userIds": [],
+                "ip": [],
+                "enabled": true
+            }
+        ],
         "beacons": [],
         "floorplan": {
-            "path": "sites/6862db1b39ce329dacc255a6/office-floor.png",
+            "path": "686d58e39c7af99e6bf5625a/6c9365ba-e8b7-4819-a1dc-4568020b589b.png",
             "mimeType": "image/png",
             "geometry": {
                 "type": "Polygon",
                 "coordinates": [
                     [
                         [
-                            -73.99150620164346,
-                            40.73892501612322
+                            -73.99190174677312,
+                            40.739379919726396
                         ],
                         [
-                            -73.9904300357224,
-                            40.73846444938788
+                            -73.99030102416697,
+                            40.739379919726396
                         ],
                         [
-                            -73.99086410875327,
-                            40.73788216500468
+                            -73.99030103533954,
+                            40.73734085674542
                         ],
                         [
-                            -73.9919402768769,
-                            40.73834273405509
+                            -73.99190175794575,
+                            40.73734085674542
                         ],
                         [
-                            -73.99150620164346,
-                            40.73892501612322
+                            -73.99190174677312,
+                            40.739379919726396
                         ]
                     ]
                 ]
             },
             "calibration": {
                 "imageSize": {
-                    "width": 1588,
-                    "height": 1134
+                    "width": 872,
+                    "height": 1466
                 },
                 "calibrationPoints": [
                     {
-                        "x": 735.0784122242648,
-                        "y": 390.0156776577819,
-                        "_id": "6903b9c005b29017743c2abf"
+                        "x": 275.06071511680364,
+                        "y": 793.522702819023,
+                        "_id": "69a9df58accfc20568739f5e"
                     },
                     {
-                        "x": 731.941157322304,
-                        "y": 470.0156776577819,
-                        "_id": "6903b9c005b29017743c2ac0"
+                        "x": 579.9168947308916,
+                        "y": 901.1190015063481,
+                        "_id": "69a9df58accfc20568739f5f"
                     }
                 ],
-                "measureLength": 5.25,
+                "measureLength": 50,
                 "measureUnit": "m"
             }
         }
