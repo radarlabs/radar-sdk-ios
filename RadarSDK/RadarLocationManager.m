@@ -910,33 +910,6 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     [self sendLocation:sendLocation stopped:stopped source:source replayed:replayed beacons:beacons];
 }
 
-- (void)performIndoorScanIfConfigured:(CLLocation *)location 
-                               beacons:(NSArray<RadarBeacon *> *_Nullable)beacons
-                     completionHandler:(void (^)(NSArray<RadarBeacon *> *_Nullable, NSString *_Nullable))completionHandler {
-    RadarTrackingOptions *options = [Radar getTrackingOptions];
-    Class RadarSDKIndoors = NSClassFromString(@"RadarSDKIndoors");
-    
-    if (options.useIndoorScan && ![RadarSettings inSurveyMode] && RadarSDKIndoors && [RadarUtils foreground]) {
-        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Starting indoor scan"];
-        
-        [RadarSDKIndoors startIndoorScan:@""
-                                forLength:5
-                        withKnownLocation:location
-                        completionHandler:^(NSString *_Nullable indoorScanResult, CLLocation *_Nullable locationAtStartOfScan) {
-            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
-                               message:[NSString stringWithFormat:@"Indoor scan completed: %lu chars", (unsigned long)(indoorScanResult ? indoorScanResult.length : 0)]];
-            completionHandler(beacons, indoorScanResult);
-        }];
-    } else {
-        if (options.useIndoorScan && ![RadarSettings inSurveyMode] && !RadarSDKIndoors) {
-            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"RadarSDKIndoors not available, skipping indoor scan"];
-        } else if (options.useIndoorScan && ![RadarSettings inSurveyMode] && RadarSDKIndoors && ![RadarUtils foreground]) {
-            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"App in background, skipping indoor scan (Bluetooth not available)"];
-        }
-        completionHandler(beacons, nil);
-    }
-}
-
 - (void)sendLocation:(CLLocation *)location stopped:(BOOL)stopped source:(RadarLocationSource)source replayed:(BOOL)replayed beacons:(NSArray<RadarBeacon *> *_Nullable)beacons {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
                                        message:[NSString stringWithFormat:@"Sending location | source = %@; location = %@; stopped = %d; replayed = %d; beacons = %@",
@@ -946,12 +919,21 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 
     RadarTrackingOptions *options = [Radar getTrackingOptions];
     
+    __block BOOL foreground = NO;
+    if ([NSThread isMainThread]) {
+        foreground = [RadarUtils foreground];
+    } else {
+        dispatch_sync(dispatch_get_main_queue(), ^{
+            foreground = [RadarUtils foreground];
+        });
+    }
+    
     if ([RadarSettings useRadarModifiedBeacon]) {
         void (^callTrackAPI)(NSArray<RadarBeacon *> *_Nullable) = ^(NSArray<RadarBeacon *> *_Nullable beacons) {
             [[RadarIndoors shared] getLocationWithCompletionHandler:^(CLLocation *_Nullable indoorLocation) {
                 [[RadarAPIClient sharedInstance] trackWithLocation:location
                                                            stopped:stopped
-                                                        foreground:[RadarUtils foreground]
+                                                        foreground:foreground
                                                             source:source
                                                           replayed:replayed
                                                            beacons:beacons
@@ -1037,7 +1019,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         [[RadarIndoors shared] getLocationWithCompletionHandler:^(CLLocation *_Nullable indoorLocation) {
             [[RadarAPIClient sharedInstance] trackWithLocation:location
                                                        stopped:stopped
-                                                    foreground:[RadarUtils foreground]
+                                                    foreground:foreground
                                                         source:source
                                                       replayed:replayed
                                                        beacons:beacons
