@@ -90,8 +90,10 @@ BOOL _initialized = NO;
     Class RadarSDKFraud = NSClassFromString(@"RadarSDKFraud");
     if (RadarSDKFraud) {
         id<RadarSDKFraudProtocol> radarSDKFraud = [RadarSDKFraud sharedInstance];
-        [radarSDKFraud initializeWithOptions:@{}];
-        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"RadarSDKFraud detected and initialized"];
+        if ([radarSDKFraud respondsToSelector:@selector(initializeWithOptions:)]) {
+            [radarSDKFraud initializeWithOptions:@{}];
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"RadarSDKFraud detected and initialized"];
+        }
     }
 
     [[NSNotificationCenter defaultCenter] addObserver:[self sharedInstance]
