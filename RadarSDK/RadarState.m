@@ -427,7 +427,7 @@ static NSTimeInterval const kBackupInterval = 2.0; // 2 seconds
 
 + (void)setLastSyncedBeaconIds:(NSArray<NSString *> *)ids {
     if (!ids) {
-        [[NSUserDefaults standardUserDefaults] removeObjectForKey:kLastSyncedPlaceIds];
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:kLastSyncedBeaconIds];
         return;
     }
     [[NSUserDefaults standardUserDefaults] setObject:ids forKey:kLastSyncedBeaconIds];
