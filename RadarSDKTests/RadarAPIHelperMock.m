@@ -35,6 +35,11 @@
                logPayload:(BOOL)logPayload
           extendedTimeout:(BOOL)extendedTimeout
         completionHandler:(RadarAPICompletionHandler)completionHandler {
+    // skip /logs calls
+    if ([url containsString:@"v1/logs"]) {
+        return;
+    }
+    
     // Capture the last request for testing
     self.lastMethod = method;
     self.lastUrl = url;

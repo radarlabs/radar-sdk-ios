@@ -17,7 +17,8 @@
                           externalId:(NSString *_Nullable)externalId
                             metadata:(NSDictionary *_Nullable)metadata
                       operatingHours:(RadarOperatingHours *_Nullable)operatingHours
-                            geometry:(RadarGeofenceGeometry *_Nonnull)geometry;
+                            geometry:(RadarGeofenceGeometry *_Nonnull)geometry
+                 activeIndoorModelId:(NSString*_Nullable)activeIndoorModelId;
 - (instancetype _Nullable)initWithObject:(id _Nonnull)object;
 
 @end

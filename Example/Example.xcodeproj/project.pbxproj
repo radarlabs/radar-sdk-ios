@@ -23,15 +23,27 @@
 		F61886C12EA7DB440072E87C /* MyRadarDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F61886C02EA7DB3F0072E87C /* MyRadarDelegate.swift */; };
 		F61886C32EA7DB5F0072E87C /* LogsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F61886C22EA7DB5C0072E87C /* LogsView.swift */; };
 		F61886C52EA7DC820072E87C /* MapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F61886C42EA7DC800072E87C /* MapView.swift */; };
-		F618871C2EAFC1EE0072E87C /* Test.mm in Sources */ = {isa = PBXBuildFile; fileRef = F61887162EAFC1E80072E87C /* Test.mm */; };
-		F625D7F92C3337650024D1E7 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F625D7F82C3337650024D1E7 /* Launch Screen.storyboard */; };
+		F61886CF2EA800830072E87C /* DebugView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F61886CE2EA800830072E87C /* DebugView.swift */; };
 		F63DDAD52E746BB0006991F5 /* StyledButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = F63DDAD42E746BB0006991F5 /* StyledButton.swift */; };
 		F6513E792E60A5F600523472 /* LocationPushExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = F6513E722E60A5F600523472 /* LocationPushExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		F6513F602E6B736200523472 /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6513F5F2E6B736200523472 /* MainView.swift */; };
+		F65B4C2F2EB3B72B00434EF1 /* site.swift in Sources */ = {isa = PBXBuildFile; fileRef = F65B4C272EB3B72A00434EF1 /* site.swift */; };
+		F65B4C312EB3B7F900434EF1 /* RadarSite.swift in Sources */ = {isa = PBXBuildFile; fileRef = F65B4C302EB3B7F500434EF1 /* RadarSite.swift */; };
+		F65B4C452EB9379300434EF1 /* AR.swift in Sources */ = {isa = PBXBuildFile; fileRef = F65B4C442EB9379000434EF1 /* AR.swift */; };
 		F65F793E2EF458E600399E84 /* MyIAMDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F65F79382EF458E000399E84 /* MyIAMDelegate.swift */; };
 		F66DAD6A2E707F0700896773 /* waypoints.gpx in Sources */ = {isa = PBXBuildFile; fileRef = F66DAD642E707F0300896773 /* waypoints.gpx */; };
-		F6BF841E2EC78AAF00143AD9 /* RadarSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0107AA77262200DA008AB52F /* RadarSDK.framework */; };
-		F6BF841F2EC78AAF00143AD9 /* RadarSDK.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 0107AA77262200DA008AB52F /* RadarSDK.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		F68CD9782ED0B7D4007E64CE /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F68CD9702ED0B7CF007E64CE /* SettingsView.swift */; };
+		F68CD97A2ED0BE80007E64CE /* SplitView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F68CD9792ED0BE7C007E64CE /* SplitView.swift */; };
+		F68CD99C2ED78F45007E64CE /* RadarSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0107AA77262200DA008AB52F /* RadarSDK.framework */; };
+		F68CD99D2ED78F45007E64CE /* RadarSDK.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 0107AA77262200DA008AB52F /* RadarSDK.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		F68F40A52EB2A5480004EE07 /* MapLibre in Frameworks */ = {isa = PBXBuildFile; productRef = F68F40A42EB2A5480004EE07 /* MapLibre */; };
+		F68F40AA2EB2AA220004EE07 /* MapLibreSwiftDSL in Frameworks */ = {isa = PBXBuildFile; productRef = F68F40A92EB2AA220004EE07 /* MapLibreSwiftDSL */; };
+		F68F40AC2EB2AA220004EE07 /* MapLibreSwiftMacros in Frameworks */ = {isa = PBXBuildFile; productRef = F68F40AB2EB2AA220004EE07 /* MapLibreSwiftMacros */; };
+		F68F40AE2EB2AA220004EE07 /* MapLibreSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = F68F40AD2EB2AA220004EE07 /* MapLibreSwiftUI */; };
+		F6BF82762EBA90BB00143AD9 /* RadarSDKIndoors.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F6BF82752EBA90BB00143AD9 /* RadarSDKIndoors.framework */; };
+		F6BF82772EBA90BB00143AD9 /* RadarSDKIndoors.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F6BF82752EBA90BB00143AD9 /* RadarSDKIndoors.framework */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		F6ED7C322EE1FB3B00D3E6E6 /* SurveyApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6ED7C312EE1FB3B00D3E6E6 /* SurveyApi.swift */; };
+		F6ED7C402EE3560600D3E6E6 /* Gzip in Frameworks */ = {isa = PBXBuildFile; productRef = F6ED7C3F2EE3560600D3E6E6 /* Gzip */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -70,12 +82,26 @@
 			remoteGlobalIDString = E698B6712C6167A800084371;
 			remoteInfo = RadarSDKMotionTests;
 		};
-		F6513E772E60A5F600523472 /* PBXContainerItemProxy */ = {
+		F68CD98D2ED7543D007E64CE /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = DD236D1B230A006700EB88F9 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = F6513E712E60A5F600523472;
 			remoteInfo = LocationPushExtension;
+		};
+		F6BF827C2EBA90E300143AD9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F68F40742EB130840004EE07 /* RadarSDKIndoors.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = FE9414F72E0DE3E6008ECBEB;
+			remoteInfo = RadarSDKIndoors;
+		};
+		F6BF827E2EBA90E300143AD9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F68F40742EB130840004EE07 /* RadarSDKIndoors.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = FE9415002E0DE3E6008ECBEB;
+			remoteInfo = RadarSDKIndoorsTests;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -86,6 +112,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				F6BF82772EBA90BB00143AD9 /* RadarSDKIndoors.framework in Embed Frameworks */,
 				013D7AF326D327C400574AD5 /* RadarSDK.framework in Embed Frameworks */,
 				E698B7502C627A1600084371 /* RadarSDKMotion.framework in Embed Frameworks */,
 			);
@@ -110,7 +137,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				F6BF841F2EC78AAF00143AD9 /* RadarSDK.framework in Embed Frameworks */,
+				F68CD99D2ED78F45007E64CE /* RadarSDK.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -128,7 +155,6 @@
 		DD236D34230A006900EB88F9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		DD291168230D0AF900049D3A /* Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
 		DD86FCF9239185F4003225F6 /* RadarSDK.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RadarSDK.xcodeproj; path = ../RadarSDK.xcodeproj; sourceTree = SOURCE_ROOT; };
-		DD86FD0B23918B3C003225F6 /* Example-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Example-Bridging-Header.h"; sourceTree = "<group>"; };
 		DDB861D22385FC3E00770661 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
 		E632FA1C2CAC366C00E86C85 /* Example.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Example.entitlements; sourceTree = "<group>"; };
 		E698B7382C626AE600084371 /* RadarSDKMotion.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RadarSDKMotion.xcodeproj; path = ../../RadarSDKMotion/RadarSDKMotion.xcodeproj; sourceTree = "<group>"; };
@@ -136,13 +162,21 @@
 		F61886C02EA7DB3F0072E87C /* MyRadarDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyRadarDelegate.swift; sourceTree = "<group>"; };
 		F61886C22EA7DB5C0072E87C /* LogsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogsView.swift; sourceTree = "<group>"; };
 		F61886C42EA7DC800072E87C /* MapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapView.swift; sourceTree = "<group>"; };
-		F61887162EAFC1E80072E87C /* Test.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = Test.mm; sourceTree = "<group>"; };
-		F625D7F82C3337650024D1E7 /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
+		F61886CE2EA800830072E87C /* DebugView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugView.swift; sourceTree = "<group>"; };
 		F63DDAD42E746BB0006991F5 /* StyledButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StyledButton.swift; sourceTree = "<group>"; };
 		F6513E722E60A5F600523472 /* LocationPushExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = LocationPushExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		F6513F5F2E6B736200523472 /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
+		F65B4C272EB3B72A00434EF1 /* site.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = site.swift; sourceTree = "<group>"; };
+		F65B4C302EB3B7F500434EF1 /* RadarSite.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarSite.swift; sourceTree = "<group>"; };
+		F65B4C442EB9379000434EF1 /* AR.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AR.swift; sourceTree = "<group>"; };
 		F65F79382EF458E000399E84 /* MyIAMDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyIAMDelegate.swift; sourceTree = "<group>"; };
 		F66DAD642E707F0300896773 /* waypoints.gpx */ = {isa = PBXFileReference; lastKnownFileType = text; path = waypoints.gpx; sourceTree = "<group>"; };
+		F68CD9702ED0B7CF007E64CE /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		F68CD9792ED0BE7C007E64CE /* SplitView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplitView.swift; sourceTree = "<group>"; };
+		F68F40742EB130840004EE07 /* RadarSDKIndoors.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RadarSDKIndoors.xcodeproj; path = ../RadarSDKIndoors/RadarSDKIndoors.xcodeproj; sourceTree = SOURCE_ROOT; };
+		F6BF82752EBA90BB00143AD9 /* RadarSDKIndoors.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = RadarSDKIndoors.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		F6ED7C312EE1FB3B00D3E6E6 /* SurveyApi.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SurveyApi.swift; sourceTree = "<group>"; };
+		F6ED7C412EE3638100D3E6E6 /* Example-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Example-Bridging-Header.h"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -195,8 +229,14 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F68F40A52EB2A5480004EE07 /* MapLibre in Frameworks */,
+				F68F40AA2EB2AA220004EE07 /* MapLibreSwiftDSL in Frameworks */,
+				F68F40AC2EB2AA220004EE07 /* MapLibreSwiftMacros in Frameworks */,
+				F6BF82762EBA90BB00143AD9 /* RadarSDKIndoors.framework in Frameworks */,
 				013D7AF226D327C400574AD5 /* RadarSDK.framework in Frameworks */,
 				E698B7492C626B0600084371 /* RadarSDKMotion.framework in Frameworks */,
+				F6ED7C402EE3560600D3E6E6 /* Gzip in Frameworks */,
+				F68F40AE2EB2AA220004EE07 /* MapLibreSwiftUI in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -204,7 +244,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F6BF841E2EC78AAF00143AD9 /* RadarSDK.framework in Frameworks */,
+				F68CD99C2ED78F45007E64CE /* RadarSDK.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -235,14 +275,15 @@
 		DD236D25230A006700EB88F9 /* Example */ = {
 			isa = PBXGroup;
 			children = (
+				F6ED7C412EE3638100D3E6E6 /* Example-Bridging-Header.h */,
 				BA5198C82EDE3B8C004A3B35 /* Assets.xcassets */,
 				E632FA1C2CAC366C00E86C85 /* Example.entitlements */,
-				DD86FD0B23918B3C003225F6 /* Example-Bridging-Header.h */,
 				DD236D34230A006900EB88F9 /* Info.plist */,
 				DDB861D22385FC3E00770661 /* Default-568h@2x.png */,
 				DD236D26230A006700EB88F9 /* AppDelegate.swift */,
 				F6513F5F2E6B736200523472 /* MainView.swift */,
 				F61886C42EA7DC800072E87C /* MapView.swift */,
+				F61886CE2EA800830072E87C /* DebugView.swift */,
 				F63DDAD42E746BB0006991F5 /* StyledButton.swift */,
 				F61886C02EA7DB3F0072E87C /* MyRadarDelegate.swift */,
 				F65F79382EF458E000399E84 /* MyIAMDelegate.swift */,
@@ -250,11 +291,21 @@
 				F61886B92EA7DB180072E87C /* TestsView.swift */,
 				F61887162EAFC1E80072E87C /* Test.mm */,
 				F61886C22EA7DB5C0072E87C /* LogsView.swift */,
+				F68CD9702ED0B7CF007E64CE /* SettingsView.swift */,
+				F61886B92EA7DB180072E87C /* TestsView.swift */,
+				F68CD9792ED0BE7C007E64CE /* SplitView.swift */,
+				F61886C02EA7DB3F0072E87C /* MyRadarDelegate.swift */,
+				F63DDAD42E746BB0006991F5 /* StyledButton.swift */,
+				F6ED7C312EE1FB3B00D3E6E6 /* SurveyApi.swift */,
+				F65B4C442EB9379000434EF1 /* AR.swift */,
+				F65B4C302EB3B7F500434EF1 /* RadarSite.swift */,
+				F65B4C272EB3B72A00434EF1 /* site.swift */,
 				F66DAD642E707F0300896773 /* waypoints.gpx */,
 				DD291168230D0AF900049D3A /* Utils.swift */,
+				DD236D2F230A006900EB88F9 /* Assets.xcassets */,
+				F68F40742EB130840004EE07 /* RadarSDKIndoors.xcodeproj */,
 				DD86FCF9239185F4003225F6 /* RadarSDK.xcodeproj */,
 				E698B7382C626AE600084371 /* RadarSDKMotion.xcodeproj */,
-				F625D7F82C3337650024D1E7 /* Launch Screen.storyboard */,
 			);
 			path = Example;
 			sourceTree = "<group>";
@@ -271,6 +322,7 @@
 		DD86FD03239185FB003225F6 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				F6BF82752EBA90BB00143AD9 /* RadarSDKIndoors.framework */,
 				BA51987B2ED10AEA004A3B35 /* WidgetKit.framework */,
 				BA51987D2ED10AEA004A3B35 /* SwiftUI.framework */,
 			);
@@ -282,6 +334,15 @@
 			children = (
 				E698B7412C626AE600084371 /* RadarSDKMotion.framework */,
 				E698B7432C626AE600084371 /* RadarSDKMotionTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		F6BF82782EBA90E300143AD9 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				F6BF827D2EBA90E300143AD9 /* RadarSDKIndoors.framework */,
+				F6BF827F2EBA90E300143AD9 /* RadarSDKIndoorsTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -329,6 +390,11 @@
 			);
 			name = Example;
 			packageProductDependencies = (
+				F68F40A42EB2A5480004EE07 /* MapLibre */,
+				F68F40A92EB2AA220004EE07 /* MapLibreSwiftDSL */,
+				F68F40AB2EB2AA220004EE07 /* MapLibreSwiftMacros */,
+				F68F40AD2EB2AA220004EE07 /* MapLibreSwiftUI */,
+				F6ED7C3F2EE3560600D3E6E6 /* Gzip */,
 			);
 			productName = Example;
 			productReference = DD236D23230A006700EB88F9 /* Example.app */;
@@ -389,6 +455,9 @@
 			);
 			mainGroup = DD236D1A230A006700EB88F9;
 			packageReferences = (
+				F68F40A32EB2A5480004EE07 /* XCRemoteSwiftPackageReference "maplibre-gl-native-distribution" */,
+				F68F40A82EB2AA220004EE07 /* XCRemoteSwiftPackageReference "swiftui-dsl" */,
+				F6ED7C3E2EE3560600D3E6E6 /* XCRemoteSwiftPackageReference "GzipSwift" */,
 			);
 			productRefGroup = DD236D24230A006700EB88F9 /* Products */;
 			projectDirPath = "";
@@ -396,6 +465,10 @@
 				{
 					ProductGroup = DD55C3B62395D25600C34B40 /* Products */;
 					ProjectRef = DD86FCF9239185F4003225F6 /* RadarSDK.xcodeproj */;
+				},
+				{
+					ProductGroup = F6BF82782EBA90E300143AD9 /* Products */;
+					ProjectRef = F68F40742EB130840004EE07 /* RadarSDKIndoors.xcodeproj */;
 				},
 				{
 					ProductGroup = E698B7392C626AE600084371 /* Products */;
@@ -440,6 +513,20 @@
 			remoteRef = E698B7422C626AE600084371 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
+		F6BF827D2EBA90E300143AD9 /* RadarSDKIndoors.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = RadarSDKIndoors.framework;
+			remoteRef = F6BF827C2EBA90E300143AD9 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F6BF827F2EBA90E300143AD9 /* RadarSDKIndoorsTests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = RadarSDKIndoorsTests.xctest;
+			remoteRef = F6BF827E2EBA90E300143AD9 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 /* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
@@ -481,18 +568,25 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F65B4C312EB3B7F900434EF1 /* RadarSite.swift in Sources */,
+				F68CD97A2ED0BE80007E64CE /* SplitView.swift in Sources */,
+				F6ED7C322EE1FB3B00D3E6E6 /* SurveyApi.swift in Sources */,
 				F66DAD6A2E707F0700896773 /* waypoints.gpx in Sources */,
+				F65B4C452EB9379300434EF1 /* AR.swift in Sources */,
 				F63DDAD52E746BB0006991F5 /* StyledButton.swift in Sources */,
 				F61886C52EA7DC820072E87C /* MapView.swift in Sources */,
 				BA5198932EDE0F06004A3B35 /* TripLiveActivityManager.swift in Sources */,
 				F618871C2EAFC1EE0072E87C /* Test.mm in Sources */,
 				DD236D27230A006700EB88F9 /* AppDelegate.swift in Sources */,
+				F61886CF2EA800830072E87C /* DebugView.swift in Sources */,
 				F6513F602E6B736200523472 /* MainView.swift in Sources */,
 				F61886C32EA7DB5F0072E87C /* LogsView.swift in Sources */,
 				F61886C12EA7DB440072E87C /* MyRadarDelegate.swift in Sources */,
 				F65F793E2EF458E600399E84 /* MyIAMDelegate.swift in Sources */,
 				DD291169230D0AF900049D3A /* Utils.swift in Sources */,
+				F65B4C2F2EB3B72B00434EF1 /* site.swift in Sources */,
 				F61886BF2EA7DB1D0072E87C /* TestsView.swift in Sources */,
+				F68CD9782ED0B7D4007E64CE /* SettingsView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -514,7 +608,7 @@
 		F6513E782E60A5F600523472 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = F6513E712E60A5F600523472 /* LocationPushExtension */;
-			targetProxy = F6513E772E60A5F600523472 /* PBXContainerItemProxy */;
+			targetProxy = F68CD98D2ED7543D007E64CE /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -721,7 +815,7 @@
 				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/RadarSDK";
 				INFOPLIST_FILE = Example/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Example;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -730,6 +824,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = io.radar.iosexample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				SWIFT_OBJC_BRIDGING_HEADER = "Example/Example-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -753,7 +848,7 @@
 				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/RadarSDK";
 				INFOPLIST_FILE = Example/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Example;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -762,6 +857,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = io.radar.iosexample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				SWIFT_OBJC_BRIDGING_HEADER = "Example/Example-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -874,6 +970,61 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		F68F40A32EB2A5480004EE07 /* XCRemoteSwiftPackageReference "maplibre-gl-native-distribution" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/maplibre/maplibre-gl-native-distribution";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 6.19.3;
+			};
+		};
+		F68F40A82EB2AA220004EE07 /* XCRemoteSwiftPackageReference "swiftui-dsl" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/maplibre/swiftui-dsl";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
+		F6ED7C3E2EE3560600D3E6E6 /* XCRemoteSwiftPackageReference "GzipSwift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/1024jp/GzipSwift";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 6.1.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		F68F40A42EB2A5480004EE07 /* MapLibre */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F68F40A32EB2A5480004EE07 /* XCRemoteSwiftPackageReference "maplibre-gl-native-distribution" */;
+			productName = MapLibre;
+		};
+		F68F40A92EB2AA220004EE07 /* MapLibreSwiftDSL */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F68F40A82EB2AA220004EE07 /* XCRemoteSwiftPackageReference "swiftui-dsl" */;
+			productName = MapLibreSwiftDSL;
+		};
+		F68F40AB2EB2AA220004EE07 /* MapLibreSwiftMacros */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F68F40A82EB2AA220004EE07 /* XCRemoteSwiftPackageReference "swiftui-dsl" */;
+			productName = MapLibreSwiftMacros;
+		};
+		F68F40AD2EB2AA220004EE07 /* MapLibreSwiftUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F68F40A82EB2AA220004EE07 /* XCRemoteSwiftPackageReference "swiftui-dsl" */;
+			productName = MapLibreSwiftUI;
+		};
+		F6ED7C3F2EE3560600D3E6E6 /* Gzip */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F6ED7C3E2EE3560600D3E6E6 /* XCRemoteSwiftPackageReference "GzipSwift" */;
+			productName = Gzip;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = DD236D1B230A006700EB88F9 /* Project object */;
 }

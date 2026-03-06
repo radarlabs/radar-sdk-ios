@@ -13,11 +13,12 @@ import Foundation
  usage: RadarSwift.bridge?.<function>()
  */
 @objc
-protocol RadarSwiftBridgeProtocol {
+public protocol RadarSwiftBridgeProtocol {
     func writeToLogBuffer(level: RadarLogLevel, type: RadarLogType, message: String, forcePersist: Bool)
     func setLogBufferPersistantLog(_ value: Bool)
     func flushReplays()
     func logOpenedAppConversion()
+    func invoke(target: NSObject, selector: Selector, args: [Any])
     func logCampaignConversion(name: String, metadata: [String: Any], campaign: String?)
 }
 

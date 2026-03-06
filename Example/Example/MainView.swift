@@ -2,7 +2,6 @@
 //  MainView.swift
 //  Example
 //
-//  Created by ShiCheng Lu on 9/5/25.
 //  Copyright © 2025 Radar Labs, Inc. All rights reserved.
 //
 
@@ -13,29 +12,45 @@ struct MainView: View {
     
     enum TabIdentifier {
         case Map
+        case Debug
         case Logs
         case Tests
+        case Settings
     }
     
-    @State private var selectedTab: TabIdentifier = .Tests;
+    @State private var selectedTab: TabIdentifier = .Debug;
+    
+    @StateObject var radarDelegateState = RadarDelegateState()
+    let radarDelegate = MyRadarDelegate()
     
     var body: some View {
         TabView(selection: $selectedTab) {
-            MapView().tabItem {
+            MyMapView(withRadar: "").tabItem {
                 Text("Map")
             }.tag(TabIdentifier.Map)
             
-            LogsView().tabItem {
+            DebugView(radarDelegateState: radarDelegateState).tabItem {
                 Text("Debug")
+            }.tag(TabIdentifier.Debug)
+            
+            LogsView(radarDelegateState: radarDelegateState).tabItem {
+                Text("Logs")
             }.tag(TabIdentifier.Logs)
-
+            
+            SettingsView().tabItem {
+                Text("Settings")
+            }.tag(TabIdentifier.Settings)
+            
             TestsView().tabItem {
                 Text("Tests")
             }.tag(TabIdentifier.Tests)
+        }.onAppear {
+            radarDelegate.state = radarDelegateState
+            Radar.setDelegate(radarDelegate)
         }
     }
 }
 
-#Preview {
-    MainView()
-}
+//#Preview {
+//    MainView()
+//}

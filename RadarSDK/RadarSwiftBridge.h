@@ -16,6 +16,7 @@
 - (void)setLogBufferPersistantLog:(BOOL)value;
 - (void)flushReplays;
 - (void)logOpenedAppConversion;
+- (void)invokeWithTarget:(NSObject * _Nonnull)target selector:(SEL _Nonnull)selector args:(NSArray * _Nonnull)args;
 @end
 
 @interface RadarSwiftBridge: NSObject<RadarSwiftBridgeProtocol>

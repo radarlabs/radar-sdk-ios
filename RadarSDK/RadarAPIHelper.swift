@@ -9,8 +9,7 @@ import Foundation
 
 @available(iOS 13.0, *)
 final class RadarApiHelper: Sendable {
-    func request(method: String, url: String, query: [String: String] = [:], headers: [String: String] = [:], body: [String: Any] = [:]) async throws -> (Data, HTTPURLResponse) {
-
+    func requestFor(method: String, url: String, query: [String: String] = [:], headers: [String: String] = [:], body: [String: Any] = [:]) throws -> URLRequest {
         // transform URL
         // turn query into a string of format: "?key=value&key2=value2" or "" if there are no queries
         let queryString = query.isEmpty ? "" : ("?" + query.compactMap { key, value in
@@ -33,6 +32,11 @@ final class RadarApiHelper: Sendable {
         if (!body.isEmpty && (method == "POST" || method == "PUT" || method == "PATCH")) {
             request.httpBody = try JSONSerialization.data(withJSONObject: body, options: [])
         }
+        return request
+    }
+    
+    func request(method: String, url: String, query: [String: String] = [:], headers: [String: String] = [:], body: [String: Any] = [:]) async throws -> (Data, HTTPURLResponse) {
+        let request = try requestFor(method: method, url: url, query: query, headers: headers, body: body)
         
         let (data, response) = try await URLSession.shared.data(for: request)
 
