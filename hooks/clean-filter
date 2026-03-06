@@ -1,0 +1,3 @@
+#!/bin/sh
+# Radar API key clean filter - sanitizes keys for git storage
+sed -E 's/(prj_(test|live)_(pk|sk)_)[0-9a-fA-F]{40}/\10000000000000000000000000000000000000000/g'
