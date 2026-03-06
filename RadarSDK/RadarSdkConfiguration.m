@@ -33,6 +33,7 @@
     _useForegroundLocationUpdatedAtMsDiff = NO;
     _useNotificationDiff = NO;
     _syncAfterSetUser = NO;
+    _featureAEnabled = NO;
 
     if (dict == nil) {
         return self;
@@ -93,6 +94,11 @@
         _syncAfterSetUser = [(NSNumber *)syncAfterSetUserObj boolValue];
     }
 
+    NSObject *featureAEnabledObj = dict[@"featureAEnabled"];
+    if (featureAEnabledObj && [featureAEnabledObj isKindOfClass:[NSNumber class]]) {
+        _featureAEnabled = [(NSNumber *)featureAEnabledObj boolValue];
+    }
+
     return self;
 }
 
@@ -110,6 +116,7 @@
     dict[@"useForegroundLocationUpdatedAtMsDiff"] = @(_useForegroundLocationUpdatedAtMsDiff);
     dict[@"useNotificationDiff"] = @(_useNotificationDiff);
     dict[@"syncAfterSetUser"] = @(_syncAfterSetUser);
+    dict[@"featureAEnabled"] = @(_featureAEnabled);
     
     return dict;
 }
