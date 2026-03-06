@@ -39,9 +39,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         radarInitializeOptions.autoLogNotificationConversions = true
         radarInitializeOptions.autoHandleNotificationDeepLinks = true
         radarInitializeOptions.silentPush = true
-        
         Radar.setAppGroup(nil)
-        Radar.initialize(publishableKey: "prj_test_pk_c0ebf059d9895f428fac2295dbe83568507938e3", options: radarInitializeOptions )
+        Radar.initialize(publishableKey: "prj_test_pk_0000000000000000000000000000000000000000", options: radarInitializeOptions )
         Radar.setMetadata([ "foo": "bar" ])
         Radar.setInAppMessageDelegate(MyIAMDelegate())
         

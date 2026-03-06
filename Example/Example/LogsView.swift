@@ -10,35 +10,65 @@ import RadarSDK
 
 struct LogsView: View {
     
-    let radarDelegateState: RadarDelegateState
+    @ObservedObject var radarDelegateState: RadarDelegateState
+    
+    enum TabIdentifier {
+        case Logs
+        case IndoorLogs
+        case Events
+    }
+    
+    @State private var selectedTab: TabIdentifier = .IndoorLogs;
     
     var body: some View {
-        VStack {
-            HStack {
+        TabView(selection: $selectedTab) {
+            VStack {
+                HStack {
+                    Text("Logs")
+                    Button("clear") {
+                        radarDelegateState.logs.removeAll()
+                    }
+                }
+                List(radarDelegateState.logs, id:\.0) { item in
+                    Text("\(item.1)")
+                }
+            }.tabItem {
                 Text("Logs")
-                Button("clear") {
-                    radarDelegateState.logs.removeAll()
+            }.tag(TabIdentifier.Logs)
+            
+            VStack {
+                HStack {
+                    Text("Indoor Logs")
+                    Button("clear") {
+                        radarDelegateState.indoorLogs.removeAll()
+                    }
                 }
-            }
-            List(radarDelegateState.logs, id:\.0) { item in
-                return Text("\(item.1)")
-            }
-
-            HStack {
+                List(Array(radarDelegateState.indoorLogs.enumerated()), id: \.offset) { index, item in
+                    Text(item)
+                }
+            }.tabItem {
+                Text("IndoorLogs")
+            }.tag(TabIdentifier.IndoorLogs)
+            
+            VStack {
+                HStack {
+                    Text("Events")
+                    Button("clear") {
+                        radarDelegateState.events.removeAll()
+                    }
+                }
+                List(radarDelegateState.events, id:\.self) { item in
+                    let type = RadarEvent.string(for: item.type) ?? "unknown-type"
+                    var description = ""
+                    if let geofence = item.geofence {
+                        description = geofence.externalId ?? ""
+                    }
+                    return Text("\(type): \(description)")
+                }
+                
+            }.tabItem {
                 Text("Events")
-                Button("clear") {
-                    radarDelegateState.events.removeAll()
-                }
-            }
-            List(radarDelegateState.events, id:\.self) { item in
-                let type = RadarEvent.string(for: item.type) ?? "unknown-type"
-                var description = ""
-                if let geofence = item.geofence {
-                    description = geofence.externalId ?? ""
-                }
-                return Text("\(type): \(description)")
-            }
-
+            }.tag(TabIdentifier.Events)
         }
     }
 }

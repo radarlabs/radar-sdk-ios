@@ -106,7 +106,7 @@ extension CLBeacon {
 
 struct DebugView: View {
     
-    let radarDelegateState: RadarDelegateState
+    @ObservedObject var radarDelegateState: RadarDelegateState
     
     @State
     var image: UIImage? = nil
@@ -154,8 +154,8 @@ struct DebugView: View {
     @AppStorage("radar-prediction-confidence") var predictionConfidence: Bool = false
 
     let scanner = RadarIndoorScan(uuids: [
-        "f7826da6-4fa2-4e98-8024-bc5b71e0893e",
-        "e655298d-8d31-4937-b4b0-e147f026315d",
+        "160C2FE2-0FA8-4A03-B31B-D772318C12F5",
+        "DEB7A751-58E9-470C-B02F-E0A0E0CB131D",
     ])
 //    let model = RadarBeaconRSSIModel()
     
@@ -205,7 +205,16 @@ struct DebugView: View {
     
     var body: some View {
         VStack(spacing: 10) {
-            MyMapView(withRadar: "prj_test_pk_c0ebf059d9895f428fac2295dbe83568507938e3")
+            MyMapView(withRadar: "prj_test_pk_0000000000000000000000000000000000000000")
+                .onLoaded { mapView in
+                    if let center = site?.fromXY((0, 0)) {
+                        mapView.setCenter(
+                            CLLocationCoordinate2D(
+                                latitude: center.latitude,
+                                longitude: center.longitude
+                            ), zoomLevel: 15, animated: false)
+                    }
+                }
                 .onStyleLoaded { style in
                     guard let site else {
                         return
@@ -291,8 +300,10 @@ struct DebugView: View {
                             Button(action: {
                                 surveying = !surveying
                                 if surveying {
+                                    radarDelegateState.indoorLogs.append("start scanning")
                                     scanner.start()
                                 } else {
+                                    radarDelegateState.indoorLogs.append("stop scanning")
                                     scanner.stop()
                                 }
                             }) {
@@ -307,9 +318,10 @@ struct DebugView: View {
                         HStack {
                             Button(action: {
                                 if collectedData.isEmpty {
-                                    print("No data")
+                                    radarDelegateState.indoorLogs.append("Send data: no data collected")
                                     return
                                 }
+                                radarDelegateState.indoorLogs.append("Send data: \(collectedData.count) points of data with \(collectedBeaconList.count) beacons")
                                 
                                 // convert collected data into csv
                                 let beacons = collectedBeaconList.sorted()
@@ -330,7 +342,8 @@ struct DebugView: View {
                                     return
                                 }
                                 Task {
-                                    await SurveyApi.createSurvey(data: compressed)
+                                    let status = await SurveyApi.createSurvey(data: compressed)
+                                    radarDelegateState.indoorLogs.append("createSurvey: \(status)")
                                 }
                                 
                                 collectedBeaconList.removeAll()
@@ -351,6 +364,7 @@ struct DebugView: View {
         }.onAppear {
             Task {
                 scanner.update = { beacons in
+                    radarDelegateState.indoorLogs.append("ranged with \(beacons.count) beacons")
                     guard let location = site?.toXY(arCoord),
                           let date = dateFormatter.string(for: Date.now) else {
                         return;

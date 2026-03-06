@@ -13,6 +13,7 @@ class RadarDelegateState: ObservableObject {
     @Published var user: RadarUser? = nil
     @Published var lastTrackedLocation: CLLocation? = nil
     @Published var clientLocation: CLLocation? = nil
+    @Published var indoorLogs: [String] = []
 }
 
 class MyRadarDelegate: NSObject, RadarDelegate, ObservableObject {
