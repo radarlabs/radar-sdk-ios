@@ -35,22 +35,19 @@ typedef NS_ENUM(NSInteger, RadarTrackingOptionsReplay) {
 };
 
 /**
- The sync options for location updates. Can be combined using bitwise OR.
+ The sync options for location updates.
  */
-typedef NS_OPTIONS(NSInteger, RadarTrackingOptionsSyncLocations) {
-    /// Syncs no location updates to the server
-    RadarTrackingOptionsSyncNone = 0,
+typedef NS_ENUM(NSInteger, RadarTrackingOptionsSyncLocations) {
     /// Syncs all location updates to the server
-    RadarTrackingOptionsSyncAll = 1 << 0,
+    RadarTrackingOptionsSyncAll,
     /// Syncs only stops and exits to the server
-    RadarTrackingOptionsSyncStopsAndExits = 1 << 1,
-    /// Syncs only on geofence entry/exit
-    RadarTrackingOptionsSyncOnGeofenceEvents = 1 << 2,
-    /// Syncs only on place entry/exit
-    RadarTrackingOptionsSyncOnPlaceEvents = 1 << 3,
-    /// Syncs only on beacon entry/exit
-    RadarTrackingOptionsSyncOnBeaconEvents = 1 << 4,
+    RadarTrackingOptionsSyncStopsAndExits,
+    /// Syncs no location updates to the server
+    RadarTrackingOptionsSyncNone,
+    /// Syncs only on detected events (geofence, place, beacon changes)
+    RadarTrackingOptionsSyncEvents
 };
+
 
 /**
  An options class used to configure background tracking.

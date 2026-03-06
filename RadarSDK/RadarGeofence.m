@@ -37,8 +37,10 @@
                                  tag:(NSString *)tag
                           externalId:(NSString *_Nullable)externalId
                             metadata:(NSDictionary *_Nullable)metadata
-                      operatingHours: (RadarOperatingHours *_Nullable) operatingHours
-                            geometry:(RadarGeofenceGeometry *_Nonnull)geometry {
+                      operatingHours:(RadarOperatingHours *_Nullable)operatingHours
+                            geometry:(RadarGeofenceGeometry *_Nonnull)geometry
+                      dwellThreshold:(NSNumber *_Nullable)dwellThreshold
+                  geofenceStopDetection:(NSNumber *_Nullable)geofenceStopDetection {
     self = [super init];
     if (self) {
         __id = _id;
@@ -48,6 +50,8 @@
         _metadata = metadata;
         _operatingHours = operatingHours;
         _geometry = geometry;
+        _dwellThreshold = dwellThreshold;
+        _geofenceStopDetection = geofenceStopDetection;
     }
     return self;
 }
@@ -56,9 +60,9 @@
     if (!object || ![object isKindOfClass:[NSDictionary class]]) {
         return nil;
     }
-
+    
     NSDictionary *dict = (NSDictionary *)object;
-
+    
     NSString *_id;
     NSString *description;
     NSString *tag;
@@ -66,80 +70,92 @@
     NSDictionary *metadata;
     RadarOperatingHours *operatingHours;
     RadarGeofenceGeometry *geometry;
-
+    
     id idObj = dict[@"_id"];
     if (idObj && [idObj isKindOfClass:[NSString class]]) {
         _id = (NSString *)idObj;
     }
-
+    
     id descriptionObj = dict[@"description"];
     if (descriptionObj && [descriptionObj isKindOfClass:[NSString class]]) {
         description = (NSString *)descriptionObj;
     }
-
+    
     id tagObj = dict[@"tag"];
     if (tagObj && [tagObj isKindOfClass:[NSString class]]) {
         tag = (NSString *)tagObj;
     }
-
+    
     id externalIdObj = dict[@"externalId"];
     if (externalIdObj && [externalIdObj isKindOfClass:[NSString class]]) {
         externalId = (NSString *)externalIdObj;
     }
-
+    
     id metadataObj = dict[@"metadata"];
     if (metadataObj && [metadataObj isKindOfClass:[NSDictionary class]]) {
         metadata = (NSDictionary *)metadataObj;
     }
-
+    
     id operatingHoursObj = dict[@"operatingHours"];
     if (operatingHoursObj && [operatingHoursObj isKindOfClass:[NSDictionary class]]) {
         operatingHours = [[RadarOperatingHours alloc] initWithDictionary:operatingHoursObj];
     }
-
+    
+    NSNumber *dwellThreshold;
+    id dwellThresholdObj = dict[@"dwellThreshold"];
+    if (dwellThresholdObj && [dwellThresholdObj isKindOfClass:[NSNumber class]]) {
+        dwellThreshold = (NSNumber *)dwellThresholdObj;
+    }
+    
+    NSNumber *geofenceStopDetection;
+    id stopDetectionObj = dict[@"stopDetection"];
+    if (stopDetectionObj && [stopDetectionObj isKindOfClass:[NSNumber class]]) {
+        geofenceStopDetection = (NSNumber *)stopDetectionObj;
+    }
+    
     id typeObj = dict[@"type"];
     if ([typeObj isKindOfClass:[NSString class]]) {
         NSString *type = (NSString *)typeObj;
-
+        
         id radiusObj = dict[@"geometryRadius"];
         id centerObj = dict[@"geometryCenter"];
-
+        
         RadarCoordinate *center = [[RadarCoordinate alloc] initWithCoordinate:CLLocationCoordinate2DMake(0, 0)];
         float radius = 0.0;
-
+        
         if ([radiusObj isKindOfClass:[NSNumber class]] && [centerObj isKindOfClass:[NSDictionary class]]) {
             id centerCoordinatesObj = ((NSDictionary *)centerObj)[@"coordinates"];
             if (![centerCoordinatesObj isKindOfClass:[NSArray class]]) {
                 return nil;
             }
-
+            
             NSArray *centerCoordinatesArr = (NSArray *)centerCoordinatesObj;
             if (centerCoordinatesArr.count != 2) {
                 return nil;
             }
-
+            
             id centerLongitudeObj = centerCoordinatesArr[0];
             id centerLatitudeObj = centerCoordinatesArr[1];
             if (![centerLongitudeObj isKindOfClass:[NSNumber class]] || ![centerLatitudeObj isKindOfClass:[NSNumber class]]) {
                 return nil;
             }
-
+            
             float centerLongitude = [((NSNumber *)centerLongitudeObj) floatValue];
             float centerLatitude = [((NSNumber *)centerLatitudeObj) floatValue];
-
+            
             center = [[RadarCoordinate alloc] initWithCoordinate:CLLocationCoordinate2DMake(centerLatitude, centerLongitude)];
             radius = [((NSNumber *)radiusObj) floatValue];
         }
-
+        
         if ([type isEqualToString:@"circle"] || [type isEqualToString:@"Circle"]) {
             geometry = [[RadarCircleGeometry alloc] initWithCenter:center radius:radius];
         } else if ([type isEqualToString:@"polygon"] || [type isEqualToString:@"Polygon"] || [type isEqualToString:@"isochrone"]) {
-            NSMutableArray<RadarCoordinate *> *mutablePolygonCoordinates = [self getPolygonCoordinates:dict]; 
-            geometry = [[RadarPolygonGeometry alloc] initWithCoordinates:mutablePolygonCoordinates center:center radius:radius];   
+            NSMutableArray<RadarCoordinate *> *mutablePolygonCoordinates = [self getPolygonCoordinates:dict];
+            geometry = [[RadarPolygonGeometry alloc] initWithCoordinates:mutablePolygonCoordinates center:center radius:radius];
         }
     }
-
-    return [[RadarGeofence alloc] initWithId:_id description:description tag:tag externalId:externalId metadata:metadata operatingHours:operatingHours geometry:geometry];
+    
+    return [[RadarGeofence alloc] initWithId:_id description:description tag:tag externalId:externalId metadata:metadata operatingHours:operatingHours geometry:geometry dwellThreshold:dwellThreshold geofenceStopDetection:geofenceStopDetection];
 }
 
 - (NSMutableArray<RadarCoordinate *> *)getPolygonCoordinates:(NSDictionary *)dict {
@@ -224,6 +240,12 @@
     if (self.operatingHours) {
         [dict setValue:self.operatingHours.hours forKey:@"operatingHours"];
     }
+    if (self.dwellThreshold) {
+        [dict setValue:self.dwellThreshold forKey:@"dwellThreshold"];
+    }
+    if (self.geofenceStopDetection) {
+        [dict setValue:self.geofenceStopDetection forKey:@"stopDetection"];
+    }
     if ([self.geometry isKindOfClass:[RadarCircleGeometry class]]) {
         RadarCircleGeometry *circleGeometry = (RadarCircleGeometry *)self.geometry;
         [dict setValue:@(circleGeometry.radius) forKey:@"geometryRadius"];
@@ -234,8 +256,10 @@
         [dict setValue:@(polygonGeometry.radius) forKey:@"geometryRadius"];
         [dict setValue:[polygonGeometry.center dictionaryValue] forKey:@"geometryCenter"];
         if (polygonGeometry._coordinates) {
-            // Nest coordinate array; Per GeoJSON spec: for type "Polygon", the "coordinates" member must be an array of LinearRing coordinate arrays.
-            [dict setValue:@[[RadarGeofence arrayForGeometryCoordinates:polygonGeometry._coordinates]] forKey:@"coordinates"];
+            NSArray *coordsArray = @[[RadarGeofence arrayForGeometryCoordinates:polygonGeometry._coordinates]];
+            
+            [dict setValue:coordsArray forKey:@"coordinates"];
+            [dict setValue:@{@"type": @"Polygon", @"coordinates": coordsArray} forKey:@"geometry"];
         }
         [dict setValue:@"Polygon" forKey:@"type"];
     }

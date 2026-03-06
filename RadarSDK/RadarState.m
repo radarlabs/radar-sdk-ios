@@ -32,10 +32,15 @@ static NSString *const kLastPressureData = @"radar-lastPressureData";
 static NSString *const kNotificationPermissionGranted = @"radar-notificationPermissionGranted";
 static NSString *const kMotionAuthorization = @"radar-motionAuthorization";
 static NSString *const kRegisteredNotifications = @"radar-registeredNotifications";
-static NSString *const kNearbyGeofences = @"radar-nearbyGeofences";
-static NSString *const kNearbyBeacons = @"radar-nearbyBeacons";
-static NSString *const kNearbyPlaces = @"radar-nearbyPlaces";
+static NSString *const kSyncedGeofences = @"radar-syncedGeofences";
+static NSString *const kSyncedBeacons = @"radar-syncedBeacons";
+static NSString *const kSyncedPlaces = @"radar-syncedPlaces";
 static NSString *const kSyncedRegion = @"radar-syncedRegion";
+static NSString *const kLastSyncedGeofenceIds = @"radar-lastSyncedGeofenceIds";
+static NSString *const kLastSyncedPlaceIds = @"radar-lastSyncedPlaceIds";
+static NSString *const kLastSyncedBeaconIds = @"radar-lastSyncedBeaconIds";
+static NSString *const kGeofenceEntryTimestamps = @"radar-geofenceEntryTimestamps";
+static NSString *const kDwellEventsFired = @"radar-dwellEventsFired";
 static NSDictionary *_lastRelativeAltitudeDataInMemory = nil;
 static NSDate *_lastPressureBackupTime = nil;
 static NSTimeInterval const kBackupInterval = 2.0; // 2 seconds
@@ -288,8 +293,8 @@ static NSTimeInterval const kBackupInterval = 2.0; // 2 seconds
     [RadarState setRegisteredNotifications:registeredNotifications];
 }
 
-+ (NSArray<RadarGeofence *> *_Nullable)nearbyGeofences {
-    NSArray *geofenceDicts = [[NSUserDefaults standardUserDefaults] arrayForKey:kNearbyGeofences];
++ (NSArray<RadarGeofence *> *_Nullable)syncedGeofences {
+    NSArray *geofenceDicts = [[NSUserDefaults standardUserDefaults] arrayForKey:kSyncedGeofences];
     if (!geofenceDicts) {
         return nil;
     }
@@ -304,21 +309,21 @@ static NSTimeInterval const kBackupInterval = 2.0; // 2 seconds
     return geofences;
 }
 
-+ (void)setNearbyGeofences:(NSArray<RadarGeofence *> *_Nullable)nearbyGeofences {
-    if (!nearbyGeofences) {
-        [[NSUserDefaults standardUserDefaults] removeObjectForKey:kNearbyGeofences];
++ (void)setSyncedGeofences:(NSArray<RadarGeofence *> *_Nullable)syncedGeofences {
+    if (!syncedGeofences) {
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:kSyncedGeofences];
         return;
     }
     
     NSMutableArray<NSDictionary *> *geofenceDicts = [NSMutableArray array];
-    for (RadarGeofence *geofence in nearbyGeofences) {
+    for (RadarGeofence *geofence in syncedGeofences) {
         [geofenceDicts addObject:[geofence dictionaryValue]];
     }
-    [[NSUserDefaults standardUserDefaults] setObject:geofenceDicts forKey:kNearbyGeofences];
+    [[NSUserDefaults standardUserDefaults] setObject:geofenceDicts forKey:kSyncedGeofences];
 }
 
-+ (NSArray<RadarBeacon *> *_Nullable)nearbyBeacons {
-    NSArray *beaconDicts = [[NSUserDefaults standardUserDefaults] arrayForKey:kNearbyBeacons];
++ (NSArray<RadarBeacon *> *_Nullable)syncedBeacons {
+    NSArray *beaconDicts = [[NSUserDefaults standardUserDefaults] arrayForKey:kSyncedBeacons];
     if(!beaconDicts) {
         return nil;
     }
@@ -333,20 +338,20 @@ static NSTimeInterval const kBackupInterval = 2.0; // 2 seconds
     return beacons;
 }
 
-+ (void)setNearbyBeacons:(NSArray<RadarBeacon *> *_Nullable)nearbyBeacons {
-    if (!nearbyBeacons) {
-        [[NSUserDefaults standardUserDefaults] removeObjectForKey:kNearbyBeacons];
++ (void)setSyncedBeacons:(NSArray<RadarBeacon *> *_Nullable)syncedBeacons {
+    if (!syncedBeacons) {
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:kSyncedBeacons];
         return;
     }
     NSMutableArray<NSDictionary *> *beaconDicts = [NSMutableArray array];
-    for (RadarBeacon *beacon in nearbyBeacons) {
+    for (RadarBeacon *beacon in syncedBeacons) {
         [beaconDicts addObject:[beacon dictionaryValue]];
     }
-    [[NSUserDefaults standardUserDefaults] setObject:beaconDicts forKey:kNearbyBeacons];
+    [[NSUserDefaults standardUserDefaults] setObject:beaconDicts forKey:kSyncedBeacons];
 }
 
-+ (NSArray<RadarPlace *> *_Nullable)nearbyPlaces {
-    NSArray *placeDicts = [[NSUserDefaults standardUserDefaults] arrayForKey:kNearbyPlaces];
++ (NSArray<RadarPlace *> *_Nullable)syncedPlaces {
+    NSArray *placeDicts = [[NSUserDefaults standardUserDefaults] arrayForKey:kSyncedPlaces];
     if (!placeDicts) {
         return nil;
     }
@@ -361,17 +366,17 @@ static NSTimeInterval const kBackupInterval = 2.0; // 2 seconds
     return places;
 }
 
-+ (void)setNearbyPlaces:(NSArray<RadarPlace *> *_Nullable)nearbyPlaces {
-    if (!nearbyPlaces) {
-        [[NSUserDefaults standardUserDefaults] removeObjectForKey:kNearbyPlaces];
++ (void)setSyncedPlaces:(NSArray<RadarPlace *> *_Nullable)syncedPlaces {
+    if (!syncedPlaces) {
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:kSyncedPlaces];
         return;
     }
     
     NSMutableArray<NSDictionary *> *placesDicts = [NSMutableArray array];
-    for (RadarPlace *place in nearbyPlaces) {
+    for (RadarPlace *place in syncedPlaces) {
         [placesDicts addObject:[place dictionaryValue]];
     }
-    [[NSUserDefaults standardUserDefaults] setObject:placesDicts forKey:kNearbyPlaces];
+    [[NSUserDefaults standardUserDefaults] setObject:placesDicts forKey:kSyncedPlaces];
 }
 
 + (CLCircularRegion *_Nullable)syncedRegion {
@@ -391,4 +396,45 @@ static NSTimeInterval const kBackupInterval = 2.0; // 2 seconds
     NSDictionary *dict = [RadarUtils dictionaryForCircularRegion:syncedRegion];
     [[NSUserDefaults standardUserDefaults] setObject:dict forKey:kSyncedRegion];
 }
+
++ (NSArray<NSString *> *)lastSyncedGeofenceIds {
+    return [[NSUserDefaults standardUserDefaults] objectForKey:kLastSyncedGeofenceIds] ?: @[];
+}
+
++ (void)setLastSyncedGeofenceIds:(NSArray<NSString *> *)ids {
+    [[NSUserDefaults standardUserDefaults] setObject:ids forKey:kLastSyncedGeofenceIds];
+}
+
++ (NSArray<NSString *> *)lastSyncedPlaceIds {
+    return [[NSUserDefaults standardUserDefaults] objectForKey:kLastSyncedPlaceIds] ?: @[];
+}
+
++ (void)setLastSyncedPlaceIds:(NSArray<NSString *> *)ids {
+    [[NSUserDefaults standardUserDefaults] setObject:ids forKey:kLastSyncedPlaceIds];
+}
+
++ (NSArray<NSString *> *)lastSyncedBeaconIds {
+    return [[NSUserDefaults standardUserDefaults] objectForKey:kLastSyncedBeaconIds] ?: @[];
+}
+
++ (void)setLastSyncedBeaconIds:(NSArray<NSString *> *)ids {
+    [[NSUserDefaults standardUserDefaults] setObject:ids forKey:kLastSyncedBeaconIds];
+}
+
++ (NSDictionary<NSString *, NSDate *> *)geofenceEntryTimestamps {
+    return [[NSUserDefaults standardUserDefaults] objectForKey:kGeofenceEntryTimestamps] ?: @{};
+}
+
++ (void)setGeofenceEntryTimestamps:(NSDictionary<NSString *, NSDate *> *)timestamps {
+    [[NSUserDefaults standardUserDefaults] setObject:timestamps forKey:kGeofenceEntryTimestamps];
+}
+
++ (NSArray<NSString *> *)dwellEventsFired {
+    return [[NSUserDefaults standardUserDefaults] objectForKey:kDwellEventsFired] ?: @[];
+}
+
++ (void)setDwellEventsFired:(NSArray<NSString *> *)ids {
+    [[NSUserDefaults standardUserDefaults] setObject:ids forKey:kDwellEventsFired];
+}
+
 @end

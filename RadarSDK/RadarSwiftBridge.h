@@ -26,9 +26,29 @@
 - (NSArray<NSString *> * _Nullable)geofenceIds;
 - (NSArray<NSString *> * _Nullable)beaconIds;
 - (NSString * _Nullable)placeId;
-- (NSArray<RadarGeofence *> * _Nullable)nearbyGeofences;
-- (NSArray<RadarBeacon *> * _Nullable)nearbyBeacons;
-- (NSArray<RadarPlace *> * _Nullable)nearbyPlaces;
+- (NSArray<RadarGeofence *> * _Nullable)geofencesFromObject:(id _Nonnull)object;
+- (NSArray<RadarPlace *> * _Nullable)placesFromObject:(id _Nonnull)object;
+- (NSArray<RadarBeacon *> * _Nullable)beaconsFromObject:(id _Nonnull)object;
+- (NSArray<RadarGeofence *> * _Nullable)syncedGeofences;
+- (NSArray<RadarBeacon *> * _Nullable)syncedBeacons;
+- (NSArray<RadarPlace *> * _Nullable)syncedPlaces;
+- (CLLocation * _Nullable)lastLocation;
+- (void)fetchSyncRegionWithLatitude:(double)latitude longitude:(double)longitude completionHandler:(void (^ _Nonnull)(RadarStatus status, NSDictionary * _Nullable res))completionHandler;
+- (void)setSyncedGeofences: (NSArray<RadarGeofence *> *_Nullable)geofences;
+- (void)setSyncedBeacons:(NSArray<RadarBeacon *> * _Nullable)beacons;
+- (void)setSyncedPlaces:(NSArray<RadarPlace *> * _Nullable)places;
+- (void)setSyncedRegion:(CLCircularRegion * _Nullable)region;
+- (NSArray<NSString *> * _Nonnull)lastSyncedGeofenceIds;
+- (void)setLastSyncedGeofenceIds:(NSArray<NSString *> * _Nullable)ids;
+- (NSArray<NSString *> * _Nonnull)lastSyncedPlaceIds;
+- (void)setLastSyncedPlaceIds:(NSArray<NSString *> * _Nullable)ids;
+- (NSArray<NSString *> * _Nonnull)lastSyncedBeaconIds;
+- (void)setLastSyncedBeaconIds:(NSArray<NSString *> * _Nullable)ids;
+- (NSDictionary<NSString *, NSDate *> * _Nonnull)geofenceEntryTimestamps;
+- (void)setGeofenceEntryTimestamps:(NSDictionary<NSString *, NSDate *> * _Nullable)timestamps;
+- (NSArray<NSString *> * _Nonnull)dwellEventsFired;
+- (void)setDwellEventsFired:(NSArray<NSString *> * _Nullable)ids;
+- (BOOL)isStopped;
 - (RadarTripOptions * _Nullable)getTripOptions;
 @end
 

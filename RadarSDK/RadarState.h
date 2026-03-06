@@ -51,14 +51,25 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)addRegisteredNotification:(NSDictionary *)registeredNotification;
 + (NSDictionary *)lastRelativeAltitudeData;
 + (void)setLastRelativeAltitudeData:(NSDictionary *_Nullable)lastRelativeAltitudeData;
-+ (NSArray<RadarGeofence *> *_Nullable)nearbyGeofences;
-+ (void)setNearbyGeofences:(NSArray<RadarGeofence *> *_Nullable)nearbyGeofences;
-+ (NSArray<RadarBeacon *> *_Nullable)nearbyBeacons;
-+ (void)setNearbyBeacons:(NSArray<RadarBeacon *> *_Nullable)nearbyBeacons;
-+ (NSArray<RadarPlace *> *_Nullable)nearbyPlaces;
-+ (void)setNearbyPlaces:(NSArray<RadarPlace *> *_Nullable)nearbyPlaces;
++ (NSArray<RadarGeofence *> *_Nullable)syncedGeofences;
++ (void)setSyncedGeofences:(NSArray<RadarGeofence *> *_Nullable)syncedGeofences;
++ (NSArray<RadarBeacon *> *_Nullable)syncedBeacons;
++ (void)setSyncedBeacons:(NSArray<RadarBeacon *> *_Nullable)syncedBeacons;
++ (NSArray<RadarPlace *> *_Nullable)syncedPlaces;
++ (void)setSyncedPlaces:(NSArray<RadarPlace *> *_Nullable)syncedPlaces;
 + (CLCircularRegion *_Nullable)syncedRegion;
 + (void)setSyncedRegion:(CLCircularRegion *_Nullable)syncedRegion;
++ (NSArray<NSString *> *)lastSyncedGeofenceIds;
++ (void)setLastSyncedGeofenceIds:(NSArray<NSString *> *_Nullable)ids;
++ (NSArray<NSString *> *)lastSyncedPlaceIds;
++ (void)setLastSyncedPlaceIds:(NSArray<NSString *> *_Nullable)ids;
++ (NSArray<NSString *> *)lastSyncedBeaconIds;
++ (void)setLastSyncedBeaconIds:(NSArray<NSString *> *_Nullable)ids;
++ (NSDictionary<NSString *, NSDate *> *)geofenceEntryTimestamps;
++ (void)setGeofenceEntryTimestamps:(NSDictionary<NSString *, NSDate *> *_Nullable)timestamps;
++ (NSArray<NSString *> *)dwellEventsFired;
++ (void)setDwellEventsFired:(NSArray<NSString *> *_Nullable)ids;
+
 
 @end
 

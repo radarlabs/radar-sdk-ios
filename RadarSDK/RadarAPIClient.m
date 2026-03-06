@@ -146,6 +146,8 @@
                         [Radar flushLogs];
 
                         RadarConfig *config = [RadarConfig fromDictionary:res];
+        
+        NSLog(@"*********CONFIG RESPONSE*********\n%@", res);
 
                         completionHandler(status, config);
                     }];
@@ -1651,6 +1653,31 @@ completionHandler:(RadarSendEventAPICompletionHandler _Nonnull)completionHandler
                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
                         return completionHandler(status);
                     }];
+}
+
+- (void)syncRegionWithLatitude:(double)latitude
+                     longitude:(double)longitude
+             completionHandler:(RadarSyncRegionAPICompletionHandler _Nonnull)completionHandler {
+    NSString *publishableKey = [RadarSettings publishableKey];
+    if (!publishableKey) {
+        return completionHandler(RadarStatusErrorPublishableKey, nil);
+    }
+    
+    NSString *host = [RadarSettings host];
+    NSString *url = [NSString stringWithFormat:@"%@/v1/sync/region", host];
+    
+    NSDictionary *headers = [RadarAPIClient headersWithPublishableKey:publishableKey];
+    
+    NSMutableDictionary *params = [NSMutableDictionary new];
+    params[@"latitude"] = @(latitude);
+    params[@"longitude"] = @(longitude);
+    
+    [self.apiHelper requestWithMethod:@"POST" url:url headers:headers params:params sleep:NO logPayload:YES extendedTimeout:NO completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
+        if (status != RadarStatusSuccess || !res) {
+            return completionHandler(status, nil);
+        }
+        completionHandler(RadarStatusSuccess, res);
+    }];
 }
 
 @end
