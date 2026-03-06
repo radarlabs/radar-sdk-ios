@@ -87,15 +87,6 @@ BOOL _initialized = NO;
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelWarning message:@"RadarSDKMotion class not found; Motion/Pressure features disabled"];
     }
 
-    Class RadarSDKFraud = NSClassFromString(@"RadarSDKFraud");
-    if (RadarSDKFraud) {
-        id<RadarSDKFraudProtocol> radarSDKFraud = [RadarSDKFraud sharedInstance];
-        if ([radarSDKFraud respondsToSelector:@selector(initializeWithOptions:)]) {
-            [radarSDKFraud initializeWithOptions:@{}];
-            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"RadarSDKFraud detected and initialized"];
-        }
-    }
-
     [[NSNotificationCenter defaultCenter] addObserver:[self sharedInstance]
                                              selector:@selector(applicationWillEnterForeground)
                                                  name:UIApplicationWillEnterForegroundNotification
@@ -130,8 +121,19 @@ BOOL _initialized = NO;
                                                 [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
                                                 [RadarSettings setSdkConfiguration:config.meta.sdkConfiguration];
                                             }
-                                         
+
                                             RadarSdkConfiguration *sdkConfiguration = [RadarSettings sdkConfiguration];
+
+                                            Class RadarSDKFraud = NSClassFromString(@"RadarSDKFraud");
+                                            if (RadarSDKFraud) {
+                                                id<RadarSDKFraudProtocol> radarSDKFraud = [RadarSDKFraud sharedInstance];
+                                                if ([radarSDKFraud respondsToSelector:@selector(initializeWithOptions:)]) {
+                                                    [radarSDKFraud initializeWithOptions:@{
+                                                        @"fraudFeatureXEnabled": @(sdkConfiguration.fraudFeatureXEnabled)
+                                                    }];
+                                                    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"RadarSDKFraud detected and initialized"];
+                                                }
+                                            }
                                             if (sdkConfiguration.startTrackingOnInitialize && ![RadarSettings tracking]) {
                                                 [Radar startTrackingWithOptions:[Radar getTrackingOptions]];
                                             }
