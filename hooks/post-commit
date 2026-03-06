@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 # Restore original keys after commit
 BACKUP_DIR=".git/key-backups"
