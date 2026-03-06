@@ -91,6 +91,10 @@ public final class RadarSyncManager: NSObject {
     // MARK: - Track Decision
     
     @objc public static func shouldTrack(location: CLLocation, options: RadarTrackingOptions) -> Bool {
+        guard options.syncLocations == .events else {
+            return true
+        }
+        
         guard RadarSwift.bridge?.syncedRegion() != nil else {
             RadarLogger.shared.debug("SyncManager: No synced region, should track")
             return true

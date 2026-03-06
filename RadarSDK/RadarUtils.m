@@ -231,10 +231,16 @@ static NSDateFormatter *_isoDateFormatter;
 }
 
 + (CLCircularRegion *)circularRegionForDictionary:(NSDictionary *)dict {
-    CLLocationCoordinate2D coordinate = CLLocationCoordinate2DMake([dict[@"latitude"] doubleValue], [dict[@"longitude"] doubleValue]);
-    CLCircularRegion *region = [[CLCircularRegion alloc] initWithCenter:coordinate radius:[dict[@"radius"] doubleValue] identifier:dict[@"identifier"]];
-    
-    return region;
+    id latObj = dict[@"latitude"];
+    id lngObj = dict[@"longitude"];
+    id radiusObj = dict[@"radius"];
+    id identifierObj = dict[@"identifier"];
+    if (![latObj isKindOfClass:[NSNumber class]] || ![lngObj isKindOfClass:[NSNumber class]] ||
+        ![radiusObj isKindOfClass:[NSNumber class]] || ![identifierObj isKindOfClass:[NSString class]]) {
+        return nil;
+    }
+    CLLocationCoordinate2D coordinate = CLLocationCoordinate2DMake([latObj doubleValue], [lngObj doubleValue]);
+    return [[CLCircularRegion alloc] initWithCenter:coordinate radius:[radiusObj doubleValue] identifier:identifierObj];
 }
 
 + (NSDictionary *)dictionaryForCircularRegion:(CLCircularRegion *)region {

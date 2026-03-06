@@ -147,8 +147,6 @@
 
                         RadarConfig *config = [RadarConfig fromDictionary:res];
         
-        NSLog(@"*********CONFIG RESPONSE*********\n%@", res);
-
                         completionHandler(status, config);
                     }];
 }

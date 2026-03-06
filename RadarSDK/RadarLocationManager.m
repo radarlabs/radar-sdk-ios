@@ -909,7 +909,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
             return;
         }
         
-        if ([RadarSettings sdkConfiguration].useSyncRegion) {
+        if ([RadarSettings sdkConfiguration].useSyncRegion && options.syncLocations == RadarTrackingOptionsSyncEvents) {
             if (![RadarSyncManager shouldTrackWithLocation:location options:options]) {
                 [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
                                                    message:@"Skipping track: useSyncRegion - no state change detected"];

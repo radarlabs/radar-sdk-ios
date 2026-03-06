@@ -402,6 +402,10 @@ static NSTimeInterval const kBackupInterval = 2.0; // 2 seconds
 }
 
 + (void)setLastSyncedGeofenceIds:(NSArray<NSString *> *)ids {
+    if (!ids) {
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:kLastSyncedGeofenceIds];
+        return;
+    }
     [[NSUserDefaults standardUserDefaults] setObject:ids forKey:kLastSyncedGeofenceIds];
 }
 
@@ -410,6 +414,10 @@ static NSTimeInterval const kBackupInterval = 2.0; // 2 seconds
 }
 
 + (void)setLastSyncedPlaceIds:(NSArray<NSString *> *)ids {
+    if (!ids) {
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:kLastSyncedPlaceIds];
+        return;
+    }
     [[NSUserDefaults standardUserDefaults] setObject:ids forKey:kLastSyncedPlaceIds];
 }
 
@@ -418,6 +426,10 @@ static NSTimeInterval const kBackupInterval = 2.0; // 2 seconds
 }
 
 + (void)setLastSyncedBeaconIds:(NSArray<NSString *> *)ids {
+    if (!ids) {
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:kLastSyncedPlaceIds];
+        return;
+    }
     [[NSUserDefaults standardUserDefaults] setObject:ids forKey:kLastSyncedBeaconIds];
 }
 
@@ -426,6 +438,10 @@ static NSTimeInterval const kBackupInterval = 2.0; // 2 seconds
 }
 
 + (void)setGeofenceEntryTimestamps:(NSDictionary<NSString *, NSDate *> *)timestamps {
+    if (!timestamps) {
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:kGeofenceEntryTimestamps];
+        return;
+    }
     [[NSUserDefaults standardUserDefaults] setObject:timestamps forKey:kGeofenceEntryTimestamps];
 }
 
@@ -434,6 +450,10 @@ static NSTimeInterval const kBackupInterval = 2.0; // 2 seconds
 }
 
 + (void)setDwellEventsFired:(NSArray<NSString *> *)ids {
+    if (!ids) {
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:kDwellEventsFired];
+        return;
+    }
     [[NSUserDefaults standardUserDefaults] setObject:ids forKey:kDwellEventsFired];
 }
 
