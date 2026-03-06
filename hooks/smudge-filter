@@ -1,6 +1,6 @@
 #!/bin/sh
 # Radar API key smudge filter - applies saved keys to working tree
-KEYS_FILE="$(git rev-parse --git-dir)/radar-keys"
+KEYS_FILE="$(git rev-parse --show-toplevel)/.radar-keys"
 ZERO='0000000000000000000000000000000000000000'
 
 if [ ! -f "$KEYS_FILE" ]; then
