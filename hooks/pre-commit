@@ -1,15 +1,35 @@
 #!/bin/sh
 
-if git diff --cached --name-only | grep -q "Example/Example/AppDelegate.swift"; then
-    key_matches=$(grep -Eo "prj_...._pk_.{40}" Example/Example/AppDelegate.swift)
-    zerokey="prj_...._pk_0{40}"
+# Sanitize Radar API keys before commit
+# Pattern: prj_(test|live)_(pk|sk)_ followed by 40 hex characters
+BACKUP_DIR=".git/key-backups"
 
-    for key in $key_matches;
-    do
-        if [[ ! $key =~ $zerokey ]]; then
-            echo "Aborted"
-            echo "Detected Radar API key: $key"
-            exit 1
-        fi
-    done
+# sed has slightly different syntax on linux vs mac
+if [ $(uname -s) = "Darwin" ]; then
+    alias sed_inplace="sed -E -i ''"
+else
+    alias sed_inplace="sed -E -i"
 fi
+
+# Clean up any leftover backups from a previous failed run
+rm -rf "$BACKUP_DIR"
+mkdir -p "$BACKUP_DIR"
+
+# Find all staged files that contain the pattern
+FILES=$(git diff --cached --name-only --diff-filter=d | xargs grep -lE 'prj_(test|live)_(pk|sk)_[0-9a-fA-F]{40}' 2>/dev/null)
+
+if [ -z "$FILES" ]; then
+    exit 0
+fi
+
+# Back up and replace
+for file in $FILES; do
+    mkdir -p "$BACKUP_DIR/$(dirname "$file")"
+    cp "$file" "$BACKUP_DIR/$file"
+
+    # Replace keys with zeroed version, preserving the prefix
+    sed_inplace 's/(prj_(test|live)_(pk|sk)_)[0-9a-fA-F]{40}/\10000000000000000000000000000000000000000/g' "$file"
+
+    # Re-stage the file with sanitized keys
+    git add "$file"
+done
