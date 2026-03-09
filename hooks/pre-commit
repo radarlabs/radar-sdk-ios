@@ -1,5 +1,5 @@
 #!/bin/sh
-# Save real Radar API keys to .git/radar-keys before commit
+# Save real Radar API keys to .radar-keys before commit
 # The clean filter handles sanitization; this just persists keys for the smudge filter
 KEYS_FILE=".radar-keys"
 ZERO='0000000000000000000000000000000000000000'
