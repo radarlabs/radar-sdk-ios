@@ -25,7 +25,6 @@ To run the example app, clone this repository, add your publishable API key in `
 
 Setup Radar public key check pre-commit hook to prevent accidental key leak when working with the Example app.
 ```
-git config core.hooksPath hooks
 git config filter.radar-keys.clean hooks/clean-filter
 git config filter.radar-keys.smudge hooks/smudge-filter
 ```
