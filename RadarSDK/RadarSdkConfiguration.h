@@ -39,8 +39,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, assign) BOOL syncAfterSetUser;
 
-@property (nonatomic, assign) BOOL featureAEnabled;
-
 /**
  Initializes a new RadarSdkConfiguration object with given value.
  */

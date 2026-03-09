@@ -13,6 +13,12 @@
 #import "RadarAPIClient.h"
 #import "RadarSettings.h"
 
+@interface RadarSdkConfiguration ()
+
+@property (nonatomic, strong) NSDictionary *originalDict;
+
+@end
+
 @implementation RadarSdkConfiguration
 
 - (instancetype)initWithDict:(NSDictionary *)dict {
@@ -33,11 +39,12 @@
     _useForegroundLocationUpdatedAtMsDiff = NO;
     _useNotificationDiff = NO;
     _syncAfterSetUser = NO;
-    _featureAEnabled = NO;
 
     if (dict == nil) {
         return self;
     }
+
+    _originalDict = dict;
 
     NSObject *logLevelObj = dict[@"logLevel"];
     if (logLevelObj && [logLevelObj isKindOfClass:[NSString class]]) {
@@ -94,16 +101,11 @@
         _syncAfterSetUser = [(NSNumber *)syncAfterSetUserObj boolValue];
     }
 
-    NSObject *featureAEnabledObj = dict[@"featureAEnabled"];
-    if (featureAEnabledObj && [featureAEnabledObj isKindOfClass:[NSNumber class]]) {
-        _featureAEnabled = [(NSNumber *)featureAEnabledObj boolValue];
-    }
-
     return self;
 }
 
 - (NSDictionary *)dictionaryValue {
-    NSMutableDictionary *dict = [NSMutableDictionary new];
+    NSMutableDictionary *dict = _originalDict ? [_originalDict mutableCopy] : [NSMutableDictionary new];
     
     dict[@"logLevel"] = [RadarLog stringForLogLevel:_logLevel];
     dict[@"startTrackingOnInitialize"] = @(_startTrackingOnInitialize);
@@ -116,7 +118,6 @@
     dict[@"useForegroundLocationUpdatedAtMsDiff"] = @(_useForegroundLocationUpdatedAtMsDiff);
     dict[@"useNotificationDiff"] = @(_useNotificationDiff);
     dict[@"syncAfterSetUser"] = @(_syncAfterSetUser);
-    dict[@"featureAEnabled"] = @(_featureAEnabled);
     
     return dict;
 }
