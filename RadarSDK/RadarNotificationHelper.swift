@@ -8,60 +8,13 @@
 
 let GEOFENCE_NOTIFICATION_PREFIX = "radar_geofence_"
 
-
-
-if (notificationText && [RadarNotificationHelper isNotificationCampaign:metadata]) {
-    UNMutableNotificationContent *content = [UNMutableNotificationContent new];
-    if (notificationTitle) {
-        content.title = [NSString localizedUserNotificationStringForKey:notificationTitle arguments:nil];
-    }
-    if (notificationSubtitle) {
-        content.subtitle = [NSString localizedUserNotificationStringForKey:notificationSubtitle arguments:nil];
-    }
-    content.body = [NSString localizedUserNotificationStringForKey:notificationText arguments:nil];
-    
-    NSMutableDictionary *mutableUserInfo = [metadata mutableCopy];
-
-    NSDate *now = [NSDate new];
-    NSTimeInterval lastSyncInterval = [now timeIntervalSince1970];
-    mutableUserInfo[@"registeredAt"] = [NSString stringWithFormat:@"%f", lastSyncInterval];
-
-    if (notificationURL) {
-        mutableUserInfo[@"url"] = notificationURL;
-    }
-    if (campaignId) {
-        mutableUserInfo[@"campaignId"] = campaignId;
-    }
-    if (identifier) {
-        mutableUserInfo[@"identifier"] = identifier;
-
-        if ([identifier hasPrefix:@"radar_geofence_"]) {
-            mutableUserInfo[@"geofenceId"] = [identifier stringByReplacingOccurrencesOfString:@"radar_geofence_" withString:@""];
-        }
-    }
-    if (campaignMetadata && [campaignMetadata isKindOfClass:[NSString class]]) {
-        NSError *jsonError;
-        NSData *jsonData = [((NSString *)campaignMetadata) dataUsingEncoding:NSUTF8StringEncoding];
-        id jsonObj = [NSJSONSerialization JSONObjectWithData:jsonData options:0 error:&jsonError];
-        if (!jsonError && [jsonObj isKindOfClass:[NSDictionary class]]) {
-            mutableUserInfo[@"campaignMetadata"] = (NSDictionary *)jsonObj;
-        }
-    }
-    
-    content.userInfo = [mutableUserInfo copy];
-    return content;
-} else {
-    return nil;
-}
-
-
-struct RadarNotificationContent: Codable, Sendable {
+struct RadarNotificationContent: Sendable {
     let notificationTitle: String?
     let notificationSubtitle: String?
     let notificationText: String
     let notificationURL: String?
     let campaignId: String
-    let campaignMetadata: String?
+    let campaignMetadata: [String: Sendable]?
     
     static func fromMetadata(_ metadata: [String: Any]) -> RadarNotificationContent? {
         // required fields
@@ -73,7 +26,14 @@ struct RadarNotificationContent: Codable, Sendable {
         let notificationTitle = metadata["radar:notificationTitle"] as? String
         let notificationSubtitle = metadata["radar:notificationSubtitle"] as? String
         let notificationURL = metadata["radar:notificationURL"] as? String
-        let campaignMetadata = metadata["radar:campaignMetadata"] as? String
+        let campaignMetadataString = metadata["radar:campaignMetadata"] as? String
+        let campaignMetadata: [String: Sendable]?
+        if let campaignMetadataString,
+           let data = campaignMetadataString.data(using: .utf8) {
+            campaignMetadata = try? JSONSerialization.jsonObject(with: data) as? [String: Sendable]
+        } else {
+            campaignMetadata = nil
+        }
         
         let notification = RadarNotificationContent(
             notificationTitle: notificationTitle,
@@ -86,19 +46,28 @@ struct RadarNotificationContent: Codable, Sendable {
         return notification
     }
     
-    func toNotificationContent() -> UNNotificationContent {
+    func toNotificationContent(userInfo: [String: Any]) -> UNNotificationContent {
+        let content = UNMutableNotificationContent()
         
+        content.userInfo = userInfo
+        content.userInfo["campaignId"] = campaignId
+        content.userInfo["url"] = notificationURL
+        content.userInfo["campaignMetadata"] = campaignMetadata
     }
 }
 
-struct RadarGeofenceNotification: Codable, Sendable {
+struct RadarGeofenceNotification: Sendable {
     let campaignType: String
     let geofenceId: String?
     let content: RadarNotificationContent
+    let geofence: RadarGeofence
     
     func toNotificationRequest() -> UNNotificationRequest {
-        let content = content.toNotificationContent()
-        let
+        let userInfo = [
+            "registerdAt": Date(),
+        ]
+        let content = content.toNotificationContent(userInfo: userInfo)
+        
         
         
         let trigger = UNLocationNotificationTrigger(region: <#T##CLRegion#>, repeats: <#T##Bool#>)
@@ -128,7 +97,12 @@ actor RadarNotificationHelper {
     
     private var currentTask: Task<Void, Never>?
 
-    public func registerGeofenceNotifications(notifications: [RadarNotification]) async {
+    public func registerGeofenceNotifications(geofences: [[String: Any]]) async {
+        let radarGeofences = geofences.compactMap { RadarGeofence(object: $0) }
+        await registerNotifications(geofences: radarGeofences)
+    }
+
+    public func registerNotifications(geofences: [RadarGeofence]) async {
 
         // cancel previous work
         currentTask?.cancel()
