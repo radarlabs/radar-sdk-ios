@@ -9,8 +9,145 @@ import SwiftUI
 import RadarSDK
 
 struct TestsView: View {
+    @State private var outputText: String = ""
+
     var body: some View {
         ScrollView {
+            Text(outputText)
+                .font(.system(.body, design: .monospaced))
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding()
+                .background(Color(.systemGray6))
+                .cornerRadius(8)
+                .padding(.horizontal)
+            
+            StyledButton("getVerifiedLocationToken") {
+                
+                // 1️⃣ Create notification content
+                let content = UNMutableNotificationContent()
+                content.title = "Welcome!"
+                content.body = "You arrived at the location."
+                content.sound = .default
+
+                // 2️⃣ Define geofence region
+                let center = CLLocationCoordinate2D(
+                    latitude: 40.738488,
+                    longitude: -73.991304
+                )
+
+                let region = CLCircularRegion(
+                    center: center,
+                    radius: 200, // meters
+                    identifier: "office_geofence"
+                )
+
+                region.notifyOnEntry = true
+                region.notifyOnExit = false
+
+                // 3️⃣ Create location trigger
+                let trigger = UNLocationNotificationTrigger(
+                    region: region,
+                    repeats: false
+                )
+
+                // 4️⃣ Create request
+                let request = UNNotificationRequest(
+                    identifier: "geofence_notification",
+                    content: content,
+                    trigger: trigger
+                )
+
+                // 5️⃣ Schedule notification
+                UNUserNotificationCenter.current().add(request) { error in
+                    outputText.removeAll()
+                    if let error = error {
+                        outputText.append("Error scheduling notification: \(error)")
+                    } else {
+                        outputText.append("registered \(request.identifier)")
+                    }
+                }
+            }
+            
+            StyledButton("pending requests") {
+                UNUserNotificationCenter.current().getPendingNotificationRequests { notifications in
+                    outputText.removeAll()
+                    for notification in notifications {
+                        outputText.append(notification.identifier)
+                    }
+                }
+            }
+            
+            StyledButton("pending requests") {
+                UNUserNotificationCenter.current().getNotificationSettings { settings in
+                    outputText.removeAll()
+                    switch settings.alertSetting {
+                    case .notSupported:
+                        outputText.append("alert unsupported")
+                    case .disabled:
+                        outputText.append("alert disabled")
+                    case .enabled:
+                        outputText.append("alert enabled")
+                    }
+                    outputText.append("\n")
+                    switch settings.badgeSetting {
+                    case .notSupported:
+                        outputText.append("badge unsupported")
+                    case .disabled:
+                        outputText.append("badge disabled")
+                    case .enabled:
+                        outputText.append("badge enabled")
+                    }
+                    outputText.append("\n")
+                    switch settings.lockScreenSetting {
+                    case .notSupported:
+                        outputText.append("lockscreen unsupported")
+                    case .disabled:
+                        outputText.append("lockscreen disabled")
+                    case .enabled:
+                        outputText.append("lockscreen enabled")
+                    }
+                    outputText.append("\n")
+                    switch settings.soundSetting {
+                    case .notSupported:
+                        outputText.append("sound unsupported")
+                    case .disabled:
+                        outputText.append("sound disabled")
+                    case .enabled:
+                        outputText.append("sound enabled")
+                    }
+                    outputText.append("\n")
+                    switch settings.notificationCenterSetting {
+                    case .notSupported:
+                        outputText.append("notifcenter unsupported")
+                    case .disabled:
+                        outputText.append("notifcenter disabled")
+                    case .enabled:
+                        outputText.append("notifcenter enabled")
+                    }
+                    outputText.append("\n")
+                    switch settings.authorizationStatus {
+                    case .notDetermined:
+                        outputText.append("User has not been asked for notification permission")
+
+                    case .denied:
+                        outputText.append("User denied notification permission")
+
+                    case .authorized:
+                        outputText.append("Notifications authorized")
+
+                    case .provisional:
+                        outputText.append("Provisional permission granted")
+
+                    case .ephemeral:
+                        outputText.append("Ephemeral permission (App Clips)")
+
+                    @unknown default:
+                        outputText.append("Unknown status")
+                    }
+                }
+            }
+            
+            
             StyledButton("trackOnce") {
                 Radar.trackOnce()
             }
