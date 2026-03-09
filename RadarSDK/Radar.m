@@ -129,7 +129,7 @@ BOOL _initialized = NO;
                                                 id<RadarSDKFraudProtocol> radarSDKFraud = [RadarSDKFraud sharedInstance];
                                                 if ([radarSDKFraud respondsToSelector:@selector(initializeWithOptions:)]) {
                                                     [radarSDKFraud initializeWithOptions:@{
-                                                        @"featureAEnabled": @(sdkConfiguration.featureAEnabled)
+                                                        @"sdkConfiguration": [sdkConfiguration dictionaryValue]
                                                     }];
                                                     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"RadarSDKFraud detected and initialized"];
                                                 }
