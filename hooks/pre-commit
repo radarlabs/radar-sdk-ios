@@ -1,7 +1,7 @@
 #!/bin/sh
 # Save real Radar API keys to .radar-keys before commit
 # The clean filter handles sanitization; this just persists keys for the smudge filter
-KEYS_FILE=".radar-keys"
+KEYS_FILE="$(git rev-parse --git-dir)/radar-keys"
 ZERO='0000000000000000000000000000000000000000'
 
 FILES=$(git diff --cached --name-only --diff-filter=d)
