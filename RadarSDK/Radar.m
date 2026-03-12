@@ -134,10 +134,9 @@ BOOL _initialized = NO;
             if (config.meta.pingServerConfiguration) {
                 Class RadarSDKFraud = NSClassFromString(@"RadarSDKFraud");
                 if (RadarSDKFraud != nil) {
-                    [RadarSDKFraud start:config.meta.pingServerConfiguration];
+                    [RadarSDKFraud initialize:config.meta.pingServerConfiguration];
                 }
             }
-            os_log(OS_LOG_DEFAULT, "WORO HERJLVKDJS");
 
             [self flushLogs];
         }];

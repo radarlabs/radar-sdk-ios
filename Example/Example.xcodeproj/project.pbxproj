@@ -49,6 +49,20 @@
 			remoteGlobalIDString = F6513E712E60A5F600523472;
 			remoteInfo = LocationPushExtension;
 		};
+		F65A50DD2F5F44ED00DAB9C7 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E698B7382C626AE600084371 /* RadarSDKMotion.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = E698B6672C6167A800084371;
+			remoteInfo = RadarSDKMotion;
+		};
+		F65A50DF2F5F44ED00DAB9C7 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E698B7382C626AE600084371 /* RadarSDKMotion.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = E698B6712C6167A800084371;
+			remoteInfo = RadarSDKMotionTests;
+		};
 		F6FB13892F576D3F00901678 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = DD86FCF9239185F4003225F6 /* RadarSDK.xcodeproj */;
@@ -265,6 +279,15 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		F65A50D52F5F44ED00DAB9C7 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				F65A50DE2F5F44ED00DAB9C7 /* RadarSDKMotion.framework */,
+				F65A50E02F5F44ED00DAB9C7 /* RadarSDKMotionTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		F6FB13842F576D3F00901678 /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -397,6 +420,10 @@
 					ProductGroup = F6FB13A92F576D7900901678 /* Products */;
 					ProjectRef = F6FB138D2F576D5700901678 /* RadarSDKFraud.xcodeproj */;
 				},
+				{
+					ProductGroup = F65A50D52F5F44ED00DAB9C7 /* Products */;
+					ProjectRef = E698B7382C626AE600084371 /* RadarSDKMotion.xcodeproj */;
+				},
 			);
 			projectRoot = "";
 			targets = (
@@ -408,6 +435,20 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
+		F65A50DE2F5F44ED00DAB9C7 /* RadarSDKMotion.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = RadarSDKMotion.framework;
+			remoteRef = F65A50DD2F5F44ED00DAB9C7 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F65A50E02F5F44ED00DAB9C7 /* RadarSDKMotionTests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = RadarSDKMotionTests.xctest;
+			remoteRef = F65A50DF2F5F44ED00DAB9C7 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		F6FB138A2F576D3F00901678 /* RadarSDKTests.xctest */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.cfbundle;
