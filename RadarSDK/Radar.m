@@ -135,10 +135,12 @@ BOOL _initialized = NO;
             if (RadarSDKFraud) {
                 id<RadarSDKFraudProtocol> radarSDKFraud = [RadarSDKFraud sharedInstance];
                 if ([radarSDKFraud respondsToSelector:@selector(initializeWithOptions:)]) {
-                    [radarSDKFraud initializeWithOptions:@{
-                        @"sdkConfiguration": [sdkConfiguration dictionaryValue],
-                        @"pingServerConfiguration": config.meta.pingServerConfiguration,
-                    }];
+                    NSMutableDictionary* fraudOptions = [[NSMutableDictionary alloc] init];
+                    // use setValue instead of inline initialized values to accept nil values
+                    [fraudOptions setValue:[sdkConfiguration dictionaryValue] forKey:@"sdkConfiguration"];
+                    [fraudOptions setValue:config.meta.pingServerConfiguration forKey:@"pingServerConfiguration"];
+                    
+                    [radarSDKFraud initializeWithOptions:fraudOptions];
                     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"RadarSDKFraud detected and initialized"];
                 }
             }

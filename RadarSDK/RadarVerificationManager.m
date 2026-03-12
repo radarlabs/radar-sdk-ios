@@ -97,6 +97,18 @@
             return;
         }
         
+        Class RadarSDKFraud = NSClassFromString(@"RadarSDKFraud");
+        if (RadarSDKFraud) {
+            id<RadarSDKFraudProtocol> radarSDKFraud = [RadarSDKFraud sharedInstance];
+            if ([radarSDKFraud respondsToSelector:@selector(updateOptions:)]) {
+                NSMutableDictionary* fraudOptions = [[NSMutableDictionary alloc] init];
+                // use setValue instead of inline initialized values to accept nil values
+                [fraudOptions setValue:config.meta.pingServerConfiguration forKey:@"pingServerConfiguration"];
+                
+                [radarSDKFraud updateOptions:fraudOptions];
+            }
+        }
+        
         [[RadarLocationManager sharedInstance]
          getLocationWithDesiredAccuracy:desiredAccuracy
          completionHandler:^(RadarStatus status, CLLocation *_Nullable location, BOOL stopped) {

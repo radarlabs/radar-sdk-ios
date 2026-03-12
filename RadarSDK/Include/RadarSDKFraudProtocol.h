@@ -21,7 +21,7 @@ typedef void (^RadarFraudPayloadCallback)(NSDictionary<NSString *, id> *_Nullabl
 
 - (void)getFraudPayloadWithOptions:(NSDictionary<NSString *, id> *)options completionHandler:(RadarFraudPayloadCallback)completionHandler;
 
-+ (void)start:(NSDictionary<NSString *, id> *)config;
+- (void)updateOptions:(NSDictionary<NSString *, id> *)options;
 
 @end
 

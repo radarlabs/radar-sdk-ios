@@ -37,8 +37,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         radarInitializeOptions.autoHandleNotificationDeepLinks = true
         radarInitializeOptions.silentPush = true
         
-        UserDefaults.standard.set("https://bailey-nonnebulous-nonaccidentally.ngrok-free.dev", forKey: "radar-verifiedHost")
-        UserDefaults.standard.set("https://bailey-nonnebulous-nonaccidentally.ngrok-free.dev", forKey: "radar-host")
         Radar.setAppGroup(nil)
         Radar.initialize(publishableKey: "", options: radarInitializeOptions)
         Radar.setDelegate(self)
