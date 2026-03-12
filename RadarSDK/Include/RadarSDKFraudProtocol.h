@@ -17,6 +17,8 @@ typedef void (^RadarFraudPayloadCallback)(NSDictionary<NSString *, id> *_Nullabl
 
 + (instancetype)sharedInstance;
 
+- (void)initializeWithOptions:(NSDictionary<NSString *, id> *)options;
+
 - (void)getFraudPayloadWithOptions:(NSDictionary<NSString *, id> *)options completionHandler:(RadarFraudPayloadCallback)completionHandler;
 
 + (void)start:(NSDictionary<NSString *, id> *)config;

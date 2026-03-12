@@ -25,6 +25,7 @@
 #import "RadarTripOptions.h"
 #import "RadarIndoorsProtocol.h"
 #import "RadarInAppMessageDelegate.h"
+#import "RadarSDKFraudProtocol.h"
 #import "RadarSwiftBridge.h"
 #import "RadarSDKFraudProtocol.h"
 #import <os/log.h>
@@ -123,19 +124,29 @@ BOOL _initialized = NO;
                 [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
                 [RadarSettings setSdkConfiguration:config.meta.sdkConfiguration];
             }
+            if (status == RadarStatusSuccess && config) {
+                [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
+                [RadarSettings setSdkConfiguration:config.meta.sdkConfiguration];
+            }
 
             RadarSdkConfiguration *sdkConfiguration = [RadarSettings sdkConfiguration];
+
+            Class RadarSDKFraud = NSClassFromString(@"RadarSDKFraud");
+            if (RadarSDKFraud) {
+                id<RadarSDKFraudProtocol> radarSDKFraud = [RadarSDKFraud sharedInstance];
+                if ([radarSDKFraud respondsToSelector:@selector(initializeWithOptions:)]) {
+                    [radarSDKFraud initializeWithOptions:@{
+                        @"sdkConfiguration": [sdkConfiguration dictionaryValue],
+                        @"pingServerConfiguration": config.meta.pingServerConfiguration,
+                    }];
+                    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"RadarSDKFraud detected and initialized"];
+                }
+            }
             if (sdkConfiguration.startTrackingOnInitialize && ![RadarSettings tracking]) {
                 [Radar startTrackingWithOptions:[Radar getTrackingOptions]];
             }
             if (sdkConfiguration.trackOnceOnAppOpen) {
                 [Radar trackOnceWithDesiredAccuracy:RadarTrackingOptionsDesiredAccuracyMedium beacons:[Radar getTrackingOptions].beacons completionHandler:nil];
-            }
-            if (config.meta.pingServerConfiguration) {
-                Class RadarSDKFraud = NSClassFromString(@"RadarSDKFraud");
-                if (RadarSDKFraud != nil) {
-                    [RadarSDKFraud initialize:config.meta.pingServerConfiguration];
-                }
             }
 
             [self flushLogs];
