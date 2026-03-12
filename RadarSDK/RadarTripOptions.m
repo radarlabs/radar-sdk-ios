@@ -19,7 +19,6 @@ static NSString *const kScheduledArrivalAt = @"scheduledArrivalAt";
 static NSString *const kApproachingThreshold = @"approachingThreshold";
 static NSString *const kStartTracking = @"startTracking";
 
-
 - (instancetype)initWithExternalId:(NSString *_Nonnull)externalId
             destinationGeofenceTag:(NSString *_Nullable)destinationGeofenceTag
      destinationGeofenceExternalId:(NSString *_Nullable)destinationGeofenceExternalId {

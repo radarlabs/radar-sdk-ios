@@ -845,6 +845,10 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     }
 
     [self callCompletionHandlersWithStatus:RadarStatusSuccess location:location];
+    
+    if ([RadarSettings sdkConfiguration].useSyncRegion && ![RadarSyncManager hasSyncedRegion]) {
+        [RadarSyncManager fetchSyncRegion];
+    }
 
     CLLocation *sendLocation = location;
 

@@ -55,6 +55,8 @@ public final class RadarSyncManager: NSObject {
                 return
             }
             
+            NSLog("📡 Sync region response: %@", res)
+            
             if let geofencesArray = res["geofences"] {
                 let geofences = RadarSwift.bridge?.geofencesFromObject(geofencesArray) ?? []
                 RadarSwift.bridge?.setSyncedGeofences(geofences)
@@ -110,7 +112,7 @@ public final class RadarSyncManager: NSObject {
             return true
         }
         
-        if Radar.getTripOptions() != nil {
+        if Radar.getTripOptions() != nil  && options.type != .onTrip {
             RadarLogger.shared.debug("SyncManager: On active trip, should track")
             return true
         }
@@ -351,6 +353,10 @@ public final class RadarSyncManager: NSObject {
     
     // MARK: - State Detection
     
+    @objc public static func hasSyncedRegion() -> Bool {
+        return RadarSwift.bridge?.syncedRegion() != nil
+    }
+    
     @objc public static func hasGeofenceStateChanged(location: CLLocation) -> Bool {
         let lastKnownGeofenceIds = Set(RadarSwift.bridge?.lastSyncedGeofenceIds() ?? [])
         let currentGeofences = getGeofences(for: location)
@@ -501,5 +507,21 @@ public final class RadarSyncManager: NSObject {
         
         let currentBeacons = getBeacons(for: location)
         RadarSwift.bridge?.setLastSyncedBeaconIds(currentBeacons.compactMap { $0._id })
+    }
+    
+    
+    // The following 4 methods are only here for map display QA testing will remove before shipping
+    
+    @objc public static func getSyncedRegion() -> CLCircularRegion? {
+        return RadarSwift.bridge?.syncedRegion()
+    }
+    @objc public static func getSyncedGeofences() -> [RadarGeofence] {
+        return RadarSwift.bridge?.syncedGeofences() ?? []
+    }
+    @objc public static func getSyncedPlaces() -> [RadarPlace] {
+        return RadarSwift.bridge?.syncedPlaces() ?? []
+    }
+    @objc public static func getSyncedBeacons() -> [RadarBeacon] {
+        return RadarSwift.bridge?.syncedBeacons() ?? []
     }
 }
