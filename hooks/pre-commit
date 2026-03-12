@@ -16,7 +16,9 @@ for file in $FILES; do
     for key in $(grep -oE 'prj_(test|live)_(pk|sk)_[0-9a-fA-F]{40}' "$file" 2>/dev/null); do
         case "$key" in *"$ZERO") continue ;; esac
         prefix=$(echo "$key" | sed -E 's/[0-9a-fA-F]{40}$//')
-        if ! grep -q "^${prefix}" "$KEYS_FILE" 2>/dev/null; then
+        if grep -q "^${prefix}" "$KEYS_FILE" 2>/dev/null; then
+            sed -i.bak "s/^${prefix}[0-9a-fA-F]\{40\}$/${key}/" "$KEYS_FILE" && rm -f "$KEYS_FILE.bak"
+        else
             echo "$key" >> "$KEYS_FILE"
         fi
     done
