@@ -16,7 +16,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nullable, strong, nonatomic, readwrite) RadarTrackingOptions *trackingOptions;
 @property (nullable, strong, nonatomic, readwrite) RadarSdkConfiguration *sdkConfiguration;
-@property (nullable, strong, nonatomic, readwrite) NSDictionary *pingServerConfiguration;
 
 + (RadarMeta *_Nullable)fromDictionary:(NSDictionary *_Nullable)dict;
 

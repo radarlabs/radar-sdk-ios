@@ -101,11 +101,7 @@
         if (RadarSDKFraud) {
             id<RadarSDKFraudProtocol> radarSDKFraud = [RadarSDKFraud sharedInstance];
             if ([radarSDKFraud respondsToSelector:@selector(updateOptions:)]) {
-                NSMutableDictionary* fraudOptions = [[NSMutableDictionary alloc] init];
-                // use setValue instead of inline initialized values to accept nil values
-                [fraudOptions setValue:config.meta.pingServerConfiguration forKey:@"pingServerConfiguration"];
-                
-                [radarSDKFraud updateOptions:fraudOptions];
+                [radarSDKFraud updateOptions:config.metaDict];
             }
         }
         

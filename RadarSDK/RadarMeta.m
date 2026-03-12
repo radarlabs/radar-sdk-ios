@@ -22,10 +22,6 @@
         if (sdkConfigurationObj && [sdkConfigurationObj isKindOfClass:[NSDictionary class]]) {
             meta.sdkConfiguration = [[RadarSdkConfiguration alloc] initWithDict:sdkConfigurationObj];
         }
-        id pingServerConfigurationObj = dict[@"pingServerConfiguration"];
-        if (pingServerConfigurationObj && [pingServerConfigurationObj isKindOfClass:[NSDictionary class]]) {
-            meta.pingServerConfiguration = pingServerConfigurationObj;
-        }
     }
 
     return meta;
