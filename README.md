@@ -23,7 +23,11 @@ See a Swift example app in `Example/`.
 
 To run the example app, clone this repository, add your publishable API key in `AppDelegate.swift`, and build the app.
 
-Setup Radar public key check pre-commit hook with `cp -r hooks .git` to prevent accidental key leak when working with the Example app.
+Setup Radar key check pre-commit hook to prevent accidental key leak when working with the Example app.
+```
+git config filter.radar-keys.clean hooks/clean-filter
+git config filter.radar-keys.smudge hooks/smudge-filter
+```
 
 ## SPM
 
