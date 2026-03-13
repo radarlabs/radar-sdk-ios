@@ -154,7 +154,7 @@ BOOL _initialized = NO;
 
 + (void)initializeWithAuthToken:(NSString *)token options:(RadarInitializeOptions *)options {
     NSString *key = [NSString stringWithFormat:@"Bearer %@", token];
-    [self initializeWithPublishableKey:key options:nil];
+    [self initializeWithPublishableKey:key options:options];
 }
 
 + (void)initializeWithPublishableKey:(NSString *)publishableKey {
