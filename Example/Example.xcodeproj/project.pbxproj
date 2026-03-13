@@ -30,8 +30,8 @@
 		F64C7F462F64569F00943B7A /* RadarSDK.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F64C7F0B2F64564F00943B7A /* RadarSDK.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		F64C7F472F6456A400943B7A /* RadarSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F64C7F0B2F64564F00943B7A /* RadarSDK.framework */; };
 		F64C7F482F6456A400943B7A /* RadarSDK.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F64C7F0B2F64564F00943B7A /* RadarSDK.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		F64C80472F645D2A00943B7A /* RadarSDKFraud.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F64C80442F645C3E00943B7A /* RadarSDKFraud.framework */; };
-		F64C80482F645D2A00943B7A /* RadarSDKFraud.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F64C80442F645C3E00943B7A /* RadarSDKFraud.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		F64C80D62F64876500943B7A /* RadarSDKFraud.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F64C7FB52F645ABD00943B7A /* RadarSDKFraud.framework */; };
+		F64C80D72F64876500943B7A /* RadarSDKFraud.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F64C7FB52F645ABD00943B7A /* RadarSDKFraud.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		F6513E792E60A5F600523472 /* LocationPushExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = F6513E722E60A5F600523472 /* LocationPushExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		F6513F602E6B736200523472 /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6513F5F2E6B736200523472 /* MainView.swift */; };
 		F65F793E2EF458E600399E84 /* MyIAMDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F65F79382EF458E000399E84 /* MyIAMDelegate.swift */; };
@@ -97,7 +97,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				F64C80482F645D2A00943B7A /* RadarSDKFraud.framework in Embed Frameworks */,
+				F64C80D72F64876500943B7A /* RadarSDKFraud.framework in Embed Frameworks */,
 				F64C7F442F64568E00943B7A /* RadarSDKMotion.framework in Embed Frameworks */,
 				F64C7F422F64568E00943B7A /* RadarSDK.framework in Embed Frameworks */,
 			);
@@ -164,7 +164,6 @@
 		F63DDAD42E746BB0006991F5 /* StyledButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StyledButton.swift; sourceTree = "<group>"; };
 		F64C7FB22F645A9F00943B7A /* RadarSDKFraud.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RadarSDKFraud.xcodeproj; path = ../RadarSDKFraud/RadarSDKFraud.xcodeproj; sourceTree = SOURCE_ROOT; };
 		F64C7FB52F645ABD00943B7A /* RadarSDKFraud.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = RadarSDKFraud.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		F64C7FBA2F645ACB00943B7A /* RadarSDKFraud.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = RadarSDKFraud.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F6513E722E60A5F600523472 /* LocationPushExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = LocationPushExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		F6513F5F2E6B736200523472 /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
 		F65F79382EF458E000399E84 /* MyIAMDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyIAMDelegate.swift; sourceTree = "<group>"; };
@@ -222,7 +221,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F64C80472F645D2A00943B7A /* RadarSDKFraud.framework in Frameworks */,
+				F64C80D62F64876500943B7A /* RadarSDKFraud.framework in Frameworks */,
 				F64C7F432F64568E00943B7A /* RadarSDKMotion.framework in Frameworks */,
 				F64C7F412F64568E00943B7A /* RadarSDK.framework in Frameworks */,
 			);
@@ -291,7 +290,6 @@
 		DD86FD03239185FB003225F6 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				F64C7FBA2F645ACB00943B7A /* RadarSDKFraud.framework */,
 				F64C7FB52F645ABD00943B7A /* RadarSDKFraud.framework */,
 				BA51987B2ED10AEA004A3B35 /* WidgetKit.framework */,
 				BA51987D2ED10AEA004A3B35 /* SwiftUI.framework */,
