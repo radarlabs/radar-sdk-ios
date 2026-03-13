@@ -179,6 +179,11 @@ BOOL _initialized = NO;
     return [RadarSettings setPublishableKey:key];
 }
 
++ (void)setAuthToken:(NSString *)token {
+    NSString *key = [NSString stringWithFormat:@"Bearer %@", token];
+    [RadarSettings setPublishableKey:key];
+}
+
 + (void)setUserId:(NSString *)userId {
     [RadarSettings setUserId:userId];
     if ([RadarSettings sdkConfiguration].syncAfterSetUser) {

@@ -368,9 +368,14 @@ typedef void (^_Nonnull RadarIndoorsScanCompletionHandler)(NSString *_Nullable r
 
 
 /**
- Sets the publishable key without initializing. Primarily used for ephemeral API keys.
+ Sets the publishable key without initializing.
  */
 + (void)setPublishableKey:(NSString *_Nonnull)key;
+
+/**
+ Sets the auth token without initializing.
+ */
++ (void)setAuthToken:(NSString *_Nonnull)token;
 
 /**
  Identifies the user.
