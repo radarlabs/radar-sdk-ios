@@ -152,6 +152,11 @@ BOOL _initialized = NO;
     _initialized = YES;
 }
 
++ (void)initializeWithAuthToken:(NSString *)token options:(RadarInitializeOptions *)options {
+    NSString *key = [NSString stringWithFormat:@"Bearer %@", token];
+    [self initializeWithPublishableKey:key options:nil];
+}
+
 + (void)initializeWithPublishableKey:(NSString *)publishableKey {
     [self initializeWithPublishableKey:publishableKey options:nil];
 }
