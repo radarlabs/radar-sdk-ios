@@ -69,7 +69,7 @@
         dispatch_async(dispatch_get_main_queue(), ^{
             [Radar sendLog:level type:type message:message];
 
-            NSString *log = [NSString stringWithFormat:@"%@ | backgroundTimeRemaining = %g", message, [RadarUtils backgroundTimeRemaining]];
+            NSString *log = [NSString stringWithFormat:@"%@ | backgroundTimeRemaining = %g", message, [RadarUtilsDeprecated backgroundTimeRemaining]];
             
             // don't output the log to console in testing
             if (NSClassFromString(@"XCTestCase") == nil) {
