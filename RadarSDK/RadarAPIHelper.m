@@ -50,26 +50,6 @@
                logPayload:(BOOL)logPayload
           extendedTimeout:(BOOL)extendedTimeout
         completionHandler:(RadarAPICompletionHandler)completionHandler {
-    [self requestWithMethod:method
-                        url:url
-                    headers:headers
-                     params:params
-                      sleep:sleep
-                 logPayload:logPayload
-            extendedTimeout:extendedTimeout
-                    isRetry:NO
-          completionHandler:completionHandler];
-}
-
-- (void)requestWithMethod:(NSString *)method
-                      url:(NSString *)url
-                  headers:(NSDictionary *)headers
-                   params:(NSDictionary *)params
-                    sleep:(BOOL)sleep
-               logPayload:(BOOL)logPayload
-          extendedTimeout:(BOOL)extendedTimeout
-                  isRetry:(BOOL)isRetry
-        completionHandler:(RadarAPICompletionHandler)completionHandler {
     dispatch_async(self.queue, ^{
         if (sleep) {
             dispatch_semaphore_wait(self.semaphore, DISPATCH_TIME_FOREVER);
@@ -138,29 +118,6 @@
                 NSTimeInterval latency = [requestStart timeIntervalSinceNow] * -1;
 
                 if (error) {
-                    BOOL isLostConnection = ([error.domain isEqualToString:NSURLErrorDomain] &&
-                                             error.code == NSURLErrorNetworkConnectionLost);
-
-                    if (isLostConnection && !isRetry) {
-                        [[RadarLogger sharedInstance]
-                            logWithLevel:RadarLogLevelDebug
-                                 message:[NSString stringWithFormat:@"📍 Radar API retrying after lost connection | url = %@", url]];
-                        // Must signal before dispatching retry to avoid semaphore deadlock
-                        if (sleep) {
-                            dispatch_semaphore_signal(self.semaphore);
-                        }
-                        [self requestWithMethod:method
-                                            url:url
-                                        headers:headers
-                                         params:params
-                                          sleep:sleep
-                                     logPayload:logPayload
-                                extendedTimeout:extendedTimeout
-                                        isRetry:YES
-                              completionHandler:completionHandler];
-                        return;
-                    }
-
                     dispatch_async(dispatch_get_main_queue(), ^{
                         [[RadarLogger sharedInstance]
                             logWithLevel:RadarLogLevelError
@@ -242,17 +199,25 @@
                 }
             };
 
-            NSURLSessionDataTask *task = [session dataTaskWithRequest:req completionHandler:dataTaskCompletionHandler];
+            void (^dataTaskRetryHandler)(NSData *, NSURLResponse *, NSError *) = ^(NSData *data, NSURLResponse *response, NSError *error) {
+                if (error && [error.domain isEqualToString:NSURLErrorDomain] && error.code == NSURLErrorNetworkConnectionLost) {
+                    [[RadarLogger sharedInstance]
+                        logWithLevel:RadarLogLevelDebug
+                             message:[NSString stringWithFormat:@"📍 Radar API retrying after lost connection | url = %@", url]];
+                    NSURLSessionDataTask *retryTask = [session dataTaskWithRequest:req completionHandler:dataTaskCompletionHandler];
+                    [retryTask resume];
+                } else {
+                    dataTaskCompletionHandler(data, response, error);
+                }
+            };
+
+            NSURLSessionDataTask *task = [session dataTaskWithRequest:req completionHandler:dataTaskRetryHandler];
             [task resume];
         } @catch (NSException *exception) {
             if (sleep) {
                 dispatch_semaphore_signal(self.semaphore);
             }
-            if (completionHandler) {
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    completionHandler(RadarStatusErrorBadRequest, nil);
-                });
-            }
+            return completionHandler(RadarStatusErrorBadRequest, nil);
         }
     });
 }
