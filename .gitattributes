@@ -1,0 +1,3 @@
+*.swift filter=radar-keys
+*.m filter=radar-keys
+*.h filter=radar-keys
