@@ -120,7 +120,7 @@ BOOL _initialized = NO;
                                                 [RadarSettings setSdkConfiguration:config.meta.sdkConfiguration];
                                                 
                                                 if ([RadarSettings sdkConfiguration].useSyncRegion) {
-                                                    [RadarSyncManager startWithInterval:300];
+                                                    [RadarSyncManager startWithInterval:21600];
                                                 } else {
                                                     [RadarSyncManager stop];
                                                 }
@@ -1506,7 +1506,7 @@ BOOL _initialized = NO;
             [RadarSettings setSdkConfiguration:config.meta.sdkConfiguration];
             
             if ([RadarSettings sdkConfiguration].useSyncRegion) {
-                [RadarSyncManager startWithInterval:300];
+                [RadarSyncManager startWithInterval:21600];
             } else {
                 [RadarSyncManager stop];
             }

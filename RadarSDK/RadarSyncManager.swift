@@ -54,9 +54,7 @@ public final class RadarSyncManager: NSObject {
                 RadarLogger.shared.warning("SyncManager: Sync region request failed")
                 return
             }
-            
-            NSLog("📡 Sync region response: %@", res)
-            
+                        
             if let geofencesArray = res["geofences"] {
                 let geofences = RadarSwift.bridge?.geofencesFromObject(geofencesArray) ?? []
                 RadarSwift.bridge?.setSyncedGeofences(geofences)
@@ -82,9 +80,18 @@ public final class RadarSyncManager: NSObject {
                     radius: radius,
                     identifier: "\(syncRegionIdentifierPrefix)\(UUID().uuidString)"
                 )
+                
+                let oldRegion = RadarSwift.bridge?.syncedRegion()
+                if oldRegion == nil {
+                    RadarLogger.shared.info("SyncManager: Initial sync region set | lat = \(lat); lng = \(lng); radius = \(radius)")
+                } else if oldRegion?.center.latitude != lat || oldRegion?.center.longitude != lng || oldRegion?.radius != radius {
+                    RadarLogger.shared.info("SyncManager: Sync region changed | lat = \(lat); lng = \(lng); radius = \(radius)")
+                }
                 RadarSwift.bridge?.setSyncedRegion(syncedRegion)
-                RadarLogger.shared.debug("SyncManager: Stored region | lat = \(lat); lng = \(lng); radius = \(radius)")
             } else {
+                if RadarSwift.bridge?.syncedRegion() != nil {
+                    RadarLogger.shared.info("SyncManager: Sync region cleared")
+                }
                 RadarSwift.bridge?.setSyncedRegion(nil)
             }
         }
@@ -94,37 +101,41 @@ public final class RadarSyncManager: NSObject {
     
     @objc public static func shouldTrack(location: CLLocation, options: RadarTrackingOptions) -> Bool {
         guard options.syncLocations == .events else {
+            RadarLogger.shared.info("SyncManager: shouldTrack = YES | reason: syncLocations != events")
             return true
         }
         
         guard RadarSwift.bridge?.syncedRegion() != nil else {
-            RadarLogger.shared.debug("SyncManager: No synced region, should track")
+            RadarLogger.shared.info("SyncManager: No synced region, should track")
             return true
         }
         
         if isNearSyncedRegionBoundary(location: location) {
-            RadarLogger.shared.debug("SyncManager: Near synced region boundary, refreshing")
+            RadarLogger.shared.info("SyncManager: Near synced region boundary, refreshing")
             fetchSyncRegion()
         }
         
         if isOutsideSyncedRegion(location: location) {
-            RadarLogger.shared.debug("SyncManager: Outside synced region, should track")
+            RadarLogger.shared.info("SyncManager: Outside synced region, should track")
             return true
         }
         
         if Radar.getTripOptions() != nil  && options.type != .onTrip {
-            RadarLogger.shared.debug("SyncManager: On active trip, should track")
+            RadarLogger.shared.info("SyncManager: On active trip, should track")
             return true
         }
         
-        if hasGeofenceStateChanged(location: location)
-            || hasPlaceStateChanged(location: location)
-            || hasBeaconStateChanged(location: location) {
+        let geofenceChanged = hasGeofenceStateChanged(location: location)
+        let placeChanged = hasPlaceStateChanged(location: location)
+        let beaconChanged = hasBeaconStateChanged(location: location)
+        
+        if geofenceChanged || placeChanged || beaconChanged {
+            RadarLogger.shared.info("SyncManager: shouldTrack = YES | reason: state changed (geofence=\(geofenceChanged), place=\(placeChanged), beacon=\(beaconChanged))")
             updateLastKnownSyncState(location: location)
             return true
         }
         
-        RadarLogger.shared.debug("SyncManager: No state change detected, skipping track")
+        RadarLogger.shared.info("SyncManager: No state change detected, skipping track")
         return false
     }
     
