@@ -349,6 +349,19 @@ typedef void (^_Nonnull RadarIndoorsScanCompletionHandler)(NSString *_Nullable r
 
  @warning Call this method from the main thread in your `AppDelegate` class before calling any other Radar methods.
 
+ @param authToken Your auth token.
+ @param options Radar SDK initialization options.
+
+ @see https://radar.com/documentation/sdk/ios#initialize-sdk
+ */
++ (void)initializeWithAuthToken:(NSString *_Nonnull)authToken options:(RadarInitializeOptions *_Nullable)options NS_SWIFT_NAME(initialize(authToken:options:));
+
+
+/**
+ Initializes the Radar SDK.
+
+ @warning Call this method from the main thread in your `AppDelegate` class before calling any other Radar methods.
+
  @param publishableKey Your publishable API key.
  @param options Radar SDK initialization options.
 
@@ -365,6 +378,17 @@ typedef void (^_Nonnull RadarIndoorsScanCompletionHandler)(NSString *_Nullable r
  Gets the version number of the Radar SDK, such as "3.5.1" or "3.5.1-beta.2".
  */
 @property (readonly, class) NSString *sdkVersion;
+
+
+/**
+ Sets the publishable key without initializing.
+ */
++ (void)setPublishableKey:(NSString *_Nonnull)key;
+
+/**
+ Sets the auth token without initializing.
+ */
++ (void)setAuthToken:(NSString *_Nonnull)token;
 
 /**
  Identifies the user.

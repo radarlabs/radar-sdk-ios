@@ -152,6 +152,11 @@ BOOL _initialized = NO;
     _initialized = YES;
 }
 
++ (void)initializeWithAuthToken:(NSString *)token options:(RadarInitializeOptions *)options {
+    NSString *key = [NSString stringWithFormat:@"Bearer %@", token];
+    [self initializeWithPublishableKey:key options:options];
+}
+
 + (void)initializeWithPublishableKey:(NSString *)publishableKey {
     [self initializeWithPublishableKey:publishableKey options:nil];
 }
@@ -173,6 +178,15 @@ BOOL _initialized = NO;
 
 + (NSString *_Nullable)getPublishableKey {
     return [RadarSettings publishableKey];
+}
+
++ (void)setPublishableKey:(NSString *)key {
+    return [RadarSettings setPublishableKey:key];
+}
+
++ (void)setAuthToken:(NSString *)token {
+    NSString *key = [NSString stringWithFormat:@"Bearer %@", token];
+    [RadarSettings setPublishableKey:key];
 }
 
 + (void)setUserId:(NSString *)userId {
