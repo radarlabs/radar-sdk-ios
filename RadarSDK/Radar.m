@@ -27,6 +27,8 @@
 #import "RadarInAppMessageDelegate.h"
 #import "RadarSDKFraudProtocol.h"
 #import "RadarSwiftBridge.h"
+#import "RadarSDKFraudProtocol.h"
+#import <os/log.h>
 
 #if __has_include(<RadarSDK/RadarSDK-Swift.h>)
 #import <RadarSDK/RadarSDK-Swift.h>
@@ -41,6 +43,7 @@
 @end
 
 @implementation Radar
+
 
 #pragma mark - Initialization
 
@@ -117,32 +120,34 @@ BOOL _initialized = NO;
         [[RadarAPIClient sharedInstance] getConfigForUsage:@"initialize"
                                                   verified:NO
                                          completionHandler:^(RadarStatus status, RadarConfig *config) {
-                                            if (status == RadarStatusSuccess && config) {
-                                                [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
-                                                [RadarSettings setSdkConfiguration:config.meta.sdkConfiguration];
-                                            }
+            if (status == RadarStatusSuccess && config) {
+                [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
+                [RadarSettings setSdkConfiguration:config.meta.sdkConfiguration];
+            }
+            if (status == RadarStatusSuccess && config) {
+                [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
+                [RadarSettings setSdkConfiguration:config.meta.sdkConfiguration];
+            }
 
-                                            RadarSdkConfiguration *sdkConfiguration = [RadarSettings sdkConfiguration];
+            RadarSdkConfiguration *sdkConfiguration = [RadarSettings sdkConfiguration];
 
-                                            Class RadarSDKFraud = NSClassFromString(@"RadarSDKFraud");
-                                            if (RadarSDKFraud) {
-                                                id<RadarSDKFraudProtocol> radarSDKFraud = [RadarSDKFraud sharedInstance];
-                                                if ([radarSDKFraud respondsToSelector:@selector(initializeWithOptions:)]) {
-                                                    [radarSDKFraud initializeWithOptions:@{
-                                                        @"sdkConfiguration": [sdkConfiguration dictionaryValue]
-                                                    }];
-                                                    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"RadarSDKFraud detected and initialized"];
-                                                }
-                                            }
-                                            if (sdkConfiguration.startTrackingOnInitialize && ![RadarSettings tracking]) {
-                                                [Radar startTrackingWithOptions:[Radar getTrackingOptions]];
-                                            }
-                                            if (sdkConfiguration.trackOnceOnAppOpen) {
-                                                [Radar trackOnceWithDesiredAccuracy:RadarTrackingOptionsDesiredAccuracyMedium beacons:[Radar getTrackingOptions].beacons completionHandler:nil];
-                                            }
+            Class RadarSDKFraud = NSClassFromString(@"RadarSDKFraud");
+            if (RadarSDKFraud) {
+                id<RadarSDKFraudProtocol> radarSDKFraud = [RadarSDKFraud sharedInstance];
+                if ([radarSDKFraud respondsToSelector:@selector(initializeWithOptions:)]) {
+                    [radarSDKFraud initializeWithOptions:config.metaDict];
+                    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"RadarSDKFraud detected and initialized"];
+                }
+            }
+            if (sdkConfiguration.startTrackingOnInitialize && ![RadarSettings tracking]) {
+                [Radar startTrackingWithOptions:[Radar getTrackingOptions]];
+            }
+            if (sdkConfiguration.trackOnceOnAppOpen) {
+                [Radar trackOnceWithDesiredAccuracy:RadarTrackingOptionsDesiredAccuracyMedium beacons:[Radar getTrackingOptions].beacons completionHandler:nil];
+            }
 
-                                            [self flushLogs];
-                                        }];
+            [self flushLogs];
+        }];
     }];
     
     if (options.silentPush) {

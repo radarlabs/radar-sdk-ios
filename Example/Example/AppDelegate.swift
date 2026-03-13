@@ -37,9 +37,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         radarInitializeOptions.autoHandleNotificationDeepLinks = true
         radarInitializeOptions.silentPush = true
         
-        Radar.setAppGroup("group.waypoint.data")
-        Radar.initialize(publishableKey: "prj_test_pk_0000000000000000000000000000000000000000", options: radarInitializeOptions )
-        Radar.setMetadata([ "foo": "bar" ])
+        Radar.setAppGroup(nil)
+        Radar.initialize(publishableKey: "", options: radarInitializeOptions)
         Radar.setDelegate(self)
         Radar.setVerifiedDelegate(self)
         Radar.setInAppMessageDelegate(MyIAMDelegate())
