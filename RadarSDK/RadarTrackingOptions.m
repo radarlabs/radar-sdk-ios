@@ -32,6 +32,13 @@ NSString *const kBeacons = @"beacons";
 NSString *const kUseIndoorScan = @"useIndoorScan";
 NSString *const kUseMotion = @"useMotion";
 NSString *const kUsePressure = @"usePressure";
+NSString *const kLiveUpdateConfiguration = @"liveUpdateConfiguration";
+
+NSString *const kLiveUpdateConfigurationDefault = @"default";
+NSString *const kLiveUpdateConfigurationAutomotiveNavigation = @"automotiveNavigation";
+NSString *const kLiveUpdateConfigurationOtherNavigation = @"otherNavigation";
+NSString *const kLiveUpdateConfigurationFitness = @"fitness";
+NSString *const kLiveUpdateConfigurationAirborne = @"airborne";
 
 NSString *const kDesiredAccuracyHigh = @"high";
 NSString *const kDesiredAccuracyMedium = @"medium";
@@ -69,6 +76,7 @@ NSString *const kSyncNone = @"none";
     options.useIndoorScan = NO;
     options.useMotion = NO;
     options.usePressure = NO;
+    options.liveUpdateConfiguration = RadarTrackingOptionsLiveUpdateConfigurationDefault;
     return options;
 }
 
@@ -96,6 +104,7 @@ NSString *const kSyncNone = @"none";
     options.useIndoorScan = NO;
     options.useMotion = NO;
     options.usePressure = NO;
+    options.liveUpdateConfiguration = RadarTrackingOptionsLiveUpdateConfigurationOtherNavigation;
     return options;
 }
 
@@ -123,7 +132,46 @@ NSString *const kSyncNone = @"none";
     options.useIndoorScan = NO;
     options.useMotion = NO;
     options.usePressure = NO;
+    options.liveUpdateConfiguration = RadarTrackingOptionsLiveUpdateConfigurationOtherNavigation;
     return options;
+}
+
++ (NSString *)stringForLiveUpdateConfiguration:(RadarTrackingOptionsLiveUpdateConfiguration)liveUpdateConfiguration {
+    NSString *str;
+    switch (liveUpdateConfiguration) {
+    case RadarTrackingOptionsLiveUpdateConfigurationDefault:
+        str = kLiveUpdateConfigurationDefault;
+        break;
+    case RadarTrackingOptionsLiveUpdateConfigurationAutomotiveNavigation:
+        str = kLiveUpdateConfigurationAutomotiveNavigation;
+        break;
+    case RadarTrackingOptionsLiveUpdateConfigurationOtherNavigation:
+        str = kLiveUpdateConfigurationOtherNavigation;
+        break;
+    case RadarTrackingOptionsLiveUpdateConfigurationFitness:
+        str = kLiveUpdateConfigurationFitness;
+        break;
+    case RadarTrackingOptionsLiveUpdateConfigurationAirborne:
+        str = kLiveUpdateConfigurationAirborne;
+        break;
+    default:
+        str = kLiveUpdateConfigurationDefault;
+    }
+    return str;
+}
+
++ (RadarTrackingOptionsLiveUpdateConfiguration)liveUpdateConfigurationForString:(NSString *)str {
+    RadarTrackingOptionsLiveUpdateConfiguration config = RadarTrackingOptionsLiveUpdateConfigurationDefault;
+    if ([str isEqualToString:kLiveUpdateConfigurationAutomotiveNavigation]) {
+        config = RadarTrackingOptionsLiveUpdateConfigurationAutomotiveNavigation;
+    } else if ([str isEqualToString:kLiveUpdateConfigurationOtherNavigation]) {
+        config = RadarTrackingOptionsLiveUpdateConfigurationOtherNavigation;
+    } else if ([str isEqualToString:kLiveUpdateConfigurationFitness]) {
+        config = RadarTrackingOptionsLiveUpdateConfigurationFitness;
+    } else if ([str isEqualToString:kLiveUpdateConfigurationAirborne]) {
+        config = RadarTrackingOptionsLiveUpdateConfigurationAirborne;
+    }
+    return config;
 }
 
 + (NSString *)stringForDesiredAccuracy:(RadarTrackingOptionsDesiredAccuracy)desiredAccuracy {
@@ -254,6 +302,9 @@ NSString *const kSyncNone = @"none";
     options.useIndoorScan = [dict[kUseIndoorScan] boolValue];
     options.useMotion = [dict[kUseMotion] boolValue];
     options.usePressure = [dict[kUsePressure] boolValue];
+    if (dict[kLiveUpdateConfiguration]) {
+        options.liveUpdateConfiguration = [RadarTrackingOptions liveUpdateConfigurationForString:dict[kLiveUpdateConfiguration]];
+    }
     return options;
 }
 
@@ -289,6 +340,7 @@ NSString *const kSyncNone = @"none";
     dict[kUseIndoorScan] = @(self.useIndoorScan);
     dict[kUseMotion] = @(self.useMotion);
     dict[kUsePressure] = @(self.usePressure);
+    dict[kLiveUpdateConfiguration] = [RadarTrackingOptions stringForLiveUpdateConfiguration:self.liveUpdateConfiguration];
     return dict;
 }
 
@@ -318,7 +370,8 @@ NSString *const kSyncNone = @"none";
            self.useStoppedGeofence == options.useStoppedGeofence && self.stoppedGeofenceRadius == options.stoppedGeofenceRadius &&
            self.useMovingGeofence == options.useMovingGeofence && self.movingGeofenceRadius == options.movingGeofenceRadius && self.syncGeofences == options.syncGeofences &&
            self.useVisits == options.useVisits && self.useSignificantLocationChanges == options.useSignificantLocationChanges && self.beacons == options.beacons &&
-           self.useIndoorScan == options.useIndoorScan && self.useMotion == options.useMotion && self.usePressure == options.usePressure;
+           self.useIndoorScan == options.useIndoorScan && self.useMotion == options.useMotion && self.usePressure == options.usePressure &&
+           self.liveUpdateConfiguration == options.liveUpdateConfiguration;
 }
 
 @end

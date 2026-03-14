@@ -39,6 +39,7 @@
     _useForegroundLocationUpdatedAtMsDiff = NO;
     _useNotificationDiff = NO;
     _syncAfterSetUser = NO;
+    _useModernLocationManager = NO;
 
     if (dict == nil) {
         return self;
@@ -101,6 +102,11 @@
         _syncAfterSetUser = [(NSNumber *)syncAfterSetUserObj boolValue];
     }
 
+    NSObject *useModernLocationManagerObj = dict[@"useModernLocationManager"];
+    if (useModernLocationManagerObj && [useModernLocationManagerObj isKindOfClass:[NSNumber class]]) {
+        _useModernLocationManager = [(NSNumber *)useModernLocationManagerObj boolValue];
+    }
+
     return self;
 }
 
@@ -118,7 +124,8 @@
     dict[@"useForegroundLocationUpdatedAtMsDiff"] = @(_useForegroundLocationUpdatedAtMsDiff);
     dict[@"useNotificationDiff"] = @(_useNotificationDiff);
     dict[@"syncAfterSetUser"] = @(_syncAfterSetUser);
-    
+    dict[@"useModernLocationManager"] = @(_useModernLocationManager);
+
     return dict;
 }
 

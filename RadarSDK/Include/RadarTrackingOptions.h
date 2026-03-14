@@ -47,6 +47,23 @@ typedef NS_ENUM(NSInteger, RadarTrackingOptionsSyncLocations) {
 };
 
 /**
+ The live update configuration options for the modern location manager (iOS 17+).
+ Maps to CLLocationUpdate.LiveConfiguration.
+ */
+typedef NS_ENUM(NSInteger, RadarTrackingOptionsLiveUpdateConfiguration) {
+    /// Default configuration
+    RadarTrackingOptionsLiveUpdateConfigurationDefault,
+    /// Automotive navigation configuration
+    RadarTrackingOptionsLiveUpdateConfigurationAutomotiveNavigation,
+    /// Other navigation configuration
+    RadarTrackingOptionsLiveUpdateConfigurationOtherNavigation,
+    /// Fitness configuration
+    RadarTrackingOptionsLiveUpdateConfigurationFitness,
+    /// Airborne configuration
+    RadarTrackingOptionsLiveUpdateConfigurationAirborne
+};
+
+/**
  An options class used to configure background tracking.
  @see https://radar.com/documentation/sdk/ios
  */
@@ -170,6 +187,12 @@ typedef NS_ENUM(NSInteger, RadarTrackingOptionsSyncLocations) {
 @property (nonatomic, assign) BOOL usePressure;
 
 /**
+ Determines the live update configuration for the modern location manager (iOS 17+).
+ Only used when `useModernLocationManager` is enabled in the SDK configuration.
+ */
+@property (nonatomic, assign) RadarTrackingOptionsLiveUpdateConfiguration liveUpdateConfiguration;
+
+/**
  Updates about every 30 seconds while moving or stopped. Moderate battery usage. Shows the flashing blue status bar during tracking.
  @see https://developer.apple.com/documentation/corelocation/cllocationmanager/2923541-showsbackgroundlocationindicator
  */
@@ -190,6 +213,8 @@ typedef NS_ENUM(NSInteger, RadarTrackingOptionsSyncLocations) {
  */
 @property (class, copy, readonly) RadarTrackingOptions *presetEfficient;
 
++ (NSString *)stringForLiveUpdateConfiguration:(RadarTrackingOptionsLiveUpdateConfiguration)liveUpdateConfiguration;
++ (RadarTrackingOptionsLiveUpdateConfiguration)liveUpdateConfigurationForString:(NSString *)str;
 + (NSString *)stringForDesiredAccuracy:(RadarTrackingOptionsDesiredAccuracy)desiredAccuracy;
 + (RadarTrackingOptionsDesiredAccuracy)desiredAccuracyForString:(NSString *)str;
 + (NSString *)stringForReplay:(RadarTrackingOptionsReplay)replay;
