@@ -392,9 +392,10 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                             @"confidence" : @(activity.confidence)
                         }];
                         
-                        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Activity detected, initiating trackOnce"];
-                        [Radar trackOnceWithCompletionHandler: nil];
-                        
+                        if (options.syncLocations != RadarTrackingOptionsSyncEvents) {
+                            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Activity detected, initiating trackOnce"];
+                            [Radar trackOnceWithCompletionHandler: nil];
+                        }
                     }
                 }];
             }
@@ -913,10 +914,12 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
             return;
         }
         
-        if ([RadarSettings sdkConfiguration].useSyncRegion && options.syncLocations == RadarTrackingOptionsSyncEvents) {
+        if (source != RadarLocationSourceForegroundLocation && source != RadarLocationSourceManualLocation &&
+            [RadarSettings sdkConfiguration].useSyncRegion && options.syncLocations == RadarTrackingOptionsSyncEvents) {
             if (![RadarSyncManager shouldTrackWithLocation:location options:options]) {
-                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
-                                                   message:@"Skipping track: useSyncRegion - no state change detected"];
+                
+                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo
+                                                   message:[NSString stringWithFormat:@"Skipping track: useSyncRegion - no state change detected | source = %@", [Radar stringForLocationSource:source]]];
                 return;
             }
         }
