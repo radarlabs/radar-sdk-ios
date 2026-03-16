@@ -72,10 +72,10 @@
     // Capture foreground state on main thread before entering background thread context
     __block BOOL foreground = NO;
     if ([NSThread isMainThread]) {
-        foreground = [RadarUtils foreground];
+        foreground = [RadarUtilsDeprecated foreground];
     } else {
         dispatch_sync(dispatch_get_main_queue(), ^{
-            foreground = [RadarUtils foreground];
+            foreground = [RadarUtilsDeprecated foreground];
         });
     }
     
@@ -84,7 +84,7 @@
      verified:YES
      completionHandler:^(RadarStatus status, RadarConfig *_Nullable config) {
         if (status != RadarStatusSuccess || !config) {
-            [RadarUtils runOnMainThread:^{
+            [RadarUtilsDeprecated runOnMainThread:^{
                 if (status != RadarStatusSuccess) {
                     [[RadarDelegateHolder sharedInstance] didFailWithStatus:status];
                 }
@@ -101,7 +101,7 @@
          getLocationWithDesiredAccuracy:desiredAccuracy
          completionHandler:^(RadarStatus status, CLLocation *_Nullable location, BOOL stopped) {
             if (status != RadarStatusSuccess) {
-                [RadarUtils runOnMainThread:^{
+                [RadarUtilsDeprecated runOnMainThread:^{
                     [[RadarDelegateHolder sharedInstance] didFailWithStatus:status];
                     
                     if (completionHandler) {
@@ -114,7 +114,7 @@
             
             Class RadarSDKFraud = NSClassFromString(@"RadarSDKFraud");
             if (!RadarSDKFraud) {
-                [RadarUtils runOnMainThread:^{
+                [RadarUtilsDeprecated runOnMainThread:^{
                     [[RadarDelegateHolder sharedInstance] didFailWithStatus:RadarStatusErrorPlugin];
                     
                     if (completionHandler) {
@@ -134,7 +134,7 @@
             }
             [[RadarSDKFraud sharedInstance] getFraudPayloadWithOptions:options completionHandler:^(NSDictionary<NSString *, id> *_Nullable result) {
                 if (!result) {
-                    [RadarUtils runOnMainThread:^{
+                    [RadarUtilsDeprecated runOnMainThread:^{
                         [[RadarDelegateHolder sharedInstance] didFailWithStatus:RadarStatusErrorUnknown];
                         
                         if (completionHandler) {
@@ -146,7 +146,7 @@
                 
                 NSString *error = result[@"error"];
                 if (error) {
-                    [RadarUtils runOnMainThread:^{
+                    [RadarUtilsDeprecated runOnMainThread:^{
                         [[RadarDelegateHolder sharedInstance] didFailWithStatus:RadarStatusErrorUnknown];
                         
                         if (completionHandler) {
@@ -188,7 +188,7 @@
                         self.lastTokenBeacons = lastTokenBeacons;
                     }
                     
-                    [RadarUtils runOnMainThread:^{
+                    [RadarUtilsDeprecated runOnMainThread:^{
                         if (status != RadarStatusSuccess) {
                             [[RadarDelegateHolder sharedInstance] didFailWithStatus:status];
                         }
@@ -208,7 +208,7 @@
                      completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarBeacon *> *_Nullable beacons,
                                          NSArray<NSString *> *_Nullable beaconUUIDs) {
                         if (beaconUUIDs && beaconUUIDs.count) {
-                            [RadarUtils runOnMainThread:^{
+                            [RadarUtilsDeprecated runOnMainThread:^{
                                 [[RadarBeaconManager sharedInstance]
                                  rangeBeaconUUIDs:beaconUUIDs
                                  completionHandler:^(RadarStatus status, NSArray<RadarBeacon *> *_Nullable beacons) {
@@ -222,7 +222,7 @@
                                 }];
                             }];
                         } else if (beacons && beacons.count) {
-                            [RadarUtils runOnMainThread:^{
+                            [RadarUtilsDeprecated runOnMainThread:^{
                                 [[RadarBeaconManager sharedInstance]
                                  rangeBeacons:beacons
                                  completionHandler:^(RadarStatus status, NSArray<RadarBeacon *> *_Nullable beacons) {
