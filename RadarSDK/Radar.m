@@ -68,6 +68,27 @@ BOOL _initialized = NO;
     });
 }
 
++ (void)initializeWithPublishableKey:(NSString *)publishableKey options:(RadarInitializeOptions *)options {
+    [RadarSettings setPublishableKey:publishableKey];
+    [Radar initializeWithOptions:options];
+}
+
++ (void)initializeWithAuthToken:(NSString *)token options:(RadarInitializeOptions *)options {
+    NSString *auth = [NSString stringWithFormat:@"Bearer %@", token];
+    // preferably we change this to setAuth
+    [RadarSettings setPublishableKey:auth];
+    [Radar initializeWithOptions:options];
+}
+
++ (void)initializeWithPublishableKey:(NSString *)publishableKey {
+    [self initializeWithPublishableKey:publishableKey options:nil];
+}
+
++ (void)initializeWithAppGroup:(NSString *)appGroup {
+    [RadarSettings setAppGroup:appGroup];
+    [Radar initializeWithPublishableKey:[RadarSettings publishableKey]];
+}
+
 + (void)initializeWithOptions:(RadarInitializeOptions *)options {
     [RadarSwift setBridge:[[RadarSwiftBridge alloc] init]];
     
@@ -148,27 +169,6 @@ BOOL _initialized = NO;
     }
 
     _initialized = YES;
-}
-
-+ (void)initializeWithPublishableKey:(NSString *)publishableKey options:(RadarInitializeOptions *)options {
-    [RadarSettings setPublishableKey:publishableKey];
-    [Radar initializeWithOptions:options];
-}
-
-+ (void)initializeWithAuthToken:(NSString *)token options:(RadarInitializeOptions *)options {
-    NSString *auth = [NSString stringWithFormat:@"Bearer %@", token];
-    // preferably we change this to setAuth
-    [RadarSettings setPublishableKey:auth];
-    [Radar initializeWithOptions:options];
-}
-
-+ (void)initializeWithPublishableKey:(NSString *)publishableKey {
-    [self initializeWithPublishableKey:publishableKey options:nil];
-}
-
-+ (void)initializeWithAppGroup:(NSString *)appGroup {
-    [RadarSettings setAppGroup:appGroup];
-    [Radar initializeWithPublishableKey:[RadarSettings publishableKey]];
 }
 
 + (BOOL)isInitialized {
