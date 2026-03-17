@@ -68,7 +68,7 @@ BOOL _initialized = NO;
     });
 }
 
-+ (void)initializeWithPublishableKey:(NSString *)publishableKey options:(RadarInitializeOptions *)options {
++ (void)initializeWithOptions:(RadarInitializeOptions *)options {
     [RadarSwift setBridge:[[RadarSwiftBridge alloc] init]];
     
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"initialize()"];
@@ -91,8 +91,6 @@ BOOL _initialized = NO;
                                              selector:@selector(applicationWillEnterForeground)
                                                  name:UIApplicationWillEnterForegroundNotification
                                                object:nil];
-    
-    [RadarSettings setPublishableKey:publishableKey];
 
     RadarSdkConfiguration *sdkConfiguration = [RadarSettings sdkConfiguration];
     // For most users not using these features, options be null and skipped,
@@ -152,9 +150,16 @@ BOOL _initialized = NO;
     _initialized = YES;
 }
 
++ (void)initializeWithPublishableKey:(NSString *)publishableKey options:(RadarInitializeOptions *)options {
+    [RadarSettings setPublishableKey:publishableKey];
+    [Radar initializeWithOptions:options];
+}
+
 + (void)initializeWithAuthToken:(NSString *)token options:(RadarInitializeOptions *)options {
-    NSString *key = [NSString stringWithFormat:@"Bearer %@", token];
-    [self initializeWithPublishableKey:key options:options];
+    NSString *auth = [NSString stringWithFormat:@"Bearer %@", token];
+    // preferably we change this to setAuth
+    [RadarSettings setPublishableKey:auth];
+    [Radar initializeWithOptions:options];
 }
 
 + (void)initializeWithPublishableKey:(NSString *)publishableKey {
@@ -178,15 +183,6 @@ BOOL _initialized = NO;
 
 + (NSString *_Nullable)getPublishableKey {
     return [RadarSettings publishableKey];
-}
-
-+ (void)setPublishableKey:(NSString *)key {
-    return [RadarSettings setPublishableKey:key];
-}
-
-+ (void)setAuthToken:(NSString *)token {
-    NSString *key = [NSString stringWithFormat:@"Bearer %@", token];
-    [RadarSettings setPublishableKey:key];
 }
 
 + (void)setUserId:(NSString *)userId {

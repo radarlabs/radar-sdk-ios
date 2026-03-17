@@ -261,4 +261,3 @@ internal extension CLLocation {
         return location
     }
 }
-
