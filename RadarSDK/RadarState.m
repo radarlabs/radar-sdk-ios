@@ -31,6 +31,7 @@ static NSString *const kLastMotionActivityData = @"radar-lastMotionActivityData"
 static NSString *const kLastPressureData = @"radar-lastPressureData";
 static NSString *const kNotificationPermissionGranted = @"radar-notificationPermissionGranted";
 static NSString *const kMotionAuthorization = @"radar-motionAuthorization";
+static NSString *const kLocationAuthorizationStatus = @"radar-locationAuthorizationStatus";
 static NSString *const kRegisteredNotifications = @"radar-registeredNotifications";
 static NSString *const kSyncedGeofences = @"radar-syncedGeofences";
 static NSString *const kSyncedBeacons = @"radar-syncedBeacons";
@@ -271,6 +272,14 @@ static NSTimeInterval const kBackupInterval = 2.0; // 2 seconds
 
 + (CMAuthorizationStatus)motionAuthorization {
     return [[NSUserDefaults standardUserDefaults] integerForKey:kMotionAuthorization];
+}
+
++ (void)setLocationAuthorizationStatus:(CLAuthorizationStatus)status {
+    [[NSUserDefaults standardUserDefaults] setInteger:status forKey:kLocationAuthorizationStatus];
+}
+
++ (CLAuthorizationStatus)locationAuthorizationStatus {
+    return (CLAuthorizationStatus)[[NSUserDefaults standardUserDefaults] integerForKey:kLocationAuthorizationStatus];
 }
 
 + (NSArray<NSDictionary *> *_Nullable)registeredNotifications {

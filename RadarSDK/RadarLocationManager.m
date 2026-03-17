@@ -61,8 +61,6 @@
  */
 @property (nonnull, strong, nonatomic) NSMutableArray<RadarLocationCompletionHandler> *completionHandlers;
 
-@property (nonatomic) BOOL firstPermissionCheck;
-
 @end
 
 @implementation RadarLocationManager
@@ -107,10 +105,6 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         _lowPowerLocationManager.allowsBackgroundLocationUpdates = [RadarUtils locationBackgroundMode];
 
         _permissionsHelper = [RadarPermissionsHelper new];
-
-        _firstPermissionCheck = YES;
-
-        _firstPermissionCheck = NO;
     }
     return self;
 }
@@ -1262,8 +1256,10 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 }
 
 - (void)locationManager:(CLLocationManager *)manager didChangeAuthorizationStatus:(CLAuthorizationStatus)status {
-    if (self.firstPermissionCheck) {
-        self.firstPermissionCheck = NO;
+    CLAuthorizationStatus previousStatus = [RadarState locationAuthorizationStatus];
+    [RadarState setLocationAuthorizationStatus:status];
+
+    if (status == previousStatus) {
         return;
     }
 
