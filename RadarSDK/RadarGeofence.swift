@@ -46,49 +46,6 @@ public class RadarGeofence: NSObject, Codable, @unchecked Sendable {
         self.geometry = geometry
     }
 
-    init?(object: Any) {
-        guard let dict = object as? [String: Any] else { return nil }
-
-        self._id = dict["_id"] as? String ?? ""
-        self.__description = dict["description"] as? String ?? ""
-        self.tag = dict["tag"] as? String
-        self.externalId = dict["externalId"] as? String
-        self.metadata = dict["metadata"] as? [String: Any]
-
-        if let operatingHoursDict = dict["operatingHours"] as? [AnyHashable: Any] {
-            self.operatingHours = RadarOperatingHours(dictionary: operatingHoursDict)
-        } else {
-            self.operatingHours = nil
-        }
-
-        guard let type = dict["type"] as? String else { return nil }
-
-        var center = RadarCoordinate(coordinate: CLLocationCoordinate2D(latitude: 0, longitude: 0))
-        var radius: Double = 0
-
-        if let radiusNum = dict["geometryRadius"] as? NSNumber,
-           let centerDict = dict["geometryCenter"] as? [String: Any],
-           let centerCoords = centerDict["coordinates"] as? [NSNumber],
-           centerCoords.count == 2 {
-            let longitude = centerCoords[0].floatValue
-            let latitude = centerCoords[1].floatValue
-            center = RadarCoordinate(coordinate: CLLocationCoordinate2D(
-                latitude: CLLocationDegrees(latitude),
-                longitude: CLLocationDegrees(longitude)
-            ))
-            radius = Double(radiusNum.floatValue)
-        }
-
-        if type == "circle" {
-            self.geometry = RadarCircleGeometry(center: center, radius: radius)
-        } else if type == "polygon" || type == "Polygon" || type == "isochrone" {
-            guard let polygonCoordinates = RadarGeofence.parsePolygonCoordinates(from: dict) else { return nil }
-            self.geometry = RadarPolygonGeometry(coordinates: polygonCoordinates, center: center, radius: radius)
-        } else {
-            return nil
-        }
-    }
-
     // MARK: - Class Methods
 
     class func geofencesFromObject(_ object: Any) -> [RadarGeofence]? {
