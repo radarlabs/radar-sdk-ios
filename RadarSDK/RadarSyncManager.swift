@@ -18,6 +18,10 @@ public final class RadarSyncManager: NSObject {
     private static let syncRegionIdentifierPrefix = "radar_synced_"
     nonisolated(unsafe) private static var syncTimer: Timer?
     
+    nonisolated(unsafe) private static var previousSyncedGeofenceIds: [String]?
+    nonisolated(unsafe) private static var previousSyncedBeaconIds: [String]?
+    nonisolated(unsafe) private static var previousSyncedPlaceIds: [String]?
+    
     // MARK: - Lifecycle
     
     @objc public static func start(interval: TimeInterval) {
@@ -131,7 +135,7 @@ public final class RadarSyncManager: NSObject {
         
         if geofenceChanged || placeChanged || beaconChanged {
             RadarLogger.shared.info("SyncManager: shouldTrack = YES | reason: state changed (geofence=\(geofenceChanged), place=\(placeChanged), beacon=\(beaconChanged))")
-            updateLastKnownSyncState(location: location)
+            saveAndUpdateSyncState(location: location)
             return true
         }
         
@@ -520,6 +524,68 @@ public final class RadarSyncManager: NSObject {
         RadarSwift.bridge?.setLastSyncedBeaconIds(currentBeacons.compactMap { $0._id })
     }
     
+    // MARK: - Server reconciliation
+    
+    private static func saveAndUpdateSyncState(location: CLLocation) {
+        previousSyncedGeofenceIds = RadarSwift.bridge?.lastSyncedGeofenceIds() as? [String]
+        previousSyncedPlaceIds = RadarSwift.bridge?.lastSyncedPlaceIds() as? [String]
+        previousSyncedBeaconIds = RadarSwift.bridge?.lastSyncedBeaconIds() as? [String]
+        
+        updateLastKnownSyncState(location: location)
+    }
+    
+    @objc public static func reconcileSyncState(user: RadarUser) {
+        let serverGeofenceIds = user.geofences?.compactMap { $0._id } ?? []
+        let serverPlaceIds: [String] = user.place?._id != nil ? [user.place!._id] : []
+        let serverBeaconIds = user.beacons?.compactMap { $0._id } ?? []
+        
+        let clientGeofenceIds = RadarSwift.bridge?.lastSyncedGeofenceIds() as? [String] ?? []
+        let clientPlaceIds = RadarSwift.bridge?.lastSyncedPlaceIds() as? [String] ?? []
+        let clientBeaconIds = RadarSwift.bridge?.lastSyncedBeaconIds() as? [String] ?? []
+        
+        let geofenceMismatch = Set(serverGeofenceIds) != Set(clientGeofenceIds)
+        let placeMismatch = Set(serverPlaceIds) != Set(clientPlaceIds)
+        let beaconMismatch = Set(serverBeaconIds) != Set(clientBeaconIds)
+        
+        if geofenceMismatch || placeMismatch || beaconMismatch {
+            RadarLogger.shared.info(
+                "SyncManager: Reconciling with server state |" +
+                "geofences: client=\(clientGeofenceIds) server=\(serverGeofenceIds) |" +
+                "places: client=\(clientPlaceIds) server=\(serverPlaceIds) |" +
+                "beacons: client=\(clientBeaconIds) server=\(serverBeaconIds)"
+            )
+            
+            RadarSwift.bridge?.setLastSyncedGeofenceIds(serverGeofenceIds)
+            RadarSwift.bridge?.setLastSyncedPlaceIds(serverPlaceIds)
+            RadarSwift.bridge?.setLastSyncedBeaconIds(serverBeaconIds)
+        } else {
+            RadarLogger.shared.info("SyncManager: Client state matches server")
+        }
+        clearPreviousState()
+    }
+    
+    @objc public static func rollbackSyncState() {
+        guard previousSyncedGeofenceIds != nil else { return }
+        
+        RadarLogger.shared.info("SyncManager: Track failed, rolling back to previous sync state")
+        
+        if let ids = previousSyncedGeofenceIds {
+            RadarSwift.bridge?.setLastSyncedGeofenceIds(ids)
+        }
+        if let ids = previousSyncedPlaceIds {
+            RadarSwift.bridge?.setLastSyncedPlaceIds(ids)
+        }
+        if let ids = previousSyncedBeaconIds {
+            RadarSwift.bridge?.setLastSyncedBeaconIds(ids)
+        }
+        clearPreviousState()
+    }
+    
+    private static func clearPreviousState() {
+        previousSyncedGeofenceIds = nil
+        previousSyncedPlaceIds = nil
+        previousSyncedBeaconIds = nil
+    }
     
     // The following 4 methods are only here for map display QA testing will remove before shipping
     
