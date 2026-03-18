@@ -56,6 +56,28 @@
     completionHandler(status, response);
 }
 
+- (void)requestWithMethod:(NSString *)method
+                      url:(NSString *)url
+                  headers:(NSDictionary *)headers
+                   params:(NSDictionary *)params
+                    sleep:(BOOL)sleep
+               logPayload:(BOOL)logPayload
+          extendedTimeout:(BOOL)extendedTimeout
+                 verified:(BOOL)verified
+             fraudOptions:(NSDictionary<NSString *, id> *)fraudOptions
+        completionHandler:(RadarAPICompletionHandler)completionHandler {
+    (void)verified;
+    (void)fraudOptions;
+    [self requestWithMethod:method
+                        url:url
+                    headers:headers
+                     params:params
+                      sleep:sleep
+                 logPayload:logPayload
+            extendedTimeout:extendedTimeout
+          completionHandler:completionHandler];
+}
+
 - (void)setMockResponse:(NSDictionary *)response forMethod:(NSString *)urlString {
     self.mockResponses[urlString] = response;
 }
