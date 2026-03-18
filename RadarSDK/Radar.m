@@ -73,15 +73,19 @@ BOOL _initialized = NO;
     [Radar initializeWithOptions:options];
 }
 
-+ (void)initializeWithAuthToken:(NSString *)token options:(RadarInitializeOptions *)options {
-    NSString *auth = [NSString stringWithFormat:@"Bearer %@", token];
++ (void)initializeWithPublishableKey:(NSString *)publishableKey {
+    [self initializeWithPublishableKey:publishableKey options:nil];
+}
+
++ (void)initializeWithAuthToken:(NSString *)authToken options:(RadarInitializeOptions *)options {
+    NSString *auth = [NSString stringWithFormat:@"Bearer %@", authToken];
     // preferably we change this to setAuth
     [RadarSettings setPublishableKey:auth];
     [Radar initializeWithOptions:options];
 }
 
-+ (void)initializeWithPublishableKey:(NSString *)publishableKey {
-    [self initializeWithPublishableKey:publishableKey options:nil];
++ (void)initializeWithAuthToken:(NSString *)authToken {
+    [self initializeWithAuthToken:authToken options:nil];
 }
 
 + (void)initializeWithAppGroup:(NSString *)appGroup {
