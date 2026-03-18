@@ -25,4 +25,3 @@ class MyIAMDelegate: RadarInAppMessageDelegate {
         print("IAM DISMISSED")
     }
 }
-
