@@ -69,6 +69,31 @@ BOOL _initialized = NO;
 }
 
 + (void)initializeWithPublishableKey:(NSString *)publishableKey options:(RadarInitializeOptions *)options {
+    [RadarSettings setPublishableKey:publishableKey];
+    [Radar initializeWithOptions:options];
+}
+
++ (void)initializeWithPublishableKey:(NSString *)publishableKey {
+    [self initializeWithPublishableKey:publishableKey options:nil];
+}
+
++ (void)initializeWithAuthToken:(NSString *)authToken options:(RadarInitializeOptions *)options {
+    NSString *auth = [NSString stringWithFormat:@"Bearer %@", authToken];
+    // preferably we change this to setAuth
+    [RadarSettings setPublishableKey:auth];
+    [Radar initializeWithOptions:options];
+}
+
++ (void)initializeWithAuthToken:(NSString *)authToken {
+    [self initializeWithAuthToken:authToken options:nil];
+}
+
++ (void)initializeWithAppGroup:(NSString *)appGroup {
+    [RadarSettings setAppGroup:appGroup];
+    [Radar initializeWithPublishableKey:[RadarSettings publishableKey]];
+}
+
++ (void)initializeWithOptions:(RadarInitializeOptions *)options {
     [RadarSwift setBridge:[[RadarSwiftBridge alloc] init]];
     
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"initialize()"];
@@ -91,8 +116,6 @@ BOOL _initialized = NO;
                                              selector:@selector(applicationWillEnterForeground)
                                                  name:UIApplicationWillEnterForegroundNotification
                                                object:nil];
-    
-    [RadarSettings setPublishableKey:publishableKey];
 
     RadarSdkConfiguration *sdkConfiguration = [RadarSettings sdkConfiguration];
     // For most users not using these features, options be null and skipped,
@@ -150,15 +173,6 @@ BOOL _initialized = NO;
     }
 
     _initialized = YES;
-}
-
-+ (void)initializeWithPublishableKey:(NSString *)publishableKey {
-    [self initializeWithPublishableKey:publishableKey options:nil];
-}
-
-+ (void)initializeWithAppGroup:(NSString *)appGroup {
-    [RadarSettings setAppGroup:appGroup];
-    [Radar initializeWithPublishableKey:[RadarSettings publishableKey]];
 }
 
 + (BOOL)isInitialized {
