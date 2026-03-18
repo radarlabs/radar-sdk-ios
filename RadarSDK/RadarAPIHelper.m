@@ -17,6 +17,8 @@
 @property (strong, nonatomic) dispatch_queue_t queue;
 @property (strong, nonatomic) dispatch_semaphore_t semaphore;
 @property (assign, nonatomic) BOOL wait;
+@property (strong, nonatomic) NSURLSession *standardSession;
+@property (strong, nonatomic) NSURLSession *extendedTimeoutSession;
 
 - (NSMutableDictionary *)updateParamsWithTiming:(NSDictionary *)params;
 
@@ -29,6 +31,16 @@
     if (self) {
         _queue = dispatch_queue_create("io.radar.api", DISPATCH_QUEUE_SERIAL);
         _semaphore = dispatch_semaphore_create(1);
+
+        NSURLSessionConfiguration *standardConfig = [NSURLSessionConfiguration ephemeralSessionConfiguration];
+        standardConfig.timeoutIntervalForRequest = 10;
+        standardConfig.timeoutIntervalForResource = 10;
+        _standardSession = [NSURLSession sessionWithConfiguration:standardConfig];
+
+        NSURLSessionConfiguration *extendedConfig = [NSURLSessionConfiguration defaultSessionConfiguration];
+        extendedConfig.timeoutIntervalForRequest = 25;
+        extendedConfig.timeoutIntervalForResource = 25;
+        _extendedTimeoutSession = [NSURLSession sessionWithConfiguration:extendedConfig];
     }
     return self;
 }
@@ -70,11 +82,6 @@
                     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelError type:RadarLogTypeSDKError message:[NSString stringWithFormat:@"Received network error | error = %@", error]];
                     completionHandler(RadarStatusErrorNetwork, nil);
                 });
-
-                if (sleep) {
-                    [NSThread sleepForTimeInterval:1];
-                    dispatch_semaphore_signal(self.semaphore);
-                }
 
                 return;
             }
@@ -202,8 +209,7 @@
 
             if (headers) {
                 for (NSString *key in headers) {
-                    NSString *value = [headers valueForKey:key];
-                    [req addValue:value forHTTPHeaderField:key];
+                    [req addValue:[headers valueForKey:key] forHTTPHeaderField:key];
                 }
             }
 
@@ -211,27 +217,113 @@
                 NSMutableDictionary *requestParams = [self updateParamsWithTiming:params];
                 [req setHTTPBody:[NSJSONSerialization dataWithJSONObject:requestParams options:0 error:NULL]];
             }
-            
-            NSURLSessionConfiguration *configuration;
-            if (extendedTimeout) {
-                configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
-                configuration.timeoutIntervalForRequest = 25;
-                configuration.timeoutIntervalForResource = 25;
-            } else {
-                // avoid SSL or credential caching
-                configuration = [NSURLSessionConfiguration ephemeralSessionConfiguration];
-                configuration.timeoutIntervalForRequest = 10;
-                configuration.timeoutIntervalForResource = 10;
-            }
 
-            void (^dataTaskCompletionHandler)(NSData *data, NSURLResponse *response, NSError *error) = ^(NSData *data, NSURLResponse *response, NSError *error) {
-                handleResponse(data, response, error);
+            NSURLSession *session = extendedTimeout ? self.extendedTimeoutSession : self.standardSession;
+            NSDate *requestStart = [NSDate date];
+
+            void (^dataTaskCompletionHandler)(NSData *, NSURLResponse *, NSError *) = ^(NSData *data, NSURLResponse *response, NSError *error) {
+                NSTimeInterval latency = [requestStart timeIntervalSinceNow] * -1;
+
+                if (error) {
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        [[RadarLogger sharedInstance]
+                            logWithLevel:RadarLogLevelError
+                                    type:RadarLogTypeSDKError
+                                 message:[NSString stringWithFormat:@"Received network error | error = %@", error]];
+                        completionHandler(RadarStatusErrorNetwork, nil);
+                    });
+
+                    if (sleep) {
+                        [NSThread sleepForTimeInterval:1];
+                        dispatch_semaphore_signal(self.semaphore);
+                    }
+
+                    return;
+                }
+
+                NSError *deserializationError = nil;
+                id resObj = [NSJSONSerialization JSONObjectWithData:data options:0 error:&deserializationError];
+                if (deserializationError || ![resObj isKindOfClass:[NSDictionary class]]) {
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        completionHandler(RadarStatusErrorServer, nil);
+                    });
+
+                    if (sleep) {
+                        [NSThread sleepForTimeInterval:1];
+                        dispatch_semaphore_signal(self.semaphore);
+                    }
+
+                    return;
+                }
+
+                NSDictionary *res;
+                RadarStatus status = RadarStatusErrorUnknown;
+
+                if ([response isKindOfClass:[NSHTTPURLResponse class]]) {
+                    NSInteger statusCode = ((NSHTTPURLResponse *)response).statusCode;
+                    if (statusCode >= 200 && statusCode < 400) {
+                        status = RadarStatusSuccess;
+                    } else if (statusCode == 400) {
+                        status = RadarStatusErrorBadRequest;
+                    } else if (statusCode == 401) {
+                        status = RadarStatusErrorUnauthorized;
+                    } else if (statusCode == 402) {
+                        status = RadarStatusErrorPaymentRequired;
+                    } else if (statusCode == 403) {
+                        status = RadarStatusErrorForbidden;
+                    } else if (statusCode == 404) {
+                        status = RadarStatusErrorNotFound;
+                    } else if (statusCode == 429) {
+                        status = RadarStatusErrorRateLimit;
+                    } else if (statusCode >= 500 && statusCode <= 599) {
+                        status = RadarStatusErrorServer;
+                    }
+
+                    res = (NSDictionary *)resObj;
+                    NSString * resJsonStr = [RadarUtils dictionaryToJson:res];
+
+                    if (params && [params objectForKey:@"replays"]) {
+                        NSArray *replays = [params objectForKey:@"replays"];
+                        [[RadarLogger sharedInstance]
+                            logWithLevel:RadarLogLevelDebug
+                                 message:[NSString stringWithFormat:@"📍 Radar API response | method = %@; url = %@; statusCode = %ld; latency = %f; replays = %lu; res = %@",
+                                                                    method, url, (long)statusCode, latency, (unsigned long)replays.count, resJsonStr]];
+                    } else {
+                        [[RadarLogger sharedInstance]
+                            logWithLevel:RadarLogLevelDebug
+                                 message:[NSString stringWithFormat:@"📍 Radar API response | method = %@; url = %@; statusCode = %ld; latency = %f; res = %@",
+                                                                    method, url, (long)statusCode, latency, resJsonStr]];
+                    }
+                }
+
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    completionHandler(status, res);
+                });
+
+                if (sleep) {
+                    [NSThread sleepForTimeInterval:1];
+                    dispatch_semaphore_signal(self.semaphore);
+                }
             };
 
-            NSURLSessionDataTask *task = [[NSURLSession sessionWithConfiguration:configuration] dataTaskWithRequest:req completionHandler:dataTaskCompletionHandler];
+            void (^dataTaskRetryHandler)(NSData *, NSURLResponse *, NSError *) = ^(NSData *data, NSURLResponse *response, NSError *error) {
+                if (error && [error.domain isEqualToString:NSURLErrorDomain] && error.code == NSURLErrorNetworkConnectionLost) {
+                    [[RadarLogger sharedInstance]
+                        logWithLevel:RadarLogLevelDebug
+                             message:[NSString stringWithFormat:@"📍 Radar API retrying after lost connection | url = %@", url]];
+                    NSURLSessionDataTask *retryTask = [session dataTaskWithRequest:req completionHandler:dataTaskCompletionHandler];
+                    [retryTask resume];
+                } else {
+                    dataTaskCompletionHandler(data, response, error);
+                }
+            };
 
+            NSURLSessionDataTask *task = [session dataTaskWithRequest:req completionHandler:dataTaskRetryHandler];
             [task resume];
         } @catch (NSException *exception) {
+            if (sleep) {
+                dispatch_semaphore_signal(self.semaphore);
+            }
             return completionHandler(RadarStatusErrorBadRequest, nil);
         }
     });

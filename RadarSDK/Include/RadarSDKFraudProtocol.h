@@ -17,6 +17,7 @@ typedef void (^RadarFraudTrackVerifiedCallback)(NSDictionary<NSString *, id> *_N
 
 + (instancetype)sharedInstance;
 
+- (void)initializeWithOptions:(NSDictionary<NSString *, id> *)options;
 - (void)trackVerifiedWithOptions:(NSDictionary<NSString *, id> *)options completionHandler:(RadarFraudTrackVerifiedCallback)completionHandler;
 
 @end

@@ -9,6 +9,7 @@
 #import "Radar.h"
 #import "RadarCoordinate+Internal.h"
 #import "RadarTrip+Internal.h"
+#import "RadarTripLeg.h"
 #import "Include/RadarTripOrder.h"
 
 @implementation RadarTrip
@@ -23,7 +24,9 @@
                          etaDistance:(float)etaDistance
                          etaDuration:(float)etaDuration
                               status:(RadarTripStatus)status
-                              orders:(NSArray<RadarTripOrder *> *_Nullable)orders {
+                              orders:(NSArray<RadarTripOrder *> *_Nullable)orders
+                                legs:(NSArray<RadarTripLeg *> *_Nullable)legs
+                        currentLegId:(NSString *_Nullable)currentLegId {
     self = [super init];
     if (self) {
         __id = _id;
@@ -37,6 +40,8 @@
         _etaDuration = etaDuration;
         _status = status;
         _orders = orders;
+        _legs = legs;
+        _currentLegId = currentLegId;
     }
     return self;
 }
@@ -59,6 +64,8 @@
     float etaDuration = 0;
     RadarTripStatus status = RadarTripStatusUnknown;
     NSArray<RadarTripOrder *> *orders;
+    NSArray<RadarTripLeg *> *legs;
+    NSString *currentLegId;
 
     id idObj = dict[@"_id"];
     if (idObj && [idObj isKindOfClass:[NSString class]]) {
@@ -167,6 +174,16 @@
     if (ordersObj) {
         orders = [RadarTripOrder ordersFromObject:ordersObj];
     }
+    
+    id legsObj = dict[@"legs"];
+    if (legsObj && [legsObj isKindOfClass:[NSArray class]]) {
+        legs = [RadarTripLeg legsFromArray:(NSArray *)legsObj];
+    }
+    
+    id currentLegObj = dict[@"currentLeg"];
+    if (currentLegObj && [currentLegObj isKindOfClass:[NSString class]]) {
+        currentLegId = (NSString *)currentLegObj;
+    }
 
     if (externalId) {
         return [[RadarTrip alloc] initWithId:_id
@@ -179,7 +196,9 @@
                                  etaDistance:etaDistance
                                  etaDuration:etaDuration
                                       status:status
-                                      orders:orders];
+                                      orders:orders
+                                        legs:legs
+                                currentLegId:currentLegId];
     }
 
     return nil;
@@ -192,11 +211,13 @@
     dict[@"metadata"] = self.metadata;
     dict[@"destinationGeofenceTag"] = self.destinationGeofenceTag;
     dict[@"destinationGeofenceExternalId"] = self.destinationGeofenceExternalId;
-    NSMutableDictionary *destinationLocationDict = [NSMutableDictionary new];
-    destinationLocationDict[@"type"] = @"Point";
-    NSArray *coordinates = @[@(self.destinationLocation.coordinate.longitude), @(self.destinationLocation.coordinate.latitude)];
-    destinationLocationDict[@"coordinates"] = coordinates;
-    dict[@"destinationLocation"] = destinationLocationDict;
+    if (self.destinationLocation) {
+        NSMutableDictionary *destinationLocationDict = [NSMutableDictionary new];
+        destinationLocationDict[@"type"] = @"Point";
+        NSArray *coordinates = @[@(self.destinationLocation.coordinate.longitude), @(self.destinationLocation.coordinate.latitude)];
+        destinationLocationDict[@"coordinates"] = coordinates;
+        dict[@"destinationLocation"] = destinationLocationDict;
+    }
     dict[@"mode"] = [Radar stringForMode:self.mode];
     NSDictionary *etaDict = @{@"distance": @(self.etaDistance), @"duration": @(self.etaDuration)};
     dict[@"eta"] = etaDict;
@@ -206,6 +227,15 @@
         if (ordersArray) {
             dict[@"orders"] = ordersArray;
         }
+    }
+    if (self.legs && self.legs.count > 0) {
+        NSArray *legsArray = [RadarTripLeg arrayForLegs:self.legs];
+        if (legsArray) {
+            dict[@"legs"] = legsArray;
+        }
+    }
+    if (self.currentLegId) {
+        dict[@"currentLeg"] = self.currentLegId;
     }
     return dict;
 }
