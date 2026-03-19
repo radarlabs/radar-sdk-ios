@@ -47,6 +47,18 @@ public struct RadarBeaconSwift: Codable, Sendable {
         }
     }
     
+    public init(id: String, description: String?, tag: String?, externalId: String?,
+         uuid: String, major: String, minor: String, geometry: RadarCoordinateSwift?) {
+        self.id = id
+        self.description = description
+        self.tag = tag
+        self.externalId = externalId
+        self.uuid = uuid
+        self.major = major
+        self.minor = minor
+        self.geometry = geometry
+    }
+    
    public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(id, forKey: .id)

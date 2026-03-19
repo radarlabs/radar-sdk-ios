@@ -67,19 +67,19 @@ public final class RadarSyncManager: NSObject {
             var newRegionCenter: RadarCoordinateSwift?
             var newRegionRadius: Double?
                         
-            if let geofencesArray = res["geofences"],
+            if let geofencesArray = res["geofences"] as? [[String: Any]],
                 let data = try? JSONSerialization.data(withJSONObject: geofencesArray) {
                     newGeofences = try? JSONDecoder().decode([RadarGeofenceSwift].self, from: data)
             }
             
-            if let placesArray = res["places"],
+            if let placesArray = res["places"] as? [[String: Any]],
                let data = try? JSONSerialization.data(withJSONObject: placesArray) {
                    newPlaces = try? JSONDecoder().decode([RadarPlaceSwift].self, from: data)
             }
             
-            if let beaconsArray = res["beacons"],
+            if let beaconsArray = res["beacons"] as? [[String: Any]],
                let data = try? JSONSerialization.data(withJSONObject: beaconsArray, options: []) {
-                newBeacons = try? JSONDecoder().decode([RadarBeaconSwift].self, from: data)
+                   newBeacons = try? JSONDecoder().decode([RadarBeaconSwift].self, from: data)
             }
             
             let currentState = syncStore.read()
@@ -331,7 +331,7 @@ public final class RadarSyncManager: NSObject {
         }
     }
     
-    private static func getGeofences(for location: CLLocation, checkingForExit: Bool = false) -> [RadarGeofenceSwift] {
+    static func getGeofences(for location: CLLocation, checkingForExit: Bool = false) -> [RadarGeofenceSwift] {
         guard let geofences = syncStore.read()?.syncedGeofences, !geofences.isEmpty else {
             return []
         }
@@ -342,7 +342,7 @@ public final class RadarSyncManager: NSObject {
         }
     }
     
-    private static func getBeacons(for location: CLLocation) -> [RadarBeaconSwift] {
+    static func getBeacons(for location: CLLocation) -> [RadarBeaconSwift] {
         guard let beacons = syncStore.read()?.syncedBeacons, !beacons.isEmpty else {
             return []
         }
@@ -354,7 +354,7 @@ public final class RadarSyncManager: NSObject {
         }
     }
     
-    private static func getPlaces(for location: CLLocation) -> [RadarPlaceSwift] {
+    static func getPlaces(for location: CLLocation) -> [RadarPlaceSwift] {
         guard let places = syncStore.read()?.syncedPlaces, !places.isEmpty else {
             return []
         }

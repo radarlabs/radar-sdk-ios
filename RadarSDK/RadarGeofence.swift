@@ -77,6 +77,17 @@ public struct RadarGeofenceSwift: Codable, Sendable {
         }
     }
     
+    public init(id: String, description: String, tag: String?, externalId: String?,
+         geometry: RadarGeofenceGeometrySwift, dwellThreshold: Double?, geofenceStopDetection: Double?) {
+        self.id = id
+        self.description = description
+        self.tag = tag
+        self.externalId = externalId
+        self.geometry = geometry
+        self.dwellThreshold = dwellThreshold
+        self.geofenceStopDetection = geofenceStopDetection
+    }
+    
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(id, forKey: .id)

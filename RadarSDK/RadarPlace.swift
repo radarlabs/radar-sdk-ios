@@ -35,6 +35,14 @@ public struct RadarPlaceSwift: Codable, Sendable {
         location = RadarCoordinateSwift(latitude: geoJSON.coordinates[1], longitude: geoJSON.coordinates[0])
     }
     
+    public init(id: String, name: String, categories: [String], location: RadarCoordinateSwift, group: String?) {
+        self.id = id
+        self.name = name
+        self.categories = categories
+        self.location = location
+        self.group = group
+    }
+    
    public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(id, forKey: .id)
