@@ -50,6 +50,7 @@ final class RadarApiHelper: Sendable {
         
         var headers = headers
         headers["Authorization"] = publishableKey
+        headers["Content-Type"] = "application/json"
         // TODO: add additional mobile headers when RadarUtils is in swift
         /*
         @"Content-Type": @"application/json",
