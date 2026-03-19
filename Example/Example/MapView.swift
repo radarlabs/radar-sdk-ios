@@ -6,9 +6,9 @@ struct MapView: View {
     
     @State var monitoringRegions: [CLCircularRegion] = []
     @State var syncedRegion: CLCircularRegion?
-    @State var syncedGeofences: [RadarGeofence] = []
-    @State var syncedPlaces: [RadarPlace] = []
-    @State var syncedBeacons: [RadarBeacon] = []
+    @State var syncedGeofences: [RadarGeofenceSwift] = []
+    @State var syncedPlaces: [RadarPlaceSwift] = []
+    @State var syncedBeacons: [RadarBeaconSwift] = []
     let timer = Timer.publish(every: 1.0, on: .main, in: .common).autoconnect()
     
     var body: some View {
@@ -32,31 +32,31 @@ struct MapView: View {
                 }
                 
                 // Synced geofences (red for circles)
-                ForEach(syncedGeofences, id: \._id) { geofence in
-                    if let circle = geofence.geometry as? RadarCircleGeometry {
-                        MapCircle(center: circle.center.coordinate, radius: circle.radius)
+                ForEach(syncedGeofences, id: \.id) { geofence in
+                    switch geofence.geometry {
+                    case .circle(let center, let radius):
+                        MapCircle(center: center.clLocationCoordinate2D, radius: radius)
                             .foregroundStyle(Color.red.opacity(0.2))
                             .stroke(Color.red, lineWidth: 2)
-                    } else if let polygon = geofence.geometry as? RadarPolygonGeometry,
-                              let coords = polygon._coordinates, !coords.isEmpty {
-                        MapPolygon(coordinates: coords.map { $0.coordinate })
+                    case .polygon(let coords, _, _):
+                        MapPolygon(coordinates: coords.map { $0.clLocationCoordinate2D })
                             .foregroundStyle(Color.red.opacity(0.2))
                             .stroke(Color.red, lineWidth: 2)
                     }
                 }
                 
                 // Synced places (purple pins)
-                ForEach(syncedPlaces, id: \._id) { place in
-                    Annotation(place.name, coordinate: place.location.coordinate) {
+                ForEach(syncedPlaces, id: \.id) { place in
+                    Annotation(place.name, coordinate: place.location.clLocationCoordinate2D) {
                         Image(systemName: "mappin.circle.fill")
                             .foregroundStyle(.purple)
                     }
                 }
                 
                 // Synced beacons (teal pins)
-                ForEach(syncedBeacons, id: \._id) { beacon in
+                ForEach(syncedBeacons, id: \.id) { beacon in
                     if let geometry = beacon.geometry {
-                        Annotation(beacon.tag ?? "beacon", coordinate: geometry.coordinate) {
+                        Annotation(beacon.tag ?? "beacon", coordinate: geometry.clLocationCoordinate2D) {
                             Image(systemName: "sensor.tag.radiowaves.forward.fill")
                                 .foregroundStyle(.teal)
                         }

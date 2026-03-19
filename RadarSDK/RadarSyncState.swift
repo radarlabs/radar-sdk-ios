@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct RadarSyncState: Codable, Sendable {
+public struct RadarSyncState: Codable, Sendable {
     var syncedRegionCenter: RadarCoordinateSwift?
     var syncedRegionRadius: Double?
     var syncedGeofences: [RadarGeofenceSwift]?

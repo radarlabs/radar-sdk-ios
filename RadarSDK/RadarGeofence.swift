@@ -9,18 +9,18 @@
 import Foundation
 import CoreLocation
 
-enum RadarGeofenceGeometrySwift: Codable, Sendable {
+public enum RadarGeofenceGeometrySwift: Codable, Sendable {
     case circle(center: RadarCoordinateSwift, radius: Double)
     case polygon(coordinates: [RadarCoordinateSwift], center: RadarCoordinateSwift, radius: Double)
     
-    var center: RadarCoordinateSwift {
+   public var center: RadarCoordinateSwift {
         switch self {
         case .circle(let center, _): return center
         case .polygon(_, let center, _): return center
         }
     }
     
-    var radius: Double {
+   public var radius: Double {
         switch self {
         case .circle(_, let radius): return radius
         case .polygon(_, _, let radius): return radius
@@ -28,14 +28,14 @@ enum RadarGeofenceGeometrySwift: Codable, Sendable {
     }
 }
 
-struct RadarGeofenceSwift: Codable, Sendable {
-    let id: String
-    let description: String
-    let tag: String?
-    let externalId: String?
-    let geometry: RadarGeofenceGeometrySwift
-    let dwellThreshold: Double?
-    let geofenceStopDetection: Double?
+public struct RadarGeofenceSwift: Codable, Sendable {
+    public let id: String
+    public let description: String
+    public let tag: String?
+    public let externalId: String?
+    public let geometry: RadarGeofenceGeometrySwift
+    public let dwellThreshold: Double?
+    public let geofenceStopDetection: Double?
     
     enum CodingKeys: String, CodingKey {
         case id = "_id"
@@ -50,7 +50,7 @@ struct RadarGeofenceSwift: Codable, Sendable {
         case stopDetection
     }
     
-    init(from decoder: Decoder) throws {
+    public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = try container.decode(String.self, forKey: .id)
         description = try container.decodeIfPresent(String.self, forKey: .description) ?? ""
@@ -77,7 +77,7 @@ struct RadarGeofenceSwift: Codable, Sendable {
         }
     }
     
-    func encode(to encoder: Encoder) throws {
+    public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(id, forKey: .id)
         try container.encode(description, forKey: .description)
