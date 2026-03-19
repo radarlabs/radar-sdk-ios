@@ -35,8 +35,8 @@ public struct RadarGeofenceSwift: Codable, Sendable {
     public let externalId: String?
     public let geometry: RadarGeofenceGeometrySwift
     public let dwellThreshold: Double?
-    public let geofenceStopDetection: Double?
-    
+    public let geofenceStopDetection: Bool?
+
     enum CodingKeys: String, CodingKey {
         case id = "_id"
         case description
@@ -57,7 +57,7 @@ public struct RadarGeofenceSwift: Codable, Sendable {
         tag = try container.decodeIfPresent(String.self, forKey: .tag)
         externalId = try container.decodeIfPresent(String.self, forKey: .externalId)
         dwellThreshold = try container.decodeIfPresent(Double.self, forKey: .dwellThreshold)
-        geofenceStopDetection = try container.decodeIfPresent(Double.self, forKey: .stopDetection)
+        geofenceStopDetection = try container.decodeIfPresent(Bool.self, forKey: .stopDetection)
         
         let type = try container.decodeIfPresent(String.self, forKey: .type) ?? ""
         let radius = try container.decodeIfPresent(Double.self, forKey: .geometryRadius) ?? 0
@@ -78,7 +78,7 @@ public struct RadarGeofenceSwift: Codable, Sendable {
     }
     
     public init(id: String, description: String, tag: String?, externalId: String?,
-         geometry: RadarGeofenceGeometrySwift, dwellThreshold: Double?, geofenceStopDetection: Double?) {
+         geometry: RadarGeofenceGeometrySwift, dwellThreshold: Double?, geofenceStopDetection: Bool?) {
         self.id = id
         self.description = description
         self.tag = tag

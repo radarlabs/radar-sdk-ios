@@ -404,7 +404,7 @@ public final class RadarSyncManager: NSObject {
             let geofence = currentGeofences.first { $0.id == id }
             let requireStop: Bool
             if let geofenceStop = geofence?.geofenceStopDetection {
-                requireStop = geofenceStop > 0
+                requireStop = geofenceStop
             } else {
                 requireStop = projectStopDetection
             }
