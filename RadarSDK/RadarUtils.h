@@ -33,8 +33,6 @@ typedef NS_ENUM(NSInteger, RadarConnectionType) {
 + (NSString *)locationAuthorization;
 + (NSString *)locationAccuracyAuthorization;
 + (BOOL)foreground;
-+ (CLCircularRegion *_Nullable)circularRegionForDictionary:(NSDictionary *_Nonnull)dict;
-+ (NSDictionary *)dictionaryForCircularRegion:(CLCircularRegion *)region;
 + (NSTimeInterval)backgroundTimeRemaining;
 + (CLLocation *)locationForDictionary:(NSDictionary *_Nonnull)dict;
 + (NSDictionary *)dictionaryForLocation:(CLLocation *)location;

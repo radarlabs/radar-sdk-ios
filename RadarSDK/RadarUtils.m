@@ -230,29 +230,6 @@ static NSDateFormatter *_isoDateFormatter;
     return dict;
 }
 
-+ (CLCircularRegion *)circularRegionForDictionary:(NSDictionary *)dict {
-    id latObj = dict[@"latitude"];
-    id lngObj = dict[@"longitude"];
-    id radiusObj = dict[@"radius"];
-    id identifierObj = dict[@"identifier"];
-    if (![latObj isKindOfClass:[NSNumber class]] || ![lngObj isKindOfClass:[NSNumber class]] ||
-        ![radiusObj isKindOfClass:[NSNumber class]] || ![identifierObj isKindOfClass:[NSString class]]) {
-        return nil;
-    }
-    CLLocationCoordinate2D coordinate = CLLocationCoordinate2DMake([latObj doubleValue], [lngObj doubleValue]);
-    return [[CLCircularRegion alloc] initWithCenter:coordinate radius:[radiusObj doubleValue] identifier:identifierObj];
-}
-
-+ (NSDictionary *)dictionaryForCircularRegion:(CLCircularRegion *)region {
-    NSMutableDictionary *dict = [NSMutableDictionary new];
-    dict[@"latitude"] = @(region.center.latitude);
-    dict[@"longitude"] = @(region.center.longitude);
-    dict[@"radius"] = @(region.radius);
-    dict[@"identifier"] = region.identifier;
-    
-    return dict;
-}
-
 + (NSString *)dictionaryToJson:(NSDictionary *)dict {
     if (!dict) {
         return @"{}";
