@@ -17,7 +17,7 @@ struct RadarCoordinate: Codable, Sendable, Equatable {
     let coordinate: CLLocationCoordinate2D
 
     private enum CodingKeys: String, CodingKey {
-        case coordinate
+        case coordinates
     }
 
     init(coordinate: CLLocationCoordinate2D) {
@@ -26,31 +26,20 @@ struct RadarCoordinate: Codable, Sendable, Equatable {
 
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        let pair = try container.decode([Double].self, forKey: .coordinate)
+        let pair = try container.decode([Double].self, forKey: .coordinates)
         guard pair.count == 2 else {
-            throw DecodingError.dataCorruptedError(forKey: .coordinate,
+            throw DecodingError.dataCorruptedError(forKey: .coordinates,
                                                    in: container,
                                                    debugDescription: "Expected [longitude, latitude]")
         }
-        let longitude = pair[0]
-        let latitude = pair[1]
-        self.coordinate = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
+        self.coordinate = CLLocationCoordinate2D(latitude: pair[1], longitude: pair[0])
+        
     }
 
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode([coordinate.longitude, coordinate.latitude], forKey: .coordinate)
+        try container.encode([coordinate.longitude, coordinate.latitude], forKey: .coordinates)
     }
-}
-
-struct RadarGeofenceGeometry: Codable, Sendable, Equatable {
-    // common
-    public let type: String
-    public let center: RadarCoordinate?
-    public let radius: Double?
-    
-    // polygon geometry
-    public let coordinates: [RadarCoordinate]?
 }
 
 enum RadarMetadataValue: Codable, Sendable, Hashable {
@@ -83,11 +72,17 @@ enum RadarMetadataValue: Codable, Sendable, Hashable {
         case .bool(let v): try container.encode(v)
         }
     }
+    
+    func string() -> String? {
+        if case let .string(value) = self {
+            return value
+        } else {
+            return nil
+        }
+    }
 }
 
-/// Represents a geofence.
-///
-/// See [Geofences Documentation](https://radar.com/documentation/geofences)
+/// This is a geofence from the raw dictionary conversion of RadarGeofence in ObjC.
 struct RadarGeofence_Swift: Codable, Sendable, Equatable {
 
     /// The Radar ID of the geofence.
@@ -106,8 +101,8 @@ struct RadarGeofence_Swift: Codable, Sendable, Equatable {
     public let metadata: [String: RadarMetadataValue]?
 
     /// The geometry of the geofence, which can be cast to either `RadarCircleGeometry` or `RadarPolygonGeometry`.
-    public let geometry: RadarGeofenceGeometry
+    public let geometryCenter: RadarCoordinate
 
-    /// The optional operating hours for the geofence.
-//    public let operatingHours: RadarOperatingHours?
+    
+    public let geometryRadius: Double
 }

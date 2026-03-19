@@ -18,26 +18,18 @@ struct RadarNotificationContent: Sendable, Hashable {
     
     init?(from metadata: [String: RadarMetadataValue]) {
         // required fields
-        guard case let .string(notificationText)? = metadata["radar:notificationText"],
-              case let .string(campaignId)? = metadata["radar:campaignId"] else {
+        guard let notificationText = metadata["radar:notificationText"]?.string(),
+              let campaignId = metadata["radar:campaignId"]?.string() else {
             return nil
         }
         self.notificationText = notificationText
         self.campaignId = campaignId
         
         // optional fields
-        if case let .string(value)? = metadata["radar:notificationTitle"] {
-            self.notificationTitle = value
-        }
-        if case let .string(value)? = metadata["radar:notificationSubtitle"] {
-            self.notificationSubtitle = value
-        }
-        if case let .string(value)? = metadata["radar:notificationURL"] {
-            self.notificationURL = value
-        }
-        if case let .string(value)? = metadata["radar:campaignMetadata"] {
-            self.campaignMetadata = value
-        }
+        self.notificationTitle = metadata["radar:notificationTitle"]?.string()
+        self.notificationSubtitle = metadata["radar:notificationSubtitle"]?.string()
+        self.notificationURL = metadata["radar:notificationURL"]?.string()
+        self.campaignMetadata = metadata["radar:campaignMetadata"]?.string()
     }
     
     func toNotificationContent(userInfo: [String: Any]) -> UNNotificationContent {
@@ -65,34 +57,33 @@ struct RadarNotificationContent: Sendable, Hashable {
 
 extension RadarGeofence_Swift {
     func toNotificationRequest() -> UNNotificationRequest? {
+        let identifier = GEOFENCE_NOTIFICATION_PREFIX + _id
         // Content
         guard let metadata = metadata,
               let metadataContent = RadarNotificationContent(from: metadata) else {
             return nil
         }
-        let identifier = GEOFENCE_NOTIFICATION_PREFIX + _id
-        
-        var userInfo: [String: Any] = [
+        guard let geofenceData = try? JSONEncoder().encode(self) else {
+            return nil
+        }
+        let userInfo: [String: Any] = [
             "registerdAt": Date().timeIntervalSince1970,
             "identifier": identifier,
+            "geofenceId": _id,
+            "geofenceData": geofenceData,
         ]
-        if let geofenceData = try? JSONEncoder().encode(self) {
-            userInfo["geofenceData"] = geofenceData
-        }
         let content = metadataContent.toNotificationContent(userInfo: userInfo)
         
         // Trigger
-        guard let latitude = geometry.center?.coordinate.latitude,
-              let longitude = geometry.center?.coordinate.longitude,
-              let radius = geometry.radius else {
-            return nil
-        }
+        let latitude = geometryCenter.coordinate.latitude
+        let longitude = geometryCenter.coordinate.longitude
+        let radius = geometryRadius
         let center = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
         let region = CLCircularRegion(center: center, radius: radius, identifier: identifier)
         let repeats = if case let .bool(value)? = metadata["radar:notificationRepeats"] { value } else { false }
         let trigger = UNLocationNotificationTrigger(region: region, repeats: repeats)
         
-        return UNNotificationRequest(identifier: "RadarSDKNotification", content: content, trigger: trigger)
+        return UNNotificationRequest(identifier: identifier, content: content, trigger: trigger)
     }
 }
 
@@ -119,45 +110,102 @@ struct NotificationValue: Codable, Hashable {
     }
 }
 
-/**
- Wrapper for UNNotificationRequest for comparison
- */
-struct RadarNotification: Hashable {
-    let request: UNNotificationRequest
-    let identifier: String
+struct NotificationPermissions: Codable {
+    let alert: Bool?
+    let sound: Bool?
+    let badge: Bool?
+    let lockScreen: Bool?
+    let notificationCenter: Bool?
+    let authorizationStatus: String
     
-    init?(from request: UNNotificationRequest) {
-        if !request.identifier.starts(with: RADAR_NOTIFICATION_PREFIX) {
-            return nil
+    init(from settings: UNNotificationSettings) {
+        switch settings.alertSetting {
+        case .notSupported:
+            alert = nil
+        case .disabled:
+            alert = false
+        case .enabled:
+            alert = true
+        @unknown default:
+            alert = nil
         }
-        self.request = request
-        self.identifier = request.identifier
-    }
-    
-    static func == (lhs: RadarNotification, rhs: RadarNotification) -> Bool {
-        return lhs.identifier == rhs.identifier
+        switch settings.badgeSetting {
+        case .notSupported:
+            badge = nil
+        case .disabled:
+            badge = false
+        case .enabled:
+            badge = true
+        @unknown default:
+            badge = nil
+        }
+        switch settings.lockScreenSetting {
+        case .notSupported:
+            lockScreen = nil
+        case .disabled:
+            lockScreen = false
+        case .enabled:
+            lockScreen = true
+        @unknown default:
+            lockScreen = nil
+        }
+        switch settings.soundSetting {
+        case .notSupported:
+            sound = nil
+        case .disabled:
+            sound = false
+        case .enabled:
+            sound = true
+        @unknown default:
+            sound = nil
+        }
+        switch settings.notificationCenterSetting {
+        case .notSupported:
+            notificationCenter = nil
+        case .disabled:
+            notificationCenter = false
+        case .enabled:
+            notificationCenter = true
+        @unknown default:
+            notificationCenter = nil
+        }
+        switch settings.authorizationStatus {
+        case .notDetermined:
+            authorizationStatus = "not_determined"
+        case .denied:
+            authorizationStatus = "denied"
+        case .authorized:
+            authorizationStatus = "authorized"
+        case .provisional:
+            authorizationStatus = "provisional"
+        case .ephemeral:
+            authorizationStatus = "ephemeral"
+        @unknown default:
+            authorizationStatus = "unknown"
+        }
     }
 }
 
 //
 @available(iOS 13.0, *)
 @objc(RadarNotificationHelper_Swift) @objcMembers
-actor RadarNotificationHelper: NSObject {
+public actor RadarNotificationHelper: NSObject {
     
     private var currentTask: Task<Void, Never>?
 
     static let shared = RadarNotificationHelper()
     
     public func registerGeofenceNotifications(geofences: [[String: Sendable]]) async {
-        let notifications: [RadarNotification] = geofences.compactMap { (geofenceDict) -> RadarNotification? in
+        let notifications: [UNNotificationRequest] = geofences.compactMap { (geofenceDict) -> UNNotificationRequest? in
             if let json = try? JSONSerialization.data(withJSONObject: geofenceDict),
                let geofence = try? JSONDecoder().decode(RadarGeofence_Swift.self, from: json),
-               let request = geofence.toNotificationRequest(),
-               let notification = RadarNotification(from: request) {
+               let notification = geofence.toNotificationRequest() {
                 return notification
             }
             return nil
         }
+        
+        RadarLogger.debug("Registering notifications: \(notifications)")
         
         // cancel previous work
         currentTask?.cancel()
@@ -166,34 +214,45 @@ actor RadarNotificationHelper: NSObject {
         currentTask = Task { [notifications] in
             await registerNotifications(notifications: notifications)
         }
+        
+        await currentTask?.value
     }
     
-    private func registerNotifications(notifications: [RadarNotification]) async {
+    private func registerNotifications(notifications: [UNNotificationRequest]) async {
         let notificationCenter = UNUserNotificationCenter.current()
         
-        // get existing scheduled notifications
-        let requests = await notificationCenter.pendingNotificationRequests().compactMap(RadarNotification.init(from:))
+        // remove all geofence notifications
+        let requests = await notificationCenter.pendingNotificationRequests()
+        if Task.isCancelled {
+            return
+        }
+        let notificationIdentifiersToRemove = requests.compactMap {
+            let identifier = $0.identifier
+
+            if identifier.starts(with: RADAR_NOTIFICATION_PREFIX) {
+                return identifier
+            }
+            return nil
+        }
+        notificationCenter.removePendingNotificationRequests(withIdentifiers: notificationIdentifiersToRemove)
         
-        // remove the ones that should no longer be sent
-        // TODO: maybe specify comparison function (without using set operations)
-        var notificationsToRemove = Set(requests).subtracting(notifications)
-        var notificationsToAdd = Set(notifications).subtracting(requests)
-        
-        
-        
-        notificationCenter.removePendingNotificationRequests(withIdentifiers: notificationsToRemove.map(\.identifier))
-        
-        // add the ones we want
-        for notification in notificationsToAdd {
+        // add notifications
+        for notification in notifications {
             do {
                 try await notificationCenter.add(notification)
+                if Task.isCancelled {
+                    return
+                }
             } catch {
-                print("Failed to add notification \(error) \(notification)")
+                RadarLogger.warning("Failed to add notification \(error) \(notification)")
             }
         }
         
         let pending = await notificationCenter.pendingNotificationRequests().compactMap {
-            NotificationValue.from(request: $0)
+            NotificationValue(from: $0)
+        }
+        if Task.isCancelled {
+            return
         }
         
         RadarState.registeredNotifications = pending
@@ -206,7 +265,7 @@ actor RadarNotificationHelper: NSObject {
             return []
         }
         let pendingRequests = await notificationCenter.pendingNotificationRequests().compactMap {
-            NotificationValue.from(request: $0)
+            NotificationValue(from: $0)
         }
         
         let delivered = Set(registered).subtracting(pendingRequests)
@@ -216,5 +275,14 @@ actor RadarNotificationHelper: NSObject {
             return json
         }
         return []
+    }
+    
+    public func notificationPermission() async -> String {
+        let settings = await UNUserNotificationCenter.current().notificationSettings()
+        let permissions = NotificationPermissions(from: settings)
+        guard let data = try? JSONEncoder().encode(permissions) else {
+            return ""
+        }
+        return String(data: data, encoding: .utf8) ?? ""
     }
 }

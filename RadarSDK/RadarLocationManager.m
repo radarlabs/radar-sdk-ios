@@ -563,12 +563,10 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Removed bubble geofences"];
 }
 - (void)replaceSyncedGeofences:(NSArray<RadarGeofence *> *)geofences {
-//    os_log(OS_LOG_DEFAULT, "JLKJDFSLJK");
-    [[RadarNotificationHelper_Swift shared]
-     registerGeofenceNotificationsWithGeofences:[RadarGeofence arrayForGeofences:geofences]
-     completionHandler:^() {}
-    ];
-    return;
+    
+    
+    
+    
     
     if (!geofences) {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Skipping replacing synced geofences"];
@@ -633,7 +631,11 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
             }
         }
     }
-
+    
+    [[RadarNotificationHelper_Swift shared]
+     registerGeofenceNotificationsWithGeofences:[RadarGeofence arrayForGeofences:geofences]
+     completionHandler:^() {}
+    ];
     [RadarNotificationHelper updateClientSideCampaignsWithPrefix:kSyncGeofenceIdentifierPrefix notificationRequests:requests];
 }
 
