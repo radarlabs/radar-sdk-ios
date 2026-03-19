@@ -88,7 +88,8 @@ struct TestsView: View {
                     case .enabled:
                         outputText.append("alert enabled")
                     }
-                    outputText.append("\n")
+                    outputText.append("
+")
                     switch settings.badgeSetting {
                     case .notSupported:
                         outputText.append("badge unsupported")
@@ -97,7 +98,8 @@ struct TestsView: View {
                     case .enabled:
                         outputText.append("badge enabled")
                     }
-                    outputText.append("\n")
+                    outputText.append("
+")
                     switch settings.lockScreenSetting {
                     case .notSupported:
                         outputText.append("lockscreen unsupported")
@@ -106,7 +108,8 @@ struct TestsView: View {
                     case .enabled:
                         outputText.append("lockscreen enabled")
                     }
-                    outputText.append("\n")
+                    outputText.append("
+")
                     switch settings.soundSetting {
                     case .notSupported:
                         outputText.append("sound unsupported")
@@ -115,7 +118,8 @@ struct TestsView: View {
                     case .enabled:
                         outputText.append("sound enabled")
                     }
-                    outputText.append("\n")
+                    outputText.append("
+")
                     switch settings.notificationCenterSetting {
                     case .notSupported:
                         outputText.append("notifcenter unsupported")
@@ -124,7 +128,8 @@ struct TestsView: View {
                     case .enabled:
                         outputText.append("notifcenter enabled")
                     }
-                    outputText.append("\n")
+                    outputText.append("
+")
                     switch settings.authorizationStatus {
                     case .notDetermined:
                         outputText.append("User has not been asked for notification permission")
