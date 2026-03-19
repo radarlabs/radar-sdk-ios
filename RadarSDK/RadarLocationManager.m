@@ -910,6 +910,13 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         
         if (source != RadarLocationSourceForegroundLocation && source != RadarLocationSourceManualLocation &&
             [RadarSettings sdkConfiguration].useSyncRegion && options.syncLocations == RadarTrackingOptionsSyncEvents) {
+            
+            if (location.horizontalAccuracy >= 1000 && options.desiredAccuracy != RadarTrackingOptionsDesiredAccuracyLow) {
+                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo
+                                                   message:[NSString stringWithFormat:@"Skipping sync region eval: inaccurate | accuracy = %f", location.horizontalAccuracy]];
+                return;
+            }
+            
             if (![RadarSyncManager shouldTrackWithLocation:location options:options]) {
                 
                 [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo
