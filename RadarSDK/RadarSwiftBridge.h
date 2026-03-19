@@ -26,7 +26,6 @@
 - (NSArray<NSString *> * _Nullable)beaconIds;
 - (NSString * _Nullable)placeId;
 - (CLLocation * _Nullable)lastLocation;
-- (void)fetchSyncRegionWithLatitude:(double)latitude longitude:(double)longitude completionHandler:(void (^ _Nonnull)(RadarStatus status, NSDictionary * _Nullable res))completionHandler;
 - (BOOL)isStopped;
 - (RadarTripOptions * _Nullable)getTripOptions;
 @end

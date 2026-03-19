@@ -22,7 +22,6 @@ protocol RadarSwiftBridgeProtocol {
     func beaconIds() -> [String]?
     func placeId() -> String?
     func lastLocation() -> CLLocation?
-    func fetchSyncRegion(latitude: Double, longitude: Double, completionHandler: @escaping (RadarStatus, [String: Any]?) -> Void)
     func isStopped() -> Bool
     func getTripOptions() -> RadarTripOptions?
 }

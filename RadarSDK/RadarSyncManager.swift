@@ -52,66 +52,43 @@ public final class RadarSyncManager: NSObject {
             return
         }
         
-        RadarSwift.bridge?.fetchSyncRegion(
-            latitude: location.coordinate.latitude,
-            longitude: location.coordinate.longitude,
-        ) { status, res in
-            guard status == .success, let res = res else {
-                RadarLogger.shared.warning("SyncManager: Sync region request failed")
-                return
-            }
-            
-            var newGeofences: [RadarGeofenceSwift]?
-            var newPlaces: [RadarPlaceSwift]?
-            var newBeacons: [RadarBeaconSwift]?
-            var newRegionCenter: RadarCoordinateSwift?
-            var newRegionRadius: Double?
-                        
-            if let geofencesArray = res["geofences"] as? [[String: Any]],
-                let data = try? JSONSerialization.data(withJSONObject: geofencesArray) {
-                    newGeofences = try? JSONDecoder().decode([RadarGeofenceSwift].self, from: data)
-            }
-            
-            if let placesArray = res["places"] as? [[String: Any]],
-               let data = try? JSONSerialization.data(withJSONObject: placesArray) {
-                   newPlaces = try? JSONDecoder().decode([RadarPlaceSwift].self, from: data)
-            }
-            
-            if let beaconsArray = res["beacons"] as? [[String: Any]],
-               let data = try? JSONSerialization.data(withJSONObject: beaconsArray, options: []) {
-                   newBeacons = try? JSONDecoder().decode([RadarBeaconSwift].self, from: data)
-            }
-            
-            let currentState = syncStore.read()
-            
-            if let regionDict = res["region"] as? [String: Any],
-               let lat = regionDict["latitude"] as? Double,
-               let lng = regionDict["longitude"] as? Double,
-               let radius = regionDict["radius"] as? Double,
-               radius > 0 {
-                newRegionCenter = RadarCoordinateSwift(latitude: lat, longitude: lng)
-                newRegionRadius = radius
-                
-                if currentState?.syncedRegionCenter == nil {
-                    RadarLogger.shared.info("SyncManager: Initial sync region set | lat = \(lat); lng = \(lng); radius = \(radius)")
-                } else if currentState?.syncedRegionCenter?.latitude != lat ||
-                            currentState?.syncedRegionCenter?.longitude != lng ||
-                            currentState?.syncedRegionRadius != radius {
-                    RadarLogger.shared.info("SyncManager: Sync region changed | lat = \(lat); lng = \(lng); radius = \(radius)")
+        if #available(iOS 13.0, *) {
+            Task{
+                do {
+                    let response = try await RadarAPIClient.shared.fetchSyncRegion(
+                        latitude: location.coordinate.latitude,
+                        longitude: location.coordinate.longitude
+                    )
+                    
+                    let currentState = syncStore.read()
+                    
+                    if let center = response.regionCenter, let radius = response.regionRadius {
+                        if currentState?.syncedRegionCenter == nil {
+                            
+                            RadarLogger.shared.info("SyncManager: Initial sync region set | lat = \(center.latitude); lng = \(center.longitude); radius = \(radius)")
+                        } else if currentState?.syncedRegionCenter?.latitude != center.latitude ||
+                                  currentState?.syncedRegionCenter?.longitude != center.longitude ||
+                                  currentState?.syncedRegionRadius != radius {
+                            
+                            RadarLogger.shared.info("SyncManager: Sync region changed | lat = \(center.latitude); lng = \(center.longitude); radius = \(radius)")
+                        }
+                    } else {
+                        if currentState?.syncedRegionCenter != nil {
+                            RadarLogger.shared.info("SyncManager: Sync region cleared")
+                        }
+                    }
+                    
+                    syncStore.modify { state in
+                        if state == nil { state = RadarSyncState() }
+                        state?.syncedGeofences = response.geofences
+                        state?.syncedPlaces = response.places
+                        state?.syncedBeacons = response.beacons
+                        state?.syncedRegionCenter = response.regionCenter
+                        state?.syncedRegionRadius = response.regionRadius
+                    }
+                } catch {
+                    RadarLogger.shared.warning("SyncManager: Sync region request failed")
                 }
-            } else {
-                if currentState?.syncedRegionCenter != nil {
-                    RadarLogger.shared.info("SyncManager: Sync region cleared")
-                }
-            }
-            
-            syncStore.modify { state in
-                if state == nil { state = RadarSyncState() }
-                state?.syncedGeofences = newGeofences
-                state?.syncedPlaces = newPlaces
-                state?.syncedBeacons = newBeacons
-                state?.syncedRegionCenter = newRegionCenter
-                state?.syncedRegionRadius = newRegionRadius
             }
         }
     }

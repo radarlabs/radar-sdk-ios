@@ -62,8 +62,6 @@ typedef void (^_Nonnull RadarSendEventAPICompletionHandler)(RadarStatus status, 
 
 typedef void (^_Nonnull RadarSyncLogsAPICompletionHandler)(RadarStatus status);
 
-typedef void (^_Nonnull RadarSyncRegionAPICompletionHandler)(RadarStatus status, NSDictionary *_Nullable res);
-
 @interface RadarAPIClient : NSObject
 
 @property (nonnull, strong, nonatomic) RadarAPIHelper *apiHelper;
@@ -177,11 +175,6 @@ typedef void (^_Nonnull RadarSyncRegionAPICompletionHandler)(RadarStatus status,
 completionHandler:(RadarSendEventAPICompletionHandler _Nonnull)completionHandler;
 
 - (void)syncLogs:(NSArray<RadarLog *> *)logs completionHandler:(RadarSyncLogsAPICompletionHandler _Nonnull)completionHandler;
-
-- (void)syncRegionWithLatitude:(double)latitude
-                     longitude:(double)longitude
-             completionHandler:(RadarSyncRegionAPICompletionHandler _Nonnull)completionHandler;
-
 @end
 
 NS_ASSUME_NONNULL_END

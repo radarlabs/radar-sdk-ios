@@ -52,10 +52,6 @@
     return [RadarState lastLocation];
 }
 
-- (void)fetchSyncRegionWithLatitude:(double)latitude longitude:(double)longitude completionHandler:(void (^)(RadarStatus status, NSDictionary * _Nullable res))completionHandler {
-    [[RadarAPIClient sharedInstance] syncRegionWithLatitude:latitude longitude:longitude completionHandler:completionHandler];
-}
-
 - (BOOL)isStopped {
     return [RadarState stopped];
 }
