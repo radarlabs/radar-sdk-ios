@@ -97,7 +97,7 @@ public final class RadarSyncManager: NSObject {
     
     @objc public static func shouldTrack(location: CLLocation, options: RadarTrackingOptions) -> Bool {
         guard options.syncLocations == .events else {
-            RadarLogger.shared.info("SyncManager: shouldTrack = YES | reason: syncLocations != events")
+            RadarLogger.shared.debug("SyncManager: shouldTrack = YES | reason: syncLocations != events")
             return true
         }
         
@@ -134,7 +134,6 @@ public final class RadarSyncManager: NSObject {
         RadarLogger.shared.info("SyncManager: No state change detected, skipping track")
         return false
     }
-    
     
     @objc public static func isNearSyncedRegionBoundary(location: CLLocation) -> Bool {
         guard let state = syncStore.read(),
@@ -373,6 +372,17 @@ public final class RadarSyncManager: NSObject {
         let currentBeacons = getBeacons(for: location)
         let currentIds = Set(currentBeacons.compactMap { $0.id })
         
+        let enteredBeaconIds = currentIds.subtracting(lastKnownBeaconIds)
+        let exitedBeaconIds = lastKnownBeaconIds.subtracting(currentIds)
+        
+        if !enteredBeaconIds.isEmpty {
+            RadarLogger.shared.info("SyncManager: Detected beacon entry: \(enteredBeaconIds)")
+        }
+        
+        if !exitedBeaconIds.isEmpty {
+            RadarLogger.shared.info("SyncManager: Detected beacon exit: \(exitedBeaconIds)")
+        }
+        
         return currentIds != lastKnownBeaconIds
     }
     
@@ -381,6 +391,17 @@ public final class RadarSyncManager: NSObject {
         let lastKnownPlaceIds = Set(state.lastSyncedPlaceIds)
         let currentPlaces = getPlaces(for: location)
         let currentIds = Set(currentPlaces.compactMap { $0.id })
+        
+        let enteredPlaceIds = currentIds.subtracting(lastKnownPlaceIds)
+        let exitedPlaceIds = lastKnownPlaceIds.subtracting(currentIds)
+        
+        if !enteredPlaceIds.isEmpty {
+            RadarLogger.shared.info("SyncManager: Detected place entry: \(enteredPlaceIds)")
+        }
+        
+        if !exitedPlaceIds.isEmpty {
+            RadarLogger.shared.info("SyncManager: Detected place exit: \(exitedPlaceIds)")
+        }
         
         return currentIds != lastKnownPlaceIds
     }
@@ -501,6 +522,13 @@ public final class RadarSyncManager: NSObject {
         let currentPlaceIds = getPlaces(for: location).map { $0.id }
         let currentBeaconIds = getBeacons(for: location).map { $0.id }
         
+        RadarLogger.shared.info(
+            "SyncManager: Optimistic update | " +
+            "geofences=\(acceptedGeofenceIds) " +
+            "places=\(currentPlaceIds) " +
+            "beacons=\(currentBeaconIds)"
+        )
+        
         syncStore.modify { state in
             if state == nil { state = RadarSyncState() }
             state?.lastSyncedGeofenceIds = acceptedGeofenceIds
@@ -516,6 +544,13 @@ public final class RadarSyncManager: NSObject {
         previousSyncedGeofenceIds = state.lastSyncedGeofenceIds
         previousSyncedPlaceIds = state.lastSyncedPlaceIds
         previousSyncedBeaconIds = state.lastSyncedBeaconIds
+        
+        RadarLogger.shared.info(
+            "SyncManager: Saving previous state before optimistic update | " +
+            "geofences=\(previousSyncedGeofenceIds?.count ?? 0) " +
+            "places=\(previousSyncedPlaceIds?.count ?? 0) " +
+            "beacons=\(previousSyncedBeaconIds?.count ?? 0)"
+        )
         
         updateLastKnownSyncState(location: location)
     }
@@ -535,18 +570,52 @@ public final class RadarSyncManager: NSObject {
         let beaconMismatch = Set(serverBeaconIds) != Set(clientBeaconIds)
         
         if geofenceMismatch || placeMismatch || beaconMismatch {
-            RadarLogger.shared.info(
-                "SyncManager: Reconciling with server state |" +
-                "geofences: client=\(clientGeofenceIds) server=\(serverGeofenceIds) |" +
-                "places: client=\(clientPlaceIds) server=\(serverPlaceIds) |" +
-                "beacons: client=\(clientBeaconIds) server=\(serverBeaconIds)"
-            )
+            
+            if geofenceMismatch {
+                let serverOnly = Set(serverGeofenceIds).subtracting(Set(clientGeofenceIds))
+                let clientOnly = Set(clientGeofenceIds).subtracting(Set(serverGeofenceIds))
+                if !serverOnly.isEmpty {
+                    RadarLogger.shared.info("SyncManager: Server added geofences: \(serverOnly)")
+                }
+                if !clientOnly.isEmpty {
+                    RadarLogger.shared.info("SyncManager: Server removed geofences: \(clientOnly)")
+                }
+            }
+            
+            if beaconMismatch {
+                let serverOnly = Set(serverBeaconIds).subtracting(Set(clientBeaconIds))
+                let clientOnly = Set(clientBeaconIds).subtracting(Set(serverBeaconIds))
+                if !serverOnly.isEmpty {
+                    RadarLogger.shared.info("SyncManager: Server added beacons: \(serverOnly)")
+                }
+                if !clientOnly.isEmpty {
+                    RadarLogger.shared.info("SyncManager: Server removed beacons: \(clientOnly)")
+                }
+            }
+            
+            if placeMismatch {
+                let serverOnly = Set(serverPlaceIds).subtracting(Set(clientPlaceIds))
+                let clientOnly = Set(clientPlaceIds).subtracting(Set(serverPlaceIds))
+                if !serverOnly.isEmpty {
+                    RadarLogger.shared.info("SyncManager: Server added places: \(serverOnly)")
+                }
+                if !clientOnly.isEmpty {
+                    RadarLogger.shared.info("SyncManager: Server removed places: \(clientOnly)")
+                }
+            }
             
             syncStore.modify { state in
                 if state == nil { state = RadarSyncState() }
                 state?.lastSyncedGeofenceIds = serverGeofenceIds
                 state?.lastSyncedPlaceIds = serverPlaceIds
                 state?.lastSyncedBeaconIds = serverBeaconIds
+                
+                // Clean up timestamps for geofences the server doesn't recognize
+                let serverSet = Set(serverGeofenceIds)
+                let cleanedTimestamps = state?.geofenceEntryTimestamps.filter { serverSet.contains($0.key) } ?? [:]
+                let cleanedDwell = state?.dwellEventsFired.filter { serverSet.contains($0) } ?? []
+                state?.geofenceEntryTimestamps = cleanedTimestamps
+                state?.dwellEventsFired = cleanedDwell
             }
         } else {
             RadarLogger.shared.info("SyncManager: Client state matches server")
