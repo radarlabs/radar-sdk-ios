@@ -228,8 +228,7 @@ public actor RadarNotificationHelper: NSObject {
         }
         let notificationIdentifiersToRemove = requests.compactMap {
             let identifier = $0.identifier
-
-            if identifier.starts(with: RADAR_NOTIFICATION_PREFIX) {
+            if identifier.starts(with: GEOFENCE_NOTIFICATION_PREFIX) {
                 return identifier
             }
             return nil
@@ -259,11 +258,10 @@ public actor RadarNotificationHelper: NSObject {
     }
     
     public func getDeliveredNotifications() async -> [[String: Sendable]] {
-        let notificationCenter = UNUserNotificationCenter.current()
-        
         guard let registered = RadarState.registeredNotifications else {
             return []
         }
+        let notificationCenter = UNUserNotificationCenter.current()
         let pendingRequests = await notificationCenter.pendingNotificationRequests().compactMap {
             NotificationValue(from: $0)
         }
