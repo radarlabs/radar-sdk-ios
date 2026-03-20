@@ -9,11 +9,11 @@ let RADAR_NOTIFICATION_PREFIX = "radar_"
 let GEOFENCE_NOTIFICATION_PREFIX = "radar_geofence_"
 
 struct RadarNotificationContent: Sendable, Hashable {
+    let campaignId: String
+    let notificationText: String
     let notificationTitle: String?
     let notificationSubtitle: String?
-    let notificationText: String
     let notificationURL: String?
-    let campaignId: String
     let campaignMetadata: String?
     
     init?(from metadata: [String: RadarMetadataValue]) {
@@ -67,7 +67,7 @@ extension RadarGeofence_Swift {
             return nil
         }
         let userInfo: [String: Any] = [
-            "registerdAt": Date().timeIntervalSince1970,
+            "registeredAt": Date().timeIntervalSince1970,
             "identifier": identifier,
             "geofenceId": _id,
             "geofenceData": geofenceData,
@@ -89,7 +89,7 @@ extension RadarGeofence_Swift {
 
 struct NotificationValue: Codable, Hashable {
     let identifier: String
-    let registerdAt: Double
+    let registeredAt: Double
     let geofenceId: String?
     let campaignId: String?
     
@@ -98,91 +98,15 @@ struct NotificationValue: Codable, Hashable {
             return nil
         }
         let userInfo = request.content.userInfo
-        guard let registerdAt = userInfo["registerdAt"] as? Double else {
+        guard let registeredAt = userInfo["registeredAt"] as? Double else {
             return nil
         }
         
         self.identifier = request.identifier
-        self.registerdAt = registerdAt
+        self.registeredAt = registeredAt
         
         self.geofenceId = userInfo["geofenceId"] as? String
         self.campaignId = userInfo["campaignId"] as? String
-    }
-}
-
-struct NotificationPermissions: Codable {
-    let alert: Bool?
-    let sound: Bool?
-    let badge: Bool?
-    let lockScreen: Bool?
-    let notificationCenter: Bool?
-    let authorizationStatus: String
-    
-    init(from settings: UNNotificationSettings) {
-        switch settings.alertSetting {
-        case .notSupported:
-            alert = nil
-        case .disabled:
-            alert = false
-        case .enabled:
-            alert = true
-        @unknown default:
-            alert = nil
-        }
-        switch settings.badgeSetting {
-        case .notSupported:
-            badge = nil
-        case .disabled:
-            badge = false
-        case .enabled:
-            badge = true
-        @unknown default:
-            badge = nil
-        }
-        switch settings.lockScreenSetting {
-        case .notSupported:
-            lockScreen = nil
-        case .disabled:
-            lockScreen = false
-        case .enabled:
-            lockScreen = true
-        @unknown default:
-            lockScreen = nil
-        }
-        switch settings.soundSetting {
-        case .notSupported:
-            sound = nil
-        case .disabled:
-            sound = false
-        case .enabled:
-            sound = true
-        @unknown default:
-            sound = nil
-        }
-        switch settings.notificationCenterSetting {
-        case .notSupported:
-            notificationCenter = nil
-        case .disabled:
-            notificationCenter = false
-        case .enabled:
-            notificationCenter = true
-        @unknown default:
-            notificationCenter = nil
-        }
-        switch settings.authorizationStatus {
-        case .notDetermined:
-            authorizationStatus = "not_determined"
-        case .denied:
-            authorizationStatus = "denied"
-        case .authorized:
-            authorizationStatus = "authorized"
-        case .provisional:
-            authorizationStatus = "provisional"
-        case .ephemeral:
-            authorizationStatus = "ephemeral"
-        @unknown default:
-            authorizationStatus = "unknown"
-        }
     }
 }
 
@@ -192,6 +116,7 @@ struct NotificationPermissions: Codable {
 public actor RadarNotificationHelper: NSObject {
     
     private var currentTask: Task<Void, Never>?
+    private var flag = false
 
     static let shared = RadarNotificationHelper()
     
@@ -206,24 +131,32 @@ public actor RadarNotificationHelper: NSObject {
         }
         
         RadarLogger.debug("Registering notifications: \(notifications)")
+        print("registering")
         
         // cancel previous work
-        currentTask?.cancel()
-        await currentTask?.value
+        let previousTask = currentTask
+        previousTask?.cancel()
         
-        currentTask = Task { [notifications] in
+        let task = Task { [notifications] in
+            await previousTask?.value
+            if Task.isCancelled {
+                print("cancelled pre \(notifications[0].identifier)")
+                return
+            }
             await registerNotifications(notifications: notifications)
         }
-        
-        await currentTask?.value
+        currentTask = task
+        await task.value
     }
     
     private func registerNotifications(notifications: [UNNotificationRequest]) async {
+        print("first \(notifications[0].identifier)")
         let notificationCenter = UNUserNotificationCenter.current()
         
         // remove all geofence notifications
         let requests = await notificationCenter.pendingNotificationRequests()
         if Task.isCancelled {
+            print("cancelled 1 \(notifications[0].identifier)")
             return
         }
         let notificationIdentifiersToRemove = requests.compactMap {
@@ -235,11 +168,14 @@ public actor RadarNotificationHelper: NSObject {
         }
         notificationCenter.removePendingNotificationRequests(withIdentifiers: notificationIdentifiersToRemove)
         
+        print("Removed \(notifications[0].identifier)")
+        
         // add notifications
         for notification in notifications {
             do {
                 try await notificationCenter.add(notification)
                 if Task.isCancelled {
+                    print("cancelled 2 \(notifications[0].identifier)")
                     return
                 }
             } catch {
@@ -251,10 +187,12 @@ public actor RadarNotificationHelper: NSObject {
             NotificationValue(from: $0)
         }
         if Task.isCancelled {
+            print("cancelled 3 \(notifications[0].identifier)")
             return
         }
         
         RadarState.registeredNotifications = pending
+        print("Done \(notifications[0].identifier)")
     }
     
     public func getDeliveredNotifications() async -> [[String: Sendable]] {

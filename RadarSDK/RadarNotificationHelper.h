@@ -33,10 +33,10 @@ typedef void (^NotificationPermissionCheckCompletion)(BOOL granted);
 + (void)getNotificationDiffWithCompletionHandler:(void (^)(NSArray *notificationsDelivered, NSArray *notificationsRemaining))completionHandler;
 @end
 
-@interface RadarNotificationHelper_Swift : NSObject
-+ (RadarNotificationHelper_Swift*) shared;
-- (void)registerGeofenceNotificationsWithGeofences:(NSArray<NSDictionary<NSString *, id> *> * _Nonnull)geofences completionHandler:(void (^ _Nonnull)(void))completionHandler;
-- (void)getDeliveredNotificationsWithCompletionHandler:(void (^ _Nonnull)(NSArray<NSDictionary<NSString *, id> *> * _Nonnull))completionHandler;
-@end
+//@interface RadarNotificationHelper_Swift : NSObject
+//+ (RadarNotificationHelper_Swift*) shared;
+//- (void)registerGeofenceNotificationsWithGeofences:(NSArray<NSDictionary<NSString *, id> *> * _Nonnull)geofences completionHandler:(void (^ _Nonnull)(void))completionHandler;
+//- (void)getDeliveredNotificationsWithCompletionHandler:(void (^ _Nonnull)(NSArray<NSDictionary<NSString *, id> *> * _Nonnull))completionHandler;
+//@end
 
 NS_ASSUME_NONNULL_END

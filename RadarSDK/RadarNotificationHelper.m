@@ -387,9 +387,9 @@ didReceiveRemoteNotification:(NSDictionary *)userInfo
     }
     
     if (true) {
-        [[RadarNotificationHelper_Swift shared] getDeliveredNotificationsWithCompletionHandler:^(NSArray* notificationsDelivered) {
-            completionHandler(notificationsDelivered, @[]);
-        }];
+//        [[RadarNotificationHelper_Swift shared] getDeliveredNotificationsWithCompletionHandler:^(NSArray* notificationsDelivered) {
+//            completionHandler(notificationsDelivered, @[]);
+//        }];
         return;
     }
     

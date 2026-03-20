@@ -632,10 +632,10 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         }
     }
     
-    [[RadarNotificationHelper_Swift shared]
-     registerGeofenceNotificationsWithGeofences:[RadarGeofence arrayForGeofences:geofences]
-     completionHandler:^() {}
-    ];
+//    [[RadarNotificationHelper_Swift shared]
+//     registerGeofenceNotificationsWithGeofences:[RadarGeofence arrayForGeofences:geofences]
+//     completionHandler:^() {}
+//    ];
     [RadarNotificationHelper updateClientSideCampaignsWithPrefix:kSyncGeofenceIdentifierPrefix notificationRequests:requests];
 }
 
