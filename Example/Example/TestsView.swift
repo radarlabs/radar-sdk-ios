@@ -21,93 +21,16 @@ struct TestsView: View {
                 .cornerRadius(8)
                 .padding(.horizontal)
             
-            StyledButton("test") {
-                Task {
-                    let helper = RadarNotificationHelper()
-                    let geofence = [
-                        "_id": "unchanged",
-                        "metadata": [
-                            "radar:campaignId": "test-campaignId",
-                            "radar:notificationText": "test-notificationText"
-                        ],
-                        "geometryCenter": [
-                            "coordinates": [0, 0]
-                        ],
-                        "geometryRadius": 0
-                    ]
-                    var geofence1 = geofence
-                    geofence1["_id"] = "1"
-                    
-                    var geofence2 = geofence
-                    geofence2["_id"] = "2"
-                    
-                    var geofence3 = geofence
-                    geofence3["_id"] = "3"
-                    
-                    var geofence4 = geofence
-                    geofence4["_id"] = "4"
-                    
-                    var geofence5 = geofence
-                    geofence5["_id"] = "5"
-                
-                    async let _ = helper.registerGeofenceNotifications(geofences: [geofence1])
-                    try await Task.sleep(nanoseconds: 10 * 1000000)
-                    async let _ = helper.registerGeofenceNotifications(geofences: [geofence2])
-                    try await Task.sleep(nanoseconds: 100)
-                    async let _ = helper.registerGeofenceNotifications(geofences: [geofence3])
-                    async let _ = helper.registerGeofenceNotifications(geofences: [geofence4])
-                    async let _ = helper.registerGeofenceNotifications(geofences: [geofence5])
-                }
-            }
-            
-            StyledButton("getVerifiedLocationToken") {
-                
-                // 1️⃣ Create notification content
-                let content = UNMutableNotificationContent()
-                content.title = "Welcome!"
-                content.body = "You arrived at the location."
-                content.sound = .default
-
-                // 2️⃣ Define geofence region
-                let center = CLLocationCoordinate2D(
-                    latitude: 40.738488,
-                    longitude: -73.991304
-                )
-
-                let region = CLCircularRegion(
-                    center: center,
-                    radius: 200, // meters
-                    identifier: "office_geofence"
-                )
-
-                region.notifyOnEntry = true
-                region.notifyOnExit = false
-
-                // 3️⃣ Create location trigger
-                let trigger = UNLocationNotificationTrigger(
-                    region: region,
-                    repeats: false
-                )
-
-                // 4️⃣ Create request
-                let request = UNNotificationRequest(
-                    identifier: "geofence_notification",
-                    content: content,
-                    trigger: trigger
-                )
-
-                // 5️⃣ Schedule notification
-                UNUserNotificationCenter.current().add(request) { error in
-                    outputText.removeAll()
-                    if let error = error {
-                        outputText.append("Error scheduling notification: \(error)")
-                    } else {
-                        outputText.append("registered \(request.identifier)")
+            StyledButton("remove first notification (simulate sent)") {
+                UNUserNotificationCenter.current().getPendingNotificationRequests { requests in
+                    if requests.count > 0 {
+                        let firstRequestId = requests.first!.identifier
+                        UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: [firstRequestId])
                     }
                 }
             }
             
-            StyledButton("pending requests") {
+            StyledButton("list pending requests") {
                 UNUserNotificationCenter.current().getPendingNotificationRequests { notifications in
                     outputText.removeAll()
                     for notification in notifications {
@@ -116,8 +39,7 @@ struct TestsView: View {
                 }
             }
             
-            StyledButton("permission") {
-                
+            StyledButton("show notification permissions") {
                 UNUserNotificationCenter.current().getNotificationSettings { settings in
                     outputText.removeAll()
                     switch settings.alertSetting {

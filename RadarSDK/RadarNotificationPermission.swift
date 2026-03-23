@@ -81,4 +81,10 @@ struct NotificationPermissions: Codable {
             authorizationStatus = "unknown"
         }
     }
+    
+    func canSendNotification() -> Bool {
+        // whether or not any notifications will be sent, when all notification types are disabled, iOS will not return anything from pending notifications list
+        // if that is the case, mostly likely the user has not received any notifications in the pending list.
+        return authorizationStatus == "authorized" && (alert == true || sound == true || badge == true || lockScreen == true || notificationCenter == true)
+    }
 }

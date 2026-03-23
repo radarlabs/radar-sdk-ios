@@ -56,7 +56,7 @@ struct RadarNotificationContent: Sendable, Hashable {
 }
 
 extension RadarGeofence_Swift {
-    func toNotificationRequest() -> UNNotificationRequest? {
+    func toNotificationRequest(now: Date = Date()) -> UNNotificationRequest? {
         let identifier = GEOFENCE_NOTIFICATION_PREFIX + _id
         // Content
         guard let metadata = metadata,
@@ -67,7 +67,7 @@ extension RadarGeofence_Swift {
             return nil
         }
         let userInfo: [String: Any] = [
-            "registeredAt": Date().timeIntervalSince1970,
+            "registeredAt": now.timeIntervalSince1970,
             "identifier": identifier,
             "geofenceId": _id,
             "geofenceData": geofenceData,
@@ -113,25 +113,24 @@ struct NotificationValue: Codable, Hashable {
 //
 @available(iOS 13.0, *)
 @objc(RadarNotificationHelper_Swift) @objcMembers
-public actor RadarNotificationHelper: NSObject {
+actor RadarNotificationHelper: NSObject {
     
     private var currentTask: Task<Void, Never>?
-    private var flag = false
 
-    static let shared = RadarNotificationHelper()
+    public static let shared = RadarNotificationHelper()
     
     public func registerGeofenceNotifications(geofences: [[String: Sendable]]) async {
+        let now = Date()
         let notifications: [UNNotificationRequest] = geofences.compactMap { (geofenceDict) -> UNNotificationRequest? in
             if let json = try? JSONSerialization.data(withJSONObject: geofenceDict),
                let geofence = try? JSONDecoder().decode(RadarGeofence_Swift.self, from: json),
-               let notification = geofence.toNotificationRequest() {
+               let notification = geofence.toNotificationRequest(now: now) {
                 return notification
             }
             return nil
         }
         
-        RadarLogger.debug("Registering notifications: \(notifications)")
-        print("registering")
+        RadarLogger.debug("NotificationHelper registering: \(notifications.map(\.identifier))")
         
         // cancel previous work
         let previousTask = currentTask
@@ -140,23 +139,27 @@ public actor RadarNotificationHelper: NSObject {
         let task = Task { [notifications] in
             await previousTask?.value
             if Task.isCancelled {
-                print("cancelled pre \(notifications[0].identifier)")
+                RadarLogger.debug("NotificationHelper cancelled registeration: \(notifications.map(\.identifier))")
                 return
             }
             await registerNotifications(notifications: notifications)
+            if Task.isCancelled {
+                RadarLogger.debug("NotificationHelper cancelled registeration: \(notifications.map(\.identifier))")
+                return
+            }
+            RadarLogger.debug("NotificationHelper completed: \(notifications.map(\.identifier))")
         }
         currentTask = task
+        print("task \(task.hashValue)")
         await task.value
     }
     
     private func registerNotifications(notifications: [UNNotificationRequest]) async {
-        print("first \(notifications[0].identifier)")
         let notificationCenter = UNUserNotificationCenter.current()
         
         // remove all geofence notifications
         let requests = await notificationCenter.pendingNotificationRequests()
         if Task.isCancelled {
-            print("cancelled 1 \(notifications[0].identifier)")
             return
         }
         let notificationIdentifiersToRemove = requests.compactMap {
@@ -168,34 +171,56 @@ public actor RadarNotificationHelper: NSObject {
         }
         notificationCenter.removePendingNotificationRequests(withIdentifiers: notificationIdentifiersToRemove)
         
-        print("Removed \(notifications[0].identifier)")
+        let settings = await UNUserNotificationCenter.current().notificationSettings()
+        if Task.isCancelled {
+            return
+        }
+        if settings.authorizationStatus != .authorized {
+            RadarLogger.debug("NotificationHelper notifications unauthorized")
+            return
+        }
         
         // add notifications
         for notification in notifications {
             do {
                 try await notificationCenter.add(notification)
+                print("added \(notification.identifier)")
                 if Task.isCancelled {
-                    print("cancelled 2 \(notifications[0].identifier)")
                     return
                 }
             } catch {
-                RadarLogger.warning("Failed to add notification \(error) \(notification)")
+                RadarLogger.warning("NotificationHelper failed to add notification \(error) \(notification)")
             }
         }
         
         let pending = await notificationCenter.pendingNotificationRequests().compactMap {
             NotificationValue(from: $0)
         }
-        if Task.isCancelled {
-            print("cancelled 3 \(notifications[0].identifier)")
-            return
-        }
-        
         RadarState.registeredNotifications = pending
-        print("Done \(notifications[0].identifier)")
+        RadarLogger.debug("NotificationHelper registered: \(pending.map(\.identifier))")
     }
     
     public func getDeliveredNotifications() async -> [[String: Sendable]] {
+        
+        let settings = await UNUserNotificationCenter.current().notificationSettings()
+        let permissions = NotificationPermissions(from: settings)
+        if (!permissions.canSendNotification()) {
+            return []
+        }
+        
+        let registerTask = currentTask
+        if let registerTask {
+            // if theres a register currently in progress, we need to wait for that to complete
+            await registerTask.value
+            // if that task was cancelled, there's an active
+            // instance of `registerNotifications` that's modifying the notification list, so the diff
+            // might not be correct.
+            if registerTask.isCancelled {
+                RadarLogger.debug("NotificationHelper getDeliveredNotifications while registering")
+                return []
+            }
+        }
+        
         guard let registered = RadarState.registeredNotifications else {
             return []
         }
@@ -203,8 +228,17 @@ public actor RadarNotificationHelper: NSObject {
         let pendingRequests = await notificationCenter.pendingNotificationRequests().compactMap {
             NotificationValue(from: $0)
         }
+        // if during await pendingNotificationRequests, the task has changed, there's an active
+        // instance of `registerNotifications` that's modifying the notification list, so the diff
+        // might not be correct.
+        if registerTask != currentTask {
+            RadarLogger.debug("NotificationHelper getDeliveredNotifications while registering")
+            return []
+        }
+        
         
         let delivered = Set(registered).subtracting(pendingRequests)
+        RadarLogger.debug("NotificationHelper delivered: \(delivered.map(\.identifier))")
         
         if let data = try? JSONEncoder().encode(Array(delivered)),
            let json = try? JSONSerialization.jsonObject(with: data) as? [[String: Sendable]] {
