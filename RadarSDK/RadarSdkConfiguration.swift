@@ -70,9 +70,6 @@ class RadarSdkConfiguration: NSObject, Codable {
         useNotificationDiff = dict?["useNotificationDiff"] as? Bool ?? false
         syncAfterSetUser = dict?["syncAfterSetUser"] as? Bool ?? false
         useNotificationDiffV2 = dict?["useNotificationDiffV2"] as? Bool ?? false
-//        useNotificationDiffV2 = true // TODO: for testing only
-        
-        print("Initialized SDK COND+FIG\(useNotificationDiffV2)")
     }
     
     public func dictionaryValue() -> [String: Any] {
