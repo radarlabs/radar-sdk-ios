@@ -36,7 +36,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         radarInitializeOptions.autoLogNotificationConversions = true
         radarInitializeOptions.autoHandleNotificationDeepLinks = true
         radarInitializeOptions.silentPush = true
-        
+
         Radar.setAppGroup("group.waypoint.data")
         Radar.initialize(publishableKey: "prj_test_pk_0000000000000000000000000000000000000000", options: radarInitializeOptions)
         Radar.setMetadata([ "foo": "bar" ])
