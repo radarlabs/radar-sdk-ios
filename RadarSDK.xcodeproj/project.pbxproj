@@ -440,7 +440,6 @@
 			children = (
 				9679F4A027CD8D0600800797 /* CLLocation+Radar.h */,
 				9679F4A227CD8DE200800797 /* CLLocation+Radar.m */,
-				53CCD782275E579800F79CC8 /* RadarLogBuffer.m */,
 			);
 			name = Util;
 			sourceTree = "<group>";
@@ -548,6 +547,7 @@
 				96A5A0D827AD9F7F007B960B /* Include */,
 				DD236C792308797B00EB88F9 /* Info.plist */,
 				532FC303277A783900989279 /* Radar+Internal.h */,
+				DD236C782308797B00EB88F9 /* RadarSDK.h */,
 				DD236C9023087A3500EB88F9 /* Radar.m */,
 				DD236C9823087F9200EB88F9 /* RadarAPIClient.h */,
 				DD236C9923087F9200EB88F9 /* RadarAPIClient.m */,
@@ -577,6 +577,7 @@
 				96A5A11527ADA02E007B960B /* RadarLog.h */,
 				96A5A11427ADA02E007B960B /* RadarLog.m */,
 				96A5A11627ADA02E007B960B /* RadarLogBuffer.h */,
+				53CCD782275E579800F79CC8 /* RadarLogBuffer.m */,
 				DD236D66230A0D6700EB88F9 /* RadarLogger.h */,
 				DD236D67230A0D6700EB88F9 /* RadarLogger.m */,
 				F64FF0DC2E4D2BEA00DF3926 /* RadarLogger.swift */,
@@ -593,7 +594,6 @@
 				82D04AC629771BF10036619F /* RadarReplay.m */,
 				82D04ABA29722ED20036619F /* RadarReplayBuffer.h */,
 				82D04AB929722ED20036619F /* RadarReplayBuffer.m */,
-				DD236C782308797B00EB88F9 /* RadarSDK.h */,
 				8227EF0B2CDAB69B00C47290 /* RadarRouteMode.m */,
 				F667F8282BFBF3D1001F2F67 /* RadarSdkConfiguration.h */,
 				F667F8262BFBF3C8001F2F67 /* RadarSdkConfiguration.m */,
@@ -659,8 +659,8 @@
 				96A5A0BA27AD9F41007B960B /* RadarContext+Internal.h */,
 				5343FFD923E38BA300808D93 /* RadarContext.m */,
 				96A5A0B627AD9F40007B960B /* RadarCoordinate+Internal.h */,
-				96A5A0B927AD9F41007B960B /* RadarEvent+Internal.h */,
 				DD236CBA2308812700EB88F9 /* RadarCoordinate.m */,
+				96A5A0B927AD9F41007B960B /* RadarEvent+Internal.h */,
 				DD236CB82308812700EB88F9 /* RadarEvent.m */,
 				96A5A0AD27AD9F40007B960B /* RadarFraud+Internal.h */,
 				96FC90F6277379C1000757DF /* RadarFraud.m */,
@@ -670,11 +670,11 @@
 				96A5A0B127AD9F40007B960B /* RadarPlace+Internal.h */,
 				DD236CB22308812600EB88F9 /* RadarPlace.m */,
 				96A5A0BB27AD9F41007B960B /* RadarPolygonGeometry+Internal.h */,
-				E658DB0B2CB46B50004E0F01 /* RadarOperatingHours+Internal.h */,
 				DD236CAB2308812600EB88F9 /* RadarPolygonGeometry.m */,
+				E658DB0B2CB46B50004E0F01 /* RadarOperatingHours+Internal.h */,
 				E658DB082CB462AA004E0F01 /* RadarOperatingHour.m */,
-				DD236CBC2308812700EB88F9 /* RadarRegion.m */,
 				96A5A0B527AD9F40007B960B /* RadarRegion+Internal.h */,
+				DD236CBC2308812700EB88F9 /* RadarRegion.m */,
 				96A5A0B327AD9F40007B960B /* RadarRoute+Internal.h */,
 				DD4D4D1723E60E6300D36C1D /* RadarRoute.m */,
 				96A5A0A827AD9F40007B960B /* RadarRouteDistance+Internal.h */,
@@ -689,9 +689,9 @@
 				DD4D4D0A23E60BF400D36C1D /* RadarRoutes.m */,
 				96A5A0AA27AD9F40007B960B /* RadarSegment+Internal.h */,
 				DD14FD4B23CE783500E80AC8 /* RadarSegment.m */,
-				96A5A0B227AD9F40007B960B /* RadarTrip+Internal.h */,
 				F6F959812C3D7EA200BC30FE /* RadarTimeZone+Internal.h */,
 				F6F959832C3D7EDE00BC30FE /* RadarTimeZone.m */,
+				96A5A0B227AD9F40007B960B /* RadarTrip+Internal.h */,
 				DDF1157C2524E18100D575C4 /* RadarTrip.m */,
 				96A5A0B427AD9F40007B960B /* RadarUser+Internal.h */,
 				DD236CBB2308812700EB88F9 /* RadarUser.m */,
@@ -1183,7 +1183,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
-				MARKETING_VERSION = 3.27.0;
+				MARKETING_VERSION = 3.28.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -1241,7 +1241,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
-				MARKETING_VERSION = 3.27.0;
+				MARKETING_VERSION = 3.28.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				OTHER_CFLAGS = "-fembed-bitcode";
