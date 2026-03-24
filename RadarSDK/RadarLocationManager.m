@@ -562,8 +562,8 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     }
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Removed bubble geofences"];
 }
+
 - (void)replaceSyncedGeofences:(NSArray<RadarGeofence *> *)geofences {
-    
     if (@available(iOS 13.0, *)) {
         if ([RadarSettings sdkConfiguration].useNotificationDiffV2) {
             [[RadarNotificationHelper_Swift shared]
@@ -578,7 +578,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 
         return;
     }
-
+    
     [self removeSyncedGeofences];
 
     RadarTrackingOptions *options = [Radar getTrackingOptions];

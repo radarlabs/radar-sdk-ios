@@ -154,46 +154,47 @@ actor RadarNotificationHelper: NSObject {
             RadarLogger.debug("NotificationHelper completed: \(notifications.map(\.identifier))")
         }
         currentTask = task
-        print("task \(task.hashValue)")
         await task.value
     }
     
-    private func registerNotifications(notifications: [UNNotificationRequest]) async {
+    private func registerNotifications(notifications: [UNNotificationRequest]?) async {
         let notificationCenter = UNUserNotificationCenter.current()
         
-        // remove all geofence notifications
-        let requests = await notificationCenter.pendingNotificationRequests()
-        if Task.isCancelled {
-            return
-        }
-        let notificationIdentifiersToRemove = requests.compactMap {
-            let identifier = $0.identifier
-            if identifier.starts(with: GEOFENCE_NOTIFICATION_PREFIX) {
-                return identifier
+        // if notifications is not null, we update the pending notifications, otherwise we only update the registered notifications list
+        if let notifications {
+            // remove all geofence notifications
+            let requests = await notificationCenter.pendingNotificationRequests()
+            if Task.isCancelled {
+                return
             }
-            return nil
-        }
-        notificationCenter.removePendingNotificationRequests(withIdentifiers: notificationIdentifiersToRemove)
-        
-        let settings = await UNUserNotificationCenter.current().notificationSettings()
-        if Task.isCancelled {
-            return
-        }
-        if settings.authorizationStatus != .authorized {
-            RadarLogger.debug("NotificationHelper notifications unauthorized")
-            return
-        }
-        
-        // add notifications
-        for notification in notifications {
-            do {
-                try await notificationCenter.add(notification)
-                print("added \(notification.identifier)")
-                if Task.isCancelled {
-                    return
+            let notificationIdentifiersToRemove = requests.compactMap {
+                let identifier = $0.identifier
+                if identifier.starts(with: GEOFENCE_NOTIFICATION_PREFIX) {
+                    return identifier
                 }
-            } catch {
-                RadarLogger.warning("NotificationHelper failed to add notification \(error) \(notification)")
+                return nil
+            }
+            notificationCenter.removePendingNotificationRequests(withIdentifiers: notificationIdentifiersToRemove)
+            
+            let settings = await UNUserNotificationCenter.current().notificationSettings()
+            if Task.isCancelled {
+                return
+            }
+            if settings.authorizationStatus != .authorized {
+                RadarLogger.debug("NotificationHelper notifications unauthorized")
+                return
+            }
+            
+            // add notifications
+            for notification in notifications {
+                do {
+                    try await notificationCenter.add(notification)
+                    if Task.isCancelled {
+                        return
+                    }
+                } catch {
+                    RadarLogger.warning("NotificationHelper failed to add notification \(error) \(notification)")
+                }
             }
         }
         

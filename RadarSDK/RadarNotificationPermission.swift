@@ -6,6 +6,8 @@
 //  Copyright © 2026 Radar Labs, Inc. All rights reserved.
 //
 
+import Foundation
+import UserNotifications
 
 struct NotificationPermissions: Codable {
     let alert: Bool?
