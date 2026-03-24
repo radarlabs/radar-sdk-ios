@@ -120,6 +120,7 @@ struct NotificationValue: Codable, Hashable {
 actor RadarNotificationHelper: NSObject {
     
     private var currentTask: Task<Void, Never>?
+    private var isRegistering = false
 
     public static let shared = RadarNotificationHelper()
     
@@ -159,7 +160,10 @@ actor RadarNotificationHelper: NSObject {
     
     private func registerNotifications(notifications: [UNNotificationRequest]?) async {
         let notificationCenter = UNUserNotificationCenter.current()
-        
+
+        isRegistering = true
+        defer { isRegistering = false }
+
         // if notifications is not null, we update the pending notifications, otherwise we only update the registered notifications list
         if let notifications {
             // remove all geofence notifications
@@ -175,7 +179,7 @@ actor RadarNotificationHelper: NSObject {
                 return nil
             }
             notificationCenter.removePendingNotificationRequests(withIdentifiers: notificationIdentifiersToRemove)
-            
+
             let settings = await UNUserNotificationCenter.current().notificationSettings()
             if Task.isCancelled {
                 return
@@ -184,7 +188,7 @@ actor RadarNotificationHelper: NSObject {
                 RadarLogger.debug("NotificationHelper notifications unauthorized")
                 return
             }
-            
+
             // add notifications
             for notification in notifications {
                 do {
@@ -197,7 +201,10 @@ actor RadarNotificationHelper: NSObject {
                 }
             }
         }
-        
+
+        if Task.isCancelled {
+            return
+        }
         let pending = await notificationCenter.pendingNotificationRequests().compactMap {
             NotificationValue(from: $0)
         }
@@ -212,20 +219,21 @@ actor RadarNotificationHelper: NSObject {
         if (!permissions.canSendNotification()) {
             return []
         }
-        
+
         let registerTask = currentTask
         if let registerTask {
-            // if theres a register currently in progress, we need to wait for that to complete
+            // if there's a register currently in progress, wait for it to complete
             await registerTask.value
-            // if that task was cancelled, there's an active
-            // instance of `registerNotifications` that's modifying the notification list, so the diff
-            // might not be correct.
-            if registerTask.isCancelled {
-                RadarLogger.debug("NotificationHelper getDeliveredNotifications while registering")
-                return []
-            }
         }
-        
+
+        // after awaiting, re-check: if a registration is still in progress (e.g. a new one
+        // started while we were waiting), the notification list is being mutated and the diff
+        // would not be reliable.
+        if isRegistering {
+            RadarLogger.debug("NotificationHelper getDeliveredNotifications while registering")
+            return []
+        }
+
         guard let registered = RadarState.registeredNotifications else {
             return []
         }
@@ -233,15 +241,13 @@ actor RadarNotificationHelper: NSObject {
         let pendingRequests = await notificationCenter.pendingNotificationRequests().compactMap {
             NotificationValue(from: $0)
         }
-        // if during await pendingNotificationRequests, the task has changed, there's an active
-        // instance of `registerNotifications` that's modifying the notification list, so the diff
-        // might not be correct.
-        if registerTask != currentTask {
+        // re-check after the await — a registration may have started during the
+        // pendingNotificationRequests call, making the diff unreliable.
+        if isRegistering {
             RadarLogger.debug("NotificationHelper getDeliveredNotifications while registering")
             return []
         }
-        
-        
+
         let delivered = Set(registered).subtracting(pendingRequests)
         RadarLogger.debug("NotificationHelper delivered: \(delivered.map(\.identifier))")
         
