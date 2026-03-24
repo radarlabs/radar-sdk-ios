@@ -415,7 +415,7 @@ didReceiveRemoteNotification:(NSDictionary *)userInfo
 
         if (completionHandler) {
             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Setting %lu notifications remaining after re-registering", (unsigned long)notificationsDelivered.count]];
-            completionHandler(@[], currentNotifications);
+            completionHandler(notificationsDelivered, currentNotifications);
         }
     }];
 }

@@ -6,6 +6,8 @@
 //
 
 import Foundation
+import UserNotifications
+import CoreLocation
 
 let RADAR_NOTIFICATION_PREFIX = "radar_"
 let GEOFENCE_NOTIFICATION_PREFIX = "radar_geofence_"
