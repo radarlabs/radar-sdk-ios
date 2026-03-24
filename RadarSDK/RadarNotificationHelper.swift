@@ -5,6 +5,8 @@
 //  Copyright © 2026 Radar Labs, Inc. All rights reserved.
 //
 
+import Foundation
+
 let RADAR_NOTIFICATION_PREFIX = "radar_"
 let GEOFENCE_NOTIFICATION_PREFIX = "radar_geofence_"
 

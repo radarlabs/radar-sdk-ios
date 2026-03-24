@@ -5,6 +5,8 @@
 //  Copyright © 2026 Radar Labs, Inc. All rights reserved.
 //
 
+import Foundation
+
 extension RadarLogLevel: Codable {
     static func from(string: String) -> RadarLogLevel {
         switch string {

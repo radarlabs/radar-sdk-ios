@@ -6,19 +6,9 @@
 //
 
 #import "RadarSdkConfiguration.h"
-//#include "Radar.h"
-//
-//#import "RadarLog.h"
-//#import "RadarUtils.h"
 #import "RadarAPIClient.h"
 #import "RadarSettings.h"
-//
-//@interface RadarSdkConfiguration ()
-//
-//@property (nonatomic, strong) NSDictionary *originalDict;
-//
-//@end
-//
+
 @implementation RadarSdkConfiguration_ObjC
 
 + (void)updateSdkConfigurationFromServer {
