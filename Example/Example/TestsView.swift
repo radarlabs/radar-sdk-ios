@@ -323,7 +323,7 @@ struct TestsView: View {
             }
             
             StyledButton("logConversion") {
-                Radar.logConversion(name: "conversion_event", revenue: 10, metadata: nil) { (status, event) in
+                Radar.logConversion(name: "conversion_event", metadata: ["data": "test"]) { (status, event) in
                     if let conversionEvent = event, conversionEvent.type == .conversion {
                         print("Conversion name: \(conversionEvent.conversionName!)")
                     }
