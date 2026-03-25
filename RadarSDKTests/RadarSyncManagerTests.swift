@@ -24,13 +24,14 @@ class RadarSyncManagerTests: XCTestCase {
     
     override func tearDown() {
         RadarSyncManager.syncStore.clear()
+        RadarSettings.setSdkConfiguration(nil)
         super.tearDown()
     }
     
     // MARK: - Helpers
     
     func makeCircleGeofence(id: String, lat: Double, lng: Double, radius: Double,
-                            dwellThreshold: Double? = nil, stopDetection: Double? = nil) -> RadarGeofenceSwift {
+                            dwellThreshold: Double? = nil, stopDetection: Bool? = nil) -> RadarGeofenceSwift {
         let center = RadarCoordinateSwift(latitude: lat, longitude: lng)
         
         return RadarGeofenceSwift(
@@ -501,7 +502,7 @@ class RadarSyncManagerTests: XCTestCase {
     
     func test_geofenceEntry_stopDetectionBlocks() {
         RadarState.setStopped(false)
-        let geofence = makeCircleGeofence(id: "geofence1", lat: testLat, lng: testLng, radius: 100, stopDetection: 1.0)
+        let geofence = makeCircleGeofence(id: "geofence1", lat: testLat, lng: testLng, radius: 100, stopDetection: true)
         var state = RadarSyncState()
         state.syncedGeofences = [geofence]
         state.lastSyncedGeofenceIds = []
@@ -513,7 +514,7 @@ class RadarSyncManagerTests: XCTestCase {
     
     func test_geofenceEntry_stopDetectionAllows() {
         RadarState.setStopped(true)
-        let geofence = makeCircleGeofence(id: "geofence1", lat: testLat, lng: testLng, radius: 100, stopDetection: 1.0)
+        let geofence = makeCircleGeofence(id: "geofence1", lat: testLat, lng: testLng, radius: 100, stopDetection: true)
         var state = RadarSyncState()
         state.syncedGeofences = [geofence]
         state.lastSyncedGeofenceIds = []
