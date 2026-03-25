@@ -187,7 +187,7 @@ class RadarUtils: NSObject {
     static var backgroundTimeRemaining: TimeInterval {
         get async {
             return await MainActor.run(resultType: TimeInterval.self) {
-                max(180, UIApplication.shared.backgroundTimeRemaining)
+                min(180, UIApplication.shared.backgroundTimeRemaining)
             }
         }
     }
