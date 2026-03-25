@@ -415,6 +415,7 @@
 - (void)stopIPMonitoring {
     if (_monitor) {
         nw_path_monitor_cancel(_monitor);
+        _monitor = nil;
     }
 }
 
