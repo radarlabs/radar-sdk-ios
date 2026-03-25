@@ -642,29 +642,4 @@ public final class RadarSyncManager: NSObject {
         previousSyncedPlaceIds = nil
         previousSyncedBeaconIds = nil
     }
-    
-    // The following 4 methods are only here for map display QA testing will remove before shipping
-    
-    @objc public static func getSyncedRegion() -> CLCircularRegion? {
-        guard let state = syncStore.read(),
-              let center = state.syncedRegionCenter,
-              let radius = state.syncedRegionRadius, radius > 0 else { return nil }
-        return CLCircularRegion(
-            center: center.clLocationCoordinate2D,
-            radius: radius,
-            identifier: "\(syncRegionIdentifierPrefix)current"
-        )
-    }
-    
-    public static func getSyncedGeofences() -> [RadarGeofenceSwift] {
-        return syncStore.read()?.syncedGeofences ?? []
-    }
-    
-    public static func getSyncedPlaces() -> [RadarPlaceSwift] {
-        return syncStore.read()?.syncedPlaces ?? []
-    }
-    
-    public static func getSyncedBeacons() -> [RadarBeaconSwift] {
-        return syncStore.read()?.syncedBeacons ?? []
-    }
 }

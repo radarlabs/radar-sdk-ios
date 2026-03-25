@@ -20,9 +20,3 @@ public struct RadarSyncState: Codable, Sendable {
     var geofenceEntryTimestamps: [String: Double] = [:]
     var dwellEventsFired: [String] = []
 }
-
-// Usage:
-// static let syncStore = RadarFileStore<SyncState>(fileName: "radar_sync_state.json")
-//
-// let state = syncStore.read() ?? SyncState()
-// syncStore.modify { state in state?.lastSyncedGeofenceIds = ["abc"] }
