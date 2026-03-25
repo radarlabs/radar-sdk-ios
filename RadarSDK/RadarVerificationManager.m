@@ -427,7 +427,7 @@
     if (success == 0) {
         temp_addr = interfaces;
         while(temp_addr != NULL) {
-            if(temp_addr->ifa_addr->sa_family == AF_INET) {
+            if(temp_addr->ifa_addr != NULL && temp_addr->ifa_addr->sa_family == AF_INET) {
                 NSString *ip = [NSString stringWithUTF8String:inet_ntoa(((struct sockaddr_in *)temp_addr->ifa_addr)->sin_addr)];
                 [ips addObject:ip];
             }
