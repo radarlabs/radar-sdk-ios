@@ -35,18 +35,13 @@ public class RadarInAppMessageManager: NSObject {
         if (withDuration) {
             metadata["displayDuration"] = Date().timeIntervalSince(messageShownTime)
         }
-        metadata["campaignId"] = message.metadata["radar:campaignId"] as? String
+        let campaignId = message.metadata["radar:campaignId"] as? String
+        metadata["campaignId"] = campaignId
         metadata["campaignName"] = message.metadata["radar:campaignName"] as? String
         metadata["geofenceId"] = message.metadata["radar:geofenceId"] as? String
 
         // logConversion runs asynchronously
-        Radar.logConversion(name: name, metadata: metadata, completionHandler: { status, event in
-            if let event = event {
-                RadarLogger.shared.info("Conversion name = \(event.conversionName ?? "-"): status = \(status); event = \(event.dictionaryValue())")
-            } else {
-                RadarLogger.shared.info("Conversion name = \(name): status = \(status); no event")
-            }
-        })
+        RadarSwift.bridge?.logCampaignConversion(name: name, metadata: metadata, campaign: campaignId)
     }
 
     func dismissInAppMessage() {
@@ -72,17 +67,19 @@ public class RadarInAppMessageManager: NSObject {
         }
 
         let viewController = await withCheckedContinuation { continuation in
-            delegate.createInAppMessageView(message,
-                                            onDismiss: {
-                self.logConversion(name: "in_app_message_clicked")
-                self.dismissInAppMessage()
-                self.delegate.onInAppMessageDismissed(message)
-            },
-                                            onInAppMessageClicked: {
-                self.logConversion(name: "in_app_message_dismissed")
-                self.dismissInAppMessage()
-                self.delegate.onInAppMessageButtonClicked(message)
-            }) { result in
+            delegate.createInAppMessageView(
+                message,
+                onDismiss: {
+                    self.logConversion(name: "user.dismissed_in_app_message")
+                    self.dismissInAppMessage()
+                    self.delegate.onInAppMessageDismissed(message)
+                },
+                onInAppMessageClicked: {
+                    self.logConversion(name: "user.clicked_in_app_message")
+                    self.dismissInAppMessage()
+                    self.delegate.onInAppMessageButtonClicked(message)
+                }
+            ) { result in
                 continuation.resume(returning: result)
             }
         }
@@ -98,7 +95,7 @@ public class RadarInAppMessageManager: NSObject {
         viewController.view.backgroundColor = UIColor.black.withAlphaComponent(0.5)
         keyWindow.addSubview(viewController.view)
         
-        self.logConversion(name: "in_app_message_displayed", withDuration: false)
+        self.logConversion(name: "user.displayed_in_app_message", withDuration: false)
     }
 
     @objc public func onInAppMessageReceived(messages: [RadarInAppMessage]) {
