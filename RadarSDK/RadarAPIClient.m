@@ -204,9 +204,9 @@
                      source:source
                    replayed:replayed
                     beacons:beacons
-               indoorScan:indoorScan
+                 indoorScan:indoorScan
                    verified:NO
-              fraudPayload:nil
+               fraudOptions:nil
         expectedCountryCode:nil
           expectedStateCode:nil
                      reason:nil
@@ -220,9 +220,9 @@
                    source:(RadarLocationSource)source
                  replayed:(BOOL)replayed
                   beacons:(NSArray<RadarBeacon *> *_Nullable)beacons
-             indoorScan:(NSString *_Nullable)indoorScan
+               indoorScan:(NSString *_Nullable)indoorScan
                  verified:(BOOL)verified
-            fraudPayload:(NSString *_Nullable)fraudPayload
+             fraudOptions:(NSDictionary<NSString *, id> *_Nullable)fraudOptions
       expectedCountryCode:(NSString * _Nullable)expectedCountryCode
         expectedStateCode:(NSString * _Nullable)expectedStateCode
                    reason:(NSString * _Nullable)reason
@@ -353,9 +353,6 @@
         if (transactionId) {
             params[@"transactionId"] = transactionId;
         }
-        if (fraudPayload) {
-            params[@"fraudPayload"] = fraudPayload;
-        }
     }
 
     params[@"appId"] = [[NSBundle mainBundle] bundleIdentifier];
@@ -445,6 +442,7 @@
                                                         publishableKey:publishableKey
                                                 notificationsRemaining:notificationsDelivered
                                                 locationMetadata:locationMetadata
+                                                        fraudOptions:fraudOptions
                                                     completionHandler:completionHandler];
         }];
     } else {
@@ -457,6 +455,7 @@
                                                     publishableKey:publishableKey
                                             notificationsRemaining:@[]
                                             locationMetadata:locationMetadata
+                                                    fraudOptions:fraudOptions
                                                 completionHandler:completionHandler];
     }
 }
@@ -470,6 +469,7 @@
                 publishableKey:(NSString *)publishableKey
                 notificationsRemaining:(NSArray *)notificationsRemaining
                 locationMetadata:(NSDictionary *)locationMetadata
+                    fraudOptions:(NSDictionary<NSString *, id> *)fraudOptions
             completionHandler:(RadarTrackAPICompletionHandler)completionHandler {
 
     NSString *host = verified ? [RadarSettings verifiedHost] : [RadarSettings host];
@@ -505,6 +505,8 @@
                                     sleep:YES
                             logPayload:YES
                         extendedTimeout:NO
+                                verified:verified
+                            fraudOptions:fraudOptions
                         completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
                             if (status != RadarStatusSuccess || !res) {
                                 if (options.replay == RadarTrackingOptionsReplayAll) {

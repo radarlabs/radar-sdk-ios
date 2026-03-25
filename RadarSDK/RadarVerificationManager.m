@@ -63,6 +63,31 @@
 }
 
 - (void)trackVerifiedWithBeacons:(BOOL)beacons desiredAccuracy:(RadarTrackingOptionsDesiredAccuracy)desiredAccuracy reason:(NSString *)reason transactionId:(NSString *)transactionId completionHandler:(RadarTrackVerifiedCompletionHandler)completionHandler {
+    // Check for fraud SDK at the very start (before any async operations)
+    Class RadarSDKFraud = NSClassFromString(@"RadarSDKFraud");
+    if (!RadarSDKFraud) {
+        [RadarUtilsDeprecated runOnMainThread:^{
+            [[RadarDelegateHolder sharedInstance] didFailWithStatus:RadarStatusErrorPlugin];
+            
+            if (completionHandler) {
+                completionHandler(RadarStatusErrorPlugin, nil);
+            }
+        }];
+        return;
+    }
+    
+    // Check if class responds to required method (more reliable than protocol check across modules)
+    if (![RadarSDKFraud instancesRespondToSelector:@selector(trackVerifiedWithOptions:completionHandler:)]) {
+        [RadarUtilsDeprecated runOnMainThread:^{
+            [[RadarDelegateHolder sharedInstance] didFailWithStatus:RadarStatusErrorPlugin];
+            
+            if (completionHandler) {
+                completionHandler(RadarStatusErrorPlugin, nil);
+            }
+        }];
+        return;
+    }
+    
     if (!reason) {
         reason = @"manual";
     }
@@ -112,53 +137,16 @@
                 return;
             }
             
-            Class RadarSDKFraud = NSClassFromString(@"RadarSDKFraud");
-            if (!RadarSDKFraud) {
-                [RadarUtilsDeprecated runOnMainThread:^{
-                    [[RadarDelegateHolder sharedInstance] didFailWithStatus:RadarStatusErrorPlugin];
-                    
-                    if (completionHandler) {
-                        completionHandler(RadarStatusErrorPlugin, nil);
-                    }
-                }];
-                return;
-            }
-            
-            
-            NSMutableDictionary *options = [NSMutableDictionary dictionary];
+            // Create fraud options dictionary with location and nonce
+            NSMutableDictionary *fraudOptions = [NSMutableDictionary dictionary];
             if (location) {
-                options[@"location"] = location;
+                fraudOptions[@"location"] = location;
             }
             if (config.nonce) {
-                options[@"nonce"] = config.nonce;
+                fraudOptions[@"nonce"] = config.nonce;
             }
-            [[RadarSDKFraud sharedInstance] getFraudPayloadWithOptions:options completionHandler:^(NSDictionary<NSString *, id> *_Nullable result) {
-                if (!result) {
-                    [RadarUtilsDeprecated runOnMainThread:^{
-                        [[RadarDelegateHolder sharedInstance] didFailWithStatus:RadarStatusErrorUnknown];
-                        
-                        if (completionHandler) {
-                            completionHandler(RadarStatusErrorUnknown, nil);
-                        }
-                    }];
-                    return;
-                }
-                
-                NSString *error = result[@"error"];
-                if (error) {
-                    [RadarUtilsDeprecated runOnMainThread:^{
-                        [[RadarDelegateHolder sharedInstance] didFailWithStatus:RadarStatusErrorUnknown];
-                        
-                        if (completionHandler) {
-                            completionHandler(RadarStatusErrorUnknown, nil);
-                        }
-                    }];
-                    return;
-                }
-                
-                NSString *fraudPayload = result[@"payload"];
-                
-                void (^callTrackAPI)(NSArray<RadarBeacon *> *_Nullable) = ^(NSArray<RadarBeacon *> *_Nullable beacons) {
+            
+            void (^callTrackAPI)(NSArray<RadarBeacon *> *_Nullable) = ^(NSArray<RadarBeacon *> *_Nullable beacons) {
                 [[RadarAPIClient sharedInstance]
                  trackWithLocation:location
                  stopped:RadarState.stopped
@@ -168,9 +156,7 @@
                  beacons:beacons
                  indoorScan:nil
                  verified:YES
-                 fraudPayload:fraudPayload
-                 // -- payload encryption --
-                 // fraudKeyVersion:fraudKeyVersion
+                 fraudOptions:fraudOptions
                  expectedCountryCode:self.expectedCountryCode
                  expectedStateCode:self.expectedStateCode
                  reason:reason
@@ -244,8 +230,7 @@
                 }
             }];
         }];
-    }];
-}
+    }
 
 - (void)intervalFired {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Token request interval fired"];
@@ -297,7 +282,7 @@
 - (void)startTrackingVerifiedWithInterval:(NSTimeInterval)interval beacons:(BOOL)beacons {
     Class RadarSDKFraud = NSClassFromString(@"RadarSDKFraud");
     if (!RadarSDKFraud) {
-        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Skipping startTrackingVerified: RadarSDKFraud submodule not available"];
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Skipping startTrackingVerified: RadarFraudSDK submodule not available"];
         return;
     }
 
@@ -319,7 +304,7 @@
 - (void)stopTrackingVerified {
     Class RadarSDKFraud = NSClassFromString(@"RadarSDKFraud");
     if (!RadarSDKFraud) {
-        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Skipping stopTrackingVerified: RadarSDKFraud submodule not available"];
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Skipping stopTrackingVerified: RadarFraudSDK submodule not available"];
         return;
     }
     
