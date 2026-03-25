@@ -6,6 +6,7 @@
 //
 
 #import "RadarTripOptions.h"
+#import "RadarTripLeg.h"
 #import "RadarUtils.h"
 
 @implementation RadarTripOptions
@@ -18,6 +19,7 @@ static NSString *const kMode = @"mode";
 static NSString *const kScheduledArrivalAt = @"scheduledArrivalAt";
 static NSString *const kApproachingThreshold = @"approachingThreshold";
 static NSString *const kStartTracking = @"startTracking";
+static NSString *const kLegs = @"legs";
 
 - (instancetype)initWithExternalId:(NSString *_Nonnull)externalId
             destinationGeofenceTag:(NSString *_Nullable)destinationGeofenceTag
@@ -101,6 +103,11 @@ static NSString *const kStartTracking = @"startTracking";
     options.approachingThreshold = [dict[kApproachingThreshold] intValue];
     options.startTracking = dict[kStartTracking] ? [dict[kStartTracking] boolValue] : YES;
 
+    id legsObj = dict[kLegs];
+    if (legsObj && [legsObj isKindOfClass:[NSArray class]]) {
+        options.legs = [RadarTripLeg legsFromArray:(NSArray *)legsObj];
+    }
+    
     return options;
 }
 
@@ -116,6 +123,10 @@ static NSString *const kStartTracking = @"startTracking";
         dict[kApproachingThreshold] = @(self.approachingThreshold);
     }
     dict[kStartTracking] = @(self.startTracking);
+    
+    if (self.legs && self.legs.count > 0) {
+        dict[kLegs] = [RadarTripLeg arrayForLegs:self.legs];
+    }
 
     return dict;
 }
@@ -134,6 +145,8 @@ static NSString *const kStartTracking = @"startTracking";
     }
 
     RadarTripOptions *options = (RadarTripOptions *)object;
+    
+    BOOL legsEqual = (!self.legs && !options.legs) || [self.legs isEqual:options.legs];
 
     return [self.externalId isEqualToString:options.externalId] &&
            ((!self.metadata && !options.metadata) || (self.metadata != nil && options.metadata != nil && [self.metadata isEqualToDictionary:options.metadata])) &&
@@ -145,7 +158,8 @@ static NSString *const kStartTracking = @"startTracking";
            ((!self.scheduledArrivalAt && !options.scheduledArrivalAt) ||
             (self.scheduledArrivalAt != nil && options.scheduledArrivalAt != nil && [self.scheduledArrivalAt isEqualToDate:options.scheduledArrivalAt])) &&
            self.mode == options.mode && ((!self.approachingThreshold && !options.approachingThreshold) || (self.approachingThreshold == options.approachingThreshold)) &&
-           self.startTracking == options.startTracking;
+           self.startTracking == options.startTracking &&
+           legsEqual;
 }
 
 @end

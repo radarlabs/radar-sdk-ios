@@ -9,6 +9,7 @@
 
 #import "CLLocation+Radar.h"
 #import "RadarAPIClient.h"
+#import "Radar+Internal.h"
 #import "RadarBeaconManager.h"
 #import "RadarCircleGeometry.h"
 #import "RadarDelegateHolder.h"
@@ -395,9 +396,8 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
             }
             if (options.usePressure) {
                 self.activityManager = [RadarActivityManager sharedInstance];
-                CMAuthorizationStatus authStatus = [CMMotionActivityManager authorizationStatus];
-                [RadarState setMotionAuthorization:authStatus];
-                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"usePressure enabled: starting relative altitude updates, auth status: %@", [Radar stringForMotionAuthorization:authStatus]]];
+                [RadarState setMotionAuthorizationString:[Radar stringForMotionAuthorizationStatus]];
+                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"usePressure enabled: starting relative altitude updates, auth status: %@", [Radar stringForMotionAuthorizationStatus]]];
                 [self.activityManager startRelativeAltitudeWithHandler: ^(CMAltitudeData * _Nullable altitudeData) {
                     if (!altitudeData) {
                         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelWarning message:@"Relative altitude callback received nil data"];
@@ -412,9 +412,8 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                 }];
 
                 if (@available(iOS 15.0, *)) {
-                    CMAuthorizationStatus authStatus = [CMMotionActivityManager authorizationStatus];
-                    [RadarState setMotionAuthorization:authStatus];
-                    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"usePressure enabled: starting absolute altitude updates (iOS 15+), auth status: %@", [Radar stringForMotionAuthorization:authStatus]]];
+                    [RadarState setMotionAuthorizationString:[Radar stringForMotionAuthorizationStatus]];
+                    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"usePressure enabled: starting absolute altitude updates (iOS 15+), auth status: %@", [Radar stringForMotionAuthorizationStatus]]];
                     [self.activityManager startAbsoluteAltitudeWithHandler: ^(CMAbsoluteAltitudeData * _Nullable altitudeData) {
                         if (!altitudeData) {
                             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelWarning message:@"Absolute altitude callback received nil data"];
@@ -941,7 +940,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     RadarTrackingOptions *options = [Radar getTrackingOptions];
     Class RadarSDKIndoors = NSClassFromString(@"RadarSDKIndoors");
     
-    if (options.useIndoorScan && ![RadarSettings inSurveyMode] && RadarSDKIndoors && [RadarUtils foreground]) {
+    if (options.useIndoorScan && ![RadarSettings inSurveyMode] && RadarSDKIndoors && [RadarUtilsDeprecated foreground]) {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Starting indoor scan"];
         
         [RadarSDKIndoors startIndoorScan:@""
@@ -955,7 +954,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     } else {
         if (options.useIndoorScan && ![RadarSettings inSurveyMode] && !RadarSDKIndoors) {
             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"RadarSDKIndoors not available, skipping indoor scan"];
-        } else if (options.useIndoorScan && ![RadarSettings inSurveyMode] && RadarSDKIndoors && ![RadarUtils foreground]) {
+        } else if (options.useIndoorScan && ![RadarSettings inSurveyMode] && RadarSDKIndoors && ![RadarUtilsDeprecated foreground]) {
             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"App in background, skipping indoor scan (Bluetooth not available)"];
         }
         completionHandler(beacons, nil);
@@ -978,7 +977,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                               completionHandler:^(NSArray<RadarBeacon *> *_Nullable beacons, NSString *_Nullable indoorScan) {
                 [[RadarAPIClient sharedInstance] trackWithLocation:location
                                                            stopped:stopped
-                                                        foreground:[RadarUtils foreground]
+                                                        foreground:[RadarUtilsDeprecated foreground]
                                                             source:source
                                                           replayed:replayed
                                                            beacons:beacons
@@ -1016,7 +1015,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
              completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarBeacon *> *_Nullable beacons, NSArray<NSString *> *_Nullable beaconUUIDs) {
                 if (beaconUUIDs && beaconUUIDs.count) {
                     [self replaceSyncedBeaconUUIDs:beaconUUIDs];
-                    [RadarUtils runOnMainThread:^{
+                    [RadarUtilsDeprecated runOnMainThread:^{
                         [[RadarBeaconManager sharedInstance] rangeBeaconUUIDs:beaconUUIDs
                                                             completionHandler:^(RadarStatus status, NSArray<RadarBeacon *> *_Nullable beacons) {
                             if (status != RadarStatusSuccess || !beacons) {
@@ -1029,7 +1028,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                     }];
                 } else if (beacons && beacons.count) {
                     [self replaceSyncedBeacons:beacons];
-                    [RadarUtils runOnMainThread:^{
+                    [RadarUtilsDeprecated runOnMainThread:^{
                         [[RadarBeaconManager sharedInstance] rangeBeacons:beacons
                                                         completionHandler:^(RadarStatus status, NSArray<RadarBeacon *> *_Nullable beacons) {
                             if (status != RadarStatusSuccess || !beacons) {
@@ -1073,7 +1072,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                           completionHandler:^(NSArray<RadarBeacon *> *_Nullable beacons, NSString *_Nullable indoorScan) {
             [[RadarAPIClient sharedInstance] trackWithLocation:location
                                                        stopped:stopped
-                                                    foreground:[RadarUtils foreground]
+                                                    foreground:[RadarUtilsDeprecated foreground]
                                                         source:source
                                                       replayed:replayed
                                                        beacons:beacons

@@ -13,6 +13,12 @@
 #import "RadarAPIClient.h"
 #import "RadarSettings.h"
 
+@interface RadarSdkConfiguration ()
+
+@property (nonatomic, strong) NSDictionary *originalDict;
+
+@end
+
 @implementation RadarSdkConfiguration
 
 - (instancetype)initWithDict:(NSDictionary *)dict {
@@ -42,6 +48,8 @@
     if (dict == nil) {
         return self;
     }
+
+    _originalDict = dict;
 
     NSObject *logLevelObj = dict[@"logLevel"];
     if (logLevelObj && [logLevelObj isKindOfClass:[NSString class]]) {
@@ -127,7 +135,7 @@
 }
 
 - (NSDictionary *)dictionaryValue {
-    NSMutableDictionary *dict = [NSMutableDictionary new];
+    NSMutableDictionary *dict = _originalDict ? [_originalDict mutableCopy] : [NSMutableDictionary new];
     
     dict[@"logLevel"] = [RadarLog stringForLogLevel:_logLevel];
     dict[@"startTrackingOnInitialize"] = @(_startTrackingOnInitialize);

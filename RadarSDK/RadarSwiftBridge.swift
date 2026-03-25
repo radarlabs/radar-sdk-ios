@@ -24,6 +24,7 @@ protocol RadarSwiftBridgeProtocol {
     func lastLocation() -> CLLocation?
     func isStopped() -> Bool
     func getTripOptions() -> RadarTripOptions?
+    func logCampaignConversion(name: String, metadata: [String: Any], campaign: String?)
 }
 
 @objc(RadarSwift) @objcMembers

@@ -185,6 +185,16 @@ internal class RadarSettings: NSObject {
         }
         set { RadarUserDefaults.set(newValue?.dictionaryValue(), forKey: .TripOptions) }
     }
+    
+    public static var trip: RadarTrip? {
+        get {
+            if let dict = RadarUserDefaults.dictionary(forKey: .Trip) {
+                return RadarTrip(object: dict)
+            }
+            return nil
+        }
+        set { RadarUserDefaults.set(newValue?.dictionaryValue(), forKey: .Trip) }
+    }
 
     public static var clientSdkConfiguration: [String: Any] {
         get { return RadarUserDefaults.dictionary(forKey: .ClientSdkConfiguration) ?? [:] }
@@ -203,7 +213,7 @@ internal class RadarSettings: NSObject {
             
             if let newValue = newValue {
                 logLevel = newValue.logLevel;
-                RadarSwift.bridge!.setLogBufferPersistantLog(true)
+                RadarSwift.bridge!.setLogBufferPersistantLog(newValue.useLogPersistence)
             } else {
                 RadarSwift.bridge!.setLogBufferPersistantLog(false)
             }

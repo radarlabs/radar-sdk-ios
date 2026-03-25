@@ -33,6 +33,7 @@ static NSString *const kNotificationPermissionGranted = @"radar-notificationPerm
 static NSString *const kMotionAuthorization = @"radar-motionAuthorization";
 static NSString *const kLocationAuthorizationStatus = @"radar-locationAuthorizationStatus";
 static NSString *const kRegisteredNotifications = @"radar-registeredNotifications";
+static NSString *const kAltitudeAdjustments = @"radar-altitudeAdjustments";
 static NSDictionary *_lastRelativeAltitudeDataInMemory = nil;
 static NSDate *_lastPressureBackupTime = nil;
 static NSTimeInterval const kBackupInterval = 2.0; // 2 seconds
@@ -257,12 +258,12 @@ static NSTimeInterval const kBackupInterval = 2.0; // 2 seconds
     return [[NSUserDefaults standardUserDefaults] boolForKey:kNotificationPermissionGranted];
 }
 
-+ (void)setMotionAuthorization:(CMAuthorizationStatus)status {
-    [[NSUserDefaults standardUserDefaults] setInteger:status forKey:kMotionAuthorization];
++ (void)setMotionAuthorizationString:(NSString *)status {
+    [[NSUserDefaults standardUserDefaults] setObject:status forKey:kMotionAuthorization];
 }
 
-+ (CMAuthorizationStatus)motionAuthorization {
-    return [[NSUserDefaults standardUserDefaults] integerForKey:kMotionAuthorization];
++ (NSString *)motionAuthorizationString {
+    return [[NSUserDefaults standardUserDefaults] stringForKey:kMotionAuthorization];
 }
 
 + (void)setLocationAuthorizationStatus:(CLAuthorizationStatus)status {
@@ -291,4 +292,17 @@ static NSTimeInterval const kBackupInterval = 2.0; // 2 seconds
     [registeredNotifications addObject:notification];
     [RadarState setRegisteredNotifications:registeredNotifications];
 }
+
++ (NSArray<NSDictionary *> *_Nullable)altitudeAdjustments {
+    return [[NSUserDefaults standardUserDefaults] objectForKey:kAltitudeAdjustments];
+}
+
++ (void)setAltitudeAdjustments:(NSArray<NSDictionary *> *_Nullable)altitudeAdjustments {
+    if (altitudeAdjustments) {
+        [[NSUserDefaults standardUserDefaults] setObject:altitudeAdjustments forKey:kAltitudeAdjustments];
+    } else {
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:kAltitudeAdjustments];
+    }
+}
+
 @end

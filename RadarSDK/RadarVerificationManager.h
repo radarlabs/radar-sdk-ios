@@ -14,8 +14,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (assign, nonatomic) BOOL started;
 
-typedef void (^_Nullable RadarVerificationCompletionHandler)(NSString *_Nullable attestationString, NSString *_Nullable keyId, NSString *_Nullable attestationError);
-
 + (instancetype)sharedInstance;
 - (void)trackVerifiedWithCompletionHandler:(RadarTrackVerifiedCompletionHandler _Nullable)completionHandler;
 - (void)trackVerifiedWithBeacons:(BOOL)beacons desiredAccuracy:(RadarTrackingOptionsDesiredAccuracy)desiredAccuracy reason:(NSString *_Nullable)reason transactionId:(NSString *_Nullable)transactionId completionHandler:(RadarTrackVerifiedCompletionHandler _Nullable)completionHandler;
@@ -24,9 +22,6 @@ typedef void (^_Nullable RadarVerificationCompletionHandler)(NSString *_Nullable
 - (void)getVerifiedLocationTokenWithBeacons:(BOOL)beacons desiredAccuracy:(RadarTrackingOptionsDesiredAccuracy)desiredAccuracy completionHandler:(RadarTrackVerifiedCompletionHandler _Nullable)completionHandler;
 - (void)clearVerifiedLocationToken;
 - (void)setExpectedJurisdictionWithCountryCode:(NSString *)countryCode stateCode:(NSString *)stateCode;
-- (void)getAttestationWithNonce:(NSString *)nonce completionHandler:(RadarVerificationCompletionHandler)completionHandler;
-- (BOOL)isJailbroken;
-- (NSString *_Nullable)kDeviceId;
 
 @end
 

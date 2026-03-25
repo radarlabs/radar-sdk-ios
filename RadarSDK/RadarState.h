@@ -6,7 +6,6 @@
 //
 
 #import <CoreLocation/CoreLocation.h>
-#import <CoreMotion/CoreMotion.h>
 #import <Foundation/Foundation.h>
 #import "RadarGeofence+Internal.h"
 #import "RadarBeacon+Internal.h"
@@ -44,8 +43,8 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)setLastMotionActivityData:(NSDictionary *_Nullable)lastMotionActivityData;
 + (void)setNotificationPermissionGranted:(BOOL)granted;
 + (BOOL)notificationPermissionGranted;
-+ (void)setMotionAuthorization:(CMAuthorizationStatus)status;
-+ (CMAuthorizationStatus)motionAuthorization;
++ (void)setMotionAuthorizationString:(NSString *_Nullable)status;
++ (NSString *_Nullable)motionAuthorizationString;
 + (void)setLocationAuthorizationStatus:(CLAuthorizationStatus)status;
 + (CLAuthorizationStatus)locationAuthorizationStatus;
 + (NSArray<NSDictionary *> *_Nullable)registeredNotifications;
@@ -53,6 +52,8 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)addRegisteredNotification:(NSDictionary *)registeredNotification;
 + (NSDictionary *)lastRelativeAltitudeData;
 + (void)setLastRelativeAltitudeData:(NSDictionary *_Nullable)lastRelativeAltitudeData;
++ (NSArray<NSDictionary *> *_Nullable)altitudeAdjustments;
++ (void)setAltitudeAdjustments:(NSArray<NSDictionary *> *_Nullable)altitudeAdjustments;
 
 @end
 
