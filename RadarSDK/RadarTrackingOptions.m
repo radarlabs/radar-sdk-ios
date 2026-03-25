@@ -44,6 +44,13 @@ NSString *const kReplayAll = @"all";
 NSString *const kSyncAll = @"all";
 NSString *const kSyncStopsAndExits = @"stopsAndExits";
 NSString *const kSyncNone = @"none";
+NSString *const kSyncEvents = @"events";
+
+NSString *const kType = @"type";
+NSString *const kTypeDefault = @"default";
+NSString *const kTypeOnTrip = @"on-trip";
+NSString *const kTypeInGeofence = @"in-geofence";
+NSString *const kTypeIsUser = @"is-user";
 
 + (RadarTrackingOptions *)presetContinuous {
     RadarTrackingOptions *options = [RadarTrackingOptions new];
@@ -189,6 +196,9 @@ NSString *const kSyncNone = @"none";
     case RadarTrackingOptionsSyncStopsAndExits:
         str = kSyncStopsAndExits;
         break;
+    case RadarTrackingOptionsSyncEvents:
+        str = kSyncEvents;
+        break;
     case RadarTrackingOptionsSyncAll:
     default:
         str = kSyncAll;
@@ -202,8 +212,41 @@ NSString *const kSyncNone = @"none";
         sync = RadarTrackingOptionsSyncStopsAndExits;
     } else if ([str isEqualToString:kSyncNone]) {
         sync = RadarTrackingOptionsSyncNone;
+    } else if ([str isEqualToString:kSyncEvents]) {
+        sync = RadarTrackingOptionsSyncEvents;
     }
     return sync;
+}
+
++ (NSString *)stringForType:(RadarTrackingOptionsType)type {
+    NSString *str;
+    switch (type) {
+        case RadarTrackingOptionsTypeOnTrip:
+            str = kTypeOnTrip;
+            break;
+        case RadarTrackingOptionsTypeInGeofence:
+            str = kTypeInGeofence;
+            break;
+        case RadarTrackingOptionsTypeIsUser:
+            str = kTypeIsUser;
+            break;
+        case RadarTrackingOptionsTypeDefault:
+        default:
+            str = kTypeDefault;
+    }
+    return str;
+}
+
++ (RadarTrackingOptionsType)typeForString:(NSString *)str {
+    RadarTrackingOptionsType type = RadarTrackingOptionsTypeDefault;
+    if ([str isEqualToString:kTypeOnTrip]) {
+        type = RadarTrackingOptionsTypeOnTrip;
+    } else if ([str isEqualToString:kTypeInGeofence]) {
+        type = RadarTrackingOptionsTypeInGeofence;
+    } else if ([str isEqualToString:kTypeIsUser]) {
+        type = RadarTrackingOptionsTypeIsUser;
+    }
+    return type;
 }
 
 + (RadarTrackingOptions *)trackingOptionsFromDictionary:(NSDictionary *)dict {
@@ -254,6 +297,7 @@ NSString *const kSyncNone = @"none";
     options.useIndoorScan = [dict[kUseIndoorScan] boolValue];
     options.useMotion = [dict[kUseMotion] boolValue];
     options.usePressure = [dict[kUsePressure] boolValue];
+    options.type = [RadarTrackingOptions typeForString:dict[kType]];
     return options;
 }
 
@@ -289,6 +333,7 @@ NSString *const kSyncNone = @"none";
     dict[kUseIndoorScan] = @(self.useIndoorScan);
     dict[kUseMotion] = @(self.useMotion);
     dict[kUsePressure] = @(self.usePressure);
+    dict[kType] = [RadarTrackingOptions stringForType:self.type];
     return dict;
 }
 

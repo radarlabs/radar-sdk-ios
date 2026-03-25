@@ -68,7 +68,7 @@ actor RadarSettingsTest {
         RadarUserDefaults.userDefaults = UserDefaults.standard
         
         #expect(RadarSettings.userId == nil)
-        #expect(RadarSettings.getAppGroup() == nil)
+        #expect(RadarSDK.RadarSettings.getAppGroup() == nil)
         
         #expect(appGroupDefaults.string(forKey: "radar-userId") == "test")
         #expect(appGroupDefaults.string(forKey: "radar-appGroup") == "test.app.group")
@@ -81,7 +81,7 @@ actor RadarSettingsTest {
         #expect(UserDefaults.standard.string(forKey: "radar-appGroup") == "test.app.group")
         
         #expect(RadarSettings.userId == "test")
-        #expect(RadarSettings.getAppGroup() == "test.app.group")
+        #expect(RadarSDK.RadarSettings.getAppGroup() == "test.app.group")
         
         RadarSettings.userId = "updated"
         

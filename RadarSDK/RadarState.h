@@ -7,6 +7,9 @@
 
 #import <CoreLocation/CoreLocation.h>
 #import <Foundation/Foundation.h>
+#import "RadarGeofence+Internal.h"
+#import "RadarBeacon+Internal.h"
+#import "RadarPlace+Internal.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -28,7 +31,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)setLastFailedStoppedLocation:(CLLocation *_Nullable)lastFailedStoppedLocation;
 + (NSArray<NSString *> *)geofenceIds;
 + (void)setGeofenceIds:(NSArray<NSString *> *_Nullable)geofenceIds;
-+ (NSArray<NSString *> *)placeId;
++ (NSString *_Nullable)placeId;
 + (void)setPlaceId:(NSString *_Nullable)placeId;
 + (NSArray<NSString *> *)regionIds;
 + (void)setRegionIds:(NSArray<NSString *> *_Nullable)regionIds;
@@ -42,6 +45,8 @@ NS_ASSUME_NONNULL_BEGIN
 + (BOOL)notificationPermissionGranted;
 + (void)setMotionAuthorizationString:(NSString *_Nullable)status;
 + (NSString *_Nullable)motionAuthorizationString;
++ (void)setLocationAuthorizationStatus:(CLAuthorizationStatus)status;
++ (CLAuthorizationStatus)locationAuthorizationStatus;
 + (NSArray<NSDictionary *> *_Nullable)registeredNotifications;
 + (void)setRegisteredNotifications:(NSArray<NSDictionary *> *_Nullable)registeredNotifications;
 + (void)addRegisteredNotification:(NSDictionary *)registeredNotification;
