@@ -72,6 +72,31 @@ BOOL _initialized = NO;
 }
 
 + (void)initializeWithPublishableKey:(NSString *)publishableKey options:(RadarInitializeOptions *)options {
+    [RadarSettings setPublishableKey:publishableKey];
+    [Radar initializeWithOptions:options];
+}
+
++ (void)initializeWithPublishableKey:(NSString *)publishableKey {
+    [self initializeWithPublishableKey:publishableKey options:nil];
+}
+
++ (void)initializeWithAuthToken:(NSString *)authToken options:(RadarInitializeOptions *)options {
+    NSString *auth = [NSString stringWithFormat:@"Bearer %@", authToken];
+    // preferably we change this to setAuth
+    [RadarSettings setPublishableKey:auth];
+    [Radar initializeWithOptions:options];
+}
+
++ (void)initializeWithAuthToken:(NSString *)authToken {
+    [self initializeWithAuthToken:authToken options:nil];
+}
+
++ (void)initializeWithAppGroup:(NSString *)appGroup {
+    [RadarSettings setAppGroup:appGroup];
+    [Radar initializeWithPublishableKey:[RadarSettings publishableKey]];
+}
+
++ (void)initializeWithOptions:(RadarInitializeOptions *)options {
     [RadarSwift setBridge:[[RadarSwiftBridge alloc] init]];
     
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"initialize()"];
@@ -94,8 +119,6 @@ BOOL _initialized = NO;
                                              selector:@selector(applicationWillEnterForeground)
                                                  name:UIApplicationWillEnterForegroundNotification
                                                object:nil];
-    
-    [RadarSettings setPublishableKey:publishableKey];
 
     RadarSdkConfiguration *sdkConfiguration = [RadarSettings sdkConfiguration];
     // For most users not using these features, options be null and skipped,
@@ -155,15 +178,6 @@ BOOL _initialized = NO;
     }
 
     _initialized = YES;
-}
-
-+ (void)initializeWithPublishableKey:(NSString *)publishableKey {
-    [self initializeWithPublishableKey:publishableKey options:nil];
-}
-
-+ (void)initializeWithAppGroup:(NSString *)appGroup {
-    [RadarSettings setAppGroup:appGroup];
-    [Radar initializeWithPublishableKey:[RadarSettings publishableKey]];
 }
 
 + (BOOL)isInitialized {
@@ -243,7 +257,7 @@ BOOL _initialized = NO;
 + (void)getLocationWithCompletionHandler:(RadarLocationCompletionHandler)completionHandler {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"getLocation()"];
     [[RadarLocationManager sharedInstance] getLocationWithCompletionHandler:^(RadarStatus status, CLLocation *_Nullable location, BOOL stopped) {
-        [RadarUtils runOnMainThread:^{
+        [RadarUtilsDeprecated runOnMainThread:^{
             completionHandler(status, location, stopped);
         }];
     }];
@@ -253,7 +267,7 @@ BOOL _initialized = NO;
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"getLocation()"];
     [[RadarLocationManager sharedInstance] getLocationWithDesiredAccuracy:desiredAccuracy
                                                         completionHandler:^(RadarStatus status, CLLocation *_Nullable location, BOOL stopped) {
-                                                            [RadarUtils runOnMainThread:^{
+                                                            [RadarUtilsDeprecated runOnMainThread:^{
                                                                 completionHandler(status, location, stopped);
                                                             }];
                                                         }];
@@ -272,7 +286,7 @@ BOOL _initialized = NO;
                      completionHandler:^(RadarStatus status, CLLocation *_Nullable location, BOOL stopped) {
                          if (status != RadarStatusSuccess) {
                              if (completionHandler) {
-                                 [RadarUtils runOnMainThread:^{
+                                 [RadarUtilsDeprecated runOnMainThread:^{
                                      completionHandler(status, nil, nil, nil);
                                  }];
                              }
@@ -300,7 +314,7 @@ BOOL _initialized = NO;
                                      }
 
                                      if (completionHandler) {
-                                         [RadarUtils runOnMainThread:^{
+                                         [RadarUtilsDeprecated runOnMainThread:^{
                                              completionHandler(status, location, events, user);
                                          }];
                                      }
@@ -325,7 +339,7 @@ BOOL _initialized = NO;
                                      if (beaconUUIDs && beaconUUIDs.count) {
                                          [[RadarLocationManager sharedInstance] replaceSyncedBeaconUUIDs:beaconUUIDs];
 
-                                         [RadarUtils runOnMainThread:^{
+                                         [RadarUtilsDeprecated runOnMainThread:^{
                                              [[RadarBeaconManager sharedInstance] rangeBeaconUUIDs:beaconUUIDs
                                                                                  completionHandler:^(RadarStatus status, NSArray<RadarBeacon *> *_Nullable beacons) {
                                                                                      if (status != RadarStatusSuccess || !beacons) {
@@ -340,7 +354,7 @@ BOOL _initialized = NO;
                                      } else if (beacons && beacons.count) {
                                          [[RadarLocationManager sharedInstance] replaceSyncedBeacons:beacons];
 
-                                         [RadarUtils runOnMainThread:^{
+                                         [RadarUtilsDeprecated runOnMainThread:^{
                                              [[RadarBeaconManager sharedInstance] rangeBeacons:beacons
                                                                              completionHandler:^(RadarStatus status, NSArray<RadarBeacon *> *_Nullable beacons) {
                                                                                  if (status != RadarStatusSuccess || !beacons) {
@@ -380,7 +394,7 @@ BOOL _initialized = NO;
                                                 [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];                                            
                                             }
                                              if (completionHandler) {
-                                                 [RadarUtils runOnMainThread:^{
+                                                 [RadarUtilsDeprecated runOnMainThread:^{
                                                      completionHandler(status, location, events, user);
                                                  }];
                                              }
@@ -472,7 +486,7 @@ BOOL _initialized = NO;
 
                 if (!coordinates) {
                     if (completionHandler) {
-                        [RadarUtils runOnMainThread:^{
+                        [RadarUtilsDeprecated runOnMainThread:^{
                             completionHandler(status, nil, nil, nil);
                         }];
                     }
@@ -511,7 +525,7 @@ BOOL _initialized = NO;
                         completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user,
                                             NSArray<RadarGeofence *> *_Nullable nearbyGeofences, RadarConfig *_Nullable config, RadarVerifiedLocationToken *_Nullable token) {
                             if (completionHandler) {
-                                [RadarUtils runOnMainThread:^{
+                                [RadarUtilsDeprecated runOnMainThread:^{
                                     completionHandler(status, location, events, user);
                                 }];
                             }
@@ -582,7 +596,7 @@ BOOL _initialized = NO;
     [[RadarAPIClient sharedInstance] sendEvent:name withMetadata:metadata withCampaign:campaign completionHandler:^(RadarStatus status, NSDictionary * _Nullable res, RadarEvent * _Nullable event) {
         if (status != RadarStatusSuccess) {
             if (completionHandler) {
-                [RadarUtils runOnMainThread:^{
+                [RadarUtilsDeprecated runOnMainThread:^{
                     completionHandler(status, nil);
                 }];
             }
@@ -591,7 +605,7 @@ BOOL _initialized = NO;
         }
         
         if (completionHandler) {
-            [RadarUtils runOnMainThread:^{
+            [RadarUtilsDeprecated runOnMainThread:^{
                 completionHandler(status, event);
             }];
         }
@@ -728,7 +742,7 @@ BOOL _initialized = NO;
                                              }
 
                                              if (completionHandler) {
-                                                 [RadarUtils runOnMainThread:^{
+                                                 [RadarUtilsDeprecated runOnMainThread:^{
                                                      completionHandler(status, trip, events);
                                                  }];
                                              }
@@ -749,7 +763,7 @@ BOOL _initialized = NO;
                                              }
 
                                              if (completionHandler) {
-                                                 [RadarUtils runOnMainThread:^{
+                                                 [RadarUtilsDeprecated runOnMainThread:^{
                                                      completionHandler(status, trip, events);
                                                  }];
                                              }
@@ -778,7 +792,7 @@ BOOL _initialized = NO;
                                              }
 
                                              if (completionHandler) {
-                                                 [RadarUtils runOnMainThread:^{
+                                                 [RadarUtilsDeprecated runOnMainThread:^{
                                                      completionHandler(status, trip, events);
                                                  }];
                                              }
@@ -807,7 +821,7 @@ BOOL _initialized = NO;
                                              }
 
                                              if (completionHandler) {
-                                                 [RadarUtils runOnMainThread:^{
+                                                 [RadarUtilsDeprecated runOnMainThread:^{
                                                      completionHandler(status, trip, events);
                                                  }];
                                              }
@@ -846,7 +860,7 @@ BOOL _initialized = NO;
         }
         
         if (completionHandler) {
-            [RadarUtils runOnMainThread:^{
+            [RadarUtilsDeprecated runOnMainThread:^{
                 completionHandler(status, trip, leg, events);
             }];
         }
@@ -860,7 +874,7 @@ BOOL _initialized = NO;
     if (!trip) {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelWarning type:RadarLogTypeSDKCall message:@"updateTripLeg() called with no active trip"];
         if (completionHandler) {
-            [RadarUtils runOnMainThread:^{
+            [RadarUtilsDeprecated runOnMainThread:^{
                 completionHandler(RadarStatusErrorBadRequest, nil, nil, nil);
             }];
         }
@@ -876,7 +890,7 @@ BOOL _initialized = NO;
     if (!trip) {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelWarning type:RadarLogTypeSDKCall message:@"updateCurrentTripLeg() called with no active trip"];
         if (completionHandler) {
-            [RadarUtils runOnMainThread:^{
+            [RadarUtilsDeprecated runOnMainThread:^{
                 completionHandler(RadarStatusErrorBadRequest, nil, nil, nil);
             }];
         }
@@ -886,7 +900,7 @@ BOOL _initialized = NO;
     if (!trip.currentLegId) {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelWarning type:RadarLogTypeSDKCall message:@"updateCurrentTripLeg() called but trip has no current leg"];
         if (completionHandler) {
-            [RadarUtils runOnMainThread:^{
+            [RadarUtilsDeprecated runOnMainThread:^{
                 completionHandler(RadarStatusErrorBadRequest, nil, nil, nil);
             }];
         }
@@ -911,7 +925,7 @@ BOOL _initialized = NO;
         }
 
         if (completionHandler) {
-            [RadarUtils runOnMainThread:^{
+            [RadarUtilsDeprecated runOnMainThread:^{
                 completionHandler(status, trip, events);
             }];
         }
@@ -924,7 +938,7 @@ BOOL _initialized = NO;
     if (!trip) {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelWarning type:RadarLogTypeSDKCall message:@"reorderTripLegs() called with no active trip"];
         if (completionHandler) {
-            [RadarUtils runOnMainThread:^{
+            [RadarUtilsDeprecated runOnMainThread:^{
                 completionHandler(RadarStatusErrorBadRequest, nil, nil);
             }];
         }
@@ -941,7 +955,7 @@ BOOL _initialized = NO;
     [[RadarLocationManager sharedInstance] getLocationWithCompletionHandler:^(RadarStatus status, CLLocation *_Nullable location, BOOL stopped) {
         if (status != RadarStatusSuccess) {
             if (completionHandler) {
-                [RadarUtils runOnMainThread:^{
+                [RadarUtilsDeprecated runOnMainThread:^{
                     completionHandler(status, nil, nil);
                 }];
             }
@@ -952,7 +966,7 @@ BOOL _initialized = NO;
         [[RadarAPIClient sharedInstance] getContextForLocation:location
                                              completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, RadarContext *_Nullable context) {
                                                  if (completionHandler) {
-                                                     [RadarUtils runOnMainThread:^{
+                                                     [RadarUtilsDeprecated runOnMainThread:^{
                                                          completionHandler(status, location, context);
                                                      }];
                                                  }
@@ -965,7 +979,7 @@ BOOL _initialized = NO;
     [[RadarAPIClient sharedInstance] getContextForLocation:location
                                          completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, RadarContext *_Nullable context) {
                                              if (completionHandler) {
-                                                 [RadarUtils runOnMainThread:^{
+                                                 [RadarUtilsDeprecated runOnMainThread:^{
                                                      completionHandler(status, location, context);
                                                  }];
                                              }
@@ -996,7 +1010,7 @@ BOOL _initialized = NO;
     [[RadarLocationManager sharedInstance] getLocationWithCompletionHandler:^(RadarStatus status, CLLocation *_Nullable location, BOOL stopped) {
         if (status != RadarStatusSuccess) {
             if (completionHandler) {
-                [RadarUtils runOnMainThread:^{
+                [RadarUtilsDeprecated runOnMainThread:^{
                     completionHandler(status, nil, nil);
                 }];
             }
@@ -1014,7 +1028,7 @@ BOOL _initialized = NO;
                                                     limit:limit
                                         completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarPlace *> *_Nullable places) {
                                             if (completionHandler) {
-                                                [RadarUtils runOnMainThread:^{
+                                                [RadarUtilsDeprecated runOnMainThread:^{
                                                     completionHandler(status, location, places);
                                                 }];
                                             }
@@ -1052,7 +1066,7 @@ BOOL _initialized = NO;
                                          countryCodes:countryCodes
                                                 limit:limit
                                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarPlace *> *_Nullable places) {
-                                        [RadarUtils runOnMainThread:^{
+                                        [RadarUtilsDeprecated runOnMainThread:^{
                                             completionHandler(status, near, places);
                                         }];
                                     }];
@@ -1074,7 +1088,7 @@ BOOL _initialized = NO;
         [[RadarLocationManager sharedInstance] getLocationWithCompletionHandler:^(RadarStatus status, CLLocation *_Nullable location, BOOL stopped) {
             if (status != RadarStatusSuccess) {
                 if (completionHandler) {
-                    [RadarUtils runOnMainThread:^{
+                    [RadarUtilsDeprecated runOnMainThread:^{
                         completionHandler(status, nil, nil);
                     }];
                 }
@@ -1088,7 +1102,7 @@ BOOL _initialized = NO;
                                                  includeGeometry:includeGeometry
                                                completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarGeofence *> *_Nullable geofences) {
                                                 if (completionHandler) {
-                                                    [RadarUtils runOnMainThread:^{
+                                                    [RadarUtilsDeprecated runOnMainThread:^{
                                                         completionHandler(status, location, geofences);
                                                     }];
                                                 }
@@ -1103,7 +1117,7 @@ BOOL _initialized = NO;
                                             includeGeometry:includeGeometry
                                           completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarGeofence *> *_Nullable geofences) {
                                             if (completionHandler) {
-                                                [RadarUtils runOnMainThread:^{
+                                                [RadarUtilsDeprecated runOnMainThread:^{
                                                     completionHandler(status, near, geofences);
                                                 }];
                                             }
@@ -1126,7 +1140,7 @@ BOOL _initialized = NO;
                                               mailable:NO
                                      completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarAddress *> *_Nullable addresses) {
                                          if (completionHandler) {
-                                             [RadarUtils runOnMainThread:^{
+                                             [RadarUtilsDeprecated runOnMainThread:^{
                                                  completionHandler(status, addresses);
                                              }];
                                          }
@@ -1148,7 +1162,7 @@ BOOL _initialized = NO;
                                               mailable:mailable
                                      completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarAddress *> *_Nullable addresses) {
                                          if (completionHandler) {
-                                             [RadarUtils runOnMainThread:^{
+                                             [RadarUtilsDeprecated runOnMainThread:^{
                                                  completionHandler(status, addresses);
                                              }];
                                          }
@@ -1169,7 +1183,7 @@ BOOL _initialized = NO;
                                                country:country
                                      completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarAddress *> *_Nullable addresses) {
                                          if (completionHandler) {
-                                             [RadarUtils runOnMainThread:^{
+                                             [RadarUtilsDeprecated runOnMainThread:^{
                                                  completionHandler(status, addresses);
                                              }];
                                          }
@@ -1185,7 +1199,7 @@ BOOL _initialized = NO;
                                                country:nil
                                      completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarAddress *> *_Nullable addresses) {
                                          if (completionHandler) {
-                                             [RadarUtils runOnMainThread:^{
+                                             [RadarUtilsDeprecated runOnMainThread:^{
                                                  completionHandler(status, addresses);
                                              }];
                                          }
@@ -1203,7 +1217,7 @@ BOOL _initialized = NO;
                                              layers:layers
                                           countries:countries
                                   completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarAddress *> *_Nullable addresses) {
-                                      [RadarUtils runOnMainThread:^{
+                                      [RadarUtilsDeprecated runOnMainThread:^{
                                           completionHandler(status, addresses);
                                       }];
                                   }];
@@ -1222,7 +1236,7 @@ BOOL _initialized = NO;
     [[RadarLocationManager sharedInstance] getLocationWithCompletionHandler:^(RadarStatus status, CLLocation *_Nullable location, BOOL stopped) {
         if (status != RadarStatusSuccess) {
             if (completionHandler) {
-                [RadarUtils runOnMainThread:^{
+                [RadarUtilsDeprecated runOnMainThread:^{
                     completionHandler(status, nil);
                 }];
             }
@@ -1245,7 +1259,7 @@ BOOL _initialized = NO;
                                                      layers:layers
                                           completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarAddress *> *_Nullable addresses) {
                                               if (completionHandler) {
-                                                  [RadarUtils runOnMainThread:^{
+                                                  [RadarUtilsDeprecated runOnMainThread:^{
                                                       completionHandler(status, addresses);
                                                   }];
                                               }
@@ -1257,7 +1271,7 @@ BOOL _initialized = NO;
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"ipGeocode()"];
     [[RadarAPIClient sharedInstance] ipGeocodeWithCompletionHandler:^(RadarStatus status, NSDictionary *_Nullable res, RadarAddress *_Nullable address, BOOL proxy) {
         if (completionHandler) {
-            [RadarUtils runOnMainThread:^{
+            [RadarUtilsDeprecated runOnMainThread:^{
                 completionHandler(status, address, proxy);
             }];
         }
@@ -1267,7 +1281,7 @@ BOOL _initialized = NO;
 + (void)validateAddress:(RadarAddress *_Nonnull)address completionHandler:(RadarValidateAddressCompletionHandler)completionHandler {
     [[RadarAPIClient sharedInstance] validateAddress:address
                                   completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, RadarAddress *_Nullable address, RadarAddressVerificationStatus verificationStatus) {
-                                      [RadarUtils runOnMainThread:^{
+                                      [RadarUtilsDeprecated runOnMainThread:^{
                                           completionHandler(status, address, verificationStatus);
                                       }];
                                   }];
@@ -1283,7 +1297,7 @@ BOOL _initialized = NO;
     [[RadarLocationManager sharedInstance] getLocationWithCompletionHandler:^(RadarStatus status, CLLocation *_Nullable location, BOOL stopped) {
         if (status != RadarStatusSuccess) {
             if (completionHandler) {
-                [RadarUtils runOnMainThread:^{
+                [RadarUtilsDeprecated runOnMainThread:^{
                     completionHandler(status, nil);
                 }];
             }
@@ -1298,7 +1312,7 @@ BOOL _initialized = NO;
                                                 geometryPoints:-1
                                              completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, RadarRoutes *_Nullable routes) {
                                                  if (completionHandler) {
-                                                     [RadarUtils runOnMainThread:^{
+                                                     [RadarUtilsDeprecated runOnMainThread:^{
                                                          completionHandler(status, routes);
                                                      }];
                                                  }
@@ -1319,7 +1333,7 @@ BOOL _initialized = NO;
                                             geometryPoints:-1
                                          completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, RadarRoutes *_Nullable routes) {
                                              if (completionHandler) {
-                                                 [RadarUtils runOnMainThread:^{
+                                                 [RadarUtilsDeprecated runOnMainThread:^{
                                                      completionHandler(status, routes);
                                                  }];
                                              }
@@ -1338,7 +1352,7 @@ BOOL _initialized = NO;
                                                     units:units
                                         completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, RadarRouteMatrix *_Nullable matrix) {
                                             if (completionHandler) {
-                                                [RadarUtils runOnMainThread:^{
+                                                [RadarUtilsDeprecated runOnMainThread:^{
                                                     completionHandler(status, matrix);
                                                 }];
                                             }
@@ -1671,7 +1685,7 @@ BOOL _initialized = NO;
     [[RadarAPIClient sharedInstance] syncLogs:flushableLogs
                             completionHandler:^(RadarStatus status) {
                                 if (onComplete) {
-                                    [RadarUtils runOnMainThread:^{
+                                    [RadarUtilsDeprecated runOnMainThread:^{
                                         onComplete(status);
                                     }];
                                 }
