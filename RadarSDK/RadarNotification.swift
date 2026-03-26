@@ -111,13 +111,31 @@ struct NotificationValue: Codable, Hashable {
 }
 
 struct NotificationPermissions: Codable {
+    
+    enum AuthorizedStatus: String, Codable {
+        case denied = "denied"
+        case authorized = "authorized"
+        case notDetermined = "not_determined"
+        case ephemeral = "ephemeral"
+        case provisional = "provisional"
+        case unknown = "unknown"
+    }
+    
     let alert: Bool?
     let sound: Bool?
     let badge: Bool?
     let lockScreen: Bool?
     let notificationCenter: Bool?
-    let authorizationStatus: String
+    let authorizationStatus: AuthorizedStatus
     
+    func canSendNotification() -> Bool {
+        // whether or not any notifications will be sent, when all notification types are disabled, iOS will not return anything from pending notifications list
+        // if that is the case, mostly likely the user has not received any notifications in the pending list.
+        return authorizationStatus == .authorized && (alert == true || sound == true || badge == true || lockScreen == true || notificationCenter == true)
+    }
+}
+
+extension NotificationPermissions {
     init(from settings: UNNotificationSettings) {
         switch settings.alertSetting {
         case .notSupported:
@@ -171,23 +189,17 @@ struct NotificationPermissions: Codable {
         }
         switch settings.authorizationStatus {
         case .notDetermined:
-            authorizationStatus = "not_determined"
+            authorizationStatus = .notDetermined
         case .denied:
-            authorizationStatus = "denied"
+            authorizationStatus = .denied
         case .authorized:
-            authorizationStatus = "authorized"
+            authorizationStatus = .authorized
         case .provisional:
-            authorizationStatus = "provisional"
+            authorizationStatus = .provisional
         case .ephemeral:
-            authorizationStatus = "ephemeral"
+            authorizationStatus = .ephemeral
         @unknown default:
-            authorizationStatus = "unknown"
+            authorizationStatus = .unknown
         }
-    }
-    
-    func canSendNotification() -> Bool {
-        // whether or not any notifications will be sent, when all notification types are disabled, iOS will not return anything from pending notifications list
-        // if that is the case, mostly likely the user has not received any notifications in the pending list.
-        return authorizationStatus == "authorized" && (alert == true || sound == true || badge == true || lockScreen == true || notificationCenter == true)
     }
 }

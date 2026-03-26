@@ -199,6 +199,7 @@
 		F6A0DAC82EF087AC00BC10B4 /* RadarSettingsTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6A0DAC72EF087A100BC10B4 /* RadarSettingsTest.swift */; };
 		F6B7E3472F7429D6006A5A24 /* RadarNotificationHelperTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6B7E3462F7429CC006A5A24 /* RadarNotificationHelperTest.swift */; };
 		F6B7E3492F745E49006A5A24 /* RadarNotification.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6B7E3482F745E44006A5A24 /* RadarNotification.swift */; };
+		F6B7E3BD2F758A13006A5A24 /* MockRadarState.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6B7E3BC2F758A0D006A5A24 /* MockRadarState.swift */; };
 		F6CBBE842EEA3FB3005ED233 /* RadarInAppMessage.h in Headers */ = {isa = PBXBuildFile; fileRef = F6CBBE832EEA3FAC005ED233 /* RadarInAppMessage.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F6E0D8B52E79FA4500DB4C73 /* RadarSwiftBridge.h in Headers */ = {isa = PBXBuildFile; fileRef = F6E0D8B22E79FA4500DB4C73 /* RadarSwiftBridge.h */; };
 		F6E0D8B62E79FA4500DB4C73 /* RadarSwiftBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6E0D8B42E79FA4500DB4C73 /* RadarSwiftBridge.swift */; };
@@ -407,6 +408,7 @@
 		F6A0DAC72EF087A100BC10B4 /* RadarSettingsTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarSettingsTest.swift; sourceTree = "<group>"; };
 		F6B7E3462F7429CC006A5A24 /* RadarNotificationHelperTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarNotificationHelperTest.swift; sourceTree = "<group>"; };
 		F6B7E3482F745E44006A5A24 /* RadarNotification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarNotification.swift; sourceTree = "<group>"; };
+		F6B7E3BC2F758A0D006A5A24 /* MockRadarState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockRadarState.swift; sourceTree = "<group>"; };
 		F6CBBE832EEA3FAC005ED233 /* RadarInAppMessage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarInAppMessage.h; sourceTree = "<group>"; };
 		F6E0D8B22E79FA4500DB4C73 /* RadarSwiftBridge.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarSwiftBridge.h; sourceTree = "<group>"; };
 		F6E0D8B32E79FA4500DB4C73 /* RadarSwiftBridge.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RadarSwiftBridge.m; sourceTree = "<group>"; };
@@ -627,6 +629,7 @@
 			children = (
 				BA46C16B2F4E0CEC00031891 /* RadarTripLegTest.m */,
 				F6A0DAC72EF087A100BC10B4 /* RadarSettingsTest.swift */,
+				F6B7E3BC2F758A0D006A5A24 /* MockRadarState.swift */,
 				F6B7E3462F7429CC006A5A24 /* RadarNotificationHelperTest.swift */,
 				96B465BB27D6732500D7119B /* CLLocation+RadarTests.m */,
 				DD8E2F7824018C37002D51AB /* CLLocationManagerMock.h */,
@@ -1039,6 +1042,7 @@
 				96B465BC27D6732500D7119B /* CLLocation+RadarTests.m in Sources */,
 				DD103211237E0C47003DD408 /* RadarSDKTests.m in Sources */,
 				DD8E2F7124018BF9002D51AB /* RadarTestUtils.m in Sources */,
+				F6B7E3BD2F758A13006A5A24 /* MockRadarState.swift in Sources */,
 				F64FF0E32E4D2E1100DF3926 /* InAppMessageTest.swift in Sources */,
 				DD8E2F7D24018C54002D51AB /* CLVisitMock.m in Sources */,
 				DD8E2F7A24018C37002D51AB /* CLLocationManagerMock.m in Sources */,

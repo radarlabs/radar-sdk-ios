@@ -6,8 +6,7 @@
 //
 
 class RadarState {
-    
-    public static var registeredNotifications: [NotificationValue]? {
+    public var registeredNotifications: [NotificationValue]? {
         get {
             if let obj = RadarUserDefaults.object(forKey: .RegisteredNotifications),
                let data = try? JSONSerialization.data(withJSONObject: obj),

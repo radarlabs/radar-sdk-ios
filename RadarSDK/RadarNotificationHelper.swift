@@ -10,6 +10,25 @@ import UserNotifications
 import CoreLocation
 
 @available(iOS 13.0, *)
+protocol NotificationCenterProtocol {
+    nonisolated(nonsending) func add(_ request: UNNotificationRequest) async throws
+    nonisolated(nonsending) func pendingNotificationRequests() async -> [UNNotificationRequest]
+    func removePendingNotificationRequests(withIdentifiers identifiers: [String])
+    
+    nonisolated(nonsending) func radarNotificationPermissions() async -> NotificationPermissions
+}
+
+extension UNUserNotificationCenter: NotificationCenterProtocol {
+    @available(iOS 13.0, *)
+    nonisolated(nonsending) func radarNotificationPermissions() async -> NotificationPermissions {
+        let settings = await notificationSettings()
+        let permissions = NotificationPermissions(from: settings)
+        return permissions
+    }
+    
+}
+
+@available(iOS 13.0, *)
 @objc(RadarNotificationHelper_Swift) @objcMembers
 actor RadarNotificationHelper: NSObject {
 
@@ -17,6 +36,14 @@ actor RadarNotificationHelper: NSObject {
     private var isRegistering: Bool = false
 
     public static let shared = RadarNotificationHelper()
+    
+    private let notificationCenter: NotificationCenterProtocol
+    private let radarState: RadarState
+    
+    init(notificationCenter: NotificationCenterProtocol = UNUserNotificationCenter.current(), radarState: RadarState = RadarState()) {
+        self.notificationCenter = notificationCenter
+        self.radarState = radarState
+    }
 
     public func registerGeofenceNotifications(geofences: [[String: Sendable]]) async {
         let now = Date()
@@ -54,7 +81,6 @@ actor RadarNotificationHelper: NSObject {
     }
     
     private func registerNotifications(notifications: [UNNotificationRequest]?) async {
-        let notificationCenter = UNUserNotificationCenter.current()
         // if notifications is not null, we update the pending notifications, otherwise we only update the registered notifications list
         if let notifications {
             // remove all geofence notifications
@@ -71,11 +97,11 @@ actor RadarNotificationHelper: NSObject {
             }
             notificationCenter.removePendingNotificationRequests(withIdentifiers: notificationIdentifiersToRemove)
             
-            let settings = await notificationCenter.notificationSettings()
+            let permissions = await notificationCenter.radarNotificationPermissions()
             if Task.isCancelled {
                 return
             }
-            if settings.authorizationStatus != .authorized {
+            if permissions.authorizationStatus != .authorized {
                 RadarLogger.debug("NotificationHelper notifications unauthorized")
                 return
             }
@@ -83,15 +109,7 @@ actor RadarNotificationHelper: NSObject {
             // add notifications
             for notification in notifications {
                 do {
-                    try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
-                        notificationCenter.add(notification) { error in
-                            if let error {
-                                continuation.resume(throwing: error)
-                            } else {
-                                continuation.resume()
-                            }
-                        }
-                    }
+                    try await notificationCenter.add(notification)
                     if Task.isCancelled {
                         return
                     }
@@ -107,15 +125,13 @@ actor RadarNotificationHelper: NSObject {
         let pending = await notificationCenter.pendingNotificationRequests().compactMap {
             NotificationValue(from: $0)
         }
-        RadarState.registeredNotifications = pending
+        radarState.registeredNotifications = pending
         RadarLogger.debug("NotificationHelper registered: \(pending.map(\.identifier))")
         isRegistering = false
     }
     
     public func getDeliveredNotifications() async -> [[String: Sendable]] {
-        let notificationCenter = UNUserNotificationCenter.current()
-        let settings = await notificationCenter.notificationSettings()
-        let permissions = NotificationPermissions(from: settings)
+        let permissions = await notificationCenter.radarNotificationPermissions()
         if (!permissions.canSendNotification()) {
             return []
         }
@@ -127,7 +143,7 @@ actor RadarNotificationHelper: NSObject {
             return []
         }
         
-        guard let registered = RadarState.registeredNotifications else {
+        guard let registered = radarState.registeredNotifications else {
             return []
         }
         let pendingRequests = await notificationCenter.pendingNotificationRequests().compactMap {
@@ -152,9 +168,7 @@ actor RadarNotificationHelper: NSObject {
     }
     
     public func notificationPermission() async -> String {
-        let notificationCenter = UNUserNotificationCenter.current()
-        let settings = await notificationCenter.notificationSettings()
-        let permissions = NotificationPermissions(from: settings)
+        let permissions = await notificationCenter.radarNotificationPermissions()
         guard let data = try? JSONEncoder().encode(permissions) else {
             return ""
         }
