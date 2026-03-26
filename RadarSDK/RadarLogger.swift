@@ -11,6 +11,7 @@ import OSLog
 @objc(RadarLogger_Swift)
 public final class RadarLogger : NSObject, Sendable {
     
+    @objc(sharedInstance)
     static let shared = RadarLogger()
 
     let dateFormatter: DateFormatter = {
