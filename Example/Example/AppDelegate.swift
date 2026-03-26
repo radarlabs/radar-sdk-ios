@@ -36,10 +36,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         radarInitializeOptions.autoLogNotificationConversions = true
         radarInitializeOptions.autoHandleNotificationDeepLinks = true
         radarInitializeOptions.silentPush = true
-
-        Radar.setAppGroup("group.waypoint.data")
+        
+        let HOST2 = "https://api-server-dev-jason.use1.radar-staging.com"
+        UserDefaults.standard.set(HOST2, forKey: "radar-host")
+        UserDefaults.standard.set(HOST2, forKey: "radar-verifiedHost")
+        
+        Radar.setAppGroup(nil)
         Radar.initialize(publishableKey: "prj_test_pk_0000000000000000000000000000000000000000", options: radarInitializeOptions)
         Radar.setMetadata([ "foo": "bar" ])
+        Radar.setUserId("ping-server-test-jason-ios")
         Radar.setDelegate(self)
         Radar.setVerifiedDelegate(self)
         Radar.setInAppMessageDelegate(MyIAMDelegate())
