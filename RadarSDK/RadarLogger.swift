@@ -78,4 +78,14 @@ public final class RadarLogger : NSObject, Sendable {
             }
         }
     }
+    
+    static func debug(_ message: String, type: RadarLogType = .none) {
+        RadarLogger.shared.debug(message, type: type)
+    }
+    static func info(_ message: String, type: RadarLogType = .none) {
+        RadarLogger.shared.info(message, type: type)
+    }
+    static func warning(_ message: String, type: RadarLogType = .none) {
+        RadarLogger.shared.warning(message, type: type)
+    }
 }

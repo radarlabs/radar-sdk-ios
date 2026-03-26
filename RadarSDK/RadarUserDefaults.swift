@@ -116,4 +116,8 @@ class RadarUserDefaults: NSObject {
     public static func array(forKey key: Key) -> [Any]? {
         return userDefaults.array(forKey: key.rawValue)
     }
+    
+    public static func data(forKey key: Key) -> Data? {
+        return userDefaults.data(forKey: key.rawValue)
+    }
 }
