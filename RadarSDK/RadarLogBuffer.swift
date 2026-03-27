@@ -11,13 +11,12 @@ class RadarLogBuffer {
     
     let logsFile = RadarFileStorageData(fileName: "logs")
     
+    let logs = [RadarLog]()
+    
     let MAX_FILE_SIZE = 4_000_000 // 4MB
     
-    
-    @available(iOS 14.0, *)
-    static let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "RadarSDK", category: "RadarSDK")
-    
     func log(message: String) {
+        
         
         if RadarSettings.sdkConfiguration?.useLogPersistence == true {
             guard let handle = logsFile?.handle else {
