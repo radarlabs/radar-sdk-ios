@@ -14,6 +14,10 @@ public final class RadarAPIClient: Sendable {
     
     let apiHelper = RadarApiHelper()
     
+    func logRequest() {
+//        RadarLogger.shared.debug("📍 Radar API request | \() \(); headers = \(); params = \()")
+    }
+    
     func getAsset(url: String) async throws -> Data {
         let (data, _) = if (url.starts(with: "http")) {
             try await apiHelper.request(method: "GET", url: url)
@@ -23,6 +27,14 @@ public final class RadarAPIClient: Sendable {
         return data
     }
     
+    
+    struct SyncRegionResponse: Codable {
+        let geofences: [RadarGeofenceSwift]?
+        let places: [RadarPlaceSwift]?
+        let beacons: [RadarBeaconSwift]?
+        let regionCenter: RadarCoordinateSwift?
+        let regionRadius: Double?
+    }
     func fetchSyncRegion(latitude: Double, longitude: Double) async throws -> SyncRegionResponse {
         let body: [String: Any] = [
             "latitude": latitude,
@@ -34,6 +46,12 @@ public final class RadarAPIClient: Sendable {
             url: "sync/region",
             body: body
         )
+        
+        do {
+            let result = try JSONDecoder().decode(SyncRegionResponse.self, from: data)
+        } catch {
+            
+        }
         
         guard let res = try JSONSerialization.jsonObject(with: data) as? [String: Any] else {
             throw URLError(.cannotParseResponse)
@@ -79,6 +97,21 @@ public final class RadarAPIClient: Sendable {
         )
     }
     
+    func sendLogs(logs: [RadarLog]) async throws {
+        let body: [String: Any?] = [
+            "id": RadarSettings.id ?? "",
+            "installId": RadarSettings.installId,
+            "deviceId": await RadarUtils.deviceId ?? NSNull(),
+            "sessionId": RadarSettings.sessionId,
+            "logs": logs
+        ]
+        
+        let (data, response) = try await apiHelper.radarRequest(method: "POST", url: "logs", body: body)
+        
+        if response.statusCode != 200 {
+            throw URLError(.badServerResponse)
+        }
+    }
     
     // TODO: implement rest of RadarAPIClient
 }

@@ -8,6 +8,42 @@
 
 import Foundation
 
+class RadarFileStorageData {
+    let file: URL
+    let handle: FileHandle?
+    
+    init?(fileName: String, directory: FileManager.SearchPathDirectory = .applicationSupportDirectory) {
+        guard let documents = FileManager.default.urls(for: directory, in: .userDomainMask).first else {
+            return nil
+        }
+        let directory = documents.appendingPathComponent("RadarSDK", isDirectory: true)
+        var file = directory.appendingPathComponent(fileName, isDirectory: false)
+        
+        if !FileManager.default.fileExists(atPath: file.path) {
+            FileManager.default.createFile(atPath: file.path, contents: nil)
+            var resourceValues = URLResourceValues()
+            resourceValues.isExcludedFromBackup = true
+            try? file.setResourceValues(resourceValues)
+        }
+        self.file = file
+        self.handle = try? FileHandle(forWritingTo: file)
+    }
+    
+    func append(data: Data) {
+        // TODO: replace with iOS 13.4 api handle?.seekToEnd()
+        handle?.seekToEndOfFile()
+        handle?.write(data)
+    }
+    
+    func write(data: Data, options: Data.WritingOptions = []) {
+        do {
+            try data.write(to: file, options: options)
+        } catch {
+            
+        }
+    }
+}
+
 final class RadarFileStorage<T: Codable & Sendable>: @unchecked Sendable {
     
     private let fileURL: URL

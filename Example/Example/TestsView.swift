@@ -11,6 +11,19 @@ import RadarSDK
 struct TestsView: View {
     var body: some View {
         ScrollView {
+            
+            StyledButton("test") {
+                do {
+                    
+                    let s = try JSONSerialization.data(withJSONObject: [
+                        "x": nil
+                    ])
+                    print(String(data: s, encoding: .utf8))
+                } catch {
+                    print(error)
+                }
+            }
+            
             StyledButton("trackOnce") {
                 Radar.trackOnce()
             }
