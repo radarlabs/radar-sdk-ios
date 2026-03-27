@@ -8,8 +8,7 @@
 
 import Foundation
 
-actor RadarFileStorageData {
-    
+class RadarFileStorageData {
     let file: URL
     let handle: FileHandle?
     
@@ -30,9 +29,19 @@ actor RadarFileStorageData {
         self.handle = try? FileHandle(forWritingTo: file)
     }
     
-//    func read() -> Data {
-//        
-//    }
+    func append(data: Data) {
+        // TODO: replace with iOS 13.4 api handle?.seekToEnd()
+        handle?.seekToEndOfFile()
+        handle?.write(data)
+    }
+    
+    func write(data: Data, options: Data.WritingOptions = []) {
+        do {
+            try data.write(to: file, options: options)
+        } catch {
+            
+        }
+    }
 }
 
 final class RadarFileStorage<T: Codable & Sendable>: @unchecked Sendable {

@@ -9,7 +9,7 @@ import Foundation
 
 @available(iOS 13.0, *)
 final class RadarApiHelper: Sendable {
-    func request(method: String, url: String, query: [String: String] = [:], headers: [String: String] = [:], body: [String: Any] = [:]) async throws -> (Data, HTTPURLResponse) {
+    func request(method: String, url: String, query: [String: String] = [:], headers: [String: String] = [:], body: [String: Any?] = [:]) async throws -> (Data, HTTPURLResponse) {
 
         // transform URL
         // turn query into a string of format: "?key=value&key2=value2" or "" if there are no queries
@@ -43,7 +43,7 @@ final class RadarApiHelper: Sendable {
         return (data, httpResponse)
     }
 
-    func radarRequest(method: String, url: String, query: [String: String] = [:], headers: [String: String] = [:], body: [String: Any] = [:]) async throws -> (Data, HTTPURLResponse) {
+    func radarRequest(method: String, url: String, query: [String: String] = [:], headers: [String: String] = [:], body: [String: Any?] = [:]) async throws -> (Data, HTTPURLResponse) {
         guard let publishableKey = RadarSettings.publishableKey else {
             throw URLError(.userAuthenticationRequired)
         }
