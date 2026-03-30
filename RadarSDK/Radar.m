@@ -147,18 +147,22 @@ BOOL _initialized = NO;
                 [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
                 [RadarSettings setSdkConfiguration:config.meta.sdkConfiguration];
             }
-            if (status == RadarStatusSuccess && config) {
-                [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
-                [RadarSettings setSdkConfiguration:config.meta.sdkConfiguration];
-            }
 
             RadarSdkConfiguration *sdkConfiguration = [RadarSettings sdkConfiguration];
 
             Class RadarSDKFraud = NSClassFromString(@"RadarSDKFraud");
             if (RadarSDKFraud) {
+                NSMutableDictionary *options;
+                if (config.meta.raw != nil) {
+                    options = [config.meta.raw mutableCopy];
+                } else {
+                    options = [[NSMutableDictionary alloc] init];
+                    [options setValue:sdkConfiguration forKey:@"sdkConfiguration"];
+                }
+                
                 id<RadarSDKFraudProtocol> radarSDKFraud = [RadarSDKFraud sharedInstance];
                 if ([radarSDKFraud respondsToSelector:@selector(initializeWithOptions:)]) {
-                    [radarSDKFraud initializeWithOptions:config.metaDict];
+                    [radarSDKFraud initializeWithOptions:options];
                     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"RadarSDKFraud detected and initialized"];
                 }
             }
@@ -1750,3 +1754,4 @@ BOOL _initialized = NO;
 }
 
 @end
+

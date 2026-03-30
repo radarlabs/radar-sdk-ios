@@ -22,6 +22,7 @@
         if (sdkConfigurationObj && [sdkConfigurationObj isKindOfClass:[NSDictionary class]]) {
             meta.sdkConfiguration = [[RadarSdkConfiguration alloc] initWithDict:sdkConfigurationObj];
         }
+        meta.raw = dict;
     }
 
     return meta;

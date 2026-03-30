@@ -19,7 +19,6 @@
         id metaObj = dict[@"meta"];
         if (metaObj && [metaObj isKindOfClass:[NSDictionary class]]) {
             config.meta = [RadarMeta fromDictionary:metaObj];
-            config.metaDict = metaObj;
         }
 
         id nonceObj = dict[@"nonce"];
