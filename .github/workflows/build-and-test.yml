@@ -18,8 +18,8 @@ jobs:
           submodules: recursive
           token: ${{ secrets.SUBMODULESTOKEN }}
 
-      - name: Use Xcode 16.4
-        run: sudo xcode-select -switch /Applications/Xcode_16.4.app
+      - name: Use Xcode 26.4
+        run: sudo xcode-select -switch /Applications/Xcode_26.4.app
 
       - name: Pick an available iPhone simulator
         id: pick_sim
