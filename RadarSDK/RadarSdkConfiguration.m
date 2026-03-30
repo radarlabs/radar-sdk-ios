@@ -115,7 +115,7 @@
     dict[@"useLogPersistence"] = @(_useLogPersistence);
     dict[@"useRadarModifiedBeacon"] = @(_useRadarModifiedBeacon);
     dict[@"useOpenedAppConversion"] = @(_useOpenedAppConversion);
-    dict[@"foregroundLocationUseUpdatedAtMsDiff"] = @(_useForegroundLocationUpdatedAtMsDiff);
+    dict[@"useForegroundLocationUpdatedAtMsDiff"] = @(_useForegroundLocationUpdatedAtMsDiff);
     dict[@"useNotificationDiff"] = @(_useNotificationDiff);
     dict[@"syncAfterSetUser"] = @(_syncAfterSetUser);
     
