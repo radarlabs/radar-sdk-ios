@@ -10,17 +10,29 @@ import OSLog
 
 @available(iOS 13.0, *)
 actor RadarLogBuffer {
+    
+    static let shared = RadarLogBuffer()
+    
     var logs = [RadarLog]()
     
     // the logs file is a full reflection of the
-    let logsFile = RadarFileStorage(fileName: "persistent_logs")
+    let logsFile = RadarFileStorage(fileName: "persistent_logs.txt")
     
     let MAX_LOGS = 500 // make configurable
     let KEEP = 250
     
+    let NEW_LINE = "\n".data(using: .utf8)!
+    
     init() {
         Task { [weak self] in
             await self?.loadLogs()
+        }
+    }
+    
+    var useLogPersistence: Bool {
+        get {
+            true
+//            RadarSettings.sdkConfiguration?.useLogPersistence ?? false
         }
     }
     
@@ -45,7 +57,6 @@ actor RadarLogBuffer {
     func log(_ log: RadarLog) {
         logs.append(log)
         
-        let useLogPersistence = RadarSettings.sdkConfiguration?.useLogPersistence ?? false
         if logs.count > MAX_LOGS {
             logs.removeFirst(logs.count - KEEP)
             // write the current logs list to file
@@ -53,14 +64,14 @@ actor RadarLogBuffer {
                 logsFile.write(data: Data())
                 for log in logs {
                     if let data = try? JSONEncoder().encode(log) {
-                        logsFile.append(data: data)
+                        logsFile.append(data: data + NEW_LINE)
                     }
                 }
             }
         } else {
             if useLogPersistence, let logsFile {
                 if let data = try? JSONEncoder().encode(log) {
-                    logsFile.append(data: data)
+                    logsFile.append(data: data + NEW_LINE)
                 }
             }
         }
@@ -68,11 +79,8 @@ actor RadarLogBuffer {
     
     func flush() async {
         do {
-            if #available(iOS 13.0, *) {
-                try await RadarAPIClient.shared.sendLogs(logs: logs)
-            }
+            try await RadarAPIClient.shared.sendLogs(logs: logs)
             logs = []
-            let useLogPersistence = RadarSettings.sdkConfiguration?.useLogPersistence ?? false
             if useLogPersistence, let logsFile {
                 logsFile.write(data: Data())
             }
@@ -81,4 +89,3 @@ actor RadarLogBuffer {
         }
     }
 }
-

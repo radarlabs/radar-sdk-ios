@@ -111,9 +111,9 @@ public final class RadarAPIClient: Sendable {
         let body: [String: Any?] = [
             "id": RadarSettings.id ?? "",
             "installId": RadarSettings.installId,
-            "deviceId": await RadarUtils.deviceId ?? NSNull(),
+            "deviceId": await RadarUtils.deviceId,
             "sessionId": RadarSettings.sessionId,
-            "logs": logs
+            "logs": logs.map(\.dict)
         ]
         
         let (data, response) = try await apiHelper.radarRequest(method: "POST", url: "logs", body: body)

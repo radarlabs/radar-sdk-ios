@@ -14,26 +14,28 @@ struct TestsView: View {
             
             StyledButton("test") {
                 Task {
-                    guard let documents = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
+                    guard let documents = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first else {
                         print("no documents directory")
                         return
                     }
                     let directory = documents.appendingPathComponent("RadarSDK", isDirectory: true)
-                    var file = directory.appendingPathComponent("persistent_logs", isDirectory: false)
+                    var file = directory.appendingPathComponent("persistent_logs.txt", isDirectory: false)
                     
+                    print(file)
                     if !FileManager.default.fileExists(atPath: file.path) {
-                        FileManager.default.createFile(atPath: file.path, contents: nil)
-                        var resourceValues = URLResourceValues()
-                        resourceValues.isExcludedFromBackup = true
-                        try? file.setResourceValues(resourceValues)
+                        print("File does not exist")
+                        return
                     }
                     guard let data = try? Data(contentsOf: file) else {
                         print("no data for file")
                         return
                     }
+                    let content = String(data: data, encoding: .utf8) ?? ""
                     print("--- LOG FILE BEGIN ---")
-                    print(String(data: data, encoding: .utf8) ?? "")
+                    print(content)
                     print("--- LOG FILE END ---")
+                    
+                    print(content.count(where: { $0.isNewline }))
                 }
             }
             

@@ -8,10 +8,10 @@
 #import "RadarSdkConfiguration.h"
 #include "Radar.h"
 
-#import "RadarLog.h"
 #import "RadarUtils.h"
 #import "RadarAPIClient.h"
 #import "RadarSettings.h"
+#import "RadarLogger.h"
 
 @interface RadarSdkConfiguration ()
 
@@ -53,7 +53,7 @@
 
     NSObject *logLevelObj = dict[@"logLevel"];
     if (logLevelObj && [logLevelObj isKindOfClass:[NSString class]]) {
-        _logLevel = [RadarLog levelFromString:(NSString *)logLevelObj];
+        _logLevel = [RadarLogger levelFromString:(NSString *)logLevelObj];
     }
 
     NSObject *startTrackingOnInitializeObj = dict[@"startTrackingOnInitialize"]; 
@@ -137,7 +137,7 @@
 - (NSDictionary *)dictionaryValue {
     NSMutableDictionary *dict = _originalDict ? [_originalDict mutableCopy] : [NSMutableDictionary new];
     
-    dict[@"logLevel"] = [RadarLog stringForLogLevel:_logLevel];
+    dict[@"logLevel"] = [RadarLogger stringForLogLevel:_logLevel];
     dict[@"startTrackingOnInitialize"] = @(_startTrackingOnInitialize);
     dict[@"trackOnceOnAppOpen"] = @(_trackOnceOnAppOpen);
     dict[@"usePersistence"] = @(_usePersistence);

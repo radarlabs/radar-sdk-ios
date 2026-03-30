@@ -14,6 +14,7 @@ class RadarFileStorage {
     
     init?(fileName: String, directory: FileManager.SearchPathDirectory = .applicationSupportDirectory) {
         guard let documents = FileManager.default.urls(for: directory, in: .userDomainMask).first else {
+            print("NO DOCUMENTS FILE")
             return nil
         }
         let directory = documents.appendingPathComponent("RadarSDK", isDirectory: true)
@@ -33,6 +34,12 @@ class RadarFileStorage {
         // TODO: replace with iOS 13.4 api handle?.seekToEnd()
         handle?.seekToEndOfFile()
         handle?.write(data)
+        
+        
+        if #available(iOS 13.4, *) {
+            print(file)
+            print(try? Data(contentsOf: file))
+        }
     }
     
     func write(data: Data, options: Data.WritingOptions = []) {

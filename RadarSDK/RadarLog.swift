@@ -151,7 +151,7 @@ struct RadarLog: Codable, CustomStringConvertible {
         }
     }
     
-    func dict() -> [String: Any] {
+    var dict: [String: Any] {
         return [
             "message": description,
             "level": level.toString(),

@@ -11,7 +11,7 @@ import Foundation
 final class RadarAPIHelper: Sendable {
     
     let session = {
-        let config = URLSessionConfiguration()
+        let config = URLSessionConfiguration.default
         config.timeoutIntervalForRequest = 10
         config.timeoutIntervalForResource = 10
         return URLSession(configuration: config)
@@ -19,13 +19,13 @@ final class RadarAPIHelper: Sendable {
     
     func retryingRequest(for request: URLRequest) async throws -> (Data, URLResponse) {
         do {
-            let (data, response) = try await URLSession.shared.data(for: request)
+            let (data, response) = try await session.data(for: request)
             return (data, response)
         } catch {
             // retry once on network connection lost error
             if let error = error as? URLError,
                error.code == .networkConnectionLost {
-                let (data, response) = try await URLSession.shared.data(for: request)
+                let (data, response) = try await session.data(for: request)
                 return (data, response)
             }
             

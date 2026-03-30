@@ -13,14 +13,12 @@
 #import "RadarCoordinate+Internal.h"
 #import "RadarDelegateHolder.h"
 #import "RadarLocationManager.h"
-#import "RadarLogBuffer.h"
 #import "RadarLogger.h"
 #import "RadarSettings.h"
 #import "RadarState.h"
 #import "RadarUtils.h"
 #import "RadarVerificationManager.h"
 #import "RadarReplayBuffer.h"
-#import "RadarLogBuffer.h"
 #import "RadarNotificationHelper.h"
 #import "RadarTripOptions.h"
 #import "RadarIndoorsProtocol.h"
@@ -1365,10 +1363,10 @@ BOOL _initialized = NO;
 + (void)setLogLevel:(RadarLogLevel)level {
     NSMutableDictionary *sdkConfiguration = [[RadarSettings clientSdkConfiguration] mutableCopy];
     NSObject *logLevelObj = sdkConfiguration[@"logLevel"];
-    if ([logLevelObj isKindOfClass:[NSString class]] && [[RadarLog stringForLogLevel:level] isEqualToString:(NSString *)logLevelObj]) {
+    if ([logLevelObj isKindOfClass:[NSString class]] && [[RadarLogger stringForLogLevel:level] isEqualToString:(NSString *)logLevelObj]) {
         return;
     }
-    [sdkConfiguration setValue:[RadarLog stringForLogLevel:level] forKey:@"logLevel"];
+    [sdkConfiguration setValue:[RadarLogger stringForLogLevel:level] forKey:@"logLevel"];
     [RadarSettings setClientSdkConfiguration:sdkConfiguration];
     
     if ([RadarSettings logLevel] == level) {
@@ -1383,7 +1381,6 @@ BOOL _initialized = NO;
 
 + (void)logBackgrounding {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug type:RadarLogTypeNone message:@"App entering background" includeDate:YES includeBattery:YES append:YES];
-    [[RadarLogBuffer sharedInstance] persistLogs];
 }
 
 + (void)logResigningActive {
@@ -1675,28 +1672,11 @@ BOOL _initialized = NO;
 }
 
 + (void)sendLog:(RadarLogLevel)level type:(RadarLogType)type message:(NSString *_Nonnull)message {
-    [[RadarLogBuffer sharedInstance] write:level type:type message:message ];
+    [RadarLogger write:level type:type message:message];
 }
 
 + (void)flushLogs {
-    NSArray<RadarLog *> *flushableLogs = [[RadarLogBuffer sharedInstance] flushableLogs]; 
-    NSUInteger pendingLogCount = [flushableLogs count];
-    if (pendingLogCount == 0) {
-        return;
-    }
-
-    RadarSyncLogsAPICompletionHandler onComplete = ^(RadarStatus status) {
-        [[RadarLogBuffer sharedInstance] onFlush:status == RadarStatusSuccess logs:flushableLogs];
-    };
-
-    [[RadarAPIClient sharedInstance] syncLogs:flushableLogs
-                            completionHandler:^(RadarStatus status) {
-                                if (onComplete) {
-                                    [RadarUtilsDeprecated runOnMainThread:^{
-                                        onComplete(status);
-                                    }];
-                                }
-                            }];
+    [RadarLogger flushLogs];
 }
 
 + (void)openURLFromNotification:(UNNotification *)notification {
