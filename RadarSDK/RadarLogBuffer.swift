@@ -13,7 +13,7 @@ actor RadarLogBuffer {
     var logs = [RadarLog]()
     
     // the logs file is a full reflection of the
-    let logsFile = RadarFileStorageData(fileName: "logs")
+    let logsFile = RadarFileStorage(fileName: "persistent_logs")
     
     let MAX_LOGS = 500 // make configurable
     let KEEP = 250

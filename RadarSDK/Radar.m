@@ -568,10 +568,10 @@ BOOL _initialized = NO;
     
     // Ensure Swift @MainActor methods are called on main thread
     if ([NSThread isMainThread]) {
-        [RadarLogger_Swift setDelegate:delegate];
+//        [RadarLogger setDelegate:delegate];
     } else {
         dispatch_async(dispatch_get_main_queue(), ^{
-            [RadarLogger_Swift setDelegate:delegate];
+//            [RadarLogger setDelegate:delegate];
         });
     }
 }

@@ -8,8 +8,8 @@
 import Foundation
 import OSLog
 
-@objc(RadarLogger_Swift)
-public final class RadarLogger : NSObject, Sendable {
+@objc(RadarLogger)
+final class RadarLogger : NSObject, Sendable {
     
     @objc(sharedInstance)
     static let shared = RadarLogger()
@@ -49,7 +49,11 @@ public final class RadarLogger : NSObject, Sendable {
     func warning(_ message: String, type: RadarLogType = .none, includeDate: Bool = false, includeBattery: Bool = false, append: Bool = false) {
         log(level: .warning, message: message, type: type, includeDate: includeDate, includeBattery: includeBattery, append: append)
     }
-
+    
+    func log(level: RadarLogLevel, type: RadarLogType, message: String) {
+        log(level: level, message: message, type: type, includeDate: false, includeBattery: false, append: false)
+    }
+    
     func log(level: RadarLogLevel, message: String, type: RadarLogType = .none, includeDate: Bool = false, includeBattery: Bool = false, append: Bool = false) {
         if (level.rawValue > RadarSettings.logLevel.rawValue) {
             return

@@ -27,6 +27,23 @@ extension RadarLogLevel: Codable {
         }
     }
     
+    public static func from(string: String) -> RadarLogLevel {
+        switch string {
+        case "none":
+            return .none
+        case "error":
+            return .error
+        case "warning":
+            return .warning
+        case "info":
+            return .info
+        case "debug":
+            return .debug
+        default:
+            return .none
+        }
+    }
+    
     public func encode(to encoder: any Encoder) throws {
         var container = encoder.singleValueContainer()
         try container.encode(self.toString())
@@ -35,20 +52,7 @@ extension RadarLogLevel: Codable {
     public init(from decoder: any Decoder) throws {
         let container = try decoder.singleValueContainer()
         let value = try container.decode(String.self)
-        switch value {
-        case "none":
-            self = .none
-        case "error":
-            self = .error
-        case "warning":
-            self = .warning
-        case "info":
-            self = .info
-        case "debug":
-            self = .debug
-        default:
-            self = .none
-        }
+        self = RadarLogLevel.from(string: value)
     }
 }
 
@@ -72,6 +76,25 @@ extension RadarLogType: Codable {
         }
     }
     
+    public static func from(string: String) -> RadarLogType {
+        switch string {
+        case "NONE":
+            return .none
+        case "SDK_CALL":
+            return .sdkCall
+        case "SDK_ERROR":
+            return .sdkError
+        case "SDK_EXCEPTION":
+            return .sdkException
+        case "APP_LIFECYCLE_EVENT":
+            return .appLifecycleEvent
+        case "PERMISSION_EVENT":
+            return .permissionEvent
+        default:
+            return .none
+        }
+    }
+    
     public func encode(to encoder: any Encoder) throws {
         var container = encoder.singleValueContainer()
         try container.encode(self.toString())
@@ -80,22 +103,7 @@ extension RadarLogType: Codable {
     public init(from decoder: any Decoder) throws {
         let container = try decoder.singleValueContainer()
         let value = try container.decode(String.self)
-        switch value {
-        case "NONE":
-            self = .none
-        case "SDK_CALL":
-            self = .sdkCall
-        case "SDK_ERROR":
-            self = .sdkError
-        case "SDK_EXCEPTION":
-            self = .sdkException
-        case "APP_LIFECYCLE_EVENT":
-            self = .appLifecycleEvent
-        case "PERMISSION_EVENT":
-            self = .permissionEvent
-        default:
-            self = .none
-        }
+        self = RadarLogType.from(string: value)
     }
 }
 
