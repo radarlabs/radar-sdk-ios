@@ -203,10 +203,8 @@ internal class RadarSettings: NSObject {
 
     public static var sdkConfiguration: RadarSdkConfiguration? {
         get {
-            if let options = RadarUserDefaults.dictionary(forKey: .SdkConfiguration) {
-                return RadarSdkConfiguration(dict: options)
-            }
-            return nil
+            let options = RadarUserDefaults.dictionary(forKey: .SdkConfiguration)
+            return RadarSdkConfiguration(dict: options)
         }
         set {
             RadarUserDefaults.set(newValue?.dictionaryValue(), forKey: .SdkConfiguration)
