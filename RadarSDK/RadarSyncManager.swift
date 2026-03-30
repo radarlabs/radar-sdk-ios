@@ -12,7 +12,7 @@ import CoreLocation
 @objc(RadarSyncManager)
 public final class RadarSyncManager: NSObject {
     
-    static let syncStore = RadarFileStorage<RadarSyncState>(fileName: "radar_sync_state.json")
+    static let syncStore = RadarFileStorageObject<RadarSyncState>(fileName: "radar_sync_state.json")
     
     private static let placeDetectionRadius: Double = 100.0
     private static let beaconRange: Double = 100.0

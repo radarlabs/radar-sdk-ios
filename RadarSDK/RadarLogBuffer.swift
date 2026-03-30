@@ -7,26 +7,25 @@
 
 import OSLog
 
+
+@available(iOS 13.0, *)
 actor RadarLogBuffer {
-    
-    let logsFile = RadarFileStorageData(fileName: "logs")
-    
     var logs = [RadarLog]()
     
+    // the logs file is a full reflection of the
+    let logsFile = RadarFileStorageData(fileName: "logs")
+    
     let MAX_LOGS = 500 // make configurable
-    let KEEP = 200
+    let KEEP = 250
     
     init() {
-        if #available(iOS 15.0, *) {
-            Task {
-                await loadLogs()
-            }
+        Task { [weak self] in
+            await self?.loadLogs()
         }
     }
     
-    @available(iOS 15.0, *)
     func loadLogs() async {
-        guard let logsFile else { return }
+        guard let logsFile, #available(iOS 15.0, *) else { return }
         
         do {
             for try await line in logsFile.file.lines {
@@ -49,7 +48,7 @@ actor RadarLogBuffer {
         let useLogPersistence = RadarSettings.sdkConfiguration?.useLogPersistence ?? false
         if logs.count > MAX_LOGS {
             logs.removeFirst(logs.count - KEEP)
-            
+            // write the current logs list to file
             if useLogPersistence, let logsFile {
                 logsFile.write(data: Data())
                 for log in logs {
@@ -67,8 +66,19 @@ actor RadarLogBuffer {
         }
     }
     
-    func flush() {
-        
+    func flush() async {
+        do {
+            if #available(iOS 13.0, *) {
+                try await RadarAPIClient.shared.sendLogs(logs: logs)
+            }
+            logs = []
+            let useLogPersistence = RadarSettings.sdkConfiguration?.useLogPersistence ?? false
+            if useLogPersistence, let logsFile {
+                logsFile.write(data: Data())
+            }
+        } catch {
+            // failed to flush logs, keep existing buffer
+        }
     }
 }
 

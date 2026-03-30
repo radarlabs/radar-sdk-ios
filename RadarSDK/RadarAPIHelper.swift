@@ -8,9 +8,32 @@
 import Foundation
 
 @available(iOS 13.0, *)
-final class RadarApiHelper: Sendable {
+final class RadarAPIHelper: Sendable {
+    
+    let session = {
+        let config = URLSessionConfiguration()
+        config.timeoutIntervalForRequest = 10
+        config.timeoutIntervalForResource = 10
+        return URLSession(configuration: config)
+    }()
+    
+    func retryingRequest(for request: URLRequest) async throws -> (Data, URLResponse) {
+        do {
+            let (data, response) = try await URLSession.shared.data(for: request)
+            return (data, response)
+        } catch {
+            // retry once on network connection lost error
+            if let error = error as? URLError,
+               error.code == .networkConnectionLost {
+                let (data, response) = try await URLSession.shared.data(for: request)
+                return (data, response)
+            }
+            
+            throw error
+        }
+    }
+    
     func request(method: String, url: String, query: [String: String] = [:], headers: [String: String] = [:], body: [String: Any?] = [:]) async throws -> (Data, HTTPURLResponse) {
-
         // transform URL
         // turn query into a string of format: "?key=value&key2=value2" or "" if there are no queries
         let queryString = query.isEmpty ? "" : ("?" + query.compactMap { key, value in
@@ -34,7 +57,7 @@ final class RadarApiHelper: Sendable {
             request.httpBody = try JSONSerialization.data(withJSONObject: body, options: [])
         }
         
-        let (data, response) = try await URLSession.shared.data(for: request)
+        let (data, response) = try await retryingRequest(for: request)
 
         guard let httpResponse = response as? HTTPURLResponse else {
             throw URLError(.badServerResponse)

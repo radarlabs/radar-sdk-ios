@@ -8,7 +8,7 @@
 
 import Foundation
 
-class RadarFileStorageData {
+class RadarFileStorage {
     let file: URL
     let handle: FileHandle?
     
@@ -42,9 +42,18 @@ class RadarFileStorageData {
             
         }
     }
+    
+    func read() -> Data? {
+        do {
+            let data = try Data(contentsOf: file)
+            return data
+        } catch {
+            return nil
+        }
+    }
 }
 
-final class RadarFileStorage<T: Codable & Sendable>: @unchecked Sendable {
+final class RadarFileStorageObject<T: Codable & Sendable>: @unchecked Sendable {
     
     private let fileURL: URL
     private let queue: DispatchQueue

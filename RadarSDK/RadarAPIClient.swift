@@ -10,21 +10,31 @@ import Foundation
 @available(iOS 13.0, *)
 public final class RadarAPIClient: Sendable {
     
+    struct APIError: Error {
+        let data: Data
+        let response: URLResponse
+        let message: String
+    }
+    
     public static let shared = RadarAPIClient()
     
-    let apiHelper = RadarApiHelper()
+    let apiHelper = RadarAPIHelper()
     
     func logRequest() {
 //        RadarLogger.shared.debug("📍 Radar API request | \() \(); headers = \(); params = \()")
     }
     
     func getAsset(url: String) async throws -> Data {
-        let (data, _) = if (url.starts(with: "http")) {
+        let (data, response) = if (url.starts(with: "http")) {
             try await apiHelper.request(method: "GET", url: url)
         } else {
             try await apiHelper.radarRequest(method: "GET", url: "assets/\(url)")
         }
-        return data
+        if response.statusCode >= 200 && response.statusCode < 300 {
+            return data
+        } else {
+            throw APIError(data: data, response: response, message: "Invalid asset")
+        }
     }
     
     
@@ -108,8 +118,10 @@ public final class RadarAPIClient: Sendable {
         
         let (data, response) = try await apiHelper.radarRequest(method: "POST", url: "logs", body: body)
         
-        if response.statusCode != 200 {
-            throw URLError(.badServerResponse)
+        if response.statusCode >= 200 && response.statusCode < 300 {
+            return
+        } else {
+            throw APIError(data: data, response: response, message: "Failed to send logs")
         }
     }
     
