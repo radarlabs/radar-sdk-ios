@@ -179,8 +179,6 @@
 		E698B6502C6112FA00084371 /* RadarMotionProtocol.h in Headers */ = {isa = PBXBuildFile; fileRef = E698B64F2C6112FA00084371 /* RadarMotionProtocol.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		E6B93B722C90E2B8003CB858 /* RadarInitializeOptions.h in Headers */ = {isa = PBXBuildFile; fileRef = E6B93B712C90E2B8003CB858 /* RadarInitializeOptions.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		E6B93B752C90E5B8003CB858 /* RadarInitializeOptions.m in Sources */ = {isa = PBXBuildFile; fileRef = E6B93B732C90E5B8003CB858 /* RadarInitializeOptions.m */; };
-		E6EEC56E2B20F41A00DD096B /* RadarFileStorage.h in Headers */ = {isa = PBXBuildFile; fileRef = E6EEC56D2B20F41A00DD096B /* RadarFileStorage.h */; };
-		E6EEC5702B20F45D00DD096B /* RadarFileStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = E6EEC56F2B20F45D00DD096B /* RadarFileStorage.m */; };
 		F64FF0D52E4D2B4700DF3926 /* RadarInAppMessageDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = F64FF0D42E4D2B4700DF3926 /* RadarInAppMessageDelegate.m */; };
 		F64FF0D72E4D2B7300DF3926 /* RadarInAppMessageDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F64FF0D62E4D2B7300DF3926 /* RadarInAppMessageDelegate.swift */; };
 		F64FF0D92E4D2B9100DF3926 /* RadarInAppMessageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F64FF0D82E4D2B9100DF3926 /* RadarInAppMessageManager.swift */; };
@@ -385,8 +383,6 @@
 		E698B64F2C6112FA00084371 /* RadarMotionProtocol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarMotionProtocol.h; sourceTree = "<group>"; };
 		E6B93B712C90E2B8003CB858 /* RadarInitializeOptions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarInitializeOptions.h; sourceTree = "<group>"; };
 		E6B93B732C90E5B8003CB858 /* RadarInitializeOptions.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RadarInitializeOptions.m; sourceTree = "<group>"; };
-		E6EEC56D2B20F41A00DD096B /* RadarFileStorage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarFileStorage.h; sourceTree = "<group>"; };
-		E6EEC56F2B20F45D00DD096B /* RadarFileStorage.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RadarFileStorage.m; sourceTree = "<group>"; };
 		F64FF0D42E4D2B4700DF3926 /* RadarInAppMessageDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RadarInAppMessageDelegate.m; sourceTree = "<group>"; };
 		F64FF0D62E4D2B7300DF3926 /* RadarInAppMessageDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarInAppMessageDelegate.swift; sourceTree = "<group>"; };
 		F64FF0D82E4D2B9100DF3926 /* RadarInAppMessageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarInAppMessageManager.swift; sourceTree = "<group>"; };
@@ -564,8 +560,6 @@
 				DD64416E25B398A7003C3E63 /* RadarBeaconManager.m */,
 				01F99CFA2965C182004E8CF3 /* RadarConfig.h */,
 				01F99CFC2965C1C4004E8CF3 /* RadarConfig.m */,
-				E6EEC56D2B20F41A00DD096B /* RadarFileStorage.h */,
-				E6EEC56F2B20F45D00DD096B /* RadarFileStorage.m */,
 				BA8647AA2F6C4CD200F1A199 /* RadarFileStorage.swift */,
 				96A5A11727ADA02E007B960B /* RadarDelegateHolder.h */,
 				DD4C104925D87E3E009C2E36 /* RadarDelegateHolder.m */,
@@ -769,7 +763,6 @@
 				96A5A0CB27AD9F41007B960B /* RadarRoute+Internal.h in Headers */,
 				96A5A10527AD9F7F007B960B /* RadarTrackingOptions.h in Headers */,
 				96A5A10927AD9F7F007B960B /* RadarContext.h in Headers */,
-				E6EEC56E2B20F41A00DD096B /* RadarFileStorage.h in Headers */,
 				0107AA1C26220055008AB52F /* RadarPermissionsHelper.h in Headers */,
 				96A5A11227AD9F7F007B960B /* Radar.h in Headers */,
 				96A5A10827AD9F7F007B960B /* RadarSegment.h in Headers */,
@@ -983,7 +976,6 @@
 				0107AB08262201CE008AB52F /* RadarAPIClient.m in Sources */,
 				BA78A60A2F2BC91E0058ECD4 /* RadarSyncManager.swift in Sources */,
 				0107AB05262201CB008AB52F /* Radar.m in Sources */,
-				E6EEC5702B20F45D00DD096B /* RadarFileStorage.m in Sources */,
 				0107AB29262201F4008AB52F /* RadarTrackingOptions.m in Sources */,
 				BA8647BB2F6C8F0E00F1A199 /* SyncRegionResponse.swift in Sources */,
 				0107AB2F262201FB008AB52F /* RadarUtils.m in Sources */,
