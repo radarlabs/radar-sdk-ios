@@ -24,10 +24,14 @@ public final class RadarAPIClient: Sendable {
     }
     
     func fetchSyncRegion(latitude: Double, longitude: Double) async throws -> SyncRegionResponse {
-        let body: [String: Any] = [
+        var body: [String: Any] = [
             "latitude": latitude,
             "longitude": longitude
         ]
+        
+        if let userId = RadarSettings.userId {
+            body["userId"] = userId
+        }
         
         let (data, _) = try await apiHelper.radarRequest(
             method: "POST",

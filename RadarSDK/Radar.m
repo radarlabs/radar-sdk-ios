@@ -200,6 +200,9 @@ BOOL _initialized = NO;
     if ([RadarSettings sdkConfiguration].syncAfterSetUser) {
         [Radar trackOnceWithCompletionHandler:nil];
     }
+    if ([RadarSettings sdkConfiguration].useSyncRegion) {
+        [RadarSyncManager fetchSyncRegion];
+    }
 }
 
 + (NSString *_Nullable)getUserId {
