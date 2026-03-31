@@ -198,6 +198,8 @@
 		F686B7372E4D2AFC00D3D614 /* RadarAPIHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = F686B7362E4D2AFC00D3D614 /* RadarAPIHelper.swift */; };
 		F69138B62F76C9CF00284DEB /* RadarLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = F69138B52F76C9C800284DEB /* RadarLog.swift */; };
 		F6A0DAC82EF087AC00BC10B4 /* RadarSettingsTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6A0DAC72EF087A100BC10B4 /* RadarSettingsTest.swift */; };
+		F6BC9EA42F7C0D3300994D25 /* RadarLoggerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6BC9EA32F7C0D2C00994D25 /* RadarLoggerTests.swift */; };
+		F6BC9EA72F7C0D5000994D25 /* RadarFileStorageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6BC9EA62F7C0D4800994D25 /* RadarFileStorageTests.swift */; };
 		F6CBBE842EEA3FB3005ED233 /* RadarInAppMessage.h in Headers */ = {isa = PBXBuildFile; fileRef = F6CBBE832EEA3FAC005ED233 /* RadarInAppMessage.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F6E0D8B52E79FA4500DB4C73 /* RadarSwiftBridge.h in Headers */ = {isa = PBXBuildFile; fileRef = F6E0D8B22E79FA4500DB4C73 /* RadarSwiftBridge.h */; };
 		F6E0D8B62E79FA4500DB4C73 /* RadarSwiftBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6E0D8B42E79FA4500DB4C73 /* RadarSwiftBridge.swift */; };
@@ -404,6 +406,8 @@
 		F686B7362E4D2AFC00D3D614 /* RadarAPIHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarAPIHelper.swift; sourceTree = "<group>"; };
 		F69138B52F76C9C800284DEB /* RadarLog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarLog.swift; sourceTree = "<group>"; };
 		F6A0DAC72EF087A100BC10B4 /* RadarSettingsTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarSettingsTest.swift; sourceTree = "<group>"; };
+		F6BC9EA32F7C0D2C00994D25 /* RadarLoggerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarLoggerTests.swift; sourceTree = "<group>"; };
+		F6BC9EA62F7C0D4800994D25 /* RadarFileStorageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarFileStorageTests.swift; sourceTree = "<group>"; };
 		F6CBBE832EEA3FAC005ED233 /* RadarInAppMessage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarInAppMessage.h; sourceTree = "<group>"; };
 		F6E0D8B22E79FA4500DB4C73 /* RadarSwiftBridge.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarSwiftBridge.h; sourceTree = "<group>"; };
 		F6E0D8B32E79FA4500DB4C73 /* RadarSwiftBridge.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RadarSwiftBridge.m; sourceTree = "<group>"; };
@@ -625,6 +629,8 @@
 				DD236C852308797B00EB88F9 /* Info.plist */,
 				DD8E2F7524018C25002D51AB /* RadarAPIHelperMock.h */,
 				DD8E2F7624018C25002D51AB /* RadarAPIHelperMock.m */,
+				F6BC9EA32F7C0D2C00994D25 /* RadarLoggerTests.swift */,
+				F6BC9EA62F7C0D4800994D25 /* RadarFileStorageTests.swift */,
 				DD8E2F7224018C17002D51AB /* RadarPermissionsHelperMock.h */,
 				DD8E2F7324018C17002D51AB /* RadarPermissionsHelperMock.m */,
 				DD103210237E0C47003DD408 /* RadarSDKTests.m */,
@@ -1033,6 +1039,8 @@
 				DD8E2F7124018BF9002D51AB /* RadarTestUtils.m in Sources */,
 				F64FF0E32E4D2E1100DF3926 /* InAppMessageTest.swift in Sources */,
 				DD8E2F7D24018C54002D51AB /* CLVisitMock.m in Sources */,
+				F6BC9EA72F7C0D5000994D25 /* RadarFileStorageTests.swift in Sources */,
+				F6BC9EA42F7C0D3300994D25 /* RadarLoggerTests.swift in Sources */,
 				DD8E2F7A24018C37002D51AB /* CLLocationManagerMock.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -61,8 +61,13 @@ class RadarFileStorage {
             let data = try Data(contentsOf: file)
             return data
         } catch {
+            print("Read failed")
             return nil
         }
+    }
+    
+    func delete() {
+        try? FileManager.default.removeItem(at: file)
     }
 }
 
