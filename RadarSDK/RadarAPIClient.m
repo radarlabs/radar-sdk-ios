@@ -157,7 +157,7 @@
    completionHandler:(RadarFlushReplaysAPICompletionHandler _Nonnull)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
-        return;
+        return completionHandler(RadarStatusErrorPublishableKey, nil);
     }
 
     NSString *host = [RadarSettings host];

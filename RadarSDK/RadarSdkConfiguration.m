@@ -91,7 +91,7 @@
         _useOpenedAppConversion = [(NSNumber *)useOpenedAppConversionObj boolValue];
     }
 
-    NSObject *useForegroundLocationUpdatedAtMsDiffObj = dict[@"foregroundLocationUseUpdatedAtMsDiff"];
+    NSObject *useForegroundLocationUpdatedAtMsDiffObj = dict[@"useForegroundLocationUpdatedAtMsDiff"];
     if (useForegroundLocationUpdatedAtMsDiffObj && [useForegroundLocationUpdatedAtMsDiffObj isKindOfClass:[NSNumber class]]) {
         _useForegroundLocationUpdatedAtMsDiff = [(NSNumber *)useForegroundLocationUpdatedAtMsDiffObj boolValue];
     }

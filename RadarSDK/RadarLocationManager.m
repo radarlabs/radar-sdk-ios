@@ -170,9 +170,8 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 
         if (completionHandler) {
             completionHandler(RadarStatusErrorPermissions, nil, NO);
-
-            return;
         }
+        return;
     }
 
     [self addCompletionHandler:completionHandler];

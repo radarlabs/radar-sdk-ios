@@ -203,19 +203,17 @@ internal class RadarSettings: NSObject {
 
     public static var sdkConfiguration: RadarSdkConfiguration? {
         get {
-            if let options = RadarUserDefaults.dictionary(forKey: .SdkConfiguration) {
-                return RadarSdkConfiguration(dict: options)
-            }
-            return nil
+            let options = RadarUserDefaults.dictionary(forKey: .SdkConfiguration)
+            return RadarSdkConfiguration(dict: options)
         }
         set {
             RadarUserDefaults.set(newValue?.dictionaryValue(), forKey: .SdkConfiguration)
             
             if let newValue = newValue {
                 logLevel = newValue.logLevel;
-                RadarSwift.bridge!.setLogBufferPersistantLog(newValue.useLogPersistence)
+                RadarSwift.bridge?.setLogBufferPersistantLog(newValue.useLogPersistence)
             } else {
-                RadarSwift.bridge!.setLogBufferPersistantLog(false)
+                RadarSwift.bridge?.setLogBufferPersistantLog(false)
             }
         }
     }
