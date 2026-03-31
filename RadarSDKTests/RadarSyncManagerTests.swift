@@ -21,7 +21,7 @@ struct RadarSyncManagerTests {
     init() {
         Radar.initialize(publishableKey: "prj_test_pk_0000000000000000")
         RadarSyncManager.syncStore.clear()
-        RadarSettings.setSdkConfiguration(nil)
+        RadarSettings.sdkConfiguration = nil
     }
     
     // MARK: - Helpers
@@ -495,7 +495,7 @@ struct RadarSyncManagerTests {
         setState(state)
         
         let config = RadarSdkConfiguration(dict: ["bufferGeofenceEntries": true])
-        RadarSettings.setSdkConfiguration(config)
+        RadarSettings.sdkConfiguration = config
         
         let offsetLat = testLat + 0.001
         let location = CLLocation(
@@ -514,7 +514,7 @@ struct RadarSyncManagerTests {
         setState(state)
         
         let config = RadarSdkConfiguration(dict: ["bufferGeofenceEntries": false])
-        RadarSettings.setSdkConfiguration(config)
+        RadarSettings.sdkConfiguration = config
         
         let offsetLat = testLat + 0.001
         let location = CLLocation(
@@ -565,7 +565,7 @@ struct RadarSyncManagerTests {
         setState(state)
         
         let config = RadarSdkConfiguration(dict: ["defaultGeofenceDwellThreshold": 5])
-        RadarSettings.setSdkConfiguration(config)
+        RadarSettings.sdkConfiguration = config
         
         let location = CLLocation(latitude: testLat, longitude: testLng)
         #expect(RadarSyncManager.hasGeofenceStateChanged(location: location))
@@ -581,7 +581,7 @@ struct RadarSyncManagerTests {
         setState(state)
         
         let config = RadarSdkConfiguration(dict: ["defaultGeofenceDwellThreshold": 5])
-        RadarSettings.setSdkConfiguration(config)
+        RadarSettings.sdkConfiguration = config
         
         let location = CLLocation(latitude: testLat, longitude: testLng)
         #expect(!RadarSyncManager.hasGeofenceStateChanged(location: location))
@@ -611,7 +611,7 @@ struct RadarSyncManagerTests {
         setState(state)
         
         let config = RadarSdkConfiguration(dict: ["defaultGeofenceDwellThreshold": 5])
-        RadarSettings.setSdkConfiguration(config)
+        RadarSettings.sdkConfiguration = config
         
         let location = CLLocation(latitude: testLat, longitude: testLng)
         #expect(!RadarSyncManager.hasGeofenceStateChanged(location: location))

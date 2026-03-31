@@ -3,4 +3,3 @@
 //
 
 #import "RadarState.h"
-#import "RadarSettings.h"

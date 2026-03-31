@@ -13,14 +13,14 @@ enum RadarGeofenceGeometrySwift: Codable, Sendable {
     case circle(center: RadarCoordinateSwift, radius: Double)
     case polygon(coordinates: [RadarCoordinateSwift], center: RadarCoordinateSwift, radius: Double)
     
-   var center: RadarCoordinateSwift {
+    var center: RadarCoordinateSwift {
         switch self {
         case .circle(let center, _): return center
         case .polygon(_, let center, _): return center
         }
     }
     
-   public var radius: Double {
+    var radius: Double {
         switch self {
         case .circle(_, let radius): return radius
         case .polygon(_, _, let radius): return radius
