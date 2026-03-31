@@ -9,10 +9,9 @@ import Testing
 @testable import RadarSDK
 
 @Suite
-class RadarFileStorageTests {
+struct RadarFileStorageTests {
     
-    @Test
-    func createFile() {
+    @Test func createFile() {
         let file = RadarFileStorage(fileName: "test/createTest.txt")
         #expect(file != nil, "file should exist after creation")
         guard let file else { return }
@@ -28,8 +27,7 @@ class RadarFileStorageTests {
         file.delete()
     }
     
-    @Test
-    func writeAndReadFile() throws {
+    @Test func writeAndReadFile() throws {
         let file = RadarFileStorage(fileName: "test/writeAndReadTest.txt")
         #expect(file != nil, "file should exist after creation")
         guard let file else { return }
@@ -53,8 +51,7 @@ class RadarFileStorageTests {
         file.delete()
     }
     
-    @Test
-    func appendFile() {
+    @Test func appendFile() {
         let file = RadarFileStorage(fileName: "test/appendTest.txt")
         #expect(file != nil, "file should exist after creation")
         guard let file else { return }
@@ -75,8 +72,7 @@ class RadarFileStorageTests {
         file.delete()
     }
     
-    @Test
-    func writeOverWriteFile() {
+    @Test func writeOverWriteFile() {
         let file = RadarFileStorage(fileName: "test/writeOverWriteTest.txt")
         #expect(file != nil, "file should exist after creation")
         guard let file else { return }

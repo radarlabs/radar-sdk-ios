@@ -21,6 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)logWithLevel:(RadarLogLevel)level type:(RadarLogType)type message:(NSString *)message;
 - (void)logWithLevel:(RadarLogLevel)level type:(RadarLogType)type message:(NSString *)message includeDate:(BOOL)includeDate includeBattery:(BOOL)includeBattery;
 - (void)logWithLevel:(RadarLogLevel)level type:(RadarLogType)type message:(NSString *)message includeDate:(BOOL)includeDate includeBattery:(BOOL)includeBattery append:(BOOL)append;
+- (void)setDelegate:(nullable id<RadarDelegate>)delegate;
 
 // from RadarLog.h
 + (RadarLogLevel)levelFromString:(NSString*)string;

@@ -15,24 +15,33 @@ actor RadarLogBuffer {
     
     var logs = [RadarLog]()
     
-    // the logs file is a full reflection of the
-    let logsFile = RadarFileStorage(fileName: "persistent_logs.txt")
-    
-    let MAX_LOGS = 500 // make configurable
-    let KEEP = 250
+    // the logs file is a full reflection of the logs
+    let logsFile: RadarFileStorage?
+
+    let MAX_LOGS: Int
+    let KEEP: Int
     
     let NEW_LINE = "\n".data(using: .utf8)!
     
-    init() {
-        Task { [weak self] in
-            await self?.loadLogs()
+    // in testing mode, allow overriding useLogPersistence
+    var useLogPersistenceOverride: Bool? = nil
+    var useLogPersistence: Bool {
+        get {
+            useLogPersistenceOverride ?? RadarSettings.sdkConfiguration?.useLogPersistence ?? false
         }
     }
     
-    var useLogPersistence: Bool {
-        get {
-            true
-//            RadarSettings.sdkConfiguration?.useLogPersistence ?? false
+    let apiClient: RadarAPIClient
+    
+    init(logsFile: String = "persistent_logs.txt", maxLogs: Int = 500, keep: Int = 250, logPersistence: Bool? = nil, apiClient: RadarAPIClient = RadarAPIClient.shared) {
+        self.logsFile = RadarFileStorage(fileName: logsFile)
+        self.MAX_LOGS = maxLogs
+        self.KEEP = keep
+        self.useLogPersistenceOverride = logPersistence
+        self.apiClient = apiClient
+        
+        Task { [weak self] in
+            await self?.loadLogs()
         }
     }
     
@@ -79,7 +88,7 @@ actor RadarLogBuffer {
     
     func flush() async {
         do {
-            try await RadarAPIClient.shared.sendLogs(logs: logs)
+            try await apiClient.sendLogs(logs: logs)
             logs = []
             if useLogPersistence, let logsFile {
                 logsFile.write(data: Data())

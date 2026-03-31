@@ -18,7 +18,15 @@ public final class RadarAPIClient: Sendable {
     
     public static let shared = RadarAPIClient()
     
-    let apiHelper = RadarAPIHelper()
+    let apiHelper: RadarAPIHelper
+    
+    init(apiHelper: RadarAPIHelper? = nil) {
+        if let apiHelper {
+            self.apiHelper = apiHelper
+        } else {
+            self.apiHelper = RadarAPIHelper()
+        }
+    }
     
     func logRequest() {
 //        RadarLogger.shared.debug("📍 Radar API request | \() \(); headers = \(); params = \()")

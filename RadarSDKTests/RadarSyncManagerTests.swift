@@ -469,7 +469,7 @@ class RadarSyncManagerTests: XCTestCase {
         setState(state)
         
         let config = RadarSdkConfiguration(dict: ["bufferGeofenceEntries": true])
-        RadarSettings.setSdkConfiguration(config)
+        RadarSettings.sdkConfiguration = config
         
         let offsetLat = testLat + 0.001
         let location = CLLocation(

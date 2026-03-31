@@ -7,15 +7,29 @@
 
 import Foundation
 
+// protocol to allow URLSession to be mocked and tested
+protocol RadarURLSessionProtocol: Sendable {
+    @available(iOS 13.0, *)
+    func data(for request: URLRequest) async throws -> (Data, URLResponse)
+}
+
+extension URLSession: RadarURLSessionProtocol {}
+
 @available(iOS 13.0, *)
 final class RadarAPIHelper: Sendable {
     
-    let session = {
-        let config = URLSessionConfiguration.default
-        config.timeoutIntervalForRequest = 10
-        config.timeoutIntervalForResource = 10
-        return URLSession(configuration: config)
-    }()
+    let session: RadarURLSessionProtocol
+    
+    init(session: RadarURLSessionProtocol? = nil) {
+        if let session {
+            self.session = session
+        } else {
+            let config = URLSessionConfiguration.default
+            config.timeoutIntervalForRequest = 10
+            config.timeoutIntervalForResource = 10
+            self.session = URLSession(configuration: config)
+        }
+    }
     
     func retryingRequest(for request: URLRequest) async throws -> (Data, URLResponse) {
         do {
@@ -85,7 +99,7 @@ final class RadarAPIHelper: Sendable {
         headers["X-Radar-App-Info"] = RadarUtils.dictionaryToJson(RadarUtils.appInfo)
         
         let url = "\(RadarSettings.host)/v1/\(url)"
-
+        
         let (data, response) = try await request(method: method, url: url, query: query, headers: headers, body: body)
 
         return (data, response)
