@@ -402,7 +402,7 @@ BOOL _initialized = NO;
 }
 
 + (void)trackVerifiedWithBeacons:(BOOL)beacons desiredAccuracy:(RadarTrackingOptionsDesiredAccuracy)desiredAccuracy completionHandler:(RadarTrackVerifiedCompletionHandler)completionHandler {
-    [self trackVerifiedWithBeacons:beacons desiredAccuracy:RadarTrackingOptionsDesiredAccuracyMedium reason:nil transactionId:nil completionHandler:completionHandler];
+    [self trackVerifiedWithBeacons:beacons desiredAccuracy:desiredAccuracy reason:nil transactionId:nil completionHandler:completionHandler];
 }
 
 + (void)trackVerifiedWithBeacons:(BOOL)beacons desiredAccuracy:(RadarTrackingOptionsDesiredAccuracy)desiredAccuracy reason:(NSString *)reason transactionId:(NSString *)transactionId completionHandler:(RadarTrackVerifiedCompletionHandler)completionHandler {
