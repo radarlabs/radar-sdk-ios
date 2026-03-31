@@ -9,12 +9,12 @@
 import Foundation
 import CoreLocation
 
-public struct RadarPlaceSwift: Codable, Sendable {
-    public let id: String
-    public let name: String
-    public let categories: [String]
-    public let location: RadarCoordinateSwift
-    public let group: String?
+struct RadarPlaceSwift: Codable, Sendable {
+    let id: String
+    let name: String
+    let categories: [String]
+    let location: RadarCoordinateSwift
+    let group: String?
     
     enum CodingKeys: String, CodingKey {
         case id = "_id"
@@ -24,7 +24,7 @@ public struct RadarPlaceSwift: Codable, Sendable {
         case group
     }
     
-    public init(from decoder: Decoder) throws {
+    init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = try container.decode(String.self, forKey: .id)
         name = try container.decodeIfPresent(String.self, forKey: .name) ?? ""
@@ -35,7 +35,7 @@ public struct RadarPlaceSwift: Codable, Sendable {
         location = RadarCoordinateSwift(latitude: geoJSON.coordinates[1], longitude: geoJSON.coordinates[0])
     }
     
-    public init(id: String, name: String, categories: [String], location: RadarCoordinateSwift, group: String?) {
+    init(id: String, name: String, categories: [String], location: RadarCoordinateSwift, group: String?) {
         self.id = id
         self.name = name
         self.categories = categories
@@ -43,7 +43,7 @@ public struct RadarPlaceSwift: Codable, Sendable {
         self.group = group
     }
     
-   public func encode(to encoder: Encoder) throws {
+   func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(id, forKey: .id)
         try container.encode(name, forKey: .name)

@@ -9,11 +9,11 @@
 import Foundation
 import CoreLocation
 
-public enum RadarGeofenceGeometrySwift: Codable, Sendable {
+enum RadarGeofenceGeometrySwift: Codable, Sendable {
     case circle(center: RadarCoordinateSwift, radius: Double)
     case polygon(coordinates: [RadarCoordinateSwift], center: RadarCoordinateSwift, radius: Double)
     
-   public var center: RadarCoordinateSwift {
+   var center: RadarCoordinateSwift {
         switch self {
         case .circle(let center, _): return center
         case .polygon(_, let center, _): return center
@@ -28,14 +28,14 @@ public enum RadarGeofenceGeometrySwift: Codable, Sendable {
     }
 }
 
-public struct RadarGeofenceSwift: Codable, Sendable {
-    public let id: String
-    public let description: String
-    public let tag: String?
-    public let externalId: String?
-    public let geometry: RadarGeofenceGeometrySwift
-    public let dwellThreshold: Double?
-    public let geofenceStopDetection: Bool?
+struct RadarGeofenceSwift: Codable, Sendable {
+    let id: String
+    let description: String
+    let tag: String?
+    let externalId: String?
+    let geometry: RadarGeofenceGeometrySwift
+    let dwellThreshold: Double?
+    let geofenceStopDetection: Bool?
 
     enum CodingKeys: String, CodingKey {
         case id = "_id"
@@ -50,7 +50,7 @@ public struct RadarGeofenceSwift: Codable, Sendable {
         case stopDetection
     }
     
-    public init(from decoder: Decoder) throws {
+    init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = try container.decode(String.self, forKey: .id)
         description = try container.decodeIfPresent(String.self, forKey: .description) ?? ""
@@ -77,7 +77,7 @@ public struct RadarGeofenceSwift: Codable, Sendable {
         }
     }
     
-    public init(id: String, description: String, tag: String?, externalId: String?,
+    init(id: String, description: String, tag: String?, externalId: String?,
          geometry: RadarGeofenceGeometrySwift, dwellThreshold: Double?, geofenceStopDetection: Bool?) {
         self.id = id
         self.description = description
@@ -88,7 +88,7 @@ public struct RadarGeofenceSwift: Codable, Sendable {
         self.geofenceStopDetection = geofenceStopDetection
     }
     
-    public func encode(to encoder: Encoder) throws {
+    func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(id, forKey: .id)
         try container.encode(description, forKey: .description)
