@@ -642,4 +642,26 @@ public final class RadarSyncManager: NSObject {
         previousSyncedPlaceIds = nil
         previousSyncedBeaconIds = nil
     }
+    
+    // MARK: - Beacon Bridging
+    
+    @objc public static func getObjCBeacons(for location: CLLocation) -> [RadarBeacon] {
+        return getBeacons(for: location).compactMap { swiftBeacon in
+            let geometry = RadarCoordinate(coordinate: CLLocationCoordinate2D(
+                latitude: swiftBeacon.geometry?.latitude ?? 0,
+                longitude: swiftBeacon.geometry?.longitude ?? 0
+            ))!
+            return RadarBeacon(
+                id: swiftBeacon.id,
+                description: swiftBeacon.description,
+                tag: swiftBeacon.tag ?? "",
+                externalId: swiftBeacon.externalId ?? "",
+                uuid: swiftBeacon.uuid,
+                major: swiftBeacon.major,
+                minor: swiftBeacon.minor,
+                metadata: nil,
+                geometry: geometry
+            )
+        }
+    }
 }
