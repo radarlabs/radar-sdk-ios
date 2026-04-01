@@ -97,6 +97,14 @@
             return;
         }
         
+        Class RadarSDKFraud = NSClassFromString(@"RadarSDKFraud");
+        if (RadarSDKFraud) {
+            id<RadarSDKFraudProtocol> radarSDKFraud = [RadarSDKFraud sharedInstance];
+            if ([radarSDKFraud respondsToSelector:@selector(updateOptions:)]) {
+                [radarSDKFraud updateOptions:config.metaDict];
+            }
+        }
+        
         [[RadarLocationManager sharedInstance]
          getLocationWithDesiredAccuracy:desiredAccuracy
          completionHandler:^(RadarStatus status, CLLocation *_Nullable location, BOOL stopped) {

@@ -7,12 +7,22 @@
 
 import SwiftUI
 import RadarSDK
+import SystemConfiguration.CaptiveNetwork
+import CoreTelephony
+import NetworkExtension
+import RadarSDKFraud
 
 struct TestsView: View {
     var body: some View {
         ScrollView {
+            
             StyledButton("trackOnce") {
-                Radar.trackOnce()
+                Task {
+//                    let x = await FraudDetection.fingerprint()
+//                    print(x)
+                    
+//                    print(TimeZone.current.identifier)
+                }
             }
             
             StyledButton("startTracking") {
@@ -96,7 +106,7 @@ struct TestsView: View {
             
             StyledButton("trackVerified") {
                 Radar.trackVerified() { (status, token) in
-                    print("TrackVerified: status = \(status); token = \(token?.dictionaryValue())")
+//                    print("TrackVerified: status = \(status); token = \(token?.dictionaryValue())")
                 }
             }
             
