@@ -473,20 +473,14 @@ BOOL _initialized = NO;
                 
                 CLLocation* location = res[@"location"];
                 
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    completionHandler(status, location, events, user);
-                });
+                completionHandler(status, location, events, user);
             } else {
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    completionHandler(status, nil, nil, nil);
-                });
+                completionHandler(status, nil, nil, nil);
             }
         } completionHandler:^(){}];
     } else {
         // don't support mock tracking on iOS 13.0
-        dispatch_async(dispatch_get_main_queue(), ^{
-            completionHandler(RadarStatusErrorBadRequest, nil, nil, nil);
-        });
+        completionHandler(RadarStatusErrorBadRequest, nil, nil, nil);
     }
 }
 
