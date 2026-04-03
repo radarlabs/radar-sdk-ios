@@ -133,6 +133,10 @@ actor RadarNotificationHelper: NSObject {
     public func getDeliveredNotifications() async -> [[String: Sendable]] {
         let permissions = await notificationCenter.radarNotificationPermissions()
         if (!permissions.canSendNotification()) {
+            if let data = try? JSONEncoder().encode(permissions),
+               let string = String(data: data, encoding: .utf8) {
+                RadarLogger.debug("NotificationHelper no permission to send notification \(string)")
+            }
             return []
         }
         
