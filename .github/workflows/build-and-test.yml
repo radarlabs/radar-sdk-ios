@@ -65,12 +65,4 @@ jobs:
           SIMULATOR_ID: ${{ env.SIMULATOR_ID }}
           scheme: RadarSDK
         run: |
-          xcodebuild test -scheme RadarSDK -workspace Example/Example.xcodeproj/project.xcworkspace -destination "platform=iOS Simulator,id=${SIMULATOR_ID}" -only-testing:RadarSDKTests/RadarParallelTests
-
-      # RadarSettings changing will affect other tests since there is one RadarSettings static instance, so do this test separately
-      - name: Test RadarSettings
-        env:
-          SIMULATOR_ID: ${{ env.SIMULATOR_ID }}
-          scheme: RadarSDK
-        run: |
-          xcodebuild test -scheme RadarSDK -workspace Example/Example.xcodeproj/project.xcworkspace -destination "platform=iOS Simulator,id=${SIMULATOR_ID}" -only-testing:RadarSDKTests/RadarSettingsTest
+          xcodebuild test -scheme RadarSDK -workspace Example/Example.xcodeproj/project.xcworkspace -destination "platform=iOS Simulator,id=${SIMULATOR_ID}" -only-testing:RadarSDKTests/RadarParallelTests -only-testing:RadarSDKTests/RadarSettingsTest

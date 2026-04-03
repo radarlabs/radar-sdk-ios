@@ -19,8 +19,9 @@ extension URLSession: RadarURLSessionProtocol {}
 final class RadarApiHelper: Sendable {
     
     let session: RadarURLSessionProtocol
-        
-    init(session: RadarURLSessionProtocol? = nil) {
+    let mockKey: String? // for testing only, in testing mode, mock publishableKey if session is mocked (passed in)
+    
+    init(session: RadarURLSessionProtocol? = nil, mockKey: String? = nil) {
         if let session {
             self.session = session
         } else {
@@ -29,6 +30,7 @@ final class RadarApiHelper: Sendable {
             config.timeoutIntervalForResource = 10
             self.session = URLSession(configuration: config)
         }
+        self.mockKey = mockKey
     }
     
     func retryingRequest(for request: URLRequest) async throws -> (Data, URLResponse) {
@@ -82,7 +84,7 @@ final class RadarApiHelper: Sendable {
     }
 
     func radarRequest(method: String, url: String, query: [String: String] = [:], headers: [String: String] = [:], body: Data? = nil) async throws -> (Data, HTTPURLResponse) {
-        guard let publishableKey = RadarSettings.publishableKey else {
+        guard let publishableKey = mockKey ?? RadarSettings.publishableKey else {
             throw URLError(.userAuthenticationRequired)
         }
         

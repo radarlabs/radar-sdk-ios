@@ -17,9 +17,8 @@ struct RadarParallelTests {
         
         @Test(.timeLimit(.minutes(2)))
         func mockTracking() async throws {
-            RadarSettings.publishableKey = "test-key" // set something so that publishableKey != nil check passes
             let mockSession = MockURLSession()
-            let mockClient = RadarAPIClient(apiHelper: RadarApiHelper(session: mockSession))
+            let mockClient = RadarAPIClient(apiHelper: RadarApiHelper(session: mockSession, mockKey: "mock-publishable-key"))
             let radar = Radar_Swift(apiClient: mockClient)
             
             print(mockSession)
