@@ -8,11 +8,23 @@
 import SwiftUI
 import RadarSDK
 
+struct CodingTest: Codable {
+    let a: String?
+    let b: String?
+    let c: String?
+}
+
 struct TestsView: View {
     var body: some View {
         ScrollView {
             StyledButton("trackOnce") {
-                Radar.trackOnce()
+                do {
+                    let d = try! JSONEncoder().encode(CodingTest(a: nil, b: nil, c: "testing"))
+                    let s = String(data: d, encoding: .utf8)
+                    print(s!)
+                } catch {
+                    print("failed")
+                }
             }
             
             StyledButton("startTracking") {

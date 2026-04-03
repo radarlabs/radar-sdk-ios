@@ -7,10 +7,48 @@
 
 import Foundation
 
+// protocol to allow URLSession to be mocked and tested
+protocol RadarURLSessionProtocol: Sendable {
+    @available(iOS 13.0, *)
+    func data(for request: URLRequest) async throws -> (Data, URLResponse)
+}
+
+extension URLSession: RadarURLSessionProtocol {}
+
 @available(iOS 13.0, *)
 final class RadarApiHelper: Sendable {
-    func request(method: String, url: String, query: [String: String] = [:], headers: [String: String] = [:], body: [String: Any] = [:]) async throws -> (Data, HTTPURLResponse) {
-
+    
+    let session: RadarURLSessionProtocol
+        
+    init(session: RadarURLSessionProtocol? = nil) {
+        if let session {
+            self.session = session
+        } else {
+            let config = URLSessionConfiguration.default
+            config.timeoutIntervalForRequest = 10
+            config.timeoutIntervalForResource = 10
+            self.session = URLSession(configuration: config)
+        }
+    }
+    
+    func retryingRequest(for request: URLRequest) async throws -> (Data, URLResponse) {
+        do {
+            let (data, response) = try await session.data(for: request)
+            return (data, response)
+        } catch {
+            // retry once on network connection lost error
+            if let error = error as? URLError,
+               error.code == .networkConnectionLost {
+                let (data, response) = try await session.data(for: request)
+                return (data, response)
+            }
+            
+            throw error
+        }
+    }
+    
+    
+    func request(method: String, url: String, query: [String: String] = [:], headers: [String: String] = [:], body: Data? = nil) async throws -> (Data, HTTPURLResponse) {
         // transform URL
         // turn query into a string of format: "?key=value&key2=value2" or "" if there are no queries
         let queryString = query.isEmpty ? "" : ("?" + query.compactMap { key, value in
@@ -30,11 +68,11 @@ final class RadarApiHelper: Sendable {
             request.addValue(value, forHTTPHeaderField: key)
         }
 
-        if (!body.isEmpty && (method == "POST" || method == "PUT" || method == "PATCH")) {
-            request.httpBody = try JSONSerialization.data(withJSONObject: body, options: [])
+        if (body != nil && (method == "POST" || method == "PUT" || method == "PATCH")) {
+            request.httpBody = body
         }
         
-        let (data, response) = try await URLSession.shared.data(for: request)
+        let (data, response) = try await retryingRequest(for: request)
 
         guard let httpResponse = response as? HTTPURLResponse else {
             throw URLError(.badServerResponse)
@@ -43,13 +81,13 @@ final class RadarApiHelper: Sendable {
         return (data, httpResponse)
     }
 
-    func radarRequest(method: String, url: String, query: [String: String] = [:], headers: [String: String] = [:], body: [String: Any] = [:]) async throws -> (Data, HTTPURLResponse) {
+    func radarRequest(method: String, url: String, query: [String: String] = [:], headers: [String: String] = [:], body: Data? = nil) async throws -> (Data, HTTPURLResponse) {
         guard let publishableKey = RadarSettings.publishableKey else {
             throw URLError(.userAuthenticationRequired)
         }
         
         var headers = headers
-        headers["Authorization"] = publishableKey
+        headers["Authorization"] = "prj_test_pk_0000000000000000000000000000000000000000" // TODO: reset this
         headers["Content-Type"] = "application/json"
         headers["X-Radar-Config"] = "true"
         headers["X-Radar-Device-Make"] = RadarUtils.deviceMake

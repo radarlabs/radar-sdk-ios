@@ -65,7 +65,7 @@ actor RadarSettingsTest {
         // simulate initialization from an app extension, which starts off with UserDefault.standard as empty
         clearUserDefaults(nil)
         
-        RadarUserDefaults.userDefaults = UserDefaults.standard
+        RadarUserDefaults.shared.userDefaults = UserDefaults.standard
         
         #expect(RadarSettings.userId == nil)
         #expect(RadarSettings.getAppGroup() == nil)
