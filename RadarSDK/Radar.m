@@ -27,6 +27,7 @@
 #import "RadarInAppMessageDelegate.h"
 #import "RadarSDKFraudProtocol.h"
 #import "RadarSwiftBridge.h"
+#import "RadarUser+Internal.h"
 
 #if __has_include(<RadarSDK/RadarSDK-Swift.h>)
 #import <RadarSDK/RadarSDK-Swift.h>
@@ -464,94 +465,25 @@ BOOL _initialized = NO;
                       interval:(NSTimeInterval)interval
              completionHandler:(RadarTrackCompletionHandler _Nullable)completionHandler {
     if (@available(iOS 13.0, *)) {
-        [[Radar_Swift shared] mockTrackingWithOrigin:origin destination:destination mode:mode steps:steps interval:interval onTrack:^(NSDictionary * result){
-            RadarStatus status = result[@"status"];
-            CLLocation *location = result[@"location"];
-            NSArray<RadarEvent *> * events = result[@"events"];
-            RadarUser * user = result[@"user"];
+        [[Radar_Swift shared] mockTrackingWithOrigin:origin destination:destination mode:mode steps:steps interval:interval onTrack:^(NSDictionary * res){
+            RadarConfig *config = [RadarConfig fromDictionary:res];
             
-            completionHandler(status, location, events, user);
+            RadarStatus status = (NSInteger)res[@"status"];
+            if (status == RadarStatusSuccess) {
+                NSArray<RadarEvent *> *events = [RadarEvent eventsFromObject:res[@"events"]];
+                RadarUser *user = [[RadarUser alloc] initWithObject:res[@"user"]];
+                
+                CLLocation* location = res[@"location"];
+                
+                completionHandler(status, location, events, user);
+            } else {
+                completionHandler(status, nil, nil, nil);
+            }
         } completionHandler:^(){}];
+    } else {
+        // don't support mock tracking on iOS 13.0
+        completionHandler(RadarStatusErrorBadRequest, nil, nil, nil);
     }
-    
-//    [[RadarAPIClient sharedInstance]
-//        getDistanceFromOrigin:origin
-//                  destination:destination
-//                        modes:mode
-//                        units:RadarRouteUnitsMetric
-//               geometryPoints:steps
-//            completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, RadarRoutes *_Nullable routes) {
-//                NSArray<RadarCoordinate *> *coordinates;
-//                if (routes) {
-//                    if (mode == RadarRouteModeFoot && routes.foot && routes.foot.geometry) {
-//                        coordinates = routes.foot.geometry.coordinates;
-//                    } else if (mode == RadarRouteModeBike && routes.bike && routes.bike.geometry) {
-//                        coordinates = routes.bike.geometry.coordinates;
-//                    } else if (mode == RadarRouteModeCar && routes.car && routes.car.geometry) {
-//                        coordinates = routes.car.geometry.coordinates;
-//                    } else if (mode == RadarRouteModeTruck && routes.truck && routes.truck.geometry) {
-//                        coordinates = routes.truck.geometry.coordinates;
-//                    } else if (mode == RadarRouteModeMotorbike && routes.motorbike && routes.motorbike.geometry) {
-//                        coordinates = routes.motorbike.geometry.coordinates;
-//                    }
-//                }
-//
-//                if (!coordinates) {
-//                    if (completionHandler) {
-//                        [RadarUtilsDeprecated runOnMainThread:^{
-//                            completionHandler(status, nil, nil, nil);
-//                        }];
-//                    }
-//
-//                    return;
-//                }
-//
-//                NSTimeInterval intervalLimit = interval;
-//                if (intervalLimit < 1) {
-//                    intervalLimit = 1;
-//                } else if (intervalLimit > 60) {
-//                    intervalLimit = 60;
-//                }
-//
-//                __block int i = 0;
-//                __block void (^track)(void);
-//                __block __weak void (^weakTrack)(void);
-//                track = ^{
-//                    weakTrack = track;
-//                    RadarCoordinate *coordinate = coordinates[i];
-//                    CLLocation *location = [[CLLocation alloc] initWithCoordinate:coordinate.coordinate
-//                                                                         altitude:-1
-//                                                               horizontalAccuracy:5
-//                                                                 verticalAccuracy:-1
-//                                                                        timestamp:[NSDate new]];
-//                    BOOL stopped = (i == 0) || (i == coordinates.count - 1);
-//
-//                    [[RadarAPIClient sharedInstance]
-//                        trackWithLocation:location
-//                                  stopped:stopped
-//                               foreground:NO
-//                                   source:RadarLocationSourceMockLocation
-//                                 replayed:NO
-//                                  beacons:nil
-//                             indoorScan:nil
-//                        completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user,
-//                                            NSArray<RadarGeofence *> *_Nullable nearbyGeofences, RadarConfig *_Nullable config, RadarVerifiedLocationToken *_Nullable token) {
-//                            if (completionHandler) {
-//                                [RadarUtilsDeprecated runOnMainThread:^{
-//                                    completionHandler(status, location, events, user);
-//                                }];
-//                            }
-//
-//                            if (i < coordinates.count - 1) {
-//                                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(intervalLimit * NSEC_PER_SEC)), dispatch_get_main_queue(), weakTrack);
-//                            }
-//
-//                            i++;
-//                        }];
-//                };
-//
-//                track();
-//            }];
 }
 
 + (void)stopTracking {

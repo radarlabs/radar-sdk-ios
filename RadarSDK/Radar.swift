@@ -37,13 +37,17 @@ final class Radar_Swift: NSObject, Sendable {
             for coordinate in coordinates {
                 let location = CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude)
                 
-                let result = try await apiClient.track(location: location, stopped: false, foreground: false, source: .mockLocation, replayed: false, beacons: nil)
+                var result = try await apiClient.track(location: location, stopped: false, foreground: false, source: .mockLocation, replayed: false, beacons: nil)
+                result["location"] = location
+                result["status"] = RadarStatus.success.rawValue
                 onTrack(result)
                 
-                try await Task.sleep(nanoseconds: UInt64(interval * 1_000_000))
+                try await Task.sleep(nanoseconds: UInt64(interval * 1_000_000_000))
             }
         } catch {
-            print("error \(error)")
+            onTrack([
+                "status": RadarStatus.errorServer.rawValue
+            ])
         }
     }
 }

@@ -40,14 +40,16 @@ struct RadarSdkTests {
         let origin = CLLocation(latitude: 40.78382, longitude: -73.97536)
         let destination = CLLocation(latitude: 40.70390, longitude: -73.98670)
         let steps = 20
-        let expireTimeout: TimeInterval = 10.0
 
         var stepCount = 0
         
         await radar.mockTracking(origin: origin, destination: destination, mode: .car, steps: 20, interval: 1, onTrack: { result in
             stepCount += 1
-//            status, location, events, user
-//            #expect(result["status"])d
+            
+            #expect(result["status"] as? Int == RadarStatus.success.rawValue)
+            #expect(result["location"] as? CLLocation != nil)
+            #expect(result["user"] != nil)
+            #expect(result["events"] != nil)
         })
 
         #expect(stepCount == steps, "Expected \(steps) callbacks but got \(stepCount)")
