@@ -8,6 +8,12 @@
 import SwiftUI
 import RadarSDK
 
+struct CodingTest: Codable {
+    let a: String?
+    let b: String?
+    let c: String?
+}
+
 struct TestsView: View {
     var body: some View {
         ScrollView {

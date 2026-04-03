@@ -9,7 +9,10 @@ import Foundation
 
 
 
-class RadarUserDefaults: NSObject {
+class RadarUserDefaults {
+    
+    nonisolated(unsafe)
+    static let shared = RadarUserDefaults(appGroup: UserDefaults.standard.string(forKey: RadarUserDefaults.Key.AppGroup.rawValue))
     
     public enum Key: String, CaseIterable {
         // RadarSettings
@@ -63,19 +66,21 @@ class RadarUserDefaults: NSObject {
         case LastPressureData = "radar-lastPressureData"
         case NotificationPermissionGranted = "radar-notificationPermissionGranted"
         case RegisteredNotifications = "radar-registeredNotifications"
+        case MotionAuthorization = "radar-motionAuthorization"
+        case AltitudeAdjustments = "radar-altitudeAdjustments"
     }
     
     // should be set once and then readonly
-    nonisolated(unsafe)
-    static var userDefaults: UserDefaults = {
+    var userDefaults: UserDefaults
+    
+    init(appGroup: String? = nil) {
         // initialized with the appGroup value of UserDefaults.standard
-        if let appGroup = UserDefaults.standard.string(forKey: Key.AppGroup.rawValue),
-           let appGroupSuite = UserDefaults(suiteName: appGroup) {
-            return appGroupSuite
+        if let appGroupSuite = UserDefaults(suiteName: appGroup) {
+            userDefaults = appGroupSuite
         } else {
-            return UserDefaults.standard
+            userDefaults = UserDefaults.standard
         }
-    }()
+    }
     
     public static func clone(from: UserDefaults, to: UserDefaults) {
         for key in Key.allCases {
@@ -84,36 +89,40 @@ class RadarUserDefaults: NSObject {
         }
     }
     
-    public static func set(_ value: Any?, forKey key: Key) {
+    public func set(_ value: Any?, forKey key: Key) {
         userDefaults.set(value, forKey: key.rawValue)
         userDefaults.synchronize()
     }
     
-    public static func string(forKey key: Key) -> String? {
+    public func string(forKey key: Key) -> String? {
         return userDefaults.string(forKey: key.rawValue)
     }
 
-    public static func bool(forKey key: Key) -> Bool {
+    public func bool(forKey key: Key) -> Bool {
         return userDefaults.bool(forKey: key.rawValue)
     }
     
-    public static func object(forKey key: Key) -> Any? {
+    public func object(forKey key: Key) -> Any? {
         return userDefaults.object(forKey: key.rawValue)
     }
     
-    public static func integer(forKey key: Key) -> Int {
+    public func integer(forKey key: Key) -> Int {
         return userDefaults.integer(forKey: key.rawValue)
     }
     
-    public static func double(forKey key: Key) -> Double {
+    public func double(forKey key: Key) -> Double {
         return userDefaults.double(forKey: key.rawValue)
     }
     
-    public static func dictionary(forKey key: Key) -> [String: Any]? {
+    public func dictionary(forKey key: Key) -> [String: Any]? {
         return userDefaults.dictionary(forKey: key.rawValue)
     }
     
-    public static func array(forKey key: Key) -> [Any]? {
+    public func array(forKey key: Key) -> [Any]? {
         return userDefaults.array(forKey: key.rawValue)
+    }
+
+    public func removeObject(forKey key: Key) {
+        userDefaults.removeObject(forKey: key.rawValue)
     }
 }

@@ -2,9 +2,9 @@ name: Xcode - Build, Analyze, & Test
 
 on:
   push:
-    branches: [ master, develop ]
+    branches: [master, develop]
   pull_request:
-    branches: [ master, develop ]
+    branches: [master, develop]
 
 jobs:
   build:
@@ -58,11 +58,11 @@ jobs:
           SIMULATOR_ID: ${{ env.SIMULATOR_ID }}
           scheme: RadarSDK
         run: |
-          xcodebuild test -scheme RadarSDK -workspace Example/Example.xcodeproj/project.xcworkspace -destination "platform=iOS Simulator,id=${SIMULATOR_ID}" -skip-testing:RadarSDKTests/InAppMessageTest -skip-testing:RadarSDKTests/RadarSettingsTest | xcpretty && exit ${PIPESTATUS[0]}
-        
-      - name: Test swift 
+          xcodebuild test -scheme RadarSDK -workspace Example/Example.xcodeproj/project.xcworkspace -destination "platform=iOS Simulator,id=${SIMULATOR_ID}" -skip-testing:RadarSDKTests/RadarParallelTests -skip-testing:RadarSDKTests/RadarSettingsTest | xcpretty && exit ${PIPESTATUS[0]}
+
+      - name: Test swift
         env:
           SIMULATOR_ID: ${{ env.SIMULATOR_ID }}
           scheme: RadarSDK
         run: |
-          xcodebuild test -scheme RadarSDK -workspace Example/Example.xcodeproj/project.xcworkspace -destination "platform=iOS Simulator,id=${SIMULATOR_ID}" -only-testing:RadarSDKTests/InAppMessageTest -only-testing:RadarSDKTests/RadarSettingsTest
+          xcodebuild test -scheme RadarSDK -workspace Example/Example.xcodeproj/project.xcworkspace -destination "platform=iOS Simulator,id=${SIMULATOR_ID}" -only-testing:RadarSDKTests/RadarParallelTests -only-testing:RadarSDKTests/RadarSettingsTest

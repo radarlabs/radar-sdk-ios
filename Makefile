@@ -31,7 +31,7 @@ lint:
 		if [ "$$spec" != "RadarSDKIndoors.podspec" ]; then \
 			pod lib lint "$$spec" || exit 1; \
 		fi; \
-	done 
+	done
 
 format:
 	./clang_format.sh
@@ -43,10 +43,10 @@ build-pretty:
 	set -o pipefail && xcodebuild $(XC_ARGS) | xcpretty
 
 test-pretty:
-	set -o pipefail && xcodebuild $(XC_TEST_ARGS) test -skip-testing:RadarSDKTests/InAppMessageTest -skip-testing:RadarSDKTests/RadarSettingsTest | xcpretty --report junit
+	set -o pipefail && xcodebuild $(XC_TEST_ARGS) test -skip-testing:RadarSDKTests/RadarParallelTests -skip-testing:RadarSDKTests/RadarSettingsTest | xcpretty --report junit
 
 test-swift:
-	xcodebuild $(XC_TEST_ARGS) test -only-testing:RadarSDKTests/InAppMessageTest -only-testing:RadarSDKTests/RadarSettingsTest
+	xcodebuild $(XC_TEST_ARGS) test -only-testing:RadarSDKTests/RadarParallelTests -only-testing:RadarSDKTests/RadarSettingsTest
 
 build-example-pretty:
 	set -o pipefail && xcodebuild $(XC_EXAMPLE_ARGS) | xcpretty
