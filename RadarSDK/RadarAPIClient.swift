@@ -167,7 +167,7 @@ public final class RadarAPIClient {
             altitudeAdjustments = adjustments
         }
         
-        let params: [String: Any?] = [
+        let params: [String: Any] = [
             "anonymous": anonymous,
             "deviceId": anonymous ? "anonymous" : await RadarUtils.deviceId,
             // anonymous fields
@@ -232,7 +232,7 @@ public final class RadarAPIClient {
             "appBuild": Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String,
             "locationMetadata": locationMetadata,
             "altitudeAdjustments": altitudeAdjustments
-        ]
+        ].compactMapValues { $0 }
         
         let body = try JSONSerialization.data(withJSONObject: params)
         

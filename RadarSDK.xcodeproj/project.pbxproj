@@ -197,7 +197,6 @@
 		F6BC9EDE2F7DA8FD00994D25 /* Radar.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6BC9EDD2F7DA8F900994D25 /* Radar.swift */; };
 		F6BC9F172F7DB7A300994D25 /* RadarRoutes.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6BC9F162F7DB79E00994D25 /* RadarRoutes.swift */; };
 		F6BC9F192F7EE6F400994D25 /* RadarState.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6BC9F182F7EE6EE00994D25 /* RadarState.swift */; };
-		F6BC9F1F2F8001E300994D25 /* RadarJsonUtils.swift in Headers */ = {isa = PBXBuildFile; fileRef = F6BC9F1E2F8001DE00994D25 /* RadarJsonUtils.swift */; };
 		F6BC9F212F800B7400994D25 /* RadarSDKTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6BC9F202F800B6900994D25 /* RadarSDKTests.swift */; };
 		F6BC9F242F8010A400994D25 /* MockAPIHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6BC9F232F80109C00994D25 /* MockAPIHelper.swift */; };
 		F6BC9F272F80195E00994D25 /* RadarTestUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6BC9F262F80195800994D25 /* RadarTestUtils.swift */; };
@@ -406,7 +405,6 @@
 		F6BC9EDD2F7DA8F900994D25 /* Radar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Radar.swift; sourceTree = "<group>"; };
 		F6BC9F162F7DB79E00994D25 /* RadarRoutes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarRoutes.swift; sourceTree = "<group>"; };
 		F6BC9F182F7EE6EE00994D25 /* RadarState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarState.swift; sourceTree = "<group>"; };
-		F6BC9F1E2F8001DE00994D25 /* RadarJsonUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarJsonUtils.swift; sourceTree = "<group>"; };
 		F6BC9F202F800B6900994D25 /* RadarSDKTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarSDKTests.swift; sourceTree = "<group>"; };
 		F6BC9F232F80109C00994D25 /* MockAPIHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockAPIHelper.swift; sourceTree = "<group>"; };
 		F6BC9F262F80195800994D25 /* RadarTestUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarTestUtils.swift; sourceTree = "<group>"; };
@@ -613,7 +611,6 @@
 				DD8CCDF7246872360011690D /* RadarTripOptions.m */,
 				DD236D0323099B8400EB88F9 /* RadarUtils.h */,
 				DD236D0423099B8400EB88F9 /* RadarUtils.m */,
-				F6BC9F1E2F8001DE00994D25 /* RadarJsonUtils.swift */,
 				F662FFB52EF5DC78005D2D29 /* RadarUtils.swift */,
 				82F7FAEC2A65FE030055AA4B /* RadarVerificationManager.h */,
 				82F7FAED2A65FE030055AA4B /* RadarVerificationManager.m */,
@@ -790,7 +787,6 @@
 				96A5A0F827AD9F7F007B960B /* RadarRegion.h in Headers */,
 				0107AA2B26220066008AB52F /* RadarUtils.h in Headers */,
 				9679F4A127CD8D0600800797 /* CLLocation+Radar.h in Headers */,
-				F6BC9F1F2F8001E300994D25 /* RadarJsonUtils.swift in Headers */,
 				96A5A0D127AD9F41007B960B /* RadarEvent+Internal.h in Headers */,
 				96A5A0D327AD9F41007B960B /* RadarPolygonGeometry+Internal.h in Headers */,
 				9683FD6427B36C26009EBB6B /* RadarMeta.h in Headers */,
