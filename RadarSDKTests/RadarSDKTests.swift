@@ -34,7 +34,7 @@ struct RadarParallelTests {
             
             var stepCount = 0
             
-            await radar.mockTracking(origin: origin, destination: destination, mode: .car, steps: 20, interval: 1, onTrack: { result in
+            await radar.mockTracking(origin: origin, destination: destination, mode: .car, steps: 20, interval: 0.2, onTrack: { result in
                 stepCount += 1
                 
                 #expect(result["status"] as? Int == RadarStatus.success.rawValue)
