@@ -5,6 +5,7 @@
 //  Copyright © 2026 Radar Labs, Inc. All rights reserved.
 //
 
+import Testing
 @testable import RadarSDK
 
 final class MockURLSession: RadarURLSessionProtocol, @unchecked Sendable {
@@ -35,5 +36,13 @@ final class MockURLSession: RadarURLSessionProtocol, @unchecked Sendable {
             return
         }
         on({ req in req.url?.absoluteString == request }, json)
+    }
+    
+    func on(_ request: String, respondWithResource resource: String) {
+        guard let response = RadarTestUtilsSwift.data(fromResource: resource) else {
+            Issue.record("invalid resource '\(resource)'")
+            return
+        }
+        on({ req in req.url?.absoluteString == request }, response)
     }
 }
