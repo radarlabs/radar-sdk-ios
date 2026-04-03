@@ -18,13 +18,7 @@ struct TestsView: View {
     var body: some View {
         ScrollView {
             StyledButton("trackOnce") {
-                do {
-                    let d = try! JSONEncoder().encode(CodingTest(a: nil, b: nil, c: "testing"))
-                    let s = String(data: d, encoding: .utf8)
-                    print(s!)
-                } catch {
-                    print("failed")
-                }
+                Radar.trackOnce()
             }
             
             StyledButton("startTracking") {

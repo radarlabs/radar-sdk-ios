@@ -14,7 +14,7 @@ extension CLLocation {
     var isValid: Bool {
         get {
             let latitudeValid = (fabs(coordinate.latitude) > DEGREE_EPSILON && coordinate.latitude > -90 && coordinate.latitude < 90)
-            let longitudeValid = (fabs(coordinate.longitude) > DEGREE_EPSILON && coordinate.longitude > -90 && coordinate.longitude < 90)
+            let longitudeValid = (fabs(coordinate.longitude) > DEGREE_EPSILON && coordinate.longitude > -180 && coordinate.longitude < 180)
             
             return latitudeValid && longitudeValid && horizontalAccuracy > 0
         }

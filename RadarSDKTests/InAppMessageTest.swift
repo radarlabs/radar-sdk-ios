@@ -99,7 +99,7 @@ let message = RadarInAppMessage.fromDictionary([
     ]
 ])
 
-// These needs to be main actor because only main actor can access the window
+// These tests need to be on the main actor because only the main actor can access the window
 extension RadarParallelTests {
     @Suite(.timeLimit(.minutes(3)))
     actor RadarInAppMessageTests {

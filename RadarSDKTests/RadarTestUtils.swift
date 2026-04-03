@@ -17,7 +17,7 @@ class RadarTestUtils {
         return data
     }
     
-    static func json(fromResourse resource: String) -> [String: Any]? {
+    static func json(fromResource resource: String) -> [String: Any]? {
         guard let data = data(fromResource: resource),
               let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else {
             return nil

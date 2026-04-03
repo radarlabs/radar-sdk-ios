@@ -2,7 +2,6 @@
 //  RadarSdkTests.swift
 //  RadarSDK
 //
-//  Created by ShiCheng Lu on 4/3/26.
 //  Copyright © 2026 Radar Labs, Inc. All rights reserved.
 //
 
@@ -20,8 +19,6 @@ struct RadarParallelTests {
             let mockSession = MockURLSession()
             let mockClient = RadarAPIClient(apiHelper: RadarApiHelper(session: mockSession, mockKey: "mock-publishable-key"))
             let radar = Radar_Swift(apiClient: mockClient)
-            
-            print(mockSession)
             
             mockSession.on(MockURLSession.urlMatch("\(RadarSettings.host)/v1/route/distance"), RadarTestUtils.data(fromResource: "route_distance")!)
             mockSession.on(MockURLSession.urlMatch("\(RadarSettings.host)/v1/track"), RadarTestUtils.data(fromResource: "track")!)
