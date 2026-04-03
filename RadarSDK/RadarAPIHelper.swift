@@ -87,7 +87,7 @@ final class RadarApiHelper: Sendable {
         }
         
         var headers = headers
-        headers["Authorization"] = "prj_test_pk_0000000000000000000000000000000000000000" // TODO: reset this
+        headers["Authorization"] = publishableKey
         headers["Content-Type"] = "application/json"
         headers["X-Radar-Config"] = "true"
         headers["X-Radar-Device-Make"] = RadarUtils.deviceMake
