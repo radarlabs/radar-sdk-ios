@@ -31,18 +31,16 @@ final class MockURLSession: RadarURLSessionProtocol, @unchecked Sendable {
         handlers.append(Handler(on: request, response: response))
     }
     
-    func on(_ request: String, _ response: [String: Any]) {
-        guard let json = try? JSONSerialization.data(withJSONObject: response) else {
-            return
+    static func urlMatch(_ match: String) -> (URLRequest) -> Bool {
+        return { request in
+            guard let url = request.url else {
+                return false
+            }
+            let sections = url.absoluteString.split(separator: "?")
+            guard let base = sections.first else {
+                return false
+            }
+            return base == match
         }
-        on({ req in req.url?.absoluteString == request }, json)
-    }
-    
-    func on(_ request: String, respondWithResource resource: String) {
-        guard let response = RadarTestUtilsSwift.data(fromResource: resource) else {
-            Issue.record("invalid resource '\(resource)'")
-            return
-        }
-        on({ req in req.url?.absoluteString == request }, response)
     }
 }

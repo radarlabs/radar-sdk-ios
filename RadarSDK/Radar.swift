@@ -45,6 +45,7 @@ final class Radar_Swift: NSObject, Sendable {
                 try await Task.sleep(nanoseconds: UInt64(interval * 1_000_000_000))
             }
         } catch {
+            print("error \(error)")
             onTrack([
                 "status": RadarStatus.errorServer.rawValue
             ])

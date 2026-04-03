@@ -22,8 +22,9 @@ struct RadarSwiftParallelTests {
             let mockClient = RadarAPIClient(apiHelper: RadarApiHelper(session: mockSession))
             let radar = Radar_Swift(apiClient: mockClient)
             
-            mockSession.on("\(RadarSettings.host)/v1/route/distance", respondWithResource: "route_distance")
-            mockSession.on("\(RadarSettings.host)/v1/track", respondWithResource: "track")
+            mockSession.on(MockURLSession.urlMatch("\(RadarSettings.host)/v1/route/distance"), RadarTestUtils.data(fromResource: "route_distance")!)
+            mockSession.on(MockURLSession.urlMatch("\(RadarSettings.host)/v1/track"), RadarTestUtils.data(fromResource: "track")!)
+            
             
             let origin = CLLocation(latitude: 40.78382, longitude: -73.97536)
             let destination = CLLocation(latitude: 40.70390, longitude: -73.98670)

@@ -8,7 +8,7 @@
 
 import Foundation
 
-class RadarTestUtilsSwift {
+class RadarTestUtils {
     static func data(fromResource resource: String) -> Data? {
         guard let path = Bundle(for: self).path(forResource: resource, ofType: "json"),
               let data = try? Data(contentsOf: URL(fileURLWithPath: path))  else {
