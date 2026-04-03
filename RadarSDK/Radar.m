@@ -466,8 +466,6 @@ BOOL _initialized = NO;
              completionHandler:(RadarTrackCompletionHandler _Nullable)completionHandler {
     if (@available(iOS 13.0, *)) {
         [[Radar_Swift shared] mockTrackingWithOrigin:origin destination:destination mode:mode steps:steps interval:interval onTrack:^(NSDictionary * res){
-            RadarConfig *config = [RadarConfig fromDictionary:res];
-            
             RadarStatus status = (NSInteger)res[@"status"];
             if (status == RadarStatusSuccess) {
                 NSArray<RadarEvent *> *events = [RadarEvent eventsFromObject:res[@"events"]];
