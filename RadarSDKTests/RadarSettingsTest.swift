@@ -28,7 +28,6 @@ actor RadarSettingsTest {
         }
     }
     
-    
     @Test("Clones to new UserDefaults on setAppGroup")
     func clonesToNewUserdefaultOnSetAppGroup() {
         clearUserDefaults(nil)

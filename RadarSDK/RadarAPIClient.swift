@@ -169,7 +169,7 @@ public final class RadarAPIClient {
         
         let params: [String: Any] = [
             "anonymous": anonymous,
-            "deviceId": anonymous ? "anonymous" : await RadarUtils.deviceId,
+            "deviceId": anonymous ? "anonymous" : RadarUtils.deviceId,
             // anonymous fields
             "id": anonymous ? nil : RadarSettings.id,
             "installId": anonymous ? nil : RadarSettings.installId,
@@ -204,7 +204,7 @@ public final class RadarAPIClient {
             "deviceMake": RadarUtils.deviceMake,
             "sdkVersion": RadarUtils.sdkVersion,
             "deviceModel": RadarUtils.deviceModel,
-            "deviceOS": await RadarUtils.deviceOS,
+            "deviceOS": RadarUtils.deviceOS,
             "country": RadarUtils.country,
             "timeZoneOffset": RadarUtils.timeZoneOffset.doubleValue,
             "xPlatformType": RadarSettings.xPlatform ? RadarSettings.xPlatformSDKType : "Native",

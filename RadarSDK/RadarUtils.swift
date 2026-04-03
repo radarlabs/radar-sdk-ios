@@ -25,7 +25,6 @@ enum RadarConnectionType: String {
 
 @objc(RadarUtils) @objcMembers
 class RadarUtils: NSObject {
-    
     static let deviceModel = {
         var systemInfo = utsname()
         uname(&systemInfo)
@@ -37,27 +36,31 @@ class RadarUtils: NSObject {
         return identifier
     }()
     
-    @available(iOS 13.0, *)
-    static var deviceOS: String {
-        get async {
-            return await MainActor.run(resultType: String.self) {
+    static func getDeviceOs() -> String {
+        if Thread.isMainThread {
+            return UIDevice.current.systemName
+        } else {
+            return DispatchQueue.main.sync {
                 UIDevice.current.systemName
             }
         }
     }
+    static let deviceOS = getDeviceOs()
     
     static let country = Locale.current.regionCode
     static let timeZoneOffset = NSNumber(value: TimeZone.current.secondsFromGMT())
     static let sdkVersion = SDK_VERSION
     
-    @available(iOS 13.0, *)
-    static var deviceId: String? {
-        get async {
-            return await MainActor.run(resultType: String?.self) {
+    static func getDeviceId() -> String? {
+        if Thread.isMainThread {
+            return UIDevice.current.identifierForVendor?.uuidString
+        } else {
+            return DispatchQueue.main.sync {
                 UIDevice.current.identifierForVendor?.uuidString
             }
         }
     }
+    static let deviceId = getDeviceId()
     
     static let deviceType: String = "iOS"
     static let deviceMake: String = "Apple"
@@ -263,3 +266,4 @@ internal extension CLLocation {
         return location
     }
 }
+
