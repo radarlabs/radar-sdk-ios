@@ -33,7 +33,6 @@ final class Radar_Swift: NSObject, Sendable {
                 print("no coords")
                 return
             }
-            
             for coordinate in coordinates {
                 let location = CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude)
                 
@@ -45,7 +44,7 @@ final class Radar_Swift: NSObject, Sendable {
                 try await Task.sleep(nanoseconds: UInt64(interval * 1_000_000_000))
             }
         } catch {
-            print("error \(error)")
+            print("Mock tracking error: \(error)")
             onTrack([
                 "status": RadarStatus.errorServer.rawValue
             ])

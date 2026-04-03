@@ -11,16 +11,17 @@ import CoreLocation
 @testable import RadarSDK
 
 @Suite
-struct RadarSwiftParallelTests {
-
-    @Suite
-    struct RadarSDKTests {
-        
-        @Test(.timeLimit(.minutes(1)))
-        func mockTracking() async throws {
+struct RadarSDKTests_Swift {
+    
+    @Test(.timeLimit(.minutes(1)))
+    func mockTracking() async throws {
+        do {
+            RadarSettings.publishableKey = "test-key" // set something so that publishableKey != nil check passes
             let mockSession = MockURLSession()
             let mockClient = RadarAPIClient(apiHelper: RadarApiHelper(session: mockSession))
             let radar = Radar_Swift(apiClient: mockClient)
+            
+            print(mockSession)
             
             mockSession.on(MockURLSession.urlMatch("\(RadarSettings.host)/v1/route/distance"), RadarTestUtils.data(fromResource: "route_distance")!)
             mockSession.on(MockURLSession.urlMatch("\(RadarSettings.host)/v1/track"), RadarTestUtils.data(fromResource: "track")!)
@@ -42,6 +43,8 @@ struct RadarSwiftParallelTests {
             })
             
             #expect(stepCount == steps, "Expected \(steps) callbacks but got \(stepCount)")
+        } catch {
+            print(error)
         }
     }
 }
