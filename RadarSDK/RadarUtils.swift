@@ -187,7 +187,8 @@ class RadarUtils: NSObject {
     static var backgroundTimeRemaining: TimeInterval {
         get async {
             return await MainActor.run(resultType: TimeInterval.self) {
-                max(180, UIApplication.shared.backgroundTimeRemaining)
+                let remaining = UIApplication.shared.backgroundTimeRemaining
+                return remaining == TimeInterval.greatestFiniteMagnitude ? 180 : remaining
             }
         }
     }
@@ -223,6 +224,7 @@ class RadarUtils: NSObject {
     
     static let isoDateFormatter: DateFormatter = {
         let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_US_POSIX")
         formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
         formatter.timeZone = TimeZone(secondsFromGMT: 0)
         return formatter

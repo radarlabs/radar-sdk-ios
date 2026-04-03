@@ -12,7 +12,7 @@
 @implementation RadarSdkConfiguration_ObjC
 
 + (void)updateSdkConfigurationFromServer {
-    [[RadarAPIClient sharedInstance] getConfigForUsage:@"sdkConfigUpdate" 
+    [[RadarAPIClient sharedInstance] getConfigForUsage:@"sdkConfigUpdate"
                                               verified:false
                                      completionHandler:^(RadarStatus status, RadarConfig *config) {
                                          if (status != RadarStatusSuccess || !config) {
