@@ -35,7 +35,8 @@
                                 trip:(RadarTrip *_Nullable)trip
                                debug:(BOOL)debug
                                fraud:(RadarFraud *_Nullable)fraud
-                            altitude:(double)altitude;
+                            altitude:(double)altitude
+               latestGeofencesDwelled:(nullable NSArray<RadarGeofence *> *)latestGeofencesDwelled;
 - (instancetype _Nullable)initWithObject:(id _Nonnull)object;
 
 @end
