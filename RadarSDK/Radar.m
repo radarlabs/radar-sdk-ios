@@ -143,6 +143,12 @@ BOOL _initialized = NO;
                                             if (status == RadarStatusSuccess && config) {
                                                 [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
                                                 [RadarSettings setSdkConfiguration:config.meta.sdkConfiguration];
+                                                
+                                                if ([RadarSettings sdkConfiguration].useSyncRegion) {
+                                                    [RadarSyncManager startWithInterval:86400];
+                                                } else {
+                                                    [RadarSyncManager stop];
+                                                }
                                             }
 
                                             RadarSdkConfiguration *sdkConfiguration = [RadarSettings sdkConfiguration];
@@ -193,6 +199,9 @@ BOOL _initialized = NO;
     [RadarSettings setUserId:userId];
     if ([RadarSettings sdkConfiguration].syncAfterSetUser) {
         [Radar trackOnceWithCompletionHandler:nil];
+    }
+    if ([RadarSettings sdkConfiguration].useSyncRegion) {
+        [RadarSyncManager fetchSyncRegion];
     }
 }
 
@@ -1642,12 +1651,18 @@ BOOL _initialized = NO;
         [[RadarAPIClient sharedInstance] getConfigForUsage:@"resume"
                                                   verified:NO
                                          completionHandler:^(RadarStatus status, RadarConfig *_Nullable config) {
-                                             if (status != RadarStatusSuccess || !config) {
-                                                return;
-                                             }
-                                             [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
-                                             [RadarSettings setSdkConfiguration:config.meta.sdkConfiguration];
-                                         }];
+            if (status != RadarStatusSuccess || !config) {
+                return;
+            }
+            [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
+            [RadarSettings setSdkConfiguration:config.meta.sdkConfiguration];
+            
+            if ([RadarSettings sdkConfiguration].useSyncRegion) {
+                [RadarSyncManager startWithInterval:86400];
+            } else {
+                [RadarSyncManager stop];
+            }
+        }];
     }
     
     [Radar logOpenedAppConversion];

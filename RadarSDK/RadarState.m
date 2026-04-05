@@ -6,6 +6,9 @@
 //
 
 #import "RadarState.h"
+#import "RadarGeofence+Internal.h"
+#import "RadarBeacon+Internal.h"
+#import "RadarPlace+Internal.h"
 #import "CLLocation+Radar.h"
 #import "RadarUtils.h"
 #import "RadarLogger.h"
@@ -28,6 +31,7 @@ static NSString *const kLastMotionActivityData = @"radar-lastMotionActivityData"
 static NSString *const kLastPressureData = @"radar-lastPressureData";
 static NSString *const kNotificationPermissionGranted = @"radar-notificationPermissionGranted";
 static NSString *const kMotionAuthorization = @"radar-motionAuthorization";
+static NSString *const kLocationAuthorizationStatus = @"radar-locationAuthorizationStatus";
 static NSString *const kRegisteredNotifications = @"radar-registeredNotifications";
 static NSString *const kAltitudeAdjustments = @"radar-altitudeAdjustments";
 static NSDictionary *_lastRelativeAltitudeDataInMemory = nil;
@@ -262,6 +266,14 @@ static NSTimeInterval const kBackupInterval = 2.0; // 2 seconds
     return [[NSUserDefaults standardUserDefaults] stringForKey:kMotionAuthorization];
 }
 
++ (void)setLocationAuthorizationStatus:(CLAuthorizationStatus)status {
+    [[NSUserDefaults standardUserDefaults] setInteger:status forKey:kLocationAuthorizationStatus];
+}
+
++ (CLAuthorizationStatus)locationAuthorizationStatus {
+    return (CLAuthorizationStatus)[[NSUserDefaults standardUserDefaults] integerForKey:kLocationAuthorizationStatus];
+}
+
 + (NSArray<NSDictionary *> *_Nullable)registeredNotifications {
     NSArray<NSDictionary *> *registeredNotifications = [[NSUserDefaults standardUserDefaults] valueForKey:kRegisteredNotifications];
     return registeredNotifications;
@@ -270,7 +282,6 @@ static NSTimeInterval const kBackupInterval = 2.0; // 2 seconds
 + (void)setRegisteredNotifications:(NSArray<NSDictionary *> *_Nullable)registeredNotifications {
     [[NSUserDefaults standardUserDefaults] setValue:registeredNotifications forKey:kRegisteredNotifications];
 }
-
 
 + (void)addRegisteredNotification:(NSDictionary *)notification {
     NSMutableArray *registeredNotifications = [NSMutableArray new];

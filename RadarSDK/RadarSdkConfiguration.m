@@ -39,6 +39,11 @@
     _useForegroundLocationUpdatedAtMsDiff = NO;
     _useNotificationDiff = NO;
     _syncAfterSetUser = NO;
+    _useSyncRegion = NO;
+    _defaultGeofenceDwellThreshold = 0;
+    _bufferGeofenceEntries = YES; // enabled by default
+    _bufferGeofenceExits = YES; // enabled by default
+    _stopDetection = NO;
 
     if (dict == nil) {
         return self;
@@ -100,6 +105,31 @@
     if (syncAfterSetUserObj && [syncAfterSetUserObj isKindOfClass:[NSNumber class]]) {
         _syncAfterSetUser = [(NSNumber *)syncAfterSetUserObj boolValue];
     }
+    
+    NSObject *useSyncRegionObj = dict[@"useSyncRegion"];
+    if (useSyncRegionObj && [useSyncRegionObj isKindOfClass:[NSNumber class]]) {
+        _useSyncRegion = [(NSNumber *)useSyncRegionObj boolValue];
+    }
+    
+    NSObject *defaultGeofenceDwellThresholdObj = dict[@"defaultGeofenceDwellThreshold"];
+    if (defaultGeofenceDwellThresholdObj && [defaultGeofenceDwellThresholdObj isKindOfClass:[NSNumber class]]) {
+        _defaultGeofenceDwellThreshold = [(NSNumber *)defaultGeofenceDwellThresholdObj integerValue];
+    }
+    
+    NSObject *bufferGeofenceEntriesObj = dict[@"bufferGeofenceEntries"];
+    if (bufferGeofenceEntriesObj && [bufferGeofenceEntriesObj isKindOfClass:[NSNumber class]]) {
+        _bufferGeofenceEntries = [(NSNumber *)bufferGeofenceEntriesObj boolValue];
+    }
+    
+    NSObject *bufferGeofenceExitsObj = dict[@"bufferGeofenceExits"];
+    if (bufferGeofenceExitsObj && [bufferGeofenceExitsObj isKindOfClass:[NSNumber class]]) {
+        _bufferGeofenceExits = [(NSNumber *)bufferGeofenceExitsObj boolValue];
+    }
+
+    NSObject *stopDetectionObj = dict[@"stopDetection"];
+    if (stopDetectionObj && [stopDetectionObj isKindOfClass:[NSNumber class]]) {
+        _stopDetection = [(NSNumber *)stopDetectionObj boolValue];
+    }
 
     return self;
 }
@@ -118,6 +148,11 @@
     dict[@"useForegroundLocationUpdatedAtMsDiff"] = @(_useForegroundLocationUpdatedAtMsDiff);
     dict[@"useNotificationDiff"] = @(_useNotificationDiff);
     dict[@"syncAfterSetUser"] = @(_syncAfterSetUser);
+    dict[@"useSyncRegion"] = @(_useSyncRegion);
+    dict[@"defaultGeofenceDwellThreshold"] = @(_defaultGeofenceDwellThreshold);
+    dict[@"bufferGeofenceEntries"] = @(_bufferGeofenceEntries);
+    dict[@"bufferGeofenceExits"] = @(_bufferGeofenceExits);
+    dict[@"stopDetection"] = @(_stopDetection);
     
     return dict;
 }

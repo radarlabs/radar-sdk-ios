@@ -39,6 +39,16 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, assign) BOOL syncAfterSetUser;
 
+@property (nonatomic, assign) BOOL useSyncRegion;
+
+@property (nonatomic, assign) NSInteger defaultGeofenceDwellThreshold;
+
+@property (nonatomic, assign) BOOL bufferGeofenceEntries;
+
+@property (nonatomic, assign) BOOL bufferGeofenceExits;
+
+@property (nonatomic, assign) BOOL stopDetection;
+
 /**
  Initializes a new RadarSdkConfiguration object with given value.
  */

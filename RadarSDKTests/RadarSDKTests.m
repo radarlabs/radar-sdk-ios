@@ -14,6 +14,13 @@
 #import "../RadarSDK/RadarSettings.h"
 #import "../RadarSDK/RadarState.h"
 #import "../RadarSDK/RadarLogBuffer.h"
+#import "../RadarSDK/RadarState.h"
+#import "../RadarSDK/RadarGeofence+Internal.h"
+#import "../RadarSDK/RadarCircleGeometry+Internal.h"
+#import "../RadarSDK/RadarPolygonGeometry+Internal.h"
+#import "../RadarSDK/RadarCoordinate+Internal.h"
+#import "../RadarSDK/RadarBeacon+Internal.h"
+#import "../RadarSDK/RadarPlace+Internal.h"
 #import "CLLocationManagerMock.h"
 #import "CLVisitMock.h"
 #import "RadarAPIHelperMock.h"
@@ -25,6 +32,12 @@
 #import "../RadarSDK/RadarTrip+Internal.h"
 #import "../RadarSDK/Include/RadarTripLeg.h"
 #import <os/log.h>
+
+#if __has_include(<RadarSDK/RadarSDK-Swift.h>)
+#import <RadarSDK/RadarSDK-Swift.h>
+#elif __has_include("RadarSDK-Swift.h")
+#import "RadarSDK-Swift.h"
+#endif
 
 @interface RadarSDKTests : XCTestCase
 
@@ -2222,5 +2235,4 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     XCTAssertEqual(savedSdkConfiguration.trackOnceOnAppOpen, YES);
     XCTAssertEqual(savedSdkConfiguration.startTrackingOnInitialize, YES);
 }
-
 @end
