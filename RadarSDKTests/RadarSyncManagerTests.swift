@@ -255,26 +255,44 @@ struct RadarSyncManagerTests {
     
     @Test("beaconStateChanged detects entry")
     func beaconStateChanged_entry() {
-        let beacon = makeBeacon(id: "beacon1", lat: testLat, lng: testLng)
         var state = RadarSyncState()
-        state.syncedBeacons = [beacon]
         state.lastSyncedBeaconIds = []
         setState(state)
         
-        let location = CLLocation(latitude: testLat, longitude: testLng)
-        #expect(RadarSyncManager.hasBeaconStateChanged(location: location))
+        let rangedBeaconIds: Set<String> = ["beacon1"]
+        #expect(RadarSyncManager.hasBeaconStateChanged(rangedBeaconIds: rangedBeaconIds))
     }
     
     @Test("beaconStateChanged detects exit")
     func beaconStateChanged_exit() {
-        let beacon = makeBeacon(id: "beacon1", lat: testLatFar, lng: testLng)
         var state = RadarSyncState()
-        state.syncedBeacons = [beacon]
         state.lastSyncedBeaconIds = ["beacon1"]
         setState(state)
         
-        let location = CLLocation(latitude: testLat, longitude: testLng)
-        #expect(RadarSyncManager.hasBeaconStateChanged(location: location))
+        let rangedBeaconIds: Set<String> = []
+        #expect(RadarSyncManager.hasBeaconStateChanged(rangedBeaconIds: rangedBeaconIds))
+    }
+    
+    @Test("beaconStateChanged returns false when no change")
+    func beaconStateChanged_noChange() {
+        var state = RadarSyncState()
+        state.lastSyncedBeaconIds = ["beacon1"]
+        setState(state)
+        
+        let rangedBeaconIds: Set<String> = ["beacon1"]
+        #expect(!RadarSyncManager.hasBeaconStateChanged(rangedBeaconIds: rangedBeaconIds))
+    }
+    
+    @Test("saveBeaconState updates stored beacon IDs")
+    func saveBeaconState() {
+        var state = RadarSyncState()
+        state.lastSyncedBeaconIds = ["beacon1"]
+        setState(state)
+        
+        RadarSyncManager.saveBeaconState(beaconIds: ["beacon2", "beacon3"])
+        
+        let updatedState = RadarSyncManager.syncStore.read()!
+        #expect(Set(updatedState.lastSyncedBeaconIds) == Set(["beacon2", "beacon3"]))
     }
     
     // MARK: - getPlaces

@@ -123,10 +123,9 @@ public final class RadarSyncManager: NSObject {
         
         let geofenceChanged = hasGeofenceStateChanged(location: location)
         let placeChanged = hasPlaceStateChanged(location: location)
-        let beaconChanged = hasBeaconStateChanged(location: location)
         
-        if geofenceChanged || placeChanged || beaconChanged {
-            RadarLogger.shared.info("SyncManager: shouldTrack = YES | reason: state changed (geofence=\(geofenceChanged), place=\(placeChanged), beacon=\(beaconChanged))")
+        if geofenceChanged || placeChanged {
+            RadarLogger.shared.info("SyncManager: shouldTrack = YES | reason: state changed (geofence=\(geofenceChanged), place=\(placeChanged)))")
             saveAndUpdateSyncState(location: location)
             return true
         }
@@ -366,24 +365,22 @@ public final class RadarSyncManager: NSObject {
         return false
     }
     
-    @objc public static func hasBeaconStateChanged(location: CLLocation) -> Bool {
+    @objc public static func hasBeaconStateChanged(rangedBeaconIds: Set<String>) -> Bool {
         let state = syncStore.read() ?? RadarSyncState()
         let lastKnownBeaconIds = Set(state.lastSyncedBeaconIds)
-        let currentBeacons = getBeacons(for: location)
-        let currentIds = Set(currentBeacons.compactMap { $0.id })
         
-        let enteredBeaconIds = currentIds.subtracting(lastKnownBeaconIds)
-        let exitedBeaconIds = lastKnownBeaconIds.subtracting(currentIds)
+        let enteredBeaconIds = rangedBeaconIds.subtracting(lastKnownBeaconIds)
+        let exitedBeaconIds = lastKnownBeaconIds.subtracting(rangedBeaconIds)
         
         if !enteredBeaconIds.isEmpty {
-            RadarLogger.shared.info("SyncManager: Detected beacon entry: \(enteredBeaconIds)")
+            RadarLogger.shared.info("SyncManager: Detected beacon entry (BLE confirmed): \(enteredBeaconIds)")
         }
         
         if !exitedBeaconIds.isEmpty {
-            RadarLogger.shared.info("SyncManager: Detected beacon exit: \(exitedBeaconIds)")
+            RadarLogger.shared.info("SyncManager: Detected beacon exit (BLE confirmed): \(exitedBeaconIds)")
         }
         
-        return currentIds != lastKnownBeaconIds
+        return rangedBeaconIds != lastKnownBeaconIds
     }
     
     @objc public static func hasPlaceStateChanged(location: CLLocation) -> Bool {
@@ -520,20 +517,17 @@ public final class RadarSyncManager: NSObject {
         let timestamps = syncStore.read()?.geofenceEntryTimestamps ?? [:]
         let acceptedGeofenceIds = Array(timestamps.keys)
         let currentPlaceIds = getPlaces(for: location).map { $0.id }
-        let currentBeaconIds = getBeacons(for: location).map { $0.id }
         
         RadarLogger.shared.info(
             "SyncManager: Optimistic update | " +
             "geofences=\(acceptedGeofenceIds) " +
-            "places=\(currentPlaceIds) " +
-            "beacons=\(currentBeaconIds)"
+            "places=\(currentPlaceIds) "
         )
         
         syncStore.modify { state in
             if state == nil { state = RadarSyncState() }
             state?.lastSyncedGeofenceIds = acceptedGeofenceIds
             state?.lastSyncedPlaceIds = currentPlaceIds
-            state?.lastSyncedBeaconIds = currentBeaconIds
         }
     }
     
@@ -543,13 +537,11 @@ public final class RadarSyncManager: NSObject {
         let state = syncStore.read() ?? RadarSyncState()
         previousSyncedGeofenceIds = state.lastSyncedGeofenceIds
         previousSyncedPlaceIds = state.lastSyncedPlaceIds
-        previousSyncedBeaconIds = state.lastSyncedBeaconIds
         
         RadarLogger.shared.info(
             "SyncManager: Saving previous state before optimistic update | " +
             "geofences=\(previousSyncedGeofenceIds?.count ?? 0) " +
-            "places=\(previousSyncedPlaceIds?.count ?? 0) " +
-            "beacons=\(previousSyncedBeaconIds?.count ?? 0)"
+            "places=\(previousSyncedPlaceIds?.count ?? 0) "
         )
         
         updateLastKnownSyncState(location: location)
@@ -623,9 +615,20 @@ public final class RadarSyncManager: NSObject {
         clearPreviousState()
     }
     
-    @objc public static func rollbackSyncState() {
-        guard previousSyncedGeofenceIds != nil else { return }
+    @objc public static func saveBeaconState(beaconIds: [String]) {
+        previousSyncedBeaconIds = syncStore.read()?.lastSyncedBeaconIds
         
+        RadarLogger.shared.info("SyncManager: Saving beacon state | previous=\(previousSyncedBeaconIds?.count ?? 0) new=\(beaconIds.count)")
+
+        syncStore.modify { state in
+            if state == nil { state = RadarSyncState() }
+            state?.lastSyncedBeaconIds = beaconIds
+        }
+    }
+    
+    @objc public static func rollbackSyncState() {
+        guard previousSyncedGeofenceIds != nil || previousSyncedPlaceIds != nil || previousSyncedBeaconIds != nil else { return }
+
         RadarLogger.shared.info("SyncManager: Track failed, rolling back to previous sync state")
         
         syncStore.modify { state in
