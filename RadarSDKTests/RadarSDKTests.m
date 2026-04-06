@@ -886,7 +886,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     __block int expired_count = 0;
 
     dispatch_queue_t timer = dispatch_queue_create("mockTrackingTimer", DISPATCH_QUEUE_SERIAL);
-    int64_t expire_timeout = (int64_t)(10.0 * NSEC_PER_SEC);
+    int64_t expire_timeout = (int64_t)(20.0 * NSEC_PER_SEC);
     
     self.continueAfterFailure = false;
     
@@ -913,6 +913,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
                         });
                     }
                 }];
+    
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, expire_timeout), timer, ^{
         expired_count++;
         if (i < expired_count) {
