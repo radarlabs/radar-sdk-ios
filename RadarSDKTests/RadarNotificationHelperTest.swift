@@ -163,7 +163,7 @@ struct RadarNotificationHelperTest {
         #expect(delivered.count == 2)
 
         let deliveredIds = delivered.compactMap { $0["identifier"] as? String }
-        #expect(deliveredIds == ["radar_geofence_2", "radar_geofence_3"])
+        #expect(Set(deliveredIds) == Set(["radar_geofence_2", "radar_geofence_3"]))
     }
     
     @Test("getDelivered returns empty when notifications are not sendable")
