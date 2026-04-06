@@ -18,7 +18,6 @@
 @protocol RadarSwiftBridgeProtocol
 - (void)flushReplays;
 - (void)logOpenedAppConversion;
-
 - (NSArray<NSString *> * _Nullable)geofenceIds;
 - (NSArray<NSString *> * _Nullable)beaconIds;
 - (NSString * _Nullable)placeId;
