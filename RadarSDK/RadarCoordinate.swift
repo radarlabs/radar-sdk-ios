@@ -13,20 +13,20 @@ public struct RadarCoordinateSwift: Codable, Sendable {
     let latitude: Double
     let longitude: Double
     
-   public var clLocationCoordinate2D: CLLocationCoordinate2D {
+    public var clLocationCoordinate2D: CLLocationCoordinate2D {
         CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
     }
     
-   public var clLocation: CLLocation {
+    public var clLocation: CLLocation {
         CLLocation(latitude: latitude, longitude: longitude)
     }
     
-   public init(latitude: Double, longitude: Double) {
+    public init(latitude: Double, longitude: Double) {
         self.latitude = latitude
         self.longitude = longitude
     }
     
-   public init(coordinate: CLLocationCoordinate2D) {
+    public init(coordinate: CLLocationCoordinate2D) {
         self.latitude = coordinate.latitude
         self.longitude = coordinate.longitude
     }

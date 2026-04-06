@@ -62,17 +62,21 @@ public final class RadarSyncManager: NSObject {
                     
                     let currentState = syncStore.read()
                     
-                    if let center = response.regionCenter, let radius = response.regionRadius {
+                    let center: RadarCoordinateSwift?
+                    if let latitude = response.region?.longitude,
+                       let longitude = response.region?.latitude,
+                       let radius = response.region?.radius {
+                        center = RadarCoordinateSwift(latitude: latitude, longitude: longitude)
                         if currentState?.syncedRegionCenter == nil {
-                            
-                            RadarLogger.shared.info("SyncManager: Initial sync region set | lat = \(center.latitude); lng = \(center.longitude); radius = \(radius)")
-                        } else if currentState?.syncedRegionCenter?.latitude != center.latitude ||
-                                  currentState?.syncedRegionCenter?.longitude != center.longitude ||
+                            RadarLogger.shared.info("SyncManager: Initial sync region set | lat = \(latitude); lng = \(longitude); radius = \(radius)")
+                        } else if currentState?.syncedRegionCenter?.latitude != latitude ||
+                                  currentState?.syncedRegionCenter?.longitude != longitude ||
                                   currentState?.syncedRegionRadius != radius {
                             
-                            RadarLogger.shared.info("SyncManager: Sync region changed | lat = \(center.latitude); lng = \(center.longitude); radius = \(radius)")
+                            RadarLogger.shared.info("SyncManager: Sync region changed | lat = \(latitude); lng = \(longitude); radius = \(radius)")
                         }
                     } else {
+                        center = nil
                         if currentState?.syncedRegionCenter != nil {
                             RadarLogger.shared.info("SyncManager: Sync region cleared")
                         }
@@ -83,8 +87,8 @@ public final class RadarSyncManager: NSObject {
                         state?.syncedGeofences = response.geofences
                         state?.syncedPlaces = response.places
                         state?.syncedBeacons = response.beacons
-                        state?.syncedRegionCenter = response.regionCenter
-                        state?.syncedRegionRadius = response.regionRadius
+                        state?.syncedRegionCenter = center
+                        state?.syncedRegionRadius = response.region?.radius
                     }
                 } catch {
                     RadarLogger.shared.warning("SyncManager: Sync region request failed")
