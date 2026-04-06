@@ -45,7 +45,11 @@ actor RadarNotificationHelper: NSObject {
         self.radarState = radarState
     }
 
-    public func registerGeofenceNotifications(geofences: [[String: Sendable]]) async {
+    public func registerGeofenceNotifications(geofences: [[String: Sendable]]?) async {
+        guard let geofences else {
+            return
+        }
+        
         let now = Date()
         let notifications: [UNNotificationRequest] = geofences.compactMap { (geofenceDict) -> UNNotificationRequest? in
             if let json = try? JSONSerialization.data(withJSONObject: geofenceDict),
