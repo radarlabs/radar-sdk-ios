@@ -171,6 +171,24 @@ actor RadarNotificationHelper: NSObject {
         return []
     }
     
+    public func removeRegisteredNotifications(notifications: [[String: Sendable]]?) async {
+        guard let notifications else {
+            return
+        }
+        guard var registered = radarState.registeredNotifications else {
+            return
+        }
+        if isRegistering {
+            return
+        }
+        let idsToRemove = notifications.compactMap { $0["identifier"] as? String }
+        
+        registered.removeAll { notification in
+            idsToRemove.contains { $0 == notification.identifier }
+        }
+        radarState.registeredNotifications = registered
+    }
+    
     public func notificationPermission() async -> String {
         let permissions = await notificationCenter.radarNotificationPermissions()
         guard let data = try? JSONEncoder().encode(permissions) else {
