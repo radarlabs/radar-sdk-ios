@@ -9,8 +9,107 @@ import SwiftUI
 import RadarSDK
 
 struct TestsView: View {
+    @State private var outputText: String = ""
+
     var body: some View {
         ScrollView {
+            Text(outputText)
+                .font(.system(.body, design: .monospaced))
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding()
+                .background(Color(.systemGray6))
+                .cornerRadius(8)
+                .padding(.horizontal)
+            
+            StyledButton("remove first notification (simulate sent)") {
+                UNUserNotificationCenter.current().getPendingNotificationRequests { requests in
+                    if requests.count > 0 {
+                        let firstRequestId = requests.first!.identifier
+                        UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: [firstRequestId])
+                    }
+                }
+            }
+            
+            StyledButton("list pending requests") {
+                UNUserNotificationCenter.current().getPendingNotificationRequests { notifications in
+                    outputText.removeAll()
+                    for notification in notifications {
+                        outputText.append(notification.identifier)
+                    }
+                }
+            }
+            
+            StyledButton("show notification permissions") {
+                UNUserNotificationCenter.current().getNotificationSettings { settings in
+                    outputText.removeAll()
+                    switch settings.alertSetting {
+                    case .notSupported:
+                        outputText.append("alert unsupported")
+                    case .disabled:
+                        outputText.append("alert disabled")
+                    case .enabled:
+                        outputText.append("alert enabled")
+                    }
+                    outputText.append("")
+                    switch settings.badgeSetting {
+                    case .notSupported:
+                        outputText.append("badge unsupported")
+                    case .disabled:
+                        outputText.append("badge disabled")
+                    case .enabled:
+                        outputText.append("badge enabled")
+                    }
+                    outputText.append("")
+                    switch settings.lockScreenSetting {
+                    case .notSupported:
+                        outputText.append("lockscreen unsupported")
+                    case .disabled:
+                        outputText.append("lockscreen disabled")
+                    case .enabled:
+                        outputText.append("lockscreen enabled")
+                    }
+                    outputText.append("")
+                    switch settings.soundSetting {
+                    case .notSupported:
+                        outputText.append("sound unsupported")
+                    case .disabled:
+                        outputText.append("sound disabled")
+                    case .enabled:
+                        outputText.append("sound enabled")
+                    }
+                    outputText.append("")
+                    switch settings.notificationCenterSetting {
+                    case .notSupported:
+                        outputText.append("notifcenter unsupported")
+                    case .disabled:
+                        outputText.append("notifcenter disabled")
+                    case .enabled:
+                        outputText.append("notifcenter enabled")
+                    }
+                    outputText.append("")
+                    switch settings.authorizationStatus {
+                    case .notDetermined:
+                        outputText.append("User has not been asked for notification permission")
+
+                    case .denied:
+                        outputText.append("User denied notification permission")
+
+                    case .authorized:
+                        outputText.append("Notifications authorized")
+
+                    case .provisional:
+                        outputText.append("Provisional permission granted")
+
+                    case .ephemeral:
+                        outputText.append("Ephemeral permission (App Clips)")
+
+                    @unknown default:
+                        outputText.append("Unknown status")
+                    }
+                }
+            }
+            
+            
             StyledButton("trackOnce") {
                 Radar.trackOnce()
             }

@@ -563,12 +563,21 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 }
 
 - (void)replaceSyncedGeofences:(NSArray<RadarGeofence *> *)geofences {
+    if (@available(iOS 13.0, *)) {
+        if ([RadarSettings sdkConfiguration].useNotificationDiffV2) {
+            [[RadarNotificationHelper_Swift shared]
+             registerGeofenceNotificationsWithGeofences:[RadarGeofence arrayForGeofences:geofences]
+             completionHandler:^() {}
+            ];
+        }
+    }
+    
     if (!geofences) {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Skipping replacing synced geofences"];
 
         return;
     }
-
+    
     [self removeSyncedGeofences];
 
     RadarTrackingOptions *options = [Radar getTrackingOptions];
@@ -626,7 +635,14 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
             }
         }
     }
-
+    
+    
+    if (@available(iOS 13.0, *)) {
+        if ([RadarSettings sdkConfiguration].useNotificationDiffV2) {
+            // we've already registered notifications before the geofences
+            return;
+        }
+    }
     [RadarNotificationHelper updateClientSideCampaignsWithPrefix:kSyncGeofenceIdentifierPrefix notificationRequests:requests];
 }
 
