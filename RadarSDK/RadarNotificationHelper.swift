@@ -45,7 +45,11 @@ actor RadarNotificationHelper: NSObject {
         self.radarState = radarState
     }
 
-    public func registerGeofenceNotifications(geofences: [[String: Sendable]]) async {
+    public func registerGeofenceNotifications(geofences: [[String: Sendable]]?) async {
+        guard let geofences else {
+            return
+        }
+        
         let now = Date()
         let notifications: [UNNotificationRequest] = geofences.compactMap { (geofenceDict) -> UNNotificationRequest? in
             if let json = try? JSONSerialization.data(withJSONObject: geofenceDict),
@@ -169,6 +173,27 @@ actor RadarNotificationHelper: NSObject {
             return json
         }
         return []
+    }
+    
+    public func removeRegisteredNotifications(notifications: [[String: Sendable]]?) async {
+        guard let notifications else {
+            return
+        }
+        guard var registered = radarState.registeredNotifications else {
+            return
+        }
+        if isRegistering {
+            return
+        }
+        let idsToRemove = Set(notifications.compactMap { $0["identifier"] as? String })
+        if idsToRemove.isEmpty {
+            return
+        }
+        
+        registered.removeAll { notification in
+            idsToRemove.contains(notification.identifier)
+        }
+        radarState.registeredNotifications = registered
     }
     
     public func notificationPermission() async -> String {
