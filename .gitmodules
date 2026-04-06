@@ -1,6 +1,6 @@
 [submodule "RadarSDKIndoors"]
 	path = RadarSDKIndoors
-	url = git@github.com:radarlabs/radar-sdk-ios-indoors.git
+	url = https://github.com/radarlabs/radar-sdk-ios-indoors.git
 [submodule "RadarSDKFraud"]
 	path = RadarSDKFraud
-	url = git@github.com:radarlabs/radar-sdk-ios-fraud.git
+	url = https://github.com/radarlabs/radar-sdk-ios-fraud.git
