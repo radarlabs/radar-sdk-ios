@@ -1036,12 +1036,18 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                                 return;
                             }
                             if (forceTrack) {
-                                [RadarSyncManager saveBeaconStateWithBeaconIds:[beacons valueForKey:@"_id"]];
+                                NSMutableArray<NSString *> *beaconIds = [NSMutableArray array];
+                                for (RadarBeacon *b in beacons) {
+                                    if (b._id && [b._id isKindOfClass:[NSString class]]) {
+                                        [beaconIds addObject:b._id];
+                                    }
+                                }
+                                [RadarSyncManager saveBeaconStateWithBeaconIds:beaconIds];
                                 callTrackAPI(beacons);
                             } else {
                                 NSMutableSet<NSString *> *rangedIds = [NSMutableSet set];
                                 for (RadarBeacon *b in beacons) {
-                                    if (b._id) { [rangedIds addObject:b._id]; }
+                                    if (b._id && [b._id isKindOfClass:[NSString class]]) { [rangedIds addObject:b._id]; }
                                 }
                                 if ([RadarSyncManager hasBeaconStateChangedWithRangedBeaconIds:rangedIds]) {
                                     [RadarState updateLastSentAt];
@@ -1126,7 +1132,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                                     }
                                     NSMutableSet<NSString *> *rangedIds = [NSMutableSet set];
                                     for (RadarBeacon *b in rangedBeacons) {
-                                        if (b._id) { [rangedIds addObject:b._id]; }
+                                        if (b._id && [b._id isKindOfClass:[NSString class]]) { [rangedIds addObject:b._id]; }
                                     }
                                     if ([RadarSyncManager hasBeaconStateChangedWithRangedBeaconIds:rangedIds]) {
                                         [RadarState updateLastSentAt];
