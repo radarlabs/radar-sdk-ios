@@ -185,10 +185,13 @@ actor RadarNotificationHelper: NSObject {
         if isRegistering {
             return
         }
-        let idsToRemove = notifications.compactMap { $0["identifier"] as? String }
+        let idsToRemove = Set(notifications.compactMap { $0["identifier"] as? String })
+        if idsToRemove.isEmpty {
+            return
+        }
         
         registered.removeAll { notification in
-            idsToRemove.contains { $0 == notification.identifier }
+            idsToRemove.contains(notification.identifier)
         }
         radarState.registeredNotifications = registered
     }
