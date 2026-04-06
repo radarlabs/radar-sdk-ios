@@ -8,9 +8,10 @@
 import Foundation
 import OSLog
 
-@objc(RadarLogger_Swift)
-public final class RadarLogger : NSObject, Sendable {
+@objc(RadarLogger)
+final class RadarLogger : NSObject, @unchecked Sendable {
     
+    @objc(sharedInstance)
     static let shared = RadarLogger()
 
     let dateFormatter: DateFormatter = {
@@ -18,6 +19,12 @@ public final class RadarLogger : NSObject, Sendable {
         formatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
         return formatter
     }()
+    
+    // in testing mode, allow changing logLevel directly
+    var logLevelOverride: RadarLogLevel? = nil
+    var logLevel: RadarLogLevel {
+        get { logLevelOverride ?? RadarSettings.logLevel }
+    }
 
     @MainActor
     let device = {
@@ -27,11 +34,11 @@ public final class RadarLogger : NSObject, Sendable {
 
     // TODO: implement RadarDelegateHolder in Swift, temp implementation to hold delegate here so delegate.didLog can be called
     @MainActor
-    weak var delegate: RadarDelegate?
+    weak var delegate: RadarDelegate? = nil
 
     @MainActor
-    @objc public static func setDelegate(_ delegate: RadarDelegate) {
-        shared.delegate = delegate
+    @objc public func setDelegate(_ delegate: RadarDelegate?) {
+        self.delegate = delegate
     }
 
     @available(iOS 14.0, *)
@@ -48,34 +55,86 @@ public final class RadarLogger : NSObject, Sendable {
     func warning(_ message: String, type: RadarLogType = .none, includeDate: Bool = false, includeBattery: Bool = false, append: Bool = false) {
         log(level: .warning, message: message, type: type, includeDate: includeDate, includeBattery: includeBattery, append: append)
     }
-
+    
+    func error(_ message: String, type: RadarLogType = .none, includeDate: Bool = false, includeBattery: Bool = false, append: Bool = false) {
+        log(level: .error, message: message, type: type, includeDate: includeDate, includeBattery: includeBattery, append: append)
+    }
+    
     func log(level: RadarLogLevel, message: String, type: RadarLogType = .none, includeDate: Bool = false, includeBattery: Bool = false, append: Bool = false) {
-        DispatchQueue.main.async {
-            if (level.rawValue > RadarSettings.logLevel.rawValue) {
-                return
+        if (level.rawValue > logLevel.rawValue) {
+            return
+        }
+        // if you're still on iOS 13.0, that's your problem, you won't get proper logs.
+        guard #available(iOS 13.0, *) else {
+            DispatchQueue.main.async {
+                self.delegate?.didLog?(message: message)
+                NSLog(message)
             }
-
-            let dateString = self.dateFormatter.string(from: Date())
-            let batteryLevel = self.device.batteryLevel;
-            var message = message
-            if (includeDate && includeBattery) {
-                message = String(format: "%@ | at %@ | with %2.f%% battery", message, dateString, batteryLevel*100)
-            } else if (includeDate) {
-                message = String(format: "%@ | at %@", message, dateString)
-            } else if (includeBattery) {
-                message = String(format: "%@ | with %2.f%% battery", message, batteryLevel*100)
+            return
+        }
+        
+        Task {
+            let log = RadarLog(level: level, message: message, type: type, createdAt: Date(), includeDate: includeDate, battery: includeBattery ? await self.device.batteryLevel : nil)
+            
+            await RadarLogBuffer.shared.log(log)
+            
+            let backgroundTime = await RadarUtils.backgroundTimeRemaining
+            let logMessage = "\(log) | backgroundTimeRemaining = \(backgroundTime)"
+            
+            if #available(iOS 14.0, *),
+               logLevelOverride == nil { // if logLevelOverride != nil, we are in test mode, don't output to console
+                RadarLogger.logger.log("\(logMessage)")
             }
-
-            // TODO: implement RadarLogBuffer
-            RadarSwift.bridge?.writeToLogBuffer(level: level, type: type, message: message, forcePersist: append)
-            if (!append) {
-                let backgroundTime = UIApplication.shared.backgroundTimeRemaining >= .greatestFiniteMagnitude ? 180 : UIApplication.shared.backgroundTimeRemaining
-                let logMessage = "\(message) | backgroundTimeRemaining = \(backgroundTime)"
-                if #available(iOS 14.0, *) {
-                    RadarLogger.logger.log("\(logMessage)")
-                }
+            await MainActor.run {
                 self.delegate?.didLog?(message: logMessage)
             }
+        }
+    }
+    
+    // ObjC interface, which will be deprecated
+    @objc
+    func log(level: RadarLogLevel, message: String) {
+        log(level: level, message: message, type: .none, includeDate: false, includeBattery: false, append: false)
+    }
+    @objc
+    func log(level: RadarLogLevel, type: RadarLogType, message: String) {
+        log(level: level, message: message, type: type, includeDate: false, includeBattery: false, append: false)
+    }
+    @objc
+    func log(level: RadarLogLevel, type: RadarLogType, message: String, includeDate: Bool, includeBattery: Bool) {
+        log(level: level, message: message, type: type, includeDate: includeDate, includeBattery: includeBattery, append: false)
+    }
+    @objc
+    func log(level: RadarLogLevel, type: RadarLogType, message: String, includeDate: Bool, includeBattery: Bool, append: Bool) {
+        log(level: level, message: message, type: type, includeDate: includeDate, includeBattery: includeBattery, append: append)
+    }
+    // ObjC interface from RadarLog.h consolidated into [RadarLogger ...] replaceing [RadarLog ...]
+    @objc
+    static func levelFromString(_ string: String) -> RadarLogLevel {
+        return RadarLogLevel.from(string: string)
+    }
+    @objc
+    static func stringForLogLevel(_ level: RadarLogLevel) -> String {
+        return level.toString()
+    }
+    // ObjC interface from RadarLogBuffer.h consolidated
+    @objc
+    static func flushLogs() {
+        guard #available(iOS 13.0, *) else {
+            return
+        }
+        Task {
+            await RadarLogBuffer.shared.flush()
+        }
+    }
+    @objc
+    static func write(_ level: RadarLogLevel, type: RadarLogType, message: String) {
+        guard #available(iOS 13.0, *) else {
+            return
+        }
+        Task {
+            let log = RadarLog(level: level, message: message, type: type, createdAt: Date(), includeDate: false, battery: nil)
+            await RadarLogBuffer.shared.log(log)
         }
     }
 }

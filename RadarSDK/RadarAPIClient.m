@@ -1708,38 +1708,4 @@ completionHandler:(RadarSendEventAPICompletionHandler _Nonnull)completionHandler
                     }];
 }
 
-- (void)syncLogs:(NSArray<RadarLog *> *)logs completionHandler:(RadarSyncLogsAPICompletionHandler)completionHandler {
-    NSString *publishableKey = [RadarSettings publishableKey];
-    if (!publishableKey) {
-        return completionHandler(RadarStatusErrorPublishableKey);
-    }
-
-    NSString *host = [RadarSettings host];
-    NSString *url = [NSString stringWithFormat:@"%@/v1/logs", host];
-
-    NSDictionary *headers = [RadarAPIClient headersWithPublishableKey:publishableKey];
-
-    NSMutableDictionary *params = [NSMutableDictionary new];
-
-    params[@"id"] = [RadarSettings _id];
-    params[@"installId"] = [RadarSettings installId];
-    params[@"deviceId"] = [RadarUtilsDeprecated deviceId];
-    NSString *sessionId = [RadarSettings sessionId];
-    if (sessionId) {
-        params[@"sessionId"] = sessionId;
-    }
-    NSArray *logsArray = [RadarLog arrayForLogs:logs];
-    [params setValue:logsArray forKey:@"logs"];
-
-    [self.apiHelper requestWithMethod:@"POST"
-                                  url:url
-                              headers:headers
-                               params:params
-                                sleep:NO
-                           logPayload:NO // avoid logging the logging call
-                      extendedTimeout:NO
-                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
-                        return completionHandler(status);
-                    }];
-}
 @end

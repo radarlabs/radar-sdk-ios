@@ -11,6 +11,34 @@ import RadarSDK
 struct TestsView: View {
     var body: some View {
         ScrollView {
+            
+            StyledButton("test") {
+                Task {
+                    guard let documents = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first else {
+                        print("no documents directory")
+                        return
+                    }
+                    let directory = documents.appendingPathComponent("RadarSDK", isDirectory: true)
+                    var file = directory.appendingPathComponent("persistent_logs.txt", isDirectory: false)
+                    
+                    print(file)
+                    if !FileManager.default.fileExists(atPath: file.path) {
+                        print("File does not exist")
+                        return
+                    }
+                    guard let data = try? Data(contentsOf: file) else {
+                        print("no data for file")
+                        return
+                    }
+                    let content = String(data: data, encoding: .utf8) ?? ""
+                    print("--- LOG FILE BEGIN ---")
+                    print(content)
+                    print("--- LOG FILE END ---")
+                    
+                    print(content.count(where: { $0.isNewline }))
+                }
+            }
+            
             StyledButton("trackOnce") {
                 Radar.trackOnce()
             }

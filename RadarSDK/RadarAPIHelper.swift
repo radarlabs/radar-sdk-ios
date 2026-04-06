@@ -7,10 +7,47 @@
 
 import Foundation
 
-@available(iOS 13.0, *)
-final class RadarApiHelper: Sendable {
-    func request(method: String, url: String, query: [String: String] = [:], headers: [String: String] = [:], body: [String: Any] = [:]) async throws -> (Data, HTTPURLResponse) {
+// protocol to allow URLSession to be mocked and tested
+protocol RadarURLSessionProtocol: Sendable {
+    @available(iOS 13.0, *)
+    func data(for request: URLRequest) async throws -> (Data, URLResponse)
+}
 
+extension URLSession: RadarURLSessionProtocol {}
+
+@available(iOS 13.0, *)
+final class RadarAPIHelper: Sendable {
+    
+    let session: RadarURLSessionProtocol
+    
+    init(session: RadarURLSessionProtocol? = nil) {
+        if let session {
+            self.session = session
+        } else {
+            let config = URLSessionConfiguration.default
+            config.timeoutIntervalForRequest = 10
+            config.timeoutIntervalForResource = 10
+            self.session = URLSession(configuration: config)
+        }
+    }
+    
+    func retryingRequest(for request: URLRequest) async throws -> (Data, URLResponse) {
+        do {
+            let (data, response) = try await session.data(for: request)
+            return (data, response)
+        } catch {
+            // retry once on network connection lost error
+            if let error = error as? URLError,
+               error.code == .networkConnectionLost {
+                let (data, response) = try await session.data(for: request)
+                return (data, response)
+            }
+            
+            throw error
+        }
+    }
+    
+    func request(method: String, url: String, query: [String: String] = [:], headers: [String: String] = [:], body: [String: Any?] = [:]) async throws -> (Data, HTTPURLResponse) {
         // transform URL
         // turn query into a string of format: "?key=value&key2=value2" or "" if there are no queries
         let queryString = query.isEmpty ? "" : ("?" + query.compactMap { key, value in
@@ -34,7 +71,7 @@ final class RadarApiHelper: Sendable {
             request.httpBody = try JSONSerialization.data(withJSONObject: body, options: [])
         }
         
-        let (data, response) = try await URLSession.shared.data(for: request)
+        let (data, response) = try await retryingRequest(for: request)
 
         guard let httpResponse = response as? HTTPURLResponse else {
             throw URLError(.badServerResponse)
@@ -43,7 +80,7 @@ final class RadarApiHelper: Sendable {
         return (data, httpResponse)
     }
 
-    func radarRequest(method: String, url: String, query: [String: String] = [:], headers: [String: String] = [:], body: [String: Any] = [:]) async throws -> (Data, HTTPURLResponse) {
+    func radarRequest(method: String, url: String, query: [String: String] = [:], headers: [String: String] = [:], body: [String: Any?] = [:]) async throws -> (Data, HTTPURLResponse) {
         guard let publishableKey = RadarSettings.publishableKey else {
             throw URLError(.userAuthenticationRequired)
         }
@@ -62,7 +99,7 @@ final class RadarApiHelper: Sendable {
         headers["X-Radar-App-Info"] = RadarUtils.dictionaryToJson(RadarUtils.appInfo)
         
         let url = "\(RadarSettings.host)/v1/\(url)"
-
+        
         let (data, response) = try await request(method: method, url: url, query: query, headers: headers, body: body)
 
         return (data, response)
