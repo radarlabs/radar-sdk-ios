@@ -1035,20 +1035,26 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                                 }
                                 return;
                             }
-                            if (forceTrack) {
-                                NSMutableArray<NSString *> *beaconIds = [NSMutableArray array];
-                                for (RadarBeacon *b in beacons) {
-                                    if (b._id && [b._id isKindOfClass:[NSString class]]) {
-                                        [beaconIds addObject:b._id];
-                                    }
+                            NSMutableDictionary<NSString *, NSString *> *syncedBeaconMap = [NSMutableDictionary dictionary];
+                            for (RadarBeacon *sb in syncedBeacons) {
+                                NSString *key = [NSString stringWithFormat:@"%@|%@|%@", sb.uuid ?: @"", sb.major ?: @"", sb.minor ?: @""];
+                                if (sb._id && [sb._id isKindOfClass:[NSString class]]) {
+                                    syncedBeaconMap[key] = sb._id;
                                 }
-                                [RadarSyncManager saveBeaconStateWithBeaconIds:beaconIds];
+                            }
+                            NSMutableArray<NSString *> *matchedIds = [NSMutableArray array];
+                            for (RadarBeacon *b in beacons) {
+                                NSString *key = [NSString stringWithFormat:@"%@|%@|%@", b.uuid ?: @"", b.major ?: @"", b.minor ?: @""];
+                                NSString *matchedId = syncedBeaconMap[key];
+                                if (matchedId) {
+                                    [matchedIds addObject:matchedId];
+                                }
+                            }
+                            if (forceTrack) {
+                                [RadarSyncManager saveBeaconStateWithBeaconIds:matchedIds];
                                 callTrackAPI(beacons);
                             } else {
-                                NSMutableSet<NSString *> *rangedIds = [NSMutableSet set];
-                                for (RadarBeacon *b in beacons) {
-                                    if (b._id && [b._id isKindOfClass:[NSString class]]) { [rangedIds addObject:b._id]; }
-                                }
+                                NSSet<NSString *> *rangedIds = [NSSet setWithArray:matchedIds];
                                 if ([RadarSyncManager hasBeaconStateChangedWithRangedBeaconIds:rangedIds]) {
                                     [RadarState updateLastSentAt];
                                     [RadarSyncManager saveBeaconStateWithBeaconIds:rangedIds.allObjects];
@@ -1130,13 +1136,25 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                                         self.sending = NO;
                                         return;
                                     }
-                                    NSMutableSet<NSString *> *rangedIds = [NSMutableSet set];
-                                    for (RadarBeacon *b in rangedBeacons) {
-                                        if (b._id && [b._id isKindOfClass:[NSString class]]) { [rangedIds addObject:b._id]; }
+                                    NSMutableDictionary<NSString *, NSString *> *syncedBeaconMap2 = [NSMutableDictionary dictionary];
+                                    for (RadarBeacon *sb in syncedBeacons) {
+                                        NSString *key = [NSString stringWithFormat:@"%@|%@|%@", sb.uuid ?: @"", sb.major ?: @"", sb.minor ?: @""];
+                                        if (sb._id && [sb._id isKindOfClass:[NSString class]]) {
+                                            syncedBeaconMap2[key] = sb._id;
+                                        }
                                     }
+                                    NSMutableArray<NSString *> *matchedIds2 = [NSMutableArray array];
+                                    for (RadarBeacon *b in rangedBeacons) {
+                                        NSString *key = [NSString stringWithFormat:@"%@|%@|%@", b.uuid ?: @"", b.major ?: @"", b.minor ?: @""];
+                                        NSString *matchedId = syncedBeaconMap2[key];
+                                        if (matchedId) {
+                                            [matchedIds2 addObject:matchedId];
+                                        }
+                                    }
+                                    NSSet<NSString *> *rangedIds = [NSSet setWithArray:matchedIds2];
                                     if ([RadarSyncManager hasBeaconStateChangedWithRangedBeaconIds:rangedIds]) {
                                         [RadarState updateLastSentAt];
-                                        [RadarSyncManager saveBeaconStateWithBeaconIds:rangedIds.allObjects];
+                                        [RadarSyncManager saveBeaconStateWithBeaconIds:matchedIds2];
                                         [self performIndoorScanIfConfigured:location
                                                                     beacons:rangedBeacons
                                                           completionHandler:^(NSArray<RadarBeacon *> *_Nullable beacons, NSString *_Nullable indoorScan) {
