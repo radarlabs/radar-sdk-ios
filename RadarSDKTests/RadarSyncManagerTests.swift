@@ -299,6 +299,7 @@ struct RadarSyncManagerTests {
     
     @Test("getPlaces returns place when within radius")
     func getPlaces_withinRadius() {
+        RadarState.setStopped(true)
         let place = makePlace(id: "place1", lat: testLat, lng: testLng)
         var state = RadarSyncState()
         state.syncedPlaces = [place]
@@ -313,6 +314,7 @@ struct RadarSyncManagerTests {
     
     @Test("getPlaces returns empty when outside radius")
     func getPlaces_outsideRadius() {
+        RadarState.setStopped(true)
         let place = makePlace(id: "place1", lat: testLatFar, lng: testLng)
         var state = RadarSyncState()
         state.syncedPlaces = [place]
@@ -328,6 +330,7 @@ struct RadarSyncManagerTests {
     
     @Test("placeStateChanged detects entry")
     func placeStateChanged_entry() {
+        RadarState.setStopped(true)
         let place = makePlace(id: "place1", lat: testLat, lng: testLng)
         var state = RadarSyncState()
         state.syncedPlaces = [place]
@@ -338,8 +341,22 @@ struct RadarSyncManagerTests {
         #expect(RadarSyncManager.hasPlaceStateChanged(location: location))
     }
     
+    @Test("placeStateChanged skips entry when not stopped")
+    func placeStateChanged_entrySkippedWhenNotStopped() {
+        RadarState.setStopped(false)
+        let place = makePlace(id: "place1", lat: testLat, lng: testLng)
+        var state = RadarSyncState()
+        state.syncedPlaces = [place]
+        state.lastSyncedPlaceIds = []
+        setState(state)
+        
+        let location = CLLocation(latitude: testLat, longitude: testLng)
+        #expect(!RadarSyncManager.hasPlaceStateChanged(location: location))
+    }
+    
     @Test("placeStateChanged detects exit")
     func placeStateChanged_exit() {
+        RadarState.setStopped(false)
         let place = makePlace(id: "place1", lat: testLatFar, lng: testLng)
         var state = RadarSyncState()
         state.syncedPlaces = [place]

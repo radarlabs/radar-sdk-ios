@@ -14,7 +14,7 @@ public final class RadarSyncManager: NSObject {
     
     static let syncStore = RadarFileStorage<RadarSyncState>(fileName: "radar_sync_state.json")
     
-    private static let placeDetectionRadius: Double = 100.0
+    private static let placeDetectionRadius: Double = 75.0
     private static let beaconRange: Double = 100.0
     private static let boundaryThresholdFraction: Double = 0.2
     private static let syncRegionIdentifierPrefix = "radar_synced_"
@@ -333,6 +333,8 @@ public final class RadarSyncManager: NSObject {
         guard let places = syncStore.read()?.syncedPlaces, !places.isEmpty else {
             return []
         }
+        let isStopped = RadarSwift.bridge?.isStopped() ?? false
+        if !isStopped { return [] }
         
         return places.filter {
             isPoint(location, insideCircleWithCenter: $0.location.clLocationCoordinate2D, radius: placeDetectionRadius)
