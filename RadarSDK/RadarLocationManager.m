@@ -1037,19 +1037,20 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                             }
                             NSMutableDictionary<NSString *, NSString *> *syncedBeaconMap = [NSMutableDictionary dictionary];
                             for (RadarBeacon *sb in syncedBeacons) {
-                                NSString *key = [NSString stringWithFormat:@"%@|%@|%@", sb.uuid ?: @"", sb.major ?: @"", sb.minor ?: @""];
+                                NSString *key = [NSString stringWithFormat:@"%@|%@|%@", [sb.uuid lowercaseString] ?: @"", sb.major ?: @"", sb.minor ?: @""];
                                 if (sb._id && [sb._id isKindOfClass:[NSString class]]) {
                                     syncedBeaconMap[key] = sb._id;
                                 }
                             }
                             NSMutableArray<NSString *> *matchedIds = [NSMutableArray array];
                             for (RadarBeacon *b in beacons) {
-                                NSString *key = [NSString stringWithFormat:@"%@|%@|%@", b.uuid ?: @"", b.major ?: @"", b.minor ?: @""];
+                                NSString *key = [NSString stringWithFormat:@"%@|%@|%@", [b.uuid lowercaseString] ?: @"", b.major ?: @"", b.minor ?: @""];
                                 NSString *matchedId = syncedBeaconMap[key];
                                 if (matchedId) {
                                     [matchedIds addObject:matchedId];
                                 }
                             }
+                            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"Beacon ID matching | syncedKeys = %@, matchedIds = %@", syncedBeaconMap.allKeys, matchedIds]];
                             if (forceTrack) {
                                 [RadarSyncManager saveBeaconStateWithBeaconIds:matchedIds];
                                 callTrackAPI(beacons);
@@ -1138,19 +1139,20 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                                     }
                                     NSMutableDictionary<NSString *, NSString *> *syncedBeaconMap2 = [NSMutableDictionary dictionary];
                                     for (RadarBeacon *sb in syncedBeacons) {
-                                        NSString *key = [NSString stringWithFormat:@"%@|%@|%@", sb.uuid ?: @"", sb.major ?: @"", sb.minor ?: @""];
+                                        NSString *key = [NSString stringWithFormat:@"%@|%@|%@", [sb.uuid lowercaseString] ?: @"", sb.major ?: @"", sb.minor ?: @""];
                                         if (sb._id && [sb._id isKindOfClass:[NSString class]]) {
                                             syncedBeaconMap2[key] = sb._id;
                                         }
                                     }
                                     NSMutableArray<NSString *> *matchedIds2 = [NSMutableArray array];
                                     for (RadarBeacon *b in rangedBeacons) {
-                                        NSString *key = [NSString stringWithFormat:@"%@|%@|%@", b.uuid ?: @"", b.major ?: @"", b.minor ?: @""];
+                                        NSString *key = [NSString stringWithFormat:@"%@|%@|%@", [b.uuid lowercaseString] ?: @"", b.major ?: @"", b.minor ?: @""];
                                         NSString *matchedId = syncedBeaconMap2[key];
                                         if (matchedId) {
                                             [matchedIds2 addObject:matchedId];
                                         }
                                     }
+                                    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"Beacon ID matching | syncedKeys = %@, matchedIds = %@", syncedBeaconMap2.allKeys, matchedIds2]];
                                     NSSet<NSString *> *rangedIds = [NSSet setWithArray:matchedIds2];
                                     if ([RadarSyncManager hasBeaconStateChangedWithRangedBeaconIds:rangedIds]) {
                                         [RadarState updateLastSentAt];
