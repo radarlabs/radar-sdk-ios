@@ -1,5 +1,5 @@
 SDK ?= "iphonesimulator"
-DESTINATION ?= "platform=iOS Simulator,name=iPhone 16,OS=18.5"
+DESTINATION ?= "platform=iOS Simulator,name=iPhone 17,OS=26.2"
 PROJECT := RadarSDK
 PROJECT_EXAMPLE := Example/Example
 SCHEME := XCFramework
@@ -31,7 +31,7 @@ lint:
 		if [ "$$spec" != "RadarSDKIndoors.podspec" ]; then \
 			pod lib lint "$$spec" || exit 1; \
 		fi; \
-	done 
+	done
 
 format:
 	./clang_format.sh

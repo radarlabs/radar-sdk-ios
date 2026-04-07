@@ -5,6 +5,9 @@
       location = "group:Example/Example.xcodeproj">
    </FileRef>
    <FileRef
+      location = "container:RadarSDKMotion/RadarSDKMotion.xcodeproj">
+   </FileRef>
+   <FileRef
       location = "group:RadarSDK.xcodeproj">
    </FileRef>
    <FileRef
