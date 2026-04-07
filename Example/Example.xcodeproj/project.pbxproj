@@ -32,10 +32,10 @@
 		F6913A722F7B0D6C00284DEB /* RadarSDK.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F6913A702F7B0D6C00284DEB /* RadarSDK.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		F6913A742F7B0D7400284DEB /* RadarSDKMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F6913A732F7B0D7400284DEB /* RadarSDKMotion.framework */; };
 		F6913A752F7B0D7400284DEB /* RadarSDKMotion.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F6913A732F7B0D7400284DEB /* RadarSDKMotion.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		F6913A772F7B0D8C00284DEB /* RadarSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F6913A762F7B0D8C00284DEB /* RadarSDK.framework */; };
-		F6913A782F7B0D8C00284DEB /* RadarSDK.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F6913A762F7B0D8C00284DEB /* RadarSDK.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		F6913A7A2F7B0D9100284DEB /* RadarSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F6913A792F7B0D9100284DEB /* RadarSDK.framework */; };
 		F6913A7B2F7B0D9100284DEB /* RadarSDK.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F6913A792F7B0D9100284DEB /* RadarSDK.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		F699D8CE2F85408D00D6B88E /* RadarSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F6913A702F7B0D6C00284DEB /* RadarSDK.framework */; };
+		F699D8CF2F85408D00D6B88E /* RadarSDK.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F6913A702F7B0D6C00284DEB /* RadarSDK.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -92,13 +92,13 @@
 			name = "Embed Foundation Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		F6BF84202EC78AAF00143AD9 /* Embed Frameworks */ = {
+		F699D8D02F85408D00D6B88E /* Embed Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				F6913A782F7B0D8C00284DEB /* RadarSDK.framework in Embed Frameworks */,
+				F699D8CF2F85408D00D6B88E /* RadarSDK.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -197,7 +197,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F6913A772F7B0D8C00284DEB /* RadarSDK.framework in Frameworks */,
+				F699D8CE2F85408D00D6B88E /* RadarSDK.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -320,7 +320,7 @@
 				F6513E6E2E60A5F600523472 /* Sources */,
 				F6513E6F2E60A5F600523472 /* Frameworks */,
 				F6513E702E60A5F600523472 /* Resources */,
-				F6BF84202EC78AAF00143AD9 /* Embed Frameworks */,
+				F699D8D02F85408D00D6B88E /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
