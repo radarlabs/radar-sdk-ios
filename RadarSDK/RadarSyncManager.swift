@@ -406,8 +406,8 @@ public final class RadarSyncManager: NSObject {
         lastPlaceCheckLocation = location
 
         if let rejectedLocation = rejectedAtLocation, !rejectedPlaceIds.isEmpty {
-            let moved = location.distance(from: rejectedLocation) > rejectedLocation.horizontalAccuracy
-            let accuracyImproved = location.horizontalAccuracy < rejectedLocation.horizontalAccuracy * 0.5
+            let moved = location.distance(from: rejectedLocation) > max(rejectedLocation.horizontalAccuracy, 15.0)
+            let accuracyImproved = rejectedLocation.horizontalAccuracy > 100.0 && location.horizontalAccuracy < 50.0
             if moved || accuracyImproved {
                 RadarLogger.shared.debug("SyncManager: Clearing place rejections | moved=\(location.distance(from: rejectedLocation)) accuracy=\(location.horizontalAccuracy) wasAccuracy=\(rejectedLocation.horizontalAccuracy)")
                 rejectedPlaceIds = []

@@ -481,6 +481,12 @@ struct RadarSyncManagerTests {
         )
         
         #expect(RadarSyncManager.hasPlaceStateChanged(location: location))
+        
+        var optimisticState = RadarSyncState()
+        optimisticState.syncedPlaces = [place]
+        optimisticState.lastSyncedPlaceIds = ["place1"]
+        setState(optimisticState)
+        
         // Server rejects — no place on user
         RadarSyncManager.reconcileSyncState(user: makeUser())
         // Same location — should be suppressed
@@ -502,6 +508,11 @@ struct RadarSyncManagerTests {
         )
         #expect(RadarSyncManager.hasPlaceStateChanged(location: location))
 
+        var optimisticState = RadarSyncState()
+        optimisticState.syncedPlaces = [place]
+        optimisticState.lastSyncedPlaceIds = ["place1"]
+        setState(optimisticState)
+        
         // Server rejects
         RadarSyncManager.reconcileSyncState(user: makeUser())
 
