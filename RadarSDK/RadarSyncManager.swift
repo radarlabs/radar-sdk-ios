@@ -118,6 +118,7 @@ public final class RadarSyncManager: NSObject {
         
         if isOutsideSyncedRegion(location: location) {
             RadarLogger.shared.info("SyncManager: Outside synced region, should track")
+            fetchSyncRegion()
             return true
         }
         
