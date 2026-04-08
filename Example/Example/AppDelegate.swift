@@ -43,7 +43,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         Radar.setDelegate(self)
         Radar.setVerifiedDelegate(self)
         Radar.setInAppMessageDelegate(MyIAMDelegate())
-//        Radar.setUserId("alan_ios_4_8_2_55pm")
+//        Radar.setUserId("alan_ios_4_8_4_30pm")
         
         if #available(iOS 15.0, *) {
             locationManager.startMonitoringLocationPushes() { data, error in

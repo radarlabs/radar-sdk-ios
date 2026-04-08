@@ -567,8 +567,8 @@ public final class RadarSyncManager: NSObject {
         // For geofences, only include those that passed stop detection (have entry timestamps)
         let timestamps = syncStore.read()?.geofenceEntryTimestamps ?? [:]
         let acceptedGeofenceIds = Array(timestamps.keys)
-        let currentPlaceIds = getPlaces(for: location).map { $0.id }
-        
+        let currentPlaceIds = getPlaces(for: location).map { $0.id }.filter { !rejectedPlaceIds.contains($0) }
+
         RadarLogger.shared.info(
             "SyncManager: Optimistic update | " +
             "geofences=\(acceptedGeofenceIds) " +
