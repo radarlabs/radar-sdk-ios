@@ -16,6 +16,7 @@ public final class RadarSyncManager: NSObject {
     
     private static let placeDetectionRadius: Double = 75.0
     private static let beaconRange: Double = 100.0
+    private static let placeExitBuffer: Double = 50.0
     private static let boundaryThresholdFraction: Double = 0.2
     private static let syncRegionIdentifierPrefix = "radar_synced_"
     nonisolated(unsafe) private static var syncTimer: Timer?
@@ -337,7 +338,8 @@ public final class RadarSyncManager: NSObject {
         if !isStopped { return [] }
         
         return places.filter {
-            isPoint(location, insideCircleWithCenter: $0.location.clLocationCoordinate2D, radius: placeDetectionRadius)
+            let radius = ($0.geometryRadius ?? 0.0) + placeDetectionRadius
+            return isPoint(location, insideCircleWithCenter: $0.location.clLocationCoordinate2D, radius: radius)
         }
     }
     
@@ -388,21 +390,41 @@ public final class RadarSyncManager: NSObject {
     @objc public static func hasPlaceStateChanged(location: CLLocation) -> Bool {
         let state = syncStore.read() ?? RadarSyncState()
         let lastKnownPlaceIds = Set(state.lastSyncedPlaceIds)
+        let allPlaces = state.syncedPlaces ?? []
+        
+        // Check for exits — user moved beyond geometryRadius + 50m
+        if !lastKnownPlaceIds.isEmpty {
+            if let lastPlace = allPlaces.first(where: { lastKnownPlaceIds.contains($0.id) }) {
+                let exitRadius = (lastPlace.geometryRadius ?? 0.0) + placeExitBuffer
+                let placeLocation = CLLocation(latitude: lastPlace.location.latitude, longitude: lastPlace.location.longitude)
+                if location.distance(from: placeLocation) > exitRadius {
+                    RadarLogger.shared.info("SyncManager: Detected place exit: \(lastPlace.id)")
+                    return true
+                }
+            }
+        }
+        
+        // Check for entries — stopped + within geometryRadius + 75m
         let currentPlaces = getPlaces(for: location)
         let currentIds = Set(currentPlaces.compactMap { $0.id })
-        
         let enteredPlaceIds = currentIds.subtracting(lastKnownPlaceIds)
-        let exitedPlaceIds = lastKnownPlaceIds.subtracting(currentIds)
         
         if !enteredPlaceIds.isEmpty {
+            if !lastKnownPlaceIds.isEmpty {
+                if let lastPlace = allPlaces.first(where: { lastKnownPlaceIds.contains($0.id) }) {
+                    let exitRadius = (lastPlace.geometryRadius ?? 0.0) + placeExitBuffer
+                    let placeLocation = CLLocation(latitude: lastPlace.location.latitude, longitude: lastPlace.location.longitude)
+                    if location.distance(from: placeLocation) <= exitRadius {
+                        RadarLogger.shared.debug("SyncManager: Skipping place switch (still within exit radius of last place)")
+                        return false
+                    }
+                }
+            }
             RadarLogger.shared.info("SyncManager: Detected place entry: \(enteredPlaceIds)")
+            return true
         }
         
-        if !exitedPlaceIds.isEmpty {
-            RadarLogger.shared.info("SyncManager: Detected place exit: \(exitedPlaceIds)")
-        }
-        
-        return currentIds != lastKnownPlaceIds
+        return false
     }
 
     private static func checkForGeofenceEntries(

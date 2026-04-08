@@ -56,11 +56,12 @@ struct RadarSyncManagerTests {
         )
     }
     
-    func makePlace(id: String, lat: Double, lng: Double) -> RadarPlaceSwift {
+    func makePlace(id: String, lat: Double, lng: Double, geometryRadius: Double? = nil) -> RadarPlaceSwift {
         
         return RadarPlaceSwift(
             id: id, name: "Test Place", categories: ["test"],
-            location: RadarCoordinateSwift(latitude: lat, longitude: lng), group: "test"
+            location: RadarCoordinateSwift(latitude: lat, longitude: lng), group: "test",
+            geometryRadius: geometryRadius
         )
     }
     
@@ -365,6 +366,81 @@ struct RadarSyncManagerTests {
         
         let location = CLLocation(latitude: testLat, longitude: testLng)
         #expect(RadarSyncManager.hasPlaceStateChanged(location: location))
+    }
+    
+    @Test("getPlaces returns place when within geometryRadius + detection radius")
+    func getPlaces_withinGeometryRadius() {
+        RadarState.setStopped(true)
+        let place = makePlace(id: "place1", lat: testLatNearby, lng: testLng, geometryRadius: 100.0)
+        var state = RadarSyncState()
+        state.syncedPlaces = [place]
+        setState(state)
+        
+        let location = CLLocation(latitude: testLat, longitude: testLng)
+        let places = RadarSyncManager.getPlaces(for: location)
+        
+        #expect(places.count == 1)
+    }
+    
+    @Test("getPlaces returns empty when outside geometryRadius + detection radius")
+    func getPlaces_outsideGeometryRadiusPlusDetection() {
+        RadarState.setStopped(true)
+        let place = makePlace(id: "place1", lat: testLatFar, lng: testLng, geometryRadius: 50.0)
+        var state = RadarSyncState()
+        state.syncedPlaces = [place]
+        setState(state)
+        
+        let location = CLLocation(latitude: testLat, longitude: testLng)
+        let places = RadarSyncManager.getPlaces(for: location)
+        
+        #expect(places.count == 0)
+    }
+    
+    @Test("placeStateChanged no exit when within geometryRadius + exit buffer")
+    func placeStateChanged_exitWithGeometryRadius() {
+        RadarState.setStopped(false)
+        let place = makePlace(id: "place1", lat: testLatNearby, lng: testLng, geometryRadius: 20.0)
+        var state = RadarSyncState()
+        state.syncedPlaces = [place]
+        state.lastSyncedPlaceIds = ["place1"]
+        setState(state)
+        
+        let location = CLLocation(latitude: testLat, longitude: testLng)
+        // testLatNearby is ~50m from testLat, exit radius = 20 + 50 = 70m
+        // User is ~50m away, within exit radius → no exit
+        #expect(!RadarSyncManager.hasPlaceStateChanged(location: location))
+    }
+    
+    @Test("placeStateChanged detects exit beyond geometryRadius + exit buffer")
+    func placeStateChanged_exitBeyondBuffer() {
+        RadarState.setStopped(false)
+        let place = makePlace(id: "place1", lat: testLatFar, lng: testLng, geometryRadius: 50.0)
+        var state = RadarSyncState()
+        state.syncedPlaces = [place]
+        state.lastSyncedPlaceIds = ["place1"]
+        setState(state)
+        
+        let location = CLLocation(latitude: testLat, longitude: testLng)
+        // testLatFar is ~200m from testLat, exit radius = 50 + 50 = 100m
+        // User is ~200m away, outside exit radius → exit
+        #expect(RadarSyncManager.hasPlaceStateChanged(location: location))
+    }
+    
+    @Test("placeStateChanged blocks switch when still within exit radius of current place")
+    func placeStateChanged_switchBlockedWithinExitRadius() {
+        RadarState.setStopped(true)
+        let place1 = makePlace(id: "place1", lat: testLat, lng: testLng, geometryRadius: 100.0)
+        let place2 = makePlace(id: "place2", lat: testLatNearby, lng: testLng, geometryRadius: 100.0)
+        var state = RadarSyncState()
+        state.syncedPlaces = [place1, place2]
+        state.lastSyncedPlaceIds = ["place1"]
+        setState(state)
+        
+        let location = CLLocation(latitude: testLatNearby, longitude: testLng)
+        // User is at testLatNearby (~50m from place1)
+        // place1 exit radius = 100 + 50 = 150m, user is ~50m away → still within exit radius
+        // Even though user is within place2's entry radius, switch should be blocked
+        #expect(!RadarSyncManager.hasPlaceStateChanged(location: location))
     }
     
     // MARK: - isOutsideSyncedRegion

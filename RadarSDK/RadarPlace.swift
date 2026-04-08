@@ -15,6 +15,7 @@ struct RadarPlaceSwift: Codable, Sendable {
     let categories: [String]
     let location: RadarCoordinateSwift
     let group: String?
+    let geometryRadius: Double?
     
     enum CodingKeys: String, CodingKey {
         case id = "_id"
@@ -22,6 +23,7 @@ struct RadarPlaceSwift: Codable, Sendable {
         case categories
         case location
         case group
+        case geometryRadius
     }
     
     init(from decoder: Decoder) throws {
@@ -30,17 +32,19 @@ struct RadarPlaceSwift: Codable, Sendable {
         name = try container.decodeIfPresent(String.self, forKey: .name) ?? ""
         categories = try container.decodeIfPresent([String].self, forKey: .categories) ?? []
         group = try container.decodeIfPresent(String.self, forKey: .group)
+        geometryRadius = try container.decodeIfPresent(Double.self, forKey: .geometryRadius)
         
         let geoJSON = try container.decode(GeoJSONPoint.self, forKey: .location)
         location = RadarCoordinateSwift(latitude: geoJSON.coordinates[1], longitude: geoJSON.coordinates[0])
     }
     
-    init(id: String, name: String, categories: [String], location: RadarCoordinateSwift, group: String?) {
+    init(id: String, name: String, categories: [String], location: RadarCoordinateSwift, group: String?, geometryRadius: Double? = nil) {
         self.id = id
         self.name = name
         self.categories = categories
         self.location = location
         self.group = group
+        self.geometryRadius = geometryRadius
     }
     
    func encode(to encoder: Encoder) throws {
@@ -49,6 +53,7 @@ struct RadarPlaceSwift: Codable, Sendable {
         try container.encode(name, forKey: .name)
         try container.encode(categories, forKey: .categories)
         try container.encodeIfPresent(group, forKey: .group)
+        try container.encodeIfPresent(geometryRadius, forKey: .geometryRadius)
         try container.encode(
             GeoJSONPoint(coordinates: [location.longitude, location.latitude]),
             forKey: .location
