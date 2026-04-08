@@ -25,6 +25,10 @@ public final class RadarSyncManager: NSObject {
     nonisolated(unsafe) private static var previousSyncedBeaconIds: [String]?
     nonisolated(unsafe) private static var previousSyncedPlaceIds: [String]?
     
+    nonisolated(unsafe) private static var rejectedPlaceIds: Set<String> = []
+    nonisolated(unsafe) private static var rejectedAtLocation: CLLocation?
+    nonisolated(unsafe) private static var lastPlaceCheckLocation: CLLocation?
+    
     // MARK: - Lifecycle
     
     @objc public static func start(interval: TimeInterval) {
@@ -336,11 +340,22 @@ public final class RadarSyncManager: NSObject {
         }
         let isStopped = RadarSwift.bridge?.isStopped() ?? false
         if !isStopped { return [] }
-        
-        return places.filter {
-            let radius = ($0.geometryRadius ?? 0.0) + placeDetectionRadius
-            return isPoint(location, insideCircleWithCenter: $0.location.clLocationCoordinate2D, radius: radius)
+
+        let closest = places
+            .compactMap { place -> (RadarPlaceSwift, Double)? in
+                let radius = (place.geometryRadius ?? 0.0) + placeDetectionRadius
+                let placeLocation = CLLocation(latitude: place.location.latitude, longitude: place.location.longitude)
+                let distance = location.distance(from: placeLocation)
+                return distance <= radius ? (place, distance) : nil
+            }
+            .min { $0.1 < $1.1 }
+            .map { $0.0 }
+
+        if let matched = closest {
+            RadarLogger.shared.debug("SyncManager: getPlaces matched \(matched.id) (geoR=\(String(describing: matched.geometryRadius)))")
+            return [matched]
         }
+        return []
     }
     
     // MARK: - State Detection
@@ -388,10 +403,22 @@ public final class RadarSyncManager: NSObject {
     }
     
     @objc public static func hasPlaceStateChanged(location: CLLocation) -> Bool {
+        lastPlaceCheckLocation = location
+
+        if let rejectedLocation = rejectedAtLocation, !rejectedPlaceIds.isEmpty {
+            let moved = location.distance(from: rejectedLocation) > rejectedLocation.horizontalAccuracy
+            let accuracyImproved = location.horizontalAccuracy < rejectedLocation.horizontalAccuracy * 0.5
+            if moved || accuracyImproved {
+                RadarLogger.shared.debug("SyncManager: Clearing place rejections | moved=\(location.distance(from: rejectedLocation)) accuracy=\(location.horizontalAccuracy) wasAccuracy=\(rejectedLocation.horizontalAccuracy)")
+                rejectedPlaceIds = []
+                rejectedAtLocation = nil
+            }
+        }
+
         let state = syncStore.read() ?? RadarSyncState()
         let lastKnownPlaceIds = Set(state.lastSyncedPlaceIds)
         let allPlaces = state.syncedPlaces ?? []
-        
+
         // Check for exits — user moved beyond geometryRadius + 50m
         if !lastKnownPlaceIds.isEmpty {
             if let lastPlace = allPlaces.first(where: { lastKnownPlaceIds.contains($0.id) }) {
@@ -403,12 +430,12 @@ public final class RadarSyncManager: NSObject {
                 }
             }
         }
-        
-        // Check for entries — stopped + within geometryRadius + 75m
+
+        // Check for entries — stopped + within geometryRadius + 75m, excluding rejected places
         let currentPlaces = getPlaces(for: location)
         let currentIds = Set(currentPlaces.compactMap { $0.id })
-        let enteredPlaceIds = currentIds.subtracting(lastKnownPlaceIds)
-        
+        let enteredPlaceIds = currentIds.subtracting(lastKnownPlaceIds).subtracting(rejectedPlaceIds)
+
         if !enteredPlaceIds.isEmpty {
             if !lastKnownPlaceIds.isEmpty {
                 if let lastPlace = allPlaces.first(where: { lastKnownPlaceIds.contains($0.id) }) {
@@ -423,10 +450,9 @@ public final class RadarSyncManager: NSObject {
             RadarLogger.shared.info("SyncManager: Detected place entry: \(enteredPlaceIds)")
             return true
         }
-        
+
         return false
     }
-
     private static func checkForGeofenceEntries(
         currentGeofences: [RadarGeofenceSwift],
         currentGeofenceIds: Set<String>,
@@ -617,6 +643,8 @@ public final class RadarSyncManager: NSObject {
                 }
                 if !clientOnly.isEmpty {
                     RadarLogger.shared.info("SyncManager: Server removed places: \(clientOnly)")
+                    rejectedPlaceIds = rejectedPlaceIds.union(clientOnly)
+                    rejectedAtLocation = lastPlaceCheckLocation
                 }
             }
             

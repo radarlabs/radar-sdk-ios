@@ -65,6 +65,29 @@ struct RadarSyncManagerTests {
         )
     }
     
+    func makeUser(placeId: String? = nil) -> RadarUser {
+        var dict: [String: Any] = [
+            "_id": "test_user",
+            "location": [
+                "type": "Point",
+                "coordinates": [testLng, testLat]
+            ],
+            "geofences": [] as [[String: Any]],
+            "beacons": [] as [[String: Any]]
+        ]
+        if let placeId = placeId {
+            dict["place"] = [
+                "_id": placeId,
+                "name": "Test Place",
+                "location": [
+                    "type": "Point",
+                    "coordinates": [testLng, testLat]
+                ]
+            ]
+        }
+        return RadarUser(object: dict as NSDictionary)!
+    }
+    
     func setState(_ state: RadarSyncState) {
         RadarSyncManager.syncStore.write(state)
     }
@@ -441,6 +464,82 @@ struct RadarSyncManagerTests {
         // place1 exit radius = 100 + 50 = 150m, user is ~50m away → still within exit radius
         // Even though user is within place2's entry radius, switch should be blocked
         #expect(!RadarSyncManager.hasPlaceStateChanged(location: location))
+    }
+    
+    @Test("placeStateChanged suppresses re-entry of server-rejected place")
+    func placeStateChanged_rejectedPlaceNotReentered() {
+        RadarState.setStopped(true)
+        let place = makePlace(id: "place1", lat: testLat, lng: testLng)
+        var state = RadarSyncState()
+        state.syncedPlaces = [place]
+        state.lastSyncedPlaceIds = []
+        setState(state)
+
+        let location = CLLocation(
+            coordinate: CLLocationCoordinate2D(latitude: testLat, longitude: testLng),
+            altitude: 0, horizontalAccuracy: 10, verticalAccuracy: -1, timestamp: Date()
+        )
+        
+        #expect(RadarSyncManager.hasPlaceStateChanged(location: location))
+        // Server rejects — no place on user
+        RadarSyncManager.reconcileSyncState(user: makeUser())
+        // Same location — should be suppressed
+        #expect(!RadarSyncManager.hasPlaceStateChanged(location: location))
+    }
+    
+    @Test("placeStateChanged clears rejections when user moves beyond accuracy")
+    func placeStateChanged_rejectionsClearedOnMovement() {
+        RadarState.setStopped(true)
+        let place = makePlace(id: "place1", lat: testLat, lng: testLng)
+        var state = RadarSyncState()
+        state.syncedPlaces = [place]
+        state.lastSyncedPlaceIds = []
+        setState(state)
+
+        let location = CLLocation(
+            coordinate: CLLocationCoordinate2D(latitude: testLat, longitude: testLng),
+            altitude: 0, horizontalAccuracy: 10, verticalAccuracy: -1, timestamp: Date()
+        )
+        #expect(RadarSyncManager.hasPlaceStateChanged(location: location))
+
+        // Server rejects
+        RadarSyncManager.reconcileSyncState(user: makeUser())
+
+        // Move far away — clears rejections
+        let farLocation = CLLocation(
+            coordinate: CLLocationCoordinate2D(latitude: testLatFar, longitude: testLng),
+            altitude: 0, horizontalAccuracy: 10, verticalAccuracy: -1, timestamp: Date()
+        )
+        _ = RadarSyncManager.hasPlaceStateChanged(location: farLocation)
+
+        // Reset state so place1 can be re-entered
+        var freshState = RadarSyncState()
+        freshState.syncedPlaces = [place]
+        freshState.lastSyncedPlaceIds = []
+        setState(freshState)
+
+        // Back near place — should detect entry again
+        let returnLocation = CLLocation(
+            coordinate: CLLocationCoordinate2D(latitude: testLat, longitude: testLng),
+            altitude: 0, horizontalAccuracy: 10, verticalAccuracy: -1, timestamp: Date()
+        )
+        #expect(RadarSyncManager.hasPlaceStateChanged(location: returnLocation))
+    }
+    
+    @Test("getPlaces returns only the single closest place")
+    func getPlaces_returnsSingleClosest() {
+        RadarState.setStopped(true)
+        let place1 = makePlace(id: "place1", lat: testLat, lng: testLng, geometryRadius: 100.0)
+        let place2 = makePlace(id: "place2", lat: testLatNearby, lng: testLng, geometryRadius: 100.0)
+        var state = RadarSyncState()
+        state.syncedPlaces = [place1, place2]
+        setState(state)
+
+        let location = CLLocation(latitude: testLat, longitude: testLng)
+        let places = RadarSyncManager.getPlaces(for: location)
+
+        #expect(places.count == 1)
+        #expect(places.first?.id == "place1")
     }
     
     // MARK: - isOutsideSyncedRegion
