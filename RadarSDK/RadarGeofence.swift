@@ -123,8 +123,8 @@ private struct GeoJSONPolygon: Codable, Sendable {
 
 // MARK: - ObjC Bridge Types
 
-struct RadarCoordinate: Codable, Sendable, Equatable {
-    static func == (lhs: RadarCoordinate, rhs: RadarCoordinate) -> Bool {
+struct RadarCoordinateCodable: Codable, Sendable, Equatable {
+    static func == (lhs: RadarCoordinateCodable, rhs: RadarCoordinateCodable) -> Bool {
         return lhs.coordinate.latitude == rhs.coordinate.latitude &&
                lhs.coordinate.longitude == rhs.coordinate.longitude
     }
@@ -216,7 +216,7 @@ struct RadarGeofence_Swift: Codable, Sendable, Equatable {
     public let metadata: [String: RadarMetadataValue]?
 
     /// The geometry of the geofence, which can be cast to either `RadarCircleGeometry` or `RadarPolygonGeometry`.
-    public let geometryCenter: RadarCoordinate
+    public let geometryCenter: RadarCoordinateCodable
 
     
     public let geometryRadius: Double
