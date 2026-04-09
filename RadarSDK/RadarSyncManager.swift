@@ -25,9 +25,9 @@ public final class RadarSyncManager: NSObject {
     nonisolated(unsafe) private static var previousSyncedBeaconIds: [String]?
     nonisolated(unsafe) private static var previousSyncedPlaceIds: [String]?
     
-    nonisolated(unsafe) private static var rejectedPlaceIds: Set<String> = []
-    nonisolated(unsafe) private static var rejectedAtLocation: CLLocation?
-    nonisolated(unsafe) private static var lastPlaceCheckLocation: CLLocation?
+    nonisolated(unsafe) static var rejectedPlaceIds: Set<String> = []
+    nonisolated(unsafe) static var rejectedAtLocation: CLLocation?
+    nonisolated(unsafe) static var lastPlaceCheckLocation: CLLocation?
     
     // MARK: - Lifecycle
     
