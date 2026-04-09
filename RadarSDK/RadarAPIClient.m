@@ -148,7 +148,7 @@
                         [Radar flushLogs];
 
                         RadarConfig *config = [RadarConfig fromDictionary:res];
-
+        
                         completionHandler(status, config);
                     }];
 }
@@ -1755,5 +1755,4 @@ completionHandler:(RadarSendEventAPICompletionHandler _Nonnull)completionHandler
                         return completionHandler(status);
                     }];
 }
-
 @end

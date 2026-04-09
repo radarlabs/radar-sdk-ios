@@ -60,6 +60,11 @@ class RadarSdkConfiguration: NSObject {
     let useNotificationDiff: Bool
     let syncAfterSetUser: Bool
     let useNotificationDiffV2: Bool
+    let useSyncRegion: Bool
+    let defaultGeofenceDwellThreshold: Int
+    let bufferGeofenceEntries: Bool
+    let bufferGeofenceExits: Bool
+    let stopDetection: Bool
     
     public init(dict: [String: Any]?) {
         originalDict = dict
@@ -75,6 +80,11 @@ class RadarSdkConfiguration: NSObject {
         useNotificationDiff = dict?["useNotificationDiff"] as? Bool ?? false
         syncAfterSetUser = dict?["syncAfterSetUser"] as? Bool ?? false
         useNotificationDiffV2 = dict?["useNotificationDiffV2"] as? Bool ?? false
+        useSyncRegion = dict?["useSyncRegion"] as? Bool ?? false
+        defaultGeofenceDwellThreshold = dict?["defaultGeofenceDwellThreshold"] as? Int ?? 0
+        bufferGeofenceEntries = dict?["bufferGeofenceEntries"] as? Bool ?? true
+        bufferGeofenceExits = dict?["bufferGeofenceExits"] as? Bool ?? true
+        stopDetection = dict?["stopDetection"] as? Bool ?? false
     }
     
     public func dictionaryValue() -> [String: Any] {
@@ -93,7 +103,12 @@ class RadarSdkConfiguration: NSObject {
             "useForegroundLocationUpdatedAtMsDiff": useForegroundLocationUpdatedAtMsDiff,
             "useNotificationDiff": useNotificationDiff,
             "syncAfterSetUser": syncAfterSetUser,
-            "useNotificationDiffV2": useNotificationDiffV2
+            "useNotificationDiffV2": useNotificationDiffV2,
+            "useSyncRegion": useSyncRegion,
+            "defaultGeofenceDwellThreshold": defaultGeofenceDwellThreshold,
+            "bufferGeofenceEntries": bufferGeofenceEntries,
+            "bufferGeofenceExits": bufferGeofenceExits,
+            "stopDetection": stopDetection
         ]
     }
 }

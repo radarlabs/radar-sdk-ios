@@ -11,15 +11,16 @@
 #import "RadarSwiftBridge.h"
 #import "RadarReplayBuffer.h"
 #import "Radar+Internal.h"
+#import "RadarState.h"
 #import "RadarLogger.h"
 
 @implementation RadarSwiftBridge
 
-- (void)setLogBufferPersistantLog:(BOOL)value { 
+- (void)setLogBufferPersistantLog:(BOOL)value {
     [[RadarLogBuffer sharedInstance] setPersistentLogFeatureFlag:value];
 }
 
-- (void)writeToLogBufferWithLevel:(RadarLogLevel)level type:(RadarLogType)type message:(NSString * _Nonnull)message forcePersist:(BOOL)forcePersist { 
+- (void)writeToLogBufferWithLevel:(RadarLogLevel)level type:(RadarLogType)type message:(NSString * _Nonnull)message forcePersist:(BOOL)forcePersist {
     [[RadarLogBuffer sharedInstance] write:level type:type message:message forcePersist:forcePersist];
 }
 
@@ -29,6 +30,30 @@
 
 - (void)logOpenedAppConversion {
     [Radar logOpenedAppConversion];
+}
+
+- (NSArray<NSString *> * _Nullable)geofenceIds {
+    return [RadarState geofenceIds];
+}
+
+- (NSArray<NSString *> * _Nullable)beaconIds {
+    return [RadarState beaconIds];
+}
+
+- (NSString * _Nullable)placeId {
+    return [RadarState placeId];
+}
+
+- (RadarTripOptions * _Nullable)getTripOptions {
+    return [Radar getTripOptions];
+}
+
+- (CLLocation * _Nullable)lastLocation {
+    return [RadarState lastLocation];
+}
+
+- (BOOL)isStopped {
+    return [RadarState stopped];
 }
 
 - (void)logCampaignConversionWithName:(NSString *)name metadata:(NSDictionary<NSString *, id> * _Nonnull)metadata campaign:(NSString * _Nullable)campaign {

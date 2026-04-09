@@ -18,6 +18,12 @@ protocol RadarSwiftBridgeProtocol {
     func setLogBufferPersistantLog(_ value: Bool)
     func flushReplays()
     func logOpenedAppConversion()
+    func geofenceIds() -> [String]?
+    func beaconIds() -> [String]?
+    func placeId() -> String?
+    func lastLocation() -> CLLocation?
+    func isStopped() -> Bool
+    func getTripOptions() -> RadarTripOptions?
     func logCampaignConversion(name: String, metadata: [String: Any], campaign: String?)
 }
 

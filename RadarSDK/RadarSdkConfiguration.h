@@ -15,7 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
  
  @see https://radar.com/documentation/sdk/ios
  */
- @interface RadarSdkConfiguration : NSObject
+@interface RadarSdkConfiguration : NSObject
 - (RadarLogLevel)logLevel;
 - (BOOL)startTrackingOnInitialize;
 - (BOOL)trackOnceOnAppOpen;
@@ -28,6 +28,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)useNotificationDiff;
 - (BOOL)syncAfterSetUser;
 - (BOOL)useNotificationDiffV2;
+- (BOOL)useSyncRegion;
+- (NSInteger)defaultGeofenceDwellThreshold;
+- (BOOL)bufferGeofenceEntries;
+- (BOOL)bufferGeofenceExits;
+- (BOOL)stopDetection;
 - (instancetype)initWithDict:(NSDictionary *_Nullable)dict;
 - (NSDictionary *)dictionaryValue;
 @end

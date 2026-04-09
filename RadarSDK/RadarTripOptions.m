@@ -21,7 +21,6 @@ static NSString *const kApproachingThreshold = @"approachingThreshold";
 static NSString *const kStartTracking = @"startTracking";
 static NSString *const kLegs = @"legs";
 
-
 - (instancetype)initWithExternalId:(NSString *_Nonnull)externalId
             destinationGeofenceTag:(NSString *_Nullable)destinationGeofenceTag
      destinationGeofenceExternalId:(NSString *_Nullable)destinationGeofenceExternalId {

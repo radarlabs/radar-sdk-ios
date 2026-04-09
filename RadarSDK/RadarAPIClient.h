@@ -187,7 +187,6 @@ typedef void (^_Nonnull RadarSyncLogsAPICompletionHandler)(RadarStatus status);
 completionHandler:(RadarSendEventAPICompletionHandler _Nonnull)completionHandler;
 
 - (void)syncLogs:(NSArray<RadarLog *> *)logs completionHandler:(RadarSyncLogsAPICompletionHandler _Nonnull)completionHandler;
-
 @end
 
 NS_ASSUME_NONNULL_END
