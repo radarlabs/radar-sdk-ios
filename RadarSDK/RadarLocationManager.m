@@ -1018,6 +1018,12 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                     if ([RadarSettings sdkConfiguration].useSyncRegion) {
                         if (status == RadarStatusSuccess && user) {
                             [RadarSyncManager reconcileSyncStateWithUser:user];
+                            
+                            for (RadarEvent *event in events) {
+                                if (event.type == RadarEventTypeUserDwelledInGeofence && event.geofence && event.geofence._id) {
+                                    [RadarSyncManager markDwellFired: event.geofence._id];
+                                }
+                            }
                         } else {
                             [RadarSyncManager rollbackSyncState];
                         }
@@ -1163,6 +1169,12 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                                                 if ([RadarSettings sdkConfiguration].useSyncRegion) {
                                                     if (status == RadarStatusSuccess && user) {
                                                         [RadarSyncManager reconcileSyncStateWithUser:user];
+                                                        
+                                                        for (RadarEvent *event in events) {
+                                                            if (event.type == RadarEventTypeUserDwelledInGeofence && event.geofence && event.geofence._id) {
+                                                                [RadarSyncManager markDwellFired: event.geofence._id];
+                                                            }
+                                                        }
                                                     } else {
                                                         [RadarSyncManager rollbackSyncState];
                                                     }
@@ -1214,6 +1226,12 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                 if ([RadarSettings sdkConfiguration].useSyncRegion) {
                     if (status == RadarStatusSuccess && user) {
                         [RadarSyncManager reconcileSyncStateWithUser:user];
+                        
+                        for (RadarEvent *event in events) {
+                            if (event.type == RadarEventTypeUserDwelledInGeofence && event.geofence && event.geofence._id) {
+                                [RadarSyncManager markDwellFired: event.geofence._id];
+                            }
+                        }
                     } else {
                         [RadarSyncManager rollbackSyncState];
                     }

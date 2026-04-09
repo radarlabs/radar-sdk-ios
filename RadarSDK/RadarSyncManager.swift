@@ -699,6 +699,15 @@ public final class RadarSyncManager: NSObject {
         previousSyncedBeaconIds = nil
     }
     
+    @objc public static func markDwellFired(_ geofenceId: String) {
+        syncStore.modify { state in
+            guard state != nil else { return }
+            if !(state?.dwellEventsFired.contains(geofenceId) ?? false) {
+                state?.dwellEventsFired.append(geofenceId)
+            }
+        }
+    }
+    
     // MARK: - Beacon Bridging
     
     @objc public static func getObjCBeacons(for location: CLLocation) -> [RadarBeacon] {
