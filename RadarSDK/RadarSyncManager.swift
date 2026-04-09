@@ -151,7 +151,7 @@ public final class RadarSyncManager: NSObject {
         let distanceFromCenter = location.distance(from: regionCenter)
         let distanceFromEdge = radius - distanceFromCenter
         
-        return distanceFromEdge <= (radius * boundaryThresholdFraction)
+        return distanceFromEdge >= 0 && distanceFromEdge <= (radius * boundaryThresholdFraction)
     }
 
     @objc public static func isOutsideSyncedRegion(location: CLLocation) -> Bool {
