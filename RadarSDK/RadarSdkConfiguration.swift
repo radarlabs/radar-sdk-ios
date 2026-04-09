@@ -45,7 +45,9 @@ extension RadarLogLevel: Codable {
 }
 
 @objc(RadarSdkConfiguration) @objcMembers
-class RadarSdkConfiguration: NSObject, Codable {
+class RadarSdkConfiguration: NSObject {
+    private let originalDict: [String: Any]?
+    
     let logLevel: RadarLogLevel
     let startTrackingOnInitialize: Bool
     let trackOnceOnAppOpen: Bool
@@ -60,6 +62,7 @@ class RadarSdkConfiguration: NSObject, Codable {
     let useNotificationDiffV2: Bool
     
     public init(dict: [String: Any]?) {
+        originalDict = dict
         logLevel = RadarLogLevel.from(string: dict?["logLevel"] as? String ?? "none")
         startTrackingOnInitialize = dict?["startTrackingOnInitialize"] as? Bool ?? false
         trackOnceOnAppOpen = dict?["trackOnceOnAppOpen"] as? Bool ?? false
@@ -75,13 +78,22 @@ class RadarSdkConfiguration: NSObject, Codable {
     }
     
     public func dictionaryValue() -> [String: Any] {
-        do {
-            let data = try JSONEncoder().encode(self)
-            let obj = try JSONSerialization.jsonObject(with: data)
-            return obj as? [String: Any] ?? [:]
-        } catch {
-            RadarLogger.warning("Failed to serialize RadarSdkConfiguration")
-            return [:]
+        if let originalDict {
+            return originalDict
         }
+        return [
+            "logLevel": logLevel.toString(),
+            "startTrackingOnInitialize": startTrackingOnInitialize,
+            "trackOnceOnAppOpen": trackOnceOnAppOpen,
+            "usePersistence": usePersistence,
+            "extendFlushReplays": extendFlushReplays,
+            "useLogPersistence": useLogPersistence,
+            "useRadarModifiedBeacon": useRadarModifiedBeacon,
+            "useOpenedAppConversion": useOpenedAppConversion,
+            "useForegroundLocationUpdatedAtMsDiff": useForegroundLocationUpdatedAtMsDiff,
+            "useNotificationDiff": useNotificationDiff,
+            "syncAfterSetUser": syncAfterSetUser,
+            "useNotificationDiffV2": useNotificationDiffV2
+        ]
     }
 }
