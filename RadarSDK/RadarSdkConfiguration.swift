@@ -1,0 +1,114 @@
+//
+//  RadarSdkConfiguration.swift
+//  RadarSDK
+//
+//  Copyright © 2026 Radar Labs, Inc. All rights reserved.
+//
+
+import Foundation
+
+extension RadarLogLevel: Codable {
+    static func from(string: String) -> RadarLogLevel {
+        switch string {
+        case "none": return .none
+        case "error": return .error
+        case "warning": return .warning
+        case "info": return .info
+        case "debug": return .debug
+        default: return .none
+        }
+    }
+    
+    func toString() -> String {
+        switch self {
+            case .none: return "none"
+            case .error: return "error"
+            case .warning: return "warning"
+            case .info: return "info"
+            case .debug: return "debug"
+            @unknown default:
+                return "none"
+        }
+    }
+    
+    public func encode(to encoder: any Encoder) throws {
+        let string = toString()
+        var container = encoder.singleValueContainer()
+        try container.encode(string)
+    }
+    
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        let string = try container.decode(String.self)
+        self = RadarLogLevel.from(string: string)
+    }
+}
+
+@objc(RadarSdkConfiguration) @objcMembers
+class RadarSdkConfiguration: NSObject {
+    private let originalDict: [String: Any]?
+    
+    let logLevel: RadarLogLevel
+    let startTrackingOnInitialize: Bool
+    let trackOnceOnAppOpen: Bool
+    let usePersistence: Bool
+    let extendFlushReplays: Bool
+    let useLogPersistence: Bool
+    let useRadarModifiedBeacon: Bool
+    let useOpenedAppConversion: Bool
+    let useForegroundLocationUpdatedAtMsDiff: Bool
+    let useNotificationDiff: Bool
+    let syncAfterSetUser: Bool
+    let useNotificationDiffV2: Bool
+    let useSyncRegion: Bool
+    let defaultGeofenceDwellThreshold: Int
+    let bufferGeofenceEntries: Bool
+    let bufferGeofenceExits: Bool
+    let stopDetection: Bool
+    
+    public init(dict: [String: Any]?) {
+        originalDict = dict
+        logLevel = RadarLogLevel.from(string: dict?["logLevel"] as? String ?? "none")
+        startTrackingOnInitialize = dict?["startTrackingOnInitialize"] as? Bool ?? false
+        trackOnceOnAppOpen = dict?["trackOnceOnAppOpen"] as? Bool ?? false
+        usePersistence = dict?["usePersistence"] as? Bool ?? false
+        extendFlushReplays = dict?["extendFlushReplays"] as? Bool ?? false
+        useLogPersistence = dict?["useLogPersistence"] as? Bool ?? false
+        useRadarModifiedBeacon = dict?["useRadarModifiedBeacon"] as? Bool ?? false
+        useOpenedAppConversion = dict?["useOpenedAppConversion"] as? Bool ?? false
+        useForegroundLocationUpdatedAtMsDiff = dict?["useForegroundLocationUpdatedAtMsDiff"] as? Bool ?? false
+        useNotificationDiff = dict?["useNotificationDiff"] as? Bool ?? false
+        syncAfterSetUser = dict?["syncAfterSetUser"] as? Bool ?? false
+        useNotificationDiffV2 = dict?["useNotificationDiffV2"] as? Bool ?? false
+        useSyncRegion = dict?["useSyncRegion"] as? Bool ?? false
+        defaultGeofenceDwellThreshold = dict?["defaultGeofenceDwellThreshold"] as? Int ?? 0
+        bufferGeofenceEntries = dict?["bufferGeofenceEntries"] as? Bool ?? true
+        bufferGeofenceExits = dict?["bufferGeofenceExits"] as? Bool ?? true
+        stopDetection = dict?["stopDetection"] as? Bool ?? false
+    }
+    
+    public func dictionaryValue() -> [String: Any] {
+        if let originalDict {
+            return originalDict
+        }
+        return [
+            "logLevel": logLevel.toString(),
+            "startTrackingOnInitialize": startTrackingOnInitialize,
+            "trackOnceOnAppOpen": trackOnceOnAppOpen,
+            "usePersistence": usePersistence,
+            "extendFlushReplays": extendFlushReplays,
+            "useLogPersistence": useLogPersistence,
+            "useRadarModifiedBeacon": useRadarModifiedBeacon,
+            "useOpenedAppConversion": useOpenedAppConversion,
+            "useForegroundLocationUpdatedAtMsDiff": useForegroundLocationUpdatedAtMsDiff,
+            "useNotificationDiff": useNotificationDiff,
+            "syncAfterSetUser": syncAfterSetUser,
+            "useNotificationDiffV2": useNotificationDiffV2,
+            "useSyncRegion": useSyncRegion,
+            "defaultGeofenceDwellThreshold": defaultGeofenceDwellThreshold,
+            "bufferGeofenceEntries": bufferGeofenceEntries,
+            "bufferGeofenceExits": bufferGeofenceExits,
+            "stopDetection": stopDetection
+        ]
+    }
+}

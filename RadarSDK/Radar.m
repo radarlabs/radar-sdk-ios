@@ -1377,7 +1377,7 @@ BOOL _initialized = NO;
     if ([RadarSettings logLevel] == level) {
         return;
     }
-    [RadarSdkConfiguration updateSdkConfigurationFromServer];
+    [RadarSdkConfiguration_ObjC updateSdkConfigurationFromServer];
 }
 
 + (void)logTermination { 
