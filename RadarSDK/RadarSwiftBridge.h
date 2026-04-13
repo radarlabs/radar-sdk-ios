@@ -27,6 +27,10 @@
 - (NSString * _Nullable)placeId;
 - (CLLocation * _Nullable)lastLocation;
 - (BOOL)isStopped;
+- (RadarEvent * _Nullable)createEventWithDict:(NSDictionary * _Nonnull)dict;
+- (RadarUser * _Nullable)createUserWithDict:(NSDictionary * _Nonnull)dict;
+- (RadarGeofence * _Nullable)createGeofenceWithDict:(NSDictionary * _Nonnull)dict;
+- (BOOL)isForeground;
 - (RadarTripOptions * _Nullable)getTripOptions;
 @end
 
