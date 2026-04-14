@@ -53,6 +53,41 @@
 			remoteGlobalIDString = BA5198792ED10AEA004A3B35;
 			remoteInfo = TripActivityExtensionExtension;
 		};
+		F699D9B72F8E8CAC00D6B88E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F699D8E12F854D0F00D6B88E /* RadarSDK.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = DD236C7E2308797B00EB88F9;
+			remoteInfo = RadarSDKTests;
+		};
+		F699D9B92F8E8CAC00D6B88E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F699D8E12F854D0F00D6B88E /* RadarSDK.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0107A9E82621FFB9008AB52F;
+			remoteInfo = RadarSDK;
+		};
+		F699D9F22F8E8CB000D6B88E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F699D8FE2F854E7D00D6B88E /* RadarSDKFraud.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 4BFF276F2E79C12600EC633E;
+			remoteInfo = RadarSDKFraud;
+		};
+		F699D9F62F8E8CB000D6B88E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F699D8EA2F854D3300D6B88E /* RadarSDKMotion.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = E698B6672C6167A800084371;
+			remoteInfo = RadarSDKMotion;
+		};
+		F699D9F82F8E8CB000D6B88E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F699D8EA2F854D3300D6B88E /* RadarSDKMotion.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = E698B6712C6167A800084371;
+			remoteInfo = RadarSDKMotionTests;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -270,6 +305,32 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		F699D9B22F8E893A00D6B88E /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				F699D9B82F8E8CAC00D6B88E /* RadarSDKTests.xctest */,
+				F699D9BA2F8E8CAC00D6B88E /* RadarSDK.framework */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		F699D9EA2F8E8CAF00D6B88E /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				F699D9F72F8E8CB000D6B88E /* RadarSDKMotion.framework */,
+				F699D9F92F8E8CB000D6B88E /* RadarSDKMotionTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		F699D9EC2F8E8CAF00D6B88E /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				F699D9F32F8E8CB000D6B88E /* RadarSDKFraud.framework */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -377,6 +438,20 @@
 			);
 			productRefGroup = DD236D24230A006700EB88F9 /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = F699D9B22F8E893A00D6B88E /* Products */;
+					ProjectRef = F699D8E12F854D0F00D6B88E /* RadarSDK.xcodeproj */;
+				},
+				{
+					ProductGroup = F699D9EC2F8E8CAF00D6B88E /* Products */;
+					ProjectRef = F699D8FE2F854E7D00D6B88E /* RadarSDKFraud.xcodeproj */;
+				},
+				{
+					ProductGroup = F699D9EA2F8E8CAF00D6B88E /* Products */;
+					ProjectRef = F699D8EA2F854D3300D6B88E /* RadarSDKMotion.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				DD236D22230A006700EB88F9 /* Example */,
@@ -385,6 +460,44 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		F699D9B82F8E8CAC00D6B88E /* RadarSDKTests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = RadarSDKTests.xctest;
+			remoteRef = F699D9B72F8E8CAC00D6B88E /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F699D9BA2F8E8CAC00D6B88E /* RadarSDK.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = RadarSDK.framework;
+			remoteRef = F699D9B92F8E8CAC00D6B88E /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F699D9F32F8E8CB000D6B88E /* RadarSDKFraud.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = RadarSDKFraud.framework;
+			remoteRef = F699D9F22F8E8CB000D6B88E /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F699D9F72F8E8CB000D6B88E /* RadarSDKMotion.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = RadarSDKMotion.framework;
+			remoteRef = F699D9F62F8E8CB000D6B88E /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F699D9F92F8E8CB000D6B88E /* RadarSDKMotionTests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = RadarSDKMotionTests.xctest;
+			remoteRef = F699D9F82F8E8CB000D6B88E /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		BA5198782ED10AEA004A3B35 /* Resources */ = {
