@@ -489,13 +489,26 @@
             if (status != RadarStatusSuccess) {
                 [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Failed to flush replays"]];
                 [[RadarDelegateHolder sharedInstance] didFailWithStatus:status];
+                
+                // Generate offline events on track failure (gated internally by offlineEventGenerationEnabled)
+                [NSClassFromString(@"RadarOfflineEventManager") performSelector:@selector(handleTrackFailure:) withObject:location];
+
+                // Update tracking options from offline location (only if useOfflineRTOUpdates)
+                RadarConfig *offlineConfig = nil;
+                if ([RadarSettings sdkConfiguration].useOfflineRTOUpdates) {
+                    RadarTrackingOptions *offlineOptions = [NSClassFromString(@"RadarOfflineEventManager") performSelector:@selector(updateTrackingOptionsFor:) withObject:location];
+                    if (offlineOptions) {
+                        offlineConfig = [RadarConfig fromDictionary:@{@"meta": @{@"trackingOptions": [offlineOptions dictionaryValue]}}];
+                    }
+                }
+                
+                completionHandler(status, nil, nil, nil, nil, offlineConfig, nil);
             } else {
                 [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Successfully flushed replays"]];
                 [RadarState setLastFailedStoppedLocation:nil];
                 [RadarSettings updateLastTrackedTime];
+                completionHandler(status, nil, nil, nil, nil, nil, nil);
             }
-
-            completionHandler(status, nil, nil, nil, nil, nil, nil);
         }];
     } else {
         [self.apiHelper requestWithMethod:@"POST"
@@ -535,7 +548,19 @@
 
                                 [[RadarDelegateHolder sharedInstance] didFailWithStatus:status];
                                 
-                                return completionHandler(status, nil, nil, nil, nil, nil, nil);
+                                // Generate offline events on track failure (gated internally by offlineEventGenerationEnabled)
+                                [NSClassFromString(@"RadarOfflineEventManager") performSelector:@selector(handleTrackFailure:) withObject:location];
+
+                                // Update tracking options from offline location (only if useOfflineRTOUpdates)
+                                RadarConfig *offlineConfig = nil;
+                                if ([RadarSettings sdkConfiguration].useOfflineRTOUpdates) {
+                                    RadarTrackingOptions *offlineOptions = [NSClassFromString(@"RadarOfflineEventManager") performSelector:@selector(updateTrackingOptionsFor:) withObject:location];
+                                    if (offlineOptions) {
+                                        offlineConfig = [RadarConfig fromDictionary:@{@"meta": @{@"trackingOptions": [offlineOptions dictionaryValue]}}];
+                                    }
+                                }
+                                
+                                return completionHandler(status, nil, nil, nil, nil, offlineConfig, nil);
                             }
             
                             [[RadarReplayBuffer sharedInstance] clearBuffer];
@@ -618,6 +643,8 @@
                                 }
                                 [RadarState setBeaconIds:beaconIds];
                             }
+            
+                            [NSClassFromString(@"RadarOfflineEventManager") performSelector:@selector(reset)];
             
                             if (events && user) {
                                 [RadarSettings setId:user._id];

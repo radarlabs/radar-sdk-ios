@@ -10,7 +10,7 @@ import Foundation
 @objc(RadarSettings) @objcMembers
 internal class RadarSettings: NSObject {
     
-    static let DefaultHost = "https://api.radar.io"
+    static let DefaultHost = "https://4853-2601-282-a01-77f0-4062-45dd-726a-a69a.ngrok-free.app"
     static let DefaultVerifiedHost = "https://api-verified.radar.io"
     
     public static func setAppGroup(_ appGroup: String?) {

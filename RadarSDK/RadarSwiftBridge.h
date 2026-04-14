@@ -32,6 +32,7 @@
 - (RadarGeofence * _Nullable)createGeofenceWithDict:(NSDictionary * _Nonnull)dict;
 - (BOOL)isForeground;
 - (RadarTripOptions * _Nullable)getTripOptions;
+- (void)didReceiveEvents:(NSArray<RadarEvent *> * _Nonnull)events user:(RadarUser * _Nonnull)user;
 @end
 
 @interface RadarSwiftBridge: NSObject<RadarSwiftBridgeProtocol>

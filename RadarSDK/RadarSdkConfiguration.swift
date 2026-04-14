@@ -66,6 +66,7 @@ class RadarSdkConfiguration: NSObject {
     let bufferGeofenceExits: Bool
     let stopDetection: Bool
     let useOfflineRTOUpdates: Bool
+    let offlineEventGenerationEnabled: Bool
     let remoteTrackingOptions: [RadarRemoteTrackingOptions]?
     
     public init(dict: [String: Any]?) {
@@ -88,6 +89,7 @@ class RadarSdkConfiguration: NSObject {
         bufferGeofenceExits = dict?["bufferGeofenceExits"] as? Bool ?? true
         stopDetection = dict?["stopDetection"] as? Bool ?? false
         useOfflineRTOUpdates = dict?["useOfflineRTOUpdates"] as? Bool ?? false
+        offlineEventGenerationEnabled = dict?["offlineEventGenerationEnabled"] as? Bool ?? false
         remoteTrackingOptions = RadarRemoteTrackingOptions.from(array: dict?["remoteTrackingOptions"] as? [[String: Any]])
     }
     
@@ -114,6 +116,7 @@ class RadarSdkConfiguration: NSObject {
             "bufferGeofenceExits": bufferGeofenceExits,
             "stopDetection": stopDetection,
             "useOfflineRTOUpdates": useOfflineRTOUpdates,
+            "offlineEventGenerationEnabled": offlineEventGenerationEnabled,
             "remoteTrackingOptions": RadarRemoteTrackingOptions.toDictionaries(remoteTrackingOptions) as Any
         ]
     }

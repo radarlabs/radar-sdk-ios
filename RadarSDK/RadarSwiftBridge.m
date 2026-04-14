@@ -14,6 +14,7 @@
 #import "RadarState.h"
 #import "RadarLogger.h"
 #import "RadarUtils.h"
+#import "RadarDelegateHolder.h"
 
 @implementation RadarSwiftBridge
 
@@ -78,6 +79,10 @@
 
 - (BOOL)isForeground {
     return [RadarUtilsDeprecated foreground];
+}
+
+- (void)didReceiveEvents:(NSArray<RadarEvent *> *)events user:(RadarUser *)user {
+    [[RadarDelegateHolder sharedInstance] didReceiveEvents:events user:user];
 }
 
 @end

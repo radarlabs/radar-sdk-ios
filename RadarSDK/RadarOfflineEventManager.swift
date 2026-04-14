@@ -70,6 +70,18 @@ class RadarOfflineEventManager: NSObject {
         completionHandler(events, user, location)
     }
     
+    @objc static func handleTrackFailure(_ location: CLLocation) {
+        let sdkConfig = RadarSettings.sdkConfiguration
+        
+        if sdkConfig?.offlineEventGenerationEnabled == true {
+            generateEvents(location: location) { events, user, loc in
+                if !events.isEmpty, let user {
+                    RadarSwift.bridge?.didReceiveEvents(events, user: user)
+                }
+            }
+        }
+    }
+    
     // MARK: - Tracking options ramp-up/down
     
     @objc static func updateTrackingOptions(geofenceTags: [String]) -> RadarTrackingOptions? {
@@ -95,6 +107,13 @@ class RadarOfflineEventManager: NSObject {
             RadarLogger.shared.debug("OfflineEventManager: Using default tracking options")
             return RadarRemoteTrackingOptions.trackingOptions(forKey: "default", in: remoteOptions)
         }
+    }
+    
+    @objc static func updateTrackingOptions(for location: CLLocation) -> RadarTrackingOptions? {
+        let currentGeofences = RadarSyncManager.getGeofences(for: location)
+        let tags = currentGeofences.compactMap { $0.tag }
+        
+        return updateTrackingOptions(geofenceTags: tags)
     }
     
     // MARK: - Private helpers
