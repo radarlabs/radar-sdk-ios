@@ -177,9 +177,8 @@ static NSString *const kBeaconNotificationIdentifierPrefix = @"radar_beacon_noti
 
         if (completionHandler) {
             completionHandler(RadarStatusErrorPermissions, nil);
-
-            return;
         }
+        return;
     }
 
     if (!CLLocationManager.isRangingAvailable) {

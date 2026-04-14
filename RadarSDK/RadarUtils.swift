@@ -11,7 +11,7 @@ import UIKit
 import SystemConfiguration
 import CoreTelephony
 
-let SDK_VERSION = "3.28.0"
+let SDK_VERSION = "3.30.0"
 
 enum RadarConnectionType: String {
     case unknown = "unknown"
@@ -224,6 +224,7 @@ class RadarUtils: NSObject {
     
     static let isoDateFormatter: DateFormatter = {
         let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_US_POSIX")
         formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
         formatter.timeZone = TimeZone(secondsFromGMT: 0)
         return formatter

@@ -2,7 +2,6 @@
 //  RadarSettingsTest.swift
 //  RadarSDK
 //
-//  Created by ShiCheng Lu on 12/15/25.
 //  Copyright © 2025 Radar Labs, Inc. All rights reserved.
 //
 

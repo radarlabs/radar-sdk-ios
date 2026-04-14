@@ -65,7 +65,7 @@ static dispatch_semaphore_t notificationSemaphore;
         } else if (event.type == RadarEventTypeUserEnteredBeacon && event.beacon && event.beacon.metadata) {
             metadata = event.beacon.metadata;
             notificationText = [metadata objectForKey:@"radar:entryNotificationText"];
-        } else if (event.type == RadarEventTypeUserExitedBeacon && event.beacon && event.geofence.metadata) {
+        } else if (event.type == RadarEventTypeUserExitedBeacon && event.beacon && event.beacon.metadata) {
             metadata = event.beacon.metadata;
             notificationText = [metadata objectForKey:@"radar:exitNotificationText"];
         } else if (event.type == RadarEventTypeUserApproachingTripDestination && event.trip && event.trip.metadata) {
@@ -385,6 +385,17 @@ didReceiveRemoteNotification:(NSDictionary *)userInfo
         }
         return;
     }
+    
+    if (@available(iOS 13.0, *)) {
+        if ([RadarSettings sdkConfiguration].useNotificationDiffV2) {
+            [[RadarNotificationHelper_Swift shared] getDeliveredNotificationsWithCompletionHandler:^(NSArray* notificationsDelivered) {
+                completionHandler(notificationsDelivered, @[]);
+            }];
+            return;
+        }
+    }
+    
+    
     UNUserNotificationCenter *notificationCenter = [UNUserNotificationCenter currentNotificationCenter];
     NSArray *registeredNotifications = [RadarState registeredNotifications];
     

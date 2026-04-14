@@ -37,7 +37,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         radarInitializeOptions.autoHandleNotificationDeepLinks = true
         radarInitializeOptions.silentPush = true
 
-        Radar.setAppGroup("group.waypoint.data")
+        UserDefaults.standard.set("https://api-server-dev-shicheng.use1.radar-staging.com", forKey: "radar-host")
+        UserDefaults.standard.set("https://api-server-dev-shicheng.use1.radar-staging.com", forKey: "radar-hostVerified")
+        
+        Radar.setAppGroup(nil)
+        Radar.setUserId("iOS-04-13-2026")
         Radar.initialize(publishableKey: "prj_test_pk_0000000000000000000000000000000000000000", options: radarInitializeOptions)
         Radar.setMetadata([ "foo": "bar" ])
         Radar.setDelegate(self)

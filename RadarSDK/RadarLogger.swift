@@ -137,4 +137,13 @@ final class RadarLogger : NSObject, @unchecked Sendable {
             await RadarLogBuffer.shared.log(log)
         }
     }
+    static func debug(_ message: String, type: RadarLogType = .none) {
+        RadarLogger.shared.debug(message, type: type)
+    }
+    static func info(_ message: String, type: RadarLogType = .none) {
+        RadarLogger.shared.info(message, type: type)
+    }
+    static func warning(_ message: String, type: RadarLogType = .none) {
+        RadarLogger.shared.warning(message, type: type)
+    }
 }

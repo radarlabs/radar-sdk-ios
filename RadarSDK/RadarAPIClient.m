@@ -157,7 +157,7 @@
    completionHandler:(RadarFlushReplaysAPICompletionHandler _Nonnull)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
-        return;
+        return completionHandler(RadarStatusErrorPublishableKey, nil);
     }
 
     NSString *host = [RadarSettings host];
@@ -443,7 +443,7 @@
                                                                 source:source
                                                             verified:verified
                                                         publishableKey:publishableKey
-                                                notificationsRemaining:notificationsDelivered
+                                                notificationsRemaining:notificationsRemaining
                                                 locationMetadata:locationMetadata
                                                     completionHandler:completionHandler];
         }];
@@ -512,8 +512,21 @@
                                     NSMutableDictionary *bufferParams = [params mutableCopy];
                                     bufferParams[@"replayed"] = @(YES);
 
-                                    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"Setting %lu notifications remaining", (unsigned long)notificationsRemaining.count]];
-                                    [RadarState setRegisteredNotifications:notificationsRemaining];
+                                    if (@available(iOS 13.0, *)) {
+                                        if ([RadarSettings sdkConfiguration].useNotificationDiffV2) {
+                                            [[RadarNotificationHelper_Swift shared]
+                                             removeRegisteredNotificationsWithNotifications:params[@"notificationDiff"]
+                                             completionHandler:^() {}
+                                            ];
+                                        } else {
+                                            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"Setting %lu notifications remaining", (unsigned long)notificationsRemaining.count]];
+                                            [RadarState setRegisteredNotifications:notificationsRemaining];
+                                        }
+                                    } else {
+                                        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"Setting %lu notifications remaining", (unsigned long)notificationsRemaining.count]];
+                                        [RadarState setRegisteredNotifications:notificationsRemaining];
+                                    }
+                                    
                                     [[RadarReplayBuffer sharedInstance] writeNewReplayToBuffer:bufferParams];
                                 } else if (options.replay == RadarTrackingOptionsReplayStops && stopped &&
                                         !(source == RadarLocationSourceForegroundLocation || source == RadarLocationSourceManualLocation)) {

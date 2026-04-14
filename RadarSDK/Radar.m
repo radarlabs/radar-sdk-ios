@@ -198,6 +198,9 @@ BOOL _initialized = NO;
     if ([RadarSettings sdkConfiguration].syncAfterSetUser) {
         [Radar trackOnceWithCompletionHandler:nil];
     }
+    if ([RadarSettings sdkConfiguration].useSyncRegion) {
+        [RadarSyncManager fetchSyncRegion];
+    }
 }
 
 + (NSString *_Nullable)getUserId {
@@ -406,7 +409,7 @@ BOOL _initialized = NO;
 }
 
 + (void)trackVerifiedWithBeacons:(BOOL)beacons desiredAccuracy:(RadarTrackingOptionsDesiredAccuracy)desiredAccuracy completionHandler:(RadarTrackVerifiedCompletionHandler)completionHandler {
-    [self trackVerifiedWithBeacons:NO desiredAccuracy:RadarTrackingOptionsDesiredAccuracyMedium reason:nil transactionId:nil completionHandler:completionHandler];
+    [self trackVerifiedWithBeacons:beacons desiredAccuracy:desiredAccuracy reason:nil transactionId:nil completionHandler:completionHandler];
 }
 
 + (void)trackVerifiedWithBeacons:(BOOL)beacons desiredAccuracy:(RadarTrackingOptionsDesiredAccuracy)desiredAccuracy reason:(NSString *)reason transactionId:(NSString *)transactionId completionHandler:(RadarTrackVerifiedCompletionHandler)completionHandler {
@@ -1372,7 +1375,7 @@ BOOL _initialized = NO;
     if ([RadarSettings logLevel] == level) {
         return;
     }
-    [RadarSdkConfiguration updateSdkConfigurationFromServer];
+    [RadarSdkConfiguration_ObjC updateSdkConfigurationFromServer];
 }
 
 + (void)logTermination { 
