@@ -36,22 +36,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         radarInitializeOptions.autoLogNotificationConversions = true
         radarInitializeOptions.autoHandleNotificationDeepLinks = true
         radarInitializeOptions.silentPush = true
-
-<<<<<<< Updated upstream
+        
         Radar.setAppGroup("group.waypoint.data")
-||||||| Stash base
-        UserDefaults.standard.set("https://api-server-dev-shicheng.use1.radar-staging.com", forKey: "radar-host")
-        UserDefaults.standard.set("https://api-server-dev-shicheng.use1.radar-staging.com", forKey: "radar-hostVerified")
-        
-        Radar.setAppGroup(nil)
-        Radar.setUserId("iOS-04-13-2026")
-=======
-        UserDefaults.standard.set("https://bailey-nonnebulous-nonaccidentally.ngrok-free.dev", forKey: "radar-host")
-        UserDefaults.standard.set("https://bailey-nonnebulous-nonaccidentally.ngrok-free.dev", forKey: "radar-hostVerified")
-        
-        Radar.setAppGroup(nil)
-        Radar.setUserId("iOS-04-13-2026")
->>>>>>> Stashed changes
         Radar.initialize(publishableKey: "prj_test_pk_0000000000000000000000000000000000000000", options: radarInitializeOptions)
         Radar.setMetadata([ "foo": "bar" ])
         Radar.setDelegate(self)
