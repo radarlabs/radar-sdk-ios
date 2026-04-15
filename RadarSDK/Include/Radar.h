@@ -98,6 +98,8 @@ typedef NS_ENUM(NSInteger, RadarLocationSource) {
     RadarLocationSourceBeaconEnter,
     /// Beacon exit
     RadarLocationSourceBeaconExit,
+    /// Offline detection
+    RadarLocationSourceOffline,
     /// Unknown
     RadarLocationSourceUnknown
 };

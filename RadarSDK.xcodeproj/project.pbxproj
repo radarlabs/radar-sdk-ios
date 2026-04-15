@@ -157,6 +157,7 @@
 		BA353F8D2F89A17500E553A1 /* RadarRemoteTrackingOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA353F8C2F89A16A00E553A1 /* RadarRemoteTrackingOptions.swift */; };
 		BA353F8F2F8D4D0E00E553A1 /* RadarOfflineEventManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA353F8E2F8D4D0800E553A1 /* RadarOfflineEventManager.swift */; };
 		BA3540202F8EBFBD00E553A1 /* RadarOfflineEventManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA35401F2F8EBFAD00E553A1 /* RadarOfflineEventManagerTests.swift */; };
+		BA3540222F90020F00E553A1 /* RadarOfflineEventManager.h in Headers */ = {isa = PBXBuildFile; fileRef = BA3540212F90020900E553A1 /* RadarOfflineEventManager.h */; };
 		BA46C1662F4CF3F200031891 /* RadarTripLeg.h in Headers */ = {isa = PBXBuildFile; fileRef = BA46C1652F4CF3E900031891 /* RadarTripLeg.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		BA46C1682F4CF46600031891 /* RadarTripLeg.m in Sources */ = {isa = PBXBuildFile; fileRef = BA46C1672F4CF45600031891 /* RadarTripLeg.m */; };
 		BA46C16A2F4E0A9000031891 /* trip_with_legs.json in Resources */ = {isa = PBXBuildFile; fileRef = BA46C1692F4E0A8300031891 /* trip_with_legs.json */; };
@@ -329,6 +330,7 @@
 		BA353F8C2F89A16A00E553A1 /* RadarRemoteTrackingOptions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarRemoteTrackingOptions.swift; sourceTree = "<group>"; };
 		BA353F8E2F8D4D0800E553A1 /* RadarOfflineEventManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarOfflineEventManager.swift; sourceTree = "<group>"; };
 		BA35401F2F8EBFAD00E553A1 /* RadarOfflineEventManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarOfflineEventManagerTests.swift; sourceTree = "<group>"; };
+		BA3540212F90020900E553A1 /* RadarOfflineEventManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarOfflineEventManager.h; sourceTree = "<group>"; };
 		BA46C1652F4CF3E900031891 /* RadarTripLeg.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarTripLeg.h; sourceTree = "<group>"; };
 		BA46C1672F4CF45600031891 /* RadarTripLeg.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RadarTripLeg.m; sourceTree = "<group>"; };
 		BA46C1692F4E0A8300031891 /* trip_with_legs.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = trip_with_legs.json; sourceTree = "<group>"; };
@@ -572,6 +574,7 @@
 		DD236C772308797B00EB88F9 /* RadarSDK */ = {
 			isa = PBXGroup;
 			children = (
+				BA3540212F90020900E553A1 /* RadarOfflineEventManager.h */,
 				BA353F8E2F8D4D0800E553A1 /* RadarOfflineEventManager.swift */,
 				BA8647AA2F6C4CD200F1A199 /* RadarFileStorage.swift */,
 				BA78A6092F2BC9160058ECD4 /* RadarSyncManager.swift */,
@@ -789,6 +792,7 @@
 				96A5A11B27ADA02F007B960B /* RadarDelegateHolder.h in Headers */,
 				96A5A10F27AD9F7F007B960B /* RadarRouteDuration.h in Headers */,
 				BA46C1662F4CF3F200031891 /* RadarTripLeg.h in Headers */,
+				BA3540222F90020F00E553A1 /* RadarOfflineEventManager.h in Headers */,
 				96A5A10627AD9F7F007B960B /* RadarFraud.h in Headers */,
 				01F99CFB2965C182004E8CF3 /* RadarConfig.h in Headers */,
 				96A5A0CF27AD9F41007B960B /* RadarAddress+Internal.h in Headers */,

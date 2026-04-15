@@ -38,6 +38,7 @@
 #import "RadarNotificationHelper.h"
 #import <os/log.h>
 #import "RadarSDKFraudProtocol.h"
+#import "RadarOfflineEventManager.h"
 
 #if __has_include(<RadarSDK/RadarSDK-Swift.h>)
 #import <RadarSDK/RadarSDK-Swift.h>
@@ -491,12 +492,12 @@
                 [[RadarDelegateHolder sharedInstance] didFailWithStatus:status];
                 
                 // Generate offline events on track failure (gated internally by offlineEventGenerationEnabled)
-                [NSClassFromString(@"RadarOfflineEventManager") performSelector:@selector(handleTrackFailure:) withObject:location];
-
+                [RadarOfflineEventManager handleTrackFailure:location];
+                
                 // Update tracking options from offline location (only if useOfflineRTOUpdates)
                 RadarConfig *offlineConfig = nil;
                 if ([RadarSettings sdkConfiguration].useOfflineRTOUpdates) {
-                    RadarTrackingOptions *offlineOptions = [NSClassFromString(@"RadarOfflineEventManager") performSelector:@selector(updateTrackingOptionsFor:) withObject:location];
+                    RadarTrackingOptions *offlineOptions = [RadarOfflineEventManager updateTrackingOptionsFor:location];
                     if (offlineOptions) {
                         offlineConfig = [RadarConfig fromDictionary:@{@"meta": @{@"trackingOptions": [offlineOptions dictionaryValue]}}];
                     }
@@ -549,12 +550,12 @@
                                 [[RadarDelegateHolder sharedInstance] didFailWithStatus:status];
                                 
                                 // Generate offline events on track failure (gated internally by offlineEventGenerationEnabled)
-                                [NSClassFromString(@"RadarOfflineEventManager") performSelector:@selector(handleTrackFailure:) withObject:location];
+                                [RadarOfflineEventManager handleTrackFailure:location];
 
                                 // Update tracking options from offline location (only if useOfflineRTOUpdates)
                                 RadarConfig *offlineConfig = nil;
                                 if ([RadarSettings sdkConfiguration].useOfflineRTOUpdates) {
-                                    RadarTrackingOptions *offlineOptions = [NSClassFromString(@"RadarOfflineEventManager") performSelector:@selector(updateTrackingOptionsFor:) withObject:location];
+                                    RadarTrackingOptions *offlineOptions = [RadarOfflineEventManager updateTrackingOptionsFor:location];
                                     if (offlineOptions) {
                                         offlineConfig = [RadarConfig fromDictionary:@{@"meta": @{@"trackingOptions": [offlineOptions dictionaryValue]}}];
                                     }
@@ -644,8 +645,8 @@
                                 [RadarState setBeaconIds:beaconIds];
                             }
             
-                            [NSClassFromString(@"RadarOfflineEventManager") performSelector:@selector(reset)];
-            
+                            [RadarOfflineEventManager reset];
+
                             if (events && user) {
                                 [RadarSettings setId:user._id];
                                 [RadarState setRadarUser:user];

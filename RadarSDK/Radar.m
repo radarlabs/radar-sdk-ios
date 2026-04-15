@@ -1578,6 +1578,9 @@ BOOL _initialized = NO;
     case RadarLocationSourceBeaconExit:
         str = @"BEACON_EXIT";
         break;
+    case RadarLocationSourceOffline:
+        str = @"OFFLINE_DETECTION";
+        break;
     case RadarLocationSourceUnknown:
         str = @"UNKNOWN";
     }
