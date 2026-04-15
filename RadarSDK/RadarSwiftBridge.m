@@ -85,4 +85,8 @@
     [[RadarDelegateHolder sharedInstance] didReceiveEvents:events user:user];
 }
 
+- (RadarUser * _Nullable)radarUser {
+    return [RadarState radarUser];
+}
+
 @end

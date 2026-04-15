@@ -648,6 +648,7 @@
             
                             if (events && user) {
                                 [RadarSettings setId:user._id];
+                                [RadarState setRadarUser:user];
 
                                 // Update local trip state from server response
                                 if (user.trip) {

@@ -170,12 +170,12 @@ class RadarOfflineEventManager: NSObject {
         location: CLLocation,
         geofences: [RadarGeofenceSwift]
     ) -> RadarUser? {
+        let cachedUser = RadarSwift.bridge?.radarUser()
         let geofenceDicts = geofences.map { geofenceDictionary(from: $0) }
         let isStopped = RadarSwift.bridge?.isStopped() ?? false
         let isForeground = RadarSwift.bridge?.isForeground() ?? false
         
-        let userDict: [String: Any] = [
-            "_id": "offline_user",
+        var userDict: [String: Any] = [
             "location": [
                 "coordinates": [location.coordinate.longitude, location.coordinate.latitude]
             ],
@@ -184,8 +184,20 @@ class RadarOfflineEventManager: NSObject {
             "stopped": isStopped,
             "foreground": isForeground,
             "source": "OFFLINE",
-            "metadata": ["offline": true]
         ]
+        
+        if let id = cachedUser?._id { userDict["_id"] = id }
+        if let userId = cachedUser?.userId { userDict["userId"] = userId }
+        if let deviceId = cachedUser?.deviceId { userDict["deviceId"] = deviceId }
+        if let desc = cachedUser?.__description { userDict["description"] = desc }
+        if let metadata = cachedUser?.metadata { userDict["metadata"] = metadata }
+        if let country = cachedUser?.country { userDict["country"] = country.dictionaryValue() }
+        if let state = cachedUser?.state { userDict["state"] = state.dictionaryValue() }
+        if let dma = cachedUser?.dma { userDict["dma"] = dma.dictionaryValue() }
+        if let postalCode = cachedUser?.postalCode { userDict["postalCode"] = postalCode.dictionaryValue() }
+        if let trip = cachedUser?.trip { userDict["trip"] = trip.dictionaryValue() }
+        
+        
         return RadarUser(object: userDict)
     }
 }

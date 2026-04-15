@@ -34,6 +34,7 @@ static NSString *const kMotionAuthorization = @"radar-motionAuthorization";
 static NSString *const kLocationAuthorizationStatus = @"radar-locationAuthorizationStatus";
 static NSString *const kRegisteredNotifications = @"radar-registeredNotifications";
 static NSString *const kAltitudeAdjustments = @"radar-altitudeAdjustments";
+static NSString *const kRadarUser = @"radar-radarUser";
 static NSDictionary *_lastRelativeAltitudeDataInMemory = nil;
 static NSDate *_lastPressureBackupTime = nil;
 static NSTimeInterval const kBackupInterval = 2.0; // 2 seconds
@@ -303,6 +304,16 @@ static NSTimeInterval const kBackupInterval = 2.0; // 2 seconds
     } else {
         [[NSUserDefaults standardUserDefaults] removeObjectForKey:kAltitudeAdjustments];
     }
+}
+
++ (void)setRadarUser:(RadarUser *_Nullable)radarUser {
+    NSDictionary *radarUserDict = [radarUser dictionaryValue];
+    [[NSUserDefaults standardUserDefaults] setObject:radarUserDict forKey:kRadarUser];
+}
+
++ (RadarUser *_Nullable)radarUser {
+    NSDictionary *radarUserDict = [[NSUserDefaults standardUserDefaults] objectForKey:kRadarUser];
+    return [[RadarUser alloc] initWithObject:radarUserDict];
 }
 
 @end

@@ -10,6 +10,7 @@
 #import "RadarGeofence+Internal.h"
 #import "RadarBeacon+Internal.h"
 #import "RadarPlace+Internal.h"
+#import "RadarUser+Internal.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -54,6 +55,8 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)setLastRelativeAltitudeData:(NSDictionary *_Nullable)lastRelativeAltitudeData;
 + (NSArray<NSDictionary *> *_Nullable)altitudeAdjustments;
 + (void)setAltitudeAdjustments:(NSArray<NSDictionary *> *_Nullable)altitudeAdjustments;
++ (void)setRadarUser:(RadarUser *_Nullable)radarUser NS_SWIFT_NAME(setRadarUser(_:));
++ (RadarUser *_Nullable)radarUser NS_SWIFT_NAME(radarUser());
 
 @end
 
