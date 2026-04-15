@@ -571,10 +571,22 @@ BOOL _initialized = NO;
     
     // Ensure Swift @MainActor methods are called on main thread
     if ([NSThread isMainThread]) {
+<<<<<<< Updated upstream
         [RadarLogger_Swift setDelegate:delegate];
+||||||| Stash base
+//        [[RadarLogger sharedInstance] setDelegate:delegate];
+=======
+        [[RadarLogger sharedInstance] setDelegate:delegate];
+>>>>>>> Stashed changes
     } else {
         dispatch_async(dispatch_get_main_queue(), ^{
+<<<<<<< Updated upstream
             [RadarLogger_Swift setDelegate:delegate];
+||||||| Stash base
+//            [[RadarLogger sharedInstance] setDelegate:delegate];
+=======
+            [[RadarLogger sharedInstance] setDelegate:delegate];
+>>>>>>> Stashed changes
         });
     }
 }
