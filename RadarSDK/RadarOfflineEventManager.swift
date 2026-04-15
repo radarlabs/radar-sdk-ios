@@ -12,8 +12,14 @@ import CoreLocation
 @objc(RadarOfflineEventManager) @objcMembers
 class RadarOfflineEventManager: NSObject {
     
-    nonisolated(unsafe) private static var offlineGeofenceIds: Set<String> = []
+    private static let queue = DispatchQueue(label: "io.radar.offlineEventManager")
+    nonisolated(unsafe)  private static var _offlineGeofenceIds: Set<String> = []
     
+    private static var offlineGeofenceIds: Set<String> {
+        get { queue.sync { _offlineGeofenceIds } }
+        set { queue.sync { _offlineGeofenceIds = newValue } }
+    }
+
     @objc static func reset() {
         offlineGeofenceIds = []
     }
