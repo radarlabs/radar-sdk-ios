@@ -38,12 +38,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         radarInitializeOptions.silentPush = true
 
         Radar.setAppGroup("group.waypoint.data")
-        Radar.initialize(publishableKey: "prj_test_pk_cff94457df57a7ac5dcaacea84ab1df7423ea9ac", options: radarInitializeOptions)
+        Radar.initialize(publishableKey: "prj_test_pk_0000000000000000000000000000000000000000", options: radarInitializeOptions)
         Radar.setMetadata([ "foo": "bar" ])
         Radar.setDelegate(self)
         Radar.setVerifiedDelegate(self)
         Radar.setInAppMessageDelegate(MyIAMDelegate())
-        Radar.setUserId("offline_alan")
         
         if #available(iOS 15.0, *) {
             locationManager.startMonitoringLocationPushes() { data, error in
@@ -200,21 +199,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
     // MARK: - RadarDelegate Methods (for Live Activity)
     // These delegate methods are optional and only needed if you want to update a Live Activity based on trip events and location updates.
     func didReceiveEvents(_ events: [RadarEvent], user: RadarUser?) {
-        
-        for event in events {
-            let isOffline = (event.metadata["offline"] as? Bool) == true
-            print("[Radar] Event: \(RadarEvent.string(for: event.type)) | offline: \(isOffline)")
-            
-            if isOffline {
-                let content = UNMutableNotificationContent()
-                content.title = "Offline Event"
-                content.body = RadarEvent.string(for: event.type) ?? "unknown"
-                content.sound = .default
-                let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: nil)
-                UNUserNotificationCenter.current().add(request)
-            }
-        }
-        
         // End the Live Activity when the user stops a trip
         if #available(iOS 16.2, *) {
             for event in events {
