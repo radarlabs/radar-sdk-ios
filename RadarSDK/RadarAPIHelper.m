@@ -123,7 +123,7 @@
                             logWithLevel:RadarLogLevelError
                                     type:RadarLogTypeSDKError
                                  message:[NSString stringWithFormat:@"Received network error | error = %@", error]];
-                        completionHandler(RadarStatusErrorNetwork, nil);
+                        completionHandler(RadarStatusErrorNetwork, nil, error);
                     });
 
                     if (sleep) {
@@ -138,7 +138,7 @@
                 id resObj = [NSJSONSerialization JSONObjectWithData:data options:0 error:&deserializationError];
                 if (deserializationError || ![resObj isKindOfClass:[NSDictionary class]]) {
                     dispatch_async(dispatch_get_main_queue(), ^{
-                        completionHandler(RadarStatusErrorServer, nil);
+                        completionHandler(RadarStatusErrorServer, nil, nil);
                     });
 
                     if (sleep) {
@@ -190,7 +190,7 @@
                 }
 
                 dispatch_async(dispatch_get_main_queue(), ^{
-                    completionHandler(status, res);
+                    completionHandler(status, res, nil);
                 });
 
                 if (sleep) {
@@ -218,7 +218,7 @@
                 dispatch_semaphore_signal(self.semaphore);
             }
             dispatch_async(dispatch_get_main_queue(), ^{
-                completionHandler(RadarStatusErrorBadRequest, nil);
+                completionHandler(RadarStatusErrorBadRequest, nil, nil);
             });
             return;
         }
