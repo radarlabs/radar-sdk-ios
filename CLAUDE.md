@@ -23,7 +23,7 @@ make build
 # Run tests
 make test
 
-# Run tests (pretty output, skips some UI tests)
+# Run tests (pretty output, skips specific unit test bundles: InAppMessageTest, RadarSettingsTest, RadarNotificationHelperTest)
 make test-pretty
 
 # Format (clang-format for any remaining ObjC)
