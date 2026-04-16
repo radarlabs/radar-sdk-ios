@@ -13,15 +13,15 @@ import CoreLocation
 class RadarOfflineEventManager: NSObject {
     
     private static let queue = DispatchQueue(label: "io.radar.offlineEventManager")
-    nonisolated(unsafe)  private static var _offlineGeofenceIds: Set<String> = []
+    nonisolated(unsafe)  private static var _offlineGeofenceIds: Set<String>? = nil
     
-    private static var offlineGeofenceIds: Set<String> {
+    private static var offlineGeofenceIds: Set<String>? {
         get { queue.sync { _offlineGeofenceIds } }
         set { queue.sync { _offlineGeofenceIds = newValue } }
     }
 
     @objc static func reset() {
-        offlineGeofenceIds = []
+        offlineGeofenceIds = nil
     }
     
     // MARK: - Event generation
@@ -32,7 +32,7 @@ class RadarOfflineEventManager: NSObject {
     ) {
         let state = RadarSyncManager.syncStore.read() ?? RadarSyncState()
         let baselineIds = Set(state.lastSyncedGeofenceIds)
-        let effectiveIds = offlineGeofenceIds.isEmpty ? baselineIds : offlineGeofenceIds
+        let effectiveIds = offlineGeofenceIds ?? baselineIds
         
         let entries = RadarSyncManager.getGeofenceEntries(for: location, against: effectiveIds)
         let exits = RadarSyncManager.getGeofenceExits(for: location, against: effectiveIds)
