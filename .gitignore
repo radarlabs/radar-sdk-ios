@@ -15,3 +15,4 @@ IntegrationExamples
 .build/
 Example/Example.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/
 .radar-keys
+.claude/settings.local.json
