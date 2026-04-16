@@ -12,7 +12,6 @@ internal class RadarSettings: NSObject {
     
     static let DefaultHost = "https://api.radar.io"
     static let DefaultVerifiedHost = "https://api-verified.radar.io"
-    static let DefaultVerifiedHostFallback = "https://api-verified2.radar.io"
     
     public static func setAppGroup(_ appGroup: String?) {
         // this call needs to by synchronised to prevent race conditions in checking / updating the app group
@@ -259,11 +258,7 @@ internal class RadarSettings: NSObject {
     public static var verifiedHost: String {
         RadarUserDefaults.string(forKey: .VerifiedHost) ?? DefaultVerifiedHost
     }
-
-    public static var verifiedHostFallback: String {
-        RadarUserDefaults.string(forKey: .VerifiedHostFallback) ?? DefaultVerifiedHostFallback
-    }
-
+    
     public static var userDebug: Bool {
         get {
             return RadarUserDefaults.bool(forKey: .UserDebug)

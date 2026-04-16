@@ -35,7 +35,6 @@ class RadarUserDefaults: NSObject {
         case Host = "radar-host"
         case LastTrackedTime = "radar-lastTrackedTime"
         case VerifiedHost = "radar-verifiedHost"
-        case VerifiedHostFallback = "radar-verifiedHostFallback"
         case LastAppOpenTime = "radar-lastAppOpenTime"
         case UserDebug = "radar-userDebug"
         case XPlatformSDKType = "radar-xPlatformSDKType"
