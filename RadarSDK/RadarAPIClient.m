@@ -136,7 +136,8 @@ static NSSet<NSNumber *> *failoverErrorCodes;
                          extendedTimeout:(BOOL)extendedTimeout
                        completionHandler:(RadarAPICompletionHandler)completionHandler {
 
-    NSString *host = [self.verifiedHostFailover currentHost];
+    BOOL useHostFailover = [RadarSettings sdkConfiguration].useHostFailover;
+    NSString *host = useHostFailover ? [self.verifiedHostFailover currentHost] : [RadarSettings verifiedHost];
     NSString *url = [[NSString stringWithFormat:@"%@%@", host, path]
         stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
 
@@ -148,7 +149,7 @@ static NSSet<NSNumber *> *failoverErrorCodes;
                            logPayload:logPayload
                       extendedTimeout:extendedTimeout
                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSError *_Nullable error) {
-        if (status == RadarStatusErrorNetwork && [RadarAPIClient isFailoverError:error]) {
+        if (useHostFailover && status == RadarStatusErrorNetwork && [RadarAPIClient isFailoverError:error]) {
             BOOL hasAlternate = [self.verifiedHostFailover reportFailure];
             if (hasAlternate) {
                 NSString *retryHost = [self.verifiedHostFailover currentHost];
@@ -177,7 +178,7 @@ static NSSet<NSNumber *> *failoverErrorCodes;
             }
         }
 
-        if (status == RadarStatusSuccess) {
+        if (useHostFailover && status == RadarStatusSuccess) {
             [self.verifiedHostFailover reportSuccess];
         }
         completionHandler(status, res, error);

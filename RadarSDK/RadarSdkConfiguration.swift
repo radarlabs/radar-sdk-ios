@@ -65,7 +65,8 @@ class RadarSdkConfiguration: NSObject {
     let bufferGeofenceEntries: Bool
     let bufferGeofenceExits: Bool
     let stopDetection: Bool
-    
+    let useHostFailover: Bool
+
     public init(dict: [String: Any]?) {
         originalDict = dict
         logLevel = RadarLogLevel.from(string: dict?["logLevel"] as? String ?? "none")
@@ -85,6 +86,7 @@ class RadarSdkConfiguration: NSObject {
         bufferGeofenceEntries = dict?["bufferGeofenceEntries"] as? Bool ?? true
         bufferGeofenceExits = dict?["bufferGeofenceExits"] as? Bool ?? true
         stopDetection = dict?["stopDetection"] as? Bool ?? false
+        useHostFailover = dict?["useHostFailover"] as? Bool ?? false
     }
     
     public func dictionaryValue() -> [String: Any] {
@@ -108,7 +110,8 @@ class RadarSdkConfiguration: NSObject {
             "defaultGeofenceDwellThreshold": defaultGeofenceDwellThreshold,
             "bufferGeofenceEntries": bufferGeofenceEntries,
             "bufferGeofenceExits": bufferGeofenceExits,
-            "stopDetection": stopDetection
+            "stopDetection": stopDetection,
+            "useHostFailover": useHostFailover
         ]
     }
 }
