@@ -189,7 +189,6 @@ class RadarOfflineEventManager: NSObject {
             "geofences": geofenceDicts,
             "stopped": isStopped,
             "foreground": isForeground,
-            "source": "OFFLINE_DETECTION",
         ]
         
         if let id = cachedUser?._id { userDict["_id"] = id }
@@ -197,11 +196,6 @@ class RadarOfflineEventManager: NSObject {
         if let deviceId = cachedUser?.deviceId { userDict["deviceId"] = deviceId }
         if let desc = cachedUser?.__description { userDict["description"] = desc }
         if let metadata = cachedUser?.metadata { userDict["metadata"] = metadata }
-        if let country = cachedUser?.country { userDict["country"] = country.dictionaryValue() }
-        if let state = cachedUser?.state { userDict["state"] = state.dictionaryValue() }
-        if let dma = cachedUser?.dma { userDict["dma"] = dma.dictionaryValue() }
-        if let postalCode = cachedUser?.postalCode { userDict["postalCode"] = postalCode.dictionaryValue() }
-        if let trip = cachedUser?.trip { userDict["trip"] = trip.dictionaryValue() }
         
         return RadarUser(object: userDict)
     }

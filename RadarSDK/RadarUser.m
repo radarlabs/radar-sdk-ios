@@ -291,8 +291,6 @@
             source = RadarLocationSourceVisitDeparture;
         } else if ([sourceStr isEqualToString:@"MOCK_LOCATION"]) {
             source = RadarLocationSourceMockLocation;
-        } else if ([sourceStr isEqualToString:@"OFFLINE_DETECTION"]) {
-            source = RadarLocationSourceOffline;
         }
     }
 
