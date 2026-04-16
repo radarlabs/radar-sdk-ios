@@ -30,7 +30,12 @@ make test-pretty
 make format
 ```
 
-Tests use `xcodebuild` targeting an iPhone simulator. See `Makefile` for the default SDK and destination.
+Tests use `xcodebuild` targeting an iPhone simulator. The default destination is `iPhone 17, OS=26.2`. Override with:
+
+```bash
+make test DESTINATION="platform=iOS Simulator,name=iPhone 16,OS=18.5"
+make build SDK="iphonesimulator" DESTINATION="platform=iOS Simulator,name=iPhone 16,OS=18.5"
+```
 
 ## Project Structure
 
@@ -39,8 +44,11 @@ RadarSDK/           # SDK source — mix of .swift and .m/.h (ObjC being migrate
 RadarSDKTests/      # Unit tests
 Example/            # Example app
 RadarSDKMotion/     # Motion extension
-RadarSDKFraud/      # Fraud detection extension
+RadarSDKFraud/      # Fraud detection extension (git submodule)
+RadarSDKIndoors/    # Indoors extension (git submodule)
 ```
+
+Run `git submodule update --init --recursive` to initialize submodules.
 
 ## Xcode Project
 
