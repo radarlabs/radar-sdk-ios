@@ -8,7 +8,8 @@
 #import "RadarHostFailover.h"
 #import "RadarLogger.h"
 
-static const NSTimeInterval kBackoffInterval = 60.0;
+static const NSTimeInterval kInitialBackoff = 30.0;
+static const NSTimeInterval kMaxBackoff = 300.0;
 
 @interface RadarHostFailover ()
 
@@ -16,6 +17,7 @@ static const NSTimeInterval kBackoffInterval = 60.0;
 @property (strong, nonatomic) NSArray<NSString *> *hosts;
 @property (assign, nonatomic) NSUInteger activeHostIndex;
 @property (strong, nonatomic, nullable) NSDate *lastFailureTime;
+@property (assign, nonatomic) NSTimeInterval currentBackoff;
 @property (assign, nonatomic) BOOL isProbingPrimary;
 
 @end
@@ -30,6 +32,7 @@ static const NSTimeInterval kBackoffInterval = 60.0;
         _hosts = [hosts copy];
         _activeHostIndex = 0;
         _lastFailureTime = nil;
+        _currentBackoff = kInitialBackoff;
         _isProbingPrimary = NO;
     }
     return self;
@@ -45,7 +48,7 @@ static const NSTimeInterval kBackoffInterval = 60.0;
         } else {
             // Failover mode: check if backoff period has elapsed
             NSTimeInterval elapsed = [[NSDate date] timeIntervalSinceDate:self.lastFailureTime];
-            if (elapsed >= kBackoffInterval) {
+            if (elapsed >= self.currentBackoff) {
                 // Time to probe the primary
                 host = self.hosts[0];
                 self.isProbingPrimary = YES;
@@ -68,6 +71,7 @@ static const NSTimeInterval kBackoffInterval = 60.0;
                                               message:@"Host failover: primary host recovered, switching back"];
             self.activeHostIndex = 0;
             self.lastFailureTime = nil;
+            self.currentBackoff = kInitialBackoff;
         }
         self.isProbingPrimary = NO;
     });
@@ -77,9 +81,10 @@ static const NSTimeInterval kBackoffInterval = 60.0;
     __block BOOL hasAlternate = NO;
     dispatch_sync(self.stateQueue, ^{
         if (self.isProbingPrimary) {
-            // Probe failed: stay on current fallback, update failure time
+            // Probe failed: stay on current fallback, double the backoff
+            self.currentBackoff = MIN(self.currentBackoff * 2, kMaxBackoff);
             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
-                                              message:@"Host failover: primary probe failed, staying on fallback"];
+                                              message:[NSString stringWithFormat:@"Host failover: primary probe failed, next probe in %.0fs", self.currentBackoff]];
             self.lastFailureTime = [NSDate date];
             self.isProbingPrimary = NO;
             hasAlternate = YES;
