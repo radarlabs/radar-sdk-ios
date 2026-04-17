@@ -512,6 +512,9 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 }
 
 - (void)updateTrackingFromMeta:(RadarMeta *_Nullable)meta {
+    [RadarOfflineEventManager logDebug:[NSString stringWithFormat:@"updateTrackingFromMeta meta=%@ options=%@",
+                                        meta ? @"non-nil" : @"nil",
+                                        meta.trackingOptions ? [meta.trackingOptions dictionaryValue] : @"nil"]];
     if (meta) {
         if ([meta trackingOptions]) {
             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
@@ -1050,6 +1053,10 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                             [RadarSyncManager rollbackSyncState];
                         }
                     }
+                    [RadarOfflineEventManager logDebug:[NSString stringWithFormat:@"callTrackAPI completion status=%d config=%@ configMeta=%@",
+                                                        (int)status,
+                                                        config ? @"non-nil" : @"nil",
+                                                        config.meta ? @"non-nil" : @"nil"]];
                     
                     [self updateTrackingFromMeta:config.meta];
                     [self replaceSyncedGeofences:nearbyGeofences];

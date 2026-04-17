@@ -12,6 +12,20 @@ import CoreLocation
 @objc(RadarOfflineEventManager) @objcMembers
 class RadarOfflineEventManager: NSObject {
     
+
+    @nonobjc
+    nonisolated(unsafe) static var debugLogger: ((String) -> Void)?
+    @objc static func setDebugLogger(_ logger: ((String) -> Void)?) {
+        debugLogger = logger
+    }
+    private static func debugLog(_ message: @autoclosure () -> String) {
+        debugLogger?(message())
+    }
+    
+    @objc public static func logDebug(_ message: String) {
+        debugLog(message)
+    }
+    
     private static let queue = DispatchQueue(label: "io.radar.offlineEventManager")
     nonisolated(unsafe)  private static var _offlineGeofenceIds: Set<String>? = nil
     
@@ -43,6 +57,7 @@ class RadarOfflineEventManager: NSObject {
         
         var events = [RadarEvent]()
         
+        
         for geofence in entries {
             if let event = makeGeofenceEvent(
                 type: "user.entered_geofence",
@@ -72,6 +87,12 @@ class RadarOfflineEventManager: NSObject {
         let currentGeofences = RadarSyncManager.getGeofences(for: location)
         offlineGeofenceIds = Set(currentGeofences.map { $0.id})
         
+        debugLog(
+            "generateEvents loc=(\(location.coordinate.latitude),\(location.coordinate.longitude)) acc=\(location.horizontalAccuracy) " +
+            "baselineIds=\(baselineIds) effectiveIds=\(effectiveIds) " +
+            "entries=\(entries.map { $0.id }) exits=\(exits.map { $0.id }) " +
+            "newOfflineGeofenceIds=\(Set(currentGeofences.map { $0.id }))"
+        )
         let user = buildSyntheticUser(location: location, geofences: currentGeofences)
         completionHandler(events, user, location)
     }
@@ -102,6 +123,10 @@ class RadarOfflineEventManager: NSObject {
             inRampedUpGeofences = false
         }
         
+        debugLog(
+            "updateTrackingOptions tags=\(geofenceTags) rampUpTags=\(rampUpTags ?? []) match=\(inRampedUpGeofences) " +
+            "remoteTypes=\(remoteOptions?.map { $0.type } ?? [])"
+        )
         if inRampedUpGeofences {
             RadarLogger.shared.debug("OfflineEventManager: Ramping up tracking options")
             return RadarRemoteTrackingOptions.trackingOptions(forKey: "inGeofence", in: remoteOptions)
@@ -118,7 +143,10 @@ class RadarOfflineEventManager: NSObject {
     @objc static func updateTrackingOptions(for location: CLLocation) -> RadarTrackingOptions? {
         let currentGeofences = RadarSyncManager.getGeofences(for: location)
         let tags = currentGeofences.compactMap { $0.tag }
-        
+        debugLog(
+            "updateTrackingOptions(for:) loc=(\(location.coordinate.latitude),\(location.coordinate.longitude)) acc=\(location.horizontalAccuracy) " +
+            "currentGeofenceIds=\(currentGeofences.map { $0.id }) tags=\(tags)"
+        )
         return updateTrackingOptions(geofenceTags: tags)
     }
     

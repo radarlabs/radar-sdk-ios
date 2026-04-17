@@ -12,6 +12,8 @@
 		BA51988D2ED10AEB004A3B35 /* TripActivityExtensionExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = BA51987A2ED10AEA004A3B35 /* TripActivityExtensionExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		BA5198932EDE0F06004A3B35 /* TripLiveActivityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA5198922EDE0F06004A3B35 /* TripLiveActivityManager.swift */; };
 		BA5198C92EDE3B8C004A3B35 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BA5198C82EDE3B8C004A3B35 /* Assets.xcassets */; };
+		BA7790272F92899C00E197CA /* DemoLogView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA7790202F92899900E197CA /* DemoLogView.swift */; };
+		BAF9893C2F919B4100ECB8D8 /* DemoLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAF989352F919B3A00ECB8D8 /* DemoLog.swift */; };
 		DD236D27230A006700EB88F9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD236D26230A006700EB88F9 /* AppDelegate.swift */; };
 		DD291169230D0AF900049D3A /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD291168230D0AF900049D3A /* Utils.swift */; };
 		DDB861D32385FC3E00770661 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DDB861D22385FC3E00770661 /* Default-568h@2x.png */; };
@@ -146,6 +148,8 @@
 		BA51987D2ED10AEA004A3B35 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
 		BA5198922EDE0F06004A3B35 /* TripLiveActivityManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TripLiveActivityManager.swift; sourceTree = "<group>"; };
 		BA5198C82EDE3B8C004A3B35 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		BA7790202F92899900E197CA /* DemoLogView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoLogView.swift; sourceTree = "<group>"; };
+		BAF989352F919B3A00ECB8D8 /* DemoLog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoLog.swift; sourceTree = "<group>"; };
 		DD236D23230A006700EB88F9 /* Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DD236D26230A006700EB88F9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		DD236D34230A006900EB88F9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -265,12 +269,14 @@
 		DD236D25230A006700EB88F9 /* Example */ = {
 			isa = PBXGroup;
 			children = (
+				BAF989352F919B3A00ECB8D8 /* DemoLog.swift */,
 				BA5198C82EDE3B8C004A3B35 /* Assets.xcassets */,
 				E632FA1C2CAC366C00E86C85 /* Example.entitlements */,
 				DD86FD0B23918B3C003225F6 /* Example-Bridging-Header.h */,
 				DD236D34230A006900EB88F9 /* Info.plist */,
 				DDB861D22385FC3E00770661 /* Default-568h@2x.png */,
 				DD236D26230A006700EB88F9 /* AppDelegate.swift */,
+				BA7790202F92899900E197CA /* DemoLogView.swift */,
 				F6513F5F2E6B736200523472 /* MainView.swift */,
 				F61886C42EA7DC800072E87C /* MapView.swift */,
 				F63DDAD42E746BB0006991F5 /* StyledButton.swift */,
@@ -531,6 +537,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F66DAD6A2E707F0700896773 /* waypoints.gpx in Sources */,
+				BAF9893C2F919B4100ECB8D8 /* DemoLog.swift in Sources */,
 				F63DDAD52E746BB0006991F5 /* StyledButton.swift in Sources */,
 				F61886C52EA7DC820072E87C /* MapView.swift in Sources */,
 				BA5198932EDE0F06004A3B35 /* TripLiveActivityManager.swift in Sources */,
@@ -541,6 +548,7 @@
 				F61886C12EA7DB440072E87C /* MyRadarDelegate.swift in Sources */,
 				F65F793E2EF458E600399E84 /* MyIAMDelegate.swift in Sources */,
 				DD291169230D0AF900049D3A /* Utils.swift in Sources */,
+				BA7790272F92899C00E197CA /* DemoLogView.swift in Sources */,
 				F61886BF2EA7DB1D0072E87C /* TestsView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

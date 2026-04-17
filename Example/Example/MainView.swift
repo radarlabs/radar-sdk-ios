@@ -10,28 +10,19 @@ import SwiftUI
 import RadarSDK
 
 struct MainView: View {
-    
     enum TabIdentifier {
         case Map
         case Logs
         case Tests
+        case DemoLog
     }
-    
-    @State private var selectedTab: TabIdentifier = .Tests;
-    
+    @State private var selectedTab: TabIdentifier = .Tests
     var body: some View {
         TabView(selection: $selectedTab) {
-            MapView().tabItem {
-                Text("Map")
-            }.tag(TabIdentifier.Map)
-            
-            LogsView().tabItem {
-                Text("Debug")
-            }.tag(TabIdentifier.Logs)
-
-            TestsView().tabItem {
-                Text("Tests")
-            }.tag(TabIdentifier.Tests)
+            MapView().tabItem { Text("Map") }.tag(TabIdentifier.Map)
+            LogsView().tabItem { Text("Debug") }.tag(TabIdentifier.Logs)
+            TestsView().tabItem { Text("Tests") }.tag(TabIdentifier.Tests)
+            DemoLogView().tabItem { Text("Offline") }.tag(TabIdentifier.DemoLog)
         }
     }
 }

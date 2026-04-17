@@ -10,7 +10,7 @@ import Foundation
 @objc(RadarSettings) @objcMembers
 internal class RadarSettings: NSObject {
     
-    static let DefaultHost = "https://api.radar.io"
+    static let DefaultHost = "https://api.radar-staging.com"
     static let DefaultVerifiedHost = "https://api-verified.radar.io"
     
     public static func setAppGroup(_ appGroup: String?) {
@@ -173,7 +173,9 @@ internal class RadarSettings: NSObject {
             }
             return nil
         }
-        set { RadarUserDefaults.set(newValue?.dictionaryValue(), forKey: .RemoteTrackingOptions) }
+        set {
+            RadarOfflineEventManager.logDebug("setRemoteTrackingOptions value=\(newValue?.dictionaryValue() ?? ["nil": "nil"])")
+            RadarUserDefaults.set(newValue?.dictionaryValue(), forKey: .RemoteTrackingOptions) }
     }
     
     public static var tripOptions: RadarTripOptions? {

@@ -767,4 +767,25 @@ public final class RadarSyncManager: NSObject {
             )
         }
     }
+    
+    // The following methods are only here for map display QA testing, remove before shipping
+    
+    @objc public static func getSyncedRegion() -> CLCircularRegion? {
+        guard let state = syncStore.read(),
+              let center = state.syncedRegionCenter,
+              let radius = state.syncedRegionRadius, radius > 0 else { return nil }
+        return CLCircularRegion(
+            center: center.clLocationCoordinate2D,
+            radius: radius,
+            identifier: "\(syncRegionIdentifierPrefix)current"
+        )
+    }
+    
+    @objc public static func getSyncedStateJSON() -> [String: Any]? {
+        let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
+        let fileURL = appSupport.appendingPathComponent("RadarSDK").appendingPathComponent("radar_sync_state.json")
+        guard let data = try? Data(contentsOf: fileURL),
+              let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else { return nil }
+        return json
+    }
 }

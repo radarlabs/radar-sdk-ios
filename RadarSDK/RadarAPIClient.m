@@ -502,7 +502,9 @@
                         offlineConfig = [RadarConfig fromDictionary:@{@"meta": @{@"trackingOptions": [offlineOptions dictionaryValue]}}];
                     }
                 }
-                
+                [RadarOfflineEventManager logDebug:[NSString stringWithFormat:@"trackFailure offlineConfig=%@ trackingOptions=%@",
+                                                    offlineConfig ? @"non-nil" : @"nil",
+                                                    offlineConfig.meta.trackingOptions ? [offlineConfig.meta.trackingOptions dictionaryValue] : @"nil"]];
                 completionHandler(status, nil, nil, nil, nil, offlineConfig, nil);
             } else {
                 [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Successfully flushed replays"]];
@@ -560,6 +562,10 @@
                                         offlineConfig = [RadarConfig fromDictionary:@{@"meta": @{@"trackingOptions": [offlineOptions dictionaryValue]}}];
                                     }
                                 }
+                                
+                                [RadarOfflineEventManager logDebug:[NSString stringWithFormat:@"trackFailure offlineConfig=%@ trackingOptions=%@",
+                                                                    offlineConfig ? @"non-nil" : @"nil",
+                                                                    offlineConfig.meta.trackingOptions ? [offlineConfig.meta.trackingOptions dictionaryValue] : @"nil"]];
                                 
                                 return completionHandler(status, nil, nil, nil, nil, offlineConfig, nil);
                             }

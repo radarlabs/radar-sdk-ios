@@ -21,6 +21,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
     var demoFunctions = Array<() -> Void>()
     
     var useSwiftUI = true
+    private var lastKnownTrackingOptionsKey: String?
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { (_, _) in }
@@ -38,11 +39,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         radarInitializeOptions.silentPush = true
 
         Radar.setAppGroup("group.waypoint.data")
-        Radar.initialize(publishableKey: "prj_test_pk_0000000000000000000000000000000000000000", options: radarInitializeOptions)
+        Radar.initialize(publishableKey: "prj_test_pk_cff94457df57a7ac5dcaacea84ab1df7423ea9ac", options: radarInitializeOptions)
         Radar.setMetadata([ "foo": "bar" ])
         Radar.setDelegate(self)
         Radar.setVerifiedDelegate(self)
         Radar.setInAppMessageDelegate(MyIAMDelegate())
+        Radar.setUserId("name_offline_ios_date")
+        
+        RadarOfflineEventManager.setDebugLogger { message in
+            DemoLog.append(message)
+        }
+       
         
         if #available(iOS 15.0, *) {
             locationManager.startMonitoringLocationPushes() { data, error in
@@ -207,8 +214,55 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
                 }
             }
         }
+        
+        let summary = events.map { "\($0.type.rawValue):\($0.geofence?._id ?? "-"):offline=\(($0.metadata["offline"] as? Bool) ?? false)" }
+        DemoLog.append("didReceiveEvents \(summary)")
+        
+        // Offline event notifications
+        for event in events {
+            guard let isOffline = event.metadata["offline"] as? Bool,
+                  isOffline else { continue }
+            let prefix = isOffline ? "Offline" : "Online"
+
+            let geofenceId = event.geofence?._id ?? "unknown"
+            let geofenceDesc = event.geofence?.__description ?? geofenceId
+            let action = event.type == .userEnteredGeofence ? "entered" : "exited"
+            scheduleOfflineEventNotification(
+                title: "\(prefix) \(action) geofence",
+                body: "\(geofenceDesc) (id: \(geofenceId))"
+            )
+            print("[offline] \(action) \(geofenceId)")
+        }
+        
+        checkForTrackingOptionsChange()
     }
     
+    private func scheduleOfflineEventNotification(title: String, body: String) {
+        let content = UNMutableNotificationContent()
+        content.title = title
+        content.body = body
+        content.sound = .default
+        let request = UNNotificationRequest(
+            identifier: UUID().uuidString,
+            content: content,
+            trigger: nil  // fires immediately
+        )
+        UNUserNotificationCenter.current().add(request)
+    }
+    
+    private func checkForTrackingOptionsChange() {
+        let current = Radar.getTrackingOptions()
+        let currentKey = "\(current.desiredStoppedUpdateInterval)|\(current.desiredMovingUpdateInterval)|\(current.desiredAccuracy.rawValue)"
+        if let last = lastKnownTrackingOptionsKey, last != currentKey {
+            let direction = current.desiredMovingUpdateInterval <= 60 ? "RAMP UP" : "RAMP DOWN"
+            scheduleOfflineEventNotification(
+                title: "Tracking options changed — \(direction)",
+                body: "stopped=\(current.desiredStoppedUpdateInterval)s moving=\(current.desiredMovingUpdateInterval)s accuracy=\(current.desiredAccuracy.rawValue)"
+            )
+        }
+        lastKnownTrackingOptionsKey = currentKey
+    }
+
     func didUpdateLocation(_ location: CLLocation, user: RadarUser) {
         // Update the Live Activity with the latest trip progress
         if #available(iOS 16.2, *) {
@@ -216,6 +270,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
                 handleTripLiveActivity(user: user)
             }
         }
+        DemoLog.append("didUpdateLocation loc=(\(location.coordinate.latitude),\(location.coordinate.longitude)) acc=\(location.horizontalAccuracy)")
+
+        checkForTrackingOptionsChange()
     }
     
     // MARK: - Live Activity Handling

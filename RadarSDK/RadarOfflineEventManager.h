@@ -17,6 +17,9 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)reset;
 + (void)handleTrackFailure:(CLLocation *)location;
 + (RadarTrackingOptions * _Nullable)updateTrackingOptionsFor:(CLLocation *)location;
++ (void)setDebugLogger:(void (^ _Nullable)(NSString *message))logger;
++ (void)logDebug:(NSString *)message;
+
 
 @end
 
