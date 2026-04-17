@@ -8,6 +8,17 @@
 import Testing
 @testable import RadarSDK
 
+/// A controllable clock for use in tests. Starts at a fixed point and advances on demand.
+private final class TestClock {
+    var currentTime: Date = Date(timeIntervalSinceReferenceDate: 0)
+
+    var provider: () -> Date { { [unowned self] in self.currentTime } }
+
+    func advance(by seconds: TimeInterval) {
+        currentTime = currentTime.addingTimeInterval(seconds)
+    }
+}
+
 @Suite(.serialized)
 struct RadarHostFailoverTests {
 
@@ -76,21 +87,26 @@ struct RadarHostFailoverTests {
     // MARK: - Probing behavior
 
     @Test func currentHost_probesPrimaryAfterBackoff() {
-        let failover = RadarHostFailover(hosts: [primary, fallback1])
+        let clock = TestClock()
+        let failover = RadarHostFailover(hosts: [primary, fallback1], now: clock.provider)
         failover.reportFailure()
 
-        // Simulate backoff elapsed
-        failover.lastFailureTime = Date(timeIntervalSinceNow: -60)
+        // Not yet elapsed: still on fallback
+        clock.advance(by: 29)
+        #expect(failover.currentHost == fallback1)
 
+        // Backoff elapsed: probe primary
+        clock.advance(by: 2)
         #expect(failover.currentHost == primary)
     }
 
     @Test func reportSuccess_afterProbeResetsToPrimary() {
-        let failover = RadarHostFailover(hosts: [primary, fallback1])
+        let clock = TestClock()
+        let failover = RadarHostFailover(hosts: [primary, fallback1], now: clock.provider)
         failover.reportFailure()
 
-        // Simulate backoff elapsed and trigger probe
-        failover.lastFailureTime = Date(timeIntervalSinceNow: -60)
+        // Backoff elapsed, trigger probe
+        clock.advance(by: 60)
         #expect(failover.currentHost == primary)
 
         // Probe succeeds
@@ -99,49 +115,66 @@ struct RadarHostFailoverTests {
     }
 
     @Test func reportFailure_probeFailedDoublesBackoff() {
-        let failover = RadarHostFailover(hosts: [primary, fallback1])
+        let clock = TestClock()
+        let failover = RadarHostFailover(hosts: [primary, fallback1], now: clock.provider)
         failover.reportFailure()
 
-        // Simulate backoff elapsed to trigger probe
-        failover.lastFailureTime = Date(timeIntervalSinceNow: -60)
-        _ = failover.currentHost // sets isProbingPrimary = true
+        // Trigger probe (initial backoff = 30s)
+        clock.advance(by: 31)
+        _ = failover.currentHost
 
-        // Probe fails
-        #expect(failover.reportFailure() == true)
+        // Probe fails — backoff doubles to 60s
+        failover.reportFailure()
 
-        // Backoff should have doubled from 30 to 60
-        #expect(failover.currentBackoff == 60.0)
+        // At 59s into new window: should still be on fallback
+        clock.advance(by: 59)
+        #expect(failover.currentHost == fallback1)
+
+        // At 61s into new window: should probe primary
+        clock.advance(by: 2)
+        #expect(failover.currentHost == primary)
     }
 
     @Test func backoffCapsAt300Seconds() {
-        let failover = RadarHostFailover(hosts: [primary, fallback1])
+        let clock = TestClock()
+        let failover = RadarHostFailover(hosts: [primary, fallback1], now: clock.provider)
         failover.reportFailure()
 
         // Repeatedly probe and fail: 30 -> 60 -> 120 -> 240 -> 300 (cap)
         for _ in 0..<10 {
-            failover.lastFailureTime = Date(timeIntervalSinceNow: -600)
-            _ = failover.currentHost // trigger probe
-            failover.reportFailure() // probe fails, doubles backoff
+            clock.advance(by: 600)
+            _ = failover.currentHost  // trigger probe
+            failover.reportFailure()  // probe fails, doubles backoff
         }
 
-        #expect(failover.currentBackoff == 300.0)
+        // At 299s: should still be on fallback (backoff capped at 300s)
+        clock.advance(by: 299)
+        #expect(failover.currentHost == fallback1)
+
+        // At 301s: should probe primary
+        clock.advance(by: 2)
+        #expect(failover.currentHost == primary)
     }
 
     @Test func reportSuccess_resetsBackoffToInitial() {
-        let failover = RadarHostFailover(hosts: [primary, fallback1])
+        let clock = TestClock()
+        let failover = RadarHostFailover(hosts: [primary, fallback1], now: clock.provider)
         failover.reportFailure()
 
-        // Drive backoff up
-        failover.lastFailureTime = Date(timeIntervalSinceNow: -60)
+        // Drive backoff up: probe, fail (backoff = 60)
+        clock.advance(by: 31)
         _ = failover.currentHost
-        failover.reportFailure() // backoff now 60
+        failover.reportFailure()
 
         // Probe again and succeed
-        failover.lastFailureTime = Date(timeIntervalSinceNow: -120)
+        clock.advance(by: 61)
         _ = failover.currentHost
         failover.reportSuccess()
 
-        #expect(failover.currentBackoff == 30.0)
+        // Backoff should be reset to initial (30s)
+        // Within 30s: no probe
+        clock.advance(by: 29)
+        #expect(failover.currentHost == primary)
     }
 
     // MARK: - Fallback during backoff
@@ -158,7 +191,8 @@ struct RadarHostFailoverTests {
     // MARK: - Full failover cycle
 
     @Test func fullCycle_failoverProbeRecover() {
-        let failover = RadarHostFailover(hosts: [primary, fallback1, fallback2])
+        let clock = TestClock()
+        let failover = RadarHostFailover(hosts: [primary, fallback1, fallback2], now: clock.provider)
 
         // 1. Start on primary
         #expect(failover.currentHost == primary)
@@ -168,15 +202,15 @@ struct RadarHostFailoverTests {
         #expect(failover.currentHost == fallback1)
 
         // 3. Backoff elapses, probe primary
-        failover.lastFailureTime = Date(timeIntervalSinceNow: -60)
+        clock.advance(by: 31)
         #expect(failover.currentHost == primary)
 
         // 4. Probe fails, stay on fallback1 with doubled backoff
         failover.reportFailure()
         #expect(failover.currentHost == fallback1)
 
-        // 5. Backoff elapses again, probe primary
-        failover.lastFailureTime = Date(timeIntervalSinceNow: -120)
+        // 5. Backoff elapses again (60s), probe primary
+        clock.advance(by: 61)
         #expect(failover.currentHost == primary)
 
         // 6. Probe succeeds, back to primary
@@ -185,7 +219,8 @@ struct RadarHostFailoverTests {
     }
 
     @Test func failoverToSecondFallbackThenRecover() {
-        let failover = RadarHostFailover(hosts: [primary, fallback1, fallback2])
+        let clock = TestClock()
+        let failover = RadarHostFailover(hosts: [primary, fallback1, fallback2], now: clock.provider)
 
         // Fail through to fallback2
         failover.reportFailure() // -> fallback1
@@ -193,7 +228,7 @@ struct RadarHostFailoverTests {
         #expect(failover.currentHost == fallback2)
 
         // Backoff elapses, probe primary, succeeds
-        failover.lastFailureTime = Date(timeIntervalSinceNow: -60)
+        clock.advance(by: 31)
         #expect(failover.currentHost == primary)
         failover.reportSuccess()
 

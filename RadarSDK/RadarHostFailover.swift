@@ -9,57 +9,58 @@ import Foundation
 
 final class RadarHostFailover {
 
-    private static let initialBackoff: TimeInterval = 30.0
-    private static let maxBackoff: TimeInterval = 300.0
+    private static let initialBackoffSeconds: TimeInterval = 30.0
+    private static let maxBackoffSeconds: TimeInterval = 300.0
 
-    private let stateQueue = DispatchQueue(label: "io.radar.hostfailover")
+    // Serial queue to synchronize access to mutable state across concurrent network threads.
+    private let stateQueue: DispatchQueue = DispatchQueue(label: "io.radar.hostfailover")
     private let hosts: [String]
+    private let now: () -> Date
 
-    // Internal for testability
-    var activeHostIndex: Int = 0
-    var lastFailureTime: Date? = nil
-    var currentBackoff: TimeInterval = RadarHostFailover.initialBackoff
-    var isProbingPrimary: Bool = false
+    private var activeHostIndex: Int = 0
+    private var lastFailureTime: Date? = nil
+    private var currentBackoffSeconds: TimeInterval = RadarHostFailover.initialBackoffSeconds
+    private var isRetryingPrimary: Bool = false
 
     /// Initialize with an ordered list of hosts. Index 0 is the primary host.
-    init(hosts: [String]) {
+    init(hosts: [String], now: @escaping () -> Date = { Date() }) {
         precondition(!hosts.isEmpty, "RadarHostFailover requires at least one host")
         self.hosts = hosts
+        self.now = now
     }
 
     /// Returns the host to use for the next request.
     /// In normal mode, returns the primary host.
     /// In failover mode with backoff not elapsed, returns the current fallback host.
-    /// In failover mode with backoff elapsed, returns the primary host (probe attempt).
+    /// In failover mode with backoff elapsed, returns the primary host (retry attempt).
     var currentHost: String {
         stateQueue.sync {
             if activeHostIndex == 0 {
-                isProbingPrimary = false
+                isRetryingPrimary = false
                 return hosts[0]
             }
-            let elapsed = Date().timeIntervalSince(lastFailureTime ?? Date())
-            if elapsed >= currentBackoff {
+            let elapsed = now().timeIntervalSince(lastFailureTime ?? now())
+            if elapsed >= currentBackoffSeconds {
                 let host = hosts[0]
-                isProbingPrimary = true
-                RadarLogger.shared.debug("Host failover: probing primary host \(host)")
+                isRetryingPrimary = true
                 return host
             } else {
-                isProbingPrimary = false
+                isRetryingPrimary = false
                 return hosts[activeHostIndex]
             }
         }
     }
 
-    /// Call after a successful request. If we were probing the primary, resets to normal mode.
+    /// Call after a successful request. If we were retrying the primary, resets to normal mode.
     func reportSuccess() {
         stateQueue.sync {
-            if isProbingPrimary {
+            if isRetryingPrimary {
                 RadarLogger.shared.debug("Host failover: primary host recovered, switching back")
                 activeHostIndex = 0
                 lastFailureTime = nil
-                currentBackoff = RadarHostFailover.initialBackoff
+                currentBackoffSeconds = RadarHostFailover.initialBackoffSeconds
             }
-            isProbingPrimary = false
+            isRetryingPrimary = false
         }
     }
 
@@ -69,17 +70,15 @@ final class RadarHostFailover {
     @discardableResult
     func reportFailure() -> Bool {
         stateQueue.sync {
-            if isProbingPrimary {
-                currentBackoff = min(currentBackoff * 2, RadarHostFailover.maxBackoff)
-                RadarLogger.shared.debug("Host failover: primary probe failed, next probe in \(Int(currentBackoff))s")
-                lastFailureTime = Date()
-                isProbingPrimary = false
+            if isRetryingPrimary {
+                currentBackoffSeconds = min(currentBackoffSeconds * 2, RadarHostFailover.maxBackoffSeconds)
+                lastFailureTime = now()
+                isRetryingPrimary = false
                 return true
             } else if activeHostIndex + 1 < hosts.count {
                 activeHostIndex += 1
-                lastFailureTime = Date()
-                isProbingPrimary = false
-                RadarLogger.shared.debug("Host failover: switching to fallback host \(hosts[activeHostIndex])")
+                lastFailureTime = now()
+                isRetryingPrimary = false
                 return true
             }
             return false
