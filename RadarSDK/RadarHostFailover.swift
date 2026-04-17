@@ -7,7 +7,7 @@
 
 import Foundation
 
-final class RadarHostFailover {
+@objc public final class RadarHostFailover: NSObject {
 
     private static let initialBackoffSeconds: TimeInterval = 30.0
     private static let maxBackoffSeconds: TimeInterval = 300.0
@@ -22,6 +22,10 @@ final class RadarHostFailover {
     private var currentBackoffSeconds: TimeInterval = RadarHostFailover.initialBackoffSeconds
     private var isRetryingPrimary: Bool = false
 
+    @objc public convenience init(hosts: [String]) {
+        self.init(hosts: hosts, now: { Date() })
+    }
+
     /// Initialize with an ordered list of hosts. Index 0 is the primary host.
     init(hosts: [String], now: @escaping () -> Date = { Date() }) {
         precondition(!hosts.isEmpty, "RadarHostFailover requires at least one host")
@@ -33,7 +37,7 @@ final class RadarHostFailover {
     /// In normal mode, returns the primary host.
     /// In failover mode with backoff not elapsed, returns the current fallback host.
     /// In failover mode with backoff elapsed, returns the primary host (retry attempt).
-    var currentHost: String {
+    @objc public var currentHost: String {
         stateQueue.sync {
             if activeHostIndex == 0 {
                 isRetryingPrimary = false
@@ -52,7 +56,7 @@ final class RadarHostFailover {
     }
 
     /// Call after a successful request. If we were retrying the primary, resets to normal mode.
-    func reportSuccess() {
+    @objc public func reportSuccess() {
         stateQueue.sync {
             if isRetryingPrimary {
                 RadarLogger.shared.debug("Host failover: primary host recovered, switching back")
@@ -67,8 +71,8 @@ final class RadarHostFailover {
     /// Call after a network error that should trigger failover.
     /// Advances to the next host if available.
     /// Returns true if a different host is available to retry on.
-    @discardableResult
-    func reportFailure() -> Bool {
+    @discardableResult @objc
+    public func reportFailure() -> Bool {
         stateQueue.sync {
             if isRetryingPrimary {
                 currentBackoffSeconds = min(currentBackoffSeconds * 2, RadarHostFailover.maxBackoffSeconds)

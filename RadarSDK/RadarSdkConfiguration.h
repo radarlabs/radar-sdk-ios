@@ -33,6 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)bufferGeofenceEntries;
 - (BOOL)bufferGeofenceExits;
 - (BOOL)stopDetection;
+- (BOOL)useHostFailover;
 - (instancetype)initWithDict:(NSDictionary *_Nullable)dict;
 - (NSDictionary *)dictionaryValue;
 @end
