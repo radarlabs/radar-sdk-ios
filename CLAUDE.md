@@ -8,11 +8,10 @@ iOS SDK for [Radar](https://radar.com). The SDK is an Xcode project with an Obje
 
 **All new code must be written in Swift.**
 
-When working in an existing Objective-C file, migrate it to Swift if the scope of changes is reasonable. Prefer incremental migration over large rewrites, but do not add new `.m` or `.h` files.
+When working in an existing Objective-C file, consider migrating the file to Swift. Prompt the user to confirm when migrating a file to Swift. Do not migrate without asking. 
 
 - New classes, structs, enums, and extensions → Swift only
 - New tests → Swift only
-- Existing Objective-C files → migrate to Swift when touching them for non-trivial changes
 
 ## Build & Test
 
