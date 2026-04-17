@@ -17,6 +17,10 @@ You can also see a detailed SDK reference [here](https://radarlabs.github.io/rad
 
 See migration guides in `MIGRATION.md`.
 
+## Development
+
+Run `make bootstrap` to set up your environment for development and allow you to use the other `make` commands. It will call `sudo` to install some gems.
+
 ## Examples
 
 See a Swift example app in `Example/`.

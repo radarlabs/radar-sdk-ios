@@ -21,30 +21,16 @@ else
   echo "homebrew already installed"
 fi
 
-if ! command -v pod >/dev/null; then
-  echo "installing cocoapods..."
-  gem install cocoapods
-else
-  echo "cocoapods already installed"
-fi
-
 if ! command -v xcpretty >/dev/null; then
   echo "installing xcpretty..."
-  gem install xcpretty
+  sudo gem install xcpretty
 else
   echo "xcpretty already installed"
 fi
 
-if ! command -v xctool >/dev/null; then
-  echo "installing xctool..."
-  brew install xctool
-else
-  echo "xctool already installed"
-fi
-
 if ! command -v jazzy >/dev/null; then
   echo "installing jazzy..."
-  gem install jazzy
+  sudo gem install jazzy
 else
   echo "jazzy already installed"
 fi
