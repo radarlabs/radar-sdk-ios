@@ -19,7 +19,7 @@ See migration guides in `MIGRATION.md`.
 
 ## Development
 
-Run `make bootstrap` to setup your environment for development and allow you to use the other `make` commands. It will call `sudo` to install some gems.
+Run `make bootstrap` to set up your environment for development and allow you to use the other `make` commands. It will call `sudo` to install some gems.
 
 ## Examples
 
