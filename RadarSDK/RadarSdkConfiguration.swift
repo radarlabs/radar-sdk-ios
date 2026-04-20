@@ -86,7 +86,7 @@ class RadarSdkConfiguration: NSObject {
         bufferGeofenceEntries = dict?["bufferGeofenceEntries"] as? Bool ?? true
         bufferGeofenceExits = dict?["bufferGeofenceExits"] as? Bool ?? true
         stopDetection = dict?["stopDetection"] as? Bool ?? false
-        useHostFailover = dict?["useHostFailover"] as? Bool ?? false
+        useHostFailover = dict?["useHostFailover"] as? Bool ?? true
     }
     
     public func dictionaryValue() -> [String: Any] {
