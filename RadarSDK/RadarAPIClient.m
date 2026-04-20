@@ -60,7 +60,8 @@ static NSSet<NSNumber *> *failoverErrorCodes;
         failoverErrorCodes = [NSSet setWithArray:@[
             @(NSURLErrorCannotConnectToHost),
             @(NSURLErrorTimedOut),
-            @(NSURLErrorNetworkConnectionLost)
+            @(NSURLErrorNetworkConnectionLost),
+            @(NSURLErrorCannotFindHost)
         ]];
     }
 }
@@ -151,6 +152,7 @@ static NSSet<NSNumber *> *failoverErrorCodes;
         if (useHostFailover && status == RadarStatusErrorNetwork && [RadarAPIClient isFailoverError:error]) {
             BOOL hasAlternate = [self.verifiedHostFailover reportFailure];
             if (hasAlternate) {
+                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelWarning message:@"Failing over"];
                 NSString *retryHost = [self.verifiedHostFailover currentHost];
                 [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo
                                                   message:[NSString stringWithFormat:@"Host failover: retrying on %@", retryHost]];
