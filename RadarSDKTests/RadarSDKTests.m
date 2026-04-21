@@ -310,6 +310,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     [[RadarLogBuffer sharedInstance]clearBuffer];
     [[RadarLogBuffer sharedInstance]setPersistentLogFeatureFlag:YES];
     [[RadarReplayBuffer sharedInstance]clearBuffer];
+    [[RadarReplayBuffer sharedInstance] cancelBatchTimer];
     
     // Clear user tags to ensure tests don't interfere with each other
     NSArray<NSString *> *existingTags = [Radar getTags];
@@ -2078,6 +2079,43 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     XCTAssertNotEqualObjects(options, @"foo");
 }
 
+- (void)test_RadarTrackingOptions_batchingFieldsInEquality {
+    RadarTrackingOptions *a = RadarTrackingOptions.presetEfficient;
+    RadarTrackingOptions *b = RadarTrackingOptions.presetEfficient;
+    XCTAssertEqualObjects(a, b);
+    
+    b.batchInterval = 30;
+    XCTAssertNotEqualObjects(a, b);
+    
+    b.batchInterval = 0;
+    b.batchSize = 5;
+    XCTAssertNotEqualObjects(a, b);
+}
+
+- (void)test_RadarTrackingOptions_batchingSerialization {
+    RadarTrackingOptions *options = RadarTrackingOptions.presetEfficient;
+    options.batchInterval = 30;
+    options.batchSize = 5;
+    
+    NSDictionary *dict = [options dictionaryValue];
+    XCTAssertEqualObjects(dict[@"batchInterval"], @30);
+    XCTAssertEqualObjects(dict[@"batchSize"], @5);
+    
+    RadarTrackingOptions *roundTripped = [RadarTrackingOptions trackingOptionsFromDictionary:dict];
+    XCTAssertEqual(roundTripped.batchInterval, 30);
+    XCTAssertEqual(roundTripped.batchSize, 5);
+    XCTAssertEqualObjects(options, roundTripped);
+}
+
+- (void)test_RadarTrackingOptions_presetsDisableBatching {
+    XCTAssertEqual(RadarTrackingOptions.presetContinuous.batchInterval, 0);
+    XCTAssertEqual(RadarTrackingOptions.presetContinuous.batchSize, 0);
+    XCTAssertEqual(RadarTrackingOptions.presetResponsive.batchInterval, 0);
+    XCTAssertEqual(RadarTrackingOptions.presetResponsive.batchSize, 0);
+    XCTAssertEqual(RadarTrackingOptions.presetEfficient.batchInterval, 0);
+    XCTAssertEqual(RadarTrackingOptions.presetEfficient.batchSize, 0);
+}
+
 - (void)test_RadarFileStorage_writeAndRead {
     NSData *originalData = [@"Test data" dataUsingEncoding:NSUTF8StringEncoding];
     [self.fileSystem writeData:originalData toFileAtPath:self.testFilePath];
@@ -2085,6 +2123,59 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     [self.fileSystem writeData:originalData2 toFileAtPath:self.testFilePath];
     NSData *readData = [self.fileSystem readFileAtPath:self.testFilePath];
     XCTAssertEqualObjects(originalData2, readData, @"Data read from file should be equal to original data");
+}
+
+- (void)test_RadarReplayBuffer_addToBatchIncrementsCount {
+    RadarTrackingOptions *options = RadarTrackingOptions.presetResponsive;
+    options.batchInterval = 0;
+    options.batchSize = 10;
+    
+    CLLocation *location = [[CLLocation alloc] initWithLatitude:0.1 longitude:0.1];
+    NSMutableDictionary *params = [RadarTestUtils createTrackParamWithLocation:location stopped:YES foreground:NO source:RadarLocationSourceBackgroundLocation replayed:NO beacons:@[] verified:NO attestationString:nil keyId:nil attestationError:nil encrypted:NO expectedCountryCode:nil expectedStateCode:nil];
+    
+    RadarReplayBuffer *buffer = [RadarReplayBuffer sharedInstance];
+    XCTAssertEqual([buffer batchCount], 0);
+    
+    [buffer addToBatch:params options:options];
+    XCTAssertEqual([buffer batchCount], 1);
+    
+    [buffer addToBatch:params options:options];
+    XCTAssertEqual([buffer batchCount], 2);
+}
+
+- (void)test_RadarReplayBuffer_shouldFlushBatchRespectsSize {
+    RadarTrackingOptions *options = RadarTrackingOptions.presetResponsive;
+    options.batchInterval = 0;
+    options.batchSize = 2;
+    
+    CLLocation *location = [[CLLocation alloc] initWithLatitude:0.1 longitude:0.1];
+    NSMutableDictionary *params = [RadarTestUtils createTrackParamWithLocation:location stopped:YES foreground:NO source:RadarLocationSourceBackgroundLocation replayed:NO beacons:@[] verified:NO attestationString:nil keyId:nil attestationError:nil encrypted:NO expectedCountryCode:nil expectedStateCode:nil];
+
+    RadarReplayBuffer *buffer = [RadarReplayBuffer sharedInstance];
+    
+    XCTAssertFalse([buffer shouldFlushBatchWithOptions:options], @"Empty buffer should not flush");
+    
+    [buffer addToBatch:params options:options];
+    XCTAssertFalse([buffer shouldFlushBatchWithOptions:options], @"1 < batchSize=2, should not flush");
+    
+    [buffer addToBatch:params options:options];
+    XCTAssertTrue([buffer shouldFlushBatchWithOptions:options], @"2 >= batchSize= 2, should flush");
+}
+
+- (void)test_RadarReplayBuffer_shouldFlushBatchWithZeroSize {
+    RadarTrackingOptions *options = RadarTrackingOptions.presetResponsive;
+    options.batchInterval = 30;
+    options.batchSize = 0;
+    
+    
+    CLLocation *location = [[CLLocation alloc] initWithLatitude:0.1 longitude:0.1];
+    NSMutableDictionary *params = [RadarTestUtils createTrackParamWithLocation:location stopped:YES foreground:NO source:RadarLocationSourceBackgroundLocation replayed:NO beacons:@[] verified:NO attestationString:nil keyId:nil attestationError:nil encrypted:NO expectedCountryCode:nil expectedStateCode:nil];
+
+    RadarReplayBuffer *buffer = [RadarReplayBuffer sharedInstance];
+    for (int i = 0; i < 5; i++) {
+        [buffer addToBatch:params options:options];
+    }
+    XCTAssertFalse([buffer shouldFlushBatchWithOptions:options], @"batchSize=0 means no size-based flush");
 }
 
 - (void)test_RadarFileStorage_allFilesInDirectory {
@@ -2235,5 +2326,20 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     RadarSdkConfiguration *savedSdkConfiguration = [RadarSettings sdkConfiguration];
     XCTAssertEqual(savedSdkConfiguration.trackOnceOnAppOpen, YES);
     XCTAssertEqual(savedSdkConfiguration.startTrackingOnInitialize, YES);
+}
+
+- (void)test_RadarSdkConfiguration_skipForegroundCheckDefault {
+    RadarSdkConfiguration *defaults = [[RadarSdkConfiguration alloc] initWithDict:@{}];
+    XCTAssertTrue(defaults.skipForegroundCheck, @"skipForegroundCheck should default to true");
+
+    RadarSdkConfiguration *explicitFalse = [[RadarSdkConfiguration alloc] initWithDict:@{
+        @"skipForegroundCheck": @(NO)
+    }];
+    XCTAssertFalse(explicitFalse.skipForegroundCheck);
+    
+    RadarSdkConfiguration *explicitTrue = [[RadarSdkConfiguration alloc] initWithDict:@{
+        @"skipForegroundCheck": @(YES)
+    }];
+    XCTAssertTrue(explicitTrue.skipForegroundCheck);
 }
 @end
