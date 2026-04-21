@@ -202,10 +202,10 @@ static const int MAX_BUFFER_SIZE = 120; // one hour of updates
 
     [self writeNewReplayToBuffer:batchParams];
 
-    if (wasEmpty) {
+    if (!batchStartTime) {
         batchStartTime = [NSDate date];
 
-        if (options.batchInterval > 0) {
+        if (options.batchInterval > 0 && !batchFlushTimer) {
             [self scheduleBatchTimerWithInterval:options.batchInterval];
         }
     }
@@ -250,14 +250,20 @@ static const int MAX_BUFFER_SIZE = 120; // one hour of updates
 }
 
 - (void)cancelBatchTimer {
-    dispatch_async(dispatch_get_main_queue(), ^{
+    void (^cancelTimerBlock)(void) = ^{
         if (self->batchFlushTimer) {
             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
                                                message:@"Canceling batch timer"];
             [self->batchFlushTimer invalidate];
             self->batchFlushTimer = nil;
         }
-    });
+    };
+    
+    if ([NSThread isMainThread]) {
+        cancelTimerBlock();
+    } else {
+        dispatch_sync(dispatch_get_main_queue(), cancelTimerBlock);
+    }
 }
 
 - (void)flushBatch {

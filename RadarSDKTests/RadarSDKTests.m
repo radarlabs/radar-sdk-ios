@@ -2164,7 +2164,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 
 - (void)test_RadarReplayBuffer_shouldFlushBatchWithZeroSize {
     RadarTrackingOptions *options = RadarTrackingOptions.presetResponsive;
-    options.batchInterval = 30;
+    options.batchInterval = 0;
     options.batchSize = 0;
     
     
