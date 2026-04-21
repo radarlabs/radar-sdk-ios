@@ -55,9 +55,9 @@ struct RadarNotificationContent: Sendable, Hashable {
     }
 }
 
-extension RadarGeofence_Swift {
+extension RadarGeofenceSwift {
     func toNotificationRequest(now: Date = Date()) -> UNNotificationRequest? {
-        let identifier = GEOFENCE_NOTIFICATION_PREFIX + _id
+        let identifier = GEOFENCE_NOTIFICATION_PREFIX + id
         // Content
         guard let metadata = metadata,
               let metadataContent = RadarNotificationContent(from: metadata) else {
@@ -69,15 +69,15 @@ extension RadarGeofence_Swift {
         let userInfo: [String: Any] = [
             "registeredAt": now.timeIntervalSince1970,
             "identifier": identifier,
-            "geofenceId": _id,
+            "geofenceId": id,
             "geofenceData": geofenceData,
         ]
         let content = metadataContent.toNotificationContent(userInfo: userInfo)
-        
+
         // Trigger
-        let latitude = geometryCenter.coordinate.latitude
-        let longitude = geometryCenter.coordinate.longitude
-        let radius = geometryRadius
+        let latitude = geometry.center.latitude
+        let longitude = geometry.center.longitude
+        let radius = geometry.radius
         let center = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
         let region = CLCircularRegion(center: center, radius: radius, identifier: identifier)
         let repeats = if case let .bool(value)? = metadata["radar:notificationRepeats"] { value } else { false }
