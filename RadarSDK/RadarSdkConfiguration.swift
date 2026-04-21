@@ -65,6 +65,7 @@ class RadarSdkConfiguration: NSObject {
     let bufferGeofenceEntries: Bool
     let bufferGeofenceExits: Bool
     let stopDetection: Bool
+    let skipForegroundCheck: Bool
     
     public init(dict: [String: Any]?) {
         originalDict = dict
@@ -85,6 +86,7 @@ class RadarSdkConfiguration: NSObject {
         bufferGeofenceEntries = dict?["bufferGeofenceEntries"] as? Bool ?? true
         bufferGeofenceExits = dict?["bufferGeofenceExits"] as? Bool ?? true
         stopDetection = dict?["stopDetection"] as? Bool ?? false
+        skipForegroundCheck = dict?["skipForegroundCheck"] as? Bool ?? true
     }
     
     public func dictionaryValue() -> [String: Any] {
@@ -108,7 +110,8 @@ class RadarSdkConfiguration: NSObject {
             "defaultGeofenceDwellThreshold": defaultGeofenceDwellThreshold,
             "bufferGeofenceEntries": bufferGeofenceEntries,
             "bufferGeofenceExits": bufferGeofenceExits,
-            "stopDetection": stopDetection
+            "stopDetection": stopDetection,
+            "skipForegroundCheck": skipForegroundCheck
         ]
     }
 }
