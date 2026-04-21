@@ -11,8 +11,8 @@ import Foundation
 internal class RadarSettings: NSObject {
     
     static let DefaultHost = "https://api.radar.io"
-    static let DefaultVerifiedHost = "https://not-real"
-    static let DefaultVerifiedHostFallback = "https://api-verified.radar-staging.com"
+    static let DefaultVerifiedHost = "https://api-verified.radar.io"
+    static let DefaultVerifiedHostFallback = "https://api-verified-cf.use1.radar-staging.com"
     
     public static func setAppGroup(_ appGroup: String?) {
         // this call needs to by synchronised to prevent race conditions in checking / updating the app group
