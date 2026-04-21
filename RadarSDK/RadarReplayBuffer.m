@@ -192,8 +192,6 @@ static const int MAX_BUFFER_SIZE = 120; // one hour of updates
 #pragma mark - Batch Methods
 
 - (void)addToBatch:(NSMutableDictionary *)params options:(RadarTrackingOptions *)options {
-    BOOL wasEmpty = (mutableReplayBuffer.count == 0);
-
     NSMutableDictionary *batchParams = [params mutableCopy];
     batchParams[@"replayed"] = @(YES);
     long nowMs = (long)([NSDate date].timeIntervalSince1970 * 1000);
