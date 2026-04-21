@@ -148,12 +148,13 @@ static NSSet<NSNumber *> *failoverErrorCodes;
                            logPayload:logPayload
                       extendedTimeout:extendedTimeout
                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSError *_Nullable error) {
-        if (useHostFailover && status == RadarStatusErrorNetwork && [RadarAPIClient isFailoverError:error]) {
+        if (useHostFailover && [RadarAPIClient isFailoverError:error]) {
             BOOL hasAlternate = [self.verifiedHostFailover reportFailure];
             if (hasAlternate) {
                 NSString *retryHost = [self.verifiedHostFailover currentHost];
                 [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo
                                                   message:[NSString stringWithFormat:@"Host failover: retrying on %@", retryHost]];
+                NSLog(@"Host failover: retrying on %@", retryHost);
 
                 NSString *retryUrl = [[NSString stringWithFormat:@"%@%@", retryHost, path]
                     stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
