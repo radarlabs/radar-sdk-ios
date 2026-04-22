@@ -486,6 +486,7 @@
             [buffer flushBatch];
         }
 
+        [RadarSettings updateLastTrackedTime];
         completionHandler(RadarStatusSuccess, nil, nil, nil, nil, nil, nil);
         return;
     }

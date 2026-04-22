@@ -19,7 +19,6 @@ static const int MAX_BUFFER_SIZE = 120; // one hour of updates
     NSMutableArray<RadarReplay *> *mutableReplayBuffer;
     BOOL isFlushing;
     NSTimer *batchFlushTimer;
-    NSDate *batchStartTime;
 }
 
 - (instancetype)init {
@@ -28,7 +27,6 @@ static const int MAX_BUFFER_SIZE = 120; // one hour of updates
         mutableReplayBuffer = [NSMutableArray<RadarReplay *> new];
         isFlushing = NO;
         batchFlushTimer = nil;
-        batchStartTime = nil;
     }
     return self;
 }
@@ -200,12 +198,8 @@ static const int MAX_BUFFER_SIZE = 120; // one hour of updates
 
     [self writeNewReplayToBuffer:batchParams];
 
-    if (!batchStartTime) {
-        batchStartTime = [NSDate date];
-
-        if (options.batchInterval > 0 && !batchFlushTimer) {
-            [self scheduleBatchTimerWithInterval:options.batchInterval];
-        }
+    if (options.batchInterval > 0 && !batchFlushTimer) {
+        [self scheduleBatchTimerWithInterval:options.batchInterval];
     }
 
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
@@ -242,6 +236,7 @@ static const int MAX_BUFFER_SIZE = 120; // one hour of updates
                                                                   block:^(NSTimer *_Nonnull timer) {
             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
                                                message:@"Batch timer fired"];
+            self->batchFlushTimer = nil;
             [self flushBatch];
         }];
     });
@@ -265,8 +260,12 @@ static const int MAX_BUFFER_SIZE = 120; // one hour of updates
 }
 
 - (void)flushBatch {
+    if (isFlushing) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
+                                           message:@"Skipping batch flush; already flushing replays"];
+        return;
+    }
     [self cancelBatchTimer];
-    batchStartTime = nil;
     [self flushReplaysWithCompletionHandler:nil completionHandler:nil];
 }
 
