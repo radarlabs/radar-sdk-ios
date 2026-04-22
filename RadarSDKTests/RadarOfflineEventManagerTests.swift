@@ -172,6 +172,27 @@ extension RadarSerializedTests {
             #expect(result != nil)
         }
         
+        @Test("updateTrackingOptions returns onTrip options when trip is active and no geofence match")
+        func updateTrackingOptions_onTrip() {
+            let config = RadarSdkConfiguration(dict: [
+                "useOfflineRTOUpdates": true,
+                "remoteTrackingOptions": [
+                    makeRemoteTrackingOptions(type: "default", preset: "responsive"),
+                    makeRemoteTrackingOptions(type: "inGeofence", preset: "continuous", geofenceTags: ["neighborhood"]),
+                    makeRemoteTrackingOptions(type: "onTrip", preset: "continuous"),
+                ]
+            ])
+            RadarSettings.sdkConfiguration = config
+            
+            RadarSettings.tripOptions = RadarTripOptions(externalId: "test-trip", destinationGeofenceTag: nil, destinationGeofenceExternalId: nil)
+
+            let result = RadarOfflineEventManager.updateTrackingOptions(geofenceTags: ["other-tags"])
+            #expect(result != nil)
+            
+            // Cleanup
+            RadarSettings.tripOptions = nil
+        }
+        
         // MARK: - updateTrackingOptions(for:) with sync store
         
         @Test("updateTrackingOptions for location uses synced geofence tags")

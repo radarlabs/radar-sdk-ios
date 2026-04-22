@@ -317,6 +317,9 @@ static NSTimeInterval const kBackupInterval = 2.0; // 2 seconds
 
 + (RadarUser *_Nullable)radarUser {
     NSDictionary *radarUserDict = [[NSUserDefaults standardUserDefaults] objectForKey:kRadarUser];
+    if (!radarUserDict) {
+        return nil;
+    }
     return [[RadarUser alloc] initWithObject:radarUserDict];
 }
 
