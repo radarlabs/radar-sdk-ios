@@ -62,7 +62,7 @@
 				</array>
 			</dict>
 		</dict>
-		<key>api-verified-cf.use1.radar-staging.com</key>
+		<key>api-verified-ga.radar-staging.com</key>
 		<dict>
 			<key>NSIncludesSubdomains</key>
 			<true/>
