@@ -171,7 +171,7 @@
 		B1CB0AA242AC0471A80CF9C1 /* RadarFailoverHostSelectorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E8A7EF9A1BED9637DCDAF1B /* RadarFailoverHostSelectorTests.swift */; };
 		B1CB0AA242AC0472A80CF9C2 /* RadarFailoverAPICoordinatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E8A7EF9A1BED9637DCDAF1C /* RadarFailoverAPICoordinatorTests.swift */; };
 		AD7B25467C8BD5F976F5A9E8 /* RadarFailoverAPICoordinator.h in Headers */ = {isa = PBXBuildFile; fileRef = D32C99C57E1D369FA0E298D8 /* RadarFailoverAPICoordinator.h */; };
-		0C18681AE942471B925A4B6D /* RadarVerifiedAPIClientWiringTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 4D342414C411B2261A6FACB9 /* RadarVerifiedAPIClientWiringTest.m */; };
+		0C18681AE942471B925A4B6D /* RadarAPIClientWiringTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D342414C411B2261A6FACB9 /* RadarAPIClientWiringTests.swift */; };
 		BA8647BB2F6C8F0E00F1A199 /* SyncRegionResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA8647BA2F6C8F0600F1A199 /* SyncRegionResponse.swift */; };
 		DD103211237E0C47003DD408 /* RadarSDKTests.m in Sources */ = {isa = PBXBuildFile; fileRef = DD103210237E0C47003DD408 /* RadarSDKTests.m */; };
 		DD103215237F1795003DD408 /* track.json in Resources */ = {isa = PBXBuildFile; fileRef = DD103214237F1795003DD408 /* track.json */; };
@@ -346,7 +346,7 @@
 		4E8A7EF9A1BED9637DCDAF1B /* RadarFailoverHostSelectorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarFailoverHostSelectorTests.swift; sourceTree = "<group>"; };
 		4E8A7EF9A1BED9637DCDAF1C /* RadarFailoverAPICoordinatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarFailoverAPICoordinatorTests.swift; sourceTree = "<group>"; };
 		D32C99C57E1D369FA0E298D8 /* RadarFailoverAPICoordinator.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarFailoverAPICoordinator.h; sourceTree = "<group>"; };
-		4D342414C411B2261A6FACB9 /* RadarVerifiedAPIClientWiringTest.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RadarVerifiedAPIClientWiringTest.m; sourceTree = "<group>"; };
+		4D342414C411B2261A6FACB9 /* RadarAPIClientWiringTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarAPIClientWiringTests.swift; sourceTree = "<group>"; };
 		BA8647BA2F6C8F0600F1A199 /* SyncRegionResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncRegionResponse.swift; sourceTree = "<group>"; };
 		DD103210237E0C47003DD408 /* RadarSDKTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RadarSDKTests.m; sourceTree = "<group>"; };
 		DD103214237F1795003DD408 /* track.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = track.json; sourceTree = "<group>"; };
@@ -668,7 +668,7 @@
 				4E8A7EF9A1BED9637DCDAF1B /* RadarFailoverHostSelectorTests.swift */,
 				4E8A7EF9A1BED9637DCDAF1C /* RadarFailoverAPICoordinatorTests.swift */,
 				BA46C16B2F4E0CEC00031891 /* RadarTripLegTest.m */,
-				4D342414C411B2261A6FACB9 /* RadarVerifiedAPIClientWiringTest.m */,
+				4D342414C411B2261A6FACB9 /* RadarAPIClientWiringTests.swift */,
 				F6A0DAC72EF087A100BC10B4 /* RadarSettingsTest.swift */,
 				F6B7E3BC2F758A0D006A5A24 /* MockRadarState.swift */,
 				F6B7E3462F7429CC006A5A24 /* RadarNotificationHelperTest.swift */,
@@ -1098,7 +1098,7 @@
 				F6A0DAC82EF087AC00BC10B4 /* RadarSettingsTest.swift in Sources */,
 				DD8E2F7424018C17002D51AB /* RadarPermissionsHelperMock.m in Sources */,
 				BA46C16C2F4E0CFA00031891 /* RadarTripLegTest.m in Sources */,
-				0C18681AE942471B925A4B6D /* RadarVerifiedAPIClientWiringTest.m in Sources */,
+				0C18681AE942471B925A4B6D /* RadarAPIClientWiringTests.swift in Sources */,
 				F6B7E3472F7429D6006A5A24 /* RadarNotificationHelperTest.swift in Sources */,
 				DD8E2F7724018C25002D51AB /* RadarAPIHelperMock.m in Sources */,
 				BA8647B92F6C7DB700F1A199 /* RadarSyncManagerTests.swift in Sources */,
