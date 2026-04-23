@@ -117,7 +117,7 @@ class RadarSdkConfiguration: NSObject {
             "bufferGeofenceEntries": bufferGeofenceEntries,
             "bufferGeofenceExits": bufferGeofenceExits,
             "stopDetection": stopDetection,
-            "skipForegroundCheck": skipForegroundCheck
+            "skipForegroundCheck": skipForegroundCheck,
             "useOfflineRTOUpdates": useOfflineRTOUpdates,
             "offlineEventGenerationEnabled": offlineEventGenerationEnabled,
             "remoteTrackingOptions": RadarRemoteTrackingOptions.toDictionaries(remoteTrackingOptions) as Any
