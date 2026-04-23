@@ -34,7 +34,7 @@
 #import "RadarUser+Internal.h"
 #import "RadarUtils.h"
 #import "RadarVerificationManager.h"
-#import "RadarVerifiedAPICoordinator.h"
+#import "RadarFailoverAPICoordinator.h"
 #import "RadarVerifiedLocationToken+Internal.h"
 #import "RadarNotificationHelper.h"
 #import <os/log.h>
@@ -145,7 +145,7 @@
     if (verified) {
         NSString *path = [NSString stringWithFormat:@"/v1/config?%@", queryString];
         RadarAPIHelper *apiHelper = self.apiHelper;
-        [[RadarVerifiedAPICoordinator sharedInstance]
+        [[RadarFailoverAPICoordinator verifiedSharedInstance]
             requestWithPath:path
              performRequest:^(NSString * _Nonnull verifiedUrl, void (^ _Nonnull innerCompletion)(RadarStatus, NSDictionary<NSObject *, id> * _Nullable)) {
                 [apiHelper requestWithMethod:@"GET"
@@ -678,7 +678,7 @@
 
         if (verified) {
             RadarAPIHelper *apiHelper = self.apiHelper;
-            [[RadarVerifiedAPICoordinator sharedInstance]
+            [[RadarFailoverAPICoordinator verifiedSharedInstance]
                 requestWithPath:@"/v1/track"
                  performRequest:^(NSString * _Nonnull verifiedUrl, void (^ _Nonnull innerCompletion)(RadarStatus, NSDictionary<NSObject *, id> * _Nullable)) {
                     [apiHelper requestWithMethod:@"POST"

@@ -9,7 +9,7 @@
 
 #import "../RadarSDK/RadarAPIClient.h"
 #import "../RadarSDK/RadarSettings.h"
-#import "../RadarSDK/RadarVerifiedAPICoordinator.h"
+#import "../RadarSDK/RadarFailoverAPICoordinator.h"
 #import "RadarAPIHelperMock.h"
 
 #if __has_include(<RadarSDK/RadarSDK-Swift.h>)
@@ -23,7 +23,7 @@
 // Radar has not yet been initialized.
 
 /// Proves that the verified branches of RadarAPIClient actually route
-/// through RadarVerifiedAPICoordinator — a pure-unit test of the
+/// through RadarFailoverAPICoordinator — a pure-unit test of the
 /// coordinator can't catch a regression where someone rewires
 /// RadarAPIClient to call RadarAPIHelper directly again.
 @interface RadarVerifiedAPIClientWiringTest : XCTestCase

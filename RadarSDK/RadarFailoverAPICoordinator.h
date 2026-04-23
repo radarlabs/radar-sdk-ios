@@ -1,5 +1,5 @@
 //
-//  RadarVerifiedAPICoordinator.h
+//  RadarFailoverAPICoordinator.h
 //  RadarSDK
 //
 //  Copyright © 2026 Radar Labs, Inc. All rights reserved.
@@ -11,9 +11,9 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface RadarVerifiedAPICoordinator : NSObject
+@interface RadarFailoverAPICoordinator : NSObject
 
-+ (instancetype)sharedInstance;
++ (instancetype)verifiedSharedInstance;
 
 - (void)requestWithPath:(NSString *)path
          performRequest:(void (^)(NSString *url, void (^completion)(RadarStatus status, NSDictionary<NSObject *, id> *_Nullable res)))performRequest
