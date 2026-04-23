@@ -37,6 +37,7 @@
     [Radar initializeWithPublishableKey:@"prj_test_pk_0000000000000000"];
     self.apiHelperMock = [RadarAPIHelperMock new];
     [RadarAPIClient sharedInstance].apiHelper = self.apiHelperMock;
+    [RadarSettings setSdkConfiguration:[[RadarSdkConfiguration alloc] initWithDict:@{@"useVerifiedHostFailover": @YES}]];
 }
 
 - (void)test_verifiedGetConfig_failsOverToSecondary {
