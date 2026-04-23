@@ -9,7 +9,7 @@ import Foundation
 
 /// State machine that decides which host in an ordered list should be tried
 /// next. Hosts are identified by their integer index; index 0 is the primary
-/// by convention.
+/// by convention and is favored
 ///
 /// - Starts on host[0].
 /// - On a non-Radar failure at a non-last host, advances to the next host and

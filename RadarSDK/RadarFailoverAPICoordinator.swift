@@ -16,7 +16,7 @@ import Foundation
 ///
 /// A "Radar response" is defined as: a response whose parsed body is a
 /// dictionary containing a top-level `meta` key. Transport errors and
-/// responses without `meta` (including Cloudflare error pages) are treated
+/// responses without `meta` are treated
 /// as non-Radar failures and trigger failover. `RadarAPIHelper` surfaces
 /// transport errors as `(RadarStatusErrorNetwork, nil)` and unparseable or
 /// non-dict bodies as `(RadarStatusErrorServer, nil)`; both hit the
@@ -49,13 +49,6 @@ internal final class RadarFailoverAPICoordinator: NSObject {
 
     /// Issue `path` against the host pool, failing over once to the next host
     /// if the first attempt was on host[0] and returned a non-Radar response.
-    ///
-    /// - Parameter path: request path + query string, e.g. `"/v1/track"` or
-    ///   `"/v1/config?installId=..."`. The coordinator prepends the selected
-    ///   host and percent-encodes the result.
-    /// - Parameter performRequest: block that performs an HTTP request against
-    ///   the given fully-formed URL and invokes `completion` with the result.
-    /// - Parameter completionHandler: receives the final (status, body) pair.
     @objc
     func request(
         path: String,
