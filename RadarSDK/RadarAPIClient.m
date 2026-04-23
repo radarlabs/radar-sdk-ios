@@ -142,7 +142,7 @@
         completionHandler(status, config);
     };
 
-    if (verified) {
+    if (verified && [RadarSettings sdkConfiguration].useVerifiedHostFailover) {
         NSString *path = [NSString stringWithFormat:@"/v1/config?%@", queryString];
         RadarAPIHelper *apiHelper = self.apiHelper;
         [[RadarFailoverAPICoordinator verifiedSharedInstance]
@@ -163,7 +163,8 @@
         return;
     }
 
-    NSString *url = [NSString stringWithFormat:@"%@/v1/config?%@", [RadarSettings host], queryString];
+    NSString *host = verified ? [RadarSettings verifiedHost] : [RadarSettings host];
+    NSString *url = [NSString stringWithFormat:@"%@/v1/config?%@", host, queryString];
     url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
 
     [self.apiHelper requestWithMethod:@"GET"
@@ -676,7 +677,7 @@
                             completionHandler(RadarStatusErrorServer, nil, nil, nil, nil, nil, nil);
                         };
 
-        if (verified) {
+        if (verified && [RadarSettings sdkConfiguration].useVerifiedHostFailover) {
             RadarAPIHelper *apiHelper = self.apiHelper;
             [[RadarFailoverAPICoordinator verifiedSharedInstance]
                 requestWithPath:@"/v1/track"
@@ -694,7 +695,8 @@
                     handleTrackResponse(status, res);
                 }];
         } else {
-            NSString *url = [NSString stringWithFormat:@"%@/v1/track", [RadarSettings host]];
+            NSString *host = verified ? [RadarSettings verifiedHost] : [RadarSettings host];
+            NSString *url = [NSString stringWithFormat:@"%@/v1/track", host];
             url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
             [self.apiHelper requestWithMethod:@"POST"
                                           url:url
