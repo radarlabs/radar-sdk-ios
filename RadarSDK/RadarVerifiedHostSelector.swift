@@ -71,11 +71,15 @@ internal final class RadarVerifiedHostSelector: NSObject {
     /// the given host. Clears failover state if the response came from primary.
     func recordRadarResponse(on host: RadarVerifiedHost) {
         lock.lock()
-        defer { lock.unlock() }
-
+        let wasFailedOver = currentHost == .secondary
         if host == .primary {
             currentHost = .primary
             nextPrimaryProbeAt = nil
+        }
+        lock.unlock()
+
+        if host == .primary && wasFailedOver {
+            RadarLogger.shared.info("VerifiedHostSelector: primary recovered, returning to primary host")
         }
     }
 
@@ -85,13 +89,29 @@ internal final class RadarVerifiedHostSelector: NSObject {
     /// the next request probes primary immediately.
     func recordNonRadarFailure(on host: RadarVerifiedHost) {
         lock.lock()
-        defer { lock.unlock() }
-
+        let wasOnPrimary = currentHost == .primary
         if host == .primary {
             currentHost = .secondary
             nextPrimaryProbeAt = now().addingTimeInterval(Self.probeInterval)
         } else {
             nextPrimaryProbeAt = .distantPast
+        }
+        lock.unlock()
+
+        if host == .primary {
+            if wasOnPrimary {
+                RadarLogger.shared.info(
+                    "VerifiedHostSelector: primary failed, switching to secondary for \(Int(Self.probeInterval))s"
+                )
+            } else {
+                RadarLogger.shared.info(
+                    "VerifiedHostSelector: probe of primary failed, staying on secondary for another \(Int(Self.probeInterval))s"
+                )
+            }
+        } else {
+            RadarLogger.shared.warning(
+                "VerifiedHostSelector: secondary also failed, will probe primary on next request"
+            )
         }
     }
 

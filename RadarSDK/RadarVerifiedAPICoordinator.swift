@@ -84,6 +84,9 @@ internal final class RadarVerifiedAPICoordinator: NSObject {
             selector.recordNonRadarFailure(on: host)
 
             if allowFailover {
+                RadarLogger.shared.info(
+                    "VerifiedAPICoordinator: non-Radar response on primary (status=\(status.rawValue)), retrying on secondary"
+                )
                 self.perform(
                     host: .secondary,
                     isProbe: false,
@@ -95,6 +98,11 @@ internal final class RadarVerifiedAPICoordinator: NSObject {
                 return
             }
 
+            if host == .secondary {
+                RadarLogger.shared.warning(
+                    "VerifiedAPICoordinator: non-Radar response on \(host.logName) (status=\(status.rawValue)), surfacing error"
+                )
+            }
             completionHandler(status, res)
         }
     }
