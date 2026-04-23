@@ -8,7 +8,7 @@
 import Foundation
 
 @objc(RadarVerifiedHost)
-enum RadarVerifiedHost: Int {
+public enum RadarVerifiedHost: Int {
     case primary
     case secondary
 }
@@ -25,11 +25,11 @@ enum RadarVerifiedHost: Int {
 /// - A non-Radar failure on the secondary clears the timer so the next request
 ///   immediately probes primary again (avoids getting stuck on a dead secondary).
 @objc(RadarVerifiedHostSelector)
-final class RadarVerifiedHostSelector: NSObject {
+public final class RadarVerifiedHostSelector: NSObject {
 
-    static let probeInterval: TimeInterval = 60
+    public static let probeInterval: TimeInterval = 60
 
-    nonisolated(unsafe) static let shared = RadarVerifiedHostSelector()
+    nonisolated(unsafe) public static let shared = RadarVerifiedHostSelector()
 
     private let lock = NSLock()
     private var currentHost: RadarVerifiedHost = .primary
@@ -37,7 +37,7 @@ final class RadarVerifiedHostSelector: NSObject {
 
     private let now: () -> Date
 
-    init(now: @escaping () -> Date = Date.init) {
+    public init(now: @escaping () -> Date = Date.init) {
         self.now = now
         super.init()
     }
@@ -45,7 +45,7 @@ final class RadarVerifiedHostSelector: NSObject {
     /// Returns the host that should be tried next, along with whether this
     /// attempt counts as a "probe" of the primary while the selector is
     /// otherwise failed over.
-    func hostForNextRequest() -> (host: RadarVerifiedHost, isProbe: Bool) {
+    public func hostForNextRequest() -> (host: RadarVerifiedHost, isProbe: Bool) {
         lock.lock()
         defer { lock.unlock() }
 
@@ -62,7 +62,7 @@ final class RadarVerifiedHostSelector: NSObject {
 
     /// Records a Radar-origin response (success or an error with `meta`) on
     /// the given host. Clears failover state if the response came from primary.
-    func recordRadarResponse(on host: RadarVerifiedHost) {
+    public func recordRadarResponse(on host: RadarVerifiedHost) {
         lock.lock()
         defer { lock.unlock() }
 
@@ -76,7 +76,7 @@ final class RadarVerifiedHostSelector: NSObject {
     /// on the given host. Moves the selector to secondary and arms/resets the
     /// probe timer. If the failure was on secondary, clears the probe time so
     /// the next request probes primary immediately.
-    func recordNonRadarFailure(on host: RadarVerifiedHost) {
+    public func recordNonRadarFailure(on host: RadarVerifiedHost) {
         lock.lock()
         defer { lock.unlock() }
 
@@ -88,7 +88,7 @@ final class RadarVerifiedHostSelector: NSObject {
         }
     }
 
-    func reset() {
+    public func reset() {
         lock.lock()
         defer { lock.unlock() }
         currentHost = .primary

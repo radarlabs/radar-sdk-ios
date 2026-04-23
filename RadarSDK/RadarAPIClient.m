@@ -126,11 +126,44 @@
     [queryString appendFormat:@"&verified=%@", verified ? @"true" : @"false"];
     [queryString appendFormat:@"&clientSdkConfiguration=%@", [RadarUtils dictionaryToJson:[RadarSettings clientSdkConfiguration]]];
 
-    NSString *host = verified ? [RadarSettings verifiedHost] : [RadarSettings host];
-    NSString *url = [NSString stringWithFormat:@"%@/v1/config?%@", host, queryString];
-    url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
-
     NSDictionary *headers = [RadarAPIClient headersWithPublishableKey:publishableKey];
+
+    void (^responseHandler)(RadarStatus, NSDictionary *) = ^(RadarStatus status, NSDictionary *_Nullable res) {
+        if (!res) {
+            completionHandler(status, nil);
+            return;
+        }
+
+        [Radar flushLogs];
+
+        RadarConfig *config = [RadarConfig fromDictionary:res];
+
+        completionHandler(status, config);
+    };
+
+    if (verified) {
+        NSString *path = [NSString stringWithFormat:@"/v1/config?%@", queryString];
+        RadarAPIHelper *apiHelper = self.apiHelper;
+        [[RadarVerifiedAPICoordinator sharedInstance]
+            requestWithPath:path
+             performRequest:^(NSString * _Nonnull verifiedUrl, void (^ _Nonnull innerCompletion)(RadarStatus, NSDictionary<NSObject *, id> * _Nullable)) {
+                [apiHelper requestWithMethod:@"GET"
+                                         url:verifiedUrl
+                                     headers:headers
+                                      params:nil
+                                       sleep:NO
+                                  logPayload:YES
+                             extendedTimeout:NO
+                           completionHandler:innerCompletion];
+             }
+          completionHandler:^(RadarStatus status, NSDictionary<NSObject *, id> * _Nullable res) {
+                responseHandler(status, res);
+            }];
+        return;
+    }
+
+    NSString *url = [NSString stringWithFormat:@"%@/v1/config?%@", [RadarSettings host], queryString];
+    url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
 
     [self.apiHelper requestWithMethod:@"GET"
                                   url:url
@@ -139,18 +172,7 @@
                                 sleep:NO
                            logPayload:YES
                       extendedTimeout:NO
-                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
-                        if (!res) {
-                            completionHandler(status, nil);
-                            return;
-                        }
-
-                        [Radar flushLogs];
-
-                        RadarConfig *config = [RadarConfig fromDictionary:res];
-        
-                        completionHandler(status, config);
-                    }];
+                    completionHandler:responseHandler];
 }
 
 - (void)flushReplays:(NSArray<NSDictionary *> *_Nonnull)replays
@@ -472,10 +494,6 @@
                 locationMetadata:(NSDictionary *)locationMetadata
             completionHandler:(RadarTrackAPICompletionHandler)completionHandler {
 
-    NSString *host = verified ? [RadarSettings verifiedHost] : [RadarSettings host];
-    NSString *url = [NSString stringWithFormat:@"%@/v1/track", host];
-    url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
-
     NSDictionary *headers = [RadarAPIClient headersWithPublishableKey:publishableKey];
 
     NSArray<RadarReplay *> *replays = [[RadarReplayBuffer sharedInstance] flushableReplays];
@@ -498,14 +516,7 @@
             completionHandler(status, nil, nil, nil, nil, nil, nil);
         }];
     } else {
-        [self.apiHelper requestWithMethod:@"POST"
-                                    url:url
-                                headers:headers
-                                params:requestParams
-                                    sleep:YES
-                            logPayload:YES
-                        extendedTimeout:NO
-                        completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
+        void (^handleTrackResponse)(RadarStatus, NSDictionary *) = ^(RadarStatus status, NSDictionary *_Nullable res) {
                             if (status != RadarStatusSuccess || !res) {
                                 if (options.replay == RadarTrackingOptionsReplayAll) {
                                     // create a copy of params that we can use to write to the buffer in case of request failure
@@ -660,9 +671,39 @@
                             }
 
                             [[RadarDelegateHolder sharedInstance] didFailWithStatus:status];
-            
+
                             completionHandler(RadarStatusErrorServer, nil, nil, nil, nil, nil, nil);
-                        }];
+                        };
+
+        if (verified) {
+            RadarAPIHelper *apiHelper = self.apiHelper;
+            [[RadarVerifiedAPICoordinator sharedInstance]
+                requestWithPath:@"/v1/track"
+                 performRequest:^(NSString * _Nonnull verifiedUrl, void (^ _Nonnull innerCompletion)(RadarStatus, NSDictionary<NSObject *, id> * _Nullable)) {
+                    [apiHelper requestWithMethod:@"POST"
+                                             url:verifiedUrl
+                                         headers:headers
+                                          params:requestParams
+                                           sleep:YES
+                                      logPayload:YES
+                                 extendedTimeout:NO
+                               completionHandler:innerCompletion];
+                 }
+              completionHandler:^(RadarStatus status, NSDictionary<NSObject *, id> * _Nullable res) {
+                    handleTrackResponse(status, res);
+                }];
+        } else {
+            NSString *url = [NSString stringWithFormat:@"%@/v1/track", [RadarSettings host]];
+            url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
+            [self.apiHelper requestWithMethod:@"POST"
+                                          url:url
+                                      headers:headers
+                                       params:requestParams
+                                        sleep:YES
+                                   logPayload:YES
+                              extendedTimeout:NO
+                            completionHandler:handleTrackResponse];
+        }
     }
 }
 
