@@ -143,7 +143,6 @@ BOOL _initialized = NO;
                                             if (status == RadarStatusSuccess && config) {
                                                 [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
                                                 [RadarSettings setSdkConfiguration:config.meta.sdkConfiguration];
-                                                
                                                 if ([RadarSettings sdkConfiguration].useSyncRegion) {
                                                     [RadarSyncManager startWithInterval:86400];
                                                 } else {

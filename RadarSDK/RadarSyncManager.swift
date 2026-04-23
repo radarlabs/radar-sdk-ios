@@ -582,6 +582,44 @@ public final class RadarSyncManager: NSObject {
         }
     }
     
+    // MARK: - Geofence Diff
+    
+    static func getGeofenceEntries(for location: CLLocation, against lastKnownIds: Set<String>) -> [RadarGeofenceSwift] {
+        let currentGeofences = getGeofences(for: location)
+        let currentGeofenceIds = Set(currentGeofences.map { $0.id })
+        let enteredIds = currentGeofenceIds.subtracting(lastKnownIds)
+        guard !enteredIds.isEmpty else { return [] }
+        
+        let sdkConfig = RadarSettings.sdkConfiguration
+        let projectStopDetection = sdkConfig?.stopDetection ?? false
+        let isStopped = RadarSwift.bridge?.isStopped() ?? false
+        
+        return currentGeofences.filter { geofence in
+            guard enteredIds.contains(geofence.id) else { return false }
+            let requireStop: Bool
+            if let geofenceStop = geofence.geofenceStopDetection {
+                requireStop = geofenceStop
+            } else {
+                requireStop = projectStopDetection
+            }
+            if requireStop && !isStopped {
+                RadarLogger.shared.debug("SyncManager: Skipping geofence entry (stop detection, not stopped): \(geofence.id)")
+                return false
+            }
+            return true
+        }
+    }
+    
+    static func getGeofenceExits(for location: CLLocation, against lastKnownIds: Set<String>) -> [RadarGeofenceSwift] {
+        let exitCheckGeofences = getGeofences(for: location, checkingForExit: true)
+        let exitCheckIds = Set(exitCheckGeofences.map { $0.id})
+        let exitedIds = lastKnownIds.subtracting(exitCheckIds)
+        guard !exitedIds.isEmpty else { return [] }
+        
+        let allSyncedGeofences = syncStore.read()?.syncedGeofences ?? []
+        return allSyncedGeofences.filter { exitedIds.contains($0.id) }
+    }
+    
     // MARK: - Server reconciliation
     
     private static func saveAndUpdateSyncState(location: CLLocation) {
@@ -706,27 +744,6 @@ public final class RadarSyncManager: NSObject {
                 state?.dwellEventsFired.append(geofenceId)
             }
         }
-    }
-    
-    // The following methods are only here for map display QA testing, remove before shipping
-    
-    @objc public static func getSyncedRegion() -> CLCircularRegion? {
-        guard let state = syncStore.read(),
-              let center = state.syncedRegionCenter,
-              let radius = state.syncedRegionRadius, radius > 0 else { return nil }
-        return CLCircularRegion(
-            center: center.clLocationCoordinate2D,
-            radius: radius,
-            identifier: "\(syncRegionIdentifierPrefix)current"
-        )
-    }
-    
-    @objc public static func getSyncedStateJSON() -> [String: Any]? {
-        let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
-        let fileURL = appSupport.appendingPathComponent("RadarSDK").appendingPathComponent("radar_sync_state.json")
-        guard let data = try? Data(contentsOf: fileURL),
-              let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else { return nil }
-        return json
     }
     
     // MARK: - Beacon Bridging
