@@ -29,7 +29,7 @@ final class RadarVerifiedHostSelector: NSObject {
 
     static let probeInterval: TimeInterval = 60
 
-    static let shared = RadarVerifiedHostSelector()
+    nonisolated(unsafe) static let shared = RadarVerifiedHostSelector()
 
     private let lock = NSLock()
     private var currentHost: RadarVerifiedHost = .primary

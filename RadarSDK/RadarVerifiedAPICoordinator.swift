@@ -7,92 +7,67 @@
 
 import Foundation
 
-/// Fronts `RadarAPIHelper` for requests that target the verified host.
-/// Resolves the primary/secondary host via `RadarVerifiedHostSelector`,
-/// transparently retries once on the secondary when the primary returns
-/// a non-Radar response, and reports every outcome back to the selector
-/// so the state machine can decide where the *next* request should go.
+/// Coordinates verified-host requests with failover. The caller supplies a
+/// `performRequest` block that actually issues the HTTP request for a given
+/// URL (wrapping `RadarAPIHelper`); this coordinator owns host selection,
+/// transparent retry on the secondary when the primary returns a non-Radar
+/// response, and reports every outcome back to `RadarVerifiedHostSelector`.
 ///
 /// A "Radar response" is defined as: a response whose parsed body is a
 /// dictionary containing a top-level `meta` key. Transport errors and
-/// responses without `meta` (including Cloudflare error pages) are
-/// treated as non-Radar failures and trigger failover. See
-/// `RadarAPIHelper.m` for how those get surfaced as `(status, res)` —
-/// transport errors come through as `(RadarStatusErrorNetwork, nil)`,
-/// and unparseable / non-dict bodies come through as
-/// `(RadarStatusErrorServer, nil)`.
+/// responses without `meta` (including Cloudflare error pages) are treated
+/// as non-Radar failures and trigger failover. `RadarAPIHelper` surfaces
+/// transport errors as `(RadarStatusErrorNetwork, nil)` and unparseable or
+/// non-dict bodies as `(RadarStatusErrorServer, nil)`; both hit the
+/// "no meta" branch here and count as non-Radar failures.
 @objc(RadarVerifiedAPICoordinator)
 final class RadarVerifiedAPICoordinator: NSObject {
 
     @objc(sharedInstance)
-    static let shared = RadarVerifiedAPICoordinator()
+    nonisolated(unsafe) static let shared = RadarVerifiedAPICoordinator()
 
     private let selector: RadarVerifiedHostSelector
 
-    /// Resolves the `RadarAPIHelper` to use for a given request. Reads from
-    /// `RadarAPIClient.sharedInstance.apiHelper` by default so tests that
-    /// swap in `RadarAPIHelperMock` work transparently.
-    private let apiHelperProvider: () -> RadarAPIHelper
-
-    init(
-        selector: RadarVerifiedHostSelector = .shared,
-        apiHelperProvider: @escaping () -> RadarAPIHelper = { RadarAPIClient.sharedInstance().apiHelper }
-    ) {
+    init(selector: RadarVerifiedHostSelector = .shared) {
         self.selector = selector
-        self.apiHelperProvider = apiHelperProvider
         super.init()
     }
 
+    /// Issue `path` against the verified host, failing over to the secondary
+    /// once if the primary returns a non-Radar response.
+    ///
+    /// - Parameter path: request path + query string, e.g. `"/v1/track"` or
+    ///   `"/v1/config?installId=..."`. The coordinator prepends the current
+    ///   host and percent-encodes the result.
+    /// - Parameter performRequest: block that performs an HTTP request against
+    ///   the given fully-formed URL and invokes `completion` with the result.
+    /// - Parameter completionHandler: receives the final (status, body) pair.
     @objc
     func request(
-        method: String,
         path: String,
-        headers: [String: String]?,
-        params: [String: Any]?,
-        sleep: Bool,
-        logPayload: Bool,
-        extendedTimeout: Bool,
+        performRequest: @escaping (_ url: String, _ completion: @escaping (RadarStatus, [AnyHashable: Any]?) -> Void) -> Void,
         completionHandler: @escaping (RadarStatus, [AnyHashable: Any]?) -> Void
     ) {
         let (host, _) = selector.hostForNextRequest()
         perform(
             host: host,
-            method: method,
             path: path,
-            headers: headers,
-            params: params,
-            sleep: sleep,
-            logPayload: logPayload,
-            extendedTimeout: extendedTimeout,
             allowFailover: host == .primary,
+            performRequest: performRequest,
             completionHandler: completionHandler
         )
     }
 
     private func perform(
         host: RadarVerifiedHost,
-        method: String,
         path: String,
-        headers: [String: String]?,
-        params: [String: Any]?,
-        sleep: Bool,
-        logPayload: Bool,
-        extendedTimeout: Bool,
         allowFailover: Bool,
+        performRequest: @escaping (String, @escaping (RadarStatus, [AnyHashable: Any]?) -> Void) -> Void,
         completionHandler: @escaping (RadarStatus, [AnyHashable: Any]?) -> Void
     ) {
         let url = Self.url(for: host, path: path)
-        let helper = apiHelperProvider()
 
-        helper.request(
-            withMethod: method,
-            url: url,
-            headers: headers,
-            params: params,
-            sleep: sleep,
-            logPayload: logPayload,
-            extendedTimeout: extendedTimeout
-        ) { [selector] status, res in
+        performRequest(url) { [selector] status, res in
             let isRadarResponse = (res?["meta"] != nil)
 
             if isRadarResponse {
@@ -106,14 +81,9 @@ final class RadarVerifiedAPICoordinator: NSObject {
             if allowFailover {
                 self.perform(
                     host: .secondary,
-                    method: method,
                     path: path,
-                    headers: headers,
-                    params: params,
-                    sleep: sleep,
-                    logPayload: logPayload,
-                    extendedTimeout: extendedTimeout,
                     allowFailover: false,
+                    performRequest: performRequest,
                     completionHandler: completionHandler
                 )
                 return
