@@ -21,14 +21,14 @@ import Foundation
 /// non-dict bodies as `(RadarStatusErrorServer, nil)`; both hit the
 /// "no meta" branch here and count as non-Radar failures.
 @objc(RadarVerifiedAPICoordinator)
-public final class RadarVerifiedAPICoordinator: NSObject {
+internal final class RadarVerifiedAPICoordinator: NSObject {
 
     @objc(sharedInstance)
-    nonisolated(unsafe) public static let shared = RadarVerifiedAPICoordinator()
+    nonisolated(unsafe) static let shared = RadarVerifiedAPICoordinator()
 
     private let selector: RadarVerifiedHostSelector
 
-    public init(selector: RadarVerifiedHostSelector = .shared) {
+    init(selector: RadarVerifiedHostSelector = .shared) {
         self.selector = selector
         super.init()
     }
@@ -43,7 +43,7 @@ public final class RadarVerifiedAPICoordinator: NSObject {
     ///   the given fully-formed URL and invokes `completion` with the result.
     /// - Parameter completionHandler: receives the final (status, body) pair.
     @objc
-    public func request(
+    func request(
         path: String,
         performRequest: @escaping (_ url: String, _ completion: @escaping (RadarStatus, [AnyHashable: Any]?) -> Void) -> Void,
         completionHandler: @escaping (RadarStatus, [AnyHashable: Any]?) -> Void
@@ -93,7 +93,7 @@ public final class RadarVerifiedAPICoordinator: NSObject {
         }
     }
 
-    public static func url(for host: RadarVerifiedHost, path: String) -> String {
+    private static func url(for host: RadarVerifiedHost, path: String) -> String {
         let base: String
         switch host {
         case .primary:
