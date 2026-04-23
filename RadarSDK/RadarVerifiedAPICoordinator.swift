@@ -48,9 +48,13 @@ internal final class RadarVerifiedAPICoordinator: NSObject {
         performRequest: @escaping (_ url: String, _ completion: @escaping (RadarStatus, [AnyHashable: Any]?) -> Void) -> Void,
         completionHandler: @escaping (RadarStatus, [AnyHashable: Any]?) -> Void
     ) {
-        let (host, _) = selector.hostForNextRequest()
+        let (host, isProbe) = selector.hostForNextRequest()
+        RadarLogger.shared.debug(
+            "VerifiedAPICoordinator: request host=\(host.logName) isProbe=\(isProbe) path=\(path)"
+        )
         perform(
             host: host,
+            isProbe: isProbe,
             path: path,
             allowFailover: host == .primary,
             performRequest: performRequest,
@@ -60,6 +64,7 @@ internal final class RadarVerifiedAPICoordinator: NSObject {
 
     private func perform(
         host: RadarVerifiedHost,
+        isProbe: Bool,
         path: String,
         allowFailover: Bool,
         performRequest: @escaping (String, @escaping (RadarStatus, [AnyHashable: Any]?) -> Void) -> Void,
@@ -81,6 +86,7 @@ internal final class RadarVerifiedAPICoordinator: NSObject {
             if allowFailover {
                 self.perform(
                     host: .secondary,
+                    isProbe: false,
                     path: path,
                     allowFailover: false,
                     performRequest: performRequest,

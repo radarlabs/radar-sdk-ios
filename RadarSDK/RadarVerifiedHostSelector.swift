@@ -11,6 +11,13 @@ import Foundation
 internal enum RadarVerifiedHost: Int {
     case primary
     case secondary
+
+    var logName: String {
+        switch self {
+        case .primary: return "primary"
+        case .secondary: return "secondary"
+        }
+    }
 }
 
 /// State machine that decides whether the next verified request should go to
