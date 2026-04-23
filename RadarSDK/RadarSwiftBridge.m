@@ -13,6 +13,8 @@
 #import "Radar+Internal.h"
 #import "RadarState.h"
 #import "RadarLogger.h"
+#import "RadarUtils.h"
+#import "RadarDelegateHolder.h"
 
 @implementation RadarSwiftBridge
 
@@ -61,6 +63,30 @@
         NSString *message = [NSString stringWithFormat:@"Conversion name = %@: status = %@; event = %@", event.conversionName, [Radar stringForStatus:status], event];
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:message];
     }];
+}
+
+- (RadarEvent * _Nullable)createEventWithDict:(NSDictionary *)dict {
+    return [[RadarEvent alloc] initWithObject:dict];
+}
+
+- (RadarUser * _Nullable)createUserWithDict:(NSDictionary *)dict {
+    return [[RadarUser alloc] initWithObject:dict];
+}
+
+- (RadarGeofence * _Nullable)createGeofenceWithDict:(NSDictionary *)dict {
+    return [[RadarGeofence alloc] initWithObject:dict];
+}
+
+- (BOOL)isForeground {
+    return [RadarUtilsDeprecated foreground];
+}
+
+- (void)didReceiveEvents:(NSArray<RadarEvent *> *)events user:(RadarUser *)user {
+    [[RadarDelegateHolder sharedInstance] didReceiveEvents:events user:user];
+}
+
+- (RadarUser * _Nullable)radarUser {
+    return [RadarState radarUser];
 }
 
 @end
