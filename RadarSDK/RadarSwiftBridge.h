@@ -27,7 +27,13 @@
 - (NSString * _Nullable)placeId;
 - (CLLocation * _Nullable)lastLocation;
 - (BOOL)isStopped;
+- (RadarEvent * _Nullable)createEventWithDict:(NSDictionary * _Nonnull)dict;
+- (RadarUser * _Nullable)createUserWithDict:(NSDictionary * _Nonnull)dict;
+- (RadarGeofence * _Nullable)createGeofenceWithDict:(NSDictionary * _Nonnull)dict;
+- (BOOL)isForeground;
 - (RadarTripOptions * _Nullable)getTripOptions;
+- (RadarUser * _Nullable)radarUser;
+- (void)didReceiveEvents:(NSArray<RadarEvent *> * _Nonnull)events user:(RadarUser * _Nonnull)user;
 @end
 
 @interface RadarSwiftBridge: NSObject<RadarSwiftBridgeProtocol>

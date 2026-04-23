@@ -25,6 +25,12 @@ protocol RadarSwiftBridgeProtocol {
     func isStopped() -> Bool
     func getTripOptions() -> RadarTripOptions?
     func logCampaignConversion(name: String, metadata: [String: Any], campaign: String?)
+    func createEvent(dict: [String: Any]) -> RadarEvent?
+    func createUser(dict: [String: Any]) -> RadarUser?
+    func createGeofence(dict: [String: Any]) -> RadarGeofence?
+    func isForeground() -> Bool
+    func didReceiveEvents(_ events: [RadarEvent], user: RadarUser)
+    func radarUser() -> RadarUser?
 }
 
 @objc(RadarSwift) @objcMembers
