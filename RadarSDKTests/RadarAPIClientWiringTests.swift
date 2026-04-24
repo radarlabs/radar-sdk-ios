@@ -56,7 +56,7 @@ final class RadarAPIClientWiringTests {
 
         let lastUrl = await capturedLastUrl(verified: true)
 
-        #expect(lastUrl?.contains("api-verified-cf.use1.radar-staging.com") == true,
+        #expect(lastUrl?.contains("api-verified.radar.com") == true,
                 "expected final URL to be on the secondary host after failover, got: \(lastUrl ?? "nil")")
     }
 
