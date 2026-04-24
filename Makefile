@@ -1,13 +1,12 @@
 SDK ?= "iphonesimulator"
-DESTINATION ?= "platform=iOS Simulator,name=iPhone 17,OS=26.4.1"
+DESTINATION ?= "platform=iOS Simulator,name=iPhone 17,OS=26.2"
 PROJECT := RadarSDK
 PROJECT_EXAMPLE := Example/Example
 SCHEME := XCFramework
 SCHEME_EXAMPLE := Example
 XC_ARGS := -sdk $(SDK) -project $(PROJECT).xcodeproj -scheme $(SCHEME) -destination $(DESTINATION) ONLY_ACTIVE_ARCH=NO OTHER_CFLAGS="-fembed-bitcode"
 XC_TEST_ARGS := $(XC_ARGS) GCC_INSTRUMENT_PROGRAM_FLOW_ARCS=YES
-EXAMPLE_BUILD_DIR := Example/build
-XC_EXAMPLE_ARGS := -sdk $(SDK) -project $(PROJECT_EXAMPLE).xcodeproj -scheme $(SCHEME_EXAMPLE) -destination $(DESTINATION) BUILD_DIR=$(EXAMPLE_BUILD_DIR) SYMROOT=$(EXAMPLE_BUILD_DIR)
+XC_EXAMPLE_ARGS := -sdk $(SDK) -project $(PROJECT_EXAMPLE).xcodeproj -scheme $(SCHEME_EXAMPLE) -destination $(DESTINATION) ONLY_ACTIVE_ARCH=NO OTHER_CFLAGS="-fembed-bitcode"
 
 bootstrap:
 	./bootstrap.sh
@@ -25,13 +24,7 @@ test-swift:
 	xcodebuild $(XC_TEST_ARGS) test -only-testing:RadarSDKTests/InAppMessageTest
 
 build-example:
-	xcodebuild $(XC_EXAMPLE_ARGS) -jobs 1
-
-run-example: build-example
-	xcrun simctl boot "iPhone 17" 2>/dev/null || true
-	open -a Simulator
-	xcrun simctl install booted Example/build/Debug-iphonesimulator/Example.app
-	xcrun simctl launch --console booted io.radar.iosexample
+	xcodebuild $(XC_EXAMPLE_ARGS)
 
 lint:
 	@for spec in *.podspec; do \
@@ -63,4 +56,4 @@ docs:
 
 dist: clean-pretty test-pretty build-pretty lint docs
 
-.PHONY: bootstrap clean test build lint format docs dist run-example
+.PHONY: bootstrap clean test build lint format docs dist
