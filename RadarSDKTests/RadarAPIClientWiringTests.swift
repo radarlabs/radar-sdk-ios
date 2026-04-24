@@ -33,12 +33,13 @@ final class RadarAPIClientWiringTests {
     /// Snapshot lastUrl at getConfig completion. Reading it after the await
     /// can race with background log flushes that also hit the mock.
     private func capturedLastUrl(verified: Bool) async -> String? {
-        await withCheckedContinuation { continuation in
+        let mock = apiHelperMock
+        return await withCheckedContinuation { continuation in
             RadarAPIClient.sharedInstance().getConfigForUsage(
                 "wiring-test",
                 verified: verified
             ) { _, _ in
-                continuation.resume(returning: self.apiHelperMock.lastUrl)
+                continuation.resume(returning: mock.lastUrl)
             }
         }
     }
@@ -52,7 +53,6 @@ final class RadarAPIClientWiringTests {
         // which can only happen if the coordinator is in the path.
         setFailoverFlag(true)
         apiHelperMock.mockStatus = .errorServer
-        apiHelperMock.mockResponse = ["error": "cloudflare"]
 
         let lastUrl = await capturedLastUrl(verified: true)
 
@@ -68,7 +68,6 @@ final class RadarAPIClientWiringTests {
         // the URL would flip to the secondary.
         setFailoverFlag(false)
         apiHelperMock.mockStatus = .errorServer
-        apiHelperMock.mockResponse = ["error": "cloudflare"]
 
         let lastUrl = await capturedLastUrl(verified: true)
 
