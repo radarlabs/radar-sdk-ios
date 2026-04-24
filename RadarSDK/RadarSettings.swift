@@ -12,7 +12,7 @@ internal class RadarSettings: NSObject {
     
     static let DefaultHost = "https://api.radar.io"
     static let DefaultVerifiedHost = "https://api-verified.radar.io"
-    static let DefaultVerifiedHostSecondary = "https://api-verified-ga.radar-staging.com" // not final, change before production
+    static let DefaultVerifiedHostSecondary = "https://api-verified.radar.com"
     
     public static func setAppGroup(_ appGroup: String?) {
         // this call needs to by synchronised to prevent race conditions in checking / updating the app group
