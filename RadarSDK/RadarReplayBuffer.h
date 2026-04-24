@@ -8,6 +8,7 @@
 #import <Foundation/Foundation.h>
 
 #import "RadarReplay.h"
+@class RadarTrackingOptions;
 
 // 2d: figure out what this means
 NS_ASSUME_NONNULL_BEGIN
@@ -30,6 +31,18 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)clearBuffer;
 
 - (void)loadReplaysFromPersistentStore;
+
+- (void)addToBatch:(NSMutableDictionary *)params options:(RadarTrackingOptions *)options;
+
+- (BOOL)shouldFlushBatchWithOptions:(RadarTrackingOptions *)options;
+
+- (void)scheduleBatchTimerWithInterval:(int)interval;
+
+- (void)cancelBatchTimer;
+
+- (void)flushBatch;
+
+- (NSUInteger)batchCount;
 
 @end
 NS_ASSUME_NONNULL_END

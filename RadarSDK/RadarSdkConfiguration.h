@@ -34,6 +34,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)bufferGeofenceEntries;
 - (BOOL)bufferGeofenceExits;
 - (BOOL)stopDetection;
+- (BOOL)skipForegroundCheck;
 - (BOOL)useOfflineRTOUpdates;
 - (BOOL)offlineEventGenerationEnabled;
 - (NSArray<RadarRemoteTrackingOptions *> *_Nullable)remoteTrackingOptions;
