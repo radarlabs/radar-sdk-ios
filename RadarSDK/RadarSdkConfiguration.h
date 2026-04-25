@@ -38,6 +38,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)useOfflineRTOUpdates;
 - (BOOL)offlineEventGenerationEnabled;
 - (NSArray<RadarRemoteTrackingOptions *> *_Nullable)remoteTrackingOptions;
+- (BOOL)useVerifiedHostFailover;
 - (instancetype)initWithDict:(NSDictionary *_Nullable)dict;
 - (NSDictionary *)dictionaryValue;
 @end

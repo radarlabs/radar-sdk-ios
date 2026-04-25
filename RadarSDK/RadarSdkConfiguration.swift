@@ -69,6 +69,7 @@ class RadarSdkConfiguration: NSObject {
     let useOfflineRTOUpdates: Bool
     let offlineEventGenerationEnabled: Bool
     let remoteTrackingOptions: [RadarRemoteTrackingOptions]?
+    let useVerifiedHostFailover: Bool
     
     public init(dict: [String: Any]?) {
         originalDict = dict
@@ -93,6 +94,7 @@ class RadarSdkConfiguration: NSObject {
         useOfflineRTOUpdates = dict?["useOfflineRTOUpdates"] as? Bool ?? false
         offlineEventGenerationEnabled = dict?["offlineEventGenerationEnabled"] as? Bool ?? false
         remoteTrackingOptions = RadarRemoteTrackingOptions.from(array: dict?["remoteTrackingOptions"] as? [[String: Any]])
+        useVerifiedHostFailover = dict?["useVerifiedHostFailover"] as? Bool ?? false
     }
     
     public func dictionaryValue() -> [String: Any] {
@@ -120,7 +122,8 @@ class RadarSdkConfiguration: NSObject {
             "skipForegroundCheck": skipForegroundCheck,
             "useOfflineRTOUpdates": useOfflineRTOUpdates,
             "offlineEventGenerationEnabled": offlineEventGenerationEnabled,
-            "remoteTrackingOptions": RadarRemoteTrackingOptions.toDictionaries(remoteTrackingOptions) as Any
+            "remoteTrackingOptions": RadarRemoteTrackingOptions.toDictionaries(remoteTrackingOptions) as Any,
+            "useVerifiedHostFailover": useVerifiedHostFailover
         ]
     }
 }

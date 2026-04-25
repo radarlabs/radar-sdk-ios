@@ -159,6 +159,10 @@
 		BA3540202F8EBFBD00E553A1 /* RadarOfflineEventManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA35401F2F8EBFAD00E553A1 /* RadarOfflineEventManagerTests.swift */; };
 		BA3540222F90020F00E553A1 /* RadarOfflineEventManager.h in Headers */ = {isa = PBXBuildFile; fileRef = BA3540212F90020900E553A1 /* RadarOfflineEventManager.h */; };
 		BA3540242F9033A900E553A1 /* RadarSerializedTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA3540232F90339F00E553A1 /* RadarSerializedTests.swift */; };
+		C0DEF1012F91000100AA0001 /* RadarFailoverAPICoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DEF0012F91000100AA0001 /* RadarFailoverAPICoordinator.swift */; };
+		C0DEF1022F91000100AA0002 /* RadarFailoverAPICoordinator.h in Headers */ = {isa = PBXBuildFile; fileRef = C0DEF0022F91000100AA0002 /* RadarFailoverAPICoordinator.h */; };
+		C0DEF1032F91000100AA0003 /* RadarFailoverAPICoordinatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DEF0032F91000100AA0003 /* RadarFailoverAPICoordinatorTests.swift */; };
+		C0DEF1042F91000100AA0004 /* RadarAPIClientFailoverWiringTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DEF0042F91000100AA0004 /* RadarAPIClientFailoverWiringTests.swift */; };
 		BA46C1662F4CF3F200031891 /* RadarTripLeg.h in Headers */ = {isa = PBXBuildFile; fileRef = BA46C1652F4CF3E900031891 /* RadarTripLeg.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		BA46C1682F4CF46600031891 /* RadarTripLeg.m in Sources */ = {isa = PBXBuildFile; fileRef = BA46C1672F4CF45600031891 /* RadarTripLeg.m */; };
 		BA46C16A2F4E0A9000031891 /* trip_with_legs.json in Resources */ = {isa = PBXBuildFile; fileRef = BA46C1692F4E0A8300031891 /* trip_with_legs.json */; };
@@ -333,6 +337,10 @@
 		BA35401F2F8EBFAD00E553A1 /* RadarOfflineEventManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarOfflineEventManagerTests.swift; sourceTree = "<group>"; };
 		BA3540212F90020900E553A1 /* RadarOfflineEventManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarOfflineEventManager.h; sourceTree = "<group>"; };
 		BA3540232F90339F00E553A1 /* RadarSerializedTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarSerializedTests.swift; sourceTree = "<group>"; };
+		C0DEF0012F91000100AA0001 /* RadarFailoverAPICoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarFailoverAPICoordinator.swift; sourceTree = "<group>"; };
+		C0DEF0022F91000100AA0002 /* RadarFailoverAPICoordinator.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarFailoverAPICoordinator.h; sourceTree = "<group>"; };
+		C0DEF0032F91000100AA0003 /* RadarFailoverAPICoordinatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarFailoverAPICoordinatorTests.swift; sourceTree = "<group>"; };
+		C0DEF0042F91000100AA0004 /* RadarAPIClientFailoverWiringTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarAPIClientFailoverWiringTests.swift; sourceTree = "<group>"; };
 		BA46C1652F4CF3E900031891 /* RadarTripLeg.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarTripLeg.h; sourceTree = "<group>"; };
 		BA46C1672F4CF45600031891 /* RadarTripLeg.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RadarTripLeg.m; sourceTree = "<group>"; };
 		BA46C1692F4E0A8300031891 /* trip_with_legs.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = trip_with_legs.json; sourceTree = "<group>"; };
@@ -591,6 +599,8 @@
 				DD236C9823087F9200EB88F9 /* RadarAPIClient.h */,
 				DD236C9923087F9200EB88F9 /* RadarAPIClient.m */,
 				F6513DDB2E54F63100523472 /* RadarAPIClient.swift */,
+				C0DEF0022F91000100AA0002 /* RadarFailoverAPICoordinator.h */,
+				C0DEF0012F91000100AA0001 /* RadarFailoverAPICoordinator.swift */,
 				82DF18772C5830C300301B17 /* RadarActivityManager.h */,
 				82DF18782C5830C300301B17 /* RadarActivityManager.m */,
 				DD633EC1237C5B800026C91A /* RadarAPIHelper.h */,
@@ -664,6 +674,8 @@
 			children = (
 				BA3540232F90339F00E553A1 /* RadarSerializedTests.swift */,
 				BA35401F2F8EBFAD00E553A1 /* RadarOfflineEventManagerTests.swift */,
+				C0DEF0042F91000100AA0004 /* RadarAPIClientFailoverWiringTests.swift */,
+				C0DEF0032F91000100AA0003 /* RadarFailoverAPICoordinatorTests.swift */,
 				BA353F082F8826AF00E553A1 /* RadatSyncTestHelper.m */,
 				BA353F072F88269F00E553A1 /* RadarSyncTestHelper.h */,
 				BA8647B82F6C7DAD00F1A199 /* RadarSyncManagerTests.swift */,
@@ -796,6 +808,7 @@
 				96A5A10F27AD9F7F007B960B /* RadarRouteDuration.h in Headers */,
 				BA46C1662F4CF3F200031891 /* RadarTripLeg.h in Headers */,
 				BA3540222F90020F00E553A1 /* RadarOfflineEventManager.h in Headers */,
+				C0DEF1022F91000100AA0002 /* RadarFailoverAPICoordinator.h in Headers */,
 				96A5A10627AD9F7F007B960B /* RadarFraud.h in Headers */,
 				01F99CFB2965C182004E8CF3 /* RadarConfig.h in Headers */,
 				96A5A0CF27AD9F41007B960B /* RadarAddress+Internal.h in Headers */,
@@ -1030,6 +1043,7 @@
 				F65F79372EF4560B00399E84 /* RadarInAppMessage.m in Sources */,
 				0107AAAA26220165008AB52F /* RadarGeofenceGeometry.m in Sources */,
 				BA8647AD2F6C527B00F1A199 /* RadarSyncState.swift in Sources */,
+				C0DEF1012F91000100AA0001 /* RadarFailoverAPICoordinator.swift in Sources */,
 				0107AAEC262201A6008AB52F /* RadarTrip.m in Sources */,
 				9679F4A327CD8DE200800797 /* CLLocation+Radar.m in Sources */,
 				BA8647B32F6C5B3500F1A199 /* RadarPlace.swift in Sources */,
@@ -1098,6 +1112,8 @@
 				F6B7E3472F7429D6006A5A24 /* RadarNotificationHelperTest.swift in Sources */,
 				DD8E2F7724018C25002D51AB /* RadarAPIHelperMock.m in Sources */,
 				BA8647B92F6C7DB700F1A199 /* RadarSyncManagerTests.swift in Sources */,
+				C0DEF1042F91000100AA0004 /* RadarAPIClientFailoverWiringTests.swift in Sources */,
+				C0DEF1032F91000100AA0003 /* RadarFailoverAPICoordinatorTests.swift in Sources */,
 				96B465BC27D6732500D7119B /* CLLocation+RadarTests.m in Sources */,
 				DD103211237E0C47003DD408 /* RadarSDKTests.m in Sources */,
 				DD8E2F7124018BF9002D51AB /* RadarTestUtils.m in Sources */,
