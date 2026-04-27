@@ -74,22 +74,6 @@ internal final class RadarFailoverAPICoordinator: NSObject {
         timer?.cancel()
     }
 
-    var isUsingSecondaryForTests: Bool {
-        locked { usingSecondaryHost }
-    }
-
-    var isHealthTimerActiveForTests: Bool {
-        locked { healthTimer != nil }
-    }
-
-    func runHealthCheckForTests() {
-        runHealthCheck()
-    }
-
-    func waitForHealthCheckForTests() {
-        healthQueue.sync {}
-    }
-
     private func selectedHost() -> (index: Int, host: String) {
         let hosts = hostsProvider()
         let wantsSecondary = locked { usingSecondaryHost }
