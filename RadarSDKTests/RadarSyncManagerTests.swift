@@ -8,18 +8,17 @@
 
 import Foundation
 import Testing
-
 @testable import RadarSDK
 
 extension RadarSerializedTests {
     @Suite(.serialized)
     struct RadarSyncManagerTests {
-
+        
         let testLat = 40.78382
         let testLng = -73.97536
         let testLatNearby = 40.78427
         let testLatFar = 40.78562
-
+        
         init() {
             Radar.initialize(publishableKey: "prj_test_pk_0000000000000000")
             RadarSyncManager.syncStore.clear()
@@ -28,61 +27,57 @@ extension RadarSerializedTests {
             RadarSyncManager.lastPlaceCheckLocation = nil
             RadarSettings.sdkConfiguration = nil
         }
-
+        
         // MARK: - Helpers
-
-        func makeCircleGeofence(
-            id: String, lat: Double, lng: Double, radius: Double,
-            dwellThreshold: Double? = nil, stopDetection: Bool? = nil
-        ) -> RadarGeofenceSwift {
+        
+        func makeCircleGeofence(id: String, lat: Double, lng: Double, radius: Double,
+                                dwellThreshold: Double? = nil, stopDetection: Bool? = nil) -> RadarGeofenceSwift {
             let center = RadarCoordinateSwift(latitude: lat, longitude: lng)
-
+            
             return RadarGeofenceSwift(
                 id: id, description: "Test Geofence", tag: "test", externalId: id,
                 geometry: .circle(center: center, radius: radius),
                 dwellThreshold: dwellThreshold, geofenceStopDetection: stopDetection
             )
         }
-
-        func makePolygonGeofence(
-            id: String, coords: [RadarCoordinateSwift],
-            center: RadarCoordinateSwift, radius: Double
-        ) -> RadarGeofenceSwift {
-
+        
+        func makePolygonGeofence(id: String, coords: [RadarCoordinateSwift],
+                                 center: RadarCoordinateSwift, radius: Double) -> RadarGeofenceSwift {
+            
             return RadarGeofenceSwift(
                 id: id, description: "Test Polygon", tag: "test", externalId: id,
                 geometry: .polygon(coordinates: coords, center: center, radius: radius),
                 dwellThreshold: nil, geofenceStopDetection: nil
             )
         }
-
+        
         func makeBeacon(id: String, lat: Double, lng: Double) -> RadarBeaconSwift {
-
+            
             return RadarBeaconSwift(
                 id: id, description: "Test Beacon", tag: "test", externalId: id,
                 uuid: "test-uuid", major: "1", minor: "1",
                 geometry: RadarCoordinateSwift(latitude: lat, longitude: lng)
             )
         }
-
+        
         func makePlace(id: String, lat: Double, lng: Double, geometryRadius: Double? = nil) -> RadarPlaceSwift {
-
+            
             return RadarPlaceSwift(
                 id: id, name: "Test Place", categories: ["test"],
                 location: RadarCoordinateSwift(latitude: lat, longitude: lng), group: "test",
                 geometryRadius: geometryRadius
             )
         }
-
+        
         func makeUser(placeId: String? = nil) -> RadarUser {
             var dict: [String: Any] = [
                 "_id": "test_user",
                 "location": [
                     "type": "Point",
-                    "coordinates": [testLng, testLat],
+                    "coordinates": [testLng, testLat]
                 ],
                 "geofences": [] as [[String: Any]],
-                "beacons": [] as [[String: Any]],
+                "beacons": [] as [[String: Any]]
             ]
             if let placeId = placeId {
                 dict["place"] = [
@@ -90,42 +85,42 @@ extension RadarSerializedTests {
                     "name": "Test Place",
                     "location": [
                         "type": "Point",
-                        "coordinates": [testLng, testLat],
-                    ],
+                        "coordinates": [testLng, testLat]
+                    ]
                 ]
             }
             return RadarUser(object: dict as NSDictionary)!
         }
-
+        
         func setState(_ state: RadarSyncState) {
             RadarSyncManager.syncStore.write(state)
         }
-
+        
         // MARK: - shouldTrack
-
+        
         @Test("shouldTrack returns true when no synced region")
         func shouldTrack_noSyncedRegion() {
             let location = CLLocation(latitude: testLat, longitude: testLng)
             let options = RadarTrackingOptions()
             options.syncLocations = .events
-
+            
             #expect(RadarSyncManager.shouldTrack(location: location, options: options))
         }
-
+        
         @Test("shouldTrack returns true when outside synced region")
         func shouldTrack_outsideSyncedRegion() {
             var state = RadarSyncState()
             state.syncedRegionCenter = RadarCoordinateSwift(latitude: testLat, longitude: testLng)
             state.syncedRegionRadius = 100
             setState(state)
-
+            
             let location = CLLocation(latitude: testLatFar, longitude: testLng)
             let options = RadarTrackingOptions()
             options.syncLocations = .events
-
+            
             #expect(RadarSyncManager.shouldTrack(location: location, options: options))
         }
-
+        
         @Test("shouldTrack returns true on geofence entry")
         func shouldTrack_geofenceEntry() {
             let geofence = makeCircleGeofence(id: "geofence1", lat: testLat, lng: testLng, radius: 100)
@@ -135,14 +130,14 @@ extension RadarSerializedTests {
             state.syncedGeofences = [geofence]
             state.lastSyncedGeofenceIds = []
             setState(state)
-
+            
             let location = CLLocation(latitude: testLat, longitude: testLng)
             let options = RadarTrackingOptions()
             options.syncLocations = .events
-
+            
             #expect(RadarSyncManager.shouldTrack(location: location, options: options))
         }
-
+        
         @Test("shouldTrack returns true on geofence exit")
         func shouldTrack_geofenceExit() {
             let geofence = makeCircleGeofence(id: "geofence1", lat: testLatFar, lng: testLng, radius: 50)
@@ -152,14 +147,14 @@ extension RadarSerializedTests {
             state.syncedGeofences = [geofence]
             state.lastSyncedGeofenceIds = ["geofence1"]
             setState(state)
-
+            
             let location = CLLocation(latitude: testLat, longitude: testLng)
             let options = RadarTrackingOptions()
             options.syncLocations = .events
-
+            
             #expect(RadarSyncManager.shouldTrack(location: location, options: options))
         }
-
+        
         @Test("shouldTrack returns false when no state change")
         func shouldNotTrack_noStateChange() {
             let geofence = makeCircleGeofence(id: "geofence1", lat: testLat, lng: testLng, radius: 100)
@@ -170,53 +165,53 @@ extension RadarSerializedTests {
             state.lastSyncedGeofenceIds = ["geofence1"]
             state.geofenceEntryTimestamps = ["geofence1": Date().timeIntervalSince1970]
             setState(state)
-
+            
             let location = CLLocation(latitude: testLat, longitude: testLng)
             let options = RadarTrackingOptions()
             options.syncLocations = .events
-
+            
             #expect(!RadarSyncManager.shouldTrack(location: location, options: options))
         }
-
+        
         // MARK: - getGeofences
-
+        
         @Test("getGeofences returns geofence when inside circle")
         func getGeofences_insideCircle() {
             let geofence = makeCircleGeofence(id: "geofence1", lat: testLat, lng: testLng, radius: 100)
             var state = RadarSyncState()
             state.syncedGeofences = [geofence]
             setState(state)
-
+            
             let location = CLLocation(latitude: testLat, longitude: testLng)
             let geofences = RadarSyncManager.getGeofences(for: location)
-
+            
             #expect(geofences.count == 1)
             #expect(geofences.first?.id == "geofence1")
         }
-
+        
         @Test("getGeofences returns empty when outside circle")
         func getGeofences_outsideCircle() {
             let geofence = makeCircleGeofence(id: "geofence1", lat: testLatFar, lng: testLng, radius: 50)
             var state = RadarSyncState()
             state.syncedGeofences = [geofence]
             setState(state)
-
+            
             let location = CLLocation(latitude: testLat, longitude: testLng)
             let geofences = RadarSyncManager.getGeofences(for: location)
-
+            
             #expect(geofences.count == 0)
         }
-
+        
         @Test("getGeofences returns empty when no nearby geofences")
         func getGeofences_noNearbyGeofences() {
             let location = CLLocation(latitude: testLat, longitude: testLng)
             let geofences = RadarSyncManager.getGeofences(for: location)
-
+            
             #expect(geofences.count == 0)
         }
-
+        
         // MARK: - geofenceStateChanged
-
+        
         @Test("geofenceStateChanged detects entry")
         func geofenceStateChanged_entry() {
             let geofence = makeCircleGeofence(id: "geofence1", lat: testLat, lng: testLng, radius: 100)
@@ -224,11 +219,11 @@ extension RadarSerializedTests {
             state.syncedGeofences = [geofence]
             state.lastSyncedGeofenceIds = []
             setState(state)
-
+            
             let location = CLLocation(latitude: testLat, longitude: testLng)
             #expect(RadarSyncManager.hasGeofenceStateChanged(location: location))
         }
-
+        
         @Test("geofenceStateChanged detects exit")
         func geofenceStateChanged_exit() {
             let geofence = makeCircleGeofence(id: "geofence1", lat: testLatFar, lng: testLng, radius: 50)
@@ -237,11 +232,11 @@ extension RadarSerializedTests {
             state.lastSyncedGeofenceIds = ["geofence1"]
             state.geofenceEntryTimestamps = ["geofence1": Date().timeIntervalSince1970]
             setState(state)
-
+            
             let location = CLLocation(latitude: testLat, longitude: testLng)
             #expect(RadarSyncManager.hasGeofenceStateChanged(location: location))
         }
-
+        
         @Test("geofenceStateChanged returns false when no change")
         func geofenceStateChanged_noChange() {
             let geofence = makeCircleGeofence(id: "geofence1", lat: testLat, lng: testLng, radius: 100)
@@ -250,86 +245,86 @@ extension RadarSerializedTests {
             state.lastSyncedGeofenceIds = ["geofence1"]
             state.geofenceEntryTimestamps = ["geofence1": Date().timeIntervalSince1970]
             setState(state)
-
+            
             let location = CLLocation(latitude: testLat, longitude: testLng)
             #expect(!RadarSyncManager.hasGeofenceStateChanged(location: location))
         }
-
+        
         // MARK: - getBeacons
-
+        
         @Test("getBeacons returns beacon when within range")
         func getBeacons_withinRange() {
             let beacon = makeBeacon(id: "beacon1", lat: testLat, lng: testLng)
             var state = RadarSyncState()
             state.syncedBeacons = [beacon]
             setState(state)
-
+            
             let location = CLLocation(latitude: testLat, longitude: testLng)
             let beacons = RadarSyncManager.getBeacons(for: location)
-
+            
             #expect(beacons.count == 1)
             #expect(beacons.first?.id == "beacon1")
         }
-
+        
         @Test("getBeacons returns empty when outside range")
         func getBeacons_outsideRange() {
             let beacon = makeBeacon(id: "beacon1", lat: testLatFar, lng: testLng)
             var state = RadarSyncState()
             state.syncedBeacons = [beacon]
             setState(state)
-
+            
             let location = CLLocation(latitude: testLat, longitude: testLng)
             let beacons = RadarSyncManager.getBeacons(for: location)
-
+            
             #expect(beacons.count == 0)
         }
-
+        
         // MARK: - beaconStateChanged
-
+        
         @Test("beaconStateChanged detects entry")
         func beaconStateChanged_entry() {
             var state = RadarSyncState()
             state.lastSyncedBeaconIds = []
             setState(state)
-
+            
             let rangedBeaconIds: Set<String> = ["beacon1"]
             #expect(RadarSyncManager.hasBeaconStateChanged(rangedBeaconIds: rangedBeaconIds))
         }
-
+        
         @Test("beaconStateChanged detects exit")
         func beaconStateChanged_exit() {
             var state = RadarSyncState()
             state.lastSyncedBeaconIds = ["beacon1"]
             setState(state)
-
+            
             let rangedBeaconIds: Set<String> = []
             #expect(RadarSyncManager.hasBeaconStateChanged(rangedBeaconIds: rangedBeaconIds))
         }
-
+        
         @Test("beaconStateChanged returns false when no change")
         func beaconStateChanged_noChange() {
             var state = RadarSyncState()
             state.lastSyncedBeaconIds = ["beacon1"]
             setState(state)
-
+            
             let rangedBeaconIds: Set<String> = ["beacon1"]
             #expect(!RadarSyncManager.hasBeaconStateChanged(rangedBeaconIds: rangedBeaconIds))
         }
-
+        
         @Test("saveBeaconState updates stored beacon IDs")
         func saveBeaconState() {
             var state = RadarSyncState()
             state.lastSyncedBeaconIds = ["beacon1"]
             setState(state)
-
+            
             RadarSyncManager.saveBeaconState(beaconIds: ["beacon2", "beacon3"])
-
+            
             let updatedState = RadarSyncManager.syncStore.read()!
             #expect(Set(updatedState.lastSyncedBeaconIds) == Set(["beacon2", "beacon3"]))
         }
-
+        
         // MARK: - getPlaces
-
+        
         @Test("getPlaces returns place when within radius")
         func getPlaces_withinRadius() {
             RadarSyncTestHelper.setStopped(true)
@@ -337,14 +332,14 @@ extension RadarSerializedTests {
             var state = RadarSyncState()
             state.syncedPlaces = [place]
             setState(state)
-
+            
             let location = CLLocation(latitude: testLat, longitude: testLng)
             let places = RadarSyncManager.getPlaces(for: location)
-
+            
             #expect(places.count == 1)
             #expect(places.first?.id == "place1")
         }
-
+        
         @Test("getPlaces returns empty when outside radius")
         func getPlaces_outsideRadius() {
             RadarSyncTestHelper.setStopped(true)
@@ -352,15 +347,15 @@ extension RadarSerializedTests {
             var state = RadarSyncState()
             state.syncedPlaces = [place]
             setState(state)
-
+            
             let location = CLLocation(latitude: testLat, longitude: testLng)
             let places = RadarSyncManager.getPlaces(for: location)
-
+            
             #expect(places.count == 0)
         }
-
+        
         // MARK: - placeStateChanged
-
+        
         @Test("placeStateChanged detects entry")
         func placeStateChanged_entry() {
             RadarSyncTestHelper.setStopped(true)
@@ -369,11 +364,11 @@ extension RadarSerializedTests {
             state.syncedPlaces = [place]
             state.lastSyncedPlaceIds = []
             setState(state)
-
+            
             let location = CLLocation(latitude: testLat, longitude: testLng)
             #expect(RadarSyncManager.hasPlaceStateChanged(location: location))
         }
-
+        
         @Test("placeStateChanged skips entry when not stopped")
         func placeStateChanged_entrySkippedWhenNotStopped() {
             RadarSyncTestHelper.setStopped(false)
@@ -382,11 +377,11 @@ extension RadarSerializedTests {
             state.syncedPlaces = [place]
             state.lastSyncedPlaceIds = []
             setState(state)
-
+            
             let location = CLLocation(latitude: testLat, longitude: testLng)
             #expect(!RadarSyncManager.hasPlaceStateChanged(location: location))
         }
-
+        
         @Test("placeStateChanged detects exit")
         func placeStateChanged_exit() {
             RadarSyncTestHelper.setStopped(false)
@@ -395,11 +390,11 @@ extension RadarSerializedTests {
             state.syncedPlaces = [place]
             state.lastSyncedPlaceIds = ["place1"]
             setState(state)
-
+            
             let location = CLLocation(latitude: testLat, longitude: testLng)
             #expect(RadarSyncManager.hasPlaceStateChanged(location: location))
         }
-
+        
         @Test("getPlaces returns place when within geometryRadius + detection radius")
         func getPlaces_withinGeometryRadius() {
             RadarSyncTestHelper.setStopped(true)
@@ -407,13 +402,13 @@ extension RadarSerializedTests {
             var state = RadarSyncState()
             state.syncedPlaces = [place]
             setState(state)
-
+            
             let location = CLLocation(latitude: testLat, longitude: testLng)
             let places = RadarSyncManager.getPlaces(for: location)
-
+            
             #expect(places.count == 1)
         }
-
+        
         @Test("getPlaces returns empty when outside geometryRadius + detection radius")
         func getPlaces_outsideGeometryRadiusPlusDetection() {
             RadarSyncTestHelper.setStopped(true)
@@ -421,13 +416,13 @@ extension RadarSerializedTests {
             var state = RadarSyncState()
             state.syncedPlaces = [place]
             setState(state)
-
+            
             let location = CLLocation(latitude: testLat, longitude: testLng)
             let places = RadarSyncManager.getPlaces(for: location)
-
+            
             #expect(places.count == 0)
         }
-
+        
         @Test("placeStateChanged no exit when within geometryRadius + exit buffer")
         func placeStateChanged_exitWithGeometryRadius() {
             RadarSyncTestHelper.setStopped(false)
@@ -436,13 +431,13 @@ extension RadarSerializedTests {
             state.syncedPlaces = [place]
             state.lastSyncedPlaceIds = ["place1"]
             setState(state)
-
+            
             let location = CLLocation(latitude: testLat, longitude: testLng)
             // testLatNearby is ~50m from testLat, exit radius = 20 + 50 = 70m
             // User is ~50m away, within exit radius → no exit
             #expect(!RadarSyncManager.hasPlaceStateChanged(location: location))
         }
-
+        
         @Test("placeStateChanged detects exit beyond geometryRadius + exit buffer")
         func placeStateChanged_exitBeyondBuffer() {
             RadarSyncTestHelper.setStopped(false)
@@ -451,13 +446,13 @@ extension RadarSerializedTests {
             state.syncedPlaces = [place]
             state.lastSyncedPlaceIds = ["place1"]
             setState(state)
-
+            
             let location = CLLocation(latitude: testLat, longitude: testLng)
             // testLatFar is ~200m from testLat, exit radius = 50 + 50 = 100m
             // User is ~200m away, outside exit radius → exit
             #expect(RadarSyncManager.hasPlaceStateChanged(location: location))
         }
-
+        
         @Test("placeStateChanged blocks switch when still within exit radius of current place")
         func placeStateChanged_switchBlockedWithinExitRadius() {
             RadarSyncTestHelper.setStopped(true)
@@ -467,14 +462,14 @@ extension RadarSerializedTests {
             state.syncedPlaces = [place1, place2]
             state.lastSyncedPlaceIds = ["place1"]
             setState(state)
-
+            
             let location = CLLocation(latitude: testLatNearby, longitude: testLng)
             // User is at testLatNearby (~50m from place1)
             // place1 exit radius = 100 + 50 = 150m, user is ~50m away → still within exit radius
             // Even though user is within place2's entry radius, switch should be blocked
             #expect(!RadarSyncManager.hasPlaceStateChanged(location: location))
         }
-
+        
         @Test("placeStateChanged suppresses re-entry of server-rejected place")
         func placeStateChanged_rejectedPlaceNotReentered() {
             RadarSyncTestHelper.setStopped(true)
@@ -483,25 +478,25 @@ extension RadarSerializedTests {
             state.syncedPlaces = [place]
             state.lastSyncedPlaceIds = []
             setState(state)
-
+            
             let location = CLLocation(
                 coordinate: CLLocationCoordinate2D(latitude: testLat, longitude: testLng),
                 altitude: 0, horizontalAccuracy: 10, verticalAccuracy: -1, timestamp: Date()
             )
-
+            
             #expect(RadarSyncManager.hasPlaceStateChanged(location: location))
-
+            
             var optimisticState = RadarSyncState()
             optimisticState.syncedPlaces = [place]
             optimisticState.lastSyncedPlaceIds = ["place1"]
             setState(optimisticState)
-
+            
             // Server rejects — no place on user
             RadarSyncManager.reconcileSyncState(user: makeUser())
             // Same location — should be suppressed
             #expect(!RadarSyncManager.hasPlaceStateChanged(location: location))
         }
-
+        
         @Test("placeStateChanged clears rejections when user moves beyond accuracy")
         func placeStateChanged_rejectionsClearedOnMovement() {
             RadarSyncTestHelper.setStopped(true)
@@ -510,34 +505,34 @@ extension RadarSerializedTests {
             state.syncedPlaces = [place]
             state.lastSyncedPlaceIds = []
             setState(state)
-
+            
             let location = CLLocation(
                 coordinate: CLLocationCoordinate2D(latitude: testLat, longitude: testLng),
                 altitude: 0, horizontalAccuracy: 10, verticalAccuracy: -1, timestamp: Date()
             )
             #expect(RadarSyncManager.hasPlaceStateChanged(location: location))
-
+            
             var optimisticState = RadarSyncState()
             optimisticState.syncedPlaces = [place]
             optimisticState.lastSyncedPlaceIds = ["place1"]
             setState(optimisticState)
-
+            
             // Server rejects
             RadarSyncManager.reconcileSyncState(user: makeUser())
-
+            
             // Move far away — clears rejections
             let farLocation = CLLocation(
                 coordinate: CLLocationCoordinate2D(latitude: testLatFar, longitude: testLng),
                 altitude: 0, horizontalAccuracy: 10, verticalAccuracy: -1, timestamp: Date()
             )
             _ = RadarSyncManager.hasPlaceStateChanged(location: farLocation)
-
+            
             // Reset state so place1 can be re-entered
             var freshState = RadarSyncState()
             freshState.syncedPlaces = [place]
             freshState.lastSyncedPlaceIds = []
             setState(freshState)
-
+            
             // Back near place — should detect entry again
             let returnLocation = CLLocation(
                 coordinate: CLLocationCoordinate2D(latitude: testLat, longitude: testLng),
@@ -545,7 +540,7 @@ extension RadarSerializedTests {
             )
             #expect(RadarSyncManager.hasPlaceStateChanged(location: returnLocation))
         }
-
+        
         @Test("getPlaces returns only the single closest place")
         func getPlaces_returnsSingleClosest() {
             RadarSyncTestHelper.setStopped(true)
@@ -554,62 +549,62 @@ extension RadarSerializedTests {
             var state = RadarSyncState()
             state.syncedPlaces = [place1, place2]
             setState(state)
-
+            
             let location = CLLocation(latitude: testLat, longitude: testLng)
             let places = RadarSyncManager.getPlaces(for: location)
-
+            
             #expect(places.count == 1)
             #expect(places.first?.id == "place1")
         }
-
+        
         // MARK: - isOutsideSyncedRegion
-
+        
         @Test("isOutsideSyncedRegion returns true when no region")
         func isOutsideSyncedRegion_nil() {
             let location = CLLocation(latitude: testLat, longitude: testLng)
             #expect(RadarSyncManager.isOutsideSyncedRegion(location: location))
         }
-
+        
         @Test("isOutsideSyncedRegion returns false when inside")
         func isOutsideSyncedRegion_inside() {
             var state = RadarSyncState()
             state.syncedRegionCenter = RadarCoordinateSwift(latitude: testLat, longitude: testLng)
             state.syncedRegionRadius = 100
             setState(state)
-
+            
             let location = CLLocation(latitude: testLat, longitude: testLng)
             #expect(!RadarSyncManager.isOutsideSyncedRegion(location: location))
         }
-
+        
         @Test("isOutsideSyncedRegion returns true when outside")
         func isOutsideSyncedRegion_outside() {
             var state = RadarSyncState()
             state.syncedRegionCenter = RadarCoordinateSwift(latitude: testLat, longitude: testLng)
             state.syncedRegionRadius = 100
             setState(state)
-
+            
             let location = CLLocation(latitude: testLatFar, longitude: testLng)
             #expect(RadarSyncManager.isOutsideSyncedRegion(location: location))
         }
-
+        
         // MARK: - isPointInsideCircle
-
+        
         @Test("isPointInsideCircle returns true when inside")
         func isPointInsideCircle_inside() {
             let point = CLLocation(latitude: testLat, longitude: testLng)
             let center = CLLocationCoordinate2D(latitude: testLat, longitude: testLng)
             #expect(RadarSyncManager.isPoint(point, insideCircleWithCenter: center, radius: 100))
         }
-
+        
         @Test("isPointInsideCircle returns false when outside")
         func isPointInsideCircle_outside() {
             let point = CLLocation(latitude: testLatFar, longitude: testLng)
             let center = CLLocationCoordinate2D(latitude: testLat, longitude: testLng)
             #expect(!RadarSyncManager.isPoint(point, insideCircleWithCenter: center, radius: 100))
         }
-
+        
         // MARK: - Multiple geofences
-
+        
         @Test("shouldTrack with multiple geofences when crossing nearest boundary")
         func multipleGeofences_shouldTrackWhenCrossingNearestBoundary() {
             let geofenceA = makeCircleGeofence(id: "geofenceA", lat: testLatNearby, lng: testLng, radius: 100)
@@ -618,14 +613,14 @@ extension RadarSerializedTests {
             state.syncedGeofences = [geofenceA, geofenceB]
             state.lastSyncedGeofenceIds = []
             setState(state)
-
+            
             let location = CLLocation(latitude: testLatNearby, longitude: testLng)
             let options = RadarTrackingOptions()
             options.syncLocations = .events
-
+            
             #expect(RadarSyncManager.shouldTrack(location: location, options: options))
         }
-
+        
         @Test("detects correct geofences from multiple")
         func multipleGeofences_detectsCorrectGeofences() {
             let geofenceA = makeCircleGeofence(id: "geofenceA", lat: testLat, lng: testLng, radius: 100)
@@ -634,19 +629,19 @@ extension RadarSerializedTests {
             var state = RadarSyncState()
             state.syncedGeofences = [geofenceA, geofenceB, geofenceC]
             setState(state)
-
+            
             let location = CLLocation(latitude: testLat, longitude: testLng)
             let geofences = RadarSyncManager.getGeofences(for: location)
             #expect(geofences.count == 2)
-
+            
             let ids = Set(geofences.map { $0.id })
             #expect(ids.contains("geofenceA"))
             #expect(ids.contains("geofenceB"))
             #expect(!ids.contains("geofenceC"))
         }
-
+        
         // MARK: - Polygon geofences
-
+        
         @Test("getGeofences returns geofence when inside polygon")
         func getGeofences_insidePolygon() {
             let coords = [
@@ -661,14 +656,14 @@ extension RadarSerializedTests {
             var state = RadarSyncState()
             state.syncedGeofences = [geofence]
             setState(state)
-
+            
             let location = CLLocation(latitude: testLat, longitude: testLng)
             let geofences = RadarSyncManager.getGeofences(for: location)
-
+            
             #expect(geofences.count == 1)
             #expect(geofences.first?.id == "poly1")
         }
-
+        
         @Test("getGeofences returns empty when outside polygon")
         func getGeofences_outsidePolygon() {
             let coords = [
@@ -683,13 +678,13 @@ extension RadarSerializedTests {
             var state = RadarSyncState()
             state.syncedGeofences = [geofence]
             setState(state)
-
+            
             let location = CLLocation(latitude: testLat, longitude: testLng)
             let geofences = RadarSyncManager.getGeofences(for: location)
-
+            
             #expect(geofences.count == 0)
         }
-
+        
         @Test("getGeofences handles mixed circle and polygon")
         func getGeofences_mixedCircleAndPolygon() {
             let circleGeofence = makeCircleGeofence(id: "circle1", lat: testLat, lng: testLng, radius: 100)
@@ -705,28 +700,28 @@ extension RadarSerializedTests {
             var state = RadarSyncState()
             state.syncedGeofences = [circleGeofence, polyGeofence]
             setState(state)
-
+            
             let location = CLLocation(latitude: testLat, longitude: testLng)
             let geofences = RadarSyncManager.getGeofences(for: location)
             #expect(geofences.count == 2)
-
+            
             let ids = Set(geofences.map { $0.id })
             #expect(ids.contains("circle1"))
             #expect(ids.contains("poly1"))
         }
-
+        
         // MARK: - Buffered entry
-
+        
         @Test("getGeofences includes buffered entry when enabled")
         func getGeofences_bufferedEntry() {
             let geofence = makeCircleGeofence(id: "geofence1", lat: testLat, lng: testLng, radius: 100)
             var state = RadarSyncState()
             state.syncedGeofences = [geofence]
             setState(state)
-
+            
             let config = RadarSdkConfiguration(dict: ["bufferGeofenceEntries": true])
             RadarSettings.sdkConfiguration = config
-
+            
             let offsetLat = testLat + 0.001
             let location = CLLocation(
                 coordinate: CLLocationCoordinate2D(latitude: offsetLat, longitude: testLng),
@@ -735,17 +730,17 @@ extension RadarSerializedTests {
             let geofences = RadarSyncManager.getGeofences(for: location)
             #expect(geofences.count == 1)
         }
-
+        
         @Test("getGeofences excludes buffered entry when disabled")
         func getGeofences_bufferingDisabled() {
             let geofence = makeCircleGeofence(id: "geofence1", lat: testLat, lng: testLng, radius: 100)
             var state = RadarSyncState()
             state.syncedGeofences = [geofence]
             setState(state)
-
+            
             let config = RadarSdkConfiguration(dict: ["bufferGeofenceEntries": false])
             RadarSettings.sdkConfiguration = config
-
+            
             let offsetLat = testLat + 0.001
             let location = CLLocation(
                 coordinate: CLLocationCoordinate2D(latitude: offsetLat, longitude: testLng),
@@ -754,9 +749,9 @@ extension RadarSerializedTests {
             let geofences = RadarSyncManager.getGeofences(for: location)
             #expect(geofences.count == 0)
         }
-
+        
         // MARK: - Stop detection
-
+        
         @Test("stop detection blocks geofence entry when not stopped")
         func geofenceEntry_stopDetectionBlocks() {
             RadarSyncTestHelper.setStopped(false)
@@ -765,11 +760,11 @@ extension RadarSerializedTests {
             state.syncedGeofences = [geofence]
             state.lastSyncedGeofenceIds = []
             setState(state)
-
+            
             let location = CLLocation(latitude: testLat, longitude: testLng)
             #expect(!RadarSyncManager.hasGeofenceStateChanged(location: location))
         }
-
+        
         @Test("stop detection allows geofence entry when stopped")
         func geofenceEntry_stopDetectionAllows() {
             RadarSyncTestHelper.setStopped(true)
@@ -778,13 +773,13 @@ extension RadarSerializedTests {
             state.syncedGeofences = [geofence]
             state.lastSyncedGeofenceIds = []
             setState(state)
-
+            
             let location = CLLocation(latitude: testLat, longitude: testLng)
             #expect(RadarSyncManager.hasGeofenceStateChanged(location: location))
         }
-
+        
         // MARK: - Dwell
-
+        
         @Test("dwell threshold reached triggers state change")
         func geofenceDwell_thresholdReached() {
             let geofence = makeCircleGeofence(id: "geofence1", lat: testLat, lng: testLng, radius: 100)
@@ -793,14 +788,14 @@ extension RadarSerializedTests {
             state.lastSyncedGeofenceIds = ["geofence1"]
             state.geofenceEntryTimestamps = ["geofence1": Date(timeIntervalSinceNow: -600).timeIntervalSince1970]
             setState(state)
-
+            
             let config = RadarSdkConfiguration(dict: ["defaultGeofenceDwellThreshold": 5])
             RadarSettings.sdkConfiguration = config
-
+            
             let location = CLLocation(latitude: testLat, longitude: testLng)
             #expect(RadarSyncManager.hasGeofenceStateChanged(location: location))
         }
-
+        
         @Test("dwell threshold not reached does not trigger state change")
         func geofenceDwell_thresholdNotReached() {
             let geofence = makeCircleGeofence(id: "geofence1", lat: testLat, lng: testLng, radius: 100)
@@ -809,14 +804,14 @@ extension RadarSerializedTests {
             state.lastSyncedGeofenceIds = ["geofence1"]
             state.geofenceEntryTimestamps = ["geofence1": Date(timeIntervalSinceNow: -60).timeIntervalSince1970]
             setState(state)
-
+            
             let config = RadarSdkConfiguration(dict: ["defaultGeofenceDwellThreshold": 5])
             RadarSettings.sdkConfiguration = config
-
+            
             let location = CLLocation(latitude: testLat, longitude: testLng)
             #expect(!RadarSyncManager.hasGeofenceStateChanged(location: location))
         }
-
+        
         @Test("per-geofence dwell threshold override")
         func geofenceDwell_perGeofenceOverride() {
             let geofence = makeCircleGeofence(id: "geofence1", lat: testLat, lng: testLng, radius: 100, dwellThreshold: 2)
@@ -825,11 +820,11 @@ extension RadarSerializedTests {
             state.lastSyncedGeofenceIds = ["geofence1"]
             state.geofenceEntryTimestamps = ["geofence1": Date(timeIntervalSinceNow: -180).timeIntervalSince1970]
             setState(state)
-
+            
             let location = CLLocation(latitude: testLat, longitude: testLng)
             #expect(RadarSyncManager.hasGeofenceStateChanged(location: location))
         }
-
+        
         @Test("dwell event already fired does not trigger again")
         func geofenceDwell_alreadyFired() {
             let geofence = makeCircleGeofence(id: "geofence1", lat: testLat, lng: testLng, radius: 100)
@@ -839,34 +834,34 @@ extension RadarSerializedTests {
             state.geofenceEntryTimestamps = ["geofence1": Date(timeIntervalSinceNow: -600).timeIntervalSince1970]
             state.dwellEventsFired = ["geofence1"]
             setState(state)
-
+            
             let config = RadarSdkConfiguration(dict: ["defaultGeofenceDwellThreshold": 5])
             RadarSettings.sdkConfiguration = config
-
+            
             let location = CLLocation(latitude: testLat, longitude: testLng)
             #expect(!RadarSyncManager.hasGeofenceStateChanged(location: location))
         }
-
+        
         // MARK: - isNearSyncedRegionBoundary
-
+        
         @Test("isNearSyncedRegionBoundary returns true when near boundary")
         func isNearSyncedRegionBoundary_near() {
             var state = RadarSyncState()
             state.syncedRegionCenter = RadarCoordinateSwift(latitude: testLat, longitude: testLng)
             state.syncedRegionRadius = 1000
             setState(state)
-
+            
             let location = CLLocation(latitude: testLat + 0.0081, longitude: testLng)
             #expect(RadarSyncManager.isNearSyncedRegionBoundary(location: location))
         }
-
+        
         @Test("isNearSyncedRegionBoundary returns false when not near boundary")
         func isNearSyncedRegionBoundary_notNear() {
             var state = RadarSyncState()
             state.syncedRegionCenter = RadarCoordinateSwift(latitude: testLat, longitude: testLng)
             state.syncedRegionRadius = 1000
             setState(state)
-
+            
             let location = CLLocation(latitude: testLat, longitude: testLng)
             #expect(!RadarSyncManager.isNearSyncedRegionBoundary(location: location))
         }

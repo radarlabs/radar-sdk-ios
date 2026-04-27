@@ -15,27 +15,26 @@ struct RadarNotificationContent: Sendable, Hashable {
     let notificationSubtitle: String?
     let notificationURL: String?
     let campaignMetadata: String?
-
+    
     init?(from metadata: [String: RadarMetadataValue]) {
         // required fields
         guard let notificationText = metadata["radar:notificationText"]?.string(),
-            let campaignId = metadata["radar:campaignId"]?.string()
-        else {
+              let campaignId = metadata["radar:campaignId"]?.string() else {
             return nil
         }
         self.notificationText = notificationText
         self.campaignId = campaignId
-
+        
         // optional fields
         self.notificationTitle = metadata["radar:notificationTitle"]?.string()
         self.notificationSubtitle = metadata["radar:notificationSubtitle"]?.string()
         self.notificationURL = metadata["radar:notificationURL"]?.string()
         self.campaignMetadata = metadata["radar:campaignMetadata"]?.string()
     }
-
+    
     func toNotificationContent(userInfo: [String: Any]) -> UNNotificationContent {
         let content = UNMutableNotificationContent()
-
+        
         if let notificationTitle {
             content.title = NSString.localizedUserNotificationString(forKey: notificationTitle, arguments: nil)
         }
@@ -43,16 +42,15 @@ struct RadarNotificationContent: Sendable, Hashable {
             content.subtitle = NSString.localizedUserNotificationString(forKey: notificationSubtitle, arguments: nil)
         }
         content.body = NSString.localizedUserNotificationString(forKey: notificationText, arguments: nil)
-
+        
         content.userInfo = userInfo
         content.userInfo["campaignId"] = campaignId
         content.userInfo["url"] = notificationURL
         if let data = campaignMetadata?.data(using: .utf8),
-            let json = try? JSONSerialization.jsonObject(with: data)
-        {
+           let json = try? JSONSerialization.jsonObject(with: data) {
             content.userInfo["campaignMetadata"] = json
         }
-
+        
         return content
     }
 }
@@ -62,8 +60,7 @@ extension RadarGeofence_Swift {
         let identifier = GEOFENCE_NOTIFICATION_PREFIX + _id
         // Content
         guard let metadata = metadata,
-            let metadataContent = RadarNotificationContent(from: metadata)
-        else {
+              let metadataContent = RadarNotificationContent(from: metadata) else {
             return nil
         }
         guard let geofenceData = try? JSONEncoder().encode(self) else {
@@ -76,7 +73,7 @@ extension RadarGeofence_Swift {
             "geofenceData": geofenceData,
         ]
         let content = metadataContent.toNotificationContent(userInfo: userInfo)
-
+        
         // Trigger
         let latitude = geometryCenter.coordinate.latitude
         let longitude = geometryCenter.coordinate.longitude
@@ -85,7 +82,7 @@ extension RadarGeofence_Swift {
         let region = CLCircularRegion(center: center, radius: radius, identifier: identifier)
         let repeats = if case let .bool(value)? = metadata["radar:notificationRepeats"] { value } else { false }
         let trigger = UNLocationNotificationTrigger(region: region, repeats: repeats)
-
+        
         return UNNotificationRequest(identifier: identifier, content: content, trigger: trigger)
     }
 }
@@ -95,7 +92,7 @@ struct NotificationValue: Codable, Hashable {
     let registeredAt: Double
     let geofenceId: String?
     let campaignId: String?
-
+    
     init?(from request: UNNotificationRequest) {
         if !request.identifier.starts(with: RADAR_NOTIFICATION_PREFIX) {
             return nil
@@ -104,17 +101,17 @@ struct NotificationValue: Codable, Hashable {
         guard let registeredAt = userInfo["registeredAt"] as? Double else {
             return nil
         }
-
+        
         self.identifier = request.identifier
         self.registeredAt = registeredAt
-
+        
         self.geofenceId = userInfo["geofenceId"] as? String
         self.campaignId = userInfo["campaignId"] as? String
     }
 }
 
 struct NotificationPermissions: Codable {
-
+    
     enum AuthorizedStatus: String, Codable {
         case denied = "denied"
         case authorized = "authorized"
@@ -123,14 +120,14 @@ struct NotificationPermissions: Codable {
         case provisional = "provisional"
         case unknown = "unknown"
     }
-
+    
     let alert: Bool?
     let sound: Bool?
     let badge: Bool?
     let lockScreen: Bool?
     let notificationCenter: Bool?
     let authorizationStatus: AuthorizedStatus
-
+    
     func canSendNotification() -> Bool {
         // whether or not any notifications will be sent, when all notification types are disabled, iOS will not return anything from pending notifications list
         // if that is the case, mostly likely the user has not received any notifications in the pending list.

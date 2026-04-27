@@ -9,32 +9,33 @@
 import Foundation
 
 final class RadarFileStorage<T: Codable & Sendable>: @unchecked Sendable {
-
+    
     private let fileURL: URL
     private let queue: DispatchQueue
     private var cache: T?
     private var cacheLoaded = false
-
+    
     init(fileName: String) {
         self.queue = DispatchQueue(label: "io.radar.filestorage.\(fileName)", qos: .utility)
-
+        
         let appSupport = FileManager.default.urls(
             for: .applicationSupportDirectory, in: .userDomainMask
         ).first!
         let dir = appSupport.appendingPathComponent("RadarSDK", isDirectory: true)
-
+        
         if !FileManager.default.fileExists(atPath: dir.path) {
             try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
         }
-
+        
         var dirURL = dir
         var values = URLResourceValues()
         values.isExcludedFromBackup = true
         try? dirURL.setResourceValues(values)
-
+        
         self.fileURL = dir.appendingPathComponent(fileName)
     }
-
+    
+    
     func read() -> T? {
         queue.sync {
             if cacheLoaded { return cache }
@@ -44,7 +45,7 @@ final class RadarFileStorage<T: Codable & Sendable>: @unchecked Sendable {
             return cache
         }
     }
-
+    
     func write(_ value: T) {
         queue.sync {
             cache = value
@@ -53,7 +54,7 @@ final class RadarFileStorage<T: Codable & Sendable>: @unchecked Sendable {
             try? data.write(to: fileURL, options: .atomic)
         }
     }
-
+    
     func writeAsync(_ value: T) {
         queue.async { [self] in
             cache = value
@@ -62,7 +63,7 @@ final class RadarFileStorage<T: Codable & Sendable>: @unchecked Sendable {
             try? data.write(to: fileURL, options: .atomic)
         }
     }
-
+    
     func modify(_ transform: (inout T?) -> Void) {
         queue.sync {
             if !cacheLoaded {
@@ -79,7 +80,7 @@ final class RadarFileStorage<T: Codable & Sendable>: @unchecked Sendable {
             }
         }
     }
-
+    
     func clear() {
         queue.sync {
             cache = nil

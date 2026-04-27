@@ -5,16 +5,16 @@
 //  Copyright © 2026 Radar Labs, Inc. All rights reserved.
 //
 
-import CoreLocation
 import Foundation
 import UserNotifications
+import CoreLocation
 
 @available(iOS 13.0, *)
 protocol NotificationCenterProtocol {
     nonisolated(nonsending) func add(_ request: UNNotificationRequest) async throws
     nonisolated(nonsending) func pendingNotificationRequests() async -> [UNNotificationRequest]
     func removePendingNotificationRequests(withIdentifiers identifiers: [String])
-
+    
     nonisolated(nonsending) func radarNotificationPermissions() async -> NotificationPermissions
 }
 
@@ -25,7 +25,7 @@ extension UNUserNotificationCenter: NotificationCenterProtocol {
         let permissions = NotificationPermissions(from: settings)
         return permissions
     }
-
+    
 }
 
 @available(iOS 13.0, *)
@@ -36,10 +36,10 @@ actor RadarNotificationHelper: NSObject {
     private var isRegistering: Bool = false
 
     public static let shared = RadarNotificationHelper()
-
+    
     private let notificationCenter: NotificationCenterProtocol
     private let radarState: RadarState
-
+    
     init(notificationCenter: NotificationCenterProtocol = UNUserNotificationCenter.current(), radarState: RadarState = RadarState()) {
         self.notificationCenter = notificationCenter
         self.radarState = radarState
@@ -49,24 +49,23 @@ actor RadarNotificationHelper: NSObject {
         guard let geofences else {
             return
         }
-
+        
         let now = Date()
         let notifications: [UNNotificationRequest] = geofences.compactMap { (geofenceDict) -> UNNotificationRequest? in
             if let json = try? JSONSerialization.data(withJSONObject: geofenceDict),
-                let geofence = try? JSONDecoder().decode(RadarGeofence_Swift.self, from: json),
-                let notification = geofence.toNotificationRequest(now: now)
-            {
+               let geofence = try? JSONDecoder().decode(RadarGeofence_Swift.self, from: json),
+               let notification = geofence.toNotificationRequest(now: now) {
                 return notification
             }
             return nil
         }
-
+        
         RadarLogger.debug("NotificationHelper registering: \(notifications.map(\.identifier))")
-
+        
         // cancel previous work
         let previousTask = currentTask
         previousTask?.cancel()
-
+        
         isRegistering = true
         let task = Task { [notifications] in
             await previousTask?.value
@@ -84,7 +83,7 @@ actor RadarNotificationHelper: NSObject {
         currentTask = task
         await task.value
     }
-
+    
     private func registerNotifications(notifications: [UNNotificationRequest]?) async {
         // if notifications is not null, we update the pending notifications, otherwise we only update the registered notifications list
         if let notifications {
@@ -101,7 +100,7 @@ actor RadarNotificationHelper: NSObject {
                 return nil
             }
             notificationCenter.removePendingNotificationRequests(withIdentifiers: notificationIdentifiersToRemove)
-
+            
             let permissions = await notificationCenter.radarNotificationPermissions()
             if Task.isCancelled {
                 return
@@ -110,7 +109,7 @@ actor RadarNotificationHelper: NSObject {
                 RadarLogger.debug("NotificationHelper notifications unauthorized")
                 return
             }
-
+            
             // add notifications
             for notification in notifications {
                 do {
@@ -123,7 +122,7 @@ actor RadarNotificationHelper: NSObject {
                 }
             }
         }
-
+        
         if Task.isCancelled {
             return
         }
@@ -134,50 +133,48 @@ actor RadarNotificationHelper: NSObject {
         RadarLogger.debug("NotificationHelper registered: \(pending.map(\.identifier))")
         isRegistering = false
     }
-
+    
     public func getDeliveredNotifications() async -> [[String: Sendable]] {
         let permissions = await notificationCenter.radarNotificationPermissions()
-        if !permissions.canSendNotification() {
+        if (!permissions.canSendNotification()) {
             if let data = try? JSONEncoder().encode(permissions),
-                let string = String(data: data, encoding: .utf8)
-            {
+               let string = String(data: data, encoding: .utf8) {
                 RadarLogger.debug("NotificationHelper no permission to send notification \(string)")
             }
             return []
         }
-
+        
         let task = currentTask
         // if currently registering, notificationCenter state will be unstable
         if isRegistering {
             RadarLogger.debug("NotificationHelper getDeliveredNotifications called while registering")
             return []
         }
-
+        
         guard let registered = radarState.registeredNotifications else {
             return []
         }
         let pendingRequests = await notificationCenter.pendingNotificationRequests().compactMap {
             NotificationValue(from: $0)
         }
-
+        
         // if a new task has begin/ended between start of this function, we can't guarantee when
         // pendingNotificationRequests are retrieved. So return empty list.
         if task != currentTask {
             RadarLogger.debug("NotificationHelper getDeliveredNotifications called while registering")
             return []
         }
-
+        
         let delivered = Set(registered).subtracting(pendingRequests)
         RadarLogger.debug("NotificationHelper delivered: \(delivered.map(\.identifier))")
-
+        
         if let data = try? JSONEncoder().encode(Array(delivered)),
-            let json = try? JSONSerialization.jsonObject(with: data) as? [[String: Sendable]]
-        {
+           let json = try? JSONSerialization.jsonObject(with: data) as? [[String: Sendable]] {
             return json
         }
         return []
     }
-
+    
     public func removeRegisteredNotifications(notifications: [[String: Sendable]]?) async {
         guard let notifications else {
             return
@@ -192,13 +189,13 @@ actor RadarNotificationHelper: NSObject {
         if idsToRemove.isEmpty {
             return
         }
-
+        
         registered.removeAll { notification in
             idsToRemove.contains(notification.identifier)
         }
         radarState.registeredNotifications = registered
     }
-
+    
     public func notificationPermission() async -> String {
         let permissions = await notificationCenter.radarNotificationPermissions()
         guard let data = try? JSONEncoder().encode(permissions) else {
@@ -207,3 +204,4 @@ actor RadarNotificationHelper: NSObject {
         return String(data: data, encoding: .utf8) ?? ""
     }
 }
+

@@ -13,13 +13,9 @@ final class RadarApiHelper: Sendable {
 
         // transform URL
         // turn query into a string of format: "?key=value&key2=value2" or "" if there are no queries
-        let queryString =
-            query.isEmpty
-            ? ""
-            : ("?"
-                + query.compactMap { key, value in
-                    key + "=" + value.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!
-                }.joined(separator: "&"))
+        let queryString = query.isEmpty ? "" : ("?" + query.compactMap { key, value in
+            key + "=" + value.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!
+        }.joined(separator: "&"))
 
         guard let urlObject = URL(string: "\(url)\(queryString)") else {
             // could not turn url into an URL object
@@ -34,10 +30,10 @@ final class RadarApiHelper: Sendable {
             request.addValue(value, forHTTPHeaderField: key)
         }
 
-        if !body.isEmpty && (method == "POST" || method == "PUT" || method == "PATCH") {
+        if (!body.isEmpty && (method == "POST" || method == "PUT" || method == "PATCH")) {
             request.httpBody = try JSONSerialization.data(withJSONObject: body, options: [])
         }
-
+        
         let (data, response) = try await URLSession.shared.data(for: request)
 
         guard let httpResponse = response as? HTTPURLResponse else {
@@ -51,7 +47,7 @@ final class RadarApiHelper: Sendable {
         guard let publishableKey = RadarSettings.publishableKey else {
             throw URLError(.userAuthenticationRequired)
         }
-
+        
         var headers = headers
         headers["Authorization"] = publishableKey
         headers["Content-Type"] = "application/json"
@@ -64,7 +60,7 @@ final class RadarApiHelper: Sendable {
         headers["X-Radar-Mobile-Origin"] = Bundle.main.bundleIdentifier
         headers["X-Radar-Network-Type"] = RadarUtils.networkType.rawValue
         headers["X-Radar-App-Info"] = RadarUtils.dictionaryToJson(RadarUtils.appInfo)
-
+        
         let url = "\(RadarSettings.host)/v1/\(url)"
 
         let (data, response) = try await request(method: method, url: url, query: query, headers: headers, body: body)
