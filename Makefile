@@ -42,6 +42,7 @@ lint-swift:
 
 format:
 	./clang_format.sh
+	swift-format format -i -r --parallel RadarSDK RadarSDKTests
 
 clean-pretty:
 	set -o pipefail && xcodebuild $(XC_ARGS) clean | xcpretty

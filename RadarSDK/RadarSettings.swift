@@ -9,10 +9,10 @@ import Foundation
 
 @objc(RadarSettings) @objcMembers
 internal class RadarSettings: NSObject {
-    
+
     static let DefaultHost = "https://api.radar.io"
     static let DefaultVerifiedHost = "https://api-verified.radar.io"
-    
+
     public static func setAppGroup(_ appGroup: String?) {
         // this call needs to by synchronised to prevent race conditions in checking / updating the app group
         let updateAppGroup = {
@@ -20,11 +20,11 @@ internal class RadarSettings: NSObject {
             if RadarUserDefaults.string(forKey: .AppGroup) == appGroup {
                 return
             }
-            
+
             let prevUserDefaults = RadarUserDefaults.userDefaults
             // if new user defaults cannot be created, default to .standard, UserDefaults(suiteName: nil) also references the standard user default
             let newUserDefaults = UserDefaults(suiteName: appGroup) ?? .standard
-            
+
             // if newUserDefaults[AppGroup] is already equal to the appGroup, we're already cloned the UserDefaults,
             // so we just start using the new user defaults. This is for initializing with an app group.
             if newUserDefaults.string(forKey: RadarUserDefaults.Key.AppGroup.rawValue) == appGroup {
@@ -32,19 +32,19 @@ internal class RadarSettings: NSObject {
                 RadarUserDefaults.userDefaults = newUserDefaults
                 return
             }
-            
+
             RadarUserDefaults.clone(from: prevUserDefaults, to: newUserDefaults)
-            
+
             // set AppGroup to nil, so next time we switch from another app group to the current, it'll detect it's new and clone
             RadarUserDefaults.set(nil, forKey: .AppGroup)
             RadarUserDefaults.userDefaults = newUserDefaults
-            
+
             // set AppGroup in default keys so we can initialize to the correct app group
             UserDefaults.standard.set(appGroup, forKey: RadarUserDefaults.Key.AppGroup.rawValue)
             // and set appGroup in new user defaults to signify initialized
             RadarUserDefaults.set(appGroup, forKey: .AppGroup)
         }
-        
+
         if Thread.isMainThread {
             updateAppGroup()
         } else {
@@ -53,16 +53,16 @@ internal class RadarSettings: NSObject {
             }
         }
     }
-    
+
     public static func getAppGroup() -> String? {
         return RadarUserDefaults.string(forKey: .AppGroup)
     }
-    
+
     public static var publishableKey: String? {
         get { return RadarUserDefaults.string(forKey: .PublishableKey) }
         set { RadarUserDefaults.set(newValue, forKey: .PublishableKey) }
     }
-    
+
     public static var installId: String {
         if let uuid = RadarUserDefaults.string(forKey: .InstallId) {
             return uuid
@@ -72,22 +72,22 @@ internal class RadarSettings: NSObject {
             return uuid
         }
     }
-    
+
     public static var sessionId: String {
         String(format: "%.f", RadarUserDefaults.double(forKey: .SessionId))
     }
-    
+
     public static func updateSessionId() -> Bool {
         let timestampSeconds: Double = Date().timeIntervalSince1970
         var sessionIdSeconds: Double = RadarUserDefaults.double(forKey: .SessionId)
-        
+
         let sdkConfiguration = RadarSettings.sdkConfiguration
-        if (sdkConfiguration?.extendFlushReplays ?? false) {
+        if sdkConfiguration?.extendFlushReplays ?? false {
             RadarLogger.shared.info("Flushing replays from updateSessionId()", type: .sdkCall)
             // TODO: call swift RadarReplayBuffer when implemented
             RadarSwift.bridge?.flushReplays()
         }
-        
+
         if timestampSeconds - sessionIdSeconds > 300 {
             sessionIdSeconds = timestampSeconds
             RadarUserDefaults.set(sessionIdSeconds, forKey: .SessionId)
@@ -98,7 +98,7 @@ internal class RadarSettings: NSObject {
         }
         return false
     }
-    
+
     public static var id: String? {
         @objc(_id)
         get { return RadarUserDefaults.string(forKey: .Id) }
@@ -109,7 +109,7 @@ internal class RadarSettings: NSObject {
         get { return RadarUserDefaults.string(forKey: .UserId) }
         set {
             let oldUserId = RadarUserDefaults.string(forKey: .UserId)
-            if (oldUserId != nil && oldUserId != newValue) {
+            if oldUserId != nil && oldUserId != newValue {
                 RadarSettings.id = nil
             }
             RadarUserDefaults.set(newValue, forKey: .UserId)
@@ -126,22 +126,22 @@ internal class RadarSettings: NSObject {
         get { return RadarUserDefaults.string(forKey: .Product) }
         set { RadarUserDefaults.set(newValue, forKey: .Product) }
     }
-    
+
     public static var metadata: [String: Any]? {
         get { return RadarUserDefaults.dictionary(forKey: .Metadata) }
         set { RadarUserDefaults.set(newValue, forKey: .Metadata) }
     }
-    
+
     public static var anonymousTrackingEnabled: Bool {
         get { return RadarUserDefaults.bool(forKey: .Anonymous) }
         set { RadarUserDefaults.set(newValue, forKey: .Anonymous) }
     }
-    
+
     public static var tracking: Bool {
         get { return RadarUserDefaults.bool(forKey: .Tracking) }
         set { RadarUserDefaults.set(newValue, forKey: .Tracking) }
     }
-    
+
     public static var trackingOptions: RadarTrackingOptions! {
         get {
             if let optionsDict = RadarUserDefaults.dictionary(forKey: .TrackingOptions) {
@@ -165,7 +165,7 @@ internal class RadarSettings: NSObject {
             RadarUserDefaults.set(newValue?.dictionaryValue(), forKey: .PreviousTrackingOptions)
         }
     }
-    
+
     public static var remoteTrackingOptions: RadarTrackingOptions? {
         get {
             if let options = RadarUserDefaults.dictionary(forKey: .RemoteTrackingOptions) {
@@ -175,7 +175,7 @@ internal class RadarSettings: NSObject {
         }
         set { RadarUserDefaults.set(newValue?.dictionaryValue(), forKey: .RemoteTrackingOptions) }
     }
-    
+
     public static var tripOptions: RadarTripOptions? {
         get {
             if let options = RadarUserDefaults.dictionary(forKey: .TripOptions) {
@@ -185,7 +185,7 @@ internal class RadarSettings: NSObject {
         }
         set { RadarUserDefaults.set(newValue?.dictionaryValue(), forKey: .TripOptions) }
     }
-    
+
     public static var trip: RadarTrip? {
         get {
             if let dict = RadarUserDefaults.dictionary(forKey: .Trip) {
@@ -208,9 +208,9 @@ internal class RadarSettings: NSObject {
         }
         set {
             RadarUserDefaults.set(newValue?.dictionaryValue(), forKey: .SdkConfiguration)
-            
+
             if let newValue = newValue {
-                logLevel = newValue.logLevel;
+                logLevel = newValue.logLevel
                 RadarSwift.bridge?.setLogBufferPersistantLog(newValue.useLogPersistence)
             } else {
                 RadarSwift.bridge?.setLogBufferPersistantLog(false)
@@ -225,13 +225,13 @@ internal class RadarSettings: NSObject {
                     return .debug
                 } else {
                     #if DEBUG
-                    return .debug;
+                        return .debug
                     #else
-                    return .none
+                        return .none
                     #endif
                 }
             }
-            return RadarLogLevel(rawValue: RadarUserDefaults.integer(forKey: .LogLevel)) ?? .none;
+            return RadarLogLevel(rawValue: RadarUserDefaults.integer(forKey: .LogLevel)) ?? .none
         }
         set { RadarUserDefaults.set(newValue.rawValue, forKey: .LogLevel) }
     }
@@ -240,16 +240,16 @@ internal class RadarSettings: NSObject {
         get { return RadarUserDefaults.object(forKey: .BeaconUUIDs) as? [String] }
         set { RadarUserDefaults.set(newValue, forKey: .BeaconUUIDs) }
     }
-    
+
     public static var host: String {
-        get { return RadarUserDefaults.string(forKey: .Host) ?? DefaultHost }
+        return RadarUserDefaults.string(forKey: .Host) ?? DefaultHost
     }
-    
+
     public static func updateLastTrackedTime() {
         let timeStamp: Date = Date()
         RadarUserDefaults.set(timeStamp, forKey: .LastTrackedTime)
     }
-    
+
     public static var lastTrackedTime: Date {
         let lastTrackedTime: Date? = RadarUserDefaults.object(forKey: .LastTrackedTime) as? Date
         return lastTrackedTime ?? Date(timeIntervalSince1970: 0)
@@ -258,7 +258,7 @@ internal class RadarSettings: NSObject {
     public static var verifiedHost: String {
         RadarUserDefaults.string(forKey: .VerifiedHost) ?? DefaultVerifiedHost
     }
-    
+
     public static var userDebug: Bool {
         get {
             return RadarUserDefaults.bool(forKey: .UserDebug)
@@ -272,7 +272,7 @@ internal class RadarSettings: NSObject {
         let timeStamp: Date = Date()
         RadarUserDefaults.set(timeStamp, forKey: .LastAppOpenTime)
     }
-    
+
     public static var lastAppOpenTime: Date {
         let lastAppOpenTime: Date? = RadarUserDefaults.object(forKey: .LastAppOpenTime) as? Date
         return lastAppOpenTime ?? Date(timeIntervalSince1970: 0)
@@ -281,23 +281,23 @@ internal class RadarSettings: NSObject {
     public static var useRadarModifiedBeacon: Bool {
         sdkConfiguration?.useRadarModifiedBeacon ?? false
     }
-    
+
     public static var xPlatform: Bool {
         xPlatformSDKType != nil && xPlatformSDKVersion != nil
     }
-    
+
     public static var xPlatformSDKType: String? {
         RadarUserDefaults.string(forKey: .XPlatformSDKType)
     }
-    
+
     public static var xPlatformSDKVersion: String? {
         RadarUserDefaults.string(forKey: .XPlatformSDKVersion)
     }
-    
+
     public static var useOpenedAppConversion: Bool {
         sdkConfiguration?.useOpenedAppConversion ?? true
     }
-    
+
     public static var initializeOptions: RadarInitializeOptions? {
         get {
             if let options = RadarUserDefaults.dictionary(forKey: .InitializeOptions) {
@@ -312,15 +312,15 @@ internal class RadarSettings: NSObject {
         get { return RadarUserDefaults.bool(forKey: .InSurveyMode) }
         set { RadarUserDefaults.set(newValue, forKey: .InSurveyMode) }
     }
-    
+
     public static var tags: [String] {
         get { return RadarUserDefaults.array(forKey: .UserTags) as? [String] ?? [] }
         set { RadarUserDefaults.set(newValue, forKey: .UserTags) }
     }
-    
+
     public static func addTags(_ tags: [String]) {
         var existingTags: [String] = self.tags
-        
+
         let existingTagsSet: Set<String> = Set(self.tags)
         for tag in tags {
             if !existingTagsSet.contains(tag) {
@@ -329,7 +329,7 @@ internal class RadarSettings: NSObject {
         }
         self.tags = existingTags
     }
-    
+
     public static func removeTags(_ tags: [String]) {
         self.tags = self.tags.filter { !tags.contains($0) }
     }
@@ -338,7 +338,7 @@ internal class RadarSettings: NSObject {
         get { return RadarUserDefaults.string(forKey: .PushNotificationToken) }
         set { RadarUserDefaults.set(newValue, forKey: .PushNotificationToken) }
     }
-    
+
     public static var locationExtensionToken: String? {
         get { return RadarUserDefaults.string(forKey: .LocationExtensionToken) }
         set { RadarUserDefaults.set(newValue, forKey: .LocationExtensionToken) }

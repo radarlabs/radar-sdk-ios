@@ -25,7 +25,7 @@ make test
 # Run tests (pretty output, skips specific unit test bundles: InAppMessageTest, RadarSettingsTest, RadarNotificationHelperTest)
 make test-pretty
 
-# Format (clang-format for any remaining ObjC)
+# Format (clang-format for ObjC, swift-format for Swift)
 make format
 
 # Lint Swift (SwiftLint, gated by .swiftlint-baseline.json — only new violations fail)

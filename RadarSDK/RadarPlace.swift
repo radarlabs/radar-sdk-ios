@@ -6,8 +6,8 @@
 //  Copyright © 2026 Radar Labs, Inc. All rights reserved.
 //
 
-import Foundation
 import CoreLocation
+import Foundation
 
 struct RadarPlaceSwift: Codable, Sendable {
     let id: String
@@ -16,7 +16,7 @@ struct RadarPlaceSwift: Codable, Sendable {
     let location: RadarCoordinateSwift
     let group: String?
     let geometryRadius: Double?
-    
+
     enum CodingKeys: String, CodingKey {
         case id = "_id"
         case name
@@ -25,7 +25,7 @@ struct RadarPlaceSwift: Codable, Sendable {
         case group
         case geometryRadius
     }
-    
+
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = try container.decode(String.self, forKey: .id)
@@ -33,11 +33,11 @@ struct RadarPlaceSwift: Codable, Sendable {
         categories = try container.decodeIfPresent([String].self, forKey: .categories) ?? []
         group = try container.decodeIfPresent(String.self, forKey: .group)
         geometryRadius = try container.decodeIfPresent(Double.self, forKey: .geometryRadius)
-        
+
         let geoJSON = try container.decode(GeoJSONPoint.self, forKey: .location)
         location = RadarCoordinateSwift(latitude: geoJSON.coordinates[1], longitude: geoJSON.coordinates[0])
     }
-    
+
     init(id: String, name: String, categories: [String], location: RadarCoordinateSwift, group: String?, geometryRadius: Double? = nil) {
         self.id = id
         self.name = name
@@ -46,8 +46,8 @@ struct RadarPlaceSwift: Codable, Sendable {
         self.group = group
         self.geometryRadius = geometryRadius
     }
-    
-   func encode(to encoder: Encoder) throws {
+
+    func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(id, forKey: .id)
         try container.encode(name, forKey: .name)

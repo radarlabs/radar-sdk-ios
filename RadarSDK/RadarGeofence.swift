@@ -5,22 +5,22 @@
 //  Copyright © 2019 Radar Labs, Inc. All rights reserved.
 //
 
-import Foundation
 import CoreLocation
+import Foundation
 
 // MARK: - Sync Region Types
 
 enum RadarGeofenceGeometrySwift: Codable, Sendable {
     case circle(center: RadarCoordinateSwift, radius: Double)
     case polygon(coordinates: [RadarCoordinateSwift], center: RadarCoordinateSwift, radius: Double)
-    
+
     var center: RadarCoordinateSwift {
         switch self {
         case .circle(let center, _): return center
         case .polygon(_, let center, _): return center
         }
     }
-    
+
     var radius: Double {
         switch self {
         case .circle(_, let radius): return radius
@@ -50,7 +50,7 @@ struct RadarGeofenceSwift: Codable, Sendable {
         case dwellThreshold
         case stopDetection
     }
-    
+
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = try container.decode(String.self, forKey: .id)
@@ -59,27 +59,31 @@ struct RadarGeofenceSwift: Codable, Sendable {
         externalId = try container.decodeIfPresent(String.self, forKey: .externalId)
         dwellThreshold = try container.decodeIfPresent(Double.self, forKey: .dwellThreshold)
         geofenceStopDetection = try container.decodeIfPresent(Bool.self, forKey: .stopDetection)
-        
+
         let type = try container.decodeIfPresent(String.self, forKey: .type) ?? ""
         let radius = try container.decodeIfPresent(Double.self, forKey: .geometryRadius) ?? 0
-        let center = try container.decodeIfPresent(GeoJSONPoint.self, forKey: .geometryCenter)
+        let center =
+            try container.decodeIfPresent(GeoJSONPoint.self, forKey: .geometryCenter)
             .map { RadarCoordinateSwift(latitude: $0.coordinates[1], longitude: $0.coordinates[0]) }
             ?? RadarCoordinateSwift(latitude: 0, longitude: 0)
-        
+
         switch type.lowercased() {
         case "polygon", "isochrone":
             let geoJSON = try container.decodeIfPresent(GeoJSONPolygon.self, forKey: .geometry)
-            let coords = geoJSON?.coordinates.first?.map {
-                RadarCoordinateSwift(latitude: $0[1], longitude: $0[0])
-            } ?? []
+            let coords =
+                geoJSON?.coordinates.first?.map {
+                    RadarCoordinateSwift(latitude: $0[1], longitude: $0[0])
+                } ?? []
             geometry = .polygon(coordinates: coords, center: center, radius: radius)
-            default :
+        default:
             geometry = .circle(center: center, radius: radius)
         }
     }
-    
-    init(id: String, description: String, tag: String?, externalId: String?,
-         geometry: RadarGeofenceGeometrySwift, dwellThreshold: Double?, geofenceStopDetection: Bool?) {
+
+    init(
+        id: String, description: String, tag: String?, externalId: String?,
+        geometry: RadarGeofenceGeometrySwift, dwellThreshold: Double?, geofenceStopDetection: Bool?
+    ) {
         self.id = id
         self.description = description
         self.tag = tag
@@ -88,7 +92,7 @@ struct RadarGeofenceSwift: Codable, Sendable {
         self.dwellThreshold = dwellThreshold
         self.geofenceStopDetection = geofenceStopDetection
     }
-    
+
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(id, forKey: .id)
@@ -97,7 +101,7 @@ struct RadarGeofenceSwift: Codable, Sendable {
         try container.encodeIfPresent(externalId, forKey: .externalId)
         try container.encodeIfPresent(dwellThreshold, forKey: .dwellThreshold)
         try container.encodeIfPresent(geofenceStopDetection, forKey: .stopDetection)
-        
+
         switch geometry {
         case .circle(let center, let radius):
             try container.encode("circle", forKey: .type)
@@ -125,10 +129,9 @@ private struct GeoJSONPolygon: Codable, Sendable {
 
 struct RadarCoordinateCodable: Codable, Sendable, Equatable {
     static func == (lhs: RadarCoordinateCodable, rhs: RadarCoordinateCodable) -> Bool {
-        return lhs.coordinate.latitude == rhs.coordinate.latitude &&
-               lhs.coordinate.longitude == rhs.coordinate.longitude
+        return lhs.coordinate.latitude == rhs.coordinate.latitude && lhs.coordinate.longitude == rhs.coordinate.longitude
     }
-    
+
     let coordinate: CLLocationCoordinate2D
 
     private enum CodingKeys: String, CodingKey {
@@ -143,12 +146,13 @@ struct RadarCoordinateCodable: Codable, Sendable, Equatable {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         let pair = try container.decode([Double].self, forKey: .coordinates)
         guard pair.count == 2 else {
-            throw DecodingError.dataCorruptedError(forKey: .coordinates,
-                                                   in: container,
-                                                   debugDescription: "Expected [longitude, latitude]")
+            throw DecodingError.dataCorruptedError(
+                forKey: .coordinates,
+                in: container,
+                debugDescription: "Expected [longitude, latitude]")
         }
         self.coordinate = CLLocationCoordinate2D(latitude: pair[1], longitude: pair[0])
-        
+
     }
 
     func encode(to encoder: Encoder) throws {
@@ -187,7 +191,7 @@ enum RadarMetadataValue: Codable, Sendable, Hashable {
         case .bool(let v): try container.encode(v)
         }
     }
-    
+
     func string() -> String? {
         if case let .string(value) = self {
             return value
@@ -218,6 +222,5 @@ struct RadarGeofence_Swift: Codable, Sendable, Equatable {
     /// The geometry of the geofence, which can be cast to either `RadarCircleGeometry` or `RadarPolygonGeometry`.
     public let geometryCenter: RadarCoordinateCodable
 
-    
     public let geometryRadius: Double
 }

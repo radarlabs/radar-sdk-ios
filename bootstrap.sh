@@ -49,4 +49,11 @@ else
   echo "swiftlint already installed"
 fi
 
+if ! command -v swift-format >/dev/null; then
+  echo "installing swift-format..."
+  brew install swift-format
+else
+  echo "swift-format already installed"
+fi
+
 echo "dependencies installed"
