@@ -153,7 +153,7 @@ internal final class RadarFailoverAPICoordinator: NSObject, @unchecked Sendable 
         }
 
         healthCheck(primaryHost) { [weak self] healthy in
-            self?.healthQueue.async {
+            self?.healthQueue.async { [weak self] in
                 self?.finishHealthCheck(healthy: healthy)
             }
         }
@@ -203,7 +203,7 @@ internal final class RadarFailoverAPICoordinator: NSObject, @unchecked Sendable 
         return combined.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? combined
     }
 
-    private static func defaultHealthCheck(primaryHost: String, completion: @escaping (Bool) -> Void) {
+    private static func defaultHealthCheck(primaryHost: String, completion: @escaping @Sendable (Bool) -> Void) {
         let urlString = url(host: primaryHost, path: "/health")
         guard let url = URL(string: urlString) else {
             completion(false)
