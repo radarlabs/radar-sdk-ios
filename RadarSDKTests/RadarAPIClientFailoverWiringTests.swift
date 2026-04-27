@@ -14,21 +14,24 @@ import Testing
 extension RadarSerializedTests {
 
     @Suite(.serialized)
-    final class RadarAPIClientFailoverWiringTests {
+    final class RadarAPIClientFailoverWiringTests: @unchecked Sendable {
 
         private let apiHelperMock = RadarAPIHelperMock()
         private let apiClient: AnyObject
+        private let originalApiHelper: AnyObject
 
         init() {
             Radar.initialize(publishableKey: "prj_test_pk_0000000000000000")
             apiClient = ObjCAPIClientBridge.sharedInstance()
+            originalApiHelper = ObjCAPIClientBridge.apiHelper(on: apiClient)
             ObjCAPIClientBridge.setAPIHelper(apiHelperMock, on: apiClient)
             RadarFailoverAPICoordinator.verifiedShared.reset()
         }
 
         deinit {
             RadarFailoverAPICoordinator.verifiedShared.reset()
-            RadarSettings.sdkConfiguration = RadarSdkConfiguration(dict: nil)
+            ObjCAPIClientBridge.setAPIHelper(originalApiHelper, on: apiClient)
+            RadarSettings.sdkConfiguration = RadarSdkConfiguration(dict: [:])
         }
 
         private func setFailoverFlag(_ enabled: Bool) {
@@ -105,13 +108,22 @@ private enum ObjCAPIClientBridge {
         return function(apiClientClass, selector)
     }
 
-    static func setAPIHelper(_ helper: RadarAPIHelperMock, on client: AnyObject) {
+    static func setAPIHelper(_ helper: AnyObject, on client: AnyObject) {
         let selector = NSSelectorFromString("setApiHelper:")
         let implementation = client.method(for: selector)
 
         typealias Function = @convention(c) (AnyObject, Selector, AnyObject) -> Void
         let function = unsafeBitCast(implementation, to: Function.self)
         function(client, selector, helper)
+    }
+
+    static func apiHelper(on client: AnyObject) -> AnyObject {
+        let selector = NSSelectorFromString("apiHelper")
+        let implementation = client.method(for: selector)
+
+        typealias Function = @convention(c) (AnyObject, Selector) -> AnyObject
+        let function = unsafeBitCast(implementation, to: Function.self)
+        return function(client, selector)
     }
 
     static func getConfig(

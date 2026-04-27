@@ -8,12 +8,12 @@
 import Foundation
 
 @objc(RadarFailoverAPICoordinator)
-internal final class RadarFailoverAPICoordinator: NSObject {
+internal final class RadarFailoverAPICoordinator: NSObject, @unchecked Sendable {
 
-    typealias HealthCheck = (_ primaryHost: String, _ completion: @escaping (Bool) -> Void) -> Void
+    typealias HealthCheck = @Sendable (_ primaryHost: String, _ completion: @escaping @Sendable (Bool) -> Void) -> Void
 
     @objc(verifiedSharedInstance)
-    nonisolated(unsafe) static let verifiedShared = RadarFailoverAPICoordinator(
+    static let verifiedShared = RadarFailoverAPICoordinator(
         hostsProvider: { [RadarSettings.verifiedHost, RadarSettings.DefaultVerifiedHostSecondary] },
         logPrefix: "verified"
     )

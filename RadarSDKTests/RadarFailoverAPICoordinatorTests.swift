@@ -10,7 +10,7 @@ import Testing
 @testable import RadarSDK
 
 @Suite(.serialized)
-final class RadarFailoverAPICoordinatorTests {
+final class RadarFailoverAPICoordinatorTests: @unchecked Sendable {
 
     private let primaryHost = "https://primary.example.com"
     private let secondaryHost = "https://secondary.example.com"
