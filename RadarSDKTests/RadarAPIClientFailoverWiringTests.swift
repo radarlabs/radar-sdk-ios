@@ -38,21 +38,31 @@ extension RadarSerializedTests {
             RadarSettings.sdkConfiguration = RadarSdkConfiguration(dict: ["useVerifiedHostFailover": enabled])
         }
 
+        private func newUrlsContaining(_ substring: String, since startCount: Int) -> [String] {
+            let history = apiHelperMock.urlHistory
+            guard history.count > startCount else { return [] }
+            return history[startCount...].filter { $0.contains(substring) }
+        }
+
         private func capturedConfigUrl(verified: Bool) async -> String? {
-            await withCheckedContinuation { continuation in
+            let startCount = apiHelperMock.urlHistory.count
+            await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
                 ObjCAPIClientBridge.getConfig(on: apiClient, usage: "wiring-test", verified: verified) { _, _ in
-                    continuation.resume(returning: self.apiHelperMock.lastUrl)
+                    continuation.resume()
                 }
             }
+            return newUrlsContaining("/v1/config", since: startCount).first
         }
 
         private func capturedTrackUrl(verified: Bool) async -> String? {
-            await withCheckedContinuation { continuation in
+            let startCount = apiHelperMock.urlHistory.count
+            await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
                 let location = CLLocation(latitude: 40.0, longitude: -73.0)
                 ObjCAPIClientBridge.track(on: apiClient, location: location, verified: verified) { _, _, _, _, _, _, _ in
-                    continuation.resume(returning: self.apiHelperMock.lastUrl)
+                    continuation.resume()
                 }
             }
+            return newUrlsContaining("/v1/track", since: startCount).first
         }
 
         @Test func verifiedConfigUsesPrimaryThenSecondaryWhenFailoverEnabled() async {

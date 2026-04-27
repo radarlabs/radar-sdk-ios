@@ -21,6 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, nullable) NSString *lastUrl;
 @property (nonatomic, strong, nullable) NSDictionary *lastHeaders;
 @property (nonatomic, strong, nullable) NSDictionary *lastParams;
+@property (nonatomic, strong, nonnull, readonly) NSArray<NSString *> *urlHistory;
 
 - (void)setMockResponse:(NSDictionary *)response forMethod:(NSString *)urlString;
 - (void)setMockStatus:(RadarStatus)mockStatus forMethod:(NSString *)urlString;

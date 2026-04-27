@@ -11,6 +11,8 @@
 
 @property (nonnull, strong, nonatomic) NSMutableDictionary *mockResponses;
 @property (nonnull, strong, nonatomic) NSMutableDictionary *mockStatuses;
+@property (nonnull, strong, nonatomic) NSMutableArray<NSString *> *mutableUrlHistory;
+@property (nonnull, strong, nonatomic) NSLock *urlHistoryLock;
 
 @end
 
@@ -22,9 +24,18 @@
     if (self) {
         self.mockResponses = [NSMutableDictionary new];
         self.mockStatuses = [NSMutableDictionary new];
+        self.mutableUrlHistory = [NSMutableArray new];
+        self.urlHistoryLock = [NSLock new];
     }
 
     return self;
+}
+
+- (NSArray<NSString *> *)urlHistory {
+    [self.urlHistoryLock lock];
+    NSArray<NSString *> *snapshot = [self.mutableUrlHistory copy];
+    [self.urlHistoryLock unlock];
+    return snapshot;
 }
 
 - (void)requestWithMethod:(NSString *)method
@@ -40,6 +51,9 @@
     self.lastUrl = url;
     self.lastHeaders = headers;
     self.lastParams = params;
+    [self.urlHistoryLock lock];
+    [self.mutableUrlHistory addObject:url];
+    [self.urlHistoryLock unlock];
     
     NSDictionary *response = self.mockResponses[url];
     if (response == nil) {
