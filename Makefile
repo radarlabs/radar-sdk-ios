@@ -1,5 +1,5 @@
 SDK ?= "iphonesimulator"
-DESTINATION ?= "platform=iOS Simulator,name=iPhone 17,OS=26.2"
+DESTINATION ?= "platform=iOS Simulator,name=iPhone 17,OS=26.4.1"
 PROJECT := RadarSDK
 PROJECT_EXAMPLE := Example/Example
 SCHEME := XCFramework
@@ -43,7 +43,17 @@ build-pretty:
 	set -o pipefail && xcodebuild $(XC_ARGS) | xcpretty
 
 test-pretty:
-	set -o pipefail && xcodebuild $(XC_TEST_ARGS) test -skip-testing:RadarSDKTests/InAppMessageTest -skip-testing:RadarSDKTests/RadarSettingsTest -skip-testing:RadarSDKTests/RadarNotificationHelperTest | xcpretty --report junit
+	@set -o pipefail; \
+	  xcodebuild $(XC_TEST_ARGS) test -skip-testing:RadarSDKTests/InAppMessageTest -skip-testing:RadarSDKTests/RadarSettingsTest -skip-testing:RadarSDKTests/RadarNotificationHelperTest 2>&1 \
+	    | tee /tmp/radar-sdk-ios-test.log \
+	    | xcpretty --report junit; \
+	  status=$$?; \
+	  if [ $$status -ne 0 ]; then \
+	    echo ""; \
+	    echo "=== Swift Testing issues (hidden by xcpretty) ==="; \
+	    grep -E "^(Testing failed:|.*✘ Test |.*recorded an issue|.* failed after .* with [0-9]+ issue|Crash: )" /tmp/radar-sdk-ios-test.log || echo "(no Swift Testing failure markers found — see /tmp/radar-sdk-ios-test.log)"; \
+	  fi; \
+	  exit $$status
 
 test-swift:
 	xcodebuild $(XC_TEST_ARGS) test -only-testing:RadarSDKTests/InAppMessageTest -only-testing:RadarSDKTests/RadarSettingsTest -only-testing:RadarSDKTests/RadarNotificationHelperTest
