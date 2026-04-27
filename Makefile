@@ -31,7 +31,14 @@ lint:
 		if [ "$$spec" != "RadarSDKIndoors.podspec" ]; then \
 			pod lib lint "$$spec" || exit 1; \
 		fi; \
-	done 
+	done
+
+lint-swift:
+	@if ! command -v swiftlint >/dev/null; then \
+		echo "swiftlint not installed; run 'make bootstrap' or 'brew install swiftlint'"; \
+		exit 1; \
+	fi
+	swiftlint lint --strict --baseline .swiftlint-baseline.json
 
 format:
 	./clang_format.sh
@@ -66,4 +73,4 @@ docs:
 
 dist: clean-pretty test-pretty build-pretty lint docs
 
-.PHONY: bootstrap clean test build lint format docs dist
+.PHONY: bootstrap clean test build lint lint-swift format docs dist

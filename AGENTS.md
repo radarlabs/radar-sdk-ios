@@ -27,6 +27,9 @@ make test-pretty
 
 # Format (clang-format for any remaining ObjC)
 make format
+
+# Lint Swift (SwiftLint, gated by .swiftlint-baseline.json — only new violations fail)
+make lint-swift
 ```
 
 Tests use `xcodebuild` targeting an iPhone simulator. The default destination is `iPhone 17, OS=26.2`. Override with:

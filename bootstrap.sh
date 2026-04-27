@@ -42,4 +42,11 @@ else
   echo "clang-format already installed"
 fi
 
+if ! command -v swiftlint >/dev/null; then
+  echo "installing swiftlint..."
+  brew install swiftlint
+else
+  echo "swiftlint already installed"
+fi
+
 echo "dependencies installed"
