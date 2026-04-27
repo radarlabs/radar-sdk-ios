@@ -33,12 +33,29 @@ lint:
 		fi; \
 	done
 
+FORMAT_BASE ?= origin/master
+
 lint-swift:
 	@if ! command -v swiftlint >/dev/null; then \
 		echo "swiftlint not installed; run 'make bootstrap' or 'brew install swiftlint'"; \
 		exit 1; \
 	fi
 	swiftlint lint --strict --baseline .swiftlint-baseline.json
+
+format-check:
+	@if ! command -v swift-format >/dev/null; then \
+		echo "swift-format not installed; run 'make bootstrap' or 'brew install swift-format'"; \
+		exit 1; \
+	fi
+	@SWIFT_FILES=$$(git diff --diff-filter=ACM --name-only $(FORMAT_BASE)...HEAD -- '*.swift' 2>/dev/null); \
+	if [ -z "$$SWIFT_FILES" ]; then \
+		echo "No Swift files changed; skipping format check."; \
+		exit 0; \
+	fi; \
+	echo "Checking format of changed Swift files:"; \
+	echo "$$SWIFT_FILES" | tr '\n' ' '; echo; \
+	echo "$$SWIFT_FILES" | xargs swift-format format -i --parallel; \
+	git diff --exit-code -- $$SWIFT_FILES
 
 format:
 	./clang_format.sh
@@ -74,4 +91,4 @@ docs:
 
 dist: clean-pretty test-pretty build-pretty lint docs
 
-.PHONY: bootstrap clean test build lint lint-swift format docs dist
+.PHONY: bootstrap clean test build lint lint-swift format format-check docs dist
