@@ -22,6 +22,10 @@ jobs:
           command: |
             gem install xcpretty jazzy
             gem install cocoapods -v '1.15.2'
+            brew install swiftlint
+      - run:
+          name: Lint Swift
+          command: make lint-swift
       - run:
           name: Test
           command: make clean test-pretty
