@@ -252,7 +252,7 @@
          verified:YES
          verifiedHostOverride:nil
          completionHandler:^(RadarStatus status, RadarConfig * _Nullable config) {
-            BOOL primaryRadarResponse = (status == RadarStatusSuccess && config && config.meta);
+            BOOL primaryRadarResponse = (config && config.meta);
             if (primaryRadarResponse) {
                 continueWithConfig(status, config, nil);
                 return;
